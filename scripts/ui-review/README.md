@@ -373,7 +373,9 @@ fixture, `dev/workbench/fixtures/marketplace/registry.ts`, added 2026-08-25),
 `?mpUpdate=1` (installed Civic Report and Meadow Mist are older than their listing → Update),
 `?liked=1` (a theme page opens already liked) — Marketplace detail states, added 2026-10-05,
 `?officePort=<n>` (where the Office editor listens; `shoot` sets it when 4717 is another
-worktree's), `?view=tools|compare` (tool gallery / permission-card comparison), `?latency=<ms>`.
+worktree's), `?view=tools|compare` (tool gallery / permission-card comparison), `?view=buddy-chat` (the buddy's chat
+window alone, 320×480) and `?view=buddy-group[&point=N]` (mascot, chat and action bar together; `point`
+rests a pretend pointer on bar button N so its hint shows), `?latency=<ms>`.
 
 Provider and account state — **a shot of Settings → Cloud providers that omits these gets
 a card drawn in its EMPTY state, which reads as a missing feature rather than a missing

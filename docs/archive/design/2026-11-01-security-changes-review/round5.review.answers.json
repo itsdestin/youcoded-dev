@@ -1,0 +1,37 @@
+{
+ "deck": "security-changes-round5",
+ "started": "2026-11-03T21:33:59.289Z",
+ "submitted": "2026-11-03T21:34:59Z",
+ "cur": 3,
+ "answers": {
+  "A-0": {
+   "v": "yes",
+   "t": 1793741650170,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-1": {
+   "v": "yes",
+   "t": 1793741656244,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "t": 1793741666695,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-3": {
+   "note": "",
+   "t": 1793741698658,
+   "v": "yes",
+   "seconds": 32,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

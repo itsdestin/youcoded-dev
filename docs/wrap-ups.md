@@ -1338,3 +1338,44 @@ recurred — the repetition is the data.
 - Windows/macOS: master's own nightly runs fail exists-probe, sidecar-cleanup, resolve-artifact-path and a MarkdownContent CPU budget (3 days running, before this branch) → reported to Destin, not fixed here (outside this work); per the test rule not filed as a card.
 - Destin's 5 roundup comments stay in the old store until his app updates → card #208 (move them then, with his OK).
 - deleted/merged: timed-out-ask cleanup moved into the module (two copies in main.ts/headless-boot.ts dropped); the `office-outside` refusal path and its verdict kind were deleted when Word/Excel joined the same card.
+
+## 2026-10-31 — buddy rebuild follow-up: taskbar gap, doc sweep, leftover tray icon (session/buddy-followup, app + workspace, cards #85 #210)
+- I told Destin the buddy "never sleeps on its own"; it has since the rebuild (`mascot-mood.ts`). Source: card #85's progress note, which I wrote myself at the #709 merge without checking item (c) against the code → applied: #85 closed as shipped. Dropped as a rule: evidence-before-claims already covers it; my lapse.
+- Taskbar-style gap (34 px, a rebuild regression) was found only because the final reviewer did geometry by hand; the workbench has no taskbar-style view → applied: fix + geometry/CSS pin + manager test seen red. Not added: a workbench view (one-off; the pin now executes).
+- Leftover tray icon on KDE: Electron's `Tray.destroy()` leaves KDE's tray entry until the app quits (measured with a 15-line Electron script + `busctl`; a helper process holding the tray measured ~200 MB) → card #210 holds the measurements and fix; WHY note at `buddy-tray.ts` `destroy()` so a tray session finds it.
+- Doc sweep found ~30 stale buddy claims (design guide, MAP had no buddy row, old inventories) → applied on this branch; audit-anchors clean.
+- deleted/merged: stale buddy component names from ~15 code comments and 4 app docs; card #85 retired.
+
+## 2026-11-01 — analytics audit, 17 approved proposals built, dashboard rebuilt twice (session/analytics-proposals, app + worker + admin + workspace, card #211)
+- Audit found Android 1.3.1+ checking in as "desktop" (headless backend hard-coded it) and own-phone exclusion broken; nothing in docs said the phone runs analytics-service → applied: fixes + worker-backend rule ("empty OS is a phone", blob layout) + `docs/local-dev.md` → "Analytics: team devices and test runs".
+- I first auto-marked EVERY workspace machine as a team device; Destin caught that contributors would vanish from analytics → applied: owner-only (`gh` login = itsdestin) in `scripts/team-device.mjs`, contributor case pinned by test seen red.
+- RECURRED (card #195, third time): `gitleaks … -q; echo` — bad flag, echo reset the exit code, push went out unscanned (clean on re-scan) → card #195 progress.
+- RECURRED (preferences 2026-10-14 / 2026-10-27): "just say retention" and "use the existing (i) styling" — both preferences were on file in `~/system/me/preferences.md`, unread before designing → applied: recurrence lines + a new numbers-first dashboard preference there.
+- Worker worktree had stale shared deps (vitest-pool-workers 0.5 vs lockfile ^0.22) and the hook blocks npm ci in worktrees; ~6 calls to work around → card #212.
+- Independent reviewer found 8 issues my tests missed (opt-out undone by a racing write, damaged file read as a fresh install, reload click undercount, …) → applied: 7 fixed with tests seen red; 1 (blob8 on pre-change AE rows) needs a check after deploy, noted on #211.
+- Two worker tests (presence, site-analytics) failed once at load 59 from other sessions, passed on 2 reruns → dropped: not reproducible without manufacturing load; reported to Destin.
+- deleted/merged: website.css merged into dashboard.css; the dashboard's weekly charts, by-version chart, journey table and every card sub-line removed; the inline App script replaced by modules sharing one chart/tab helper.
+
+## 2026-11-03 — voice typing heard nothing: muted mic, app now says so (session/voice-no-sound, app + workspace, no card)
+- Cause was the Z13's system mic muted (found in 2 calls with `wpctl status`/`pw-record`), not the app; but the app gave no sign: "Listening" over pure zeros, then an empty box → applied: amber "No sound detected — device may be muted" after 3 s of digital silence, and a card after an empty Stop (no sound / too quiet / no words); 6 tests in `useVoiceInput.test.ts` seen red with detection off. Machine fact → `~/system/machines/z13/issues.md`.
+- InputBar went 7 lines over its line budget → applied: the listening band moved into `VoiceButton.tsx` instead of raising the budget.
+- `preview` refuses an answered deck; a one-step follow-up deck (`no-sound-2.live.json`) carried the N-1 revision → dropped: AUTHORING.md documents it; one call.
+- `first-draw-stability` journey failed once at load 69 (67.8 px drift), passed on two reruns at load 74–97; unrelated to voice → dropped: not reproducible without manufacturing load; reported to Destin.
+- deleted/merged: the listening band's markup left InputBar (one component in VoiceButton); InputBar's `StatusStrip` import removed.
+
+## 2026-11-04 — security audit fixes, five review decks (session/sec-integration app + workspace, session/sec-worker-hardening marketplace, no card)
+- Danger-zone screen was marked `newIn: 'after'` though Delete account existed before, so the deck showed only the new side; Destin: "i need to review all of these surfaces" → applied: mark removed (`screens/settings.ts`), round 5 walked every step. Dropped as a rule: `scripts/shoot/README.md` already says `newIn` is for states only the new code has; my lapse.
+- First round-5 crop used image pixels (2160x1350) instead of the 1440x900 CSS pixels → dropped: AUTHORING.md `crop` row already says CSS pixels; one rebuild.
+- Real-website run of the download guard: GitHub archive and release downloads always hop to codeload.github.com / release-assets.githubusercontent.com, so a "github.com only" rule stops them and asks → reported to Destin (design consequence of Q-7 exact-site, not a bug).
+- Android `./gradlew test` stops at `buildRuntimeDebug` here (needs Alpine `apk version -t`); `testDebugUnitTest -x bundleWebUi -x buildRuntimeDebug` ran 41 green → dropped as a doc edit: CLAUDE.md's Android paragraph deliberately names commands, not verdicts.
+- Destin: "that was a bit too verbose, just tell me what you need" → dropped: `~/system/global.md` already says fewest words; recurrence of my habit, not a missing rule.
+- The Electron 41→44 upgrade (audit) made every packaged Linux file world-writable: Electron 44's own zip stores 0666/0777. verify.sh and the local tests were green; only CI's AppImage payload check (`ci-evidence.mjs` verifyInstalled) caught it, and deb/rpm/pacman passed while shipping the bad modes → applied: `desktop/scripts/after-pack-permissions.cjs` afterPack hook + `tests/after-pack-permissions.test.ts`, seen red then green; local `--dir` build has 0 world-writable files.
+- deleted/merged: none found; looked at the deck and shoot docs, both already covered this session's mistakes.
+
+## 2026-11-05 — background commands stuck "Running"/"Watching" forever (session/stuck-background-commands, app + workspace, card #220 for the unchecked native half)
+- Three causes from one screenshot: Monitor time-limit notices carry no `<status>` (24% of 980 Monitors stuck), a helper's launch ignored an end read earlier on reopen, the restart reap never matched helper commands (the last found only by the independent reviewer) → applied: `transcript-watcher.ts`, `cc-background.ts`, `chat-reducer.ts`, 4 tests each seen red; `cc-dependencies.md` notes the expiry wording.
+- A helper's `until rg -q …; do sleep 10; done` ran 32 h: Claude Code drops the Bash timeout once it auto-backgrounds a command → applied: glob-guard adds a note (never a block, Destin chose warn) for wait loops with no limit; 5 tests, seen red. Loop killed with Destin's OK.
+- chat-reducer.ts went +10 over its line budget → applied: launch-record merge moved to `commandWithKnownEnd` (one copy instead of two).
+- Native sessions not investigated → card #220 (Destin's words).
+- I cd'd into worktrees during read-only investigation and the session's working directory followed (5 environment-change notices) → dropped: harmless here, absolute paths used throughout.
+- deleted/merged: the duplicated "end already read" record-building in chat-reducer (two copies → one helper in cc-background.ts).

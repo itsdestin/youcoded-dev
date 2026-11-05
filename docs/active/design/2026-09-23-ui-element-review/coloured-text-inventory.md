@@ -6,6 +6,8 @@ related: small-fixes-3 (the sweep question), guide-draft.md principle 2, decisio
 
 # Status colours used as text — inventory (not fixed yet)
 
+> **Note (2026-10-30):** the buddy files named below (`BubbleFeed`, `CompactToolStrip`, `AttentionStrip`, `SessionPill`) were deleted in the buddy rebuild; the buddy chat now uses the main window's SessionStrip, ChatView, InputBar and cards (`docs/archive/specs/2026-10-25-buddy-rebuild-design.md`). Findings about them are closed by deletion.
+
 The guide: the fixed status hues (green, red, amber, blue) go in tints, never in text (principle 2).
 **Swept 2026-10-13** (small-fixes-3#SF3-10, Destin picked "sweep"): every place below that coloured
 WORDS now keeps them in the text colour, with the status colour in a pill, tint, outline, bar or

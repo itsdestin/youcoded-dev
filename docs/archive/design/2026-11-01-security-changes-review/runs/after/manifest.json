@@ -1,0 +1,478 @@
+[
+  {
+    "name": "chat#web-visit",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#web-visit/halftone-dimension.png",
+    "ms": 4709,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/development/bug-report/halftone-dimension.png",
+    "ms": 6034,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 102,
+      "w": 600,
+      "h": 696
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/remote#devices",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/remote#devices/halftone-dimension.png",
+    "ms": 6440,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/first-time-warning/full-auto",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat/first-time-warning/full-auto/halftone-dimension.png",
+    "ms": 6992,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/account#signed-in",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/account#signed-in/halftone-dimension.png",
+    "ms": 7064,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#grant-curl-download",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#grant-curl-download/halftone-dimension.png",
+    "ms": 7883,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#web-visit",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#web-visit/meadow-mist.png",
+    "ms": 8387,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/remote#devices",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/remote#devices/meadow-mist.png",
+    "ms": 8491,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/development/bug-report/meadow-mist.png",
+    "ms": 8681,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 118,
+      "w": 600,
+      "h": 663
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/permissions",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/assistant/permissions/halftone-dimension.png",
+    "ms": 9432,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/first-time-warning/full-auto",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat/first-time-warning/full-auto/meadow-mist.png",
+    "ms": 10618,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 202,
+      "w": 420,
+      "h": 497
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/account#signed-in",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/account#signed-in/meadow-mist.png",
+    "ms": 11246,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#grant-curl-upload",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#grant-curl-upload/halftone-dimension.png",
+    "ms": 5901,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#grant-curl-download",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#grant-curl-download/meadow-mist.png",
+    "ms": 12122,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#grant-curl-upload",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#grant-curl-upload/meadow-mist.png",
+    "ms": 7519,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#grant-npm-install",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#grant-npm-install/meadow-mist.png",
+    "ms": 6912,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/permissions",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/assistant/permissions/meadow-mist.png",
+    "ms": 15011,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#grant-npm-install",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#grant-npm-install/halftone-dimension.png",
+    "ms": 9298,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-logs",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/development/bug-report#review-logs/halftone-dimension.png",
+    "ms": 29445,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 153,
+      "w": 600,
+      "h": 594
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-logs",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/development/bug-report#review-logs/meadow-mist.png",
+    "ms": 51704,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 178,
+      "w": 600,
+      "h": 544
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#browser-sandbox",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#browser-sandbox/halftone-dimension.png",
+    "ms": 2698,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 952,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#browser-form",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#browser-form/halftone-dimension.png",
+    "ms": 2759,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 952,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#browser-sandbox",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#browser-sandbox/meadow-mist.png",
+    "ms": 3955,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 930,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#browser-form",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/chat#browser-form/meadow-mist.png",
+    "ms": 4107,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 930,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/browser",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/assistant/browser/halftone-dimension.png",
+    "ms": 5440,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/browser",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/assistant/browser/meadow-mist.png",
+    "ms": 7315,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/permissions#never-ask-open",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/assistant/permissions#never-ask-open/halftone-dimension.png",
+    "ms": 10783,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/permissions#never-ask-open",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs/after/settings/assistant/permissions#never-ask-open/meadow-mist.png",
+    "ms": 17518,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  }
+]

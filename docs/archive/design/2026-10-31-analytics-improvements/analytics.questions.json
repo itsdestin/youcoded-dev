@@ -1,0 +1,442 @@
+{
+  "title": "Analytics: getting more useful, trustworthy numbers",
+  "key": "analytics-improvements-questions",
+  "out": "analytics.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Fix what's wrong today",
+      "intro": "From the audit: the app and website dashboard has two counting mistakes. These come first, because everything later builds on them."
+    },
+    {
+      "id": "F-1",
+      "words": true,
+      "surface": "Analytics dashboard, App tab",
+      "path": "Analytics page → App → Platforms card and the Android filter",
+      "headline": "How should we fix phones being counted as computers?",
+      "today": "Since 1.3.1, the phone app checks in labelled as \"Desktop\". The Android filter and the Platforms card only show phones still on 1.3.0 or older.",
+      "problem": "You can't tell how many phone users you have, and the Desktop numbers are inflated by phones.",
+      "proposal": "The phone app labels itself correctly again. Separately, the dashboard can also recognise the mislabelled check-ins already stored, because phones leave the \"which computer system\" field blank while real computers always fill it in.",
+      "options": [
+        {
+          "id": "fix-and-relabel",
+          "label": "Fix and relabel past",
+          "pros": [
+            "Phone numbers are right immediately, including the last 3 months.",
+            "No waiting for people to update the app."
+          ],
+          "cons": [
+            "Relies on the blank field. A computer that ever failed to report its system would be miscounted as a phone (no case of this is known)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "fix-forward",
+          "label": "Fix going forward only",
+          "pros": [
+            "Simplest; no guessing about old data."
+          ],
+          "cons": [
+            "Android numbers stay wrong until most phones update, and the history stays wrong for up to 3 months."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F-2",
+      "words": true,
+      "surface": "Phone app",
+      "path": "What the phone app sends once a day",
+      "headline": "Should each phone get a stable ID that survives reinstalling, the way it worked before 1.3.1?",
+      "today": "Since 1.3.1, each phone invents a random ID and stores it in the app's files. The old phone app used the phone's own built-in ID instead.",
+      "problem": "Reinstalling or clearing the app's data makes the same phone look like a brand-new user, and the original user like someone who quit. Every phone that updated to 1.3.1 already showed up once as \"new\". The tool for leaving your own phone out of the counts no longer works either.",
+      "proposal": "The phone app hands the engine the phone's built-in ID, as 1.3.0 did. Phones then get their 1.3.0 identity back, and leaving out your own phone works again. Yes builds it; No keeps random IDs."
+    },
+    {
+      "id": "F-3",
+      "words": true,
+      "surface": "Analytics dashboard, App tab",
+      "path": "Analytics page → App → New devices, Retention",
+      "headline": "Should every card say plainly what it counts, which filters it ignores, and when its number is unreliable?",
+      "today": "Cards have one-line notes. \"New devices\" and \"Retention\" silently ignore the version and test-build filters. On the 90-day range, \"New devices\" counts almost every long-time user as new.",
+      "problem": "A number can look filtered or trustworthy when it isn't, and you only find out from an audit like this one.",
+      "proposal": "Each card gets a small (i) that explains, in one or two sentences, what it really counts. Cards say so when a filter doesn't apply, and the 90-day new-devices number is hidden or flagged. Yes builds it; No leaves the cards as they are."
+    },
+    {
+      "id": "P-2",
+      "page": "Seeing who uses, downloads and gives up",
+      "intro": "Today the app sends one thing: a once-a-day \"the app is running here\" check-in. These questions decide what extra, still-anonymous signals would answer \"how many people really use it, and where do they drop off?\""
+    },
+    {
+      "id": "U-1",
+      "words": true,
+      "surface": "Daily check-in",
+      "path": "What the app sends once a day (described in About → Privacy)",
+      "headline": "How should we tell \"actually used the app\" apart from \"the app was just open\"?",
+      "today": "The app counts as \"active\" any day it was running. An app left open and untouched for a week counts as active every day.",
+      "problem": "Active numbers and retention overstate real use, and you can't tell a loyal user from a forgotten window.",
+      "proposal": "Three ways to do it. Any change to what is sent also means updating the privacy description in About.",
+      "options": [
+        {
+          "id": "yesterday-flag",
+          "label": "Report yesterday's use",
+          "summary": "Each day's check-in also says yes/no: did this person send at least one message yesterday?",
+          "pros": [
+            "Still exactly one check-in per day, so the privacy promise stays the same apart from one more listed item.",
+            "Shows both groups: people who opened it and people who used it."
+          ],
+          "cons": [
+            "The \"used\" numbers are a day behind.",
+            "Someone's very last day of use is never reported if they never open the app again."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "checkin-on-use",
+          "label": "Check in only on use",
+          "summary": "Don't send the day's check-in until the person actually sends a message.",
+          "pros": [
+            "\"Active\" simply means \"used\"; nothing new to learn on the dashboard.",
+            "No delay."
+          ],
+          "cons": [
+            "You lose people who open the app but never manage to use it, which is exactly the group most likely to be stuck in setup."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing changes for users."
+          ],
+          "cons": [
+            "Active and retention keep counting idle windows."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "U-2",
+      "words": true,
+      "surface": "First launch and setup",
+      "path": "What happens after someone installs and opens YouCoded for the first time",
+      "headline": "Should the app report, once each and anonymously, how far a new user got through setup?",
+      "today": "You see a \"new device\" when it first checks in, then nothing more until it does or doesn't come back.",
+      "problem": "Between downloading and becoming a regular user there are steps (opening it, connecting an AI account, sending a first message) where people can give up. Right now you can't see which step loses them.",
+      "proposal": "Each device sends a few one-time markers, ever: \"opened for the first time\", \"finished setup\", \"sent a first message\", and, if setup fails, which step failed. The dashboard shows them as a staircase: 100 opened → 70 finished setup → 55 sent a message. Yes designs it; No drops it."
+    },
+    {
+      "id": "U-3",
+      "words": true,
+      "surface": "Analytics dashboard, App tab",
+      "path": "Analytics page → App",
+      "headline": "Should the dashboard show who stopped using the app, from data we already collect?",
+      "today": "You see how many devices are active, but not how many stopped showing up.",
+      "problem": "Growth hides loss. 10 new devices a week looks fine until you learn 8 a week are leaving.",
+      "proposal": "New cards from the check-ins we already have, with no change to the app: \"Stopped coming back\" (seen before, not seen for 14+ days), \"Returning vs new\" on each day's bar, and \"How often people return\" (daily users ÷ monthly users). Yes builds them; No skips them.",
+      "notice": "Someone on a 2-week holiday would briefly count as \"stopped\" and then come back."
+    },
+    {
+      "id": "U-4",
+      "words": true,
+      "surface": "Analytics storage",
+      "path": "Where the check-ins are kept",
+      "headline": "Should we keep app numbers for longer than 3 months?",
+      "today": "Check-ins are kept for 90 days, then deleted automatically. Every chart stops there.",
+      "problem": "You can't compare this month to last spring, or see all-time growth. The 90-day cutoff also makes long-time users look \"new\" at the edge.",
+      "proposal": "Two levels of keeping more.",
+      "options": [
+        {
+          "id": "totals",
+          "label": "Keep daily totals",
+          "summary": "Each night, save that day's totals (active devices, new devices, by platform and version). Never the device IDs.",
+          "pros": [
+            "Charts covering a year or more.",
+            "Nothing that identifies a device is kept longer."
+          ],
+          "cons": [
+            "The \"new devices\" mistake at the 90-day edge stays.",
+            "Only shows the totals we chose to save; can't re-slice old days later."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "first-seen",
+          "label": "Also keep first-seen dates",
+          "summary": "Also keep, permanently, the scrambled device ID and the date each device was first seen.",
+          "pros": [
+            "True all-time \"new devices\" and an all-time user count.",
+            "Fixes the 90-day \"looks new\" mistake for good."
+          ],
+          "cons": [
+            "Keeps a permanent list of scrambled device IDs, which is a bigger privacy commitment and should be written into About → Privacy."
+          ]
+        },
+        {
+          "id": "keep-90",
+          "label": "Keep 90 days only",
+          "pros": [
+            "Nothing changes; the privacy story stays the simplest."
+          ],
+          "cons": [
+            "No history beyond 3 months, ever."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "U-5",
+      "words": true,
+      "surface": "Analytics dashboard",
+      "path": "Analytics page → a new \"Installer downloads\" card",
+      "headline": "Should the dashboard show GitHub's own download counts for each installer file?",
+      "today": "\"Download clicks\" only counts clicks on the website's Download Now button. Anyone downloading straight from GitHub, a package manager, or by right-clicking isn't seen.",
+      "problem": "You can't see how many installers were really downloaded in total.",
+      "proposal": "GitHub counts every download of every installer file. A nightly check copies those counts into the dashboard, per version and platform. Yes builds it; No skips it.",
+      "notice": "The app's automatic updates download from GitHub too, so these counts mix new installs with updates. The card would have to say so. On a new version's first days, most downloads are updates."
+    },
+    {
+      "id": "U-6",
+      "words": true,
+      "surface": "About → Privacy",
+      "path": "The \"Share anonymous usage stats\" switch",
+      "headline": "Should the app send one last \"turned analytics off\" signal when someone switches it off?",
+      "today": "People who switch analytics off vanish from every count. You have no idea how many there are.",
+      "problem": "If many people opt out, every number is lower than reality by an unknown amount.",
+      "proposal": "When the switch is turned off, send one final anonymous \"opted out\" message, then nothing ever again. I recommend No: sending something at the moment someone says \"stop sending\" feels like a betrayal if they notice, and the gain is small."
+    },
+    {
+      "id": "P-3",
+      "page": "Leaving out your machines, test runs and other developers",
+      "intro": "Today you leave your own devices out by hand: you run a script on each one and paste its ID into a secret list. It doesn't work for phones, misses VMs and fresh test machines, and knows nothing about other developers."
+    },
+    {
+      "id": "D-1",
+      "words": true,
+      "surface": "Daily check-in",
+      "path": "Any copy of YouCoded that isn't an official release",
+      "headline": "Should only official released builds ever send check-ins?",
+      "today": "Any running copy checks in: dev windows, builds someone made from the source code, and test versions. Only automated CI smoke tests are skipped. Dev windows report a normal-looking version number.",
+      "problem": "A volunteer developer testing a change looks exactly like a real user. Their test builds can also inflate \"new devices\".",
+      "proposal": "Only installers built by the official release process send check-ins. Dev windows, home-made builds and \"releasetest\" builds stay silent. Yes builds it; No keeps today's behaviour.",
+      "notice": "Developers who also use the real app day to day still count, as real users."
+    },
+    {
+      "id": "D-2",
+      "words": true,
+      "surface": "Excluding your own devices",
+      "path": "Analytics page → \"My devices\" switch",
+      "headline": "How should your own computers, phone and VMs be left out?",
+      "today": "Each device's ID has to be worked out by a script and added by hand to a secret list, followed by a server redeploy. Phones and fresh VMs fall through.",
+      "problem": "It's easy to forget a machine, and you can't see whether it's working.",
+      "proposal": "Three ways to do it.",
+      "options": [
+        {
+          "id": "flag",
+          "label": "\"Team device\" flag",
+          "summary": "A device can be marked as a team device: automatically on any machine set up with this development workspace, through a hidden setting on a phone, and through a setting for VMs. Its check-ins carry the mark, and the dashboard leaves them out.",
+          "pros": [
+            "Looks after itself: set up a machine and it's excluded.",
+            "Works for phones and VMs; no secret list, no redeploy.",
+            "Other developers using the workspace are excluded too."
+          ],
+          "cons": [
+            "Needs an app update before it works, and old versions aren't covered.",
+            "A real user could find and set the flag, but would only be hiding themselves."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "list",
+          "label": "Fix the hand-kept list",
+          "summary": "Keep the secret list, but fix the phone recipe and add a one-command \"add this device\" step.",
+          "pros": [
+            "Works for every app version, including old ones."
+          ],
+          "cons": [
+            "Still manual, per device, with a redeploy.",
+            "Never covers VMs or other developers."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Both",
+          "pros": [
+            "The flag for the future, the list for old versions."
+          ],
+          "cons": [
+            "Two systems to understand."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D-3",
+      "words": true,
+      "surface": "Test tools",
+      "path": "Scripts that launch YouCoded in VMs or test machines",
+      "headline": "Should every one of our test scripts launch YouCoded with analytics switched off?",
+      "today": "Only the automated CI smoke test switches analytics off. A VM test or a fresh-install test run by hand checks in like a new user.",
+      "problem": "Each fresh VM is a brand-new device, so a day of install testing can add several fake \"new devices\".",
+      "proposal": "One general \"no analytics\" switch the app respects, set automatically by every test script we have, with instructions to use it in any VM. Yes builds it; No leaves it.",
+      "notice": "I would not try to detect VMs automatically. Real people run YouCoded in VMs too, and they'd disappear."
+    },
+    {
+      "id": "D-4",
+      "words": true,
+      "surface": "Analytics dashboard, Website tab",
+      "path": "Analytics page → Website",
+      "headline": "Should your own visits to youcoded.ai be leavable out of the website numbers?",
+      "today": "Every time you or a tester opens youcoded.ai or clicks Download Now, it counts.",
+      "problem": "Checking the site after a change, or testing the download popup, inflates visits and download clicks. At today's traffic levels that can be a noticeable share.",
+      "proposal": "Open a special link (youcoded.ai/?me) once in each browser you use. That browser then stops counting itself. The dashboard has a button to copy the link. Yes builds it; No leaves it.",
+      "notice": "It's per browser. Clearing that browser's site data, or a private window, starts counting again."
+    },
+    {
+      "id": "D-5",
+      "words": true,
+      "surface": "Analytics dashboard",
+      "path": "Analytics page → bottom of each tab",
+      "headline": "Should the dashboard show how much it left out, so you can see exclusion is working?",
+      "today": "The bottom says \"Your own devices are excluded\", even when the exclusion list is empty or out of date.",
+      "problem": "You can't tell whether the exclusion is doing anything.",
+      "proposal": "A line like \"Left out: 3 team devices, 14 test check-ins this month\" that you can open for details. Yes builds it; No leaves it."
+    },
+    {
+      "id": "P-4",
+      "page": "Making the two tabs work together",
+      "intro": "Website and App are separate tabs with separate controls, and nothing ties them together. These questions are about telling one story from download interest to regular use."
+    },
+    {
+      "id": "X-1",
+      "words": true,
+      "surface": "Analytics dashboard",
+      "path": "Analytics page → opening view",
+      "headline": "Should the dashboard open on an Overview that lines up the whole journey, week by week?",
+      "today": "You choose Website or App and read each one on its own.",
+      "problem": "Answering \"did last week's post lead to users?\" means flipping tabs and lining up dates in your head.",
+      "proposal": "An Overview tab with one row per week: site visits → instructions opened → download clicks → GitHub downloads → new devices → finished setup → still around a week later. Each step is labelled as a separate count, not the same people followed through.",
+      "options": [
+        {
+          "id": "overview",
+          "label": "Add an Overview tab",
+          "pros": [
+            "The whole story at a glance.",
+            "Spots the weak step quickly, for example lots of clicks but few new devices."
+          ],
+          "cons": [
+            "Easy to misread the steps as the same people. The labels have to work hard."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "shared-controls",
+          "label": "Just share controls",
+          "summary": "Keep two tabs, but one date range and one clock setting work on both.",
+          "pros": [
+            "Smaller change; the dates always match when you switch tabs."
+          ],
+          "cons": [
+            "Still no side-by-side story."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing to learn."
+          ],
+          "cons": [
+            "Cross-checking stays manual."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "X-2",
+      "words": true,
+      "surface": "Analytics dashboard",
+      "path": "Analytics page → platform breakdowns on both tabs",
+      "headline": "Should both tabs split by the same four platforms: Windows, Mac, Linux and Android?",
+      "today": "The website splits download clicks four ways. The app only splits Desktop vs Android, though it already receives Windows, Mac or Linux and never shows it.",
+      "problem": "You can't see something like \"40 Mac download clicks but only 5 new Macs\", which would point to a Mac install problem.",
+      "proposal": "The app tab gets a Windows / Mac / Linux / Android filter and breakdown, and the overview compares clicks with new devices per platform. Yes builds it; No leaves it."
+    },
+    {
+      "id": "X-3",
+      "words": true,
+      "surface": "Analytics dashboard charts",
+      "path": "Every chart over time",
+      "headline": "Should charts mark release days and campaign launches?",
+      "today": "Charts are plain bars. You have to remember what happened on which day.",
+      "problem": "A spike or dip has no explanation on the chart: was it a release, a Reddit post, or a fault?",
+      "proposal": "A thin line on each chart wherever a version shipped or a campaign link was created, with its name on hover. Yes builds it; No leaves it.",
+      "notice": "Busy weeks get a few lines close together."
+    },
+    {
+      "id": "X-4",
+      "words": true,
+      "surface": "Campaign links",
+      "path": "Analytics page → Website → Campaign link builder",
+      "headline": "How closely should we try to tie a campaign link to the app installs it led to?",
+      "today": "A campaign shows visits and download clicks. What happens after the download is invisible.",
+      "problem": "You want to know which posts bring real users, not just clicks.",
+      "proposal": "Two approaches.",
+      "options": [
+        {
+          "id": "time-window",
+          "label": "Compare by timing",
+          "summary": "Show new devices in the 3 days after a campaign's clicks, next to the usual level, as a rough estimate.",
+          "pros": [
+            "No tracking of anyone; uses numbers we already have.",
+            "Good enough when only one campaign runs at a time."
+          ],
+          "cons": [
+            "An estimate. Two campaigns in the same week can't be told apart."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "carry-tag",
+          "label": "Carry the campaign through",
+          "summary": "Pass the campaign code through the download so the new app reports which campaign it came from.",
+          "pros": [
+            "Exact per-campaign installs."
+          ],
+          "cons": [
+            "The installers are plain files on GitHub, which can't carry a per-visitor tag without a separate download service.",
+            "This is the kind of tracking across visits the website promises not to do."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "Trusting the numbers",
+      "intro": "The audit found that both the app counts and the website counts can be faked by someone who wants to. Nothing suggests that's happening yet."
+    },
+    {
+      "id": "T-1",
+      "words": true,
+      "surface": "Website counting",
+      "path": "What youcoded.ai sends when a page loads or Download Now is clicked",
+      "headline": "Should the website counter limit how much one internet address can count per hour, like the app counter already does?",
+      "today": "The app counter allows 30 check-ins an hour from one internet address. The website counter only has a site-wide cap (10,000 visits a day, each allowed up to 100 clicks) plus a Cloudflare rule nobody has tested.",
+      "problem": "One person with a short script could add thousands of fake visits and download clicks in a day.",
+      "proposal": "Each internet address can start, say, 30 visits an hour, and one visit's clicks count at most 5. Yes builds it; No leaves it.",
+      "notice": "A school or office sharing one internet address could, very rarely, go uncounted past that limit."
+    },
+    {
+      "id": "T-2",
+      "words": true,
+      "surface": "Analytics dashboard",
+      "path": "Every chart over time",
+      "headline": "Should the dashboard flag days that look suspicious instead of just showing them?",
+      "today": "A sudden spike looks like good news.",
+      "problem": "Fake or test traffic and real growth look identical on a chart.",
+      "proposal": "A warning badge on days with odd patterns: far more visits than usual from one source, many download clicks per visit, or a burst of new devices within one hour. Hover to see why. Yes builds it; No leaves it.",
+      "notice": "A real viral post will sometimes get flagged too. It's a prompt to look, not a verdict."
+    }
+  ]
+}

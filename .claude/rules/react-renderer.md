@@ -49,6 +49,11 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **chat-pane bg == drawer-pane bg (both `--canvas`; the Files/Browser panel painted inside the drawer pane is `--panel`)** — change them in the SAME edit; the audit does NOT catch this one.
 - **Status colour == `StatusDot.tsx` STATUS_LABEL** (green *Working*, blue *Response Ready*), and it goes in the ring/tint, NEVER the word — fixed across themes, so as text it fails the pale ones · depth doc → "Status colours".
 
+## Content-Security-Policy (`src/shared/app-csp.ts`, stamped into `index.html` by `vite.config.ts`)
+- **`srcdoc` frames INHERIT the page's policy** (measured, Electron 41) — the HTML preview and Pages are `<iframe srcdoc>`, so tightening the page's `script-src` to `'self'` silently kills every preview and page. `script-src` stays open until those frames are served from their own address (like `office:`) · guard: `app-csp.test.ts`.
+- **Every preview frame carries its own narrowing policy** (`artifact-views/html-preview-csp.ts`: the `csp` attribute plus a `<meta>` for Safari/Firefox); a frame's effective policy is the intersection, so the page's list must stay at least as wide as a preview needs (https images/styles/fonts/scripts) · guard: `html-preview-csp.test.ts`.
+- **Anything new the page fetches or loads from a non-self address needs adding to `buildAppCsp()`** — the browser console says "violates the following Content Security Policy"; `shoot` now lists those as PAGE ERROR.
+
 ## Header bar (`HeaderBar.tsx`)
 - **No `min-w-0` on the left cluster** (collapses below the gear's `shrink-0`); put it on an individual child. Layout is SPACE-aware (`packSessions()` + ResizeObserver) — no `@media`/`window.innerWidth`; viewport branches only via `useNarrowViewport()`.
 - **`showCaptionButtons` must include Linux** — frameless on BOTH; gate window-chrome on "not macOS", NEVER `navigator.platform === 'Win32'`. Announcement lives in StatusBar.
