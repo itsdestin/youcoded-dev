@@ -1,0 +1,104 @@
+[
+  {
+    "name": "settings/account#signed-in",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs-round5/before/settings/account#signed-in/halftone-dimension.png",
+    "ms": 3881,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 239,
+      "w": 420,
+      "h": 422
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/account#signed-in",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs-round5/before/settings/account#signed-in/meadow-mist.png",
+    "ms": 4740,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 247,
+      "w": 420,
+      "h": 406
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/account#delete-account",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs-round5/before/settings/account#delete-account/halftone-dimension.png",
+    "ms": 13101,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/account#delete-account",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs-round5/before/settings/account#delete-account/meadow-mist.png",
+    "ms": 16024,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/account#danger-zone",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs-round5/before/settings/account#danger-zone/halftone-dimension.png",
+    "ms": 7502,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 203,
+      "w": 420,
+      "h": 493
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/account#danger-zone",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/sec-integration/docs/active/design/2026-11-01-security-changes-review/runs-round5/before/settings/account#danger-zone/meadow-mist.png",
+    "ms": 12933,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 203,
+      "w": 420,
+      "h": 493
+    },
+    "parts": []
+  }
+]
