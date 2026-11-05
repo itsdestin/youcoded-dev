@@ -78,8 +78,11 @@ same popup — recorded as an exception in the design guide. Backend still to bu
   inside `<untrusted-content>`. Page data is DONE for the Claude Code page tools
   (`claude-code-pages-mcp.ts` ReadPageData, 2026-11-01); the rest is step 3 work. It is a
   speed bump, not a wall: asks, approvals and step 4's fixed lists stay the real limits.
-- **Undo:** Destin unsure in the abstract — each assistant change becomes a history point with
-  Undo beside its message; judged in the mockup, not decided here.
+- **Undo (decided, deck step3f, 2026-11-05):** changes land at once; taking one back is a **Versions
+  list** in the chat's header (the page as it was before each request, newest first, each with Put
+  back), not a line under each reply. It works "like any other typical version history menu": any
+  version can be put back, and putting one back is itself a new version, so nothing is lost. Each
+  reply that changes the page takes a history point first (the 15-second sync history is too coarse).
 - **Skills:** a page names the skills it works best with and the chat offers the marketplace
   install; a page never carries its own. Later, not step 3.
 - **Next:** layout mockups of the page's assistant view (desktop + phone) on a choice deck.

@@ -1,0 +1,32 @@
+{
+ "deck": "pages-finish-step3f-choice",
+ "started": "2026-11-05T10:13:05.418Z",
+ "submitted": "2026-11-05T21:13:06Z",
+ "cur": 2,
+ "answers": {
+  "K-undo": {
+   "v": "pick",
+   "t": 1793913116026,
+   "note": "",
+   "pick": "versions",
+   "seconds": 472,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "K-undone": {
+   "v": "other",
+   "t": 1793913123795,
+   "seconds": 8,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "K-which": {
+   "v": "other",
+   "t": 1793913185964,
+   "note": "confused. if we're offering a version history, it seems like it should just work like any other typical version history menu and let me resume from any of the checkpoints?",
+   "seconds": 62,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}
