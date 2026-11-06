@@ -16,8 +16,8 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: Step 2 (files) tried by Destin in the dev window: working (2026-10-25). Practice page deleted, dev window closed.
-Next: Step 3 (chat in a page): Destin wants to think through the real use cases first — no deck or build until then.
+Done: Steps 1, 1b, 2 and 3 built on session/90-pages-finish and tried by Destin: step 3 = each page's own assistant chat, earlier chats, versions with Put back (2026-11-05, 'step 3 looks good'). Main-chat scroll jump under load found and fixed on the branch. Not on master yet.
+Next: Step 4: assistants and automations (page buttons running the assistant in the background with a fixed allowed list, scheduled runs, spending limits; card #61 joins). Open question first: what an unattended run does when it needs to ask.
 Blocked: none
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
