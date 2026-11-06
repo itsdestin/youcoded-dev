@@ -1,0 +1,477 @@
+{
+  "title": "Step 4: automations, the jobs that run without you",
+  "key": "pages-finish-step4-questions",
+  "out": "pages-finish-step4.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-what",
+      "words": true,
+      "surface": "Automations",
+      "path": "Nowhere yet: this is new",
+      "headline": "An automation is a saved instruction the app runs for you later, with no chat open and nobody watching.",
+      "changed": "Today everything the assistant does happens inside a chat you are looking at. If it needs permission, it asks you on the spot, because you are there. An automation is different: you set it up once with an instruction (\"check yesterday's spending and flag anything odd\"), when it should run (every morning, when an email arrives, or when you press a button on a page), which model does the work, and a fixed list of what it may touch. Then it runs on its own and leaves its result somewhere for you.",
+      "notice": "Decided earlier, from your answers: it works for the whole app, not just pages (pages are simply the first to use it); your Claude subscription can run it, not only paid providers; each thing it may touch has its own Always allow or Ask first switch; page buttons never ask on each press and their runs stay out of your Resume list; and there is a monthly spending limit, on by default.",
+      "yes": "That's right",
+      "no": "Not quite"
+    },
+    {
+      "id": "Q-uses",
+      "words": true,
+      "pick": "several",
+      "surface": "Automations",
+      "path": "Nowhere yet: this is new",
+      "headline": "Which of these would you actually set up? Pick every one you would use.",
+      "today": "None of these exist. The app only does things while you are chatting with it.",
+      "problem": "The first version cannot do everything well. The jobs you would really use decide which starting conditions, permissions and result screens we build first, and which wait.",
+      "proposal": "Pick all that you would use. Use Other to add a job you would want that is missing. Each one notes what it would need from the app.",
+      "options": [
+        {
+          "id": "morning-money",
+          "label": "Morning money check",
+          "summary": "Every morning it reads your money page's numbers and writes a short note on the page if something looks unusual.",
+          "pros": ["Only reads and writes inside one page, so it never needs to ask you anything."],
+          "cons": ["Needs a schedule, and the computer has to be on at that time."]
+        },
+        {
+          "id": "email",
+          "label": "Email sorter",
+          "summary": "When an email arrives it sorts it and drafts a reply for you to look at.",
+          "pros": ["Saves real time every day."],
+          "cons": ["Needs an email connection (step 5's \"Sign in with Google\") and an \"email arrived\" trigger, so it is the most work to build.", "Sending is risky, so it would draft but ask before sending."]
+        },
+        {
+          "id": "page-button",
+          "label": "Page button",
+          "summary": "A \"Make this week's shopping list\" button on a recipes page. You press it, it works in the background, and the list appears on the page.",
+          "pros": ["You start it yourself, so there is no surprise.", "Simplest to build: no schedule, no waiting overnight."],
+          "cons": ["Only runs when you press it."]
+        },
+        {
+          "id": "weekly",
+          "label": "Friday wrap-up",
+          "summary": "Every Friday it summarises what you worked on that week into a briefing page.",
+          "pros": ["Reads only, so it rarely needs permission."],
+          "cons": ["Needs to read your chat list, which is private material for a background job to see."]
+        },
+        {
+          "id": "watcher",
+          "label": "Price watcher",
+          "summary": "Every few hours it checks a website and tells you when a price drops below a number you set.",
+          "pros": ["A clear, useful result: a notification."],
+          "cons": ["Runs often, so it uses up a spending limit or your subscription allowance faster.", "A phone notification needs the phone connected to your computer."]
+        },
+        {
+          "id": "tidy",
+          "label": "Overnight tidy-up",
+          "summary": "Overnight it sorts your Downloads folder into sub-folders.",
+          "pros": ["Real chore removed."],
+          "cons": ["Moves your files while you sleep: the riskiest of these. A mistake is found in the morning."]
+        }
+      ]
+    },
+    {
+      "id": "P-blocked",
+      "page": "When it needs something and you're not there",
+      "intro": "This is the big open question from before. In a chat, the assistant just asks you. Here, nobody is watching."
+    },
+    {
+      "id": "Q-blocked",
+      "words": true,
+      "surface": "Automations",
+      "path": "A job running on its own",
+      "headline": "When a job wants to do something set to Ask first, what should happen?",
+      "today": "In a chat, the assistant stops and shows you a card (Allow or Deny), and you answer straight away because you are there.",
+      "problem": "An automation often runs at 3 a.m. If it stops to ask, it can sit there for hours. If it never asks, it could do something you did not want. Example: the email sorter has drafted a reply and now wants to send it.",
+      "proposal": "Three ways it could behave, plus a mix. This answer shapes almost everything else on these pages.",
+      "options": [
+        {
+          "id": "wait",
+          "label": "Wait for you",
+          "summary": "The job pauses, you get a notification, and the question waits in a \"Waiting for you\" list. Once you answer it carries on.",
+          "pros": ["Nothing happens without your yes.", "Nothing is lost: it continues where it stopped."],
+          "cons": ["A job started at 3 a.m. may sit until you wake up.", "Several waiting jobs can pile up."]
+        },
+        {
+          "id": "skip",
+          "label": "Skip and keep going",
+          "summary": "It leaves that one action undone, finishes everything else, and its report says what it skipped and lets you do it with one press.",
+          "pros": ["The job always finishes.", "You review the skipped part whenever you like."],
+          "cons": ["Some jobs make no sense half done (a reply drafted but not sent may be fine; a folder half sorted may be confusing)."]
+        },
+        {
+          "id": "stop",
+          "label": "Stop",
+          "summary": "It ends right there and reports why.",
+          "pros": ["Simplest to understand."],
+          "cons": ["Wastes the work done so far, and the cost of it.", "You have to start it again yourself."]
+        },
+        {
+          "id": "per-job",
+          "label": "Choose per job",
+          "summary": "Each job has a setting \"If it needs your OK\", with Wait for you or Skip and keep going. Wait is the default; a job left waiting too long switches to Skip (next question).",
+          "pros": ["Fits every example: the email sorter waits to send, the tidy-up skips and reports.", "Never stuck forever, never a silent yes."],
+          "cons": ["One more setting to understand when you make a job."],
+          "recommended": true
+        }
+      ]
+    },
+    {
+      "id": "Q-wait-long",
+      "words": true,
+      "surface": "Automations",
+      "path": "A job that is waiting for you",
+      "headline": "If a job is waiting for your OK and you don't answer, how long should it wait?",
+      "today": "A chat's question card waits as long as the chat is open.",
+      "problem": "A job that waits forever can block its own next run (tomorrow's morning check) and can hold the computer's attention all night.",
+      "proposal": "Pick how long a waiting job waits before it gives up on that one action.",
+      "options": [
+        {
+          "id": "until-next",
+          "label": "Until its next run",
+          "summary": "It waits until the job is due to run again; then the old run skips the action and reports, and the new run starts fresh.",
+          "pros": ["Fits any schedule: a daily job waits a day, an hourly one an hour.", "A job never piles up behind itself."],
+          "cons": ["A job you start by hand has no next run, so it needs a fixed time instead (we would use 24 hours)."],
+          "recommended": true
+        },
+        {
+          "id": "fixed",
+          "label": "A fixed time",
+          "summary": "Every job waits the same amount, for example 12 hours.",
+          "pros": ["Easy to remember."],
+          "cons": ["Too long for an hourly job, maybe too short for a weekly one."]
+        },
+        {
+          "id": "forever",
+          "label": "Until you answer",
+          "pros": ["Never gives up on something you wanted."],
+          "cons": ["A forgotten question blocks the job for good, and later runs skip or pile up."]
+        }
+      ]
+    },
+    {
+      "id": "Q-asleep",
+      "words": true,
+      "surface": "Automations",
+      "path": "A job whose time comes while the computer is off",
+      "headline": "If the computer is asleep or off when a job is due, what should happen?",
+      "today": "Jobs would run in YouCoded on your computer (or on your phone, for the Android app). YouCoded does not run anywhere else, so when the computer sleeps, nothing runs.",
+      "problem": "Laptops sleep a lot. A 7 a.m. money check on a laptop that wakes at 9 would simply be missed, with no sign it was missed.",
+      "proposal": "Pick what a missed job does. Running jobs on a server instead is a much bigger project, so it is not offered here.",
+      "options": [
+        {
+          "id": "catch-up",
+          "label": "Run once on waking",
+          "summary": "When the computer wakes, a job that missed its time runs once (not once for every time it missed).",
+          "pros": ["Your morning check still happens, just later.", "A week away gives one catch-up run, not seven."],
+          "cons": ["A job may run at an odd time, for example while you are on battery in a meeting."],
+          "recommended": true
+        },
+        {
+          "id": "skip-missed",
+          "label": "Skip it",
+          "summary": "A missed run is listed as \"Missed: the computer was asleep\" and waits for its next time.",
+          "pros": ["Nothing runs at an unexpected moment."],
+          "cons": ["A laptop user may find their daily job rarely runs."]
+        },
+        {
+          "id": "keep-awake",
+          "label": "Keep the computer awake",
+          "summary": "When jobs are due, YouCoded asks the computer to wake up or stay awake for them.",
+          "pros": ["Jobs run on time."],
+          "cons": ["Uses battery, and some computers ignore the request when the lid is closed.", "Can feel like the app taking over your computer."]
+        }
+      ]
+    },
+    {
+      "id": "Q-tell",
+      "words": true,
+      "pick": "several",
+      "surface": "Automations",
+      "path": "A job that finished, or is waiting",
+      "headline": "How should a job tell you it finished or needs you? Pick every one you want.",
+      "today": "The app shows notifications on the computer when a chat finishes while you are elsewhere. A connected phone gets them too.",
+      "problem": "A daily job that notifies every time becomes noise you learn to ignore. One that never notifies is easy to forget.",
+      "proposal": "Pick every way you would want to hear about a job. We would never notify for a plain \"done, nothing to report\" unless the job's instruction asks for it.",
+      "options": [
+        {
+          "id": "notify-needs",
+          "label": "When it needs you",
+          "summary": "A notification on the computer and the phone when a job is waiting for your OK.",
+          "pros": ["You can answer quickly, so it is not stuck long."],
+          "cons": ["Can interrupt you."],
+          "recommended": true
+        },
+        {
+          "id": "notify-result",
+          "label": "When it has news",
+          "summary": "A notification when the job says there is something worth telling you (the price dropped, an odd charge).",
+          "pros": ["You hear about what matters, not every run."],
+          "cons": ["Depends on the assistant judging \"worth telling\" well."]
+        },
+        {
+          "id": "notify-fail",
+          "label": "When it fails",
+          "summary": "A notification when a job breaks or hits its spending limit.",
+          "pros": ["A broken job is never silently broken for weeks."],
+          "cons": ["One more kind of interruption."]
+        },
+        {
+          "id": "list-only",
+          "label": "Just a list",
+          "summary": "No notifications; you look at the list of runs when you want to.",
+          "pros": ["Quiet."],
+          "cons": ["Easy to miss a waiting job or a broken one."]
+        }
+      ]
+    },
+    {
+      "id": "P-where",
+      "page": "Where you make them and find them",
+      "intro": "These decide which screens get drawn next."
+    },
+    {
+      "id": "Q-belongs",
+      "words": true,
+      "surface": "Automations",
+      "path": "Nowhere yet: this is new",
+      "headline": "Does every job belong to a page, or can a job stand on its own?",
+      "today": "Pages are small apps inside YouCoded, each with its own information, settings and assistant chat.",
+      "problem": "A job needs somewhere to put its result. A page is a natural place (the money note appears on the money page), but some jobs have no obvious page: the Downloads tidy-up, the price watcher.",
+      "proposal": "Pick how jobs relate to pages.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Either",
+          "summary": "A job can belong to a page (its results show on the page, it is listed in the page's Settings) or stand on its own (its results show in the automations list and a notification).",
+          "pros": ["Fits every example.", "Page jobs share the page's spending limit and permissions."],
+          "cons": ["Two kinds of job to explain."],
+          "recommended": true
+        },
+        {
+          "id": "page-only",
+          "label": "Always a page",
+          "summary": "Every job lives in a page. A job like the price watcher gets a small page of its own, made for you.",
+          "pros": ["One idea to learn; every result has a place you can look at."],
+          "cons": ["Creates pages you did not ask for.", "Odd for jobs that only move files."]
+        },
+        {
+          "id": "standalone-only",
+          "label": "Never a page",
+          "summary": "Jobs live only in an automations list; a page can show a job's result but does not own it.",
+          "pros": ["One place for all jobs."],
+          "cons": ["A page's own buttons and jobs get split away from the page they serve."]
+        }
+      ]
+    },
+    {
+      "id": "Q-make",
+      "words": true,
+      "surface": "Automations",
+      "path": "Making a new job",
+      "headline": "How should you make a new job?",
+      "today": "Pages are made by talking to the assistant (the page builder). Settings are changed with switches and forms.",
+      "problem": "A job has several parts (instruction, when, model, what it may touch, limit). A form with all of them is a lot; only talking gives you no way to check what was set.",
+      "proposal": "Pick the way you would want to make one.",
+      "options": [
+        {
+          "id": "ask-then-review",
+          "label": "Ask, then check",
+          "summary": "You say \"every morning, check my spending\" in a chat or the page's assistant. It drafts the job and shows one card with every part filled in; you change anything and press Turn on.",
+          "pros": ["Natural to start.", "You still see and approve every part before it runs."],
+          "cons": ["The card has to be clear enough that you actually read it."],
+          "recommended": true
+        },
+        {
+          "id": "form",
+          "label": "A form",
+          "summary": "A New job button opens a form you fill in.",
+          "pros": ["You see every choice."],
+          "cons": ["Writing a good instruction from scratch is hard for most people."]
+        },
+        {
+          "id": "chat-only",
+          "label": "Only by asking",
+          "summary": "You ask, it sets it up, and it tells you in words what it did.",
+          "pros": ["Fastest."],
+          "cons": ["Permissions get set without you seeing a switch, which is risky for anything that sends or moves."]
+        }
+      ]
+    },
+    {
+      "id": "Q-home",
+      "words": true,
+      "surface": "Automations",
+      "path": "Finding and changing your jobs",
+      "headline": "Where should the list of all your jobs live?",
+      "today": "The app has three main areas: Chat, Projects and Pages (reached from the top bar), plus Settings.",
+      "problem": "You need one place to see every job, pause one, press Run now, answer a waiting one and look at past runs. Where it lives decides whether people find it.",
+      "proposal": "Pick a home. Page jobs would also appear in that page's Settings either way.",
+      "options": [
+        {
+          "id": "new-area",
+          "label": "A new main area",
+          "summary": "Automations becomes a fourth main area beside Chat, Projects and Pages, with a badge when something is waiting for you.",
+          "pros": ["Easy to find; the badge makes waiting jobs hard to miss.", "Room for a proper run history."],
+          "cons": ["One more main area for people who never use automations."],
+          "recommended": true
+        },
+        {
+          "id": "in-pages",
+          "label": "Inside Pages",
+          "summary": "A tab in the Pages area, next to your page library.",
+          "pros": ["No new main area."],
+          "cons": ["Odd home for jobs that have nothing to do with a page."]
+        },
+        {
+          "id": "settings",
+          "label": "In Settings",
+          "pros": ["Out of the way."],
+          "cons": ["Waiting jobs are easy to miss; Settings is not somewhere people look daily."]
+        }
+      ]
+    },
+    {
+      "id": "Q-runs",
+      "words": true,
+      "surface": "Automations",
+      "path": "Looking at what a job did",
+      "headline": "What should you be able to see about a past run?",
+      "today": "Earlier decision: page-button runs stay out of your Resume list, so they don't crowd your chats.",
+      "problem": "When a job does something odd, you need to see why. But a full chat for every hourly price check would be a lot.",
+      "proposal": "Pick how much each run shows.",
+      "options": [
+        {
+          "id": "summary-plus",
+          "label": "Summary, then all",
+          "summary": "Each run is one line (when, how long, cost, what it did, anything skipped). Pressing it opens the full conversation, read-only.",
+          "pros": ["Quick to scan, and the detail is there when something is off."],
+          "cons": ["Keeps every run's conversation, which takes disk space (we would keep the last 50 per job)."],
+          "measured": "50 runs kept per job",
+          "recommended": true
+        },
+        {
+          "id": "summary-only",
+          "label": "Summary only",
+          "pros": ["Simple and light."],
+          "cons": ["No way to see why a job did something odd."]
+        },
+        {
+          "id": "full-chat",
+          "label": "A normal chat",
+          "summary": "Each run is a regular chat you can open and continue.",
+          "pros": ["You can reply to it and keep going."],
+          "cons": ["Lots of chats; and continuing one turns a background job into a normal chat with normal permissions."]
+        }
+      ]
+    },
+    {
+      "id": "P-money",
+      "page": "Money",
+      "intro": "Decided already: a monthly limit, on by default for pages and automations. These settle the details."
+    },
+    {
+      "id": "Q-limit",
+      "words": true,
+      "surface": "Automations",
+      "path": "A job's or a page's settings",
+      "headline": "What should the spending limit be when you first make a job?",
+      "today": "The status bar shows what each chat reply cost when you pay a provider per use. Nothing stops spending today.",
+      "problem": "Too low and a useful job stops mid-month; too high and a looping mistake can cost real money before you notice.",
+      "proposal": "Pick a starting limit. You can change it on each job or page.",
+      "options": [
+        {
+          "id": "five",
+          "label": "$5 a month",
+          "summary": "Each job or page starts with a $5 monthly limit.",
+          "pros": ["A mistake can never cost much.", "Enough for a daily check on a cheap model."],
+          "cons": ["A busy job on an expensive model will hit it and need raising."],
+          "measured": "$5 per month",
+          "recommended": true
+        },
+        {
+          "id": "twenty",
+          "label": "$20 a month",
+          "pros": ["Rarely gets in the way."],
+          "cons": ["Four times the money lost if a job misbehaves."],
+          "measured": "$20 per month"
+        },
+        {
+          "id": "ask",
+          "label": "Ask every time",
+          "summary": "No starting number; you choose one when you make each job.",
+          "pros": ["You think about it each time."],
+          "cons": ["One more question when making a job, and people don't know what a fair number is."]
+        }
+      ]
+    },
+    {
+      "id": "Q-subscription",
+      "words": true,
+      "surface": "Automations",
+      "path": "A job run on your Claude subscription",
+      "headline": "A job running on your Claude subscription costs no extra money. What should limit it?",
+      "today": "A Claude subscription has no price per reply. Instead it has an allowance that resets every few hours and weekly; when it runs out, Claude stops answering until it resets, in your chats too.",
+      "problem": "A dollar limit means nothing here. A job that runs too often could quietly use up the allowance you need for your own chats.",
+      "proposal": "Pick what limits subscription jobs.",
+      "options": [
+        {
+          "id": "runs-per-day",
+          "label": "Runs per day",
+          "summary": "Each subscription job may run a set number of times a day (default 10). Run now presses count too.",
+          "pros": ["Easy to understand and to predict."],
+          "cons": ["Does not know if one run is big or small."],
+          "measured": "10 runs per day",
+          "recommended": true
+        },
+        {
+          "id": "nothing",
+          "label": "No limit",
+          "pros": ["Nothing gets in the way."],
+          "cons": ["A runaway job can use up your allowance and leave your own chats waiting hours."]
+        },
+        {
+          "id": "pause-low",
+          "label": "Pause when low",
+          "summary": "Jobs pause when your allowance is nearly used, leaving the rest for your chats.",
+          "pros": ["Protects your own chats directly."],
+          "cons": ["The app can only partly see how much allowance is left, so this would be a rough guess."]
+        }
+      ]
+    },
+    {
+      "id": "Q-limit-hit",
+      "words": true,
+      "surface": "Automations",
+      "path": "A job that reaches its limit",
+      "headline": "When a job reaches its limit in the middle of a run, what happens to that run?",
+      "today": "Decided: reaching a limit stops the work with a clear notice; it never just warns and carries on.",
+      "problem": "A job stopped halfway may leave things half done, for example a folder half sorted.",
+      "proposal": "Pick when the stop happens.",
+      "options": [
+        {
+          "id": "finish-reply",
+          "label": "After this step",
+          "summary": "It finishes the step it is on (it may go a few cents over), then stops, reports, and does not run again until next month or until you raise the limit.",
+          "pros": ["Never cuts a step in half.", "The overrun is tiny and shown."],
+          "cons": ["Can go slightly over the number you set."],
+          "recommended": true
+        },
+        {
+          "id": "exact",
+          "label": "Right away",
+          "summary": "It stops the moment the limit is reached, even mid-step.",
+          "pros": ["Never a cent over."],
+          "cons": ["More likely to leave something half done."]
+        },
+        {
+          "id": "warn-80",
+          "label": "Warn first, then stop",
+          "summary": "A notification at 80% of the limit, then it stops after the step at 100%.",
+          "pros": ["Time to raise the limit before a job stops."],
+          "cons": ["One more notification."]
+        }
+      ]
+    }
+  ]
+}
