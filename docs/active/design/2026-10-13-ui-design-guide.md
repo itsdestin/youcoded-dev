@@ -500,6 +500,22 @@ box for its opened list.
 - A list that can grow long shows a fixed number of rows (the sessions menu shows about 6½, so the cut
   row says "there is more") and fades see-through at the edge that has more.
 
+### New UI reuses what exists, and stays short
+Destin, security-changes review, 2026-11-01 and 2026-11-02: new pieces kept arriving with their own
+styling ("random non-standard and extra busy ui elements") and were sent back until they used the
+app's own.
+
+- **Reuse the existing surface's component and its styling. Do not draw a look-alike.** Before
+  building anything new, find a screen in the app that does the same job and put it on screen
+  beside yours (`node scripts/shoot/shoot.mjs --list` names every screen; `rg` the component that
+  draws it). Then render your piece **through that same component**, so the colours, frosted
+  background, spacing, buttons and keys come with it. A copy of the markup drifts, and a copy that
+  lives somewhere else misses what its surroundings add (the browser's ask copied the permission
+  card's look but sat outside the chat's frosted bubble, so it was see-through).
+- **Keep the copy minimal.** One short line per control or notice. Put detail behind an expand or
+  confirm step the app already has (a notice's Details fold, a destructive action's confirm), and
+  say a fact once.
+
 ### Status and notices
 - A status label is a **small tinted pill in its status colour, sentence case** (`Pill`: "Installed",
   "Needed"). Its words are the normal text colour. A live status (a session Working / Inactive, the

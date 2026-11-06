@@ -1,0 +1,70 @@
+{
+  "title": "Account screens: every step, today vs this work",
+  "key": "security-changes-round5",
+  "out": "round5.review.html",
+  "images": "images/round5.review",
+  "runs": {
+    "before": "runs-round5/before",
+    "after": "runs-round5/after"
+  },
+  "labels": {
+    "before": "App today",
+    "after": "This work"
+  },
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "A-0",
+      "surface": "Settings \u00b7 Account",
+      "path": "Settings, Account (signed in)",
+      "crop": "settings/account#signed-in@440x600+500+165",
+      "headline": "Step 1 of 4: the Account page. Nothing changes here.",
+      "changed": "Nothing. The same three cards, the same buttons.",
+      "notice": "Sign out everywhere is not on this page. It is one level down, on Edit account.",
+      "risk": "None.",
+      "highlight": "panel"
+    },
+    {
+      "id": "A-1",
+      "surface": "Settings \u00b7 Account \u00b7 Edit account",
+      "path": "Account, press Edit account, scroll to Danger zone",
+      "crop": "settings/account#danger-zone@440x600+500+165",
+      "headline": "Step 2 of 4: the Danger zone gains one button, Sign out everywhere, above Delete account.",
+      "changed": "This is the only thing added to what you see before pressing anything. It is the same red outlined button as Delete account.",
+      "notice": "What it does: ends your YouCoded account sign-in on every computer and phone, this one included. You sign in again with GitHub. Your account and data are untouched.",
+      "risk": "Two red buttons now sit in the Danger zone instead of one."
+    },
+    {
+      "id": "A-2",
+      "surface": "Settings \u00b7 Account \u00b7 Edit account",
+      "path": "Danger zone, press Sign out everywhere",
+      "crop": "settings/account#sign-out-everywhere@440x600+500+165",
+      "headline": "Step 3 of 4: pressing it asks once before doing anything.",
+      "changed": "New: a one-line red note, then Cancel and Sign out everywhere. Delete account hides until you press Cancel. Same layout as Delete account's own confirm (step 4), without the typed word.",
+      "notice": "After it works, this window shows you signed out. If the server can't be reached, a red line under it says nothing changed and you are still signed in.",
+      "risk": "Phones paired for remote access stay paired; the note doesn't say so.",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "This work"
+      },
+      "new": true
+    },
+    {
+      "id": "A-3",
+      "surface": "Settings \u00b7 Account \u00b7 Edit account",
+      "path": "Danger zone, press Delete account",
+      "crop": "settings/account#delete-account@440x600+500+165",
+      "headline": "Step 4 of 4: Delete account's confirm. Nothing changes here.",
+      "changed": "Same words, same typed word, same buttons. While it is open, Sign out everywhere hides, so it looks exactly like today.",
+      "notice": "This is the existing pattern step 3 copies.",
+      "risk": "None.",
+      "highlight": "panel"
+    }
+  ]
+}

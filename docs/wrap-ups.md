@@ -1355,3 +1355,38 @@ recurred — the repetition is the data.
 - Independent reviewer found 8 issues my tests missed (opt-out undone by a racing write, damaged file read as a fresh install, reload click undercount, …) → applied: 7 fixed with tests seen red; 1 (blob8 on pre-change AE rows) needs a check after deploy, noted on #211.
 - Two worker tests (presence, site-analytics) failed once at load 59 from other sessions, passed on 2 reruns → dropped: not reproducible without manufacturing load; reported to Destin.
 - deleted/merged: website.css merged into dashboard.css; the dashboard's weekly charts, by-version chart, journey table and every card sub-line removed; the inline App script replaced by modules sharing one chart/tab helper.
+
+## 2026-11-03 — voice typing heard nothing: muted mic, app now says so (session/voice-no-sound, app + workspace, no card)
+- Cause was the Z13's system mic muted (found in 2 calls with `wpctl status`/`pw-record`), not the app; but the app gave no sign: "Listening" over pure zeros, then an empty box → applied: amber "No sound detected — device may be muted" after 3 s of digital silence, and a card after an empty Stop (no sound / too quiet / no words); 6 tests in `useVoiceInput.test.ts` seen red with detection off. Machine fact → `~/system/machines/z13/issues.md`.
+- InputBar went 7 lines over its line budget → applied: the listening band moved into `VoiceButton.tsx` instead of raising the budget.
+- `preview` refuses an answered deck; a one-step follow-up deck (`no-sound-2.live.json`) carried the N-1 revision → dropped: AUTHORING.md documents it; one call.
+- `first-draw-stability` journey failed once at load 69 (67.8 px drift), passed on two reruns at load 74–97; unrelated to voice → dropped: not reproducible without manufacturing load; reported to Destin.
+- deleted/merged: the listening band's markup left InputBar (one component in VoiceButton); InputBar's `StatusStrip` import removed.
+
+## 2026-11-04 — security audit fixes, five review decks (session/sec-integration app + workspace, session/sec-worker-hardening marketplace, no card)
+- Danger-zone screen was marked `newIn: 'after'` though Delete account existed before, so the deck showed only the new side; Destin: "i need to review all of these surfaces" → applied: mark removed (`screens/settings.ts`), round 5 walked every step. Dropped as a rule: `scripts/shoot/README.md` already says `newIn` is for states only the new code has; my lapse.
+- First round-5 crop used image pixels (2160x1350) instead of the 1440x900 CSS pixels → dropped: AUTHORING.md `crop` row already says CSS pixels; one rebuild.
+- Real-website run of the download guard: GitHub archive and release downloads always hop to codeload.github.com / release-assets.githubusercontent.com, so a "github.com only" rule stops them and asks → reported to Destin (design consequence of Q-7 exact-site, not a bug).
+- Android `./gradlew test` stops at `buildRuntimeDebug` here (needs Alpine `apk version -t`); `testDebugUnitTest -x bundleWebUi -x buildRuntimeDebug` ran 41 green → dropped as a doc edit: CLAUDE.md's Android paragraph deliberately names commands, not verdicts.
+- Destin: "that was a bit too verbose, just tell me what you need" → dropped: `~/system/global.md` already says fewest words; recurrence of my habit, not a missing rule.
+- The Electron 41→44 upgrade (audit) made every packaged Linux file world-writable: Electron 44's own zip stores 0666/0777. verify.sh and the local tests were green; only CI's AppImage payload check (`ci-evidence.mjs` verifyInstalled) caught it, and deb/rpm/pacman passed while shipping the bad modes → applied: `desktop/scripts/after-pack-permissions.cjs` afterPack hook + `tests/after-pack-permissions.test.ts`, seen red then green; local `--dir` build has 0 world-writable files.
+- deleted/merged: none found; looked at the deck and shoot docs, both already covered this session's mistakes.
+
+## 2026-11-05 — background commands stuck "Running"/"Watching" forever (session/stuck-background-commands, app + workspace, card #220 for the unchecked native half)
+- Three causes from one screenshot: Monitor time-limit notices carry no `<status>` (24% of 980 Monitors stuck), a helper's launch ignored an end read earlier on reopen, the restart reap never matched helper commands (the last found only by the independent reviewer) → applied: `transcript-watcher.ts`, `cc-background.ts`, `chat-reducer.ts`, 4 tests each seen red; `cc-dependencies.md` notes the expiry wording.
+- A helper's `until rg -q …; do sleep 10; done` ran 32 h: Claude Code drops the Bash timeout once it auto-backgrounds a command → applied: glob-guard adds a note (never a block, Destin chose warn) for wait loops with no limit; 5 tests, seen red. Loop killed with Destin's OK.
+- chat-reducer.ts went +10 over its line budget → applied: launch-record merge moved to `commandWithKnownEnd` (one copy instead of two).
+- Native sessions not investigated → card #220 (Destin's words).
+- I cd'd into worktrees during read-only investigation and the session's working directory followed (5 environment-change notices) → dropped: harmless here, absolute paths used throughout.
+- deleted/merged: the duplicated "end already read" record-building in chat-reducer (two copies → one helper in cc-background.ts).
+
+## 2026-11-05 — leftovers: old branches, missed security pieces, privacy policy live (session/privacy-policy, app + worker + workspace; wecoded-themes#41, youcoded-dev#340, wecoded-marketplace#117, youcoded#717; card #221)
+- I told Destin "everything is merged" after sec-integration; two pieces of that workstream were not (themes commit on session/sec-supply-chain, a rule/MAP commit on session/sec-site-ask). Found only when deleting the old branches → applied: both merged. Lesson, not a new rule: `close-out.sh` per branch already answers this; I ran it on the combining branch only, not on every branch it superseded.
+- Privacy draft sat in scratchpad for 5 days while master's PRIVACY.md changed (2026-10-31 analytics: team flag, setup milestones, reload-continuing visits, `?me`); the draft would have reverted those and said "nothing in sessionStorage" → applied: kept master's newer text. Dropped as a rule: a draft of a repo file belongs on a branch, where a merge shows the drift — my lapse.
+- I recommended "approve before signing" as protection against a stolen GitHub login; Destin: "i still don't see how 'click approve on github' stops someone who stole my github sign in" — he was right (one account approves itself) → dropped the option; only themes branch protection applied (no required check: update-registry pushes to main).
+- Account deletion left the SyncGroupRoom DO untouched and the export omitted games → applied: internal `/erase` path + export rows, 3 tests seen red (worker 461 green).
+- validate-apple-services-macos was cancelled on every PR ("macos-14-arm64-us-default is not supported") → applied: macos-15.
+- gitleaks flagged a fake sync name in a new test → applied: `.gitleaksignore` fingerprint (the scanner header documents it).
+- RECURRED card #212 (stale shared worker deps) → progress note on #212.
+- Cloudflare traffic limits (Destin: "don't know") → card #221. Play data-safety form must match the new policy → card #31 note.
+- deleted/merged: 11 superseded security branches and worktrees (about 4 GB each); the "after the next update" markers and the 30-day email-deletion promise from the policy.
