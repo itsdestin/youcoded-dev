@@ -118,6 +118,11 @@ job, with sensible defaults**, rather than one app-wide behaviour.
   At the limit: finish the current step (a few cents over, shown), then stop and report.
 - **Subscription runs:** no limit, but **usage tracked per job, per model and harness** (tokens),
   so you see where usage goes — the same for ChatGPT/OpenRouter.
+- **Chains of jobs (several agents handing work on) wait** (Destin, 2026-11-06: "may have some
+  overlap with plans work … would need to figure that out before we build that segment"). Plans =
+  card #74, built but unmerged on youcoded `feat/specialists-plans-ui` (handoff
+  `2026-10-24-specialists-and-plans-START-HERE.md`). Step 4's first build is single jobs only,
+  shaped so a chain can later be a #74 plan whose steps are jobs; settle that overlap first.
 
 ## Follow-ups recorded (Destin, 2026-10-24: "record anything that is gonna be a follow up")
 
