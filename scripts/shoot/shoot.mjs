@@ -218,6 +218,11 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       // page only. A Page is drawn in its own frame, so its "now playing" bars kept moving and ~30 Pages
       // screens differed by a few pixels. A script added this way runs in every frame the tab loads.
       await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { const add = () => { const st = document.createElement('style'); st.textContent = '*, *::before, *::after { animation-play-state: paused !important; animation-delay: 0s !important; animation-duration: 0s !important; transition: none !important; caret-color: transparent !important; }'; (document.head || document.documentElement).appendChild(st); }; if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', add); else add(); })();` });
+      // WHY reduced motion too (Destin, 2026-11-05, the marketplace "change" Encyclopedia → Superpowers: "this is
+      // just something that naturally changes/cycles from run to run"): the featured slideshow turns every ~6 s
+      // on a timer, which no animation style stops, so each version was caught on whichever card it had reached.
+      // The slideshow (in v1.3.3 too) holds its first card when the computer asks for reduced motion.
+      await tab.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
       tab.seededRandom = true;
     }
     await tab.navigate(`${base}?${q}`);
