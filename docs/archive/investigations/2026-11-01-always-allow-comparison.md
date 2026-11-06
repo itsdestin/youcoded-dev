@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # "Always allow" across coding assistants vs YouCoded
