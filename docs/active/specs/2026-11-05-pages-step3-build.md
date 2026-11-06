@@ -3,6 +3,10 @@ status: active
 ---
 # Pages step 3 — the page's assistant: build design
 
+**Built 2026-11-05 and tried by Destin in a dev window ("step 3 looks good").** After his try: the page chat shows
+each step as its own line in words (`tools: 'slim'`), not "1 step" (his note), and the page tools read "Read the
+page's information" / "Changed the page's information". The page builder 0.6.0 writes and keeps `page.md`.
+
 Design decisions: `2026-10-24-pages-finish-architecture.md` (step 3 section) and the step 3 decks in
 `docs/active/design/2026-10-24-pages-finish/` (layout: rounds 1–5; Undo: step3f). Destin, 2026-11-05: skip
 the reviewers and the contract ("i will review manually. just think through how to build this, spec it out,

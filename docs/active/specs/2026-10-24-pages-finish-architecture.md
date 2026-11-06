@@ -1,12 +1,15 @@
 ---
-status: draft
+status: active
 date: 2026-10-24
 related: docs/active/investigations/2026-10-24-pages-finish-audit.md (what exists); docs/active/design/2026-10-24-pages-finish/pages-finish.questions.answers.json (Destin's first answers); docs/active/specs/2026-09-15-youcoded-pages-scope.md; docs/active/specs/2026-09-01-agent-platform-vision-and-state.md; cards #90, #61, #155
 ---
 
 # Finishing Pages — the architecture proposal
 
-**Direction approved in two question decks; screens not yet designed; nothing built.**
+**Status (2026-11-05): steps 1, 1b, 2 and 3 are built and tried by Destin, on branch
+`session/90-pages-finish` (youcoded, wecoded-marketplace, youcoded-dev), not yet on master. Next: step 4.**
+Step technical designs: `2026-10-24-pages-finish-step1-technical-design.md`,
+`2026-10-24-pages-finish-step2-files-technical-design.md`, `2026-11-05-pages-step3-build.md`.
 
 ## Decisions from round 2 (`pages-finish-2.questions.answers.json`, 2026-10-24)
 
@@ -85,9 +88,16 @@ same popup — recorded as an exception in the design guide. Backend still to bu
   reply that changes the page takes a history point first (the 15-second sync history is too coarse).
 - **Skills:** a page names the skills it works best with and the chat offers the marketplace
   install; a page never carries its own. Later, not step 3.
-- **Next:** layout mockups of the page's assistant view (desktop + phone) on a choice deck.
+- **Layout (decks step3 … step3e):** a floating Pages panel over the page's bottom right, behind a round chat
+  button, on computer and phone; steps shown one line each in words, not "1 step" (Destin, 2026-11-05).
 
 ## Follow-ups recorded (Destin, 2026-10-24: "record anything that is gonna be a follow up")
+
+- **Step 3's own** (2026-11-05): someone else's `page.md` asks Allow / Don't use (step 6, when pages can come
+  from others); page versions are per computer (sync later); a native-model page chat that has ended reopens
+  in the main window (it must ask which model), not inside the page; the file-approval change (step 2) made
+  the chat redraw a little slower, untraced (it exposed the scroll bug fixed 2026-11-05, which no longer
+  depends on it).
 
 - **#202** — sharing phase 2: publishing without GitHub, versions/forks and "update my version",
   the AI reviewer, programs in shared pages.
@@ -208,8 +218,9 @@ per-page settings window, which replaces today's "N connections" dialog.
    channel). **Built 2026-10-24.** The bank page (Plaid) moves onto the general system in step 5
    instead, because it needs exactly what "Sign in with…" builds — a browser sign-in and the app
    holding each bank's token — and building those twice is the duplication this work avoids.
-2. Files.
-3. Chat in a page.
+2. Files. **Built 2026-10-24**; Destin tried it in a dev window 2026-10-25 ("working").
+3. Chat in a page. **Built 2026-11-05** (`2026-11-05-pages-step3-build.md`): each page's own assistant chat,
+   earlier chats, versions with Put back; Destin tried it in a dev window ("step 3 looks good").
 4. Assistants and automations runner + spending limits + background (card #61 joins here).
 5. Accounts ("Sign in with…") — with or after card #155 — including Plaid rebuilt on it
    (body-placed secrets, app-held per-bank tokens, browser sign-in) so no bank is special code.

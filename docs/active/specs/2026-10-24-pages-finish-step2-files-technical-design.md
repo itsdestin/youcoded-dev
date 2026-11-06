@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-10-24
 related: docs/active/specs/2026-10-24-pages-finish-architecture.md (step 2); approved screens pages-finish-step2.review.answers.json, pages-finish-step2b/2d/2e (the file chooser); card #90, #203 (Android folders)
 branch: session/90-pages-finish (youcoded, youcoded-dev, wecoded-marketplace)

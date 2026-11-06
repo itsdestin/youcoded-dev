@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 date: 2026-10-24
 related: docs/active/specs/2026-10-24-pages-finish-architecture.md (step 1); docs/active/design/2026-10-24-pages-finish/pages-finish-step1.review.answers.json (approved screens); docs/active/investigations/2026-10-24-pages-finish-audit.md; card #90
 branch: session/90-pages-finish (youcoded, youcoded-dev); page-builder skill in wecoded-marketplace
