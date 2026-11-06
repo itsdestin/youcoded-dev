@@ -2,7 +2,7 @@
 status: shipped
 ---
 
-> **Archived 2026-11-05.** Fixes shipped in youcoded#713 and #715, wecoded-marketplace#114 and #117, wecoded-themes#41. Destin's decision on each finding: `docs/archive/design/2026-10-30-security-decisions/security.questions.answers.json`. Still open: server traffic limits (card #221). Dropped: an "approve before signing" GitHub environment (with one account, a stolen login approves itself). Findings below describe the code as of 2026-10-30, not today.
+> **Archived 2026-11-05.** Fixes shipped in youcoded#713 and #715, wecoded-marketplace#114 and #117, wecoded-themes#41. Destin's 14 decisions on the questions it raised (not one per finding; the fixes themselves are in those PRs): `docs/archive/design/2026-10-30-security-decisions/security.questions.answers.json`. Still open: server traffic limits (card #221). Dropped: an "approve before signing" GitHub environment (with one account, a stolen login approves itself). Findings below describe the code as of 2026-10-30, not today.
 
 # YouCoded Security Audit — 2026-10-30
 
