@@ -91,6 +91,34 @@ same popup — recorded as an exception in the design guide. Backend still to bu
 - **Layout (decks step3 … step3e):** a floating Pages panel over the page's bottom right, behind a round chat
   button, on computer and phone; steps shown one line each in words, not "1 step" (Destin, 2026-11-05).
 
+## Step 4 decisions (`pages-finish-step4.questions.answers.json`, 2026-11-06)
+
+Settles the unattended-ask question left open in round 2. The theme of every answer: **set per
+job, with sensible defaults**, rather than one app-wide behaviour.
+
+- **Uses:** all six examples (money check, email sorter, page button, weekly wrap-up, price
+  watcher, overnight tidy-up), "and more advanced things too": a page of automations that take
+  fixed inputs and reach a goal with several agents, e.g. building/reviewing a feature on
+  receiving a bug report.
+- **Permissions, granular per job:** "always allowed to read emails, ask before writing emails,
+  run this exact command without asking, and that's it", with broader settings also available.
+  When it needs an OK: **chosen per job** (Wait for you / Skip and keep going).
+- **Waiting expiry and missed runs: per job**, each with set ways to proceed — after no answer
+  (e.g. skip and report, stop, carry on with a stated fallback) and when late (run on launch,
+  skip, or different behaviour if late).
+- **Telling you:** system notifications on computer and phone when it needs you, has news, or
+  fails; customizable per job; plus a visible marker on the page button / front page that
+  something behind it is waiting. No notification for "done, nothing to report".
+- **Belongs:** a job may belong to a page or stand alone; every job, page-owned or not, also
+  shows in one central Automations view.
+- **Home:** a new main area beside Chat, Projects and Pages, possibly itself a built-in page.
+- **Making one:** by chat and/or a full builder view (both).
+- **Runs:** one line per run, opening the full conversation read-only; last 50 kept per job.
+- **Money:** a limit on every job, prefilled at $5/month in a popup you can change when making it.
+  At the limit: finish the current step (a few cents over, shown), then stop and report.
+- **Subscription runs:** no limit, but **usage tracked per job, per model and harness** (tokens),
+  so you see where usage goes — the same for ChatGPT/OpenRouter.
+
 ## Follow-ups recorded (Destin, 2026-10-24: "record anything that is gonna be a follow up")
 
 - **Step 3's own** (2026-11-05): someone else's `page.md` asks Allow / Don't use (step 6, when pages can come

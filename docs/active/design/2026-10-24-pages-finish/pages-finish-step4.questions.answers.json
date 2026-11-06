@@ -1,0 +1,116 @@
+{
+ "deck": "pages-finish-step4-questions",
+ "started": "2026-11-06T08:33:33.297Z",
+ "submitted": "2026-11-06T08:55:37Z",
+ "cur": 3,
+ "answers": {
+  "S-what": {
+   "v": "yes",
+   "t": 1793954230396,
+   "seconds": 109,
+   "theme": "morning-rounds"
+  },
+  "Q-uses": {
+   "v": "picks",
+   "picks": [
+    "morning-money",
+    "email",
+    "page-button",
+    "weekly",
+    "watcher",
+    "tidy"
+   ],
+   "t": 1793954230396,
+   "note": "yeah basically any of these honestly. and more advanced things too, like a page full of automations/plans that take fixed inputs and accomplishes a goal with multiple agents. like building/reviewing/etc a whole new feature from scratch upon recieving bug reports or something",
+   "seconds": 109,
+   "theme": "morning-rounds"
+  },
+  "Q-blocked": {
+   "v": "pick",
+   "pick": "per-job",
+   "t": 1793954695142,
+   "note": "this should be something i can tune fairly granularly. \"always allowed to read emails, ask before writing emails, run this exact command without asking, and that's it\" with broader settings also available. for things that must ask, we should utilize desktop/mobile system notifications and include a visual indication that something behind that button on the front page is waiting",
+   "seconds": 116,
+   "theme": "morning-rounds"
+  },
+  "Q-wait-long": {
+   "v": "other",
+   "t": 1793954695142,
+   "note": "maybe set per job? allow it to be a bit more useful/dynamic with set ways to proceed for the agent with no response after expiry",
+   "seconds": 116,
+   "theme": "morning-rounds"
+  },
+  "Q-asleep": {
+   "v": "other",
+   "t": 1793954695142,
+   "note": "probably also determine per job. some might be run-on-launch, while others might just be skip or different behavvior if late.",
+   "seconds": 116,
+   "theme": "morning-rounds"
+  },
+  "Q-tell": {
+   "v": "picks",
+   "picks": [
+    "notify-needs",
+    "notify-result",
+    "notify-fail"
+   ],
+   "t": 1793954695142,
+   "note": "maybe allow customizable notifications per job",
+   "seconds": 116,
+   "theme": "morning-rounds"
+  },
+  "Q-belongs": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1793955127328,
+   "note": "but jobs not tied to a page should still show in a central automations view somewhere ",
+   "seconds": 108,
+   "theme": "morning-rounds"
+  },
+  "Q-make": {
+   "v": "other",
+   "t": 1793955127328,
+   "note": "i think either with chat and/or a full builder view",
+   "seconds": 108,
+   "theme": "morning-rounds"
+  },
+  "Q-home": {
+   "v": "pick",
+   "pick": "new-area",
+   "t": 1793955127328,
+   "note": "the main are could probably be a built in page tho",
+   "seconds": 108,
+   "theme": "morning-rounds"
+  },
+  "Q-runs": {
+   "v": "pick",
+   "pick": "summary-plus",
+   "t": 1793955127328,
+   "seconds": 108,
+   "theme": "morning-rounds"
+  },
+  "Q-limit": {
+   "v": "pick",
+   "t": 1793955336605,
+   "pick": "ask",
+   "note": "defsaut to 5 with a changeable popup",
+   "seconds": 70,
+   "theme": "morning-rounds"
+  },
+  "Q-subscription": {
+   "v": "pick",
+   "pick": "nothing",
+   "t": 1793955336605,
+   "note": "but we should track tokens used per job by each model/harness so users can see where usage is going. same for gpt/openrouter",
+   "seconds": 70,
+   "theme": "morning-rounds"
+  },
+  "Q-limit-hit": {
+   "v": "pick",
+   "pick": "finish-reply",
+   "t": 1793955336605,
+   "seconds": 70,
+   "theme": "morning-rounds"
+  }
+ }
+}
