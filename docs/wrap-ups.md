@@ -1379,3 +1379,14 @@ recurred — the repetition is the data.
 - Native sessions not investigated → card #220 (Destin's words).
 - I cd'd into worktrees during read-only investigation and the session's working directory followed (5 environment-change notices) → dropped: harmless here, absolute paths used throughout.
 - deleted/merged: the duplicated "end already read" record-building in chat-reducer (two copies → one helper in cc-background.ts).
+
+## 2026-11-05 — leftovers: old branches, missed security pieces, privacy policy live (session/privacy-policy, app + worker + workspace; wecoded-themes#41, youcoded-dev#340, wecoded-marketplace#117, youcoded#717; card #221)
+- I told Destin "everything is merged" after sec-integration; two pieces of that workstream were not (themes commit on session/sec-supply-chain, a rule/MAP commit on session/sec-site-ask). Found only when deleting the old branches → applied: both merged. Lesson, not a new rule: `close-out.sh` per branch already answers this; I ran it on the combining branch only, not on every branch it superseded.
+- Privacy draft sat in scratchpad for 5 days while master's PRIVACY.md changed (2026-10-31 analytics: team flag, setup milestones, reload-continuing visits, `?me`); the draft would have reverted those and said "nothing in sessionStorage" → applied: kept master's newer text. Dropped as a rule: a draft of a repo file belongs on a branch, where a merge shows the drift — my lapse.
+- I recommended "approve before signing" as protection against a stolen GitHub login; Destin: "i still don't see how 'click approve on github' stops someone who stole my github sign in" — he was right (one account approves itself) → dropped the option; only themes branch protection applied (no required check: update-registry pushes to main).
+- Account deletion left the SyncGroupRoom DO untouched and the export omitted games → applied: internal `/erase` path + export rows, 3 tests seen red (worker 461 green).
+- validate-apple-services-macos was cancelled on every PR ("macos-14-arm64-us-default is not supported") → applied: macos-15.
+- gitleaks flagged a fake sync name in a new test → applied: `.gitleaksignore` fingerprint (the scanner header documents it).
+- RECURRED card #212 (stale shared worker deps) → progress note on #212.
+- Cloudflare traffic limits (Destin: "don't know") → card #221. Play data-safety form must match the new policy → card #31 note.
+- deleted/merged: 11 superseded security branches and worktrees (about 4 GB each); the "after the next update" markers and the 30-day email-deletion promise from the policy.
