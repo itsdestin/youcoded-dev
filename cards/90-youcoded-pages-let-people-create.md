@@ -23,6 +23,7 @@ Blocked: none
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
 Chats
+- 2026-11-06 session/90-pages-finish: chat started
 - 2026-10-24 session/90-pages-finish: chat started
 - 2026-10-24 session/90-pages-finish: chat started
 - 2026-10-19 session/90-work-board-loading: chat started
