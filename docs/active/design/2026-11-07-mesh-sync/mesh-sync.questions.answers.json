@@ -1,0 +1,143 @@
+{
+ "deck": "mesh-sync-questions",
+ "started": "2026-11-07T23:13:26.210Z",
+ "submitted": "2026-11-07T23:56:11Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "v": "picks",
+   "picks": [
+    "never-lose",
+    "pick-up-anywhere",
+    "watch-live",
+    "phone-alone"
+   ],
+   "t": 1794093509041,
+   "note": "idk why you keep insisting \"the phone has none of your project files\". the phone app should be near full-parity with the desktop applications? like the assistant should fundamentally have all of the same files, tools, etc.",
+   "seconds": 101,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794093509041,
+   "note": "why are you talking about this in terms of my specific devices? i feel like you've deeply under-researched and don't understand what we're actually building here. this is not about me or my devices. this is an app intended for a much broader audience of people with a much broader range/combination of devices, and it needs to work for everyone.",
+   "seconds": 101,
+   "theme": "morning-rounds"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1794093509041,
+   "note": "i'm not sure. i think we should at least explore what it might look like to somehow keep ALL context from a chat (including files, programs, history, etc) when moving across devices. i want to understand all mechanisms for this. maybe each session could get its own little container/environment that can be synced or compacted and re-used somehow? we also need to think through how conversations across devices interact with synced project files and such",
+   "seconds": 101,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1794094690734,
+   "note": "i'm confused. it seems like you're overcomplicating this conceptually. i should barely even be able to tell if the conversation is running on this device or another. we could probably add a status bar chip tied to each conversation that names its host device, but i see no reason for the chat to look or behave any differently. it should feel like i'm typing into a normal session running on this device, but continue running on the original host device unless that device goes offline or i explicitly request a switch.",
+   "seconds": 296,
+   "theme": "morning-rounds"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "stays-until-quiet",
+   "t": 1794094690734,
+   "note": " hink a conversation should always stay on its current host device until 1) the host device disappears or goes offline, or 2) the user clicks the status bar chip and changes the host device to another known/online device manually. this should reduce unecessary switches and lost ki",
+   "seconds": 296,
+   "theme": "morning-rounds"
+  },
+  "Q-6": {
+   "note": "this shouldn't really ever be possible. a user should be given the option to fork/duplicate chats, as exists in claude code and other harnesses, but our system should really eliminate the case where a user somehow accidentally ends up with two different copies of the same conversation with different messages. in the very very very rare cases where we cant prevent/eliminate this, then we shuold do everything possible to reconcile without the user needing to get involved",
+   "t": 1794094690734,
+   "v": "other",
+   "seconds": 296,
+   "theme": "morning-rounds"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "warn-and-type",
+   "t": 1794094690734,
+   "note": "this is fine, but again: we need to make reconciliation super simple from a ux perspective. forked/split conversations should probably be grouped coherently in some way in the resume browser, and trying to restart the original/pre-fork version should offer a warning of some sort that it was forked and continued as a different session with an option to like delete/archive the original and resume from the fork or something.",
+   "seconds": 296,
+   "theme": "morning-rounds"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "continue-button",
+   "t": 1794095322959,
+   "note": "this shouldn't create a duplicate though, and reconciliation should be basically fully automatic for this case if we choose to change the host device. but i think, depending on our final implementation, this will need to more clearly explain the tradeoffs of waiting for the original devices vs continuing on current device (\"This session was hosted on \"XX\". That device has since gone offline. You may continue here, but note that the session will not have (commands, files, etc). If this session requires hardware or files that exist only on the other device, it may be best to wait for that device to come back online.\" or something like that.",
+   "seconds": 211,
+   "theme": "morning-rounds"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "drop-it",
+   "t": 1794095322959,
+   "note": "probably makes reconciliation easier too if we just drop the incomplete/unsynced reply.",
+   "seconds": 211,
+   "theme": "morning-rounds"
+  },
+  "Q-10": {
+   "v": "yes",
+   "t": 1794095322959,
+   "note": "need to think through how this would actually work on various platforms, and also ensure we dont introduce any accidental unintended behaviours like a permanent keep-awake.",
+   "seconds": 211,
+   "theme": "morning-rounds"
+  },
+  "Q-11": {
+   "v": "other",
+   "t": 1794095402174,
+   "note": "again i feel like you under-researched here. the phone should be at full parity with the desktop. i dont understand why you would suggest anything otherwise.",
+   "seconds": 26,
+   "theme": "morning-rounds"
+  },
+  "Q-12": {
+   "v": "other",
+   "t": 1794095402174,
+   "seconds": 26,
+   "theme": "morning-rounds"
+  },
+  "Q-13": {
+   "v": "pick",
+   "t": 1794095402174,
+   "note": "should work exactly the same as pc.",
+   "pick": "list-then-open",
+   "seconds": 26,
+   "theme": "morning-rounds"
+  },
+  "Q-14": {
+   "v": "pick",
+   "pick": "word-by-word",
+   "t": 1794095769297,
+   "seconds": 73,
+   "theme": "morning-rounds"
+  },
+  "Q-15": {
+   "v": "other",
+   "t": 1794095769297,
+   "note": "feel like i already answered this, but we should only switch hosts when directly approved by the user and only try to offer proactively when the originating device is no longer reachable. we shouldn't freely switch",
+   "seconds": 73,
+   "theme": "morning-rounds"
+  },
+  "Q-16": {
+   "v": "other",
+   "t": 1794095769297,
+   "note": "i think we should figure out the actual design first before you start trying to think about phasing. i certainly don't want to waste time fixing/changing the current system if we're just going to toss those same changes in a week with a more robust rebuild",
+   "seconds": 73,
+   "theme": "morning-rounds"
+  },
+  "Q-17": {
+   "v": "no",
+   "t": 1794095769297,
+   "seconds": 73,
+   "theme": "morning-rounds"
+  },
+  "Q-18": {
+   "v": "wrote",
+   "t": 1794095769297,
+   "text": "i think we've covered most goals/constraints pretty well, but lmk if you have any follow ups",
+   "seconds": 73,
+   "theme": "morning-rounds"
+  }
+ }
+}
