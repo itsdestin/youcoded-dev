@@ -1,0 +1,214 @@
+{
+  "title": "Finishing Pages, step 4: automations, first screens",
+  "key": "pages-finish-step4-review",
+  "out": "pages-finish-step4.review.html",
+  "stage": "design",
+  "images": "images/pages-finish-step4.review",
+  "runs": {
+    "after": "runs-step4/after"
+  },
+  "steps": [
+    {
+      "id": "A-list",
+      "surface": "Pages",
+      "path": "Pages → Built in → Automations (a new built-in page, beside Office)",
+      "crop": "automations",
+      "new": true,
+      "headline": "Automations is a built-in page: anything waiting for you on top, then every job, grouped by the page it belongs to.",
+      "changed": "New. Your Q-home note: \"the main area could probably be a built in page\". It lists, pins and opens like Office, so no new top-bar button. Its line under the title counts this month's use: dollars on paid models, tokens on your subscription.",
+      "notice": "A job waiting for your OK is a card at the top showing exactly what it would send, with Allow and Don't allow. An orange dot on Automations (and on the job's page) in the page list says something waits. Each job's switch pauses it.",
+      "risk": "Like Office, it is unpinned until you pin it, so the waiting dot shows only in the Pages list. One question below is about that."
+    },
+    {
+      "id": "A-phone",
+      "surface": "Pages",
+      "path": "Automations at phone width",
+      "crop": "automations#phone",
+      "new": true,
+      "headline": "At phone width the same page, one column; the waiting card's buttons share the width.",
+      "changed": "New.",
+      "notice": "Row lines wrap rather than cutting off the schedule; the run's result (Skipped a step) moves under the lines."
+    },
+    {
+      "id": "A-job",
+      "surface": "Pages",
+      "path": "Automations → Email sorter",
+      "crop": "automations/job",
+      "new": true,
+      "headline": "A job's full settings: what it does, when, what it may do (each its own switch), and what happens when it needs you.",
+      "changed": "New: the \"full builder view\" from your Q-make note. Every setting you said should be per job is here: Wait for you or Skip (Q-blocked), how long it waits and what it does without an answer (Q-wait-long), what to do if the computer was asleep (Q-asleep), the three notification switches (Q-tell), and the model with its monthly limit (Q-limit).",
+      "notice": "What it may do: one row per thing, each Always allow or Ask first, and \"Anything not listed\" (other websites, other commands and files: Never or Ask first) is the broader setting you asked for. Changes save as you make them, like Settings.",
+      "risk": "Add something it may do isn't drawn yet; a question below asks what its list should look like. Scroll down in the live copy to see the model and limit."
+    },
+    {
+      "id": "A-sub",
+      "surface": "Pages",
+      "path": "Automations → Downloads tidy-up",
+      "crop": "automations/job-subscription",
+      "new": true,
+      "headline": "A job on your Claude subscription, with exact permissions: one folder, one command, and moving files set to Ask first.",
+      "changed": "New. It shows your example: \"run this exact command without asking\". Each permission can be narrowed to one folder, one website or one exact command, shown under its name.",
+      "notice": "Because it is on your subscription, the money limit is replaced by \"this month it used 118k tokens of your subscription's allowance\" (your Q-subscription note: no limit, but tracked). If the computer was asleep, this one runs differently: only older files, and says it ran late.",
+      "risk": "\"Tokens\" is a word most people don't know; the outside tester tripped on it."
+    },
+    {
+      "id": "A-runs",
+      "surface": "Pages",
+      "path": "Automations → Morning money check → Runs",
+      "crop": "automations/job-runs",
+      "new": true,
+      "headline": "Each run is one line: when, its result, what it did, its cost; Open conversation shows the whole run read-only.",
+      "changed": "New (Q-runs). The last 50 runs are kept per job. A late run says \"Ran late\"; a skipped one says why; a failed one says what failed.",
+      "notice": "Runs never appear in your chat list or Resume.",
+      "risk": "Open conversation isn't drawn yet: it would open the run in the same read-only preview the Resume list uses."
+    },
+    {
+      "id": "A-new",
+      "surface": "Pages",
+      "path": "Automations → New automation",
+      "crop": "automations/new",
+      "new": true,
+      "headline": "A new job starts filled with the safe defaults; Turn on (or Save, turned off) sits by its name.",
+      "changed": "New. Defaults from your answers: wait for you, until its next run, then skip; run once when the computer wakes; all three notifications on; $5 a month on a paid model.",
+      "notice": "Nothing runs until you press Turn on."
+    },
+    {
+      "id": "A-check",
+      "surface": "Chat",
+      "path": "Any chat → \"every morning, check my spending\" → the assistant sets it up",
+      "crop": "chat/automation-check",
+      "new": true,
+      "headline": "Asking in a chat drafts the job; this popup shows it before anything runs, with its permissions and the $5 limit ready to change.",
+      "changed": "New: \"with chat\" from your Q-make note, and the limit popup from your Q-limit note (\"default to 5 with a changeable popup\").",
+      "notice": "Change something else opens the full settings from the screens above. Closing it with the ✕ throws the draft away.",
+      "risk": "The chat behind it here is a practice conversation, not the one that asked for the job."
+    },
+    {
+      "id": "A-pagesettings",
+      "surface": "Pages",
+      "path": "Manage pages → Money → its gear (Page settings)",
+      "crop": "pages/library/settings#automations",
+      "new": true,
+      "headline": "A page's own automations are listed in its Page settings, each with its switch.",
+      "changed": "New section, shown only on a page that has automations (Q-belongs: a job can belong to a page).",
+      "notice": "Open in Automations closes this and opens the job list."
+    },
+    {
+      "id": "Q-pin",
+      "words": true,
+      "surface": "Pages",
+      "path": "The top bar and the Pages list",
+      "headline": "How should you notice a job waiting for you when Automations isn't pinned?",
+      "today": "In these screens the waiting dot shows on Automations and on the job's page, but only inside the Pages list. A notification also goes to the computer and phone.",
+      "problem": "If you dismiss the notification, nothing in the top bar says anything waits, so a job can sit until it gives up.",
+      "proposal": "Pick where the dot also shows.",
+      "options": [
+        {
+          "id": "pages-button",
+          "label": "On the Pages button",
+          "recommended": true,
+          "pros": [
+            "Always in the top bar, with nothing to set up.",
+            "Same as Settings' dot today."
+          ],
+          "cons": [
+            "One more dot in the top bar."
+          ]
+        },
+        {
+          "id": "auto-pin",
+          "label": "Pin Automations",
+          "summary": "Making your first automation pins Automations to the top bar; you can unpin it.",
+          "pros": [
+            "Its own button, with the dot on it."
+          ],
+          "cons": [
+            "Takes one of the four pin places without asking."
+          ]
+        },
+        {
+          "id": "list-only",
+          "label": "Pages list only",
+          "pros": [
+            "Quiet."
+          ],
+          "cons": [
+            "Easy to miss after dismissing a notification."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-add",
+      "words": true,
+      "surface": "Pages",
+      "path": "A job → What it may do → Add something it may do",
+      "headline": "What should \"Add something it may do\" show?",
+      "today": "Each permission is a plain sentence (\"Read your email\", \"Move files within a folder\"), with where it comes from (Gmail, This page, Your computer, Internet) under it.",
+      "problem": "A full list of everything the assistant can do is long and technical; too short a list and you can't build the jobs you want.",
+      "proposal": "Pick how the list is built.",
+      "options": [
+        {
+          "id": "grouped",
+          "label": "Grouped by where",
+          "recommended": true,
+          "summary": "A menu grouped under This page, Your computer, Internet, and each connected service (Gmail…). Picking one that needs a folder, site or command asks for it next.",
+          "pros": [
+            "Mirrors the words under each row.",
+            "Only shows services you've connected."
+          ],
+          "cons": [
+            "A second step for the narrow ones."
+          ]
+        },
+        {
+          "id": "ask",
+          "label": "Ask the assistant",
+          "summary": "A box: \"What else should it be able to do?\" The assistant adds the narrowest permission that fits.",
+          "pros": [
+            "No list to read."
+          ],
+          "cons": [
+            "You don't see the choices it didn't pick."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-button",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page's own button (e.g. Make this week's shopping list)",
+      "headline": "How should a page's own button show that its job is running or waiting?",
+      "today": "Pages draw their own buttons. These screens put the dot on the page in the list, not on the button inside the page.",
+      "problem": "Your Q-blocked note asked for a marker on \"that button on the front page\". Only the page can draw that, so the page builder has to be told how.",
+      "proposal": "Pick how the marker gets onto the button.",
+      "options": [
+        {
+          "id": "kit",
+          "label": "The kit does it",
+          "recommended": true,
+          "summary": "A button the page marks as running a job gets a spinner while it runs and the orange dot while it waits, drawn by the page kit (the shared look every page uses).",
+          "pros": [
+            "Every page's buttons look and behave the same.",
+            "Pages built before this get it with a small update by the page builder."
+          ],
+          "cons": [
+            "A page that draws its own odd buttons doesn't get it."
+          ]
+        },
+        {
+          "id": "page",
+          "label": "Each page decides",
+          "summary": "The page is told when its job runs or waits and draws whatever it likes.",
+          "pros": [
+            "Freedom for unusual pages."
+          ],
+          "cons": [
+            "Every page may show it differently, or not at all."
+          ]
+        }
+      ]
+    }
+  ]
+}
