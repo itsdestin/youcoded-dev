@@ -1,0 +1,94 @@
+{
+ "deck": "pages-finish-step4-review",
+ "started": "2026-11-07T22:34:48.418Z",
+ "submitted": "2026-11-07T22:45:57Z",
+ "cur": 10,
+ "answers": {
+  "A-list": {
+   "note": "nope, sorry but i hate this completely. i think i'd prefer something much closer to marketplace or command drawer styling, with card for individual automations (but they can keep toggles on them). also how would i manage/edit existing automations? please review the design guide thoroughly before proposing another ui round. remember to always prefer minimal copy: if two pieces of text on one screen say the same thing, one should be removed. if something can be said or understood intuitively with fewer words, it should use fewer words",
+   "t": 1794091018600,
+   "v": "other",
+   "seconds": 130,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "A-phone": {
+   "v": "other",
+   "t": 1794091021923,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "A-job": {
+   "note": "okay this is somewhat better, at least decent, but i still don't love it. i really don't like how you do copy edits/additions. you very frequently default to these weird, long-form \"what it does, when it runs, what it may do\" style question-and-answer labels, which i hate. headers, and labels, should be statements, not questions or open-ended curiosity statements. i think you should also take a more thorough look at a range of existing surfaces in the app and find ways to improve the simplicity/visual heirarchy of this page",
+   "t": 1794091177340,
+   "v": "other",
+   "seconds": 155,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "A-sub": {
+   "note": "what's different between claude code vs openrouter vs chatgpt automations? the underlying engine for any automation should be easily interchangeable",
+   "t": 1794091242424,
+   "v": "other",
+   "seconds": 65,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "A-runs": {
+   "v": "other",
+   "t": 1794091402681,
+   "note": "we can improve the visual styling here. i hate all of this bare text in a single large \"last 6 runs\" box. or ui/design guide should be clear about this, but a single concept/item/run/button should always have its own container that groups everything attached to that unit. in this case, each day should probably be its own clearly divided subcard or something. also you always include unnecessary and verbose explanations of technical underpinnings/design details that a user doesn't need to see. \"the last 50 runs are kep. a runs conversation opens read-only and never appears in your chat list\" is just overcomplicated for ui copy. should be hidden behind a single (i) popup somewhere that explains automations more broadly, not randomly scattered across screens and ui surfaces. ",
+   "seconds": 160,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "A-new": {
+   "note": "what? this copy and buttons are confusing.",
+   "t": 1794091445278,
+   "v": "other",
+   "seconds": 43,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "A-check": {
+   "v": "other",
+   "t": 1794091475195,
+   "note": "may need refinement? but i like this",
+   "seconds": 30,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "A-pagesettings": {
+   "v": "yes",
+   "t": 1794091482732,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-pin": {
+   "v": "pick",
+   "pick": "pages-button",
+   "t": 1794091505986,
+   "seconds": 23,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-add": {
+   "v": "other",
+   "t": 1794091537972,
+   "note": "kinda confused about this generally. hard to visualize what you're asking here.",
+   "seconds": 32,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-button": {
+   "v": "pick",
+   "pick": "kit",
+   "t": 1794091556005,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

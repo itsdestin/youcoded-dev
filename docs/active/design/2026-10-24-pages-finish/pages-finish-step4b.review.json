@@ -1,0 +1,93 @@
+{
+  "title": "Finishing Pages, step 4: automations, round 2",
+  "key": "pages-finish-step4b-review",
+  "out": "pages-finish-step4b.review.html",
+  "stage": "design",
+  "images": "images/pages-finish-step4b.review",
+  "runs": {
+    "after": "runs-step4b/after"
+  },
+  "steps": [
+    {
+      "id": "B-list",
+      "surface": "Pages",
+      "path": "Pages → Built in → Automations",
+      "crop": "automations",
+      "new": true,
+      "headline": "Automations is now a grid of cards, like Your library: switch where the star was, waiting jobs first.",
+      "changed": "Redrawn from A-list. Each card: name and switch, a schedule chip and a model chip, the instruction, then the last result and its date. A job waiting for you shows what it wants in the amber box. How automations work is behind the (i) by the title, nowhere else.",
+      "notice": "The Pages button in the top bar now gets an orange dot while something waits (your Q-pin pick)."
+    },
+    {
+      "id": "B-phone",
+      "surface": "Pages",
+      "path": "Automations at phone width",
+      "crop": "automations#phone",
+      "new": true,
+      "headline": "At phone width the cards stack in one column.",
+      "changed": "New.",
+      "notice": "The waiting box and switches keep their place on every card."
+    },
+    {
+      "id": "B-details",
+      "surface": "Pages",
+      "path": "Automations → click a card",
+      "crop": "automations/details",
+      "new": true,
+      "headline": "Clicking a card opens Automation details, shaped like Plugin details: the job on top, its settings below.",
+      "changed": "Answers \"how would i manage/edit existing automations?\". The top card holds the switch, what it is waiting on (with Allow / Don't allow) and Run now. Labels are names now: Instruction, Schedule, Permissions, Page, Model, Spending limit, Approvals, Missed runs, Notifications. Hints are gone.",
+      "notice": "Changes save as you make them, like Settings."
+    },
+    {
+      "id": "B-add",
+      "surface": "Pages",
+      "path": "Automation details → Permissions → Add a permission",
+      "crop": "automations/details#add-menu",
+      "new": true,
+      "headline": "Each permission is its own box with Allow / Ask; Add a permission opens a menu grouped by where it comes from.",
+      "changed": "Q-add, drawn this time. Groups: This page, each connected service (Gmail here), Your computer, Internet. Items ending in \"…\" ask for the one folder, website or command next. \"Other websites\" and \"Other commands and files\" set what happens to anything not listed.",
+      "risk": "Picking an item adds it set to Ask; the follow-up step for a folder, website or command isn't drawn yet.",
+      "notice": "Allow never asks; Ask waits or skips, as set under Approvals."
+    },
+    {
+      "id": "B-sub",
+      "surface": "Pages",
+      "path": "Automation details for Downloads tidy-up",
+      "crop": "automations/details#subscription",
+      "new": true,
+      "headline": "Any job can run on any model: Claude, ChatGPT or OpenRouter, picked from one list.",
+      "changed": "A-sub: \"the underlying engine for any automation should be easily interchangeable\". Nothing else about a job depends on which runs it. The only difference is payment: a plan you already pay for (Claude, ChatGPT) shows Usage in tokens; a pay-per-use service (OpenRouter) shows a Spending limit instead.",
+      "notice": "Switch the model and only that one card changes."
+    },
+    {
+      "id": "B-runs",
+      "surface": "Pages",
+      "path": "Automation details → Runs",
+      "crop": "automations/details#runs",
+      "new": true,
+      "headline": "Each run is its own box: when, result, cost, what it did, and Open conversation.",
+      "changed": "A-runs: one box per run, and the explanation line is gone (it's in the (i)).",
+      "notice": "Runs never appear in your chats."
+    },
+    {
+      "id": "B-new",
+      "surface": "Pages",
+      "path": "Automations → New automation",
+      "crop": "automations/details#new",
+      "new": true,
+      "headline": "New automation is the same popup, empty, with one button: Create.",
+      "changed": "A-new: the two confusing buttons are gone. The switch at the top starts on; turn it off first to create it paused.",
+      "notice": "Nothing runs before Create."
+    },
+    {
+      "id": "B-check",
+      "surface": "Chat",
+      "path": "A chat → \"every morning, check my spending\"",
+      "crop": "chat/automation-check",
+      "new": true,
+      "headline": "From a chat: the same check as before, with the extra lines removed.",
+      "changed": "Its subtitle and two hint lines are gone; \"Edit all settings\" opens Automation details.",
+      "notice": "The ✕ throws the draft away."
+    }
+  ]
+}

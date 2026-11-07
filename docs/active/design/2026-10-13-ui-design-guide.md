@@ -242,6 +242,16 @@ Every small label is plain (final-review#ST-21).
   again", no failure words in the button. The failure is a plain sentence in the notice box beside it.
   Still fine: a countdown ("Trying again in 5s…") and "try again" inside a sentence
   (small-fixes-1#SF-1, error-notices-1#EN-Q1).
+- **Labels and headings are statements, never questions** — a name for what is under them
+  ("Schedule", "Permissions", "Approvals"), not "When it runs" or "What it may do", and never an
+  open-ended phrase that reads like a prompt (pages-finish-step4-review#A-job).
+- **Say it once, in the fewest words.** If two pieces of text on one screen say the same thing, one
+  goes. If a control or a picture already makes it plain, no line explains it
+  (pages-finish-step4-review#A-list).
+- **How a feature works is not screen copy.** Background a user doesn't need to act (what is kept,
+  where it runs, what never appears where) sits behind **one (i)** (`AnchorTip`) by the feature's
+  title, explaining the feature as a whole — never scattered as grey lines across its screens
+  (pages-finish-step4-review#A-runs).
 - **A control that exists on one platform says which**: "Remove KDE helper" (nothing-bare-3#N3-3).
 
 ### Spacing
@@ -374,6 +384,9 @@ Backup & sync, Assistant → General, Account.
   paragraphs; anything you act on stays rows.
 - **No line crosses the full width** of a card or popup. Separate with spacing; a divider, if one is
   needed, is the tapered line.
+- **One thing, one box.** A single item (a run, a permission, a request) has its own container holding
+  everything about it — its words, its status, its buttons — never bare lines inside one big shared
+  box (pages-finish-step4-review#A-runs).
 - **Lists of short names** (saved devices) are plain rows inside **one** shared box, not a box each.
 - 16px between first-level cards; 12px inside a card's edge.
 - **The outline is what separates layers.** A card's fill is only a shade off what it sits on, in every
