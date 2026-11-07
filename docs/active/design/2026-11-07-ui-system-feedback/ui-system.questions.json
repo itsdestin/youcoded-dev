@@ -1,0 +1,177 @@
+{
+  "title": "Design guide and UI building: changes from your Pages feedback",
+  "key": "ui-system-questions",
+  "out": "ui-system.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-done",
+      "words": true,
+      "surface": "Design guide",
+      "path": "docs/active/design/2026-10-13-ui-design-guide.md",
+      "headline": "Already added to the guide today: labels are statements, say it once, one (i) per feature, one box per item.",
+      "changed": "Four rules from your step 4 notes went in: labels and headings name what is under them, never questions; if two lines say the same thing one goes; how a feature works sits behind one (i) by its title; a single item (a run, a permission) gets its own box.",
+      "notice": "Every later design reads these before drawing.",
+      "yes": "Keep them",
+      "no": "Change them"
+    },
+    {
+      "id": "Q-plain",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Text and numbers",
+      "headline": "Add a rule: every label uses the words a newcomer would say out loud?",
+      "today": "The guide asks for plain words, sentence case and few words.",
+      "problem": "Labels still come out as riddles: \"On their own\", \"What it may do\", \"Money chat\". Each was short and in sentence case, so it passed the rules.",
+      "proposal": "A label names a thing or a state the way someone new would say it (\"Paused\", \"Permissions\", the chat's real name). A test: read it with no screen around it; if it needs the screen to make sense, rewrite it."
+    },
+    {
+      "id": "Q-close",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Popups and side panels",
+      "headline": "Add a rule: ✕ only on things that end; a panel that comes back as it was hides instead?",
+      "today": "The guide says every popup and panel closes with the ✕.",
+      "problem": "Your step 3 note: on the page chat, \"X reads as end chat permanently\" when it actually reopens where you left it.",
+      "proposal": "✕ for things that end or are thrown away (a popup, a draft). A panel that keeps its place and comes back the same (the page chat) uses a hide button instead."
+    },
+    {
+      "id": "Q-create",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Buttons",
+      "headline": "Add a rule: making something new has one main button and no on/off switches?",
+      "today": "The guide covers one filled button per view, but nothing on making new things.",
+      "problem": "New automation shipped first with \"Save, turned off\" and \"Turn on\", then a switch in its corner; both read as confusing.",
+      "proposal": "A create screen has one main action (Create) and no state switches; turning it off or pausing happens after, where the thing lives."
+    },
+    {
+      "id": "P-blocks",
+      "page": "Building blocks",
+      "intro": "Most of your other notes were \"this doesn't look like the rest of the app\"."
+    },
+    {
+      "id": "Q-table",
+      "words": true,
+      "surface": "Design guide",
+      "path": "The shared pieces table",
+      "headline": "Extend the guide's \"which piece for which job\" table with whole surfaces, not just buttons and fields?",
+      "today": "The table names small pieces: a button, a switch, a dropdown. Bigger jobs have no named surface.",
+      "problem": "Each new screen re-invents bigger things: its own model list instead of the app's model picker, a chat header unlike any other, a page of rows where the Library uses cards, tab strips per permission.",
+      "proposal": "Add rows for the big jobs, each naming the existing surface to reuse.",
+      "options": [
+        {
+          "id": "big",
+          "label": "Add the big jobs",
+          "recommended": true,
+          "summary": "Pick a model → the model picker; a collection of things → Library cards; one thing's settings → a detail popup like Plugin details; a per-item mode in a list → a pill that opens a small menu; a chat inside a page → the page chat panel; a page with sections → Settings' layout.",
+          "pros": ["The builder looks up the surface before drawing, so it can't invent one."],
+          "cons": ["The table needs a line each time a new surface is approved."]
+        },
+        {
+          "id": "keep",
+          "label": "Keep it small",
+          "pros": ["Shorter guide."],
+          "cons": ["Bigger surfaces keep being re-invented."]
+        }
+      ]
+    },
+    {
+      "id": "Q-refs",
+      "words": true,
+      "surface": "Review decks",
+      "path": "The first deck of any new screen",
+      "headline": "Should the first deck of a new screen show the existing screens it copies, beside it?",
+      "today": "The rule says to name two or three similar screens. Names go in the text, and you never see the pictures.",
+      "problem": "Round 1 of Automations named its references, but still drew a list where Your library uses cards. You only found out by reacting to the result.",
+      "proposal": "The deck builder takes a \"references\" list and shows those screens' pictures as the deck's first slide, so you and the builder look at the same thing.",
+      "options": [
+        {
+          "id": "slide",
+          "label": "A references slide",
+          "recommended": true,
+          "pros": ["You can say \"make it more like this one\" before any drawing is judged.", "The builder has to actually open them."],
+          "cons": ["One more slide to look at."]
+        },
+        {
+          "id": "names",
+          "label": "Names only",
+          "pros": ["No extra slide."],
+          "cons": ["What happened this time keeps happening."]
+        }
+      ]
+    },
+    {
+      "id": "Q-copycheck",
+      "words": true,
+      "surface": "UI building",
+      "path": "The automatic checks run before you see anything",
+      "headline": "Add an automatic check that flags question-style labels and explanation lines in new screens?",
+      "today": "Code checks catch hand-made colours and buttons, not words.",
+      "problem": "Wording is the most common thing you send back, and nothing catches it before you do.",
+      "proposal": "A check that fails on a label ending in \"?\" or starting with What / When / How / If, and lists every grey hint line on a new screen for the builder to justify or remove. The outside tester also gets your copy rules as things to flag.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Check and tester",
+          "recommended": true,
+          "pros": ["Catches the common cases automatically; the tester catches the rest."],
+          "cons": ["Now and then it will flag a label that's fine, and the builder will have to mark it OK."]
+        },
+        {
+          "id": "tester",
+          "label": "Tester only",
+          "pros": ["No new check to maintain."],
+          "cons": ["Relies on judgement, which missed it this time."]
+        }
+      ]
+    },
+    {
+      "id": "P-decks",
+      "page": "How designs reach you",
+      "intro": "Notes about the decks themselves."
+    },
+    {
+      "id": "Q-picture",
+      "words": true,
+      "surface": "Review decks",
+      "path": "Question slides",
+      "headline": "Every question about how something looks comes with a picture?",
+      "today": "Questions can be words only.",
+      "problem": "\"Add a permission\" was asked in words and you said it was hard to visualize; drawn the next round, it was easy.",
+      "proposal": "A question about appearance or layout always has a drawing of each option. Words-only questions are kept for behaviour (what happens, when, what's allowed)."
+    },
+    {
+      "id": "Q-choice",
+      "words": true,
+      "surface": "Review decks",
+      "path": "Choice slides",
+      "headline": "Only offer \"pick one\" when the options really can't be combined?",
+      "today": "Several designs of one thing go on one pick-one slide.",
+      "problem": "Your step 3 note: \"why are you offering these to me like they're exclusive options?\" — when they could all be had together.",
+      "proposal": "Before a pick-one slide, the builder checks whether the options combine; if they do, each becomes its own yes/no instead."
+    },
+    {
+      "id": "Q-scope",
+      "words": true,
+      "surface": "Review decks",
+      "path": "Architecture and planning decks",
+      "headline": "Keep one-off builds out of decks about the bigger system?",
+      "today": "Nothing stops a planning deck from mixing in single features.",
+      "problem": "Your first Pages note: \"we shouldn't be looking at single pages like the home page here. this work is about the broader architecture.\"",
+      "proposal": "A deck about a system asks only about the system; one-off builds become their own items."
+    },
+    {
+      "id": "Q-other",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Anything missed",
+      "answer": "words",
+      "prompt": "Other patterns in your feedback the guide should capture",
+      "headline": "Anything else from your feedback the guide or the way UI gets built should change?",
+      "today": "These proposals come from your notes across the Pages decks.",
+      "problem": "Some feedback may not have been turned into a rule.",
+      "proposal": "Type anything to add; it becomes a guide rule or a check."
+    }
+  ]
+}

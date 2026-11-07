@@ -1,0 +1,69 @@
+{
+ "deck": "pages-finish-step4b-review",
+ "started": "2026-11-07T23:02:38.251Z",
+ "submitted": "2026-11-07T23:09:34Z",
+ "cur": 7,
+ "answers": {
+  "B-list": {
+   "note": "tf is \"on their own\"? same issue i describe before, your copy is just weird and riddle-y. separately, i want you to create a second deck and propose changes to the ui/design guides and ui-building system more broadly given all of the feedback i've provided during this session across our various decks",
+   "t": 1794092632837,
+   "v": "yes",
+   "seconds": 75,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-phone": {
+   "v": "yes",
+   "t": 1794092651995,
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-details": {
+   "note": "this is significantly better. i still dont love the styling of the spending limit box or the settings/runs toggle thing. ",
+   "t": 1794092775569,
+   "v": "yes",
+   "seconds": 124,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-add": {
+   "note": "i don't love these allow/ask toggles. they don't seem to match the styling used for similar elements elsewhere in the app. i think the \"add a permission\" ui and some of the other elements on this will need further refinement, but htis is mostly good as a v1",
+   "t": 1794092867493,
+   "v": "other",
+   "seconds": 92,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-sub": {
+   "v": "yes",
+   "t": 1794092899681,
+   "note": "we should use the same model selector used on other surfaces elsewhere in the app, or a clean derivative of it..",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-runs": {
+   "v": "yes",
+   "t": 1794092909945,
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-new": {
+   "v": "yes",
+   "t": 1794092961403,
+   "note": "super unclear what the toggle in the top right does? i don't think a separate toggle to enable/disable really makes sense on the creation/new automation screen, if that's what its for",
+   "seconds": 51,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-check": {
+   "v": "yes",
+   "t": 1794092973129,
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

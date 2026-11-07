@@ -1,0 +1,34 @@
+{
+  "title": "Finishing Pages, step 4: automations, round 3",
+  "key": "pages-finish-step4c-review",
+  "out": "pages-finish-step4c.review.html",
+  "stage": "design",
+  "images": "images/pages-finish-step4c.review",
+  "runs": { "after": "runs-step4c/after" },
+  "steps": [
+    {
+      "id": "C-list", "surface": "Pages", "path": "Pages → Automations", "crop": "automations", "new": true,
+      "headline": "Groups are now Waiting for you, On and Paused; a job's page is a chip on its card.",
+      "changed": "B-list: \"On their own\" is gone.",
+      "notice": "Weekly briefing, Money and Recipe notes show as chips."
+    },
+    {
+      "id": "C-details", "surface": "Pages", "path": "Automations → a card", "crop": "automations/details", "new": true,
+      "headline": "The app's own model picker, the Library's tab strip, and the limit as one setting row.",
+      "changed": "B-sub and B-details: the Model card uses the picker from Settings and Specialists; Settings / Runs uses the Library's Plugins / Themes strip; Spending is one row with the limit at the right.",
+      "notice": "Runs shows its count."
+    },
+    {
+      "id": "C-add", "surface": "Pages", "path": "Automation details → Permissions", "crop": "automations/details#add-menu", "new": true,
+      "headline": "Each permission shows its state as a pill (Always allowed / Asks first) that opens a small menu with Remove.",
+      "changed": "B-add: the per-row Allow / Ask strips are replaced by the shared status pill with a menu, the way your status in Games works. The bin moved into that menu.",
+      "notice": "Anything not listed uses the same pill (Never / Asks first)."
+    },
+    {
+      "id": "C-new", "surface": "Pages", "path": "Automations → New automation", "crop": "automations/details#new", "new": true,
+      "headline": "New automation has no switch: Create turns it on.",
+      "changed": "B-new.",
+      "notice": "Pausing it happens afterwards, from its card."
+    }
+  ]
+}
