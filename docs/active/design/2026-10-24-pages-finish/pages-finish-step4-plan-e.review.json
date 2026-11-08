@@ -1,0 +1,60 @@
+{
+  "title": "Automations: the redesigned popup, and practice runs",
+  "key": "pages-finish-step4-plan-e",
+  "out": "pages-finish-step4-plan-e.review.html",
+  "images": "images/pages-finish-step4-plan-e.review",
+  "runs": { "after": "runs-plan-e/after" },
+  "steps": [
+    {
+      "id": "E-top", "surface": "Automations", "path": "Automation details (a run waiting for you)",
+      "crop": "automations/details", "new": true,
+      "headline": "A fresh reviewer redrew the popup: fewer boxes inside boxes, and one clear button where it matters.",
+      "changed": "Your D-settings note. A reviewer with no context read the design guide and borrowed from Page settings and the app's Settings rows. Run now is a small button beside the switch; the waiting ask has one filled button (Allow) and a one-line note box; Model and its usage share one card.",
+      "notice": "Permission names now wrap instead of being cut off."
+    },
+    {
+      "id": "E-lower", "surface": "Automations", "path": "Automation details → Advanced settings, one opened",
+      "crop": "automations/details#lower-open", "new": true,
+      "headline": "Each advanced setting is a short name with today's choice under it in grey.",
+      "changed": "\"Approvals\", \"No answer\", \"Missed runs\", \"Overlapping runs\", each closed until you open it. Inside, every choice has a \"Good:\" and a \"Catch:\" line. The two catch-all rows sit together under \"Anything not listed\" as Websites and Commands and files. Runs on moved to the left column so the two sides are even.",
+      "notice": "Still to come: a permission's own width (see the last question) and the step where you say which folder or site."
+    },
+    {
+      "id": "E-new", "surface": "Automations", "path": "New automation",
+      "crop": "automations/details#new", "new": true,
+      "headline": "A new automation uses the same layout, starting from the usual defaults.",
+      "changed": "Same groups and order as an existing one; Create at the foot.",
+      "notice": "Most automations will still start in a chat, where the assistant fills this in for you."
+    },
+    {
+      "id": "Q-practice", "words": true, "surface": "Automations", "path": "Making an automation → practice runs",
+      "headline": "How should a practice run keep your real things safe?",
+      "today": "Your Q-tryrun answer: making an automation should be back-and-forth, with a test setup that mirrors its real inputs and outputs without risking real data, explained simply.",
+      "problem": "A practice run needs real-looking inputs to be worth anything, but nothing it does should change or send anything real.",
+      "proposal": "Users see one line: \"Practice runs work on copies. Nothing real changes or gets sent; you'll see what it would have done.\" After each one, a short report: what it read, what it would have changed or sent, and which permissions it needed (each with Add). Adjust the instructions or permissions, practice again, then Turn on.",
+      "options": [
+        { "id": "copies", "label": "Copies, and sends held back", "recommended": true, "pros": ["Folders and page data are copied first, so changes land on the copies.", "Emails, posts and forms are shown as \"would send\", never sent.", "Websites are still read live, so results look real."], "cons": ["Copying a very large folder takes time; it copies only what the run opens.", "A website button that secretly buys or posts can't always be spotted, so in practice those clicks ask you first."] },
+        { "id": "real-ask", "label": "Real things, everything asks", "pros": ["Nothing to copy; simplest to build."], "cons": ["One wrong Allow changes or sends something real."] }
+      ]
+    },
+    {
+      "id": "Q-width", "words": true, "surface": "Automation details", "path": "Permissions → a command permission",
+      "headline": "Give each command permission its own width, picked when it's added?",
+      "today": "Your Q-changing answer: \"this needs to be a case-by-case thing … broad … extremely narrow … something in the middle\".",
+      "problem": "One width for every command is too loose for some jobs and too tight for others.",
+      "proposal": "Each command permission carries one of three widths, shown as a pill like its mode: \"Exactly this\" (\"whisper memo.m4a --model small\"), \"These settings, any files\" (\"whisper … --model small\"), \"Anything with this program\" (\"whisper …\"). The assistant suggests one when it drafts the list; you can change it. The chat permission card already offers this same choice.",
+      "options": [
+        { "id": "three", "label": "Three widths per permission", "recommended": true, "pros": ["Each job gets exactly the room it needs.", "Same choice people already see in chats."], "cons": ["One more pill on command permissions."] },
+        { "id": "two", "label": "Two: exact or any", "pros": ["Simpler choice."], "cons": ["No middle ground for \"these settings only\"."] }
+      ]
+    },
+    {
+      "id": "Q-other", "words": true, "surface": "Automations", "path": "Popup and practice runs",
+      "answer": "words", "prompt": "Anything to change",
+      "headline": "Anything else about the redesigned popup or practice runs?",
+      "today": "This deck shows the redesign and asks about practice runs and command widths.",
+      "problem": "Something may still be off.",
+      "proposal": "Type it here."
+    }
+  ]
+}
