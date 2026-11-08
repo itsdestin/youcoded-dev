@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automations build plan</title>
+<style>
+  /* WHY its own palette tokens: this page replaces the contract deck for step 4 (Destin, 2026-11-07:
+     contracts "do a piss poor job" of showing what exists, its seams, and how it is tested). It is a
+     plain file opened from chat, so it carries its own light/dark colours. */
+  :root {
+    --bg: #f6f5f2; --panel: #ffffff; --edge: #dedad2; --fg: #1d1c1a; --fg2: #55524c; --muted: #8a867e;
+    --accent: #c4642d; --ok: #2f7d4f; --wait: #b07a10; --blue: #3a6ea5; --soft: #f0ede6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --panel: #1d1c1a; --edge: #34322e; --fg: #ecebe7; --fg2: #b9b6ae; --muted: #85827a;
+      --accent: #e08a55; --ok: #5cb27f; --wait: #d9a63a; --blue: #7aa6d6; --soft: #26241f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 80px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 19px; margin: 48px 0 6px; padding-top: 12px; border-top: 1px solid var(--edge); }
+  h3 { font-size: 15px; margin: 0 0 4px; }
+  p { margin: 6px 0; }
+  .sub { color: var(--fg2); }
+  .muted { color: var(--muted); font-size: 13px; }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav a { color: var(--fg2); text-decoration: none; border: 1px solid var(--edge); border-radius: 999px; padding: 3px 12px; font-size: 13px; background: var(--panel); }
+  .card { background: var(--panel); border: 1px solid var(--edge); border-radius: 10px; padding: 14px 16px; }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .piece .n { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; align-items: center; justify-content: center; margin-right: 6px; }
+  .never { color: var(--fg2); font-size: 13px; margin-top: 6px; }
+  .never b { color: var(--accent); font-weight: 600; }
+  svg { width: 100%; height: auto; display: block; }
+  .diagram { padding: 8px; overflow-x: auto; }
+  .diagram svg { min-width: 760px; }
+  .screen { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; align-items: start; margin-top: 18px; }
+  .screen img { width: 100%; border-radius: 8px; border: 1px solid var(--edge); display: block; cursor: zoom-in; }
+  .screen ul { margin: 6px 0 0; padding-left: 18px; }
+  .screen li { margin: 4px 0; }
+  .ctl { font-weight: 600; }
+  @media (max-width: 760px) { .screen { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--edge); border-radius: 10px; overflow: hidden; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--edge); vertical-align: top; }
+  th { background: var(--soft); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--fg2); }
+  tr:last-child td { border-bottom: 0; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+  .auto { background: color-mix(in srgb, var(--blue) 18%, transparent); color: var(--blue); }
+  .you { background: color-mix(in srgb, var(--wait) 20%, transparent); color: var(--wait); }
+  .status { color: var(--muted); white-space: nowrap; }
+  .tablewrap { overflow-x: auto; }
+  .later li { margin: 4px 0; }
+  dialog { border: 0; padding: 0; background: transparent; max-width: 96vw; }
+  dialog img { max-width: 96vw; max-height: 92vh; border-radius: 8px; }
+  dialog::backdrop { background: rgba(0,0,0,.75); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Automations: what we're building</h1>
+  <p class="sub">Pages, step 4. The screens you approved, the pieces behind them, and how each piece gets checked. At the end of the build this same page comes back with a pass or fail on every check.</p>
+  <nav>
+    <a href="#pieces">1. The pieces</a>
+    <a href="#screens">2. Screens and what they do</a>
+    <a href="#checks">3. How it gets checked</a>
+    <a href="#later">Not in this version</a>
+  </nav>
+
+  <h2 id="pieces">1. The pieces and how they connect</h2>
+  <p class="sub">Eight pieces. Arrows show what talks to what. Everything runs inside YouCoded on this computer, and on a phone inside the YouCoded app.</p>
+  <div class="card diagram">
+    <svg viewBox="0 0 960 470" role="img" aria-label="Diagram of the automation pieces">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <style>
+        .bx { fill: var(--panel); stroke: var(--edge); stroke-width: 1.5; }
+        .hi { fill: var(--soft); stroke: var(--accent); stroke-width: 1.5; }
+        .t { fill: var(--fg); font: 600 14px system-ui, sans-serif; }
+        .s { fill: var(--fg2); font: 12px system-ui, sans-serif; }
+        .ln { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#ar); }
+        .wall { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 6 5; fill: none; }
+        .wt { fill: var(--accent); font: 600 12px system-ui, sans-serif; }
+        .num { fill: var(--accent); font: 700 13px system-ui, sans-serif; }
+      </style>
+
+      <!-- Row 1: what you see -->
+      <rect class="bx" x="20" y="20" width="250" height="78" rx="10"/>
+      <text class="num" x="34" y="44">1</text><text class="t" x="50" y="44">Automations page</text>
+      <text class="s" x="34" y="64">Cards, details popup, runs,</text><text class="s" x="34" y="80">the dots on the Pages button</text>
+
+      <rect class="bx" x="355" y="20" width="250" height="78" rx="10"/>
+      <text class="num" x="369" y="44">2</text><text class="t" x="385" y="44">Pages and chats</text>
+      <text class="s" x="369" y="64">Page buttons and page events;</text><text class="s" x="369" y="80">"automate this" from a chat</text>
+
+      <rect class="bx" x="690" y="20" width="250" height="78" rx="10"/>
+      <text class="num" x="704" y="44">3</text><text class="t" x="720" y="44">Notifications</text>
+      <text class="s" x="704" y="64">Computer and phone; per job:</text><text class="s" x="704" y="80">needs you, has news, failed</text>
+
+      <!-- Row 2: the core -->
+      <rect class="hi" x="20" y="160" width="250" height="78" rx="10"/>
+      <text class="num" x="34" y="184">4</text><text class="t" x="50" y="184">Job list (saved on disk)</text>
+      <text class="s" x="34" y="204">Every job's settings, its last 50</text><text class="s" x="34" y="220">runs, usage by month and model</text>
+
+      <rect class="hi" x="355" y="160" width="250" height="78" rx="10"/>
+      <text class="num" x="369" y="184">5</text><text class="t" x="385" y="184">The runner</text>
+      <text class="s" x="369" y="204">Starts runs, at most two at once;</text><text class="s" x="369" y="220">holds waiting runs; writes results</text>
+
+      <rect class="hi" x="690" y="160" width="250" height="78" rx="10"/>
+      <text class="num" x="704" y="184">6</text><text class="t" x="720" y="184">The clock</text>
+      <text class="s" x="704" y="204">Checks every 30 seconds what is due;</text><text class="s" x="704" y="220">handles runs missed while off</text>
+
+      <!-- Row 3: the two routes and the gatekeeper -->
+      <rect class="bx" x="20" y="320" width="250" height="78" rx="10"/>
+      <text class="num" x="34" y="344">7</text><text class="t" x="50" y="344">Permission gate</text>
+      <text class="s" x="34" y="364">Always allowed / Asks first / Never;</text><text class="s" x="34" y="380">wait or skip; counts spending</text>
+
+      <rect class="bx" x="355" y="320" width="250" height="78" rx="10"/>
+      <text class="num" x="369" y="344">8a</text><text class="t" x="393" y="344">Claude route</text>
+      <text class="s" x="369" y="364">Your Claude subscription, run</text><text class="s" x="369" y="380">with no window and no saved chat</text>
+
+      <rect class="bx" x="690" y="320" width="250" height="78" rx="10"/>
+      <text class="num" x="704" y="344">8b</text><text class="t" x="728" y="344">ChatGPT / OpenRouter route</text>
+      <text class="s" x="704" y="364">YouCoded's own assistant engine,</text><text class="s" x="704" y="380">same tools as a chat</text>
+
+      <!-- arrows -->
+      <path class="ln" d="M145 98 V156"/>                 <!-- page -> job list -->
+      <path class="ln" d="M270 199 H351"/>                <!-- job list -> runner -->
+      <path class="ln" d="M686 199 H609"/>                <!-- clock -> runner -->
+      <path class="ln" d="M480 98 V156"/>                 <!-- pages/chat -> runner -->
+      <path class="ln" d="M560 156 C 600 120, 700 120, 760 102"/> <!-- runner -> notifications -->
+      <path class="ln" d="M440 238 V316"/>                <!-- runner -> claude -->
+      <path class="ln" d="M560 238 C 620 280, 760 280, 800 316"/> <!-- runner -> native -->
+      <path class="ln" d="M351 359 H274"/>                <!-- claude -> gate -->
+      <path class="ln" d="M800 398 C 760 450, 240 450, 160 402"/> <!-- native -> gate -->
+      <path class="ln" d="M145 316 C 145 290, 300 260, 380 242"/> <!-- gate -> runner (asks) -->
+
+      <!-- the wall: runs never reach chats -->
+      <rect class="wall" x="10" y="140" width="940" height="320" rx="14"/>
+      <text class="wt" x="480" y="454" text-anchor="middle">Nothing inside the dashed line reaches your chat list, chat search, Resume or sync</text>
+    </svg>
+  </div>
+
+  <div class="grid" style="margin-top:12px">
+    <div class="card piece"><h3><span class="n">1</span>Automations page</h3>
+      <p>The built-in page you approved: cards grouped Waiting for you / On / Paused, the details popup, the Runs tab. Shows only what the job list says; never starts a run itself except through Run now and Allow.</p>
+      <p class="never"><b>Never</b> shows a run as a chat.</p></div>
+    <div class="card piece"><h3><span class="n">2</span>Pages and chats</h3>
+      <p>A page can start one of its own jobs from a button, or report that something happened ("a new expense was added"). In a chat, asking to automate something opens the short check popup; nothing is saved until Turn on.</p>
+      <p class="never"><b>Never</b> lets a page start another page's jobs, or a job that stands alone.</p></div>
+    <div class="card piece"><h3><span class="n">3</span>Notifications</h3>
+      <p>A system notification when a job needs you, has news, or failed, each switchable per job. Clicking it opens that job.</p>
+      <p class="never"><b>Never</b> for "done, nothing to report".</p></div>
+    <div class="card piece"><h3><span class="n">4</span>Job list</h3>
+      <p>One file of every job's settings, plus a folder per job holding its runs. Each run keeps a short summary and its full conversation. Older than the last 50 are deleted as new ones arrive. Usage is kept per job, per month, per model.</p>
+      <p class="never"><b>Never</b> synced between devices in this version.</p></div>
+    <div class="card piece"><h3><span class="n">5</span>The runner</h3>
+      <p>Starts a run, picks the route for the job's model, hands it the job's permissions, and records the outcome. A run waiting for your OK is held here, on disk, so closing the app doesn't lose it.</p>
+      <p class="never"><b>Never</b> runs one job twice at the same time; a third due job waits its turn.</p></div>
+    <div class="card piece"><h3><span class="n">6</span>The clock</h3>
+      <p>Every 30 seconds it checks which jobs are due. When the computer wakes, or YouCoded opens, it applies each job's Missed runs setting: run once, skip, or run differently. Several missed times become one run.</p>
+      <p class="never"><b>Never</b> wakes a sleeping computer; jobs run only while YouCoded is open.</p></div>
+    <div class="card piece"><h3><span class="n">7</span>Permission gate</h3>
+      <p>Every action a run tries passes here first. Always allowed goes through; Asks first waits for you or skips, as the job says; anything not listed follows the job's "Other websites" / "Other commands and files" setting. On paid models it adds up spending and stops the run before its next step once the monthly limit is reached.</p>
+      <p class="never"><b>Never</b> shows a run's question in a chat's permission card; it goes to the job.</p></div>
+    <div class="card piece"><h3><span class="n">8</span>Two routes, one behaviour</h3>
+      <p>Claude jobs run through your Claude subscription with no window and nothing saved to your chat history. ChatGPT and OpenRouter jobs run on YouCoded's own assistant engine. Both go through the same gate, so a job behaves the same whichever model it uses; only the Spending/Usage line differs.</p>
+      <p class="never"><b>Never</b> runs without the gate: if the Claude route can't apply your permissions, the run fails with a clear reason instead.</p></div>
+  </div>
+
+  <h2 id="screens">2. The screens you approved, and what's behind each control</h2>
+
+  <div class="screen">
+    <img src="img/list.png" alt="Automations page">
+    <div><h3>Automations page</h3><ul>
+      <li><span class="ctl">Switch on a card:</span> turns the job off or on. Off means the clock skips it; a run already going finishes.</li>
+      <li><span class="ctl">Waiting for you group:</span> jobs holding a run for your OK. The same jobs light the orange dot on the Pages button.</li>
+      <li><span class="ctl">Result pill and date:</span> the last run's outcome, from the job list.</li>
+      <li><span class="ctl">New automation:</span> opens the empty details popup.</li>
+    </ul></div>
+  </div>
+
+  <div class="screen">
+    <img src="img/details.png" alt="Automation details">
+    <div><h3>Automation details</h3><ul>
+      <li><span class="ctl">Allow / Don't allow:</span> answers the waiting run, which carries on or skips that step.</li>
+      <li><span class="ctl">Run now:</span> starts a run immediately, outside the schedule.</li>
+      <li><span class="ctl">Every field:</span> saves as you change it. The next run uses the new settings; a run already going keeps the old ones.</li>
+      <li><span class="ctl">Approvals:</span> wait for you (up to a time you pick, then skip, stop or do something else) or skip and continue.</li>
+      <li><span class="ctl">Missed runs:</span> what the clock does after the computer was off.</li>
+    </ul></div>
+  </div>
+
+  <div class="screen">
+    <img src="img/add-menu.png" alt="Permissions with the add menu">
+    <div><h3>Permissions</h3><ul>
+      <li><span class="ctl">Each pill:</span> Always allowed or Asks first for that one thing; Remove in its menu.</li>
+      <li><span class="ctl">Add a permission:</span> grouped by where it comes from. Picking a folder, website or command asks which one next, in a small box in the same style (not drawn yet; shown on the deck after the build).</li>
+      <li><span class="ctl">Other websites / Other commands and files:</span> Never or Asks first for anything not listed.</li>
+    </ul></div>
+  </div>
+
+  <div class="screen">
+    <img src="img/subscription.png" alt="Details for a subscription job">
+    <div><h3>Model, spending and usage</h3><ul>
+      <li><span class="ctl">Model picker:</span> the same one as Settings. Changing it changes the route; nothing else about the job changes.</li>
+      <li><span class="ctl">Monthly limit</span> (paid models): starts at $5. Reaching it stops the run before its next step, so it can end a few cents over; the run shows the real amount.</li>
+      <li><span class="ctl">Usage</span> (subscriptions): no limit; tokens this month, counted per model.</li>
+    </ul></div>
+  </div>
+
+  <div class="screen">
+    <img src="img/runs.png" alt="Runs tab">
+    <div><h3>Runs</h3><ul>
+      <li><span class="ctl">Each box:</span> one run: when, result, cost, what it did.</li>
+      <li><span class="ctl">Open conversation:</span> the run's full conversation, read-only. It never appears among your chats.</li>
+      <li>Last 50 kept per job.</li>
+    </ul></div>
+  </div>
+
+  <div class="screen">
+    <img src="img/new.png" alt="New automation">
+    <div><h3>New automation</h3><ul>
+      <li><span class="ctl">Create:</span> saves it switched on; the clock picks it up at once.</li>
+    </ul></div>
+  </div>
+
+  <div class="screen">
+    <img src="img/chat-check.png" alt="Automation check from a chat">
+    <div><h3>From a chat</h3><ul>
+      <li>Asking the assistant to automate something makes it fill in this check. <span class="ctl">Turn on</span> saves the job; <span class="ctl">Edit all settings</span> opens the details popup; the ✕ throws the draft away.</li>
+      <li>Works in Claude chats and in ChatGPT/OpenRouter chats alike.</li>
+    </ul></div>
+  </div>
+
+  <div class="screen">
+    <img src="img/page-settings.png" alt="A page's own settings listing its automations">
+    <div><h3>A page's Settings</h3><ul>
+      <li>Lists that page's own jobs with their switches; <span class="ctl">Open in Automations</span> jumps to the job.</li>
+      <li>A page button tied to a job shows a spinner while it runs and a dot while it waits, drawn the same on every page.</li>
+    </ul></div>
+  </div>
+
+  <h2 id="checks">3. How it gets checked</h2>
+  <p class="sub"><span class="tag auto">Automatic</span> a test the build adds and runs on every change, with no model calls and no money spent (a fake model and a fake clock stand in). <span class="tag you">You try it</span> a step in the dev window, never your own app. At the end the right column fills in.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>What should be true</th><th>How</th><th>The check</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>A job runs at its scheduled time.</td><td><span class="tag auto">Automatic</span></td><td>Fake clock moves to 8:00; the runner starts exactly one run of the 8:00 job.</td><td class="status">not built yet</td></tr>
+      <tr><td>Missed runs follow the job's setting.</td><td><span class="tag auto">Automatic</span></td><td>Clock jumps three days: "run once" gives one run, "skip" gives one Missed row, "run differently" gives one run with the extra instruction.</td><td class="status">not built yet</td></tr>
+      <tr><td>A paused job never runs.</td><td><span class="tag auto">Automatic</span></td><td>Switch off, move the clock past its time: no run.</td><td class="status">not built yet</td></tr>
+      <tr><td>Always allowed goes through; anything set to Never is refused.</td><td><span class="tag auto">Automatic</span></td><td>A fake model tries a listed and an unlisted action on both routes; the gate's answers are compared.</td><td class="status">not built yet</td></tr>
+      <tr><td>Asks first + Wait: the run waits, then carries on after Allow.</td><td><span class="tag auto">Automatic</span></td><td>The run stops at the action, the job shows Waiting, Allow resumes it, and the run ends Done.</td><td class="status">not built yet</td></tr>
+      <tr><td>No answer in time does what the job says.</td><td><span class="tag auto">Automatic</span></td><td>Clock passes "Wait up to"; one test each for skip that step, stop the run, do something else.</td><td class="status">not built yet</td></tr>
+      <tr><td>Asks first + Skip: the run continues without it.</td><td><span class="tag auto">Automatic</span></td><td>The action is refused, the run continues, and the run says what was skipped.</td><td class="status">not built yet</td></tr>
+      <tr><td>A waiting run survives closing the app.</td><td><span class="tag auto">Automatic</span></td><td>The runner is shut down mid-wait and started again; the job still waits, and Allow finishes it.</td><td class="status">not built yet</td></tr>
+      <tr><td>Spending stops at the limit.</td><td><span class="tag auto">Automatic</span></td><td>A fake model charges 3 cents a step against a 10-cent limit: the run stops after the 4th step, shows "Limit reached" and 12 cents.</td><td class="status">not built yet</td></tr>
+      <tr><td>Subscription usage is counted per job and model.</td><td><span class="tag auto">Automatic</span></td><td>Two runs on two models; the month's usage shows both, separately.</td><td class="status">not built yet</td></tr>
+      <tr><td>Runs never appear as chats.</td><td><span class="tag auto">Automatic</span></td><td>After a run: the chat list, Resume list, phone list and chat search have nothing new, and no Claude chat file was written.</td><td class="status">not built yet</td></tr>
+      <tr><td>Only the last 50 runs are kept.</td><td><span class="tag auto">Automatic</span></td><td>51 runs: the oldest is gone.</td><td class="status">not built yet</td></tr>
+      <tr><td>At most two jobs run at once.</td><td><span class="tag auto">Automatic</span></td><td>Three due at once: two start, the third starts when one ends.</td><td class="status">not built yet</td></tr>
+      <tr><td>A page can only start its own jobs.</td><td><span class="tag auto">Automatic</span></td><td>Page A asks to run page B's job: refused.</td><td class="status">not built yet</td></tr>
+      <tr><td>Notifications follow each job's switches, and never for plain Done.</td><td><span class="tag auto">Automatic</span></td><td>Each outcome is run with each switch on and off; the notifications sent are compared.</td><td class="status">not built yet</td></tr>
+      <tr><td>The screens still match what you approved.</td><td><span class="tag auto">Automatic</span></td><td>Each screen above is re-photographed on the built version and shown to you beside these pictures.</td><td class="status">not built yet</td></tr>
+      <tr><td>Phone and computer show the same jobs.</td><td><span class="tag auto">Automatic</span></td><td>The existing check that every computer feature has its phone counterpart, extended to automations.</td><td class="status">not built yet</td></tr>
+      <tr><td>A real Claude job runs end to end.</td><td><span class="tag you">You try it</span></td><td>In the dev window: make "every minute, tell me the time" on Claude, wait a minute, open its run.</td><td class="status">not built yet</td></tr>
+      <tr><td>A real OpenRouter job stops at its limit.</td><td><span class="tag you">You try it</span></td><td>Set a 1-cent limit, Run now, and see "Limit reached" with the real cost.</td><td class="status">not built yet</td></tr>
+      <tr><td>A notification arrives and opens the job.</td><td><span class="tag you">You try it</span></td><td>A job set to ask before writing a file; Run now; click the notification.</td><td class="status">not built yet</td></tr>
+      <tr><td>A page button runs its job.</td><td><span class="tag you">You try it</span></td><td>On the Money page, press its check button: spinner, then the result on the card.</td><td class="status">not built yet</td></tr>
+      <tr><td>Automating from a chat.</td><td><span class="tag you">You try it</span></td><td>In a chat: "every morning, check my spending" → the check popup → Turn on → it appears on the Automations page.</td><td class="status">not built yet</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Also run on every change: the app's full test suite, type checks and style rules. Before you see the result, a separate reviewer reads the code and an outside tester who has never seen this plan tries the screens; what they find is listed here with what was done about it.</p>
+
+  <h2 id="later">Not in this version</h2>
+  <ul class="later">
+    <li><b>Starting a job when something happens elsewhere</b> (an email arrives in Gmail): needs step 5's "Sign in with…". Until then: schedule, page button, or the page reporting something.</li>
+    <li><b>Chains of jobs</b> handing work to each other: waits on the plans work.</li>
+    <li><b>Running while YouCoded is closed</b>, and <b>syncing jobs between devices</b>.</li>
+  </ul>
+
+  <dialog id="zoom"><img alt=""></dialog>
+</main>
+<script>
+  // Click a screen to see it full size.
+  const d = document.getElementById('zoom'), zi = d.querySelector('img');
+  document.querySelectorAll('.screen img').forEach((i) => i.addEventListener('click', () => { zi.src = i.src; d.showModal(); }));
+  d.addEventListener('click', () => d.close());
+</script>
+</body>
+</html>
