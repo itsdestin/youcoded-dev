@@ -601,6 +601,9 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     if (inside.outside && !inside.changes.length) r.shift = 0;
     const edge = dropEdgeSlivers(inside.changes, panB.get(key), panA.get(key));
     r.changes = dropSmallMoves(edge.changes).changes;
+    // WHY (2026-11-07 audit: office/presentation, document and spreadsheet settle into one of two layouts, 10-18 px
+    // apart, between pictures of the SAME code): on an Office screen a shift with nothing else is that settling
+    if (name.startsWith('office/') && r.shift && !r.changes.length) { r.shift = 0; r.unstable = (r.unstable ?? 0) + 1; }
     const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift, ...(r.shiftFromY ? { fromY: r.shiftFromY } : {}) } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}), ...(inside.outside ? { outside: inside.outside } : {}), ...(edge.edge ? { edge: edge.edge } : {}) };
     if (!b.elements || !a.elements) row.reason = 'no element lists beside the pictures: pixels only';
     if (r.mask) { const mf = join('diff', name, `${theme}.mask.png`); writeMask(join(run, mf), r.mask); row.mask = mf; }

@@ -333,7 +333,7 @@ const byPath=(a,b)=>a.id<b.id?-1:1;
 // a phone filter shows the phone picture
 function pick(g){return S.f.has('phone')?(g.states.find(st=>st.ph)||g.states[0]):g.states[0]}
 function tile(g,extra,cls,st){st=st||pick(g);const full=!st.crop&&!st.ph; // WHY: a phone picture is tall and thin; filling the tile would crop it
-  const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')&&!S.f.has('since')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since==='changed'&&CM?`<span class="badge" data-tip="${T('scr.badge.changed')}">Changed</span>`:'')
+  const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')&&!S.f.has('since')&&!S.f.has('new')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since==='changed'&&CM?`<span class="badge" data-tip="${T('scr.badge.changed')}">Changed</span>`:'')
     // a whole new screen says New; an older screen with new situations says how many (it is not itself new)
     +(g.newn&&CM?`<span class="badge" data-tip="${T('scr.badge.new')}">${g.newn===g.states.length?'New':g.newn+' new'}</span>`:'');
   const tip=cls==='here'?'This is the screen you are looking at.':(g.desc?g.desc+' Click to open it.':TIP['scr.tile']);
