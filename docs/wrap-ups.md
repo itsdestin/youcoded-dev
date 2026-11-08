@@ -1390,3 +1390,12 @@ recurred — the repetition is the data.
 - RECURRED card #212 (stale shared worker deps) → progress note on #212.
 - Cloudflare traffic limits (Destin: "don't know") → card #221. Play data-safety form must match the new policy → card #31 note.
 - deleted/merged: 11 superseded security branches and worktrees (about 4 GB each); the "after the next update" markers and the 30-day email-deletion promise from the policy.
+
+## 2026-11-07 — security apparatus: bundled-parts watch, alarms to the phone, pinning, plugin off-switch, bad-day checklist (session/security-apparatus, app + worker + themes + workspace, no card)
+- Uninstall left a plugin's hooks and connected tools in place: the reconcilers only recognise an owner whose folder still exists, so an uninstalled plugin's online tool kept starting → applied: `detachPluginExtras` runs before the folder goes (uninstall and off-switch), pinned in `plugin-blocklist.test.ts`, seen red.
+- A guard-proof edit was restored with `cp` from a hand backup; glob-guard blocked it, so verify ran on the deliberately broken code → dropped as a rule: the hook did its job and the workspace rule already says restore with git; my lapse (re-fixed via Edit, re-verified).
+- Three app files sat exactly at their line budgets (main.ts, App.tsx, types.ts) → applied: logic moved to `plugin-blocklist.ts`, budgets raised by the exact growth with the reason in the commit.
+- RECURRED (card #195): `gitleaks git -q` is not a flag — this time it refused rather than pushed unscanned → card #195 progress.
+- RECURRED (card #212): worker worktree had no dependencies; the hook also refuses a clean install in a /tmp scratch copy and `cp -al` fails across filesystems → card #212 progress; worker tests ran on the PR's worker-ci instead.
+- Destin's decisions: severe fixes are "yes hotfix" + the reviewed hotfix process (option A) → applied: runbook §7 and the phone alert text; Google Messages rebuild deferred → card #223.
+- deleted/merged: none found; looked at the hook/MCP reconcilers (uninstall now reuses their own config builders instead of a second copy).

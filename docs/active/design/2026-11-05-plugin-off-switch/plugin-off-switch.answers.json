@@ -1,0 +1,36 @@
+{
+ "deck": "plugin-off-switch-review",
+ "started": "2026-11-05T23:17:18.898Z",
+ "submitted": "2026-11-05T23:18:07Z",
+ "cur": 3,
+ "answers": {
+  "1": {
+   "v": "yes",
+   "t": 1793920655483,
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "2": {
+   "v": "yes",
+   "t": 1793920673643,
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "3": {
+   "v": "yes",
+   "t": 1793920681622,
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "4": {
+   "v": "yes",
+   "t": 1793920686791,
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

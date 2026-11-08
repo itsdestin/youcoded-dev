@@ -426,12 +426,27 @@ def main():
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=a.out_dir, **kwargs)
 
+        def _wrong_origin(self):
+            # WHY (code scanning, 2026-11): same pin as ui-review/deck/serve.py. Without it any
+            # website open while the editor runs could POST /save and overwrite the saved edits,
+            # and a DNS-rebinding name pointed at 127.0.0.1 could read the whole site folder.
+            port = self.server.server_address[1]
+            mine = {f'127.0.0.1:{port}', f'localhost:{port}', f'[::1]:{port}'}
+            origin = self.headers.get('origin')
+            return (self.headers.get('host') or '') not in mine or (origin is not None and origin not in {f'http://{m}' for m in mine})
+
         def do_GET(self):
+            if self._wrong_origin():
+                self.send_error(403)
+                return
             if self.path in ('/', '/index.html', '/site.edit.html'):
                 self.path = '/index.html'
             return super().do_GET()
 
         def do_POST(self):
+            if self._wrong_origin():
+                self.send_error(403)
+                return
             if self.path != '/save':
                 self.send_error(404)
                 return
