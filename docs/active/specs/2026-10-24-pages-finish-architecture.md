@@ -130,7 +130,7 @@ deck step behind each line: `2026-11-07-pages-step4-automations-technical-design
 - **Answered (deck `plan-d`, 2026-11-08):** the assistant drafts each job's permission list; "Allow
   from now on" on asks; "Describe it…" in the Add menu; edited scripts ask again; the run is told its
   rules. A fresh reviewer redesigned the details popup.
-- **Open (deck `pages-finish-step4-plan-e`):** the redesign; how practice runs keep real things
+- **Open (deck `pages-finish-step4-plan-f`, plan-e with before pictures):** the redesign; how practice runs keep real things
   safe; per-permission command width. Nothing in it is decided until answered. Not drawn yet: typing which folder / site / command after Add a permission;
   the delete-page popup.
 

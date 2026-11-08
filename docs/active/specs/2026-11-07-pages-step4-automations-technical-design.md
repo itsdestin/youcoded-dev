@@ -8,7 +8,7 @@ decks; the first version (no saved Claude runs, one owning page, two jobs at a t
 notifications) is superseded. `plan-c` answered 2026-11-08 (kept apart: clear; three places: clear;
 two "not listed" rows kept; Rules → "Advanced settings" fold cards; the permission list's origin
 not yet thought through). `plan-d` answered 2026-11-08 (see "Where the list comes from"). Open: deck
-`pages-finish-step4-plan-e` (popup redesign by a fresh reviewer; practice runs; command widths).
+`pages-finish-step4-plan-f` (plan-e re-served with before pictures; popup redesign by a fresh reviewer; practice runs; command widths).
 Do not build from this until that deck is answered and one design-review round has run.
 
 Sources, in order (later wins): `pages-finish-step4.questions` → `step4.review` → `step4b.review` →
