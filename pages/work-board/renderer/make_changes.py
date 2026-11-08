@@ -89,7 +89,7 @@ def main():
         sizes = dict(ex.map(tile, man))
         list(ex.map(lambda j: side_pic(*j), jobs))
     json.dump(sizes, open(os.path.join(OUT, 'sizes.json'), 'w'), indent=0)
-    keep = ('kind', 'role', 'name', 'oldText', 'newText', 'words', 'styleChanges', 'box', 'beforeBox', 'side', 'field')
+    keep = ('kind', 'role', 'name', 'oldText', 'newText', 'words', 'styleChanges', 'box', 'beforeBox', 'side', 'field', 'way')
     # WHY a view box (2026-11-07 review: "the changed part is about 100 px wide and unreadable" on dialogs): when the
     # screen is a dialog or panel well under the window, the comparison zooms to it (both sides' panel, padded)
     pans = {}

@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { classify, compareRun, compareScreen, keepInsidePanel, scrolledNotGone, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
+import { classify, compareRun, compareScreen, dropEdgeSlivers, keepInsidePanel, scrolledNotGone, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
 
 const WORKSPACE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const { PNG } = createRequire(join(WORKSPACE, 'youcoded', 'desktop', 'package.json'))('pngjs');
@@ -244,4 +244,13 @@ test('a terminal block cursor is ignored on a terminal screen only', () => {
   const blank = pic(200, 100, () => null), cursor = pic(200, 100, (x, y) => (x >= 60 && x < 69 && y >= 40 && y < 60 ? [20, 20, 20] : null));
   assert.equal(compareScreen(side(blank), side(cursor), 1, {}, { ignoreCaret: 'block' }).changes.length, 0);
   assert.equal(compareScreen(side(blank), side(cursor), 1, {}, { ignoreCaret: 'line' }).changes.length, 1);
+});
+
+test('a piece peeking in a few pixels at the panel\'s edge is not a change; a piece fully shown is', () => {
+  const panel = { x: 300, y: 100, w: 800, h: 700 };
+  const sliver = { kind: 'added', side: 'after', box: { x: 500, y: 794, w: 150, h: 5.5 } };
+  const halfOut = { kind: 'removed', side: 'before', box: { x: 1050, y: 788, w: 48, h: 26 } };
+  const shown = { kind: 'added', side: 'after', box: { x: 500, y: 745, w: 150, h: 16 } };
+  const r = dropEdgeSlivers([sliver, halfOut, shown], panel, panel);
+  assert.deepEqual(r.changes, [shown]); assert.equal(r.edge, 2);
 });

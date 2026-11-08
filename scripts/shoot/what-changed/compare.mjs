@@ -505,6 +505,17 @@ function panels(side) {
   return out;
 }
 
+/**
+ * WHY (2026-11-07: Browser settings marked "Saved sign-ins" and the new heading as 5 px slivers peeking in at the
+ * dialog's bottom edge, where no one can read them): a piece shown less than 8 px, or less than half, inside its
+ * screen's panel is at the edge, not on the picture. Its change is dropped and counted; a shift is kept.
+ */
+export function dropEdgeSlivers(changes, panelBefore, panelAfter) {
+  const seen = (b, p) => { if (!b || !p) return true; const h = Math.min(b.y + b.h, p.y + p.h) - Math.max(b.y, p.y); return h >= 8 && h >= b.h / 2; };
+  const kept = changes.filter((c) => c.kind === 'pixels' || seen(c.box, (c.side === 'before' ? panelBefore : panelAfter)) || (c.beforeBox && seen(c.beforeBox, panelBefore) && c.kind !== 'added'));
+  return { changes: kept, edge: changes.length - kept.length };
+}
+
 const hits = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 /**
  * WHY (Destin, 2026-11-05, a theme popup flagged "Changed" for a speck in the blurred page behind it:
@@ -566,8 +577,9 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     const inside = keepInsidePanel(r.changes, panB.get(key), panA.get(key), vp.w, vp.h);
     // A shift that lies outside the panel (the page behind moved) is the page's business too.
     if (inside.outside && !inside.changes.length) r.shift = 0;
-    r.changes = inside.changes;
-    const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift, ...(r.shiftFromY ? { fromY: r.shiftFromY } : {}) } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}), ...(inside.outside ? { outside: inside.outside } : {}) };
+    const edge = dropEdgeSlivers(inside.changes, panB.get(key), panA.get(key));
+    r.changes = edge.changes;
+    const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift, ...(r.shiftFromY ? { fromY: r.shiftFromY } : {}) } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}), ...(inside.outside ? { outside: inside.outside } : {}), ...(edge.edge ? { edge: edge.edge } : {}) };
     if (!b.elements || !a.elements) row.reason = 'no element lists beside the pictures: pixels only';
     if (r.mask) { const mf = join('diff', name, `${theme}.mask.png`); writeMask(join(run, mf), r.mask); row.mask = mf; }
     screens.push(row);

@@ -91,6 +91,7 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
 - `box` is in CSS pixels on `side` (`removed` uses `before`; everything else `after`).
 - `pixels` is a changed area no element explains (an icon, a picture, a border).
 - `scrolled` is a piece shown on one side only that the other side still has, scrolled out of view (`way`: `out` = pushed below the visible part, `in` = came into view). Each `*.elements.json` carries `outOfView`: the controls and words scrolled out of view inside a scrolling area (no box).
+- `edge` counts changes dropped because the piece only peeks in at its panel's edge (under 8 px, or under half, shown).
 - `outside` counts changes dropped because they sit outside a popup's own panel (on the page behind it, which is
   its own screen). Only screens whose panel covers well under the window are filtered this way.
 - `shift` is a shared offset the comparer found (a row inserted above), reported once so the elements
