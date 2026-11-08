@@ -514,6 +514,12 @@ function newMarks(side) {
   for (const r of Array.isArray(m) ? m : []) if (r.newIn) out.set(`${r.name}|${r.theme}`, r.newIn);
   return out;
 }
+/** The screen list's plain sentence for each new picture (shoot writes `whatsNew` beside `newIn`). */
+function whatsNewOf(side) {
+  const m = readJson(join(side, 'manifest.json')); const out = new Map();
+  for (const r of Array.isArray(m) ? m : []) if (r.whatsNew) out.set(`${r.name}|${r.theme}`, r.whatsNew);
+  return out;
+}
 /** Each picture's panel box (CSS pixels): the part of the window that IS this screen (shoot's mark). */
 function panels(side) {
   const m = readJson(join(side, 'manifest.json')); const out = new Map();
@@ -644,6 +650,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
   const failB = failures(join(run, 'before')), failA = failures(join(run, 'after'));
   const panB = panels(join(run, 'before')), panA = panels(join(run, 'after'));
   const newA = newMarks(join(run, 'after'));
+  const wnA = whatsNewOf(join(run, 'after'));
   const keys = new Set([...B.keys(), ...A.keys(), ...[...failB].filter(([, v]) => v).map(([k]) => k), ...[...failA].filter(([, v]) => v).map(([k]) => k)]);
   const screens = [];
   for (const key of [...keys].sort()) {
@@ -665,7 +672,8 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     if (!B.has(key) && A.has(key)) {
       const label = beforeLabel ?? meta.before?.label ?? 'the before side';
       const isNew = newA.get(key) === 'after';
-      screens.push({ ...entry, status: isNew ? 'new' : 'nobefore', reason: isNew ? `new since ${label}` : `no picture of it from ${label} (not on its photo list)`, after: rel('after', true) }); continue;
+      const what = isNew ? wnA.get(key) : null;
+      screens.push({ ...entry, status: isNew ? 'new' : 'nobefore', reason: isNew ? `new since ${label}` : `no picture of it from ${label} (not on its photo list)`, ...(what ? { whatsNew: what } : {}), after: rel('after', true) }); continue;
     }
     if (B.has(key) && !A.has(key)) { screens.push({ ...entry, status: 'removed', reason: 'not in the after side', before: rel('before', true) }); continue; }
     if (!B.has(key) && !A.has(key)) continue;

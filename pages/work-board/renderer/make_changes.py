@@ -113,7 +113,7 @@ def main():
         if pic and s['status'] != 'failed' and os.path.exists(os.path.join(RUN, pic)):
             with Image.open(os.path.join(RUN, pic)) as im: vw, vh = round(im.width / (s.get('scale') or 1.5)), round(im.height / (s.get('scale') or 1.5))
         by.setdefault(s['name'], {})[s['theme']] = dict(vw=vw, vh=vh,
-            status=s['status'], reason=s.get('reason'), unstable=s.get('unstable', 0),
+            status=s['status'], reason=s.get('reason'), unstable=s.get('unstable', 0), whatsNew=s.get('whatsNew'),
             shift=s.get('shift'), view=view_of(s['name'], s['theme'], vw, vh),
             before=bool(s.get('before')) and s['status'] != 'failed', after=bool(s.get('after')) and s['status'] != 'failed',
             changes=[{k: c[k] for k in keep if c.get(k) is not None} for c in s.get('changes', [])])

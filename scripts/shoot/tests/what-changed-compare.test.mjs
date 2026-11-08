@@ -210,12 +210,14 @@ test('only the after side has it: "new" when the screen list marks it new, other
   mkdirSync(join(run, 'before'), { recursive: true });
   writeFileSync(join(run, 'before', 'manifest.json'), '[]');
   writeFileSync(join(run, 'after', 'manifest.json'), JSON.stringify([
-    { name: 'really-new', theme: 'meadow-mist', ok: true, newIn: 'after' },
+    { name: 'really-new', theme: 'meadow-mist', ok: true, newIn: 'after', whatsNew: 'the sentence' },
     { name: 'older-screen', theme: 'meadow-mist', ok: true },
   ]));
   writeFileSync(join(run, 'run.json'), JSON.stringify({ before: { label: 'v1.0.0' }, after: { label: 'now' } }));
   const by = Object.fromEntries(compareRun(run).screens.map((s) => [s.name, s.status]));
   assert.deepEqual(by, { 'really-new': 'new', 'older-screen': 'nobefore' });
+  // the screen list's sentence reaches the comparison, so the board can say what to look for
+  assert.equal(compareRun(run).screens.find((s) => s.name === 'really-new').whatsNew, 'the sentence');
 });
 
 test('a release that cannot open a screen has no picture of it (with why); a time-out is a failed picture', () => {

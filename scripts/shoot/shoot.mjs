@@ -500,7 +500,9 @@ function summarize(label, { results, screens }, outDir) {
   // the app ("new") from one that existed but was only added to this photo list later ("no picture from the
   // release"), and only the screen list knows which is which.
   const newIn = new Map((screens ?? []).filter((s) => s.newIn).map((s) => [s.name, s.newIn]));
-  const { records, kept } = mergeManifest(readManifest(mf), results.map(({ thumb, ...r }) => (newIn.has(r.name) ? { ...r, newIn: newIn.get(r.name) } : r)));
+  // whatsNew rides along: the comparison board says in words what a new state shows (screens/whats-new.ts)
+  const whatsNew = new Map((screens ?? []).filter((s) => s.whatsNew).map((s) => [s.name, s.whatsNew]));
+  const { records, kept } = mergeManifest(readManifest(mf), results.map(({ thumb, ...r }) => (newIn.has(r.name) ? { ...r, newIn: newIn.get(r.name), ...(whatsNew.has(r.name) ? { whatsNew: whatsNew.get(r.name) } : {}) } : r)));
   writeFileSync(mf, JSON.stringify(records, null, 2));
   if (kept) console.log(`  kept ${kept} earlier picture(s) of this folder in its manifest (re-shot ones replaced)`);
   // --contrast: the painted-pixel report beside the pictures (text too faint on its own

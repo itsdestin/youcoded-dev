@@ -229,6 +229,7 @@ CSS = '''
 .timg.full{padding:0} .timg.full img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:0;box-shadow:none}
 .tov{position:absolute;top:8px;right:8px;left:8px;display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap}
 .tov .badge,.tov .spill{background:var(--panel)}
+.newnote{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:var(--radius-md);background:var(--inset)}
 .tcap{padding:6px 12px 8px;display:flex;flex-direction:column;min-width:0}
 .tcap .tn{font-size:12px;font-weight:500;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tcap .tp{font-size:11px;color:var(--fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -331,14 +332,27 @@ function pass(g){
   return true}
 const byPath=(a,b)=>a.id<b.id?-1:1;
 // a phone filter shows the phone picture
-function pick(g){return S.f.has('phone')?(g.states.find(st=>st.ph)||g.states[0]):g.states[0]}
+// WHY (Destin, 2026-11-08: "entirely unclear why 'chat full screen' would be a 'new' page"): looking for
+// changes or new things, a tile is about the situations that match, not the screen — its picture is one of them
+// and its words name them, so "Chat" under New reads as "16 new situations on Chat: …", never as a new page
+function hunt(){return CM?(S.f.has('since')?'changed':S.f.has('new')?'new':null):null}
+function hits(g,h){return h?g.states.filter(st=>stSince(st)===h):[]}
+function pick(g){const h=hits(g,hunt());if(h.length)return h[0];return S.f.has('phone')?(g.states.find(st=>st.ph)||g.states[0]):g.states[0]}
+// the screen list's own sentence for a new situation (whats-new.ts), from whichever theme carries it
+function whatNew(st){const t=Object.values(st.ch||{}).find(t=>t.whatsNew);return t?t.whatsNew:''}
+function namesOf(L){const n=L.map(st=>st.l);return n.length<=2?n.join(' and '):n.slice(0,2).join(', ')+' and '+(n.length-2)+' more'}
 function tile(g,extra,cls,st){st=st||pick(g);const full=!st.crop&&!st.ph; // WHY: a phone picture is tall and thin; filling the tile would crop it
-  const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')&&!S.f.has('since')&&!S.f.has('new')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since==='changed'&&CM?`<span class="badge" data-tip="${T('scr.badge.changed')}">Changed</span>`:'')
+  const h=cls?null:hunt(),hl=hits(g,h);
+  // a hunting tile says only what it was found for: how many of its situations, out of how many
+  const huntB=hl.length?`<span class="badge" data-tip="${T(h==='new'?'scr.badge.new':'scr.badge.changed')}">${hl.length===g.states.length?(h==='new'?'New screen':g.states.length>1?'Every situation changed':'Changed'):hl.length+' of '+g.states.length+' situations '+(h==='new'?'new':'changed')}</span>`:'';
+  const badges=huntB||((g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since==='changed'&&CM?`<span class="badge" data-tip="${T('scr.badge.changed')}">Changed</span>`:'')
     // a whole new screen says New; an older screen with new situations says how many (it is not itself new)
-    +(g.newn&&CM?`<span class="badge" data-tip="${T('scr.badge.new')}">${g.newn===g.states.length?'New':g.newn+' new'}</span>`:'');
+    +(g.newn&&CM?`<span class="badge" data-tip="${T('scr.badge.new')}">${g.newn===g.states.length?'New screen':g.newn+' new situations'}</span>`:''));
+  const one=h==='new'&&hl.length===1?whatNew(hl[0]):'';
+  const sub=one?one:hl.length&&hl.length<g.states.length?(h==='new'?'New: ':'Changed: ')+namesOf(hl):(pathText(g)||KINDW[g.kind]);
   const tip=cls==='here'?'This is the screen you are looking at.':(g.desc?g.desc+' Click to open it.':TIP['scr.tile']);
   return `<figure class="tile${extra?' extra':''}${cls?' '+cls:''}" data-id="${esc(g.id)}" tabindex="0" data-tip="${esc(tip)}"><div class="timg${full?' full':''}"><img src="${st.img}" alt="" decoding="async" loading="lazy"><span class="tov">${badges}</span></div>
-  <figcaption class="tcap"><span class="tn">${esc(g.t)}</span><span class="tp">${esc(pathText(g)||KINDW[g.kind])}</span></figcaption></figure>`}
+  <figcaption class="tcap"><span class="tn">${esc(g.t)}</span><span class="tp">${esc(sub)}</span></figcaption></figure>`}
 const SHOWN=6;
 function renderWall(list){const by={};list.forEach(g=>{(by[g.place]=by[g.place]||[]).push(g)});
   const narrowed=S.f.size||S.q||S.only||S.ask!==null;
@@ -355,7 +369,12 @@ function sRender(){const list=SG.filter(pass);VIS=list.slice().sort((a,b)=>PLACE
   // WHY the second sentence (2026-11-07 review: "nothing tells the owner that 152 screens could not be compared"):
   // looking for changes, the count also says how many screens the release has no picture of
   const nb=CM&&(S.f.has('since')||S.f.has('new'))?SG.reduce((k,g)=>k+g.states.filter(st=>stSince(st)==='nobefore').length,0):0;
-  $('#scount').textContent=(n===SG.length?'All '+n+' screens':n+' of '+SG.length+' screens')+', grouped by where they are in the app.'+(nb?` ${nb} situations could not be compared: ${CM.release} has no picture of them.`:'');
+  // WHY said per filter: "13 of 191 screens" under New read as 13 new screens; most are older screens with new situations
+  const H=hunt(),nNew=list.filter(g=>g.newn===g.states.length).length;
+  const lead=H==='new'?`${n} screens can show something ${CM.release} could not${nNew?` (${nNew} of them are whole new screens)`:': each is an older screen with new situations, listed on its tile'}.`
+    :H==='changed'?`${n} screens look different from ${CM.release}.`
+    :(n===SG.length?'All '+n+' screens':n+' of '+SG.length+' screens')+', grouped by where they are in the app.';
+  $('#scount').textContent=lead+(nb?` ${nb} situations could not be compared: ${CM.release} cannot open them for a picture.`:'');
   $$('.sbar [data-f]').forEach(b=>b.setAttribute('aria-pressed',S.f.has(b.dataset.f)?'true':'false'));
   const ec=$('#effchip');ec.hidden=!S.only;if(S.only)ec.innerHTML=`${esc(S.only.label)} <button aria-label="Show every screen again" data-tip="${T('scr.only.x')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg></button>`;
   if(S.only)ec.querySelector('button').onclick=()=>{S.only=null;sRender()};
@@ -394,11 +413,18 @@ function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+
   const img=`<img src="${DWIN?st.win:st.img}" alt="${esc(g.t)}">`;
   const pic=st.crop?`<button class="dimg${DWIN?' full':''}" id="dzoom" data-tip="${DWIN?T('pop.zoomin'):T('pop.zoomout')}">${img}</button>`:`<div class="dimg full">${img}</div>`;
   const since=CM?stSince(st):null,cmpOn=DCMP&&since==='changed';
+  // WHY (Destin, 2026-11-08: "clicking into it doesnt provide much clarity either"): opened from New, the popup
+  // says first what is new here and lists only those situations, instead of all 115 with a faint "new" beside one
+  const nl=hunt()==='new'?g.states.map((x,i)=>[x,i]).filter(([x])=>stSince(x)==='new'):[];
+  const shown=nl.length?nl:g.states.map((x,i)=>[x,i]);
+  const strip=shown.length>1?`<div class="sstrip" role="group" aria-label="Situations">${shown.map(([x,i])=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(x.l)})"><span class="si"><img src="${x.img}" alt=""></span><span>${esc(x.l)}</span></button>`).join('')}</div>`:'';
+  // the sentence of what to look for leads; why the screen itself is listed follows, quieter
+  const newNote=nl.length?`<div class="newnote"><div class="eyebrow">New since ${esc(CM.release)}: what to look for</div><p class="t-sm">${esc(whatNew(st)||'No description yet.')}</p><p class="t-xs muted">${nl.length===g.states.length?`This whole screen is new: ${esc(CM.release)} did not have it.`:`${esc(g.t)} itself is not new: ${nl.length} of its ${g.states.length} situations are things ${esc(CM.release)} could not show at all${nl.length>1?' (pick one under the picture)':''}. The other ${g.states.length-nl.length} existed already${g.since==='changed'?'; some look different now, and Changed since '+esc(CM.release)+' compares them':''}.`}</p></div>`:'';
   if(cmpOn){$('#dbody').innerHTML=cmpHTML(g,st)+(DPATH?pathHTML(g):'');wireCmp(g)}else
   $('#dbody').innerHTML=`<div class="dgrid"><div class="dleft">${pic}
-  <div class="dbar"><span class="t-xs muted">${g.states.length>1?`Situation ${DST+1} of ${g.states.length}: ${esc(st.l)}`:'One situation photographed'}${st.ph?' · phone size':''}${st.crop?(DWIN?' · click the picture to zoom back in':' · click the picture to see the whole window'):''}${since==='same'?' · looks the same as in '+esc(CM.release):since==='new'?' · new since '+esc(CM.release):since==='nobefore'?' · no picture of it from '+esc(CM.release):''}</span></div>
-  ${g.states.length>1?`<div class="sstrip" role="group" aria-label="Situations">${g.states.map((s,i)=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(s.l)})"><span class="si"><img src="${s.img}" alt=""></span><span>${esc(s.l)}</span></button>`).join('')}</div>`:''}
-  </div><div class="dfacts">
+  <div class="dbar"><span class="t-xs muted">${nl.length>1?`New situation ${nl.findIndex(([,i])=>i===DST)+1} of ${nl.length}: ${esc(st.l)}`:g.states.length>1?`Situation ${DST+1} of ${g.states.length}: ${esc(st.l)}`:'One situation photographed'}${st.ph?' · phone size':''}${st.crop?(DWIN?' · click the picture to zoom back in':' · click the picture to see the whole window'):''}${since==='same'?' · looks the same as in '+esc(CM.release):since==='new'?' · new since '+esc(CM.release):since==='nobefore'?' · no picture of it from '+esc(CM.release):''}</span></div>
+  ${strip}
+  </div><div class="dfacts">${newNote}
     <div><div class="eyebrow" data-tip="${T('pop.where')}">Where it is</div><div class="crumbs">${where}</div></div>
     ${g.desc?`<p class="t-sm">${esc(g.desc)}</p>`:''}
     <dl class="factlist"><dt data-tip="${T('pop.kind')}">Kind</dt><dd>${KINDW[g.kind]}</dd><dt data-tip="${T('pop.place')}">Place</dt><dd>${esc(g.place)}</dd><dt data-tip="${T('pop.clicks')}">Clicks to reach</dt><dd>${g.depth}</dd>${flags.length?`<dt data-tip="${T('pop.also')}">Also</dt><dd>${flags.join('<br>')}</dd>`:''}</dl>
