@@ -1371,3 +1371,22 @@ recurred — the repetition is the data.
 - Destin: "that was a bit too verbose, just tell me what you need" → dropped: `~/system/global.md` already says fewest words; recurrence of my habit, not a missing rule.
 - The Electron 41→44 upgrade (audit) made every packaged Linux file world-writable: Electron 44's own zip stores 0666/0777. verify.sh and the local tests were green; only CI's AppImage payload check (`ci-evidence.mjs` verifyInstalled) caught it, and deb/rpm/pacman passed while shipping the bad modes → applied: `desktop/scripts/after-pack-permissions.cjs` afterPack hook + `tests/after-pack-permissions.test.ts`, seen red then green; local `--dir` build has 0 world-writable files.
 - deleted/merged: none found; looked at the deck and shoot docs, both already covered this session's mistakes.
+
+## 2026-11-05 — background commands stuck "Running"/"Watching" forever (session/stuck-background-commands, app + workspace, card #220 for the unchecked native half)
+- Three causes from one screenshot: Monitor time-limit notices carry no `<status>` (24% of 980 Monitors stuck), a helper's launch ignored an end read earlier on reopen, the restart reap never matched helper commands (the last found only by the independent reviewer) → applied: `transcript-watcher.ts`, `cc-background.ts`, `chat-reducer.ts`, 4 tests each seen red; `cc-dependencies.md` notes the expiry wording.
+- A helper's `until rg -q …; do sleep 10; done` ran 32 h: Claude Code drops the Bash timeout once it auto-backgrounds a command → applied: glob-guard adds a note (never a block, Destin chose warn) for wait loops with no limit; 5 tests, seen red. Loop killed with Destin's OK.
+- chat-reducer.ts went +10 over its line budget → applied: launch-record merge moved to `commandWithKnownEnd` (one copy instead of two).
+- Native sessions not investigated → card #220 (Destin's words).
+- I cd'd into worktrees during read-only investigation and the session's working directory followed (5 environment-change notices) → dropped: harmless here, absolute paths used throughout.
+- deleted/merged: the duplicated "end already read" record-building in chat-reducer (two copies → one helper in cc-background.ts).
+
+## 2026-11-05 — leftovers: old branches, missed security pieces, privacy policy live (session/privacy-policy, app + worker + workspace; wecoded-themes#41, youcoded-dev#340, wecoded-marketplace#117, youcoded#717; card #221)
+- I told Destin "everything is merged" after sec-integration; two pieces of that workstream were not (themes commit on session/sec-supply-chain, a rule/MAP commit on session/sec-site-ask). Found only when deleting the old branches → applied: both merged. Lesson, not a new rule: `close-out.sh` per branch already answers this; I ran it on the combining branch only, not on every branch it superseded.
+- Privacy draft sat in scratchpad for 5 days while master's PRIVACY.md changed (2026-10-31 analytics: team flag, setup milestones, reload-continuing visits, `?me`); the draft would have reverted those and said "nothing in sessionStorage" → applied: kept master's newer text. Dropped as a rule: a draft of a repo file belongs on a branch, where a merge shows the drift — my lapse.
+- I recommended "approve before signing" as protection against a stolen GitHub login; Destin: "i still don't see how 'click approve on github' stops someone who stole my github sign in" — he was right (one account approves itself) → dropped the option; only themes branch protection applied (no required check: update-registry pushes to main).
+- Account deletion left the SyncGroupRoom DO untouched and the export omitted games → applied: internal `/erase` path + export rows, 3 tests seen red (worker 461 green).
+- validate-apple-services-macos was cancelled on every PR ("macos-14-arm64-us-default is not supported") → applied: macos-15.
+- gitleaks flagged a fake sync name in a new test → applied: `.gitleaksignore` fingerprint (the scanner header documents it).
+- RECURRED card #212 (stale shared worker deps) → progress note on #212.
+- Cloudflare traffic limits (Destin: "don't know") → card #221. Play data-safety form must match the new policy → card #31 note.
+- deleted/merged: 11 superseded security branches and worktrees (about 4 GB each); the "after the next update" markers and the 30-day email-deletion promise from the policy.

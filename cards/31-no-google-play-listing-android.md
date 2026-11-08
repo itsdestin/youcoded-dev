@@ -15,7 +15,7 @@ platform: Android only
 vision: everywhere.added.play, together.added.legal
 ---
 Progress
-Done: nothing recorded.
+Done: 2026-11-05: privacy policy rewritten and live (youcoded#717). The Play data-safety form must match it; Destin: Android on Play 'should be soon, but not currently'
 Next: not decided.
 Blocked: nothing recorded.
 
