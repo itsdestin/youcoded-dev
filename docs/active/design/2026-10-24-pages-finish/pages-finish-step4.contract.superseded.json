@@ -1,4 +1,7 @@
 {
+  "_comment": [
+    "SUPERSEDED 2026-11-08, never signed: Destin dropped contracts for step 4 ('they're never particularly useful for me'). The decks are the record; current design: docs/active/specs/2026-11-07-pages-step4-automations-technical-design.md. Renamed so close-out no longer treats it as this branch's contract."
+  ],
   "title": "YouCoded Pages step 4: automations — contract",
   "key": "pages-finish-step4-contract",
   "out": "pages-finish-step4.contract.html",

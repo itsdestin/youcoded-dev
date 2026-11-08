@@ -11,6 +11,8 @@ tags: [native-runtime, specialists, agents, automations, vision]
 
 # Native sessions, specialists, and assistants — the vision and where it stands
 
+> **Status 2026-11-08:** the Automations part of layer 3 is being designed and built as Pages step 4 — current decisions: `docs/active/specs/2026-10-24-pages-finish-architecture.md` → "Step 4 decisions", design: `docs/active/specs/2026-11-07-pages-step4-automations-technical-design.md`. Where this document describes automations differently, those win.
+>
 > **Status 2026-10-16:** open items are now work cards, not a roadmap (retired 2026-10-15): run `node scripts/cards.mjs index`. Mapping: native engine matches Claude Code and tool-connections screen = #59; Agents & Automations = #61; ideas for assistants and tools = #63; Mesh and Cloud = #64; helper plans = #74; per-project skills and tools = #75; skills home = #77; Android = #1. Statements below about Android code (`SessionService.kt`, the Kotlin runtime) describe code deleted in the 2026-10-14/15 Android rebuild, which now runs the desktop backend; the state claims were last verified 2026-09-04 and need re-checking before use.
 
 **What this is.** One document for the whole "YouCoded runs its own agents" family: native

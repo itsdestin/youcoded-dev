@@ -6,8 +6,11 @@ related: docs/active/investigations/2026-10-24-pages-finish-audit.md (what exist
 
 # Finishing Pages — the architecture proposal
 
-**Status (2026-11-05): steps 1, 1b, 2 and 3 are built and tried by Destin, on branch
-`session/90-pages-finish` (youcoded, wecoded-marketplace, youcoded-dev), not yet on master. Next: step 4.**
+**Status (2026-11-08): steps 1, 1b, 2 and 3 are built and tried by Destin, on branch
+`session/90-pages-finish` (youcoded, wecoded-marketplace, youcoded-dev), not yet on master. Step 4
+(automations): screens approved, build plan being settled on decks; nothing built behind the screens
+yet. Current step 4 design: `2026-11-07-pages-step4-automations-technical-design.md` — it, not the
+"Technical notes" 6–7 below, is what a builder follows.**
 Step technical designs: `2026-10-24-pages-finish-step1-technical-design.md`,
 `2026-10-24-pages-finish-step2-files-technical-design.md`, `2026-11-05-pages-step3-build.md`.
 
@@ -67,6 +70,7 @@ same popup — recorded as an exception in the design guide. Backend still to bu
   - **Page buttons / background helpers (step 4):** case by case per page; a fixed,
     pre-approved list of what each may touch, never asking per run; runs hidden from resume
     history (U-page-button note). The unattended-ask question stays open there.
+    *(2026-11-08: settled — see "Step 4 decisions": per-job Asks first rules, not "never asking".)*
 - **Where the chat starts:** in the page's PROJECT folder (e.g. `~/YouCoded/Personal`), not the
   page folder, so its chats sit under a real project in the resume list (marked with the
   page's icon). YouCoded adds an opening note naming the page and carrying its `page.md`.
@@ -91,38 +95,38 @@ same popup — recorded as an exception in the design guide. Backend still to bu
 - **Layout (decks step3 … step3e):** a floating Pages panel over the page's bottom right, behind a round chat
   button, on computer and phone; steps shown one line each in words, not "1 step" (Destin, 2026-11-05).
 
-## Step 4 decisions (`pages-finish-step4.questions.answers.json`, 2026-11-06)
+## Step 4 decisions (questions deck 2026-11-06; screens rounds 1–3; build-plan decks 2026-11-07/08)
 
-Settles the unattended-ask question left open in round 2. The theme of every answer: **set per
-job, with sensible defaults**, rather than one app-wide behaviour.
+The theme of every answer: **set per job, with sensible pre-filled values**. Full detail, with the
+deck step behind each line: `2026-11-07-pages-step4-automations-technical-design.md`.
 
-- **Uses:** all six examples (money check, email sorter, page button, weekly wrap-up, price
-  watcher, overnight tidy-up), "and more advanced things too": a page of automations that take
-  fixed inputs and reach a goal with several agents, e.g. building/reviewing a feature on
-  receiving a bug report.
-- **Permissions, granular per job:** "always allowed to read emails, ask before writing emails,
-  run this exact command without asking, and that's it", with broader settings also available.
-  When it needs an OK: **chosen per job** (Wait for you / Skip and keep going).
-- **Waiting expiry and missed runs: per job**, each with set ways to proceed — after no answer
-  (e.g. skip and report, stop, carry on with a stated fallback) and when late (run on launch,
-  skip, or different behaviour if late).
-- **Telling you:** system notifications on computer and phone when it needs you, has news, or
-  fails; customizable per job; plus a visible marker on the page button / front page that
-  something behind it is waiting. No notification for "done, nothing to report".
-- **Belongs:** a job may belong to a page or stand alone; every job, page-owned or not, also
-  shows in one central Automations view.
-- **Home:** a new main area beside Chat, Projects and Pages, possibly itself a built-in page.
-- **Making one:** by chat and/or a full builder view (both).
-- **Runs:** one line per run, opening the full conversation read-only; last 50 kept per job.
-- **Money:** a limit on every job, prefilled at $5/month in a popup you can change when making it.
-  At the limit: finish the current step (a few cents over, shown), then stop and report.
-- **Subscription runs:** no limit, but **usage tracked per job, per model and harness** (tokens),
-  so you see where usage goes — the same for ChatGPT/OpenRouter.
-- **Chains of jobs (several agents handing work on) wait** (Destin, 2026-11-06: "may have some
-  overlap with plans work … would need to figure that out before we build that segment"). Plans =
-  card #74, built but unmerged on youcoded `feat/specialists-plans-ui` (handoff
-  `2026-10-24-specialists-and-plans-START-HERE.md`). Step 4's first build is single jobs only,
-  shaped so a chain can later be a #74 plan whose steps are jobs; settle that overlap first.
+- **Screens approved** (round 3, all yes): Automations page of cards grouped Waiting for you / On /
+  Paused; details popup with the app's model picker, Settings / Runs tabs, spending as one row,
+  permissions as pills with menus; New automation with one Create button and no switch.
+- **Uses:** the six examples and "more advanced things too". **Chains of jobs wait** on the plans
+  work (card #74); step 4 is single jobs.
+- **An automation is its own thing, linked to any number of pages and projects** (not owned by one);
+  any linked page can run it. Deleting a page asks per linked automation: keep or delete.
+- **Permissions are narrow, per job:** each one an exact rule (one folder, one command, one site, this
+  page), Always allowed or Asks first, plus what happens to anything not listed. A job starts with
+  none of the chats' permissions and never changes theirs. Answers carry a note; Don't allow needs one.
+- **Per-job rules:** Asks first items (wait up to a time, then skip / stop / do this instead; or skip),
+  missed while off (run once on wake / another time / other instructions / skip), due while still
+  running (skip new / stop old / run both). New automation starts pre-filled.
+- **Money:** $5 a month to start on paid models, changeable; at the limit finish the step, then stop.
+  Subscription runs: no limit, tokens tracked per job, model and harness.
+- **Claude jobs:** the user's own Claude Code, saved like a chat but in a folder kept out of the chat
+  list, Resume and search, so a paused run continues after a restart. Anthropic's rules reviewed.
+- **No limit on runs at once.** Runs only while YouCoded is open.
+- **No system notifications in step 4** — all system notifications (automations and chats, a
+  Notifications menu replacing Sound) are built together later; step 4 shows the orange dots only.
+- **Devices:** each automation has a Runs on list; it reaches other devices with the mesh sync work
+  (session `mesh-sync-design`), not a sync of its own.
+- **Dropped:** the step 4 contract (renamed `pages-finish-step4.contract.superseded.json`); the
+  "what we're building" page (`step4-plan/automations-plan.html`, superseded by the decks).
+- **Open (deck `pages-finish-step4-plan-c`):** whether the permissions explanation is clear; one or
+  two "not listed" rows. Not drawn yet: typing which folder / site / command after Add a permission;
+  the delete-page popup.
 
 ## Follow-ups recorded (Destin, 2026-10-24: "record anything that is gonna be a follow up")
 
@@ -182,6 +186,10 @@ per-page settings window, which replaces today's "N connections" dialog.
   any chat; it can redraw the page or change it. Those chats are ordinary chats — in your chat
   list, marked with the page's icon. Works with every model a normal chat can use, including the
   Claude subscription.
+*(2026-10-24 proposal, kept as history. Step 4's decided version — automations linked to pages, not
+defined inside one; per-job rules; no system notifications yet; a limit per job, not per page — is
+"Step 4 decisions" above and the step 4 technical design.)*
+
 - **An autonomous assistant**: defined inside the page (name, what it does, what it may touch,
   which model, when it runs). It runs hidden — never in your chat list — and the page shows its
   results. Its runs are listed in the page's settings and in the app-wide automations list; each
@@ -220,14 +228,14 @@ per-page settings window, which replaces today's "N connections" dialog.
    from `App.tsx` so the page view and the main view mount the same thing. Page-bound sessions are
    ordinary sessions created with `cwd` = page or project folder and an owner label. Native
    page-data tools mirror `claude-code-pages-mcp.ts` (pattern: doc-comments tools).
-6. **Runner (card #61).** A reusable session factory pulled out of the `ipc-handlers.ts`
+6. **Runner (card #61).** *Superseded for step 4 by `2026-11-07-pages-step4-automations-technical-design.md` (2026-11-08): no session factory, links instead of an owner, saved Claude runs. Kept as history.* A reusable session factory pulled out of the `ipc-handlers.ts`
    closure; an `owner` + `hidden` header field (generalising `sessionKind`); hidden runs excluded
    from the strip, Resume, phone snapshot, welcome-back, chat search, title/conversation feeders
    and sync; a persisted job store with Run now + schedules + missed-run policy; budgets as hard
    stops; a `needs-approval` inbox. Agents are definition files in the page folder (specialist
    format: charter, allowed tools, allowed folders, model). Background lanes: native providers,
    and Claude Code headless (`claude -p`, stream output) for subscription users.
-7. **Spend.** Enforced in the harness where `costForUsage` is already summed, per owner (page,
+7. **Spend.** *Step 4's version: same technical design, decision 8.* Enforced in the harness where `costForUsage` is already summed, per owner (page,
    automation, optionally chat), stored next to the approval, per device.
 8. **Sharing.** Monorepo registry (`wecoded-pages`, like themes); `page.json` gains `version`
    and `forkedFrom {id, version, commit}`; review status keyed by commit + rules version (catalog
