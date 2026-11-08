@@ -16,9 +16,9 @@ side: both
 vision: agents.background.scheduled, agents.background.view
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: yes — the old roadmap marked it blocked; see below.
+Done: Being designed as Pages step 4 (card #90): decisions in docs/active/specs/2026-10-24-pages-finish-architecture.md 'Step 4 decisions'.
+Next: Follow card #90 step 4; chains of jobs wait on #74.
+Blocked: none
 
 Chats
 
