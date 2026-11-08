@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { classify, compareRun, compareScreen, keepInsidePanel, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
+import { classify, compareRun, compareScreen, keepInsidePanel, scrolledNotGone, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
 
 const WORKSPACE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const { PNG } = createRequire(join(WORKSPACE, 'youcoded', 'desktop', 'package.json'))('pngjs');
@@ -209,4 +209,26 @@ test('only the after side has it: "new" when the screen list marks it new, other
   writeFileSync(join(run, 'run.json'), JSON.stringify({ before: { label: 'v1.0.0' }, after: { label: 'now' } }));
   const by = Object.fromEntries(compareRun(run).screens.map((s) => [s.name, s.status]));
   assert.deepEqual(by, { 'really-new': 'new', 'older-screen': 'nobefore' });
+});
+
+test('when the content slides over a wallpaper that stays put, the wallpaper is not a wall of changes', () => {
+  // a textured background that never moves; four lines of text (each an element, like chat messages) slide 20 px down under a new row
+  const wall = (x, y) => (Math.abs(Math.sin(Math.floor(x / 6) * 12.9898 + Math.floor(y / 6) * 78.233) * 43758.5453) % 1 < 0.3 ? [90, 120, 160] : [200, 210, 230]);
+  const rows = (y0) => (x, y) => (x > 40 && x < 160 && y >= y0 && y < y0 + 60 && (y - y0) % 15 < 8 ? [20, 20, 20] : null);
+  const b = pic(200, 200, (x, y) => rows(80)(x, y) ?? wall(x, y));
+  const a = pic(200, 200, (x, y) => rows(100)(x, y) ?? (x > 40 && x < 160 && y >= 80 && y < 96 ? [200, 160, 0] : null) ?? wall(x, y));
+  const line = (i, y0) => el('text', null, `Line ${i}`, 41, y0 + i * 15, 118, 8);
+  const bEls = [el('control', 'button', 'Top', 10, 10), ...[0, 1, 2, 3].map((i) => line(i, 80))];
+  const aEls = [el('control', 'button', 'Top', 10, 10), ...[0, 1, 2, 3].map((i) => line(i, 100)), el('control', 'button', 'New', 40, 80, 120, 16)];
+  const r = compareScreen(side(b, bEls), side(a, aEls), 1);
+  assert.equal(r.shift, 20);
+  assert.deepEqual(r.changes.filter((c) => c.kind === 'pixels'), []);
+});
+
+test('a piece pushed below a scrolling edge is "scrolled", not removed; one really gone stays removed', () => {
+  const b = [el('control', 'button', 'Clear', 10, 300), el('text', null, 'Saved sign-ins', 10, 280), el('control', 'button', 'Old thing', 10, 200)];
+  const a = [];
+  const changes = scrolledNotGone(classify(matchElements(b, a)).changes, [], [{ kind: 'control', role: 'button', name: 'Clear' }, { kind: 'text', role: null, name: 'Saved sign-ins', text: 'Saved sign-ins' }]);
+  assert.deepEqual(changes.map((c) => [c.kind, c.name]).sort(), [['removed', 'Old thing'], ['scrolled', 'Clear'], ['scrolled', 'Saved sign-ins']]);
+  assert.ok(changes.every((c) => !('key' in c)));
 });

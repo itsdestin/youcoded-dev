@@ -188,8 +188,9 @@ export function classify({ pairs, removed, added, shift }) {
   const byDx = new Map();
   for (const x of slid) if (x.plain) { const k = Math.round(x.dx); const near = [...byDx.keys()].find((q) => Math.abs(q - k) <= 1) ?? k; byDx.set(near, (byDx.get(near) ?? []).concat(x)); }
   for (const group of byDx.values()) if (group.length >= 2) for (const x of group) { ignored.push(x.m.box, x.m.beforeBox); changes.splice(changes.indexOf(x.m), 1); }
-  for (const e of removed) changes.push({ kind: 'removed', role: e.role ?? null, name: e.name, ...(e.text ? { oldText: e.text } : {}), side: 'before', box: e.box });
-  for (const e of added) changes.push({ kind: 'added', role: e.role ?? null, name: e.name, ...(e.text ? { newText: e.text } : {}), side: 'after', box: e.box });
+  // `key` lets scrolledNotGone find the piece in the other side's out-of-view list; it is dropped there
+  for (const e of removed) changes.push({ kind: 'removed', role: e.role ?? null, name: e.name, ...(e.text ? { oldText: e.text } : {}), side: 'before', box: e.box, key: keyOf(e) });
+  for (const e of added) changes.push({ kind: 'added', role: e.role ?? null, name: e.name, ...(e.text ? { newText: e.text } : {}), side: 'after', box: e.box, key: keyOf(e) });
   return { changes, ignored, shift: shift || 0, shiftFromY: fromY.length ? Math.min(...fromY) : 0 };
 }
 
@@ -314,6 +315,21 @@ function pixelShift(A, B, topY, maxDy = 60) {
   return best ? { dy: best, fromY: topY + Math.max(best, 0) } : null;
 }
 
+/**
+ * WHY (2026-11-07 release audit: Browser settings listed "Saved sign-ins" as removed — a new section had only
+ * pushed it below the dialog's edge): a piece that left the picture but is still in the screen, scrolled out of
+ * view, is `scrolled`, not `removed`; one that came into view from below is `scrolled` too, not `added`.
+ */
+export function scrolledNotGone(changes, outBefore = [], outAfter = []) {
+  const keys = (list) => new Set((list ?? []).map(keyOf).filter(Boolean));
+  const hidAfter = keys(outAfter), hidBefore = keys(outBefore);
+  return changes.map(({ key, ...c }) => {
+    if (c.kind === 'removed' && key && hidAfter.has(key)) return { ...c, kind: 'scrolled', way: 'out' };
+    if (c.kind === 'added' && key && hidBefore.has(key)) return { ...c, kind: 'scrolled', way: 'in' };
+    return c;
+  });
+}
+
 // ─── One screen ──────────────────────────────────────────────────────────────
 const PAD = 3;   // CSS px of slack around an explained element
 /**
@@ -323,7 +339,9 @@ const PAD = 3;   // CSS px of slack around an explained element
 export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) {
   let changes = [], ignored = [], shift = 0, shiftFromY = 0, unstable = 0;
   const haveEls = Array.isArray(before.elements) && Array.isArray(after.elements);
-  if (haveEls) ({ changes, ignored, shift, shiftFromY } = classify(matchElements(before.elements, after.elements)));
+  let matched = null;
+  if (haveEls) { matched = matchElements(before.elements, after.elements); ({ changes, ignored, shift, shiftFromY } = classify(matched)); }
+  changes = scrolledNotGone(changes, before.outOfView, after.outOfView);
   if (!before.png || !after.png) return { changes, shift };
   if (before.bytes && after.bytes && before.bytes.equals(after.bytes)) return { changes, shift };
   const A = after.png, B = before.png;
@@ -332,11 +350,32 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
     return { changes, shift };
   }
   let { mask, count } = diffPixels(A, B, { dyPx: Math.round(shift * scale), fromY: Math.floor((shiftFromY - PAD) * scale) });
+  // WHY "differs both ways" for a shift the elements found too (2026-11-07 review: the chat's content slid 12 px
+  // over a wallpaper that stayed put, and ~40 boxes landed on unchanged scenery): what moved matches the moved
+  // picture, what stayed (a wallpaper, a side panel) matches the unmoved one; only a pixel matching neither is new.
+  if (shift && count) {
+    const still = diffPixels(A, B);
+    count = 0; for (let i = 0; i < mask.length; i++) { if (mask[i] && still.mask[i]) count++; else mask[i] = 0; }
+  }
   if (!count) return { changes, shift };
   // What elements already explain: their boxes on both sides (and the before boxes as they sit after the shift).
   const boxes = [];
   for (const c of changes) for (const b of [c.box, c.beforeBox]) if (b) {
     for (const dy of c.beforeBox === b || c.side === 'before' ? [0, shift] : [0]) boxes.push({ x: (b.x - PAD) * scale, y: (b.y + dy - PAD) * scale, w: (b.w + 2 * PAD) * scale, h: (b.h + 2 * PAD) * scale });
+  }
+  // WHY (2026-11-07 review, the chat over its wallpaper): a small piece that rode along with the shift unchanged
+  // is see-through in places, so the fixed wallpaper behind it matches neither the moved nor the unmoved picture.
+  // Inside such a piece the shift explains it. Small only: a large container would hide real changes inside it.
+  if (shift && matched) {
+    const area = A.width * A.height / (scale * scale);
+    for (const { a: ea, b: eb } of matched.pairs) {
+      const rode = Math.abs(ea.box.y - eb.box.y - shift) <= 1 && Math.abs(ea.box.x - eb.box.x) <= 1 && Math.abs(ea.box.w - eb.box.w) <= 1 && Math.abs(ea.box.h - eb.box.h) <= 1;
+      // RIDE: the bubble or card around a piece of text is not an element of its own, but its see-through
+      // padding and soft shadow moved with the text (measured on the Meadow Mist chat: glass message bubbles over
+      // a wallpaper; 14 px left the shadows above each bubble marked, 24 px covers them)
+      const RIDE = 24;
+      if (rode && ea.box.w * ea.box.h < 0.05 * area) boxes.push({ x: (ea.box.x - RIDE) * scale, y: (ea.box.y - RIDE) * scale, w: (ea.box.w + 2 * RIDE) * scale, h: (ea.box.h + 2 * RIDE) * scale });
+    }
   }
   for (const b of ignored) boxes.push({ x: (b.x - PAD) * scale, y: (b.y - PAD) * scale, w: (b.w + 2 * PAD) * scale, h: (b.h + 2 * PAD) * scale });
   clearBoxes(mask, A.width, A.height, boxes);
@@ -502,7 +541,8 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     if (!B.has(key) && !A.has(key)) continue;
     const side = (map, dir) => {
       const png = map.get(key); const bytes = readFileSync(png);
-      return { bytes, png: PNG.sync.read(bytes), elements: readJson(png.replace(/\.png$/, '.elements.json'))?.elements ?? null, meta: readJson(png.replace(/\.png$/, '.elements.json')) };
+      const meta = readJson(png.replace(/\.png$/, '.elements.json'));
+      return { bytes, png: PNG.sync.read(bytes), elements: meta?.elements ?? null, outOfView: meta?.outOfView ?? [], meta };
     };
     const b = side(B, 'before'), a = side(A, 'after');
     const scale = a.meta?.scale ?? meta.scale ?? 1.5;

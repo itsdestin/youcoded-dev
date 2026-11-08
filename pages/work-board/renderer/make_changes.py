@@ -90,6 +90,22 @@ def main():
         list(ex.map(lambda j: side_pic(*j), jobs))
     json.dump(sizes, open(os.path.join(OUT, 'sizes.json'), 'w'), indent=0)
     keep = ('kind', 'role', 'name', 'oldText', 'newText', 'words', 'styleChanges', 'box', 'beforeBox', 'side', 'field')
+    # WHY a view box (2026-11-07 review: "the changed part is about 100 px wide and unreadable" on dialogs): when the
+    # screen is a dialog or panel well under the window, the comparison zooms to it (both sides' panel, padded)
+    pans = {}
+    for side in ('before', 'after'):
+        try: man2 = json.load(open(os.path.join(RUN, side, 'manifest.json')))
+        except Exception: man2 = []
+        for m in man2:
+            p = m.get('panel')
+            if m.get('ok') and p and p['w'] >= 40 and p['h'] >= 40: pans.setdefault((m['name'], m['theme']), []).append(p)
+    def view_of(name, theme, vw, vh):
+        ps = pans.get((name, theme))
+        if not ps or not vw: return None
+        x0 = max(0, min(p['x'] for p in ps) - 16); y0 = max(0, min(p['y'] for p in ps) - 16)
+        x1 = min(vw, max(p['x'] + p['w'] for p in ps) + 16); y1 = min(vh, max(p['y'] + p['h'] for p in ps) + 16)
+        if (x1 - x0) * (y1 - y0) >= 0.6 * vw * vh: return None
+        return dict(x=x0, y=y0, w=x1 - x0, h=y1 - y0)
     by = {}
     for s in ch['screens']:
         vw = vh = None
@@ -98,7 +114,7 @@ def main():
             with Image.open(os.path.join(RUN, pic)) as im: vw, vh = round(im.width / (s.get('scale') or 1.5)), round(im.height / (s.get('scale') or 1.5))
         by.setdefault(s['name'], {})[s['theme']] = dict(vw=vw, vh=vh,
             status=s['status'], reason=s.get('reason'), unstable=s.get('unstable', 0),
-            shift=s.get('shift'),
+            shift=s.get('shift'), view=view_of(s['name'], s['theme'], vw, vh),
             before=bool(s.get('before')) and s['status'] != 'failed', after=bool(s.get('after')) and s['status'] != 'failed',
             changes=[{k: c[k] for k in keep if c.get(k) is not None} for c in s.get('changes', [])])
     json.dump(dict(before=ch['before'], after=ch['after'], themes=ch['themes'], tileTheme=TILE_THEME, screens=by),

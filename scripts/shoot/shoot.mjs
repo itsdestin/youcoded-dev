@@ -47,6 +47,8 @@ const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
+// The instant a frozen page's clock starts at (shoot --freeze): 29 Jul 2026, 18:00 local time.
+const FROZEN_NOW = new Date(2026, 6, 29, 18, 0, 0).getTime();
 const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, noElements: false, freeze: false, noMontage: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], except: [], list: false, all: false, check: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
@@ -217,6 +219,11 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // page restarts the same sequence, and it works on an old release's code, which can't be changed.
     if (opt.freeze && !tab.seededRandom) {
       await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { let s = 0x2545F491; Math.random = () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return (s >>> 0) / 4294967296; }; })();` });
+      // WHY a fixed clock too (2026-11-07 release audit): the two versions were photographed half an hour apart,
+      // so "Resets @ 9:38pm" read "10:00pm" and message times moved, widening chips that then read as "moved".
+      // Every page starts at the same instant (a whole hour, so minutes do not tick over mid-page) and runs on
+      // from there; dates the fixtures spell out are unaffected.
+      await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { const R = Date, off = ${FROZEN_NOW} - R.now(); class D extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + off); } static now() { return R.now() + off; } } D.parse = R.parse; D.UTC = R.UTC; globalThis.Date = D; })();` });
       // WHY also here (what-changed run 3, 2026-11-03): the evaluate below stops animation in the app's own
       // page only. A Page is drawn in its own frame, so its "now playing" bars kept moving and ~30 Pages
       // screens differed by a few pixels. A script added this way runs in every frame the tab loads.
@@ -327,11 +334,12 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     }
     // WHY measured just before the picture, after the screen is proven showing and settled: the
     // element list must describe exactly what the picture shows (what-changed/FORMAT.md).
-    const elements = opt.noElements || opt.check ? null : await tab.evaluate(MEASURE_ELEMENTS, 15_000).catch(() => null);
+    const measured = opt.noElements || opt.check ? null : await tab.evaluate(MEASURE_ELEMENTS, 15_000).catch(() => null);
+    const elements = measured?.elements ?? null, outOfView = measured?.outOfView ?? [];
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
     r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
-    if (elements) writeFileSync(join(dir, `${theme}.elements.json`), JSON.stringify({ screen: screen.name, theme, scale: shotScale(), viewport: { w, h }, elements }));
+    if (elements) writeFileSync(join(dir, `${theme}.elements.json`), JSON.stringify({ screen: screen.name, theme, scale: shotScale(), viewport: { w, h }, elements, outOfView }));
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     // WHY a byte array (what-changed full run, 2026-11-03): a plain array of numbers is 8 bytes a
     // pixel; ~900 pictures of it, held for both sides of a before/after, ran node out of its 4 GB.

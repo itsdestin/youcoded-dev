@@ -70,7 +70,7 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
       "shift": { "y": 0 },
       "changes": [
         {
-          "kind": "added | removed | text | moved | restyled | pixels",
+          "kind": "added | removed | scrolled | text | moved | restyled | pixels",
           "role": "button", "name": "Check for updates",
           "oldText": "Check for updates", "newText": "Look for updates",
           "words": [{ "same": "for updates" }, { "old": "Check", "new": "Look" }],
@@ -90,6 +90,7 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
 - `new` = the screen list marks the screen new in the app (`newIn: 'after'`, carried in the after side's manifest) and only the after side has it. `nobefore` = only the after side has a picture but the screen is not marked new: it existed in the release but was not on the release's photo list, so nothing is known about whether it changed. `removed` = only the before side has it. `failed` = either side's picture was not taken (`reason` says which side and why).
 - `box` is in CSS pixels on `side` (`removed` uses `before`; everything else `after`).
 - `pixels` is a changed area no element explains (an icon, a picture, a border).
+- `scrolled` is a piece shown on one side only that the other side still has, scrolled out of view (`way`: `out` = pushed below the visible part, `in` = came into view). Each `*.elements.json` carries `outOfView`: the controls and words scrolled out of view inside a scrolling area (no box).
 - `outside` counts changes dropped because they sit outside a popup's own panel (on the page behind it, which is
   its own screen). Only screens whose panel covers well under the window are filtered this way.
 - `shift` is a shared offset the comparer found (a row inserted above), reported once so the elements

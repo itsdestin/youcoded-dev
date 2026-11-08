@@ -270,6 +270,8 @@ button.dimg{cursor:zoom-in;font:inherit} button.dimg.full{cursor:zoom-out} butto
 .cmpwell{width:100%;font:inherit;color:inherit;background:var(--well);border:1px solid var(--edge-card);border-radius:var(--radius-lg);padding:8px;display:flex;align-items:center;justify-content:center;min-height:120px}
 button.cmpwell{cursor:zoom-in} button.cmpwell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .cmpstage{position:relative;display:inline-block;max-width:100%;line-height:0}
+.cmpcrop{position:relative;width:100%;overflow:hidden;border-radius:var(--radius-md)}
+.cmpcrop .cmpstage{position:absolute;display:block;max-width:none} .cmpcrop .cmpstage img{width:100%;max-width:none;max-height:none;border-radius:0}
 .cmpstage img{display:block;max-width:100%;max-height:max(260px,calc(100vh - 360px));width:auto;height:auto;border-radius:var(--radius-md)}
 .hl{position:absolute;border:2px solid;border-radius:var(--radius-sm);pointer-events:none;transition:outline-color var(--dur-hover)}
 .hl.old{background:color-mix(in srgb,var(--status-error) 12%,transparent);border-color:color-mix(in srgb,var(--status-error) 75%,transparent)}
@@ -333,7 +335,10 @@ function sRender(){const list=SG.filter(pass);VIS=list.slice().sort((a,b)=>PLACE
   $$('#sbody .showall').forEach(b=>b.onclick=()=>{const k=b.closest('.gsec').dataset.k;S.open[k]=!S.open[k];sRender()});
   const sa=$('#sall');if(sa)sa.onclick=()=>{S.f.clear();S.q='';S.ask=null;S.only=null;$('#sq').value='';$('#sshow').value='';sRender()};
   const n=list.length;
-  $('#scount').textContent=(n===SG.length?'All '+n+' screens':n+' of '+SG.length+' screens')+', grouped by where they are in the app.';
+  // WHY the second sentence (2026-11-07 review: "nothing tells the owner that 152 screens could not be compared"):
+  // looking for changes, the count also says how many screens the release has no picture of
+  const nb=CM&&(S.f.has('since')||S.f.has('new'))?SG.reduce((k,g)=>k+g.states.filter(st=>stSince(st)==='nobefore').length,0):0;
+  $('#scount').textContent=(n===SG.length?'All '+n+' screens':n+' of '+SG.length+' screens')+', grouped by where they are in the app.'+(nb?` ${nb} situations could not be compared: ${CM.release} has no picture of them.`:'');
   $$('.sbar [data-f]').forEach(b=>b.setAttribute('aria-pressed',S.f.has(b.dataset.f)?'true':'false'));
   const ec=$('#effchip');ec.hidden=!S.only;if(S.only)ec.innerHTML=`${esc(S.only.label)} <button aria-label="Show every screen again" data-tip="${T('scr.only.x')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg></button>`;
   if(S.only)ec.querySelector('button').onclick=()=>{S.only=null;sRender()};
@@ -416,20 +421,28 @@ function rowText(gr){const c=gr.items[0],n=gr.items.length,r=roleW(c,n),one=n===
   switch(gr.k){
     case 'added':return [`New ${cnt}${r}${one}`,n>1?esc(names(gr.items)):'Not there in '+esc(CM.release)+'.'];
     case 'removed':return [`Gone: ${cnt}${r}${one}`,n>1?esc(names(gr.items)):'It was there in '+esc(CM.release)+'.'];
+    // WHY its own line (2026-11-07 release audit): pushed below a scrolling edge is not gone
+    case 'scrolled':return c.way==='out'?[`Pushed further down: ${cnt}${r}${one}`,(n>1?esc(names(gr.items))+'. ':'')+'Still there, below what the picture shows.']:[`Now in view: ${cnt}${r}${one}`,(n>1?esc(names(gr.items))+'. ':'')+'It was further down in '+esc(CM.release)+'.'];
     case 'text':return [`New ${fieldW} on ${r?'the '+r:'the screen'}${c.name&&c.kind==='text'&&c.role?' “'+esc(c.name)+'”':''}`,wordsHTML(c)];
     case 'moved':return [`${n>1?cnt+r:(r||'Something')[0].toUpperCase()+(r||'something').slice(1)+one} ${n>1?'are':'is'} ${esc(shiftWords(c))}`,n>1?esc(names(gr.items)):''];
     case 'restyled':return [`New look: ${cnt}${r}${one}`,'Its '+(c.styleChanges||[]).map(x=>PROPW[x.prop]||x.prop).join(', ')+(n>1?' · '+esc(names(gr.items)):'')];
-    case 'shift':return [`Everything below the mark sits ${px(gr.dy)} px ${gr.dy>0?'lower':'higher'}`,''];
-    default:return [n>1?`Something else looks different in ${n} spots`:'Something else looks different here','An icon, a picture, a border or the background, in the marked '+(n>1?'areas':'area')+'.']}}
+    case 'shift':return [`Everything below this line moved ${gr.dy>0?'down':'up'} ${px(gr.dy)} px`,''];
+    // WHY short (2026-11-07 review): the marks already show where; the line only has to say there is more
+    default:return [n>1?`Other visual changes in ${n} places`:'Another visual change','']}}
 function boxStyle(b,t){return `left:${b.x/t.vw*100}%%;top:${b.y/t.vh*100}%%;width:${b.w/t.vw*100}%%;height:${b.h/t.vh*100}%%`}
-function marks(list,side,t){return list.map((gr,gi)=>gr.items.map(c=>{const b=side==='before'?(c.kind==='added'?null:c.kind==='removed'?c.box:(c.beforeBox||c.box)):(c.kind==='removed'?null:c.box);
+// a piece only one side shows (added, removed, scrolled in or out) is marked on that side only
+function marks(list,side,t){return list.map((gr,gi)=>gr.items.map(c=>{const only=c.kind==='added'||c.kind==='removed'||c.kind==='scrolled'?c.side:null;
+  const b=only?(only===side?c.box:null):side==='before'?(c.beforeBox||c.box):c.box;
   return b?`<span class="hl ${side==='before'?'old':'new'}" data-g="${gi}" style="${boxStyle(b,t)}" aria-hidden="true"></span>`:''}).join('')).join('')}
 function cmpPic(g,st,t,side,list){const f=st.n.replace(/\//g,'__').replace(/#/g,'%%23');const has=t[side];
   const lab=side==='before'?esc(CM.release):'Now';
   // WHY a button: clicking a picture shows it at full width and clicking again shows both, as the popup's own
   // picture zooms (this replaced a Side by side / 1.3.3 / Now switch: one control fewer)
   const tag=has?'button':'div',attr=tag==='button'?` data-zoom="${side}" data-tip="${T(DZOOM?'cmp.unzoom':'cmp.zoom')}"`:'';
-  return `<figure class="cmppic"><div class="eyebrow">${lab}</div><${tag} class="cmpwell"${attr}>${has?`<div class="cmpstage"><img src="changes/cmp/${DTH}/${f}.${side}.jpg" alt="${esc(g.t)}, ${lab}">${marks(list,side,t)}</div>`:`<p class="t-xs muted">${side==='before'?'This screen did not exist in '+esc(CM.release)+'.':'This screen is gone now.'}</p>`}</${tag}></figure>`}
+  // WHY a crop box for a dialog (make_changes.py's view): the window stays one picture, only the part shown
+  // narrows, so the marks (percent of the whole window) keep lining up
+  const v=t.view,stage=`<div class="cmpstage"${v?` style="width:${t.vw/v.w*100}%%;left:${-v.x/v.w*100}%%;top:${-v.y/v.h*100}%%"`:''}><img src="changes/cmp/${DTH}/${f}.${side}.jpg" alt="${esc(g.t)}, ${lab}">${marks(list,side,t)}</div>`;
+  return `<figure class="cmppic"><div class="eyebrow">${lab}</div><${tag} class="cmpwell"${attr}>${has?(v?`<div class="cmpcrop" style="aspect-ratio:${v.w}/${v.h};max-width:calc(max(260px,100vh - 360px) * ${(v.w/v.h).toFixed(3)})">${stage}</div>`:stage):`<p class="t-xs muted">${side==='before'?'This screen did not exist in '+esc(CM.release)+'.':'This screen is gone now.'}</p>`}</${tag}></figure>`}
 function cmpHTML(g,st){const ch=st.ch||{};
   // WHY only the themes that changed get a tab: a tab that opens "nothing is different" is a dead end
   const th=CM.themes.filter(x=>ch[x]&&ch[x].status==='changed'),same=CM.themes.filter(x=>ch[x]&&!th.includes(x));
@@ -445,8 +458,8 @@ function cmpHTML(g,st){const ch=st.ch||{};
   const left=g.states.length-chg.length;
   const also=[th.length===1&&same.length?`Only in ${esc(themeName(DTH))}; ${same.map(x=>esc(themeName(x))).join(', ')} looks the same.`:'',
     left?(left===1?'1 other situation looks the same.':left+' other situations look the same.'):''].filter(Boolean).join(' ');
-  const note=`Red is ${esc(CM.release)}, green is now. Point at or tap a line to find it.${also?' '+also:''}`;
-  const steady=t.unstable?`<p class="t-xs muted">Parts that move by themselves, like animations and clocks, were left out.</p>`:'';
+  const note=`Red = ${esc(CM.release)}, green = now. Tap a line to find it.${also?' '+also:''}`;
+  const steady=t.unstable?`<p class="t-xs muted">Moving parts (animations, clocks) were left out.</p>`:'';
   const listHTML=`<section class="cmplist"><div class="sechead"><div class="gtext"><h3 class="gh">What changed<span class="cnt" data-tip="${T('cmp.count')}">${list.length}</span></h3><p class="gdesc">${note}</p></div></div>${rows}${steady}</section>`;
   return `<div class="dcmp">${tabs}${strip}${body}${listHTML}</div>`}
 function wireCmp(g){$$('#dbody [data-th]').forEach(b=>b.onclick=()=>{DTH=b.dataset.th;drawShot()});

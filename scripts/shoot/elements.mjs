@@ -92,8 +92,10 @@ function measure() {
   };
   const shown = (el) => { try { return el.checkVisibility({ opacityProperty: true, visibilityProperty: true }); } catch { return true; } };
 
+  const pushed = new Set();
   const push = (el, kind, role, box, extra) => {
     if (out.length >= MAX) return;
+    pushed.add(el);
     out.push({
       id: out.length + 1, kind, role, name: extra.name ?? '', text: extra.text ?? null,
       title: el.getAttribute('title') || null, placeholder: el.getAttribute('placeholder') || null,
@@ -150,7 +152,33 @@ function measure() {
     for (const c of el.children) walk(c, myClip, descendControl);
   };
   walk(document.body, { l: 0, t: 0, r: innerWidth, b: innerHeight }, false);
-  return out;
+
+  // WHY a second list (2026-11-07 release audit: a new section pushed "Saved sign-ins" below a dialog's edge and
+  // the comparison called it removed): the controls and words that exist but are scrolled out of view inside a
+  // scrolling area. Only scrolled-out ones — a piece behind a popup is not here (it is not outside any
+  // scrolling ancestor), and neither is anything display:none or invisible. No box: it is not on the picture.
+  const outOfView = [];
+  const scrolledOut = (el, r) => {
+    for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      if (cs.overflowY === 'visible' && cs.overflowX === 'visible') continue;
+      const ar = a.getBoundingClientRect();
+      if (r.bottom <= ar.top || r.top >= ar.bottom || r.right <= ar.left || r.left >= ar.right) return true;
+    }
+    return r.bottom <= 0 || r.top >= innerHeight;
+  };
+  const insideControl = (el) => { for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) if (kindOf(a, roleOf(a))) return true; return false; };
+  for (const el of document.body.querySelectorAll('*')) {
+    if (outOfView.length >= 1500) break;
+    if (pushed.has(el) || SKIP_TAGS.has(el.tagName) || insideControl(el)) continue;
+    const role = roleOf(el), kind = kindOf(el, role);
+    const own = kind ? '' : norm([...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.nodeValue).join(' '));
+    if (!kind && !own) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1 || !shown(el) || !scrolledOut(el, r)) continue;
+    outOfView.push(kind ? { kind, role, name: nameOf(el), text: kind === 'field' ? null : norm(el.innerText ?? el.textContent) || null } : { kind: 'text', role: null, name: own, text: own });
+  }
+  return { elements: out, outOfView };
 }
 
 /** The text to hand to a page evaluate: runs `measure` and returns the element list. */
