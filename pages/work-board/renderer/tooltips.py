@@ -82,6 +82,7 @@ TIP = {
   'scr.phone': 'Screens that were also photographed at phone size.',
   'scr.work': 'Screens that some unfinished work touches right now.',
   'scr.since': 'Screens that look different from the last release. Open one to see both side by side.',
+  'scr.new': 'Screens that are new since the last release.',
   'scr.badge.changed': 'This screen looks different from the last release.',
   'scr.badge.new': 'This screen did not exist in the last release.',
   'scr.showme': 'Pick a question to see only the screens that answer it. Pick "Every screen" to go back.',

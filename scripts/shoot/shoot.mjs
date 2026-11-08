@@ -47,7 +47,7 @@ const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, noElements: false, freeze: false, noMontage: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false };
+const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, noElements: false, freeze: false, noMontage: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], except: [], list: false, all: false, check: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
   if (a === '--tag') opt.tags.push(next());
@@ -69,6 +69,9 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--after') opt.after = next();
   else if (a === '--before-file') opt.beforeFiles.push(parseBeforeFile(next()));
   else if (a === '--list') opt.list = true;
+  // WHY --except (what-changed, 2026-11-07): a release comparison takes every screen EACH side knows (the old
+  // release's list is shorter) minus the ones that do not ship; naming screens instead fails on the old side.
+  else if (a === '--except') opt.except.push(next());
   else if (a === '--all') opt.all = true;
   else if (a === '--check') opt.check = true;
   else if (a === '-h' || a === '--help') { console.log(readHelp()); process.exit(0); }
@@ -395,7 +398,12 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
 }
 
 // ─── Picking screens ─────────────────────────────────────────────────────────
+const globRe = (n) => new RegExp('^' + n.split('*').map((p) => p.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*') + '$');
 function picker(screens) {
+  const keep = (list) => (opt.except.length ? list.filter((s) => !opt.except.some((e) => globRe(e).test(s.name))) : list);
+  return keep(pickNamed(screens));
+}
+function pickNamed(screens) {
   if (opt.all || opt.check) return screens;
   const unknown = [];
   const byName = opt.names.flatMap((n) => {

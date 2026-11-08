@@ -164,12 +164,13 @@ def head_controls(tip, changes=None):
     pills = ''.join(f'<button class="fchip" data-f="{f}" aria-pressed="false" data-tip="{T(k)}">{E(lbl)}</button>' for f, lbl, k in (
         ('kind:popup', 'Popups', 'scr.popups'), ('kind:menu', 'Menus', 'scr.menus'), ('first', 'First launch', 'scr.first'),
         ('phone', 'Phone', 'scr.phone'), ('work', 'Changing now', 'scr.work')))
-    # WHY one more pill only when a run is given: the filter Destin asked for (2026-11-03, "what changed since
-    # last release"); new screens are a "Show me" question, so the row stays short (2026-10-13 cut)
+    # WHY two pills only when a run is given: the filter Destin asked for (2026-11-03, "what changed since
+    # last release"). New screens sit beside it as a pill, not inside "Show me…" (2026-11-05 review: the same
+    # idea in two different controls, one of them hard to find); pressed together they show both.
     meta = change_meta(changes)
-    if meta: pills += f'<button class="fchip" data-f="since" aria-pressed="false" data-tip="{T("scr.since")}">Changed since {E(meta["release"])}</button>'
+    if meta: pills += (f'<button class="fchip" data-f="since" aria-pressed="false" data-tip="{T("scr.since")}">Changed since {E(meta["release"])}</button>'
+                       f'<button class="fchip" data-f="new" aria-pressed="false" data-tip="{T("scr.new")}">New since {E(meta["release"])}</button>')
     opts = '<option value="">Show me… (every screen)</option>' + ''.join(f'<option value="{i}">{E(q)}</option>' for i, q in enumerate(SHOW_ME))
-    if meta: opts += f'<option value="new">New since {E(meta["release"])}</option>'
     return f'''<div class="lensbar sbar">
   <input class="field" id="sq" type="search" placeholder="Find a screen" aria-label="Find a screen" data-tip="{T('scr.search')}">
   <div class="fchips" role="group" aria-label="Show only">{pills}</div>
@@ -284,7 +285,10 @@ button.cmpwell{cursor:zoom-in} button.cmpwell:focus-visible{outline:2px solid va
   .field{width:100%}
   .dialog{max-width:100vw;max-height:calc(100vh - 2rem)}
   .wall{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))} .timg{height:128px}
-  .sbar .fchips{flex-wrap:nowrap;overflow-x:auto}
+  /* WHY wrap (2026-11-05 review): scrolled sideways, the last pills sat off screen with no hint on a phone */
+  .sbar .fchips{flex-wrap:wrap}
+  /* the list of changes first on a phone: stacked pictures pushed it below the fold */
+  .dcmp .cmplist{order:2} .dcmp .cmppics{order:3}
 }
 :root,:root[data-theme="light"]{--scrim:rgba(73,73,73,.5)} :root[data-theme="dark"]{--scrim:rgba(7,7,7,.5)}
 :root[data-theme="midnight"]{--scrim:rgba(5,7,9,.5)} :root[data-theme="creme"]{--scrim:rgba(74,71,66,.5)}
@@ -302,9 +306,9 @@ const T=k=>esc(TIP[k]||'');
 function pathText(g){return g.crumbs.map(c=>c.w).join(' › ')}
 // WHY: Popups and Menus widen each other (either kind); every other pill narrows (Popups AND Phone)
 function pass(g){
-  const fam={};S.f.forEach(f=>{const k=f.startsWith('kind:')?'kind':f;(fam[k]=fam[k]||[]).push(f)});
-  for(const k in fam){if(!fam[k].some(f=>f.startsWith('kind:')?g.kind===f.slice(5):f==='work'?g.work.length>0:f==='since'?g.since==='changed':g.fl[f]))return false}
-  if(S.ask==='new'){if(g.since!=='new')return false}else if(S.ask!==null&&!g.q.includes(S.ask))return false;
+  const fam={};S.f.forEach(f=>{const k=f.startsWith('kind:')?'kind':f==='new'?'since':f;(fam[k]=fam[k]||[]).push(f)});
+  for(const k in fam){if(!fam[k].some(f=>f.startsWith('kind:')?g.kind===f.slice(5):f==='work'?g.work.length>0:f==='since'?g.since==='changed':f==='new'?g.since==='new':g.fl[f]))return false}
+  if(S.ask!==null&&!g.q.includes(S.ask))return false;
   if(S.only&&!S.only.ids.has(g.id))return false;
   if(S.q){const t=(g.t+' '+g.id+' '+(g.desc||'')+' '+g.place).toLowerCase();if(!S.q.split(/\s+/).every(w=>t.includes(w)))return false}
   return true}
@@ -314,7 +318,7 @@ function pick(g){return S.f.has('phone')?(g.states.find(st=>st.ph)||g.states[0])
 function tile(g,extra,cls,st){st=st||pick(g);const full=!st.crop&&!st.ph; // WHY: a phone picture is tall and thin; filling the tile would crop it
   const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')&&!S.f.has('since')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since&&CM?`<span class="badge" data-tip="${T(g.since==='new'?'scr.badge.new':'scr.badge.changed')}">${g.since==='new'?'New':'Changed'}</span>`:'');
   const tip=cls==='here'?'This is the screen you are looking at.':(g.desc?g.desc+' Click to open it.':TIP['scr.tile']);
-  return `<figure class="tile${extra?' extra':''}${cls?' '+cls:''}" data-id="${esc(g.id)}" tabindex="0" data-tip="${esc(tip)}"><div class="timg${full?' full':''}"><img src="${st.img}" alt="" decoding="async"><span class="tov">${badges}</span></div>
+  return `<figure class="tile${extra?' extra':''}${cls?' '+cls:''}" data-id="${esc(g.id)}" tabindex="0" data-tip="${esc(tip)}"><div class="timg${full?' full':''}"><img src="${st.img}" alt="" decoding="async" loading="lazy"><span class="tov">${badges}</span></div>
   <figcaption class="tcap"><span class="tn">${esc(g.t)}</span><span class="tp">${esc(pathText(g)||KINDW[g.kind])}</span></figcaption></figure>`}
 const SHOWN=6;
 function renderWall(list){const by={};list.forEach(g=>{(by[g.place]=by[g.place]||[]).push(g)});
@@ -335,7 +339,7 @@ function sRender(){const list=SG.filter(pass);VIS=list.slice().sort((a,b)=>PLACE
   if(S.only)ec.querySelector('button').onclick=()=>{S.only=null;sRender()};
   fades()}
 $$('.sbar [data-f]').forEach(b=>b.onclick=()=>{const f=b.dataset.f;S.f.has(f)?S.f.delete(f):S.f.add(f);sRender()});
-$('#sshow').onchange=e=>{const v=e.target.value;S.ask=v===''?null:v==='new'?'new':+v;sRender()};
+$('#sshow').onchange=e=>{const v=e.target.value;S.ask=v===''?null:+v;sRender()};
 $('#sq').oninput=e=>{S.q=e.target.value.trim().toLowerCase();sRender()};
 // ---- the picture popup
 let DCUR=null,DST=0,DWIN=false,DPATH=false,LASTFOCUS=null;

@@ -86,14 +86,9 @@ if (before.packagesDiffer?.length) console.error(`[what-changed] note: ${before.
 // personal Pages loaded as sample pages (Home, Paint, Money…, whose fake cameras and paint canvas read as
 // changes) and the icon / pill catalogues. Those are not part of the app a user installs, so a release
 // comparison leaves them out. The Pages *frame* (library, focus view chrome) stays: it ships.
-const NOT_SHIPPED = [/^pages\/(page|focus)\/page-/, /^dev\/(icons|pills|open-tasks)(#|$)/];
-function shippedScreens(checkout) {
-  const r = spawnSync(process.execPath, [join(HERE, 'shoot.mjs'), '--list', '--worktree', checkout], { encoding: 'utf8' });
-  const names = r.stdout.split('\n').map((l) => l.split(/\s+/)[0]).filter((n) => n && /^[a-z][\w#/-]*$/.test(n) && !NOT_SHIPPED.some((re) => re.test(n)));
-  if (r.status !== 0 || !names.length) die('could not read the screen list (shoot --list)');
-  return names;
-}
-const shootArgs = [join(HERE, 'shoot.mjs'), ...(opt.only.length ? opt.only : shippedScreens(afterCheckout)), '--before', before.dir, '--after', afterCheckout, '--out', out, '--no-montage', '--freeze', ...(opt.themes ? ['--themes', opt.themes] : [])];
+// Each side photographs every screen its own list has (the release's list is shorter), minus these.
+const NOT_SHIPPED = ['pages/page/page-*', 'pages/focus/page-*', 'dev/icons*', 'dev/pills*', 'dev/open-tasks*'];
+const shootArgs = [join(HERE, 'shoot.mjs'), ...(opt.only.length ? opt.only : ['--all', ...NOT_SHIPPED.flatMap((p) => ['--except', p])]), '--before', before.dir, '--after', afterCheckout, '--out', out, '--no-montage', '--freeze', ...(opt.themes ? ['--themes', opt.themes] : [])];
 const shot = spawnSync(process.execPath, shootArgs, { stdio: 'inherit' });
 if (shot.status !== 0) die(`shoot stopped with exit code ${shot.status} — see above`);
 

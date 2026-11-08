@@ -38,7 +38,9 @@ def tile(m):
     W, H = im.size
     s = m.get('scale') or 1
     p = m.get('panel')
-    crop = bool(p) and (p['w'] * p['h'] * s * s) < 0.6 * W * H
+    # WHY the 40 px floor (2026-11-05 review: three tiles were a 30 px blue square): a mark that small is a
+    # misplaced mark, not the screen, so the tile shows the whole window instead
+    crop = bool(p) and p['w'] >= 40 and p['h'] >= 40 and (p['w'] * p['h'] * s * s) < 0.6 * W * H
     win = im.resize((1000, round(H * 1000 / W)), Image.LANCZOS) if W > 1000 else im
     if crop:
         pad = 8 * s
