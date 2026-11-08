@@ -317,6 +317,62 @@ battery over an hour on the phone. The result decides between the mesh and A. Ei
 viewer, chip, switching and fork work is the same, so design can proceed on everything else
 while the spike runs.
 
+## 9. The mesh's negatives, side by side with the other two (analysis, not a decision)
+
+Destin, 2026-11-08: a checkpoint to see the mesh's downsides plainly. Nothing below changes an
+approved decision; the list of what stands is in section 10.
+
+| What a user runs into | True mesh | A. Our server | B. Tailscale |
+|---|---|---|---|
+| Adding a device | pair from an existing device that is awake and in hand | sign in | install Tailscale, sign in to it, then sign in to the app |
+| Lost every device | live sync gone; chats remain only in the git copy | sign in again | sign in to Tailscale again |
+| No device awake | nothing moves; the next device to wake catches up from git, minutes later | mailbox delivers within seconds of waking | same as the mesh |
+| Hotel, office or carrier network | direct path blocked on roughly one in ten networks; relay quality depends on who runs the relay pool | works wherever a web page loads | mostly works; Tailscale relays when blocked |
+| Phone battery and data | periodic chatter to stay findable, more than one idle connection; unmeasured | one idle connection Android handles well | the VPN tunnel runs all the time |
+| "My devices don't see each other" | hardest to help: no server log, many network causes | our log shows who connected and when | Tailscale's own admin page shows device state |
+| Who learns what | the discovery network can learn your address from your device key; relays learn device keys | we learn your devices, addresses and timing; never words | Tailscale learns your devices and addresses |
+| Business use | fine | fine | free plan is personal and non-commercial |
+
+| What we carry | True mesh | A. Our server | B. Tailscale |
+|---|---|---|---|
+| New work | the most: pairing, streaming, catch-up from any device, and keeping every device's copy in agreement | moderate server work plus sealing and pairing | desktop-to-desktop client, discovery, install guidance |
+| Dependency | one company's networking stack, inside our app on four platforms; Android path untested | Cloudflare, already in use | Tailscale, already in use for remote access |
+| Security we own | pairing and key handling; transport encryption comes from the toolkit, which is less reviewed than the web's or WireGuard's | pairing, key handling, sealing and server checks, all reviewable | almost nothing new |
+| Something of ours a user must trust | nothing, except the app itself | our server, blind to content | nothing |
+| GitHub still in the picture | yes: the permanent copy and the all-offline fallback | yes | yes |
+| Cost | nothing | nothing until a few hundred heavy users | nothing |
+| Time to a first working version | longest, and a spike comes first | shortest | middle |
+
+What the mesh does not buy: it does not remove GitHub (the permanent copy stays), it does not
+make catch-up better when every device is asleep (worse than A), and it does not reduce the
+pairing and key work (same as A once a key never touches a server). What it buys: no account
+and no service of ours in the live path, any awake device can catch another up, and the plumbing
+in the middle is replaceable.
+
+## 10. Decisions that stand, whichever pipe is chosen
+
+From the three decks, every approved rule concerns how a chat behaves, not how bytes travel:
+
+- One device hosts a chat; every other device shows it live, word by word, identical except a
+  chip naming the host.
+- The host changes only when the user taps the chip, or the host is offline and the user taps
+  Continue here after a notice naming what the new device lacks. The half-finished reply is
+  dropped on both sides.
+- The host keeps running the chat; the chat's files sync underneath; no portable bundle, no
+  container.
+- Everything sent between devices is sealed end to end; a key never syncs to GitHub or any
+  server.
+- The phone is a full host; parity gaps are separate work.
+- Every project appears on every device; a chat may also open where its folder is absent.
+- Fetching a missing project shows what is missing, why, and the storage first.
+- Deliberate forks are equals; accidental splits warn and offer to archive the older one.
+- The design is for every user's devices; design first, phasing later; the current handoff
+  code is replaced, not patched; the Nov 5 copies are left alone.
+
+Still open: the pipe (deck 3 Q-1), the mailbox, a self-host address, who pays, helper
+transcripts, the smaller pieces, phone wake, chat without folder, the pairing method, and
+whether the GitHub copy gets sealed too.
+
 ## Sources
 
 - Cloudflare Durable Objects pricing: https://developers.cloudflare.com/durable-objects/platform/pricing
