@@ -289,6 +289,31 @@ export function regions(mask, w, h, { gap = 8, minPixels = 12, cell = 4 } = {}) 
   return stats.filter((s) => s.count >= minPixels).map((s) => ({ x: s.x0, y: s.y0, w: s.x1 - s.x0, h: s.y1 - s.y0, count: s.count }));
 }
 
+/**
+ * WHY a shift found from the pixels (Destin, 2026-11-07, the spreadsheet that showed "159 spots" because the
+ * sheet sat 12 px lower: "we should figure out this and similar cases"): content drawn inside an embedded
+ * editor or canvas has no element list, so the element-based shift (findShift) never sees it move, and every
+ * cell edge became its own box. Each picture row is summed into one number; the vertical offset that makes
+ * the two pictures' rows line up again below the first difference is the shift. Returns { dy, fromY } in
+ * picture pixels, or null. Kept only when re-comparing with that shift leaves under a fifth of the
+ * differences (checked by the caller).
+ */
+function pixelShift(A, B, topY, maxDy = 60) {
+  const w = Math.min(A.width, B.width);
+  const sig = (P) => { const s = new Float64Array(P.height); for (let y = 0; y < P.height; y++) { let t = 0; for (let x = 0; x < w; x += 2) { const i = (y * P.width + x) * 4; t += P.data[i] + P.data[i + 1] + P.data[i + 2]; } s[y] = t; } return s; };
+  const a = sig(A), b = sig(B);
+  let best = 0, bestE = Infinity;
+  // nearest offsets first, and only a strictly better one replaces it: of equally good offsets (a repeating
+  // pattern of rows) the smallest move wins
+  for (let k = 1; k <= 2 * maxDy; k++) {
+    const dy = k % 2 ? (k + 1) / 2 : -k / 2;
+    let e = 0, n = 0;
+    for (let y = Math.max(topY, topY + dy); y < A.height && y - dy < B.height; y++) { e += Math.abs(a[y] - b[y - dy]); n++; }
+    if (n > 20) { e /= n; if (e < bestE - 1e-9) { bestE = e; best = dy; } }
+  }
+  return best ? { dy: best, fromY: topY + Math.max(best, 0) } : null;
+}
+
 // ─── One screen ──────────────────────────────────────────────────────────────
 const PAD = 3;   // CSS px of slack around an explained element
 /**
@@ -306,7 +331,7 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
     changes.push({ kind: 'pixels', role: null, name: 'picture size differs', side: 'after', box: { x: 0, y: 0, w: A.width / scale, h: A.height / scale } });
     return { changes, shift };
   }
-  const { mask, count } = diffPixels(A, B, { dyPx: Math.round(shift * scale), fromY: Math.floor((shiftFromY - PAD) * scale) });
+  let { mask, count } = diffPixels(A, B, { dyPx: Math.round(shift * scale), fromY: Math.floor((shiftFromY - PAD) * scale) });
   if (!count) return { changes, shift };
   // What elements already explain: their boxes on both sides (and the before boxes as they sit after the shift).
   const boxes = [];
@@ -316,6 +341,27 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
   for (const b of ignored) boxes.push({ x: (b.x - PAD) * scale, y: (b.y - PAD) * scale, w: (b.w + 2 * PAD) * scale, h: (b.h + 2 * PAD) * scale });
   clearBoxes(mask, A.width, A.height, boxes);
   let found = regions(mask, A.width, A.height);
+  // Many scattered differences and no shift from the elements: try a shift found from the pixels.
+  let pixMoved = 0;
+  if (!shift && found.length && (found.length >= 8 || count >= 0.01 * A.width * A.height)) {
+    const top = Math.min(...found.map((r) => r.y));
+    const bottom = Math.max(...found.map((r) => r.y + r.h));
+    const ps = pixelShift(A, B, top);
+    // WHY the height test: a large enough offset "explains" any one new block by skipping over it (the rows a
+    // shift opens up are not compared). A real shift moves far more content than the gap it opens.
+    if (ps && bottom - top > 3 * Math.abs(ps.dy)) {
+      // WHY "differs both ways": often only part of the window moved (the sheet slid down while the side
+      // panels stayed), so a pixel is explained when it matches either the unmoved or the moved picture.
+      const again = diffPixels(A, B, { dyPx: ps.dy, fromY: ps.fromY });
+      let both = 0; for (let i = 0; i < mask.length; i++) { if (mask[i] && again.mask[i]) both++; else again.mask[i] = 0; }
+      // two thirds: a moved sheet above a bar that stayed put leaves an honest strip where they meet
+      if (both < count / 3) {
+        pixMoved = count - both;
+        mask = again.mask; count = both; clearBoxes(mask, A.width, A.height, boxes); found = regions(mask, A.width, A.height);
+        shift = round1(ps.dy / scale); shiftFromY = round1(ps.fromY / scale);
+      }
+    }
+  }
   // WHY (Office editor caret): the editor draws a blinking text cursor on its own canvas, which no style
   // can hide. A region a few pixels wide and one text line tall on an office screen is that cursor.
   if (opts.ignoreCaret) { const n = found.length; found = found.filter((r) => !(r.w <= 5 * scale && r.h <= 26 * scale)); unstable += n - found.length; }
@@ -324,6 +370,14 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
   // thing, a late-loading image), so a difference there says nothing about the release. A change
   // touching such a spot is dropped and counted — pixel regions and element changes alike.
   const flicker = repeat.before || repeat.after ? flickerMask(A, B, repeat) : null;
+  // WHY: a shift found from the pixels where a side's own two pictures also differ below it is the page
+  // still settling (measured: the Meadow Mist spreadsheet slid 18 px between two pictures of the SAME code),
+  // so it is not a change between versions.
+  if (flicker && pixMoved) {
+    let shaky = 0; const y0 = Math.floor(shiftFromY * scale) * A.width;
+    for (let i = y0; i < flicker.length; i++) if (flicker[i]) shaky++;
+    if (shaky > pixMoved / 5) { shift = 0; shiftFromY = 0; unstable += 1; }
+  }
   if (flicker) {
     const kept = found.filter((r) => !touches(flicker, A.width, A.height, r, 4));
     unstable += found.length - kept.length; found = kept;
@@ -332,12 +386,12 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
     const keptEls = changes.filter((c) => c.kind === 'pixels' || stays(c));
     unstable += changes.length - keptEls.length; changes = keptEls;
   }
-  if (!found.length) return { changes, shift, unstable };
+  if (!found.length) return { changes, shift, shiftFromY, unstable };
   // Only the surviving regions stay in the mask picture.
   const keep = new Uint8Array(mask.length);
   for (const r of found) for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) if (mask[y * A.width + x]) keep[y * A.width + x] = 1;
   for (const r of found) changes.push({ kind: 'pixels', role: null, name: '', side: 'after', box: { x: round1((r.x - 1) / scale), y: round1((r.y - 1) / scale), w: round1((r.w + 2) / scale), h: round1((r.h + 2) / scale) } });
-  return { changes, shift, unstable, mask: { data: keep, w: A.width, h: A.height } };
+  return { changes, shift, shiftFromY, unstable, mask: { data: keep, w: A.width, h: A.height } };
 }
 
 /** Pixels where a side's picture differs from its own repeat (same size only). */
@@ -445,7 +499,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     // A shift that lies outside the panel (the page behind moved) is the page's business too.
     if (inside.outside && !inside.changes.length) r.shift = 0;
     r.changes = inside.changes;
-    const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}), ...(inside.outside ? { outside: inside.outside } : {}) };
+    const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift, ...(r.shiftFromY ? { fromY: r.shiftFromY } : {}) } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}), ...(inside.outside ? { outside: inside.outside } : {}) };
     if (!b.elements || !a.elements) row.reason = 'no element lists beside the pictures: pixels only';
     if (r.mask) { const mf = join('diff', name, `${theme}.mask.png`); writeMask(join(run, mf), r.mask); row.mask = mf; }
     screens.push(row);

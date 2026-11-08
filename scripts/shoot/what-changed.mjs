@@ -79,7 +79,19 @@ writeFileSync(join(out, 'run.json'), JSON.stringify({
 }, null, 1));
 
 console.error(`[what-changed] ${tag} (${before.dir}) vs ${afterCheckout} → ${out}`);
-const shootArgs = [join(HERE, 'shoot.mjs'), ...(opt.only.length ? opt.only : ['--all']), '--before', before.dir, '--after', afterCheckout, '--out', out, '--no-montage', '--freeze', ...(opt.themes ? ['--themes', opt.themes] : [])];
+// WHY only screens that ship (Destin, 2026-11-07: "we should ONLY include real, built-in pages that are intended
+// to ship with the app in these reviews"): the screen list also photographs practice material — Destin's own
+// personal Pages loaded as sample pages (Home, Paint, Money…, whose fake cameras and paint canvas read as
+// changes) and the icon / pill catalogues. Those are not part of the app a user installs, so a release
+// comparison leaves them out. The Pages *frame* (library, focus view chrome) stays: it ships.
+const NOT_SHIPPED = [/^pages\/(page|focus)\/page-/, /^dev\/(icons|pills|open-tasks)(#|$)/];
+function shippedScreens(checkout) {
+  const r = spawnSync(process.execPath, [join(HERE, 'shoot.mjs'), '--list', '--worktree', checkout], { encoding: 'utf8' });
+  const names = r.stdout.split('\n').map((l) => l.split(/\s+/)[0]).filter((n) => n && /^[a-z][\w#/-]*$/.test(n) && !NOT_SHIPPED.some((re) => re.test(n)));
+  if (r.status !== 0 || !names.length) die('could not read the screen list (shoot --list)');
+  return names;
+}
+const shootArgs = [join(HERE, 'shoot.mjs'), ...(opt.only.length ? opt.only : shippedScreens(afterCheckout)), '--before', before.dir, '--after', afterCheckout, '--out', out, '--no-montage', '--freeze', ...(opt.themes ? ['--themes', opt.themes] : [])];
 const shot = spawnSync(process.execPath, shootArgs, { stdio: 'inherit' });
 if (shot.status !== 0) die(`shoot stopped with exit code ${shot.status} — see above`);
 

@@ -24,6 +24,11 @@ RUN = os.path.abspath(sys.argv[1])
 TILE_THEME = sys.argv[sys.argv.index('--tile-theme') + 1] if '--tile-theme' in sys.argv else 'meadow-mist'
 OUT = os.path.join(RUN, 'board')
 
+# WHY (Destin, 2026-11-07: "ONLY include real, built-in pages that are intended to ship with the app"): the
+# same rule as what-changed.mjs's NOT_SHIPPED, so a run taken before that rule shows the same list
+NOT_SHIPPED = [re.compile(r'^pages/(page|focus)/page-'), re.compile(r'^dev/(icons|pills|open-tasks)(#|$)')]
+def shipped(n): return not any(r.search(n) for r in NOT_SHIPPED)
+
 def fname(n):  # make_shots.py's rule; the page asks for '#' as %23, which the server reads back as '#'
     return n.replace('/', '__') + '.jpg'
 
@@ -67,6 +72,7 @@ def screen_defs():
 def main():
     for d in ('shots', 'thumbs'): os.makedirs(os.path.join(OUT, d), exist_ok=True)
     ch = json.load(open(os.path.join(RUN, 'changes.json')))
+    ch['screens'] = [x for x in ch['screens'] if shipped(x['name'])]
     man = [m for m in json.load(open(os.path.join(RUN, 'after', 'manifest.json'))) if m.get('ok') and m['theme'] == TILE_THEME and os.path.exists(m.get('file') or '')]
     jobs = []
     for s in ch['screens']:
@@ -90,6 +96,7 @@ def main():
             with Image.open(os.path.join(RUN, pic)) as im: vw, vh = round(im.width / (s.get('scale') or 1.5)), round(im.height / (s.get('scale') or 1.5))
         by.setdefault(s['name'], {})[s['theme']] = dict(vw=vw, vh=vh,
             status=s['status'], reason=s.get('reason'), unstable=s.get('unstable', 0),
+            shift=s.get('shift'),
             before=bool(s.get('before')) and s['status'] != 'failed', after=bool(s.get('after')) and s['status'] != 'failed',
             changes=[{k: c[k] for k in keep if c.get(k) is not None} for c in s.get('changes', [])])
     json.dump(dict(before=ch['before'], after=ch['after'], themes=ch['themes'], tileTheme=TILE_THEME, screens=by),

@@ -396,6 +396,11 @@ function shiftWords(c){const a=c.box,b=c.beforeBox;if(!a||!b)return '';const w=[
 // one row per kind of change; the same change on many things (every session row 20 px wider) is one row
 function groupChanges(list){const G=[],by={};list.forEach(c=>{const k=c.kind+'|'+(c.role||'')+'|'+(c.kind==='moved'?shiftWords(c):c.kind==='restyled'?(c.styleChanges||[]).map(x=>x.prop).join(','):c.kind==='pixels'?'':c.kind+(c.name||'')+(c.oldText||'')+(c.newText||''));
   if(!by[k]){by[k]={k:c.kind,items:[]};G.push(by[k])}by[k].items.push(c)});return G}
+// WHY a shift is the first line (2026-11-07, the spreadsheet that showed 159 boxes because the sheet sat lower):
+// "everything below here moved" is one fact, marked as the band it opened, not one box per cell
+function withShift(t){const G=groupChanges(t.changes||[]);const s=t.shift;if(!s||!s.y)return G;
+  const y=s.fromY||0,band={x:0,y:s.y>0?y-s.y:y,w:t.vw,h:Math.abs(s.y)};
+  return [{k:'shift',dy:s.y,items:[{kind:'shift',box:band,beforeBox:{x:0,y:s.y>0?y-s.y:y+s.y,w:t.vw,h:Math.abs(s.y)}}]},...G]}
 function names(items){const n=items.filter(c=>c.name).map(c=>'“'+c.name+'”');return n.length<=3?n.join(', '):n.slice(0,3).join(', ')+' and '+(n.length-3)+' more'}
 // WHY the join rule: the comparer trims each piece, so a space goes between pieces except before punctuation
 function wordsHTML(c){if(c.words&&c.words.length){let out='';c.words.forEach((w,i)=>{const first=w.same!=null?w.same:(w.old||w.new||'');
@@ -409,6 +414,7 @@ function rowText(gr){const c=gr.items[0],n=gr.items.length,r=roleW(c,n),one=n===
     case 'text':return [`New ${fieldW} on ${r?'the '+r:'the screen'}${c.name&&c.kind==='text'&&c.role?' “'+esc(c.name)+'”':''}`,wordsHTML(c)];
     case 'moved':return [`${n>1?cnt+r:(r||'Something')[0].toUpperCase()+(r||'something').slice(1)+one} ${n>1?'are':'is'} ${esc(shiftWords(c))}`,n>1?esc(names(gr.items)):''];
     case 'restyled':return [`New look: ${cnt}${r}${one}`,'Its '+(c.styleChanges||[]).map(x=>PROPW[x.prop]||x.prop).join(', ')+(n>1?' · '+esc(names(gr.items)):'')];
+    case 'shift':return [`Everything below the mark sits ${px(gr.dy)} px ${gr.dy>0?'lower':'higher'}`,''];
     default:return [n>1?`Something else looks different in ${n} spots`:'Something else looks different here','An icon, a picture, a border or the background, in the marked '+(n>1?'areas':'area')+'.']}}
 function boxStyle(b,t){return `left:${b.x/t.vw*100}%%;top:${b.y/t.vh*100}%%;width:${b.w/t.vw*100}%%;height:${b.h/t.vh*100}%%`}
 function marks(list,side,t){return list.map((gr,gi)=>gr.items.map(c=>{const b=side==='before'?(c.kind==='added'?null:c.kind==='removed'?c.box:(c.beforeBox||c.box)):(c.kind==='removed'?null:c.box);
@@ -423,8 +429,8 @@ function cmpHTML(g,st){const ch=st.ch||{};
   // WHY only the themes that changed get a tab: a tab that opens "nothing is different" is a dead end
   const th=CM.themes.filter(x=>ch[x]&&ch[x].status==='changed'),same=CM.themes.filter(x=>ch[x]&&!th.includes(x));
   if(!DTH||!th.includes(DTH))DTH=th.includes(CM.tile)?CM.tile:th[0];
-  const t=ch[DTH];const list=groupChanges(t.changes||[]);
-  const tabs=th.length>1?`<div class="cmpbar"><div class="tabs" role="group" aria-label="Theme">${th.map(x=>`<button data-th="${x}" aria-pressed="${x===DTH}" data-tip="${T('cmp.theme')}">${esc(themeName(x))} <span class="count" data-tip="${T('cmp.count')}">${groupChanges(ch[x].changes).length}</span></button>`).join('')}</div></div>`:'';
+  const t=ch[DTH];const list=withShift(t);
+  const tabs=th.length>1?`<div class="cmpbar"><div class="tabs" role="group" aria-label="Theme">${th.map(x=>`<button data-th="${x}" aria-pressed="${x===DTH}" data-tip="${T('cmp.theme')}">${esc(themeName(x))} <span class="count" data-tip="${T('cmp.count')}">${withShift(ch[x]).length}</span></button>`).join('')}</div></div>`:'';
   // WHY only the situations that changed: the same ones are summed up in one line instead
   const chg=g.states.map((s,i)=>[s,i]).filter(([s])=>stSince(s)==='changed');
   const strip=chg.length>1?`<div class="sstrip" role="group" aria-label="Situations that changed">${chg.map(([s,i])=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(s.l)})"><span class="si"><img src="${s.img}" alt=""></span><span>${esc(s.l)}</span></button>`).join('')}</div>`:'';

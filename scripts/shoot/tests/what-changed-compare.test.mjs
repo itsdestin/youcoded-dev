@@ -183,3 +183,12 @@ test('a popup owns only the changes on it; a change on the page behind belongs t
   assert.equal(keepInsidePanel([behind], { x: 0, y: 0, w: 1440, h: 900 }, null, 1440, 900).changes.length, 1);
   assert.equal(keepInsidePanel([behind], { x: 0, y: 0, w: 12, h: 12 }, null, 1440, 900).changes.length, 1);
 });
+
+test('a page that only sits lower (no element list explains it) is one shift, not a wall of little boxes', () => {
+  // text-like rows at uneven spacing (a repeating pattern would line up at more than one offset); in the after picture everything from y 40 down sits 12 px lower
+  const rowOn = Array.from({ length: 240 }, (_, i) => (Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1) < 0.3);
+  const stripes = (off) => (x, y) => { const yy = y >= 40 ? y - off : y; return yy >= 0 && rowOn[yy] && x % 7 < 5 && x > 10 && x < 290 ? [30, 30, 30] : null; };
+  const r = compareScreen(side(pic(300, 240, stripes(0)), []), side(pic(300, 240, stripes(12)), []), 1);
+  assert.equal(r.shift, 12);
+  assert.ok(r.changes.length <= 1, `left over: ${r.changes.length} boxes`);
+});
