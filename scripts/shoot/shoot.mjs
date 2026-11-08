@@ -235,6 +235,16 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       await tab.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
       tab.seededRandom = true;
     }
+    // WHY (what-changed run 9, 2026-11-08: "chat#tooltip-permission" showed the fake voice script's sentence in its
+    // message box in one picture and not in its repeat): a tab takes many screens in turn, and the app keeps an
+    // unsent message in the tab's session storage to restore it after a reload. So whatever an earlier screen typed
+    // (the voice screens dictate a sentence) came back on whichever screen that tab took next. Every screen now starts
+    // with that storage empty. Top page only: the phone-size view loads the app again in a frame of the same tab, and
+    // clearing there would wipe what the screen itself just stored.
+    if (!tab.freshSession) {
+      await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { try { if (window === window.top) sessionStorage.clear(); } catch {} })();` });
+      tab.freshSession = true;
+    }
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);

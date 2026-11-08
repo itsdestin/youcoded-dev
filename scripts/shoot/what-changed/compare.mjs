@@ -126,7 +126,12 @@ const BRAILLE = /^[\u2800-\u28ff\s]+$/;
 const DURATION = /\b\d+\s?(?:d|h|m|s)\b/g;
 const CLOCK = /\b\d{1,2}:\d{2}(?::\d{2})?\s?(?:[AaPp][Mm])?/g;
 const SPINNER = /[\u2800-\u28ff]/g;
-const steady = (t) => t.replace(SPINNER, '').replace(CLOCK, '#').replace(DURATION, '#').replace(/\s+/g, ' ').trim();
+// WHY two more (what-changed run 9, 2026-11-08): a running timer reads "For 9m 58s" in one picture and "For 10m"
+// in the other (one duration became two words), and a progress line read "41% of 24,000 tokens" against "39%".
+// Both count on from when the page opened, so they differ between any two pictures. A run of durations is one
+// duration, and a bare percentage is progress; the words around them still count.
+const PERCENT = /\b\d{1,3}(?:\.\d+)?%/g;
+const steady = (t) => t.replace(SPINNER, '').replace(CLOCK, '#').replace(DURATION, '#').replace(PERCENT, '#').replace(/#(?:\s*#)+/g, '#').replace(/\s+/g, ' ').trim();
 /** Words that change by themselves: a spinner glyph, a countdown or a clock time. True when the two texts are the same without those. */
 export function volatileText(o, n) {
   return o !== n && (steady(o) === steady(n) || (RANDOM_PHRASES.has(o) && RANDOM_PHRASES.has(n)));

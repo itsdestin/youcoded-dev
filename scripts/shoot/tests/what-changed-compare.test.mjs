@@ -130,6 +130,12 @@ test('a clock time or a spinner glyph inside a label is not a wording change eit
   assert.deepEqual(kinds(run([el('text', null, 'Sent 4:13 PM', 10, 50)], [el('text', null, 'Posted 4:13 PM', 10, 50)])), ['text']);
 });
 
+test('a running timer or progress percentage is not a wording change; other words beside it still are', () => {
+  assert.equal(volatileText('For 9m 58s', 'For 10m'), true);
+  assert.equal(volatileText('Reading your prompt — 41% of 24,000 tokens', 'Reading your prompt — 39% of 24,000 tokens'), true);
+  assert.equal(volatileText('Reading 41% of 24,000 tokens', 'Loading 41% of 24,000 tokens'), false);
+});
+
 test('a swap between two of the app\'s random thinking phrases is not a wording change; other words still are', () => {
   const phrases = randomPhrasesFrom("const THINKING_LINES = [\n  'Calibrating',\n  \"Perplexing\",\n];");
   assert.deepEqual(phrases, ['Calibrating', 'Perplexing']);
