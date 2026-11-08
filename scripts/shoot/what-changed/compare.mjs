@@ -173,7 +173,9 @@ export function classify({ pairs, removed, added, shift }) {
     // Wording changes resize and re-centre their own box: only a vertical move counts then.
     const moved = wording ? Math.abs(dy - (rode ? shift : 0)) > MOVE_TOL
       : Math.abs(dx) > MOVE_TOL || Math.abs(dy - (rode ? shift : 0)) > MOVE_TOL || Math.abs(a.box.w - b.box.w) > MOVE_TOL || Math.abs(a.box.h - b.box.h) > MOVE_TOL;
-    if (moved) {
+    // WHY not when the words changed too (2026-11-07 review: the same sentence was quoted twice, once as new words
+    // and once as "is 172 px wider"): new words resize their own box; the words line already says what changed
+    if (moved && !wording) {
       const m = { kind: 'moved', ...base, side: 'after', box: a.box, beforeBox: b.box };
       // Candidates for the sideways ride-along below: same size, same row, only pushed left/right.
       slid.push({ m, dx, plain: !wording && Math.abs(dy - (rode ? shift : 0)) <= MOVE_TOL && Math.abs(a.box.w - b.box.w) <= MOVE_TOL && Math.abs(a.box.h - b.box.h) <= MOVE_TOL });
@@ -321,11 +323,14 @@ function pixelShift(A, B, topY, maxDy = 60) {
  * view, is `scrolled`, not `removed`; one that came into view from below is `scrolled` too, not `added`.
  */
 export function scrolledNotGone(changes, outBefore = [], outAfter = []) {
-  const keys = (list) => new Set((list ?? []).map(keyOf).filter(Boolean));
+  // WHY close words count too (2026-11-07 review: "youcoded … 4 ▸" was pushed out of view, and the fixture's
+  // count had become "7 ▸"): the same row with a number changed is still the same row
+  const keys = (list) => (list ?? []).map((e) => ({ k: keyOf(e), g: groupOf(e), l: labelOf(e) })).filter((x) => x.k);
   const hidAfter = keys(outAfter), hidBefore = keys(outBefore);
+  const has = (list, key, c) => list.some((x) => x.k === key || (x.g === (c.role ? 'ctl' : 'text') && similarity(x.l, norm(c.oldText ?? c.newText ?? c.name)) >= 0.7));
   return changes.map(({ key, ...c }) => {
-    if (c.kind === 'removed' && key && hidAfter.has(key)) return { ...c, kind: 'scrolled', way: 'out' };
-    if (c.kind === 'added' && key && hidBefore.has(key)) return { ...c, kind: 'scrolled', way: 'in' };
+    if (c.kind === 'removed' && key && has(hidAfter, key, c)) return { ...c, kind: 'scrolled', way: 'out' };
+    if (c.kind === 'added' && key && has(hidBefore, key, c)) return { ...c, kind: 'scrolled', way: 'in' };
     return c;
   });
 }
@@ -409,9 +414,14 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
   // can hide. A region a few pixels wide and one text line tall on an office screen is that cursor.
   // The terminal's block cursor is wider than a text caret, so its limit is wider (2026-11-07: chat/terminal).
   if (opts.ignoreCaret) { const wide = opts.ignoreCaret === 'block' ? 12 : 5; const n = found.length; found = found.filter((r) => !(r.w <= wide * scale && r.h <= 26 * scale)); unstable += n - found.length; }
+  const inElAny = (r) => opts.els.some((e) => r.x / scale < e.box.x + e.box.w && e.box.x < (r.x + r.w) / scale && r.y / scale < e.box.y + e.box.h && e.box.y < (r.y + r.h) / scale);
   // WHY (2026-11-07: a 4 px speck drifting in the Halftone backdrop marked two status-bar screens): a speck this
   // small that touches no piece of the screen is backdrop. One inside a piece (a status dot on a button) stays.
   if (opts.els) {
+    // WHY (2026-11-07 review: "Other visual changes in 17 places" on trees and sky behind the glass bubbles of a
+    // chat that slid 12-26 px): after a shift, a difference that touches no piece of the screen is the wallpaper
+    // showing through what moved, not a change
+    if (shift) { const n = found.length; found = found.filter((r) => inElAny(r)); unstable += n - found.length; }
     const inEl = (r) => opts.els.some((e) => r.x / scale < e.box.x + e.box.w && e.box.x < (r.x + r.w) / scale && r.y / scale < e.box.y + e.box.h && e.box.y < (r.y + r.h) / scale);
     const n = found.length; found = found.filter((r) => !(r.w <= 5 * scale && r.h <= 5 * scale && !inEl(r))); unstable += n - found.length;
   }
@@ -510,6 +520,18 @@ function panels(side) {
  * dialog's bottom edge, where no one can read them): a piece shown less than 8 px, or less than half, inside its
  * screen's panel is at the edge, not on the picture. Its change is dropped and counted; a shift is kept.
  */
+/**
+ * WHY (2026-11-07 review: Full auto listed its title and close button "moved 10 px up" because the dialog grew one
+ * sentence taller and re-centred): when a screen has a real change, small moves (under 12 px every way) are its
+ * knock-on effects, not news. A screen whose only changes are small moves keeps them.
+ */
+export function dropSmallMoves(changes) {
+  const small = (c) => c.kind === 'moved' && c.box && c.beforeBox && ['x', 'y', 'w', 'h'].every((k) => Math.abs(c.box[k] - c.beforeBox[k]) < 12);
+  if (changes.every((c) => small(c) || c.kind === 'pixels')) return { changes, small: 0 };
+  const kept = changes.filter((c) => !small(c));
+  return { changes: kept, small: changes.length - kept.length };
+}
+
 export function dropEdgeSlivers(changes, panelBefore, panelAfter) {
   const seen = (b, p) => { if (!b || !p) return true; const h = Math.min(b.y + b.h, p.y + p.h) - Math.max(b.y, p.y); return h >= 8 && h >= b.h / 2; };
   const kept = changes.filter((c) => c.kind === 'pixels' || seen(c.box, (c.side === 'before' ? panelBefore : panelAfter)) || (c.beforeBox && seen(c.beforeBox, panelBefore) && c.kind !== 'added'));
@@ -578,7 +600,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     // A shift that lies outside the panel (the page behind moved) is the page's business too.
     if (inside.outside && !inside.changes.length) r.shift = 0;
     const edge = dropEdgeSlivers(inside.changes, panB.get(key), panA.get(key));
-    r.changes = edge.changes;
+    r.changes = dropSmallMoves(edge.changes).changes;
     const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift, ...(r.shiftFromY ? { fromY: r.shiftFromY } : {}) } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}), ...(inside.outside ? { outside: inside.outside } : {}), ...(edge.edge ? { edge: edge.edge } : {}) };
     if (!b.elements || !a.elements) row.reason = 'no element lists beside the pictures: pixels only';
     if (r.mask) { const mf = join('diff', name, `${theme}.mask.png`); writeMask(join(run, mf), r.mask); row.mask = mf; }

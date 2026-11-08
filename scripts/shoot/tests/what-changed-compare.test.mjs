@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { classify, compareRun, compareScreen, dropEdgeSlivers, keepInsidePanel, scrolledNotGone, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
+import { classify, compareRun, compareScreen, dropEdgeSlivers, dropSmallMoves, keepInsidePanel, scrolledNotGone, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
 
 const WORKSPACE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const { PNG } = createRequire(join(WORKSPACE, 'youcoded', 'desktop', 'package.json'))('pngjs');
@@ -253,4 +253,21 @@ test('a piece peeking in a few pixels at the panel\'s edge is not a change; a pi
   const shown = { kind: 'added', side: 'after', box: { x: 500, y: 745, w: 150, h: 16 } };
   const r = dropEdgeSlivers([sliver, halfOut, shown], panel, panel);
   assert.deepEqual(r.changes, [shown]); assert.equal(r.edge, 2);
+});
+
+test('small moves are knock-on effects beside a real change, but kept when they are all there is', () => {
+  const nudge = { kind: 'moved', box: { x: 10, y: 0, w: 50, h: 20 }, beforeBox: { x: 10, y: 10, w: 50, h: 20 } };
+  const words = { kind: 'text', box: { x: 0, y: 40, w: 50, h: 20 } };
+  assert.deepEqual(dropSmallMoves([nudge, words]).changes, [words]);
+  assert.deepEqual(dropSmallMoves([nudge]).changes, [nudge]);
+});
+
+test('reworded text is one words line, not also a "moved" line for its new size', () => {
+  const b = [el('text', null, 'Keep your own backups', 10, 10, 140, 20)], a = [el('text', null, 'Keep your own backups of anything you cannot replace', 10, 10, 330, 20)];
+  assert.deepEqual(classify(matchElements(b, a)).changes.map((c) => c.kind), ['text']);
+});
+
+test('a row pushed out of view is found even when a number in it changed', () => {
+  const changes = scrolledNotGone(classify(matchElements([el('control', 'button', 'youcoded /home/me 4', 10, 300)], [])).changes, [], [{ kind: 'control', role: 'button', name: 'youcoded /home/me 7' }]);
+  assert.equal(changes[0].kind, 'scrolled');
 });

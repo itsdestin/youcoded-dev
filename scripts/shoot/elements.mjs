@@ -175,7 +175,11 @@ function measure() {
     const own = kind ? '' : norm([...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.nodeValue).join(' '));
     if (!kind && !own) continue;
     const r = el.getBoundingClientRect();
-    if (r.width < 1 || r.height < 1 || !shown(el) || !scrolledOut(el, r)) continue;
+    if (r.width < 1 || r.height < 1 || !shown(el)) continue;
+    // WHY covered too (2026-11-07 review: a chat that slid 12 px brought a row's buttons out from under the top bar,
+    // and they read as new): a piece under another part of the screen exists but is out of sight
+    const onScreen = inter({ l: 0, t: 0, r: innerWidth, b: innerHeight }, { l: r.left, t: r.top, r: r.right, b: r.bottom });
+    if (!scrolledOut(el, r) && !(onScreen && covered(el, onScreen))) continue;
     outOfView.push(kind ? { kind, role, name: nameOf(el), text: kind === 'field' ? null : norm(el.innerText ?? el.textContent) || null } : { kind: 'text', role: null, name: own, text: own });
   }
   return { elements: out, outOfView };

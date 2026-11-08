@@ -17,9 +17,14 @@ import json, os, re, html
 E = html.escape
 
 # ---------------------------------------------------------------------------------------- rules
+# WHY plain words (2026-11-07 review: situation names read "Cc", "Native", "Review ai"): short names in the
+# screen list stand for these, and the owner should not have to know them
+WORDS = {'cc': 'Claude Code', 'native': 'built-in assistant', 'ai': 'AI', 'cli': 'command line', 'ui': 'UI'}
 def pretty(seg):
     seg = re.sub(r'^page-', '', seg)
-    return seg.replace('-', ' ').replace('_', ' ').capitalize()
+    words = [WORDS.get(w, w) for w in re.split(r'[-_]', seg)]
+    out = ' '.join(words)
+    return out[:1].upper() + out[1:]
 
 def kind_of(tags):
     """KIND — from the workbench definition's own tag (types.ts `tags`), never from the picture:
@@ -71,6 +76,16 @@ def state_label(name):
 
 # SINCE THE RELEASE — 'changed' when any situation differs in any theme, 'new' when no situation existed
 # then, else None (the same, or no what-changed run given)
+def new_count(states):
+    """WHY (2026-11-07 review: Chat gained 16 new situations and its popup said they "look the same"): how many
+    situations of a screen are new since the release (new in a theme, changed in none) — the New filter and the
+    tile's "3 new" tag read it, so new situations on an old screen are not hidden."""
+    n = 0
+    for st in states:
+        v = [t['status'] for t in (st.get('ch') or {}).values()]
+        if 'new' in v and 'changed' not in v and 'removed' not in v: n += 1
+    return n
+
 def since_of(states):
     # WHY nobefore is left out: "no picture from the release" says nothing about change, and is not news
     sts = [t['status'] for st in states for t in (st.get('ch') or {}).values() if t['status'] != 'nobefore']
@@ -143,7 +158,7 @@ def build(here, names, place_of, desc, efforts, release_pats, questions, matches
             kind=kind_of((d0 or {}).get('tags', [])), place=place_of(k), desc=desc.get(k),
             states=stl,
             fl=dict(type=any(s['ty'] for s in stl), first=first_only(k), phone=any(s['ph'] for s in stl), err=any(s['er'] for s in stl)),
-            work=wk, rel=rel, q=qs, since=since_of(stl),
+            work=wk, rel=rel, q=qs, since=since_of(stl), newn=new_count(stl),
             recent=min([efforts[i]['days'] for i in wk], default=None)))
     kids = {}
     for g in out:
@@ -309,7 +324,7 @@ function pathText(g){return g.crumbs.map(c=>c.w).join(' › ')}
 // WHY: Popups and Menus widen each other (either kind); every other pill narrows (Popups AND Phone)
 function pass(g){
   const fam={};S.f.forEach(f=>{const k=f.startsWith('kind:')?'kind':f==='new'?'since':f;(fam[k]=fam[k]||[]).push(f)});
-  for(const k in fam){if(!fam[k].some(f=>f.startsWith('kind:')?g.kind===f.slice(5):f==='work'?g.work.length>0:f==='since'?g.since==='changed':f==='new'?g.since==='new':g.fl[f]))return false}
+  for(const k in fam){if(!fam[k].some(f=>f.startsWith('kind:')?g.kind===f.slice(5):f==='work'?g.work.length>0:f==='since'?g.since==='changed':f==='new'?g.newn>0:g.fl[f]))return false}
   if(S.ask!==null&&!g.q.includes(S.ask))return false;
   if(S.only&&!S.only.ids.has(g.id))return false;
   if(S.q){const t=(g.t+' '+g.id+' '+(g.desc||'')+' '+g.place).toLowerCase();if(!S.q.split(/\s+/).every(w=>t.includes(w)))return false}
@@ -318,7 +333,9 @@ const byPath=(a,b)=>a.id<b.id?-1:1;
 // a phone filter shows the phone picture
 function pick(g){return S.f.has('phone')?(g.states.find(st=>st.ph)||g.states[0]):g.states[0]}
 function tile(g,extra,cls,st){st=st||pick(g);const full=!st.crop&&!st.ph; // WHY: a phone picture is tall and thin; filling the tile would crop it
-  const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')&&!S.f.has('since')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since&&CM?`<span class="badge" data-tip="${T(g.since==='new'?'scr.badge.new':'scr.badge.changed')}">${g.since==='new'?'New':'Changed'}</span>`:'');
+  const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')&&!S.f.has('since')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since==='changed'&&CM?`<span class="badge" data-tip="${T('scr.badge.changed')}">Changed</span>`:'')
+    // a whole new screen says New; an older screen with new situations says how many (it is not itself new)
+    +(g.newn&&CM?`<span class="badge" data-tip="${T('scr.badge.new')}">${g.newn===g.states.length?'New':g.newn+' new'}</span>`:'');
   const tip=cls==='here'?'This is the screen you are looking at.':(g.desc?g.desc+' Click to open it.':TIP['scr.tile']);
   return `<figure class="tile${extra?' extra':''}${cls?' '+cls:''}" data-id="${esc(g.id)}" tabindex="0" data-tip="${esc(tip)}"><div class="timg${full?' full':''}"><img src="${st.img}" alt="" decoding="async" loading="lazy"><span class="tov">${badges}</span></div>
   <figcaption class="tcap"><span class="tn">${esc(g.t)}</span><span class="tp">${esc(pathText(g)||KINDW[g.kind])}</span></figcaption></figure>`}
@@ -360,7 +377,9 @@ function stSince(st){const v=Object.values(st.ch||{}).map(t=>t.status);if(!v.len
 function openShot(id,stIdx){const g=GI[id];if(!g)return;if(!DCUR)LASTFOCUS=document.activeElement;DCUR=id;DWIN=false;DZOOM=null;DTH=null;
   // WHY: opened while looking for changes, the popup opens on the first situation that changed, compared
   const hunting=CM&&S.f.has('since'),first=g.states.findIndex(s=>stSince(s)==='changed');
-  DST=stIdx??(hunting&&first>=0?first:Math.max(0,g.states.indexOf(pick(g))));if(hunting)DCMP=true;drawShot();
+  // looking for new things, the popup opens on the first new situation
+  const firstNew=CM&&S.f.has('new')?g.states.findIndex(s=>stSince(s)==='new'):-1;
+  DST=stIdx??(hunting&&first>=0?first:firstNew>=0?firstNew:Math.max(0,g.states.indexOf(pick(g))));if(hunting)DCMP=true;drawShot();
   $('#scrim').hidden=false;$('#dwrap').hidden=false;$('#dbody').scrollTop=0;fades();$('#dclose').focus({preventScroll:true})}
 function pathHTML(g){const chain=g.chain.map(id=>GI[id]);const kids=g.kids.map(k=>GI[k]).sort(byPath);
   return `<section class="dpath" id="dpath"><div class="sechead"><div class="gtext"><h3 class="gh" data-tip="${T('pop.way')}">How you get here</h3><p class="gdesc">${g.depth===1?'It opens straight from the main window.':'Start at the main window and click through these, left to right.'}</p></div></div>
@@ -381,7 +400,7 @@ function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+
   ${g.states.length>1?`<div class="sstrip" role="group" aria-label="Situations">${g.states.map((s,i)=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(s.l)})"><span class="si"><img src="${s.img}" alt=""></span><span>${esc(s.l)}</span></button>`).join('')}</div>`:''}
   </div><div class="dfacts">
     <div><div class="eyebrow" data-tip="${T('pop.where')}">Where it is</div><div class="crumbs">${where}</div></div>
-    <p class="t-sm">${g.desc?esc(g.desc):'<span class="missing">No description yet. The real version has an agent write one sentence when this screen\'s code changes.</span>'}</p>
+    ${g.desc?`<p class="t-sm">${esc(g.desc)}</p>`:''}
     <dl class="factlist"><dt data-tip="${T('pop.kind')}">Kind</dt><dd>${KINDW[g.kind]}</dd><dt data-tip="${T('pop.place')}">Place</dt><dd>${esc(g.place)}</dd><dt data-tip="${T('pop.clicks')}">Clicks to reach</dt><dd>${g.depth}</dd>${flags.length?`<dt data-tip="${T('pop.also')}">Also</dt><dd>${flags.join('<br>')}</dd>`:''}</dl>
     <div><div class="eyebrow" data-tip="${T('pop.work')}">Work changing it</div>${work.length?work.map(w=>`<div class="row slim"><div class="body"><div class="t-xs">${esc(w.title)}</div><div class="hint">last worked on ${w.days===0?'today':w.days+' days ago'}</div></div></div>`).join(''):'<div class="t-xs muted">Nothing open.</div>'}</div>
   </div></div>${DPATH?pathHTML(g):''}`;
@@ -413,20 +432,24 @@ function withShift(t){const G=groupChanges(t.changes||[]);const s=t.shift;if(!s|
   return [{k:'shift',dy:s.y,items:[{kind:'shift',box:band,beforeBox:{x:0,y:s.y>0?y-s.y:y+s.y,w:t.vw,h:Math.abs(s.y)}}]},...G]}
 function names(items){const n=items.filter(c=>c.name).map(c=>'“'+c.name+'”');return n.length<=3?n.join(', '):n.slice(0,3).join(', ')+' and '+(n.length-3)+' more'}
 // WHY the join rule: the comparer trims each piece, so a space goes between pieces except before punctuation
-function wordsHTML(c){if(c.words&&c.words.length){let out='';c.words.forEach((w,i)=>{const first=w.same!=null?w.same:(w.old||w.new||'');
+// WHY whole sentences when most words changed (2026-11-07 review: a rewritten sentence read as confetti of struck and
+// added words): the old line, then the new one, each whole, is easier to read
+function wordsHTML(c){const ws=c.words||[],tot=ws.reduce((k,w)=>k+((w.same??w.old??w.new??'').split(' ').length),0),chg=ws.filter(w=>w.same==null).reduce((k,w)=>k+((w.old||w.new||'').split(' ').length),0);
+  if(ws.length&&tot>6&&chg/tot>0.4)return `<span class="wd old">${esc(c.oldText||'')}</span><br><span class="wd new">${esc(c.newText||'')}</span>`;
+  if(c.words&&c.words.length){let out='';c.words.forEach((w,i)=>{const first=w.same!=null?w.same:(w.old||w.new||'');
     if(i&&!/^[,.;:!?)]/.test(first))out+=' ';out+=w.same!=null?esc(w.same):(w.old?`<span class="wd old">${esc(w.old)}</span>`:'')+(w.old&&w.new?' ':'')+(w.new?`<span class="wd new">${esc(w.new)}</span>`:'')});return out}
   return `<span class="wd old">${esc(c.oldText||'')}</span> <span class="wd new">${esc(c.newText||'')}</span>`}
 function rowText(gr){const c=gr.items[0],n=gr.items.length,r=roleW(c,n),one=n===1&&c.name?' “'+esc(c.name)+'”':'',cnt=n>1?n+' ':'';
   const fieldW=c.field==='title'?'hover hint':c.field==='placeholder'?'hint text':'words';
   switch(gr.k){
-    case 'added':return [`New ${cnt}${r}${one}`,n>1?esc(names(gr.items)):'Not there in '+esc(CM.release)+'.'];
+    case 'added':return [`New ${cnt}${n===1&&/^\d+$/.test(c.newText||'')?'number':r}${one}`,n>1?esc(names(gr.items)):'Not there in '+esc(CM.release)+'.'];
     case 'removed':return [`Gone: ${cnt}${r}${one}`,n>1?esc(names(gr.items)):'It was there in '+esc(CM.release)+'.'];
     // WHY its own line (2026-11-07 release audit): pushed below a scrolling edge is not gone
-    case 'scrolled':return c.way==='out'?[`Pushed further down: ${cnt}${r}${one}`,(n>1?esc(names(gr.items))+'. ':'')+'Still there, below what the picture shows.']:[`Now in view: ${cnt}${r}${one}`,(n>1?esc(names(gr.items))+'. ':'')+'It was further down in '+esc(CM.release)+'.'];
+    case 'scrolled':return c.way==='out'?[`Out of view now: ${cnt}${r}${one}`,(n>1?esc(names(gr.items))+'. ':'')+'Still on the screen, scrolled away or covered.']:[`Now in view: ${cnt}${r}${one}`,(n>1?esc(names(gr.items))+'. ':'')+'It was out of view in '+esc(CM.release)+'.'];
     case 'text':return [`New ${fieldW} on ${r?'the '+r:'the screen'}${c.name&&c.kind==='text'&&c.role?' “'+esc(c.name)+'”':''}`,wordsHTML(c)];
     case 'moved':return [`${n>1?cnt+r:(r||'Something')[0].toUpperCase()+(r||'something').slice(1)+one} ${n>1?'are':'is'} ${esc(shiftWords(c))}`,n>1?esc(names(gr.items)):''];
     case 'restyled':return [`New look: ${cnt}${r}${one}`,'Its '+(c.styleChanges||[]).map(x=>PROPW[x.prop]||x.prop).join(', ')+(n>1?' · '+esc(names(gr.items)):'')];
-    case 'shift':return [`Everything below this line moved ${gr.dy>0?'down':'up'} ${px(gr.dy)} px`,''];
+    case 'shift':return [`Below this point, everything sits ${px(gr.dy)} px ${gr.dy>0?'lower':'higher'}`,'Something above it got '+(gr.dy>0?'taller':'shorter')+'.'];
     // WHY short (2026-11-07 review): the marks already show where; the line only has to say there is more
     default:return [n>1?`Other visual changes in ${n} places`:'Another visual change','']}}
 function boxStyle(b,t){return `left:${b.x/t.vw*100}%%;top:${b.y/t.vh*100}%%;width:${b.w/t.vw*100}%%;height:${b.h/t.vh*100}%%`}
@@ -455,9 +478,11 @@ function cmpHTML(g,st){const ch=st.ch||{};
   const sides=DZOOM?[DZOOM]:['before','after'];
   const body=`<div class="cmppics${sides.length===1?' one':''}">${sides.map(sd=>cmpPic(g,st,t,sd,list)).join('')}</div>`;
   const rows=list.map((gr,gi)=>{const [a,b]=rowText(gr);return `<button class="row rowbtn slim cmprow" data-g="${gi}" data-tip="${T('cmp.row')}"><div class="body"><div class="t-xs">${a}</div>${b?`<div class="hint wrap">${b}</div>`:''}</div></button>`}).join('');
-  const left=g.states.length-chg.length;
+  // WHY counted apart (2026-11-07 review): new situations and ones the release has no picture of are not "the same"
+  const by=k=>g.states.filter(x=>stSince(x)===k).length,nS=by('same'),nN=by('new'),nB=by('nobefore');
+  const sit=(n,w)=>n===1?`1 other situation ${w[0]}`:`${n} other situations ${w[1]}`;
   const also=[th.length===1&&same.length?`Only in ${esc(themeName(DTH))}; ${same.map(x=>esc(themeName(x))).join(', ')} looks the same.`:'',
-    left?(left===1?'1 other situation looks the same.':left+' other situations look the same.'):''].filter(Boolean).join(' ');
+    nS?sit(nS,['looks the same.','look the same.']):'',nN?(nN===1?'1 situation is new.':nN+' situations are new.'):'',nB?(nB===1?`1 has no ${esc(CM.release)} picture.`:`${nB} have no ${esc(CM.release)} picture.`):''].filter(Boolean).join(' ');
   const note=`Red = ${esc(CM.release)}, green = now. Tap a line to find it.${also?' '+also:''}`;
   const steady=t.unstable?`<p class="t-xs muted">Moving parts (animations, clocks) were left out.</p>`:'';
   const listHTML=`<section class="cmplist"><div class="sechead"><div class="gtext"><h3 class="gh">What changed<span class="cnt" data-tip="${T('cmp.count')}">${list.length}</span></h3><p class="gdesc">${note}</p></div></div>${rows}${steady}</section>`;
