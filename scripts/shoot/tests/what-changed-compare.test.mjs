@@ -232,3 +232,16 @@ test('a piece pushed below a scrolling edge is "scrolled", not removed; one real
   assert.deepEqual(changes.map((c) => [c.kind, c.name]).sort(), [['removed', 'Old thing'], ['scrolled', 'Clear'], ['scrolled', 'Saved sign-ins']]);
   assert.ok(changes.every((c) => !('key' in c)));
 });
+
+test('a tiny speck on the backdrop is ignored; the same speck on a piece of the screen is kept', () => {
+  const blank = pic(200, 100, () => null), speck = pic(200, 100, (x, y) => (x >= 120 && x < 124 && y >= 50 && y < 54 ? [30, 30, 30] : null));
+  assert.deepEqual(compareScreen(side(blank), side(speck), 1, {}, { els: [] }).changes, []);
+  const button = el('control', 'button', 'Go', 110, 40, 30, 20);
+  assert.equal(compareScreen(side(blank, [button]), side(speck, [button]), 1, {}, { els: [button] }).changes.length, 1);
+});
+
+test('a terminal block cursor is ignored on a terminal screen only', () => {
+  const blank = pic(200, 100, () => null), cursor = pic(200, 100, (x, y) => (x >= 60 && x < 69 && y >= 40 && y < 60 ? [20, 20, 20] : null));
+  assert.equal(compareScreen(side(blank), side(cursor), 1, {}, { ignoreCaret: 'block' }).changes.length, 0);
+  assert.equal(compareScreen(side(blank), side(cursor), 1, {}, { ignoreCaret: 'line' }).changes.length, 1);
+});

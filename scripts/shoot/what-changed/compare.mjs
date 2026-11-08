@@ -377,7 +377,11 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
       if (rode && ea.box.w * ea.box.h < 0.05 * area) boxes.push({ x: (ea.box.x - RIDE) * scale, y: (ea.box.y - RIDE) * scale, w: (ea.box.w + 2 * RIDE) * scale, h: (ea.box.h + 2 * RIDE) * scale });
     }
   }
-  for (const b of ignored) boxes.push({ x: (b.x - PAD) * scale, y: (b.y - PAD) * scale, w: (b.w + 2 * PAD) * scale, h: (b.h + 2 * PAD) * scale });
+  // WHY wider sideways (2026-11-07: the thinking bubble's random phrase is ignored as words, yet the bubble around
+  // it grew with the longer phrase and its edge was marked): words that change by themselves take their bubble
+  // (24 px sideways, 12 px up and down: the bubble's padding; measured on the Meadow Mist thinking bubble)
+  const SIDE = 24, UPDOWN = 12;
+  for (const b of ignored) boxes.push({ x: (b.x - SIDE) * scale, y: (b.y - UPDOWN) * scale, w: (b.w + 2 * SIDE) * scale, h: (b.h + 2 * UPDOWN) * scale });
   clearBoxes(mask, A.width, A.height, boxes);
   let found = regions(mask, A.width, A.height);
   // Many scattered differences and no shift from the elements: try a shift found from the pixels.
@@ -403,7 +407,14 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
   }
   // WHY (Office editor caret): the editor draws a blinking text cursor on its own canvas, which no style
   // can hide. A region a few pixels wide and one text line tall on an office screen is that cursor.
-  if (opts.ignoreCaret) { const n = found.length; found = found.filter((r) => !(r.w <= 5 * scale && r.h <= 26 * scale)); unstable += n - found.length; }
+  // The terminal's block cursor is wider than a text caret, so its limit is wider (2026-11-07: chat/terminal).
+  if (opts.ignoreCaret) { const wide = opts.ignoreCaret === 'block' ? 12 : 5; const n = found.length; found = found.filter((r) => !(r.w <= wide * scale && r.h <= 26 * scale)); unstable += n - found.length; }
+  // WHY (2026-11-07: a 4 px speck drifting in the Halftone backdrop marked two status-bar screens): a speck this
+  // small that touches no piece of the screen is backdrop. One inside a piece (a status dot on a button) stays.
+  if (opts.els) {
+    const inEl = (r) => opts.els.some((e) => r.x / scale < e.box.x + e.box.w && e.box.x < (r.x + r.w) / scale && r.y / scale < e.box.y + e.box.h && e.box.y < (r.y + r.h) / scale);
+    const n = found.length; found = found.filter((r) => !(r.w <= 5 * scale && r.h <= 5 * scale && !inEl(r))); unstable += n - found.length;
+  }
   // WHY (flicker filter): `repeat.before/after` are a second picture of the same screen from the
   // SAME side. Where a side's own two pictures differ, that side is unstable (a glow, a blinking
   // thing, a late-loading image), so a difference there says nothing about the release. A change
@@ -418,7 +429,10 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
     if (shaky > pixMoved / 5) { shift = 0; shiftFromY = 0; unstable += 1; }
   }
   if (flicker) {
-    const kept = found.filter((r) => !touches(flicker, A.width, A.height, r, 4));
+    // WHY 12 CSS px (2026-11-07: the thinking bubble's spinner dots sat just beside its flickering phrase and were
+    // marked): a spot this close to one that changes by itself belongs to the same moving thing
+    const near = Math.round(12 * scale);
+    const kept = found.filter((r) => !touches(flicker, A.width, A.height, r, near));
     unstable += found.length - kept.length; found = kept;
     const css = (b) => ({ x: b.x * scale, y: b.y * scale, w: b.w * scale, h: b.h * scale });
     const stays = (c) => !(c.box && touches(flicker, A.width, A.height, css(c.box), 4)) && !(c.beforeBox && touches(flicker, A.width, A.height, css(c.beforeBox), 4));
@@ -547,7 +561,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     const b = side(B, 'before'), a = side(A, 'after');
     const scale = a.meta?.scale ?? meta.scale ?? 1.5;
     const again = (map) => (map.has(key) ? PNG.sync.read(readFileSync(map.get(key))) : null);
-    const r = compareScreen(b, a, scale, { before: again(B2), after: again(A2) }, { ignoreCaret: name.startsWith('office/') });
+    const r = compareScreen(b, a, scale, { before: again(B2), after: again(A2) }, { ignoreCaret: name.startsWith('office/') ? 'line' : name.startsWith('chat/terminal') ? 'block' : false, els: [...(b.elements ?? []), ...(a.elements ?? [])] });
     const vp = a.meta?.viewport ?? { w: a.png.width / scale, h: a.png.height / scale };
     const inside = keepInsidePanel(r.changes, panB.get(key), panA.get(key), vp.w, vp.h);
     // A shift that lies outside the panel (the page behind moved) is the page's business too.
