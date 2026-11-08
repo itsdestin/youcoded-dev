@@ -1,0 +1,57 @@
+{
+  "title": "Automations: permissions, and simpler settings",
+  "key": "pages-finish-step4-plan-c",
+  "out": "pages-finish-step4-plan-c.review.html",
+  "images": "images/pages-finish-step4-plan-c.review",
+  "runs": { "after": "runs-plan-c/after" },
+  "steps": [
+    {
+      "id": "C-rules", "surface": "Automations", "path": "Automation details → Rules",
+      "crop": "automations/details#lower", "new": true,
+      "headline": "The lower settings are now one Rules list: a plain label on the left, its value as a pill you click to change.",
+      "changed": "N-lower (\"very convoluted … unclear what these labels/buttons mean\"): the tab strips, dropdowns and three separate boxes became five rows in the same style as permissions. A choice that needs words (another time, other instructions) opens a box under its row.",
+      "notice": "The Notifications card is gone: system notifications are built later, all together (your Q-notify-menu answer)."
+    },
+    {
+      "id": "C-perm", "surface": "Automations", "path": "Automation details → Permissions → Add a permission",
+      "crop": "automations/details#add-menu", "new": true,
+      "headline": "Each permission you add becomes one exact rule, given only to that job's runs.",
+      "changed": "\"See the files in a folder: ~/Downloads\" lets it read inside Downloads and nowhere else. \"Run one command: du -sh ~/Downloads\" allows that exact command, no other. \"Visit one website: bestbuy.com\" reaches that site only. \"Read this page's information\" works on that page only.",
+      "notice": "Gmail and other services appear in this menu once step 5's sign-ins exist; until then it lists this page, your computer and the internet.",
+      "risk": "The step after picking a folder, website or command (typing which one) is still not drawn; it will be on the deck after the build."
+    },
+    {
+      "id": "C-apart", "words": true, "surface": "Automations", "path": "Automations and your chats",
+      "headline": "A job starts with none of your chats' permissions, and nothing a job is allowed ever reaches a chat.",
+      "changed": "Claude jobs start Claude Code in its restricted mode, which ignores the settings files your chats use and gets only this job's rules, folders and tools. ChatGPT / OpenRouter jobs give YouCoded's assistant the job's list in place of a chat's.",
+      "notice": "So an \"Always allow\" you clicked in a chat never applies to an automation, and the other way round.",
+      "yes": "Clear", "no": "Still unclear"
+    },
+    {
+      "id": "C-edge", "words": true, "surface": "Automations", "path": "What happens when a run tries something",
+      "headline": "Every action a run tries lands in one of three places: allowed, asks first, or not on the list.",
+      "changed": "On the list as Always allowed: it happens. On the list as Asks first: the \"Asks first items\" rule decides (wait for you, or skip it). Not on the list: \"Other websites\" or \"Other commands and files\" decides (Never refuses it, Asks first treats it like an Asks first item).",
+      "notice": "Example: the price watch lists bestbuy.com; trying amazon.com is \"not on the list\", so with Never it's refused, the run carries on, and its run box says what was refused.",
+      "yes": "Clear", "no": "Still unclear"
+    },
+    {
+      "id": "Q-unlisted-one", "words": true, "surface": "Automation details", "path": "Permissions → Other websites / Other commands and files",
+      "headline": "Combine \"Other websites\" and \"Other commands and files\" into one row: \"Anything not listed\"?",
+      "today": "Two rows decide what happens to things not on the list: one for websites, one for your computer.",
+      "problem": "Two rows for one idea adds to the clutter, and most jobs want the same answer for both.",
+      "proposal": "Pick one row or two.",
+      "options": [
+        { "id": "one", "label": "One row", "recommended": true, "pros": ["One fewer row; the idea reads at once."], "cons": ["A job that should ask about websites but refuse commands can't say so."] },
+        { "id": "two", "label": "Keep two", "pros": ["Websites and your computer can be treated differently."], "cons": ["One more row to understand."] }
+      ]
+    },
+    {
+      "id": "Q-other", "words": true, "surface": "Automations", "path": "Permissions and settings",
+      "answer": "words", "prompt": "Anything still unclear, or to change",
+      "headline": "Anything about permissions or these settings still unclear?",
+      "today": "This deck covers how permissions work and the simplified settings.",
+      "problem": "Something may still be unclear.",
+      "proposal": "Type it here."
+    }
+  ]
+}
