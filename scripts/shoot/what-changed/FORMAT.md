@@ -12,6 +12,7 @@ Change this file first when a part needs a new field.
 ```
 <run>/
   run.json                             written by what-changed.mjs: { before: {label, commit, dir}, after: {...} } (labels for changes.json)
+                                       plus photoCopy: {dir, borrowed, standIns} when the release side is its photo copy (what-changed/photo-copy.mjs)
   changes.json                         the comparer's result (below)
   before/<screen name>/<theme>.png     shoot's own --before/--after layout, untouched
   before/<screen name>/<theme>.elements.json

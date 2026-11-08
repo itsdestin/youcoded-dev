@@ -10,6 +10,7 @@
 //   --after   the current code: a worktree or folder, as for shoot (default: this workspace's youcoded/)
 //   --only    screen names/globs to limit the run (default: every screen); repeatable
 //   --out     run folder (default: scratch/what-changed/<since>-<timestamp>)
+//   --no-photo-copy  photograph the release with only its own, older screen list (default: the release's code with today's photo-only machinery, what-changed/photo-copy.mjs)
 //   --compare-only <run>   skip the shooting and redo only the comparison of an existing run (uses its before-2/ after-2/ repeat pictures if present)
 // Remove the release checkout when done:  git -C youcoded worktree remove --force scratch/release-<tag>
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -17,6 +18,7 @@ import { spawnSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { latestReleaseTag, prepareReleaseCheckout } from './what-changed/release-checkout.mjs';
+import { preparePhotoCopy } from './what-changed/photo-copy.mjs';
 import { compareRun, summaryLine } from './what-changed/compare.mjs';
 import { resolveCheckout } from './engine.mjs';
 
@@ -24,11 +26,12 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
 const die = (m) => { console.error(`what-changed: ${m}`); process.exit(2); };
 
-const opt = { since: null, after: null, themes: null, out: null, only: [], compareOnly: null };
+const opt = { since: null, after: null, themes: null, out: null, only: [], compareOnly: null, photoCopy: true };
 const args = process.argv.slice(2);
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => args[++i] ?? die(`${a} needs a value`);
   if (a === '--since') opt.since = next(); else if (a === '--after') opt.after = next(); else if (a === '--themes') opt.themes = next();
+  else if (a === '--no-photo-copy') opt.photoCopy = false;
   else if (a === '--out') opt.out = resolve(next()); else if (a === '--only') opt.only.push(next()); else if (a === '--compare-only') opt.compareOnly = resolve(next());
   else if (a === '-h' || a === '--help') { console.log(spawnSync('sed', ['-n', '2,16p', fileURLToPath(import.meta.url)], { encoding: 'utf8' }).stdout.replace(/^\/\/ ?/gm, '')); process.exit(0); }
   else die(`unknown option ${a}`);
@@ -67,6 +70,16 @@ let afterCheckout;
 try { afterCheckout = opt.after ? resolveCheckout(opt.after) : resolveCheckout(WORKSPACE); } catch (e) { die(e.message); }
 let before;
 try { before = prepareReleaseCheckout({ appRepo, tag, afterCheckout, scratchRoot: join(WORKSPACE, 'scratch') }); } catch (e) { die(e.message); }
+// WHY the photo copy (Destin, 2026-11-08: "get the screenshots from 1.3.3 for everything"): the release's own app
+// code with today's photo-only machinery over it, so the release side can open every screen today's list knows
+// (what-changed/photo-copy.mjs says what is laid over and why nothing of the release's app changes).
+// --no-photo-copy photographs the release with only its own, older screen list.
+let photo = null;
+if (opt.photoCopy) {
+  try { photo = { dir: preparePhotoCopy({ releaseDir: before.dir, afterCheckout, root: join(WORKSPACE, 'scratch', 'release-photo') }) }; } catch (e) { die(e.message); }
+  photo.info = JSON.parse(readFileSync(join(photo.dir, 'photo-copy.json'), 'utf8'));
+  before = { ...before, releaseDir: before.dir, dir: photo.dir };
+}
 
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);
 const out = opt.out ?? join(WORKSPACE, 'scratch', 'what-changed', `${tag}-${stamp}`);
@@ -74,8 +87,9 @@ mkdirSync(out, { recursive: true });
 const rev = (dir, ...a) => spawnSync('git', ['-C', dir, ...a], { encoding: 'utf8' }).stdout.trim();
 // WHY run.json: the comparer names both sides in changes.json from it (labels and commits).
 writeFileSync(join(out, 'run.json'), JSON.stringify({
-  before: { label: tag, commit: rev(before.dir, 'rev-parse', '--short', 'HEAD'), dir: before.dir },
+  before: { label: tag, commit: rev(before.releaseDir ?? before.dir, 'rev-parse', '--short', 'HEAD'), dir: before.dir },
   ...(before.packagesDiffer?.length ? { packagesDiffer: before.packagesDiffer } : {}),
+  ...(photo ? { photoCopy: { dir: photo.dir, borrowed: photo.info.borrowed, standIns: photo.info.standIns } } : {}),
   after: { label: rev(afterCheckout, 'branch', '--show-current') || 'current code', commit: rev(afterCheckout, 'rev-parse', '--short', 'HEAD'), dir: afterCheckout },
 }, null, 1));
 
