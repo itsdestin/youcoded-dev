@@ -1,0 +1,634 @@
+{
+  "title": "Your chats on every device — follow-ups after checking the code",
+  "key": "mesh-sync-questions-2",
+  "out": "mesh-sync.questions-2.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "The whole design",
+      "headline": "The design is for every user's devices. Yours are only the test case.",
+      "changed": "Stated, not asked: the first deck was written around your laptop, desktop and phone. The design itself is written for any mix of Windows, Mac, Linux and Android devices a user owns.",
+      "notice": "Nothing in the app will name or assume specific machines; every rule works for one device or ten.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "An open chat",
+      "path": "Any chat, on any of your devices",
+      "headline": "One device hosts a chat. Every other device shows it live and types into it, identical except for a chip naming the host.",
+      "changed": "Stated from your answers: a chat always runs on one device, its host. Other devices are windows onto it, word by word, with no separate copy to collide.",
+      "notice": "You stop noticing which device is doing the work. The chip is the only tell, and tapping it is the only way to move a chat while its host is online.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat whose host went offline",
+      "headline": "A host changes only when you tap the chip, or when the host is offline and you tap Continue here. The half-finished reply is dropped.",
+      "changed": "Stated from your answers: no automatic moves, no surprise switches, and the notice spells out what the new device may lack before you continue.",
+      "notice": "A chat whose host is away sits readable with a notice until you decide. Nothing happens behind your back.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-4",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "The current handoff and takeover code",
+      "headline": "The current handoff and takeover system is replaced, not patched. No fixes to it ship before the new design is agreed.",
+      "changed": "Stated from your answer on phasing: the roughly 1,600 lines that do today's 25-second handoff, takeover dialogs and moved-gate are retired by the new design rather than improved first.",
+      "notice": "Today's warnings and occasional lost messages stay as they are until the new system lands. The two lost Nov 5 exchanges stay in their conflict copies, per your No.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-2",
+      "page": "How devices reach each other",
+      "intro": "Live word-by-word viewing needs a connection between two devices at that moment. Today the only such link is Tailscale, which most users will never install."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Backup & Sync and Remote access in settings",
+      "headline": "How should a user's devices connect for live viewing?",
+      "today": "A phone can watch a computer only over Tailscale, a separate app the user installs and signs into on every device. Home wifi is refused on purpose since the Oct 30 security review. The sync service already gives every signed-in account a private online room, but it carries only tiny notices.",
+      "problem": "Asking every user to install Tailscale rules out most of them. Any other path is new work and has its own cost.",
+      "proposal": "Pick every path the app should support. The recommended one is the path that works for everyone with no setup.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "cloud-relay",
+          "label": "Through YouCoded's own service",
+          "pros": [
+            "Works from anywhere with nothing to install; signing in to the app is the only setup.",
+            "The account room, sign-in and device identities already exist; the relay part is new."
+          ],
+          "cons": [
+            "Every live word passes through a server you pay for, so cost grows with users.",
+            "Needs the next question's answer on encryption."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "direct-with-meeting-point",
+          "label": "Direct, with the service as introducer",
+          "pros": [
+            "Devices talk to each other directly after the service introduces them, so the server carries almost nothing."
+          ],
+          "cons": [
+            "Direct connections fail behind many home routers and phone networks, so a relay is still needed as a fallback; the most complex option to build."
+          ]
+        },
+        {
+          "id": "tailscale",
+          "label": "Tailscale",
+          "pros": [
+            "Already works for the phone today; private, no server of yours involved."
+          ],
+          "cons": [
+            "Users must install and sign in to a second app on every device; computer-to-computer viewing is still new work."
+          ]
+        },
+        {
+          "id": "home-wifi",
+          "label": "Same home wifi, directly",
+          "pros": [
+            "Fast and free when both devices are at home."
+          ],
+          "cons": [
+            "Reverses the Oct 30 decision unless the link is encrypted first; useless away from home."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Anything that passes through YouCoded's service",
+      "headline": "If live chat text passes through YouCoded's service, may the service be able to read it?",
+      "today": "Sync already stores conversations in the user's own private GitHub space, which GitHub can read. The sync service itself sees only notices, never chat text.",
+      "problem": "A relay that can read chats is simpler to build and lets you debug it. One that cannot read them protects users from you, from a breach, and from legal requests, but if a user loses every device their key is gone with it.",
+      "proposal": "Pick what the service may see.",
+      "options": [
+        {
+          "id": "end-to-end",
+          "label": "Service cannot read chats",
+          "pros": [
+            "Matches the Oct 30 intent: conversations never travel readable.",
+            "A breach of the service exposes no chat text."
+          ],
+          "cons": [
+            "Key management is new work: a key per account, handed to each new device at sign-in.",
+            "Lose every device and the live link's key is gone; the GitHub backup still restores the chats themselves."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "transport-only",
+          "label": "Encrypted in transit only",
+          "pros": [
+            "Simpler and quicker to build; easier to debug."
+          ],
+          "cons": [
+            "Your server could read every live chat; users must trust you not to."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Backup & Sync in settings",
+      "headline": "Who pays for the relay traffic?",
+      "today": "Sync is free because the user's own GitHub stores the files. The sync service's small notices cost you almost nothing.",
+      "problem": "Relaying live chats costs real money per active user per hour. A card already parks the idea of a paid tier for cloud sync.",
+      "proposal": "Pick how the cost is covered.",
+      "options": [
+        {
+          "id": "free-metered",
+          "label": "Free, with usage watched",
+          "pros": [
+            "Nothing in the way of users; you see the real cost before deciding anything."
+          ],
+          "cons": [
+            "You pay for everyone until you change course."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "paid-tier",
+          "label": "Part of a paid tier",
+          "pros": [
+            "Covers its own cost from day one."
+          ],
+          "cons": [
+            "Needs billing, which does not exist in the app; most users never see the feature."
+          ]
+        },
+        {
+          "id": "free-capped",
+          "label": "Free up to a monthly limit",
+          "pros": [
+            "Bounded cost."
+          ],
+          "cons": [
+            "A chat that stops streaming mid-month is a confusing failure."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "What travels with a chat",
+      "intro": "I inventoried everything a running chat holds beyond its messages. Most of it does not sync today, and some of it cannot."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "A chat continued on another device",
+      "headline": "How should a chat's surroundings move with it?",
+      "today": "Messages, titles and tags sync. A project folder under YouCoded Projects syncs as files to every device. Not synced: helper transcripts, undo history, memory notes, plans, saved tool output. Cannot move: running programs, open browser tabs, a half-answered permission prompt.",
+      "problem": "Your idea of a container per chat that moves between devices is one of three ways to get there, each with a different cost.",
+      "proposal": "Pick the mechanism to design around.",
+      "options": [
+        {
+          "id": "host-stays-plus-sync",
+          "label": "Host stays; sync the portable leftovers",
+          "pros": [
+            "While the host is online nothing needs to move at all, which is your chosen model.",
+            "Helper transcripts, undo history, notes and plans are plain files; syncing them is modest work."
+          ],
+          "cons": [
+            "Running programs and open browser tabs still die with an offline host; the Continue here notice says so."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "portable-bundle",
+          "label": "A portable bundle per chat",
+          "pros": [
+            "One package holds the chat, its files and history; move it and everything is there."
+          ],
+          "cons": [
+            "Duplicates the project's files per chat, so disk use multiplies.",
+            "Still cannot carry running programs."
+          ]
+        },
+        {
+          "id": "true-container",
+          "label": "A real container per chat",
+          "pros": [
+            "In principle the whole running environment, programs included, could pause on one device and resume on another."
+          ],
+          "cons": [
+            "Not possible on Android or plain Windows; heavy on every platform; months of work before the first chat moves."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "A chat continued on another device",
+      "headline": "Which extra pieces must follow a chat to its new host?",
+      "today": "Only the main messages and the chat's title, tags and notes travel. Everything below stays on the device that made it.",
+      "problem": "Each piece is separate work and some are keyed to one machine's folder layout, so they need rewriting on the way.",
+      "proposal": "Pick everything that must travel.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "helper-transcripts",
+          "label": "Helper transcripts",
+          "pros": [
+            "The assistant's side-workers' notes stay readable; a card already suspects their loss causes missed messages."
+          ],
+          "cons": [
+            "None beyond size."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "undo-history",
+          "label": "Undo history",
+          "pros": [
+            "Undo an edit made on the other device."
+          ],
+          "cons": [
+            "Keyed to the old device's exact folder paths, so it must be rewritten in transit; only meaningful for synced projects."
+          ]
+        },
+        {
+          "id": "memory-plans",
+          "label": "Memory notes and plans",
+          "pros": [
+            "The assistant remembers the same things about a project everywhere."
+          ],
+          "cons": [
+            "Keyed to a folder path today; needs a re-key."
+          ]
+        },
+        {
+          "id": "permission-rules",
+          "label": "Approved-permission rules",
+          "pros": [
+            "Say yes to a tool once, on any device."
+          ],
+          "cons": [
+            "Deliberately per machine today, because a phone and a work PC may deserve different trust."
+          ]
+        },
+        {
+          "id": "attachments",
+          "label": "Attached files and images",
+          "pros": [
+            "A photo sent from the phone is there when the desktop hosts the chat."
+          ],
+          "cons": [
+            "Live in temporary folders today; needs a permanent home per chat."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat whose old host comes back",
+      "headline": "You continued a chat elsewhere after its host went offline. When the old host comes back, what happens to its leftover half-reply?",
+      "today": "Not possible today; the nearest thing is a conflict copy the app never shows.",
+      "problem": "The old host still holds the cut-off reply you chose to drop. Left alone it would re-sync as a second version of the chat, the exact split you said must never happen.",
+      "proposal": "Pick what the returning device does, automatically, the moment it sees the chat moved on without it.",
+      "options": [
+        {
+          "id": "discard-tail",
+          "label": "Discard its leftover silently",
+          "pros": [
+            "No split ever appears; the chat is identical everywhere again.",
+            "What it discards is only the reply you already chose to drop."
+          ],
+          "cons": [
+            "If that reply had edited files on the old device, those edits remain there with no message explaining them."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "archive-tail",
+          "label": "Keep it as an archived fork",
+          "pros": [
+            "Nothing is ever deleted; you can read what the old host had said."
+          ],
+          "cons": [
+            "One archived entry per incident in the chat list, which is clutter for something you chose to drop."
+          ]
+        },
+        {
+          "id": "ask",
+          "label": "Ask on the returning device",
+          "pros": [
+            "You decide with the text in front of you."
+          ],
+          "cons": [
+            "A dialog on a device you may not be looking at, about a reply you already dropped."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "The phone",
+      "intro": "I checked what the phone can and cannot do today. It runs the same engine and the same sync as a computer, and it has synced project folders. Some tools are missing."
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "The phone app",
+      "path": "Any chat hosted on the phone",
+      "headline": "The phone is missing some tools today. How should this design treat that gap?",
+      "today": "The phone runs Claude Code and native chats with files, search, background commands, hooks and the same sync as a computer. Missing: the assistant's browser, Office, admin commands, a folder picker and access to the phone's own photos and downloads, local models, and helper programs such as Python or npm.",
+      "problem": "Full parity is a project of its own. This design can assume it, wait for it, or work around it.",
+      "proposal": "Pick how the two relate.",
+      "options": [
+        {
+          "id": "assume-parity",
+          "label": "Assume parity; close gaps separately",
+          "pros": [
+            "This design treats a phone exactly like a computer, as you want; the missing tools become their own work items and land in parallel."
+          ],
+          "cons": [
+            "Until they land, a chat hosted on the phone may fail a step a computer would have done, and the assistant says so."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "parity-first",
+          "label": "Close the gaps first",
+          "pros": [
+            "The phone is a full host on day one."
+          ],
+          "cons": [
+            "Delays every device feature by the time the phone work takes."
+          ]
+        },
+        {
+          "id": "viewer-until-parity",
+          "label": "Phone views only until parity",
+          "pros": [
+            "No half-working hosted chats on the phone."
+          ],
+          "cons": [
+            "Contradicts your parity goal in the meantime; a phone with every computer off can only read."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "The phone app",
+      "path": "Backup & Sync on the phone",
+      "headline": "Should every device hold every synced project, or only the ones it needs?",
+      "today": "Every device downloads every synced project in full, automatically, with no way to opt out. A phone with a 5 GB project downloads 5 GB.",
+      "problem": "Storage and data on a phone are scarce, yet hosting a project chat there needs the project's files present.",
+      "proposal": "Pick how projects spread across devices. You already chose list-then-open for chats; this is the same question for projects.",
+      "options": [
+        {
+          "id": "on-demand",
+          "label": "Download when a chat here needs it",
+          "pros": [
+            "A phone stays small until you host a project chat on it; then the project arrives first and the chat starts."
+          ],
+          "cons": [
+            "The first message to a project chat on a new device waits for the download, with a progress line."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "per-device-choice",
+          "label": "You choose per device",
+          "pros": [
+            "Full control: tick which projects each device holds."
+          ],
+          "cons": [
+            "A chat for an unticked project cannot be hosted there until you change the setting."
+          ]
+        },
+        {
+          "id": "everything",
+          "label": "Everything everywhere, as today",
+          "pros": [
+            "Any device can host any chat instantly."
+          ],
+          "cons": [
+            "Phones fill up; a big project blocks sync for a long time on first setup."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "The phone app",
+      "path": "A chat hosted on the phone with the screen off",
+      "headline": "How should the phone stay awake while it hosts a reply with the screen off?",
+      "today": "A background service keeps the engine running, but nothing holds the phone awake for a reply. Battery saving modes may pause it; this has never been measured. A 4-hour keep-awake exists only for remote access.",
+      "problem": "A reply paused mid-way looks like a vanished host to other devices. Holding the phone awake drains the battery.",
+      "proposal": "Pick the approach, knowing the first step is to measure what Android actually does.",
+      "options": [
+        {
+          "id": "per-reply-lock",
+          "label": "Awake only while a reply runs",
+          "pros": [
+            "Costs battery only during work; released the moment the reply ends, with a hard cap so it can never stick."
+          ],
+          "cons": [
+            "Some phones ignore it in strict battery modes; the measurement will tell."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "battery-exemption",
+          "label": "Ask to be exempt from battery saving",
+          "pros": [
+            "The most reliable way to keep running."
+          ],
+          "cons": [
+            "A scary system prompt at setup, and app stores frown on it without a clear reason."
+          ]
+        },
+        {
+          "id": "nothing",
+          "label": "Do nothing",
+          "pros": [
+            "No battery cost."
+          ],
+          "cons": [
+            "Replies hosted on the phone may stall whenever the screen turns off."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "Sleep, switching and forks",
+      "intro": "Three things the code research changed, and the two features you named: the chip and explicit forking."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "A computer going to sleep",
+      "headline": "Uploading before sleep: each system allows two to five seconds and a real upload takes far longer. What happens in that window?",
+      "today": "Closing the lid does nothing. An upload is a dozen steps and two trips to GitHub; sleep arrives first.",
+      "problem": "A full upload cannot fit. Holding the computer awake until it finishes is the stuck keep-awake you warned about.",
+      "proposal": "Pick what the sleeping device does with its few seconds.",
+      "options": [
+        {
+          "id": "tiny-note",
+          "label": "Send a tiny note, upload on wake",
+          "pros": [
+            "Fits easily: one short message to the service saying this device holds unsent messages for chat X.",
+            "Other devices show Laptop has newer messages instead of a stale chat; the real upload runs the moment it wakes."
+          ],
+          "cons": [
+            "The messages themselves stay on the sleeping device until it wakes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "try-full-upload",
+          "label": "Try the full upload anyway",
+          "pros": [
+            "Sometimes finishes on a fast connection."
+          ],
+          "cons": [
+            "Usually cut off halfway; a half upload is worse to reason about than none."
+          ]
+        },
+        {
+          "id": "hold-awake",
+          "label": "Hold the device awake until uploaded",
+          "pros": [
+            "The upload always completes."
+          ],
+          "cons": [
+            "A hung upload keeps the laptop awake in a bag; exactly the failure you named."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "An open chat",
+      "path": "The host chip on a chat",
+      "headline": "You tap the chip to move a chat to a device that does not have its project. What should the chip do?",
+      "today": "No chip exists. Today's handoff refuses outright with a project-missing error.",
+      "problem": "A device without the project's files cannot host a project chat properly, but refusing silently is confusing.",
+      "proposal": "Pick how the chip treats such a device.",
+      "options": [
+        {
+          "id": "fetch-then-switch",
+          "label": "Fetch the project there, then switch",
+          "pros": [
+            "Always works; the chip shows Preparing Desktop with progress, then the switch happens."
+          ],
+          "cons": [
+            "A big project means a wait, and that device now holds the project."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "grey-out",
+          "label": "Grey it out with the reason",
+          "pros": [
+            "Nothing surprising happens."
+          ],
+          "cons": [
+            "A dead end: you must fix it elsewhere first."
+          ]
+        },
+        {
+          "id": "allow-and-warn",
+          "label": "Allow it, with a warning",
+          "pros": [
+            "Your choice, immediately."
+          ],
+          "cons": [
+            "The assistant then answers about files it cannot see."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Chat list",
+      "path": "The resume browser",
+      "headline": "You asked for deliberate forking, like Claude Code has. When you open the original after forking it, what should happen?",
+      "today": "No fork feature exists in the app. Conflict copies are the only forks, and the app hides them.",
+      "problem": "An original and its fork share most of their text; opening the original by habit and continuing there creates two live versions again.",
+      "proposal": "Forks sit grouped under their original in the list. Pick what opening the original does.",
+      "options": [
+        {
+          "id": "warn-offer",
+          "label": "Warn, offer to archive it",
+          "pros": [
+            "Your words from the first deck: a notice that it was forked and continued elsewhere, with Archive original and resume from fork as one tap, or continue here anyway."
+          ],
+          "cons": [
+            "One notice to read."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "auto-archive",
+          "label": "Archive the original automatically",
+          "pros": [
+            "Nothing to read; the list stays clean."
+          ],
+          "cons": [
+            "Removes a chat you may have forked precisely to keep both going."
+          ]
+        },
+        {
+          "id": "equal",
+          "label": "Treat both as equals",
+          "pros": [
+            "Simplest; both are just chats."
+          ],
+          "cons": [
+            "Nothing stops you from continuing both and losing track of which has what."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Everything above",
+      "headline": "Any rule I should check this design against that these two decks never asked about?",
+      "today": "Your first deck's answers plus this one cover scope, connection, what travels, the phone, sleep, switching and forks.",
+      "problem": "The next step is rewriting the design document from these answers. A rule I do not know cannot be written in.",
+      "proposal": "Write it in a line, or leave it empty.",
+      "answer": "words",
+      "prompt": "e.g. never ask me to install anything"
+    }
+  ]
+}
