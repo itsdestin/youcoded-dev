@@ -90,6 +90,15 @@ export function preparePhotoCopy({ releaseDir, afterCheckout, root }) {
     const cp = spawnSync('cp', ['-al', nm, join(dest, 'desktop', 'node_modules')], { encoding: 'utf8' });
     if (cp.status !== 0) throw new Error(`photo copy: linking node_modules failed: ${cp.stderr}`);
   }
+  // WHY also these two (2026-11-08: the first full run stopped at "the Office screens need the editor"): the
+  // release checkout already holds the fetched Office add-on and its compiled main process; the copy links them
+  // in (hardlinks, as node_modules) instead of rebuilding them, which needs a type check of the whole release.
+  for (const d of ['desktop/office-addon', 'desktop/dist']) {
+    if (existsSync(join(releaseDir, d)) && !existsSync(join(dest, d))) {
+      const cp = spawnSync('cp', ['-al', join(releaseDir, d), join(dest, d)], { encoding: 'utf8' });
+      if (cp.status !== 0) throw new Error(`photo copy: linking ${d} failed: ${cp.stderr}`);
+    }
+  }
   // WHY stand-ins (2026-11-08: today's practice pages name three parts 1.3.3's files do not have — the voice
   // "listening" strip, the buddy's separate bar buttons, the buddy window's large size): each missing name is
   // replaced, in the importing practice file only, by a stand-in that throws "not in this release" when used.
