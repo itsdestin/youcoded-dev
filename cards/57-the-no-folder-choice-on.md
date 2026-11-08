@@ -11,6 +11,7 @@ summary: Chats with no project folder: test the "No folder" choice, decide incog
 area: Chat
 side: both
 vision: projects.folder.nofolder, projects.folder.builtin
+work: session/android-ux-test
 ---
 Progress
 Done: nothing recorded.
@@ -18,6 +19,7 @@ Next: check it still happens.
 Blocked: nothing recorded.
 
 Chats
+- 2026-11-08 session/android-ux-test: Phone stopgap (card #213, youcoded 47d32af06): the phone no longer offers its app-private Home as a project, shows the No folder row, and opens a new session with no folder there. Destin 2026-11-08: fold the phone into this card's rethink of presets and no-folder sessions.
 
 From the old roadmap (native-harness › sessions, status needs-verify, seen on all, last checked 2026-09-19)
 **v1.3.1 release blocker.** The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested or thought through (Destin, 2026-09-19: "we didn't really like think that through… I didn't test it at all"). Test that it works, then turn it into an incognito mode; what incognito keeps and leaves out needs deciding. Goes with the "Your Assistant" item below
