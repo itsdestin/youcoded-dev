@@ -85,8 +85,11 @@ A leaked GitHub token of Destin's: he revokes it (first-minute list); then check
 
 ### 7. A serious known flaw (CVE) in something we bundle
 - The daily security watch opens a `security-watch` issue and pings the phone for High/Critical.
-- Fix in a branch (bump the version the issue names), and use the release process Destin approved for
-  severe fixes. **Releases happen only when Destin says so.**
+- The alert says "hotfix candidate". Destin answers by telling the assistant **"yes hotfix"**
+  (decided 2026-11-07, option A over a one-tap release button that would skip review). Then: fix in a
+  branch (bump the version the issue names), run the usual checks and a fresh code review, write the
+  release notes, and follow youcoded-admin's hotfix release steps. **Destin gives the final go before
+  anything is released.**
 
 ### 8. Someone reports a vulnerability privately
 - GitHub private vulnerability reporting is on for every repo (Security → Advisories).
