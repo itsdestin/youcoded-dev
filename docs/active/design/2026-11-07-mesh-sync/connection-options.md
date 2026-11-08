@@ -193,7 +193,7 @@ online for the first time" but "do we add a second server, and can we make it bl
 | Many "encrypted" apps | Message bodies written into server logs or analytics in the clear. | Must be a rule with a test: no frame body is ever logged. Sealed bodies make a slip unreadable anyway. |
 | Home-made encryption | Reusing a number that must never repeat, or sealing without a check that the message was not altered or replayed. | Avoided by using a standard library's authenticated sealing with a fresh random number per message, and putting the sender and a sequence number inside the sealed part. |
 | Stolen sign-in token | A token copied from a device lets a stranger join the account's room. | Today a token lives 90 days idle. With sealing, a thief gets sealed blobs and timing only. Settings must let the user remove a device, which kills its token. |
-| GitHub account taken over | The attacker signs in to the app on a new device, which then downloads the sync repository. | Already true today: the repository holds every chat readable. Sealing with a key kept in that repository does not change this; a stronger pairing step (next section) would. |
+| GitHub account taken over | The attacker signs in to the app on a new device, which then downloads the sync repository. | Already true today: the repository holds every chat readable. Device pairing keeps the live path closed to that device, and sealing the repository too would close the gap entirely. |
 
 What they have in common: the builder either promised a word with a strict meaning, or trusted a
 default they did not understand. None of them were broken ciphers.
@@ -204,15 +204,28 @@ default they did not understand. None of them were broken ciphers.
   libsodium are the two standard choices; both are used by far bigger apps. We write no cipher.
 - **The pipe.** Cloudflare's encrypted connections, the per-account room and the sign-in token
   check already exist and were audited on Oct 30.
-- **The key, simplest design.** One key per account, created on the first device and stored as a
-  small file in the user's existing private sync repository, which every device already
-  downloads. No new pairing screens, no key-exchange protocol of our own, so the fewest ways to be
-  wrong. Honest limit: GitHub holds the key beside the chats it already holds. Removing a device
-  means making a new key.
-- **The key, stronger design.** Pair every new device by approving it from an existing one, the
-  way WhatsApp and Signal do. Libraries exist (Signal's, Matrix's) but they are large, and the
-  flow adds screens and support cases. Worth it only if we want to stop trusting GitHub, which
-  Backup & Sync does not do today.
+- **Rule (Destin, 2026-11-08): a key is never synced to GitHub or stored on any server.** A
+  key is made on a device and reaches another device only through a step the user performs.
+  The earlier "key file in the sync repository" idea is rejected.
+- **The key, three ways that respect the rule.**
+  1. *Pair by code.* A new device shows a short code or QR; an existing device scans or types
+     it and hands over the account key sealed so only that new device can open it. The server
+     relays sealed handshakes it cannot read; the code is what stops a stranger or the server
+     from slipping in. This is how WhatsApp and Signal link devices. Needs one existing device
+     awake. Standard libraries cover the sealing; the screens are ours.
+  2. *Passphrase.* The user types one sync passphrase on each device; the key is derived from it
+     on the device and never sent. No second device needed. Costs: a forgotten passphrase ends
+     live sync on new devices until reset; a weak passphrase is guessable by anyone holding the
+     sealed messages; one more thing to explain at setup.
+  3. *Both.* Pair by code normally; the passphrase as the recovery path when no other device
+     is reachable.
+- **Reuse.** Sealing, key pairs and derivation from a passphrase all come from libsodium or the
+  built-in library. The full Signal protocol (forward secrecy between devices) is far more than
+  a person's own devices need and would be the heaviest thing in the app.
+- **The same rule applied to Backup & Sync.** Once keys live only on devices, the chat files
+  on GitHub could be sealed the same way, closing today's "readable on GitHub" gap. That is a
+  larger change: GitHub becomes blind, and losing every device with no passphrase means the
+  chats are gone, so a recovery phrase step becomes mandatory.
 - **Option B reuses the most.** Tailscale is WireGuard, audited for years, and has a setting
   ("Tailnet lock") that stops even Tailscale from adding a device. Our part is the remote-access
   server that already passed the Oct 30 audit.
@@ -220,9 +233,9 @@ default they did not understand. None of them were broken ciphers.
 ### What we can honestly promise, and when
 
 - Today, truthfully: "Your chats sync through your own private GitHub repository."
-- With the simple key design: "Live updates pass through our server sealed on your devices; the
-  server relays and stores sealed messages it cannot read. Your GitHub repository holds your chats
-  and the key, as it does today."
+- With device pairing: "Live updates pass through our server sealed by keys that exist only on
+  your devices; the server relays and stores sealed messages it cannot read. Your GitHub
+  repository holds your chats as it does today."
 - "End-to-end encrypted" as a headline claim only after an outside review by a person. A written
   design, open code and a test that the server has no path to the key are the minimum before
   saying it anywhere. Zoom's lesson is that the word gets checked.
