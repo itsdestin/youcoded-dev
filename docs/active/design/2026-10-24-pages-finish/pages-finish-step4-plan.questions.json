@@ -1,0 +1,258 @@
+{
+  "title": "Automations: the build plan, one piece at a time",
+  "key": "pages-finish-step4-plan",
+  "out": "pages-finish-step4-plan.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-story",
+      "page": "One job, start to finish",
+      "intro": "The job: \"Every morning at 8, check my spending and email me if anything looks off.\" Reads the Money page (Always allowed), sends email (Asks first), OpenRouter, $5 a month."
+    },
+    {
+      "id": "S-make", "words": true, "surface": "Automations", "path": "A chat, or Automations → New automation",
+      "headline": "You make it from a chat or with New automation; Create saves it switched on.",
+      "changed": "In a chat, the assistant fills in the short check popup; Turn on saves it. Nothing runs before that.",
+      "notice": "Checked by: you, in the dev window. Ask a chat, press Turn on, see the card appear.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-start", "words": true, "surface": "Automations", "path": "8:00, nobody watching",
+      "headline": "At 8:00 it starts by itself, with no chat opening, as long as YouCoded is open.",
+      "changed": "If the computer was off at 8:00, the job's Missed runs setting decides: run once when it wakes, skip, or run differently. Three missed mornings make one run, not three.",
+      "notice": "Checked by: a test with a pretend clock. At 8:00 exactly one run starts; three days later, exactly one run.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-allowed", "words": true, "surface": "Automations", "path": "The run reads the Money page",
+      "headline": "Things set to Always allowed just happen; anything not on the job's list is refused.",
+      "changed": "Reading the Money page goes through. Another website or a command it wasn't given is refused, because new jobs start with both \"Other\" settings at Never.",
+      "notice": "Checked by: a test where a pretend assistant tries one allowed and one unlisted thing.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-asks", "words": true, "surface": "Automations", "path": "The run wants to send an email",
+      "headline": "Something set to Asks first pauses the run, notifies you and puts the job under Waiting for you.",
+      "changed": "A notification on your computer and phone, the orange dot on the Pages button, and the job moves to the top group. Closing the app keeps it waiting.",
+      "notice": "Checked by: tests that the run stops at that step, shows Waiting, and is still waiting after a restart.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-answer", "words": true, "surface": "Automations", "path": "Automation details → Allow / Don't allow",
+      "headline": "Allow carries on, Don't allow skips that step, and no answer in time does what the job says.",
+      "changed": "\"Wait up to\" ends with: skip that step, stop the run, or do something else you wrote.",
+      "notice": "Checked by: one test per choice, and you clicking a real notification once in the dev window.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-done", "words": true, "surface": "Automations", "path": "Automation details → Runs",
+      "headline": "A finished run is kept under its job with its whole conversation, and never shows among your chats.",
+      "changed": "One box per run: when, result, cost, what it did, Open conversation (read-only). Not in your chat list, Resume, chat search or the phone's chat list. Last 50 kept.",
+      "notice": "Checked by: a test that after a run nothing new appears in any of those lists.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-limit", "words": true, "surface": "Automations", "path": "The month's spending reaches $5",
+      "headline": "At the limit the run stops before its next step and shows Limit reached with the real amount.",
+      "changed": "The step already going finishes, so it can end a few cents over. A Claude job has no limit and shows tokens used instead.",
+      "notice": "Checked by: a test at 3¢ a step against 10¢ that must stop after step 4 at 12¢, and you trying a real 1¢ limit.",
+      "yes": "Right", "no": "Change this"
+    },
+
+    {
+      "id": "P-plugs",
+      "page": "Where it plugs into the app",
+      "intro": "Every place outside the Automations page that changes. Anything not listed here stays exactly as it is."
+    },
+    {
+      "id": "S-pagesbtn", "words": true, "surface": "Top bar", "path": "The Pages button",
+      "headline": "The Pages button gets an orange dot while any automation is waiting for you.",
+      "changed": "It goes away once nothing is waiting.",
+      "notice": "Same dot on the job's page in the Pages list.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-pagesettings", "words": true, "surface": "Pages", "path": "A page → Settings",
+      "headline": "A page's Settings lists that page's automations with their switches and Open in Automations.",
+      "changed": "Only jobs that belong to that page.",
+      "notice": "Already drawn in round 1.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-pagebtn", "words": true, "surface": "Pages", "path": "A button on a page",
+      "headline": "A page can have a button that runs one of its own automations, with a spinner and a waiting dot.",
+      "changed": "The page kit draws the spinner and dot, so they look the same on every page. A page can also say \"something happened\" to start its own jobs.",
+      "notice": "Checked by: you, pressing the Money page's check button in the dev window.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-chat", "words": true, "surface": "Chat", "path": "Any chat",
+      "headline": "In any chat, the assistant can offer to turn a request into an automation.",
+      "changed": "It opens the approved check popup. Works in Claude chats and ChatGPT / OpenRouter chats alike.",
+      "notice": "The assistant only offers it when you ask for something repeated or scheduled.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-notify", "words": true, "surface": "Your computer and phone", "path": "System notifications",
+      "headline": "YouCoded starts sending system notifications, which it has never done before.",
+      "changed": "Only for automations: needs you, has news, failed, each switchable per job. Clicking one opens the job.",
+      "notice": "Your computer may ask once whether to allow YouCoded notifications.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "S-reused", "words": true, "surface": "The whole app", "path": "Settings, chats, sync",
+      "headline": "Reused as they are: the model picker, your Claude, ChatGPT and OpenRouter connections, the assistant's tools and safety rules.",
+      "changed": "Untouched: your chats, chat list, Resume, chat search and sync.",
+      "notice": "A job gets the same tools a chat gets, with its own permissions on top.",
+      "yes": "Right", "no": "Change this"
+    },
+
+    {
+      "id": "P-rules",
+      "page": "Rules I filled in without asking you",
+      "intro": "Your answers didn't cover these, so I picked. Each is easy to change now, harder after the build."
+    },
+    {
+      "id": "Q-unlisted", "words": true, "surface": "Automation details", "path": "Permissions → Other websites / Other commands and files",
+      "headline": "What should a new job do with a website or command you didn't list?",
+      "today": "Each job lists what it may do. Two settings cover everything else.",
+      "problem": "The default decides what a job does on day one, before you have tuned it.",
+      "proposal": "Pick the starting setting for new jobs; you can still change it per job.",
+      "options": [
+        { "id": "never", "label": "Never", "recommended": true, "pros": ["Nothing happens you didn't list.", "Matches \"and that's it\" from your answer."], "cons": ["A job may fail its first run until you add what it needs."] },
+        { "id": "ask", "label": "Asks first", "pros": ["The first run shows you what it wanted."], "cons": ["More questions waiting for you."] }
+      ]
+    },
+    {
+      "id": "Q-approvals", "words": true, "surface": "Automation details", "path": "Approvals",
+      "headline": "How should a new job handle an Asks first step, before you change anything?",
+      "today": "Each job chooses: wait for you (up to a time, then skip, stop or do something else) or skip and continue.",
+      "problem": "A new job needs a starting point.",
+      "proposal": "Pick the default for new jobs.",
+      "options": [
+        { "id": "wait-next", "label": "Wait until next run", "recommended": true, "summary": "Waits until its next scheduled time, then skips that step.", "pros": ["Gives you the most time to answer.", "Never piles up two waiting runs."], "cons": ["A daily job may hold an answer for a whole day."] },
+        { "id": "wait-hour", "label": "Wait an hour", "summary": "Waits an hour, then skips that step.", "pros": ["Runs finish the same morning."], "cons": ["Miss the notification for an hour and it's gone."] },
+        { "id": "skip", "label": "Skip and continue", "pros": ["Never waits on you."], "cons": ["Anything set to Asks first effectively never happens unless you Run now."] }
+      ]
+    },
+    {
+      "id": "Q-missed", "words": true, "surface": "Automation details", "path": "Missed runs",
+      "headline": "What should a new job do about runs missed while the computer was off?",
+      "today": "Each job picks: run once when the computer wakes, skip them, or run differently.",
+      "problem": "A new job needs a starting point.",
+      "proposal": "Pick the default for new jobs.",
+      "options": [
+        { "id": "run", "label": "Run once on wake", "recommended": true, "pros": ["A morning check still happens if you opened the laptop at 10."], "cons": ["It may run at a time you didn't expect."] },
+        { "id": "skip", "label": "Skip them", "pros": ["Runs only ever happen at their set time."], "cons": ["A laptop that's often asleep at 8 never runs its 8:00 job."] }
+      ]
+    },
+    {
+      "id": "Q-notify", "words": true, "surface": "Automation details", "path": "Notifications",
+      "headline": "Which notifications should a new job start with?",
+      "today": "Three switches per job: needs you, has news, failed.",
+      "problem": "Too many and you mute them; too few and you miss a waiting job.",
+      "proposal": "Pick which start on; each job can change them.",
+      "pick": "several",
+      "options": [
+        { "id": "needs", "label": "Needs you", "recommended": true, "pros": ["Without it a waiting job sits unseen."], "cons": ["None."] },
+        { "id": "news", "label": "Has news", "pros": ["You hear when it found something."], "cons": ["A chatty job can notify daily."] },
+        { "id": "fails", "label": "Failed", "pros": ["You learn a job broke."], "cons": ["A flaky internet morning sends one."] }
+      ]
+    },
+    {
+      "id": "Q-parallel", "words": true, "surface": "Automations", "path": "Several jobs due at once",
+      "headline": "How many automations may run at the same time?",
+      "today": "Nothing runs in the background yet.",
+      "problem": "Many at once slows the computer and spends faster; one at a time makes a long job hold up the rest.",
+      "proposal": "Pick a number; the rest wait their turn.",
+      "options": [
+        { "id": "two", "label": "Two", "recommended": true, "pros": ["A long job doesn't block a quick one.", "The computer stays responsive."], "cons": ["A third due job starts late."] },
+        { "id": "one", "label": "One", "pros": ["Lightest on the computer."], "cons": ["One slow job delays all the others."] },
+        { "id": "any", "label": "No limit", "pros": ["Everything starts on time."], "cons": ["Eight jobs at 8:00 can slow everything down."] }
+      ]
+    },
+    {
+      "id": "Q-overlap", "words": true, "surface": "Automations", "path": "A job is due while its last run is still going",
+      "headline": "When a job is due but its last run hasn't finished, what happens?",
+      "today": "Nothing runs in the background yet.",
+      "problem": "Two copies of the same job could do the same thing twice, like send two emails.",
+      "proposal": "Pick what the new due time does.",
+      "options": [
+        { "id": "skip", "label": "Skip it", "recommended": true, "summary": "Recorded as skipped in Runs.", "pros": ["Never does the same thing twice."], "cons": ["A run is lost if the last one was stuck."] },
+        { "id": "queue", "label": "Run after", "summary": "Starts as soon as the last run ends.", "pros": ["No run is lost."], "cons": ["A slow job falls further and further behind."] }
+      ]
+    },
+    {
+      "id": "Q-midrun", "words": true, "surface": "Automation details", "path": "Changing a setting while it runs",
+      "headline": "When you change a job's settings while it's running, when does the change apply?",
+      "today": "Settings save as you change them.",
+      "problem": "Changing permissions halfway could surprise a run that is already doing things.",
+      "proposal": "Pick when changes take effect.",
+      "options": [
+        { "id": "next", "label": "Next run", "recommended": true, "pros": ["A run behaves the same from start to end."], "cons": ["Removing a permission doesn't stop a run already using it; you'd pause the job."] },
+        { "id": "now", "label": "Right away", "pros": ["Taking away a permission takes effect at once."], "cons": ["A run can break halfway."] }
+      ]
+    },
+    {
+      "id": "Q-pagejobs", "words": true, "surface": "Pages", "path": "A page's buttons and events",
+      "headline": "Pages may start only their own automations, never another page's or a standalone one. Right?",
+      "today": "Jobs belong to a page or stand alone.",
+      "problem": "A page from someone else (later, with sharing) could otherwise run your jobs.",
+      "proposal": "Yes keeps pages to their own jobs. No lets any page start any job you allow it."
+    },
+    {
+      "id": "Q-deletepage", "words": true, "surface": "Pages", "path": "Deleting a page that has automations",
+      "headline": "When you delete a page that has automations, what happens to them?",
+      "today": "Deleting a page moves it to history, where Put back restores it.",
+      "problem": "Its jobs could keep running with nothing to report to.",
+      "proposal": "Pick what happens to its jobs.",
+      "options": [
+        { "id": "ask", "label": "Ask me", "recommended": true, "summary": "The delete popup asks: delete them too, or keep them standalone.", "pros": ["Nothing disappears by surprise."], "cons": ["One more question when deleting."] },
+        { "id": "pause", "label": "Pause them", "summary": "Kept and paused; Put back turns them on again.", "pros": ["No extra question.", "Put back is complete."], "cons": ["Paused jobs pile up in Automations."] }
+      ]
+    },
+    {
+      "id": "Q-restart", "words": true, "surface": "Automations", "path": "A Claude job waiting when the app closes",
+      "headline": "A waiting Claude job can't resume where it was after a restart. Restart it from its notes instead?",
+      "today": "ChatGPT and OpenRouter jobs pick up exactly where they paused. Claude's background mode can't, because the run isn't saved as a chat.",
+      "problem": "A Claude job waiting for you when you close YouCoded would otherwise be lost.",
+      "proposal": "Yes: it starts again with what it had done so far, and the run says \"picked up after restart\". No: the run ends as Stopped and the next scheduled run starts fresh."
+    },
+    {
+      "id": "Q-unprotected", "words": true, "surface": "Automations", "path": "A Claude job when Claude can't apply its permissions",
+      "headline": "If an update to Claude ever stops it applying a job's permissions, the run fails instead of running unprotected. Right?",
+      "today": "Claude jobs rely on Claude's own background mode to respect the job's list.",
+      "problem": "If that mode changes, a job could run with more freedom than you gave it.",
+      "proposal": "Yes: the run fails with a clear reason until YouCoded is updated. No: it runs anyway with Claude's normal limits."
+    },
+    {
+      "id": "Q-devices", "words": true, "surface": "Automations", "path": "Your computer and your phone",
+      "headline": "Each device runs its own automations, not synced, for this version. OK?",
+      "today": "Pages and chats sync between your devices; automations would be new.",
+      "problem": "Syncing jobs means deciding which device runs them, or both would run each one.",
+      "proposal": "Yes: each device has its own list for now, and syncing comes later. No: syncing becomes part of this build, which adds a \"runs on\" setting per job and more time."
+    },
+
+    {
+      "id": "P-yours",
+      "page": "From your answers, and anything else",
+      "intro": "Already decided on earlier decks; here so the whole plan is in one place."
+    },
+    {
+      "id": "S-yours", "words": true, "surface": "Automations", "path": "Earlier step 4 decks",
+      "headline": "From your answers: $5 default limit, finish the step then stop, last 50 runs kept, and per-job approvals, missed runs and notifications.",
+      "changed": "Also not in this version: starting when something happens elsewhere (needs step 5's sign-ins), chains of jobs (waits on plans), and running while YouCoded is closed.",
+      "notice": "These come from the step 4 questions deck and rounds 1 to 3.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "Q-other", "words": true, "surface": "Automations", "path": "The whole plan",
+      "answer": "words",
+      "prompt": "Anything to add, question or change",
+      "headline": "Anything else in this plan you want to question, tune or add before the build starts?",
+      "today": "This deck covers every step, seam and rule of the build.",
+      "problem": "Something you care about may not have its own slide.",
+      "proposal": "Type it here; it becomes a slide or a change."
+    }
+  ]
+}
