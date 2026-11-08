@@ -129,9 +129,13 @@ deck step behind each line: `2026-11-07-pages-step4-automations-technical-design
   lower settings became "Advanced settings" fold cards.
 - **Answered (deck `plan-d`, 2026-11-08):** the assistant drafts each job's permission list; "Allow
   from now on" on asks; "Describe it…" in the Add menu; edited scripts ask again; the run is told its
-  rules. A fresh reviewer redesigned the details popup.
-- **Open (deck `pages-finish-step4-plan-f`, plan-e with before pictures):** the redesign; how practice runs keep real things
-  safe; per-permission command width. Nothing in it is decided until answered. Not drawn yet: typing which folder / site / command after Add a permission;
+  rules.
+- **Answered (deck `plan-f`, 2026-11-08):** the fresh-reviewer popup redesign was dropped ("it kinda
+  sucked"; the popup stays as on `plan-d`); practice runs work on copies with sends held back; the
+  three wording-based command widths were rejected as contrived.
+- **Open (deck `pages-finish-step4-plan-g`):** what a command may reach (a fence of the job's
+  folders and websites, an exact-only lock, computers without the fence, fenced reading). Nothing
+  in it is decided until answered. Not drawn yet: typing which folder / site / command after Add a permission;
   the delete-page popup.
 
 ## Follow-ups recorded (Destin, 2026-10-24: "record anything that is gonna be a follow up")

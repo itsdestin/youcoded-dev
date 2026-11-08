@@ -7,13 +7,13 @@ status: draft
 decks; the first version (no saved Claude runs, one owning page, two jobs at a time, system
 notifications) is superseded. `plan-c` answered 2026-11-08 (kept apart: clear; three places: clear;
 two "not listed" rows kept; Rules → "Advanced settings" fold cards; the permission list's origin
-not yet thought through). `plan-d` answered 2026-11-08 (see "Where the list comes from"). Open: deck
-`pages-finish-step4-plan-f` (plan-e re-served with before pictures; popup redesign by a fresh reviewer; practice runs; command widths).
+not yet thought through). `plan-d`/`plan-f` answered 2026-11-08 (the fresh-reviewer popup redesign was dropped, "it kinda
+sucked"; practice runs on copies). Open: deck `pages-finish-step4-plan-g` (commands).
 Do not build from this until that deck is answered and one design-review round has run.
 
 Sources, in order (later wins): `pages-finish-step4.questions` → `step4.review` → `step4b.review` →
 `step4c.review` (screens approved) → `step4-plan.questions` → `step4-plan-b.review` →
-`step4-plan-c.review` → `step4-plan-d.review` → `step4-plan-e.review`, all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
+`step4-plan-c.review` → `step4-plan-d.review` → `step4-plan-e.review` (skipped: no before pictures) → `step4-plan-f.review` → `step4-plan-g.questions`, all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
 (`pages-finish-step4.contract.superseded.json`) is dropped (Destin, 2026-11-07: contracts don't
 help him); the decks are the record. Paths are `youcoded/desktop/src/` unless noted.
 
@@ -72,13 +72,20 @@ limit; subscription models show tokens used. No system notifications in this ste
      run's ask adds that exact permission (`Q-fromnow`); "Describe it…" in the Add menu, the
      assistant writes one exact permission and shows it back (`Q-describe` both); a script
      permission records the file's contents and asks again after it changes (`Q-scripts`).
-   - **Practice runs** (`Q-tryrun` yes, with "an iterative process … simplest test environment that
-     mirrors the real world … without risking damage to real data … explained simply"): pending
-     `plan-e#Q-practice` (proposed: copies of folders and page data, sends held back as "would
-     send", websites read live, a report after each with Add buttons). Do not build until answered.
-   - **Command width** (`Q-changing`: "case-by-case"): pending `plan-e#Q-width` (proposed: each
-     command permission is exact / these settings, any files / anything with this program, the
-     same choice as the chat permission card).
+   - **Practice runs** (`plan-d#Q-tryrun` yes; `plan-f#Q-practice` → copies): practice runs work on
+     copies of the job's folders and page data; emails, posts and forms are held back and shown as
+     "would send"; websites are read live; a website click that may buy or post asks during
+     practice. Each ends with a report (read / would change / would send / permissions needed, each
+     with Add). Users see: "Practice runs work on copies. Nothing real changes or gets sent."
+   - **Commands** (`plan-d#Q-changing` "case-by-case"; `plan-f#Q-width` rejected the three wording
+     widths as "contrived"): pending `plan-g`. Proposed: every command runs inside Claude Code's
+     sandbox (the "fence") limited to the job's listed folders and websites; a command permission
+     names a program, with an optional exact-only lock; reads fenced to listed folders; computers
+     without the fence ask per command. Facts and limits: `sandboxing.md` (Mac/Linux/WSL2 only;
+     Linux needs bubblewrap + socat; `failIfUnavailable`, `allowUnsandboxedCommands: false`; reads
+     open by default; docker/ssh break). The native lane has no sandbox today (`shared/bash-risky-variants.ts`
+     says its text checks are "a speed bump, not a sandbox"). Use cases:
+     `docs/active/design/2026-10-24-pages-finish/step4-command-use-cases.md`.
    - **Answers carry a note** (`plan-b#N-answer`): `answer(jobId, allow, note?)`; Don't allow needs
      one. The note goes back to the run as the tool result's message, so it doesn't retry.
    - Service permissions (Gmail etc.) need step 5's sign-ins; until then the Add menu lists this
@@ -133,7 +140,7 @@ while YouCoded is closed.
 
 ## Still to settle before the build
 
-- `plan-e` deck answers (popup redesign; practice runs; command width).
+- `plan-g` deck answers (what a command may reach).
 - The "type which folder / website / command" step after Add a permission — not drawn; shown on the
   post-build deck.
 - One design-review round against this document and the decks.

@@ -1,0 +1,54 @@
+{
+ "deck": "pages-finish-step4-plan-f",
+ "started": "2026-11-08T10:27:04.464Z",
+ "submitted": "2026-11-08T10:30:38Z",
+ "cur": 5,
+ "answers": {
+  "E-top": {
+   "note": "",
+   "t": 1794133729497,
+   "v": "no",
+   "seconds": 67,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "E-lower": {
+   "v": "no",
+   "seconds": 40,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1794133731591
+  },
+  "E-new": {
+   "v": "no",
+   "t": 1794133743116,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-practice": {
+   "v": "pick",
+   "pick": "copies",
+   "t": 1794133755466,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-width": {
+   "v": "other",
+   "t": 1794133812974,
+   "note": "no. i feel like you didn't think through the many actual use cases. your proposed categories feel contrived",
+   "seconds": 58,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-other": {
+   "v": "wrote",
+   "t": 1794133837093,
+   "seconds": 24,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "text": "we're just dropping that last redesign of the main popup. it kinda sucked"
+  }
+ }
+}

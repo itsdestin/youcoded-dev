@@ -1,0 +1,57 @@
+{
+  "title": "Automations: what a command is allowed to reach",
+  "key": "pages-finish-step4-plan-g",
+  "out": "pages-finish-step4-plan-g.questions.html",
+  "steps": [
+    {
+      "id": "G-cases", "words": true, "surface": "Automations", "path": "13 real automations, and what they run",
+      "headline": "Going through real automations, a command's wording turned out to be the wrong thing to judge.",
+      "changed": "Most everyday ones run no commands at all: a money check, a price watch, an email sorter, a weekly briefing, a research digest. The rest work on folders: tidy Downloads (move, delete), turn voice memos into notes (whisper on a new file each week), back up photos, run your own script, test or publish a project, check the disk, talk to the smart home. For python, npm or your own script, the wording says nothing about what it does: the same three words can read one file or delete a folder.",
+      "notice": "What does matter, in every case: which folders it can read, which it can change, which websites it can reach. The full list is in the notes beside this deck.",
+      "yes": "Makes sense", "no": "Disagree"
+    },
+    {
+      "id": "Q-fence", "words": true, "surface": "Automations", "path": "A command permission",
+      "headline": "Should every command an automation runs sit inside a fence of its own folders and websites?",
+      "today": "Your Q-changing answer: some jobs need a wide scope, some \"run only this with only these settings\", some in between; my three wording-based widths felt contrived.",
+      "problem": "Rules on a command's wording can't stop a script from doing something else, and the right width differs for every job.",
+      "proposal": "Claude Code has a built-in fence for commands (on Mac and Linux; on Windows only inside WSL, its optional Linux layer). Each command, and anything it starts, can change only the job's listed folders and reach only its listed websites, whatever the command says. A command permission then just names a program (\"whisper\", \"your script backup.sh\", or \"any program\"), and its folders and sites decide how far it reaches.",
+      "options": [
+        { "id": "fence-lock", "label": "Fence, plus an exact-only lock", "recommended": true, "pros": ["Wide or narrow is set by folders and sites, which people understand.", "A script can't reach past the fence.", "For a risky one (publishing a site) you can still lock it to one exact command."], "cons": ["Some programs break inside a fence (docker, ssh to a server); those need asks.", "The fence needs two small programs (bubblewrap and socat) on Linux, and WSL on Windows."] },
+        { "id": "fence", "label": "Fence only", "pros": ["Simplest: no wording rules at all."], "cons": ["No way to say \"only this exact command\"."] },
+        { "id": "wording", "label": "Wording rules, no fence", "pros": ["Works on every computer."], "cons": ["Easy to get around; a script can do anything."] }
+      ]
+    },
+    {
+      "id": "Q-nofence", "words": true, "surface": "Automations", "path": "A computer where the fence can't run",
+      "headline": "What should happen on a computer where the fence can't run?",
+      "today": "The fence works on Mac and Linux. Windows has it only inside WSL. Unknown yet for phones.",
+      "problem": "Without the fence, nothing stops a command from reaching past its folders.",
+      "proposal": "Pick what a job with commands does there. Jobs with no commands run as normal everywhere.",
+      "options": [
+        { "id": "ask", "label": "Every command asks there", "recommended": true, "pros": ["The job still works; you see each command first."], "cons": ["Not hands-off on that computer."] },
+        { "id": "off", "label": "Can't run there", "pros": ["No surprises."], "cons": ["That computer's switch under Runs on is off, with the reason."] },
+        { "id": "warn", "label": "Run unfenced, with a warning", "pros": ["Fully hands-off."], "cons": ["A script can reach anything you can."] }
+      ]
+    },
+    {
+      "id": "Q-reads", "words": true, "surface": "Automations", "path": "What a command can read",
+      "headline": "Fence reading too, so a command only reads the folders on its list?",
+      "today": "Claude Code's fence limits changes and websites, but by default lets a command read the whole computer.",
+      "problem": "A command could read your saved passwords or keys, and with any website allowed it could send them out.",
+      "proposal": "Block reading everywhere in your home folder except the job's listed folders (and what the program itself needs to start).",
+      "options": [
+        { "id": "listed", "label": "Only listed folders", "recommended": true, "pros": ["Your keys and other files are out of reach."], "cons": ["A program that keeps settings in your home folder may need that folder added."] },
+        { "id": "secrets", "label": "Anything except known secret folders", "pros": ["Fewer programs trip over it."], "cons": ["Anything not on the secrets list is readable."] }
+      ]
+    },
+    {
+      "id": "Q-other", "words": true, "surface": "Automations", "path": "Commands",
+      "answer": "words", "prompt": "A case this misses, or anything to change",
+      "headline": "A real automation this would handle badly?",
+      "today": "The cases checked are listed on the first slide.",
+      "problem": "Something may be missing.",
+      "proposal": "Type it here."
+    }
+  ]
+}
