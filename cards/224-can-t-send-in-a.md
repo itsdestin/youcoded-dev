@@ -1,7 +1,7 @@
 ---
 id: 224
 title: Can't send in a Claude Code chat: "Queue identity is not ready"
-stage: build
+stage: merged
 tags: claude-code-integration, chat-data, sessions, bug
 related: 193
 branch: 224-can-t-send-in-a
