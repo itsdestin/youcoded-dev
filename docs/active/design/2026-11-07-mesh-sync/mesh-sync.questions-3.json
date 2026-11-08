@@ -1,0 +1,497 @@
+{
+ "title": "Your chats on every device — round 3: connection, costs, what travels",
+ "key": "mesh-sync-questions-3",
+ "out": "mesh-sync.questions-3.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Decisions recorded from round 2",
+   "intro": "Each statement restates one of your round-2 answers as a rule the design will follow. Mark any that misread you as Fails."
+  },
+  {
+   "id": "S-1",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "Any chat seen from a second device",
+   "headline": "Everything a chat sends between devices is encrypted end to end. No server of ours can read it.",
+   "changed": "Stated from your pick: words, pasted files and notices travel locked so that only your own signed-in devices can open them.",
+   "notice": "Nothing changes on screen. If you lose every device, the server holds nothing readable to recover from; the git copy remains your backup.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "surface": "An open chat",
+   "path": "A chat with its host online",
+   "headline": "The host keeps running the chat. Other devices receive a synced copy and show it live. Switching moves the running part only.",
+   "changed": "Stated from your pick: no portable bundle and no container. The chat's files sync underneath; the live stream rides on top.",
+   "notice": "Switching hosts is quick because the new device already holds the chat. Only the pieces still being written need to catch up.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-3",
+   "words": true,
+   "surface": "An open chat",
+   "path": "Taking over a chat whose host is unreachable",
+   "headline": "When a chat moves hosts mid-reply, the unfinished reply is dropped on both devices. The old host discards its half when it returns.",
+   "changed": "Stated from your pick: discard, not archive, not ask.",
+   "notice": "You may see a reply vanish when you tap Continue here. Your last message stays, so you can resend it.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-4",
+   "words": true,
+   "surface": "The phone",
+   "path": "Any chat hosted on the phone",
+   "headline": "The phone counts as a full host. The design assumes it will match the desktop; parity gaps are separate work.",
+   "changed": "Stated from your pick: no viewer-only phone mode. The notice before a switch names what the phone lacks today.",
+   "notice": "Until parity lands, a chat moved to the phone may lack the browser, documents and some helpers, and the notice will say so.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-5",
+   "words": true,
+   "surface": "Projects",
+   "path": "Backup & Sync in settings",
+   "headline": "Every project appears on every device, as today. A chat can also open on a device that lacks its project folder.",
+   "changed": "Stated from your answer: no per-device project choice, plus a new way to open a chat for its history and feedback alone when the folder is absent.",
+   "notice": "Devices keep filling with every project. The chat-without-folder path is a new feature and gets its own question on page 4.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-6",
+   "words": true,
+   "surface": "An open chat",
+   "path": "Tapping the host chip toward a device missing the project",
+   "headline": "Before fetching a missing project, a confirmation shows what is missing, why it is needed and the storage it will take.",
+   "changed": "Stated from your answer: fetch then switch, never silently.",
+   "notice": "One extra confirmation appears only in this case. A device low on storage can decline and stay a viewer.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-7",
+   "words": true,
+   "surface": "Resume browser",
+   "path": "A chat with more than one branch",
+   "headline": "Branches you forked on purpose are equals. Branches split by a network gap or a device move warn and offer to archive the older one.",
+   "changed": "Stated from your answer: the app records why a branch exists and treats the two reasons differently.",
+   "notice": "Deliberate forks sit side by side with no warnings. Accidental splits show a notice on the older branch with one Archive button.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "P-2",
+   "page": "How devices connect",
+   "intro": "Read the plain-words explainer first; it has the costs, prices and tradeoffs behind these four questions: docs/active/design/2026-11-07-mesh-sync/connection-options.md"
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "Backup & Sync in settings",
+   "headline": "Which path should carry a chat's live words between a user's devices?",
+   "today": "The phone can watch a desktop only over Tailscale, a separate app and account on every device. Our account service already gives each signed-in user a private room, which today passes only tiny change notices.",
+   "problem": "Tailscale leaves out most users. Our own server costs money and is a central piece, which sits badly with a fully open-source, self-hostable app.",
+   "proposal": "Pick one. The explainer's section 1 compares them in detail.",
+   "options": [
+    {
+     "id": "hub-relay",
+     "label": "Through the account service, address changeable",
+     "pros": [
+      "Sign in is the whole setup; works on any network.",
+      "Pennies per user; the server code is already open source, so a fork or a user can run their own copy and point the app at it.",
+      "Can hold undelivered words for a device that was asleep."
+     ],
+     "cons": [
+      "A server stays in the picture by default; most users will use ours.",
+      "New work on the server and on every app platform."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "tailscale-only",
+     "label": "Over Tailscale only",
+     "pros": [
+      "Nothing of ours is required; our cost is zero.",
+      "Builds on the remote-access link that already exists."
+     ],
+     "cons": [
+      "Every user installs Tailscale and signs in on each device; the phone's one VPN slot is taken.",
+      "No mailbox: a device that was asleep catches up only through the slow git upload.",
+      "Tailscale Inc. still runs a central coordination service."
+     ]
+    },
+    {
+     "id": "both-paths",
+     "label": "Both, the app uses whichever is available",
+     "pros": [
+      "Users who already run Tailscale keep working with no server of ours involved."
+     ],
+     "cons": [
+      "Two systems to keep working and to test on four platforms; every bug has two causes to check.",
+      "Behaviour differs by path, such as the mailbox existing on one and not the other."
+     ]
+    },
+    {
+     "id": "direct-introduced",
+     "label": "Direct between devices, introduced by the service",
+     "pros": [
+      "The server carries almost nothing once two devices are connected."
+     ],
+     "cons": [
+      "Still needs a server to introduce devices, and a relay for the one in ten networks where direct fails.",
+      "The hardest to build and debug, for a saving that is already pennies."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "Backup & Sync in settings",
+   "headline": "Should a device that was asleep get the words it missed from the server?",
+   "today": "Today a device that was off catches up when the host next uploads to git, which takes 10 to 30 seconds and never happens during the 2 to 5 seconds a sleeping computer allows.",
+   "problem": "Without a store on the server, a phone in a pocket learns nothing until the host is awake and connected again.",
+   "proposal": "Pick one. The explainer's section 2 explains why the sleep window stops mattering with a mailbox.",
+   "options": [
+    {
+     "id": "mailbox",
+     "label": "The server keeps undelivered words until each device collects them",
+     "pros": [
+      "Every device catches up within seconds of waking, whatever the host is doing.",
+      "The host only needs to send a one-word going-to-sleep note."
+     ],
+     "cons": [
+      "Encrypted words sit on the server until collected; storage is pennies but it is a copy outside your devices.",
+      "Needs a rule for how long to keep uncollected words."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "git-only",
+     "label": "No store; devices catch up through the git copy",
+     "pros": [
+      "Nothing of a chat ever rests on our server."
+     ],
+     "cons": [
+      "Minutes, not seconds, after a host wakes; a host that sleeps before uploading leaves the others behind.",
+      "The sleep gap from deck 2 stays unsolved."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "Backup & Sync in settings",
+   "headline": "Should a user be able to point the app at their own copy of the server?",
+   "today": "The app is built against one server address. The server code is open source, but nobody can tell the app to use another copy.",
+   "problem": "A fork, a company or a privacy-minded user cannot run the whole thing themselves.",
+   "proposal": "Pick one.",
+   "options": [
+    {
+     "id": "address-setting",
+     "label": "A server address field in settings, ours by default",
+     "pros": [
+      "Full self-hosting with one copied line; forks need no code change.",
+      "Keeps our server the default, so ordinary users notice nothing."
+     ],
+     "cons": [
+      "Each device must be set to the same address; a mismatch looks like devices never connecting.",
+      "Sign-in and friends features would also move to that address."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "fixed",
+     "label": "Our server only; forks edit the code",
+     "pros": [
+      "No new setting; nothing to misconfigure."
+     ],
+     "cons": [
+      "Self-hosting means rebuilding the app, out of reach for most."
+     ]
+    },
+    {
+     "id": "later",
+     "label": "Decide after the live path works",
+     "pros": [
+      "Keeps this round smaller."
+     ],
+     "cons": [
+      "Hard to add cleanly afterwards if the address is assumed in many places."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "Account settings",
+   "headline": "Who pays for the live path on our server?",
+   "today": "Backup & Sync is free and the server already runs for about $5 a month. The app has no way to take payments. A donation page exists.",
+   "problem": "The live path adds roughly 2 cents a month per heavy user, so a thousand heavy users add $20 to $40 a month.",
+   "proposal": "Pick one.",
+   "options": [
+    {
+     "id": "free",
+     "label": "Free for everyone, we absorb it",
+     "pros": [
+      "Nothing for users to understand or do.",
+      "The cost is small enough to carry for a long time."
+     ],
+     "cons": [
+      "A sudden popular month lands on the company card; a cap per account (see deck 2) would bound it."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "donation",
+     "label": "Free, with an occasional donation prompt",
+     "pros": [
+      "Covers cost without accounts or tax work."
+     ],
+     "cons": [
+      "Prompts annoy; most people never give."
+     ]
+    },
+    {
+     "id": "paid-later",
+     "label": "Free now; a paid tier once there is something worth paying for",
+     "pros": [
+      "Leaves the door open for a priced plan later."
+     ],
+     "cons": [
+      "Building payments is a project of its own and does not change this design."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "What travels with a chat",
+   "intro": "Section 3 of the explainer lists each piece with its measured size and what breaks without it."
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "An open chat",
+   "path": "A chat with helpers, opened on a second device",
+   "headline": "When should the work of the assistant's helpers reach your other devices?",
+   "today": "Helpers' own transcripts sit beside the chat and never sync. On your desktop they are 8.4 GB across 327 chats, half your whole store.",
+   "problem": "Copying them everywhere multiplies storage on every device; skipping them leaves a helper's details empty when you expand them on another device.",
+   "proposal": "Pick one.",
+   "options": [
+    {
+     "id": "on-demand",
+     "label": "Fetch a helper's transcript when you expand it",
+     "pros": [
+      "Other devices store a few MB per chat you actually dig into, never 8 GB.",
+      "The chat itself reads identically; only the expand step waits a moment."
+     ],
+     "cons": [
+      "Expanding a helper on a device that is offline shows a 'not fetched yet' notice.",
+      "A new host that needs a helper's details reads them a beat later."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "always",
+     "label": "Copy them everywhere, like the chat",
+     "pros": [
+      "Every detail is present instantly on every device."
+     ],
+     "cons": [
+      "Every device grows by the whole helper store; the phone would hold gigabytes it will rarely open."
+     ]
+    },
+    {
+     "id": "never",
+     "label": "Leave them on the device that made them",
+     "pros": [
+      "Simplest and smallest."
+     ],
+     "cons": [
+      "Helper details are gone for good when a chat moves hosts."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "An open chat",
+   "path": "Any chat, opened on a second device",
+   "headline": "Which smaller pieces should always travel with a chat?",
+   "today": "Only the chat file, its name, tags and handoff notes sync. Saved long outputs, pasted images, undo history, memory notes and plans stay on the device that made them.",
+   "problem": "A chat that moves hosts without them may show broken images, redo work it already did, or forget project habits.",
+   "proposal": "Pick every piece that should always travel. The explainer's table gives sizes.",
+   "options": [
+    {
+     "id": "memory-plans",
+     "label": "Memory notes and plans (250 KB in total today)",
+     "pros": [
+      "The assistant keeps its project habits and plans on every host.",
+      "Tiny."
+     ],
+     "cons": [
+      "Memory keyed to a folder path needs translating when the project lives elsewhere."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "attachments",
+     "label": "Pasted images and dropped files (up to 32 MB each)",
+     "pros": [
+      "No broken images when a chat opens elsewhere."
+     ],
+     "cons": [
+      "A chat full of screenshots grows the sync by their size."
+     ]
+    },
+    {
+     "id": "spill",
+     "label": "Saved long outputs (510 MB in total today)",
+     "pros": [
+      "A new host can reread what the assistant saved instead of redoing it."
+     ],
+     "cons": [
+      "A few MB per heavy chat."
+     ]
+    },
+    {
+     "id": "undo",
+     "label": "Undo history (about 1 MB per chat)",
+     "pros": [
+      "Undo of earlier edits works after a switch when the project sits in the same place."
+     ],
+     "cons": [
+      "Useless where the project path differs; adds about 1 MB per chat."
+     ]
+    }
+   ],
+   "pick": "several"
+  },
+  {
+   "id": "P-4",
+   "page": "The phone, and chats without their folder",
+   "intro": "Sections 4 and 5 of the explainer have the details."
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "The phone",
+   "path": "A chat hosted on the phone, screen off",
+   "headline": "How should a phone-hosted chat behave when the screen is off?",
+   "today": "Nothing holds the phone awake during a reply. After the phone has been still and dark for a while, Android cuts the network for every app until the user picks it up.",
+   "problem": "A reply can stall mid-way when the screen locks, and a pocketed phone cannot host at all.",
+   "proposal": "Pick one. Google allows asking for a battery exemption only when the app's core function needs it.",
+   "options": [
+    {
+     "id": "lock-plus-toggle",
+     "label": "Stay awake per reply, plus an opt-in setting to exempt the app from battery limits",
+     "pros": [
+      "Replies finish with the screen off, no permission needed.",
+      "Users who host from the phone can opt in once, with the battery cost explained."
+     ],
+     "cons": [
+      "Opted-in phones use more battery when hosting.",
+      "Still no promise in the deepest sleep without the opt-in."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "lock-only",
+     "label": "Stay awake per reply only",
+     "pros": [
+      "No permission prompts ever."
+     ],
+     "cons": [
+      "A pocketed phone drops as host; viewers see 'host asleep' and may Continue here."
+     ]
+    },
+    {
+     "id": "ask-at-setup",
+     "label": "Ask for the battery exemption during setup",
+     "pros": [
+      "Phone hosting works out of the box."
+     ],
+     "cons": [
+      "A permission prompt before the user has seen any value; may be refused by Google's review."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-8",
+   "words": true,
+   "surface": "An open chat",
+   "path": "Opening a chat whose project folder is not on this device",
+   "headline": "How should a chat open on a device that lacks its project folder?",
+   "today": "It cannot. The resume browser refuses, so a chat you only want to read or ask about is stuck on its other device.",
+   "problem": "You sometimes need the context and feedback of a chat without caring whether the folder is here.",
+   "proposal": "Pick one. Each shows the fetch confirmation from S-6 as a way out.",
+   "options": [
+    {
+     "id": "scratch",
+     "label": "Open in a temporary folder with a banner",
+     "pros": [
+      "The assistant can talk, read the whole history and write notes into a temporary place.",
+      "The banner offers to fetch the real project any time."
+     ],
+     "cons": [
+      "The assistant may try to read project files that are not there and report them missing.",
+      "Files written in the temporary place need a home when the project arrives."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "read-only",
+     "label": "Open to read and ask, no tools",
+     "pros": [
+      "Nothing can go wrong; no stray files."
+     ],
+     "cons": [
+      "The assistant cannot run or write anything until you fetch the project."
+     ]
+    },
+    {
+     "id": "fetch-always",
+     "label": "Always fetch the project first",
+     "pros": [
+      "The chat always behaves normally once open."
+     ],
+     "cons": [
+      "Waiting and storage for a folder you did not want; impossible on a full device."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-9",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "The whole design",
+   "headline": "Anything in the explainer that read wrong, or a rule you want written down?",
+   "today": "The explainer and this deck carry every fact the design will rest on.",
+   "problem": "A misread fact becomes a wrong rule.",
+   "proposal": "Write anything, or leave blank.",
+   "answer": "words",
+   "prompt": "e.g. never store anything on a server, even encrypted"
+  }
+ ]
+}
