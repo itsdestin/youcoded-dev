@@ -1,0 +1,55 @@
+{
+ "deck": "pages-finish-step4-plan-c",
+ "started": "2026-11-08T09:06:14.723Z",
+ "submitted": "2026-11-08T09:13:37Z",
+ "cur": 1,
+ "answers": {
+  "C-rules": {
+   "note": "i think \"rules\" should become \"Advanced Settings\". each of the individual cards should become an expandable card of sorts with the menus/options/etc hidden inside. all should start collapsed. each should explain in plain, concise terms what the option does with pros/cons. the titles of each section should be more clear/concise/statement-like",
+   "t": 1794129215246,
+   "v": "other",
+   "seconds": 171,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "C-perm": {
+   "note": "i still dont think we've sufficiently fleshed out how the list under \"add a permission\" gets built? some of these are very narrow permissions, and many would probably be fully custom commands or scripts or something, so i doubt we could build a comprehensive list? we need to consider this more thoughtfully. how would a user actually experience the end-to-end flow of adding new automations or managing existing automation permissions for tasks we might not have even considered yet?",
+   "t": 1794129216597,
+   "v": "other",
+   "seconds": 140,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "C-apart": {
+   "v": "yes",
+   "t": 1794129100060,
+   "seconds": 26,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "C-edge": {
+   "v": "yes",
+   "t": 1794129099410,
+   "seconds": 15,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-unlisted-one": {
+   "v": "pick",
+   "pick": "two",
+   "t": 1794129098649,
+   "note": "fine with two, i think we need to make sure whatever the user selects is accurately conveyed to the model so it doesnt try using unlisted commands in like an always block/skip instead of ask mode.",
+   "seconds": 83,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-other": {
+   "v": "other",
+   "dk": true,
+   "t": 1794129097298,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

@@ -5,13 +5,14 @@ status: draft
 
 **Status 2026-11-08: draft, not yet reviewed.** Rewritten to match Destin's answers on the build-plan
 decks; the first version (no saved Claude runs, one owning page, two jobs at a time, system
-notifications) is superseded. Open: deck `pages-finish-step4-plan-c` (permissions explained, and
-whether "Other websites" + "Other commands and files" become one "Anything not listed" row).
+notifications) is superseded. `plan-c` answered 2026-11-08 (kept apart: clear; three places: clear;
+two "not listed" rows kept; Rules → "Advanced settings" fold cards; the permission list's origin
+not yet thought through). Open: deck `pages-finish-step4-plan-d` (how permissions get built).
 Do not build from this until that deck is answered and one design-review round has run.
 
 Sources, in order (later wins): `pages-finish-step4.questions` → `step4.review` → `step4b.review` →
 `step4c.review` (screens approved) → `step4-plan.questions` → `step4-plan-b.review` →
-`step4-plan-c.review`, all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
+`step4-plan-c.review` → `step4-plan-d.review`, all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
 (`pages-finish-step4.contract.superseded.json`) is dropped (Destin, 2026-11-07: contracts don't
 help him); the decks are the record. Paths are `youcoded/desktop/src/` unless noted.
 
@@ -56,9 +57,19 @@ limit; subscription models show tokens used. No system notifications in this ste
    (`plan-c#C-perm`, pending): a folder → read/write inside it; one command → that exact command;
    one website → that host; this page → that page's data tools. A tool the job may never use is
    removed from the model's tool list, not just refused (`plan#S-allowed` note).
-   - Always allowed → runs. Asks first → the "Asks first items" rule: wait (up to a time, then skip
+   - Always allowed → runs. Asks first → the first Advanced setting: wait (up to a time, then skip
      that step / stop / do this instead) or skip. Not listed → "Other websites" / "Other commands
-     and files" (Never or Asks first; may merge into one row — `plan-c#Q-unlisted-one`).
+     and files", two rows kept (`plan-c#Q-unlisted-one` → two), each Never or Asks first.
+   - **The run is told its rules** (`plan-c#Q-unlisted-one` note: "make sure whatever the user
+     selects is accurately conveyed to the model"): the run's opening instructions list every
+     permission and its mode and say, per "not listed" row, either "don't try; it will be refused"
+     (Never) or "you may try; the run waits for the person" (Asks first). Pinned by a test on the
+     generated text for each combination.
+   - **Where the list comes from** — pending `plan-d`. Proposed: the assistant drafts it when the
+     automation is made (check popup shows it); "Try it once" practice run; "Allow from now on" on
+     asks; "Describe it…" in the Add menu; a command permission covers the program with any
+     details; a script permission asks again after the file changes. Do not build any of these
+     until answered.
    - **Answers carry a note** (`plan-b#N-answer`): `answer(jobId, allow, note?)`; Don't allow needs
      one. The note goes back to the run as the tool result's message, so it doesn't retry.
    - Service permissions (Gmail etc.) need step 5's sign-ins; until then the Add menu lists this
@@ -87,7 +98,9 @@ limit; subscription models show tokens used. No system notifications in this ste
    run and month and checks the limit before the next step (finish the step, then stop — a few cents
    over is possible and shown; `questions#Q-limit-hit`). Claude lane: subscription, tokens only.
    New jobs on a paid model start at $5 (`questions#Q-limit` note).
-9. **New automation starts pre-filled** (`plan-b#E-prefill`): Wait for me (until its next run, then
+9. **Advanced settings** (`plan-c#C-rules`): the lower settings are fold-out cards, all closed,
+   titled with what the job does now; open, one line on what it covers and each choice with a pro
+   and a con. **New automation starts pre-filled** (`plan-b#E-prefill`): Wait for me (until its next run, then
    skip that step), missed → run once on wake, due while running → skip the new run, unlisted →
    Never, this device on.
 10. **Devices** (`plan-b#Q-devices` → ride on the mesh): each job stores `devices: {id, name, runs}`
@@ -111,7 +124,7 @@ while YouCoded is closed.
 
 ## Still to settle before the build
 
-- `plan-c` deck answers (permissions clarity; one or two "not listed" rows).
+- `plan-d` deck answers (how permissions get built).
 - The "type which folder / website / command" step after Add a permission — not drawn; shown on the
   post-build deck.
 - One design-review round against this document and the decks.

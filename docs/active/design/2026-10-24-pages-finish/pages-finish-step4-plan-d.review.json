@@ -1,0 +1,94 @@
+{
+  "title": "Automations: how permissions get built",
+  "key": "pages-finish-step4-plan-d",
+  "out": "pages-finish-step4-plan-d.review.html",
+  "images": "images/pages-finish-step4-plan-d.review",
+  "runs": { "after": "runs-plan-d/after" },
+  "steps": [
+    {
+      "id": "D-settings", "surface": "Automations", "path": "Automation details → Advanced settings",
+      "crop": "automations/details#lower-open", "new": true,
+      "headline": "\"Rules\" is now \"Advanced settings\": closed cards whose titles say what the job does now.",
+      "changed": "Your C-rules note: each setting is a fold-out card, all closed when the popup opens. Open one and it says in one line what it covers, then lists its choices, each with one pro (+) and one con (−). \"Wait up to\" sits inside the first card.",
+      "notice": "A closed card's title changes with the choice (\"Skips steps that need your OK\", \"Runs a missed run at 18:00\"), so the list reads without opening anything."
+    },
+    {
+      "id": "D-source", "words": true, "surface": "Automations", "path": "Where the permission list comes from",
+      "headline": "You don't build the list from a menu: the assistant writes it, and you check it.",
+      "changed": "Most automations start in a chat: \"every Sunday, turn my new voice memos into notes\". The assistant knows which folders, websites and commands it will use, so it writes each one as an exact permission (\"See the files in ~/Recordings\", \"Run whisper on those files\", \"Change this page's information\"). The check popup lists them in plain words before Turn on. Nothing on the list is a fixed catalogue, so a task nobody planned for works the same way.",
+      "notice": "The Add a permission menu is only for adding one yourself later; the next questions cover how that and the in-between cases work.",
+      "yes": "Clear", "no": "Still unclear"
+    },
+    {
+      "id": "Q-tryrun", "words": true, "surface": "Automations", "path": "Check popup → before Turn on",
+      "headline": "Offer \"Try it once\" before an automation is turned on?",
+      "today": "The check popup shows the drafted permissions and Turn on. The first real run is the first time anything is tested.",
+      "problem": "A drafted list can miss something (a second website, a folder the task needs), and you'd only find out when a scheduled run hits it.",
+      "proposal": "A practice run with you watching: anything not on the list asks you, and each Allow can add it to the list. When it finishes, you turn it on.",
+      "options": [
+        { "id": "yes", "label": "Offer Try it once", "recommended": true, "pros": ["Gaps show up while you're there, not at 3am."], "cons": ["A practice run costs one run's usage or money.", "One more button in the check popup."] },
+        { "id": "no", "label": "No practice run", "pros": ["Simpler popup."], "cons": ["Missed permissions surface only during real runs."] }
+      ]
+    },
+    {
+      "id": "Q-fromnow", "words": true, "surface": "Automations", "path": "A run asks about something not on its list",
+      "headline": "When a run asks about something not listed, offer \"Allow from now on\" too?",
+      "today": "The ask has Allow and Don't allow (with a note). Allow covers this one time only.",
+      "problem": "A task that needs it every week would ask every week, and the only other fix is adding the permission by hand.",
+      "proposal": "Three answers: Allow once, Allow from now on (adds that exact permission to the job's list), Don't allow (with a note).",
+      "options": [
+        { "id": "yes", "label": "Add Allow from now on", "recommended": true, "pros": ["The list grows from what the job really does.", "No menu hunting."], "cons": ["Three buttons instead of two."] },
+        { "id": "no", "label": "Keep two buttons", "pros": ["Simpler ask."], "cons": ["The same thing asks every run until you add it by hand."] }
+      ]
+    },
+    {
+      "id": "Q-describe", "words": true, "surface": "Automation details", "path": "Permissions → Add a permission",
+      "headline": "Add \"Describe it…\" to the Add a permission menu?",
+      "today": "The menu lists a few kinds: a folder, a website, one command, this page's information.",
+      "problem": "Plenty of real needs fit none of these (\"run my backup script\", \"use the printer\"), and a fixed list can never cover them.",
+      "proposal": "Keep the few common kinds and add \"Describe it…\": you type it in your words, the assistant turns it into one exact permission and shows it back plainly before it's saved.",
+      "options": [
+        { "id": "both", "label": "Common kinds + Describe it", "recommended": true, "pros": ["Quick for common cases, works for anything else."], "cons": ["Describing needs a model, so it uses a little usage."] },
+        { "id": "menu", "label": "Common kinds only", "pros": ["No model involved."], "cons": ["Anything else needs a chat with the assistant."] },
+        { "id": "describe", "label": "Describe it only", "pros": ["One way to do it."], "cons": ["Slower for the common cases."] }
+      ]
+    },
+    {
+      "id": "Q-changing", "words": true, "surface": "Automations", "path": "A command that changes every run",
+      "headline": "How should a permission handle a command whose details change every run?",
+      "today": "\"Run one command\" allows that exact command only.",
+      "problem": "Most real commands change each time: \"whisper memo-0412.m4a\" this week, \"whisper memo-0419.m4a\" next week. An exact match would ask every run.",
+      "proposal": "Pick how wide a command permission is.",
+      "options": [
+        { "id": "program", "label": "That program, any details", "recommended": true, "pros": ["\"Run whisper\" covers every week's files.", "Matches how Claude Code's own rules work."], "cons": ["It could also point whisper at a file outside the listed folders."] },
+        { "id": "exact", "label": "Exact command only", "pros": ["Nothing it wasn't shown."], "cons": ["Changing commands ask every run."] }
+      ]
+    },
+    {
+      "id": "Q-scripts", "words": true, "surface": "Automations", "path": "A permission to run your own script",
+      "headline": "If a script an automation may run is edited later, ask again before running it?",
+      "today": "\"Run one script: ~/scripts/backup.sh\" names the file, not what's in it.",
+      "problem": "If the file changes (you edit it, or another program does), the automation runs the new contents with the old permission.",
+      "proposal": "Remember the script as it was when you allowed it; if it changes, the next run asks first.",
+      "options": [
+        { "id": "ask", "label": "Ask again after a change", "recommended": true, "pros": ["A changed script never runs unseen."], "cons": ["Your own edits cause one ask."] },
+        { "id": "trust", "label": "Trust the file name", "pros": ["No extra asks."], "cons": ["Whatever is in the file runs."] }
+      ]
+    },
+    {
+      "id": "D-told", "words": true, "surface": "Automations", "path": "What the assistant is told at the start of a run",
+      "headline": "Each run starts by telling the assistant its exact list and what happens to anything not on it.",
+      "changed": "Your Q-unlisted note (\"make sure whatever the user selects is accurately conveyed to the model\"): the run's opening instructions list each permission and its mode, then say in plain words: with Never, \"don't try anything not listed; it will be refused\"; with Asks first, \"you may try it; the run waits for the person to answer\". Tools it may never use are removed outright.",
+      "notice": "So with Asks first it does ask instead of quietly skipping, and with Never it doesn't keep trying.",
+      "yes": "Clear", "no": "Still unclear"
+    },
+    {
+      "id": "Q-other", "words": true, "surface": "Automations", "path": "Permissions",
+      "answer": "words", "prompt": "Anything still unclear, or to change",
+      "headline": "Anything about how permissions get built still unclear?",
+      "today": "This deck covers where the list comes from and how it grows.",
+      "problem": "Something may still be unclear.",
+      "proposal": "Type it here."
+    }
+  ]
+}

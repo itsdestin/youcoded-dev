@@ -124,8 +124,12 @@ deck step behind each line: `2026-11-07-pages-step4-automations-technical-design
   (session `mesh-sync-design`), not a sync of its own.
 - **Dropped:** the step 4 contract (renamed `pages-finish-step4.contract.superseded.json`); the
   "what we're building" page (`step4-plan/automations-plan.html`, superseded by the decks).
-- **Open (deck `pages-finish-step4-plan-c`):** whether the permissions explanation is clear; one or
-  two "not listed" rows. Not drawn yet: typing which folder / site / command after Add a permission;
+- **Answered (deck `plan-c`, 2026-11-08):** jobs kept apart from chats and the three places an action
+  lands are clear; two "not listed" rows stay, and the run is told plainly what each means; the
+  lower settings became "Advanced settings" fold cards.
+- **Open (deck `pages-finish-step4-plan-d`):** how the permission list gets built (assistant drafts
+  it, a practice run, "Allow from now on", "Describe it…", commands that change each run, edited
+  scripts). Nothing in it is decided until answered. Not drawn yet: typing which folder / site / command after Add a permission;
   the delete-page popup.
 
 ## Follow-ups recorded (Destin, 2026-10-24: "record anything that is gonna be a follow up")
