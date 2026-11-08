@@ -1,0 +1,228 @@
+{
+  "title": "YouCoded Pages step 4: automations — contract",
+  "key": "pages-finish-step4-contract",
+  "out": "pages-finish-step4.contract.html",
+  "themes": [
+    "midnight"
+  ],
+  "branch": "session/90-pages-finish",
+  "sources": {
+    "pages-finish-step4-questions": "pages-finish-step4.questions.json",
+    "pages-finish-step4-review": "pages-finish-step4.review.json",
+    "pages-finish-step4b-review": "pages-finish-step4b.review.json",
+    "pages-finish-step4c-review": "pages-finish-step4c.review.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Pages",
+      "path": "Pages → Automations, and a chat's automation check",
+      "headline": "This is what done means for automations.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "An automation is a saved instruction the app runs for you later, with nobody watching and no chat open.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#S-what"
+        },
+        {
+          "id": "R2",
+          "statement": "You can set up jobs like a morning money check, email sorter, page button, Friday wrap-up, price watcher and overnight tidy-up.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-uses",
+          "note": "yeah basically any of these honestly. and more advanced things too, like a page full of automations/plans that take fixed inputs and accomplishes a goal with multiple agents. like building/reviewing/etc a whole new feature from scratch upon recieving bug reports or something"
+        },
+        {
+          "id": "R3",
+          "statement": "Each job has its own setting for what happens when it wants to do something set to Ask first.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-blocked",
+          "note": "this should be something i can tune fairly granularly. \"always allowed to read emails, ask before writing emails, run this exact command without asking, and that's it\" with broader settings also available. for things that must ask, we should utilize desktop/mobile system notifications and include a visual indication that something behind that button on the front page is waiting"
+        },
+        {
+          "id": "R4",
+          "statement": "A job can notify you when it needs you, when it has news, and when it fails.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-tell",
+          "note": "maybe allow customizable notifications per job"
+        },
+        {
+          "id": "R5",
+          "statement": "A job can belong to a page or stand on its own.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-belongs",
+          "note": "but jobs not tied to a page should still show in a central automations view somewhere "
+        },
+        {
+          "id": "R6",
+          "statement": "You can make a new automation by asking in a chat or by filling in a full settings view.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-make",
+          "note": "i think either with chat and/or a full builder view"
+        },
+        {
+          "id": "R7",
+          "statement": "All your automations are listed in one new main area, which is a built-in page.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-home",
+          "note": "the main are could probably be a built in page tho"
+        },
+        {
+          "id": "R8",
+          "statement": "Each past run shows a short summary first, with everything it did one step further in.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-runs"
+        },
+        {
+          "id": "R9",
+          "statement": "A new automation on a paid model starts with a spending limit that you can change in a popup.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-limit",
+          "note": "defsaut to 5 with a changeable popup"
+        },
+        {
+          "id": "R10",
+          "statement": "A job on a subscription has no usage limit, and usage is tracked per job so you can see where it goes.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-subscription",
+          "note": "but we should track tokens used per job by each model/harness so users can see where usage is going. same for gpt/openrouter"
+        },
+        {
+          "id": "R11",
+          "statement": "A job that reaches its limit mid-run finishes its current step, then stops.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-questions#Q-limit-hit"
+        },
+        {
+          "id": "R12",
+          "statement": "A page's own Settings lists that page's automations, each with its switch.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-review#A-pagesettings"
+        },
+        {
+          "id": "R13",
+          "statement": "The Pages button in the top bar shows a dot while an automation is waiting for you.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-review#Q-pin"
+        },
+        {
+          "id": "R14",
+          "statement": "A page button that runs a job shows a spinner while it runs and a dot while it waits, drawn the same on every page.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4-review#Q-button"
+        },
+        {
+          "id": "R15",
+          "statement": "At phone width the automation cards stack in one column.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4b-review#B-phone"
+        },
+        {
+          "id": "R16",
+          "statement": "Any automation can run on Claude, ChatGPT or OpenRouter, picked from one list, with nothing else about the job changing.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4b-review#B-sub",
+          "note": "we should use the same model picker used on other surfaces elsewhere in the app, or a clean derivative of it.."
+        },
+        {
+          "id": "R17",
+          "statement": "Each run is its own box showing when, result, cost, what it did, and Open conversation.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4b-review#B-runs"
+        },
+        {
+          "id": "R18",
+          "statement": "Asking in a chat to automate something shows a short draft to check before anything runs, with Edit all settings.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4b-review#B-check"
+        },
+        {
+          "id": "R19",
+          "statement": "Automations shows cards grouped Waiting for you, On and Paused, with a job's page shown as a chip on its card.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4c-review#C-list"
+        },
+        {
+          "id": "R20",
+          "statement": "Opening a card shows its details with the app's model picker, a Settings / Runs tab strip, and the spending limit as one row.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4c-review#C-details"
+        },
+        {
+          "id": "R21",
+          "statement": "Each permission shows its state as a pill (Always allowed / Asks first) that opens a menu with Remove.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4c-review#C-add"
+        },
+        {
+          "id": "R22",
+          "statement": "A new automation has no on/off switch: Create turns it on, and you can pause it afterwards from its card.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4c-review#C-new"
+        },
+        {
+          "id": "R23",
+          "statement": "The details top card has the on/off switch, what the job is waiting on with Allow and Don't allow, and Run now.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4b-review#B-details",
+          "note": "this is significantly better. i still dont love the styling of the spending limit box or the settings/runs toggle thing. "
+        },
+        {
+          "id": "R24",
+          "statement": "Each job has its own Approvals setting for whether it waits for you or skips when it wants something set to Ask first.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4b-review#B-details",
+          "note": "this is significantly better. i still dont love the styling of the spending limit box or the settings/runs toggle thing. "
+        },
+        {
+          "id": "R25",
+          "statement": "Each job has its own Missed runs setting for what happens when the computer was asleep or off when it was due.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4b-review#B-details",
+          "note": "this is significantly better. i still dont love the styling of the spending limit box or the settings/runs toggle thing. "
+        },
+        {
+          "id": "R26",
+          "statement": "Each job has its own Notifications setting.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4b-review#B-details",
+          "note": "this is significantly better. i still dont love the styling of the spending limit box or the settings/runs toggle thing. "
+        },
+        {
+          "id": "R27",
+          "statement": "Changes you make in automation details save as you make them, with no Save button.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "pages-finish-step4b-review#B-details",
+          "note": "this is significantly better. i still dont love the styling of the spending limit box or the settings/runs toggle thing. "
+        }
+      ]
+    }
+  ]
+}
