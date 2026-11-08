@@ -124,7 +124,8 @@ function findShift(pairs) {
 // ─── Classifying ─────────────────────────────────────────────────────────────
 const BRAILLE = /^[\u2800-\u28ff\s]+$/;
 const DURATION = /\b\d+\s?(?:d|h|m|s)\b/g;
-const CLOCK = /\b\d{1,2}:\d{2}(?::\d{2})?\s?(?:[AaPp][Mm])?/g;
+// The mic's elapsed time is drawn as "0 : 11" (minutes and seconds in separate pieces), so spaces may sit around the colon.
+const CLOCK = /\b\d{1,2} ?: ?\d{2}(?: ?: ?\d{2})?\s?(?:[AaPp][Mm])?/g;
 const SPINNER = /[\u2800-\u28ff]/g;
 // WHY two more (what-changed run 9, 2026-11-08): a running timer reads "For 9m 58s" in one picture and "For 10m"
 // in the other (one duration became two words), and a progress line read "41% of 24,000 tokens" against "39%".
@@ -557,8 +558,35 @@ export function keepInsidePanel(changes, panelBefore, panelAfter, vw, vh) {
   if (!ps.length || !vw || !vh || ps.every((p) => p.w * p.h >= 0.6 * vw * vh)) return { changes, outside: 0 };
   const PADC = 4; // a change hugging the panel's edge (its shadow, its border) still belongs to it
   const grow = (p) => ({ x: p.x - PADC, y: p.y - PADC, w: p.w + 2 * PADC, h: p.h + 2 * PADC });
-  const kept = changes.filter((c) => [c.box, c.beforeBox].some((b) => b && ps.some((p) => hits(b, grow(p)))));
+  // WHY half, for pixel spots (what-changed run 9, 2026-11-08: office/versions marked a 41 px smudge of the blurred
+  // page beside the popup because its last pixel touched the popup's edge): an element belongs to the popup when it
+  // touches it, but a spot of pixels only when most of it lies on the popup.
+  const share = (b, p) => { const w = Math.min(b.x + b.w, p.x + p.w) - Math.max(b.x, p.x), h = Math.min(b.y + b.h, p.y + p.h) - Math.max(b.y, p.y); return w > 0 && h > 0 ? (w * h) / (b.w * b.h || 1) : 0; };
+  const on = (c, b, p) => (c.kind === 'pixels' ? share(b, grow(p)) >= 0.5 : hits(b, grow(p)));
+  const kept = changes.filter((c) => [c.box, c.beforeBox].some((b) => b && ps.some((p) => on(c, b, p))));
   return { changes: kept, outside: changes.length - kept.length };
+}
+
+/**
+ * Drops wording changes whose words a side's own repeat picture does not show. Returns { changes, dropped }.
+ *
+ * WHY (what-changed run 9, 2026-11-08): screens of something in progress (voice typing word by word with its
+ * timer, a model loading) catch a different moment in every picture: "0 : 13" against "0 : 11", "Preparing"
+ * against "Loading". The pixel flicker check missed them because growing text lands in new places. A screen's
+ * second picture of the SAME code is the test: words that are not in it change by themselves, not between
+ * versions. Without a repeat picture (or element list) nothing is dropped.
+ */
+export function dropUnsteadyWords(changes, beforeAgain, afterAgain) {
+  const texts = (els) => (els ? new Set(els.flatMap((e) => [e.text, e.name, e.title, e.placeholder]).filter(Boolean).map((t) => String(t).replace(/\s+/g, ' ').trim())) : null);
+  const tb = texts(beforeAgain), ta = texts(afterAgain);
+  const missing = (set, t) => set && t && !set.has(String(t).replace(/\s+/g, ' ').trim());
+  const kept = changes.filter((c) => {
+    if (c.kind === 'text') return !(missing(tb, c.oldText) || missing(ta, c.newText));
+    if (c.kind === 'added') return !missing(ta, c.newText ?? c.name);
+    if (c.kind === 'removed') return !missing(tb, c.oldText ?? c.name);
+    return true;
+  });
+  return { changes: kept, dropped: changes.length - kept.length };
 }
 
 export function compareRun(run, { beforeLabel, afterLabel } = {}) {
@@ -599,6 +627,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     const b = side(B, 'before'), a = side(A, 'after');
     const scale = a.meta?.scale ?? meta.scale ?? 1.5;
     const again = (map) => (map.has(key) ? PNG.sync.read(readFileSync(map.get(key))) : null);
+    const againEls = (map) => (map.has(key) ? readJson(map.get(key).replace(/\.png$/, '.elements.json'))?.elements ?? null : null);
     const r = compareScreen(b, a, scale, { before: again(B2), after: again(A2) }, { ignoreCaret: name.startsWith('office/') ? 'line' : name.startsWith('chat/terminal') ? 'block' : false, els: [...(b.elements ?? []), ...(a.elements ?? [])] });
     const vp = a.meta?.viewport ?? { w: a.png.width / scale, h: a.png.height / scale };
     const inside = keepInsidePanel(r.changes, panB.get(key), panA.get(key), vp.w, vp.h);
@@ -606,6 +635,8 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     if (inside.outside && !inside.changes.length) r.shift = 0;
     const edge = dropEdgeSlivers(inside.changes, panB.get(key), panA.get(key));
     r.changes = dropSmallMoves(edge.changes).changes;
+    const steadyWords = dropUnsteadyWords(r.changes, againEls(B2), againEls(A2));
+    r.changes = steadyWords.changes; r.unstable = (r.unstable ?? 0) + steadyWords.dropped;
     // WHY (2026-11-07 audit: office/presentation, document and spreadsheet settle into one of two layouts, 10-18 px
     // apart, between pictures of the SAME code): on an Office screen a shift with nothing else is that settling
     if (name.startsWith('office/') && r.shift && !r.changes.length) { r.shift = 0; r.unstable = (r.unstable ?? 0) + 1; }

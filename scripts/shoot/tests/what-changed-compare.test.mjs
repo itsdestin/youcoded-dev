@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { classify, compareRun, compareScreen, dropEdgeSlivers, dropSmallMoves, keepInsidePanel, scrolledNotGone, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
+import { classify, compareRun, compareScreen, dropEdgeSlivers, dropUnsteadyWords, dropSmallMoves, keepInsidePanel, scrolledNotGone, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
 
 const WORKSPACE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const { PNG } = createRequire(join(WORKSPACE, 'youcoded', 'desktop', 'package.json'))('pngjs');
@@ -132,6 +132,7 @@ test('a clock time or a spinner glyph inside a label is not a wording change eit
 
 test('a running timer or progress percentage is not a wording change; other words beside it still are', () => {
   assert.equal(volatileText('For 9m 58s', 'For 10m'), true);
+  assert.equal(volatileText('0 : 13', '0 : 11'), true);
   assert.equal(volatileText('Reading your prompt — 41% of 24,000 tokens', 'Reading your prompt — 39% of 24,000 tokens'), true);
   assert.equal(volatileText('Reading 41% of 24,000 tokens', 'Loading 41% of 24,000 tokens'), false);
 });
@@ -276,4 +277,26 @@ test('reworded text is one words line, not also a "moved" line for its new size'
 test('a row pushed out of view is found even when a number in it changed', () => {
   const changes = scrolledNotGone(classify(matchElements([el('control', 'button', 'youcoded /home/me 4', 10, 300)], [])).changes, [], [{ kind: 'control', role: 'button', name: 'youcoded /home/me 7' }]);
   assert.equal(changes[0].kind, 'scrolled');
+});
+
+test('words a side\'s own repeat picture does not show are not a change between versions; steady words still are', () => {
+  const timer = { kind: 'text', oldText: '0 : 13', newText: '0 : 11' };
+  const copy = { kind: 'text', oldText: 'Read them before sending.', newText: 'Posted publicly. Read them before sending.' };
+  const grown = { kind: 'added', name: 'Row 14 is wrong', newText: 'Row 14 is wrong' };
+  const before2 = [{ text: '0 : 12' }, { text: 'Read them before sending.' }];
+  const after2 = [{ text: '0 : 09' }, { text: 'Posted publicly. Read them before sending.' }];
+  const r = dropUnsteadyWords([timer, copy, grown], before2, after2);
+  assert.deepEqual(r.changes, [copy]);
+  assert.equal(r.dropped, 2);
+  assert.equal(dropUnsteadyWords([timer], null, null).changes.length, 1);
+});
+
+test('a spot of pixels mostly beside a popup is the page behind it, even when it touches the popup\'s edge', () => {
+  const panel = { x: 510, y: 257, w: 420, h: 385 };
+  const beside = { kind: 'pixels', box: { x: 468.7, y: 606, w: 41.3, h: 10.7 } };
+  const onIt = { kind: 'pixels', box: { x: 600, y: 300, w: 40, h: 10 } };
+  const edgeEl = { kind: 'restyled', box: { x: 470, y: 300, w: 42, h: 10 } };
+  const r = keepInsidePanel([beside, onIt, edgeEl], panel, panel, 1440, 900);
+  assert.deepEqual(r.changes, [onIt, edgeEl]);
+  assert.equal(r.outside, 1);
 });
