@@ -9,6 +9,8 @@ tags: [local-models, engine, performance, parity]
 # Local model runner audit (2026-09-04)
 
 > **Status 2026-10-16:** sections 1-3 are dated and mostly built (feat/local-engine-upgrades). What is still open is the dual-model decision and the engine parity gaps, which are cards #48 and #47.
+>
+> **Status 2026-11-08:** §5 item 6 (the ROCm trial) is done and re-measured — ROCm stays optional, see `youcoded/docs/engine-dependencies.md` → "ROCm vs Vulkan, measured". The draft-model idea in §3/§4 now has a better answer that needs no second model: MTP drafting from heads already inside recent Qwen GGUFs (about 2× faster writing on Qwen3.8-27B). Status and plan: `docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md`.
 
 Asked by Destin: how do we maximize local-model performance across model types, what
 easy wins exist, and what is missing for parity with LM Studio / Ollama / Jan.
