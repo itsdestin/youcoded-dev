@@ -16,8 +16,8 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: Steps 1, 1b, 2 and 3 built on session/90-pages-finish and tried by Destin: step 3 = each page's own assistant chat, earlier chats, versions with Put back (2026-11-05, 'step 3 looks good'). Main-chat scroll jump under load found and fixed on the branch. Not on master yet.
-Next: Step 4: assistants and automations (page buttons running the assistant in the background with a fixed allowed list, scheduled runs, spending limits; card #61 joins). Open question first: what an unattended run does when it needs to ask.
+Done: Steps 1, 1b, 2 and 3 built and tried (not on master). Step 4 automations: screens approved (round 3, 2026-11-07); build plan settled on decks plan / plan-b (2026-11-08) — links to pages/projects, per-job rules, saved Claude runs, no system notifications, devices via the mesh.
+Next: Step 4: Destin answers deck pages-finish-step4-plan-c (permissions explained; one or two 'not listed' rows), then one design-review round on docs/active/specs/2026-11-07-pages-step4-automations-technical-design.md, then build.
 Blocked: none
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
