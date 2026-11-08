@@ -1,0 +1,121 @@
+{
+ "deck": "pages-finish-step4-plan-b",
+ "started": "2026-11-08T07:38:00.724Z",
+ "submitted": "2026-11-08T07:52:38Z",
+ "cur": 14,
+ "answers": {
+  "N-answer": {
+   "v": "yes",
+   "t": 1794123639625,
+   "seconds": 159,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "N-links": {
+   "v": "yes",
+   "t": 1794123678730,
+   "seconds": 39,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "N-lower": {
+   "note": "this ui has gotten very convoluted, and its also unclear/unintuitive what a lot of these labels/buttons mean/do",
+   "t": 1794123792754,
+   "v": "other",
+   "seconds": 114,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "E-claude": {
+   "v": "pick",
+   "pick": "saved",
+   "t": 1794123841532,
+   "seconds": 49,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "E-tos": {
+   "v": "yes",
+   "t": 1794123850872,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "E-perm": {
+   "note": "i'm still really confused about how the very narrow and restrictive/tailored permission types i'm requesting would work here? and how we'd keep these settings separate from main sessions? like what do the actual seems and such look like in practice?",
+   "t": 1794123951811,
+   "v": "other",
+   "seconds": 101,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "E-unlisted": {
+   "v": "no",
+   "t": 1794124127805,
+   "note": "this question is buried in a 15-question deck without enough surrounding context. what are we talking about here? how does this actually work under the current proposal",
+   "seconds": 159,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "E-approvals": {
+   "v": "no",
+   "seconds": 22,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1794124131762
+  },
+  "E-prefill": {
+   "v": "pick",
+   "pick": "prefilled",
+   "t": 1794124137854,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "E-notify": {
+   "v": "yes",
+   "t": 1794124156525,
+   "seconds": 19,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-notify-menu": {
+   "v": "no",
+   "t": 1794124203933,
+   "note": "all system notifcations will be built together later, including for automations. current notification building should just be limited to the orange light on pages and such",
+   "seconds": 47,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "E-parallel": {
+   "v": "yes",
+   "t": 1794124213348,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-devices": {
+   "v": "pick",
+   "pick": "wait-mesh",
+   "t": 1794124259578,
+   "seconds": 46,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "E-deletepage": {
+   "v": "yes",
+   "t": 1794124269743,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-other": {
+   "v": "wrote",
+   "text": "i want to make sure we have updated all docs and such to reflect the decisions i've actually made, questions that are open, etc. we should ensure current planning docs don't reference old/outdated versions of any of these features or suggest implementations that i haven't approved. anything that might mislead builder sessions should be annotated and such to point at current docs or reflect updated status",
+   "t": 1794124357491,
+   "seconds": 88,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}
