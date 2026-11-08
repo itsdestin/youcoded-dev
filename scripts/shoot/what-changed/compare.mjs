@@ -439,6 +439,12 @@ function failures(side) {
   for (const r of Array.isArray(m) ? m : []) out.set(`${r.name}|${r.theme}`, r.ok ? null : r.reason || 'not taken');
   return out;
 }
+/** Which pictures the screen list marks as new in the app (shoot writes `newIn` into the record). */
+function newMarks(side) {
+  const m = readJson(join(side, 'manifest.json')); const out = new Map();
+  for (const r of Array.isArray(m) ? m : []) if (r.newIn) out.set(`${r.name}|${r.theme}`, r.newIn);
+  return out;
+}
 /** Each picture's panel box (CSS pixels): the part of the window that IS this screen (shoot's mark). */
 function panels(side) {
   const m = readJson(join(side, 'manifest.json')); const out = new Map();
@@ -475,6 +481,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
   const B2 = findPictures(join(run, 'before-2')), A2 = findPictures(join(run, 'after-2'));
   const failB = failures(join(run, 'before')), failA = failures(join(run, 'after'));
   const panB = panels(join(run, 'before')), panA = panels(join(run, 'after'));
+  const newA = newMarks(join(run, 'after'));
   const keys = new Set([...B.keys(), ...A.keys(), ...[...failB].filter(([, v]) => v).map(([k]) => k), ...[...failA].filter(([, v]) => v).map(([k]) => k)]);
   const screens = [];
   for (const key of [...keys].sort()) {
@@ -483,7 +490,14 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     const entry = { name, theme };
     if (failA.get(key)) { screens.push({ ...entry, status: 'failed', reason: `after: ${failA.get(key)}` }); continue; }
     if (failB.get(key) && A.has(key)) { screens.push({ ...entry, status: 'failed', reason: `before: ${failB.get(key)}` }); continue; }
-    if (!B.has(key) && A.has(key)) { screens.push({ ...entry, status: 'new', reason: `not in ${beforeLabel ?? meta.before?.label ?? 'the before side'}`, after: rel('after', true) }); continue; }
+    // WHY two kinds (2026-11-07 review: ~80% of "new" screens existed in the release but were only added to the
+    // photo list later): `new` only when the screen list marks the screen new (newIn: 'after'); otherwise the
+    // release simply has no picture of it, `nobefore`, which is not a change and not news.
+    if (!B.has(key) && A.has(key)) {
+      const label = beforeLabel ?? meta.before?.label ?? 'the before side';
+      const isNew = newA.get(key) === 'after';
+      screens.push({ ...entry, status: isNew ? 'new' : 'nobefore', reason: isNew ? `new since ${label}` : `no picture of it from ${label} (not on its photo list)`, after: rel('after', true) }); continue;
+    }
     if (B.has(key) && !A.has(key)) { screens.push({ ...entry, status: 'removed', reason: 'not in the after side', before: rel('before', true) }); continue; }
     if (!B.has(key) && !A.has(key)) continue;
     const side = (map, dir) => {
@@ -516,7 +530,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
 
 export function summaryLine(out) {
   const n = (s) => out.screens.filter((x) => x.status === s).length;
-  return `${n('changed')} changed · ${n('unchanged')} unchanged · ${n('new')} new · ${n('removed')} removed · ${n('failed')} failed (${out.screens.length} pictures)`;
+  return `${n('changed')} changed · ${n('unchanged')} unchanged · ${n('new')} new · ${n('nobefore')} with no release picture · ${n('removed')} removed · ${n('failed')} failed (${out.screens.length} pictures)`;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

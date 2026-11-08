@@ -4,8 +4,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { classify, compareScreen, keepInsidePanel, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
+import { classify, compareRun, compareScreen, keepInsidePanel, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
 
 const WORKSPACE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const { PNG } = createRequire(join(WORKSPACE, 'youcoded', 'desktop', 'package.json'))('pngjs');
@@ -191,4 +193,20 @@ test('a page that only sits lower (no element list explains it) is one shift, no
   const r = compareScreen(side(pic(300, 240, stripes(0)), []), side(pic(300, 240, stripes(12)), []), 1);
   assert.equal(r.shift, 12);
   assert.ok(r.changes.length <= 1, `left over: ${r.changes.length} boxes`);
+});
+
+test('only the after side has it: "new" when the screen list marks it new, otherwise "no picture from the release"', () => {
+  const run = mkdtempSync(join(tmpdir(), 'wc-run-'));
+  const png = PNG.sync.write(pic(20, 20, () => null));
+  const put = (side, name) => { mkdirSync(join(run, side, name), { recursive: true }); writeFileSync(join(run, side, name, 'meadow-mist.png'), png); };
+  put('after', 'really-new'); put('after', 'older-screen');
+  mkdirSync(join(run, 'before'), { recursive: true });
+  writeFileSync(join(run, 'before', 'manifest.json'), '[]');
+  writeFileSync(join(run, 'after', 'manifest.json'), JSON.stringify([
+    { name: 'really-new', theme: 'meadow-mist', ok: true, newIn: 'after' },
+    { name: 'older-screen', theme: 'meadow-mist', ok: true },
+  ]));
+  writeFileSync(join(run, 'run.json'), JSON.stringify({ before: { label: 'v1.0.0' }, after: { label: 'now' } }));
+  const by = Object.fromEntries(compareRun(run).screens.map((s) => [s.name, s.status]));
+  assert.deepEqual(by, { 'really-new': 'new', 'older-screen': 'nobefore' });
 });

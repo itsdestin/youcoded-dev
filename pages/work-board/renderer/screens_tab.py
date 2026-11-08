@@ -72,7 +72,8 @@ def state_label(name):
 # SINCE THE RELEASE — 'changed' when any situation differs in any theme, 'new' when no situation existed
 # then, else None (the same, or no what-changed run given)
 def since_of(states):
-    sts = [t['status'] for st in states for t in (st.get('ch') or {}).values()]
+    # WHY nobefore is left out: "no picture from the release" says nothing about change, and is not news
+    sts = [t['status'] for st in states for t in (st.get('ch') or {}).values() if t['status'] != 'nobefore']
     if not sts: return None
     if 'changed' in sts or 'removed' in sts: return 'changed'
     if all(x == 'new' for x in sts): return 'new'
@@ -346,7 +347,7 @@ let DCMP=false,DZOOM=null,DTH=null;
 // offering 8 different pages of (nothing actually changed)"): the comparison is offered only on a situation
 // that changed; one that is the same, or has no release picture, just says so under the usual picture.
 function stSince(st){const v=Object.values(st.ch||{}).map(t=>t.status);if(!v.length)return null;
-  return v.includes('changed')||v.includes('removed')?'changed':v.includes('new')?'new':'same'}
+  return v.includes('changed')||v.includes('removed')?'changed':v.includes('new')?'new':v.every(s=>s==='nobefore')?'nobefore':'same'}
 function openShot(id,stIdx){const g=GI[id];if(!g)return;if(!DCUR)LASTFOCUS=document.activeElement;DCUR=id;DWIN=false;DZOOM=null;DTH=null;
   // WHY: opened while looking for changes, the popup opens on the first situation that changed, compared
   const hunting=CM&&S.f.has('since'),first=g.states.findIndex(s=>stSince(s)==='changed');
@@ -367,7 +368,7 @@ function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+
   const since=CM?stSince(st):null,cmpOn=DCMP&&since==='changed';
   if(cmpOn){$('#dbody').innerHTML=cmpHTML(g,st)+(DPATH?pathHTML(g):'');wireCmp(g)}else
   $('#dbody').innerHTML=`<div class="dgrid"><div class="dleft">${pic}
-  <div class="dbar"><span class="t-xs muted">${g.states.length>1?`Situation ${DST+1} of ${g.states.length}: ${esc(st.l)}`:'One situation photographed'}${st.ph?' · phone size':''}${st.crop?(DWIN?' · click the picture to zoom back in':' · click the picture to see the whole window'):''}${since==='same'?' · looks the same as in '+esc(CM.release):since==='new'?' · no picture of it from '+esc(CM.release):''}</span></div>
+  <div class="dbar"><span class="t-xs muted">${g.states.length>1?`Situation ${DST+1} of ${g.states.length}: ${esc(st.l)}`:'One situation photographed'}${st.ph?' · phone size':''}${st.crop?(DWIN?' · click the picture to zoom back in':' · click the picture to see the whole window'):''}${since==='same'?' · looks the same as in '+esc(CM.release):since==='new'?' · new since '+esc(CM.release):since==='nobefore'?' · no picture of it from '+esc(CM.release):''}</span></div>
   ${g.states.length>1?`<div class="sstrip" role="group" aria-label="Situations">${g.states.map((s,i)=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(s.l)})"><span class="si"><img src="${s.img}" alt=""></span><span>${esc(s.l)}</span></button>`).join('')}</div>`:''}
   </div><div class="dfacts">
     <div><div class="eyebrow" data-tip="${T('pop.where')}">Where it is</div><div class="crumbs">${where}</div></div>

@@ -470,7 +470,11 @@ function summarize(label, { results, screens }, outDir) {
   // A re-shoot into an existing run folder keeps that folder's other pictures in the manifest
   // (manifest.mjs says why: a partial re-shoot used to drop them from the deck, silently).
   const mf = join(outDir, 'manifest.json');
-  const { records, kept } = mergeManifest(readManifest(mf), results.map(({ thumb, ...r }) => r));
+  // WHY newIn in the record (what-changed, 2026-11-07): a release comparison must tell a screen that is new in
+  // the app ("new") from one that existed but was only added to this photo list later ("no picture from the
+  // release"), and only the screen list knows which is which.
+  const newIn = new Map((screens ?? []).filter((s) => s.newIn).map((s) => [s.name, s.newIn]));
+  const { records, kept } = mergeManifest(readManifest(mf), results.map(({ thumb, ...r }) => (newIn.has(r.name) ? { ...r, newIn: newIn.get(r.name) } : r)));
   writeFileSync(mf, JSON.stringify(records, null, 2));
   if (kept) console.log(`  kept ${kept} earlier picture(s) of this folder in its manifest (re-shot ones replaced)`);
   // --contrast: the painted-pixel report beside the pictures (text too faint on its own

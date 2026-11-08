@@ -61,7 +61,7 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
   "screens": [
     {
       "name": "settings/about", "theme": "meadow-mist",
-      "status": "changed | unchanged | new | removed | failed",
+      "status": "changed | unchanged | new | nobefore | removed | failed",
       "reason": "only when failed or new: why",
       "before": "before/settings/about/meadow-mist.png",
       "after": "after/settings/about/meadow-mist.png",
@@ -87,7 +87,7 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
 
 - A `text` change may carry `field: "title" | "placeholder"` when it is a tooltip / hint that changed (absent = the visible words).
 - Left out on purpose: a spinner glyph and a countdown (`resets in 2h 59m` vs `3h 0m`) change by themselves.
-- `new` = the picture exists only on the after side (`reason` says so); `removed` the reverse. `failed` = either side's picture was not taken (`reason` says which side and why).
+- `new` = the screen list marks the screen new in the app (`newIn: 'after'`, carried in the after side's manifest) and only the after side has it. `nobefore` = only the after side has a picture but the screen is not marked new: it existed in the release but was not on the release's photo list, so nothing is known about whether it changed. `removed` = only the before side has it. `failed` = either side's picture was not taken (`reason` says which side and why).
 - `box` is in CSS pixels on `side` (`removed` uses `before`; everything else `after`).
 - `pixels` is a changed area no element explains (an icon, a picture, a border).
 - `outside` counts changes dropped because they sit outside a popup's own panel (on the page behind it, which is
