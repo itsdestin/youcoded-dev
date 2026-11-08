@@ -894,3 +894,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-31 #85 Buddy window: three open items (youcoded#709 (buddy rebuild: menu-typing guard, real question card, idle moments + sleep in mascot-mood.ts))
 - [x] 2026-11-02 #211 Analytics: honest numbers, team-device exclusion and a clearer dashboard (youcoded#711, wecoded-marketplace#113, youcoded-admin#21, youcoded-dev#330)
 - [x] 2026-11-03 #215 Voice typing: say when the microphone hears nothing (youcoded#712, youcoded-dev#331)
+- [x] 2026-11-08 #224 Can't send in a Claude Code chat: "Queue identity is not ready" (youcoded#719)
