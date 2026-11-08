@@ -1,0 +1,130 @@
+{
+  "title": "Automations: the build plan, round 2",
+  "key": "pages-finish-step4-plan-b",
+  "out": "pages-finish-step4-plan-b.review.html",
+  "images": "images/pages-finish-step4-plan-b.review",
+  "runs": { "after": "runs-plan-b/after" },
+  "steps": [
+    {
+      "id": "N-answer", "surface": "Automations", "path": "Automation details → a job waiting for you",
+      "crop": "automations/details", "new": true,
+      "headline": "Allow and Don't allow now take a note for the assistant; Don't allow needs one.",
+      "changed": "S-answer: the note tells the run what to do instead, so it doesn't just try again. Allow works with or without one.",
+      "notice": "Don't allow stays greyed out until the note has something in it."
+    },
+    {
+      "id": "N-links", "surface": "Automations", "path": "Automation details → Linked to",
+      "crop": "automations/details#subscription", "new": true,
+      "headline": "An automation is linked to any number of pages and projects instead of belonging to one.",
+      "changed": "Q-pagejobs and Q-deletepage. Each link is its own box with Unlink; \"Link to a page or project\" adds one. Every linked page can run it from a button and shows its waiting dot.",
+      "notice": "The card's chips show every link (here Weekly briefing and youcoded-dev)."
+    },
+    {
+      "id": "N-lower", "surface": "Automations", "path": "Automation details → the lower settings",
+      "crop": "automations/details#lower", "new": true,
+      "headline": "Missed runs gets more choices, and two new settings: Still running when due, and Runs on.",
+      "changed": "S-start: Missed runs adds \"Run at another time\" and \"Run with other instructions\" (which can also change what it makes). Q-overlap: skip the new run, stop the old one, or run both, per job. Q-devices: one switch per device.",
+      "notice": "With two devices on, a warning says it may run on each of them."
+    },
+
+    {
+      "id": "E-claude", "words": true, "surface": "Automations", "path": "Jobs on a Claude model",
+      "headline": "Run Claude jobs as ordinary Claude Code sessions that are saved, but kept in their own folder away from your chats?",
+      "today": "Claude jobs use Claude Code's background mode (the same Claude Code your chats use, started with no window). The last plan turned saving off, so a job waiting for you couldn't continue after a restart.",
+      "problem": "Not saving was only to keep runs out of your chat list. It cost the restart behaviour you asked about, and made Claude jobs work differently from ChatGPT / OpenRouter ones.",
+      "proposal": "Save each run like any Claude Code chat, but in a folder YouCoded keeps for automations and leaves out of your chat list, Resume and chat search. Old runs are deleted with the last-50 rule.",
+      "options": [
+        { "id": "saved", "label": "Saved, kept apart", "recommended": true,
+          "pros": ["A waiting Claude job picks up exactly where it paused, even after a restart, like the other models.", "Asks go through the same permission system your Claude chats already use."],
+          "cons": ["Run files sit on disk in that folder (deleted after 50 runs per job)."] },
+        { "id": "unsaved", "label": "Not saved", "pros": ["Nothing written to disk."], "cons": ["A Claude job waiting when you close YouCoded is lost, or has to start over."] }
+      ]
+    },
+    {
+      "id": "E-tos", "words": true, "surface": "Automations", "path": "Anthropic's rules for Claude subscriptions",
+      "headline": "Anthropic's rules allow an app to start your own, unchanged Claude Code with your own sign-in, which is what this does.",
+      "changed": "Their rules forbid apps that take your Claude login themselves, change Claude Code, or resell usage. YouCoded does none of those: you sign in inside Claude Code, and each run counts toward your plan's normal limits.",
+      "notice": "One grey area: their general terms discourage automated use, while their own docs offer scheduled Claude Code runs. Heavy automations on a subscription carry that small risk; jobs on ChatGPT or OpenRouter don't.",
+      "yes": "Understood", "no": "I have concerns"
+    },
+    {
+      "id": "E-perm", "words": true, "surface": "Automations", "path": "How permissions are enforced",
+      "headline": "Both kinds of job follow the same permission list; only who enforces it differs.",
+      "changed": "Claude jobs: Claude Code enforces it, and anything set to Asks first reaches YouCoded the same way a Claude chat's permission question does. ChatGPT / OpenRouter jobs: YouCoded's own assistant enforces it.",
+      "notice": "S-allowed note: on both, a tool the job may never use is taken out of the assistant's list entirely, so it knows not to plan around it.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "E-unlisted", "words": true, "surface": "Automation details", "path": "Permissions → Other websites / Other commands and files",
+      "headline": "\"Other websites\" decides what happens when a job tries a website you didn't list. Is that clear now?",
+      "changed": "Example: the price watch lists bestbuy.com. If it tries amazon.com, \"Never\" refuses it (the run carries on and its box says what was refused); \"Asks first\" pauses it like any Asks first item. \"Other commands and files\" works the same for your computer.",
+      "notice": "New automation shows both as Never; you can change them while creating it or later.",
+      "yes": "Clear", "no": "Still unclear"
+    },
+    {
+      "id": "E-approvals", "words": true, "surface": "Automation details", "path": "Approvals",
+      "headline": "\"Approvals\" decides what a run does when it reaches something set to Asks first. Is that clear now?",
+      "changed": "Example: the email sorter wants to send a reply. \"Wait for me\": the run pauses, you get a notification, and the job sits under Waiting for you until you answer or \"Wait up to\" runs out. \"Skip and continue\": the reply isn't sent, the run finishes, and its box says what was skipped.",
+      "notice": "It's what you saw on the details popup in round 2; nothing new to build.",
+      "yes": "Clear", "no": "Still unclear"
+    },
+    {
+      "id": "E-prefill", "words": true, "surface": "Automations", "path": "New automation",
+      "headline": "Should New automation start with its settings already picked, or blank until you choose each one?",
+      "today": "You're right: every setting applies to every run the same way, from the first to the hundredth. \"Default\" only meant what New automation shows already picked.",
+      "problem": "Pre-picked is quicker but easy to skip past; blank makes you think about each one but is slower.",
+      "proposal": "Pick how New automation starts.",
+      "options": [
+        { "id": "prefilled", "label": "Already picked", "recommended": true, "summary": "Wait for me, missed runs run once on wake, unlisted things Never, all three notifications on.", "pros": ["Create works straight away.", "The picks are the careful ones."], "cons": ["You may not notice a setting you'd have changed."] },
+        { "id": "blank", "label": "Blank", "summary": "Create stays greyed out until each setting is chosen.", "pros": ["Every choice is deliberate."], "cons": ["Several more clicks for every new job, including ones made from a chat."] }
+      ]
+    },
+    {
+      "id": "E-notify", "words": true, "surface": "Your computer and phone", "path": "Automation notifications",
+      "headline": "When notifications are sent, and what they show.",
+      "changed": "Needs you: the moment a run pauses for your OK. Has news: when a run ends and says it found something. Failed: when a run fails or reaches its limit. Each shows the job's name and one line; clicking opens that job. Where your system supports buttons in notifications, Allow and Don't allow appear right there.",
+      "notice": "Never for a run that finished with nothing to report.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "Q-notify-menu", "words": true, "surface": "Settings", "path": "Settings → Sound",
+      "headline": "Build only automation notifications now, and make the full Notifications menu its own follow-up?",
+      "today": "Settings has a Sound item for chat chimes. Automations would add the app's first system notifications.",
+      "problem": "Your S-notify note wants a full Notifications menu replacing Sound, covering chats finishing or waiting too. That's a bigger, separate job.",
+      "proposal": "Yes: step 4 ships the three switches per automation; the Notifications menu becomes its own work item, built next to this. No: the menu is part of step 4."
+    },
+    {
+      "id": "E-parallel", "words": true, "surface": "Automations", "path": "Several jobs due at once",
+      "headline": "No limit on how many automations run at once.",
+      "changed": "Q-parallel: you picked no limit, since one job can be heavy and ten can be light.",
+      "notice": "If it ever slows the computer, a setting can be added later.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "Q-devices", "words": true, "surface": "Automations", "path": "Your computer and your phone",
+      "headline": "Build the Runs on list now and let the mesh sync work carry automations to your other devices?",
+      "today": "The mesh sync design (another session) plans \"one list everywhere\" for chats, then automatic choice of which device runs things, including \"exactly-once\" claims for scheduled automations.",
+      "problem": "Showing automations on every device needs that sync. Building a separate sync just for automations would be thrown away when the mesh lands.",
+      "proposal": "Each automation gets a stable identity and its Runs on list now (pictured); until the mesh's list step ships, only this device appears. When it ships, automations ride along, and later the mesh can pick the device itself.",
+      "options": [
+        { "id": "wait-mesh", "label": "Ride on the mesh", "recommended": true, "pros": ["Nothing built twice.", "Fits the mesh's later automatic device choice."], "cons": ["Until then, your phone doesn't see automations made on the computer."] },
+        { "id": "own-sync", "label": "Sync now", "pros": ["Visible everywhere straight away."], "cons": ["A temporary sync to replace later; risk of runs on both devices before the mesh's exactly-once claim exists."] }
+      ]
+    },
+    {
+      "id": "E-deletepage", "words": true, "surface": "Pages", "path": "Deleting a page that has linked automations",
+      "headline": "Deleting a page asks about each linked automation: keep it or delete it.",
+      "changed": "Q-deletepage: the delete popup lists every automation linked to that page, each with Keep / Delete. A kept one loses that link but carries on as before, and still runs from Automations.",
+      "notice": "Not drawn yet; it will be on the deck after the build.",
+      "yes": "Right", "no": "Change this"
+    },
+    {
+      "id": "Q-other", "words": true, "surface": "Automations", "path": "The whole plan",
+      "answer": "words", "prompt": "Anything to add, question or change",
+      "headline": "Anything else before the build starts?",
+      "today": "This round covers every note from the last deck.",
+      "problem": "Something may still be missing.",
+      "proposal": "Type it here."
+    }
+  ]
+}
