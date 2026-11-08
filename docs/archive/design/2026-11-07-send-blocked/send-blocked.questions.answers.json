@@ -1,0 +1,80 @@
+{
+ "deck": "send-blocked-questions",
+ "started": "2026-11-08T00:18:08.024Z",
+ "submitted": "2026-11-08T00:25:47Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794097287742,
+   "seconds": 40,
+   "theme": "morning-rounds"
+  },
+  "S-2": {
+   "v": "other",
+   "t": 1794097287742,
+   "note": "no. i can type into the terminal fine if i switch away from chat view, but that isn't a \"solution\". the entire point of the claude code integration is that i don't have to use the TUI, but get a better, visually intuitive UI surface for claude code. if your proposal is \"just stop using the ui surface\", then i might as well just delete youcoded.",
+   "seconds": 40,
+   "theme": "morning-rounds"
+  },
+  "S-3": {
+   "note": "i think sleep may still be involved. i noticed this issue most recently on my windows desktop after walking away for 24+ hours. idk what caused it there, but it was fine before i left and wasn't working when i got back.",
+   "t": 1794097287742,
+   "v": "other",
+   "seconds": 40,
+   "theme": "morning-rounds"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794097287742,
+   "seconds": 40,
+   "theme": "morning-rounds"
+  },
+  "S-5": {
+   "v": "yes",
+   "t": 1794097287742,
+   "note": "again that's not a fix, so idk why you bothered bringing it up. our goal here is to fix a bug, not discuss random ways i might happen to get around it",
+   "seconds": 40,
+   "theme": "morning-rounds"
+  },
+  "Q-1": {
+   "v": "other",
+   "t": 1794097459496,
+   "note": "i feel like most of these options make message sending far more complicated and less reliable for no reason? we should fix all of the issues we discovered in the most simple and robust way available to us. i don't want to add another half-dozen workarounds for edge cases.",
+   "seconds": 57,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794097459496,
+   "note": "this should be automatic reconcilation and the user shouldn't even have to notice or think about why a chat failed. we need to be wary of performance costs or other regressions. i want the simplest/most robust automatic self-repair we can implement.",
+   "dk": true,
+   "seconds": 57,
+   "theme": "morning-rounds"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1794097459496,
+   "note": "the backup idea seems overcomplicated and prone to fucking up other app systems for no real benefit. ",
+   "seconds": 57,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "picks",
+   "t": 1794097546266,
+   "note": "idk. i noticed it most recently on windows pc after sleep, but it could have other causes as well. ",
+   "picks": [
+    "after-idle"
+   ],
+   "seconds": 44,
+   "theme": "morning-rounds"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1794097546266,
+   "note": "idk. reopening/restarting probably fixes, but i didn't get that far into diagnosis or testing. again, it doesn't matter if reopening fixes it - the chat shouldn't break this way in the first place.",
+   "seconds": 44,
+   "theme": "morning-rounds"
+  }
+ }
+}
