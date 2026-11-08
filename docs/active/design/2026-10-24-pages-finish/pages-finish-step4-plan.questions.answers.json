@@ -1,0 +1,190 @@
+{
+ "deck": "pages-finish-step4-plan",
+ "started": "2026-11-08T06:48:57.523Z",
+ "submitted": "2026-11-08T07:23:38Z",
+ "cur": 3,
+ "answers": {
+  "S-make": {
+   "v": "yes",
+   "t": 1794120880142,
+   "seconds": 49,
+   "theme": "halftone-dimension"
+  },
+  "S-start": {
+   "v": "yes",
+   "t": 1794120880142,
+   "note": "want to clarify for builers/planning purposes: \"run differently\" should include a range of options including running at a different time, running with different instructions, changing/modifying outputs for that run, etc.",
+   "seconds": 49,
+   "theme": "halftone-dimension"
+  },
+  "S-allowed": {
+   "v": "yes",
+   "t": 1794120880142,
+   "note": "we need to make sure the model knows which \"anticipated\" tools have been restricted if that proves to impact performance at all.",
+   "seconds": 49,
+   "theme": "halftone-dimension"
+  },
+  "S-asks": {
+   "v": "other",
+   "t": 1794120880142,
+   "note": "need to think through/explain how these notifications will actually operate, when they will be sent, what actions we might be able to include/streamline, etc.",
+   "seconds": 49,
+   "theme": "halftone-dimension"
+  },
+  "S-answer": {
+   "note": "for automations, to prevent confusion or subsequent re-tries, allow/don't allow should let the user also include a note/steer for the model. maybe require the steer as input for dont allow.",
+   "t": 1794120880142,
+   "v": "other",
+   "seconds": 49,
+   "theme": "halftone-dimension"
+  },
+  "S-done": {
+   "v": "yes",
+   "t": 1794120880142,
+   "seconds": 49,
+   "theme": "halftone-dimension"
+  },
+  "S-limit": {
+   "v": "yes",
+   "t": 1794120880142,
+   "seconds": 49,
+   "theme": "halftone-dimension"
+  },
+  "S-pagesbtn": {
+   "v": "yes",
+   "t": 1794121251906,
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "S-pagesettings": {
+   "v": "yes",
+   "t": 1794121251906,
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "S-pagebtn": {
+   "v": "yes",
+   "t": 1794121251906,
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "S-chat": {
+   "v": "yes",
+   "t": 1794121251906,
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "S-notify": {
+   "v": "other",
+   "t": 1794121251906,
+   "note": "yes. i think we may want to possibly split this out into a separate follow up that would include a new advanced \"notifications\" menu to replace the current \"sound\" settings menu item and also offer notifications for other items like regular chat finished/waiting notifications.",
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "S-reused": {
+   "v": "yes",
+   "t": 1794121251906,
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "Q-unlisted": {
+   "v": "other",
+   "t": 1794122577223,
+   "note": "confused. explain further",
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-approvals": {
+   "v": "other",
+   "t": 1794122577223,
+   "note": "confused. need more context about how/when this would be encountered and what it would actually look like under our current framework",
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-missed": {
+   "v": "other",
+   "t": 1794122577223,
+   "note": "i think your \"new job\" framing on these past few questions is confusing me here a tad. most of these behaviors should be consistent between the 1st run and the 100th, right? for this specific question, i think this should be something i select when creating the job, right? there shouldn't really be a \"default\" for most of these settings? unless i'm confused?",
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-notify": {
+   "v": "other",
+   "t": 1794122577223,
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-parallel": {
+   "v": "pick",
+   "pick": "any",
+   "t": 1794122577223,
+   "note": "maybe we can make this configurable in some way, but i think we want to skip the limit. a single automation might be VERY heavy in some instances, and 10 might be relatively light. i dont think this number would be super useful, and would cause friction when trying to accomplish some advanced tasks or run parllel things at the same time",
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-overlap": {
+   "v": "other",
+   "t": 1794122577223,
+   "note": "i think this should depend on the specific job. some may warrant skipping (but skipping current v previous may differ) and others may work best if both still run. ",
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-midrun": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1794122577223,
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-pagejobs": {
+   "v": "other",
+   "dk": true,
+   "t": 1794122577223,
+   "note": "i think this may be a tad to strict as currently conceptualized. i think an automation should be something i can assign to any page/project, or multiple pages/projects. a page should be able to run any automation that has been approved for it (even if that automation originated in a different page/project or as a standalone automation).",
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-deletepage": {
+   "v": "other",
+   "t": 1794122577223,
+   "note": "i think we're linking the automations to pages just a smidge too tightly. the automation is kinda a separate thing that can be linked into a page or built as part of a page build, but it shouldn't necessarily belong to the page. in this instance, i think it may be best to ask the user explicitly when deleting a page whether they want to keep/delete various linked automations indvidually. a kept automation can continue running under its previous conditions or on a button press in automations view. ",
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-restart": {
+   "v": "other",
+   "dk": true,
+   "t": 1794122577223,
+   "note": "uhh i want you to further explain how our claude code vs native automations work. what mode are we using exactly? how does that usage work with anthropic subscriptions and tos. are we sure the chat isn't saved anywhere, and is there any way we could fix this or find/utilize a better method that allows this to work more like a native session? how will permissions infra differ?",
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-unprotected": {
+   "v": "yes",
+   "t": 1794122577223,
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "Q-devices": {
+   "v": "other",
+   "t": 1794122577223,
+   "note": "i think at a minimum we need to sync the metadata to display the automation as existing on all synced devices. preferably there should also be the option to enable, with a popup or something saying (disable on your other device or it may run twice/on boht) or something like htat. we are seprately speccing out the upgraded youcoded sync/mesh system in antoher session, so our build should at least be aware of where that session kinda stands so we build in a way that i can integrate later on when i add automatic automation runner selection",
+   "dk": true,
+   "seconds": 110,
+   "theme": "halftone-dimension"
+  },
+  "S-yours": {
+   "v": "yes",
+   "t": 1794122617601,
+   "seconds": 21,
+   "theme": "halftone-dimension"
+  },
+  "Q-other": {
+   "v": "wrote",
+   "seconds": 21,
+   "theme": "halftone-dimension",
+   "t": 1794122617601,
+   "text": "just all the other comments i've left throughout this\n"
+  }
+ }
+}
