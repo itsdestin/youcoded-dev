@@ -261,6 +261,62 @@ dropped half replies, fork handling, streaming the chat's tail, phone wake. Only
 A middle path exists: build A with the pipe behind a small interface, so B can be added later
 for users who have Tailscale, without redoing the viewer and switching work.
 
+## 8. The true mesh: what it would be, and what exists to build it from
+
+Destin, 2026-11-08: neither our server nor Tailscale feels like the mesh he pictures. What a
+true mesh means, taken literally:
+
+1. **No account for sync.** Devices pair with each other (scan a code), the way Syncthing
+   pairs by device ID. GitHub sign-in stays for the marketplace and friends, not for sync.
+2. **Every device holds the data and the keys.** Any device can host, any device can catch
+   another up. A phone that was asleep catches up from whichever of your devices is awake, not
+   only from the host.
+3. **Helpers in the middle are dumb and replaceable.** Two devices on different networks still
+   need a way to find each other, and about one in ten networks needs a relay. In a mesh those
+   helpers hold no account, no data and no keys; anyone can run one; the app can point at
+   another set. They are plumbing, not a service.
+
+Both A and B fail point 1 (an account with us, or with Tailscale) and point 3 (our account
+room, or Tailscale's coordination service, is the only helper). Point 2 is already the chosen
+design.
+
+### What exists that already works this way
+
+| | Syncthing | Hyperswarm (Holepunch) | Iroh (n0) |
+|---|---|---|---|
+| What it is | open-source file sync used by millions; devices pair by ID, find each other through discovery servers, relay through a public pool anyone can join | the networking under the Keet messenger: devices meet through a shared network of nodes, punch through routers, encrypt by key pair | a Rust library, stable 1.0 in 2026: "dial a key, not an address"; punches through, falls back to public relays anyone can run |
+| Language | Go program | JavaScript, runs inside Node, which our app already ships on every platform | Rust, no official Node bindings found |
+| Fit for us | the model to copy, not code to embed: it syncs files, not live streams | closest to drop-in: our engine is already Node on desktop and on Android | strongest engineering, hardest to wire into our app |
+| Android | its own app exists | runs on phones through Holepunch's own runtime; our headless Node path is untested; a 2026 report shows phones on mobile data failing to fall back to relay until a fix | unknown for our setup |
+| Who runs the helpers | the maintainer, plus anyone | Holepunch, plus anyone | n0, plus anyone |
+
+### What the app would feel like
+
+Settings, Devices, Add device: a code on one screen, scanned on the other. Done; no sign-in
+for sync. Chats stream between whichever of your devices are awake. When only one device is on,
+nothing is lost; the next one to wake catches up from it. Only when none of your devices is on
+does the git copy (or an optional dumb sealed mailbox anyone can run) matter.
+
+### What it costs, honestly
+
+- **The most new work of the three.** The pairing screens, the streaming, and the catch-up
+  from any device (every device keeps a copy of every chat's live tail, and copies must agree
+  when two devices wrote at different times; append-only chat logs make that tractable).
+- **A dependency whose health we do not control.** Hyperswarm is one company's stack; Iroh is
+  one company's library. If either stalls, the mesh stalls.
+- **The phone is the unknown.** Battery cost of staying findable, carrier networks that block
+  direct paths, Android's sleep rules. None of this is measured for us yet.
+- **Debugging is harder.** "My devices don't see each other" has no server log to read.
+
+### The way to find out without betting the design on it
+
+A two-week spike, outside the app: two devices on different networks (desktop at home, phone
+on mobile data), running Hyperswarm inside our Node runtime, including the Android headless
+path. Measure: do they find each other, how often direct versus relay, how long to connect,
+battery over an hour on the phone. The result decides between the mesh and A. Either way the
+viewer, chip, switching and fork work is the same, so design can proceed on everything else
+while the spike runs.
+
 ## Sources
 
 - Cloudflare Durable Objects pricing: https://developers.cloudflare.com/durable-objects/platform/pricing
@@ -272,3 +328,6 @@ for users who have Tailscale, without redoing the viewer and switching work.
 - Zoom FTC settlement: https://www.ftc.gov/news-events/news/press-releases/2020/11/ftc-requires-zoom-enhance-its-security-practices-part-settlement
 - Tea app breach: https://akashmenon.substack.com/p/not-a-hack-just-bad-defaults
 - Moltbook and exposed Supabase databases: https://cybernews.com/news/16000-supabase-databases-exposed/ and https://blog.ogwilliam.com/post/moltbook-hack-supabase-vibe-coding
+- Syncthing security principles: https://docs.syncthing.net/users/security.html
+- Hyperswarm and HyperDHT docs: https://docs.pears.com/p2p/reference/building-blocks/hyperswarm/
+- Iroh: https://github.com/n0-computer/iroh
