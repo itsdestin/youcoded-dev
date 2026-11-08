@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { classify, compareRun, compareScreen, dropEdgeSlivers, dropUnsteadyWords, dropSmallMoves, keepInsidePanel, scrolledNotGone, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
+import { classify, compareRun, compareScreen, dropEdgeSlivers, dropUnsteadyWords, hiddenChanges, dropSmallMoves, keepInsidePanel, scrolledNotGone, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
 
 const WORKSPACE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const { PNG } = createRequire(join(WORKSPACE, 'youcoded', 'desktop', 'package.json'))('pngjs');
@@ -218,6 +218,23 @@ test('only the after side has it: "new" when the screen list marks it new, other
   assert.deepEqual(by, { 'really-new': 'new', 'older-screen': 'nobefore' });
 });
 
+test('a release that cannot open a screen has no picture of it (with why); a time-out is a failed picture', () => {
+  const run = mkdtempSync(join(tmpdir(), 'wc-run-'));
+  const png = PNG.sync.write(pic(20, 20, () => null));
+  for (const n of ['no-switch', 'slow']) { mkdirSync(join(run, 'after', n), { recursive: true }); writeFileSync(join(run, 'after', n, 'meadow-mist.png'), png); }
+  mkdirSync(join(run, 'before'), { recursive: true });
+  writeFileSync(join(run, 'before', 'manifest.json'), JSON.stringify([
+    { name: 'no-switch', theme: 'meadow-mist', ok: false, reason: 'no opener registered for no-switch (is its component mounted?)' },
+    { name: 'slow', theme: 'meadow-mist', ok: false, reason: 'Page.navigate timed out after 15s' },
+  ]));
+  writeFileSync(join(run, 'after', 'manifest.json'), JSON.stringify([{ name: 'no-switch', theme: 'meadow-mist', ok: true }, { name: 'slow', theme: 'meadow-mist', ok: true }]));
+  writeFileSync(join(run, 'run.json'), JSON.stringify({ before: { label: 'v1.0.0' }, after: { label: 'now' } }));
+  const rows = Object.fromEntries(compareRun(run).screens.map((s) => [s.name, s]));
+  assert.equal(rows['no-switch'].status, 'nobefore');
+  assert.match(rows['no-switch'].reason, /v1\.0\.0 cannot open it/);
+  assert.equal(rows.slow.status, 'failed');
+});
+
 test('when the content slides over a wallpaper that stays put, the wallpaper is not a wall of changes', () => {
   // a textured background that never moves; four lines of text (each an element, like chat messages) slide 20 px down under a new row
   const wall = (x, y) => (Math.abs(Math.sin(Math.floor(x / 6) * 12.9898 + Math.floor(y / 6) * 78.233) * 43758.5453) % 1 < 0.3 ? [90, 120, 160] : [200, 210, 230]);
@@ -299,4 +316,27 @@ test('a spot of pixels mostly beside a popup is the page behind it, even when it
   const r = keepInsidePanel([beside, onIt, edgeEl], panel, panel, 1440, 900);
   assert.deepEqual(r.changes, [onIt, edgeEl]);
   assert.equal(r.outside, 1);
+});
+
+test('words below the fold of the screen\'s own panel are compared; what the popup covers is not', () => {
+  const panel = { x: 500, y: 200, w: 400, h: 400 };
+  const own = { x: 510, y: 240, w: 380, h: 340 }, page = { x: 0, y: 40, w: 1440, h: 860 };
+  const b = { elements: [{ text: 'Anonymous usage stats' }], outOfView: [{ text: 'Old tail words here', why: 'scrolled', area: own }, { text: 'Page behind sentence', why: 'scrolled', area: page }] };
+  const a = { elements: [{ text: 'Anonymous usage stats' }], outOfView: [{ text: 'Two more messages are sent once', why: 'scrolled', area: own }, { text: 'Old tail words here, changed', why: 'scrolled', area: own }, { text: 'Covered page words', why: 'covered' }] };
+  const r = hiddenChanges(b, a, panel, panel, 1440, 900);
+  assert.deepEqual(r.map((c) => [c.kind, c.hidden]), [['added', true], ['text', true]]);
+  assert.equal(r[0].newText, 'Two more messages are sent once');
+  assert.equal(r[1].oldText, 'Old tail words here');
+});
+
+test('a new heading barely in view at the panel\'s edge is listed as below the visible part; a grown line is one rewording', () => {
+  const panel = { x: 0, y: 0, w: 800, h: 600 };
+  const sliver = { kind: 'added', role: null, name: 'Sites where it can send forms', newText: 'Sites where it can send forms', side: 'after', box: { x: 20, y: 596, w: 200, h: 20 } };
+  const r = dropEdgeSlivers([sliver], panel, panel);
+  assert.equal(r.changes.length, 1);
+  assert.equal(r.changes[0].hidden, true);
+  assert.equal(r.changes[0].box, undefined);
+  const own = { x: 0, y: 0, w: 800, h: 600 };
+  const h = hiddenChanges({ elements: [], outOfView: [{ text: 'Offline', why: 'scrolled', area: own }] }, { elements: [], outOfView: [{ text: 'Offline · Last used Oct 11', why: 'scrolled', area: own }] }, panel, panel, 1440, 900);
+  assert.deepEqual(h.map((c) => [c.kind, c.oldText, c.newText]), [['text', 'Offline', 'Offline · Last used Oct 11']]);
 });

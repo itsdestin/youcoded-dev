@@ -5,7 +5,7 @@ import { existsSync, readFileSync } from 'node:fs';
 /**
  * The manifest to write into `outDir` after a run: this run's records, plus every record an
  * EARLIER run left in the same folder for a picture this run did not take — when that
- * picture's file is still there.
+ * picture's file is still there, or when it records a picture that could not be taken.
  *
  * WHY (project-switcher friction, proposal 5): re-shooting one screen with `--out` into an
  * existing run folder rewrote manifest.json with only that screen, so every other picture —
@@ -19,8 +19,11 @@ export function mergeManifest(previous, results) {
   const now = new Set(results.map(key));
   const kept = (Array.isArray(previous) ? previous : []).filter((r) =>
     r && typeof r.name === 'string' && !now.has(key(r))
-    // A picture deleted since is not carried over; a not-taken record had no file to keep.
-    && r.ok && r.file && existsSync(r.file));
+    // A picture deleted since is not carried over.
+    // WHY a not-taken record is kept too (what-changed run 9, 2026-11-08): it is a fact about this folder ("1.3.3
+    // has no way to open this screen"). Dropping it on a partial re-shoot turned 24 honest failures into "no
+    // picture from the release (not on its photo list)", which is a different, wrong reason.
+    && (r.ok ? r.file && existsSync(r.file) : true));
   return { records: [...kept, ...results], kept: kept.length };
 }
 

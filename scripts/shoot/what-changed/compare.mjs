@@ -540,7 +540,15 @@ export function dropSmallMoves(changes) {
 
 export function dropEdgeSlivers(changes, panelBefore, panelAfter) {
   const seen = (b, p) => { if (!b || !p) return true; const h = Math.min(b.y + b.h, p.y + p.h) - Math.max(b.y, p.y); return h >= 8 && h >= b.h / 2; };
-  const kept = changes.filter((c) => c.kind === 'pixels' || seen(c.box, (c.side === 'before' ? panelBefore : panelAfter)) || (c.beforeBox && seen(c.beforeBox, panelBefore) && c.kind !== 'added'));
+  const kept = [];
+  for (const c of changes) {
+    if (c.kind === 'pixels' || seen(c.box, (c.side === 'before' ? panelBefore : panelAfter)) || (c.beforeBox && seen(c.beforeBox, panelBefore) && c.kind !== 'added')) { kept.push(c); continue; }
+    // WHY (2026-11-08 review: the browser settings' new "Sites where it can send forms" section showed only the top
+    // of its heading at the bottom edge, and the screen read "unchanged"): words only one side has are still news
+    // when barely in view; they are listed as below the visible part, without a mark on a sliver.
+    const words = c.kind === 'added' ? c.newText ?? c.name : c.kind === 'removed' ? c.oldText ?? c.name : '';
+    if (words && norm(words).length > 3) { const { box, beforeBox, ...rest } = c; kept.push({ ...rest, hidden: true }); }
+  }
   return { changes: kept, edge: changes.length - kept.length };
 }
 
@@ -565,6 +573,41 @@ export function keepInsidePanel(changes, panelBefore, panelAfter, vw, vh) {
   const on = (c, b, p) => (c.kind === 'pixels' ? share(b, grow(p)) >= 0.5 : hits(b, grow(p)));
   const kept = changes.filter((c) => [c.box, c.beforeBox].some((b) => b && ps.some((p) => on(c, b, p))));
   return { changes: kept, outside: changes.length - kept.length };
+}
+
+/**
+ * Words that exist only out of view, on one side: below the visible part of the screen's own scrolling panel.
+ * Returns changes with `hidden: true` and no box (they are not on the picture).
+ *
+ * WHY (what-changed run 9, 2026-11-08 review: About's stats gained a paragraph below its fold and the screen read
+ * "unchanged"): the pictures only show the top of a scrolling panel, so a change further down was invisible to
+ * the comparison. Only words scrolled away inside the screen's own panel count (`why: 'scrolled'`, its scrolling
+ * area mostly on the panel): what a popup covers, or the page behind it scrolled away, is that page's business.
+ * A word on either side, in view or not, that the other side also has is no change; a near match is a rewording.
+ */
+export function hiddenChanges(b, a, panelB, panelA, vw, vh) {
+  const small = (p) => p && p.w >= 40 && p.h >= 40 && p.w * p.h < 0.6 * vw * vh;
+  const share = (r, p) => { const w = Math.min(r.x + r.w, p.x + p.w + 4) - Math.max(r.x, p.x - 4), h = Math.min(r.y + r.h, p.y + p.h + 4) - Math.max(r.y, p.y - 4); return w > 0 && h > 0 ? (w * h) / (r.w * r.h || 1) : 0; };
+  const ours = (e, p) => e.why === 'scrolled' && e.area && (!small(p) || share(e.area, p) >= 0.8);
+  const word = (e) => norm(e.text ?? e.name);
+  const all = (d) => new Set([...(d.elements ?? []), ...(d.outOfView ?? [])].map(word).filter(Boolean).map(steady));
+  const only = (d, p, other) => {
+    const seen = all(other);
+    const list = [...new Set((d.outOfView ?? []).filter((e) => ours(e, p)).map(word).filter((t) => t.length > 3 && !seen.has(steady(t)) && !RANDOM_PHRASES.has(t)))];
+    // A block's words are also its pieces' words: keep the pieces, drop a block that contains one of them.
+    return list.filter((t) => !list.some((u) => u !== t && t.includes(u)));
+  };
+  const gone = only(b, panelB, a), fresh = only(a, panelA, b);
+  const out = [], used = new Set();
+  for (const n of fresh) {
+    let best = null, bs = 0.5;
+    // A line that only grew ("Offline" → "Offline · Last used Oct 11") is a rewording too.
+    for (const o of gone) { if (used.has(o)) continue; const sc = n.startsWith(o) || n.endsWith(o) || o.startsWith(n) || o.endsWith(n) ? 0.9 : similarity(o, n); if (sc > bs) { bs = sc; best = o; } }
+    if (best) { used.add(best); out.push({ kind: 'text', role: null, name: n, oldText: best, newText: n, words: wordDiff(best, n), side: 'after', hidden: true }); }
+    else out.push({ kind: 'added', role: null, name: n, newText: n, side: 'after', hidden: true });
+  }
+  for (const o of gone) if (!used.has(o)) out.push({ kind: 'removed', role: null, name: o, oldText: o, side: 'before', hidden: true });
+  return out;
 }
 
 /**
@@ -608,7 +651,14 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     const rel = (side, p) => (p ? join(side, name, `${theme}.png`) : undefined);
     const entry = { name, theme };
     if (failA.get(key)) { screens.push({ ...entry, status: 'failed', reason: `after: ${failA.get(key)}` }); continue; }
-    if (failB.get(key) && A.has(key)) { screens.push({ ...entry, status: 'failed', reason: `before: ${failB.get(key)}` }); continue; }
+    // WHY two kinds of release failure (2026-11-08 review): a release that has no way to open a screen (its code
+    // predates the screen's photo switch, or the part is not in it) can never be pictured — that is "no release
+    // picture", with the real reason. A time-out or a crash is a failed picture, to take again.
+    if (failB.get(key) && A.has(key)) {
+      const why = failB.get(key), label = beforeLabel ?? meta.before?.label ?? 'the before side';
+      if (/no opener registered|its mark is not on the page|is not in this release/.test(why)) { screens.push({ ...entry, status: 'nobefore', reason: `${label} cannot open it for a picture (${why})`, after: rel('after', true) }); continue; }
+      screens.push({ ...entry, status: 'failed', reason: `before: ${why}` }); continue;
+    }
     // WHY two kinds (2026-11-07 review: ~80% of "new" screens existed in the release but were only added to the
     // photo list later): `new` only when the screen list marks the screen new (newIn: 'after'); otherwise the
     // release simply has no picture of it, `nobefore`, which is not a change and not news.
@@ -627,7 +677,8 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     const b = side(B, 'before'), a = side(A, 'after');
     const scale = a.meta?.scale ?? meta.scale ?? 1.5;
     const again = (map) => (map.has(key) ? PNG.sync.read(readFileSync(map.get(key))) : null);
-    const againEls = (map) => (map.has(key) ? readJson(map.get(key).replace(/\.png$/, '.elements.json'))?.elements ?? null : null);
+    // A repeat's out-of-view words count too: a word below the fold is still on its screen.
+    const againEls = (map) => { const m = map.has(key) ? readJson(map.get(key).replace(/\.png$/, '.elements.json')) : null; return m?.elements ? [...m.elements, ...(m.outOfView ?? [])] : null; };
     const r = compareScreen(b, a, scale, { before: again(B2), after: again(A2) }, { ignoreCaret: name.startsWith('office/') ? 'line' : name.startsWith('chat/terminal') ? 'block' : false, els: [...(b.elements ?? []), ...(a.elements ?? [])] });
     const vp = a.meta?.viewport ?? { w: a.png.width / scale, h: a.png.height / scale };
     const inside = keepInsidePanel(r.changes, panB.get(key), panA.get(key), vp.w, vp.h);
@@ -635,6 +686,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     if (inside.outside && !inside.changes.length) r.shift = 0;
     const edge = dropEdgeSlivers(inside.changes, panB.get(key), panA.get(key));
     r.changes = dropSmallMoves(edge.changes).changes;
+    r.changes.push(...hiddenChanges(b, a, panB.get(key), panA.get(key), vp.w, vp.h));
     const steadyWords = dropUnsteadyWords(r.changes, againEls(B2), againEls(A2));
     r.changes = steadyWords.changes; r.unstable = (r.unstable ?? 0) + steadyWords.dropped;
     // WHY (2026-11-07 audit: office/presentation, document and spreadsheet settle into one of two layouts, 10-18 px

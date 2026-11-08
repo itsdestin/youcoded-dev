@@ -163,9 +163,9 @@ function measure() {
       const cs = getComputedStyle(a);
       if (cs.overflowY === 'visible' && cs.overflowX === 'visible') continue;
       const ar = a.getBoundingClientRect();
-      if (r.bottom <= ar.top || r.top >= ar.bottom || r.right <= ar.left || r.left >= ar.right) return true;
+      if (r.bottom <= ar.top || r.top >= ar.bottom || r.right <= ar.left || r.left >= ar.right) return { x: Math.round(ar.left), y: Math.round(ar.top), w: Math.round(ar.width), h: Math.round(ar.height) };
     }
-    return r.bottom <= 0 || r.top >= innerHeight;
+    return r.bottom <= 0 || r.top >= innerHeight ? { x: 0, y: 0, w: innerWidth, h: innerHeight } : null;
   };
   const insideControl = (el) => { for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) if (kindOf(a, roleOf(a))) return true; return false; };
   for (const el of document.body.querySelectorAll('*')) {
@@ -179,8 +179,14 @@ function measure() {
     // WHY covered too (2026-11-07 review: a chat that slid 12 px brought a row's buttons out from under the top bar,
     // and they read as new): a piece under another part of the screen exists but is out of sight
     const onScreen = inter({ l: 0, t: 0, r: innerWidth, b: innerHeight }, { l: r.left, t: r.top, r: r.right, b: r.bottom });
-    if (!scrolledOut(el, r) && !(onScreen && covered(el, onScreen))) continue;
-    outOfView.push(kind ? { kind, role, name: nameOf(el), text: kind === 'field' ? null : norm(el.innerText ?? el.textContent) || null } : { kind: 'text', role: null, name: own, text: own });
+    const area = scrolledOut(el, r);
+    if (!area && !(onScreen && covered(el, onScreen))) continue;
+    // WHY `why` and `area` (what-changed run 9, 2026-11-08: a new paragraph below the fold of About's stats went
+    // unreported): words that exist only out of view are compared too, but only when they are scrolled away inside
+    // the screen's own panel. `area` is the box of the scrolling part that hides them; something covered is
+    // usually the page behind a popup, which is not the popup's change.
+    const base = kind ? { kind, role, name: nameOf(el), text: kind === 'field' ? null : norm(el.innerText ?? el.textContent) || null } : { kind: 'text', role: null, name: own, text: own };
+    outOfView.push(area ? { ...base, why: 'scrolled', area } : { ...base, why: 'covered' });
   }
   return { elements: out, outOfView };
 }

@@ -423,7 +423,7 @@ function shiftWords(c){const a=c.box,b=c.beforeBox;if(!a||!b)return '';const w=[
   if(px(dw))w.push(px(dw)+' px '+(dw>0?'wider':'narrower'));if(px(dh))w.push(px(dh)+' px '+(dh>0?'taller':'shorter'));
   if(px(dx))w.push('moved '+px(dx)+' px '+(dx>0?'right':'left'));if(px(dy))w.push('moved '+px(dy)+' px '+(dy>0?'down':'up'));return w.join(', ')}
 // one row per kind of change; the same change on many things (every session row 20 px wider) is one row
-function groupChanges(list){const G=[],by={};list.forEach(c=>{const k=c.kind+'|'+(c.role||'')+'|'+(c.kind==='moved'?shiftWords(c):c.kind==='restyled'?(c.styleChanges||[]).map(x=>x.prop).join(','):c.kind==='pixels'?'':c.kind+(c.name||'')+(c.oldText||'')+(c.newText||''));
+function groupChanges(list){const G=[],by={};list.forEach(c=>{const k=c.kind+'|'+(c.role||'')+'|'+(c.kind==='moved'?shiftWords(c):c.kind==='restyled'?(c.styleChanges||[]).map(x=>x.prop).join(','):c.kind==='pixels'?'':(c.hidden?'below':'')+c.kind+(c.name||'')+(c.oldText||'')+(c.newText||''));
   if(!by[k]){by[k]={k:c.kind,items:[]};G.push(by[k])}by[k].items.push(c)});return G}
 // WHY a shift is the first line (2026-11-07, the spreadsheet that showed 159 boxes because the sheet sat lower):
 // "everything below here moved" is one fact, marked as the band it opened, not one box per cell
@@ -441,6 +441,12 @@ function wordsHTML(c){const ws=c.words||[],tot=ws.reduce((k,w)=>k+((w.same??w.ol
   return `<span class="wd old">${esc(c.oldText||'')}</span> <span class="wd new">${esc(c.newText||'')}</span>`}
 function rowText(gr){const c=gr.items[0],n=gr.items.length,r=roleW(c,n),one=n===1&&c.name?' “'+esc(c.name)+'”':'',cnt=n>1?n+' ':'';
   const fieldW=c.field==='title'?'hover hint':c.field==='placeholder'?'hint text':'words';
+  // WHY its own wording (2026-11-08 review: About's new paragraph sat below the fold and went unreported): a change
+  // the pictures cannot show is named, and the reader is told where to look for it
+  if(c.hidden){const many=n>1?esc(names(gr.items)):'';
+    if(gr.k==='added')return [`New words below the visible part${n>1?' ('+n+')':''}`,many||'“'+esc(c.newText||'')+'”. Scroll down in the app to see it.'];
+    if(gr.k==='removed')return [`Gone from below the visible part${n>1?' ('+n+')':''}`,many||'“'+esc(c.oldText||'')+'” was further down in '+esc(CM.release)+'.'];
+    if(gr.k==='text')return ['New words below the visible part',wordsHTML(c)]}
   switch(gr.k){
     case 'added':return [`New ${cnt}${n===1&&/^\d+$/.test(c.newText||'')?'number':r}${one}`,n>1?esc(names(gr.items)):'Not there in '+esc(CM.release)+'.'];
     case 'removed':return [`Gone: ${cnt}${r}${one}`,n>1?esc(names(gr.items)):'It was there in '+esc(CM.release)+'.'];
