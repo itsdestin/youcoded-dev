@@ -25,25 +25,28 @@ cellular, hotel and office networks.
 **Privacy.** With the end-to-end encryption you chose, the server sees only sizes and timing,
 never a word of a chat.
 
-**Cost to us.** We pay Cloudflare. Chat words are tiny, so this is cheap:
+**Cost to us.** Correction (Destin, 2026-11-08): the server runs on Cloudflare's free plan today
+and costs nothing. Chat words are tiny, so the free plan goes a long way, but not forever:
 
-| Item | Published rate | What a heavy user costs |
+| Item | Free plan allows | Paid plan ($5 a month) |
 |---|---|---|
-| Base plan | $5 per month for the whole server, already paid | nothing extra |
-| Messages into the room | 20 messages count as 1 request; 1,000,000 requests included, then $0.15 per million | about 150,000 requests a month, 2 cents |
-| Messages out to your other devices | free | nothing |
-| Server time | 400,000 seconds-of-memory included, then $12.50 per million | inside the included amount |
-| Mailbox storage | $0.20 per GB per month | pennies |
+| Messages into the room | 100,000 requests a day; 20 messages count as 1 request, so 2,000,000 words-chunks a day across all users | 1,000,000 requests a month included, then $0.15 per million |
+| Messages out to your other devices | free | free |
+| Server time | 13,000 seconds-of-memory a day | 400,000 a month included, then $12.50 per million |
+| Mailbox storage | 1 to 5 GB (Cloudflare's own pages disagree) | 10 GB, then $0.20 per GB a month |
 
-A heavy user is 200 replies a day streamed word by word. A thousand such users would be
-roughly $20 to $40 a month on top of the $5. Light users round to zero.
+A heavy user is 200 replies a day streamed word by word, about 100,000 chunks. Sent one chunk
+at a time that is 5,000 requests a day, so about 20 heavy users fill the free plan. Sending a
+chunk every quarter second instead (still looks live) cuts that five to ten times, so a few
+hundred heavy users fit for free. Beyond that, the paid plan is $5 a month plus roughly 2 cents
+per heavy user. Light users round to zero.
 
 **How we could charge.** The app has no payment system today. Choices: keep it free and absorb
 the cost (it is pennies per user), add a donation prompt (a Buy Me a Coffee page exists), or
 sell a paid tier later through a card processor (needs company accounts and tax handling).
 
 **Self-hosting.** The server code is already open source in the `wecoded-marketplace`
-repository. A fork can deploy its own copy to its own Cloudflare account for the same $5. If
+repository. A fork can deploy its own copy to its own Cloudflare account, free at small scale. If
 the app gets a "server address" setting, a user can point it at their own copy and need nothing
 of ours. Sync itself already works this way: it uses the user's own GitHub repositories.
 
@@ -96,7 +99,7 @@ devices in the same room. Not needed for the design to work.
 | Setup for a user | sign in | install and sign in to Tailscale on every device | sign in |
 | Works on any network | yes | yes, once Tailscale is on | mostly, relay for the rest |
 | Reaches a device that was asleep | yes, mailbox | no | no, unless the meeting point also stores |
-| Our monthly cost | $5 plus pennies per user | $0 | $5 plus pennies |
+| Our monthly cost | $0 until a few hundred heavy users, then $5 plus pennies per user | $0 | same as A |
 | Nothing of ours required | yes, if the server address is a setting | yes | no |
 | New work | medium | medium | high |
 
@@ -169,6 +172,82 @@ Today that chat cannot be opened there. Ways around it:
 - **Always fetch first.** The confirmation popup you asked for (what is missing, why, how much
   storage), then the project downloads.
 
+## 6. Security: the horror stories, what they have in common, and what we can honestly promise
+
+### First, where your chats already go
+
+Every chat already travels over the internet today: Backup & Sync commits each chat file to a
+private repository on GitHub, readable by GitHub, over an encrypted connection. The live path
+would send *less* readable material than that to *one more* party (our server), and with
+end-to-end sealing that party sees nothing readable. So the question is not "do messages go
+online for the first time" but "do we add a second server, and can we make it blind".
+
+### The horror stories, and the one mistake behind each
+
+| Story | What actually went wrong | Does the same trap exist for us |
+|---|---|---|
+| Zoom, 2020, settled with the FTC | Marketed "end-to-end encryption" while Zoom's own servers held the keys and could read meetings. The term has one accepted meaning: only the user's devices hold keys. | Yes, if the key ever touches our server. Guard: the key is created on the user's devices and never sent to us; a test proves the server code has no path to it. |
+| Tea app, 2025 | A storage bucket with no access rules; 72,000 photos and a million private messages readable by anyone who found the address. | Our server has no public buckets; the mailbox would hold only sealed messages. Sealing is exactly what makes a leak harmless. |
+| Moltbook, 2026, and 16,000 exposed Supabase databases | AI-written apps shipped the database's master key inside the app, or left the database's row rules off, so any user could read every row. | Our app ships no server secret; each device gets its own sign-in token after GitHub sign-in. Rows are read by server code that checks the token, which the Oct 30 audit reviewed. |
+| Countless small apps | One account can read another's data by changing an ID in a request. | The relay room is per account, chosen by the server from the verified token, never from an ID the device sends. A reviewer must test this one specifically. |
+| Many "encrypted" apps | Message bodies written into server logs or analytics in the clear. | Must be a rule with a test: no frame body is ever logged. Sealed bodies make a slip unreadable anyway. |
+| Home-made encryption | Reusing a number that must never repeat, or sealing without a check that the message was not altered or replayed. | Avoided by using a standard library's authenticated sealing with a fresh random number per message, and putting the sender and a sequence number inside the sealed part. |
+| Stolen sign-in token | A token copied from a device lets a stranger join the account's room. | Today a token lives 90 days idle. With sealing, a thief gets sealed blobs and timing only. Settings must let the user remove a device, which kills its token. |
+| GitHub account taken over | The attacker signs in to the app on a new device, which then downloads the sync repository. | Already true today: the repository holds every chat readable. Sealing with a key kept in that repository does not change this; a stronger pairing step (next section) would. |
+
+What they have in common: the builder either promised a word with a strict meaning, or trusted a
+default they did not understand. None of them were broken ciphers.
+
+### What we could reuse instead of inventing
+
+- **The sealing itself.** The encryption library built into Electron and Node (WebCrypto) and
+  libsodium are the two standard choices; both are used by far bigger apps. We write no cipher.
+- **The pipe.** Cloudflare's encrypted connections, the per-account room and the sign-in token
+  check already exist and were audited on Oct 30.
+- **The key, simplest design.** One key per account, created on the first device and stored as a
+  small file in the user's existing private sync repository, which every device already
+  downloads. No new pairing screens, no key-exchange protocol of our own, so the fewest ways to be
+  wrong. Honest limit: GitHub holds the key beside the chats it already holds. Removing a device
+  means making a new key.
+- **The key, stronger design.** Pair every new device by approving it from an existing one, the
+  way WhatsApp and Signal do. Libraries exist (Signal's, Matrix's) but they are large, and the
+  flow adds screens and support cases. Worth it only if we want to stop trusting GitHub, which
+  Backup & Sync does not do today.
+- **Option B reuses the most.** Tailscale is WireGuard, audited for years, and has a setting
+  ("Tailnet lock") that stops even Tailscale from adding a device. Our part is the remote-access
+  server that already passed the Oct 30 audit.
+
+### What we can honestly promise, and when
+
+- Today, truthfully: "Your chats sync through your own private GitHub repository."
+- With the simple key design: "Live updates pass through our server sealed on your devices; the
+  server relays and stores sealed messages it cannot read. Your GitHub repository holds your chats
+  and the key, as it does today."
+- "End-to-end encrypted" as a headline claim only after an outside review by a person. A written
+  design, open code and a test that the server has no path to the key are the minimum before
+  saying it anywhere. Zoom's lesson is that the word gets checked.
+
+## 7. A versus B: real effort and what users feel
+
+Most of the work is the same either way: the live viewer, the host chip, switching, takeover,
+dropped half replies, fork handling, streaming the chat's tail, phone wake. Only the pipe differs.
+
+| | A. Our server | B. Tailscale |
+|---|---|---|
+| New server work | relay frames, mailbox, device removal: moderate, in one codebase we deploy | none |
+| New app work | sealing and key file; the pipe client | desktop-to-desktop client (none exists), finding which devices are on, streaming over the existing link, Tailscale install and sign-in guidance on four platforms |
+| Rough share of the whole project | about a quarter | about a quarter, similar |
+| Security surface we own | sealing code and server auth, both reviewable | almost none beyond today |
+| Setup a user does | sign in to the app | install Tailscale on every device, create its account, sign in on each; phone loses its VPN slot |
+| Reaches a device that was asleep | yes, mailbox | no; git upload only |
+| Business users | fine | Tailscale's free plan is personal, non-commercial; a business pays per user |
+| Support load | ours: a server we must keep up | theirs, mostly; but "my devices don't see each other" questions land on us |
+| Self-hosting | address setting, free at small scale | nothing of ours |
+| Cost | free until a few hundred heavy users | free |
+
+A middle path exists: build A with the pipe behind a small interface, so B can be added later
+for users who have Tailscale, without redoing the viewer and switching work.
+
 ## Sources
 
 - Cloudflare Durable Objects pricing: https://developers.cloudflare.com/durable-objects/platform/pricing
@@ -176,3 +255,7 @@ Today that chat cannot be opened there. Ways around it:
 - Tailscale plan limits (secondary): https://costbench.com/software/business-vpn/tailscale/free-plan/ and https://www.ssdnodes.com/learn/is-tailscale-free-plan-limits
 - Android Doze and the exemption rules: https://developer.android.com/training/monitoring-device-state/doze-standby
 - Headscale: https://github.com/juanfont/headscale
+- Cloudflare free plan limits: https://workers.cloudflare.com/plans
+- Zoom FTC settlement: https://www.ftc.gov/news-events/news/press-releases/2020/11/ftc-requires-zoom-enhance-its-security-practices-part-settlement
+- Tea app breach: https://akashmenon.substack.com/p/not-a-hack-just-bad-defaults
+- Moltbook and exposed Supabase databases: https://cybernews.com/news/16000-supabase-databases-exposed/ and https://blog.ogwilliam.com/post/moltbook-hack-supabase-vibe-coding
