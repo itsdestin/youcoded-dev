@@ -8,10 +8,20 @@
 //
 // Remove it later:  git -C youcoded worktree remove --force scratch/release-<tag>
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const git = (repo, ...a) => spawnSync('git', ['-C', repo, ...a], { encoding: 'utf8' });
+
+/** Names of the packages whose version differs between the tag's lockfile and the checkout's. */
+function changedPackages(checkout, tag, lock) {
+  try {
+    const old = JSON.parse(git(checkout, 'show', `${tag}:${lock}`).stdout).packages ?? {};
+    const now = JSON.parse(readFileSync(join(checkout, lock), 'utf8')).packages ?? {};
+    return [...new Set([...Object.keys(old), ...Object.keys(now)])].filter((k) => k && old[k]?.version !== now[k]?.version)
+      .map((k) => k.replace(/^.*node_modules\//, '')).filter((v, i, all) => all.indexOf(v) === i).sort();
+  } catch { return ['(could not read the lockfiles)']; }
+}
 
 /** The newest `v*` tag of the app repo, or null. */
 export function latestReleaseTag(appRepo) {
@@ -35,8 +45,12 @@ export function prepareReleaseCheckout({ appRepo, tag, afterCheckout, scratchRoo
   // Lockfile: tag vs the after checkout's file on disk (so an uncommitted change counts too).
   const lock = 'desktop/package-lock.json';
   const diff = git(afterCheckout, 'diff', '--quiet', tag, '--', lock);
-  if (diff.status === 1) throw new Error(`${lock} differs between ${tag} and ${afterCheckout}: the old app would be built with the wrong packages. Install the old release's packages by hand or compare a closer release.`);
-  if (diff.status !== 0) throw new Error(`could not compare ${lock} with ${tag}: ${(diff.stderr || '').trim()}`);
+  if (diff.status !== 0 && diff.status !== 1) throw new Error(`could not compare ${lock} with ${tag}: ${(diff.stderr || '').trim()}`);
+  // WHY a recorded limit, not a refusal (2026-11-07: master moved to Electron 44 and updated 66 packages
+  // since v1.3.3, so every later release comparison was refused): both sides are photographed with the SAME
+  // installed packages, so the comparison shows what the app's own code changed. What it cannot show is a
+  // look change that comes only from a package update; run.json and the summary say so.
+  const packagesDiffer = diff.status === 1 ? changedPackages(afterCheckout, tag, lock) : [];
   const nm = join(afterCheckout, 'desktop', 'node_modules');
   if (!existsSync(nm)) throw new Error(`${nm} is missing — run workspace-start for the after checkout first (its packages are copied for the old release)`);
 
@@ -54,5 +68,5 @@ export function prepareReleaseCheckout({ appRepo, tag, afterCheckout, scratchRoo
     const cp = spawnSync('cp', ['-al', nm, target], { encoding: 'utf8' });
     if (cp.status !== 0) throw new Error(`linking node_modules into ${dest} failed: ${cp.stderr}`);
   }
-  return { dir: dest, commit: sha };
+  return { dir: dest, commit: sha, packagesDiffer };
 }

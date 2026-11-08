@@ -75,10 +75,12 @@ const rev = (dir, ...a) => spawnSync('git', ['-C', dir, ...a], { encoding: 'utf8
 // WHY run.json: the comparer names both sides in changes.json from it (labels and commits).
 writeFileSync(join(out, 'run.json'), JSON.stringify({
   before: { label: tag, commit: rev(before.dir, 'rev-parse', '--short', 'HEAD'), dir: before.dir },
+  ...(before.packagesDiffer?.length ? { packagesDiffer: before.packagesDiffer } : {}),
   after: { label: rev(afterCheckout, 'branch', '--show-current') || 'current code', commit: rev(afterCheckout, 'rev-parse', '--short', 'HEAD'), dir: afterCheckout },
 }, null, 1));
 
 console.error(`[what-changed] ${tag} (${before.dir}) vs ${afterCheckout} → ${out}`);
+if (before.packagesDiffer?.length) console.error(`[what-changed] note: ${before.packagesDiffer.length} package(s) changed version since ${tag} (${before.packagesDiffer.slice(0, 6).join(', ')}${before.packagesDiffer.length > 6 ? '…' : ''}); both sides are photographed with today's installed packages, so a look change caused only by a package update is not shown`);
 // WHY only screens that ship (Destin, 2026-11-07: "we should ONLY include real, built-in pages that are intended
 // to ship with the app in these reviews"): the screen list also photographs practice material — Destin's own
 // personal Pages loaded as sample pages (Home, Paint, Money…, whose fake cameras and paint canvas read as

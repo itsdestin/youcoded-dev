@@ -30,11 +30,13 @@ test('an unknown tag is refused and the newest tags are named', () => {
   assert.throws(() => prepareReleaseCheckout({ appRepo: f.repo, tag: 'v9.9.9', afterCheckout: f.repo, scratchRoot: f.scratch }), /no release tag "v9\.9\.9".*v1\.10\.0/);
 });
 
-test('a different lockfile is refused before anything is made', () => {
+test('a different lockfile is not refused: the packages that changed are named, so the run can say what it cannot see', () => {
   const f = fixture();
-  writeFileSync(join(f.repo, 'desktop', 'package-lock.json'), '{"a":2}');
-  assert.throws(() => prepareReleaseCheckout({ appRepo: f.repo, tag: 'v1.0.0', afterCheckout: f.repo, scratchRoot: f.scratch }), /package-lock\.json differs/);
-  assert.equal(existsSync(join(f.scratch, 'release-v1.0.0')), false);
+  writeFileSync(join(f.repo, 'desktop', 'package-lock.json'), '{"packages":{"node_modules/electron":{"version":"44.0.0"},"node_modules/same":{"version":"1.0.0"}}}');
+  f.git('add', '.'); f.git('commit', '-qm', 'two');
+  const r = prepareReleaseCheckout({ appRepo: f.repo, tag: 'v1.0.0', afterCheckout: f.repo, scratchRoot: f.scratch });
+  assert.ok(r.packagesDiffer.includes('electron'));
+  assert.ok(existsSync(join(f.scratch, 'release-v1.0.0')));
 });
 
 test('missing packages in the after checkout are refused', () => {
