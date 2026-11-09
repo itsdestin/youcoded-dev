@@ -3,13 +3,12 @@ status: draft
 ---
 # Pages step 4 — automations: technical design
 
-**Status 2026-11-08: draft, not yet reviewed.** Rewritten to match Destin's answers on the build-plan
-decks; the first version (no saved Claude runs, one owning page, two jobs at a time, system
-notifications) is superseded. `plan-c` answered 2026-11-08 (kept apart: clear; three places: clear;
-two "not listed" rows kept; Rules → "Advanced settings" fold cards; the permission list's origin
-not yet thought through). `plan-d`/`plan-f` answered 2026-11-08 (the fresh-reviewer popup redesign was dropped, "it kinda
-sucked"; practice runs on copies). Open: deck `pages-finish-step4-plan-g` (commands).
-Do not build from this until that deck is answered and one design-review round has run.
+**Status 2026-11-09: draft, not yet reviewed. Nothing here is built** — only the screens exist, in the
+workbench against `renderer/dev/workbench/automations-mock.ts`. Every decision below is answered on a
+deck except decision 3's **Commands** bullet, which waits on deck `pages-finish-step4-plan-g` (started
+2026-11-08, not submitted). Do not build from this until that deck is submitted, the screens listed
+under "Still to settle" are drawn, and one design-review round has run. An earlier version (no saved
+Claude runs, one owning page, two jobs at a time, system notifications) is superseded by this one.
 
 Sources, in order (later wins): `pages-finish-step4.questions` → `step4.review` → `step4b.review` →
 `step4c.review` (screens approved) → `step4-plan.questions` → `step4-plan-b.review` →
@@ -42,7 +41,7 @@ limit; subscription models show tokens used. No system notifications in this ste
      - Saved like any Claude Code session, so a paused run continues with `--resume <id>` after a
        restart (this is why "saved" won).
      - `--restricted` ignores the user's and project's settings files: chat "Always allow" rules
-       never reach a job and nothing a job is allowed reaches a chat (`plan-c#C-apart`, pending).
+       never reach a job and nothing a job is allowed reaches a chat (`plan-c#C-apart` yes).
      - The run settings file holds the job's allow/deny rules and YouCoded's permission hook, so
        Asks first reaches the app through the same hook relay Claude chats use; the relay routes a
        run's session id to the runner, never to a chat card.
@@ -55,8 +54,9 @@ limit; subscription models show tokens used. No system notifications in this ste
        `youcoded/docs/cc-dependencies.md`; a missing flag fails the run with a clear reason, never
        runs unprotected (`plan#Q-unprotected` yes).
 3. **Permissions** — each added permission compiles to one exact rule for that job only
-   (`plan-c#C-perm`, pending): a folder → read/write inside it; one command → that exact command;
-   one website → that host; this page → that page's data tools. A tool the job may never use is
+   (`plan-c#C-perm`; how the list is built settled on `plan-d`, below): a folder → read/write inside it; one command → that exact command;
+   one website → that host; this page → that page's data tools. (What "one command" means is the
+   open Commands bullet below — the wording-based version was rejected on `plan-f`.) A tool the job may never use is
    removed from the model's tool list, not just refused (`plan#S-allowed` note).
    - Always allowed → runs. Asks first → the first Advanced setting: wait (up to a time, then skip
      that step / stop / do this instead) or skip. Not listed → "Other websites" / "Other commands
@@ -140,7 +140,11 @@ while YouCoded is closed.
 
 ## Still to settle before the build
 
-- `plan-g` deck answers (what a command may reach).
-- The "type which folder / website / command" step after Add a permission — not drawn; shown on the
-  post-build deck.
+- `plan-g` deck answers (what a command may reach); then rewrite decision 3's Commands bullet.
+- Draw, with before/after pictures where a screen exists (Destin rejects after-only decks): the
+  "type which folder / website / command" step after Add a permission, the "Describe it…" flow, the
+  practice-run report, "Allow from now on" on a run's ask, and the delete-page popup.
 - One design-review round against this document and the decks.
+- At build time, verify before relying on it: Claude Code's sandbox under `-p --restricted
+  --tools Bash` (not documented), and what fences the native lane's commands (none today; Anthropic's
+  sandbox-runtime package is a candidate, unverified).

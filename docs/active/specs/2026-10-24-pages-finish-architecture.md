@@ -6,13 +6,33 @@ related: docs/active/investigations/2026-10-24-pages-finish-audit.md (what exist
 
 # Finishing Pages — the architecture proposal
 
-**Status (2026-11-08): steps 1, 1b, 2 and 3 are built and tried by Destin, on branch
-`session/90-pages-finish` (youcoded, wecoded-marketplace, youcoded-dev), not yet on master. Step 4
-(automations): screens approved, build plan being settled on decks; nothing built behind the screens
-yet. Current step 4 design: `2026-11-07-pages-step4-automations-technical-design.md` — it, not the
-"Technical notes" 6–7 below, is what a builder follows.**
-Step technical designs: `2026-10-24-pages-finish-step1-technical-design.md`,
-`2026-10-24-pages-finish-step2-files-technical-design.md`, `2026-11-05-pages-step3-build.md`.
+## Where this stands (2026-11-09) — read this first
+
+- **Built and tried by Destin, not on master:** steps 1, 1b, 2 and 3, on branch
+  `session/90-pages-finish` (youcoded, wecoded-marketplace, youcoded-dev). Merge only on his word.
+  Before shipping, merge master in (it has newer commits touching the same files, e.g. youcoded
+  48fbd6a61 "plugin off-switch").
+- **Step 4 (automations): screens only.** Drawn in the workbench against a fake backend
+  (`renderer/dev/workbench/automations-mock.ts`; six `automations.*` channels in `mock-only.ts`).
+  No runner, store, scheduler or bridge exists. The lower settings are the "Advanced settings" fold
+  cards (youcoded 3fb1f7306); a later popup redesign was reverted (bcb6ec0d2).
+- **Step 4 is blocked on one deck:** `pages-finish-step4-plan-g` (what a command may reach).
+  Destin started it 2026-11-08 and did not submit: G-cases "Makes sense"; Q-fence "other" with no
+  note; Q-nofence, Q-reads, Q-other unanswered. Re-serve it with `serve --no-build`; nothing in it is
+  decided yet.
+- **Step 4 after plan-g, in order:** apply the answers to the step 4 design; draw (before/after
+  where something exists) the "type which folder / website / command" step, the "Describe it…" flow,
+  the practice-run report, "Allow from now on" on asks and the delete-page popup; one design-review
+  round; then build (verify first: Claude Code's sandbox under `-p --restricted --tools Bash`, and a
+  fence for the native lane, which has none).
+- **Then:** step 5 (accounts, Plaid rebuilt), step 6 (basic sharing), the docs.
+- **Open question for Destin, unanswered:** file a card for building all system notifications
+  together later (a Notifications menu replacing Sound, for chats and automations)? Not filed.
+
+What a builder follows per step: `2026-10-24-pages-finish-step1-technical-design.md`,
+`2026-10-24-pages-finish-step2-files-technical-design.md`, `2026-11-05-pages-step3-build.md`,
+`2026-11-07-pages-step4-automations-technical-design.md` (step 4 — it, not the "Technical notes"
+6–7 below, which are history).
 
 ## Decisions from round 2 (`pages-finish-2.questions.answers.json`, 2026-10-24)
 
@@ -26,13 +46,11 @@ Step technical designs: `2026-10-24-pages-finish-step1-technical-design.md`,
   where possible, but more modular. "Assistants that own duties" maybe later, not now.
   *Design consequence:* a recipe's allowed operations can become an assistant's tools: an email
   recipe yields `email_read`/`email_write`, each with its own allow/ask switch.
-- **Still open — needs more thought before step 4:** how unattended asks behave ("need to
-  think more through various autonomous assistant types and use cases"). Next: a catalogue of
-  assistant types and use cases, each with its permission pattern, before deciding.
+- ~~Still open: how unattended asks behave.~~ Settled 2026-11-08: per-job Asks first rules (see
+  "Step 4 decisions").
 - **Claude subscription for background runs: yes, now** (Claude Code headless), alongside
   provider models.
-- **Still open — needs pictures:** where a page's chat lives (Destin "unsure" on the side
-  panel). Show layouts on a choice deck before step 3.
+- ~~Still open: where a page's chat lives.~~ Settled on the step 3 decks (see "Step 3 decisions").
 - **Spending limits:** one system; on by default for pages and automations, optional for chats.
 - **One Settings window per page** replaces the connections window; opened from the card and
   the top band.
@@ -53,8 +71,7 @@ each library card and beside an open page's name; the recipe approval card (`doe
 general "Together, this page could send…" amber line (`combinedRisk`); "Open this website?"
 with a per-site "Don't ask again" switch; phone width. Follow-up applied from S-card-gear:
 "Edit in chat" moved off the card into Page settings. Q-band-popup: the band gear opens the
-same popup — recorded as an exception in the design guide. Backend still to build:
-`pages.openWebsite`, `pages.forgetOpenSite` (mock-only), `does`/`parts`/`openSites` in main.
+same popup — recorded as an exception in the design guide. Backend built with step 1 (`pages.openWebsite`, `pages.forgetOpenSite`, `does`/`parts`/`openSites`).
 
 ## Step 3 decisions (`pages-finish-step3.questions.answers.json` + chat, 2026-11-02)
 
@@ -133,10 +150,9 @@ deck step behind each line: `2026-11-07-pages-step4-automations-technical-design
 - **Answered (deck `plan-f`, 2026-11-08):** the fresh-reviewer popup redesign was dropped ("it kinda
   sucked"; the popup stays as on `plan-d`); practice runs work on copies with sends held back; the
   three wording-based command widths were rejected as contrived.
-- **Open (deck `pages-finish-step4-plan-g`):** what a command may reach (a fence of the job's
-  folders and websites, an exact-only lock, computers without the fence, fenced reading). Nothing
-  in it is decided until answered. Not drawn yet: typing which folder / site / command after Add a permission;
-  the delete-page popup.
+- **Open (deck `pages-finish-step4-plan-g`, started, not submitted):** what a command may reach (a
+  fence of the job's folders and websites, an exact-only lock, computers without the fence, fenced
+  reading). Nothing in it is decided until submitted. Not drawn yet: see "Where this stands".
 
 ## Follow-ups recorded (Destin, 2026-10-24: "record anything that is gonna be a follow up")
 
@@ -160,8 +176,8 @@ deck step behind each line: `2026-11-07-pages-step4-automations-technical-design
   itself (the computer and the Android app can).
 - **Skills a page asks for** — the chat offers to install them from the marketplace (step 3
   decisions); after step 3.
-- **Idea, not filed (awaiting Destin's yes):** rearranging the main window, e.g. a sidebar
-  session list instead of the top bar (step 3 deck, R-other). Not a Pages item.
+- **#222** — rearranging the main window, e.g. a sidebar list of chats instead of the top bar
+  (step 3 deck, R-other). Not a Pages item.
 
 ## The idea in one paragraph
 

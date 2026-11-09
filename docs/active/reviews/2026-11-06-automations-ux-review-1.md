@@ -1,5 +1,9 @@
 # Automations UX review 1 (practice app, default scenario, desktop and 390 px)
 
+> **2026-11-09:** history. Screens changed after this review: the notifications switches (U11) were
+> removed (no system notifications in step 4), and the lower settings became "Advanced settings" fold
+> cards. Current design: `docs/active/specs/2026-11-07-pages-step4-automations-technical-design.md`.
+
 - U1 accepted — a paused job now says Paused in its top card, and that a waiting run still waits — After clicking Pause on a job I expected the job to look paused (badge, Run now greyed) / the switch flipped and nothing else changed: no "Paused" badge in the header, "Waiting for you" stays, "Run now" still live. On the list the same job shows a "Paused" badge, so the two screens disagree — Email sorter job, Runs tab — /home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/scratch/explore/20261106-094416/15-click.png
 - U2 accepted — Open in Automations closes Page settings first — "Open in Automations" in Money's page settings should take me to Automations / the settings window stayed on top of the Automations page (layers still listed the dialog), so it looks like nothing happened until I close it — Money › Settings for Money — /home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/scratch/explore/20261106-094416/28-click.png
 - U3 already handled — not wired in the practice copy; listed as a risk on the deck — "Add something it may do" and "Open conversation" (past run) do nothing (expected in practice copy, noted once) — Email sorter Settings and Runs — /home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/scratch/explore/20261106-094416/19-click.png
