@@ -13,9 +13,9 @@ priority: P3
 work: session/local-model-hardening
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Background read of a chat's opening; each chat keeps its own engine slot (--no-cache-idle-slots + id_slot); ROCm re-measured (stays optional — the merged-in '24-46% slower' line is out of date, see engine-dependencies.md); kept-reading cost measured (none on 27B); MTP measured (27B 6.7 -> 11-15 t/s). MTP history: found 2026-07-14 (+25% on the 35B MoE), lost when knowledge-debt.md was deleted 2026-07-15, never on the roadmap.
+Next: MTP per model via models.ini (a model without the heads refuses to load with it); find the request left counted as running; size tool results to the room left; refuse junk summaries; trace cloud-model local-engine entries; one too-long error; ROCm wording; finish 35B/9B/2B runs
+Blocked: nothing
 
 Chats
 - 2026-11-09 session/local-model-hardening: speed work (warm-up, per-chat slots) built; context faults and MTP to fix here
