@@ -14,8 +14,8 @@ work: session/local-model-hardening
 ---
 Progress
 Done: All of it built on session/local-model-hardening, verify.sh --full green (2026-11-09): stuck 'busy' engine fixed (b3b0b1e29); tool results sized to the room left, junk summaries refused, one too-long error (b3a125c1e); MTP per model for dense models with heads (efaa9558d, 27B replies 6.7 -> 11.6-11.9 t/s); ROCm and Speculative decoding wording (253a19b92, 1552bd6e0); cloud ids on the local engine already fixed by 04c209dc3; too-long turns log token counts (c83ab6ed1). End-to-end 9B/32k: run 2 clean, run 1 one unexplained too-long (not reproduced).
-Next: Push the app branch (blocked: gitleaks false positive on a GGUF key name in tests/engine-manager.test.ts, needs Destin's OK to mark it); then Destin's review. Open, not in this card's finish: Windows/Mac unmeasured; picking context size from hardware; 9B/2B kept-reading runs.
-Blocked: App-branch push waits on Destin (gitleaks false positive)
+Next: After the OK: mark it, re-scan, push both branches; then Destin's review. Full status and open list: docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md (on the branch).
+Blocked: Pushes wait on Destin's OK to mark one secrets-scan false positive (a model-file field name in an app test). Held: 7 app commits, 2 workspace doc commits.
 
 Chats
 - 2026-11-09 session/local-model-hardening: speed work (warm-up, per-chat slots) built; context faults and MTP to fix here
