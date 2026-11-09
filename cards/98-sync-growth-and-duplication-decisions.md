@@ -11,6 +11,7 @@ summary: Sync: large projects may miss edits or duplicate history, very long cha
 area: Devices & sync
 side: behind
 vision: sync.follow.safety, sync.added.longchats
+work: session/sync-slim-history
 ---
 Progress
 Done: nothing recorded.
@@ -18,6 +19,7 @@ Next: check it still happens.
 Blocked: nothing recorded.
 
 Chats
+- 2026-11-09 session/sync-slim-history: Slim synced chats (pictures out of sync copies), plan in docs/active/plans/2026-11-02-slim-synced-chats.md
 
 From the old roadmap (perf, status needs-verify, seen on all, last checked 2026-09-16)
 Sync: growth and duplication decisions (3 things; the history-size decision moved to sync). (a) Large synced projects use more file watches than needed; one watch per project risks missed edits and needs Linux, Mac and Windows tests; (b) synced code projects that keep Git history get a second hidden history; (c) a far-behind device on a slow connection may keep timing out its upload, not reproduced.
