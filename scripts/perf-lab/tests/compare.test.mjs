@@ -1,5 +1,6 @@
 // scripts/perf-lab/tests/compare.test.mjs
 import { test } from 'node:test';
+import { addLegacyFixtureEvidence } from './legacy-fixture.mjs';
 import assert from 'node:assert/strict';
 import { PRIMARY, ZERO_BASELINE_FLOOR, get, runsFor, spreadPct, verdict } from '../compare.mjs';
 import { MEASURES as HISTORY_MEASURES } from '../scenario-history.mjs';
@@ -20,7 +21,53 @@ import { MEASURES as SCROLL_MEASURES } from '../scenario-scrollback.mjs';
 // it could not find as a path that had not regressed, so a fixture missing half the
 // metrics was silently grading a change on the other half. A partial fixture here means
 // partial tests, and partial tests are how a gate quietly stops gating.
+test('old inferred-main measurement semantics cannot compare as new raw response semantics', () => {
+  const old = structuredClone(base);
+  delete old.stallMeasurementRevision;
+  for (const row of old.replayStall.medium.runs) { row.mainProcessStallMaxMs = row.ipcMaxMs; delete row.ipcMaxMs; }
+  old.replayStall.medium.median.mainProcessStallMaxMs = old.replayStall.medium.median.ipcMaxMs;
+  delete old.replayStall.medium.median.ipcMaxMs;
+  const candidate = structuredClone(base);
+  candidate.startup.median.sessionsListed = 700;
+  const result = verdict(old, candidate, { target: 'startup.median.sessionsListed' });
+  assert.equal(result.status, 'inconclusive');
+  assert.match(result.comparability.reasons.join(' '), /stall.*revision/i);
+});
+
+test('fast completed replay responses followed by an outstanding ping cannot KEEP', () => {
+  const candidate = structuredClone(base);
+  candidate.startup.median.sessionsListed = 700;
+  assert.equal(verdict(base, candidate, { target: 'startup.median.sessionsListed' }).keep, true);
+  candidate.replayStall.medium.median.ipcMaxMs = 2;
+  candidate.replayStall.medium.median.ipcTotalStallMs = 0;
+  candidate.replayStall.medium.runs[0].ipcMaxMs = 2;
+  candidate.replayStall.medium.runs[0].ipcTotalStallMs = 0;
+  for (const change of [{ openStallMs: 9000 }, { rejectedPings: 1 }, { sawHidden: true }, { tickSamples: 0 }, { observedMs: null }]) {
+    candidate.replayStall.medium.runs[0].ipcEvidence = {
+      maxMs: 2, totalStallMs: 0, pings: 4, tickSamples: 4, observedMs: 10000,
+      maxTickDelayMs: 1, rejectedPings: 0, sawHidden: false, openStallMs: null, ...change,
+    };
+    const result = verdict(base, candidate, { target: 'startup.median.sessionsListed' });
+    assert.equal(result.keep, false, JSON.stringify(change));
+    assert.match(result.comparability.reasons.join(' '), /replayStall.*IPC/i);
+  }
+  delete candidate.replayStall.medium.runs[0].ipcEvidence;
+  assert.equal(verdict(base, candidate, { target: 'startup.median.sessionsListed' }).keep, false);
+});
+
+test('unsupported replay renderer observation cannot be credited as a zero PRIMARY guard', () => {
+  const candidate = structuredClone(base);
+  candidate.startup.median.sessionsListed = 700;
+  candidate.replayStall.huge.runs[0].longtaskSupported = false;
+  candidate.replayStall.huge.runs[0].rendererLongtaskMaxMs = 0;
+  candidate.replayStall.huge.median.rendererLongtaskMaxMs = 0;
+  const result = verdict(base, candidate, { target: 'startup.median.sessionsListed' });
+  assert.equal(result.keep, false);
+  assert.match(result.comparability.reasons.join(' '), /replayStall.*renderer/i);
+});
+
 const base = {
+  stallMeasurementRevision: 2,
   // WHY: a green fixture must carry the same provenance run.mjs writes, or a
   // verdict test could pass without ever exercising the comparability gate.
   machine: { cpu: 'Example CPU', ramGb: 32, kernel: '6.1.0', node: 'v26.0.0', renderer: {
@@ -40,7 +87,7 @@ const base = {
     ],
     median: { sessionsListed: 1000, firstContentfulPaint: 500, blankWindowMs: 200 },
   },
-  idle: { pssMb: { median: 400, runs: [400, 405] }, cpuPct: { median: 2, runs: [2, 2.1] } },
+  idle: { pssMb: { median: 400, runs: [400, 405, 400] }, cpuPct: { median: 2, runs: [2, 2.1, 2] } },
   history: {
     medium: { runs: [{ resumeStableMs: 300 }, { resumeStableMs: 310 }], median: { resumeStableMs: 300 } },
     huge: {
@@ -58,10 +105,10 @@ const base = {
   replayStall: {
     medium: {
       runs: [
-        { mainProcessStallMaxMs: 3000, ipcTotalStallMs: 4200 },
-        { mainProcessStallMaxMs: 3100, ipcTotalStallMs: 4300 },
+        { ipcMaxMs: 3000, ipcTotalStallMs: 4200 },
+        { ipcMaxMs: 3100, ipcTotalStallMs: 4300 },
       ],
-      median: { mainProcessStallMaxMs: 3000, ipcTotalStallMs: 4200 },
+      median: { ipcMaxMs: 3000, ipcTotalStallMs: 4200 },
     },
     huge: {
       runs: [{ rendererLongtaskMaxMs: 3200 }, { rendererLongtaskMaxMs: 3300 }],
@@ -129,6 +176,18 @@ const base = {
   },
   errors: { coldStarts: [0, 0, 0], scenarioBoot: 0 },
 };
+// A passing comparison fixture owes actual observation validity, not only medians.
+for (const section of Object.values(base.replayStall)) {
+  for (const row of section.runs) {
+    Object.assign(row, {
+      ipcEvidence: { maxMs: row.ipcMaxMs ?? 3300, openStallMs: null, pings: 4, tickSamples: 4, observedMs: 10000,
+        maxTickDelayMs: 1, rejectedPings: 0, sawHidden: false },
+      longtaskSupported: true, rendererLongtaskCount: 1, rendererLongtaskTotalMs: 3300,
+      rendererLongtaskMaxMs: row.rendererLongtaskMaxMs ?? 3300,
+    });
+  }
+}
+addLegacyFixtureEvidence(base, ['startup', 'history', 'workload', 'stall', 'artifacts', 'projects', 'terminal', 'native-stream', 'native-resume', 'scrollback']);
 const clone = () => JSON.parse(JSON.stringify(base));
 
 // The guard on the fixture itself. If PRIMARY gains a path and nobody adds it here, every
@@ -178,10 +237,10 @@ test('a phase NEITHER report ran is out of scope, but a phase only one ran still
   // `--only projects` on both sides: 30 of the 34 PRIMARY paths belong to phases
   // that were never measured. Refusing on those would print REJECT for reasons
   // that have nothing to do with the change, on every single-phase comparison.
-  const onlyProjects = (stall, open) => ({
+  const onlyProjects = (stall, open) => addLegacyFixtureEvidence({
     // A single-phase report still carries its runner's machine, noise and the
     // descriptor of the phase it actually measured.
-    machine: clone().machine, noise: clone().noise,
+    machine: clone().machine, noise: clone().noise, stallMeasurementRevision: 2,
     measures: { projects: PROJECTS_MEASURES },
     aborted: null, incomplete: [],
     projects: {
@@ -192,7 +251,7 @@ test('a phase NEITHER report ran is out of scope, but a phase only one ran still
       median: { thrash: { ipcStallMs: stall, toConversations: { medianMs: 65 } }, open: { openMs: open }, conversations: { ms: 58 } },
     },
     errors: { coldStarts: [0], scenarioBoot: 0 },
-  });
+  }, ['projects']);
   const v = verdict(onlyProjects(7101, 192), onlyProjects(0, 161), { target: 'projects.median.thrash.ipcStallMs', screens: {} });
   assert.equal(v.keep, true, v.reasons.join('; '));
   assert.equal(v.notRun.length, 30);
@@ -315,15 +374,15 @@ const zeroBase = (key) => {
 };
 
 test('a freeze that did not exist before is a regression, not a missing percentage', () => {
-  const b = zeroBase('mainProcessStallMaxMs');
+  const b = zeroBase('ipcMaxMs');
   const c = JSON.parse(JSON.stringify(b));
   c.startup.median.sessionsListed = 800;                       // a genuine, well-clear win…
-  c.replayStall.medium.median.mainProcessStallMaxMs = 3000;    // …paid for with a new 3s app-wide freeze
-  for (const r of c.replayStall.medium.runs) r.mainProcessStallMaxMs = 3000;
+  c.replayStall.medium.median.ipcMaxMs = 3000;    // …paid for with a new 3s app-wide freeze
+  for (const r of c.replayStall.medium.runs) r.ipcMaxMs = 3000;
 
   const v = verdict(b, c, { target: 'startup.median.sessionsListed', screens: {} });
   assert.equal(v.keep, false, `kept a change that introduced a 3s freeze: ${JSON.stringify(v.reasons)}`);
-  const r = v.regressions.find((x) => x.path === 'replayStall.medium.median.mainProcessStallMaxMs');
+  const r = v.regressions.find((x) => x.path === 'replayStall.medium.median.ipcMaxMs');
   assert.ok(r, `no regression recorded: ${JSON.stringify(v.regressions)}`);
   // No fabricated percentage — the reason quotes the zero and the real number instead.
   assert.equal(r.deltaPct, null);
@@ -334,11 +393,11 @@ test('a freeze that did not exist before is a regression, not a missing percenta
 // the constant it is checking moves whenever the constant moves and pins nothing. These
 // two assertions bracket the value from both sides, so raising OR lowering it fails.
 test('one unit of wobble around a zero baseline is tolerated; two units is a regression', () => {
-  const b = zeroBase('mainProcessStallMaxMs');
+  const b = zeroBase('ipcMaxMs');
   const judge = (stallMs) => {
     const c = JSON.parse(JSON.stringify(b));
     c.startup.median.sessionsListed = 800;
-    c.replayStall.medium.median.mainProcessStallMaxMs = stallMs;
+    c.replayStall.medium.median.ipcMaxMs = stallMs;
     return verdict(b, c, { target: 'startup.median.sessionsListed', screens: {} });
   };
   assert.equal(ZERO_BASELINE_FLOOR, 1);
@@ -382,7 +441,7 @@ test('an older baseline that predates a metric cannot certify it', () => {
   assert.ok(v.missing.every((m) => m.where === 'baseline'), JSON.stringify(v.missing));
 });
 
-test('a metric NEWER than the baseline is noted, not refused — but only within a phase the baseline ran', () => {
+test('a declared new-semantics phase cannot excuse a missing metric as merely newer', () => {
   // Adding a PRIMARY path used to retire every existing baseline the day it
   // landed: 2026-09-09, a baseline ninety minutes old lacked the new field and
   // the gate refused everything. A field the baseline's own phase never carried
@@ -391,7 +450,9 @@ test('a metric NEWER than the baseline is noted, not refused — but only within
   for (const r of b.artifacts.runs) delete r.htmlNav;
   const c = clone(); c.startup.median.sessionsListed = 800;
   const v = verdict(b, c, { target: 'startup.median.sessionsListed', screens: {} });
-  assert.equal(v.keep, true, v.reasons.join('; '));
+  assert.equal(v.keep, false);
+  assert.equal(v.status, 'inconclusive');
+  assert.match(v.comparability.reasons.join(' '), /median missing\/nonfinite/);
   assert.deepEqual(v.newMetric, ['artifacts.median.htmlNav.swap.medianMs']);
   assert.deepEqual(v.missing, []);
 
@@ -431,7 +492,7 @@ test('runsFor resolves the workload.median.<nested> shape', () => {
   assert.deepEqual(runsFor(base, 'workload.median.probe.longtaskTotalMs'), [100, 130]);
 });
 test('runsFor resolves the idle.<key>.median (flat runs) shape', () => {
-  assert.deepEqual(runsFor(base, 'idle.pssMb.median'), [400, 405]);
+  assert.deepEqual(runsFor(base, 'idle.pssMb.median'), [400, 405, 400]);
 });
 
 // `median` has to be a whole path SEGMENT. Searching for the text ".median" anywhere in

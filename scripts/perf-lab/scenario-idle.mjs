@@ -51,12 +51,11 @@ import { cpuSnapshot, cpuPercent, pssMb } from './procs.mjs';
 // the rule the whole rig depends on (non-finite entries are DROPPED, an empty set is
 // null and never 0), and a second copy is a second thing to drift.
 import { median } from './scenario-history.mjs';
-// Reused, not reimplemented. attributeStalls is pure, already unit-pinned in
-// scenario-replay-stall.test.mjs, and — crucially for the honesty rules below — it
-// returns NULL rather than a main-process verdict when there is no long-task data to
-// exonerate the renderer with. Re-deriving that arithmetic here would be a second
-// chance to get it wrong in exactly the direction this scenario is biased toward.
+// WHY reuse the union arithmetic and structured verdict: residual IPC excess is
+// unknown, not independent main blocking. Long-task absence cannot exonerate the
+// renderer, and renderer scheduling observations must survive into the verdict.
 import { attributeStalls, summarizeBlame } from './scenario-replay-stall.mjs';
+import { STALL_MEASUREMENT_REVISION } from './stall-attribution.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const round1 = (n) => (typeof n === 'number' && Number.isFinite(n) ? Math.round(n * 10) / 10 : null);
@@ -134,6 +133,7 @@ export const NUMERIC_KEYS = [
   'ipcMaxMs', 'ipcP95Ms', 'ipcMedianMs', 'ipcTotalStallMs',
   'ipcOver100ms', 'ipcOver250ms', 'ipcOver1000ms',
   'ipcPings', 'ipcMissedTicks', 'ipcMaxPingGapMs',
+  'ipcBlockedWindowMs', 'unknownStallMs',
   // --- Cadence: the point of the scenario. Null unless enough events were seen. ---
   'stallFloorMs', 'stallSampleCount', 'stallEventCount',
   'periodicStallMs', 'periodicGapMadMs', 'periodicDispersionRatio',
@@ -646,6 +646,7 @@ export async function runIdleScenario(app, fixture, {
   }
 
   return {
+    measurementRevision: STALL_MEASUREMENT_REVISION,
     byCount,
     perSessionTax: tax,
     // The window's reach, carried WITH the numbers so it cannot be separated from them.
@@ -803,6 +804,7 @@ async function measureOnce(app, fixture, picked, clones, sessionCount, rep, cfg)
       longtasks: raw.longtaskSupported ? raw.longtasks : null,
       ipcT0: raw.ipcT0,
       probeT0: raw.probeT0,
+      samePageClock: true, // both t0s came from one page evaluate
     });
 
     // ---- 6. Say plainly what was NOT measured -------------------------------
@@ -836,7 +838,8 @@ async function measureOnce(app, fixture, picked, clones, sessionCount, rep, cfg)
       warnings.push(`${label}: only ${ids.length} of ${sessionCount} sessions were open during the window — the per-session slope is computed against sessionCount, so this run would skew it`);
     }
 
-    const rendererAlive = rend.longtaskSupported !== false;
+    // WHY require positive support evidence: missing support is unavailable, not zero.
+    const rendererAlive = rend.longtaskSupported === true;
 
     return {
       // --- headline latency ---
@@ -860,12 +863,16 @@ async function measureOnce(app, fixture, picked, clones, sessionCount, rep, cfg)
       periodicGapMadMs: periodicity.gapMadMs,
       periodicDispersionRatio: periodicity.dispersionRatio,
       periodicity,
-      // --- attribution (null unless the renderer probe could exonerate the renderer) ---
+      // --- observed renderer overlap; independent main unavailable, residual unknown ---
       mainProcessStallMs: attr.mainProcessStallMs,
       mainProcessStallMaxMs: attr.mainProcessStallMaxMs,
       rendererStallMs: attr.rendererStallMs,
       rendererStallMaxMs: attr.rendererStallMaxMs,
-      blame: summarizeBlame(attr.mainProcessStallMs, attr.rendererStallMs, { floorMs: floor ?? everyMs }),
+      measurementRevision: STALL_MEASUREMENT_REVISION,
+      ipcEvidence: ipc,
+      blame: summarizeBlame({ ipc, probe: rend, floorMs: floor ?? everyMs }),
+      ipcBlockedWindowMs: attr.ipcBlockedWindowMs,
+      unknownStallMs: attr.unknownStallMs,
       worstStalls: attr.worst,
       // --- renderer detail ---
       rendererLongtaskCount: rendererAlive ? rend.longtaskCount : null,

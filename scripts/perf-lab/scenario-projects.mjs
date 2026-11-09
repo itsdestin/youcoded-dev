@@ -50,13 +50,13 @@
 // Node built-ins only (the workspace root has no package.json and must not gain one).
 import { writeFileSync, mkdirSync, statSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { installProbe, readProbe, readProbeWindow, stopProbe, median, p95 } from './scenario-workload.mjs';
-import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
+import { installProbe, readProbe, stopProbe, median, p95 } from './scenario-workload.mjs';
+import { stopIpcStallProbe } from './probe-ipc.mjs';
 // Pure helpers shared with the artifacts scenario: the same PRNG so the tree is
 // byte-identical between a baseline and a candidate, the same content
 // generators so card previews render real Markdown/HTML/code, the same stall
 // attributor and key-event builder. Importing keeps one copy of each.
-import { rng32, buildCodeArtifact, buildMarkdownArtifact, buildHtmlArtifact, attributeStall, keyEventsFor } from './scenario-artifacts.mjs';
+import { rng32, buildCodeArtifact, buildMarkdownArtifact, buildHtmlArtifact, step, keyEventsFor } from './scenario-artifacts.mjs';
 // The fixture's own transcript writer, so the big project's conversations are the
 // same shape every other phase resumes (and one generator, not two).
 import { transcriptBody, stableUuid, ccProjectSlug } from './fixture.mjs';
@@ -312,9 +312,6 @@ function countDirs(dir) {
 // In-page helpers
 // ---------------------------------------------------------------------------
 
-const mark = (cdp, label) =>
-  cdp.evaluate(`(() => { if (window.__perfProbe) window.__perfProbe.mark(${JSON.stringify(label)}); return true; })()`);
-
 /**
  * Installs `window.__perfProj`. Every selector below was read off master and is
  * cited; a helper that cannot find its target returns a REASON, never a bare
@@ -550,26 +547,9 @@ const call = (cdp, expr) => cdp.evaluate(`(async () => { const h = window.__perf
 // Step wrapper — both probes, per step (same contract as scenario-artifacts)
 // ---------------------------------------------------------------------------
 
-async function step(cdp, label, fn, { pingMs = 50 } = {}) {
-  await mark(cdp, `${label}:start`);
-  await installIpcStallProbe(cdp, { everyMs: pingMs });
-  let result, thrown = null;
-  try {
-    result = await fn();
-  } catch (err) {
-    thrown = err;
-    result = { ok: false, reason: err.message };
-  }
-  await mark(cdp, `${label}:end`);
-  let ipc = null;
-  try { ipc = await readIpcStallProbe(cdp); } catch (err) { ipc = { error: err.message }; }
-  try { await stopIpcStallProbe(cdp); } catch { /* page gone */ }
-  let probe = null;
-  try { probe = await readProbeWindow(cdp, `${label}:start`, `${label}:end`); } catch (err) { probe = { error: err.message }; }
-  const out = { ...result, probe, ipc, stall: attributeStall(ipc, probe) };
-  if (thrown) out.threw = thrown.message;
-  return out;
-}
+// WHY shared with artifacts/native-resume: timer readiness and atomic drain
+// boundaries must not drift between surfaces.
+
 
 // ---------------------------------------------------------------------------
 // Report contract

@@ -15,7 +15,13 @@
 //   (NOT `node --test <dir>/` — on Node 26 that tries to require() the directory.)
 
 import assert from 'node:assert/strict';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { assessComparability } from '../comparability.mjs';
+import { DOCUMENT_INSTRUMENT_FILES } from '../document-report.mjs';
 import { describe, it } from 'node:test';
+import { addLegacyFixtureEvidence } from './legacy-fixture.mjs';
 
 import { PRIMARY, get, runsFor, spreadPct, verdict } from '../compare.mjs';
 import { MEASURES as HISTORY_MEASURES, NUMERIC_KEYS, medianRun } from '../scenario-history.mjs';
@@ -31,8 +37,250 @@ import {
   EXIT, NETWORK_PATHS, NOISE_GATE_MAX_WAIT_MS, NOISE_GATE_POLL_MS, PHASES, STALL_SIZES, USAGE,
   buildArtifactsSection, buildIdleSection, buildProjectsSection, buildRepeatedSection, buildStartupSection, buildTerminalSection, buildWorkloadSection,
   emptyReport, median, medianTree, parseArgs, phaseOfPath, primaryPathsFor,
-  renderMarkdown, stemFor, validateReport,
+  renderMarkdown, stemFor, validateReport, artifactFixtureOptions, withBoot,
 } from '../run.mjs';
+
+it('artifact runs require neither a model nor unrelated large histories', () => {
+  assert.deepEqual(artifactFixtureOptions(), { seedEngine: false, historySizes: { small: 12 }, decoyCount: 0 });
+});
+
+// Document outcomes are raw evidence, never median-only or status-only passes.
+import { documentEvidence, shiftDocumentInput, setDocumentOperation } from './document-evidence-fixture.mjs';
+import { DOCUMENT_ADAPTER_REVISION, DOCUMENT_CONTROL_TYPES } from '../document-input.mjs';
+const documentRow = (id = 'csv-rows-64kib') => ({...documentEvidence(id),
+  id, status: 'measured',
+  fixture: { bytes: 65536, sha256: 'a'.repeat(64), shape: { rows: 100, columns: 2 } },
+});
+const documentSection = () => ({
+  expectedRepeats: 2, requiredCaseIds: ['csv-rows-64kib'],
+  optionalCoverage: [{ id: 'path-list', reason: 'UI adapter unavailable' }], provenance: {
+    profile: 'smoke', caseIds: ['csv-rows-64kib'], checkout: '/checkout',
+    build: { sha: 'a'.repeat(40), dirty: 'a'.repeat(12), branch: 'base', binary: '/checkout/app' },
+    labSource: { sha: 'a'.repeat(40), dirty: 'a'.repeat(12), branch: 'lab' },
+    node: 'v26', platform: 'linux', arch: 'x64', memoryPolicy: 'RSS cap', renderingPolicy: 'software evidence',
+    instrumentHashes: Object.fromEntries(DOCUMENT_INSTRUMENT_FILES.map(f => [f, 'a'.repeat(64)])),
+    sourceHashes: ['XlsxView.tsx', 'CsvView.tsx', 'DocxView.tsx', 'HtmlView.tsx'].map(name => ({
+      file: `/checkout/desktop/src/renderer/components/artifact-views/${name}`, sha256: 'a'.repeat(64),
+    })),
+  },
+  runs: [0, 1].map(() => ({ descriptor: { revision: DOCUMENT_ADAPTER_REVISION, calibrationValid: true,
+    buildVerified: true, checkout:'/checkout',binary:'/checkout/app',buildStampSha256:'a'.repeat(64),
+    buildStamp:{sha:'a'.repeat(40),dirty:'a'.repeat(12),branch:'base'},
+    sourceHashes:['XlsxView.tsx','CsvView.tsx','DocxView.tsx','HtmlView.tsx'].map(name=>({file:`/checkout/desktop/src/renderer/components/artifact-views/${name}`,sha256:'a'.repeat(64)})),
+    calibrations: DOCUMENT_CONTROL_TYPES.map(control => {
+      const r = documentRow(`control-${control}`); r.proof.control = control;
+      if (control === 'renderer-block') {r.renderer.maxDelayMs = 400;setDocumentOperation(r,600);shiftDocumentInput(r,390);}
+      if (control === 'main-block') {r.main.maxDelayMs = 400;setDocumentOperation(r,400);}
+      if (control === 'slow-async') setDocumentOperation(r,400);
+      if (control === 'renderer-congestion') {setDocumentOperation(r,800);r.renderer.totalExcessMs=200;r.renderer.maxDelayMs=40;shiftDocumentInput(r,20);r.proof.shortTaskCount=24;r.proof.shortTaskBusyMs=720;r.proof.shortTaskMaxMs=35;}
+      return r;
+    }) }, cases: [documentRow()] })),
+});
+
+it('document validation refuses incomplete repeats and failed adapter outcomes independently of medians', async () => {
+  const { documentProblems } = await import('../document-report.mjs');
+  assert.deepEqual(documentProblems(documentSection()), []);
+  for (const status of ['failed', 'timeout', 'memory-limit', 'unreviewed']) {
+    const d = documentSection(); d.runs[1].cases[0].status = status;
+    assert.ok(documentProblems(d).some(p => p.includes(status)));
+  }
+  const d = documentSection(); d.runs.pop();
+  assert.ok(documentProblems(d).some(p => p.includes('repeat')));
+  const missing = documentSection(); missing.runs[1].cases = [];
+  assert.ok(documentProblems(missing).some(p => p.includes('csv-rows-64kib')));
+  const proof = documentSection(); proof.runs[1].cases[0].memory.complete = false;
+  assert.ok(documentProblems(proof).length);
+  for (const mutate of [
+    d => { d.runs[1].cases[0].input.caseId = 'swapped'; },
+    d => { d.runs[1].cases[0].operationMs = 600; },
+    d => { d.runs[1].descriptor.calibrations[1].input = documentEvidence().input; },
+    d => { d.runs[1].cases[0].input.clocks.raw.splice(1); },
+    d => { const raw=d.runs[1].cases[0].input.clocks.raw;raw[raw.length-1]={beforeMs:13000,rendererMs:13100,afterMs:13000}; },
+    d => { d.runs[1].cases[0].input.clocks.raw = [{beforeMs:-20,rendererMs:80,afterMs:-20},{beforeMs:-10,rendererMs:90,afterMs:-10}]; },
+    d => { const input=d.runs[1].cases[0].input;[300,260,310,320].forEach((atMs,i)=>input.samples[i].receipt.atMs=atMs); },
+    d => { d.runs[1].cases[0].renderer.maxDelayMs = null; },
+    d => { d.runs[1].cases[0].input.latencyMs = NaN; },
+    d => { delete d.runs[1].cases[0].fixture; },
+    d => { d.runs[1].descriptor.calibrations.pop(); },
+    d => { d.runs[1].descriptor.calibrations[0].main.maxDelayMs = null; },
+    d => { d.runs[1].descriptor.provenanceError = 'missing build stamp'; },
+  ]) {
+    const broken = documentSection(); mutate(broken); assert.ok(documentProblems(broken).length);
+  }
+});
+
+it('document budget breaches stay valid measurements and one worst repeat cannot hide behind a median', async () => {
+  const { documentProblems, documentBreaches, compareDocuments } = await import('../document-report.mjs');
+  const base = documentSection(), cand = documentSection();
+  cand.runs[1].cases[0].renderer.maxDelayMs = 12000;
+  assert.deepEqual(documentProblems(cand), []);
+  assert.ok(documentBreaches(cand).some(b => b.value === 12000));
+  assert.ok(compareDocuments(base, cand).some(p => p.includes('12000')));
+  cand.runs.pop();
+  assert.ok(compareDocuments(base, cand).some(p => p.includes('repeat')));
+  assert.ok(compareDocuments(base, null).length);
+});
+
+it('clock uncertainty straddling input budget is inconclusive, not a measured breach or healthy result',async()=>{
+  const {documentProblems,documentBreaches}=await import('../document-report.mjs');
+  const section=documentSection();shiftDocumentInput(section.runs[0].cases[0],241);
+  assert.equal(section.runs[0].cases[0].input.budgetStatus,'inconclusive');
+  assert.ok(documentProblems(section).length);
+  assert.equal(documentBreaches(section).filter(b=>b.metric==='input.latencyMs').length,0);
+});
+
+it('runner and comparison both reject document gaps even when legacy artifact medians are healthy', () => {
+  const base = completeReport(), cand = completeReport();
+  base.artifacts.documents = documentSection(); cand.artifacts.documents = documentSection();
+  cand.artifacts.documents.runs[1].cases = [];
+  assert.ok(validateReport(cand, new Set(['artifacts'])).some(p => p.includes('csv-rows-64kib')));
+  const v = verdict(base, cand, { target: 'startup.median.sessionsListed' });
+  assert.equal(v.keep, false);
+  assert.ok(v.reasons.some(p => p.includes('csv-rows-64kib')));
+  delete cand.artifacts.documents;
+  assert.ok(verdict(base, cand, { target: 'startup.median.sessionsListed' }).reasons.some(p => p.includes('required section missing')));
+});
+
+it('document controls and optional unsupported coverage appear beside raw failures in normal Markdown', () => {
+  const r = completeReport(); r.artifacts.documents = documentSection();
+  r.artifacts.documents.runs[1].cases[0].status = 'memory-limit';
+  const md = renderMarkdown(r, 'documents');
+  for (const text of ['control-main-block', 'memory-limit', 'Unsupported/unmeasured path-list', 'Invalid: documents repeat 2']) assert.ok(md.includes(text), text);
+});
+
+it('document repeat checkpoints preserve controls and completed cases when the adapter later throws', async () => {
+  const { recordDocumentRepeat } = await import('../document-report.mjs');
+  const section = { runs: [] }, snapshots = [];
+  await assert.rejects(recordDocumentRepeat(section, async emit => {
+    await emit({ id: 'control-noop', kind: 'calibration', status: 'measured' });
+    await emit(documentRow());
+    throw Error('later adapter failure');
+  }, () => snapshots.push(structuredClone(section))), /later adapter failure/);
+  assert.equal(section.runs[0].cases.length, 1);
+  assert.equal(section.runs[0].descriptor.calibrations.length, 1);
+  assert.match(section.runs[0].descriptor.error, /later adapter failure/);
+  assert.equal(snapshots[0].runs[0].cases.length, 0);
+  assert.equal(snapshots.at(-1).runs[0].cases.length, 1);
+});
+
+it('owned artifacts inspector closes before process teardown on success and adapter failure', async () => {
+  for (const mode of ['success', 'adapter-failure', 'inspector-failure']) {
+    const events = [];
+    const app = { pid: 42, cdp: {}, kill: async () => { events.push('kill'); } };
+    const build = { binary: '/private/app', appDir: '/private' }, fixture = { home: '/private/home' };
+    const promise = withBoot(build, fixture, async measuredApp => {
+      assert.equal(measuredApp.mainLoop.owner.pid, 42);
+      events.push('case');
+      if (mode === 'adapter-failure') throw Error('adapter failure');
+      return 7;
+    }, { mainLoop: true, _deps: {
+      freeInspectorPort: async () => 12345,
+      launchApp: async config => { assert.deepEqual(config.extraArgs, ['--inspect=127.0.0.1:12345']); return app; },
+      waitFor: async () => {}, captureRenderer: async () => {},
+      connectMainLoop: async (owned, identity) => {
+        assert.equal(owned, app); assert.deepEqual(identity, { binary: build.binary, home: fixture.home, port: 12345 });
+        if (mode === 'inspector-failure') throw Error('inspector failure');
+        return { owner: { pid: app.pid }, close: () => events.push('close') };
+      },
+    } });
+    if (mode === 'success') assert.equal(await promise, 7);
+    else await assert.rejects(promise, /failure/);
+    assert.deepEqual(events, mode === 'inspector-failure' ? ['kill'] : ['case', 'close', 'kill']);
+  }
+});
+
+it('document selection is bounded and --check is a no-launch plan', () => {
+  const cfg = parseArgs(['--only', 'artifacts', '--check', '--document-cases', 'csv-rows-64kib']);
+  assert.equal(cfg.dryRun, true);
+  assert.deepEqual(cfg.documentCaseIds, ['csv-rows-64kib']);
+  for (const value of ['', 'path-list-1000', 'xlsx-merge-400x500', 'csv-rows-64kib,csv-rows-64kib']) assert.throws(() => parseArgs(['--document-cases', value]), /bounded smoke/);
+});
+
+const comparableArtifactReport = () => addLegacyFixtureEvidence({
+  ...emptyReport(), aborted: null, incomplete: [],
+  artifacts: buildArtifactsSection([artifactRun(0), artifactRun(1)], artifactMedian),
+  measures: { artifacts: ARTIFACT_MEASURES },
+  machine: { cpu: 'CPU', ramGb: 32, kernel: '6.1', node: 'v26', renderer: {
+    source: 'SystemInfo', glRenderer: 'llvmpipe', accelerated: false, featureStatus: { gpu_compositing: 'disabled_software' },
+  } },
+  noise: { loadAvgBefore: 1, machineBusyPctBefore: 1, maxLoadAvgAccepted: 1, maxBusyPctAccepted: 1 },
+}, ['artifacts']);
+
+it('artifact descriptor compares fixture policy, not disk observations', async () => {
+  const { artifactMeasurementMetadata } = await import('../run.mjs');
+  const b = comparableArtifactReport(), c = comparableArtifactReport();
+  const bm = artifactMeasurementMetadata({ availableBytes: 99999, checkedPath: '/baseline', measuredAt: 'before', reserveBytes: 100, additionalBytes: 50, requiredBytes: 150 });
+  const cm = artifactMeasurementMetadata({ availableBytes: 88888, checkedPath: '/candidate', measuredAt: 'after', reserveBytes: 100, additionalBytes: 50, requiredBytes: 150 });
+  b.measures.artifacts = bm.descriptor; c.measures.artifacts = cm.descriptor;
+  b.observations = bm.observations; c.observations = cm.observations;
+  assert.equal(b.observations.disk.checkedPath, '/baseline');
+  assert.equal(c.observations.disk.availableBytes, 88888);
+  assert.equal(assessComparability(b, c).comparable, true);
+  c.measures.artifacts.fixture.historySizes.small++;
+  assert.equal(assessComparability(b, c).comparable, false);
+  c.measures.artifacts.fixture.historySizes.small--;
+  c.measures.artifacts.fixture.diskPolicy.reserveBytes++;
+  assert.equal(assessComparability(b, c).comparable, false);
+});
+
+it('document provenance is required and instrument identity differs independently from app candidate', async () => {
+  const { compareDocuments, documentProblems, DOCUMENT_INSTRUMENT_FILES } = await import('../document-report.mjs');
+  const b = documentSection(), c = documentSection();
+  delete b.provenance; delete c.provenance;
+  assert.ok(documentProblems(b).some(p => /provenance/.test(p)));
+  assert.ok(compareDocuments(b, c).some(p => /provenance/.test(p)));
+  for (const file of DOCUMENT_INSTRUMENT_FILES) {
+    const base = documentSection(), changed = documentSection();
+    changed.provenance.instrumentHashes[file] = 'b'.repeat(64);
+    assert.ok(compareDocuments(base, changed).some(p => /instrument/.test(p)), file);
+    delete changed.provenance.instrumentHashes[file];
+    assert.ok(documentProblems(changed).some(p => /provenance/.test(p)), file);
+  }
+  const base = documentSection(), candidate = documentSection();
+  candidate.provenance.checkout = '/other-checkout';
+  candidate.provenance.build.sha = 'b'.repeat(40);
+  candidate.provenance.build.dirty = 'b'.repeat(12);
+  candidate.provenance.build.binary = '/other-checkout/app';
+  candidate.provenance.labSource.dirty = 'b'.repeat(12);
+  candidate.provenance.sourceHashes[0].sha256 = 'b'.repeat(64);
+  for(const source of candidate.provenance.sourceHashes)source.file=source.file.replace('/checkout/','/other-checkout/');
+  for (const run of candidate.runs) {
+    Object.assign(run.descriptor,{checkout:candidate.provenance.checkout,binary:candidate.provenance.build.binary,
+      buildStamp:structuredClone(candidate.provenance.build),sourceHashes:structuredClone(candidate.provenance.sourceHashes)});
+    for(const source of run.descriptor.sourceHashes)source.file=source.file.replace('/checkout/','/other-checkout/');
+  }
+  assert.deepEqual(compareDocuments(base, candidate), []);
+  const br = comparableArtifactReport(), cr = comparableArtifactReport();
+  br.artifacts.documents = base; cr.artifacts.documents = candidate;
+  assert.equal(verdict(br, cr, { target: PRIMARY[0] }).comparability.comparable, true);
+  cr.artifacts.documents.provenance.instrumentHashes['scenario-workload.mjs'] = 'b'.repeat(64);
+  const changed = verdict(br, cr, { target: PRIMARY[0] });
+  assert.equal(changed.comparability.comparable, false);
+  assert.equal(changed.status, 'inconclusive');
+});
+
+it('atomic report publication keeps checkpoint cases/controls on failed final rename and cleans only its own temp', async () => {
+  const { publishReportJson } = await import('../atomic-report.mjs');
+  const root = mkdtempSync(join(tmpdir(), 'perf-report-'));
+  try {
+    const saved = { artifacts: { documents: documentSection() } };
+    const path = join(root, 'run.json');
+    publishReportJson(root, 'run', saved);
+    const previous = readFileSync(path, 'utf8');
+    const unrelated = join(root, 'unrelated.tmp'); writeFileSync(unrelated, 'keep');
+    assert.throws(() => publishReportJson(root, 'run', { final: true }, { rename: () => { throw Error('injected before rename'); } }), /injected/);
+    assert.equal(readFileSync(path, 'utf8'), previous);
+    assert.deepEqual(JSON.parse(previous), saved);
+    assert.deepEqual(readdirSync(root).sort(), ['run.json', 'unrelated.tmp']);
+    const outside = join(root, 'outside.json'); writeFileSync(outside, 'outside');
+    for (const stem of ['../outside', '/outside', 'nested/run']) assert.throws(() => publishReportJson(root, stem, {}), /stem/);
+    symlinkSync(outside, join(root, 'linked.json'));
+    assert.throws(() => publishReportJson(root, 'linked', {}), /regular|symlink/);
+    assert.equal(readFileSync(outside, 'utf8'), 'outside');
+    publishReportJson(root, 'run', { final: true });
+    assert.deepEqual(JSON.parse(readFileSync(path, 'utf8')), { final: true });
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
 
 // ── Synthetic per-run objects, in the exact shapes the real modules return ────
 
@@ -134,6 +382,9 @@ const workloadRun = (i) => ({
 
 /** One replay-stall run, shaped as scenario-replay-stall.mjs's measureOnce() returns it. */
 const stallRun = (i, { stable = true } = {}) => ({
+  longtaskSupported: true,
+  ipcEvidence: { maxMs: 3300 + i, openStallMs: null, pings: 400, tickSamples: 400, observedMs: 20000,
+    maxTickDelayMs: 1, rejectedPings: 0, sawHidden: false },
   ipcMedianMs: 4 + i,
   ipcP95Ms: 60 + i,
   ipcMaxMs: 3300 + i,
@@ -143,8 +394,10 @@ const stallRun = (i, { stable = true } = {}) => ({
   ipcPings: 400,
   ipcMissedTicks: 30 + i,
   ipcMaxPingGapMs: 3300 + i,
-  mainProcessStallMs: 3000 + i,
-  mainProcessStallMaxMs: 2900 + i,
+  mainProcessStallMs: null,
+  mainProcessStallMaxMs: null,
+  ipcBlockedWindowMs: 4200 + i,
+  unknownStallMs: 3000,
   rendererStallMs: 1200 + i,
   rendererStallMaxMs: 1100 + i,
   rendererLongtaskCount: 40 + i,
@@ -163,7 +416,7 @@ const stallSize = (n, opts) => {
   return {
     runs,
     median: med,
-    blame: summarizeBlame(med.mainProcessStallMs, med.rendererStallMs),
+    blame: summarizeBlame({ ipc: { maxMs: med.ipcMaxMs }, probe: { longtaskMaxMs: med.rendererLongtaskMaxMs } }),
     stabilizedRuns: runs.filter((r) => r.stability === 'stable').length,
     warnings: [...new Set(runs.flatMap((r) => r.warnings))],
   };
@@ -341,7 +594,7 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, terminal: TERMINAL_MEASURES, nativeStream: STREAM_MEASURES, nativeResume: RESUME_MEASURES, scrollback: SCROLL_MEASURES };
   report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, projectsBoot: 0, terminalBoots: [0, 0, 0], nativeStreamBoots: [0, 0, 0], nativeResumeBoots: [0, 0, 0], scrollbackBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
-  return report;
+  return addLegacyFixtureEvidence(report, PHASES);
 }
 
 const ALL = new Set(PHASES);
@@ -459,6 +712,22 @@ describe('compare.mjs PRIMARY contract', () => {
 });
 
 describe('validateReport', () => {
+  it('fails closed on replay IPC pending, rejected, hidden or missing coverage, even with fast completed metrics', () => {
+    for (const change of [{ openStallMs: 9000 }, { rejectedPings: 1 }, { sawHidden: true }, { tickSamples: 0 }, { observedMs: null }]) {
+      const report = completeReport();
+      const row = report.replayStall.medium.runs[0];
+      row.ipcMaxMs = 2; row.ipcTotalStallMs = 0;
+      row.ipcEvidence = { maxMs: 2, totalStallMs: 0, pings: 4, tickSamples: 4, observedMs: 10000,
+        maxTickDelayMs: 1, rejectedPings: 0, sawHidden: false, openStallMs: null, ...change };
+      assert.ok(validateReport(report, new Set(['stall'])).some(p => /replayStall.*IPC/i.test(p)), JSON.stringify(change));
+    }
+  });
+  it('rejects unsupported replay renderer readings rather than trusting copied zeroes', () => {
+    const report = completeReport();
+    report.replayStall.huge.runs[0].longtaskSupported = false;
+    report.replayStall.huge.runs[0].rendererLongtaskMaxMs = 0;
+    assert.ok(validateReport(report, new Set(['stall'])).some(p => /replayStall.*renderer/i.test(p)));
+  });
   it('passes a complete report with every phase requested', () => {
     assert.deepEqual(validateReport(completeReport(), ALL), []);
   });

@@ -1,0 +1,27 @@
+{
+  "capture": "scratch/image-stalls-runtime-x0Eb8i/runtime-report.json systemInfo.info.gpu (relevant raw fields, no invented active flag)",
+  "gpu": {
+    "devices": [{
+      "vendorId": 4098,
+      "deviceId": 5510,
+      "vendorString": "Google Inc. (Mesa)",
+      "deviceString": "ANGLE (Mesa, llvmpipe (LLVM 23.1.1 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.4-arch3.1)",
+      "driverVendor": "Mesa",
+      "driverVersion": "26.2.4"
+    }],
+    "auxAttributes": {
+      "glRenderer": "ANGLE (Mesa, llvmpipe (LLVM 23.1.1 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.4-arch3.1)",
+      "glVendor": "Google Inc. (Mesa)",
+      "glVersion": "OpenGL ES 3.0 (ANGLE 2.1 git hash: e0cdcf9dcda5)"
+    },
+    "featureStatus": {
+      "gpu_compositing": "disabled_software",
+      "rasterization": "unavailable_off",
+      "multiple_raster_threads": "enabled_on",
+      "opengl": "unavailable_off",
+      "vulkan": "disabled_off",
+      "webgl": "unavailable_off",
+      "video_decode": "unavailable_off"
+    }
+  }
+}

@@ -15,5 +15,5 @@ test('sanitizeProcessEnv keeps only the allow-list (no session-manager or auth v
 });
 test('parseArgs requires absolute app-dir and an --out inside scratch/perf-lab/gpu', () => {
   assert.throws(() => parseArgs(['--app-dir', 'rel', '--out', '/x/y.json']), /absolute/);
-  assert.throws(() => parseArgs(['--app-dir', '/a', '--out', '/tmp/out.json']), /must be inside/);
+  assert.throws(() => parseArgs(['--checkout','/isolated/app','--app-dir', '/a', '--out', '/tmp/out.json']), /must be inside/);
 });

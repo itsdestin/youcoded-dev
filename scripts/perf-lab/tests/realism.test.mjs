@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { analyseRun, parseOptions } from '../realism.mjs';
+import { analyseRun, parseOptions, main, runBoot, realismRuntimeRefusal } from '../realism.mjs';
 import { table, rowOf } from '../realism-table.mjs';
 
 const ids = ['a', 'b', 'c'];
@@ -28,6 +28,18 @@ test('parseOptions: presets, overrides, soak and busy-off handling', () => {
   assert.deepEqual(c.seqs, ['fresh']);               // busy desktop off -> no busy run
   assert.throws(() => parseOptions(['--nope', '1']));
   assert.throws(() => parseOptions(['--seqs', 'bogus']));
+});
+
+test('realism GPU display is allowed only on the supervised path; unsupervised shapes and software stay refused',async()=>{
+ const dependencies=new Proxy({},{get(){throw Error('No preparation dependency may be read');}});
+ // Default preset runs a busy-desktop browser: an unsupervised process on the private compositor.
+ const r=await main(['--display','gpu','--checkout','/not-existing'],dependencies);assert.equal(r.status,'unsupported');assert.match(r.reason,/unsupervised/);
+ const direct=await runBoot(parseOptions(['--display','gpu','--checkout','/not-existing']),1,'/must-not-write');assert.equal(direct.status,'unsupported');
+ const refusal=args=>realismRuntimeRefusal(parseOptions(['--display','gpu','--checkout','/x',...args]));
+ assert.match(refusal(['--busy','off','--build','dev']).reason,/app supervisor/);
+ assert.match(refusal(['--busy','off']).reason,/lifetime/);            // default 30-minute budget cannot fit a 60 s compositor
+ assert.equal(refusal(['--busy','off','--max-minutes','0.5']),null);   // lifted: needs the supervised binding + a hardware verdict per boot (runBoot)
+ assert.equal(realismRuntimeRefusal(parseOptions(['--display','xvfb'])),null);
 });
 
 test('table: one row per cell, worst across boots', () => {

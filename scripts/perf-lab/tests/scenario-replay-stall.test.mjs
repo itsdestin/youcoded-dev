@@ -12,9 +12,20 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  attributeStalls, mergeIntervals, overlapMs, summarizeBlame, medianRun,
+  attributeStalls as rawAttributeStalls, mergeIntervals, overlapMs, summarizeBlame, medianRun,
   NUMERIC_KEYS, SIZES, runReplayStallScenario,
 } from '../scenario-replay-stall.mjs';
+
+// Synthetic fixtures explicitly share a page performance clock unless overridden.
+const attributeStalls = options => rawAttributeStalls({ ipcT0: 0, probeT0: 0, samePageClock: true, ...options });
+
+test('missing, invalid or undeclared shared clocks cannot establish overlap', () => {
+  for (const clocks of [{}, { ipcT0: 0, probeT0: 0 }, { ipcT0: NaN, probeT0: 0, samePageClock: true }, { ipcT0: 0, probeT0: Infinity, samePageClock: true }]) {
+    const result = rawAttributeStalls({ samples: [[0, 1000]], everyMs: 100, longtasks: [[0, 1000]], ...clocks });
+    assert.equal(result.rendererStallMs, null);
+    assert.equal(result.mainProcessStallMs, null);
+  }
+});
 
 // ---------------------------------------------------------------------------
 // mergeIntervals / overlapMs
@@ -56,33 +67,33 @@ test('a stall sitting under a long task is charged to the renderer', () => {
   });
   assert.equal(a.ipcTotalStallMs, 800);        // 900 round trip - 100ms interval
   assert.equal(a.rendererStallMs, 800);
-  assert.equal(a.mainProcessStallMs, 0);
+  assert.equal(a.mainProcessStallMs, null);
   assert.equal(a.worst[0].blame, 'renderer');
 });
 
-test('a stall with the renderer idle is charged to the main process — the app-wide freeze', () => {
+test('zero renderer overlap leaves the response delay unknown, not main', () => {
   const a = attributeStalls({
     samples: [[1000, 3353]],                  // the measured 5,000-message number
     everyMs: 100,
     longtasks: [[20000, 120]],                // a long task, but nowhere near this stall
   });
-  assert.equal(a.mainProcessStallMs, 3253);
+  assert.equal(a.mainProcessStallMs, null);
   assert.equal(a.rendererStallMs, 0);
-  assert.equal(a.mainProcessStallMaxMs, 3253);
-  assert.equal(a.worst[0].blame, 'main-process');
+  assert.equal(a.unknownStallMs, 3253);
+  assert.equal(a.mainProcessStallMaxMs, null);
+  assert.equal(a.worst[0].blame, 'unknown');
 });
 
-test('a partly-covered stall splits, and the two halves always sum to ipcTotalStallMs', () => {
+test('union elapsed windows split into observed renderer overlap and unknown residual', () => {
   const a = attributeStalls({
     samples: [[0, 1000], [2000, 600], [5000, 105]],
     everyMs: 100,
     longtasks: [[0, 400], [2000, 550]],
   });
-  assert.equal(a.rendererStallMs + a.mainProcessStallMs, a.ipcTotalStallMs);
-  // First ping: 1000ms round trip, 400ms of it under a long task -> 400 renderer / 500 main.
+  assert.equal(a.rendererStallMs + a.unknownStallMs, a.ipcBlockedWindowMs);
   assert.equal(a.worst[0].roundTripMs, 1000);
-  assert.equal(a.worst[0].longtaskOverlapMs, 400);
-  assert.equal(a.worst[0].blame, 'mixed');    // 40% covered: neither >=50% nor <=10%
+  assert.equal(a.worst[0].longtaskOverlapMs, 300); // [100,1000) intersect [0,400)
+  assert.equal(a.worst[0].blame, 'unclear');
 });
 
 test('the two probes are put on ONE timeline via their separate t0 values', () => {
@@ -93,12 +104,12 @@ test('the two probes are put on ONE timeline via their separate t0 values', () =
     samples: [[500, 300]], everyMs: 100, longtasks: [[0, 300]], ipcT0: 0, probeT0: 500,
   });
   assert.equal(covered.rendererStallMs, 200);
-  assert.equal(covered.mainProcessStallMs, 0);
+  assert.equal(covered.unknownStallMs, 0);
   // Without the offset the same data would be misattributed — proving the offset is load-bearing.
   const naive = attributeStalls({
     samples: [[500, 300]], everyMs: 100, longtasks: [[0, 300]], ipcT0: 0, probeT0: 0,
   });
-  assert.equal(naive.mainProcessStallMs, 200);
+  assert.equal(naive.unknownStallMs, 200);
 });
 
 test('no long-task data means NO attribution — never a fabricated main-process verdict', () => {
@@ -124,7 +135,7 @@ test('zero pings reports null, not a suspiciously perfect zero', () => {
 test('round trips at or below the ping interval are not stalls', () => {
   const a = attributeStalls({ samples: [[0, 100], [100, 40], [200, 3]], everyMs: 100, longtasks: [] });
   assert.equal(a.ipcTotalStallMs, 0);
-  assert.equal(a.mainProcessStallMs, 0);
+  assert.equal(a.mainProcessStallMs, null);
 });
 
 test('ipcMaxPingGapMs catches the block that produced no slow sample at all', () => {
@@ -150,13 +161,22 @@ test('attributeStalls refuses a non-array rather than silently measuring nothing
 // summarizeBlame / medianRun
 // ---------------------------------------------------------------------------
 
-test('summarizeBlame needs a clear 2x margin, and stays quiet below the floor', () => {
-  assert.equal(summarizeBlame(3000, 100), 'main-process');
-  assert.equal(summarizeBlame(100, 3000), 'renderer');
-  assert.equal(summarizeBlame(1000, 800), 'mixed');
-  assert.equal(summarizeBlame(3, 4), 'none');          // jitter is not a verdict
-  assert.equal(summarizeBlame(null, 100), null);       // unattributable stays unattributed
-  assert.equal(summarizeBlame(0, 0), 'none');
+test('summarizeBlame uses structured observations, not residual positional numbers', () => {
+  assert.equal(summarizeBlame({ ipc: { maxMs: 3000 }, probe: { longtaskMaxMs: 0 } }).verdict, 'unclear');
+  assert.equal(summarizeBlame({ ipc: { maxMs: 3, maxTickDelayMs: 900 }, probe: { longtaskMaxMs: 0 } }).verdict, 'renderer');
+  assert.equal(summarizeBlame({}).verdict, 'unknown');
+});
+
+test('overlapping response windows use union arithmetic while raw sums stay diagnostic', () => {
+  const a = attributeStalls({ samples: [[0, 1000], [500, 1000]], everyMs: 100, longtasks: [[0, 800]] });
+  assert.equal(a.ipcTotalStallMs, 1800);
+  assert.equal(a.ipcBlockedWindowMs, 1400); // union [100,1000), [600,1500)
+  assert.equal(a.rendererStallMs, 700); // [100,800), counted once
+  assert.equal(a.unknownStallMs, 700);
+  const invalid = attributeStalls({ samples: [[0, 1000]], everyMs: 100, longtasks: [[0, 800]], samePageClock: false });
+  assert.equal(invalid.rendererStallMs, null);
+  assert.equal(invalid.mainProcessStallMs, null);
+  assert.equal(invalid.unknownStallMs, 900);
 });
 
 test('medianRun projects only NUMERIC_KEYS and keeps an always-null metric null', () => {
@@ -239,7 +259,7 @@ function fakeApp({
             ...probe,
           };
         }
-        if (expr.includes('setInterval(ping')) { calls.push('install-ipc'); return true; }
+        if (expr.includes('timer = setInterval(')) { calls.push('install-ipc'); return true; }
         if (expr.includes('requestAnimationFrame(tick)')) {
           calls.push('install-probe');
           return { longtaskSupported: probe.longtaskSupported !== false };
@@ -284,7 +304,7 @@ test('a probe that was itself frozen says so, and says which way the bias runs',
   const out = await runReplayStallScenario(app, fixture, FAST);
   const w = out[SIZES[0]].warnings.join(' ');
   assert.match(w, /the stall probe was itself blocked/);
-  assert.match(w, /OVERSTATES the main process/,
+  assert.match(w, /unobserved time remains unknown/,
     'the warning must name the DIRECTION of the bias — "the probe missed things" alone does not tell a reader whether to trust a main-process verdict');
 });
 
@@ -314,10 +334,11 @@ test('runReplayStallScenario reports every size with runs, median, blame and war
     // exactly that, so the warning firing here is the guard working.
     assert.equal(s.warnings.length, 1, 'the probe-starvation warning should fire on this fixture');
     assert.match(s.warnings[0], /FLOOR, not a total/);
-    assert.match(s.warnings[0], /OVERSTATES the main process/);
+    assert.match(s.warnings[0], /unobserved time remains unknown/);
     // The canned data is a 3.25s stall with the renderer idle — the app-wide freeze.
-    assert.equal(s.blame, 'main-process');
-    assert.equal(s.median.mainProcessStallMs, 3253);
+    assert.equal(s.blame.verdict, 'unclear');
+    assert.equal(s.median.mainProcessStallMs, null);
+    assert.equal(s.median.unknownStallMs, 3253);
     assert.equal(s.median.rendererStallMs, 0);
     assert.equal(s.median.ipcMaxMs, 3353);
     assert.equal(s.median.rendererLongtaskMaxMs, 117);
@@ -332,11 +353,11 @@ test('the run carries the diagnostics that are NOT medianable', async () => {
   const out = await runReplayStallScenario(fakeApp(), fixture, { ...FAST, sizes: ['medium'] });
   const run = out.medium.runs[0];
   assert.equal(run.stability, 'stable');
-  assert.equal(run.blame, 'main-process');
+  assert.equal(run.blame.verdict, 'unclear');
   assert.equal(run.expectedEntries, 60);          // the PAINTED page: 30 turns x 2 entries
   assert.equal(run.onDiskEntries, 5000);          // what the file holds: 2 lines per turn, 2500 turns
   assert.equal(run.timedOutAfterMs, null);
-  assert.equal(run.worstStalls[0].blame, 'main-process');
+  assert.equal(run.worstStalls[0].blame, 'unknown');
   assert.equal(run.longtaskSupported, true);
 });
 
@@ -385,9 +406,23 @@ test('no long-task observer downgrades to unattributed, and says so loudly', asy
   const run = out.small.runs[0];
   assert.equal(run.mainProcessStallMs, null);
   assert.equal(run.rendererStallMs, null);
+  for (const key of ['rendererLongtaskCount', 'rendererLongtaskTotalMs', 'rendererLongtaskMaxMs']) {
+    assert.equal(run[key], null, key);
+    assert.equal(out.small.median[key], null, key);
+  }
   assert.equal(run.ipcTotalStallMs, 3253);          // end-to-end cost is still reported
-  assert.equal(out.small.blame, null);
+  assert.equal(out.small.blame.verdict, 'unknown');
   assert.match(out.small.warnings.join(' '), /long-task observer failed to attach/);
+});
+
+test('pending wait stays raw evidence without relabeling completed response metrics', async () => {
+  const app = fakeApp({ ipc: { maxMs: 2, totalStallMs: 0, openStallMs: 9000 } });
+  const out = await runReplayStallScenario(app, fixture, { ...FAST, sizes: ['small'] });
+  const run = out.small.runs[0];
+  assert.equal(run.ipcMaxMs, 2);
+  assert.equal(run.ipcTotalStallMs, 0);
+  assert.equal(run.ipcEvidence.openStallMs, 9000);
+  assert.notEqual(run.blame.verdict, 'none');
 });
 
 test('zero completed pings is a warning, not a silent clean bill of health', async () => {

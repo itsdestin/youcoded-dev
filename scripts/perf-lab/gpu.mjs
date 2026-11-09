@@ -120,7 +120,9 @@ export function parseSystemInfo(info) {
       vendorId: d?.vendorId ?? null,
       deviceId: d?.deviceId ?? null,
       deviceString: typeof d?.deviceString === 'string' && d.deviceString ? d.deviceString : null,
-      // Electron/Chromium spell this several ways across versions; keep whichever exists.
+      // CDP SystemInfo GPUDevice does not require an activity field; index0
+      // is the primary device, NOT proof of active:true. Preserve an explicit
+      // extension if supplied, otherwise keep activity unknown (null).
       active: d?.active ?? null,
     })),
     error: null,

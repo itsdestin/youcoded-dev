@@ -124,7 +124,7 @@ const json = (res, status, body) => {
  *   backpressureWaits, aborted }.
  * Times are Date.now() epoch ms so a scenario can line them up with its own clock.
  */
-export async function startFakeProvider({ port = FAKE_PROVIDER_PORT, host = '127.0.0.1' } = {}) {
+export async function startFakeProvider({ port = FAKE_PROVIDER_PORT, host = '127.0.0.1', serverFactory = createServer } = {}) {
   let current = { deltas: 200, perSec: 100, seed: 'perf-lab-stream', chars: null, text: null };
   let planned = null;   // { text, pieces } built lazily from `current`
   const requests = [];
@@ -151,6 +151,14 @@ export async function startFakeProvider({ port = FAKE_PROVIDER_PORT, host = '127
       startedAt: Date.now(), firstWriteAt: null, lastWriteAt: null, endedAt: null,
       streamMs: null, achievedPerSec: null, backpressureWaits: 0, aborted: false,
     };
+    // WHY opt-in: legacy timing fields retain their definitions. Diagnostic
+    // write completion is separate from renderer receipt and socket delivery.
+    if (current.completionDiagnostic) rec.completionDiagnostic = {
+      plannedText: text, contentWrites: 0, writtenTextChars: 0,
+      finishWritten: false, doneWritten: false, endRequested: false, endRequestedAt: null,
+      completed: false, writeCompletedAt: null, writeError: null, prematureClose: false,
+      scope: 'SSE writes accepted by Node response; end callback complete, not renderer/network receipt',
+    };
     requests.push(rec);
     const waiter = waiters.shift() ?? null;
     inFlight.add(res);
@@ -163,11 +171,19 @@ export async function startFakeProvider({ port = FAKE_PROVIDER_PORT, host = '127
     // fire), `res.write` then returns false forever and 'drain' never comes. Both
     // sides are watched and a backpressure wait also ends on close — measured, the
     // first version hung a test run for good on exactly this.
-    const onGone = () => { if (!rec.endedAt) rec.aborted = true; };
+    const onGone = () => {
+      const d = rec.completionDiagnostic;
+      // WHY endedAt is insufficient: legacy records stamp end REQUEST, before
+      // Node confirms the response write. A close in that gap is still an abort.
+      if (d ? !d.completed : !rec.endedAt) {
+        rec.aborted = true;
+        if (d) { d.prematureClose = true; d.completed = false; inFlight.delete(res); }
+      }
+    };
     req.on('close', onGone);
     res.on('close', onGone);
     const write = async (s) => {
-      if (rec.aborted || res.destroyed || res.writableEnded) { rec.aborted = true; return; }
+      if (rec.aborted || res.destroyed || res.writableEnded) { rec.aborted = true; return false; }
       if (!res.write(s)) {
         rec.backpressureWaits++;
         await new Promise((r) => {
@@ -176,6 +192,7 @@ export async function startFakeProvider({ port = FAKE_PROVIDER_PORT, host = '127
           res.once('close', done);
         });
       }
+      return !rec.aborted;
     };
 
     // Pacing: at each tick send every delta that is DUE by the wall clock, so a
@@ -188,7 +205,11 @@ export async function startFakeProvider({ port = FAKE_PROVIDER_PORT, host = '127
       const due = dueBy(performance.now());
       while (sent < due && !rec.aborted) {
         const delta = sent === 0 ? { role: 'assistant', content: pieces[sent] } : { content: pieces[sent] };
-        await write(frame(delta));
+        const accepted = await write(frame(delta));
+        if (rec.completionDiagnostic && accepted) {
+          rec.completionDiagnostic.contentWrites++;
+          rec.completionDiagnostic.writtenTextChars += pieces[sent].length;
+        }
         sent++;
         rec.deltasSent = sent;
         const now = Date.now();
@@ -201,20 +222,38 @@ export async function startFakeProvider({ port = FAKE_PROVIDER_PORT, host = '127
       }
     }
     if (!rec.aborted) {
-      await write(frame({}, 'stop', {
+      const finished = await write(frame({}, 'stop', {
         usage: { prompt_tokens: 64, completion_tokens: sent, total_tokens: 64 + sent },
       }));
-      await write('data: [DONE]\n\n');
-      res.end();
+      const done = await write('data: [DONE]\n\n');
+      if (rec.completionDiagnostic) {
+        rec.completionDiagnostic.finishWritten = finished;
+        rec.completionDiagnostic.doneWritten = done;
+        const d = rec.completionDiagnostic;
+        d.endRequested = true;
+        d.endRequestedAt = Date.now();
+        res.end(error => {
+          // Error wins regardless of duplicate callback ordering; no later
+          // success can erase a failed callback or premature close.
+          if (error) {
+            d.writeError ||= String(error.message ?? error).slice(0, 512);
+            rec.aborted = true; d.completed = false;
+          } else if (!rec.aborted && !d.writeError && !d.prematureClose) {
+            d.completed = true; d.writeCompletedAt ??= Date.now();
+          }
+          inFlight.delete(res);
+        });
+      } else res.end();
     }
-    inFlight.delete(res);
+    // Diagnostic responses stay owned through callback/close, not only end().
+    if (!rec.completionDiagnostic || rec.aborted || rec.completionDiagnostic.completed) inFlight.delete(res);
     rec.endedAt = Date.now();
     rec.streamMs = rec.firstWriteAt === null ? null : rec.lastWriteAt - rec.firstWriteAt;
     rec.achievedPerSec = rec.streamMs > 0 ? Math.round((sent - 1) / rec.streamMs * 1000 * 10) / 10 : null;
     if (waiter) waiter(rec);
   };
 
-  const server = createServer(async (req, res) => {
+  const server = serverFactory(async (req, res) => {
     try {
       const url = new URL(req.url, `http://${host}:${port}`);
       if (req.method === 'GET' && (url.pathname === '/health' || url.pathname === '/v1/health')) return json(res, 200, { status: 'ok' });

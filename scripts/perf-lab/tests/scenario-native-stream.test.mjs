@@ -2,9 +2,11 @@
 // Run: node --test scripts/perf-lab/tests/scenario-native-stream.test.mjs
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import vm from 'node:vm';
+import { splitDeltas } from '../fake-provider.mjs';
 import {
   FIRST_SWITCH_AT_MS, LEG_GRACE_MS, MEASURES, NUMERIC_PATHS, STOP_BUTTON, STREAM_DELTAS, STREAM_PER_SEC,
-  SWITCHES_DURING_STREAM, SWITCH_EVERY_MS, installStreamHelpers, mainThreadDelta, medianRun, summariseLeg, summariseStreamSwitches,
+  SWITCHES_DURING_STREAM, SWITCH_EVERY_MS, installStreamHelpers, mainThreadDelta, medianRun, summariseLeg, summariseStreamSwitches, streamLeg,
 } from '../scenario-native-stream.mjs';
 
 // Same guard as scenario-native-resume.test: an apostrophe inside the injected
@@ -29,7 +31,7 @@ test('summariseLeg carries every reading through and reports null, never 0, for 
   const rec = { deltasSent: 3000, achievedPerSec: 149.7, streamMs: 20030, backpressureWaits: 0, aborted: false, chars: 13500 };
   const layout = { commits: 1200, layouts: 1210, layoutsPerFrame: 1.0, commitsPerFrame: 0.99, frames: 1195, elapsedMs: 20100 };
   const probe = { longtaskTotalMs: 800, longtaskMaxMs: 120, longtaskCount: 9, frameGapMaxMs: 150, windowMs: 20500, longtaskSupported: true };
-  const ipcRead = { pings: 200, totalStallMs: 10, maxMs: 130, over250ms: 0, over1000ms: 0, openStallMs: null, rejectedPings: 0, missedTicks: 0 };
+  const ipcRead = { tickSamples: 200, observedMs: 20500, maxTickDelayMs: 2, sawHidden: false, pings: 200, totalStallMs: 10, maxMs: 130, over250ms: 0, over1000ms: 0, openStallMs: null, rejectedPings: 0, missedTicks: 0 };
   const mainThread = mainThreadDelta({ taskMs: 1000, scriptMs: 500 }, { taskMs: 7100.26, scriptMs: 4400 }, probe.windowMs);
   assert.equal(mainThread.taskMs, 6100.3);
   assert.equal(mainThread.scriptMs, 3900);
@@ -94,6 +96,89 @@ test('every nativeStream PRIMARY path is a NUMERIC_PATH of this scenario', () =>
   const mine = PRIMARY.filter((p) => p.startsWith('nativeStream.median.')).map((p) => p.slice('nativeStream.median.'.length));
   assert.equal(mine.length, 2);
   for (const p of mine) assert.ok(NUMERIC_PATHS.includes(p), `${p} is gated but not produced by medianRun`);
+});
+
+function diagnosticLegHarness({ failSend = false, failInstallReply = false } = {}) {
+  let callback = null, off = 0, done, current = {}, clock = 0;
+  const requests = [], plans = [], calls = [];
+  const root = { getAttribute: () => 'owned', closest: () => null };
+  const page = vm.createContext({ TextEncoder, performance: { now: () => ++clock },
+    document: { visibilityState: 'visible', querySelectorAll: () => [root] },
+    window: { claude: { on: { transcriptEvent: cb => { calls.push('register'); callback = cb; return cb; } },
+      off: (channel, handle) => { assert.equal(channel, 'transcript:event'); assert.equal(handle, callback); callback = null; off++; } } } });
+  const fake = { requests, plan: value => { current = value; plans.push(value); }, plannedText: () => splitDeltas(current.text, current.deltas).join(''),
+    expectCompletion: () => new Promise(resolve => { done = resolve; }) };
+  const cdp = { send: async () => ({ metrics: ['TaskDuration', 'ScriptDuration', 'LayoutCount', 'RecalcStyleCount', 'LayoutDuration', 'RecalcStyleDuration'].map(name => ({ name, value: 1 })) }),
+    evaluate: async source => {
+      calls.push(source);
+      if (source.includes('window.claude.native.send')) {
+        calls.push('send'); if (failSend) throw Error('injected send failure');
+        const text = current.text ?? 'legacy markdown';
+        if (callback) {
+          const chunks = splitDeltas(text, current.deltas);
+          chunks.forEach((text, i) => callback({ sessionId: 'owned', uuid: `text-${i}`, type: 'assistant-text', data: { text, partId: 'text-0' } }));
+          callback({ sessionId: 'owned', uuid: 'terminal', type: 'turn-complete', data: { stopReason: 'stop' } });
+        }
+        const rec = { index: requests.length, stream: true, plannedDeltas: current.deltas, deltasSent: current.deltas, chars: text.length,
+          aborted: false, backpressureWaits: 0, streamMs: 10, startedAt: 1, endedAt: 2,
+          ...(current.completionDiagnostic ? { completionDiagnostic: { plannedText: text, contentWrites: current.deltas, writtenTextChars: text.length,
+            finishWritten: true, doneWritten: true, completed: true, writeCompletedAt: 2, endRequested: true, endRequestedAt: 2, writeError: null, prematureClose: false } } : {}) };
+        requests.push(rec); done(rec); return { status: 'sent' };
+      }
+      if (source.includes('__perfStreamDrain') || source.includes('const roots =')) {
+        const result = vm.runInContext(source, page);
+        if (failInstallReply && source.includes('collector already active')) throw Error('injected install reply failure');
+        return result;
+      }
+      if (source.includes('legacy IPC boundary')) return { ready: true };
+      if (source.includes('readIpcStallProbe:')) return { pings: 2, totalStallMs: 0, maxMs: 2, openStallMs: null, rejectedPings: 0,
+        tickSamples: 2, observedMs: 100, maxTickDelayMs: 0, sawHidden: false };
+      if (source.includes('const inWin =')) return { windowMs: 100, longtaskMaxMs: 0, longtaskTotalMs: 0, longtaskCount: 0, frameGapMaxMs: 0 };
+      if (source.includes('window.__layoutCost.read')) return { attached: true, frames: 2, commits: 1, elapsedMs: 100 };
+      if (source.includes('new MutationObserver')) return { attached: true };
+      if (source.includes('chatLen()')) return 20;
+      return true;
+    } };
+  return { cdp, fake, calls, plans, off: () => off, page };
+}
+
+test('actual streamLeg optional diagnostic registers before send and closes after legacy end mark', async () => {
+  const h = diagnosticLegHarness();
+  const r = await streamLeg(h.cdp, h.fake, { label: 'native-stream:visible', sessionId: 'owned', deltas: 6, perSec: 150,
+    seed: 'visible', pingMs: 100, warnings: [], completionDiagnostics: true });
+  assert.equal(r.completionDiagnostic.status, 'measured', JSON.stringify(r.completionDiagnostic));
+  assert.ok(h.calls.indexOf('register') < h.calls.indexOf('send'));
+  assert.equal(h.off(), 1);
+  assert.equal(h.page.window.__perfStreamDrain, undefined);
+  assert.equal(r.turnEndSignal, 'stop-button');
+  assert.equal(r.completionDiagnostic.producer.index, 0);
+  const end = h.calls.findIndex(s => s.includes?.('mark("native-stream:visible:end")'));
+  const receipt = h.calls.findIndex(s => s.includes?.('return window.__perfStreamDrain.read'));
+  assert.ok(end >= 0 && receipt > end, 'drain snapshots happen after legacy measurement window');
+});
+
+test('standard streamLeg leaves fixture and timing fields alone and never registers diagnostic listener', async () => {
+  const h = diagnosticLegHarness();
+  const r = await streamLeg(h.cdp, h.fake, { label: 'native-stream:visible', sessionId: 'owned', deltas: 6, perSec: 150, seed: 'visible', pingMs: 100, warnings: [] });
+  assert.equal(r.completionDiagnostic, undefined);
+  assert.equal(h.calls.includes('register'), false);
+  assert.deepEqual(h.plans, [{ deltas: 6, perSec: 150, seed: 'visible' }]);
+  assert.ok(NUMERIC_PATHS.every(p => !p.includes('completionDiagnostic')));
+});
+
+test('streamLeg cleans an installed listener even when the registration reply fails before send', async () => {
+  const h = diagnosticLegHarness({ failInstallReply: true });
+  await assert.rejects(streamLeg(h.cdp, h.fake, { label: 'native-stream:visible', sessionId: 'owned', deltas: 6, perSec: 150,
+    seed: 'visible', pingMs: 100, warnings: [], completionDiagnostics: true }), /injected install reply failure/);
+  assert.equal(h.off(), 1); assert.equal(h.page.window.__perfStreamDrain, undefined);
+  assert.equal(h.calls.includes('send'), false);
+});
+
+test('streamLeg removes receipt listener on send failure without touching other listeners', async () => {
+  const h = diagnosticLegHarness({ failSend: true });
+  await assert.rejects(streamLeg(h.cdp, h.fake, { label: 'native-stream:visible', sessionId: 'owned', deltas: 6, perSec: 150,
+    seed: 'visible', pingMs: 100, warnings: [], completionDiagnostics: true }), /injected send failure/);
+  assert.equal(h.off(), 1); assert.equal(h.page.window.__perfStreamDrain, undefined);
 });
 
 test('MEASURES names the fake endpoint, the rate, and what the scenario is blind to', () => {
