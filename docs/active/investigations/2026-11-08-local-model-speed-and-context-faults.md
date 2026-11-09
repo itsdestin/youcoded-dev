@@ -25,10 +25,12 @@ passed. NOT merged; awaiting Destin's review.
 - On GitHub: the warm-up, per-chat slots, `--no-cache-idle-slots` and their docs (up to
   `78d838c8c`).
 - **Six commits local only** (`b3b0b1e29` … `c83ab6ed1`, table below). The secrets scan
-  flags `key: 'qwen35moe.expert_count'` in `desktop/tests/engine-manager.test.ts` (commit
-  `efaa9558d`) as an API key — a false positive: it is a model-file field name. Marking it
-  (fingerprint in `youcoded/.gitleaksignore`, or a `gitleaks:allow` comment) needs
-  Destin's OK; nothing is pushed until he gives it. Never bypass the scan.
+  flags a line in `desktop/tests/engine-manager.test.ts` (commit `efaa9558d`, rule
+  generic-api-key) whose "key" is the model-file field name for the expert count — a
+  false positive. Marking it (fingerprint in `.gitleaksignore`, or a `gitleaks:allow`
+  comment) needs Destin's OK; nothing is pushed until he gives it. Never bypass the scan.
+  (Commit `0dbaf88f7` on the workspace branch quoted that line and is held by the same
+  scan; the quote is removed in the commit after it.)
 
 **Built on the branch:**
 
