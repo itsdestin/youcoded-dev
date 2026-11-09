@@ -1,0 +1,4 @@
+- Time: Tuesday at 14:30
+- Room: Cedar 7
+- Contact: Anaïs 李
+- Parking: West entrance is closed; use the south garage

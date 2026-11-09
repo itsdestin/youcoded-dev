@@ -1,0 +1,57 @@
+
+> Configure project :app
+WARNING: BuildType(releaseTest): resValue 'string/app_name' value is being replaced.
+
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :app:generateDebugBuildConfig
+> Task :app:checkDebugAarMetadata
+> Task :app:generateDebugResValues
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+
+> Task :app:processDebugMainManifest
+/home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/app/src/main/AndroidManifest.xml:39:9-41 Warning:
+	android:extractNativeLibs should not be specified in this source AndroidManifest.xml file. See https://d.android.com/guide/topics/manifest/application-element#extractNativeLibs for more information.
+The AGP Upgrade Assistant can remove the attribute from the AndroidManifest.xml file and update the build file accordingly. See https://d.android.com/studio/build/agp-upgrade-assistant for more information.
+
+> Task :app:processDebugManifest
+> Task :app:preDebugUnitTestBuild
+> Task :app:javaPreCompileDebug
+> Task :app:processDebugManifestForPackage
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:mergeDebugResources
+> Task :app:processDebugResources
+
+> Task :app:compileDebugKotlin
+w: file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/app/src/main/kotlin/com/youcoded/app/bridge/HostJsBridge.kt:148:108 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'Any?'.
+w: file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/app/src/main/kotlin/com/youcoded/app/runtime/PairedDeviceStore.kt:45:57 'static fun create(p0: String, p1: String, p2: Context, p3: EncryptedSharedPreferences.PrefKeyEncryptionScheme, p4: EncryptedSharedPreferences.PrefValueEncryptionScheme): SharedPreferences' is deprecated. Deprecated in Java.
+w: file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/app/src/main/kotlin/com/youcoded/app/runtime/PairedDeviceStore.kt:47:21 'class MasterKeys : Any' is deprecated. Deprecated in Java.
+w: file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/app/src/main/kotlin/com/youcoded/app/runtime/PairedDeviceStore.kt:47:44 'class MasterKeys : Any' is deprecated. Deprecated in Java.
+w: file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/app/src/main/kotlin/com/youcoded/app/ui/AppWebView.kt:48:17 'var allowUniversalAccessFromFileURLs: Boolean' is deprecated. Deprecated in Java.
+
+> Task :app:compileDebugJavaWithJavac
+> Task :app:processDebugJavaRes
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:testDebugUnitTest
+
+[Incubating] Problems report is available at: file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 4s
+24 actionable tasks: 24 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.1/userguide/configuration_cache_enabling.html

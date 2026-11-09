@@ -1,0 +1,44 @@
+[
+  {
+    "mode": "legacy",
+    "conversationId": "1446c36e-55a9-4b29-a954-b61c06dbf0d6",
+    "humanPrompts": 4,
+    "models": [
+      "claude-haiku-5-5"
+    ],
+    "cliEstimatedCostUSD": 0.006541870000000001,
+    "modelUsage": {
+      "claude-haiku-5-5": {
+        "inputTokens": 1289,
+        "outputTokens": 3507,
+        "thinkingTokens": 1496,
+        "cacheReadInputTokens": 222512,
+        "cacheCreationInputTokens": 14214,
+        "webSearchRequests": 0,
+        "costUSD": 0.006541870000000001
+      }
+    },
+    "cancellationFileExists": false
+  },
+  {
+    "mode": "mods",
+    "conversationId": "97ab40d4-ef78-4d22-ae86-9f6e20e9d166",
+    "humanPrompts": 4,
+    "models": [
+      "claude-haiku-5-5"
+    ],
+    "cliEstimatedCostUSD": 0.00572709,
+    "modelUsage": {
+      "claude-haiku-5-5": {
+        "inputTokens": 28,
+        "outputTokens": 2613,
+        "thinkingTokens": 801,
+        "cacheReadInputTokens": 223909,
+        "cacheCreationInputTokens": 15665,
+        "webSearchRequests": 0,
+        "costUSD": 0.00572709
+      }
+    },
+    "cancellationFileExists": true
+  }
+]

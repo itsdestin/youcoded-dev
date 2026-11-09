@@ -1,0 +1,42 @@
+[
+  {
+    "name": "direct-direct",
+    "submit": "direct",
+    "stop": "direct",
+    "command": "python3 -c \"import pathlib,time; pathlib.Path('/tmp/direct-direct/project/started').write_text('STARTED'); time.sleep(8); pathlib.Path('/tmp/direct-direct/project/finished').write_text('FINISHED')\"",
+    "stopDelayAfterProcessStartMs": 2.78564453125,
+    "processCompleted": true,
+    "followupWritten": true,
+    "mainApiRequests": 3
+  },
+  {
+    "name": "direct-escape",
+    "submit": "direct",
+    "stop": "escape",
+    "command": "python3 -c \"import pathlib,time; pathlib.Path('/tmp/direct-escape/project/started').write_text('STARTED'); time.sleep(8); pathlib.Path('/tmp/direct-escape/project/finished').write_text('FINISHED')\"",
+    "stopDelayAfterProcessStartMs": 4.915283203125,
+    "processCompleted": false,
+    "followupWritten": false,
+    "mainApiRequests": 1
+  },
+  {
+    "name": "pty-direct",
+    "submit": "pty",
+    "stop": "direct",
+    "command": "python3 -c \"import pathlib,time; pathlib.Path('/tmp/pty-direct/project/started').write_text('STARTED'); time.sleep(8); pathlib.Path('/tmp/pty-direct/project/finished').write_text('FINISHED')\"",
+    "stopDelayAfterProcessStartMs": 8.615966796875,
+    "processCompleted": true,
+    "followupWritten": true,
+    "mainApiRequests": 3
+  },
+  {
+    "name": "pty-escape",
+    "submit": "pty",
+    "stop": "escape",
+    "command": "python3 -c \"import pathlib,time; pathlib.Path('/tmp/pty-escape/project/started').write_text('STARTED'); time.sleep(8); pathlib.Path('/tmp/pty-escape/project/finished').write_text('FINISHED')\"",
+    "stopDelayAfterProcessStartMs": 11.820068359375,
+    "processCompleted": false,
+    "followupWritten": false,
+    "mainApiRequests": 1
+  }
+]

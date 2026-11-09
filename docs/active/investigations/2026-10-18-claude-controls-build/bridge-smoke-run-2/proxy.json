@@ -1,0 +1,320 @@
+[
+  {
+    "path": "/hello",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3",
+      "capabilities": [
+        "send-text",
+        "stop",
+        "model",
+        "clear",
+        "compact"
+      ]
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3",
+      "state": {
+        "claudeSessionId": "306e122e-253a-40a8-82f0-202617171eec",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3",
+      "requestId": "106fc4f7-d288-4d2d-8c47-52b7f923eabc"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3",
+      "requestId": "106fc4f7-d288-4d2d-8c47-52b7f923eabc",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "306e122e-253a-40a8-82f0-202617171eec"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3",
+      "state": {
+        "claudeSessionId": "306e122e-253a-40a8-82f0-202617171eec",
+        "model": "claude-sonnet-5-5",
+        "turnId": "e2a3cd17-da9f-493a-8920-a66516fbd00d"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3",
+      "state": {
+        "claudeSessionId": "306e122e-253a-40a8-82f0-202617171eec",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3",
+      "requestId": "b114fb11-aef0-42d1-8ad9-d6cce22c1867"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362373425-65kvl5zu9c3"
+    },
+    "dropped": false
+  }
+]

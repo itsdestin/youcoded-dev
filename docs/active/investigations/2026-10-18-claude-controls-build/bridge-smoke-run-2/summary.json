@@ -1,0 +1,48 @@
+{
+  "pass": false,
+  "cases": [
+    {
+      "name": "missing handshake is unavailable",
+      "pass": true
+    },
+    {
+      "name": "native CLI production plugin readiness",
+      "pass": true
+    },
+    {
+      "name": "text delivered once with actual transcript",
+      "pass": true
+    },
+    {
+      "name": "model command getter and API effect",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'unknown'\n- 'accepted'\n\n    at file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:132:156\n    at async check (file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:48:45)\n    at async file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:132:5"
+    },
+    {
+      "name": "clear changes identity and subsequent text works",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'unknown'\n- 'accepted'\n\n    at file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:133:199\n    at async check (file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:48:45)\n    at async file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:133:5"
+    },
+    {
+      "name": "compact actual effect then further control",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'unknown'\n- 'accepted'\n\n    at file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:134:182\n    at async check (file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:48:45)\n    at async file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:134:5"
+    },
+    {
+      "name": "Stop targets genuine main turn and cancels",
+      "pass": false,
+      "error": "Error: Timeout: streaming main request\n    at wait (file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:52:11)\n    at async file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:138:7\n    at async check (file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:48:45)\n    at async file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:135:5"
+    },
+    {
+      "name": "lost receipt returns unknown and dedup prevents second prompt",
+      "pass": false,
+      "error": "Error: Timeout: lost receipt actual effect\n    at wait (file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:52:11)\n    at async file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:148:7\n    at async check (file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:48:45)\n    at async file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:145:5"
+    },
+    {
+      "name": "close revokes client capability and settles pending",
+      "pass": false,
+      "error": "Error: Timeout: close pending claimed\n    at wait (file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:52:11)\n    at async file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:158:7\n    at async check (file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:48:45)\n    at async file:///home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop/test-conpty/test-claude-control-bridge.mjs:155:5"
+    }
+  ],
+  "cleanup": "exact PTY child SIGTERM; bridge/proxy/observer/fake API closed; bwrap PID namespace kills descendants on exit"
+}

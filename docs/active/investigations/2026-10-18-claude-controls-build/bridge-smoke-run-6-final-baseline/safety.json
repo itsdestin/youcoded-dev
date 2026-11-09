@@ -1,0 +1,7 @@
+{
+  "noAuth": true,
+  "namespace": "net:[4026533292]",
+  "cli": "/home/destin/.local/share/claude/versions/2.1.302",
+  "envPolicy": "literal allowlist; dummy local token; no credential copying",
+  "terminalControlWrites": 0
+}

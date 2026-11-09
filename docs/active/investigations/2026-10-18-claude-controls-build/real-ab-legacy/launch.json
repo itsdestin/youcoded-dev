@@ -1,0 +1,22 @@
+{
+  "mode": "legacy",
+  "root": "/tmp/cc-real-ab-KEjSRV",
+  "home": "/tmp/cc-real-ab-KEjSRV/home",
+  "profile": "dev-cc-real-ab",
+  "offset": 484,
+  "cli": "2.1.303",
+  "model": "haiku",
+  "command": [
+    "scripts/run-dev.sh",
+    "--path",
+    "/home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded",
+    "--label",
+    "Haiku A/B — legacy",
+    "--offset",
+    "484",
+    "--profile",
+    "dev-cc-real-ab"
+  ],
+  "promptLimitAcrossBothArms": 8,
+  "startedAt": "2026-10-19T05:13:06.360Z"
+}

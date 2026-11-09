@@ -1,0 +1,36 @@
+// Authorized eight-prompt real Haiku comparison; launcher itself sends NO model requests.
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createRequire} from 'node:module';
+import {spawn,spawnSync} from 'node:child_process';
+const workspace=fileURLToPath(new URL('../../../../',import.meta.url));
+const mode=process.argv[2];
+if(!['mods','legacy'].includes(mode))throw Error('Choose mods or legacy');
+const root='/tmp/cc-real-ab-KEjSRV',home=path.join(root,'home');
+if(!fs.existsSync(path.join(home,'.claude')))throw Error('Missing isolated sign-in profile');
+const profile='dev-cc-real-ab',offset=484;
+const require=createRequire(import.meta.url),hooks=require(path.join(workspace,'youcoded/desktop/scripts/install-hooks.js'));
+const stable=path.join(home,'.claude/youcoded-hooks');
+hooks.stageHookScripts({stamp:'real-ab-test',srcDir:path.join(workspace,'youcoded/desktop/hook-scripts'),stableDir:stable});
+const settingsPath=path.join(home,'.claude/settings.json');
+const settings=fs.existsSync(settingsPath)?JSON.parse(fs.readFileSync(settingsPath,'utf8')):{};
+settings.promptSuggestionEnabled=false;
+hooks.applyAppHooks(settings,stable,path.join(workspace,'youcoded/desktop/hook-scripts'));
+fs.writeFileSync(settingsPath,JSON.stringify(settings));
+const state=path.join(home,'.claude','toolkit-state-'+profile);fs.mkdirSync(state,{recursive:true});
+const configPath=path.join(state,'config.json');
+if(!fs.existsSync(configPath))fs.writeFileSync(configPath,JSON.stringify({setup_completed:true}));
+const bin=path.join(root,'bin');fs.mkdirSync(bin,{recursive:true});
+fs.writeFileSync(path.join(bin,'claude'),'#!/bin/bash\nexec /home/destin/.local/share/claude/versions/2.1.303 "$@"\n',{mode:0o700});
+const out=path.join(path.dirname(fileURLToPath(import.meta.url)),'real-ab-'+mode);fs.mkdirSync(out,{recursive:true});
+const env={HOME:home,CLAUDE_CONFIG_DIR:path.join(home,'.claude'),PATH:bin+':/home/destin/YouCoded-Test-Builds/claude-direct-controls-20261018/scripts/browser-bin:/usr/local/bin:/usr/bin:/bin',BROWSER:'/home/destin/YouCoded-Test-Builds/claude-direct-controls-20261018/scripts/browser-bin/xdg-open',LANG:'C.UTF-8',DISABLE_AUTOUPDATER:'1',CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC:'1',YOUCODED_CC_MODS:mode==='legacy'?'0':'1'};
+for(const k of ['DISPLAY','WAYLAND_DISPLAY','XDG_RUNTIME_DIR','XAUTHORITY'])if(process.env[k])env[k]=process.env[k];
+const command=['scripts/run-dev.sh','--path',path.join(workspace,'youcoded'),'--label','Haiku A/B — '+mode,'--offset',String(offset),'--profile',profile];
+fs.writeFileSync(path.join(out,'launch.json'),JSON.stringify({mode,root,home,profile,offset,cli:'2.1.303',model:'haiku',command,promptLimitAcrossBothArms:8,startedAt:new Date().toISOString()},null,2));
+const child=spawn('/bin/bash',command,{cwd:workspace,env,stdio:['ignore','inherit','inherit']});
+console.log(JSON.stringify({mode,root,out,port:9706}));
+let stopping=false;
+function stop(){if(stopping)return;stopping=true;spawnSync('/bin/bash',['scripts/run-dev.sh','--stop','--offset',String(offset)],{cwd:workspace,env,stdio:'inherit',timeout:15000});}
+process.on('SIGTERM',()=>{stop();process.exit(0)});process.on('SIGINT',()=>{stop();process.exit(0)});
+child.on('exit',code=>{stop();process.exitCode=code??1});

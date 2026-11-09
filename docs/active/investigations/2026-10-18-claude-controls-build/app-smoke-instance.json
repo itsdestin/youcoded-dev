@@ -1,0 +1,22 @@
+{
+  "root": "/tmp/cc-controls-app-olrLCY",
+  "home": "/tmp/cc-controls-app-olrLCY/home",
+  "project": "/tmp/cc-controls-app-olrLCY/project",
+  "profile": "dev-cc-direct-smoke",
+  "offset": 481,
+  "devtoolsPort": 9703,
+  "vitePort": 5654,
+  "fakeApi": "http://127.0.0.1:42837",
+  "command": [
+    "scripts/run-dev.sh",
+    "--path",
+    "/home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded",
+    "--label",
+    "Claude Direct Controls — isolated test",
+    "--offset",
+    "481",
+    "--profile",
+    "dev-cc-direct-smoke"
+  ],
+  "startedAt": "2026-10-18T22:54:05.378Z"
+}

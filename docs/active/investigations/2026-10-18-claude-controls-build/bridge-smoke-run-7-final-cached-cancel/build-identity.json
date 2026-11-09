@@ -1,0 +1,9 @@
+{
+  "version": "2.1.302 (Claude Code)",
+  "files": {
+    "src/main/claude-control-bridge.ts": "11aa94c6b6409871b591deca4f5a923746de334b462d725b85e3ca4b7f55e82f",
+    "src/main/claude-control-plugin.ts": "18904ec1c25891f9937b815b9a1499491b5ae7ae43b3e22a73cbde70c2135892",
+    "dist/main/claude-control-bridge.js": "68cfa2e060556a8ac371a1a5ab6da83ef3384d8c1ff9b4c9c2f6f3ebd9d5d2de",
+    "dist/main/claude-control-plugin.js": "4d8307b11fa1fb2c17660fa91e85a603bef87b1006f257032379ddf67591c9aa"
+  }
+}

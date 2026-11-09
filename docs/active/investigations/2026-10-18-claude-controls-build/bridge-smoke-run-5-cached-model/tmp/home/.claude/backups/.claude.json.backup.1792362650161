@@ -1,0 +1,63 @@
+{
+  "numStartups": 1,
+  "tipsHistory": {
+    "new-user-warmup": 1
+  },
+  "promptQueueUseCount": 2,
+  "hasCompletedOnboarding": true,
+  "projects": {
+    "/tmp/project": {
+      "hasTrustDialogAccepted": true,
+      "lastGracefulShutdown": false,
+      "lastVersionBase": "2.1.302"
+    }
+  },
+  "firstStartTime": "2026-10-18T22:28:34.110Z",
+  "firstStartVersion": "2.1.302",
+  "machineID": "7656dd4ff91c6fadee4af0ef171e2ef47aa617046aa340c8f390a7020521cd59",
+  "opusProMigrationComplete": true,
+  "sonnet1m45MigrationComplete": true,
+  "seenNotifications": {},
+  "hasResetAutoModeOptInForDefaultOffer": true,
+  "migrationVersion": 14,
+  "userID": "cd309989d54efca7a096271481c6603128be3c35c066cc58c6d754c91b1abdc3",
+  "pluginUsage": {
+    "youcoded-control-bridge@inline": {
+      "usageCount": 0,
+      "lastUsedAt": 1792362514222,
+      "lastUsedNumStartups": 1
+    },
+    "claude-control-smoke-observer@inline": {
+      "usageCount": 0,
+      "lastUsedAt": 1792362514222,
+      "lastUsedNumStartups": 1
+    },
+    "cc-plugin-agents-md@builtin": {
+      "usageCount": 0,
+      "lastUsedAt": 1792362514222,
+      "lastUsedNumStartups": 1
+    },
+    "cc-plugin-plugin-authoring@builtin": {
+      "usageCount": 0,
+      "lastUsedAt": 1792362514222,
+      "lastUsedNumStartups": 1
+    },
+    "cc-plugin-diff@builtin": {
+      "usageCount": 0,
+      "lastUsedAt": 1792362514222,
+      "lastUsedNumStartups": 1
+    }
+  },
+  "lastClawdEntranceVersion": "2.1.302",
+  "lastReleaseNotesSeen": "2.1.302",
+  "hasSeenAutoDefaultNotice": true,
+  "officialMarketplaceAutoInstallAttempted": true,
+  "officialMarketplaceAutoInstalled": false,
+  "officialMarketplaceAutoInstallFailReason": "unknown",
+  "officialMarketplaceAutoInstallRetryCount": 1,
+  "officialMarketplaceAutoInstallLastAttemptTime": 1792362514470,
+  "officialMarketplaceAutoInstallNextRetryTime": 1792369714470,
+  "tipLifetimeShownCounts": {
+    "new-user-warmup": 1
+  }
+}

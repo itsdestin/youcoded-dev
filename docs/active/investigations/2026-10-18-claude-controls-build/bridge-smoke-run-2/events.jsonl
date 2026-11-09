@@ -1,0 +1,50 @@
+{"at":"2026-10-18T22:26:13.429Z","kind":"proxy","data":{"path":"/hello","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3","capabilities":["send-text","stop","model","clear","compact"]},"dropped":false}}
+{"at":"2026-10-18T22:26:13.438Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:13.440Z","kind":"proxy","data":{"path":"/state","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3","state":{"claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec","model":"claude-sonnet-5-5","turnId":null}},"dropped":false}}
+{"at":"2026-10-18T22:26:13.441Z","kind":"state","data":{"id":"actual","claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec","model":"claude-sonnet-5-5","turnId":null}}
+{"at":"2026-10-18T22:26:13.475Z","kind":"proxy","data":{"path":"/claim","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3","requestId":"106fc4f7-d288-4d2d-8c47-52b7f923eabc"},"dropped":false}}
+{"at":"2026-10-18T22:26:13.476Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:13.536Z","kind":"proxy","data":{"path":"/result","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3","requestId":"106fc4f7-d288-4d2d-8c47-52b7f923eabc","result":{"status":"accepted","model":"claude-sonnet-5-5","claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec"}},"dropped":false}}
+{"at":"2026-10-18T22:26:13.537Z","kind":"settled","data":{"id":"actual","request":{"kind":"send-text","text":"SMOKE_TEXT_ONCE","sendId":"SMOKE_TEXT_ONCE"},"result":{"status":"accepted","requestId":"106fc4f7-d288-4d2d-8c47-52b7f923eabc","model":"claude-sonnet-5-5","claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec"}}}
+{"at":"2026-10-18T22:26:13.537Z","kind":"execute","data":{"request":{"kind":"send-text","text":"SMOKE_TEXT_ONCE","sendId":"SMOKE_TEXT_ONCE"},"result":{"status":"accepted","requestId":"106fc4f7-d288-4d2d-8c47-52b7f923eabc","model":"claude-sonnet-5-5","claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec"}}}
+{"at":"2026-10-18T22:26:13.565Z","kind":"proxy","data":{"path":"/state","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3","state":{"claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec","model":"claude-sonnet-5-5","turnId":"e2a3cd17-da9f-493a-8920-a66516fbd00d"}},"dropped":false}}
+{"at":"2026-10-18T22:26:13.566Z","kind":"state","data":{"id":"actual","claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec","model":"claude-sonnet-5-5","turnId":"e2a3cd17-da9f-493a-8920-a66516fbd00d"}}
+{"at":"2026-10-18T22:26:13.616Z","kind":"observer","data":{"event":"complete","turnId":"e2a3cd17-da9f-493a-8920-a66516fbd00d","reason":"answer"}}
+{"at":"2026-10-18T22:26:13.643Z","kind":"proxy","data":{"path":"/state","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3","state":{"claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec","model":"claude-sonnet-5-5","turnId":null}},"dropped":false}}
+{"at":"2026-10-18T22:26:13.644Z","kind":"state","data":{"id":"actual","claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec","model":"claude-sonnet-5-5","turnId":null}}
+{"at":"2026-10-18T22:26:13.689Z","kind":"execute","data":{"request":{"kind":"send-text","text":"SMOKE_TEXT_ONCE","sendId":"SMOKE_TEXT_ONCE"},"result":{"status":"accepted","requestId":"106fc4f7-d288-4d2d-8c47-52b7f923eabc","model":"claude-sonnet-5-5","claudeSessionId":"306e122e-253a-40a8-82f0-202617171eec"}}}
+{"at":"2026-10-18T22:26:13.693Z","kind":"proxy","data":{"path":"/claim","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3","requestId":"b114fb11-aef0-42d1-8ad9-d6cce22c1867"},"dropped":false}}
+{"at":"2026-10-18T22:26:13.693Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:18.700Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:23.707Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:25.691Z","kind":"execute","data":{"request":{"kind":"command","command":"model","args":"haiku"},"result":{"status":"unknown","message":"Control receipt timed out after handoff"}}}
+{"at":"2026-10-18T22:26:25.696Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:30.706Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:35.716Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:37.700Z","kind":"execute","data":{"request":{"kind":"command","command":"clear"},"result":{"status":"unknown","message":"Control receipt timed out after handoff"}}}
+{"at":"2026-10-18T22:26:37.704Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:42.714Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:47.723Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:49.705Z","kind":"execute","data":{"request":{"kind":"command","command":"compact"},"result":{"status":"unknown","message":"Control receipt timed out after handoff"}}}
+{"at":"2026-10-18T22:26:49.710Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:54.714Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:26:59.718Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:01.706Z","kind":"execute","data":{"request":{"kind":"send-text","text":"SMOKE_STOP_REAL_TURN","sendId":"stop-target"},"result":{"status":"unknown","message":"Control receipt timed out after handoff"}}}
+{"at":"2026-10-18T22:27:04.723Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:09.728Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:14.716Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:19.725Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:24.733Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:26.716Z","kind":"execute","data":{"request":{"kind":"send-text","text":"SMOKE_LOST_RECEIPT","sendId":"lost-receipt"},"result":{"status":"unknown","message":"Control receipt timed out after handoff"}}}
+{"at":"2026-10-18T22:27:29.739Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:34.743Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:39.747Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:44.751Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:49.756Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:51.729Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:27:56.732Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:28:01.737Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:28:03.724Z","kind":"execute","data":{"request":{"kind":"send-text","text":"SMOKE_CLOSE_PENDING","sendId":"close-pending"},"result":{"status":"unknown","message":"Control receipt timed out after handoff"}}}
+{"at":"2026-10-18T22:28:06.741Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:28:11.745Z","kind":"proxy","data":{"path":"/poll","body":{"v":1,"incarnation":"1792362373425-65kvl5zu9c3"},"dropped":false}}
+{"at":"2026-10-18T22:28:17.023Z","kind":"cli-exit","data":{"exitCode":143,"signal":0}}

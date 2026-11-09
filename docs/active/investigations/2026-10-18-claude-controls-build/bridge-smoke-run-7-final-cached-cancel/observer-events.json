@@ -1,0 +1,52 @@
+[
+  {
+    "event": "complete",
+    "turnId": "73155a4b-b13b-43f9-b05b-8146bf168c3e",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "f409f9a3-ca9b-40ea-8630-a6c8523f37c2",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "a1e5f6c4-443c-463c-bcdf-3c3bd16377fc",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "6f35357f-69c2-401d-b248-13532af1576a",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "99fc1744-c858-43db-a239-5db7df8507f4",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "e85070b6-6441-4b61-8f6c-459594898044",
+    "reason": "aborted"
+  },
+  {
+    "event": "complete",
+    "turnId": "57f5d21b-e872-40cc-8e34-9194d6d80b9e",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "766fcc73-328c-43dd-b933-46ef24df1b11",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "871daf87-53f8-4985-ac0f-bb4045447804",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "af79fa05-2d21-4bc4-8ab1-f1bb912643d5",
+    "reason": "answer"
+  }
+]

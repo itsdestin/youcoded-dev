@@ -1,0 +1,20 @@
+NOTE  master has new commits touching files this branch changed — merge it in and check for duplicate work:
+        3c9f99975 Refresh website demo with YouCoded Light, Home and Finance (#640)
+verify: /home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded (base origin/master)
+  tests: FULL suite (--full)
+
+PASS  types (tsgo --noEmit)
+PASS  types in tests/ (tsgo --noEmit, 0 file(s) still excluded)
+PASS  tests (full suite)
+PASS  dead code (knip)
+PASS  lint (oxlint)
+PASS  design lint (oxlint --max-warnings ratchet)
+PASS  invariants (ast-grep)
+PASS  screens open (shoot --check)
+PASS  journeys (click paths)
+
+full logs (every check): /home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/scratch/verify-20261018-232636-1182391
+
+machine load: 20.20 at the start, 21.26 at the end, on 32 threads (1-minute load average)
+OK — all checks passed.
+   Not covered: Android (./gradlew test), marketplace worker.

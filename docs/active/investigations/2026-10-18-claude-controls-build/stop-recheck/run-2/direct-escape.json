@@ -1,0 +1,115 @@
+{
+  "name": "direct-escape",
+  "submit": "direct",
+  "stop": "escape",
+  "command": "python3 -c \"import pathlib,time; pathlib.Path('/tmp/direct-escape/project/started').write_text('STARTED'); time.sleep(8); pathlib.Path('/tmp/direct-escape/project/finished').write_text('FINISHED')\"",
+  "stopDelayAfterProcessStartMs": 5.68212890625,
+  "processCompleted": false,
+  "followupWritten": false,
+  "mainApiRequests": 1,
+  "events": [
+    {
+      "at": 1792390432555,
+      "kind": "state",
+      "data": {
+        "turnUserUuid": null,
+        "claudeSessionId": "0954cc53-6b07-4f94-878c-46acf78721e1",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    {
+      "at": 1792390432653,
+      "kind": "settled",
+      "data": {
+        "request": {
+          "kind": "send-text",
+          "text": "Perform the controlled tool task.",
+          "sendId": "once"
+        },
+        "result": {
+          "status": "accepted",
+          "requestId": "8897926c-0cf2-4ae9-88ad-7f4204952234",
+          "model": "claude-haiku-5-5",
+          "claudeSessionId": "0954cc53-6b07-4f94-878c-46acf78721e1"
+        }
+      }
+    },
+    {
+      "at": 1792390432654,
+      "kind": "submit-result",
+      "data": {
+        "status": "accepted",
+        "requestId": "8897926c-0cf2-4ae9-88ad-7f4204952234",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "0954cc53-6b07-4f94-878c-46acf78721e1"
+      }
+    },
+    {
+      "at": 1792390432696,
+      "kind": "main-api",
+      "data": {
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+              },
+              {
+                "type": "text",
+                "text": "Perform the controlled tool task."
+              }
+            ]
+          },
+          {
+            "role": "system",
+            "content": [
+              {
+                "type": "text",
+                "text": "Today's date is 2026-10-18.",
+                "cache_control": {
+                  "type": "ephemeral"
+                }
+              }
+            ],
+            "output_config": {
+              "effort": "medium"
+            }
+          }
+        ],
+        "model": "claude-haiku-5-5"
+      }
+    },
+    {
+      "at": 1792390432711,
+      "kind": "state",
+      "data": {
+        "turnUserUuid": "9f1b933b-4149-42b6-9b86-74e7a604f11a",
+        "claudeSessionId": "0954cc53-6b07-4f94-878c-46acf78721e1",
+        "model": "claude-haiku-5-5",
+        "turnId": "d71b3e66-8020-4561-8f51-b9513efad127"
+      }
+    },
+    {
+      "at": 1792390432815,
+      "kind": "stop-request",
+      "data": {
+        "stop": "escape",
+        "target": "d71b3e66-8020-4561-8f51-b9513efad127",
+        "startedAt": 1792390432809.3179
+      }
+    },
+    {
+      "at": 1792390432951,
+      "kind": "state",
+      "data": {
+        "turnUserUuid": null,
+        "claudeSessionId": "0954cc53-6b07-4f94-878c-46acf78721e1",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    }
+  ]
+}

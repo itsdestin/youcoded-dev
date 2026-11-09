@@ -1,0 +1,678 @@
+[
+  {
+    "path": "/hello",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "capabilities": [
+        "send-text",
+        "stop",
+        "model",
+        "clear",
+        "compact"
+      ]
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "fb05f99a-1732-4711-b71d-5ab26ea59915",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "e650a134-7232-40f8-a1e6-1788eb2168b9"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "e650a134-7232-40f8-a1e6-1788eb2168b9",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "fb05f99a-1732-4711-b71d-5ab26ea59915"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "45bd018c-1480-4819-88a3-f3c69698919a"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "fb05f99a-1732-4711-b71d-5ab26ea59915",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "45bd018c-1480-4819-88a3-f3c69698919a",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "fb05f99a-1732-4711-b71d-5ab26ea59915"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "fb05f99a-1732-4711-b71d-5ab26ea59915",
+        "model": "claude-haiku-5-5",
+        "turnId": "270db538-2189-47ba-a1fb-ce5c4b01a303"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "fb05f99a-1732-4711-b71d-5ab26ea59915",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "d711aba7-99c6-4195-8777-771041cfeb83"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "d711aba7-99c6-4195-8777-771041cfeb83",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "fb05f99a-1732-4711-b71d-5ab26ea59915"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "fb05f99a-1732-4711-b71d-5ab26ea59915",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "84f05240-fa42-46a7-882a-0380fe92e1da"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "84f05240-fa42-46a7-882a-0380fe92e1da",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "2ba49943-dc65-4ea7-a7b5-a1225ccb5dd5"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "2ba49943-dc65-4ea7-a7b5-a1225ccb5dd5",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": "04292704-a255-4dc2-9c34-ad8ce1013fef"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "15a80e6c-5a78-4a5e-a821-1580e7690f94"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "15a80e6c-5a78-4a5e-a821-1580e7690f94",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "08f744b8-7645-400f-a6ae-9fa9ee63c0a1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "08f744b8-7645-400f-a6ae-9fa9ee63c0a1",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": "72628a24-cc99-47f2-8088-82aa1bcb3483"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "3871f81e-170d-4405-9610-b584c9007eef"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "3871f81e-170d-4405-9610-b584c9007eef",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": "faeffebd-68e2-44f3-b6db-d1f2c088a7bb"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "3ff7f4b6-dabe-476e-9c5d-fe6020be9512"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "3ff7f4b6-dabe-476e-9c5d-fe6020be9512",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "1304d391-0626-4c40-be99-43ab2259fe82"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "1304d391-0626-4c40-be99-43ab2259fe82",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "114d9a6a-397c-4c6e-93c6-4bf1e4b9ad61"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "114d9a6a-397c-4c6e-93c6-4bf1e4b9ad61",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": true
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "5eb585bf-2be8-4efe-a469-cd226e8ddc71"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "5eb585bf-2be8-4efe-a469-cd226e8ddc71",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "c2da097f-e320-40b0-b69a-15d8cddb4e5e"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "requestId": "c2da097f-e320-40b0-b69a-15d8cddb4e5e",
+      "result": {
+        "status": "accepted",
+        "model": "claude-haiku-5-5",
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663"
+      }
+    },
+    "dropped": true
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362505782-2b6cmbweq8q",
+      "state": {
+        "claudeSessionId": "dd5449ba-17f7-4ec7-97cf-7a28cc0aa663",
+        "model": "claude-haiku-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  }
+]

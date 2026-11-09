@@ -1,0 +1,47 @@
+[
+  {
+    "event": "complete",
+    "turnId": "270db538-2189-47ba-a1fb-ce5c4b01a303",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "a2cf6828-1291-43b6-83c8-92fa932f3739",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "04292704-a255-4dc2-9c34-ad8ce1013fef",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "72628a24-cc99-47f2-8088-82aa1bcb3483",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "faeffebd-68e2-44f3-b6db-d1f2c088a7bb",
+    "reason": "aborted"
+  },
+  {
+    "event": "complete",
+    "turnId": "cd9b03c6-074e-4a67-814d-e75ad38a5007",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "805fd677-3b0b-410e-89b5-59a10205ff4f",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "f6f024bc-401b-4ce0-8f94-a8c69b6594b3",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "1c17ade4-a494-4f0e-a612-39d503ae84ba",
+    "reason": "answer"
+  }
+]

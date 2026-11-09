@@ -1,0 +1,54 @@
+note: sub-repos resolved from the main checkout /home/destin/youcoded-dev (this is a worktree)
+note: wecoded-marketplace/ in that checkout is 38 commit(s) behind origin/master — a MAP path reported missing may simply not be pulled yet.
+note: this checkout is 53 commit(s) behind origin/master — failures below may already be FIXED upstream. Re-check from a worktree at origin/master before acting on one.
+anchors: 574/574 ok · MAP paths: 1084/1084 ok · eager ≈4648 tokens (limit 10000)
+WARN work on this disk only — quiet worktrees holding uncommitted or unpushed work (commit and push them; do NOT delete them):
+  session/plugin-project-controls: 223 uncommitted, 0 unpushed, idle 534h  ->  /home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls
+  session/specialists-plans-wrapup: 11 uncommitted, 0 unpushed, idle 532h  ->  /home/destin/youcoded-dev/worktrees/sessions/specialists-plans-wrapup
+  docs/specialists-plans-decisions: 1191 uncommitted, 0 unpushed, idle 532h  ->  /home/destin/youcoded-dev/worktrees/specialists-plans-decisions
+  session/usage-visibility-20260929: 43 uncommitted, 0 unpushed, idle 472h  ->  /home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929
+  session/refactor-plans-20260924: 2 uncommitted, 0 unpushed, idle 417h  ->  /home/destin/youcoded-dev/worktrees/sessions/refactor-plans-20260924
+  master: 199 uncommitted, 0 unpushed, idle 303h  ->  /home/destin/youcoded-dev
+  session/master-plan-20261006: 57 uncommitted, 0 unpushed, idle 244h  ->  /home/destin/youcoded-dev/worktrees/sessions/master-plan-20261006
+WARN workbench switches the shot rig's README never names (a plan that omits one captures an EMPTY card, which reads as a missing feature):
+  ?pagesKit=  ->  document it in scripts/ui-review/README.md
+  ?pagesMenu=  ->  document it in scripts/ui-review/README.md
+  ?updateInstall=  ->  document it in scripts/ui-review/README.md
+WARN rule bodies over the word budget (trim when convenient — not build-blocking):
+  .claude/rules/harness-tools.md: 614 words (limit 600)
+  .claude/rules/landing-page.md: 620 words (limit 600)
+  .claude/rules/live-app-safety.md: 626 words (limit 600)
+  .claude/rules/narrow-viewport.md: 606 words (limit 600)
+  .claude/rules/native-runtime.md: 611 words (limit 600)
+  .claude/rules/performance.md: 830 words (limit 600)
+  .claude/rules/prereq-installer.md: 676 words (limit 600)
+  .claude/rules/pty-io.md: 1318 words (limit 600)
+  .claude/rules/registries.md: 602 words (limit 600)
+  .claude/rules/review-deck.md: 667 words (limit 600)
+  .claude/rules/status-bar-relevance.md: 604 words (limit 600)
+  .claude/rules/sync-spaces.md: 671 words (limit 600)
+  .claude/rules/worker-backend.md: 602 words (limit 600)
+worktree-safe globs: 0 blind · 14 exempt (named) · 2 reaching outside their repo
+diff scope vs docs/audits/2026-09-01.md: 23906 changed files → affected subsystems: android-runtime, artifacts, assistant-browser, buddy-floater, catalog, chat-reducer, code-search, conversations, engine-local-models, feature-flow, harness-evaluator, harness-tools, ipc-bridge, landing-page, multi-window-detach, narrow-viewport, native-permissions, native-runtime, native-specialists, office, performance, prereq-installer, pty-io, react-renderer, registries, renderer-lists, review-deck, session-strip-motion, status-bar-relevance, sync-spaces, test-suite-hygiene, worker-backend
+  changed code files matching NO rule (427, plus 13695 in archives/prototypes/fixtures — expected):
+    .claude/hooks/cards-edit-check.mjs
+    .claude/hooks/cards-edit-check.test.mjs
+    .claude/hooks/context-inject.sh
+    .claude/hooks/context-inject.test.mjs
+    .claude/hooks/glob-guard.test.mjs
+    .claude/hooks/roadmap-edit-check.mjs
+    .claude/hooks/roadmap-edit-check.test.mjs
+    scripts/ast-grep/check.sh
+    scripts/ast-grep/prove-rule.sh
+    scripts/audit-anchors.mjs
+    scripts/audit-anchors.test.mjs
+    scripts/cards-master.mjs
+    scripts/cards-master.test.mjs
+    scripts/cards.mjs
+    scripts/cards.test.mjs
+    scripts/cdp-eval.mjs
+    scripts/ci-health.mjs
+    scripts/dev-isolation.sh
+    scripts/dev-isolation.test.mjs
+    scripts/fill-missing-deps.mjs
+MECHANICAL PASS: OK

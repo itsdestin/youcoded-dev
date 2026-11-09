@@ -1,0 +1,25 @@
+{
+  "cli": "/home/destin/.local/share/claude/versions/2.1.302",
+  "args": [
+    "--model",
+    "sonnet",
+    "--plugin-dir",
+    "/home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/docs/active/investigations/2026-10-18-claude-controls-build/bridge-smoke-run-3/deployment/claude-control-plugins/63eb1ab2d4242f72f1770c60a7ef8bc7abd047f1125306a5b0bac5486320b1c9",
+    "--plugin-dir",
+    "/home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/docs/active/investigations/2026-10-18-claude-controls-build/bridge-smoke-run-3/observer"
+  ],
+  "env": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/tmp/home",
+    "CLAUDE_CONFIG_DIR": "/tmp/home/.claude",
+    "TMPDIR": "/tmp",
+    "TERM": "xterm-256color",
+    "LANG": "C.UTF-8",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:35665",
+    "ANTHROPIC_AUTH_TOKEN": "localfakeAPI",
+    "DISABLE_AUTOUPDATER": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "YOUCODED_CC_CONTROL_URL": "http://127.0.0.1:42749",
+    "YOUCODED_CC_CONTROL_TOKEN": "[redacted]"
+  }
+}

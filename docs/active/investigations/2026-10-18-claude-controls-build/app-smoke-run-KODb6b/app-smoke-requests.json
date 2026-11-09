@@ -1,0 +1,22 @@
+[
+  {
+    "model": "claude-sonnet-5-5",
+    "at": 1792367030605,
+    "dummyAuth": true
+  },
+  {
+    "model": "claude-sonnet-5-5",
+    "at": 1792367096073,
+    "dummyAuth": true
+  },
+  {
+    "model": "claude-haiku-5-5",
+    "at": 1792367226869,
+    "dummyAuth": true
+  },
+  {
+    "model": "claude-haiku-5-5",
+    "at": 1792367295218,
+    "dummyAuth": true
+  }
+]

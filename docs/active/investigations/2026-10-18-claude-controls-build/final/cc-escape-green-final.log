@@ -1,0 +1,17 @@
+npm notice run youcoded@1.3.0 npx
+npm notice run 'vitest' run tests/claude-controls-renderer.test.tsx tests/session-channels.test.ts tests/instant-buttons.test.tsx
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop
+
+ ✓ |unit| tests/claude-controls-renderer.test.tsx (16 tests) 51ms
+ ✓ |unit| tests/session-channels.test.ts (23 tests) 20ms
+ ✓ |unit| tests/instant-buttons.test.tsx (60 tests) 218ms
+
+ Test Files  3 passed (3)
+      Tests  99 passed (99)
+   Start at  23:26:11
+   Duration  3.35s (transform 3.86s, setup 289ms, import 5.05s, tests 288ms, environment 957ms)
+

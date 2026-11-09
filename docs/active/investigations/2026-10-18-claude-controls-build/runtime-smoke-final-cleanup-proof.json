@@ -1,0 +1,8 @@
+{
+  "namespaces": {
+    "bridge-smoke-run-6-final-baseline": "net:[4026533292]",
+    "bridge-smoke-run-7-final-cached-cancel": "net:[4026533292]"
+  },
+  "remainingProcesses": [],
+  "scriptMatchesBothPassingSnapshots": true
+}

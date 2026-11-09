@@ -1,0 +1,42 @@
+{
+  "pass": true,
+  "cases": [
+    {
+      "name": "missing handshake is unavailable",
+      "pass": true
+    },
+    {
+      "name": "native CLI production plugin readiness",
+      "pass": true
+    },
+    {
+      "name": "model command getter and API effect",
+      "pass": true
+    },
+    {
+      "name": "text delivered once with actual transcript",
+      "pass": true
+    },
+    {
+      "name": "clear changes identity and subsequent text works",
+      "pass": true
+    },
+    {
+      "name": "compact actual effect then further control",
+      "pass": true
+    },
+    {
+      "name": "Stop targets genuine main turn and cancels",
+      "pass": true
+    },
+    {
+      "name": "lost receipt returns unknown and dedup prevents second prompt",
+      "pass": true
+    },
+    {
+      "name": "close revokes client capability and settles pending",
+      "pass": true
+    }
+  ],
+  "cleanup": "exact PTY child SIGTERM; bridge/proxy/observer/fake API closed; bwrap PID namespace kills descendants on exit"
+}

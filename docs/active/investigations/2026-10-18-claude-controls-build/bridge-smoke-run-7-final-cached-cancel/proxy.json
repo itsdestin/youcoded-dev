@@ -1,0 +1,779 @@
+[
+  {
+    "path": "/hello",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "capabilities": [
+        "send-text",
+        "stop",
+        "model",
+        "clear",
+        "compact"
+      ]
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "7b526990-1eec-410e-9342-abdc07a45798"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "7b526990-1eec-410e-9342-abdc07a45798",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260",
+        "model": "claude-sonnet-5-5",
+        "turnId": "73155a4b-b13b-43f9-b05b-8146bf168c3e"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "eae96759-4012-4297-982c-f74135051d5b"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "eae96759-4012-4297-982c-f74135051d5b",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "2dcaa2af-f833-4120-b652-c801235909b9"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "2dcaa2af-f833-4120-b652-c801235909b9",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "7c43bfe4-aae9-455b-b87c-25ebe84c9ff8"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "7c43bfe4-aae9-455b-b87c-25ebe84c9ff8",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "65b9a6c2-439f-4490-a3af-c0950e316ee1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "65b9a6c2-439f-4490-a3af-c0950e316ee1",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "f1d4222a-1c97-4800-8dc0-9e4591f4e260",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "6f1e1abf-4ea3-4800-8eb7-b5308137dc46"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "6f1e1abf-4ea3-4800-8eb7-b5308137dc46",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "ad734fc6-0735-48e7-a22d-4349e78db1f5"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "ad734fc6-0735-48e7-a22d-4349e78db1f5",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": "6f35357f-69c2-401d-b248-13532af1576a"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "fdb8d632-f430-4f05-87c5-94799cd2264c"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "fdb8d632-f430-4f05-87c5-94799cd2264c",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "6399f356-b6c1-40f9-b006-8eab82fe3371"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "6399f356-b6c1-40f9-b006-8eab82fe3371",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": "99fc1744-c858-43db-a239-5db7df8507f4"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "fe170d39-2b23-49d3-b3f3-54d67582ef45"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "fe170d39-2b23-49d3-b3f3-54d67582ef45",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": "e85070b6-6441-4b61-8f6c-459594898044"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "0f12a893-20cf-4723-ae22-5d8ad43204ea"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "0f12a893-20cf-4723-ae22-5d8ad43204ea",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "c9a0fdd8-7111-4258-bb78-763efcc7b1a1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "c9a0fdd8-7111-4258-bb78-763efcc7b1a1",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "0fbd3261-af67-46ff-aaff-d4c2b6548e26"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "0fbd3261-af67-46ff-aaff-d4c2b6548e26",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": true
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "b475be6d-1a29-4d29-9975-4f82b076a1dc"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "b475be6d-1a29-4d29-9975-4f82b076a1dc",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "68b6b8b7-408f-405f-9466-507fa89f114b"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "requestId": "68b6b8b7-408f-405f-9466-507fa89f114b",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb"
+      }
+    },
+    "dropped": true
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792363706294-3g45qadzm1",
+      "state": {
+        "claudeSessionId": "1bdcfe22-2c4b-4dda-a2e1-998b347974fb",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  }
+]

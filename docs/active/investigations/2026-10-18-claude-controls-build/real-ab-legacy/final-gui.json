@@ -1,0 +1,14 @@
+{
+  "exceptionId": 1,
+  "text": "Uncaught",
+  "lineNumber": 0,
+  "columnNumber": 46,
+  "scriptId": "1098",
+  "exception": {
+    "type": "object",
+    "subtype": "error",
+    "className": "SyntaxError",
+    "description": "SyntaxError: Unexpected identifier 'window'",
+    "objectId": "2088701736419425301.1.2"
+  }
+}

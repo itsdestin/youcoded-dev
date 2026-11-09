@@ -1,0 +1,344 @@
+[
+  {
+    "path": "/hello",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt",
+      "capabilities": [
+        "send-text",
+        "stop",
+        "model",
+        "clear",
+        "compact"
+      ]
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt",
+      "state": {
+        "claudeSessionId": "42f1bade-7a46-47fc-be1e-911760c222ed",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt",
+      "requestId": "6197da51-e153-495a-a8e4-7a293fbd2634"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/result",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt",
+      "requestId": "6197da51-e153-495a-a8e4-7a293fbd2634",
+      "result": {
+        "status": "accepted",
+        "model": "claude-sonnet-5-5",
+        "claudeSessionId": "42f1bade-7a46-47fc-be1e-911760c222ed"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt",
+      "state": {
+        "claudeSessionId": "42f1bade-7a46-47fc-be1e-911760c222ed",
+        "model": "claude-sonnet-5-5",
+        "turnId": "65893af3-6a9d-4ddb-ac82-46c9fc9a1ad7"
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/state",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt",
+      "state": {
+        "claudeSessionId": "42f1bade-7a46-47fc-be1e-911760c222ed",
+        "model": "claude-sonnet-5-5",
+        "turnId": null
+      }
+    },
+    "dropped": false
+  },
+  {
+    "path": "/claim",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt",
+      "requestId": "fa4866d1-e0f1-4a93-b222-6941354ea005"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  },
+  {
+    "path": "/poll",
+    "body": {
+      "v": 1,
+      "incarnation": "1792362514512-h75tgqw41tt"
+    },
+    "dropped": false
+  }
+]

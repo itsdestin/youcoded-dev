@@ -1,0 +1,150 @@
+npm notice run youcoded@1.3.0 npx
+npm notice run 'vitest' run tests/claude-controls-renderer.test.tsx -t preserves CLI expansion
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /home/destin/youcoded-dev/worktrees/sessions/11-claude-direct-controls/youcoded/desktop
+
+ ❯ |unit| tests/claude-controls-renderer.test.tsx (16 tests | 4 failed | 12 skipped) 29ms
+     ↓ routes /model sonnet without typing it
+     ↓ routes /clear without typing it
+     ↓ routes /compact keep tests without typing it
+     ↓ keeps unsupported commands raw and Stop explicitly separate
+     ↓ keeps deliberate Escape for a native popup separate from turn Stop
+     ↓ announces an ambiguous command outcome rather than replaying it
+     ↓ uses direct text submission and never injects CR to recover it
+     ↓ uses the existing PTY path only after definite pre-dispatch unavailability
+     ↓ does not fall back or nudge Enter after unknown
+     ↓ does not fall back or nudge Enter after rejected
+     × preserves CLI expansion conservatively for text containing @: Summarize @notes.md 21ms
+     × preserves CLI expansion conservatively for text containing @: @"folder/visit notes.md" 3ms
+     × preserves CLI expansion conservatively for text containing @: Compare @資料.md and @other.md 2ms
+     × preserves CLI expansion conservatively for text containing @: Contact ana@example.com 2ms
+     ↓ keeps attachment sends and their existing guarded CR recovery on the PTY
+     ↓ does not reinterpret other slash commands as direct chat prompts
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/claude-controls-renderer.test.tsx > Claude chat transport choice > preserves CLI expansion conservatively for text containing @: Summarize @notes.md
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "direct-test",
+      Object {
+        "kind": "send-text",
+        "sendId": "smveus9ek-292dd86b3716-1",
+        "text": "Summarize @notes.md",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/claude-controls-renderer.test.tsx:93:27
+     91|     act(()=>{t.send([],text);});
+     92|     await act(async()=>{await vi.advanceTimersByTimeAsync(0);});
+     93|     expect(t.control).not.toHaveBeenCalled();
+       |                           ^
+     94|     expect(t.sendInput).toHaveBeenCalledExactlyOnceWith(S,text+'\r',un…
+     95|     expect(t.bubble().sendTransport).not.toBe('direct');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  |unit| tests/claude-controls-renderer.test.tsx > Claude chat transport choice > preserves CLI expansion conservatively for text containing @: @"folder/visit notes.md"
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "direct-test",
+      Object {
+        "kind": "send-text",
+        "sendId": "smveus9f4-33db772fca08-2",
+        "text": "@"folder/visit notes.md"",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/claude-controls-renderer.test.tsx:93:27
+     91|     act(()=>{t.send([],text);});
+     92|     await act(async()=>{await vi.advanceTimersByTimeAsync(0);});
+     93|     expect(t.control).not.toHaveBeenCalled();
+       |                           ^
+     94|     expect(t.sendInput).toHaveBeenCalledExactlyOnceWith(S,text+'\r',un…
+     95|     expect(t.bubble().sendTransport).not.toBe('direct');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  |unit| tests/claude-controls-renderer.test.tsx > Claude chat transport choice > preserves CLI expansion conservatively for text containing @: Compare @資料.md and @other.md
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "direct-test",
+      Object {
+        "kind": "send-text",
+        "sendId": "smveus9f7-d9e7a7e21f7b-3",
+        "text": "Compare @資料.md and @other.md",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/claude-controls-renderer.test.tsx:93:27
+     91|     act(()=>{t.send([],text);});
+     92|     await act(async()=>{await vi.advanceTimersByTimeAsync(0);});
+     93|     expect(t.control).not.toHaveBeenCalled();
+       |                           ^
+     94|     expect(t.sendInput).toHaveBeenCalledExactlyOnceWith(S,text+'\r',un…
+     95|     expect(t.bubble().sendTransport).not.toBe('direct');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  |unit| tests/claude-controls-renderer.test.tsx > Claude chat transport choice > preserves CLI expansion conservatively for text containing @: Contact ana@example.com
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "direct-test",
+      Object {
+        "kind": "send-text",
+        "sendId": "smveus9f9-b48a2067d9a1-4",
+        "text": "Contact ana@example.com",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/claude-controls-renderer.test.tsx:93:27
+     91|     act(()=>{t.send([],text);});
+     92|     await act(async()=>{await vi.advanceTimersByTimeAsync(0);});
+     93|     expect(t.control).not.toHaveBeenCalled();
+       |                           ^
+     94|     expect(t.sendInput).toHaveBeenCalledExactlyOnceWith(S,text+'\r',un…
+     95|     expect(t.bubble().sendTransport).not.toBe('direct');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 12 skipped (16)
+   Start at  23:08:15
+   Duration  803ms (transform 150ms, setup 96ms, import 146ms, tests 29ms, environment 387ms)
+

@@ -1,0 +1,47 @@
+[
+  {
+    "event": "complete",
+    "turnId": "df5c5910-c413-4d22-bb01-468310758a72",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "e2e4b45d-cad5-477f-9c5d-4661fbbf3443",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "ab6c2d2f-0fd8-45ad-af6d-ba6b03d19fa2",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "429a4afa-674c-4bab-a488-9ab582d33906",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "ffe319d2-ef83-45a7-97cb-376bc5fb3e6b",
+    "reason": "aborted"
+  },
+  {
+    "event": "complete",
+    "turnId": "a42029cc-fe9b-4b68-a106-4f8173abd57a",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "b38e52b7-751e-4fd5-bfdb-50b0e29efcec",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "9cbbb79c-2a16-4546-803d-73683f96f63c",
+    "reason": "answer"
+  },
+  {
+    "event": "complete",
+    "turnId": "73a747dc-07af-4798-9fa4-36fd930d71b4",
+    "reason": "answer"
+  }
+]

@@ -1,0 +1,47 @@
+PASS missing handshake is unavailable
+PASS native CLI production plugin readiness
+PASS model command getter and API effect
+PASS text delivered once with actual transcript
+PASS clear changes identity and subsequent text works
+PASS compact actual effect then further control
+PASS Stop targets genuine main turn and cancels
+PASS lost receipt returns unknown and dedup prevents second prompt
+PASS close revokes client capability and settles pending
+[
+  {
+    "name": "missing handshake is unavailable",
+    "pass": true
+  },
+  {
+    "name": "native CLI production plugin readiness",
+    "pass": true
+  },
+  {
+    "name": "model command getter and API effect",
+    "pass": true
+  },
+  {
+    "name": "text delivered once with actual transcript",
+    "pass": true
+  },
+  {
+    "name": "clear changes identity and subsequent text works",
+    "pass": true
+  },
+  {
+    "name": "compact actual effect then further control",
+    "pass": true
+  },
+  {
+    "name": "Stop targets genuine main turn and cancels",
+    "pass": true
+  },
+  {
+    "name": "lost receipt returns unknown and dedup prevents second prompt",
+    "pass": true
+  },
+  {
+    "name": "close revokes client capability and settles pending",
+    "pass": true
+  }
+]

@@ -1,0 +1,3 @@
+PASS missing handshake is unavailable
+PASS native CLI production plugin readiness
+FAIL text delivered once with actual transcript: Timeout: API prompt SMOKE_TEXT_ONCE

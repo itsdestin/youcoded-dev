@@ -1,0 +1,1 @@
+async function observe($,e,next){if(e.agentId===undefined){try{await $.http.fetch("http://127.0.0.1:33257",{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event:'complete',turnId:e.turnId,reason:e.reason})});}catch(_){}}return next(e);}export function register(on){on('turn.complete',observe);}
