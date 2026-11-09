@@ -1,12 +1,30 @@
 ---
 status: draft
 date: 2026-11-06
+reviewed: 2026-11-07 against youcoded 8ffa0a421 and worker 0aed74e
+superseded-in-part-by: docs/active/design/2026-11-07-mesh-sync/README.md (decisions) and connection-options.md (research)
 topic: YouCoded Mesh — conversations that work on every device at once (sync, live view, automatic runner choice)
 related-cards: 64, 98, 119, 121, 125, 127
 supersedes-direction-of: the per-finding patch list in the 2026-11-05 sync/handoff investigation
 ---
 
 # YouCoded Mesh — suggested design (draft, for review)
+
+> **Status, 2026-11-09.** This is the ORIGINAL proposal, kept as written so a later reader can
+> see what was proposed. It was reviewed against the code on 2026-11-07, then Destin was
+> interviewed over three question decks. **The current record of decisions is
+> `docs/active/design/2026-11-07-mesh-sync/README.md`; where this file disagrees with it, the
+> README wins.** In particular, three of the four "decisions so far" in section 1 were
+> overturned by Destin: the runner no longer follows the device he types on (a chat stays on
+> its host until the host is offline or he taps the chip); the phone is a full host, not a
+> last resort; and switching is never automatic. The review also found: the prompt-cache
+> assumption (5 minutes) is wrong for his plan (about an hour); "live view reuses what exists"
+> is half true (only the phone can watch a computer, over Tailscale only); the referee holds no
+> online roster; "chat list in seconds, content on open" is impossible with whole-folder sync
+> and 25 chats over the 50 MiB cap; the two-names problem was sync delay and the phone resume
+> bug cited was in deleted code; and the merge-by-message-id stitching in section 5.1 should
+> not be built (half the lines in a transcript are housekeeping without IDs). The file paths it
+> names under `main/sync-spaces/` are actually under `main/conversations/`.
 
 **Nothing here is approved or built.** This is the current suggested design after one
 session's discussion with Destin (2026-11-05/06) and three independent read-only reviews.

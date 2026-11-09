@@ -1,7 +1,8 @@
 ---
 status: draft
 date: 2026-11-07
-for: Destin, answering deck 2 follow-ups Q-1, Q-3, Q-5, Q-9, Q-10
+for: Destin, answering deck 2 follow-ups Q-1, Q-3, Q-5, Q-9, Q-10, then chat follow-ups on 2026-11-08
+index: README.md in this folder lists every decision and open item; this file is research and analysis, not decisions
 ---
 
 # Chats on every device: how devices could connect, and what it costs
