@@ -14,7 +14,7 @@ vision: sync.follow.safety
 ---
 Progress
 Done: nothing recorded.
-Next: not decided.
+Next: The 'compact the remote .git history' item is now piece 2 of card #98's plan (docs/active/plans/2026-11-02-slim-synced-chats.md) — do it there, after slimming, not separately. Item (c) gets rarer once #98 piece 1 shrinks over-limit chats.
 Blocked: nothing recorded.
 
 See also #17: 127's item (d), a dev copy of the app syncing the same Personal folder as the real app, is one of the dev-instance-touches-the-real-app faults listed in 17.
