@@ -13,9 +13,9 @@ priority: P3
 work: session/local-model-hardening
 ---
 Progress
-Done: Background read of a chat's opening; each chat keeps its own engine slot (--no-cache-idle-slots + id_slot); ROCm re-measured (stays optional — the merged-in '24-46% slower' line is out of date, see engine-dependencies.md); kept-reading cost measured (none on 27B); MTP measured (27B 6.7 -> 11-15 t/s). MTP history: found 2026-07-14 (+25% on the 35B MoE), lost when knowledge-debt.md was deleted 2026-07-15, never on the roadmap.
-Next: MTP per model via models.ini (a model without the heads refuses to load with it); find the request left counted as running; size tool results to the room left; refuse junk summaries; trace cloud-model local-engine entries; one too-long error; ROCm wording; finish 35B/9B/2B runs
-Blocked: nothing
+Done: All of it built on session/local-model-hardening, verify.sh --full green (2026-11-09): stuck 'busy' engine fixed (b3b0b1e29); tool results sized to the room left, junk summaries refused, one too-long error (b3a125c1e); MTP per model for dense models with heads (efaa9558d, 27B replies 6.7 -> 11.6-11.9 t/s); ROCm and Speculative decoding wording (253a19b92, 1552bd6e0); cloud ids on the local engine already fixed by 04c209dc3; too-long turns log token counts (c83ab6ed1). End-to-end 9B/32k: run 2 clean, run 1 one unexplained too-long (not reproduced).
+Next: Push the app branch (blocked: gitleaks false positive on a GGUF key name in tests/engine-manager.test.ts, needs Destin's OK to mark it); then Destin's review. Open, not in this card's finish: Windows/Mac unmeasured; picking context size from hardware; 9B/2B kept-reading runs.
+Blocked: App-branch push waits on Destin (gitleaks false positive)
 
 Chats
 - 2026-11-09 session/local-model-hardening: speed work (warm-up, per-chat slots) built; context faults and MTP to fix here
