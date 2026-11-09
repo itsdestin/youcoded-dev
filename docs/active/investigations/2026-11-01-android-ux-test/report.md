@@ -1,8 +1,75 @@
 ---
 status: active
 date: 2026-11-01
+updated: 2026-11-09
 ---
 # Android app: hands-on test of latest master
+
+## Where this stands (2026-11-09): read this first
+
+This file is the single status record for card #213. The findings below the line are the **original 2026-11-01
+test**. They describe master `573fab4c6`, not the branch. Every finding has since been answered or fixed.
+
+**Branches.** All three are pushed and none is merged. Destin decides when to merge, and plans to release this
+together with other workstreams:
+- **App:** `itsdestin/youcoded` `session/android-ux-test`, about 60 commits.
+- **Workspace:** `youcoded-dev` `session/android-ux-test`, holding the decks, their answers and these docs.
+- **Marketplace:** `wecoded-marketplace` `session/android-ux-test`, one commit (`278c228`) that hosts the Connect 4
+  and Chess rooms on the Worker. **It must merge, and the Worker must deploy, before or with the app.** The app's
+  game rooms point at `api.youcoded.ai` (commit 5ae5a5ca6).
+
+**Decisions:** `docs/active/design/2026-11-01-android-findings/findings.questions.answers.json` (34 questions) and
+`docs/active/design/2026-11-08-phone-leftovers/leftovers.questions.answers.json` (3 questions).
+
+### Original findings: outcome
+| Finding | Outcome |
+|---|---|
+| 1 Assistant can't start (ICU) | Fixed: ICU data shipped. Alpine packages pinned (`alpine-lock.json`, refreshed per release by `update-pins.py`). 5ae5a5ca6 |
+| 2 Hidden Claude Code setup screens | Fixed: text-style, security-notes and Trust screens show as chat cards on phone and desktop. 5ae5a5ca6, 05c337481, 977fac906, d0de9fc9c |
+| 3 Sync never works / 'Sync failing' on fresh install | Fixed: `info/` created. Shows "Sync off" when sync was never set up. 5ae5a5ca6, d0de9fc9c, 516b6e529 |
+| 4 Online games | The 2026-11-01 diagnosis was partly wrong (Destin: desktop showed him online). Real causes: the hosted PartyKit rooms were shut down, so rooms moved to the Worker (marketplace `278c228`); on the phone, a leader-window bug dropped presence (d0de9fc9c). A daily online-services watch was added. |
+| 5 Attach file | Fixed: phone file picker, real attachment names. 5ae5a5ca6, 977fac906 |
+| 6 Phone treated as a browser | Fixed: platform stays `android`, so phone screens and wording show. The unified settings screen Destin described is **card #133** (later, separate work). |
+| 7–29 | Fixed as answered, in 5ae5a5ca6 and follow-ups. Sign-in returns to the app; ChatGPT waiting fixed; phone layouts; "phone" wording; local model hidden; 2048 swipe; Back closes menus; live status and "needs you" notifications; one-column Pages with a list/page switch; touch tooltips; no keyboard autofocus; marketplace items that can't run go last; everyday chips; file names instead of paths; tap wording; mode badge (b091649e9, d0de9fc9c); tickable lists; duplicate question header; startup error box. |
+| Answered "no" or "keep" | 16 answer order, 17 approval card text, 29 notification permission timing: left as they were. |
+| Tour | Minor fixes done. The full rebuild is **card #214**. |
+| Marketplace phone redesign (like an app store) | **Card #225** (Destin, L-3). |
+
+### Added during retesting (all on the branch, all checked by Destin on the Flip7)
+- **Phone layout and polish:** popups fit, first-launch screens, trust card, density rounds 1–2, phone polish rounds
+  1–4. Decks are in `docs/active/design/2026-11-01-android-findings/` and `2026-11-07-phone-polish/`.
+- **Keyboard:** the page glides with the keyboard instead of resizing, and Samsung's height overshoot is corrected.
+  The terminal slides up rather than shrinking.
+- **Terminal view:** doubled lines fixed (no resize from the keyboard or message box; a hidden terminal starts at
+  its real size). Terminal keys are drawn like the quick chips, with a Ctrl that works on the next letter. Decks are
+  in `2026-11-04-terminal-keys/`.
+- **Fullscreen display mode** (L-2): new phone sessions seed Claude Code's `tui: fullscreen` when no mode is set,
+  and a swipe scrolls it (235042b1d). Destin confirmed on 2026-11-09: "fullscreen mode looks good". Depth is in
+  `../2026-11-08-phone-fullscreen-mode.md`.
+- **No folder on the phone** (L-1): there is no app-private "Home" project, and a session with no folder opens in
+  the clean No folder (47d32af06). Destin confirmed on 2026-11-09: "seems to work". The fuller rethink of presets
+  and no-folder sessions is **card #57**.
+- **Speed:** skills drawer and settings rows (phone lab measurements, card #96).
+
+### Tried and reverted: do not rebuild without asking
+Typing straight into the terminal on the phone. The message box was hidden and a D-pad with Send was added
+(deck `2026-11-08-terminal-direct-typing/`). It worked in the phone's own sessions. Over remote access to a
+computer it duplicated typed text, and the cause was never found. Destin: "its super broken". It was reverted in
+7c3c66469 and 68584b3bd. The code survives on the app branch `experiment/phone-terminal-typing` (e870b4c9b).
+
+### What remains
+- **Card #213:** nothing left to build. What remains is Destin's merge decision and the release, together with
+  other workstreams.
+- **Not tested on a phone yet:** real sync between two devices, multiplayer games (they need the Worker deployed
+  first), the ChatGPT sign-in itself, and the flip phone's cover screen.
+- **Later, as separate cards:** #133 (one settings screen), #57 (No folder / Your Assistant), #225 (phone
+  marketplace), #214 (tour rebuild).
+- **Separate task started from this test:** `docs/active/handoffs/2026-11-01-test-infrastructure-rethink.md`
+  (tests that would have caught finding 1). No card tracks it yet.
+
+---
+
+## Original findings (2026-11-01, master `573fab4c6`)
 
 **What was tested:** the Android app built from master `573fab4c6` (2026-11-01), on Destin's Galaxy Z Flip7
 (Android 17), as two side-by-side test copies. Neither touches the real app:

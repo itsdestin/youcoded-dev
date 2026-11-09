@@ -6,6 +6,11 @@ topic: Should the phone run Claude Code in "fullscreen" display mode?
 
 # Phone terminal view: Claude Code fullscreen mode
 
+**Outcome (2026-11-09):** this investigation's recommendation was built in app commit 235042b1d on
+`session/android-ux-test`. It seeds `tui: fullscreen` only when no display mode is set, and a swipe sends wheel
+input (`terminal-swipe.ts`). Destin checked it on the Flip7: "fullscreen mode looks good". The status of card #213 is
+in `2026-11-01-android-ux-test/report.md`. The text below is the investigation as written beforehand.
+
 Investigation only. No app code changed. Everything marked TESTED was run against REAL Claude Code in a PTY with a
 throwaway HOME and a local stand-in API (no login, no cost). Nothing touched `~/.claude`, the live app or a phone.
 
