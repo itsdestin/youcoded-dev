@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Sanitized excerpts of recorded objective-comparison-v3 stock-allocation captures, not synthetic controls or complete trajectories. Prompt, text, arguments and result content omitted; original times, IDs and error flags retained. Never use excerpts for cohort totals or quality claims.",
+  "records": [
+    {"id":"youcoded", "source":"oc-d1925ffa8300371eac9fe715/stock-allocation-with-reserve__HtrB3uJ/agent/youcoded-run.json", "sourceSha256":"6a27c5d13293b4b09fca3a97c856147a14aa18dcfc83288e5fcd864b1ca0c971",
+      "raw":{"runtime":"createRuntime/NativeSessionHost","status":"excerpt","requests":[{"id":"d90cb8cc-12bd-48ef-8695-1482d5c3879b","startedAt":"2026-10-21T00:40:30.731Z","endedAt":"2026-10-21T00:40:32.162Z"}],"events":[{"type":"tool-use","timestamp":1792543232167,"data":{"toolUseId":"toolu_0197YQJC2s57ap4zQnbCubH7","toolName":"Bash"}},{"type":"tool-result","timestamp":1792543232181,"data":{"toolUseId":"toolu_0197YQJC2s57ap4zQnbCubH7","toolName":"Bash","isError":false}}]}},
+    {"id":"pi", "source":"oc-8ec7e0662008702f2cfd667f/stock-allocation-with-reserve__zd4XgCf/agent/trajectory.json", "sourceSha256":"8dad215d634ad08101c56b7d2b2be0a8e610aac17696c4eb6bd6ec30a365a8d9",
+      "raw":{"schema_version":"ATIF-v1.7","agent":{"name":"pi"},"steps":[{"source":"agent","timestamp":"2026-10-21T00:38:05.826Z","tool_calls":[{"tool_call_id":"toolu_012pmvd24br47zrtt83xxM76","function_name":"bash"}],"observation":{"results":[{"source_call_id":"toolu_012pmvd24br47zrtt83xxM76","extra":{"is_error":false}}]}}]}},
+    {"id":"claude-code", "source":"oc-6ec10e6419ad01e25af03b09/stock-allocation-with-reserve__Xv2yZRs/agent/trajectory.json", "sourceSha256":"e3fb750828bf51205fe04c189b6a72df1c2ce8affbf2e9068655a1e7b7f815ef",
+      "raw":{"schema_version":"ATIF-v1.7","agent":{"name":"claude-code"},"steps":[{"source":"agent","timestamp":"2026-10-21T00:41:06.573Z","tool_calls":[{"tool_call_id":"toolu_01JT5NeHaBdFtu94AF3NJQ8K","function_name":"Bash"}],"observation":{"results":[{"source_call_id":"toolu_01JT5NeHaBdFtu94AF3NJQ8K","extra":{"tool_result_is_error":false}}]}}]}},
+    {"id":"opencode", "source":"oc-3d589e9d8ecf708f595a50e7/stock-allocation-with-reserve__uqaEFq4/agent/trajectory.json", "sourceSha256":"e189848c693524b266b0bac69a4a538bfa7dfd441885bbbfbe0d516b0e5aa935",
+      "raw":{"schema_version":"ATIF-v1.7","agent":{"name":"opencode"},"steps":[{"source":"agent","timestamp":"2026-10-21T00:39:46.335000+00:00","tool_calls":[{"tool_call_id":"toolu_01KcZmmr55X8fzDQLkHTgxXz","function_name":"bash"}],"observation":{"results":[{"source_call_id":"toolu_01KcZmmr55X8fzDQLkHTgxXz"}]}}]}},
+    {"id":"hermes", "source":"oc-947b232b44e32b38575e679f/stock-allocation-with-reserve__Jgn3d3S/agent/trajectory.json", "sourceSha256":"ba51bb7c8def974f8eb7bedf7e1743d25acab7637645ed27031855653c04d713",
+      "raw":{"schema_version":"ATIF-v1.2","agent":{"name":"hermes"},"steps":[{"source":"agent","tool_calls":[{"tool_call_id":"toolu_01ApN1Lw53yZCMyJrq84t5Ab","function_name":"terminal"}],"observation":{"results":[{"source_call_id":"toolu_01ApN1Lw53yZCMyJrq84t5Ab"}]}}]}}
+  ]
+}

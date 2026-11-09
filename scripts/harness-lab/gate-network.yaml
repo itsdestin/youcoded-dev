@@ -1,0 +1,10 @@
+# Shared only for guarded inference; no host-network mode or Docker socket mount.
+services:
+  main:
+    networks:
+      - default
+      - budget
+networks:
+  budget:
+    external: true
+    name: youcoded-harness-gate

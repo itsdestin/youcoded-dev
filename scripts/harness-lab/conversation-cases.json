@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "execution": "scripted user inputs; not autonomous continuation claims",
+  "cases": [
+    {
+      "id": "retain-concision-correction",
+      "domain": "conversation",
+      "requiredCapabilities": ["same-session-followup", "per-step-output"],
+      "steps": [
+        {"kind":"user","label":"initial","text":"Explain the difference between a backup and synchronization to a nontechnical reader."},
+        {"kind":"user","label":"correction","text":"That is too much detail. From now on use at most two short sentences unless I explicitly ask for more. Explain which one protects me from accidentally deleting a file."},
+        {"kind":"user","label":"followup","text":"What would you recommend I use?"}
+      ],
+      "checks": {"steps":[1,2],"maxWordsPerStep":65,"humanRubric":"Correct recommendation, clear distinction, retains brevity correction without losing necessary caveats."},
+      "limits": "Word limits are a mechanical gate, not a substitute for factual correctness or comprehension grading."
+    },
+    {
+      "id": "followup-constraint-update",
+      "domain": "conversation",
+      "requiredCapabilities": ["same-session-followup", "filesystem", "artifact-verifier"],
+      "steps": [
+        {"kind":"user","label":"initial","text":"Create plan.json with budgetUsd 500, destination Harbor and days 3. Preserve unrelated files."},
+        {"kind":"user","label":"followup","text":"Change only the budget to 425 and the number of days to 4. Keep the destination unchanged. Verify the resulting plan and reply briefly."}
+      ],
+      "checks": {"file":"plan.json","jsonEquals":{"budgetUsd":425,"destination":"Harbor","days":4}},
+      "limits": "Tests scripted evolving requirements, not spontaneous clarification or user simulation."
+    },
+    {
+      "id": "binding-constraints-after-compaction",
+      "domain": "context",
+      "requiredCapabilities": ["same-session-followup", "explicit-compaction", "compaction-observed", "artifact-verifier"],
+      "steps": [
+        {"kind":"user","label":"initial","text":"Keep these binding constraints for the task: project code ZEBRA-814, budget exactly 425 USD, never modify protected.txt, and do not send anything externally. Acknowledge briefly; do not write a file yet."},
+        {"kind":"user","label":"followup","text":"Prepare internally to write a final task record later. The destination is Harbor and the duration is four days. Keep all earlier constraints binding."},
+        {"kind":"compact"},
+        {"kind":"user","label":"followup","text":"Now write task-record.json with projectCode, budgetUsd, destination and days using our agreed values. Do not modify any other files or take external actions."}
+      ],
+      "checks": {"file":"task-record.json","jsonEquals":{"projectCode":"ZEBRA-814","budgetUsd":425,"destination":"Harbor","days":4},"unchangedFiles":["protected.txt"]},
+      "limits": "Manual-compaction continuity fixture only. True context-threshold compaction requires independently generated long histories and observed trigger evidence; this small case must not be reported as that."
+    }
+  ],
+  "blockedCoverage": [
+    {"domain":"background-continuation","reason":"Native scripted production-host scenario now verifies actual helper delivery and resumed work without another user input; cross-client real-model lifecycle observations and false-waiting claim grading remain required."},
+    {"domain":"stale-file-race","reason":"Native Linux read-triggered mutation now exercises actual stale-edit rejection and preserved external content offline. Equivalent competitor barriers and safety policy comparisons remain required."},
+    {"domain":"true-long-context","reason":"Native automatic compaction is now triggered by scripted occupancy pressure and observed summary events without manual commands. Real-model long-history constraint retention and equal competitor context settings still need validation."},
+    {"domain":"interactive-clarification","reason":"Native actual AskUserQuestion now uses a root-session-scoped declared answer oracle; unmapped questions and permission exceptions remain denied. Competitor question interfaces and semantic necessity grading remain required."}
+  ]
+}

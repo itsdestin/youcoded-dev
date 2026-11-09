@@ -1,0 +1,2 @@
+# Adapter API validated against this exact release; no model calls during install/tests.
+harbor==0.24.0

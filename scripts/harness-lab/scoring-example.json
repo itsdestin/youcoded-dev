@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "synthetic": true,
+  "description": "Offline contract fixture, not a model benchmark or user performance result.",
+  "records": [
+    {
+      "id": "fixture-completed",
+      "outcome": {"verified": true, "status": "completed"},
+      "resources": {"tokens": 360, "elapsedMs": 2000, "costUsd": 0.01},
+      "coverage": {"events": true, "requests": true, "followThrough": false, "recovery": false, "safety": false},
+      "evidence": {"checks": [], "followThrough": [], "recovery": [], "safety": []},
+      "configuration": {
+        "task": {"id":"synthetic-task","version":"1","fixtureHash":"fixture-f","rubricHash":"fixture-r"},
+        "model": {"id":"scripted","revision":"1","provider":"offline","reasoning":"none"},
+        "environment": {"image":"offline","cpu":1,"memoryMb":256,"network":"none"},
+        "controls": {"permissions":"fixture-only","cacheCondition":"none","maxSeconds":10,"maxRequests":3,"maxOutputTokens":100},
+        "harness": {"id":"synthetic","version":"1","promptHash":"fixture-p","toolsHash":"fixture-t","skillsHash":"fixture-s"}
+      },
+      "run": {
+        "runtime": "createRuntime/NativeSessionHost",
+        "status": "completed",
+        "requests": [
+          {"id":"r1","role":"main","startedAt":"1970-01-01T00:00:01.100Z"},
+          {"id":"r2","role":"main","startedAt":"1970-01-01T00:00:01.300Z"},
+          {"id":"r3","role":"main","startedAt":"1970-01-01T00:00:01.600Z"}
+        ],
+        "events": [
+          {"uuid":"e1","sessionId":"root","timestamp":1000,"type":"user-message","data":{"text":"Do the fixture task."}},
+          {"uuid":"e2","sessionId":"root","timestamp":1150,"type":"assistant-text","data":{"partId":"p","text":"Checking."}},
+          {"uuid":"e3","sessionId":"root","timestamp":1200,"type":"tool-use","data":{"toolUseId":"c1","toolName":"Read","toolInput":{"file_path":"fixture.txt"}}},
+          {"uuid":"e4","sessionId":"root","timestamp":1250,"type":"tool-result","data":{"toolUseId":"c1","isError":false}},
+          {"uuid":"e5","sessionId":"root","timestamp":1400,"type":"tool-use","data":{"toolUseId":"c2","toolName":"Edit","toolInput":{"file_path":"fixture.txt","old_string":"old","new_string":"new"}}},
+          {"uuid":"e6","sessionId":"root","timestamp":1450,"type":"tool-result","data":{"toolUseId":"c2","isError":false}},
+          {"uuid":"e7","sessionId":"root","timestamp":1700,"type":"assistant-text","data":{"partId":"final","text":"Updated the fixture."}},
+          {"uuid":"e8","sessionId":"root","timestamp":1800,"type":"turn-complete","data":{}}
+        ]
+      }
+    },
+    {
+      "id": "fixture-timeout",
+      "outcome": {"verified": false, "status": "timeout"},
+      "resources": {"tokens": null, "elapsedMs": 10000, "costUsd": null},
+      "coverage": {"events": false, "requests": false, "followThrough": false, "recovery": false, "safety": false},
+      "evidence": {"checks": [], "followThrough": [], "recovery": [], "safety": []},
+      "configuration": {},
+      "failureClass": "unknown",
+      "run": {"status":"timeout","events":[],"requests":[]}
+    }
+  ],
+  "budgets": [{"id":"small","tokens":1000,"elapsedMs":5000,"costUsd":0.1}],
+  "comparisons": [],
+  "grades": [],
+  "humanReferences": []
+}

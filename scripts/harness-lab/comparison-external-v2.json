@@ -1,0 +1,14 @@
+{
+  "version": "substantial-development-external-v2",
+  "baseContract": "comparison-contracts.json",
+  "baseVersion": "substantial-development-v1",
+  "status": "offline-functional-only; whole-matrix and Harbor transport unqualified",
+  "scope": "All base functional requirements and allowed paths apply except the explicit replacements below. No assertion of arbitrary implementation-internal execution is accepted.",
+  "replacements": {
+    "repo-context-migration": "Replace in-memory input purity with filesystem-enforced read-only persisted inputs. Replace lock invocation counts, concurrent merge scheduling and patch-alias timing with observable sequential API transactions: read legacy/v2 preferences, apply valid and invalid patches, preserve unrelated persisted config, merge successive provider updates, write v2 on successful updates, and preserve persisted bytes for rejected-only transactions. Host reads committed config.json independently after process exit. migrateConfig and cloudContextLength are graded by externally returned normalized values, not by claims of internal mutation or execution. Batch CLI must preserve its read-only input and use a fresh output, atomically reject invalid batches and produce deterministic idempotent bytes.",
+    "repo-release-integrity": "Publisher/parser/download verifier API outputs are graded against independent host cases. Signing CLI writes files observed directly by the host and verified with host cryptography; no child-reported CLI status or filesystem state is trusted.",
+    "research-failover-planner": "CLI exit status is observed by the host and plans are independently checked for optimum across varied workloads. Evidence and controlled retrieval receipt files are consistency evidence only, not authenticated tool-use traces."
+  },
+  "regressionTests": "Host executes submitted tests in a fresh sandbox against the submitted source and a separate copy with the original pinned parser/store defect (or a deliberately wrong planner). Accept only exit zero on submitted source and nonzero on the defective copy, plus ALL independent functional checks. Submitted tests are never a source of expected answers or a host execution path.",
+  "backend": "Explicit bwrap only, restricted offline Node API, Linux x86-64. No network, home, credentials, controller oracle or host socket. No kernel-escape guarantee. Docker remains disabled/unqualified for submission acceptance."
+}

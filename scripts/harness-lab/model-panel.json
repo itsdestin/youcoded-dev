@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "source": "https://openrouter.ai/api/v1/models",
+  "checkedDate": "2026-10-18",
+  "execution": "disabled-build-phase",
+  "models": [
+    {"id":"anthropic/claude-haiku-5.5","family":"anthropic","inputUsdPerMillion":0.1,"outputUsdPerMillion":0.5,"band":"haiku-peer"},
+    {"id":"openai/gpt-6-luna","family":"openai","inputUsdPerMillion":0.1,"outputUsdPerMillion":0.5,"band":"haiku-peer"},
+    {"id":"deepseek/deepseek-v4.1-flash","family":"deepseek","inputUsdPerMillion":0.04,"outputUsdPerMillion":0.144,"band":"haiku-peer","snapshotCandidate":"deepseek/deepseek-v4.1-flash-1017"},
+    {"id":"qwen/qwen3.8-flash","family":"qwen","inputUsdPerMillion":0.15,"outputUsdPerMillion":0.47,"band":"haiku-peer"},
+    {"id":"google/gemini-3.5-flash-lite","family":"google","inputUsdPerMillion":0.3,"outputUsdPerMillion":2.5,"band":"higher-budget-control"}
+  ],
+  "notes": [
+    "Public catalog prices are indicative minimum route prices, not guaranteed billing or admission ceilings.",
+    "Pin actual endpoint/provider and record returned model identity before live use; do not silently substitute aliases or batch routes.",
+    "Reasoning support and budgets differ; do not assume disabling thinking is valid across the panel.",
+    "The dated DeepSeek snapshot is a candidate for reproducibility, not silently interchangeable with the cheaper routed alias.",
+    "No key is needed for suite construction. No additional paid evaluation is authorized by this configuration."
+  ]
+}

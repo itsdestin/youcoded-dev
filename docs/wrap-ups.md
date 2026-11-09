@@ -937,3 +937,12 @@ recurred — the repetition is the data.
 - Flaky tests met by builders under load (LocalModelsSection, prompt-assembly, switch-marks, ipc-handlers status + real GitHub calls, wheel-scroll scan, journeys on glass) → applied: each fixed with break-it proof; journeys run with Reduce effects; ipc-handlers fails on any network use
 - Destin said: Pages chart recipe "add to roadmap"; phone Pages squeeze "roadmap item" → roadmap: other-features.md Pages follow-ups (e), (h)
 - deleted/merged: the old painted scroll-fade band and 5 private fade copies (one CSS-only fade); Focus timer and Week planner samples; the PITFALLS pre-merge incognito note (checked at merge instead)
+
+## 2026-10-17 — harness performance lab foundation (session/148-harness-performance-lab, app + workspace; not shipped)
+- Research status was repeated without checking actual task state; user had to correct it. Applied: a real-host Task.list/report-delivery regression and an investigation under #148. It passes without a production fix; the original incident is NOT claimed resolved.
+- Existing evaluator omits full host behavior and some usage categories. Applied: isolated production-runtime runner, SDK-attempt ledger, unknown-data and paired-comparison tests, small independent verifier fixtures, Harbor adapter. No model-performance claim from synthetic runs.
+- Fresh review found early settlement before report confirmation, mixed/retracted final-answer text, unflushed final stdout and unsafe Windows timeout semantics. Applied: durable-delivery check, turn/part-aware text extraction, awaited output flush; Windows execution explicitly refused in v1.
+- Startup supplied stale hardlinked dependencies (TypeScript 5.9.3 instead of required 6); build failed. Applied locally: moved only this worktree's old links aside and installed lockfile dependencies. No shared dependency inode changed; no new general guidance (already documented).
+- Harbor schema and adapter checks run offline in a disposable Python environment. Docker socket access was denied; container end-to-end and paid comparisons remain explicit next-stage gates, not passing checks.
+- Deleted/merged: no existing production mechanism removed; deliberately reused createRuntime/NativeSessionHost and Harbor rather than adding another agent loop or dashboard.
+- Source changes remain local and uncommitted; no shipping, paid evaluation or live-app interaction was performed.

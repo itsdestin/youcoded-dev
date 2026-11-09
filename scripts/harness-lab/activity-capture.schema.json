@@ -1,0 +1,20 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema",
+ "$id":"urn:youcoded:harness-lab:activity-capture:1",
+ "title":"Content-free monotonic activity capture v1",
+ "type":"object","additionalProperties":false,
+ "required":["schemaVersion","clock","observation","receipts","dropped"],
+ "properties":{
+  "schemaVersion":{"const":1},
+  "clock":{"type":"object","additionalProperties":false,"required":["id","kind"],"properties":{"id":{"type":"string","minLength":1},"kind":{"const":"monotonic-ms"}}},
+  "observation":{"type":"object","additionalProperties":false,"required":["start","end","status"],"properties":{"start":{"type":"number","minimum":0},"end":{"type":["number","null"],"minimum":0},"status":{"enum":["open","completed","failed","interrupted","incomplete"]}}},
+  "dropped":{"type":"integer","minimum":0},
+  "receipts":{"type":"array","maxItems":100000,"items":{"type":"object","additionalProperties":false,"required":["kind","at","scope"],"properties":{
+    "kind":{"enum":["request-start","request-end","first-byte","phase-start","phase-delta","phase-end","tool-submit","tool-result","execution-start","execution-end","ask-start","ask-end","root-input","stop","turn-end"]},
+    "at":{"type":"number","minimum":0},"scope":{"enum":["parent","child"]},
+    "id":{"type":"string"},"requestId":{"type":"string"},"toolCallId":{"type":"string"},"sessionId":{"type":"string"},
+    "phase":{"enum":["reasoning-stream","answer-stream","tool-argument-stream"]},
+    "status":{"enum":["completed","failed","interrupted","denied","allowed","cancelled","incomplete"]}
+  }}}
+ }
+}

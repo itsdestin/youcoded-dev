@@ -1,0 +1,20 @@
+{
+  "id": "haiku55-guarded-pilot-v1",
+  "model": "claude-haiku-5-5",
+  "provider": "Anthropic direct",
+  "thinking": "disabled by shared gateway",
+  "maxOutputTokens": 8192,
+  "maxRequestsPerTrial": 20,
+  "timeoutSeconds": 180,
+  "repetitions": 2,
+  "cache": "warm reuse permitted; no forced invalidation; deterministic rotated agent order",
+  "tasks": ["finish-the-file", "repair-average", "reconcile-sources"],
+  "agents": ["youcoded", "claude-code", "pi", "hermes", "opencode"],
+  "versions": {"claude-code": "2.1.302", "pi": "1.3.0", "hermes": "v0.22.2", "opencode": "1.19.3"},
+  "image": "youcoded-harness-competitors:pilot-20261017",
+  "totalBudgetUsd": 10,
+  "priorConservativeSpendUsd": 0.21916345,
+  "grading": "independent file/state verifier; no model self-report accepted as success",
+  "communication": "final answer word count and blinded review packet; clarity not automatically scored",
+  "limitations": ["small public pilot, not representative or publication-grade", "Harbor adapter defaults differ and are recorded", "no Browser, private plugins, external task network data or persistent cross-trial memory", "model alias is mutable; capture request/response model IDs", "unknown interrupted-request costs retain their maximum reservation"]
+}

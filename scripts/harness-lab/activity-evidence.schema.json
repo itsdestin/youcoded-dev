@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:youcoded:harness-lab:activity-evidence:1",
+  "title": "Derived activity evidence v1 (content-free export)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "records"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "kind": {"const": "derived-activity-evidence"},
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}}
+  },
+  "$defs": {
+    "record": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "source", "coverage", "reason", "analysis"],
+      "properties": {
+        "id": {"type": "string"},
+        "source": {"type": "object", "additionalProperties": false,
+          "required": ["reference", "sha256"],
+          "properties": {"reference": {"type": ["string", "null"]}, "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}}},
+        "coverage": {"enum": ["partial", "not-collected", "unsupported"]},
+        "reason": {"type": "string"},
+        "analysis": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/analysis"}]}
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "required": ["schemaVersion", "adapter", "capture", "normalized", "interactions", "workPatterns", "toolLatency", "timeline", "outcome", "continuation", "graders", "limitations"],
+      "properties": {
+        "schemaVersion": {"const": 1},
+        "adapter": {"type": "string"},
+        "collectedActivity": {"oneOf": [{"type":"null"},{"$ref":"#/$defs/collected"}]},
+        "gatewayActivity": {"type":"array","items":{"type":"object","required":["requestId","analysis"],"properties":{"requestId":{"type":"string"},"analysis":{"$ref":"#/$defs/collected"}}}},
+        "capture": {"type": "object", "required": ["complete", "rawEvents", "normalizedEvents", "expectedEvents", "reason"]},
+        "normalized": {"type": "object", "additionalProperties": false,
+          "required": ["schemaVersion", "events", "requests"],
+          "properties": {"schemaVersion": {"const": 1}, "events": {"type": "array", "items": {"$ref": "#/$defs/event"}}, "requests": {"type": "array"}}},
+        "timeline": {"type": "object", "required": ["schemaVersion", "window", "laneUnionMs", "coveredUnionMs", "overlapMs", "unclassifiedInRequestMs", "unclassifiedOutsideRequestMs", "censoredIntervals", "invalidIntervals", "segments", "coverage", "reason"]}
+      }
+    },
+    "collected": {
+      "type":"object", "required":["schemaVersion","clock","observation","coverage","dropped","unmatchedReceipts","openIntervals","intervals","points","executions","requestGaps","timelines","interpretation"],
+      "properties": {
+        "schemaVersion":{"const":1},"clock":{"type":"object","required":["id","kind"],"properties":{"id":{"type":"string"},"kind":{"const":"monotonic-ms"}}},
+        "coverage":{"enum":["measured","partial"]},"observation":{"type":"object","required":["start","end","status"]},
+        "intervals":{"type":"array"},"points":{"type":"array"},"executions":{"type":"array"},"requestGaps":{"type":"array"},"timelines":{"type":"object","required":["parent","child"]}
+      }
+    },
+    "event": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "clock", "scope", "provenance", "toolCallId", "isError"],
+      "properties": {
+        "type": {"type": "string"}, "timestamp": {"type": ["number", "null"], "minimum": 0},
+        "clock": {"const": "epoch-ms"}, "scope": {"enum": ["parent", "child"]},
+        "provenance": {"enum": ["assistant", "human", "scripted", "notice", "unknown"]},
+        "toolCallId": {"type": ["string", "null"]}, "isError": {"type": ["boolean", "null"]}
+      }
+    }
+  }
+}
