@@ -10,9 +10,9 @@ why: A hands-on phone test on 2026-11-01 found the Android app can't start its a
 work: session/android-ux-test
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: All 34 findings answered or fixed; phone layout, keyboard, terminal, density and polish rounds; fullscreen display mode and No folder on the phone, both checked by Destin 2026-11-09. Direct terminal typing tried and reverted (branch experiment/phone-terminal-typing). Status: docs/active/investigations/2026-11-01-android-ux-test/report.md on the branch
+Next: Destin's merge decision; app, workspace and wecoded-marketplace branches session/android-ux-test (Worker must deploy with the app for game rooms). Release with other workstreams
+Blocked: nothing
 
 Chats
 - 2026-11-02 session/android-ux-test: Fixing all Android test findings from the 2026-11-01 deck
