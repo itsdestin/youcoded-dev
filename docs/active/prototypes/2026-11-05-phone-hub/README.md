@@ -9,7 +9,10 @@ Destin, round 3 of the narrow-screens design (`docs/active/design/2026-11-04-nar
 `narrow-screens-3.live.answers.json` L-2): *"for now it should stay today. but i want to keep a
 version of hub as a reference for the future full buildout of an alternative mobile mode."*
 
-So the phone ☰ keeps today's small menu, and this panel is NOT shipped. It is kept here because the
+So the phone ☰ keeps today's small menu, and this panel is NOT shipped. The narrow-screens status
+page is `docs/active/design/2026-11-04-narrow-screens/README.md`. The broader idea of letting
+people rearrange the main window (a sidebar of chats instead of the top bar) is card #222, and
+this panel is a worked example for it. It is kept here because the
 branch's workbench switch for it is deleted once the narrow-screens work settles.
 
 ## What it was
