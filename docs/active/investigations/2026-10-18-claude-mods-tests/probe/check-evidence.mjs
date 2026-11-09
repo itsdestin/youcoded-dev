@@ -1,0 +1,24 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const dir = new URL('../evidence/', import.meta.url);
+const run = JSON.parse(fs.readFileSync(new URL('controls.json',dir)));
+const summary = JSON.parse(fs.readFileSync(new URL('controls-summary.json',dir)));
+const rows = Object.fromEntries(run.interactive.modReport.rows.map(r=>[r.name,r]));
+assert.equal(run.interactive.modReport.done,true);
+for(const name of ['baseline','commands','config-keys','model-sonnet','clear','send-simple','send-repeat-unicode-busy','compact','abort-turn'])assert.equal(rows[name].ok,true,name);
+assert.equal(rows['model-sonnet'].value.model,'claude-sonnet-5-5');
+assert.notEqual(rows.clear.value.before,rows.clear.value.after);
+assert.equal(rows.compact.value.id,rows.clear.value.after);
+assert.equal(rows['send-repeat-unicode-busy'].value.messages.filter(m=>m.role==='user'&&m.text==='repeat exact').length,2);
+assert(rows['send-repeat-unicode-busy'].value.messages.some(m=>m.text==='line one\n第二行 café 🧪'));
+assert(rows.compact.value.messages.some(m=>m.text.includes('LOCAL_SCRIPTED_REPLY_4')));
+assert(summary.transcripts.some(t=>t.boundaries.some(b=>b.subtype==='compact_boundary')));
+assert.equal(rows['unknown-command'].ok,false);
+assert.match(rows['unknown-command'].error,/no command named/);
+assert(run.interactive.modReport.events.some(e=>e.event==='turn.complete'&&e.reason==='aborted'));
+assert.equal(run.interactive.requests.length,6);
+assert(run.interactive.requests.every(q=>q.dummyAuth&&q.model==='claude-sonnet-5-5'));
+assert.equal(run.interactive.serverClosed,true);
+assert.equal(run.interactive.finalExit.exitCode,129); // Driver deliberately stops this isolated interactive CLI.
+for(const command of run.commands) assert.equal(command.code,0);
+console.log('PASS: actual CLI loading/control evidence; model, clear, compact, repeated/Unicode/busy sends, expected unknown-command refusal, abort, six dummy-auth requests, and server cleanup assertions.');

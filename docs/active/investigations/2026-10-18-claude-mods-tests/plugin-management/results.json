@@ -1,0 +1,269 @@
+{
+  "scope": "offline user-scope local marketplace lifecycle only",
+  "network": "bubblewrap --unshare-net",
+  "credentials": "fresh HOME/config, allowlisted environment, none copied",
+  "commands": [
+    {
+      "name": "version",
+      "args": [
+        "--version"
+      ],
+      "exit": 0,
+      "seconds": 0.01,
+      "stdout": "2.1.302 (Claude Code)\n",
+      "stderr": "",
+      "json": null
+    },
+    {
+      "name": "validate-marketplace",
+      "args": [
+        "plugin",
+        "validate",
+        "/tmp/yc-plugin-lifecycle-0twl80jy/marketplace"
+      ],
+      "exit": 0,
+      "seconds": 0.146,
+      "stdout": "Validating marketplace manifest: /tmp/yc-plugin-lifecycle-0twl80jy/marketplace/.claude-plugin/marketplace.json\n\n\u26a0 Found 2 warnings:\n\n  \u276f description: No marketplace description provided. Adding a description helps users understand what this marketplace offers\n  \u276f plugins[0] plugin.json \u2192 author: No author information provided. Consider adding author details for plugin attribution\n\n\u2714 Validation passed with warnings\n",
+      "stderr": "",
+      "json": null
+    },
+    {
+      "name": "add-marketplace",
+      "args": [
+        "plugin",
+        "marketplace",
+        "add",
+        "/tmp/yc-plugin-lifecycle-0twl80jy/marketplace",
+        "--scope",
+        "user",
+        "--json"
+      ],
+      "exit": 0,
+      "seconds": 0.144,
+      "stdout": "{\"command\":\"marketplace-add\",\"outcome\":\"ok\",\"marketplace\":\"yc-reliability-probe\",\"message\":\"Successfully added marketplace: yc-reliability-probe (declared in user settings)\"}\n",
+      "stderr": "",
+      "json": {
+        "command": "marketplace-add",
+        "outcome": "ok",
+        "marketplace": "yc-reliability-probe",
+        "message": "Successfully added marketplace: yc-reliability-probe (declared in user settings)"
+      }
+    },
+    {
+      "name": "install",
+      "args": [
+        "plugin",
+        "install",
+        "probe-skill@yc-reliability-probe",
+        "--scope",
+        "user",
+        "--json"
+      ],
+      "exit": 0,
+      "seconds": 0.161,
+      "stdout": "{\"command\":\"install\",\"outcome\":\"ok\",\"plugin\":\"probe-skill@yc-reliability-probe\",\"pluginId\":\"probe-skill@yc-reliability-probe\",\"scope\":\"user\",\"message\":\"Successfully installed plugin: probe-skill@yc-reliability-probe (scope: user)\"}\n",
+      "stderr": "",
+      "json": {
+        "command": "install",
+        "outcome": "ok",
+        "plugin": "probe-skill@yc-reliability-probe",
+        "pluginId": "probe-skill@yc-reliability-probe",
+        "scope": "user",
+        "message": "Successfully installed plugin: probe-skill@yc-reliability-probe (scope: user)"
+      }
+    },
+    {
+      "name": "list-installed",
+      "args": [
+        "plugin",
+        "list",
+        "--json"
+      ],
+      "exit": 0,
+      "seconds": 0.148,
+      "stdout": "[\n  {\n    \"id\": \"probe-skill@yc-reliability-probe\",\n    \"version\": \"1.0.0\",\n    \"scope\": \"user\",\n    \"enabled\": true,\n    \"installPath\": \"/tmp/yc-plugin-lifecycle-0twl80jy/home/.claude/plugins/cache/yc-reliability-probe/probe-skill/1.0.0\",\n    \"readFromFolder\": \"/tmp/yc-plugin-lifecycle-0twl80jy/marketplace/plugins/probe-skill\",\n    \"folderVersion\": \"1.0.0\",\n    \"installedAt\": \"2026-10-18T19:11:36.609Z\",\n    \"lastUpdated\": \"2026-10-18T19:11:36.609Z\",\n    \"projectEnabled\": false\n  }\n]\n",
+      "stderr": "",
+      "json": [
+        {
+          "id": "probe-skill@yc-reliability-probe",
+          "version": "1.0.0",
+          "scope": "user",
+          "enabled": true,
+          "installPath": "/tmp/yc-plugin-lifecycle-0twl80jy/home/.claude/plugins/cache/yc-reliability-probe/probe-skill/1.0.0",
+          "readFromFolder": "/tmp/yc-plugin-lifecycle-0twl80jy/marketplace/plugins/probe-skill",
+          "folderVersion": "1.0.0",
+          "installedAt": "2026-10-18T19:11:36.609Z",
+          "lastUpdated": "2026-10-18T19:11:36.609Z",
+          "projectEnabled": false
+        }
+      ]
+    },
+    {
+      "name": "disable",
+      "args": [
+        "plugin",
+        "disable",
+        "probe-skill@yc-reliability-probe",
+        "--scope",
+        "user",
+        "--json"
+      ],
+      "exit": 0,
+      "seconds": 0.152,
+      "stdout": "{\"command\":\"disable\",\"outcome\":\"ok\",\"plugin\":\"probe-skill@yc-reliability-probe\",\"pluginId\":\"probe-skill@yc-reliability-probe\",\"scope\":\"user\",\"message\":\"Successfully disabled plugin: probe-skill (scope: user)\"}\n",
+      "stderr": "",
+      "json": {
+        "command": "disable",
+        "outcome": "ok",
+        "plugin": "probe-skill@yc-reliability-probe",
+        "pluginId": "probe-skill@yc-reliability-probe",
+        "scope": "user",
+        "message": "Successfully disabled plugin: probe-skill (scope: user)"
+      }
+    },
+    {
+      "name": "list-disabled",
+      "args": [
+        "plugin",
+        "list",
+        "--json"
+      ],
+      "exit": 0,
+      "seconds": 0.148,
+      "stdout": "[\n  {\n    \"id\": \"probe-skill@yc-reliability-probe\",\n    \"version\": \"1.0.0\",\n    \"scope\": \"user\",\n    \"enabled\": false,\n    \"installPath\": \"/tmp/yc-plugin-lifecycle-0twl80jy/home/.claude/plugins/cache/yc-reliability-probe/probe-skill/1.0.0\",\n    \"readFromFolder\": \"/tmp/yc-plugin-lifecycle-0twl80jy/marketplace/plugins/probe-skill\",\n    \"folderVersion\": \"1.0.0\",\n    \"installedAt\": \"2026-10-18T19:11:36.609Z\",\n    \"lastUpdated\": \"2026-10-18T19:11:36.609Z\",\n    \"projectEnabled\": false\n  }\n]\n",
+      "stderr": "",
+      "json": [
+        {
+          "id": "probe-skill@yc-reliability-probe",
+          "version": "1.0.0",
+          "scope": "user",
+          "enabled": false,
+          "installPath": "/tmp/yc-plugin-lifecycle-0twl80jy/home/.claude/plugins/cache/yc-reliability-probe/probe-skill/1.0.0",
+          "readFromFolder": "/tmp/yc-plugin-lifecycle-0twl80jy/marketplace/plugins/probe-skill",
+          "folderVersion": "1.0.0",
+          "installedAt": "2026-10-18T19:11:36.609Z",
+          "lastUpdated": "2026-10-18T19:11:36.609Z",
+          "projectEnabled": false
+        }
+      ]
+    },
+    {
+      "name": "enable",
+      "args": [
+        "plugin",
+        "enable",
+        "probe-skill@yc-reliability-probe",
+        "--scope",
+        "user",
+        "--json"
+      ],
+      "exit": 0,
+      "seconds": 0.154,
+      "stdout": "{\"command\":\"enable\",\"outcome\":\"ok\",\"plugin\":\"probe-skill@yc-reliability-probe\",\"pluginId\":\"probe-skill@yc-reliability-probe\",\"scope\":\"user\",\"message\":\"Successfully enabled plugin: probe-skill (scope: user)\"}\n",
+      "stderr": "",
+      "json": {
+        "command": "enable",
+        "outcome": "ok",
+        "plugin": "probe-skill@yc-reliability-probe",
+        "pluginId": "probe-skill@yc-reliability-probe",
+        "scope": "user",
+        "message": "Successfully enabled plugin: probe-skill (scope: user)"
+      }
+    },
+    {
+      "name": "list-enabled",
+      "args": [
+        "plugin",
+        "list",
+        "--json"
+      ],
+      "exit": 0,
+      "seconds": 0.148,
+      "stdout": "[\n  {\n    \"id\": \"probe-skill@yc-reliability-probe\",\n    \"version\": \"1.0.0\",\n    \"scope\": \"user\",\n    \"enabled\": true,\n    \"installPath\": \"/tmp/yc-plugin-lifecycle-0twl80jy/home/.claude/plugins/cache/yc-reliability-probe/probe-skill/1.0.0\",\n    \"readFromFolder\": \"/tmp/yc-plugin-lifecycle-0twl80jy/marketplace/plugins/probe-skill\",\n    \"folderVersion\": \"1.0.0\",\n    \"installedAt\": \"2026-10-18T19:11:36.609Z\",\n    \"lastUpdated\": \"2026-10-18T19:11:36.609Z\",\n    \"projectEnabled\": false\n  }\n]\n",
+      "stderr": "",
+      "json": [
+        {
+          "id": "probe-skill@yc-reliability-probe",
+          "version": "1.0.0",
+          "scope": "user",
+          "enabled": true,
+          "installPath": "/tmp/yc-plugin-lifecycle-0twl80jy/home/.claude/plugins/cache/yc-reliability-probe/probe-skill/1.0.0",
+          "readFromFolder": "/tmp/yc-plugin-lifecycle-0twl80jy/marketplace/plugins/probe-skill",
+          "folderVersion": "1.0.0",
+          "installedAt": "2026-10-18T19:11:36.609Z",
+          "lastUpdated": "2026-10-18T19:11:36.609Z",
+          "projectEnabled": false
+        }
+      ]
+    },
+    {
+      "name": "uninstall",
+      "args": [
+        "plugin",
+        "uninstall",
+        "probe-skill@yc-reliability-probe",
+        "--scope",
+        "user",
+        "--json"
+      ],
+      "exit": 0,
+      "seconds": 0.158,
+      "stdout": "{\"command\":\"uninstall\",\"outcome\":\"ok\",\"plugin\":\"probe-skill@yc-reliability-probe\",\"pluginId\":\"probe-skill@yc-reliability-probe\",\"scope\":\"user\",\"keptData\":false,\"message\":\"Successfully uninstalled plugin: probe-skill (scope: user)\"}\n",
+      "stderr": "",
+      "json": {
+        "command": "uninstall",
+        "outcome": "ok",
+        "plugin": "probe-skill@yc-reliability-probe",
+        "pluginId": "probe-skill@yc-reliability-probe",
+        "scope": "user",
+        "keptData": false,
+        "message": "Successfully uninstalled plugin: probe-skill (scope: user)"
+      }
+    },
+    {
+      "name": "list-removed",
+      "args": [
+        "plugin",
+        "list",
+        "--json"
+      ],
+      "exit": 0,
+      "seconds": 0.144,
+      "stdout": "[]\n",
+      "stderr": "",
+      "json": []
+    },
+    {
+      "name": "install-missing",
+      "args": [
+        "plugin",
+        "install",
+        "does-not-exist@yc-reliability-probe",
+        "--scope",
+        "user",
+        "--json"
+      ],
+      "exit": 1,
+      "seconds": 0.141,
+      "stdout": "{\"command\":\"install\",\"outcome\":\"failed\",\"plugin\":\"does-not-exist@yc-reliability-probe\",\"scope\":\"user\",\"message\":\"Plugin \\\"does-not-exist\\\" not found in marketplace \\\"yc-reliability-probe\\\". Your local copy may be out of date \u2014 try `claude plugin marketplace update yc-reliability-probe`.\",\"failureCode\":\"not_found\"}\n",
+      "stderr": "\u2718 Failed to install plugin \"does-not-exist@yc-reliability-probe\": Plugin \"does-not-exist\" not found in marketplace \"yc-reliability-probe\". Your local copy may be out of date \u2014 try `claude plugin marketplace update yc-reliability-probe`.\n",
+      "json": {
+        "command": "install",
+        "outcome": "failed",
+        "plugin": "does-not-exist@yc-reliability-probe",
+        "scope": "user",
+        "message": "Plugin \"does-not-exist\" not found in marketplace \"yc-reliability-probe\". Your local copy may be out of date \u2014 try `claude plugin marketplace update yc-reliability-probe`.",
+        "failureCode": "not_found"
+      }
+    }
+  ],
+  "checks": {
+    "all_ordinary_commands_exit_zero": true,
+    "installed_list_contains_plugin": true,
+    "disabled_list_reports_false": true,
+    "enabled_list_reports_true": true,
+    "removed_list_omits_plugin": true,
+    "missing_plugin_returns_failure": true
+  },
+  "temp_state_removed_on_exit": true
+}

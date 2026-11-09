@@ -1,0 +1,15 @@
+{
+  "max": 3,
+  "grants": [
+    {
+      "id": 1,
+      "phase": "first",
+      "text": "Reply with exactly SUBSCRIPTION_PROBE_ONE_73 and nothing else. Do not call tools.",
+      "at": "2026-10-18T21:08:39.171Z"
+    }
+  ],
+  "phaseGranted": {
+    "first": 1,
+    "resume": 0
+  }
+}

@@ -1,0 +1,342 @@
+{
+  "version": "2.1.302 (Claude Code)",
+  "model": "haiku",
+  "maxPrompts": 2,
+  "previousAttempts": 1,
+  "phases": [
+    {
+      "name": "first",
+      "pid": 29,
+      "args": [
+        "--model",
+        "haiku",
+        "--tools",
+        "",
+        "--permission-mode",
+        "dontAsk",
+        "--prompt-suggestions",
+        "false",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--plugin-dir",
+        "/tmp/yc-subscription-smoke-4MzhNw/subscription-plugin"
+      ],
+      "startedAt": "2026-10-18T21:21:20.482Z",
+      "mod": {
+        "phase": "first",
+        "handshake": true,
+        "grants": [
+          {
+            "id": 1,
+            "text": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools."
+          }
+        ],
+        "submissions": [
+          {
+            "id": 1,
+            "result": {
+              "text": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools.",
+              "origin": {
+                "kind": "plugin",
+                "name": "isolated-subscription-smoke",
+                "asUser": true
+              }
+            }
+          }
+        ],
+        "starts": [
+          {
+            "turnId": "284e6f60-d5ee-4766-93d9-c57307524928",
+            "text": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools."
+          }
+        ],
+        "ends": [
+          {
+            "turnId": "284e6f60-d5ee-4766-93d9-c57307524928",
+            "answer": "SUBSCRIPTION_PROBE_TWO_73",
+            "reason": "answer",
+            "usage": {
+              "input_tokens": 2,
+              "output_tokens": 23,
+              "cache_read_input_tokens": 0,
+              "cache_creation_input_tokens": 2974,
+              "model": "claude-haiku-5-5"
+            },
+            "durationMs": 1270,
+            "isAborted": false
+          }
+        ],
+        "done": true,
+        "model": "claude-haiku-5-5",
+        "tools": [],
+        "id": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+        "version": {
+          "version": "2.1.302",
+          "base": "2.1.302",
+          "builtAt": "2026-10-16T15:52:41Z"
+        },
+        "messages": [
+          {
+            "role": "user",
+            "text": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools.",
+            "toolUses": []
+          },
+          {
+            "role": "assistant",
+            "text": "SUBSCRIPTION_PROBE_TWO_73",
+            "toolUses": []
+          }
+        ],
+        "usage": {
+          "startedAt": 1792358480493,
+          "context": {
+            "tokens": 2976,
+            "window": 1000000,
+            "percent": 0
+          },
+          "rateLimits": [
+            {
+              "kind": "five_hour",
+              "percentUsed": 0,
+              "resetsAt": "2026-10-19T02:20:00.000Z"
+            },
+            {
+              "kind": "seven_day",
+              "percentUsed": 100,
+              "resetsAt": "2026-10-21T14:00:00.000Z"
+            }
+          ],
+          "cost": {
+            "usd": 0.0006065
+          }
+        }
+      },
+      "messages": [
+        {
+          "file": "8736a03d-fd57-49cb-ad41-7f59d03d2337.jsonl",
+          "type": "user",
+          "uuid": "7042f6fb-c69d-4c78-9dbf-79f997e5745a",
+          "sessionId": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+          "content": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools."
+        },
+        {
+          "file": "8736a03d-fd57-49cb-ad41-7f59d03d2337.jsonl",
+          "type": "assistant",
+          "uuid": "bfbe6257-574d-470b-a2cf-4c1abfb03a4c",
+          "sessionId": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+          "model": "claude-haiku-5-5",
+          "content": [
+            {
+              "type": "text",
+              "text": "SUBSCRIPTION_PROBE_TWO_73"
+            }
+          ]
+        }
+      ],
+      "statusHints": {
+        "notLoggedIn": false,
+        "usageLimit": false,
+        "permissionPrompt": false
+      },
+      "completed": true,
+      "exit": {
+        "exitCode": 129,
+        "signal": 0
+      },
+      "endedAt": "2026-10-18T21:21:23.044Z"
+    },
+    {
+      "name": "resume",
+      "pid": 118,
+      "args": [
+        "--model",
+        "haiku",
+        "--tools",
+        "",
+        "--permission-mode",
+        "dontAsk",
+        "--prompt-suggestions",
+        "false",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--plugin-dir",
+        "/tmp/yc-subscription-smoke-4MzhNw/subscription-plugin",
+        "--resume",
+        "8736a03d-fd57-49cb-ad41-7f59d03d2337"
+      ],
+      "startedAt": "2026-10-18T21:21:23.046Z",
+      "mod": {
+        "phase": "resume",
+        "handshake": true,
+        "grants": [
+          {
+            "id": 2,
+            "text": "Reply with exactly café 第二行 🧪 and nothing else. Do not call tools."
+          }
+        ],
+        "submissions": [
+          {
+            "id": 2,
+            "result": {
+              "text": "Reply with exactly café 第二行 🧪 and nothing else. Do not call tools.",
+              "origin": {
+                "kind": "plugin",
+                "name": "isolated-subscription-smoke",
+                "asUser": true
+              }
+            }
+          }
+        ],
+        "starts": [
+          {
+            "turnId": "7c06e50f-66bd-417c-ab10-8d13f83a2040",
+            "text": "Reply with exactly café 第二行 🧪 and nothing else. Do not call tools."
+          }
+        ],
+        "ends": [
+          {
+            "turnId": "7c06e50f-66bd-417c-ab10-8d13f83a2040",
+            "answer": "café 第二行 🧪",
+            "reason": "answer",
+            "usage": {
+              "input_tokens": 4,
+              "output_tokens": 11,
+              "cache_read_input_tokens": 2958,
+              "cache_creation_input_tokens": 70,
+              "model": "claude-haiku-5-5"
+            },
+            "durationMs": 1404,
+            "isAborted": false
+          }
+        ],
+        "done": true,
+        "model": "claude-haiku-5-5",
+        "tools": [],
+        "id": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+        "version": {
+          "version": "2.1.302",
+          "base": "2.1.302",
+          "builtAt": "2026-10-16T15:52:41Z"
+        },
+        "messages": [
+          {
+            "role": "user",
+            "text": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools.",
+            "toolUses": []
+          },
+          {
+            "role": "assistant",
+            "text": "SUBSCRIPTION_PROBE_TWO_73",
+            "toolUses": []
+          },
+          {
+            "role": "user",
+            "text": "Reply with exactly café 第二行 🧪 and nothing else. Do not call tools.",
+            "toolUses": []
+          },
+          {
+            "role": "assistant",
+            "text": "café 第二行 🧪",
+            "toolUses": []
+          }
+        ],
+        "usage": {
+          "startedAt": 1792358480493,
+          "context": {
+            "tokens": 3032,
+            "window": 1000000,
+            "percent": 0
+          },
+          "rateLimits": [
+            {
+              "kind": "five_hour",
+              "percentUsed": 0,
+              "resetsAt": "2026-10-19T02:20:00.000Z"
+            },
+            {
+              "kind": "seven_day",
+              "percentUsed": 100,
+              "resetsAt": "2026-10-21T14:00:00.000Z"
+            }
+          ],
+          "cost": {
+            "usd": 0.00065598
+          }
+        }
+      },
+      "messages": [
+        {
+          "file": "8736a03d-fd57-49cb-ad41-7f59d03d2337.jsonl",
+          "type": "user",
+          "uuid": "7042f6fb-c69d-4c78-9dbf-79f997e5745a",
+          "sessionId": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+          "content": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools."
+        },
+        {
+          "file": "8736a03d-fd57-49cb-ad41-7f59d03d2337.jsonl",
+          "type": "assistant",
+          "uuid": "bfbe6257-574d-470b-a2cf-4c1abfb03a4c",
+          "sessionId": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+          "model": "claude-haiku-5-5",
+          "content": [
+            {
+              "type": "text",
+              "text": "SUBSCRIPTION_PROBE_TWO_73"
+            }
+          ]
+        },
+        {
+          "file": "8736a03d-fd57-49cb-ad41-7f59d03d2337.jsonl",
+          "type": "user",
+          "uuid": "6c789d87-2ea1-4109-8346-173038aa9f9d",
+          "sessionId": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+          "content": "Reply with exactly café 第二行 🧪 and nothing else. Do not call tools."
+        }
+      ],
+      "statusHints": {
+        "notLoggedIn": false,
+        "usageLimit": false,
+        "permissionPrompt": false
+      },
+      "completed": true,
+      "exit": {
+        "exitCode": 129,
+        "signal": 0
+      },
+      "endedAt": "2026-10-18T21:21:25.759Z"
+    }
+  ],
+  "modelTools": "disabled",
+  "credentialHandling": "official CLI only; no credential file read or copied",
+  "auth": {
+    "loggedIn": true,
+    "authMethod": "claude.ai",
+    "apiProvider": "firstParty",
+    "subscriptionType": "max"
+  },
+  "validation": {
+    "exit": 0,
+    "stdout": "{\n  \"success\": true,\n  \"strict\": false,\n  \"target\": \"/tmp/yc-subscription-smoke-4MzhNw/subscription-plugin/.claude-plugin/plugin.json\",\n  \"manifest\": {\n    \"file\": \"/tmp/yc-subscription-smoke-4MzhNw/subscription-plugin/.claude-plugin/plugin.json\",\n    \"type\": \"plugin\",\n    \"errors\": [],\n    \"warnings\": [\n      {\n        \"path\": \"author\",\n        \"message\": \"No author information provided. Consider adding author details for plugin attribution\",\n        \"code\": null\n      }\n    ],\n    \"notes\": [],\n    \"gatingHooks\": []\n  },\n  \"contents\": [\n    {\n      \"file\": \"/tmp/yc-subscription-smoke-4MzhNw/subscription-plugin/hooks/hooks.json\",\n      \"type\": \"hooks\",\n      \"errors\": [],\n      \"warnings\": [],\n      \"notes\": [\n        \"./register.ts hooks: turn.start, turn.complete, session.start\",\n        \"./register.ts calls: $.clock.after, $.clock.sleep (via drive), $.fs.read, $.fs.write (via save), $.http.fetch (via drive), $.prompt.submit (via drive), $.session.cwd, $.session.id (via drive), $.session.messages (via drive), $.session.model (via drive), $.session.usage (via drive), $.session.version (via drive), $.tool.list (via drive)\"\n      ],\n      \"gatingHooks\": []\n    }\n  ],\n  \"advice\": []\n}\n",
+    "stderr": ""
+  },
+  "controllerClosed": true,
+  "grants": [
+    {
+      "id": 1,
+      "phase": "first",
+      "text": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools.",
+      "at": "2026-10-18T21:21:21.306Z"
+    },
+    {
+      "id": 2,
+      "phase": "resume",
+      "text": "Reply with exactly café 第二行 🧪 and nothing else. Do not call tools.",
+      "at": "2026-10-18T21:21:23.937Z"
+    }
+  ],
+  "submittedInvocations": 2,
+  "remainingPromptAllowance": 0,
+  "cumulativePromptGrants": 3
+}

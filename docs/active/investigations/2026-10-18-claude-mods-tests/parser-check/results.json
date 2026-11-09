@@ -1,0 +1,226 @@
+{
+  "scope": "pure unchanged parser replay; no live app",
+  "assertions": "duplicate text preserved; Unicode preserved; model command omitted; compact command ordinary text; compact summary present",
+  "reports": [
+    {
+      "file": "29da9fd2-b22e-4da2-8723-d8d9777daad5.jsonl",
+      "rows": [
+        {
+          "uuid": "7bf7050f-62ce-4fbd-926b-72d2a32a1ec4",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "promptId": "ecd4642d-c251-46f7-ac69-932ce2f63b7c",
+          "content": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>",
+          "events": []
+        },
+        {
+          "uuid": "72db26c9-286c-44da-8c9d-784717fe4c06",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "content": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args>sonnet</command-args>",
+          "events": []
+        },
+        {
+          "uuid": "1ae5687f-8b50-47f4-92f3-bc804419db21",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "content": "<local-command-stdout>Set model to `Sonnet 5.5` and saved as your default for new sessions</local-command-stdout>",
+          "events": []
+        }
+      ]
+    },
+    {
+      "file": "756fd956-8200-4a1b-bf20-6cf80766220f.jsonl",
+      "rows": [
+        {
+          "uuid": "52b7595f-5253-4b79-b0d4-df0d063c8554",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "content": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>",
+          "events": []
+        },
+        {
+          "uuid": "bb202ca4-1ba4-4cb7-954d-3d3eff1a876e",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "promptId": "82652823-d446-4e04-b761-05a1faf84b24",
+          "content": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
+          "events": [
+            {
+              "type": "user-message",
+              "uuid": "bb202ca4-1ba4-4cb7-954d-3d3eff1a876e",
+              "data": {
+                "text": "/clear",
+                "slashCommand": true
+              }
+            }
+          ]
+        },
+        {
+          "uuid": "8ca96903-1ee5-4860-8043-929a48542936",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract",
+            "asUser": true
+          },
+          "promptId": "82652823-d446-4e04-b761-05a1faf84b24",
+          "content": "repeat exact",
+          "events": [
+            {
+              "type": "user-message",
+              "uuid": "8ca96903-1ee5-4860-8043-929a48542936",
+              "data": {
+                "text": "repeat exact"
+              }
+            }
+          ]
+        },
+        {
+          "uuid": "8938c398-85d4-4d97-9e28-63a3b6a7c665",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract",
+            "asUser": true
+          },
+          "promptId": "00c32141-1fd3-4b73-b257-8e8fdd00b817",
+          "content": "repeat exact",
+          "events": [
+            {
+              "type": "user-message",
+              "uuid": "8938c398-85d4-4d97-9e28-63a3b6a7c665",
+              "data": {
+                "text": "repeat exact"
+              }
+            }
+          ]
+        },
+        {
+          "uuid": "1f953faf-ce33-475a-9d10-71a8a381b7bd",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract",
+            "asUser": true
+          },
+          "promptId": "ca6d89e5-5952-47be-a2c9-b8c88f6eeffb",
+          "content": "line one\n第二行 café 🧪",
+          "events": [
+            {
+              "type": "user-message",
+              "uuid": "1f953faf-ce33-475a-9d10-71a8a381b7bd",
+              "data": {
+                "text": "line one\n第二行 café 🧪"
+              }
+            }
+          ]
+        },
+        {
+          "uuid": "2962caeb-2ff4-4b88-b59a-a6eadfa2a4c0",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract",
+            "asUser": true
+          },
+          "promptId": "5cc369aa-21f7-4f17-b417-70ccf438fc97",
+          "content": "queued while busy",
+          "events": [
+            {
+              "type": "user-message",
+              "uuid": "2962caeb-2ff4-4b88-b59a-a6eadfa2a4c0",
+              "data": {
+                "text": "queued while busy"
+              }
+            }
+          ]
+        },
+        {
+          "uuid": "a3800dc4-c5a6-4d52-aba3-453b25aa7371",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "promptId": "e0beae8d-fc15-4a0e-ae9d-f7dc7258c69f",
+          "content": "/compact Keep the probe markers.",
+          "events": [
+            {
+              "type": "user-message",
+              "uuid": "a3800dc4-c5a6-4d52-aba3-453b25aa7371",
+              "data": {
+                "text": "/compact Keep the probe markers."
+              }
+            }
+          ]
+        },
+        {
+          "uuid": "2c0f48cb-df52-4f24-ae03-e6b990118802",
+          "promptId": "e0beae8d-fc15-4a0e-ae9d-f7dc7258c69f",
+          "content": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\nLOCAL_SCRIPTED_REPLY_4\n\nIf you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/756fd956-8200-4a1b-bf20-6cf80766220f.jsonl\nContinue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with \"I'll continue\" or similar. Pick up the last task as if the break never happened.\n\nThe messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them.",
+          "events": [
+            {
+              "type": "compact-summary",
+              "uuid": "2c0f48cb-df52-4f24-ae03-e6b990118802",
+              "data": {
+                "summary": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\nLOCAL_SCRIPTED_REPLY_4\n\nIf you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/756fd956-8200-4a1b-bf20-6cf80766220f.jsonl\nContinue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with \"I'll continue\" or similar. Pick up the last task as if the break never happened.\n\nThe messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them."
+              }
+            }
+          ]
+        },
+        {
+          "uuid": "0a3ebc5a-e9a8-4051-a647-83a77292d443",
+          "promptId": "e0beae8d-fc15-4a0e-ae9d-f7dc7258c69f",
+          "content": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>",
+          "events": []
+        },
+        {
+          "uuid": "141ad8e4-9423-4b0b-b7d7-f1b0b5c44d4d",
+          "promptId": "e0beae8d-fc15-4a0e-ae9d-f7dc7258c69f",
+          "content": "<command-name>/compact</command-name>\n            <command-message>compact</command-message>\n            <command-args>Keep the probe markers.</command-args>",
+          "events": [
+            {
+              "type": "user-message",
+              "uuid": "141ad8e4-9423-4b0b-b7d7-f1b0b5c44d4d",
+              "data": {
+                "text": "/compact Keep the probe markers.",
+                "slashCommand": true
+              }
+            }
+          ]
+        },
+        {
+          "uuid": "2a2e0fa6-d987-4bce-b603-825b4dd06cae",
+          "promptId": "e0beae8d-fc15-4a0e-ae9d-f7dc7258c69f",
+          "content": "<local-command-stdout>\u001b[2mCompacted (ctrl+o to see full summary)\u001b[22m</local-command-stdout>",
+          "events": []
+        },
+        {
+          "uuid": "e75e4f70-4b9a-4c0e-9137-2595929d6145",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract",
+            "asUser": true
+          },
+          "promptId": "8edab400-06d3-4846-b0d8-64f3abd48683",
+          "content": "slow interruption probe",
+          "events": [
+            {
+              "type": "user-message",
+              "uuid": "e75e4f70-4b9a-4c0e-9137-2595929d6145",
+              "data": {
+                "text": "slow interruption probe"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "title": "Claude Code reliability — what should we test?",
+  "key": "claude-reliability-options",
+  "stage": "ask",
+  "out": "claude-reliability.questions.html",
+  "_comment": "Draft experiment shortlist, not implementation approval. Based on the read-only investigation of app bc9e43752, desktop CLI 2.1.302 and Android pin 2.1.300. Official references: https://code.claude.com/docs/en/plugins/mods/{overview,events,api,reference,troubleshoot}; https://code.claude.com/docs/en/agent-sdk/overview; https://code.claude.com/docs/en/legal-and-compliance. No experiments or app edits are authorized by creating this deck. Selection scopes a later isolated test; paid runs require separate approval.",
+  "steps": [
+    {"id":"P-1","page":"1–5 · Replace terminal guesswork","intro":"Choose Test this or Later for each numbered change. These are experiments, not app changes. Mods are small extensions running inside Claude Code. All tests use isolated copies; paid runs need separate approval."},
+    {
+      "id":"1","words":true,"surface":"Messages","path":"Claude Code chats · mod experiment",
+      "headline":"1. Send messages directly instead of pretending to type",
+      "today":"YouCoded types text and file paths into Claude Code's terminal, then sends Enter.",
+      "problem":"Timing and open menus can swallow a message or give Enter the wrong meaning.",
+      "proposal":"Try the mod's direct-send method. Pass only if long text, images and busy-session sends arrive once, without answering an open menu.",
+      "options":[
+        {"id":"test","label":"Test this","recommended":true,"pros":["Could remove paste timing and accidental menu input.","Could preserve multiline text without flattening it."],"cons":["Image support and queued-send confirmation are not yet proven."]},
+        {"id":"later","label":"Later","summary":"Keep the current send path while testing other changes."}
+      ]
+    },
+    {
+      "id":"2","words":true,"surface":"Conversation controls","path":"Stop · model picker · permission mode · compact",
+      "headline":"2. Change conversation settings without keyboard shortcuts",
+      "today":"Stop, model changes and permission-mode changes send keys or commands into the terminal.",
+      "problem":"The app can show a change before Claude has actually applied it.",
+      "proposal":"Try direct mod controls. Pass only if Stop works while busy and every setting change reports its applied value or a clear refusal.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["Less dependence on keyboard focus.","Displayed settings could follow confirmed changes."],"cons":["Some controls may still need the terminal; test each separately."]},
+        {"id":"later","label":"Later","summary":"Keep shortcut-driven controls and their existing checks."}
+      ]
+    },
+    {
+      "id":"3","words":true,"surface":"Approvals and questions","path":"Permission cards · questions · plan approval",
+      "headline":"3. Answer the exact request, not its position on a menu",
+      "today":"Ordinary approvals use hooks; plan choices still rely on reading and answering a terminal menu.",
+      "problem":"A changed menu or expired request can leave a card unusable or out of date.",
+      "proposal":"Try addressed mod replies. Pass only if approvals, questions and every plan choice preserve their meaning through long waits, cancellation and disconnects.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["Could stop menu wording and layout from breaking approval cards.","Could reject stale answers instead of applying them elsewhere."],"cons":["Highest uncertainty: special questions, plans and mod failure may prevent full replacement."]},
+        {"id":"later","label":"Later","summary":"Keep existing approval protections and terminal fallback; do not loosen permissions."}
+      ]
+    },
+    {
+      "id":"4","words":true,"surface":"Live conversation","path":"Replies · tool cards · background helpers",
+      "headline":"4. Receive conversation updates directly instead of watching files",
+      "today":"The chat view reads Claude's changing transcript files and decodes special records for background work.",
+      "problem":"An upstream format change can hide replies or leave completed work spinning.",
+      "proposal":"Compare mod events against the existing timeline in a test session. Pass only with complete, correctly ordered replies, tool results and nested-helper activity, including reconnects.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["Could reduce missing updates and false completion states.","Less dependence on private transcript formatting."],"cons":["Events can be missed if the mod stops; history recovery still needs a separate solution."]},
+        {"id":"later","label":"Later","summary":"Retain the file watcher as the live conversation source."}
+      ]
+    },
+    {
+      "id":"5","words":true,"surface":"Session status","path":"Working indicator · context and usage display",
+      "headline":"5. Read status directly, without watching the spinner or replacing the statusline",
+      "today":"Working-state checks read terminal animation; context and usage depend on files written by our statusline.",
+      "problem":"A terminal redesign or custom statusline can make these readings wrong or unavailable.",
+      "proposal":"Try mod turn and usage reports. Pass only if busy, waiting and finished states stay distinct and usage remains correct with a custom statusline.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["Fewer false stuck warnings.","Users could keep their own statusline without losing app statistics."],"cons":["A quiet model is not necessarily stuck; progress and usage coverage must be verified."]},
+        {"id":"later","label":"Later","summary":"Keep the current screen and statusline readings."}
+      ]
+    },
+    {"id":"P-2","page":"6–10 · Make the connection and extensions dependable","intro":"Select experiments independently. Any mod-based replacement also needs item 6's recovery test before adoption. Item 7 and item 9 do not require mods. No selection approves app implementation."},
+    {
+      "id":"6","words":true,"surface":"Connection recovery","path":"All mod-backed Claude Code features",
+      "headline":"6. Detect a broken connection before trusting it",
+      "today":"Several independent signals tell YouCoded what Claude is doing; a new mod would add another possible failure point.",
+      "problem":"Mods can be disabled or unloaded while Claude keeps running.",
+      "proposal":"Test a connection handshake, health checks and safe recovery. Deliberately disable or crash the test mod; pass only if unavailable actions are clear and no send or approval repeats.",
+      "options":[
+        {"id":"test","label":"Test this","recommended":true,"pros":["Makes silent integration failure visible.","A prerequisite before trusting any mod-based replacement."],"cons":["Users may need terminal fallback while the connection is unavailable."]},
+        {"id":"later","label":"Later","summary":"Defer mod-backed replacements too; do not ship them without failure detection."}
+      ]
+    },
+    {
+      "id":"7","words":true,"surface":"Plugin installation","path":"Marketplace · install, update and remove",
+      "headline":"7. Let Claude Code manage its own plugin installation records",
+      "today":"YouCoded updates four Claude Code registration files itself.",
+      "problem":"A partial update or changed file format can make an installed plugin invisible.",
+      "proposal":"Try Claude Code's official plugin commands in a disposable profile. Pass only if install, update, disable and removal survive interrupted operations and report their actual outcome.",
+      "options":[
+        {"id":"test","label":"Test this","recommended":true,"pros":["Avoids maintaining Claude's private registration formats.","Uses commands already available in the installed CLI."],"cons":["Scopes, offline installs and command-confirmation prompts need careful handling."]},
+        {"id":"later","label":"Later","summary":"Keep our installer and its four-file bookkeeping."}
+      ]
+    },
+    {
+      "id":"8","words":true,"surface":"Skills and commands","path":"Command drawer · installed skills",
+      "headline":"8. Show what this Claude session actually has available",
+      "today":"Separate file scans populate skills and commands, with a hand-maintained list of built-in commands.",
+      "problem":"The lists can disagree with Claude about disabled plugins, project scope or available commands.",
+      "proposal":"Try the mod's command list plus official plugin listings. Establish their coverage; pass only if project changes, disabled plugins and unusual install locations produce the correct available choices.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["Fewer commands that appear available but do not work.","Less manual upkeep when Claude adds features."],"cons":["No single complete discovery source is proven; some file scanning may remain."]},
+        {"id":"later","label":"Later","summary":"Keep the current scanners and built-in command list."}
+      ]
+    },
+    {
+      "id":"9","words":true,"surface":"App tools and settings","path":"Browser · comments · pages · external connections",
+      "headline":"9. Attach app tools to each session instead of rewriting shared settings",
+      "today":"Some tools already attach per session; other connections are copied into Claude's global configuration.",
+      "problem":"Concurrent updates can overwrite changes, and removed plugins can leave stale connections behind.",
+      "proposal":"Test per-session tool configuration while keeping the existing tool protocol. Pass only if user connections remain intact, failures are visible, and stopping a session leaves no stale app entries.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["Less interference with Claude used outside YouCoded.","Clearer cleanup and less persistent secret copying."],"cons":["App-provided tools would not automatically appear in separately launched Claude sessions."]},
+        {"id":"later","label":"Later","summary":"Retain persistent projection, with concurrency and cleanup risks still to address."}
+      ]
+    },
+    {
+      "id":"10","words":true,"surface":"App instructions","path":"Personalization · instructions supplied by YouCoded",
+      "headline":"10. Supply app instructions without changing the user's global instructions",
+      "today":"YouCoded adds automatic-naming instructions to the user's global Claude instructions file.",
+      "problem":"App-specific instructions can affect Claude sessions launched outside YouCoded.",
+      "proposal":"Test session-only instructions through a mod, without redesigning naming. Pass only if YouCoded sessions receive them, unrelated sessions do not, and personal instructions remain unchanged.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["Cleaner separation between YouCoded and standalone Claude.","App instructions could update without editing personal files."],"cons":["Changing instructions too often can reduce cached reuse; disabled mods would omit these instructions."]},
+        {"id":"later","label":"Later","summary":"Keep the current global instruction section."}
+      ]
+    },
+    {"id":"P-3","page":"11–14 · Protect history and evaluate bigger changes","intro":"These cover durability, compatibility and the larger replacement option. We review test results before deciding whether to build anything. Existing subscriptions must not be silently replaced with API billing."},
+    {
+      "id":"11","words":true,"surface":"History and resume","path":"Past chats · reconnect · device handoff",
+      "headline":"11. Keep a durable app history separate from Claude's resume files",
+      "today":"YouCoded preserves copies of Claude transcripts, but still relies on their format for browsing and resume.",
+      "problem":"Direct mod updates alone would not recover missed events or preserve full history after a crash.",
+      "proposal":"Test an app-owned conversation record alongside preserved Claude resume data. Pass only if crash recovery, compaction and device transfer lose no messages and still resume correctly.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["Could keep readable history independent of Claude's storage changes.","Provides a recovery path for missed live updates."],"cons":["Large migration and extra storage; readable history is not itself a resumable Claude session."]},
+        {"id":"later","label":"Later","summary":"Keep the current durable transcript copies and handoff safeguards."}
+      ]
+    },
+    {
+      "id":"12","words":true,"surface":"Compatibility checks","path":"Claude upgrades · desktop and Android",
+      "headline":"12. Test each supported Claude version before calling it compatible",
+      "today":"Daily checks catch startup and popup changes, but many other integration behaviors are not covered that way.",
+      "problem":"A Claude update can still change sends, approvals, history or extension loading unnoticed.",
+      "proposal":"Expand checks to those behaviors and report unsupported capabilities. Pass only if deliberately changed behavior is caught on the tested desktop and Android versions.",
+      "options":[
+        {"id":"test","label":"Test this","recommended":true,"pros":["Finds breakage before users discover it.","Useful whether we adopt mods or keep today's integration."],"cons":["Ongoing maintenance; full checks need several operating systems and some quota-approved runs."]},
+        {"id":"later","label":"Later","summary":"Keep the existing startup and popup checks without broader coverage."}
+      ]
+    },
+    {
+      "id":"13","words":true,"surface":"Hook installation","path":"App startup · upgrades · standalone Claude",
+      "headline":"13. Make installed app hooks survive upgrades without touching unrelated hooks",
+      "today":"Hooks are copied to a stable folder, but write protection still points at the bundled source location.",
+      "problem":"Moved installations or missing scripts can leave stale commands; broad filename matching can mistake a user's hook for ours.",
+      "proposal":"Test stable paths, complete script checks and exact ownership in disposable installs. Pass only if relocation and missing-file repair work while similarly named user hooks stay untouched.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["A focused improvement that does not depend on mods.","Protects users' existing Claude customization."],"cons":["Does not remove the deeper limitations of hooks and terminal-driven control."]},
+        {"id":"later","label":"Later","summary":"Keep current installation behavior while testing larger replacements."}
+      ]
+    },
+    {
+      "id":"14","words":true,"surface":"Alternative Claude connection","path":"API-backed Claude chats · separate experiment",
+      "headline":"14. Compare the official Agent SDK with the terminal connection",
+      "today":"YouCoded hosts interactive Claude Code, including its terminal and subscription sign-in.",
+      "problem":"A mod bridge still needs custom recovery and control plumbing; the SDK provides a purpose-built app connection.",
+      "proposal":"Prototype an API-backed SDK session separately. Compare sends, approvals, streaming and resume; document missing terminal features, billing differences and authentication constraints before any adoption decision.",
+      "options":[
+        {"id":"test","label":"Test this","pros":["The clearest documented interface for hosting Claude in another app.","Could remove most terminal-control dependence for this connection type."],"cons":["Not an approved drop-in subscription replacement; API usage is separately billed.","Keeping two connection types adds maintenance and terminal behavior may differ."]},
+        {"id":"later","label":"Later","summary":"Focus on improvements that preserve the existing CLI and subscription arrangement."}
+      ]
+    }
+  ]
+}

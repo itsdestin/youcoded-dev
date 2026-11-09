@@ -1,0 +1,265 @@
+2026-10-18T20:23:55.759Z [DEBUG] MDM settings load completed in 0ms
+2026-10-18T20:23:55.774Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:23:55.776Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/project/.claude/settings.json
+2026-10-18T20:23:55.777Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/project/.claude/settings.local.json
+2026-10-18T20:23:55.778Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-10-18T20:23:55.786Z [DEBUG] [init] configureGlobalMTLS starting
+2026-10-18T20:23:55.786Z [DEBUG] [init] configureGlobalMTLS complete
+2026-10-18T20:23:55.786Z [DEBUG] [init] configureGlobalAgents starting
+2026-10-18T20:23:55.786Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-10-18T20:23:55.786Z [DEBUG] CA certs: Loaded 121 bundled root certificates
+2026-10-18T20:23:55.791Z [DEBUG] CA certs: Loaded 121 system CA certificates
+2026-10-18T20:23:55.791Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:23:55.792Z [DEBUG] [init] configureGlobalAgents complete
+2026-10-18T20:23:55.796Z [DEBUG] Error log sink initialized
+2026-10-18T20:23:55.814Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:23:55.820Z [DEBUG] [ToolSearch:optimistic] disabled: ANTHROPIC_BASE_URL=http://127.0.0.1:38623 is not a first-party Anthropic host. Set ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards tool_reference blocks.
+2026-10-18T20:23:55.824Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-10-18T20:23:55.824Z [DEBUG] [STARTUP] Running setup()...
+2026-10-18T20:23:55.832Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/skills, project=[]
+2026-10-18T20:23:55.833Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/agents'
+2026-10-18T20:23:55.833Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T20:23:55.835Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T20:23:55.835Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/commands'
+2026-10-18T20:23:55.835Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T20:23:55.844Z [DEBUG] Loaded 1 installed plugins from /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/installed_plugins.json
+2026-10-18T20:23:55.848Z [DEBUG] Git remote URL: null
+2026-10-18T20:23:55.848Z [DEBUG] No git remote URL found
+2026-10-18T20:23:55.855Z [DEBUG] Read hooks.json for plugin scoped-probe (enabled=true): /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/market/plugins/scoped-probe/hooks/hooks.json
+2026-10-18T20:23:55.857Z [INFO] [uds-messaging] Listening: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/runtime/cc-socks/444.sock
+2026-10-18T20:23:55.858Z [INFO] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/runtime/cc-socks/444.sock
+2026-10-18T20:23:55.860Z [INFO] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -N -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-10-18T20:23:55.861Z [DEBUG] Error log sink initialized
+2026-10-18T20:23:55.865Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-10-18T20:23:55.865Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T20:23:55.866Z [DEBUG] Checking plugin scoped-probe: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:23:55.866Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:23:55.866Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:23:55.866Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:23:55.866Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T20:23:55.866Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T20:23:55.867Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T20:23:55.867Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T20:23:55.868Z [DEBUG] cc-plugin-sec-default@builtin not seated: no managed settings and not a Team or Enterprise organization (none)
+2026-10-18T20:23:55.870Z [DEBUG] [STARTUP] setup() completed in 46ms
+2026-10-18T20:23:55.871Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-10-18T20:23:55.877Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T20:23:55.884Z [DEBUG] [STARTUP] Commands and agents loaded in 13ms
+2026-10-18T20:23:55.889Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-10-18T20:23:55.894Z [DEBUG] Cleared mTLS configuration cache
+2026-10-18T20:23:55.894Z [DEBUG] Cleared proxy agent cache
+2026-10-18T20:23:55.894Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:23:55.895Z [DEBUG] [STARTUP] showSetupScreens() completed in 6ms
+2026-10-18T20:23:55.896Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-10-18T20:23:55.896Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-10-18T20:23:55.896Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-10-18T20:23:55.896Z [DEBUG] Starting background startup prefetches
+2026-10-18T20:23:55.897Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T20:23:55.898Z [DEBUG] [STARTUP] MCP configs resolved in 68ms (awaited at +74ms)
+2026-10-18T20:23:55.903Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:23:55.906Z [DEBUG] All plugins already exist, skipping migration
+2026-10-18T20:23:55.906Z [DEBUG] Initialized versioned plugins system with 1 plugins
+2026-10-18T20:23:55.925Z [DEBUG] Total LSP servers loaded: 0
+2026-10-18T20:23:55.925Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-10-18T20:23:55.925Z [DEBUG] LSP manager initialized with 0 servers
+2026-10-18T20:23:55.925Z [DEBUG] LSP server manager initialized successfully
+2026-10-18T20:23:55.925Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-10-18T20:23:55.929Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-10-18T20:23:55.930Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-10-18T20:23:55.936Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:23:55.939Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-10-18T20:23:55.939Z [DEBUG] Keeping /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/cache/scoped-market/scoped-probe: it still holds a directory, a symlink, a versioned archive or an entry of unknown type
+2026-10-18T20:23:55.951Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-10-18T20:23:55.952Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-10-18T20:23:55.953Z [DEBUG] Keeping /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/cache/scoped-market: it still holds a directory, a symlink, a versioned archive or an entry of unknown type
+2026-10-18T20:23:55.955Z [DEBUG] Git remote URL: null
+2026-10-18T20:23:55.955Z [DEBUG] No git remote URL found
+2026-10-18T20:23:55.955Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-10-18T20:23:55.955Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:55.955Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.4e9fc91bbbe3
+2026-10-18T20:23:55.955Z [DEBUG] Ripgrep first use test: PASSED (mode=embedded, path=/home/destin/.local/share/claude/versions/2.1.302)
+2026-10-18T20:23:55.955Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:55.955Z [DEBUG] Temp file written successfully, size: 604 bytes
+2026-10-18T20:23:55.955Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.4e9fc91bbbe3 to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:55.956Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:55.957Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:55.957Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.f5ef5a8562bf
+2026-10-18T20:23:55.957Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:55.957Z [DEBUG] Temp file written successfully, size: 773 bytes
+2026-10-18T20:23:55.957Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.f5ef5a8562bf to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:55.958Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:55.990Z [DEBUG] [keybindings] KeybindingSetup initialized with 224 bindings, 0 warnings
+2026-10-18T20:23:56.008Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:23:56.029Z [DEBUG] [engine] send set_max_thinking_tokens max=null
+2026-10-18T20:23:56.029Z [DEBUG] [engine] send set_model model=claude-opus-5-5
+2026-10-18T20:23:56.035Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:23:56.041Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T20:23:56.041Z [DEBUG] performStartupChecks called
+2026-10-18T20:23:56.045Z [DEBUG] [jobStateNameSync] watch skipped: Error: ENOENT: no such file or directory, watch '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/jobs/ea8dd0d4'
+2026-10-18T20:23:56.047Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-10-18T20:23:56.049Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:23:56.050Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-10-18T20:23:56.051Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/project/.claude/settings.json
+2026-10-18T20:23:56.052Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/project/.claude/settings.local.json
+2026-10-18T20:23:56.052Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:23:56.066Z [DEBUG] [servedCatalog] off (essential_traffic)
+2026-10-18T20:23:56.075Z [DEBUG] Starting background plugin installations
+2026-10-18T20:23:56.076Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T20:23:56.076Z [DEBUG] performBackgroundPluginInstallations called
+2026-10-18T20:23:56.081Z [DEBUG] hooks module scoped-probe@scoped-market loaded (worker, environment 1, tier user); events: prompt.submit,prompt.context,turn.start,turn.complete,session.measure,tool.check,session.start
+2026-10-18T20:23:56.082Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 2, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-10-18T20:23:56.083Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 3, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-10-18T20:23:56.084Z [DEBUG] hooks module cc-plugin-diff@builtin loaded (native, environment 4, tier builtin); events: session.start,ui.render,command.run,ui.close,ui.focus,ui.scroll,tool.call,prompt.submit
+2026-10-18T20:23:56.085Z [DEBUG] [keybindings] Watching for changes to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/keybindings.json
+2026-10-18T20:23:56.089Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:23:56.089Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:23:56.090Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for scoped-probe,cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-diff
+2026-10-18T20:23:56.090Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-10-18T20:23:56.090Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-10-18T20:23:56.091Z [DEBUG] plugin.register: cc-plugin-diff (builtin, cc-plugin-diff@builtin), judged by core alone: admitted
+2026-10-18T20:23:56.091Z [DEBUG] plugin.register: scoped-probe (user, scoped-probe@scoped-market), judged by core alone: admitted
+2026-10-18T20:23:56.099Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-10-18T20:23:56.099Z [DEBUG] session.start: raised (surface terminal, interactive)
+2026-10-18T20:23:56.107Z [DEBUG] $.command.register (cc-plugin-diff): /diff listed
+2026-10-18T20:23:56.110Z [DEBUG] hooks module cc-plugin-diff@builtin session.start settled in 6.6ms (native link, next() included)
+2026-10-18T20:23:56.110Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 7.1ms (native link, next() included)
+2026-10-18T20:23:56.111Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/projects/-tmp-cc-scoped-2G7ftb-scoped-installed-3pJTSv-project/memory/'
+2026-10-18T20:23:56.111Z [DEBUG] No CLAUDE.md/rules files found
+2026-10-18T20:23:56.132Z [DEBUG] hooks module scoped-probe@scoped-market session.start settled in 31.4ms (worker hop, next() included)
+2026-10-18T20:23:56.136Z [WARN] Official marketplace GCS fetch failed: connect ECONNREFUSED 35.190.46.17:443
+2026-10-18T20:23:56.136Z [DEBUG] Attempting to auto-install official marketplace
+2026-10-18T20:23:56.167Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:56.167Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.72dc813e67a8
+2026-10-18T20:23:56.168Z [DEBUG] Watching /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/project for /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/project/.claude to appear
+2026-10-18T20:23:56.169Z [DEBUG] Watching for changes in setting files /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/settings.json...
+2026-10-18T20:23:56.171Z [DEBUG] Loaded plugins - Enabled: 4, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2026-10-18T20:23:56.171Z [DEBUG] Plugin autoupdate: command-source refresh disabled by tengu_plugin_command_source_refresh (still excluding command-sourced plugins from the regular pass)
+2026-10-18T20:23:56.173Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:56.175Z [DEBUG] Temp file written successfully, size: 1329 bytes
+2026-10-18T20:23:56.175Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.72dc813e67a8 to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:56.175Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:56.176Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T20:23:56.183Z [DEBUG] SSH config check: code=255 configured=false
+2026-10-18T20:23:56.183Z [INFO] SSH not configured for GitHub, using HTTPS for anthropics/claude-plugins-official
+2026-10-18T20:23:56.185Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:23:56.189Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T20:23:56.190Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 58.1ms (native link, next() included)
+2026-10-18T20:23:56.191Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:56.191Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.12c7a297238f
+2026-10-18T20:23:56.193Z [DEBUG] hooks module scoped-probe@scoped-market prompt.context settled in 74.5ms (worker hop, next() included)
+2026-10-18T20:23:56.194Z [DEBUG] git clone: url=https://github.com/anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:23:56.195Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:56.197Z [DEBUG] Temp file written successfully, size: 1370 bytes
+2026-10-18T20:23:56.197Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.12c7a297238f to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:56.197Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:56.200Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:56.200Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.0c04227da93c
+2026-10-18T20:23:56.201Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:56.201Z [DEBUG] Temp file written successfully, size: 1407 bytes
+2026-10-18T20:23:56.201Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.0c04227da93c to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:56.202Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:56.203Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:56.203Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.36f6c3fc0a6d
+2026-10-18T20:23:56.204Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:56.205Z [DEBUG] Temp file written successfully, size: 1480 bytes
+2026-10-18T20:23:56.205Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.36f6c3fc0a6d to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:56.205Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:56.209Z [WARN] "git clone failed: url=https://github.com/anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- https://github.com/anthropics/claude-plugins-official.git /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server"
+2026-10-18T20:23:56.210Z [ERROR] "HTTPS clone failed for marketplace anthropics/claude-plugins-official (Failed to clone marketplace repository: Cloning into '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server), falling back to SSH"
+2026-10-18T20:23:56.210Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:23:56.216Z [DEBUG] git clone: url=git@github.com:anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:23:56.226Z [WARN] "git clone failed: url=git@github.com:anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- git@github.com:anthropics/claude-plugins-official.git /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:23:56.226Z [ERROR] "SSH clone fallback also failed for marketplace anthropics/claude-plugins-official: Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:23:56.227Z [ERROR] "Failed to auto-install official marketplace: Fetching the marketplace from GitHub failed on both attempts. HTTPS (https://github.com/anthropics/claude-plugins-official.git): Failed to clone marketplace repository: Cloning into '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server\n\nSSH (git@github.com:anthropics/claude-plugins-official.git): Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:23:56.228Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:56.228Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.112506745733
+2026-10-18T20:23:56.229Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:56.230Z [DEBUG] Temp file written successfully, size: 1812 bytes
+2026-10-18T20:23:56.230Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.112506745733 to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:56.230Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:56.230Z [INFO] 1 setup issue: plugins (run /plugin for details)
+2026-10-18T20:23:56.258Z [ERROR] install check: claude command at /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.local/bin/claude missing or broken (/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.local/bin does not exist)
+2026-10-18T20:23:56.258Z [ERROR] install check: claude command at /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.local/bin/claude missing or broken
+2026-10-18T20:23:56.258Z [INFO] 1 setup issue: install (run `claude doctor` for details)
+2026-10-18T20:23:56.486Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-10-18T20:23:58.141Z [DEBUG] $.fs.write (scoped-probe): /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/project/scoped-report.json (232 bytes)
+2026-10-18T20:23:58.166Z [DEBUG] $.prompt.submit (scoped-probe): "SYNTHETIC original user text 73"
+2026-10-18T20:23:58.199Z [DEBUG] High write ratio: blit=575, write=623 (52.0% writes), screen=42x115
+2026-10-18T20:23:58.203Z [DEBUG] hooks module scoped-probe@scoped-market prompt.submit skipped: re-entry (the plugin's own code raised it; origin scoped-probe)
+2026-10-18T20:23:58.205Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in scoped-probe
+2026-10-18T20:23:58.205Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in scoped-probe
+2026-10-18T20:23:58.207Z [DEBUG] FileHistory: Added snapshot for d03c64a6-b181-4ddc-9147-e99ebd19f9d4, tracking 0 files
+2026-10-18T20:23:58.218Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 12.9ms (native link, next() included)
+2026-10-18T20:23:58.219Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 13.9ms (native link, next() included)
+2026-10-18T20:23:58.220Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.2ms (native link, next() included)
+2026-10-18T20:23:58.220Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/output-styles: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/output-styles'
+2026-10-18T20:23:58.220Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/output-styles: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/output-styles'
+2026-10-18T20:23:58.221Z [DEBUG] Total plugin output styles loaded: 0
+2026-10-18T20:23:58.223Z [DEBUG] act_dont_rederive_arm_active source=growthbook
+2026-10-18T20:23:58.225Z [DEBUG] hooks module scoped-probe@scoped-market turn.start settled in 11.2ms (worker hop, next() included)
+2026-10-18T20:23:58.229Z [DEBUG] [engine] yield system/init (first)
+2026-10-18T20:23:58.229Z [DEBUG] [engine] turn 1 start
+2026-10-18T20:23:58.235Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:23:58.275Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.da4; cc_entrypoint=cli;
+2026-10-18T20:23:58.275Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:23:58.277Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:23:58.282Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:23:58.287Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:23:58.289Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:23:58.315Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:23:58.323Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:23:58.335Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 6.0ms (native link, next() included)
+2026-10-18T20:23:58.340Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:58.340Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.430b0700553b
+2026-10-18T20:23:58.343Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:23:58.343Z [DEBUG] [API:timing] first byte after 61ms
+2026-10-18T20:23:58.362Z [DEBUG] [engine] turn 1 end (turns=1 usage in=37 out=11 cost=$0.0004 api=79ms stop=end_turn resultLen=27)
+2026-10-18T20:23:58.373Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:23:58.373Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:23:58.374Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.4ms (native link, next() included)
+2026-10-18T20:23:58.375Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:58.376Z [DEBUG] hooks module scoped-probe@scoped-market turn.complete settled in 8.3ms (worker hop, next() included)
+2026-10-18T20:23:58.381Z [DEBUG] Temp file written successfully, size: 1840 bytes
+2026-10-18T20:23:58.381Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.430b0700553b to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:58.381Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:58.382Z [DEBUG] hooks module scoped-probe@scoped-market session.measure settled in 4.8ms (worker hop, next() included)
+2026-10-18T20:23:58.384Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-10-18T20:23:58.384Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-10-18T20:23:58.384Z [DEBUG] [FileIndex] not a git repo, returning null
+2026-10-18T20:23:58.384Z [DEBUG] [FileIndex] git ls-files returned null, falling back to ripgrep
+2026-10-18T20:23:58.414Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 6.1ms (native link, next() included)
+2026-10-18T20:23:58.414Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.6ms (native link, next() included)
+2026-10-18T20:23:58.415Z [DEBUG] [FileIndex] ripgrep: 2 files in 31ms
+2026-10-18T20:23:58.417Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/skills: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/skills'
+2026-10-18T20:23:58.417Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/skills: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/skills'
+2026-10-18T20:23:58.417Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/routines: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/routines'
+2026-10-18T20:23:58.417Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/routines: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/routines'
+2026-10-18T20:23:58.417Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/workflows: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/workflows'
+2026-10-18T20:23:58.417Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/workflows: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/workflows'
+2026-10-18T20:23:58.418Z [DEBUG] [FileIndex] cache refresh completed in 34ms
+2026-10-18T20:23:58.421Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:58.421Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.776217085669
+2026-10-18T20:23:58.422Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:58.422Z [DEBUG] Temp file written successfully, size: 1949 bytes
+2026-10-18T20:23:58.422Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.776217085669 to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:58.423Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:58.474Z [DEBUG] $.fs.write (scoped-probe): /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/project/scoped-report.json (1426 bytes)
+2026-10-18T20:23:59.315Z [DEBUG] [REPL:unmount] REPL unmounting
+2026-10-18T20:23:59.317Z [DEBUG] [uds-messaging] Shutting down
+2026-10-18T20:23:59.318Z [DEBUG] LSP server manager shut down successfully
+2026-10-18T20:23:59.319Z [DEBUG] XTVERSION: no reply (terminal ignored query)
+2026-10-18T20:23:59.319Z [DEBUG] Terminal capabilities: extendedKeys=no (env: terminal=xterm-256color, no answer); synchronizedOutput=no (env: no known terminal, no answer); kittyKeyboard=yes (not asked yet, no answer); kittyGraphics=no (env: terminal=xterm-256color, not asked yet, no answer); mousePixels=no (env: terminal=xterm-256color, not asked yet, no answer); programStatus=no (not asked yet, no answer); terminal said: no reply to CSI ? u; DECRQM 2026 not asked (no XTVERSION reply)
+2026-10-18T20:23:59.319Z [DEBUG] DECSTBM: gated (TMUX=unset ZELLIJ=unset TERM_PROGRAM=unset TERM=xterm-256color)
+2026-10-18T20:23:59.321Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:59.321Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.0316a548a5c5
+2026-10-18T20:23:59.321Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:59.321Z [DEBUG] Temp file written successfully, size: 2852 bytes
+2026-10-18T20:23:59.321Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.0316a548a5c5 to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:59.321Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:59.322Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:23:59.322Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.83c7e2169122
+2026-10-18T20:23:59.322Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:23:59.322Z [DEBUG] Temp file written successfully, size: 2683 bytes
+2026-10-18T20:23:59.322Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json.tmp.444.83c7e2169122 to /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json
+2026-10-18T20:23:59.322Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/home/.claude/.claude.json written atomically
+2026-10-18T20:23:59.322Z [DEBUG] fullscreen boot canary: withdrawn

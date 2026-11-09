@@ -1,0 +1,271 @@
+2026-10-18T20:33:38.567Z [DEBUG] MDM settings load completed in 0ms
+2026-10-18T20:33:38.751Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:33:38.767Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/.claude/settings.json
+2026-10-18T20:33:38.768Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/.claude/settings.local.json
+2026-10-18T20:33:38.785Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-10-18T20:33:38.820Z [DEBUG] [init] configureGlobalMTLS starting
+2026-10-18T20:33:38.821Z [DEBUG] [init] configureGlobalMTLS complete
+2026-10-18T20:33:38.821Z [DEBUG] [init] configureGlobalAgents starting
+2026-10-18T20:33:38.821Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-10-18T20:33:38.821Z [DEBUG] CA certs: Loaded 121 bundled root certificates
+2026-10-18T20:33:38.881Z [DEBUG] CA certs: Loaded 121 system CA certificates
+2026-10-18T20:33:38.882Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:33:38.882Z [DEBUG] [init] configureGlobalAgents complete
+2026-10-18T20:33:38.943Z [DEBUG] Error log sink initialized
+2026-10-18T20:33:38.957Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-10-18T20:33:39.039Z [DEBUG] Git remote URL: null
+2026-10-18T20:33:39.039Z [DEBUG] No git remote URL found
+2026-10-18T20:33:39.056Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:39.056Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.3be236e1b57a
+2026-10-18T20:33:39.059Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:39.060Z [DEBUG] Temp file written successfully, size: 264 bytes
+2026-10-18T20:33:39.060Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.3be236e1b57a to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:39.060Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:39.065Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:39.066Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.f51dc66e2333
+2026-10-18T20:33:39.069Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:39.072Z [DEBUG] Temp file written successfully, size: 347 bytes
+2026-10-18T20:33:39.072Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.f51dc66e2333 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:39.074Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:39.089Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:39.089Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.36aff4d65b7d
+2026-10-18T20:33:39.089Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:39.090Z [DEBUG] Temp file written successfully, size: 383 bytes
+2026-10-18T20:33:39.090Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.36aff4d65b7d to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:39.092Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:39.103Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:39.104Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.3f2d3cf40179
+2026-10-18T20:33:39.111Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:39.116Z [DEBUG] Temp file written successfully, size: 422 bytes
+2026-10-18T20:33:39.116Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.3f2d3cf40179 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:39.118Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:39.151Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:39.151Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.03402526798a
+2026-10-18T20:33:39.156Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:39.158Z [DEBUG] Temp file written successfully, size: 449 bytes
+2026-10-18T20:33:39.158Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.03402526798a to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:39.158Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:39.170Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:39.170Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.2706b1cd999c
+2026-10-18T20:33:39.172Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:39.175Z [DEBUG] Temp file written successfully, size: 497 bytes
+2026-10-18T20:33:39.175Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.2706b1cd999c to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:39.177Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:39.188Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:39.188Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.e42efea65cc1
+2026-10-18T20:33:39.194Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:39.196Z [DEBUG] Temp file written successfully, size: 523 bytes
+2026-10-18T20:33:39.196Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.e42efea65cc1 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:39.196Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:39.291Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:33:39.319Z [DEBUG] [ToolSearch:optimistic] disabled: ANTHROPIC_BASE_URL=http://127.0.0.1:37073 is not a first-party Anthropic host. Set ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards tool_reference blocks.
+2026-10-18T20:33:39.348Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-10-18T20:33:39.354Z [DEBUG] [STARTUP] Running setup()...
+2026-10-18T20:33:39.387Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/skills, project=[]
+2026-10-18T20:33:39.398Z [DEBUG] Failed to stat directory /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/agents'
+2026-10-18T20:33:39.408Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T20:33:39.413Z [DEBUG] Failed to stat directory /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/commands'
+2026-10-18T20:33:39.413Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T20:33:39.413Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T20:33:39.414Z [DEBUG] --plugin-dir /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/plugin is one plugin: .claude-plugin at its top marks it
+2026-10-18T20:33:39.418Z [DEBUG] installed_plugins.json doesn't exist, returning empty V2 object
+2026-10-18T20:33:39.520Z [DEBUG] Read hooks.json for plugin isolated-compat (enabled=true): /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/plugin/hooks/hooks.json
+2026-10-18T20:33:39.532Z [DEBUG] Loaded inline plugin from path: isolated-compat
+2026-10-18T20:33:39.533Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-10-18T20:33:39.539Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-10-18T20:33:39.541Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T20:33:39.542Z [DEBUG] Checking plugin isolated-compat: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:33:39.542Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:33:39.542Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:33:39.542Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:33:39.542Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T20:33:39.542Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T20:33:39.553Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T20:33:39.563Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T20:33:39.593Z [INFO] [uds-messaging] Listening: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/runtime/cc-socks/182.sock
+2026-10-18T20:33:39.600Z [INFO] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/runtime/cc-socks/182.sock
+2026-10-18T20:33:39.613Z [INFO] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -N -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-10-18T20:33:39.624Z [DEBUG] Error log sink initialized
+2026-10-18T20:33:39.650Z [DEBUG] cc-plugin-sec-default@builtin not seated: no managed settings and not a Team or Enterprise organization (none)
+2026-10-18T20:33:39.661Z [DEBUG] [STARTUP] setup() completed in 307ms
+2026-10-18T20:33:39.663Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-10-18T20:33:39.709Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T20:33:39.771Z [DEBUG] [STARTUP] Commands and agents loaded in 108ms
+2026-10-18T20:33:39.813Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-10-18T20:33:39.845Z [DEBUG] Cleared mTLS configuration cache
+2026-10-18T20:33:39.845Z [DEBUG] Cleared proxy agent cache
+2026-10-18T20:33:39.845Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:33:39.858Z [DEBUG] [STARTUP] showSetupScreens() completed in 45ms
+2026-10-18T20:33:39.859Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-10-18T20:33:39.859Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-10-18T20:33:39.859Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-10-18T20:33:39.860Z [DEBUG] Starting background startup prefetches
+2026-10-18T20:33:39.870Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T20:33:39.891Z [DEBUG] [STARTUP] MCP configs resolved in 217ms (awaited at +543ms)
+2026-10-18T20:33:39.920Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:33:39.933Z [DEBUG] Initialized versioned plugins system with 0 plugins
+2026-10-18T20:33:40.143Z [DEBUG] Total LSP servers loaded: 0
+2026-10-18T20:33:40.143Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-10-18T20:33:40.143Z [DEBUG] LSP manager initialized with 0 servers
+2026-10-18T20:33:40.143Z [DEBUG] LSP server manager initialized successfully
+2026-10-18T20:33:40.143Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-10-18T20:33:40.158Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-10-18T20:33:40.158Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-10-18T20:33:40.219Z [DEBUG] Ripgrep first use test: PASSED (mode=embedded, path=/home/destin/.local/share/claude/versions/2.1.302)
+2026-10-18T20:33:40.220Z [DEBUG] "rg error (signal=undefined, code=2, stderr: rg: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/cache: IO error for operation on /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/cache: No such file or directory (os error 2)\n), 0 results"
+2026-10-18T20:33:40.230Z [DEBUG] Git remote URL: null
+2026-10-18T20:33:40.230Z [DEBUG] No git remote URL found
+2026-10-18T20:33:40.230Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-10-18T20:33:40.266Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-10-18T20:33:40.267Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:33:40.271Z [DEBUG] Lock acquisition took longer than expected - another Claude instance may be running
+2026-10-18T20:33:40.367Z [ERROR] hooks module isolated-compat@inline failed to load: isolated-compat: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/plugin/hooks/register.ts, compiled line 16 `await record($);`: $ is passed to "record", which is not a function declared at the top of this file (a function declaration, or a const bound to one), nor one imported from a file of the module's own; $ is followed nowhere else; $ is always spelled $.noun.event(...) at the call site, on is always on("<event>", hook), and next.to always next.to(e, "<tier>")
+2026-10-18T20:33:40.372Z [DEBUG] [isolated-compat] $.ui.log: hooks module did not load: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/plugin/hooks/register.ts, compiled line 16 `await record($);`: $ is passed to "record", which is not a function declared at the top of this file (a function declaration, or a const bound to one), nor one imported from a file of the module's own; $ is followed nowhere else; $ is always spelled $.noun.event(...) at the call site, on is always on("<event>", hook), and next.to always next.to(e, "<tier>")
+2026-10-18T20:33:40.373Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-10-18T20:33:40.376Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 1, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-10-18T20:33:40.377Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 2, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-10-18T20:33:40.379Z [DEBUG] hooks module cc-plugin-diff@builtin loaded (native, environment 3, tier builtin); events: session.start,ui.render,command.run,ui.close,ui.focus,ui.scroll,tool.call,prompt.submit
+2026-10-18T20:33:40.385Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-diff
+2026-10-18T20:33:40.389Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-10-18T20:33:40.389Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-10-18T20:33:40.390Z [DEBUG] plugin.register: cc-plugin-diff (builtin, cc-plugin-diff@builtin), judged by core alone: admitted
+2026-10-18T20:33:40.403Z [DEBUG] plugin-dir watch: watching isolated-compat; folders of plugins none
+2026-10-18T20:33:40.518Z [DEBUG] Artifact gates frozen: capabilities=true comments=false db=true files=false types=false type_create=false type_catalog=false read_page_data=false room=false verify=false delete=false preview=false preview_browser=unread open=false endpoints=false pin=true share=false versions=false flag_source=disabled gb_fresh=false
+2026-10-18T20:33:40.519Z [DEBUG] Artifact publish edits offer frozen: edit_hook=false
+2026-10-18T20:33:40.520Z [DEBUG] Artifact input schema built: assets=false copy_from=false publish_edits=true assets_source=cold_no_identity
+2026-10-18T20:33:40.794Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:40.795Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.a4503fded602
+2026-10-18T20:33:40.810Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:40.811Z [DEBUG] Temp file written successfully, size: 603 bytes
+2026-10-18T20:33:40.811Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.a4503fded602 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:40.812Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:40.814Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:40.814Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.4c302db668ec
+2026-10-18T20:33:40.814Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:40.816Z [DEBUG] Temp file written successfully, size: 603 bytes
+2026-10-18T20:33:40.816Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.4c302db668ec to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:40.818Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:40.822Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:40.822Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.12d0b1a2b751
+2026-10-18T20:33:40.827Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:40.833Z [DEBUG] Temp file written successfully, size: 772 bytes
+2026-10-18T20:33:40.833Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.12d0b1a2b751 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:40.833Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:40.991Z [DEBUG] [keybindings] KeybindingSetup initialized with 224 bindings, 0 warnings
+2026-10-18T20:33:41.103Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:33:41.233Z [DEBUG] [engine] send set_max_thinking_tokens max=null
+2026-10-18T20:33:41.233Z [DEBUG] [engine] send set_model model=claude-opus-5-5
+2026-10-18T20:33:41.262Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:33:41.294Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T20:33:41.295Z [DEBUG] performStartupChecks called
+2026-10-18T20:33:41.321Z [DEBUG] [jobStateNameSync] watch skipped: Error: ENOENT: no such file or directory, watch '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/jobs/3cfe031f'
+2026-10-18T20:33:41.330Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-10-18T20:33:41.332Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:33:41.334Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-10-18T20:33:41.348Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/.claude/settings.json
+2026-10-18T20:33:41.349Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/.claude/settings.local.json
+2026-10-18T20:33:41.349Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:33:41.427Z [DEBUG] [servedCatalog] off (essential_traffic)
+2026-10-18T20:33:41.431Z [DEBUG] plugin-dir watch: watching isolated-compat; folders of plugins none
+2026-10-18T20:33:41.459Z [DEBUG] Starting background plugin installations
+2026-10-18T20:33:41.460Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T20:33:41.460Z [DEBUG] performBackgroundPluginInstallations called
+2026-10-18T20:33:41.476Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 52.0ms (native link, next() included)
+2026-10-18T20:33:41.493Z [DEBUG] [keybindings] Watching for changes to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/keybindings.json
+2026-10-18T20:33:41.504Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:33:41.504Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:33:41.511Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/projects/-tmp-cc-compat-jAdpYa-compat-crash302-EuSJyG-project/memory/'
+2026-10-18T20:33:41.511Z [DEBUG] No CLAUDE.md/rules files found
+2026-10-18T20:33:41.603Z [DEBUG] Lock acquisition took longer than expected - another Claude instance may be running
+2026-10-18T20:33:41.613Z [WARN] Official marketplace GCS fetch failed: connect ECONNREFUSED 35.190.46.17:443
+2026-10-18T20:33:41.613Z [DEBUG] Attempting to auto-install official marketplace
+2026-10-18T20:33:41.701Z [DEBUG] High write ratio: blit=0, write=1123 (100.0% writes), screen=42x115
+2026-10-18T20:33:41.736Z [DEBUG] Watching /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project for /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/.claude to appear
+2026-10-18T20:33:41.736Z [DEBUG] Watching for changes in setting files /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/settings.json...
+2026-10-18T20:33:41.739Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:41.739Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.03def15c82a6
+2026-10-18T20:33:41.751Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:41.770Z [DEBUG] SSH config check: code=255 configured=false
+2026-10-18T20:33:41.771Z [INFO] SSH not configured for GitHub, using HTTPS for anthropics/claude-plugins-official
+2026-10-18T20:33:41.782Z [DEBUG] Temp file written successfully, size: 1324 bytes
+2026-10-18T20:33:41.783Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.03def15c82a6 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:41.783Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:33:41.786Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T20:33:41.787Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:41.946Z [DEBUG] git clone: url=https://github.com/anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:33:41.947Z [DEBUG] Lock acquisition took longer than expected - another Claude instance may be running
+2026-10-18T20:33:41.967Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T20:33:41.975Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 439.6ms (native link, next() included)
+2026-10-18T20:33:41.976Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:41.976Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.5a80f8a423f9
+2026-10-18T20:33:42.056Z [WARN] "git clone failed: url=https://github.com/anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- https://github.com/anthropics/claude-plugins-official.git /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 3 ms: Could not connect to server"
+2026-10-18T20:33:42.057Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:42.065Z [ERROR] "HTTPS clone failed for marketplace anthropics/claude-plugins-official (Failed to clone marketplace repository: Cloning into '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 3 ms: Could not connect to server), falling back to SSH"
+2026-10-18T20:33:42.079Z [DEBUG] High write ratio: blit=0, write=1132 (100.0% writes), screen=42x115
+2026-10-18T20:33:42.089Z [DEBUG] Temp file written successfully, size: 1365 bytes
+2026-10-18T20:33:42.089Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.5a80f8a423f9 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:42.090Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:33:42.090Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:42.105Z [DEBUG] git clone: url=git@github.com:anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:33:42.105Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:42.105Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.a55877ae3ac6
+2026-10-18T20:33:42.118Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:42.120Z [DEBUG] Temp file written successfully, size: 1402 bytes
+2026-10-18T20:33:42.120Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.a55877ae3ac6 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:42.120Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:42.133Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:42.133Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.955d2550ec0b
+2026-10-18T20:33:42.137Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:42.141Z [DEBUG] Temp file written successfully, size: 1475 bytes
+2026-10-18T20:33:42.141Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.955d2550ec0b to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:42.142Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:42.148Z [WARN] "git clone failed: url=git@github.com:anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- git@github.com:anthropics/claude-plugins-official.git /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:33:42.157Z [ERROR] "SSH clone fallback also failed for marketplace anthropics/claude-plugins-official: Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:33:42.168Z [ERROR] "Failed to auto-install official marketplace: Fetching the marketplace from GitHub failed on both attempts. HTTPS (https://github.com/anthropics/claude-plugins-official.git): Failed to clone marketplace repository: Cloning into '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 3 ms: Could not connect to server\n\nSSH (git@github.com:anthropics/claude-plugins-official.git): Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:33:42.204Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:42.204Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.afccf5f3c6b5
+2026-10-18T20:33:42.208Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:42.214Z [DEBUG] Temp file written successfully, size: 1807 bytes
+2026-10-18T20:33:42.214Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.afccf5f3c6b5 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:42.218Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:42.222Z [INFO] 1 setup issue: plugins (run /plugin for details)
+2026-10-18T20:33:42.249Z [DEBUG] High write ratio: blit=0, write=1131 (100.0% writes), screen=42x115
+2026-10-18T20:33:42.258Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-10-18T20:33:42.265Z [ERROR] install check: claude command at /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.local/bin/claude missing or broken (/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.local/bin does not exist)
+2026-10-18T20:33:42.265Z [ERROR] install check: claude command at /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.local/bin/claude missing or broken
+2026-10-18T20:33:42.265Z [INFO] 1 setup issue: install (run `claude doctor` for details)
+2026-10-18T20:33:42.287Z [DEBUG] type root of isolated-compat at /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/plugin/.claude-plugin/types: entries claude-code, claude-code-tools, claude-code-mcp; wrote .claude-plugin/types/claude-code/index.d.ts, .claude-plugin/types/claude-code-tools/index.d.ts, .claude-plugin/types/claude-code-mcp/index.d.ts, .claude-plugin/types/tsconfig.json, .claude-plugin/types/.gitignore, tsconfig.json
+2026-10-18T20:33:42.287Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-10-18T20:33:42.288Z [DEBUG] session.start: raised (surface terminal, interactive)
+2026-10-18T20:33:42.321Z [DEBUG] $.command.register (cc-plugin-diff): /diff listed
+2026-10-18T20:33:42.337Z [DEBUG] hooks module cc-plugin-diff@builtin session.start settled in 47.8ms (native link, next() included)
+2026-10-18T20:33:42.337Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 48.4ms (native link, next() included)
+2026-10-18T20:33:42.358Z [DEBUG] Loaded plugins - Enabled: 4, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2026-10-18T20:33:42.358Z [DEBUG] Plugin autoupdate: command-source refresh disabled by tengu_plugin_command_source_refresh (still excluding command-sourced plugins from the regular pass)
+2026-10-18T20:33:42.378Z [DEBUG] High write ratio: blit=0, write=1128 (100.0% writes), screen=42x115
+2026-10-18T20:33:42.437Z [DEBUG] High write ratio: blit=0, write=1141 (100.0% writes), screen=42x115
+2026-10-18T20:33:42.567Z [DEBUG] High write ratio: blit=0, write=1140 (100.0% writes), screen=42x115
+2026-10-18T20:33:42.632Z [DEBUG] High write ratio: blit=0, write=1134 (100.0% writes), screen=42x115
+2026-10-18T20:33:42.705Z [DEBUG] High write ratio: blit=0, write=1150 (100.0% writes), screen=42x115
+2026-10-18T20:33:42.900Z [DEBUG] High write ratio: blit=0, write=1142 (100.0% writes), screen=42x115
+2026-10-18T20:33:42.970Z [DEBUG] High write ratio: blit=18, write=1125 (98.4% writes), screen=42x115
+2026-10-18T20:33:43.045Z [DEBUG] High write ratio: blit=0, write=1149 (100.0% writes), screen=42x115
+2026-10-18T20:33:51.345Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:33:51.345Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.6d3c358f5405
+2026-10-18T20:33:51.349Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:33:51.359Z [DEBUG] Temp file written successfully, size: 1638 bytes
+2026-10-18T20:33:51.359Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.6d3c358f5405 to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:33:51.361Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically
+2026-10-18T20:33:51.362Z [DEBUG] fullscreen boot canary: healthy
+2026-10-18T20:34:10.080Z [DEBUG] [REPL:unmount] REPL unmounting
+2026-10-18T20:34:10.085Z [DEBUG] [uds-messaging] Shutting down
+2026-10-18T20:34:10.087Z [DEBUG] LSP server manager shut down successfully
+2026-10-18T20:34:10.087Z [DEBUG] XTVERSION: no reply (terminal ignored query)
+2026-10-18T20:34:10.087Z [DEBUG] Terminal capabilities: extendedKeys=no (env: terminal=xterm-256color, no answer); synchronizedOutput=no (env: no known terminal, no answer); kittyKeyboard=yes (not asked yet, no answer); kittyGraphics=no (env: terminal=xterm-256color, not asked yet, no answer); mousePixels=no (env: terminal=xterm-256color, not asked yet, no answer); programStatus=no (not asked yet, no answer); terminal said: no reply to CSI ? u; DECRQM 2026 not asked (no XTVERSION reply)
+2026-10-18T20:34:10.088Z [DEBUG] DECSTBM: gated (TMUX=unset ZELLIJ=unset TERM_PROGRAM=unset TERM=xterm-256color)
+2026-10-18T20:34:10.095Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:34:10.095Z [DEBUG] Writing to temp file: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.8ad97d3b0ccb
+2026-10-18T20:34:10.095Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:34:10.096Z [DEBUG] Temp file written successfully, size: 2226 bytes
+2026-10-18T20:34:10.096Z [DEBUG] Renaming /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json.tmp.182.8ad97d3b0ccb to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json
+2026-10-18T20:34:10.096Z [DEBUG] File /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/.claude.json written atomically

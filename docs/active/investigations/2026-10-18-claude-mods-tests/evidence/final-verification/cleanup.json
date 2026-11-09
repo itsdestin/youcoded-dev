@@ -1,0 +1,5 @@
+{
+  "scope": "process argv matches against recorded investigation temporary roots; ancestors excluded",
+  "rootsChecked": 139,
+  "remainingPids": []
+}

@@ -1,0 +1,586 @@
+2026-10-18T19:13:36.914Z [DEBUG] MDM settings load completed in 0ms
+2026-10-18T19:13:36.919Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/settings.json
+2026-10-18T19:13:36.920Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T19:13:36.921Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.json
+2026-10-18T19:13:36.922Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.local.json
+2026-10-18T19:13:36.923Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-10-18T19:13:36.929Z [DEBUG] [init] configureGlobalMTLS starting
+2026-10-18T19:13:36.929Z [DEBUG] [init] configureGlobalMTLS complete
+2026-10-18T19:13:36.929Z [DEBUG] [init] configureGlobalAgents starting
+2026-10-18T19:13:36.929Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-10-18T19:13:36.929Z [DEBUG] CA certs: Loaded 121 bundled root certificates
+2026-10-18T19:13:36.933Z [DEBUG] CA certs: Loaded 121 system CA certificates
+2026-10-18T19:13:36.933Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T19:13:36.933Z [DEBUG] [init] configureGlobalAgents complete
+2026-10-18T19:13:36.938Z [DEBUG] Error log sink initialized
+2026-10-18T19:13:36.938Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-10-18T19:13:36.944Z [DEBUG] Git remote URL: null
+2026-10-18T19:13:36.944Z [DEBUG] No git remote URL found
+2026-10-18T19:13:36.945Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:36.945Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.ef2828e7f3a3
+2026-10-18T19:13:36.945Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:36.946Z [DEBUG] Temp file written successfully, size: 272 bytes
+2026-10-18T19:13:36.946Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.ef2828e7f3a3 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:36.946Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:36.947Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:36.947Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.02b00c05c88b
+2026-10-18T19:13:36.947Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:36.947Z [DEBUG] Temp file written successfully, size: 355 bytes
+2026-10-18T19:13:36.947Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.02b00c05c88b to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:36.948Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:36.949Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:36.949Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.734b111d6ba7
+2026-10-18T19:13:36.949Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:36.950Z [DEBUG] Temp file written successfully, size: 391 bytes
+2026-10-18T19:13:36.950Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.734b111d6ba7 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:36.950Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:36.951Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:36.951Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.b10130edd38a
+2026-10-18T19:13:36.951Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:36.951Z [DEBUG] Temp file written successfully, size: 430 bytes
+2026-10-18T19:13:36.951Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.b10130edd38a to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:36.951Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:36.953Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:36.953Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.a00b84a1328f
+2026-10-18T19:13:36.954Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:36.954Z [DEBUG] Temp file written successfully, size: 457 bytes
+2026-10-18T19:13:36.954Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.a00b84a1328f to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:36.954Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:36.955Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:36.955Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.1b6d7c5e12c6
+2026-10-18T19:13:36.955Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:36.955Z [DEBUG] Temp file written successfully, size: 505 bytes
+2026-10-18T19:13:36.956Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.1b6d7c5e12c6 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:36.956Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:36.957Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:36.957Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.5eaf884cab25
+2026-10-18T19:13:36.957Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:36.957Z [DEBUG] Temp file written successfully, size: 531 bytes
+2026-10-18T19:13:36.957Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.5eaf884cab25 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:36.957Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:36.980Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T19:13:36.987Z [DEBUG] [ToolSearch:optimistic] disabled: ANTHROPIC_BASE_URL=http://127.0.0.1:42877 is not a first-party Anthropic host. Set ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards tool_reference blocks.
+2026-10-18T19:13:36.992Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-10-18T19:13:36.993Z [DEBUG] [STARTUP] Running setup()...
+2026-10-18T19:13:37.002Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/skills, project=[]
+2026-10-18T19:13:37.004Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T19:13:37.004Z [DEBUG] Failed to stat directory /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/agents'
+2026-10-18T19:13:37.005Z [DEBUG] installed_plugins.json doesn't exist, returning empty V2 object
+2026-10-18T19:13:37.005Z [DEBUG] --plugin-dir /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/disposable-plugin is one plugin: .claude-plugin at its top marks it
+2026-10-18T19:13:37.006Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T19:13:37.006Z [DEBUG] Failed to stat directory /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/commands'
+2026-10-18T19:13:37.006Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T19:13:37.027Z [DEBUG] Read hooks.json for plugin isolated-mod-contract (enabled=true): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/disposable-plugin/hooks/hooks.json
+2026-10-18T19:13:37.029Z [DEBUG] Loaded inline plugin from path: isolated-mod-contract
+2026-10-18T19:13:37.029Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-10-18T19:13:37.030Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-10-18T19:13:37.032Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T19:13:37.032Z [DEBUG] Checking plugin isolated-mod-contract: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:13:37.032Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:13:37.032Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:13:37.032Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:13:37.032Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T19:13:37.032Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T19:13:37.033Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T19:13:37.033Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T19:13:37.037Z [INFO] [uds-messaging] Listening: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/cc-socks/2218715.sock
+2026-10-18T19:13:37.039Z [INFO] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/cc-socks/2218715.sock
+2026-10-18T19:13:37.042Z [INFO] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -N -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-10-18T19:13:37.044Z [DEBUG] Error log sink initialized
+2026-10-18T19:13:37.049Z [DEBUG] cc-plugin-sec-default@builtin not seated: no managed settings and not a Team or Enterprise organization (none)
+2026-10-18T19:13:37.051Z [DEBUG] [STARTUP] setup() completed in 58ms
+2026-10-18T19:13:37.053Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-10-18T19:13:37.061Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T19:13:37.070Z [DEBUG] [STARTUP] Commands and agents loaded in 17ms
+2026-10-18T19:13:37.077Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-10-18T19:13:37.085Z [DEBUG] Cleared mTLS configuration cache
+2026-10-18T19:13:37.085Z [DEBUG] Cleared proxy agent cache
+2026-10-18T19:13:37.085Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T19:13:37.088Z [DEBUG] [STARTUP] showSetupScreens() completed in 11ms
+2026-10-18T19:13:37.088Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-10-18T19:13:37.088Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-10-18T19:13:37.088Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-10-18T19:13:37.089Z [DEBUG] Starting background startup prefetches
+2026-10-18T19:13:37.089Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T19:13:37.090Z [DEBUG] [STARTUP] MCP configs resolved in 42ms (awaited at +98ms)
+2026-10-18T19:13:37.096Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:37.098Z [DEBUG] Initialized versioned plugins system with 0 plugins
+2026-10-18T19:13:37.123Z [DEBUG] Total LSP servers loaded: 0
+2026-10-18T19:13:37.123Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-10-18T19:13:37.123Z [DEBUG] LSP manager initialized with 0 servers
+2026-10-18T19:13:37.123Z [DEBUG] LSP server manager initialized successfully
+2026-10-18T19:13:37.123Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-10-18T19:13:37.125Z [DEBUG] [sessionRegistry] sweep permitted (domain linux:dc3f3c83acfa4c73bf52983341d69d0b:pid:[4026531836])
+2026-10-18T19:13:37.128Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-10-18T19:13:37.128Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-10-18T19:13:37.135Z [DEBUG] Ripgrep first use test: PASSED (mode=embedded, path=/home/destin/.local/share/claude/versions/2.1.302)
+2026-10-18T19:13:37.136Z [DEBUG] "rg error (signal=undefined, code=2, stderr: rg: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/cache: IO error for operation on /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/cache: No such file or directory (os error 2)\n), 0 results"
+2026-10-18T19:13:37.138Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-10-18T19:13:37.156Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-10-18T19:13:37.157Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-10-18T19:13:37.157Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:37.157Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.ff7359f1b79d
+2026-10-18T19:13:37.158Z [DEBUG] Git remote URL: null
+2026-10-18T19:13:37.158Z [DEBUG] No git remote URL found
+2026-10-18T19:13:37.158Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-10-18T19:13:37.158Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:37.158Z [DEBUG] Temp file written successfully, size: 611 bytes
+2026-10-18T19:13:37.158Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.ff7359f1b79d to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:37.158Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:37.159Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:37.159Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.11e3e6572b10
+2026-10-18T19:13:37.159Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:37.159Z [DEBUG] Temp file written successfully, size: 611 bytes
+2026-10-18T19:13:37.159Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.11e3e6572b10 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:37.160Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:37.160Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:37.160Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.72e47d09b67d
+2026-10-18T19:13:37.161Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:37.161Z [DEBUG] Temp file written successfully, size: 784 bytes
+2026-10-18T19:13:37.161Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.72e47d09b67d to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:37.161Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:37.199Z [DEBUG] [keybindings] KeybindingSetup initialized with 224 bindings, 0 warnings
+2026-10-18T19:13:37.223Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:37.249Z [DEBUG] [engine] send set_max_thinking_tokens max=null
+2026-10-18T19:13:37.250Z [DEBUG] [engine] send set_model model=claude-opus-5-5
+2026-10-18T19:13:37.256Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T19:13:37.265Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T19:13:37.266Z [DEBUG] performStartupChecks called
+2026-10-18T19:13:37.271Z [DEBUG] [jobStateNameSync] watch skipped: Error: ENOENT: no such file or directory, watch '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/jobs/29da9fd2'
+2026-10-18T19:13:37.274Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-10-18T19:13:37.276Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T19:13:37.277Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-10-18T19:13:37.279Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/settings.json
+2026-10-18T19:13:37.279Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.json
+2026-10-18T19:13:37.279Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.local.json
+2026-10-18T19:13:37.280Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T19:13:37.300Z [DEBUG] [servedCatalog] off (essential_traffic)
+2026-10-18T19:13:37.311Z [DEBUG] Starting background plugin installations
+2026-10-18T19:13:37.312Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T19:13:37.312Z [DEBUG] performBackgroundPluginInstallations called
+2026-10-18T19:13:37.317Z [DEBUG] hooks module isolated-mod-contract@inline loaded (worker, environment 1, tier user); events: turn.start,turn.complete,session.start
+2026-10-18T19:13:37.319Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 2, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-10-18T19:13:37.320Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 3, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-10-18T19:13:37.322Z [DEBUG] hooks module cc-plugin-diff@builtin loaded (native, environment 4, tier builtin); events: session.start,ui.render,command.run,ui.close,ui.focus,ui.scroll,tool.call,prompt.submit
+2026-10-18T19:13:37.323Z [DEBUG] [keybindings] Watching for changes to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/keybindings.json
+2026-10-18T19:13:37.329Z [DEBUG] [sessionRegistry] sweep permitted (domain linux:dc3f3c83acfa4c73bf52983341d69d0b:pid:[4026531836])
+2026-10-18T19:13:37.329Z [DEBUG] [sessionRegistry] sweep permitted (domain linux:dc3f3c83acfa4c73bf52983341d69d0b:pid:[4026531836])
+2026-10-18T19:13:37.330Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for isolated-mod-contract,cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-diff
+2026-10-18T19:13:37.331Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-10-18T19:13:37.331Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-10-18T19:13:37.331Z [DEBUG] plugin.register: cc-plugin-diff (builtin, cc-plugin-diff@builtin), judged by core alone: admitted
+2026-10-18T19:13:37.332Z [DEBUG] plugin.register: isolated-mod-contract (user, isolated-mod-contract@inline), judged by core alone: admitted
+2026-10-18T19:13:37.343Z [DEBUG] plugin-dir watch: watching isolated-mod-contract; folders of plugins none
+2026-10-18T19:13:37.394Z [DEBUG] Artifact gates frozen: capabilities=true comments=false db=true files=false types=false type_create=false type_catalog=false read_page_data=false room=false verify=false delete=false preview=false preview_browser=unread open=false endpoints=false pin=true share=false versions=false flag_source=disabled gb_fresh=false
+2026-10-18T19:13:37.395Z [DEBUG] Artifact publish edits offer frozen: edit_hook=false
+2026-10-18T19:13:37.396Z [DEBUG] Artifact input schema built: assets=false copy_from=false publish_edits=true assets_source=cold_no_identity
+2026-10-18T19:13:37.486Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/memory/'
+2026-10-18T19:13:37.487Z [DEBUG] No CLAUDE.md/rules files found
+2026-10-18T19:13:37.527Z [DEBUG] Lock acquisition took longer than expected - another Claude instance may be running
+2026-10-18T19:13:37.559Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 5.8ms (native link, next() included)
+2026-10-18T19:13:37.561Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-10-18T19:13:37.561Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-10-18T19:13:37.561Z [DEBUG] [FileIndex] not a git repo, returning null
+2026-10-18T19:13:37.561Z [DEBUG] [FileIndex] git ls-files returned null, falling back to ripgrep
+2026-10-18T19:13:37.566Z [WARN] Official marketplace GCS fetch failed: connect ECONNREFUSED 35.190.46.17:443
+2026-10-18T19:13:37.566Z [DEBUG] Attempting to auto-install official marketplace
+2026-10-18T19:13:37.576Z [DEBUG] [FileIndex] ripgrep: 0 files in 15ms
+2026-10-18T19:13:37.577Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:37.578Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.c381abddea35
+2026-10-18T19:13:37.578Z [DEBUG] Failed to stat directory /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/routines: ENOENT: no such file or directory, stat '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/routines'
+2026-10-18T19:13:37.578Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/routines: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/routines'
+2026-10-18T19:13:37.578Z [DEBUG] Failed to stat directory /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/workflows: ENOENT: no such file or directory, stat '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/workflows'
+2026-10-18T19:13:37.578Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/workflows: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/workflows'
+2026-10-18T19:13:37.578Z [DEBUG] Failed to stat directory /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/output-styles: ENOENT: no such file or directory, stat '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/output-styles'
+2026-10-18T19:13:37.578Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/output-styles: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/output-styles'
+2026-10-18T19:13:37.578Z [DEBUG] Failed to stat directory /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/skills: ENOENT: no such file or directory, stat '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/skills'
+2026-10-18T19:13:37.578Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/skills: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/skills'
+2026-10-18T19:13:37.578Z [DEBUG] [FileIndex] cache refresh completed in 18ms
+2026-10-18T19:13:37.579Z [DEBUG] Watching /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project for /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude to appear
+2026-10-18T19:13:37.580Z [DEBUG] Watching for changes in setting files /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/settings.json...
+2026-10-18T19:13:37.586Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:37.588Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T19:13:37.589Z [DEBUG] Temp file written successfully, size: 1342 bytes
+2026-10-18T19:13:37.589Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.c381abddea35 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:37.590Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:37.596Z [DEBUG] SSH config check: code=255 configured=false
+2026-10-18T19:13:37.597Z [INFO] SSH not configured for GitHub, using HTTPS for anthropics/claude-plugins-official
+2026-10-18T19:13:37.601Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T19:13:37.603Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T19:13:37.605Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 104.1ms (native link, next() included)
+2026-10-18T19:13:37.608Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:37.608Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.5843d1f31311
+2026-10-18T19:13:37.612Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:37.612Z [DEBUG] Temp file written successfully, size: 1383 bytes
+2026-10-18T19:13:37.612Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.5843d1f31311 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:37.613Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:37.616Z [DEBUG] git clone: url=https://github.com/anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T19:13:37.625Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:37.625Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.a350d9e29697
+2026-10-18T19:13:37.628Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:37.629Z [DEBUG] Temp file written successfully, size: 1420 bytes
+2026-10-18T19:13:37.629Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.a350d9e29697 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:37.630Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:37.646Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:37.646Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.79622e600be3
+2026-10-18T19:13:37.647Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:37.648Z [DEBUG] Temp file written successfully, size: 1456 bytes
+2026-10-18T19:13:37.648Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.79622e600be3 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:37.649Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:37.652Z [WARN] "git clone failed: url=https://github.com/anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- https://github.com/anthropics/claude-plugins-official.git /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 2 ms: Could not connect to server"
+2026-10-18T19:13:37.653Z [ERROR] "HTTPS clone failed for marketplace anthropics/claude-plugins-official (Failed to clone marketplace repository: Cloning into '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 2 ms: Could not connect to server), falling back to SSH"
+2026-10-18T19:13:37.659Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T19:13:37.660Z [ERROR] install check: claude command at /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.local/bin/claude missing or broken (/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.local/bin does not exist)
+2026-10-18T19:13:37.661Z [ERROR] install check: claude command at /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.local/bin/claude missing or broken
+2026-10-18T19:13:37.661Z [INFO] 1 setup issue: install (run `claude doctor` for details)
+2026-10-18T19:13:37.685Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:37.686Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.e820ba93339b
+2026-10-18T19:13:37.686Z [DEBUG] git clone: url=git@github.com:anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T19:13:37.689Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:37.690Z [DEBUG] Temp file written successfully, size: 1529 bytes
+2026-10-18T19:13:37.690Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.e820ba93339b to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:37.691Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:37.700Z [WARN] "git clone failed: url=git@github.com:anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- git@github.com:anthropics/claude-plugins-official.git /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T19:13:37.701Z [ERROR] "SSH clone fallback also failed for marketplace anthropics/claude-plugins-official: Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T19:13:37.702Z [ERROR] "Failed to auto-install official marketplace: Fetching the marketplace from GitHub failed on both attempts. HTTPS (https://github.com/anthropics/claude-plugins-official.git): Failed to clone marketplace repository: Cloning into '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 2 ms: Could not connect to server\n\nSSH (git@github.com:anthropics/claude-plugins-official.git): Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T19:13:37.705Z [DEBUG] type root of isolated-mod-contract at /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/disposable-plugin/.claude-plugin/types: entries claude-code, claude-code-tools, claude-code-mcp; wrote .claude-plugin/types/claude-code/index.d.ts, .claude-plugin/types/claude-code-tools/index.d.ts, .claude-plugin/types/claude-code-mcp/index.d.ts, .claude-plugin/types/tsconfig.json, .claude-plugin/types/.gitignore, tsconfig.json
+2026-10-18T19:13:37.705Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-10-18T19:13:37.705Z [DEBUG] session.start: raised (surface terminal, interactive)
+2026-10-18T19:13:37.711Z [DEBUG] Loaded plugins - Enabled: 4, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2026-10-18T19:13:37.712Z [DEBUG] Plugin autoupdate: command-source refresh disabled by tengu_plugin_command_source_refresh (still excluding command-sourced plugins from the regular pass)
+2026-10-18T19:13:37.733Z [DEBUG] $.command.register (cc-plugin-diff): /diff listed
+2026-10-18T19:13:37.738Z [DEBUG] hooks module cc-plugin-diff@builtin session.start settled in 14.8ms (native link, next() included)
+2026-10-18T19:13:37.739Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 15.4ms (native link, next() included)
+2026-10-18T19:13:37.739Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:37.739Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.ec8d73e191c1
+2026-10-18T19:13:37.748Z [DEBUG] hooks module isolated-mod-contract@inline session.start settled in 42.0ms (worker hop, next() included)
+2026-10-18T19:13:37.754Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:37.755Z [DEBUG] Temp file written successfully, size: 1861 bytes
+2026-10-18T19:13:37.755Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.ec8d73e191c1 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:37.764Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:37.765Z [INFO] 1 setup issue: plugins (run /plugin for details)
+2026-10-18T19:13:37.896Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-10-18T19:13:39.255Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (227 bytes)
+2026-10-18T19:13:39.258Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (16202 bytes)
+2026-10-18T19:13:39.262Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:39.267Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (17802 bytes)
+2026-10-18T19:13:39.268Z [DEBUG] $.command.run (isolated-mod-contract): 13 chars queued
+2026-10-18T19:13:39.321Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 7.6ms (native link, next() included)
+2026-10-18T19:13:39.321Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 4.2ms (native link, next() included)
+2026-10-18T19:13:39.356Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T19:13:39.359Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/settings.json.tmp.2218715.4fe56cd4f77c
+2026-10-18T19:13:39.364Z [DEBUG] [engine] send set_model model=claude-sonnet-5-5
+2026-10-18T19:13:39.367Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-sonnet-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T19:13:39.367Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:39.367Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.4f7f7ef114de
+2026-10-18T19:13:39.368Z [DEBUG] Temp file written successfully, size: 24 bytes
+2026-10-18T19:13:39.368Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/settings.json.tmp.2218715.4fe56cd4f77c to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/settings.json
+2026-10-18T19:13:39.369Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/settings.json written atomically
+2026-10-18T19:13:39.372Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.json
+2026-10-18T19:13:39.372Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.local.json
+2026-10-18T19:13:39.372Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T19:13:39.374Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.json
+2026-10-18T19:13:39.374Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.local.json
+2026-10-18T19:13:39.374Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T19:13:39.374Z [DEBUG] Settings changed from userSettings, updating app state
+2026-10-18T19:13:39.375Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T19:13:39.375Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.json
+2026-10-18T19:13:39.376Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/.claude/settings.local.json
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all allow rules for destination 'userSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all deny rules for destination 'userSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all ask rules for destination 'userSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all allow rules for destination 'projectSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all deny rules for destination 'projectSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all ask rules for destination 'projectSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all allow rules for destination 'localSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all deny rules for destination 'localSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all ask rules for destination 'localSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all allow rules for destination 'flagSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all deny rules for destination 'flagSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all ask rules for destination 'flagSettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all allow rules for destination 'policySettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all deny rules for destination 'policySettings' with 0 rule(s): []
+2026-10-18T19:13:39.376Z [DEBUG] Replacing all ask rules for destination 'policySettings' with 0 rule(s): []
+2026-10-18T19:13:39.384Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T19:13:39.384Z [DEBUG] [servedCatalog] selection write skipped: not_primary
+2026-10-18T19:13:39.385Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T19:13:39.387Z [DEBUG] FileHistory: Added snapshot for 72db26c9-286c-44da-8c9d-784717fe4c06, tracking 0 files
+2026-10-18T19:13:39.395Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:39.396Z [DEBUG] [sessionRegistry] sweep permitted (domain linux:dc3f3c83acfa4c73bf52983341d69d0b:pid:[4026531836])
+2026-10-18T19:13:39.396Z [DEBUG] [sessionRegistry] sweep permitted (domain linux:dc3f3c83acfa4c73bf52983341d69d0b:pid:[4026531836])
+2026-10-18T19:13:39.402Z [DEBUG] Temp file written successfully, size: 1889 bytes
+2026-10-18T19:13:39.402Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.4f7f7ef114de to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:39.405Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:39.423Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:39.434Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T19:13:39.449Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 4.5ms (native link, next() included)
+2026-10-18T19:13:39.450Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (17886 bytes)
+2026-10-18T19:13:39.453Z [DEBUG] $.command.run (isolated-mod-contract): 6 chars queued
+2026-10-18T19:13:39.495Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 6.5ms (native link, next() included)
+2026-10-18T19:13:39.495Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.3ms (native link, next() included)
+2026-10-18T19:13:39.496Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): command.run nested in isolated-mod-contract
+2026-10-18T19:13:39.496Z [DEBUG] hooks module cc-plugin-diff@builtin (native): command.run nested in isolated-mod-contract
+2026-10-18T19:13:39.499Z [DEBUG] Cleared all session hooks for session 29da9fd2-b22e-4da2-8723-d8d9777daad5
+2026-10-18T19:13:39.504Z [DEBUG] LSP Diagnostics: Resetting all state (0 pending, 0 files tracked)
+2026-10-18T19:13:39.509Z [DEBUG] [closeSessionTabGroup] bridge not connected, skipping
+2026-10-18T19:13:39.509Z [DEBUG] $.ui.status (cc-plugin-diff): (cleared)
+2026-10-18T19:13:39.510Z [DEBUG] hooks module cc-plugin-diff@builtin command.run settled in 13.2ms (native link, next() included)
+2026-10-18T19:13:39.510Z [DEBUG] hooks module cc-plugin-agents-md@builtin command.run settled in 13.8ms (native link, next() included)
+2026-10-18T19:13:39.510Z [DEBUG] FileHistory: Added snapshot for bb202ca4-1ba4-4cb7-954d-3d3eff1a876e, tracking 0 files
+2026-10-18T19:13:39.513Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:39.513Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.58b0a7869f6e
+2026-10-18T19:13:39.516Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:39.517Z [DEBUG] Temp file written successfully, size: 1998 bytes
+2026-10-18T19:13:39.517Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.58b0a7869f6e to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:39.517Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (18224 bytes)
+2026-10-18T19:13:39.517Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:39.536Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T19:13:39.542Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 7.5ms (native link, next() included)
+2026-10-18T19:13:39.542Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.5ms (native link, next() included)
+2026-10-18T19:13:39.544Z [DEBUG] $.prompt.submit (isolated-mod-contract): "repeat exact"
+2026-10-18T19:13:39.582Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 7.2ms (native link, next() included)
+2026-10-18T19:13:39.582Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 5.3ms (native link, next() included)
+2026-10-18T19:13:39.582Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:39.582Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:39.584Z [DEBUG] FileHistory: Making snapshot for message 8ca96903-1ee5-4860-8043-929a48542936
+2026-10-18T19:13:39.587Z [DEBUG] FileHistory: Added snapshot for 8ca96903-1ee5-4860-8043-929a48542936, tracking 0 files
+2026-10-18T19:13:39.591Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T19:13:39.591Z [DEBUG] Checking plugin isolated-mod-contract: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:13:39.591Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:13:39.591Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:13:39.591Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:13:39.591Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T19:13:39.591Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T19:13:39.591Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 8.8ms (native link, next() included)
+2026-10-18T19:13:39.592Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 9.6ms (native link, next() included)
+2026-10-18T19:13:39.593Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.2ms (native link, next() included)
+2026-10-18T19:13:39.593Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/skills, project=[]
+2026-10-18T19:13:39.593Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T19:13:39.595Z [DEBUG] hooks module isolated-mod-contract@inline turn.start settled in 6.7ms (worker hop, next() included)
+2026-10-18T19:13:39.595Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/output-styles: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/output-styles'
+2026-10-18T19:13:39.595Z [DEBUG] Failed to stat directory /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/output-styles: ENOENT: no such file or directory, stat '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/output-styles'
+2026-10-18T19:13:39.595Z [DEBUG] Total plugin output styles loaded: 0
+2026-10-18T19:13:39.595Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/memory/'
+2026-10-18T19:13:39.596Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:39.596Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.14ca2d64f16b
+2026-10-18T19:13:39.596Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T19:13:39.596Z [DEBUG] Failed to stat directory /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/commands'
+2026-10-18T19:13:39.596Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T19:13:39.597Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T19:13:39.602Z [DEBUG] act_dont_rederive_arm_active source=growthbook
+2026-10-18T19:13:39.608Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:39.609Z [DEBUG] Temp file written successfully, size: 1998 bytes
+2026-10-18T19:13:39.609Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.14ca2d64f16b to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:39.610Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:39.623Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T19:13:39.627Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:39.627Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.f3023b3208b2
+2026-10-18T19:13:39.628Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:39.628Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T19:13:39.629Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 33.0ms (native link, next() included)
+2026-10-18T19:13:39.632Z [DEBUG] [engine] yield system/init (first)
+2026-10-18T19:13:39.632Z [DEBUG] [engine] turn 1 start
+2026-10-18T19:13:39.638Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T19:13:39.649Z [DEBUG] Temp file written successfully, size: 2525 bytes
+2026-10-18T19:13:39.649Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.f3023b3208b2 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:39.667Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.d35; cc_entrypoint=cli;
+2026-10-18T19:13:39.667Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:39.669Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:39.671Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:39.673Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:39.678Z [DEBUG] [API:timing] dispatching to firstParty model=claude-sonnet-5-5
+2026-10-18T19:13:39.680Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T19:13:39.689Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:39.689Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.a1afe25f1fbf
+2026-10-18T19:13:39.689Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:39.690Z [DEBUG] Temp file written successfully, size: 2525 bytes
+2026-10-18T19:13:39.690Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.a1afe25f1fbf to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:39.690Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:40.406Z [DEBUG] Suppressed change to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/settings.json — echo of our own write within the last 5000ms
+2026-10-18T19:13:40.893Z [DEBUG] Stream started - received first chunk
+2026-10-18T19:13:40.894Z [DEBUG] [API:timing] first byte after 1221ms
+2026-10-18T19:13:40.902Z [DEBUG] [server-classifier] the platform gave no classification for this request (server_no_result); treating that as this deployment's answer: auto mode classifies locally for the rest of this session and stops sending the classifier context
+2026-10-18T19:13:40.913Z [DEBUG] [engine] turn 1 end (turns=1 usage in=10 out=5 cost=$0.0001 api=1236ms stop=end_turn resultLen=22)
+2026-10-18T19:13:40.923Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.3ms (native link, next() included)
+2026-10-18T19:13:40.924Z [DEBUG] hooks module isolated-mod-contract@inline turn.complete settled in 4.8ms (worker hop, next() included)
+2026-10-18T19:13:40.955Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 7.8ms (native link, next() included)
+2026-10-18T19:13:40.955Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.9ms (native link, next() included)
+2026-10-18T19:13:40.966Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (18790 bytes)
+2026-10-18T19:13:40.968Z [DEBUG] $.prompt.submit (isolated-mod-contract): "repeat exact"
+2026-10-18T19:13:40.994Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 5.0ms (native link, next() included)
+2026-10-18T19:13:40.994Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.5ms (native link, next() included)
+2026-10-18T19:13:40.994Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:40.994Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:40.995Z [DEBUG] FileHistory: Making snapshot for message 8938c398-85d4-4d97-9e28-63a3b6a7c665
+2026-10-18T19:13:40.996Z [DEBUG] FileHistory: Added snapshot for 8938c398-85d4-4d97-9e28-63a3b6a7c665, tracking 0 files
+2026-10-18T19:13:40.998Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 3.8ms (native link, next() included)
+2026-10-18T19:13:40.998Z [DEBUG] [engine] turn 2 start
+2026-10-18T19:13:40.999Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 5.3ms (native link, next() included)
+2026-10-18T19:13:41.000Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T19:13:41.004Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.d35; cc_entrypoint=cli;
+2026-10-18T19:13:41.004Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:41.005Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:41.006Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.1ms (native link, next() included)
+2026-10-18T19:13:41.006Z [DEBUG] $.prompt.submit (isolated-mod-contract): "line one\n第二行 café 🧪"
+2026-10-18T19:13:41.007Z [DEBUG] hooks module isolated-mod-contract@inline turn.start settled in 10.0ms (worker hop, next() included)
+2026-10-18T19:13:41.008Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:41.010Z [DEBUG] [API:timing] dispatching to firstParty model=claude-sonnet-5-5
+2026-10-18T19:13:41.011Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T19:13:41.025Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:41.025Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.4cbfe8104f01
+2026-10-18T19:13:41.026Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:41.027Z [DEBUG] Temp file written successfully, size: 2525 bytes
+2026-10-18T19:13:41.027Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.4cbfe8104f01 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:41.027Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:41.029Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:41.029Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.7845722ca803
+2026-10-18T19:13:41.029Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:41.029Z [DEBUG] Temp file written successfully, size: 2525 bytes
+2026-10-18T19:13:41.030Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.7845722ca803 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:41.030Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:42.216Z [DEBUG] Stream started - received first chunk
+2026-10-18T19:13:42.216Z [DEBUG] [API:timing] first byte after 1208ms
+2026-10-18T19:13:42.225Z [DEBUG] [engine] turn 2 end (turns=1 usage in=20 out=10 cost=$0.0001 api=2454ms stop=end_turn resultLen=22)
+2026-10-18T19:13:42.230Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.2ms (native link, next() included)
+2026-10-18T19:13:42.275Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 26.4ms (native link, next() included)
+2026-10-18T19:13:42.275Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 9.1ms (native link, next() included)
+2026-10-18T19:13:42.275Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 6.4ms (native link, next() included)
+2026-10-18T19:13:42.275Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:42.275Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:42.276Z [DEBUG] FileHistory: Making snapshot for message 1f953faf-ce33-475a-9d10-71a8a381b7bd
+2026-10-18T19:13:42.279Z [DEBUG] FileHistory: Added snapshot for 1f953faf-ce33-475a-9d10-71a8a381b7bd, tracking 0 files
+2026-10-18T19:13:42.280Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 5.0ms (native link, next() included)
+2026-10-18T19:13:42.281Z [DEBUG] [engine] turn 3 start
+2026-10-18T19:13:42.281Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 6.1ms (native link, next() included)
+2026-10-18T19:13:42.282Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T19:13:42.288Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.d35; cc_entrypoint=cli;
+2026-10-18T19:13:42.288Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:42.289Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:42.290Z [DEBUG] hooks module isolated-mod-contract@inline turn.complete settled in 61.8ms (worker hop, next() included)
+2026-10-18T19:13:42.291Z [DEBUG] $.prompt.submit (isolated-mod-contract): "queued while busy"
+2026-10-18T19:13:42.292Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.1ms (native link, next() included)
+2026-10-18T19:13:42.293Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:42.295Z [DEBUG] [API:timing] dispatching to firstParty model=claude-sonnet-5-5
+2026-10-18T19:13:42.296Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T19:13:42.297Z [DEBUG] hooks module isolated-mod-contract@inline turn.start settled in 6.0ms (worker hop, next() included)
+2026-10-18T19:13:42.322Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:42.322Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.3b65d3ef42e3
+2026-10-18T19:13:42.322Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:42.323Z [DEBUG] Temp file written successfully, size: 2525 bytes
+2026-10-18T19:13:42.323Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.3b65d3ef42e3 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:42.323Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:43.500Z [DEBUG] Stream started - received first chunk
+2026-10-18T19:13:43.500Z [DEBUG] [API:timing] first byte after 1207ms
+2026-10-18T19:13:43.507Z [DEBUG] [engine] turn 3 end (turns=1 usage in=30 out=15 cost=$0.0002 api=3670ms stop=end_turn resultLen=22)
+2026-10-18T19:13:43.542Z [DEBUG] High write ratio: blit=3410, write=3706 (52.1% writes), screen=40x110
+2026-10-18T19:13:43.545Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 19.8ms (native link, next() included)
+2026-10-18T19:13:43.545Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 6.6ms (native link, next() included)
+2026-10-18T19:13:43.545Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 4.8ms (native link, next() included)
+2026-10-18T19:13:43.545Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:43.545Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:43.546Z [DEBUG] FileHistory: Making snapshot for message 2962caeb-2ff4-4b88-b59a-a6eadfa2a4c0
+2026-10-18T19:13:43.547Z [DEBUG] FileHistory: Added snapshot for 2962caeb-2ff4-4b88-b59a-a6eadfa2a4c0, tracking 0 files
+2026-10-18T19:13:43.549Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 3.6ms (native link, next() included)
+2026-10-18T19:13:43.549Z [DEBUG] [engine] turn 4 start
+2026-10-18T19:13:43.549Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 4.5ms (native link, next() included)
+2026-10-18T19:13:43.551Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T19:13:43.556Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.d35; cc_entrypoint=cli;
+2026-10-18T19:13:43.556Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:43.557Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:43.558Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.2ms (native link, next() included)
+2026-10-18T19:13:43.559Z [DEBUG] hooks module isolated-mod-contract@inline turn.complete settled in 49.9ms (worker hop, next() included)
+2026-10-18T19:13:43.560Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:43.563Z [DEBUG] [API:timing] dispatching to firstParty model=claude-sonnet-5-5
+2026-10-18T19:13:43.564Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T19:13:43.565Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.2ms (native link, next() included)
+2026-10-18T19:13:43.566Z [DEBUG] hooks module isolated-mod-contract@inline turn.start settled in 6.2ms (worker hop, next() included)
+2026-10-18T19:13:44.767Z [DEBUG] Stream started - received first chunk
+2026-10-18T19:13:44.767Z [DEBUG] [API:timing] first byte after 1207ms
+2026-10-18T19:13:44.775Z [DEBUG] [engine] turn 4 end (turns=1 usage in=40 out=20 cost=$0.0003 api=4887ms stop=end_turn resultLen=22)
+2026-10-18T19:13:44.779Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.2ms (native link, next() included)
+2026-10-18T19:13:44.780Z [DEBUG] hooks module isolated-mod-contract@inline turn.complete settled in 2.3ms (worker hop, next() included)
+2026-10-18T19:13:44.804Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 6.3ms (native link, next() included)
+2026-10-18T19:13:44.804Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.5ms (native link, next() included)
+2026-10-18T19:13:44.832Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (20198 bytes)
+2026-10-18T19:13:44.834Z [DEBUG] $.command.run (isolated-mod-contract): 32 chars queued
+2026-10-18T19:13:44.870Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 5.5ms (native link, next() included)
+2026-10-18T19:13:44.870Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.0ms (native link, next() included)
+2026-10-18T19:13:44.871Z [DEBUG] FileHistory: Making snapshot for message a3800dc4-c5a6-4d52-aba3-453b25aa7371
+2026-10-18T19:13:44.874Z [DEBUG] FileHistory: Added snapshot for a3800dc4-c5a6-4d52-aba3-453b25aa7371, tracking 0 files
+2026-10-18T19:13:44.875Z [DEBUG] [engine] turn 5 start
+2026-10-18T19:13:44.880Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): command.run nested in isolated-mod-contract
+2026-10-18T19:13:44.892Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.d35; cc_entrypoint=cli;
+2026-10-18T19:13:44.892Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:44.894Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:44.896Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:44.896Z [DEBUG] [API:timing] dispatching to firstParty model=claude-sonnet-5-5
+2026-10-18T19:13:44.897Z [DEBUG] [API REQUEST] /v1/messages source=compact
+2026-10-18T19:13:44.913Z [DEBUG] High write ratio: blit=550, write=1351 (71.1% writes), screen=40x110
+2026-10-18T19:13:44.918Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:44.918Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.8f414de20bf1
+2026-10-18T19:13:44.919Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:44.919Z [DEBUG] Temp file written successfully, size: 2525 bytes
+2026-10-18T19:13:44.919Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.8f414de20bf1 to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:44.919Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:46.765Z [DEBUG] AutoUpdaterWrapper: Installation type: native
+2026-10-18T19:13:47.276Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:47.276Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.7b66312d1faa
+2026-10-18T19:13:47.276Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:47.277Z [DEBUG] Temp file written successfully, size: 2352 bytes
+2026-10-18T19:13:47.277Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.7b66312d1faa to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:47.278Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:47.278Z [DEBUG] fullscreen boot canary: healthy
+2026-10-18T19:13:47.291Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 2.0ms (native link, next() included)
+2026-10-18T19:13:48.901Z [DEBUG] Stream started - received first chunk
+2026-10-18T19:13:48.902Z [DEBUG] [API:timing] first byte after 4006ms
+2026-10-18T19:13:48.904Z [DEBUG] Forked agent [reactive-compact] received message: type=assistant
+2026-10-18T19:13:48.909Z [DEBUG] Forked agent [reactive-compact] finished: 1 messages, types=[assistant], totalUsage: input=0 output=5 cacheRead=0 cacheCreate=0
+2026-10-18T19:13:48.917Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.compact settled in 4034.9ms (native link, next() included)
+2026-10-18T19:13:48.922Z [DEBUG] hooks module cc-plugin-agents-md@builtin command.run settled in 4042.1ms (native link, next() included)
+2026-10-18T19:13:48.929Z [DEBUG] [engine] turn 5 end (turns=0 usage in=50 out=25 cost=$0.0004 api=8899ms stop=null resultLen=0)
+2026-10-18T19:13:48.954Z [DEBUG] High write ratio: blit=0, write=1602 (100.0% writes), screen=40x110
+2026-10-18T19:13:48.956Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 7.9ms (native link, next() included)
+2026-10-18T19:13:48.956Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 4.9ms (native link, next() included)
+2026-10-18T19:13:48.960Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (22379 bytes)
+2026-10-18T19:13:48.963Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (22532 bytes)
+2026-10-18T19:13:48.963Z [DEBUG] $.prompt.submit (isolated-mod-contract): "slow interruption probe"
+2026-10-18T19:13:48.996Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 7.9ms (native link, next() included)
+2026-10-18T19:13:48.996Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 5.3ms (native link, next() included)
+2026-10-18T19:13:48.996Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:48.997Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in isolated-mod-contract
+2026-10-18T19:13:48.998Z [DEBUG] FileHistory: Making snapshot for message e75e4f70-4b9a-4c0e-9137-2595929d6145
+2026-10-18T19:13:49.000Z [DEBUG] FileHistory: Added snapshot for e75e4f70-4b9a-4c0e-9137-2595929d6145, tracking 0 files
+2026-10-18T19:13:49.004Z [DEBUG] act_dont_rederive_arm_active source=growthbook
+2026-10-18T19:13:49.005Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 8.5ms (native link, next() included)
+2026-10-18T19:13:49.006Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 9.1ms (native link, next() included)
+2026-10-18T19:13:49.006Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.2ms (native link, next() included)
+2026-10-18T19:13:49.008Z [DEBUG] hooks module isolated-mod-contract@inline turn.start settled in 6.4ms (worker hop, next() included)
+2026-10-18T19:13:49.023Z [DEBUG] High write ratio: blit=550, write=1316 (70.5% writes), screen=40x110
+2026-10-18T19:13:49.025Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:13:49.025Z [DEBUG] Writing to temp file: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.73038424464b
+2026-10-18T19:13:49.026Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:13:49.027Z [DEBUG] Temp file written successfully, size: 2352 bytes
+2026-10-18T19:13:49.027Z [DEBUG] Renaming /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json.tmp.2218715.73038424464b to /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json
+2026-10-18T19:13:49.027Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T19:13:49.028Z [DEBUG] File /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/.claude.json written atomically
+2026-10-18T19:13:49.035Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T19:13:49.035Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 27.2ms (native link, next() included)
+2026-10-18T19:13:49.037Z [DEBUG] [engine] turn 6 start
+2026-10-18T19:13:49.038Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T19:13:49.051Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.daa; cc_entrypoint=cli;
+2026-10-18T19:13:49.052Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:49.053Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:49.063Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:13:49.068Z [DEBUG] [API:timing] dispatching to firstParty model=claude-sonnet-5-5
+2026-10-18T19:13:49.069Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T19:13:49.511Z [DEBUG] $.turn.abort (isolated-mod-contract): cancelled turn b1fd01d2-55e6-40b7-9f29-ba7aef3979b6
+2026-10-18T19:13:49.515Z [ERROR] Error in API request: Request was aborted.
+2026-10-18T19:13:49.516Z [DEBUG] [engine] turn 6 end (turns=1 usage in=50 out=25 cost=$0.0004 api=8899ms stop=null resultLen=0)
+2026-10-18T19:13:49.516Z [DEBUG] [engine] turn ended in error: [ede_diagnostic] result_type=user last_content_type=n/a stop_reason=null
+2026-10-18T19:13:49.543Z [DEBUG] High write ratio: blit=0, write=1647 (100.0% writes), screen=40x110
+2026-10-18T19:13:49.544Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 7.2ms (native link, next() included)
+2026-10-18T19:13:49.544Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 4.0ms (native link, next() included)
+2026-10-18T19:13:49.545Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.2ms (native link, next() included)
+2026-10-18T19:13:49.547Z [DEBUG] hooks module isolated-mod-contract@inline turn.complete settled in 28.6ms (worker hop, next() included)
+2026-10-18T19:13:49.618Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (24839 bytes)
+2026-10-18T19:13:49.620Z [DEBUG] $.fs.write (isolated-mod-contract): /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project/mod-report.json (24838 bytes)

@@ -1,0 +1,220 @@
+{
+  "mode": "attachment",
+  "root": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb",
+  "project": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/project",
+  "plugin": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/plugin",
+  "binary": "/home/destin/.local/bin/claude",
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "TERM": "xterm-256color",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "HOME": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/home",
+    "CLAUDE_CONFIG_DIR": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/home/.claude",
+    "TMPDIR": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb",
+    "XDG_CONFIG_HOME": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/home/.config",
+    "XDG_CACHE_HOME": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/home/.cache",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:43255",
+    "ANTHROPIC_AUTH_TOKEN": "fake-token-for-local-capture"
+  },
+  "commands": [
+    {
+      "args": [
+        "--version"
+      ],
+      "code": 0,
+      "output": "2.1.302 (Claude Code)\n"
+    },
+    {
+      "args": [
+        "plugin",
+        "validate",
+        "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/plugin",
+        "--json"
+      ],
+      "code": 0,
+      "output": "{\n  \"success\": true,\n  \"strict\": false,\n  \"target\": \"/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/plugin/.claude-plugin/plugin.json\",\n  \"manifest\": {\n    \"file\": \"/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/plugin/.claude-plugin/plugin.json\",\n    \"type\": \"plugin\",\n    \"errors\": [],\n    \"warnings\": [\n      {\n        \"path\": \"author\",\n        \"message\": \"No author information provided. Consider adding author details for plugin attribution\",\n        \"code\": null\n      }\n    ],\n    \"notes\": [],\n    \"gatingHooks\": []\n  },\n  \"contents\": [\n    {\n      \"file\": \"/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/plugin/hooks/hooks.json\",\n      \"type\": \"hooks\",\n      \"errors\": [],\n      \"warnings\": [],\n      \"notes\": [\n        \"./register.ts hooks: prompt.submit, turn.complete, session.start\",\n        \"./register.ts gating hook without .catch: prompt.submit\",\n        \"./register.ts calls: $.clock.after, $.clock.sleep, $.fs.write, $.prompt.submit, $.session.cwd, $.session.messages\"\n      ],\n      \"gatingHooks\": [\n        {\n          \"module\": \"./register.ts\",\n          \"pattern\": \"prompt.submit\",\n          \"hook\": \"prompt.submit\",\n          \"hasCatch\": false\n        }\n      ]\n    }\n  ],\n  \"advice\": []\n}\n"
+    }
+  ],
+  "pid": 2241896,
+  "networkNamespace": "net:[4026533345]",
+  "png": {
+    "bytes": 70,
+    "sha256": "4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5"
+  },
+  "modReport": {
+    "input": {
+      "text": "attachment metadata transport probe",
+      "asUser": true,
+      "attachments": [
+        {
+          "type": "image",
+          "mediaType": "image/png",
+          "filename": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/project/tiny.png"
+        }
+      ]
+    },
+    "events": [
+      {
+        "event": "turn.complete",
+        "reason": "answer"
+      }
+    ],
+    "done": true,
+    "result": {
+      "text": "attachment metadata transport probe",
+      "origin": {
+        "kind": "plugin",
+        "name": "isolated-attachment-probe",
+        "asUser": true
+      }
+    },
+    "completed": true,
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "<system-reminder>\nToday's date is 2026-10-18.\n</system-reminder>"
+          },
+          {
+            "type": "text",
+            "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+          },
+          {
+            "type": "text",
+            "text": "attachment metadata transport probe"
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "LOCAL_ATTACHMENT_TRANSPORT_REPLY"
+          }
+        ]
+      }
+    ]
+  },
+  "raw": "\r ▐▛███▛█Claude Codev2.1.302\r▝▜██████▀Opus 5.5 · API Usage Billing\r ▝▝   ▝▝ /tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/project\r▎Debug mode enabled · logging to /tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/debug.log\r◐ medium · /effort\r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r❯  \r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r⏸ manual mode on · ? for shortcuts · ← for agents\r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\rMake auto mode your default permission mode?\rAutomodeletsClaudehandlepermissionpromptsautomatically.Claudecheckseachtoolcallforrisky\ractionsandpromptinjectionbeforeexecuting,runstheonesitassessesaslower-risk,andblocksthe\rrest.\r❯Yes, set auto mode as my default permission mode\rNo,keepmanualmode\r\r\r\r\r\r▟▟\r█▟█▟\r▟█▟█\r▗▟▛▛▄\r ▘\r ▐ \r▝▀\r› Prompt from the isolated-attachment-pro… plugin\r❯ attachment metadata transport probe                                                                         \r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\rMake auto mode your default permission mode?\r\rAutomodeletsClaudehandlepermissionpromptsautomatically.Claudecheckseachtoolcallforrisky\ractions and prompt injection before executing, runstheonesitassessesaslower-risk,andblocksthe\rrest.\r❯Yes, set auto mode as my default permission mode\rNo,keepmanualmode\r\r\r\r\r\r\r\r✶Fiddle-faddling… \r◐ medium · /effort\r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r❯  \r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r⏸ manual mode on · esc to interrupt · ← for agents\rattachment metadata transport probe\r●LOCAL_ATTACHMENT_TRANSPORT_REPLY\r✻Crunched for 0s · done 12:20 PM\r\r❯ \r? for shortcuts · ← for agents",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/v1/messages?beta=true",
+      "model": "claude-opus-5-5",
+      "dummyAuth": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "attachment metadata transport probe"
+            }
+          ]
+        },
+        {
+          "role": "system",
+          "content": [
+            {
+              "type": "text",
+              "text": "Today's date is 2026-10-18.",
+              "cache_control": {
+                "type": "ephemeral"
+              }
+            }
+          ],
+          "output_config": {
+            "effort": "medium"
+          }
+        }
+      ]
+    }
+  ],
+  "turnsUsed": 1,
+  "files": {
+    "failure-open": {
+      "exists": false
+    },
+    "failure-deny": {
+      "exists": false
+    },
+    "failure-timeout": {
+      "exists": false
+    }
+  },
+  "transcripts": [
+    {
+      "path": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/home/.claude/projects/-tmp-cc-mods-second-TLiCmv-cc-mods-attachment-mSPUtb-project/7450121f-3448-4780-a4f4-6ea663963fdc.jsonl",
+      "userRows": [
+        {
+          "parentUuid": null,
+          "isSidechain": false,
+          "promptId": "ba8034cc-9135-4338-9bca-e85cc1161678",
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": "attachment metadata transport probe"
+          },
+          "uuid": "190100e0-ded1-4672-96b3-6fb9bd9f8dea",
+          "timestamp": "2026-10-18T19:20:42.803Z",
+          "permissionMode": "default",
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-attachment-probe",
+            "asUser": true
+          },
+          "promptSource": "system",
+          "turnOrigin": "system",
+          "turnPosition": {
+            "promptIndex": 0,
+            "turnIndex": 1
+          },
+          "queuePriority": "later",
+          "userType": "external",
+          "entrypoint": "cli",
+          "cwd": "/tmp/cc-mods-second-TLiCmv/cc-mods-attachment-mSPUtb/project",
+          "sessionId": "7450121f-3448-4780-a4f4-6ea663963fdc",
+          "version": "2.1.302",
+          "gitBranch": "HEAD"
+        }
+      ],
+      "types": [
+        "mode",
+        "permission-mode",
+        "atis-latch",
+        "queue-operation",
+        "queue-operation",
+        "file-history-snapshot",
+        "user",
+        "assistant",
+        "attachment",
+        "attachment",
+        "attachment",
+        "system",
+        "attachment",
+        "attachment",
+        "last-prompt",
+        "mode",
+        "permission-mode",
+        "atis-latch"
+      ]
+    }
+  ],
+  "childExit": {
+    "exitCode": 129,
+    "signal": 0
+  },
+  "serverClosed": true
+}

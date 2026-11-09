@@ -1,0 +1,346 @@
+2026-10-18T19:58:56.440Z [DEBUG] MDM settings load completed in 0ms
+2026-10-18T19:58:56.446Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T19:58:56.447Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/.claude/settings.json
+2026-10-18T19:58:56.448Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/.claude/settings.local.json
+2026-10-18T19:58:56.448Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-10-18T19:58:56.451Z [DEBUG] [init] configureGlobalMTLS starting
+2026-10-18T19:58:56.452Z [DEBUG] [init] configureGlobalMTLS complete
+2026-10-18T19:58:56.452Z [DEBUG] [init] configureGlobalAgents starting
+2026-10-18T19:58:56.452Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-10-18T19:58:56.452Z [DEBUG] CA certs: Loaded 121 bundled root certificates
+2026-10-18T19:58:56.455Z [DEBUG] CA certs: Loaded 121 system CA certificates
+2026-10-18T19:58:56.455Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T19:58:56.455Z [DEBUG] [init] configureGlobalAgents complete
+2026-10-18T19:58:56.458Z [DEBUG] Error log sink initialized
+2026-10-18T19:58:56.458Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-10-18T19:58:56.471Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T19:58:56.475Z [DEBUG] [ToolSearch:optimistic] disabled: ANTHROPIC_BASE_URL=http://127.0.0.1:43053 is not a first-party Anthropic host. Set ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards tool_reference blocks.
+2026-10-18T19:58:56.478Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-10-18T19:58:56.479Z [DEBUG] [STARTUP] Running setup()...
+2026-10-18T19:58:56.484Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/skills, project=[]
+2026-10-18T19:58:56.485Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T19:58:56.485Z [DEBUG] Failed to stat directory /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/agents'
+2026-10-18T19:58:56.485Z [DEBUG] installed_plugins.json doesn't exist, returning empty V2 object
+2026-10-18T19:58:56.485Z [DEBUG] --plugin-dir /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/plugin is one plugin: .claude-plugin at its top marks it
+2026-10-18T19:58:56.485Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T19:58:56.485Z [DEBUG] Failed to stat directory /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/commands'
+2026-10-18T19:58:56.486Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T19:58:56.498Z [DEBUG] Git remote URL: null
+2026-10-18T19:58:56.498Z [DEBUG] No git remote URL found
+2026-10-18T19:58:56.499Z [DEBUG] Read hooks.json for plugin isolated-interaction (enabled=true): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/plugin/hooks/hooks.json
+2026-10-18T19:58:56.500Z [DEBUG] Loaded inline plugin from path: isolated-interaction
+2026-10-18T19:58:56.500Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-10-18T19:58:56.501Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-10-18T19:58:56.502Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T19:58:56.502Z [DEBUG] Checking plugin isolated-interaction: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:58:56.502Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:58:56.502Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:58:56.502Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:58:56.502Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T19:58:56.502Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T19:58:56.503Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T19:58:56.503Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T19:58:56.504Z [INFO] [uds-messaging] Listening: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/runtime/cc-socks/677.sock
+2026-10-18T19:58:56.506Z [INFO] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/runtime/cc-socks/677.sock
+2026-10-18T19:58:56.508Z [INFO] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -N -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-10-18T19:58:56.509Z [DEBUG] Error log sink initialized
+2026-10-18T19:58:56.512Z [DEBUG] cc-plugin-sec-default@builtin not seated: no managed settings and not a Team or Enterprise organization (none)
+2026-10-18T19:58:56.513Z [DEBUG] [STARTUP] setup() completed in 34ms
+2026-10-18T19:58:56.514Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-10-18T19:58:56.519Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T19:58:56.526Z [DEBUG] [STARTUP] Commands and agents loaded in 11ms
+2026-10-18T19:58:56.530Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-10-18T19:58:56.534Z [DEBUG] Cleared mTLS configuration cache
+2026-10-18T19:58:56.534Z [DEBUG] Cleared proxy agent cache
+2026-10-18T19:58:56.534Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T19:58:56.536Z [DEBUG] [STARTUP] showSetupScreens() completed in 6ms
+2026-10-18T19:58:56.536Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-10-18T19:58:56.536Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-10-18T19:58:56.536Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-10-18T19:58:56.536Z [DEBUG] Starting background startup prefetches
+2026-10-18T19:58:56.537Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T19:58:56.537Z [DEBUG] [STARTUP] MCP configs resolved in 26ms (awaited at +59ms)
+2026-10-18T19:58:56.542Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:56.543Z [DEBUG] Initialized versioned plugins system with 0 plugins
+2026-10-18T19:58:56.562Z [DEBUG] Total LSP servers loaded: 0
+2026-10-18T19:58:56.562Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-10-18T19:58:56.562Z [DEBUG] LSP manager initialized with 0 servers
+2026-10-18T19:58:56.562Z [DEBUG] LSP server manager initialized successfully
+2026-10-18T19:58:56.563Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-10-18T19:58:56.565Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T19:58:56.567Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-10-18T19:58:56.567Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-10-18T19:58:56.574Z [DEBUG] Ripgrep first use test: PASSED (mode=embedded, path=/home/destin/.local/share/claude/versions/2.1.302)
+2026-10-18T19:58:56.575Z [DEBUG] "rg error (signal=undefined, code=2, stderr: rg: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/cache: IO error for operation on /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/cache: No such file or directory (os error 2)\n), 0 results"
+2026-10-18T19:58:56.577Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-10-18T19:58:56.592Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-10-18T19:58:56.593Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-10-18T19:58:56.594Z [DEBUG] Git remote URL: null
+2026-10-18T19:58:56.594Z [DEBUG] No git remote URL found
+2026-10-18T19:58:56.594Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-10-18T19:58:56.594Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:56.594Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.78f2afd46224
+2026-10-18T19:58:56.594Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:56.595Z [DEBUG] Temp file written successfully, size: 604 bytes
+2026-10-18T19:58:56.595Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.78f2afd46224 to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:56.595Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:56.596Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:56.596Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.f275864d8827
+2026-10-18T19:58:56.596Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:56.596Z [DEBUG] Temp file written successfully, size: 604 bytes
+2026-10-18T19:58:56.596Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.f275864d8827 to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:56.596Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:56.597Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:56.597Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.2b49ef2cda19
+2026-10-18T19:58:56.597Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:56.597Z [DEBUG] Temp file written successfully, size: 773 bytes
+2026-10-18T19:58:56.597Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.2b49ef2cda19 to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:56.597Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:56.624Z [DEBUG] [keybindings] KeybindingSetup initialized with 224 bindings, 0 warnings
+2026-10-18T19:58:56.639Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:56.656Z [DEBUG] [engine] send set_max_thinking_tokens max=null
+2026-10-18T19:58:56.656Z [DEBUG] [engine] send set_model model=claude-opus-5-5
+2026-10-18T19:58:56.660Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T19:58:56.664Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T19:58:56.665Z [DEBUG] performStartupChecks called
+2026-10-18T19:58:56.667Z [DEBUG] [jobStateNameSync] watch skipped: Error: ENOENT: no such file or directory, watch '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/jobs/915e7a55'
+2026-10-18T19:58:56.669Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-10-18T19:58:56.670Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T19:58:56.671Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-10-18T19:58:56.672Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/.claude/settings.json
+2026-10-18T19:58:56.673Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/.claude/settings.local.json
+2026-10-18T19:58:56.673Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T19:58:56.683Z [DEBUG] [servedCatalog] off (essential_traffic)
+2026-10-18T19:58:56.689Z [DEBUG] Starting background plugin installations
+2026-10-18T19:58:56.690Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T19:58:56.690Z [DEBUG] performBackgroundPluginInstallations called
+2026-10-18T19:58:56.695Z [DEBUG] hooks module isolated-interaction@inline loaded (worker, environment 1, tier user); events: turn.start,turn.complete,tool.check,tool.call,session.start
+2026-10-18T19:58:56.697Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 2, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-10-18T19:58:56.697Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 3, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-10-18T19:58:56.698Z [DEBUG] hooks module cc-plugin-diff@builtin loaded (native, environment 4, tier builtin); events: session.start,ui.render,command.run,ui.close,ui.focus,ui.scroll,tool.call,prompt.submit
+2026-10-18T19:58:56.699Z [DEBUG] [keybindings] Watching for changes to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/keybindings.json
+2026-10-18T19:58:56.704Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T19:58:56.704Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T19:58:56.705Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for isolated-interaction,cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-diff
+2026-10-18T19:58:56.705Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-10-18T19:58:56.705Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-10-18T19:58:56.705Z [DEBUG] plugin.register: cc-plugin-diff (builtin, cc-plugin-diff@builtin), judged by core alone: admitted
+2026-10-18T19:58:56.706Z [DEBUG] plugin.register: isolated-interaction (user, isolated-interaction@inline), judged by core alone: admitted
+2026-10-18T19:58:56.712Z [DEBUG] plugin-dir watch: watching isolated-interaction; folders of plugins none
+2026-10-18T19:58:56.735Z [DEBUG] Artifact gates frozen: capabilities=true comments=false db=true files=false types=false type_create=false type_catalog=false read_page_data=false room=false verify=false delete=false preview=false preview_browser=unread open=false endpoints=false pin=true share=false versions=false flag_source=disabled gb_fresh=false
+2026-10-18T19:58:56.735Z [DEBUG] Artifact publish edits offer frozen: edit_hook=true
+2026-10-18T19:58:56.736Z [DEBUG] Artifact input schema built: assets=false copy_from=false publish_edits=false assets_source=cold_no_identity
+2026-10-18T19:58:56.774Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/projects/-tmp-cc-interaction-2IVXXs-cancel-late-UsArJZ-project/memory/'
+2026-10-18T19:58:56.775Z [DEBUG] No CLAUDE.md/rules files found
+2026-10-18T19:58:56.798Z [DEBUG] Lock acquisition took longer than expected - another Claude instance may be running
+2026-10-18T19:58:56.800Z [WARN] Official marketplace GCS fetch failed: connect ECONNREFUSED 35.190.46.17:443
+2026-10-18T19:58:56.800Z [DEBUG] Attempting to auto-install official marketplace
+2026-10-18T19:58:56.827Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:56.827Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.b4ca68ab8080
+2026-10-18T19:58:56.828Z [DEBUG] Watching /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project for /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/.claude to appear
+2026-10-18T19:58:56.828Z [DEBUG] Watching for changes in setting files /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/settings.json...
+2026-10-18T19:58:56.831Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:56.831Z [DEBUG] Temp file written successfully, size: 1330 bytes
+2026-10-18T19:58:56.831Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.b4ca68ab8080 to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:56.832Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T19:58:56.832Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:56.834Z [DEBUG] SSH config check: code=255 configured=false
+2026-10-18T19:58:56.834Z [INFO] SSH not configured for GitHub, using HTTPS for anthropics/claude-plugins-official
+2026-10-18T19:58:56.836Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T19:58:56.839Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T19:58:56.840Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 58.0ms (native link, next() included)
+2026-10-18T19:58:56.843Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:56.843Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.80c970f385fb
+2026-10-18T19:58:56.844Z [ERROR] install check: claude command at /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.local/bin/claude missing or broken (/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.local/bin does not exist)
+2026-10-18T19:58:56.844Z [ERROR] install check: claude command at /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.local/bin/claude missing or broken
+2026-10-18T19:58:56.844Z [INFO] 1 setup issue: install (run `claude doctor` for details)
+2026-10-18T19:58:56.844Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:56.845Z [DEBUG] Temp file written successfully, size: 1371 bytes
+2026-10-18T19:58:56.845Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.80c970f385fb to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:56.846Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:56.847Z [DEBUG] git clone: url=https://github.com/anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T19:58:56.852Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:56.852Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.0174a3e31754
+2026-10-18T19:58:56.853Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:56.853Z [DEBUG] Temp file written successfully, size: 1408 bytes
+2026-10-18T19:58:56.853Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.0174a3e31754 to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:56.854Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:56.856Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:56.856Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.fb42c274cd30
+2026-10-18T19:58:56.857Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:56.858Z [DEBUG] Temp file written successfully, size: 1481 bytes
+2026-10-18T19:58:56.858Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.fb42c274cd30 to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:56.858Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:56.869Z [WARN] "git clone failed: url=https://github.com/anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- https://github.com/anthropics/claude-plugins-official.git /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 4 ms: Could not connect to server"
+2026-10-18T19:58:56.870Z [ERROR] "HTTPS clone failed for marketplace anthropics/claude-plugins-official (Failed to clone marketplace repository: Cloning into '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 4 ms: Could not connect to server), falling back to SSH"
+2026-10-18T19:58:56.871Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T19:58:56.874Z [DEBUG] git clone: url=git@github.com:anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T19:58:56.879Z [DEBUG] type root of isolated-interaction at /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/plugin/.claude-plugin/types: entries claude-code, claude-code-tools, claude-code-mcp; wrote .claude-plugin/types/claude-code/index.d.ts, .claude-plugin/types/claude-code-tools/index.d.ts, .claude-plugin/types/claude-code-mcp/index.d.ts, .claude-plugin/types/tsconfig.json, .claude-plugin/types/.gitignore, tsconfig.json
+2026-10-18T19:58:56.879Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-10-18T19:58:56.880Z [DEBUG] session.start: raised (surface terminal, interactive)
+2026-10-18T19:58:56.889Z [DEBUG] $.command.register (cc-plugin-diff): /diff listed
+2026-10-18T19:58:56.892Z [DEBUG] hooks module cc-plugin-diff@builtin session.start settled in 5.4ms (native link, next() included)
+2026-10-18T19:58:56.892Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 5.7ms (native link, next() included)
+2026-10-18T19:58:56.893Z [DEBUG] Loaded plugins - Enabled: 4, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2026-10-18T19:58:56.893Z [DEBUG] Plugin autoupdate: command-source refresh disabled by tengu_plugin_command_source_refresh (still excluding command-sourced plugins from the regular pass)
+2026-10-18T19:58:56.894Z [DEBUG] hooks module isolated-interaction@inline session.start settled in 13.2ms (worker hop, next() included)
+2026-10-18T19:58:56.899Z [WARN] "git clone failed: url=git@github.com:anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- git@github.com:anthropics/claude-plugins-official.git /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T19:58:56.900Z [ERROR] "SSH clone fallback also failed for marketplace anthropics/claude-plugins-official: Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T19:58:56.900Z [ERROR] "Failed to auto-install official marketplace: Fetching the marketplace from GitHub failed on both attempts. HTTPS (https://github.com/anthropics/claude-plugins-official.git): Failed to clone marketplace repository: Cloning into '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 4 ms: Could not connect to server\n\nSSH (git@github.com:anthropics/claude-plugins-official.git): Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T19:58:56.902Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:56.902Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.20a132b037ab
+2026-10-18T19:58:56.902Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:56.903Z [DEBUG] Temp file written successfully, size: 1813 bytes
+2026-10-18T19:58:56.903Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.20a132b037ab to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:56.903Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:56.903Z [INFO] 1 setup issue: plugins (run /plugin for details)
+2026-10-18T19:58:57.136Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-10-18T19:58:57.799Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.803Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.805Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (16566 bytes)
+2026-10-18T19:58:57.805Z [DEBUG] $.prompt.submit (isolated-interaction): "Synthetic isolated cancel-late"
+2026-10-18T19:58:57.823Z [DEBUG] High write ratio: blit=575, write=630 (52.3% writes), screen=42x115
+2026-10-18T19:58:57.826Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in isolated-interaction
+2026-10-18T19:58:57.827Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in isolated-interaction
+2026-10-18T19:58:57.828Z [DEBUG] FileHistory: Added snapshot for 2e534e15-1335-4a5e-a145-0ead930d410c, tracking 0 files
+2026-10-18T19:58:57.834Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 7.2ms (native link, next() included)
+2026-10-18T19:58:57.834Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 7.8ms (native link, next() included)
+2026-10-18T19:58:57.835Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.1ms (native link, next() included)
+2026-10-18T19:58:57.835Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/output-styles: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/output-styles'
+2026-10-18T19:58:57.835Z [DEBUG] Failed to stat directory /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/output-styles: ENOENT: no such file or directory, stat '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/output-styles'
+2026-10-18T19:58:57.835Z [DEBUG] Total plugin output styles loaded: 0
+2026-10-18T19:58:57.836Z [DEBUG] act_dont_rederive_arm_active source=growthbook
+2026-10-18T19:58:57.838Z [DEBUG] hooks module isolated-interaction@inline turn.start settled in 6.6ms (worker hop, next() included)
+2026-10-18T19:58:57.841Z [DEBUG] [engine] yield system/init (first)
+2026-10-18T19:58:57.841Z [DEBUG] [engine] turn 1 start
+2026-10-18T19:58:57.845Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T19:58:57.859Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.6ee; cc_entrypoint=cli;
+2026-10-18T19:58:57.859Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.860Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.864Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.867Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T19:58:57.868Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T19:58:57.887Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T19:58:57.892Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.899Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.3ms (native link, next() included)
+2026-10-18T19:58:57.901Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:57.901Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.8019a1895aa0
+2026-10-18T19:58:57.903Z [DEBUG] Stream started - received first chunk
+2026-10-18T19:58:57.903Z [DEBUG] [API:timing] first byte after 39ms
+2026-10-18T19:58:57.913Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.915Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:57.916Z [DEBUG] Temp file written successfully, size: 1841 bytes
+2026-10-18T19:58:57.916Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.8019a1895aa0 to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:57.917Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.918Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:57.920Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-10-18T19:58:57.920Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-10-18T19:58:57.920Z [DEBUG] [FileIndex] not a git repo, returning null
+2026-10-18T19:58:57.920Z [DEBUG] [FileIndex] git ls-files returned null, falling back to ripgrep
+2026-10-18T19:58:57.935Z [DEBUG] [FileIndex] ripgrep: 2 files in 15ms
+2026-10-18T19:58:57.937Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/skills: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/skills'
+2026-10-18T19:58:57.937Z [DEBUG] Failed to stat directory /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/skills: ENOENT: no such file or directory, stat '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/skills'
+2026-10-18T19:58:57.937Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/workflows: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/workflows'
+2026-10-18T19:58:57.937Z [DEBUG] Failed to stat directory /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/workflows: ENOENT: no such file or directory, stat '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/workflows'
+2026-10-18T19:58:57.937Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/routines: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/routines'
+2026-10-18T19:58:57.937Z [DEBUG] Failed to stat directory /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/routines: ENOENT: no such file or directory, stat '/tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/routines'
+2026-10-18T19:58:57.937Z [DEBUG] [FileIndex] cache refresh completed in 17ms
+2026-10-18T19:58:57.937Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (17516 bytes)
+2026-10-18T19:58:57.948Z [DEBUG] "Permission suggestions for Write: [\n  {\n    \"type\": \"setMode\",\n    \"mode\": \"acceptEdits\",\n    \"destination\": \"session\"\n  }\n]"
+2026-10-18T19:58:57.949Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.951Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:57.954Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (18137 bytes)
+2026-10-18T19:58:57.954Z [DEBUG] $.http.fetch (isolated-interaction): GET http://127.0.0.1:34137/check/Write/toolu_fake_1792353537871_0
+2026-10-18T19:58:58.352Z [DEBUG] $.turn.abort (isolated-interaction): cancelled turn 484f1957-36ff-40a2-bb24-0856cdca65ff
+2026-10-18T19:58:58.355Z [ERROR] hook failed: isolated-interaction: errorKind=HooksError errorChars=116 (tool.check; left out; the call was interrupted, so the dispatch rejects)
+2026-10-18T19:58:58.356Z [DEBUG] [isolated-interaction] $.ui.log: tool.check call rejected: its hook threw isolated-interaction: $.http.fetch(http://127.0.0.1:34137/check/Write/toolu_fake_1792353537871_0) failed: turn-abort, the call interrupted
+2026-10-18T19:58:58.360Z [DEBUG] Aborting: tool=Write isAbort=true hasFeedback=false isSubagent=false
+2026-10-18T19:58:58.361Z [DEBUG] Write tool permission denied
+2026-10-18T19:58:58.362Z [DEBUG] hooks module cc-plugin-diff@builtin tool.call settled in 423.9ms (native link, next() included)
+2026-10-18T19:58:58.364Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.367Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.388Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (18208 bytes)
+2026-10-18T19:58:58.390Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.391Z [DEBUG] $.prompt.submit (isolated-interaction): "Synthetic new turn after addressed abort"
+2026-10-18T19:58:58.408Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (19025 bytes)
+2026-10-18T19:58:58.410Z [DEBUG] hooks module isolated-interaction@inline tool.call settled in 501.2ms (worker hop, next() included)
+2026-10-18T19:58:58.416Z [DEBUG] [engine] turn 1 end (turns=2 usage in=10 out=5 cost=$0.0001 api=51ms stop=tool_use resultLen=0)
+2026-10-18T19:58:58.424Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T19:58:58.424Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T19:58:58.425Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.430Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:58.430Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.29e7df746818
+2026-10-18T19:58:58.434Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.3ms (native link, next() included)
+2026-10-18T19:58:58.505Z [DEBUG] High write ratio: blit=920, write=938 (50.5% writes), screen=42x115
+2026-10-18T19:58:58.511Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 41.1ms (native link, next() included)
+2026-10-18T19:58:58.511Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 18.5ms (native link, next() included)
+2026-10-18T19:58:58.511Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 9.1ms (native link, next() included)
+2026-10-18T19:58:58.511Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in isolated-interaction
+2026-10-18T19:58:58.511Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in isolated-interaction
+2026-10-18T19:58:58.512Z [DEBUG] FileHistory: Making snapshot for message 39d66bf6-c8b5-425e-84a3-9b2e3004ea4a
+2026-10-18T19:58:58.515Z [DEBUG] FileHistory: Added snapshot for 39d66bf6-c8b5-425e-84a3-9b2e3004ea4a, tracking 0 files
+2026-10-18T19:58:58.518Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 6.4ms (native link, next() included)
+2026-10-18T19:58:58.518Z [DEBUG] [engine] turn 2 start
+2026-10-18T19:58:58.520Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 8.6ms (native link, next() included)
+2026-10-18T19:58:58.521Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T19:58:58.533Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.6ee; cc_entrypoint=cli;
+2026-10-18T19:58:58.534Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.535Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.537Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:58.538Z [DEBUG] hooks module isolated-interaction@inline turn.complete settled in 116.7ms (worker hop, next() included)
+2026-10-18T19:58:58.542Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.546Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T19:58:58.548Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T19:58:58.548Z [DEBUG] Temp file written successfully, size: 1841 bytes
+2026-10-18T19:58:58.549Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.29e7df746818 to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:58.550Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.2ms (native link, next() included)
+2026-10-18T19:58:58.550Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:58.553Z [DEBUG] hooks module isolated-interaction@inline turn.start settled in 14.1ms (worker hop, next() included)
+2026-10-18T19:58:58.557Z [DEBUG] Stream started - received first chunk
+2026-10-18T19:58:58.557Z [DEBUG] [API:timing] first byte after 15ms
+2026-10-18T19:58:58.574Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.621Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.638Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T19:58:58.638Z [DEBUG] Writing to temp file: /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.65c91cdf0cf0
+2026-10-18T19:58:58.638Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (21206 bytes)
+2026-10-18T19:58:58.638Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:58:58.640Z [DEBUG] Temp file written successfully, size: 1950 bytes
+2026-10-18T19:58:58.640Z [DEBUG] Renaming /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json.tmp.677.65c91cdf0cf0 to /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json
+2026-10-18T19:58:58.641Z [DEBUG] File /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/home/.claude/.claude.json written atomically
+2026-10-18T19:58:58.647Z [DEBUG] "Permission suggestions for Write: [\n  {\n    \"type\": \"setMode\",\n    \"mode\": \"acceptEdits\",\n    \"destination\": \"session\"\n  }\n]"
+2026-10-18T19:58:58.650Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.653Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:58:58.657Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (21826 bytes)
+2026-10-18T19:58:58.658Z [DEBUG] $.http.fetch (isolated-interaction): GET http://127.0.0.1:34137/check/Write/toolu_fake_1792353538552_0
+2026-10-18T19:59:01.663Z [DEBUG] $.http.fetch (isolated-interaction): 200 in 3004ms, 36 chars
+2026-10-18T19:59:01.665Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:59:01.667Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (21961 bytes)
+2026-10-18T19:59:01.668Z [DEBUG] hooks module isolated-interaction@inline tool.check settled in 3026.8ms (worker hop, next() included)
+2026-10-18T19:59:01.668Z [DEBUG] tool.check Write toolu_fake_1792353538552_0: ask -> deny by plugin isolated-interaction: Explicit synthetic deny
+2026-10-18T19:59:01.669Z [DEBUG] Write tool permission denied
+2026-10-18T19:59:01.670Z [DEBUG] hooks module cc-plugin-diff@builtin tool.call settled in 3030.4ms (native link, next() included)
+2026-10-18T19:59:01.671Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:59:01.673Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:59:01.675Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (22500 bytes)
+2026-10-18T19:59:01.676Z [DEBUG] hooks module isolated-interaction@inline tool.call settled in 3112.1ms (worker hop, next() included)
+2026-10-18T19:59:01.683Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-10-18T19:59:01.683Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-10-18T19:59:01.683Z [DEBUG] Sending 13 skills via attachment (initial)
+2026-10-18T19:59:01.684Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-10-18T19:59:01.695Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T19:59:01.702Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.6ee; cc_entrypoint=cli;
+2026-10-18T19:59:01.702Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:59:01.703Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:59:01.724Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:59:01.727Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T19:59:01.728Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T19:59:01.731Z [DEBUG] Stream started - received first chunk
+2026-10-18T19:59:01.731Z [DEBUG] [API:timing] first byte after 7ms
+2026-10-18T19:59:01.741Z [DEBUG] [engine] turn 2 end (turns=2 usage in=30 out=15 cost=$0.0004 api=118ms stop=end_turn resultLen=26)
+2026-10-18T19:59:01.749Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:59:01.771Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 5.1ms (native link, next() included)
+2026-10-18T19:59:01.771Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 2.8ms (native link, next() included)
+2026-10-18T19:59:01.774Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.2ms (native link, next() included)
+2026-10-18T19:59:01.776Z [DEBUG] hooks module isolated-interaction@inline turn.complete settled in 31.1ms (worker hop, next() included)
+2026-10-18T19:59:01.831Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:59:01.834Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-2IVXXs/cancel-late-UsArJZ/project/interaction-report.json (23716 bytes)

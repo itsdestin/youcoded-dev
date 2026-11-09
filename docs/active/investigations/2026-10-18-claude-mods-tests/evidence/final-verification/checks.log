@@ -1,0 +1,68 @@
+
+=== check-evidence ===
+PASS: actual CLI loading/control evidence; model, clear, compact, repeated/Unicode/busy sends, expected unknown-command refusal, abort, six dummy-auth requests, and server cleanup assertions.
+
+=== approval-check ===
+PASS real CLI 2.1.302: allow after 12000ms service wait; hook elapsed 12042ms, own budget remaining 9997ms; exact temporary file bytes confirmed.
+PASS deny/refused/disconnect: underlying allow(Write) overridden by deny; all three files absent; four distinct model-facing tool results verified.
+PASS isolation/cleanup: 8 dummy-auth local requests, same network namespace, both servers closed, CLI deliberately stopped (129), no owned children; 30 prior files unchanged during launch; immutable probes/evidence still match.
+PASS config inspection: permissionMode=default, unlocked, options=default,plan,acceptEdits,auto,dontAsk; no config set or effort/rename executed.
+PASS failed attempt preserved: allowlisted PATH lacked CLI; explicit observed binary path used on second launch. Checker performed no writes.
+NOTE lifecycle docs changed after completed launch (not immutable evidence): PLAN.md,RESULTS.md. Before/after-launch hashes remain equal.
+
+=== control-followup-check ===
+PASS 35 checks: controls, persisted settings/title, core ask → external allow/deny, model results, isolation, cleanup, preservation.
+
+=== interaction-check ===
+PASS 2922 read-only assertions; 11 actual CLI sessions; 32 localhost dummy-auth model requests.
+QUESTION: check allow blocked at native menu; synthetic structured single/multi/custom text and response-only mapper text plus saved records verified; explicit deny verified.
+PLAN: actual engine entry + plan Write/Read verified; check allow blocked at native menu; ExitPlanMode deny retained plan policy; replacement falsely says approved while engine stays in plan mode. No successful external engine approval claimed.
+PENDING: addressed abort canceled old request; late allow overlapped new denied request; neither file exists. Reload command queued until turn completion; original explicitly allowed write completed. Mid-flight unload/removal remains UNVERIFIED.
+ISOLATION: prior evidence hashes preserved, binary unchanged, exact children/servers stopped, no owned processes remain. Initial validation refusal and first plan-deny/response-precedence limitations retained.
+
+=== lifecycle-check ===
+PASS: isolation, preservation, cleanup; 30s ceiling deny; malformed deny + distinct restart recovery; bounded 36s polling allow; same-ID resume without duplicate users; absent/empty handshake controls. Worker unload remains unverified.
+
+=== scoped-check ===
+PASS 494 saved-evidence assertions; 10 actual CLI sessions; 11 local scripted API requests; no evidence rewritten.
+
+=== compat-check ===
+{
+  "versions": {
+    "2.1.300": "674deba0bba9aee479f4503c438b49303b6fdd304b9a471b14977aaec5215453",
+    "2.1.302": "60d7eb7f12fbb28a52533fe8be5884097403562aa02dc73991a021c7067e29a5"
+  },
+  "unchangedKeySignatures": [
+    "CommandRunArgs",
+    "CommandRunInput",
+    "CommandRunResult",
+    "PromptSubmitArgs",
+    "PromptSubmitInput",
+    "PromptSubmitResult",
+    "SessionMessagesCall",
+    "ToolCheckArgs",
+    "ToolCheckInput",
+    "ToolCheckResult"
+  ],
+  "declarationTypesChanged": [
+    "CoreEngineInterface",
+    "HookFailure",
+    "InputProps",
+    "OpValueOf",
+    "RenderElement",
+    "EnvSetResult"
+  ],
+  "requests": {
+    "batch1": 0,
+    "batch2": 11,
+    "crashFollowup": 3
+  },
+  "initialCrash": "No conversation found (only metadata persisted)",
+  "resumedOldTool": "interrupted; outcome unknown",
+  "cleanup": "all recorded owned processes/services stopped"
+}
+PASS: 525 captured-evidence assertions (includes preservation checks, not independent behavioral scenarios).
+PASS failure: throw-before-next executed Write; explicit catch deny blocked Write; 10000ms own-budget timeout reached catch and blocked Write; CLI completed all three turns.
+PASS attachment NEGATIVE capability: real 70-byte PNG exists, metadata submission delivered text with plugin origin, but fake API received ZERO image blocks. No pixel transport established.
+PASS isolation/preservation: seven dummy-auth localhost API requests, both servers closed, no matching temporary children, 13 existing evidence files unchanged.
+VERIFIED unchanged installer behavior: stable staging works; volatile write-guard path, missing non-relay script repair gap, and basename ownership collisions reproduced. No app changes.

@@ -1,0 +1,12 @@
+{
+  "removedProfile": "/tmp/yc-subscription-smoke-tqHx4a",
+  "temporaryProfileRemoved": true,
+  "remainingOwnedProcesses": [],
+  "controllerClosed": true,
+  "promptAttempts": 1,
+  "remainingAuthorizedPromptsNotSent": 2,
+  "credentialFilesReadOrCopied": false,
+  "globalLogoutOrRevocationPerformed": false,
+  "reason": "Stopped on native Claude weekly-limit response",
+  "at": "2026-10-18T21:09:45.220Z"
+}

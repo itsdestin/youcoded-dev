@@ -1,0 +1,104 @@
+{
+  "name": "crash302",
+  "root": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG",
+  "home": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home",
+  "configDir": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude",
+  "project": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project",
+  "policy": {
+    "permissions": {
+      "defaultMode": "default"
+    }
+  },
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "TERM": "xterm-256color",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "HOME": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home",
+    "CLAUDE_CONFIG_DIR": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude",
+    "TMPDIR": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG",
+    "XDG_CONFIG_HOME": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.config",
+    "XDG_CACHE_HOME": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.cache",
+    "XDG_DATA_HOME": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.local/share",
+    "XDG_STATE_HOME": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.local/state",
+    "XDG_RUNTIME_DIR": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/runtime",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:37073",
+    "ANTHROPIC_AUTH_TOKEN": "fake-token-for-local-capture"
+  },
+  "binary": "/home/destin/.local/share/claude/versions/2.1.302",
+  "binarySha256": "60d7eb7f12fbb28a52533fe8be5884097403562aa02dc73991a021c7067e29a5",
+  "requests": [],
+  "serviceEvents": [],
+  "phases": [
+    {
+      "label": "first",
+      "command": [
+        "/home/destin/.local/share/claude/versions/2.1.302",
+        "--plugin-dir",
+        "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/plugin",
+        "--debug-file",
+        "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/first-debug.log"
+      ],
+      "pid": 182,
+      "start": 1792355617392,
+      "networkNamespace": "net:[4026533295]",
+      "cliNetworkNamespace": "net:[4026533295]",
+      "modReport": null,
+      "transcripts": [
+        {
+          "path": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/home/.claude/projects/-tmp-cc-compat-jAdpYa-compat-crash302-EuSJyG-project/3cfe031f-a706-4847-9a5f-d0d39598d000.jsonl",
+          "sha256": "75741de16362868f0571239f5a8cdc281f94d798d2cf2d306144d70bdbe08f9b",
+          "text": "{\"type\":\"mode\",\"mode\":\"normal\",\"sessionId\":\"3cfe031f-a706-4847-9a5f-d0d39598d000\"}\n{\"type\":\"permission-mode\",\"permissionMode\":\"default\",\"sessionId\":\"3cfe031f-a706-4847-9a5f-d0d39598d000\"}\n{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"system\",\"subtype\":\"informational\",\"content\":\"isolated-compat: hooks module did not load: /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/plugin/hooks/register.ts, compiled line 16 `await record($);`: $ is passed to \\\"record\\\", which is not a function declared at the top of this file (a function declaration, or a const bound to one), nor one imported from a file of the module's own; $ is followed nowhere else; $ is always spelled $.noun.event(...) at the call site, on is always on(\\\"<event>\\\", hook), and next.to always next.to(e, \\\"<tier>\\\")\",\"isMeta\":false,\"timestamp\":\"2026-10-18T20:33:41.306Z\",\"uuid\":\"90bc94e6-ffd1-4342-b077-d991195ae182\",\"level\":\"notice\",\"userType\":\"external\",\"entrypoint\":\"cli\",\"cwd\":\"/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project\",\"sessionId\":\"3cfe031f-a706-4847-9a5f-d0d39598d000\",\"version\":\"2.1.302\",\"gitBranch\":\"HEAD\"}\n"
+        }
+      ],
+      "raw": "\rClaude Codev2.1.302\rOpus 5.5 · API Usage Billing\r/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project\r▎Debug mode enabled · logging to /tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/first-debug.log\r●isolated-compat: hooks module did not load: \r/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/plugin/hooks/register.ts, compiled line 16 `await \rrecord($);`: $ is passed to \"record\", which is not a function declared at the top of this file (a \rfunction declaration, or a const bound to one), nor one imported from a file of the module's own; $ is \rfollowed nowhere else; $ is always spelled $.noun.event(...) at the call site, on is always on(\"<event>\",\rhook), and next.to always next.to(e, \"<tier>\")\r◐ medium · /effort\r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r❯  \r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r⏸ manual mode on · ? for shortcuts · ← for agents\r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\rMake auto mode your default permission mode?\rAutomodeletsClaudehandlepermissionpromptsautomatically.Claudecheckseachtoolcallforriskyactions\randpromptinjectionbeforeexecuting,runstheonesitassessesaslower-risk,andblockstherest.\r❯Yes, set auto mode as my default permission mode\rNo,keepmanualmode\r\r\r\r\r\r▛█▄\r██▘\r▝▝ \r \r▀\r  \r▛█ \r██▀\r███▛█▄\r████▘\r   ▝▝ \r \r▀\r     \r▛█ \r█████▀\r▗▟▛███▛█▄\r ▜████▘\r ▝▝   ▝▝ \r         \r▐▛▛█ \r·▜██████·\r~~\r ▐▛███▛█\r▝▜███▀\r ▝▝   ▝▝ ",
+      "exit": {
+        "exitCode": 129,
+        "signal": 0
+      },
+      "durationMs": 32730
+    }
+  ],
+  "version": "2.1.302 (Claude Code)\n",
+  "generatedTypes": {
+    "path": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/compat-batch1/crash302-generated.d.ts",
+    "sha256": "c942d5c8cd8a1e87c58ec0cbdc4dfda6a0399273f42709ae19ccd8225ba4dfea"
+  },
+  "files": {
+    "allow": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/allow.txt",
+      "exists": false,
+      "content": null
+    },
+    "deny": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/deny.txt",
+      "exists": false,
+      "content": null
+    },
+    "old": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/old.txt",
+      "exists": false,
+      "content": null
+    },
+    "new": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/new.txt",
+      "exists": false,
+      "content": null
+    },
+    "catch": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-crash302-EuSJyG/project/catch.txt",
+      "exists": false,
+      "content": null
+    }
+  },
+  "settings": {
+    "permissions": {
+      "defaultMode": "default"
+    }
+  },
+  "serversClosed": true
+}

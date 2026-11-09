@@ -1,0 +1,278 @@
+2026-10-18T19:11:44.472Z [DEBUG] MDM settings load completed in 0ms
+2026-10-18T19:11:44.476Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/settings.json
+2026-10-18T19:11:44.476Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T19:11:44.477Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/project/.claude/settings.json
+2026-10-18T19:11:44.477Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/project/.claude/settings.local.json
+2026-10-18T19:11:44.478Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-10-18T19:11:44.482Z [DEBUG] [init] configureGlobalMTLS starting
+2026-10-18T19:11:44.482Z [DEBUG] [init] configureGlobalMTLS complete
+2026-10-18T19:11:44.482Z [DEBUG] [init] configureGlobalAgents starting
+2026-10-18T19:11:44.482Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-10-18T19:11:44.482Z [DEBUG] CA certs: Loaded 121 bundled root certificates
+2026-10-18T19:11:44.485Z [DEBUG] CA certs: Loaded 121 system CA certificates
+2026-10-18T19:11:44.486Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T19:11:44.486Z [DEBUG] [init] configureGlobalAgents complete
+2026-10-18T19:11:44.489Z [DEBUG] Error log sink initialized
+2026-10-18T19:11:44.489Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-10-18T19:11:44.494Z [DEBUG] Git remote URL: null
+2026-10-18T19:11:44.494Z [DEBUG] No git remote URL found
+2026-10-18T19:11:44.494Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.494Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.0e9e658c1822
+2026-10-18T19:11:44.494Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.495Z [DEBUG] Temp file written successfully, size: 269 bytes
+2026-10-18T19:11:44.495Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.0e9e658c1822 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.495Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.495Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.495Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.ef39fa164d95
+2026-10-18T19:11:44.495Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.496Z [DEBUG] Temp file written successfully, size: 352 bytes
+2026-10-18T19:11:44.496Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.ef39fa164d95 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.496Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.496Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.496Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.ba89e0333385
+2026-10-18T19:11:44.496Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.496Z [DEBUG] Temp file written successfully, size: 388 bytes
+2026-10-18T19:11:44.496Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.ba89e0333385 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.496Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.496Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.497Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.30e7b42682f1
+2026-10-18T19:11:44.497Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.497Z [DEBUG] Temp file written successfully, size: 427 bytes
+2026-10-18T19:11:44.497Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.30e7b42682f1 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.497Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.498Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.498Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.eedeae9cd131
+2026-10-18T19:11:44.498Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.498Z [DEBUG] Temp file written successfully, size: 454 bytes
+2026-10-18T19:11:44.498Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.eedeae9cd131 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.498Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.498Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.498Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.2d7e512e043e
+2026-10-18T19:11:44.499Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.499Z [DEBUG] Temp file written successfully, size: 502 bytes
+2026-10-18T19:11:44.499Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.2d7e512e043e to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.499Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.499Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.499Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.a74155eaeed5
+2026-10-18T19:11:44.499Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.499Z [DEBUG] Temp file written successfully, size: 528 bytes
+2026-10-18T19:11:44.499Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.a74155eaeed5 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.499Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.514Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T19:11:44.518Z [DEBUG] [ToolSearch:optimistic] disabled: ANTHROPIC_BASE_URL=http://127.0.0.1:35657 is not a first-party Anthropic host. Set ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards tool_reference blocks.
+2026-10-18T19:11:44.522Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-10-18T19:11:44.523Z [DEBUG] [STARTUP] Running setup()...
+2026-10-18T19:11:44.527Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/skills, project=[]
+2026-10-18T19:11:44.528Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T19:11:44.528Z [DEBUG] Failed to stat directory /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/agents'
+2026-10-18T19:11:44.528Z [DEBUG] installed_plugins.json doesn't exist, returning empty V2 object
+2026-10-18T19:11:44.528Z [DEBUG] --plugin-dir /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/disposable-plugin is one plugin: .claude-plugin at its top marks it
+2026-10-18T19:11:44.528Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T19:11:44.529Z [DEBUG] Failed to stat directory /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/commands'
+2026-10-18T19:11:44.529Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T19:11:44.538Z [DEBUG] Read hooks.json for plugin isolated-mod-contract (enabled=true): /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/disposable-plugin/hooks/hooks.json
+2026-10-18T19:11:44.539Z [DEBUG] Loaded inline plugin from path: isolated-mod-contract
+2026-10-18T19:11:44.539Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-10-18T19:11:44.540Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-10-18T19:11:44.541Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T19:11:44.541Z [DEBUG] Checking plugin isolated-mod-contract: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:11:44.541Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:11:44.541Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:11:44.541Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T19:11:44.542Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T19:11:44.542Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T19:11:44.542Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T19:11:44.542Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T19:11:44.544Z [INFO] [uds-messaging] Listening: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/cc-socks/2203791.sock
+2026-10-18T19:11:44.545Z [INFO] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/cc-socks/2203791.sock
+2026-10-18T19:11:44.547Z [INFO] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -N -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-10-18T19:11:44.548Z [DEBUG] Error log sink initialized
+2026-10-18T19:11:44.551Z [DEBUG] cc-plugin-sec-default@builtin not seated: no managed settings and not a Team or Enterprise organization (none)
+2026-10-18T19:11:44.552Z [DEBUG] [STARTUP] setup() completed in 29ms
+2026-10-18T19:11:44.553Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-10-18T19:11:44.558Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T19:11:44.563Z [DEBUG] [STARTUP] Commands and agents loaded in 10ms
+2026-10-18T19:11:44.567Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-10-18T19:11:44.570Z [DEBUG] Cleared mTLS configuration cache
+2026-10-18T19:11:44.570Z [DEBUG] Cleared proxy agent cache
+2026-10-18T19:11:44.571Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T19:11:44.572Z [DEBUG] [STARTUP] showSetupScreens() completed in 5ms
+2026-10-18T19:11:44.572Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-10-18T19:11:44.572Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-10-18T19:11:44.572Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-10-18T19:11:44.572Z [DEBUG] Starting background startup prefetches
+2026-10-18T19:11:44.573Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T19:11:44.574Z [DEBUG] [STARTUP] MCP configs resolved in 21ms (awaited at +51ms)
+2026-10-18T19:11:44.578Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:11:44.579Z [DEBUG] Initialized versioned plugins system with 0 plugins
+2026-10-18T19:11:44.599Z [DEBUG] Total LSP servers loaded: 0
+2026-10-18T19:11:44.599Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-10-18T19:11:44.599Z [DEBUG] LSP manager initialized with 0 servers
+2026-10-18T19:11:44.599Z [DEBUG] LSP server manager initialized successfully
+2026-10-18T19:11:44.599Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-10-18T19:11:44.602Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-10-18T19:11:44.602Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-10-18T19:11:44.608Z [DEBUG] Ripgrep first use test: PASSED (mode=embedded, path=/home/destin/.local/share/claude/versions/2.1.302)
+2026-10-18T19:11:44.608Z [DEBUG] "rg error (signal=undefined, code=2, stderr: rg: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/cache: IO error for operation on /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/cache: No such file or directory (os error 2)\n), 0 results"
+2026-10-18T19:11:44.608Z [DEBUG] [sessionRegistry] sweep permitted (domain linux:dc3f3c83acfa4c73bf52983341d69d0b:pid:[4026531836])
+2026-10-18T19:11:44.610Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-10-18T19:11:44.613Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-10-18T19:11:44.613Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-10-18T19:11:44.614Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.614Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.c46c2c15e452
+2026-10-18T19:11:44.614Z [DEBUG] Git remote URL: null
+2026-10-18T19:11:44.614Z [DEBUG] No git remote URL found
+2026-10-18T19:11:44.614Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-10-18T19:11:44.614Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.615Z [DEBUG] Temp file written successfully, size: 608 bytes
+2026-10-18T19:11:44.615Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.c46c2c15e452 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.615Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.615Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.615Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.720ceb1aeb3e
+2026-10-18T19:11:44.616Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.616Z [DEBUG] Temp file written successfully, size: 608 bytes
+2026-10-18T19:11:44.616Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.720ceb1aeb3e to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.616Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.617Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.617Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.e7da51daecba
+2026-10-18T19:11:44.617Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.617Z [DEBUG] Temp file written successfully, size: 781 bytes
+2026-10-18T19:11:44.617Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.e7da51daecba to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.617Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.643Z [DEBUG] [keybindings] KeybindingSetup initialized with 224 bindings, 0 warnings
+2026-10-18T19:11:44.658Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T19:11:44.675Z [DEBUG] [engine] send set_max_thinking_tokens max=null
+2026-10-18T19:11:44.675Z [DEBUG] [engine] send set_model model=claude-opus-5-5
+2026-10-18T19:11:44.679Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T19:11:44.683Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T19:11:44.683Z [DEBUG] performStartupChecks called
+2026-10-18T19:11:44.686Z [DEBUG] [jobStateNameSync] watch skipped: Error: ENOENT: no such file or directory, watch '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/jobs/fc8f8d65'
+2026-10-18T19:11:44.688Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-10-18T19:11:44.689Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T19:11:44.690Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-10-18T19:11:44.691Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/settings.json
+2026-10-18T19:11:44.691Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/project/.claude/settings.json
+2026-10-18T19:11:44.692Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/project/.claude/settings.local.json
+2026-10-18T19:11:44.692Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T19:11:44.702Z [DEBUG] [servedCatalog] off (essential_traffic)
+2026-10-18T19:11:44.708Z [DEBUG] Starting background plugin installations
+2026-10-18T19:11:44.709Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T19:11:44.709Z [DEBUG] performBackgroundPluginInstallations called
+2026-10-18T19:11:44.712Z [DEBUG] hooks module isolated-mod-contract@inline loaded (worker, environment 1, tier user); events: none
+2026-10-18T19:11:44.713Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 2, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-10-18T19:11:44.713Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 3, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-10-18T19:11:44.714Z [DEBUG] hooks module cc-plugin-diff@builtin loaded (native, environment 4, tier builtin); events: session.start,ui.render,command.run,ui.close,ui.focus,ui.scroll,tool.call,prompt.submit
+2026-10-18T19:11:44.715Z [DEBUG] [keybindings] Watching for changes to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/keybindings.json
+2026-10-18T19:11:44.719Z [DEBUG] [sessionRegistry] sweep permitted (domain linux:dc3f3c83acfa4c73bf52983341d69d0b:pid:[4026531836])
+2026-10-18T19:11:44.719Z [DEBUG] [sessionRegistry] sweep permitted (domain linux:dc3f3c83acfa4c73bf52983341d69d0b:pid:[4026531836])
+2026-10-18T19:11:44.719Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for isolated-mod-contract,cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-diff
+2026-10-18T19:11:44.720Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-10-18T19:11:44.720Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-10-18T19:11:44.720Z [DEBUG] plugin.register: cc-plugin-diff (builtin, cc-plugin-diff@builtin), judged by core alone: admitted
+2026-10-18T19:11:44.720Z [DEBUG] plugin.register: isolated-mod-contract (user, isolated-mod-contract@inline), judged by core alone: admitted
+2026-10-18T19:11:44.722Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/projects/-tmp-cc-mods-netns-Te9erZ-cc-mods-contract-r9fSIO-project/memory/'
+2026-10-18T19:11:44.723Z [DEBUG] No CLAUDE.md/rules files found
+2026-10-18T19:11:44.731Z [DEBUG] plugin-dir watch: watching isolated-mod-contract; folders of plugins none
+2026-10-18T19:11:44.750Z [DEBUG] Artifact gates frozen: capabilities=true comments=false db=true files=false types=false type_create=false type_catalog=false read_page_data=false room=false verify=false delete=false preview=false preview_browser=unread open=false endpoints=false pin=true share=false versions=false flag_source=disabled gb_fresh=false
+2026-10-18T19:11:44.751Z [DEBUG] Artifact publish edits offer frozen: edit_hook=false
+2026-10-18T19:11:44.751Z [DEBUG] Artifact input schema built: assets=false copy_from=false publish_edits=true assets_source=cold_no_identity
+2026-10-18T19:11:44.810Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.2ms (native link, next() included)
+2026-10-18T19:11:44.811Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-10-18T19:11:44.811Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-10-18T19:11:44.811Z [DEBUG] [FileIndex] not a git repo, returning null
+2026-10-18T19:11:44.812Z [DEBUG] [FileIndex] git ls-files returned null, falling back to ripgrep
+2026-10-18T19:11:44.813Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.813Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.87f29454ca46
+2026-10-18T19:11:44.814Z [DEBUG] Watching /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/project for /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/project/.claude to appear
+2026-10-18T19:11:44.814Z [DEBUG] Watching for changes in setting files /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/settings.json...
+2026-10-18T19:11:44.815Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/output-styles: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/output-styles'
+2026-10-18T19:11:44.815Z [DEBUG] Failed to stat directory /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/output-styles: ENOENT: no such file or directory, stat '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/output-styles'
+2026-10-18T19:11:44.816Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/skills: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/skills'
+2026-10-18T19:11:44.816Z [DEBUG] Failed to stat directory /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/skills: ENOENT: no such file or directory, stat '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/skills'
+2026-10-18T19:11:44.816Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/workflows: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/workflows'
+2026-10-18T19:11:44.816Z [DEBUG] Failed to stat directory /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/workflows: ENOENT: no such file or directory, stat '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/workflows'
+2026-10-18T19:11:44.816Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/routines: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/routines'
+2026-10-18T19:11:44.816Z [DEBUG] Failed to stat directory /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/routines: ENOENT: no such file or directory, stat '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/routines'
+2026-10-18T19:11:44.817Z [WARN] Official marketplace GCS fetch failed: connect ECONNREFUSED 35.190.46.17:443
+2026-10-18T19:11:44.817Z [DEBUG] Attempting to auto-install official marketplace
+2026-10-18T19:11:44.818Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.819Z [DEBUG] Temp file written successfully, size: 1339 bytes
+2026-10-18T19:11:44.819Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.87f29454ca46 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.820Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.826Z [DEBUG] [FileIndex] ripgrep: 0 files in 14ms
+2026-10-18T19:11:44.826Z [DEBUG] [FileIndex] cache refresh completed in 15ms
+2026-10-18T19:11:44.827Z [DEBUG] SSH config check: code=255 configured=false
+2026-10-18T19:11:44.827Z [INFO] SSH not configured for GitHub, using HTTPS for anthropics/claude-plugins-official
+2026-10-18T19:11:44.828Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T19:11:44.832Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.832Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.a3589b3d6924
+2026-10-18T19:11:44.833Z [ERROR] install check: claude command at /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.local/bin/claude missing or broken (/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.local/bin does not exist)
+2026-10-18T19:11:44.833Z [ERROR] install check: claude command at /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.local/bin/claude missing or broken
+2026-10-18T19:11:44.833Z [INFO] 1 setup issue: install (run `claude doctor` for details)
+2026-10-18T19:11:44.833Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.833Z [DEBUG] Temp file written successfully, size: 1380 bytes
+2026-10-18T19:11:44.833Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.a3589b3d6924 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.834Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.836Z [DEBUG] git clone: url=https://github.com/anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T19:11:44.839Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.839Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.0ab6bdc36ca6
+2026-10-18T19:11:44.839Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.840Z [DEBUG] Temp file written successfully, size: 1417 bytes
+2026-10-18T19:11:44.840Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.0ab6bdc36ca6 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.840Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.842Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.842Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.80751e2fa703
+2026-10-18T19:11:44.842Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.843Z [DEBUG] Temp file written successfully, size: 1453 bytes
+2026-10-18T19:11:44.843Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.80751e2fa703 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.843Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.852Z [WARN] "git clone failed: url=https://github.com/anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- https://github.com/anthropics/claude-plugins-official.git /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server"
+2026-10-18T19:11:44.853Z [ERROR] "HTTPS clone failed for marketplace anthropics/claude-plugins-official (Failed to clone marketplace repository: Cloning into '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server), falling back to SSH"
+2026-10-18T19:11:44.853Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.853Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.6d40d85e9186
+2026-10-18T19:11:44.854Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T19:11:44.854Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.854Z [DEBUG] Temp file written successfully, size: 1526 bytes
+2026-10-18T19:11:44.854Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.6d40d85e9186 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.856Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.859Z [DEBUG] git clone: url=git@github.com:anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T19:11:44.862Z [DEBUG] type root of isolated-mod-contract at /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/disposable-plugin/.claude-plugin/types: entries claude-code, claude-code-tools, claude-code-mcp; wrote .claude-plugin/types/claude-code/index.d.ts, .claude-plugin/types/claude-code-tools/index.d.ts, .claude-plugin/types/claude-code-mcp/index.d.ts, .claude-plugin/types/tsconfig.json, .claude-plugin/types/.gitignore, tsconfig.json
+2026-10-18T19:11:44.862Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-10-18T19:11:44.863Z [DEBUG] session.start: raised (surface terminal, interactive)
+2026-10-18T19:11:44.867Z [DEBUG] $.command.register (cc-plugin-diff): /diff listed
+2026-10-18T19:11:44.869Z [DEBUG] hooks module cc-plugin-diff@builtin session.start settled in 5.9ms (native link, next() included)
+2026-10-18T19:11:44.869Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 6.1ms (native link, next() included)
+2026-10-18T19:11:44.870Z [DEBUG] Loaded plugins - Enabled: 4, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2026-10-18T19:11:44.871Z [DEBUG] Plugin autoupdate: command-source refresh disabled by tengu_plugin_command_source_refresh (still excluding command-sourced plugins from the regular pass)
+2026-10-18T19:11:44.877Z [WARN] "git clone failed: url=git@github.com:anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- git@github.com:anthropics/claude-plugins-official.git /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T19:11:44.877Z [ERROR] "SSH clone fallback also failed for marketplace anthropics/claude-plugins-official: Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T19:11:44.877Z [ERROR] "Failed to auto-install official marketplace: Fetching the marketplace from GitHub failed on both attempts. HTTPS (https://github.com/anthropics/claude-plugins-official.git): Failed to clone marketplace repository: Cloning into '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server\n\nSSH (git@github.com:anthropics/claude-plugins-official.git): Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T19:11:44.884Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:44.884Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.6b3258e12ab2
+2026-10-18T19:11:44.884Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:44.885Z [DEBUG] Temp file written successfully, size: 1858 bytes
+2026-10-18T19:11:44.885Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.6b3258e12ab2 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:44.885Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:44.885Z [INFO] 1 setup issue: plugins (run /plugin for details)
+2026-10-18T19:11:45.129Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-10-18T19:11:54.391Z [DEBUG] AutoUpdaterWrapper: Installation type: native
+2026-10-18T19:11:54.689Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:54.689Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.5de009e53359
+2026-10-18T19:11:54.690Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:54.690Z [DEBUG] Temp file written successfully, size: 1685 bytes
+2026-10-18T19:11:54.690Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.5de009e53359 to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:54.690Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically
+2026-10-18T19:11:54.691Z [DEBUG] fullscreen boot canary: healthy
+2026-10-18T19:11:54.697Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 0.6ms (native link, next() included)
+2026-10-18T19:11:56.640Z [DEBUG] [REPL:unmount] REPL unmounting
+2026-10-18T19:11:56.642Z [DEBUG] [uds-messaging] Shutting down
+2026-10-18T19:11:56.643Z [DEBUG] LSP server manager shut down successfully
+2026-10-18T19:11:56.644Z [DEBUG] XTVERSION: no reply (terminal ignored query)
+2026-10-18T19:11:56.644Z [DEBUG] Terminal capabilities: extendedKeys=no (env: terminal=xterm-256color, no answer); synchronizedOutput=no (env: no known terminal, no answer); kittyKeyboard=yes (not asked yet, no answer); kittyGraphics=no (env: terminal=xterm-256color, not asked yet, no answer); mousePixels=no (env: terminal=xterm-256color, not asked yet, no answer); programStatus=no (not asked yet, no answer); terminal said: no reply to CSI ? u; DECRQM 2026 not asked (no XTVERSION reply)
+2026-10-18T19:11:56.644Z [DEBUG] DECSTBM: gated (TMUX=unset ZELLIJ=unset TERM_PROGRAM=unset TERM=xterm-256color)
+2026-10-18T19:11:56.649Z [DEBUG] Preserving file permissions: 100600
+2026-10-18T19:11:56.649Z [DEBUG] Writing to temp file: /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.e1c0e08f2e2f
+2026-10-18T19:11:56.650Z [DEBUG] Applied original permissions to temp file
+2026-10-18T19:11:56.650Z [DEBUG] Temp file written successfully, size: 2274 bytes
+2026-10-18T19:11:56.650Z [DEBUG] Renaming /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json.tmp.2203791.e1c0e08f2e2f to /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json
+2026-10-18T19:11:56.650Z [DEBUG] File /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude/.claude.json written atomically

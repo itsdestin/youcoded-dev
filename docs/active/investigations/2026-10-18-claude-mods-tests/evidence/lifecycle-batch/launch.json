@@ -1,0 +1,560 @@
+{
+  "command": [
+    "/usr/bin/bwrap",
+    "--ro-bind",
+    "/",
+    "/",
+    "--bind",
+    "/tmp/cc-lifecycle-rJvifR",
+    "/tmp/cc-lifecycle-rJvifR",
+    "--bind",
+    "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/lifecycle-batch",
+    "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/lifecycle-batch",
+    "--dev",
+    "/dev",
+    "--proc",
+    "/proc",
+    "--unshare-net",
+    "--unshare-pid",
+    "--die-with-parent",
+    "--clearenv",
+    "--setenv",
+    "PATH",
+    "/usr/local/bin:/usr/bin:/bin",
+    "--setenv",
+    "HOME",
+    "/tmp/cc-lifecycle-rJvifR/launcher-home",
+    "--setenv",
+    "TMPDIR",
+    "/tmp/cc-lifecycle-rJvifR",
+    "--setenv",
+    "LANG",
+    "C.UTF-8",
+    "--setenv",
+    "LC_ALL",
+    "C.UTF-8",
+    "--setenv",
+    "LIFECYCLE_NETNS",
+    "1",
+    "--",
+    "/usr/bin/node",
+    "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/lifecycle-probe.mjs",
+    "--inside",
+    "lifecycle-batch"
+  ],
+  "env": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "HOME": "/tmp/cc-lifecycle-rJvifR/launcher-home",
+    "TMPDIR": "/tmp/cc-lifecycle-rJvifR",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LIFECYCLE_NETNS": "1"
+  },
+  "sandbox": "/tmp/cc-lifecycle-rJvifR",
+  "exitCode": 0,
+  "signal": null,
+  "stdout": "{\"name\":\"stall\",\"phases\":[{\"done\":true,\"id\":\"0ee9beca-539b-4998-83ff-d742a936cd25\",\"elapsed\":32980,\"exit\":{\"exitCode\":129,\"signal\":0}}],\"requests\":2,\"files\":{\"stall\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-stall-caEzaK/project/stall.txt\",\"exists\":false,\"content\":null},\"malformed\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-stall-caEzaK/project/malformed.txt\",\"exists\":false,\"content\":null},\"recovered\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-stall-caEzaK/project/recovered.txt\",\"exists\":false,\"content\":null},\"poll\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-stall-caEzaK/project/poll.txt\",\"exists\":false,\"content\":null}}}\n{\"name\":\"recovery\",\"phases\":[{\"done\":true,\"id\":\"294444ff-46eb-403f-93b9-a6442d495413\",\"elapsed\":3159,\"exit\":{\"exitCode\":129,\"signal\":0}}],\"requests\":4,\"files\":{\"stall\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-recovery-82lhvn/project/stall.txt\",\"exists\":false,\"content\":null},\"malformed\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-recovery-82lhvn/project/malformed.txt\",\"exists\":false,\"content\":null},\"recovered\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-recovery-82lhvn/project/recovered.txt\",\"exists\":true,\"content\":\"SYNTHETIC lifecycle recovered\\n\"},\"poll\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-recovery-82lhvn/project/poll.txt\",\"exists\":false,\"content\":null}}}\n{\"name\":\"poll\",\"phases\":[{\"done\":true,\"id\":\"4a7a48b9-4092-49ca-a2a5-6f6cedcca232\",\"elapsed\":38850,\"exit\":{\"exitCode\":129,\"signal\":0}}],\"requests\":2,\"files\":{\"stall\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-poll-zCtA0I/project/stall.txt\",\"exists\":false,\"content\":null},\"malformed\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-poll-zCtA0I/project/malformed.txt\",\"exists\":false,\"content\":null},\"recovered\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-poll-zCtA0I/project/recovered.txt\",\"exists\":false,\"content\":null},\"poll\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-poll-zCtA0I/project/poll.txt\",\"exists\":true,\"content\":\"SYNTHETIC lifecycle poll\\n\"}}}\n{\"name\":\"resume\",\"phases\":[{\"done\":true,\"id\":\"2c6bdfb6-6bb3-41f2-8a42-86f6e03aa1df\",\"elapsed\":2859,\"exit\":{\"exitCode\":129,\"signal\":0}},{\"done\":true,\"id\":\"2c6bdfb6-6bb3-41f2-8a42-86f6e03aa1df\",\"elapsed\":2862,\"exit\":{\"exitCode\":129,\"signal\":0}}],\"requests\":2,\"files\":{\"stall\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-resume-af1djx/project/stall.txt\",\"exists\":false,\"content\":null},\"malformed\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-resume-af1djx/project/malformed.txt\",\"exists\":false,\"content\":null},\"recovered\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-resume-af1djx/project/recovered.txt\",\"exists\":false,\"content\":null},\"poll\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-resume-af1djx/project/poll.txt\",\"exists\":false,\"content\":null}}}\n{\"name\":\"absent\",\"phases\":[{\"elapsed\":7531,\"exit\":{\"exitCode\":129,\"signal\":0}}],\"requests\":0,\"files\":{\"stall\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project/stall.txt\",\"exists\":false,\"content\":null},\"malformed\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project/malformed.txt\",\"exists\":false,\"content\":null},\"recovered\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project/recovered.txt\",\"exists\":false,\"content\":null},\"poll\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project/poll.txt\",\"exists\":false,\"content\":null}}}\n{\"name\":\"empty\",\"phases\":[{\"elapsed\":7525,\"exit\":{\"exitCode\":129,\"signal\":0}}],\"requests\":0,\"files\":{\"stall\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/stall.txt\",\"exists\":false,\"content\":null},\"malformed\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/malformed.txt\",\"exists\":false,\"content\":null},\"recovered\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/recovered.txt\",\"exists\":false,\"content\":null},\"poll\":{\"path\":\"/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/poll.txt\",\"exists\":false,\"content\":null}}}\n",
+  "stderr": "",
+  "durationMs": 100366,
+  "preservation": [
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/LIVE-HISTORY.md",
+      "before": "ba8602ce97105b7652a2fd5bc58d2803aec1357a2a39b4e0e12e484f56341e91",
+      "after": "ba8602ce97105b7652a2fd5bc58d2803aec1357a2a39b4e0e12e484f56341e91",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/PLAN.md",
+      "before": "edd80e811d53a68ec70f1f0e6a43f5fbc95ec75534c4e25bc713cebffeccb3a3",
+      "after": "edd80e811d53a68ec70f1f0e6a43f5fbc95ec75534c4e25bc713cebffeccb3a3",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/RESULTS.md",
+      "before": "7ec5cad940f6b3252b1b0e0b8b6f80a411f987bbd714bf28cbb6861a45235d54",
+      "after": "7ec5cad940f6b3252b1b0e0b8b6f80a411f987bbd714bf28cbb6861a45235d54",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/REPORT.md",
+      "before": "10ef95c5bc3819b5887165521de01bd8c8dfc3b498e9fef614725f91593d5b2e",
+      "after": "10ef95c5bc3819b5887165521de01bd8c8dfc3b498e9fef614725f91593d5b2e",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/approval-batch/approval-launch.json",
+      "before": "ca9167d3c937b8b11916d1e4955e275521c38dce061df1ab1ce303a6f9242e40",
+      "after": "ca9167d3c937b8b11916d1e4955e275521c38dce061df1ab1ce303a6f9242e40",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/approval-batch2/approval-debug.log",
+      "before": "7bf5b3e4e2f8551e9423614a5c58259091cf6b688f8c1e02a81adb17563ca1c1",
+      "after": "7bf5b3e4e2f8551e9423614a5c58259091cf6b688f8c1e02a81adb17563ca1c1",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/approval-batch2/approval-launch.json",
+      "before": "9012105a088f3aecf50677cd2641b1af93892a1211cfc49c4f951dbfceb13e31",
+      "after": "9012105a088f3aecf50677cd2641b1af93892a1211cfc49c4f951dbfceb13e31",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/approval-batch2/approval-run.json",
+      "before": "b66d6d3ec30c32dc4a93e669c480ad6dabcfaaf297f56f6a9768d07904a5a3ea",
+      "after": "b66d6d3ec30c32dc4a93e669c480ad6dabcfaaf297f56f6a9768d07904a5a3ea",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/approval-report.md",
+      "before": "10fd125746ca0297aae37ab484cf7c6ed38545f2cd4e670f796979675857d6cb",
+      "after": "10fd125746ca0297aae37ab484cf7c6ed38545f2cd4e670f796979675857d6cb",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/attachment-debug.log",
+      "before": "c23ffc3c6a58a5e4452f898ed98cbd1de74fe6698590fdd686c481e75b9ec2f7",
+      "after": "c23ffc3c6a58a5e4452f898ed98cbd1de74fe6698590fdd686c481e75b9ec2f7",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/attachment-run.json",
+      "before": "250ecbf65b12b8ab31af795fcf30e50e4e35ee6f576609c8bd9813f9bbc84f25",
+      "after": "250ecbf65b12b8ab31af795fcf30e50e4e35ee6f576609c8bd9813f9bbc84f25",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/attachment-tiny.png",
+      "before": "4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5",
+      "after": "4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/binary-contract-search.json",
+      "before": "135343e6cc53e23f3f3d1bad267dec150be20e3dbb79be1aad3b9779a877de4c",
+      "after": "135343e6cc53e23f3f3d1bad267dec150be20e3dbb79be1aad3b9779a877de4c",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/cleanup.json",
+      "before": "8f3d0226a42a9de0a80a0af45a6b52b8823ef4cf6cc59798c55d935533f35722",
+      "after": "8f3d0226a42a9de0a80a0af45a6b52b8823ef4cf6cc59798c55d935533f35722",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/control-followup/REPORT.md",
+      "before": "db181d856a3714403ba43a1c83487491529d2ee637e4d3f4cfca0bd29b755961",
+      "after": "db181d856a3714403ba43a1c83487491529d2ee637e4d3f4cfca0bd29b755961",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/control-followup/debug.log",
+      "before": "0ec4447addad41b76759a9f3b134b84bd84eaeaeff1b12601196fb1641a2b467",
+      "after": "0ec4447addad41b76759a9f3b134b84bd84eaeaeff1b12601196fb1641a2b467",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/control-followup/diff-review.patch",
+      "before": "8c3f71b71e727a756fd444dc3892e543f8eebed6a7769a01a5314c002c7d230e",
+      "after": "8c3f71b71e727a756fd444dc3892e543f8eebed6a7769a01a5314c002c7d230e",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/control-followup/emitted.d.ts",
+      "before": "c942d5c8cd8a1e87c58ec0cbdc4dfda6a0399273f42709ae19ccd8225ba4dfea",
+      "after": "c942d5c8cd8a1e87c58ec0cbdc4dfda6a0399273f42709ae19ccd8225ba4dfea",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/control-followup/launch.json",
+      "before": "0a9fc2aae606f8a06555ee568195c6aeeb79571b5f69dfe4d548ca0219f6c9cd",
+      "after": "0a9fc2aae606f8a06555ee568195c6aeeb79571b5f69dfe4d548ca0219f6c9cd",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/control-followup/run.json",
+      "before": "1bf64f11b1bc395132f8b369865095cf80e83ab8f3de13152572655b1622d564",
+      "after": "1bf64f11b1bc395132f8b369865095cf80e83ab8f3de13152572655b1622d564",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/controls-debug.log",
+      "before": "4f3c82d5969ef0429787c66ddf36e8fba49ab82be01c94b7f5b6df8daa64a543",
+      "after": "4f3c82d5969ef0429787c66ddf36e8fba49ab82be01c94b7f5b6df8daa64a543",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/controls-summary.json",
+      "before": "8b9f039565e718c55f5edabb637c6400eabffeb12b7af39a416786d3780724dd",
+      "after": "8b9f039565e718c55f5edabb637c6400eabffeb12b7af39a416786d3780724dd",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/controls.json",
+      "before": "626a86a7d4e9ed2b7134f26c1131f068150e04d7b5f4fe89fd90428fda9b9223",
+      "after": "626a86a7d4e9ed2b7134f26c1131f068150e04d7b5f4fe89fd90428fda9b9223",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/discovery.json",
+      "before": "5a51fb45d9ace4617a27236da7f8bc9107ee492a71f54f33b706c7bc22bb9536",
+      "after": "5a51fb45d9ace4617a27236da7f8bc9107ee492a71f54f33b706c7bc22bb9536",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/failure-attachment-assertions.json",
+      "before": "dc997270e8e0c32229c02310edd948aa7dbc77d5d67312d536ba39f8af6c1c91",
+      "after": "dc997270e8e0c32229c02310edd948aa7dbc77d5d67312d536ba39f8af6c1c91",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/failure-attachment-report.md",
+      "before": "13963dc581fda4abd5f9eed9b19b7ff502036eb4fa162d9c09b30520ada95d20",
+      "after": "13963dc581fda4abd5f9eed9b19b7ff502036eb4fa162d9c09b30520ada95d20",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/failure-debug.log",
+      "before": "c131c839ac12bd6a9ddcc485cefc5ca963991687f82f5e18f64f35ecaad90e7a",
+      "after": "c131c839ac12bd6a9ddcc485cefc5ca963991687f82f5e18f64f35ecaad90e7a",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/failure-run.json",
+      "before": "c900fa62a60acc972086fb90ba8e970a9466b9b33905309e745022e7aeab9349",
+      "after": "c900fa62a60acc972086fb90ba8e970a9466b9b33905309e745022e7aeab9349",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/generated-claude-code-mcp.d.ts",
+      "before": "0cab298516885f406c7762cf83b84334b5f5f02e1207abc79a02d136f518354b",
+      "after": "0cab298516885f406c7762cf83b84334b5f5f02e1207abc79a02d136f518354b",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/generated-claude-code-tools.d.ts",
+      "before": "8c7d5a89bae3ffced54bdbeb16f6c7817a521c088f6338becfea9e32c283d028",
+      "after": "8c7d5a89bae3ffced54bdbeb16f6c7817a521c088f6338becfea9e32c283d028",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/generated-claude-code.d.ts",
+      "before": "c942d5c8cd8a1e87c58ec0cbdc4dfda6a0399273f42709ae19ccd8225ba4dfea",
+      "after": "c942d5c8cd8a1e87c58ec0cbdc4dfda6a0399273f42709ae19ccd8225ba4dfea",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch/launch.json",
+      "before": "9623855fb6ad0a7e1bd1139d8ebf2aee72271760e0ca6fcaa49d3c0be23f800e",
+      "after": "9623855fb6ad0a7e1bd1139d8ebf2aee72271760e0ca6fcaa49d3c0be23f800e",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/cancel-late-debug.log",
+      "before": "4c2e8be975e0216e8dc0f171b21ad3f921d3138348efc00094952a013dcec1a9",
+      "after": "4c2e8be975e0216e8dc0f171b21ad3f921d3138348efc00094952a013dcec1a9",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/cancel-late.json",
+      "before": "7f0c83cad7cdfedc2fbb7a1d637d47648b3f9536b1b1cb492ec672247a4e14fc",
+      "after": "7f0c83cad7cdfedc2fbb7a1d637d47648b3f9536b1b1cb492ec672247a4e14fc",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/launch.json",
+      "before": "eaaa362f85d506033e4c05e8d4030e69c7913a2819e65dea61bc8ef583dd8c84",
+      "after": "eaaa362f85d506033e4c05e8d4030e69c7913a2819e65dea61bc8ef583dd8c84",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/plan-allow-debug.log",
+      "before": "2d390770945083b164ba735d732b14f454be33e81c2f2d2fe20a99f390496ade",
+      "after": "2d390770945083b164ba735d732b14f454be33e81c2f2d2fe20a99f390496ade",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/plan-allow.json",
+      "before": "5df32e337904e7d4336a6df8f870633b40c07df325a9b7556f23234bbc407246",
+      "after": "5df32e337904e7d4336a6df8f870633b40c07df325a9b7556f23234bbc407246",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/plan-deny-debug.log",
+      "before": "e370ffca956e026b02dcce7dd442d9fbde31b094188c2be6c853fe49245a9bd9",
+      "after": "e370ffca956e026b02dcce7dd442d9fbde31b094188c2be6c853fe49245a9bd9",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/plan-deny.json",
+      "before": "2a805ba807d85c150e642b5bd6de79fc0b8ade111f7d9f536de9691ebdf894c9",
+      "after": "2a805ba807d85c150e642b5bd6de79fc0b8ade111f7d9f536de9691ebdf894c9",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/plan-replace-debug.log",
+      "before": "1a921d52b111207987ee0846bc940025b9d3ec5a9f48916f84df240553c55426",
+      "after": "1a921d52b111207987ee0846bc940025b9d3ec5a9f48916f84df240553c55426",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/plan-replace.json",
+      "before": "e04506808cc7c4cb51d894b726197f776d84cbcd4c6d78efd5718f772e63d532",
+      "after": "e04506808cc7c4cb51d894b726197f776d84cbcd4c6d78efd5718f772e63d532",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/question-allow-debug.log",
+      "before": "c49fa3ea39885040271838de64855c0db011760dc3d42dcebea4485a84d9fef3",
+      "after": "c49fa3ea39885040271838de64855c0db011760dc3d42dcebea4485a84d9fef3",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/question-allow.json",
+      "before": "45a07a920b9cb7ded3cbb47bdc98e010f88c1c459afc4347ed26bec7a37ef01e",
+      "after": "45a07a920b9cb7ded3cbb47bdc98e010f88c1c459afc4347ed26bec7a37ef01e",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/question-deny-debug.log",
+      "before": "6c2a845ee34c316a7f06bd049acd000e5955e9311f281b32656fc7558e506ffe",
+      "after": "6c2a845ee34c316a7f06bd049acd000e5955e9311f281b32656fc7558e506ffe",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/question-deny.json",
+      "before": "baacda4397371c6ea162eda98cd95f801eb2a1ebb22762088551de6e4ac0a17f",
+      "after": "baacda4397371c6ea162eda98cd95f801eb2a1ebb22762088551de6e4ac0a17f",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/question-replace-debug.log",
+      "before": "7882fe713e53107e471c5074e7f7f1f507a1ad3fd491463b898b536d50600178",
+      "after": "7882fe713e53107e471c5074e7f7f1f507a1ad3fd491463b898b536d50600178",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/question-replace.json",
+      "before": "11b88f928cef5e74a5cf6f7527ebe0ed24ab325a91c4281e7375badf06e6c048",
+      "after": "11b88f928cef5e74a5cf6f7527ebe0ed24ab325a91c4281e7375badf06e6c048",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/reload-pending-debug.log",
+      "before": "fc481f8ceed28e30d585dac4fcffe092476a3b2d0a163cb234b890f650370d47",
+      "after": "fc481f8ceed28e30d585dac4fcffe092476a3b2d0a163cb234b890f650370d47",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-batch2/reload-pending.json",
+      "before": "d458acbbe7e3951c4f68119e1b05ea6ad7443b2ecc7356c7602aac971f59e9a6",
+      "after": "d458acbbe7e3951c4f68119e1b05ea6ad7443b2ecc7356c7602aac971f59e9a6",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-followup/REPORT.md",
+      "before": "f2620402378a29f3e0bb47332f11ba1574505f687c829ac649f229d05688d187",
+      "after": "f2620402378a29f3e0bb47332f11ba1574505f687c829ac649f229d05688d187",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-followup/launch.json",
+      "before": "eb3c898d5f8a61b0e5aff7f5a6c365afa41c3018a5948dfe28f1ab752047f81b",
+      "after": "eb3c898d5f8a61b0e5aff7f5a6c365afa41c3018a5948dfe28f1ab752047f81b",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-followup/plan-deny-debug.log",
+      "before": "923d021cb6f1b787da26f68106f57d85236e90d9451d9b249356ed95ce967146",
+      "after": "923d021cb6f1b787da26f68106f57d85236e90d9451d9b249356ed95ce967146",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-followup/plan-deny.json",
+      "before": "d336094648d81219490dfc616833373ad30912c5939faeafecc8824cdb31ec2f",
+      "after": "d336094648d81219490dfc616833373ad30912c5939faeafecc8824cdb31ec2f",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-followup/question-free-debug.log",
+      "before": "0aea2bf66e1040aca53725f928230293f964147f5b36f1137f329aa8d8871a8c",
+      "after": "0aea2bf66e1040aca53725f928230293f964147f5b36f1137f329aa8d8871a8c",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-followup/question-free.json",
+      "before": "248e4d9f027beac0c3db1500dcaa2fbd3f6f33dcbc25b990c3b0d9b22c383150",
+      "after": "248e4d9f027beac0c3db1500dcaa2fbd3f6f33dcbc25b990c3b0d9b22c383150",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-followup/question-structured-debug.log",
+      "before": "064c4f23c0eb5d204f375041b413830c15300c59f0df6993b39e439d5caa4aec",
+      "after": "064c4f23c0eb5d204f375041b413830c15300c59f0df6993b39e439d5caa4aec",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interaction-followup/question-structured.json",
+      "before": "e78341c444fe3747b54745b94d8a6dc3b838ac8d9397c121295f3f96c39fc72d",
+      "after": "e78341c444fe3747b54745b94d8a6dc3b838ac8d9397c121295f3f96c39fc72d",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/interactive.json",
+      "before": "1100577933abd2d6cfa5057358623fcdc658a475fbf6e78afc44ec54600e7fa3",
+      "after": "1100577933abd2d6cfa5057358623fcdc658a475fbf6e78afc44ec54600e7fa3",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/loading-debug.log",
+      "before": "dd3a3cb314316b1af591cedf84b612c4967c4bd424922054804f9b6258bbe822",
+      "after": "dd3a3cb314316b1af591cedf84b612c4967c4bd424922054804f9b6258bbe822",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/targeted-contract.txt",
+      "before": "b9eec96942bbaf7d83b77d51de2f7a06fdee10a26dff3c2add055eaa78fab916",
+      "after": "b9eec96942bbaf7d83b77d51de2f7a06fdee10a26dff3c2add055eaa78fab916",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/parser-check/check.mjs",
+      "before": "64728689bf9337c0aeef0ca73719a2e47328e0929f0016ee4c3f42430df85c52",
+      "after": "64728689bf9337c0aeef0ca73719a2e47328e0929f0016ee4c3f42430df85c52",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/parser-check/results.json",
+      "before": "3efce77e1d9cd9b539e8ab6893144a2f78a871770800ed7096e45ac8d9c05adb",
+      "after": "3efce77e1d9cd9b539e8ab6893144a2f78a871770800ed7096e45ac8d9c05adb",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/plugin-management/check.py",
+      "before": "ac681dfdbd14e70f116ff7ffe086c1d4985e7ede4f60330eec4b2768cd735823",
+      "after": "ac681dfdbd14e70f116ff7ffe086c1d4985e7ede4f60330eec4b2768cd735823",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/plugin-management/extended-results.json",
+      "before": "0915ca650db1341dd81403d8510a3d1f52606caca761ad51c43ec837ad23a92e",
+      "after": "0915ca650db1341dd81403d8510a3d1f52606caca761ad51c43ec837ad23a92e",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/plugin-management/results.json",
+      "before": "f2eec5671854de6eb3e6bbd8840760e96d5fe1ad71d536fc69abacac77dc8db3",
+      "after": "f2eec5671854de6eb3e6bbd8840760e96d5fe1ad71d536fc69abacac77dc8db3",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/approval-check.mjs",
+      "before": "0a66096d37562ce7071c404ffcfe55f14559247f67e8bcc45ae76bdc286dba5f",
+      "after": "0a66096d37562ce7071c404ffcfe55f14559247f67e8bcc45ae76bdc286dba5f",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/approval-fixture.ts",
+      "before": "3979353728b8dfe6d164b22650ebd4e9594322a272f15177f627dd2eb4833c10",
+      "after": "3979353728b8dfe6d164b22650ebd4e9594322a272f15177f627dd2eb4833c10",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/approval-probe.mjs",
+      "before": "b464745cbc63e735857b8eea7bf29bbffe0a74735e1f5c3ea25941394c840513",
+      "after": "b464745cbc63e735857b8eea7bf29bbffe0a74735e1f5c3ea25941394c840513",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/attachment-fixture.ts",
+      "before": "1c9c36cadafeb9a5219776da9def20fc3002897adba6f8bf6eb0e536b7201991",
+      "after": "1c9c36cadafeb9a5219776da9def20fc3002897adba6f8bf6eb0e536b7201991",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/check-evidence.mjs",
+      "before": "d406fb675a6a9d00e639d16ebbec0455dbf26085cd322eef4ed2c889946c00ba",
+      "after": "d406fb675a6a9d00e639d16ebbec0455dbf26085cd322eef4ed2c889946c00ba",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/control-followup-check.mjs",
+      "before": "b8841871c86d058dfee322339356298048555c86c563fb79d70f4955e01b6909",
+      "after": "b8841871c86d058dfee322339356298048555c86c563fb79d70f4955e01b6909",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/control-followup-fixture.ts",
+      "before": "434d34f6dfbcf6654dfb6ec061ee2e7824dd2d1a9efb2a3aec7b39c50790f551",
+      "after": "434d34f6dfbcf6654dfb6ec061ee2e7824dd2d1a9efb2a3aec7b39c50790f551",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/control-followup-probe.mjs",
+      "before": "3b26e670e8cb2d42d444241db56b4ca49bda7f923e724e89005bf087c8373ba3",
+      "after": "3b26e670e8cb2d42d444241db56b4ca49bda7f923e724e89005bf087c8373ba3",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/failure-attachment-check.mjs",
+      "before": "4f9d361ff2a0ee38c12b69c28670df9281bc76bb64938e5c7fda61e5fe515520",
+      "after": "4f9d361ff2a0ee38c12b69c28670df9281bc76bb64938e5c7fda61e5fe515520",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/failure-attachment-probe.mjs",
+      "before": "ec28a063d38779ce823ae1d5a53e03d04b4aff771108b61e71c9eb7ec99e4083",
+      "after": "ec28a063d38779ce823ae1d5a53e03d04b4aff771108b61e71c9eb7ec99e4083",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/failure-fixture.ts",
+      "before": "fff11cc4d83b4af2fd2b2d2646dd79cf096185f2470eaf3dacfda1caba5baf84",
+      "after": "fff11cc4d83b4af2fd2b2d2646dd79cf096185f2470eaf3dacfda1caba5baf84",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/fixture-register.ts",
+      "before": "5853b879aeb74929987ed2b8dd361c3dda0362f840132bfacc7712d53f27e1e4",
+      "after": "5853b879aeb74929987ed2b8dd361c3dda0362f840132bfacc7712d53f27e1e4",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/interaction-check.mjs",
+      "before": "70e354c1b00f370966bef82b281fb5e46122e8562ae3c855d341f54ce38c47b1",
+      "after": "70e354c1b00f370966bef82b281fb5e46122e8562ae3c855d341f54ce38c47b1",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/interaction-fixture.ts",
+      "before": "1ace8faefbb058b6febc2949b9ab7a0b36cb585818a26bd581b5ce0f88d2fd62",
+      "after": "1ace8faefbb058b6febc2949b9ab7a0b36cb585818a26bd581b5ce0f88d2fd62",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/interaction-probe.mjs",
+      "before": "36cf0dbd84ed5f1540f1987ad838f6076301a452a17c7369457841b27f824ff2",
+      "after": "36cf0dbd84ed5f1540f1987ad838f6076301a452a17c7369457841b27f824ff2",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/lifecycle-fixture.ts",
+      "before": "cb358af89def9cd9fbaf065ce87e65fb51187a594af9656bdf9b5af0f4043cc4",
+      "after": "cb358af89def9cd9fbaf065ce87e65fb51187a594af9656bdf9b5af0f4043cc4",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/lifecycle-probe.mjs",
+      "before": "315a823fd4ee6638efc5b2a7bd755554dedbb4f92bb6ece5b08557b68d6281a0",
+      "after": "315a823fd4ee6638efc5b2a7bd755554dedbb4f92bb6ece5b08557b68d6281a0",
+      "unchanged": true
+    },
+    {
+      "file": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/mods-probe.mjs",
+      "before": "5ea0330fd9b6d35e398b38f485a809ba904823dce39bbf8b941ae2e306db9cc9",
+      "after": "5ea0330fd9b6d35e398b38f485a809ba904823dce39bbf8b941ae2e306db9cc9",
+      "unchanged": true
+    }
+  ],
+  "remainingSandboxProcesses": []
+}

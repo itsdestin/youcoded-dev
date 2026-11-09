@@ -1,0 +1,327 @@
+2026-10-18T20:24:03.682Z [DEBUG] MDM settings load completed in 0ms
+2026-10-18T20:24:03.689Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:24:03.690Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/project/.claude/settings.json
+2026-10-18T20:24:03.691Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/project/.claude/settings.local.json
+2026-10-18T20:24:03.691Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-10-18T20:24:03.695Z [DEBUG] [init] configureGlobalMTLS starting
+2026-10-18T20:24:03.695Z [DEBUG] [init] configureGlobalMTLS complete
+2026-10-18T20:24:03.695Z [DEBUG] [init] configureGlobalAgents starting
+2026-10-18T20:24:03.695Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-10-18T20:24:03.695Z [DEBUG] CA certs: Loaded 121 bundled root certificates
+2026-10-18T20:24:03.699Z [DEBUG] CA certs: Loaded 121 system CA certificates
+2026-10-18T20:24:03.700Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:24:03.700Z [DEBUG] [init] configureGlobalAgents complete
+2026-10-18T20:24:03.703Z [DEBUG] Error log sink initialized
+2026-10-18T20:24:03.703Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-10-18T20:24:03.708Z [DEBUG] Git remote URL: null
+2026-10-18T20:24:03.709Z [DEBUG] No git remote URL found
+2026-10-18T20:24:03.709Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.709Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.718c131503d4
+2026-10-18T20:24:03.709Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.709Z [DEBUG] Temp file written successfully, size: 262 bytes
+2026-10-18T20:24:03.709Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.718c131503d4 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.709Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.710Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.710Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.eb25f366a422
+2026-10-18T20:24:03.710Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.710Z [DEBUG] Temp file written successfully, size: 345 bytes
+2026-10-18T20:24:03.710Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.eb25f366a422 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.710Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.711Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.711Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.30db80ed09a8
+2026-10-18T20:24:03.711Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.711Z [DEBUG] Temp file written successfully, size: 381 bytes
+2026-10-18T20:24:03.711Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.30db80ed09a8 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.711Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.711Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.711Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.7f53095980d4
+2026-10-18T20:24:03.711Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.711Z [DEBUG] Temp file written successfully, size: 420 bytes
+2026-10-18T20:24:03.711Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.7f53095980d4 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.712Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.712Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.712Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.396a606f4935
+2026-10-18T20:24:03.713Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.713Z [DEBUG] Temp file written successfully, size: 447 bytes
+2026-10-18T20:24:03.713Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.396a606f4935 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.713Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.713Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.713Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.66e1adf48a37
+2026-10-18T20:24:03.713Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.713Z [DEBUG] Temp file written successfully, size: 495 bytes
+2026-10-18T20:24:03.714Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.66e1adf48a37 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.714Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.714Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.714Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.27d3adfe664b
+2026-10-18T20:24:03.714Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.714Z [DEBUG] Temp file written successfully, size: 521 bytes
+2026-10-18T20:24:03.714Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.27d3adfe664b to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.715Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.730Z [DEBUG] --mcp-config provenance: undeclared
+2026-10-18T20:24:03.730Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:24:03.734Z [DEBUG] [ToolSearch:optimistic] disabled: ANTHROPIC_BASE_URL=http://127.0.0.1:41769 is not a first-party Anthropic host. Set ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards tool_reference blocks.
+2026-10-18T20:24:03.737Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-10-18T20:24:03.738Z [DEBUG] [STARTUP] Running setup()...
+2026-10-18T20:24:03.742Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/skills, project=[]
+2026-10-18T20:24:03.743Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T20:24:03.743Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/agents'
+2026-10-18T20:24:03.743Z [DEBUG] installed_plugins.json doesn't exist, returning empty V2 object
+2026-10-18T20:24:03.743Z [DEBUG] --plugin-dir /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/market/plugins/scoped-probe is one plugin: .claude-plugin at its top marks it
+2026-10-18T20:24:03.743Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T20:24:03.743Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/commands'
+2026-10-18T20:24:03.744Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T20:24:03.753Z [DEBUG] Read hooks.json for plugin scoped-probe (enabled=true): /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/market/plugins/scoped-probe/hooks/hooks.json
+2026-10-18T20:24:03.754Z [DEBUG] Loaded inline plugin from path: scoped-probe
+2026-10-18T20:24:03.754Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-10-18T20:24:03.755Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-10-18T20:24:03.756Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T20:24:03.756Z [DEBUG] Checking plugin scoped-probe: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:24:03.756Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:24:03.756Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:24:03.756Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:24:03.756Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T20:24:03.756Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T20:24:03.756Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T20:24:03.756Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T20:24:03.758Z [INFO] [uds-messaging] Listening: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/runtime/cc-socks/670.sock
+2026-10-18T20:24:03.759Z [INFO] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/runtime/cc-socks/670.sock
+2026-10-18T20:24:03.761Z [INFO] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -N -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-10-18T20:24:03.762Z [DEBUG] Error log sink initialized
+2026-10-18T20:24:03.766Z [DEBUG] cc-plugin-sec-default@builtin not seated: no managed settings and not a Team or Enterprise organization (none)
+2026-10-18T20:24:03.767Z [DEBUG] [STARTUP] setup() completed in 29ms
+2026-10-18T20:24:03.768Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-10-18T20:24:03.773Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T20:24:03.778Z [DEBUG] [STARTUP] Commands and agents loaded in 10ms
+2026-10-18T20:24:03.784Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-10-18T20:24:03.788Z [DEBUG] Cleared mTLS configuration cache
+2026-10-18T20:24:03.788Z [DEBUG] Cleared proxy agent cache
+2026-10-18T20:24:03.788Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:24:03.790Z [DEBUG] [STARTUP] showSetupScreens() completed in 6ms
+2026-10-18T20:24:03.790Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-10-18T20:24:03.790Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-10-18T20:24:03.790Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-10-18T20:24:03.790Z [DEBUG] Starting background startup prefetches
+2026-10-18T20:24:03.791Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T20:24:03.791Z [DEBUG] [STARTUP] MCP configs resolved in 20ms (awaited at +54ms)
+2026-10-18T20:24:03.795Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:24:03.797Z [DEBUG] Initialized versioned plugins system with 0 plugins
+2026-10-18T20:24:03.815Z [DEBUG] Total LSP servers loaded: 0
+2026-10-18T20:24:03.815Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-10-18T20:24:03.815Z [DEBUG] LSP manager initialized with 0 servers
+2026-10-18T20:24:03.815Z [DEBUG] LSP server manager initialized successfully
+2026-10-18T20:24:03.815Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-10-18T20:24:03.818Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-10-18T20:24:03.818Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-10-18T20:24:03.824Z [DEBUG] Ripgrep first use test: PASSED (mode=embedded, path=/home/destin/.local/share/claude/versions/2.1.302)
+2026-10-18T20:24:03.825Z [DEBUG] "rg error (signal=undefined, code=2, stderr: rg: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/cache: IO error for operation on /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/cache: No such file or directory (os error 2)\n), 0 results"
+2026-10-18T20:24:03.825Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:24:03.827Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-10-18T20:24:03.840Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-10-18T20:24:03.840Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-10-18T20:24:03.841Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.841Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.8f308585fe5f
+2026-10-18T20:24:03.841Z [DEBUG] Git remote URL: null
+2026-10-18T20:24:03.841Z [DEBUG] No git remote URL found
+2026-10-18T20:24:03.841Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-10-18T20:24:03.841Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.842Z [DEBUG] Temp file written successfully, size: 601 bytes
+2026-10-18T20:24:03.842Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.8f308585fe5f to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.842Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.843Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.843Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.11f11c244486
+2026-10-18T20:24:03.843Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.843Z [DEBUG] Temp file written successfully, size: 601 bytes
+2026-10-18T20:24:03.843Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.11f11c244486 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.843Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.844Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:03.844Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.8b10baeccb15
+2026-10-18T20:24:03.844Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:03.844Z [DEBUG] Temp file written successfully, size: 770 bytes
+2026-10-18T20:24:03.844Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.8b10baeccb15 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:03.844Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:03.885Z [DEBUG] [keybindings] KeybindingSetup initialized with 224 bindings, 0 warnings
+2026-10-18T20:24:03.902Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:24:03.924Z [DEBUG] [engine] send set_max_thinking_tokens max=null
+2026-10-18T20:24:03.925Z [DEBUG] [engine] send set_model model=claude-opus-5-5
+2026-10-18T20:24:03.929Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:24:03.937Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T20:24:03.938Z [DEBUG] performStartupChecks called
+2026-10-18T20:24:03.941Z [DEBUG] [jobStateNameSync] watch skipped: Error: ENOENT: no such file or directory, watch '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/jobs/fb62d539'
+2026-10-18T20:24:03.945Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-10-18T20:24:03.946Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:24:03.948Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-10-18T20:24:03.949Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/project/.claude/settings.json
+2026-10-18T20:24:03.950Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/project/.claude/settings.local.json
+2026-10-18T20:24:03.950Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:24:03.964Z [DEBUG] [servedCatalog] off (essential_traffic)
+2026-10-18T20:24:03.972Z [DEBUG] Starting background plugin installations
+2026-10-18T20:24:03.972Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T20:24:03.972Z [DEBUG] performBackgroundPluginInstallations called
+2026-10-18T20:24:03.979Z [DEBUG] hooks module scoped-probe@inline loaded (worker, environment 1, tier user); events: prompt.submit,prompt.context,turn.start,turn.complete,session.measure,tool.check,session.start
+2026-10-18T20:24:03.981Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 2, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-10-18T20:24:03.982Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 3, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-10-18T20:24:03.983Z [DEBUG] hooks module cc-plugin-diff@builtin loaded (native, environment 4, tier builtin); events: session.start,ui.render,command.run,ui.close,ui.focus,ui.scroll,tool.call,prompt.submit
+2026-10-18T20:24:03.985Z [DEBUG] [keybindings] Watching for changes to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/keybindings.json
+2026-10-18T20:24:03.992Z [DEBUG] mcp runtime arm: v2 (source: default)
+2026-10-18T20:24:04.013Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:24:04.013Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:24:04.014Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for scoped-probe,cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-diff
+2026-10-18T20:24:04.015Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-10-18T20:24:04.015Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-10-18T20:24:04.015Z [DEBUG] plugin.register: cc-plugin-diff (builtin, cc-plugin-diff@builtin), judged by core alone: admitted
+2026-10-18T20:24:04.015Z [DEBUG] plugin.register: scoped-probe (user, scoped-probe@inline), judged by core alone: admitted
+2026-10-18T20:24:04.019Z [DEBUG] MCP server "scopedSession": Starting connection with timeout of 30000ms
+2026-10-18T20:24:04.022Z [DEBUG] MCP server "scopedSession": Connection failed after 11ms (ENOENT): ENOENT: no such file or directory, posix_spawn 'stdio'
+2026-10-18T20:24:04.023Z [ERROR] MCP server "scopedSession" Connection failed (ENOENT): ENOENT: no such file or directory, posix_spawn 'stdio'
+2026-10-18T20:24:04.023Z [INFO] 1 setup issue: MCP (run /mcp for details)
+2026-10-18T20:24:04.023Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/projects/-tmp-cc-scoped-2G7ftb-scoped-broken-ld04fG-project/memory/'
+2026-10-18T20:24:04.024Z [DEBUG] No CLAUDE.md/rules files found
+2026-10-18T20:24:04.033Z [DEBUG] plugin-dir watch: watching scoped-probe; folders of plugins none
+2026-10-18T20:24:04.058Z [DEBUG] Artifact gates frozen: capabilities=true comments=false db=true files=false types=false type_create=false type_catalog=false read_page_data=false room=false verify=false delete=false preview=false preview_browser=unread open=false endpoints=false pin=true share=false versions=false flag_source=disabled gb_fresh=false
+2026-10-18T20:24:04.058Z [DEBUG] Artifact publish edits offer frozen: edit_hook=true
+2026-10-18T20:24:04.059Z [DEBUG] Artifact input schema built: assets=false copy_from=false publish_edits=false assets_source=cold_no_identity
+2026-10-18T20:24:04.125Z [DEBUG] Lock acquisition took longer than expected - another Claude instance may be running
+2026-10-18T20:24:04.127Z [WARN] Official marketplace GCS fetch failed: connect ECONNREFUSED 35.190.46.17:443
+2026-10-18T20:24:04.127Z [DEBUG] Attempting to auto-install official marketplace
+2026-10-18T20:24:04.163Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:04.163Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.51588744558b
+2026-10-18T20:24:04.165Z [DEBUG] Watching /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/project for /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/project/.claude to appear
+2026-10-18T20:24:04.165Z [DEBUG] Watching for changes in setting files /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/settings.json...
+2026-10-18T20:24:04.167Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:04.167Z [DEBUG] Temp file written successfully, size: 1319 bytes
+2026-10-18T20:24:04.167Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.51588744558b to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:04.168Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:04.176Z [DEBUG] SSH config check: code=255 configured=false
+2026-10-18T20:24:04.177Z [INFO] SSH not configured for GitHub, using HTTPS for anthropics/claude-plugins-official
+2026-10-18T20:24:04.179Z [ERROR] install check: claude command at /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.local/bin/claude missing or broken (/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.local/bin does not exist)
+2026-10-18T20:24:04.179Z [ERROR] install check: claude command at /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.local/bin/claude missing or broken
+2026-10-18T20:24:04.179Z [INFO] 1 setup issue: install (run `claude doctor` for details)
+2026-10-18T20:24:04.179Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:24:04.183Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:04.183Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.fc13eb063b33
+2026-10-18T20:24:04.184Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:04.184Z [DEBUG] Temp file written successfully, size: 1360 bytes
+2026-10-18T20:24:04.185Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.fc13eb063b33 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:04.185Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:04.187Z [DEBUG] git clone: url=https://github.com/anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:24:04.192Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:04.192Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.7b36477e22b8
+2026-10-18T20:24:04.192Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:04.193Z [DEBUG] Temp file written successfully, size: 1397 bytes
+2026-10-18T20:24:04.193Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.7b36477e22b8 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:04.193Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:04.195Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:04.195Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.bd831844120d
+2026-10-18T20:24:04.195Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:04.196Z [DEBUG] Temp file written successfully, size: 1470 bytes
+2026-10-18T20:24:04.196Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.bd831844120d to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:04.196Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:04.210Z [WARN] "git clone failed: url=https://github.com/anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- https://github.com/anthropics/claude-plugins-official.git /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server"
+2026-10-18T20:24:04.210Z [ERROR] "HTTPS clone failed for marketplace anthropics/claude-plugins-official (Failed to clone marketplace repository: Cloning into '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server), falling back to SSH"
+2026-10-18T20:24:04.211Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:24:04.214Z [DEBUG] git clone: url=git@github.com:anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:24:04.242Z [WARN] "git clone failed: url=git@github.com:anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- git@github.com:anthropics/claude-plugins-official.git /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:24:04.243Z [ERROR] "SSH clone fallback also failed for marketplace anthropics/claude-plugins-official: Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:24:04.244Z [ERROR] "Failed to auto-install official marketplace: Fetching the marketplace from GitHub failed on both attempts. HTTPS (https://github.com/anthropics/claude-plugins-official.git): Failed to clone marketplace repository: Cloning into '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server\n\nSSH (git@github.com:anthropics/claude-plugins-official.git): Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:24:04.247Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:04.247Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.ba917219f029
+2026-10-18T20:24:04.248Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:04.248Z [DEBUG] Temp file written successfully, size: 1802 bytes
+2026-10-18T20:24:04.248Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.ba917219f029 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:04.249Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:04.249Z [INFO] 1 setup issue: plugins (run /plugin for details)
+2026-10-18T20:24:04.252Z [DEBUG] type root of scoped-probe at /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/market/plugins/scoped-probe/.claude-plugin/types: entries claude-code, claude-code-tools, claude-code-mcp; wrote .claude-plugin/types/claude-code/index.d.ts, .claude-plugin/types/claude-code-tools/index.d.ts, .claude-plugin/types/claude-code-mcp/index.d.ts, .claude-plugin/types/tsconfig.json, .claude-plugin/types/.gitignore, tsconfig.json
+2026-10-18T20:24:04.252Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-10-18T20:24:04.253Z [DEBUG] session.start: raised (surface terminal, interactive)
+2026-10-18T20:24:04.257Z [DEBUG] Loaded plugins - Enabled: 4, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2026-10-18T20:24:04.258Z [DEBUG] Plugin autoupdate: command-source refresh disabled by tengu_plugin_command_source_refresh (still excluding command-sourced plugins from the regular pass)
+2026-10-18T20:24:04.261Z [DEBUG] $.command.register (cc-plugin-diff): /diff listed
+2026-10-18T20:24:04.264Z [DEBUG] hooks module cc-plugin-diff@builtin session.start settled in 5.5ms (native link, next() included)
+2026-10-18T20:24:04.264Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 6.0ms (native link, next() included)
+2026-10-18T20:24:04.270Z [DEBUG] hooks module scoped-probe@inline session.start settled in 15.8ms (worker hop, next() included)
+2026-10-18T20:24:04.480Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-10-18T20:24:06.273Z [DEBUG] $.fs.write (scoped-probe): /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/project/scoped-report.json (195 bytes)
+2026-10-18T20:24:06.274Z [DEBUG] $.prompt.submit (scoped-probe): "SYNTHETIC original user text 73"
+2026-10-18T20:24:06.291Z [DEBUG] High write ratio: blit=575, write=623 (52.0% writes), screen=42x115
+2026-10-18T20:24:06.293Z [DEBUG] hooks module scoped-probe@inline prompt.submit skipped: re-entry (the plugin's own code raised it; origin scoped-probe)
+2026-10-18T20:24:06.294Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in scoped-probe
+2026-10-18T20:24:06.295Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in scoped-probe
+2026-10-18T20:24:06.296Z [DEBUG] FileHistory: Added snapshot for e93738f4-3320-4273-985e-17c868593596, tracking 0 files
+2026-10-18T20:24:06.303Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 8.3ms (native link, next() included)
+2026-10-18T20:24:06.303Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 8.9ms (native link, next() included)
+2026-10-18T20:24:06.304Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.1ms (native link, next() included)
+2026-10-18T20:24:06.305Z [DEBUG] hooks module scoped-probe@inline turn.start settled in 5.1ms (worker hop, next() included)
+2026-10-18T20:24:06.305Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/output-styles: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/output-styles'
+2026-10-18T20:24:06.305Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/output-styles: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/output-styles'
+2026-10-18T20:24:06.306Z [DEBUG] Total plugin output styles loaded: 0
+2026-10-18T20:24:06.307Z [DEBUG] act_dont_rederive_arm_active source=growthbook
+2026-10-18T20:24:06.328Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:24:06.333Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:24:06.340Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.4ms (native link, next() included)
+2026-10-18T20:24:06.340Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:06.340Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.92c5364cc33c
+2026-10-18T20:24:06.341Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:06.342Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T20:24:06.343Z [DEBUG] Temp file written successfully, size: 1830 bytes
+2026-10-18T20:24:06.343Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.92c5364cc33c to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:06.344Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:06.345Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-10-18T20:24:06.346Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-10-18T20:24:06.346Z [DEBUG] [FileIndex] not a git repo, returning null
+2026-10-18T20:24:06.346Z [DEBUG] [FileIndex] git ls-files returned null, falling back to ripgrep
+2026-10-18T20:24:06.350Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/skills: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/skills'
+2026-10-18T20:24:06.350Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/skills: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/skills'
+2026-10-18T20:24:06.350Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/workflows: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/workflows'
+2026-10-18T20:24:06.350Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/workflows: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/workflows'
+2026-10-18T20:24:06.350Z [DEBUG] Failed to stat directory /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/routines: ENOENT: no such file or directory, stat '/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/routines'
+2026-10-18T20:24:06.350Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/routines: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/routines'
+2026-10-18T20:24:06.351Z [DEBUG] [FileIndex] ripgrep: 2 files in 5ms
+2026-10-18T20:24:06.352Z [DEBUG] [FileIndex] cache refresh completed in 7ms
+2026-10-18T20:24:06.352Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T20:24:06.352Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 48.5ms (native link, next() included)
+2026-10-18T20:24:06.353Z [DEBUG] hooks module scoped-probe@inline prompt.context settled in 50.7ms (worker hop, next() included)
+2026-10-18T20:24:06.355Z [DEBUG] [engine] yield system/init (first)
+2026-10-18T20:24:06.356Z [DEBUG] [engine] turn 1 start
+2026-10-18T20:24:06.359Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:24:06.373Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.da4; cc_entrypoint=cli;
+2026-10-18T20:24:06.374Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:24:06.375Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:24:06.382Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:24:06.386Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:24:06.389Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:24:06.394Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:24:06.394Z [DEBUG] [API:timing] first byte after 11ms
+2026-10-18T20:24:06.407Z [DEBUG] [engine] turn 1 end (turns=1 usage in=37 out=11 cost=$0.0004 api=27ms stop=end_turn resultLen=27)
+2026-10-18T20:24:06.413Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:24:06.413Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:24:06.413Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.2ms (native link, next() included)
+2026-10-18T20:24:06.414Z [DEBUG] hooks module scoped-probe@inline turn.complete settled in 3.9ms (worker hop, next() included)
+2026-10-18T20:24:06.416Z [DEBUG] hooks module scoped-probe@inline session.measure settled in 1.9ms (worker hop, next() included)
+2026-10-18T20:24:06.434Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 4.0ms (native link, next() included)
+2026-10-18T20:24:06.434Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 2.2ms (native link, next() included)
+2026-10-18T20:24:06.438Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:06.439Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.4735d5d77fe5
+2026-10-18T20:24:06.439Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:06.440Z [DEBUG] $.fs.write (scoped-probe): /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/project/scoped-report.json (1429 bytes)
+2026-10-18T20:24:06.440Z [DEBUG] Temp file written successfully, size: 1939 bytes
+2026-10-18T20:24:06.440Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.4735d5d77fe5 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:06.440Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:07.262Z [DEBUG] [REPL:unmount] REPL unmounting
+2026-10-18T20:24:07.264Z [DEBUG] [uds-messaging] Shutting down
+2026-10-18T20:24:07.265Z [DEBUG] LSP server manager shut down successfully
+2026-10-18T20:24:07.266Z [DEBUG] XTVERSION: no reply (terminal ignored query)
+2026-10-18T20:24:07.266Z [DEBUG] Terminal capabilities: extendedKeys=no (env: terminal=xterm-256color, no answer); synchronizedOutput=no (env: no known terminal, no answer); kittyKeyboard=yes (not asked yet, no answer); kittyGraphics=no (env: terminal=xterm-256color, not asked yet, no answer); mousePixels=no (env: terminal=xterm-256color, not asked yet, no answer); programStatus=no (not asked yet, no answer); terminal said: no reply to CSI ? u; DECRQM 2026 not asked (no XTVERSION reply)
+2026-10-18T20:24:07.266Z [DEBUG] DECSTBM: gated (TMUX=unset ZELLIJ=unset TERM_PROGRAM=unset TERM=xterm-256color)
+2026-10-18T20:24:07.269Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:07.269Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.33ba8a805727
+2026-10-18T20:24:07.269Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:07.269Z [DEBUG] Temp file written successfully, size: 2843 bytes
+2026-10-18T20:24:07.270Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.33ba8a805727 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:07.270Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:07.270Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:24:07.270Z [DEBUG] Writing to temp file: /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.9f09819262f2
+2026-10-18T20:24:07.270Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:24:07.271Z [DEBUG] Temp file written successfully, size: 2674 bytes
+2026-10-18T20:24:07.271Z [DEBUG] Renaming /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json.tmp.670.9f09819262f2 to /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json
+2026-10-18T20:24:07.271Z [DEBUG] File /tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/home/.claude/.claude.json written atomically
+2026-10-18T20:24:07.271Z [DEBUG] fullscreen boot canary: withdrawn

@@ -1,0 +1,21 @@
+{
+  "preservation": {
+    "filesChecked": 13,
+    "changed": []
+  },
+  "remainingMatchingTempChildren": [],
+  "binarySha256": "60d7eb7f12fbb28a52533fe8be5884097403562aa02dc73991a021c7067e29a5",
+  "failure": {
+    "throwWithoutCatch": "Write executed",
+    "throwWithCatchDeny": "Write blocked",
+    "timeoutWithCatchDeny": "Write blocked",
+    "timeoutElapsedMs": 10120
+  },
+  "attachment": {
+    "imageBlocks": 0,
+    "textArrived": true,
+    "pluginOriginRetained": true,
+    "pngBytes": 70
+  },
+  "requests": 7
+}

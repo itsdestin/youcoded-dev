@@ -1,0 +1,82 @@
+{
+  "name": "absent",
+  "root": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle",
+  "home": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/home",
+  "configDir": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/home/.claude",
+  "project": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project",
+  "policy": {
+    "permissions": {
+      "defaultMode": "default"
+    }
+  },
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "TERM": "xterm-256color",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/home",
+    "CLAUDE_CONFIG_DIR": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/home/.claude",
+    "TMPDIR": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle",
+    "XDG_CONFIG_HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/home/.config",
+    "XDG_CACHE_HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/home/.cache",
+    "XDG_DATA_HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/home/.local/share",
+    "XDG_STATE_HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/home/.local/state",
+    "XDG_RUNTIME_DIR": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/runtime",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:35937",
+    "ANTHROPIC_AUTH_TOKEN": "fake-token-for-local-capture"
+  },
+  "binary": "/home/destin/.local/bin/claude",
+  "binarySha256": "60d7eb7f12fbb28a52533fe8be5884097403562aa02dc73991a021c7067e29a5",
+  "version": "2.1.302 (Claude Code)\n",
+  "requests": [],
+  "serviceEvents": [],
+  "phases": [
+    {
+      "label": "first",
+      "command": [
+        "/home/destin/.local/bin/claude",
+        "--debug-file",
+        "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/first-debug.log"
+      ],
+      "pid": 499,
+      "start": 1792354713308,
+      "networkNamespace": "net:[4026533106]",
+      "cliNetworkNamespace": "net:[4026533106]",
+      "modReport": null,
+      "transcripts": [],
+      "raw": "\r ▐▛███▛█Claude Codev2.1.302\r▝▜██████▀Opus 5.5 · API Usage Billing\r ▝▝   ▝▝ /tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project\r▎Debug mode enabled · logging to /tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/first-debug.log\r◐ medium · /effort\r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r❯  \r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r⏸ manual mode on · ? for shortcuts · ← for agents\r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\rMake auto mode your default permission mode?\rAutomodeletsClaudehandlepermissionpromptsautomatically.Claudecheckseachtoolcallforriskyactions\randpromptinjectionbeforeexecuting,runstheonesitassessesaslower-risk,andblockstherest.\r❯Yes, set auto mode as my default permission mode\rNo,keepmanualmode\r\r\r\r\r\r        \r ▐▂▂█ \r·▜██████·\r~~\r ▐▟███▟█\r▝▜███▀\r ▝▝   ▝▝ \r▛▛\r▂▂\r▛▛",
+      "exit": {
+        "exitCode": 129,
+        "signal": 0
+      },
+      "durationMs": 7531
+    }
+  ],
+  "files": {
+    "stall": {
+      "path": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project/stall.txt",
+      "exists": false,
+      "content": null
+    },
+    "malformed": {
+      "path": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project/malformed.txt",
+      "exists": false,
+      "content": null
+    },
+    "recovered": {
+      "path": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project/recovered.txt",
+      "exists": false,
+      "content": null
+    },
+    "poll": {
+      "path": "/tmp/cc-lifecycle-rJvifR/lifecycle-absent-lDEgle/project/poll.txt",
+      "exists": false,
+      "content": null
+    }
+  },
+  "serversClosed": true
+}

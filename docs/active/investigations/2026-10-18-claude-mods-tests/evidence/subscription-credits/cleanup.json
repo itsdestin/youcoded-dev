@@ -1,0 +1,12 @@
+{
+  "removedProfile": "/tmp/yc-subscription-smoke-4MzhNw",
+  "temporaryProfileRemoved": true,
+  "remainingOwnedProcesses": [],
+  "controllerClosed": true,
+  "promptAttempts": 2,
+  "remainingAuthorizedPromptsNotSent": 0,
+  "credentialFilesReadOrCopied": false,
+  "globalLogoutOrRevocationPerformed": false,
+  "reason": "Bounded credit smoke run ended",
+  "at": "2026-10-18T21:22:50.704Z"
+}

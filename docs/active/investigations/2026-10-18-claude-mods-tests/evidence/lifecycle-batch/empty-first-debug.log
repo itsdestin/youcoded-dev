@@ -1,0 +1,256 @@
+2026-10-18T20:18:41.177Z [DEBUG] MDM settings load completed in 0ms
+2026-10-18T20:18:41.183Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:18:41.184Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/.claude/settings.json
+2026-10-18T20:18:41.185Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/.claude/settings.local.json
+2026-10-18T20:18:41.185Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-10-18T20:18:41.189Z [DEBUG] [init] configureGlobalMTLS starting
+2026-10-18T20:18:41.189Z [DEBUG] [init] configureGlobalMTLS complete
+2026-10-18T20:18:41.189Z [DEBUG] [init] configureGlobalAgents starting
+2026-10-18T20:18:41.190Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-10-18T20:18:41.190Z [DEBUG] CA certs: Loaded 121 bundled root certificates
+2026-10-18T20:18:41.193Z [DEBUG] CA certs: Loaded 121 system CA certificates
+2026-10-18T20:18:41.193Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:18:41.193Z [DEBUG] [init] configureGlobalAgents complete
+2026-10-18T20:18:41.196Z [DEBUG] Error log sink initialized
+2026-10-18T20:18:41.196Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-10-18T20:18:41.201Z [DEBUG] Git remote URL: null
+2026-10-18T20:18:41.201Z [DEBUG] No git remote URL found
+2026-10-18T20:18:41.202Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.202Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.2e11577fd62d
+2026-10-18T20:18:41.202Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.202Z [DEBUG] Temp file written successfully, size: 267 bytes
+2026-10-18T20:18:41.202Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.2e11577fd62d to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.202Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.203Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.203Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.c40e304ae78c
+2026-10-18T20:18:41.203Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.204Z [DEBUG] Temp file written successfully, size: 350 bytes
+2026-10-18T20:18:41.204Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.c40e304ae78c to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.204Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.204Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.204Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.6925678fe0dc
+2026-10-18T20:18:41.205Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.205Z [DEBUG] Temp file written successfully, size: 386 bytes
+2026-10-18T20:18:41.205Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.6925678fe0dc to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.205Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.205Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.205Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.e7d5997472b7
+2026-10-18T20:18:41.206Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.206Z [DEBUG] Temp file written successfully, size: 425 bytes
+2026-10-18T20:18:41.206Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.e7d5997472b7 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.206Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.207Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.207Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.052e2c4d6631
+2026-10-18T20:18:41.207Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.207Z [DEBUG] Temp file written successfully, size: 452 bytes
+2026-10-18T20:18:41.207Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.052e2c4d6631 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.207Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.207Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.207Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.44c14cd6684c
+2026-10-18T20:18:41.208Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.208Z [DEBUG] Temp file written successfully, size: 500 bytes
+2026-10-18T20:18:41.208Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.44c14cd6684c to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.208Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.208Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.208Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.2c14eddfa2c2
+2026-10-18T20:18:41.208Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.208Z [DEBUG] Temp file written successfully, size: 526 bytes
+2026-10-18T20:18:41.209Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.2c14eddfa2c2 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.209Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.221Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:18:41.225Z [DEBUG] [ToolSearch:optimistic] disabled: ANTHROPIC_BASE_URL=http://127.0.0.1:39411 is not a first-party Anthropic host. Set ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards tool_reference blocks.
+2026-10-18T20:18:41.228Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-10-18T20:18:41.228Z [DEBUG] [STARTUP] Running setup()...
+2026-10-18T20:18:41.232Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/skills, project=[]
+2026-10-18T20:18:41.233Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T20:18:41.233Z [DEBUG] Failed to stat directory /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/agents'
+2026-10-18T20:18:41.233Z [DEBUG] installed_plugins.json doesn't exist, returning empty V2 object
+2026-10-18T20:18:41.234Z [DEBUG] --plugin-dir /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/plugin is one plugin: .claude-plugin at its top marks it
+2026-10-18T20:18:41.234Z [DEBUG] Failed to stat directory /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/commands'
+2026-10-18T20:18:41.234Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T20:18:41.234Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T20:18:41.243Z [DEBUG] Read hooks.json for plugin isolated-lifecycle (enabled=true): /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/plugin/hooks/hooks.json
+2026-10-18T20:18:41.244Z [DEBUG] Loaded inline plugin from path: isolated-lifecycle
+2026-10-18T20:18:41.244Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-10-18T20:18:41.245Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-10-18T20:18:41.246Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T20:18:41.246Z [DEBUG] Checking plugin isolated-lifecycle: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:18:41.246Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:18:41.246Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:18:41.246Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:18:41.246Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T20:18:41.247Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T20:18:41.247Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T20:18:41.247Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T20:18:41.249Z [INFO] [uds-messaging] Listening: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/runtime/cc-socks/581.sock
+2026-10-18T20:18:41.250Z [INFO] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/runtime/cc-socks/581.sock
+2026-10-18T20:18:41.252Z [INFO] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -N -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-10-18T20:18:41.253Z [DEBUG] Error log sink initialized
+2026-10-18T20:18:41.256Z [DEBUG] cc-plugin-sec-default@builtin not seated: no managed settings and not a Team or Enterprise organization (none)
+2026-10-18T20:18:41.257Z [DEBUG] [STARTUP] setup() completed in 29ms
+2026-10-18T20:18:41.258Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-10-18T20:18:41.262Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T20:18:41.268Z [DEBUG] [STARTUP] Commands and agents loaded in 10ms
+2026-10-18T20:18:41.272Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-10-18T20:18:41.275Z [DEBUG] Cleared mTLS configuration cache
+2026-10-18T20:18:41.275Z [DEBUG] Cleared proxy agent cache
+2026-10-18T20:18:41.276Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:18:41.277Z [DEBUG] [STARTUP] showSetupScreens() completed in 5ms
+2026-10-18T20:18:41.277Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-10-18T20:18:41.277Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-10-18T20:18:41.277Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-10-18T20:18:41.277Z [DEBUG] Starting background startup prefetches
+2026-10-18T20:18:41.278Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T20:18:41.278Z [DEBUG] [STARTUP] MCP configs resolved in 20ms (awaited at +50ms)
+2026-10-18T20:18:41.282Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:18:41.283Z [DEBUG] Initialized versioned plugins system with 0 plugins
+2026-10-18T20:18:41.299Z [DEBUG] Total LSP servers loaded: 0
+2026-10-18T20:18:41.299Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-10-18T20:18:41.299Z [DEBUG] LSP manager initialized with 0 servers
+2026-10-18T20:18:41.299Z [DEBUG] LSP server manager initialized successfully
+2026-10-18T20:18:41.299Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-10-18T20:18:41.301Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-10-18T20:18:41.301Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-10-18T20:18:41.307Z [DEBUG] Ripgrep first use test: PASSED (mode=embedded, path=/home/destin/.local/share/claude/versions/2.1.302)
+2026-10-18T20:18:41.307Z [DEBUG] "rg error (signal=undefined, code=2, stderr: rg: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/cache: IO error for operation on /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/cache: No such file or directory (os error 2)\n), 0 results"
+2026-10-18T20:18:41.307Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:18:41.309Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-10-18T20:18:41.312Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-10-18T20:18:41.313Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-10-18T20:18:41.313Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.313Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.a72055349814
+2026-10-18T20:18:41.313Z [DEBUG] Git remote URL: null
+2026-10-18T20:18:41.313Z [DEBUG] No git remote URL found
+2026-10-18T20:18:41.314Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-10-18T20:18:41.314Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.314Z [DEBUG] Temp file written successfully, size: 606 bytes
+2026-10-18T20:18:41.314Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.a72055349814 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.314Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.315Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.315Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.bd0191478c3c
+2026-10-18T20:18:41.315Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.315Z [DEBUG] Temp file written successfully, size: 606 bytes
+2026-10-18T20:18:41.315Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.bd0191478c3c to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.315Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.316Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.316Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.e86390dca70e
+2026-10-18T20:18:41.316Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.316Z [DEBUG] Temp file written successfully, size: 775 bytes
+2026-10-18T20:18:41.316Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.e86390dca70e to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.316Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.341Z [DEBUG] [keybindings] KeybindingSetup initialized with 224 bindings, 0 warnings
+2026-10-18T20:18:41.354Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:18:41.369Z [DEBUG] [engine] send set_max_thinking_tokens max=null
+2026-10-18T20:18:41.369Z [DEBUG] [engine] send set_model model=claude-opus-5-5
+2026-10-18T20:18:41.372Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:18:41.376Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T20:18:41.376Z [DEBUG] performStartupChecks called
+2026-10-18T20:18:41.379Z [DEBUG] [jobStateNameSync] watch skipped: Error: ENOENT: no such file or directory, watch '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/jobs/81cf9584'
+2026-10-18T20:18:41.381Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-10-18T20:18:41.382Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:18:41.382Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-10-18T20:18:41.383Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/.claude/settings.json
+2026-10-18T20:18:41.383Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/.claude/settings.local.json
+2026-10-18T20:18:41.384Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:18:41.393Z [DEBUG] [servedCatalog] off (essential_traffic)
+2026-10-18T20:18:41.399Z [DEBUG] Starting background plugin installations
+2026-10-18T20:18:41.399Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T20:18:41.399Z [DEBUG] performBackgroundPluginInstallations called
+2026-10-18T20:18:41.403Z [DEBUG] hooks module isolated-lifecycle@inline loaded (worker, environment 1, tier user); events: none
+2026-10-18T20:18:41.404Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 2, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-10-18T20:18:41.405Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 3, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-10-18T20:18:41.405Z [DEBUG] hooks module cc-plugin-diff@builtin loaded (native, environment 4, tier builtin); events: session.start,ui.render,command.run,ui.close,ui.focus,ui.scroll,tool.call,prompt.submit
+2026-10-18T20:18:41.406Z [DEBUG] [keybindings] Watching for changes to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/keybindings.json
+2026-10-18T20:18:41.409Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:18:41.409Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:18:41.409Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for isolated-lifecycle,cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-diff
+2026-10-18T20:18:41.410Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-10-18T20:18:41.410Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-10-18T20:18:41.410Z [DEBUG] plugin.register: cc-plugin-diff (builtin, cc-plugin-diff@builtin), judged by core alone: admitted
+2026-10-18T20:18:41.410Z [DEBUG] plugin.register: isolated-lifecycle (user, isolated-lifecycle@inline), judged by core alone: admitted
+2026-10-18T20:18:41.415Z [DEBUG] plugin-dir watch: watching isolated-lifecycle; folders of plugins none
+2026-10-18T20:18:41.434Z [DEBUG] Artifact gates frozen: capabilities=true comments=false db=true files=false types=false type_create=false type_catalog=false read_page_data=false room=false verify=false delete=false preview=false preview_browser=unread open=false endpoints=false pin=true share=false versions=false flag_source=disabled gb_fresh=false
+2026-10-18T20:18:41.435Z [DEBUG] Artifact publish edits offer frozen: edit_hook=false
+2026-10-18T20:18:41.436Z [DEBUG] Artifact input schema built: assets=false copy_from=false publish_edits=true assets_source=cold_no_identity
+2026-10-18T20:18:41.465Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/projects/-tmp-cc-lifecycle-rJvifR-lifecycle-empty-6qhDyB-project/memory/'
+2026-10-18T20:18:41.466Z [DEBUG] No CLAUDE.md/rules files found
+2026-10-18T20:18:41.482Z [WARN] Official marketplace GCS fetch failed: connect ECONNREFUSED 35.190.46.17:443
+2026-10-18T20:18:41.482Z [DEBUG] Attempting to auto-install official marketplace
+2026-10-18T20:18:41.502Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.502Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.e39313d2ba33
+2026-10-18T20:18:41.503Z [DEBUG] Watching /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project for /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/.claude to appear
+2026-10-18T20:18:41.503Z [DEBUG] Watching for changes in setting files /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/settings.json...
+2026-10-18T20:18:41.505Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.506Z [DEBUG] Temp file written successfully, size: 1330 bytes
+2026-10-18T20:18:41.506Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.e39313d2ba33 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.506Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T20:18:41.507Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.508Z [DEBUG] SSH config check: code=255 configured=false
+2026-10-18T20:18:41.508Z [INFO] SSH not configured for GitHub, using HTTPS for anthropics/claude-plugins-official
+2026-10-18T20:18:41.509Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:18:41.511Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T20:18:41.512Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 41.9ms (native link, next() included)
+2026-10-18T20:18:41.514Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.514Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.9678f72bd878
+2026-10-18T20:18:41.514Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.515Z [DEBUG] Temp file written successfully, size: 1371 bytes
+2026-10-18T20:18:41.515Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.9678f72bd878 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.515Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.516Z [DEBUG] git clone: url=https://github.com/anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:18:41.520Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.520Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.20bff0dab988
+2026-10-18T20:18:41.520Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.520Z [DEBUG] Temp file written successfully, size: 1408 bytes
+2026-10-18T20:18:41.520Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.20bff0dab988 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.521Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.521Z [ERROR] install check: claude command at /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.local/bin/claude missing or broken (/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.local/bin does not exist)
+2026-10-18T20:18:41.522Z [ERROR] install check: claude command at /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.local/bin/claude missing or broken
+2026-10-18T20:18:41.522Z [INFO] 1 setup issue: install (run `claude doctor` for details)
+2026-10-18T20:18:41.523Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.523Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.539a5f4fec96
+2026-10-18T20:18:41.524Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.524Z [DEBUG] Temp file written successfully, size: 1481 bytes
+2026-10-18T20:18:41.524Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.539a5f4fec96 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.524Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.531Z [WARN] "git clone failed: url=https://github.com/anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- https://github.com/anthropics/claude-plugins-official.git /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server"
+2026-10-18T20:18:41.532Z [ERROR] "HTTPS clone failed for marketplace anthropics/claude-plugins-official (Failed to clone marketplace repository: Cloning into '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server), falling back to SSH"
+2026-10-18T20:18:41.532Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:18:41.534Z [DEBUG] git clone: url=git@github.com:anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:18:41.537Z [DEBUG] type root of isolated-lifecycle at /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/plugin/.claude-plugin/types: entries claude-code, claude-code-tools, claude-code-mcp; wrote .claude-plugin/types/claude-code/index.d.ts, .claude-plugin/types/claude-code-tools/index.d.ts, .claude-plugin/types/claude-code-mcp/index.d.ts, .claude-plugin/types/tsconfig.json, .claude-plugin/types/.gitignore, tsconfig.json
+2026-10-18T20:18:41.537Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-10-18T20:18:41.537Z [DEBUG] session.start: raised (surface terminal, interactive)
+2026-10-18T20:18:41.544Z [DEBUG] $.command.register (cc-plugin-diff): /diff listed
+2026-10-18T20:18:41.546Z [DEBUG] hooks module cc-plugin-diff@builtin session.start settled in 8.5ms (native link, next() included)
+2026-10-18T20:18:41.546Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 8.8ms (native link, next() included)
+2026-10-18T20:18:41.551Z [WARN] "git clone failed: url=git@github.com:anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- git@github.com:anthropics/claude-plugins-official.git /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:18:41.551Z [DEBUG] Loaded plugins - Enabled: 4, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2026-10-18T20:18:41.552Z [DEBUG] Plugin autoupdate: command-source refresh disabled by tengu_plugin_command_source_refresh (still excluding command-sourced plugins from the regular pass)
+2026-10-18T20:18:41.552Z [ERROR] "SSH clone fallback also failed for marketplace anthropics/claude-plugins-official: Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:18:41.555Z [ERROR] "Failed to auto-install official marketplace: Fetching the marketplace from GitHub failed on both attempts. HTTPS (https://github.com/anthropics/claude-plugins-official.git): Failed to clone marketplace repository: Cloning into '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 1 ms: Could not connect to server\n\nSSH (git@github.com:anthropics/claude-plugins-official.git): Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:18:41.556Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:41.556Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.26a16c7cf460
+2026-10-18T20:18:41.556Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:41.557Z [DEBUG] Temp file written successfully, size: 1813 bytes
+2026-10-18T20:18:41.557Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.26a16c7cf460 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:41.557Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:41.557Z [INFO] 1 setup issue: plugins (run /plugin for details)
+2026-10-18T20:18:41.810Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-10-18T20:18:48.558Z [DEBUG] [REPL:unmount] REPL unmounting
+2026-10-18T20:18:48.560Z [DEBUG] [uds-messaging] Shutting down
+2026-10-18T20:18:48.561Z [DEBUG] LSP server manager shut down successfully
+2026-10-18T20:18:48.561Z [DEBUG] XTVERSION: no reply (terminal ignored query)
+2026-10-18T20:18:48.561Z [DEBUG] Terminal capabilities: extendedKeys=no (env: terminal=xterm-256color, no answer); synchronizedOutput=no (env: no known terminal, no answer); kittyKeyboard=yes (not asked yet, no answer); kittyGraphics=no (env: terminal=xterm-256color, not asked yet, no answer); mousePixels=no (env: terminal=xterm-256color, not asked yet, no answer); programStatus=no (not asked yet, no answer); terminal said: no reply to CSI ? u; DECRQM 2026 not asked (no XTVERSION reply)
+2026-10-18T20:18:48.561Z [DEBUG] DECSTBM: gated (TMUX=unset ZELLIJ=unset TERM_PROGRAM=unset TERM=xterm-256color)
+2026-10-18T20:18:48.563Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:48.563Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.12b172819b73
+2026-10-18T20:18:48.563Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:48.563Z [DEBUG] Temp file written successfully, size: 2400 bytes
+2026-10-18T20:18:48.563Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.12b172819b73 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:48.563Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:48.564Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:18:48.564Z [DEBUG] Writing to temp file: /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.b2771c1d23a4
+2026-10-18T20:18:48.564Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:18:48.564Z [DEBUG] Temp file written successfully, size: 2231 bytes
+2026-10-18T20:18:48.564Z [DEBUG] Renaming /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json.tmp.581.b2771c1d23a4 to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json
+2026-10-18T20:18:48.564Z [DEBUG] File /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude/.claude.json written atomically
+2026-10-18T20:18:48.564Z [DEBUG] fullscreen boot canary: withdrawn

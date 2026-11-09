@@ -1,0 +1,402 @@
+2026-10-18T20:00:02.429Z [DEBUG] MDM settings load completed in 0ms
+2026-10-18T20:00:02.435Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:00:02.436Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/.claude/settings.json
+2026-10-18T20:00:02.436Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/.claude/settings.local.json
+2026-10-18T20:00:02.437Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-10-18T20:00:02.440Z [DEBUG] [init] configureGlobalMTLS starting
+2026-10-18T20:00:02.440Z [DEBUG] [init] configureGlobalMTLS complete
+2026-10-18T20:00:02.440Z [DEBUG] [init] configureGlobalAgents starting
+2026-10-18T20:00:02.440Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-10-18T20:00:02.440Z [DEBUG] CA certs: Loaded 121 bundled root certificates
+2026-10-18T20:00:02.444Z [DEBUG] CA certs: Loaded 121 system CA certificates
+2026-10-18T20:00:02.444Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:00:02.444Z [DEBUG] [init] configureGlobalAgents complete
+2026-10-18T20:00:02.446Z [DEBUG] Error log sink initialized
+2026-10-18T20:00:02.447Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-10-18T20:00:02.457Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:00:02.461Z [DEBUG] [ToolSearch:optimistic] disabled: ANTHROPIC_BASE_URL=http://127.0.0.1:39371 is not a first-party Anthropic host. Set ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards tool_reference blocks.
+2026-10-18T20:00:02.463Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-10-18T20:00:02.464Z [DEBUG] [STARTUP] Running setup()...
+2026-10-18T20:00:02.468Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/skills, project=[]
+2026-10-18T20:00:02.468Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T20:00:02.468Z [DEBUG] Failed to stat directory /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/agents'
+2026-10-18T20:00:02.469Z [DEBUG] installed_plugins.json doesn't exist, returning empty V2 object
+2026-10-18T20:00:02.469Z [DEBUG] --plugin-dir /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/plugin is one plugin: .claude-plugin at its top marks it
+2026-10-18T20:00:02.469Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T20:00:02.469Z [DEBUG] Failed to stat directory /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/commands'
+2026-10-18T20:00:02.469Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T20:00:02.478Z [DEBUG] Git remote URL: null
+2026-10-18T20:00:02.478Z [DEBUG] No git remote URL found
+2026-10-18T20:00:02.479Z [DEBUG] Read hooks.json for plugin isolated-interaction (enabled=true): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/plugin/hooks/hooks.json
+2026-10-18T20:00:02.480Z [DEBUG] Loaded inline plugin from path: isolated-interaction
+2026-10-18T20:00:02.480Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-10-18T20:00:02.481Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-10-18T20:00:02.481Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T20:00:02.481Z [DEBUG] Checking plugin isolated-interaction: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:00:02.481Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:00:02.482Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:00:02.482Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:00:02.482Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T20:00:02.482Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T20:00:02.482Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T20:00:02.482Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T20:00:02.483Z [INFO] [uds-messaging] Listening: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/runtime/cc-socks/237.sock
+2026-10-18T20:00:02.485Z [INFO] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/runtime/cc-socks/237.sock
+2026-10-18T20:00:02.487Z [INFO] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -N -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-10-18T20:00:02.487Z [DEBUG] Error log sink initialized
+2026-10-18T20:00:02.490Z [DEBUG] cc-plugin-sec-default@builtin not seated: no managed settings and not a Team or Enterprise organization (none)
+2026-10-18T20:00:02.491Z [DEBUG] [STARTUP] setup() completed in 27ms
+2026-10-18T20:00:02.491Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-10-18T20:00:02.496Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T20:00:02.500Z [DEBUG] [STARTUP] Commands and agents loaded in 9ms
+2026-10-18T20:00:02.504Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-10-18T20:00:02.508Z [DEBUG] Cleared mTLS configuration cache
+2026-10-18T20:00:02.508Z [DEBUG] Cleared proxy agent cache
+2026-10-18T20:00:02.508Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:00:02.509Z [DEBUG] [STARTUP] showSetupScreens() completed in 5ms
+2026-10-18T20:00:02.509Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-10-18T20:00:02.509Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-10-18T20:00:02.509Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-10-18T20:00:02.509Z [DEBUG] Starting background startup prefetches
+2026-10-18T20:00:02.510Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T20:00:02.510Z [DEBUG] [STARTUP] MCP configs resolved in 20ms (awaited at +47ms)
+2026-10-18T20:00:02.514Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:02.515Z [DEBUG] Initialized versioned plugins system with 0 plugins
+2026-10-18T20:00:02.530Z [DEBUG] Total LSP servers loaded: 0
+2026-10-18T20:00:02.530Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-10-18T20:00:02.530Z [DEBUG] LSP manager initialized with 0 servers
+2026-10-18T20:00:02.530Z [DEBUG] LSP server manager initialized successfully
+2026-10-18T20:00:02.530Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-10-18T20:00:02.531Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:00:02.533Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-10-18T20:00:02.533Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-10-18T20:00:02.538Z [DEBUG] Ripgrep first use test: PASSED (mode=embedded, path=/home/destin/.local/share/claude/versions/2.1.302)
+2026-10-18T20:00:02.538Z [DEBUG] "rg error (signal=undefined, code=2, stderr: rg: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/cache: IO error for operation on /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/cache: No such file or directory (os error 2)\n), 0 results"
+2026-10-18T20:00:02.540Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-10-18T20:00:02.554Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-10-18T20:00:02.555Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-10-18T20:00:02.556Z [DEBUG] Git remote URL: null
+2026-10-18T20:00:02.556Z [DEBUG] No git remote URL found
+2026-10-18T20:00:02.556Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-10-18T20:00:02.556Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:02.556Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.690397ea0410
+2026-10-18T20:00:02.556Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:02.556Z [DEBUG] Temp file written successfully, size: 602 bytes
+2026-10-18T20:00:02.556Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.690397ea0410 to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:02.556Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:02.557Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:02.557Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.1c129ac96b78
+2026-10-18T20:00:02.557Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:02.557Z [DEBUG] Temp file written successfully, size: 602 bytes
+2026-10-18T20:00:02.557Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.1c129ac96b78 to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:02.557Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:02.558Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:02.558Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.502614be271d
+2026-10-18T20:00:02.558Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:02.558Z [DEBUG] Temp file written successfully, size: 771 bytes
+2026-10-18T20:00:02.558Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.502614be271d to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:02.558Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:02.581Z [DEBUG] [keybindings] KeybindingSetup initialized with 224 bindings, 0 warnings
+2026-10-18T20:00:02.594Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:02.610Z [DEBUG] [engine] send set_max_thinking_tokens max=null
+2026-10-18T20:00:02.610Z [DEBUG] [engine] send set_model model=claude-opus-5-5
+2026-10-18T20:00:02.613Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:00:02.617Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T20:00:02.617Z [DEBUG] performStartupChecks called
+2026-10-18T20:00:02.619Z [DEBUG] [jobStateNameSync] watch skipped: Error: ENOENT: no such file or directory, watch '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/jobs/261e30ed'
+2026-10-18T20:00:02.621Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-10-18T20:00:02.622Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:00:02.623Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-10-18T20:00:02.624Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/.claude/settings.json
+2026-10-18T20:00:02.624Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/.claude/settings.local.json
+2026-10-18T20:00:02.624Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:00:02.633Z [DEBUG] [servedCatalog] off (essential_traffic)
+2026-10-18T20:00:02.639Z [DEBUG] Starting background plugin installations
+2026-10-18T20:00:02.639Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T20:00:02.639Z [DEBUG] performBackgroundPluginInstallations called
+2026-10-18T20:00:02.643Z [DEBUG] hooks module isolated-interaction@inline loaded (worker, environment 1, tier user); events: turn.start,turn.complete,tool.check,tool.call,session.start
+2026-10-18T20:00:02.644Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 2, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-10-18T20:00:02.644Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 3, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-10-18T20:00:02.645Z [DEBUG] hooks module cc-plugin-diff@builtin loaded (native, environment 4, tier builtin); events: session.start,ui.render,command.run,ui.close,ui.focus,ui.scroll,tool.call,prompt.submit
+2026-10-18T20:00:02.646Z [DEBUG] [keybindings] Watching for changes to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/keybindings.json
+2026-10-18T20:00:02.648Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:00:02.649Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:00:02.649Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for isolated-interaction,cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-diff
+2026-10-18T20:00:02.649Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-10-18T20:00:02.650Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-10-18T20:00:02.650Z [DEBUG] plugin.register: cc-plugin-diff (builtin, cc-plugin-diff@builtin), judged by core alone: admitted
+2026-10-18T20:00:02.650Z [DEBUG] plugin.register: isolated-interaction (user, isolated-interaction@inline), judged by core alone: admitted
+2026-10-18T20:00:02.655Z [DEBUG] plugin-dir watch: watching isolated-interaction; folders of plugins none
+2026-10-18T20:00:02.673Z [DEBUG] Artifact gates frozen: capabilities=true comments=false db=true files=false types=false type_create=false type_catalog=false read_page_data=false room=false verify=false delete=false preview=false preview_browser=unread open=false endpoints=false pin=true share=false versions=false flag_source=disabled gb_fresh=false
+2026-10-18T20:00:02.674Z [DEBUG] Artifact publish edits offer frozen: edit_hook=true
+2026-10-18T20:00:02.674Z [DEBUG] Artifact input schema built: assets=false copy_from=false publish_edits=false assets_source=cold_no_identity
+2026-10-18T20:00:02.703Z [DEBUG] memory index backfill: ENOENT: no such file or directory, scandir '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/projects/-tmp-cc-interaction-lNT19o-plan-deny-vLJc9h-project/memory/'
+2026-10-18T20:00:02.703Z [DEBUG] No CLAUDE.md/rules files found
+2026-10-18T20:00:02.719Z [WARN] Official marketplace GCS fetch failed: connect ECONNREFUSED 35.190.46.17:443
+2026-10-18T20:00:02.719Z [DEBUG] Attempting to auto-install official marketplace
+2026-10-18T20:00:02.740Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:02.740Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.8b887a89baf4
+2026-10-18T20:00:02.741Z [DEBUG] Watching /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project for /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/.claude to appear
+2026-10-18T20:00:02.741Z [DEBUG] Watching for changes in setting files /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/settings.json...
+2026-10-18T20:00:02.743Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:02.743Z [DEBUG] Temp file written successfully, size: 1328 bytes
+2026-10-18T20:00:02.743Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.8b887a89baf4 to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:02.744Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T20:00:02.744Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:02.746Z [DEBUG] SSH config check: code=255 configured=false
+2026-10-18T20:00:02.746Z [INFO] SSH not configured for GitHub, using HTTPS for anthropics/claude-plugins-official
+2026-10-18T20:00:02.747Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:00:02.749Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T20:00:02.750Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 42.6ms (native link, next() included)
+2026-10-18T20:00:02.752Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:02.752Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.b9e6c8a57e07
+2026-10-18T20:00:02.753Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:02.753Z [DEBUG] Temp file written successfully, size: 1369 bytes
+2026-10-18T20:00:02.753Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.b9e6c8a57e07 to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:02.753Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:02.755Z [DEBUG] git clone: url=https://github.com/anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:00:02.759Z [ERROR] install check: claude command at /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.local/bin/claude missing or broken (/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.local/bin does not exist)
+2026-10-18T20:00:02.759Z [ERROR] install check: claude command at /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.local/bin/claude missing or broken
+2026-10-18T20:00:02.759Z [INFO] 1 setup issue: install (run `claude doctor` for details)
+2026-10-18T20:00:02.759Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:02.759Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.b2de986eee38
+2026-10-18T20:00:02.759Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:02.760Z [DEBUG] Temp file written successfully, size: 1406 bytes
+2026-10-18T20:00:02.760Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.b2de986eee38 to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:02.760Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:02.762Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:02.762Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.a485171d6e07
+2026-10-18T20:00:02.762Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:02.762Z [DEBUG] Temp file written successfully, size: 1479 bytes
+2026-10-18T20:00:02.762Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.a485171d6e07 to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:02.762Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:02.770Z [WARN] "git clone failed: url=https://github.com/anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- https://github.com/anthropics/claude-plugins-official.git /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 3 ms: Could not connect to server"
+2026-10-18T20:00:02.770Z [ERROR] "HTTPS clone failed for marketplace anthropics/claude-plugins-official (Failed to clone marketplace repository: Cloning into '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 3 ms: Could not connect to server), falling back to SSH"
+2026-10-18T20:00:02.771Z [DEBUG] Marketplace checkout probe: no readable HEAD, cloning
+2026-10-18T20:00:02.773Z [DEBUG] git clone: url=git@github.com:anthropics/claude-plugins-official.git ref=default timeout=120000ms
+2026-10-18T20:00:02.775Z [DEBUG] type root of isolated-interaction at /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/plugin/.claude-plugin/types: entries claude-code, claude-code-tools, claude-code-mcp; wrote .claude-plugin/types/claude-code/index.d.ts, .claude-plugin/types/claude-code-tools/index.d.ts, .claude-plugin/types/claude-code-mcp/index.d.ts, .claude-plugin/types/tsconfig.json, .claude-plugin/types/.gitignore, tsconfig.json
+2026-10-18T20:00:02.775Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-10-18T20:00:02.776Z [DEBUG] session.start: raised (surface terminal, interactive)
+2026-10-18T20:00:02.783Z [DEBUG] $.command.register (cc-plugin-diff): /diff listed
+2026-10-18T20:00:02.785Z [DEBUG] hooks module cc-plugin-diff@builtin session.start settled in 4.2ms (native link, next() included)
+2026-10-18T20:00:02.785Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 4.4ms (native link, next() included)
+2026-10-18T20:00:02.786Z [DEBUG] Loaded plugins - Enabled: 4, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2026-10-18T20:00:02.786Z [DEBUG] Plugin autoupdate: command-source refresh disabled by tengu_plugin_command_source_refresh (still excluding command-sourced plugins from the regular pass)
+2026-10-18T20:00:02.786Z [DEBUG] hooks module isolated-interaction@inline session.start settled in 10.1ms (worker hop, next() included)
+2026-10-18T20:00:02.790Z [WARN] "git clone failed: url=git@github.com:anthropics/claude-plugins-official.git code=128 error=Command failed with exit code 128: /usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c format.pretty=medium -c gc.auto=0 -c maintenance.auto=false -c hook.applypatch-msg.enabled=false -c hook.pre-applypatch.enabled=false -c hook.post-applypatch.enabled=false -c hook.pre-commit.enabled=false -c hook.pre-merge-commit.enabled=false -c hook.prepare-commit-msg.enabled=false -c hook.commit-msg.enabled=false -c hook.post-commit.enabled=false -c hook.pre-rebase.enabled=false -c hook.post-checkout.enabled=false -c hook.post-merge.enabled=false -c hook.pre-push.enabled=false -c hook.pre-receive.enabled=false -c hook.update.enabled=false -c hook.proc-receive.enabled=false -c hook.post-receive.enabled=false -c hook.post-update.enabled=false -c hook.reference-transaction.enabled=false -c hook.push-to-checkout.enabled=false -c hook.pre-auto-gc.enabled=false -c hook.post-rewrite.enabled=false -c hook.sendemail-validate.enabled=false -c hook.fsmonitor-watchman.enabled=false -c hook.p4-changelist.enabled=false -c hook.p4-prepare-changelist.enabled=false -c hook.p4-post-changelist.enabled=false -c hook.p4-pre-submit.enabled=false -c hook.post-index-change.enabled=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never -c init.defaultRefFormat=files clone --depth 1 --no-recurse-submodules -- git@github.com:anthropics/claude-plugins-official.git /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone stderr=Cloning into '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:00:02.791Z [ERROR] "SSH clone fallback also failed for marketplace anthropics/claude-plugins-official: Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:00:02.791Z [ERROR] "Failed to auto-install official marketplace: Fetching the marketplace from GitHub failed on both attempts. HTTPS (https://github.com/anthropics/claude-plugins-official.git): Failed to clone marketplace repository: Cloning into '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nfatal: unable to access 'https://github.com/anthropics/claude-plugins-official.git/': Failed to connect to github.com:443 after 3 ms: Could not connect to server\n\nSSH (git@github.com:anthropics/claude-plugins-official.git): Failed to clone marketplace repository: SSH authentication failed. Please ensure your SSH keys are configured for GitHub, or use an HTTPS URL instead.\n\nOriginal error: Cloning into '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone'...\nBad owner or permissions on /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists."
+2026-10-18T20:00:02.792Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:02.792Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.7bbc2bd2c6dd
+2026-10-18T20:00:02.792Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:02.793Z [DEBUG] Temp file written successfully, size: 1811 bytes
+2026-10-18T20:00:02.793Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.7bbc2bd2c6dd to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:02.793Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:02.793Z [INFO] 1 setup issue: plugins (run /plugin for details)
+2026-10-18T20:00:03.048Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-10-18T20:00:03.694Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.698Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.700Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (16566 bytes)
+2026-10-18T20:00:03.700Z [DEBUG] $.prompt.submit (isolated-interaction): "Synthetic isolated plan-deny"
+2026-10-18T20:00:03.715Z [DEBUG] High write ratio: blit=575, write=628 (52.2% writes), screen=42x115
+2026-10-18T20:00:03.718Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in isolated-interaction
+2026-10-18T20:00:03.718Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in isolated-interaction
+2026-10-18T20:00:03.719Z [DEBUG] FileHistory: Added snapshot for 12e9512a-9274-40ec-8fae-c79d914e03d4, tracking 0 files
+2026-10-18T20:00:03.725Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 6.6ms (native link, next() included)
+2026-10-18T20:00:03.725Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 7.0ms (native link, next() included)
+2026-10-18T20:00:03.726Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 0.1ms (native link, next() included)
+2026-10-18T20:00:03.726Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/output-styles: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/output-styles'
+2026-10-18T20:00:03.726Z [DEBUG] Failed to stat directory /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/output-styles: ENOENT: no such file or directory, stat '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/output-styles'
+2026-10-18T20:00:03.726Z [DEBUG] Total plugin output styles loaded: 0
+2026-10-18T20:00:03.727Z [DEBUG] act_dont_rederive_arm_active source=growthbook
+2026-10-18T20:00:03.729Z [DEBUG] hooks module isolated-interaction@inline turn.start settled in 6.1ms (worker hop, next() included)
+2026-10-18T20:00:03.731Z [DEBUG] [engine] yield system/init (first)
+2026-10-18T20:00:03.731Z [DEBUG] [engine] turn 1 start
+2026-10-18T20:00:03.735Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:00:03.747Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.429; cc_entrypoint=cli;
+2026-10-18T20:00:03.747Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.749Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.752Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.755Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:00:03.756Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:00:03.774Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:00:03.777Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.783Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 2.9ms (native link, next() included)
+2026-10-18T20:00:03.785Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:03.785Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.c22a409e6c25
+2026-10-18T20:00:03.786Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:00:03.786Z [DEBUG] [API:timing] first byte after 34ms
+2026-10-18T20:00:03.796Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.797Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:03.798Z [DEBUG] Temp file written successfully, size: 1839 bytes
+2026-10-18T20:00:03.798Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.c22a409e6c25 to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:03.799Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.799Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:03.801Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-10-18T20:00:03.801Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-10-18T20:00:03.801Z [DEBUG] [FileIndex] not a git repo, returning null
+2026-10-18T20:00:03.801Z [DEBUG] [FileIndex] git ls-files returned null, falling back to ripgrep
+2026-10-18T20:00:03.813Z [DEBUG] [FileIndex] ripgrep: 2 files in 12ms
+2026-10-18T20:00:03.814Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/skills: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/skills'
+2026-10-18T20:00:03.814Z [DEBUG] Failed to stat directory /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/skills: ENOENT: no such file or directory, stat '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/skills'
+2026-10-18T20:00:03.815Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/workflows: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/workflows'
+2026-10-18T20:00:03.815Z [DEBUG] Failed to stat directory /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/workflows: ENOENT: no such file or directory, stat '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/workflows'
+2026-10-18T20:00:03.815Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/routines: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/routines'
+2026-10-18T20:00:03.815Z [DEBUG] Failed to stat directory /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/routines: ENOENT: no such file or directory, stat '/tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/routines'
+2026-10-18T20:00:03.815Z [DEBUG] [FileIndex] cache refresh completed in 14ms
+2026-10-18T20:00:03.815Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (17277 bytes)
+2026-10-18T20:00:03.821Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.822Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.823Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (17632 bytes)
+2026-10-18T20:00:03.824Z [DEBUG] $.http.fetch (isolated-interaction): GET http://127.0.0.1:33105/check/EnterPlanMode/toolu_fake_1792353603758_0
+2026-10-18T20:00:03.827Z [DEBUG] $.http.fetch (isolated-interaction): 200 in 3ms, 37 chars
+2026-10-18T20:00:03.828Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.829Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (17776 bytes)
+2026-10-18T20:00:03.830Z [DEBUG] hooks module isolated-interaction@inline tool.check settled in 11.4ms (worker hop, next() included)
+2026-10-18T20:00:03.831Z [INFO] [Stall] tool_dispatch_start tool=EnterPlanMode toolUseId=toolu_fake_1792353603758_0 permissionDecisionMs=13
+2026-10-18T20:00:03.831Z [DEBUG] Applying permission update: Setting mode to 'plan'
+2026-10-18T20:00:03.834Z [INFO] [Stall] tool_dispatch_end tool=EnterPlanMode toolUseId=toolu_fake_1792353603758_0 outcome=ok durationMs=3
+2026-10-18T20:00:03.844Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 2.3ms (native link, next() included)
+2026-10-18T20:00:03.844Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 1.2ms (native link, next() included)
+2026-10-18T20:00:03.845Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.847Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.848Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (18857 bytes)
+2026-10-18T20:00:03.849Z [DEBUG] hooks module isolated-interaction@inline tool.call settled in 58.0ms (worker hop, next() included)
+2026-10-18T20:00:03.854Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-10-18T20:00:03.854Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-10-18T20:00:03.854Z [DEBUG] Sending 13 skills via attachment (initial)
+2026-10-18T20:00:03.855Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-10-18T20:00:03.859Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:00:03.877Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.429; cc_entrypoint=cli;
+2026-10-18T20:00:03.877Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.878Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.883Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.887Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:00:03.889Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:00:03.910Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:00:03.910Z [DEBUG] [API:timing] first byte after 28ms
+2026-10-18T20:00:03.915Z [DEBUG] [server-classifier] the platform gave no classification for this request (server_no_result); treating that as this deployment's answer: auto mode classifies locally for the rest of this session and stops sending the classifier context
+2026-10-18T20:00:03.917Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.931Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.933Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (21278 bytes)
+2026-10-18T20:00:03.939Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.940Z [DEBUG] hooks module isolated-interaction@inline tool.check settled in 4.6ms (worker hop, next() included)
+2026-10-18T20:00:03.941Z [INFO] [Stall] tool_dispatch_start tool=Write toolUseId=toolu_fake_1792353603891_0 permissionDecisionMs=6
+2026-10-18T20:00:03.948Z [DEBUG] FileHistory: Tracked file modification for /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/plans/jolly-brewing-teapot.md
+2026-10-18T20:00:03.949Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-10-18T20:00:03.951Z [DEBUG] [lspRecommendation] Failed to load marketplace anthropic-plugin-directory: PluginDirectoryCatalogMissingError: Not available: the Anthropic Directory's catalog is not on this machine (it is off, blocked, unavailable, or not downloaded yet)
+2026-10-18T20:00:03.951Z [DEBUG] Writing to temp file: /proc/self/fd/20/jolly-brewing-teapot.md.tmp.237.d52c1e296f5c
+2026-10-18T20:00:03.951Z [DEBUG] Temp file written successfully, size: 68 bytes
+2026-10-18T20:00:03.951Z [DEBUG] Renaming /proc/self/fd/20/jolly-brewing-teapot.md.tmp.237.d52c1e296f5c to /proc/self/fd/20/jolly-brewing-teapot.md
+2026-10-18T20:00:03.951Z [DEBUG] File /proc/self/fd/20/jolly-brewing-teapot.md written atomically
+2026-10-18T20:00:03.952Z [INFO] [Stall] tool_dispatch_end tool=Write toolUseId=toolu_fake_1792353603891_0 outcome=ok durationMs=11
+2026-10-18T20:00:03.954Z [DEBUG] hooks module cc-plugin-diff@builtin tool.call settled in 20.0ms (native link, next() included)
+2026-10-18T20:00:03.955Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.956Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.957Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (22663 bytes)
+2026-10-18T20:00:03.958Z [DEBUG] hooks module isolated-interaction@inline tool.call settled in 44.4ms (worker hop, next() included)
+2026-10-18T20:00:03.961Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-10-18T20:00:03.961Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-10-18T20:00:03.961Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-10-18T20:00:03.963Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:00:03.966Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.429; cc_entrypoint=cli;
+2026-10-18T20:00:03.966Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.967Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.977Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.979Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:00:03.980Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:00:03.982Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:00:03.982Z [DEBUG] [API:timing] first byte after 5ms
+2026-10-18T20:00:03.986Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.997Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:03.998Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (24384 bytes)
+2026-10-18T20:00:04.002Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.003Z [DEBUG] hooks module isolated-interaction@inline tool.check settled in 3.7ms (worker hop, next() included)
+2026-10-18T20:00:04.004Z [INFO] [Stall] tool_dispatch_start tool=Read toolUseId=toolu_fake_1792353603981_0 permissionDecisionMs=5
+2026-10-18T20:00:04.014Z [INFO] [Stall] tool_dispatch_end tool=Read toolUseId=toolu_fake_1792353603981_0 outcome=ok durationMs=9
+2026-10-18T20:00:04.015Z [DEBUG] hooks module cc-plugin-agents-md@builtin tool.call settled in 16.9ms (native link, next() included)
+2026-10-18T20:00:04.016Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.018Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.019Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (25584 bytes)
+2026-10-18T20:00:04.019Z [DEBUG] hooks module isolated-interaction@inline tool.call settled in 35.2ms (worker hop, next() included)
+2026-10-18T20:00:04.022Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-10-18T20:00:04.022Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-10-18T20:00:04.022Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-10-18T20:00:04.023Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:00:04.026Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.429; cc_entrypoint=cli;
+2026-10-18T20:00:04.026Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.027Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.034Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.036Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:00:04.036Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:00:04.038Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:00:04.038Z [DEBUG] [API:timing] first byte after 4ms
+2026-10-18T20:00:04.043Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.052Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.054Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (27251 bytes)
+2026-10-18T20:00:04.056Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.057Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.058Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (27813 bytes)
+2026-10-18T20:00:04.059Z [DEBUG] $.http.fetch (isolated-interaction): GET http://127.0.0.1:33105/check/ExitPlanMode/toolu_fake_1792353604038_0
+2026-10-18T20:00:04.061Z [DEBUG] $.http.fetch (isolated-interaction): 200 in 3ms, 36 chars
+2026-10-18T20:00:04.062Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.063Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (27955 bytes)
+2026-10-18T20:00:04.063Z [DEBUG] hooks module isolated-interaction@inline tool.check settled in 8.5ms (worker hop, next() included)
+2026-10-18T20:00:04.063Z [DEBUG] tool.check ExitPlanMode toolu_fake_1792353604038_0: ask -> deny by plugin isolated-interaction: Explicit synthetic deny
+2026-10-18T20:00:04.064Z [DEBUG] ExitPlanMode tool permission denied
+2026-10-18T20:00:04.065Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.067Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.068Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (28515 bytes)
+2026-10-18T20:00:04.068Z [DEBUG] hooks module isolated-interaction@inline tool.call settled in 27.7ms (worker hop, next() included)
+2026-10-18T20:00:04.071Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-10-18T20:00:04.071Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-10-18T20:00:04.071Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-10-18T20:00:04.072Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:00:04.075Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.429; cc_entrypoint=cli;
+2026-10-18T20:00:04.075Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.076Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.076Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.078Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:00:04.078Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:00:04.087Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:00:04.088Z [DEBUG] [API:timing] first byte after 11ms
+2026-10-18T20:00:04.092Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.102Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.104Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (29776 bytes)
+2026-10-18T20:00:04.110Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.111Z [DEBUG] hooks module isolated-interaction@inline tool.check settled in 5.4ms (worker hop, next() included)
+2026-10-18T20:00:04.111Z [DEBUG] tool.check Write toolu_fake_1792353604079_0: ask -> deny by plugin isolated-interaction: Synthetic safety veto after observing post-plan base policy
+2026-10-18T20:00:04.111Z [DEBUG] Write tool permission denied
+2026-10-18T20:00:04.111Z [DEBUG] hooks module cc-plugin-diff@builtin tool.call settled in 7.0ms (native link, next() included)
+2026-10-18T20:00:04.112Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.113Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.114Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (30958 bytes)
+2026-10-18T20:00:04.115Z [DEBUG] hooks module isolated-interaction@inline tool.call settled in 24.9ms (worker hop, next() included)
+2026-10-18T20:00:04.117Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-10-18T20:00:04.117Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-10-18T20:00:04.117Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-10-18T20:00:04.118Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:00:04.121Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.429; cc_entrypoint=cli;
+2026-10-18T20:00:04.121Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.122Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.132Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.133Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:00:04.134Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:00:04.136Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:00:04.136Z [DEBUG] [API:timing] first byte after 4ms
+2026-10-18T20:00:04.143Z [DEBUG] [engine] turn 1 end (turns=6 usage in=60 out=30 cost=$0.0008 api=150ms stop=end_turn resultLen=26)
+2026-10-18T20:00:04.148Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:00:04.148Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:00:04.149Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.151Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.2ms (native link, next() included)
+2026-10-18T20:00:04.151Z [DEBUG] hooks module isolated-interaction@inline turn.complete settled in 5.3ms (worker hop, next() included)
+2026-10-18T20:00:04.166Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 3.2ms (native link, next() included)
+2026-10-18T20:00:04.166Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 1.8ms (native link, next() included)
+2026-10-18T20:00:04.167Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:00:04.167Z [DEBUG] Writing to temp file: /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.8bea8d08d1f1
+2026-10-18T20:00:04.168Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:00:04.168Z [DEBUG] Temp file written successfully, size: 1948 bytes
+2026-10-18T20:00:04.169Z [DEBUG] Renaming /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json.tmp.237.8bea8d08d1f1 to /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json
+2026-10-18T20:00:04.169Z [DEBUG] File /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/home/.claude/.claude.json written atomically
+2026-10-18T20:00:04.240Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:00:04.242Z [DEBUG] $.fs.write (isolated-interaction): /tmp/cc-interaction-lNT19o/plan-deny-vLJc9h/project/interaction-report.json (32317 bytes)

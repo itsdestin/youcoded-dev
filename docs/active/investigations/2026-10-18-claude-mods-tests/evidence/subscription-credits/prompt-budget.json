@@ -1,0 +1,22 @@
+{
+  "max": 2,
+  "previousAttempts": 1,
+  "grants": [
+    {
+      "id": 1,
+      "phase": "first",
+      "text": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools.",
+      "at": "2026-10-18T21:21:21.306Z"
+    },
+    {
+      "id": 2,
+      "phase": "resume",
+      "text": "Reply with exactly café 第二行 🧪 and nothing else. Do not call tools.",
+      "at": "2026-10-18T21:21:23.937Z"
+    }
+  ],
+  "phaseGranted": {
+    "first": 1,
+    "resume": 1
+  }
+}

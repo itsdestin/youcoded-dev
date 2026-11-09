@@ -1,0 +1,104 @@
+{
+  "name": "controls300",
+  "root": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC",
+  "home": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/home",
+  "configDir": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/home/.claude",
+  "project": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/project",
+  "policy": {
+    "permissions": {
+      "defaultMode": "default"
+    }
+  },
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "TERM": "xterm-256color",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "HOME": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/home",
+    "CLAUDE_CONFIG_DIR": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/home/.claude",
+    "TMPDIR": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC",
+    "XDG_CONFIG_HOME": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/home/.config",
+    "XDG_CACHE_HOME": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/home/.cache",
+    "XDG_DATA_HOME": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/home/.local/share",
+    "XDG_STATE_HOME": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/home/.local/state",
+    "XDG_RUNTIME_DIR": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/runtime",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:39519",
+    "ANTHROPIC_AUTH_TOKEN": "fake-token-for-local-capture"
+  },
+  "binary": "/home/destin/.local/share/claude/versions/2.1.300",
+  "binarySha256": "674deba0bba9aee479f4503c438b49303b6fdd304b9a471b14977aaec5215453",
+  "requests": [],
+  "serviceEvents": [],
+  "phases": [
+    {
+      "label": "first",
+      "command": [
+        "/home/destin/.local/share/claude/versions/2.1.300",
+        "--plugin-dir",
+        "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/plugin",
+        "--debug-file",
+        "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/first-debug.log"
+      ],
+      "pid": 11,
+      "start": 1792355531707,
+      "networkNamespace": "net:[4026533295]",
+      "cliNetworkNamespace": "net:[4026533295]",
+      "modReport": null,
+      "transcripts": [
+        {
+          "path": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/home/.claude/projects/-tmp-cc-compat-jAdpYa-compat-controls300-XNUCuC-project/e60a0253-a35f-47de-ab90-854d24a981fd.jsonl",
+          "sha256": "9dfd44afe533909f718ae4dfa34abf7c928fee02708d398d3f76d7d615de4808",
+          "text": "{\"type\":\"mode\",\"mode\":\"normal\",\"sessionId\":\"e60a0253-a35f-47de-ab90-854d24a981fd\"}\n{\"type\":\"permission-mode\",\"permissionMode\":\"default\",\"sessionId\":\"e60a0253-a35f-47de-ab90-854d24a981fd\"}\n{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"system\",\"subtype\":\"informational\",\"content\":\"isolated-compat: hooks module did not load: /tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/plugin/hooks/register.ts, compiled line 16 `await record($);`: $ is passed to \\\"record\\\", which is not a function declared at the top of this file (a function declaration, or a const bound to one), nor one imported from a file of the module's own; $ is followed nowhere else; $ is always spelled $.noun.event(...) at the call site, on is always on(\\\"<event>\\\", hook), and next.to always next.to(e, \\\"<tier>\\\")\",\"isMeta\":false,\"timestamp\":\"2026-10-18T20:32:13.754Z\",\"uuid\":\"5692b571-38ca-451a-bc6f-5f4134fd6ee3\",\"level\":\"notice\",\"userType\":\"external\",\"entrypoint\":\"cli\",\"cwd\":\"/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/project\",\"sessionId\":\"e60a0253-a35f-47de-ab90-854d24a981fd\",\"version\":\"2.1.300\",\"gitBranch\":\"HEAD\"}\n"
+        }
+      ],
+      "raw": "\r ▐▛███▛█Claude Codev2.1.300\r▝▜██████▀Opus 5.5 · API Usage Billing\r ▝▝   ▝▝ /tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/project\r▎Debug mode enabled · logging to /tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/first-debug.log\r●isolated-compat: hooks module did not load: \r/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/plugin/hooks/register.ts, compiled line 16 `await \rrecord($);`: $ is passed to \"record\", which is not a function declared at the top of this file (a \rfunction declaration, or a const bound to one), nor one imported from a file of the module's own; $ is \rfollowed nowhere else; $ is always spelled $.noun.event(...) at the call site, on is always on(\"<event>\",\rhook), and next.to always next.to(e, \"<tier>\")\r◐ medium · /effort\r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r❯  \r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r⏸ manual mode on · ? for shortcuts · ← for agents\r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\rMake auto mode your default permission mode?\rAutomodeletsClaudehandlepermissionpromptsautomatically.Claudecheckseachtoolcallforriskyactions\randpromptinjectionbeforeexecuting,runstheonesitassessesaslower-risk,andblockstherest.\r❯Yes, set auto mode as my default permission mode\rNo,keepmanualmode\r\r\r\r\r\r█▟█▟\r▟█▟█\r▛▛",
+      "exit": {
+        "exitCode": 129,
+        "signal": 0
+      },
+      "durationMs": 50854
+    }
+  ],
+  "version": "2.1.300 (Claude Code)\n",
+  "generatedTypes": {
+    "path": "/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/evidence/compat-batch1/controls300-generated.d.ts",
+    "sha256": "4ef2b862e13812b3a658b8420eec6f586dfedeb11641ad497f37f28845423c45"
+  },
+  "files": {
+    "allow": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/project/allow.txt",
+      "exists": false,
+      "content": null
+    },
+    "deny": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/project/deny.txt",
+      "exists": false,
+      "content": null
+    },
+    "old": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/project/old.txt",
+      "exists": false,
+      "content": null
+    },
+    "new": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/project/new.txt",
+      "exists": false,
+      "content": null
+    },
+    "catch": {
+      "path": "/tmp/cc-compat-jAdpYa/compat-controls300-XNUCuC/project/catch.txt",
+      "exists": false,
+      "content": null
+    }
+  },
+  "settings": {
+    "permissions": {
+      "defaultMode": "default"
+    }
+  },
+  "serversClosed": true
+}

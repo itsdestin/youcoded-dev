@@ -1,0 +1,417 @@
+{
+  "version": "2.1.302",
+  "root": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk",
+  "commands": [
+    "deep-research",
+    "dataviz",
+    "update-config",
+    "keybindings-help",
+    "verify",
+    "debug",
+    "code-review",
+    "simplify",
+    "batch",
+    "fewer-permission-prompts",
+    "doctor",
+    "loop",
+    "claude-api",
+    "workflow-authoring",
+    "run",
+    "run-skill-generator",
+    "plugin-authoring",
+    "add-dir",
+    "agents",
+    "autocompact",
+    "fork",
+    "subtask",
+    "branch",
+    "btw",
+    "cd",
+    "clear",
+    "color",
+    "compact",
+    "config",
+    "output-style",
+    "copy",
+    "context",
+    "background",
+    "effort",
+    "exit",
+    "fast",
+    "focus",
+    "heapdump",
+    "help",
+    "ide",
+    "init",
+    "keybindings",
+    "mcp",
+    "memory",
+    "mobile",
+    "model",
+    "__remote-workflow",
+    "workflow-launch-exec",
+    "plugin",
+    "release-notes",
+    "reload-plugins",
+    "reload-skills",
+    "rename",
+    "resume",
+    "setup-bedrock",
+    "setup-vertex",
+    "skills",
+    "status",
+    "statusline",
+    "stickers",
+    "theme",
+    "tui",
+    "feedback",
+    "bug",
+    "rewind",
+    "security-review",
+    "terminal-setup",
+    "scroll-speed",
+    "pro-trial-expired",
+    "usage",
+    "insights",
+    "recap",
+    "permissions",
+    "plan",
+    "powerup",
+    "goal",
+    "hooks",
+    "export",
+    "sandbox",
+    "login",
+    "logout",
+    "passes",
+    "list-agents",
+    "tasks",
+    "workflows",
+    "team-onboarding",
+    "radio",
+    "diff"
+  ],
+  "apiRequests": [
+    {
+      "path": "/v1/messages?beta=true",
+      "model": "claude-sonnet-5-5",
+      "dummyAuth": true
+    },
+    {
+      "path": "/v1/messages?beta=true",
+      "model": "claude-sonnet-5-5",
+      "dummyAuth": true
+    },
+    {
+      "path": "/v1/messages?beta=true",
+      "model": "claude-sonnet-5-5",
+      "dummyAuth": true
+    },
+    {
+      "path": "/v1/messages?beta=true",
+      "model": "claude-sonnet-5-5",
+      "dummyAuth": true
+    },
+    {
+      "path": "/v1/messages?beta=true",
+      "model": "claude-sonnet-5-5",
+      "dummyAuth": true
+    },
+    {
+      "path": "/v1/messages?beta=true",
+      "model": "claude-sonnet-5-5",
+      "dummyAuth": true
+    }
+  ],
+  "outcomes": [
+    {
+      "name": "baseline",
+      "ok": true
+    },
+    {
+      "name": "model-sonnet",
+      "ok": true,
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "name": "clear",
+      "ok": true
+    },
+    {
+      "name": "send-simple",
+      "ok": true
+    },
+    {
+      "name": "send-repeat-unicode-busy",
+      "ok": true
+    },
+    {
+      "name": "compact",
+      "ok": true
+    },
+    {
+      "name": "unknown-command",
+      "ok": false,
+      "error": "HooksError: isolated-mod-contract: $.command.run: no command named /does-not-exist-probe in this session"
+    },
+    {
+      "name": "abort-turn",
+      "ok": true
+    }
+  ],
+  "events": [
+    {
+      "event": "turn.start",
+      "turnId": "3b2a9446-cac0-4305-8355-319d4eb814bc"
+    },
+    {
+      "event": "turn.complete",
+      "reason": "answer"
+    },
+    {
+      "event": "turn.start",
+      "turnId": "30ba2eba-55c0-4ae2-86cc-6d766f062965"
+    },
+    {
+      "event": "turn.complete",
+      "reason": "answer"
+    },
+    {
+      "event": "turn.start",
+      "turnId": "2e464259-6305-4843-883d-d09d7104744e"
+    },
+    {
+      "event": "turn.complete",
+      "reason": "answer"
+    },
+    {
+      "event": "turn.start",
+      "turnId": "171243ea-6bc0-4f27-9e83-c40a2d1934ab"
+    },
+    {
+      "event": "turn.complete",
+      "reason": "answer"
+    },
+    {
+      "event": "turn.start",
+      "turnId": "b1fd01d2-55e6-40b7-9f29-ba7aef3979b6"
+    },
+    {
+      "event": "turn.complete",
+      "reason": "aborted"
+    }
+  ],
+  "transcripts": [
+    {
+      "path": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/29da9fd2-b22e-4da2-8723-d8d9777daad5.jsonl",
+      "rows": 11,
+      "types": [
+        "mode",
+        "permission-mode",
+        "queue-operation",
+        "queue-operation",
+        "queue-operation",
+        "file-history-snapshot",
+        "queue-operation",
+        "cost-state",
+        "user",
+        "user",
+        "user"
+      ],
+      "sessionIds": [
+        "29da9fd2-b22e-4da2-8723-d8d9777daad5"
+      ],
+      "boundaries": [],
+      "userMessages": [
+        {
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "content": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>"
+        },
+        {
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "content": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args>sonnet</command-args>"
+        },
+        {
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "content": "<local-command-stdout>Set model to `Sonnet 5.5` and saved as your default for new sessions</local-command-stdout>"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/756fd956-8200-4a1b-bf20-6cf80766220f.jsonl",
+      "rows": 80,
+      "types": [
+        "mode",
+        "file-history-snapshot",
+        "queue-operation",
+        "queue-operation",
+        "file-history-snapshot",
+        "user",
+        "user",
+        "system",
+        "user",
+        "atis-latch",
+        "attachment",
+        "attachment",
+        "attachment",
+        "attachment",
+        "api-request-shape",
+        "api-request-blob",
+        "api-request-blob",
+        "api-request",
+        "last-prompt",
+        "mode",
+        "atis-latch",
+        "assistant",
+        "attachment",
+        "system",
+        "queue-operation",
+        "queue-operation",
+        "file-history-snapshot",
+        "queue-operation",
+        "api-request-blob",
+        "api-request",
+        "user",
+        "last-prompt",
+        "mode",
+        "atis-latch",
+        "queue-operation",
+        "assistant",
+        "system",
+        "file-history-snapshot",
+        "queue-operation",
+        "api-request-blob",
+        "api-request",
+        "user",
+        "queue-operation",
+        "assistant",
+        "system",
+        "file-history-snapshot",
+        "api-request-blob",
+        "api-request",
+        "user",
+        "assistant",
+        "system",
+        "queue-operation",
+        "queue-operation",
+        "file-history-snapshot",
+        "user",
+        "last-prompt",
+        "mode",
+        "atis-latch",
+        "system",
+        "user",
+        "user",
+        "user",
+        "user",
+        "attachment",
+        "queue-operation",
+        "queue-operation",
+        "file-history-snapshot",
+        "user",
+        "attachment",
+        "attachment",
+        "attachment",
+        "attachment",
+        "api-request-blob",
+        "api-request-blob",
+        "api-request-blob",
+        "api-request-blob",
+        "api-request",
+        "cost-state",
+        "last-prompt",
+        "cost-state"
+      ],
+      "sessionIds": [
+        "756fd956-8200-4a1b-bf20-6cf80766220f"
+      ],
+      "boundaries": [
+        {
+          "type": "system",
+          "subtype": "local_command"
+        },
+        {
+          "type": "system",
+          "subtype": "turn_duration"
+        },
+        {
+          "type": "system",
+          "subtype": "turn_duration"
+        },
+        {
+          "type": "system",
+          "subtype": "turn_duration"
+        },
+        {
+          "type": "system",
+          "subtype": "turn_duration"
+        },
+        {
+          "type": "system",
+          "subtype": "compact_boundary",
+          "compactMetadata": {
+            "trigger": "manual",
+            "preTokens": 15,
+            "postTokens": 944,
+            "cumulativeDroppedTokens": 0,
+            "durationMs": 4029,
+            "preservedSegment": {
+              "headUuid": "d91e23b9-35e8-4361-832b-031ad78dc436",
+              "anchorUuid": "2c0f48cb-df52-4f24-ae03-e6b990118802",
+              "tailUuid": "40642e41-f8d2-42ba-96a2-9b16c01efef0"
+            },
+            "preservedMessages": {
+              "anchorUuid": "2c0f48cb-df52-4f24-ae03-e6b990118802",
+              "uuids": [
+                "d91e23b9-35e8-4361-832b-031ad78dc436",
+                "40642e41-f8d2-42ba-96a2-9b16c01efef0"
+              ],
+              "allUuids": [
+                "d91e23b9-35e8-4361-832b-031ad78dc436",
+                "40642e41-f8d2-42ba-96a2-9b16c01efef0"
+              ]
+            }
+          }
+        }
+      ],
+      "userMessages": [
+        {
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract"
+          },
+          "content": "/compact Keep the probe markers."
+        },
+        {
+          "content": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\nLOCAL_SCRIPTED_REPLY_4\n\nIf you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/756fd956-8200-4a1b-bf20-6cf80766220f.jsonl\nContinue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with \"I'll continue\" or similar. Pick up the last task as if the break never happened.\n\nThe messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them."
+        },
+        {
+          "content": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>"
+        },
+        {
+          "content": "<command-name>/compact</command-name>\n            <command-message>compact</command-message>\n            <command-args>Keep the probe markers.</command-args>"
+        },
+        {
+          "content": "<local-command-stdout>\u001b[2mCompacted (ctrl+o to see full summary)\u001b[22m</local-command-stdout>"
+        },
+        {
+          "origin": {
+            "kind": "plugin",
+            "name": "isolated-mod-contract",
+            "asUser": true
+          },
+          "content": "slow interruption probe"
+        }
+      ]
+    }
+  ]
+}

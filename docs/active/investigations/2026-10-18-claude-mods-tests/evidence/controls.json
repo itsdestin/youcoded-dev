@@ -1,0 +1,1465 @@
+{
+  "root": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk",
+  "bin": "/home/destin/.local/bin/claude",
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "TERM": "xterm-256color",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "HOME": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home",
+    "CLAUDE_CONFIG_DIR": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude",
+    "TMPDIR": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk",
+    "XDG_CONFIG_HOME": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.config",
+    "XDG_CACHE_HOME": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.cache",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+  "commands": [
+    {
+      "args": [
+        "plugin",
+        "validate",
+        "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/disposable-plugin",
+        "--json"
+      ],
+      "code": 0,
+      "output": "{\n  \"success\": true,\n  \"strict\": false,\n  \"target\": \"/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/disposable-plugin/.claude-plugin/plugin.json\",\n  \"manifest\": {\n    \"file\": \"/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/disposable-plugin/.claude-plugin/plugin.json\",\n    \"type\": \"plugin\",\n    \"errors\": [],\n    \"warnings\": [\n      {\n        \"path\": \"author\",\n        \"message\": \"No author information provided. Consider adding author details for plugin attribution\",\n        \"code\": null\n      }\n    ],\n    \"notes\": [],\n    \"gatingHooks\": []\n  },\n  \"contents\": [\n    {\n      \"file\": \"/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/disposable-plugin/hooks/hooks.json\",\n      \"type\": \"hooks\",\n      \"errors\": [],\n      \"warnings\": [],\n      \"notes\": [\n        \"./register.ts hooks: turn.start, turn.complete, session.start\",\n        \"./register.ts calls: $.clock.after, $.clock.sleep, $.command.list, $.command.run, $.config.list, $.fs.write, $.prompt.submit, $.session.cwd, $.session.id, $.session.messages, $.session.model, $.session.version, $.turn.abort\"\n      ],\n      \"gatingHooks\": []\n    }\n  ],\n  \"advice\": []\n}\n"
+    },
+    {
+      "args": [
+        "plugin",
+        "test",
+        "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/disposable-plugin"
+      ],
+      "code": 0,
+      "output": "\nsmoke.test.ts:\n(pass) offline test runner smoke only [3.73ms]\n\n 1 pass\n 0 fail\nRan 1 test across 1 file. [0.19s]\n"
+    }
+  ],
+  "interactive": {
+    "pid": 2218715,
+    "exit": null,
+    "raw": "\r ▐▛███▛█Claude Codev2.1.302\r▝▜██████▀Opus 5.5 · API Usage Billing\r ▝▝   ▝▝ /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project\r▎Auto mode is now Claude Code's default permission mode.\r▎Auto mode lets Claude handle permission prompts automatically. Claude checks each tool call for risky \r▎actions and prompt injection before executing, runs the ones it assesses as lower-risk, and blocks the rest.\r▎https://code.claude.com/docs/en/permission-modes\r1 more notice hidden\r◐ medium · /effort\r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r❯  \r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r⏵⏵ auto mode on (shift+tab to cycle) · ← for agents\r▗▟▂▂▄\r ▘\r         \r▐▂▂█ \r~▜██████~\r ▐▂███▂█\r▝▜███▀\r ▝▝   ▝▝ \r▛▛\r▂▂\r▛▛\r› Prompt from the isolated-mod-contract plugin\r❯ /model sonnet                                                                                               \r·Effecting… \r❯ \resc to interrupt · ← for agents\r\r\r\r\r\r\r\r▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔◐ medium · /effort ▔\rSonnet .5· API Usage Billing\r❯ /model sonnet                                                                                               \r  ⎿  SetmodeltoSonnet 5.5andsavedasyourdefaultfornewsessions\r◐ medium · /effort\r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r❯  \r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r  ⏵⏵ auto mode on (shift+tab to cycle) · ← for agents\r› Prompt from the isolated-mod-contract plugin\r❯ /clear                                                                                                      \r✢Wibbling… \r  ⎿  Tip: Start with small features or bug fixes, tell Claude to propose a plan, and verify its suggested \redits\r❯ \resc to interrupt · ← for agents\rclear       \r\r\r\r\r\r\r❯ \r← for agents\r› Prompt from the isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r✢Onioning… \r  ⎿  Tip: Start with small features or bug fixes, tell Claude to propose a plan, and verify its suggested \redits\r❯ \resc to interrupt · ← for agents\r*n\r✶\r✻i…\r✽ng\ron\r✻ii\r✶nn\r*\r✢Oo\rrepeat exact\r●LOCAL_SCRIPTED_REPLY_0\r✻Worked for 1s · done 12:13 PM\r\r\r\r❯ \r← for agents\r› Prompt from the isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r·Determining… \r  ⎿  Tip: Start with small features or bug fixes, tell Claude to propose a plan, and verify its suggested \redits\r❯ \resc to interrupt · ← for agents\r› Prompt from the isolated-mod-contract plugin\r❯ line one                                                                                                    \r  第二行 café 🧪                                                                                              \rer\r✢De\r*t\r✶\r✻e\r✽D\rrepeat exact\r● LOCAL_SCRIPTED_REPLY_1\r\r✻ Cooked for 1s · done 12:13 PM\r› Prompt from the isolated-mod-contract plugin\r❯ line one                                                                                                    \r  第二行 café 🧪                                                                                              \rHypspacing… ▝▜██████▀Sonnet 5.5 · API Usage Billing\r▝▝   ▝▝ /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/project\r\r▎ Auto mode is now Claude Code's default permission mode.\r▎Auto mode lets Claude handle permission prompts automatically. Claude checks each tool call for risky \ractions and prompt injection before executing, runs the ones it assesses as lower-risk, and blocks the rest.\rhtps://cod.claude.com/docs/en/permssion-odes\r 1 more notice hidden\r\r❯ /clear                                                                                                      \r› Prompt from the isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r\r● LOCAL_SCRIPTED_REPLY_0\r✻Worked for 1s · done 12:13 PM\r› Promptrom theisolated-mod-contract plugin\r❯ repeat exact                                                                                                \r\r● LOCAL_SCRIPTED_REPLY_1\r✻Cooked for 1s · done 12:13 PM\r› Prmptrom theisolated-mod-contract plugin\r❯ line one                                                                                                    \r  第二行 café 🧪                                                                                              \r\r› Prompt from the isolated-mod-contract plugin\r❯ queued while busy                                                                                           \rH\r✻\r✶\r*\r✢\r·\r✢▎ Auto mode lets Claudehandle prmsson prompts automatically. Claude checks each tool call for risky \r▎ actions and rompt injection before exeuting, runs the ones it assesses as lower-risk, and blocks the rest.\r▎https://code.claude.com/docs/en/permission-modes\r 1 more notice hidden\r\r❯ /clear                                                                                                      \r\r› Promptfrom the isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r\r●LOCAL_SCRIPTED_REPLY_0\r\r✻ Worked for 1s · done 12:13 PM\r› Prompt from the isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r\r●LOCAL_SCRIPTED_REPLY_1\r\r✻ Cooked for 1s · done 12:13 PM\r› Prompt from the isolated-mod-contract plugin\r❯ line one                                                                                                    \r  第二行 café 🧪                                                                                              \r● LOCAL_SCRIPTED_REPLY_2\r\r✻ Cogitated for 1s · done 12:13 PM\rThundering… \r*\r✶\r✻\r✽\r✻\r✶\r*\rqueued while busy\r●LOCAL_SCRIPTED_REPLY_3\r\r✻Brewed for 1s · done 12:13 PM\r❯ \r← for agents› Prompt from he isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r\r●LOCAL_SCRIPTED_REPLY_0\r✻ Worked for 1s · done 12:13 PM\r1\rCo\rlin on    \r  第二行 café 🧪                                                                                              \r\r●LOCAL_SCRIPTED_REPLY_2\r\r✻Cogitated for 1s · done 12:13 PM\r\r› Prompt from the isolated-mod-contract plugin\r❯ queuedwhile busy\r3\rBrewed for 1s· done 12:3 PM\r/compact Keep the probe markers.\r*Propagating… \r  ⎿  Tip: Start with small features or bug fixes, tell Claude to propose a plan, and verify its suggested \r    edits\r❯ \resc to interrupt · ← for agents\r/compact Keep the probe markers.\r✢Compacting conversation… (0s)\r·cove\rnr\rvs\rerat\rsi\rao\rtn\r✢io…\rn\r*…\r✶\r✻\r1\r✽\r✻\rC\ro\r✶Cmp\roa\r*mc\rpati\r✢cn\rtg2\ri \r·ngco\r n\rcv\roe\r\rnvrs\rea\r✢rt\rsaio\rtn\r*i…\ro\r✶n…\r✻\r3\r✽\r✻\r✶\rC\r*o\rm\r✢Cp\romac4\r\r❯ /clear                                                                                                      \r\r› Prompt from the isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r● LOCAL_SCRIPTED_REPLY_0\r\r✻Worked for 1s · done 12:13 PM\r\r› Prompt from the isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r● LOCAL_SCRIPTED_REPLY_1\r\r✻ Cooked for 1s · done 12:13 PM\r› Prompt from the isolated-mod-contract plugin\r❯ line one                                                                                                    \r  第二行 café 🧪                                                                                              \r● LOCAL_SCRIPTED_REPLY_2\r\r✻Cogitated for 1s · done 12:13 PM\r\r› Prompt from the isolated-mod-contract plugin\r❯ queued while busy                                                                                           \r● LOCAL_SCRIPTED_REPLY_3\r\r✻Brewed for 1s · done 12:13 PM\r\r❯ /compact Keep the probe markers.                                                                            \r  ⎿  Compacted (ctrl+o to see full summary)\r❯ \r\r✻ Worked for 1s · done 12:13 PM\r1\rCo\rlin on    \r  第二行 café 🧪                                                                                              \r\r●LOCAL_SCRIPTED_REPLY_2\r\r✻Cogitated for 1s · done 12:13 PM\r\r› Prompt from the isolated-mod-contract plugin\r❯ queuedwhile busy\r3\rBrewed for 1s· done 12:3 PM\r❯ /compact Keep the probe markers.                                                                            \r  ⎿  Compacted (ctrl+o to see full summary)\r› Prompt from the isolated-mod-contract plugin\r❯ slow interruption probe                                                                                     \r\r✢Booping… \r  ⎿  Tip: Start with small features or bug fixes, tell Claude to propose a plan, and verify its suggested \r     edits\r❯ \r · esc to interrupt\r·\r✢\r\r› Prompt from the isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r● LOCAL_SCRIPTED_REPLY_0\r\r✻Worked for 1s · done 12:13 PM\r\r› Prompt from the isolated-mod-contract plugin\r❯ repeat exact                                                                                                \r● LOCAL_SCRIPTED_REPLY_1\r\r✻ Cooked for 1s · done 12:13 PM\r› Prompt from the isolated-mod-contract plugin\r❯ line one                                                                                                    \r  第二行 café 🧪                                                                                              \r● LOCAL_SCRIPTED_REPLY_2\r\r✻Cogitated for 1s · done 12:13 PM\r\r› Prompt from the isolated-mod-contract plugin\r❯ queued while busy                                                                                           \r● LOCAL_SCRIPTED_REPLY_3\r\r✻Brewed for 1s · done 12:13 PM\r\r /compact Keep the probe markers.\r  ⎿  Compacted (ctrl+o to see full summary)\r\r›Prompt from he isolated-mod-contract plugn\r❯ slow interruption probe                                                                                     \r❯ \r",
+    "apiRequests": [
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "main": true,
+        "head": "{\"model\":\"claude-sonnet-5-5\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own i"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "main": true,
+        "head": "{\"model\":\"claude-sonnet-5-5\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own i"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "main": true,
+        "head": "{\"model\":\"claude-sonnet-5-5\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own i"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "main": true,
+        "head": "{\"model\":\"claude-sonnet-5-5\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own i"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "main": true,
+        "head": "{\"model\":\"claude-sonnet-5-5\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own i"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "main": true,
+        "head": "{\"model\":\"claude-sonnet-5-5\",\"messages\":[{\"role\":\"user\",\"content\":\"This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\\n\\nLOCAL_SCRIPTED_REPLY_4\\n\\nIf you need specific details from before compaction "
+      }
+    ],
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "model": "claude-sonnet-5-5",
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>\n"
+              },
+              {
+                "type": "text",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-stdout></local-command-stdout>\n"
+              },
+              {
+                "type": "text",
+                "text": "repeat exact"
+              }
+            ]
+          },
+          {
+            "role": "system",
+            "content": [
+              {
+                "type": "text",
+                "text": "Today's date is 2026-10-18.",
+                "cache_control": {
+                  "type": "ephemeral"
+                }
+              }
+            ]
+          }
+        ],
+        "dummyAuth": true
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "model": "claude-sonnet-5-5",
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>\n"
+              },
+              {
+                "type": "text",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-stdout></local-command-stdout>\n"
+              },
+              {
+                "type": "text",
+                "text": "repeat exact"
+              }
+            ]
+          },
+          {
+            "role": "system",
+            "content": "Today's date is 2026-10-18."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_0"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "repeat exact",
+                "cache_control": {
+                  "type": "ephemeral"
+                }
+              }
+            ]
+          }
+        ],
+        "dummyAuth": true
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "model": "claude-sonnet-5-5",
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>\n"
+              },
+              {
+                "type": "text",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-stdout></local-command-stdout>\n"
+              },
+              {
+                "type": "text",
+                "text": "repeat exact"
+              }
+            ]
+          },
+          {
+            "role": "system",
+            "content": "Today's date is 2026-10-18."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_0"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": "repeat exact"
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_1"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "line one\n第二行 café 🧪",
+                "cache_control": {
+                  "type": "ephemeral"
+                }
+              }
+            ]
+          }
+        ],
+        "dummyAuth": true
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "model": "claude-sonnet-5-5",
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>\n"
+              },
+              {
+                "type": "text",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-stdout></local-command-stdout>\n"
+              },
+              {
+                "type": "text",
+                "text": "repeat exact"
+              }
+            ]
+          },
+          {
+            "role": "system",
+            "content": "Today's date is 2026-10-18."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_0"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": "repeat exact"
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_1"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": "line one\n第二行 café 🧪"
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_2"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "queued while busy",
+                "cache_control": {
+                  "type": "ephemeral"
+                }
+              }
+            ]
+          }
+        ],
+        "dummyAuth": true
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "model": "claude-sonnet-5-5",
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>\n"
+              },
+              {
+                "type": "text",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-stdout></local-command-stdout>\n"
+              },
+              {
+                "type": "text",
+                "text": "repeat exact"
+              }
+            ]
+          },
+          {
+            "role": "system",
+            "content": "Today's date is 2026-10-18."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_0"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": "repeat exact"
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_1"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": "line one\n第二行 café 🧪"
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_2",
+                "cache_control": {
+                  "type": "ephemeral"
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "queued while busy\n"
+              },
+              {
+                "type": "text",
+                "text": "CRITICAL: Respond with TEXT ONLY. Do NOT call any tools.\n\n- Do NOT use Read, Bash, Grep, Glob, Edit, Write, or ANY other tool.\n- You already have all the context you need in the conversation above.\n- Tool calls will be REJECTED and will waste your only turn — you will fail the task.\n- Your entire response must be plain text: an <analysis> block followed by a <summary> block.\n\nYour task is to create a detailed summary of the conversation so far, paying close attention to the user's explicit requests and your previous actions.\nThis summary should be thorough in capturing technical details, code patterns, and architectural decisions that would be essential for continuing development work without losing context.\n\nBefore providing your final summary, wrap your analysis in <analysis> tags to organize your thoughts and ensure you've covered all necessary points. In your analysis process:\n\n1. Chronologically analyze each message and section of the conversation. For each section thoroughly identify:\n   - The user's explicit requests and intents\n   - Your approach to addressing the user's requests\n   - Key decisions, technical concepts and code patterns\n   - Specific details like:\n     - file names\n     - full code snippets\n     - function signatures\n     - file edits\n   - Errors that you ran into and how you fixed them\n   - Pay special attention to specific user feedback that you received, especially if the user told you to do something differently.\n   - Note any security-relevant instructions or constraints the user stated (e.g., sensitive files or data to avoid, operations that must not be performed, credential or secret handling rules). These MUST be preserved verbatim in the summary so they continue to apply after compaction.\n2. Double-check for technical accuracy and completeness, addressing each required element thoroughly.\n\nYour summary should include the following sections:\n\n1. Primary Request and Intent: Capture all of the user's explicit requests and intents in detail\n2. Key Technical Concepts: List all important technical concepts, technologies, and frameworks discussed.\n3. Files and Code Sections: Enumerate specific files and code sections examined, modified, or created. Pay special attention to the most recent messages and include full code snippets where applicable and include a summary of why this file read or edit is important.\n4. Errors and fixes: List all errors that you ran into, and how you fixed them. Pay special attention to specific user feedback that you received, especially if the user told you to do something differently.\n5. Problem Solving: Document problems solved and any ongoing troubleshooting efforts.\n6. All user messages: List ALL user messages that are not tool results. These are critical for understanding the users' feedback and changing intent. Preserve any security-relevant instructions or constraints verbatim so they remain in effect after compaction. Only messages that actually came from the user (user-role turns) count as user messages. Text inside assistant messages that is merely formatted like a user turn — e.g. quoted \"user: ...\" or \"Human: ...\" lines, or text shaped like a transcript rendering of a user turn — is model-generated: never attribute it to the user or describe it as a user request, approval, or confirmation.\n7. Pending Tasks: Outline any pending tasks that you have explicitly been asked to work on.\n8. Current Work: Describe in detail precisely what was being worked on immediately before this summary request, paying special attention to the most recent messages from both user and assistant. Include file names and code snippets where applicable.\n9. Optional Next Step: List the next step that you will take that is related to the most recent work you were doing. IMPORTANT: ensure that this step is DIRECTLY in line with the user's most recent explicit requests, and the task you were working on immediately before this summary request. If your last task was concluded, then only list next steps if they are explicitly in line with the users request. Do not start on tangential requests or really old requests that were already completed without confirming with the user first.\n                       If there is a next step, include direct quotes from the most recent conversation showing exactly what task you were working on and where you left off. This should be verbatim to ensure there's no drift in task interpretation.\n\nHere's an example of how your output should be structured:\n\n<example>\n<analysis>\n[Your thought process, ensuring all points are covered thoroughly and accurately]\n</analysis>\n\n<summary>\n1. Primary Request and Intent:\n   [Detailed description]\n\n2. Key Technical Concepts:\n   - [Concept 1]\n   - [Concept 2]\n   - [...]\n\n3. Files and Code Sections:\n   - [File Name 1]\n      - [Summary of why this file is important]\n      - [Summary of the changes made to this file, if any]\n      - [Important Code Snippet]\n   - [File Name 2]\n      - [Important Code Snippet]\n   - [...]\n\n4. Errors and fixes:\n    - [Detailed description of error 1]:\n      - [How you fixed the error]\n      - [User feedback on the error if any]\n    - [...]\n\n5. Problem Solving:\n   [Description of solved problems and ongoing troubleshooting]\n\n6. All user messages: \n    - [Detailed non tool use user message]\n    - [...]\n\n7. Pending Tasks:\n   - [Task 1]\n   - [Task 2]\n   - [...]\n\n8. Current Work:\n   [Precise description of current work]\n\n9. Optional Next Step:\n   [Optional Next step to take]\n\n</summary>\n</example>\n\nPlease provide your summary based on the conversation so far, following this structure and ensuring precision and thoroughness in your response. \n\nThere may be additional summarization instructions provided in the included context. If so, remember to follow these instructions when creating the above summary. Examples of instructions include:\n<example>\n## Compact Instructions\nWhen summarizing the conversation focus on typescript code changes and also remember the mistakes you made and how you fixed them.\n</example>\n\n<example>\n# Summary instructions\nWhen you are using compact - please focus on test output and code changes. Include file reads verbatim.\n</example>\n\n\nAdditional Instructions:\nKeep the probe markers.\n\nREMINDER: Do NOT call any tools. Respond with plain text only — an <analysis> block followed by a <summary> block. Tool calls will be rejected and you will fail the task."
+              }
+            ]
+          }
+        ],
+        "dummyAuth": true
+      },
+      {
+        "method": "POST",
+        "path": "/v1/messages?beta=true",
+        "model": "claude-sonnet-5-5",
+        "messages": [
+          {
+            "role": "user",
+            "content": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\nLOCAL_SCRIPTED_REPLY_4\n\nIf you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/756fd956-8200-4a1b-bf20-6cf80766220f.jsonl\nContinue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with \"I'll continue\" or similar. Pick up the last task as if the break never happened.\n\nThe messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them."
+          },
+          {
+            "role": "system",
+            "content": []
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "LOCAL_SCRIPTED_REPLY_3"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-caveat>The command below was run directly in Claude Code, not sent to you as a request, and its output goes straight to the user. It's recorded here as context for later messages.</local-command-caveat>\n"
+              },
+              {
+                "type": "text",
+                "text": "<command-name>/compact</command-name>\n            <command-message>compact</command-message>\n            <command-args>Keep the probe markers.</command-args>\n"
+              },
+              {
+                "type": "text",
+                "text": "<local-command-stdout>\u001b[2mCompacted (ctrl+o to see full summary)\u001b[22m</local-command-stdout>\n"
+              },
+              {
+                "type": "text",
+                "text": "slow interruption probe"
+              }
+            ]
+          },
+          {
+            "role": "system",
+            "content": [
+              {
+                "type": "text",
+                "text": "Available agent types for the Agent tool:\n- claude: Catch-all for any task that doesn't fit a more specific agent. FleetView's default when no agent name is typed. (Tools: *)\n- claude-code-guide: Use this agent when the user asks questions (\"Can Claude...\", \"Does Claude...\", \"How do I...\") about: (1) Claude Code (the CLI tool) - features, hooks, slash commands, MCP servers, settings, IDE integrations, keyboard shortcuts; (2) Claude Agent SDK - building custom agents; (3) Claude API (formerly Anthropic API) - Messages API for directly passing messages to Claude, Tool Runner (`client.beta.messages.tool_runner`) for running an agentic loop over your own tools, manual tool-use loops, Managed Agents for server-hosted agents with a managed sandbox, prompt caching, and general Anthropic SDK usage; (4) Claude Tag (Claude in Slack) - what it is, setting it up for a Slack workspace, `/install-slack-app`; (5) `claude plugin eval` (writing and running plugin eval suites, its JSON/report, sandbox, CI) and the `/skill-doctor` report. **IMPORTANT:** Before spawning a new agent, check if there is already a running or recently completed claude-code-guide agent that you can continue via SendMessage. (Tools: Bash, Read, WebFetch, WebSearch)\n- Explore: Read-only search agent for broad fan-out searches — when answering means sweeping many files, directories, or naming conventions and you only need the conclusion, not the file dumps. It reads excerpts rather than whole files, so it locates code; it doesn't review or audit it. Specify search breadth: \"medium\" for moderate exploration, \"very thorough\" for multiple locations and naming conventions. (Tools: All tools except Agent, Artifact, ArtifactComments, ArtifactData, ArtifactCheck, ExitPlanMode, Edit, Write, NotebookEdit)\n- general-purpose: General-purpose agent for researching complex questions, searching for code, and executing multi-step tasks. When you are searching for a keyword or file and are not confident that you will find the right match in the first few tries use this agent to perform the search for you. (Tools: *)\n- Plan: Software architect agent for designing implementation plans. Use this when you need to plan the implementation strategy for a task. Returns step-by-step plans, identifies critical files, and considers architectural trade-offs. (Tools: All tools except Agent, Artifact, ArtifactComments, ArtifactData, ArtifactCheck, ExitPlanMode, Edit, Write, NotebookEdit)\n- statusline-setup: Use this agent to configure the user's Claude Code status line setting. (Tools: Read, Edit)\n\nWhen you launch multiple agents for independent work, send them in a single message with multiple tool uses so they run concurrently.\n\nToday's date is 2026-10-18.",
+                "cache_control": {
+                  "type": "ephemeral"
+                }
+              }
+            ]
+          }
+        ],
+        "dummyAuth": true
+      }
+    ],
+    "plugin": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/disposable-plugin",
+    "environment": {
+      "PATH": "/usr/local/bin:/usr/bin:/bin",
+      "TERM": "xterm-256color",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "HOME": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home",
+      "CLAUDE_CONFIG_DIR": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude",
+      "TMPDIR": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk",
+      "XDG_CONFIG_HOME": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.config",
+      "XDG_CACHE_HOME": "/tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.cache",
+      "DISABLE_AUTOUPDATER": "1",
+      "DISABLE_TELEMETRY": "1",
+      "DISABLE_ERROR_REPORTING": "1",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+      "ANTHROPIC_BASE_URL": "http://127.0.0.1:42877",
+      "ANTHROPIC_AUTH_TOKEN": "fake-token-for-local-capture"
+    },
+    "modReport": {
+      "rows": [
+        {
+          "name": "baseline",
+          "ok": true,
+          "value": {
+            "id": "29da9fd2-b22e-4da2-8723-d8d9777daad5",
+            "model": "claude-opus-5-5",
+            "version": {
+              "version": "2.1.302",
+              "base": "2.1.302",
+              "builtAt": "2026-10-16T15:52:41Z"
+            }
+          }
+        },
+        {
+          "name": "commands",
+          "ok": true,
+          "value": [
+            {
+              "name": "deep-research",
+              "description": "Deep research harness — fan-out web searches, fetch sources, adversarially verify claims, synthesize a cited report.",
+              "source": "builtin"
+            },
+            {
+              "name": "dataviz",
+              "description": "Use this skill whenever you are about to create ANY chart, graph, plot, dashboard, or data visualization, in ANY output medium — an HTML or React artifact, inline SVG, plotting code in any library (matplotlib, plotly, d3, Recharts, …), an image/PNG you will render and upload, or a chart shared into Slack. Read it BEFORE writing the first line of chart code, choosing chart colors, building a stat tile / meter / KPI row, or laying out a dashboard. When the destination is a first-party document connector (host-designated, never self-described) that renders live charts, hand it the rows (inline, or as an uploaded data file the chart cites) rather than a rendered PNG/SVG — a picture of a chart loses hover, data inspection and per-value comments. Produces visualizations that read as one system — elegant, accessible, consistent in light and dark — using a brand-neutral placeholder palette you swap for your own. Teaches a design-system-agnostic method: a form heuristic, a color formula with a runnable validator, mark specs, and interaction rules. A validated default palette is documented in `references/palette.md` — swap that file's values for your brand's. Triggers on: \"chart\", \"graph\", \"plot\", \"data viz\", \"visualization\", \"dashboard\", \"analytics\", \"visualize data\", \"categorical colors\", \"sequential / diverging palette\", \"stat tile\", \"sparkline\", \"heatmap\", \"legend\", \"axis\", \"tooltip\", \"chart colors\", \"color by series\".",
+              "source": "builtin"
+            },
+            {
+              "name": "update-config",
+              "description": "Use this skill to configure the Claude Code harness via settings.json. Automated behaviors (\"from now on when X\", \"each time X\", \"whenever X\", \"before/after X\") require hooks configured in settings.json - the harness executes these, not Claude, so memory/preferences cannot fulfill them. Also use for: permissions (\"allow X\", \"add permission\", \"move permission to\"), env vars (\"set X=Y\"), hook troubleshooting, or any changes to settings.json/settings.local.json files. Examples: \"allow npm commands\", \"add bq permission to global settings\", \"move permission to user settings\", \"set DEBUG=true\", \"when claude stops show X\". For simple settings like theme/model, suggest the /config command.",
+              "source": "builtin"
+            },
+            {
+              "name": "keybindings-help",
+              "description": "Use when the user wants to customize keyboard shortcuts, rebind keys, add chord bindings, or modify ~/.claude/keybindings.json. Examples: \"rebind ctrl+s\", \"add a chord shortcut\", \"change the submit key\", \"customize keybindings\".",
+              "source": "builtin"
+            },
+            {
+              "name": "verify",
+              "description": "Verify that a code change actually does what it's supposed to by exercising it end-to-end and observing behavior — drive the affected flow, not just tests or typecheck. Run before committing nontrivial changes; bootstraps this repo's project verify skill if none exists yet. Don't invoke it on a diff that only touches tests, docs, or other code with no runtime surface to drive (a change to product source always has one) — there's nothing to observe.",
+              "source": "builtin"
+            },
+            {
+              "name": "debug",
+              "description": "Enable debug logging for this session and help diagnose issues",
+              "source": "builtin"
+            },
+            {
+              "name": "code-review",
+              "description": "Review the current diff, or a PR number/branch/path target, for correctness bugs (plus reuse/simplification/efficiency cleanups where the model's review recipe covers them) at the given effort level (low|medium|high|xhigh|max: from few high-confidence findings up to many, some of them uncertain); with no level given, it reuses the level you typed last. Pass --comment to post findings as inline PR comments, or --fix to apply the findings to the working tree after the review. Pass --max-findings <n> to report up to n findings, or --max-findings all for every finding. The choice stays until you pass --max-findings default.",
+              "source": "builtin"
+            },
+            {
+              "name": "simplify",
+              "description": "Review the changed code for reuse, simplification, efficiency, and altitude cleanups, then apply the fixes. Quality only — it does not hunt for bugs; use /code-review for that.",
+              "source": "builtin"
+            },
+            {
+              "name": "batch",
+              "description": "Research and plan a large-scale change, then execute it in parallel across 5–30 isolated worktree agents that each open a PR.",
+              "source": "builtin"
+            },
+            {
+              "name": "fewer-permission-prompts",
+              "description": "Scan your transcripts for common read-only Bash and MCP tool calls, then add a prioritized allowlist to project .claude/settings.json to reduce permission prompts.",
+              "source": "builtin"
+            },
+            {
+              "name": "doctor",
+              "description": "Health-check the user's Claude Code setup and fix issues: diagnose installation health — what the `claude doctor` terminal diagnostics cover — from local data (duplicate or leftover installs, PATH, unparseable settings files, broken or colliding agent definitions, skills whose frontmatter fails to parse); find unused skills, MCP servers, and plugins versus their context cost and disable dead weight; deduplicate local CLAUDE.md files against checked-in ones; trim checked-in CLAUDE.md files by cutting content a session could derive from the codebase (directory layouts, tech-stack lists, architecture overviews) while keeping gotchas, rationale, and non-standard conventions; migrate always-loaded CLAUDE.md guidance into lazy skills and nested CLAUDE.md files; flag slow hooks and context-heavy extensions; check the installed version is current; make auto mode the default permission mode; and pre-approve frequently denied read-only commands. Use when the user asks for a doctor run, checkup, audit, tune-up, or cleanup of their Claude Code setup or configuration.",
+              "source": "builtin"
+            },
+            {
+              "name": "loop",
+              "description": "Run a prompt or slash command on a recurring interval (e.g. /loop 5m /foo). Omit the interval to let the model self-pace.",
+              "source": "builtin"
+            },
+            {
+              "name": "claude-api",
+              "description": "Reference for the Claude API / Anthropic SDK — model ids, pricing, params, streaming, tool use, MCP, agents, caching, token counting, model migration.\nTRIGGER — read BEFORE opening the target file; don't skip because it \"looks like a one-liner\" — whenever: the prompt names Claude/Anthropic in any form (Claude, Anthropic, Fable, Opus, Sonnet, Haiku, `anthropic`, `@anthropic-ai`, `claude-*`, `us.anthropic.*`, `[1m]`); the user asks about an LLM (pricing/model choice/limits/caching) — never answer from memory; OR the task is LLM-shaped with provider unstated (agent/MCP/tool-definition/multi-agent/RAG/LLM-judge/computer-use; generate/summarize/extract/classify/rewrite/converse over NL; debugging refusals/cutoffs/streaming/tool-calls/tokens).\nSKIP only when another provider is being worked on (overrides all triggers): OpenAI/GPT/Gemini/Llama/Mistral/Cohere/Ollama named in the query; OR `grep -rE 'openai|langchain_openai|google.generativeai|genai|mistralai|cohere|ollama'` over the project hits (run this grep FIRST if no provider named — don't Read the file).",
+              "source": "builtin"
+            },
+            {
+              "name": "workflow-authoring",
+              "description": "Reference for writing a Workflow tool script (script API and gotchas, resume, quality patterns, worked examples). Load before authoring a script for a workflow the user already opted into; it does not itself authorize running one.",
+              "source": "builtin"
+            },
+            {
+              "name": "run",
+              "description": "Launch and drive this project's app to see a change working. Use when asked to run, start, or screenshot the app, or to confirm a change works in the real app (not just tests). First looks for a project skill that already covers launching the app; otherwise falls back to built-in patterns per project type (CLI, server, TUI, Electron, browser-driven, library).",
+              "source": "builtin"
+            },
+            {
+              "name": "run-skill-generator",
+              "description": "Author or improve the run-<unit> skill - a per-project skill that tells agents how to build, launch, and drive this project's app. Use when the user asks to set up the project, get it running, write run instructions, or verify build/run steps work from a clean environment.",
+              "source": "builtin"
+            },
+            {
+              "name": "plugin-authoring",
+              "description": "Make a mod: a change to Claude's own interface or behaviour, such as a live pane or panel, a band above the prompt, a status line, a toast, a slash command, or a hook on tool calls or prompts. Use to make, change or debug a mod or its hooks module.",
+              "source": "builtin"
+            },
+            {
+              "name": "add-dir",
+              "description": "Add a new working directory",
+              "source": "builtin"
+            },
+            {
+              "name": "agents",
+              "description": "(removed) Ask Claude to create/manage subagents, or edit .claude/agents/",
+              "source": "builtin"
+            },
+            {
+              "name": "autocompact",
+              "description": "Set how full the context gets before auto-summarizing",
+              "source": "builtin"
+            },
+            {
+              "name": "fork",
+              "description": "Copy this conversation into a new background session and keep working here",
+              "source": "builtin"
+            },
+            {
+              "name": "subtask",
+              "description": "Send a subagent off with your full context; its result comes back here",
+              "source": "builtin"
+            },
+            {
+              "name": "branch",
+              "description": "Create a branch of the current conversation at this point",
+              "source": "builtin"
+            },
+            {
+              "name": "btw",
+              "description": "Ask a quick side question without interrupting the main conversation",
+              "source": "builtin"
+            },
+            {
+              "name": "cd",
+              "description": "Move this session to a new working directory",
+              "source": "builtin"
+            },
+            {
+              "name": "clear",
+              "description": "Start a new session with empty context; previous session stays on disk (resumable with /resume)",
+              "source": "builtin"
+            },
+            {
+              "name": "color",
+              "description": "Set the prompt bar color for this session",
+              "source": "builtin"
+            },
+            {
+              "name": "compact",
+              "description": "Free up context by summarizing the conversation so far",
+              "source": "builtin"
+            },
+            {
+              "name": "config",
+              "description": "Open settings",
+              "source": "builtin"
+            },
+            {
+              "name": "output-style",
+              "description": "List output styles or switch to one",
+              "source": "builtin"
+            },
+            {
+              "name": "copy",
+              "description": "Copy Claude's last response to clipboard (or /copy N for the Nth-latest)",
+              "source": "builtin"
+            },
+            {
+              "name": "context",
+              "description": "Visualize current context usage as a colored grid",
+              "source": "builtin"
+            },
+            {
+              "name": "background",
+              "description": "Send this session to the background and free the terminal",
+              "source": "builtin"
+            },
+            {
+              "name": "effort",
+              "description": "Set effort level for model usage",
+              "source": "builtin"
+            },
+            {
+              "name": "exit",
+              "description": "Exit the CLI",
+              "source": "builtin"
+            },
+            {
+              "name": "fast",
+              "description": "Toggle fast mode (Opus 5.5)",
+              "source": "builtin"
+            },
+            {
+              "name": "focus",
+              "description": "Toggle focus view: just your prompt, summary, and response",
+              "source": "builtin"
+            },
+            {
+              "name": "heapdump",
+              "description": "Dump the JS heap to the Desktop; on Linux with no Desktop folder, the home directory",
+              "source": "builtin"
+            },
+            {
+              "name": "help",
+              "description": "Show help and available commands",
+              "source": "builtin"
+            },
+            {
+              "name": "ide",
+              "description": "Manage IDE integrations and show status",
+              "source": "builtin"
+            },
+            {
+              "name": "init",
+              "description": "Initialize a new CLAUDE.md file with codebase documentation",
+              "source": "builtin"
+            },
+            {
+              "name": "keybindings",
+              "description": "Open your keyboard shortcuts file",
+              "source": "builtin"
+            },
+            {
+              "name": "mcp",
+              "description": "Manage MCP servers",
+              "source": "builtin"
+            },
+            {
+              "name": "memory",
+              "description": "Edit CLAUDE.md files and memory settings",
+              "source": "builtin"
+            },
+            {
+              "name": "mobile",
+              "description": "Show QR code to download the Claude mobile app",
+              "source": "builtin"
+            },
+            {
+              "name": "model",
+              "description": "Set the AI model for Claude Code (currently Opus 5.5)",
+              "source": "builtin"
+            },
+            {
+              "name": "__remote-workflow",
+              "description": "Run the workflow script delivered in this session environment (server-launched sessions only)",
+              "source": "builtin"
+            },
+            {
+              "name": "workflow-launch-exec",
+              "description": "Execute a server-launched workflow handoff (workflow_launch event sessions only)",
+              "source": "builtin"
+            },
+            {
+              "name": "plugin",
+              "description": "Manage Claude Code plugins",
+              "source": "builtin"
+            },
+            {
+              "name": "release-notes",
+              "description": "View release notes",
+              "source": "builtin"
+            },
+            {
+              "name": "reload-plugins",
+              "description": "Activate pending plugin changes in the current session",
+              "source": "builtin"
+            },
+            {
+              "name": "reload-skills",
+              "description": "Pick up skills added or changed on disk during this session",
+              "source": "builtin"
+            },
+            {
+              "name": "rename",
+              "description": "Rename the current conversation",
+              "source": "builtin"
+            },
+            {
+              "name": "resume",
+              "description": "Resume a previous conversation",
+              "source": "builtin"
+            },
+            {
+              "name": "setup-bedrock",
+              "description": "Reconfigure Amazon Bedrock authentication, region, or model pins",
+              "source": "builtin"
+            },
+            {
+              "name": "setup-vertex",
+              "description": "Reconfigure Google Vertex AI authentication, project, region, or model pins",
+              "source": "builtin"
+            },
+            {
+              "name": "skills",
+              "description": "List available skills",
+              "source": "builtin"
+            },
+            {
+              "name": "status",
+              "description": "Show Claude Code status including version, model, account, API connectivity, and tool statuses",
+              "source": "builtin"
+            },
+            {
+              "name": "statusline",
+              "description": "Set up Claude Code's status line UI",
+              "source": "builtin"
+            },
+            {
+              "name": "stickers",
+              "description": "Order Claude Code stickers",
+              "source": "builtin"
+            },
+            {
+              "name": "theme",
+              "description": "Change the theme",
+              "source": "builtin"
+            },
+            {
+              "name": "tui",
+              "description": "Set the terminal UI renderer (default | fullscreen)",
+              "source": "builtin"
+            },
+            {
+              "name": "feedback",
+              "description": "Send feedback to Anthropic or report a bug",
+              "source": "builtin"
+            },
+            {
+              "name": "bug",
+              "description": "Report a bug or share your conversation",
+              "source": "builtin"
+            },
+            {
+              "name": "rewind",
+              "description": "Restore the code and/or conversation to a previous point",
+              "source": "builtin"
+            },
+            {
+              "name": "security-review",
+              "description": "Complete a security review of the pending changes on the current branch",
+              "source": "builtin"
+            },
+            {
+              "name": "terminal-setup",
+              "description": "Install Shift+Enter key binding for newlines",
+              "source": "builtin"
+            },
+            {
+              "name": "scroll-speed",
+              "description": "Adjust mouse wheel scroll speed",
+              "source": "builtin"
+            },
+            {
+              "name": "pro-trial-expired",
+              "description": "Options shown when the Pro plan Claude Code trial has ended",
+              "source": "builtin"
+            },
+            {
+              "name": "usage",
+              "description": "Show session cost, plan usage, and activity stats",
+              "source": "builtin"
+            },
+            {
+              "name": "insights",
+              "description": "Generate a report analyzing your Claude Code sessions",
+              "source": "builtin"
+            },
+            {
+              "name": "recap",
+              "description": "Generate a one-line session recap now",
+              "source": "builtin"
+            },
+            {
+              "name": "permissions",
+              "description": "Manage allow and deny tool permission rules",
+              "source": "builtin"
+            },
+            {
+              "name": "plan",
+              "description": "Enable plan mode or view the current session plan",
+              "source": "builtin"
+            },
+            {
+              "name": "powerup",
+              "description": "Discover Claude Code features through quick interactive lessons",
+              "source": "builtin"
+            },
+            {
+              "name": "goal",
+              "description": "Set a goal Claude checks before stopping",
+              "source": "builtin"
+            },
+            {
+              "name": "hooks",
+              "description": "View hook configurations for tool events",
+              "source": "builtin"
+            },
+            {
+              "name": "export",
+              "description": "Export the current conversation to a file or clipboard",
+              "source": "builtin"
+            },
+            {
+              "name": "sandbox",
+              "description": "◯ sandbox disabled (⏎ to configure)",
+              "source": "builtin"
+            },
+            {
+              "name": "login",
+              "description": "Sign in with your Anthropic account",
+              "source": "builtin"
+            },
+            {
+              "name": "logout",
+              "description": "Sign out from your Anthropic account",
+              "source": "builtin"
+            },
+            {
+              "name": "passes",
+              "description": "Share a free week of Claude Code with friends",
+              "source": "builtin"
+            },
+            {
+              "name": "list-agents",
+              "description": "List subagents, teammates, and other Claude sessions you can message",
+              "source": "builtin"
+            },
+            {
+              "name": "tasks",
+              "description": "View and manage everything running in the background",
+              "source": "builtin"
+            },
+            {
+              "name": "workflows",
+              "description": "Browse running and completed workflows",
+              "source": "builtin"
+            },
+            {
+              "name": "team-onboarding",
+              "description": "Help teammates ramp on Claude Code with a guide from your usage",
+              "source": "builtin"
+            },
+            {
+              "name": "radio",
+              "description": "Listen to Claude FM lo-fi radio",
+              "source": "builtin"
+            },
+            {
+              "name": "diff",
+              "description": "Toggle the diff panel showing uncommitted changes",
+              "source": "plugin",
+              "plugin": "cc-plugin-diff"
+            }
+          ]
+        },
+        {
+          "name": "config-keys",
+          "ok": true,
+          "value": [
+            {
+              "key": "autoCompact",
+              "kind": "boolean"
+            },
+            {
+              "key": "autoContinueAtUsageLimit",
+              "kind": "boolean"
+            },
+            {
+              "key": "switchModelsOnFlag",
+              "kind": "choice"
+            },
+            {
+              "key": "tips",
+              "kind": "boolean"
+            },
+            {
+              "key": "reduceMotion",
+              "kind": "boolean"
+            },
+            {
+              "key": "thinking",
+              "kind": "boolean"
+            },
+            {
+              "key": "recap",
+              "kind": "boolean"
+            },
+            {
+              "key": "checkpoints",
+              "kind": "boolean"
+            },
+            {
+              "key": "workflows",
+              "kind": "boolean"
+            },
+            {
+              "key": "workflowKeywordTriggerEnabled",
+              "kind": "boolean"
+            },
+            {
+              "key": "workflowSizeGuideline",
+              "kind": "choice"
+            },
+            {
+              "key": "verbose",
+              "kind": "boolean"
+            },
+            {
+              "key": "progressBar",
+              "kind": "boolean"
+            },
+            {
+              "key": "turnDuration",
+              "kind": "boolean"
+            },
+            {
+              "key": "timeFormat",
+              "kind": "choice"
+            },
+            {
+              "key": "permissionMode",
+              "kind": "choice"
+            },
+            {
+              "key": "worktreeBaseRef",
+              "kind": "choice"
+            },
+            {
+              "key": "useAutoModeDuringPlan",
+              "kind": "boolean"
+            },
+            {
+              "key": "gitignore",
+              "kind": "boolean"
+            },
+            {
+              "key": "copyFullResponse",
+              "kind": "boolean"
+            },
+            {
+              "key": "copyOnSelect",
+              "kind": "boolean"
+            },
+            {
+              "key": "autoScroll",
+              "kind": "boolean"
+            },
+            {
+              "key": "defaultToAgentsView",
+              "kind": "boolean"
+            },
+            {
+              "key": "leftArrowOpensAgents",
+              "kind": "boolean"
+            },
+            {
+              "key": "autoUpdatesChannel",
+              "kind": "text"
+            },
+            {
+              "key": "theme",
+              "kind": "choice"
+            },
+            {
+              "key": "notifChannel",
+              "kind": "choice"
+            },
+            {
+              "key": "outputStyle",
+              "kind": "choice"
+            },
+            {
+              "key": "language",
+              "kind": "text"
+            },
+            {
+              "key": "editor",
+              "kind": "choice"
+            },
+            {
+              "key": "askUserQuestionTimeout",
+              "kind": "choice"
+            },
+            {
+              "key": "externalEditorContext",
+              "kind": "boolean"
+            },
+            {
+              "key": "prStatus",
+              "kind": "boolean"
+            },
+            {
+              "key": "model",
+              "kind": "choice"
+            },
+            {
+              "key": "autoConnectIde",
+              "kind": "boolean"
+            },
+            {
+              "key": "chrome",
+              "kind": "boolean"
+            },
+            {
+              "key": "dialogExpiry",
+              "kind": "choice"
+            },
+            {
+              "key": "cc-plugin-agents-md.instructionFiles",
+              "kind": "choice"
+            }
+          ]
+        },
+        {
+          "name": "model-sonnet",
+          "ok": true,
+          "value": {
+            "result": {},
+            "model": "claude-sonnet-5-5"
+          }
+        },
+        {
+          "name": "clear",
+          "ok": true,
+          "value": {
+            "before": "29da9fd2-b22e-4da2-8723-d8d9777daad5",
+            "result": {
+              "text": ""
+            },
+            "after": "756fd956-8200-4a1b-bf20-6cf80766220f",
+            "messages": [
+              {
+                "role": "user",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
+                "toolUses": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "send-simple",
+          "ok": true,
+          "value": {
+            "result": {
+              "text": "repeat exact",
+              "origin": {
+                "kind": "plugin",
+                "name": "isolated-mod-contract",
+                "asUser": true
+              }
+            },
+            "messages": [
+              {
+                "role": "user",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "repeat exact",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_0",
+                "toolUses": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "send-repeat-unicode-busy",
+          "ok": true,
+          "value": {
+            "results": [
+              {
+                "text": "repeat exact",
+                "origin": {
+                  "kind": "plugin",
+                  "name": "isolated-mod-contract",
+                  "asUser": true
+                }
+              },
+              {
+                "text": "line one\n第二行 café 🧪",
+                "origin": {
+                  "kind": "plugin",
+                  "name": "isolated-mod-contract",
+                  "asUser": true
+                }
+              },
+              {
+                "text": "queued while busy",
+                "origin": {
+                  "kind": "plugin",
+                  "name": "isolated-mod-contract",
+                  "asUser": true
+                }
+              }
+            ],
+            "messages": [
+              {
+                "role": "user",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "repeat exact",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_0",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "repeat exact",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_1",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "line one\n第二行 café 🧪",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_2",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "queued while busy",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_3",
+                "toolUses": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "compact",
+          "ok": true,
+          "value": {
+            "result": {},
+            "id": "756fd956-8200-4a1b-bf20-6cf80766220f",
+            "messages": [
+              {
+                "role": "user",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "repeat exact",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_0",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "repeat exact",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_1",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "line one\n第二行 café 🧪",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_2",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "queued while busy",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\nLOCAL_SCRIPTED_REPLY_4\n\nIf you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/756fd956-8200-4a1b-bf20-6cf80766220f.jsonl\nContinue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with \"I'll continue\" or similar. Pick up the last task as if the break never happened.\n\nThe messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them.",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_3",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "<command-name>/compact</command-name>\n            <command-message>compact</command-message>\n            <command-args>Keep the probe markers.</command-args>",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "<local-command-stdout>\u001b[2mCompacted (ctrl+o to see full summary)\u001b[22m</local-command-stdout>",
+                "toolUses": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "unknown-command",
+          "ok": false,
+          "error": "HooksError: isolated-mod-contract: $.command.run: no command named /does-not-exist-probe in this session"
+        },
+        {
+          "name": "abort-turn",
+          "ok": true,
+          "value": {
+            "messages": [
+              {
+                "role": "user",
+                "text": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "repeat exact",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_0",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "repeat exact",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_1",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "line one\n第二行 café 🧪",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_2",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "queued while busy",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\nLOCAL_SCRIPTED_REPLY_4\n\nIf you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /tmp/cc-mods-controls-ICGXX8/cc-mods-contract-8vQbbk/home/.claude/projects/-tmp-cc-mods-controls-ICGXX8-cc-mods-contract-8vQbbk-project/756fd956-8200-4a1b-bf20-6cf80766220f.jsonl\nContinue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with \"I'll continue\" or similar. Pick up the last task as if the break never happened.\n\nThe messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them.",
+                "toolUses": []
+              },
+              {
+                "role": "assistant",
+                "text": "LOCAL_SCRIPTED_REPLY_3",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "<command-name>/compact</command-name>\n            <command-message>compact</command-message>\n            <command-args>Keep the probe markers.</command-args>",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "<local-command-stdout>\u001b[2mCompacted (ctrl+o to see full summary)\u001b[22m</local-command-stdout>",
+                "toolUses": []
+              },
+              {
+                "role": "user",
+                "text": "slow interruption probe",
+                "toolUses": []
+              }
+            ]
+          }
+        }
+      ],
+      "events": [
+        {
+          "event": "turn.start",
+          "turnId": "3b2a9446-cac0-4305-8355-319d4eb814bc"
+        },
+        {
+          "event": "turn.complete",
+          "reason": "answer"
+        },
+        {
+          "event": "turn.start",
+          "turnId": "30ba2eba-55c0-4ae2-86cc-6d766f062965"
+        },
+        {
+          "event": "turn.complete",
+          "reason": "answer"
+        },
+        {
+          "event": "turn.start",
+          "turnId": "2e464259-6305-4843-883d-d09d7104744e"
+        },
+        {
+          "event": "turn.complete",
+          "reason": "answer"
+        },
+        {
+          "event": "turn.start",
+          "turnId": "171243ea-6bc0-4f27-9e83-c40a2d1934ab"
+        },
+        {
+          "event": "turn.complete",
+          "reason": "answer"
+        },
+        {
+          "event": "turn.start",
+          "turnId": "b1fd01d2-55e6-40b7-9f29-ba7aef3979b6"
+        },
+        {
+          "event": "turn.complete",
+          "reason": "aborted"
+        }
+      ],
+      "done": true
+    },
+    "finalExit": {
+      "exitCode": 129,
+      "signal": 0
+    },
+    "serverClosed": true
+  }
+}

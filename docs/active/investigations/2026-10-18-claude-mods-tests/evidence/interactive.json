@@ -1,0 +1,69 @@
+{
+  "root": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO",
+  "bin": "/home/destin/.local/bin/claude",
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "TERM": "xterm-256color",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "HOME": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home",
+    "CLAUDE_CONFIG_DIR": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude",
+    "TMPDIR": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO",
+    "XDG_CONFIG_HOME": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.config",
+    "XDG_CACHE_HOME": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.cache",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+  "commands": [
+    {
+      "args": [
+        "plugin",
+        "validate",
+        "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/disposable-plugin",
+        "--json"
+      ],
+      "code": 0,
+      "output": "{\n  \"success\": true,\n  \"strict\": false,\n  \"target\": \"/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/disposable-plugin/.claude-plugin/plugin.json\",\n  \"manifest\": {\n    \"file\": \"/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/disposable-plugin/.claude-plugin/plugin.json\",\n    \"type\": \"plugin\",\n    \"errors\": [],\n    \"warnings\": [\n      {\n        \"path\": \"author\",\n        \"message\": \"No author information provided. Consider adding author details for plugin attribution\",\n        \"code\": null\n      }\n    ],\n    \"notes\": [],\n    \"gatingHooks\": []\n  },\n  \"contents\": [\n    {\n      \"file\": \"/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/disposable-plugin/hooks/hooks.json\",\n      \"type\": \"hooks\",\n      \"errors\": [],\n      \"warnings\": [],\n      \"notes\": [\n        \"./register.ts hooks: nothing\",\n        \"./register.ts calls: nothing on $\"\n      ],\n      \"gatingHooks\": []\n    }\n  ],\n  \"advice\": []\n}\n"
+    },
+    {
+      "args": [
+        "plugin",
+        "test",
+        "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/disposable-plugin"
+      ],
+      "code": 1,
+      "output": "\nsmoke.test.ts:\n(fail) the file did not load\n  it declares no test(): nothing ran\n\n 0 pass\n 1 fail\nRan 1 test across 1 file. [0.11s]\n"
+    }
+  ],
+  "interactive": {
+    "pid": 2203791,
+    "exit": null,
+    "raw": "\r ▐▛███▛█Claude Codev2.1.302\r▝▜██████▀Opus 5.5 · API Usage Billing\r ▝▝   ▝▝ /tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/project\r▎Auto mode is now Claude Code's default permission mode.\r▎Auto mode lets Claude handle permission prompts automatically. Claude checks each tool call for risky \r▎actions and prompt injection before executing, runs the ones it assesses as lower-risk, and blocks the rest.\r▎https://code.claude.com/docs/en/permission-modes\r1 more notice hidden\r◐ medium · /effort\r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r❯  \r──────────────────────────────────────────────────────────────────────────────────────────────────────────────\r⏵⏵ auto mode on (shift+tab to cycle) · ← for agents\r        \r ▐▛▛█ \r·▜██████·\r~~\r▗▟▛███▛█▄\r▜███▘\r ▝▝   ▝▝ \r ▐ \r▝▀\r        \r ▐▛▛█ \r·▜██████·\r~~\r▗▟▛███▛█▄\r▜███▘\r ▝▝   ▝▝ \r ▐ \r▝▀\r\r",
+    "apiRequests": [],
+    "plugin": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/disposable-plugin",
+    "environment": {
+      "PATH": "/usr/local/bin:/usr/bin:/bin",
+      "TERM": "xterm-256color",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "HOME": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home",
+      "CLAUDE_CONFIG_DIR": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.claude",
+      "TMPDIR": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO",
+      "XDG_CONFIG_HOME": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.config",
+      "XDG_CACHE_HOME": "/tmp/cc-mods-netns-Te9erZ/cc-mods-contract-r9fSIO/home/.cache",
+      "DISABLE_AUTOUPDATER": "1",
+      "DISABLE_TELEMETRY": "1",
+      "DISABLE_ERROR_REPORTING": "1",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+      "ANTHROPIC_BASE_URL": "http://127.0.0.1:35657",
+      "ANTHROPIC_AUTH_TOKEN": "fake-token-for-local-capture"
+    },
+    "finalExit": {
+      "exitCode": 129,
+      "signal": 0
+    },
+    "serverClosed": true
+  }
+}

@@ -1,0 +1,267 @@
+2026-10-18T20:37:00.290Z [DEBUG] MDM settings load completed in 1ms
+2026-10-18T20:37:00.302Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:37:00.304Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/.claude/settings.json
+2026-10-18T20:37:00.305Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/.claude/settings.local.json
+2026-10-18T20:37:00.305Z [DEBUG] CA certs: Config fallback - globalEnv keys: , settingsEnv keys: none
+2026-10-18T20:37:00.311Z [DEBUG] [init] configureGlobalMTLS starting
+2026-10-18T20:37:00.311Z [DEBUG] [init] configureGlobalMTLS complete
+2026-10-18T20:37:00.311Z [DEBUG] [init] configureGlobalAgents starting
+2026-10-18T20:37:00.311Z [DEBUG] CA certs: stores=bundled,system, extraCertsPath=undefined
+2026-10-18T20:37:00.311Z [DEBUG] CA certs: Loaded 121 bundled root certificates
+2026-10-18T20:37:00.315Z [DEBUG] CA certs: Loaded 121 system CA certificates
+2026-10-18T20:37:00.315Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:37:00.315Z [DEBUG] [init] configureGlobalAgents complete
+2026-10-18T20:37:00.319Z [DEBUG] Error log sink initialized
+2026-10-18T20:37:00.319Z [DEBUG] clearPluginCache: invalidating loadAllPlugins cache (preAction: --plugin-dir inline plugins)
+2026-10-18T20:37:00.332Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:37:00.336Z [DEBUG] [ToolSearch:optimistic] disabled: ANTHROPIC_BASE_URL=http://127.0.0.1:34029 is not a first-party Anthropic host. Set ENABLE_TOOL_SEARCH=true (or auto / auto:N) if your proxy forwards tool_reference blocks.
+2026-10-18T20:37:00.339Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-10-18T20:37:00.340Z [DEBUG] [STARTUP] Running setup()...
+2026-10-18T20:37:00.345Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/skills, project=[]
+2026-10-18T20:37:00.346Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T20:37:00.346Z [DEBUG] Failed to stat directory /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/agents'
+2026-10-18T20:37:00.346Z [DEBUG] installed_plugins.json doesn't exist, returning empty V2 object
+2026-10-18T20:37:00.346Z [DEBUG] --plugin-dir /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/plugin is one plugin: .claude-plugin at its top marks it
+2026-10-18T20:37:00.347Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T20:37:00.347Z [DEBUG] Failed to stat directory /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/commands'
+2026-10-18T20:37:00.347Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T20:37:00.359Z [DEBUG] Git remote URL: null
+2026-10-18T20:37:00.359Z [DEBUG] No git remote URL found
+2026-10-18T20:37:00.360Z [DEBUG] Read hooks.json for plugin isolated-compat (enabled=true): /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/plugin/hooks/hooks.json
+2026-10-18T20:37:00.361Z [DEBUG] Loaded inline plugin from path: isolated-compat
+2026-10-18T20:37:00.361Z [DEBUG] Loaded 1 directory-loaded plugins
+2026-10-18T20:37:00.362Z [DEBUG] Found 4 plugins (4 enabled, 0 disabled)
+2026-10-18T20:37:00.363Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T20:37:00.363Z [DEBUG] Checking plugin isolated-compat: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:37:00.363Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:37:00.363Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:37:00.363Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:37:00.363Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T20:37:00.363Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T20:37:00.364Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T20:37:00.364Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T20:37:00.367Z [INFO] [uds-messaging] Listening: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/runtime/cc-socks/108.sock
+2026-10-18T20:37:00.369Z [INFO] [uds-messaging] Inject messages (auth line optional here): { echo '{"type":"auth","token":"[REDACTED]"$CLAUDE_CODE_MESSAGING_TOKEN"'"}'; echo '{"type":"user","message":{"role":"user","content":"hello"}}'; } | socat - UNIX-CONNECT:/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/runtime/cc-socks/108.sock
+2026-10-18T20:37:00.371Z [INFO] [uds-messaging] Connect when the data is ready (e.g. out=$(cmd); printf '%s\n' "$out" | nc -N -U "$CLAUDE_CODE_MESSAGING_SOCKET" — or the socat form above): a connection that sends no complete line within 30000 ms is closed
+2026-10-18T20:37:00.373Z [DEBUG] Error log sink initialized
+2026-10-18T20:37:00.376Z [DEBUG] cc-plugin-sec-default@builtin not seated: no managed settings and not a Team or Enterprise organization (none)
+2026-10-18T20:37:00.377Z [DEBUG] [STARTUP] setup() completed in 37ms
+2026-10-18T20:37:00.378Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-10-18T20:37:00.385Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T20:37:00.391Z [DEBUG] [STARTUP] Commands and agents loaded in 13ms
+2026-10-18T20:37:00.394Z [DEBUG] fullscreen disabled: a previous fullscreen launch on this machine died before it was healthy (strike) · /tui fullscreen or CLAUDE_CODE_NO_FLICKER=1 to override
+2026-10-18T20:37:00.395Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-10-18T20:37:00.402Z [DEBUG] Cleared mTLS configuration cache
+2026-10-18T20:37:00.402Z [DEBUG] Cleared proxy agent cache
+2026-10-18T20:37:00.402Z [DEBUG] mTLS: Creating HTTPS agent with custom certificates
+2026-10-18T20:37:00.404Z [DEBUG] [STARTUP] showSetupScreens() completed in 9ms
+2026-10-18T20:37:00.405Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-10-18T20:37:00.405Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-10-18T20:37:00.405Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-10-18T20:37:00.405Z [DEBUG] Starting background startup prefetches
+2026-10-18T20:37:00.406Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T20:37:00.407Z [DEBUG] [STARTUP] MCP configs resolved in 26ms (awaited at +68ms)
+2026-10-18T20:37:00.411Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:37:00.413Z [DEBUG] Initialized versioned plugins system with 0 plugins
+2026-10-18T20:37:00.420Z [DEBUG] LSP Diagnostics: Resetting all state (0 pending, 0 files tracked)
+2026-10-18T20:37:00.422Z [DEBUG] Total LSP servers loaded: 0
+2026-10-18T20:37:00.422Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2026-10-18T20:37:00.422Z [DEBUG] LSP manager initialized with 0 servers
+2026-10-18T20:37:00.422Z [DEBUG] LSP server manager initialized successfully
+2026-10-18T20:37:00.422Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2026-10-18T20:37:00.425Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:37:00.427Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-10-18T20:37:00.427Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-10-18T20:37:00.429Z [DEBUG] getPluginSkills: Processing 4 enabled plugins
+2026-10-18T20:37:00.429Z [DEBUG] Checking plugin isolated-compat: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:37:00.429Z [DEBUG] Checking plugin cc-plugin-agents-md: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:37:00.429Z [DEBUG] Checking plugin cc-plugin-plugin-authoring: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:37:00.429Z [DEBUG] Checking plugin cc-plugin-diff: skillsPath=none, skillsPaths=0 paths
+2026-10-18T20:37:00.429Z [DEBUG] Total plugin workflows loaded: 0
+2026-10-18T20:37:00.429Z [DEBUG] Total plugin commands loaded: 0
+2026-10-18T20:37:00.431Z [DEBUG] Ripgrep first use test: PASSED (mode=embedded, path=/home/destin/.local/share/claude/versions/2.1.302)
+2026-10-18T20:37:00.432Z [DEBUG] "rg error (signal=undefined, code=2, stderr: rg: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/plugins/cache: IO error for operation on /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/plugins/cache: No such file or directory (os error 2)\n), 0 results"
+2026-10-18T20:37:00.432Z [DEBUG] Loading skills from: managed=/etc/claude-code/.claude/skills, user=/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/skills, project=[]
+2026-10-18T20:37:00.432Z [DEBUG] Total plugin skills loaded: 0 (0 duplicate/user-owned entries skipped)
+2026-10-18T20:37:00.433Z [DEBUG] Git remote URL: null
+2026-10-18T20:37:00.433Z [DEBUG] No git remote URL found
+2026-10-18T20:37:00.433Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-10-18T20:37:00.434Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/commands: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/commands'
+2026-10-18T20:37:00.434Z [DEBUG] Failed to stat directory /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/commands: ENOENT: no such file or directory, stat '/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/commands'
+2026-10-18T20:37:00.434Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)
+2026-10-18T20:37:00.435Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills, 39 bundled skills, 1 builtin plugin skills
+2026-10-18T20:37:00.444Z [DEBUG] [3P telemetry] Event dropped (no event logger initialized): plugin_loaded
+2026-10-18T20:37:00.447Z [DEBUG] FileHistory: No need to copy file history for resuming with same session id: 18674568-ac6c-4069-a77b-d4f024f206dd
+2026-10-18T20:37:00.471Z [DEBUG] plugin cc-plugin-agents-md: no pluginConfigs["agents-md@builtin" or "cc-plugin-agents-md@builtin"].options in user, --settings or managed settings (project settings are not read); every option is its default
+2026-10-18T20:37:00.472Z [DEBUG] hooks worker spawned (one for every plugin)
+2026-10-18T20:37:00.472Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:37:00.472Z [DEBUG] Writing to temp file: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.9c847bde6f18
+2026-10-18T20:37:00.480Z [DEBUG] [Bootstrap] Skipped: Nonessential traffic disabled
+2026-10-18T20:37:00.547Z [DEBUG] [keybindings] KeybindingSetup initialized with 224 bindings, 0 warnings
+2026-10-18T20:37:00.580Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:37:00.605Z [DEBUG] [engine] send set_max_thinking_tokens max=null
+2026-10-18T20:37:00.605Z [DEBUG] [engine] send set_model model=claude-opus-5-5
+2026-10-18T20:37:00.611Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:37:00.620Z [DEBUG] [claudeai-mcp] Disabled: API-key auth precedence active
+2026-10-18T20:37:00.621Z [DEBUG] performStartupChecks called
+2026-10-18T20:37:00.628Z [DEBUG] [jobStateNameSync] watch skipped: Error: ENOENT: no such file or directory, watch '/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/jobs/18674568'
+2026-10-18T20:37:00.639Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-10-18T20:37:00.640Z [DEBUG] Official marketplace auto-install skipped: unknown
+2026-10-18T20:37:00.641Z [DEBUG] [Claude in Chrome] Disabled: OAuth token has no scope accepted by /api/oauth/validate (needs user:profile, user:office, or user:ccr_inference; env-var and setup-token sessions default to user:inference only)
+2026-10-18T20:37:00.642Z [DEBUG] [ScheduledTasks] scheduler start() — enabled=false, hasTasks=false
+2026-10-18T20:37:00.643Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/.claude/settings.json
+2026-10-18T20:37:00.643Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/.claude/settings.local.json
+2026-10-18T20:37:00.643Z [DEBUG] Broken symlink or missing file encountered for settings.json at path: /etc/claude-code/managed-settings.json
+2026-10-18T20:37:00.658Z [DEBUG] [servedCatalog] off (essential_traffic)
+2026-10-18T20:37:00.664Z [INFO] 1 setup issue: plugins (run /plugin for details)
+2026-10-18T20:37:00.668Z [DEBUG] Starting background plugin installations
+2026-10-18T20:37:00.669Z [DEBUG] [auto-mode] verifyAutoModeGateAccess: enabledState=enabled disabledBySettings=false model=claude-opus-5-5 modelSupported=true disableFastModeBreakerFires=false carouselAvailable=true canEnterAuto=true
+2026-10-18T20:37:00.669Z [DEBUG] performBackgroundPluginInstallations called
+2026-10-18T20:37:00.674Z [DEBUG] hooks module isolated-compat@inline loaded (worker, environment 1, tier user); events: turn.complete,tool.check,session.start
+2026-10-18T20:37:00.675Z [DEBUG] hooks module cc-plugin-agents-md@builtin loaded (native, environment 2, tier builtin); events: session.start,prompt.context,command.run,session.compact,prompt.submit,turn.start,turn.complete,agent.spawn,tool.call,prompt.mention
+2026-10-18T20:37:00.676Z [DEBUG] hooks module cc-plugin-plugin-authoring@builtin loaded (native, environment 3, tier builtin); events: skill.prompt,tool.check,tool.call
+2026-10-18T20:37:00.677Z [DEBUG] hooks module cc-plugin-diff@builtin loaded (native, environment 4, tier builtin); events: session.start,ui.render,command.run,ui.close,ui.focus,ui.scroll,tool.call,prompt.submit
+2026-10-18T20:37:00.678Z [DEBUG] [keybindings] Watching for changes to /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/keybindings.json
+2026-10-18T20:37:00.681Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:37:00.681Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:37:00.683Z [DEBUG] engine.create: no plugin-provided interfaces; $ built for isolated-compat,cc-plugin-agents-md,cc-plugin-plugin-authoring,cc-plugin-diff
+2026-10-18T20:37:00.683Z [DEBUG] plugin.register: cc-plugin-agents-md (builtin, cc-plugin-agents-md@builtin), judged by core alone: admitted
+2026-10-18T20:37:00.683Z [DEBUG] plugin.register: cc-plugin-plugin-authoring (builtin, cc-plugin-plugin-authoring@builtin), judged by core alone: admitted
+2026-10-18T20:37:00.684Z [DEBUG] plugin.register: cc-plugin-diff (builtin, cc-plugin-diff@builtin), judged by core alone: admitted
+2026-10-18T20:37:00.684Z [DEBUG] plugin.register: isolated-compat (user, isolated-compat@inline), judged by core alone: admitted
+2026-10-18T20:37:00.692Z [DEBUG] plugin-dir watch: watching isolated-compat; folders of plugins none
+2026-10-18T20:37:00.726Z [DEBUG] Artifact gates frozen: capabilities=true comments=false db=true files=false types=false type_create=false type_catalog=false read_page_data=false room=false verify=false delete=false preview=false preview_browser=unread open=false endpoints=false pin=true share=false versions=false flag_source=disabled gb_fresh=false
+2026-10-18T20:37:00.726Z [DEBUG] Artifact publish edits offer frozen: edit_hook=true
+2026-10-18T20:37:00.727Z [DEBUG] Artifact input schema built: assets=false copy_from=false publish_edits=false assets_source=cold_no_identity
+2026-10-18T20:37:00.780Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:37:00.781Z [DEBUG] No CLAUDE.md/rules files found
+2026-10-18T20:37:00.818Z [DEBUG] Total plugin agents loaded: 0
+2026-10-18T20:37:00.819Z [DEBUG] Temp file written successfully, size: 1741 bytes
+2026-10-18T20:37:00.819Z [DEBUG] Renaming /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.9c847bde6f18 to /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json
+2026-10-18T20:37:00.820Z [DEBUG] File /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json written atomically
+2026-10-18T20:37:00.823Z [DEBUG] Watching /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project for /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/.claude to appear
+2026-10-18T20:37:00.823Z [DEBUG] Watching for changes in setting files /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/settings.json...
+2026-10-18T20:37:00.826Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md found 0 of 4 directories
+2026-10-18T20:37:00.826Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:37:00.826Z [DEBUG] Writing to temp file: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.650e485dfd30
+2026-10-18T20:37:00.827Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:37:00.827Z [DEBUG] Temp file written successfully, size: 1741 bytes
+2026-10-18T20:37:00.828Z [DEBUG] Renaming /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.650e485dfd30 to /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json
+2026-10-18T20:37:00.834Z [DEBUG] File /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json written atomically
+2026-10-18T20:37:00.835Z [DEBUG] $.fs.ancestors (cc-plugin-agents-md): AGENTS.md, .claude/AGENTS.md found 0 of 4 directories
+2026-10-18T20:37:00.836Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.context settled in 48.7ms (native link, next() included)
+2026-10-18T20:37:00.853Z [ERROR] install check: claude command at /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.local/bin/claude missing or broken (/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.local/bin does not exist)
+2026-10-18T20:37:00.853Z [ERROR] install check: claude command at /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.local/bin/claude missing or broken
+2026-10-18T20:37:00.853Z [INFO] 1 setup issue: install (run `claude doctor` for details)
+2026-10-18T20:37:00.856Z [DEBUG] type root of isolated-compat at /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/plugin/.claude-plugin/types: entries claude-code, claude-code-tools, claude-code-mcp; wrote nothing
+2026-10-18T20:37:00.856Z [DEBUG] Registered 0 hooks from 4 plugins
+2026-10-18T20:37:00.856Z [DEBUG] session.start: raised (surface terminal, interactive)
+2026-10-18T20:37:00.860Z [DEBUG] Loaded plugins - Enabled: 4, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2026-10-18T20:37:00.860Z [DEBUG] Plugin autoupdate: command-source refresh disabled by tengu_plugin_command_source_refresh (still excluding command-sourced plugins from the regular pass)
+2026-10-18T20:37:00.864Z [DEBUG] $.command.register (cc-plugin-diff): /diff listed
+2026-10-18T20:37:00.867Z [DEBUG] hooks module cc-plugin-diff@builtin session.start settled in 6.1ms (native link, next() included)
+2026-10-18T20:37:00.867Z [DEBUG] hooks module cc-plugin-agents-md@builtin session.start settled in 6.4ms (native link, next() included)
+2026-10-18T20:37:00.872Z [DEBUG] hooks module isolated-compat@inline session.start settled in 15.1ms (worker hop, next() included)
+2026-10-18T20:37:01.128Z [DEBUG] [fs.watch probe] verdict: delivers
+2026-10-18T20:37:02.185Z [DEBUG] $.fs.write (isolated-compat): /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/compat-report-second.json (162 bytes)
+2026-10-18T20:37:02.207Z [DEBUG] $.prompt.submit (isolated-compat): "SYNTHETIC compat NEW distinct deny"
+2026-10-18T20:37:02.229Z [DEBUG] hooks module cc-plugin-agents-md@builtin (native): prompt.submit nested in isolated-compat
+2026-10-18T20:37:02.230Z [DEBUG] hooks module cc-plugin-diff@builtin (native): prompt.submit nested in isolated-compat
+2026-10-18T20:37:02.231Z [DEBUG] FileHistory: Making snapshot for message 343b1671-1af7-4396-8964-1b639daadfa2
+2026-10-18T20:37:02.236Z [DEBUG] FileHistory: Added snapshot for 343b1671-1af7-4396-8964-1b639daadfa2, tracking 0 files
+2026-10-18T20:37:02.240Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.start settled in 3.3ms (native link, next() included)
+2026-10-18T20:37:02.240Z [DEBUG] hooks module cc-plugin-diff@builtin prompt.submit settled in 9.8ms (native link, next() included)
+2026-10-18T20:37:02.240Z [DEBUG] hooks module cc-plugin-agents-md@builtin prompt.submit settled in 10.4ms (native link, next() included)
+2026-10-18T20:37:02.241Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/output-styles: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/output-styles'
+2026-10-18T20:37:02.241Z [DEBUG] Failed to stat directory /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/output-styles: ENOENT: no such file or directory, stat '/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/output-styles'
+2026-10-18T20:37:02.241Z [DEBUG] Total plugin output styles loaded: 0
+2026-10-18T20:37:02.242Z [DEBUG] act_dont_rederive_arm_active source=growthbook
+2026-10-18T20:37:02.246Z [DEBUG] [engine] yield system/init (first)
+2026-10-18T20:37:02.246Z [DEBUG] [engine] turn 1 start
+2026-10-18T20:37:02.252Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:37:02.267Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.cc1; cc_entrypoint=cli;
+2026-10-18T20:37:02.267Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:37:02.270Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:37:02.276Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:37:02.281Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:37:02.284Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:37:02.310Z [DEBUG] prompt.edit: unhooked; the composer relays nothing
+2026-10-18T20:37:02.318Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:37:02.330Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 5.0ms (native link, next() included)
+2026-10-18T20:37:02.337Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:37:02.337Z [DEBUG] Writing to temp file: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.4bc0b3dc4d7c
+2026-10-18T20:37:02.341Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:37:02.341Z [DEBUG] [API:timing] first byte after 65ms
+2026-10-18T20:37:02.359Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:37:02.360Z [DEBUG] Temp file written successfully, size: 1741 bytes
+2026-10-18T20:37:02.361Z [DEBUG] Renaming /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.4bc0b3dc4d7c to /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json
+2026-10-18T20:37:02.361Z [DEBUG] File /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json written atomically
+2026-10-18T20:37:02.371Z [DEBUG] "Permission suggestions for Write: [\n  {\n    \"type\": \"setMode\",\n    \"mode\": \"acceptEdits\",\n    \"destination\": \"session\"\n  }\n]"
+2026-10-18T20:37:02.373Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-10-18T20:37:02.373Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-10-18T20:37:02.373Z [DEBUG] [FileIndex] not a git repo, returning null
+2026-10-18T20:37:02.373Z [DEBUG] [FileIndex] git ls-files returned null, falling back to ripgrep
+2026-10-18T20:37:02.394Z [DEBUG] [FileIndex] ripgrep: 3 files in 21ms
+2026-10-18T20:37:02.396Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/agents: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/agents'
+2026-10-18T20:37:02.396Z [DEBUG] Failed to stat directory /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/agents: ENOENT: no such file or directory, stat '/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/agents'
+2026-10-18T20:37:02.396Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/skills: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/skills'
+2026-10-18T20:37:02.396Z [DEBUG] Failed to stat directory /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/skills: ENOENT: no such file or directory, stat '/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/skills'
+2026-10-18T20:37:02.396Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/workflows: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/workflows'
+2026-10-18T20:37:02.396Z [DEBUG] Failed to stat directory /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/workflows: ENOENT: no such file or directory, stat '/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/workflows'
+2026-10-18T20:37:02.396Z [DEBUG] Failed to stat directory /etc/claude-code/.claude/routines: ENOENT: no such file or directory, stat '/etc/claude-code/.claude/routines'
+2026-10-18T20:37:02.396Z [DEBUG] Failed to stat directory /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/routines: ENOENT: no such file or directory, stat '/tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/routines'
+2026-10-18T20:37:02.397Z [DEBUG] [FileIndex] cache refresh completed in 24ms
+2026-10-18T20:37:02.398Z [DEBUG] $.fs.write (isolated-compat): /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/compat-report-second.json (420 bytes)
+2026-10-18T20:37:02.399Z [DEBUG] $.http.fetch (isolated-compat): GET http://127.0.0.1:35929/new.txt
+2026-10-18T20:37:02.882Z [DEBUG] $.http.fetch (isolated-compat): 200 in 484ms, 19 chars
+2026-10-18T20:37:02.884Z [DEBUG] $.fs.write (isolated-compat): /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/compat-report-second.json (486 bytes)
+2026-10-18T20:37:02.885Z [DEBUG] hooks module isolated-compat@inline tool.check settled in 526.0ms (worker hop, next() included)
+2026-10-18T20:37:02.885Z [DEBUG] tool.check Write toolu_fake_1792355822287_0: ask -> deny by plugin isolated-compat: Explicit synthetic compat deny
+2026-10-18T20:37:02.887Z [DEBUG] Write tool permission denied
+2026-10-18T20:37:02.887Z [DEBUG] hooks module cc-plugin-diff@builtin tool.call settled in 539.5ms (native link, next() included)
+2026-10-18T20:37:02.894Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-10-18T20:37:02.894Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-10-18T20:37:02.894Z [DEBUG] Sending 13 skills via attachment (initial)
+2026-10-18T20:37:02.894Z [DEBUG] Hooks: checkForNewResponses returning 0 responses, 0 hooks still pending
+2026-10-18T20:37:02.902Z [DEBUG] autocompact: tokens=[REDACTED] level=ok effectiveWindow=980000
+2026-10-18T20:37:02.909Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.302.cc1; cc_entrypoint=cli;
+2026-10-18T20:37:02.909Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:37:02.910Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:37:02.928Z [DEBUG] Fast mode unavailable: Fast mode is currently unavailable
+2026-10-18T20:37:02.931Z [DEBUG] [API:timing] dispatching to firstParty model=claude-opus-5-5
+2026-10-18T20:37:02.932Z [DEBUG] [API REQUEST] /v1/messages source=repl_main_thread
+2026-10-18T20:37:02.936Z [DEBUG] Stream started - received first chunk
+2026-10-18T20:37:02.936Z [DEBUG] [API:timing] first byte after 8ms
+2026-10-18T20:37:02.949Z [DEBUG] [engine] turn 1 end (turns=2 usage in=20 out=10 cost=$0.0003 api=119ms stop=end_turn resultLen=35)
+2026-10-18T20:37:02.958Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:37:02.959Z [DEBUG] [sessionRegistry] sweep declined by isRegistrySweepPermitted() — dead records are left in place (neither counted nor deleted)
+2026-10-18T20:37:02.959Z [DEBUG] hooks module cc-plugin-agents-md@builtin turn.complete settled in 0.3ms (native link, next() included)
+2026-10-18T20:37:02.962Z [DEBUG] hooks module isolated-compat@inline turn.complete settled in 5.4ms (worker hop, next() included)
+2026-10-18T20:37:02.989Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 8.2ms (native link, next() included)
+2026-10-18T20:37:02.989Z [DEBUG] hooks module cc-plugin-diff@builtin ui.render settled in 4.4ms (native link, next() included)
+2026-10-18T20:37:02.994Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:37:02.994Z [DEBUG] Writing to temp file: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.882f6d74fe49
+2026-10-18T20:37:02.994Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:37:02.995Z [DEBUG] Temp file written successfully, size: 1850 bytes
+2026-10-18T20:37:02.995Z [DEBUG] Renaming /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.882f6d74fe49 to /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json
+2026-10-18T20:37:02.996Z [DEBUG] File /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json written atomically
+2026-10-18T20:37:03.036Z [DEBUG] $.fs.write (isolated-compat): /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/compat-report-second.json (2876 bytes)
+2026-10-18T20:37:03.037Z [DEBUG] $.fs.write (isolated-compat): /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/project/compat-report-second.json (2875 bytes)
+2026-10-18T20:37:03.741Z [DEBUG] [uds-messaging] Shutting down
+2026-10-18T20:37:03.743Z [DEBUG] LSP server manager shut down successfully
+2026-10-18T20:37:03.743Z [DEBUG] XTVERSION: no reply (terminal ignored query)
+2026-10-18T20:37:03.744Z [DEBUG] Terminal capabilities: extendedKeys=no (env: terminal=xterm-256color, no answer); synchronizedOutput=no (env: no known terminal, no answer); kittyKeyboard=yes (not asked yet, no answer); kittyGraphics=no (env: terminal=xterm-256color, not asked yet, no answer); mousePixels=no (env: terminal=xterm-256color, not asked yet, no answer); programStatus=no (not asked yet, no answer); terminal said: no reply to CSI ? u; DECRQM 2026 not asked (no XTVERSION reply)
+2026-10-18T20:37:03.744Z [DEBUG] DECSTBM: gated (TMUX=unset ZELLIJ=unset TERM_PROGRAM=unset TERM=xterm-256color)
+2026-10-18T20:37:03.747Z [WARN] [stderr] \u001b[?25h
+2026-10-18T20:37:03.748Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:37:03.748Z [DEBUG] Writing to temp file: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.5c80690fb827
+2026-10-18T20:37:03.748Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:37:03.748Z [DEBUG] Temp file written successfully, size: 2756 bytes
+2026-10-18T20:37:03.748Z [DEBUG] Renaming /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.5c80690fb827 to /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json
+2026-10-18T20:37:03.748Z [DEBUG] File /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json written atomically
+2026-10-18T20:37:03.749Z [DEBUG] Preserving file permissions: 100644
+2026-10-18T20:37:03.749Z [DEBUG] Writing to temp file: /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.1380c679c050
+2026-10-18T20:37:03.749Z [DEBUG] Applied original permissions to temp file
+2026-10-18T20:37:03.749Z [DEBUG] Temp file written successfully, size: 3460 bytes
+2026-10-18T20:37:03.749Z [DEBUG] Renaming /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json.tmp.108.1380c679c050 to /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json
+2026-10-18T20:37:03.749Z [DEBUG] File /tmp/cc-compat-0lDDAh/compat-crash302-wBfvlD/home/.claude/.claude.json written atomically

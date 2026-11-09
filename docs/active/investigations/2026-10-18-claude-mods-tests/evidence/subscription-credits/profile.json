@@ -1,0 +1,10 @@
+{
+  "root": "/tmp/yc-subscription-smoke-4MzhNw",
+  "project": "/tmp/yc-subscription-smoke-4MzhNw/project",
+  "binary": "/home/destin/.local/share/claude/versions/2.1.302",
+  "createdAt": "2026-10-18T21:17:55.477Z",
+  "maxPrompts": 2,
+  "model": "haiku",
+  "submittedPrompts": 0,
+  "auth": "official CLI --claudeai; user signs in; no credential copying"
+}

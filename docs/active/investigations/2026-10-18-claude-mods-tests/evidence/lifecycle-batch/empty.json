@@ -1,0 +1,84 @@
+{
+  "name": "empty",
+  "root": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB",
+  "home": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home",
+  "configDir": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude",
+  "project": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project",
+  "policy": {
+    "permissions": {
+      "defaultMode": "default"
+    }
+  },
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "TERM": "xterm-256color",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home",
+    "CLAUDE_CONFIG_DIR": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.claude",
+    "TMPDIR": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB",
+    "XDG_CONFIG_HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.config",
+    "XDG_CACHE_HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.cache",
+    "XDG_DATA_HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.local/share",
+    "XDG_STATE_HOME": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/home/.local/state",
+    "XDG_RUNTIME_DIR": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/runtime",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:39411",
+    "ANTHROPIC_AUTH_TOKEN": "fake-token-for-local-capture"
+  },
+  "binary": "/home/destin/.local/bin/claude",
+  "binarySha256": "60d7eb7f12fbb28a52533fe8be5884097403562aa02dc73991a021c7067e29a5",
+  "version": "2.1.302 (Claude Code)\n",
+  "requests": [],
+  "serviceEvents": [],
+  "phases": [
+    {
+      "label": "first",
+      "command": [
+        "/home/destin/.local/bin/claude",
+        "--plugin-dir",
+        "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/plugin",
+        "--debug-file",
+        "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/first-debug.log"
+      ],
+      "pid": 581,
+      "start": 1792354721078,
+      "networkNamespace": "net:[4026533106]",
+      "cliNetworkNamespace": "net:[4026533106]",
+      "modReport": null,
+      "transcripts": [],
+      "raw": "\r ▐▛███▛█Claude Codev2.1.302\r▝▜██████▀Opus 5.5 · API Usage Billing\r ▝▝   ▝▝ /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project\r▎Debug mode enabled · logging to /tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/first-debug.log\r◐ medium · /effort\r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r❯  \r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r⏸ manual mode on · ? for shortcuts · ← for agents\r───────────────────────────────────────────────────────────────────────────────────────────────────────────────────\rMake auto mode your default permission mode?\rAutomodeletsClaudehandlepermissionpromptsautomatically.Claudecheckseachtoolcallforriskyactions\randpromptinjectionbeforeexecuting,runstheonesitassessesaslower-risk,andblockstherest.\r❯Yes, set auto mode as my default permission mode\rNo,keepmanualmode\r\r\r\r\r\r        \r ▐▛▛█ \r·▜██████·\r~~\r▗▟▛███▛█▄\r▜███▘\r ▝▝   ▝▝ \r ▐ \r▝▀\r        \r ▐▛▛█ \r·▜██████·\r~~\r▗▟▛███▛█▄\r▜███▘\r ▝▝   ▝▝ \r ▐ \r▝▀",
+      "exit": {
+        "exitCode": 129,
+        "signal": 0
+      },
+      "durationMs": 7525
+    }
+  ],
+  "files": {
+    "stall": {
+      "path": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/stall.txt",
+      "exists": false,
+      "content": null
+    },
+    "malformed": {
+      "path": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/malformed.txt",
+      "exists": false,
+      "content": null
+    },
+    "recovered": {
+      "path": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/recovered.txt",
+      "exists": false,
+      "content": null
+    },
+    "poll": {
+      "path": "/tmp/cc-lifecycle-rJvifR/lifecycle-empty-6qhDyB/project/poll.txt",
+      "exists": false,
+      "content": null
+    }
+  },
+  "serversClosed": true
+}

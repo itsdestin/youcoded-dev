@@ -1,0 +1,38 @@
+[
+  {
+    "type": "user",
+    "uuid": "7042f6fb-c69d-4c78-9dbf-79f997e5745a",
+    "sessionId": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+    "content": "Reply with exactly SUBSCRIPTION_PROBE_TWO_73 and nothing else. Do not call tools."
+  },
+  {
+    "type": "assistant",
+    "uuid": "bfbe6257-574d-470b-a2cf-4c1abfb03a4c",
+    "sessionId": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+    "model": "claude-haiku-5-5",
+    "content": [
+      {
+        "type": "text",
+        "text": "SUBSCRIPTION_PROBE_TWO_73"
+      }
+    ]
+  },
+  {
+    "type": "user",
+    "uuid": "6c789d87-2ea1-4109-8346-173038aa9f9d",
+    "sessionId": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+    "content": "Reply with exactly café 第二行 🧪 and nothing else. Do not call tools."
+  },
+  {
+    "type": "assistant",
+    "uuid": "e2f7d625-769d-4e79-8038-fc052857524d",
+    "sessionId": "8736a03d-fd57-49cb-ad41-7f59d03d2337",
+    "model": "claude-haiku-5-5",
+    "content": [
+      {
+        "type": "text",
+        "text": "café 第二行 🧪"
+      }
+    ]
+  }
+]

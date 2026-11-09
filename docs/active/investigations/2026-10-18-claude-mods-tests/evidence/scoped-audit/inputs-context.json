@@ -1,0 +1,508 @@
+[
+  {
+    "batch": "scoped-batch",
+    "mode": "control",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-control-uHNdAd/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "5f3ce61d85325ba04b7ba36dffa49f4cb1a57ea8cab54a7b08509e679eaf5c34",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  on('prompt.context',async($,e,next)=>{const r=await next(e);events.push({event:'context-hook',mode});return mode==='context'||mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-control-uHNdAd/project/scoped-meta.json",
+        "sha256": "bc0dca0ed550f1aacae2398d74ca4366219f0dc4e39ff25efd8e10a90682f0bc",
+        "text": "{\n  \"mode\": \"control\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        }
+      }
+    }
+  },
+  {
+    "batch": "scoped-batch",
+    "mode": "submit",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-submit-fcUpaB/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "5f3ce61d85325ba04b7ba36dffa49f4cb1a57ea8cab54a7b08509e679eaf5c34",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  on('prompt.context',async($,e,next)=>{const r=await next(e);events.push({event:'context-hook',mode});return mode==='context'||mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-submit-fcUpaB/project/scoped-meta.json",
+        "sha256": "cab490dc27aac5ccb88f3d2338d270346b197061dc85e3fcb7a85079e9cc7972",
+        "text": "{\n  \"mode\": \"submit\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        }
+      }
+    }
+  },
+  {
+    "batch": "scoped-batch",
+    "mode": "context",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-context-3IEmOB/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "5f3ce61d85325ba04b7ba36dffa49f4cb1a57ea8cab54a7b08509e679eaf5c34",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  on('prompt.context',async($,e,next)=>{const r=await next(e);events.push({event:'context-hook',mode});return mode==='context'||mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-context-3IEmOB/project/scoped-meta.json",
+        "sha256": "065242d89b54c8d81299f9637f171bb9c41f72429f0201a0dc3ade94b0d2895f",
+        "text": "{\n  \"mode\": \"context\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        }
+      }
+    }
+  },
+  {
+    "batch": "scoped-batch",
+    "mode": "observer",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-observer-sKabl4/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "5f3ce61d85325ba04b7ba36dffa49f4cb1a57ea8cab54a7b08509e679eaf5c34",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  on('prompt.context',async($,e,next)=>{const r=await next(e);events.push({event:'context-hook',mode});return mode==='context'||mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-observer-sKabl4/observer/hooks/register.ts",
+        "sha256": "6357c06140adc70f1edc759ad710077b38891a086a15fdb18d1b0f9bf29e60ca",
+        "text": "export function register(on){on('prompt.submit',($,e,next)=>next({...e,context:[...(e.context??[]),'SCOPED_OBSERVER_CONTEXT_73']}));}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-observer-sKabl4/project/scoped-meta.json",
+        "sha256": "12c33deb7ecdd39ff7d376be758ea8ed6b146de8cddb03e8c80555b7239a7774",
+        "text": "{\n  \"mode\": \"observer\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        },
+        "context": [
+          "SCOPED_OBSERVER_CONTEXT_73"
+        ]
+      }
+    }
+  },
+  {
+    "batch": "scoped-batch",
+    "mode": "installed",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "5f3ce61d85325ba04b7ba36dffa49f4cb1a57ea8cab54a7b08509e679eaf5c34",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  on('prompt.context',async($,e,next)=>{const r=await next(e);events.push({event:'context-hook',mode});return mode==='context'||mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-installed-3pJTSv/project/scoped-meta.json",
+        "sha256": "3ab70b4498adf823f8cee68be1948515bddb70b201a0bea20518a67ae31e97f6",
+        "text": "{\n  \"mode\": \"installed\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        }
+      }
+    }
+  },
+  {
+    "batch": "scoped-batch",
+    "mode": "mcp",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-mcp-3DXgAA/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "5f3ce61d85325ba04b7ba36dffa49f4cb1a57ea8cab54a7b08509e679eaf5c34",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  on('prompt.context',async($,e,next)=>{const r=await next(e);events.push({event:'context-hook',mode});return mode==='context'||mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-mcp-3DXgAA/session-mcp.json",
+        "sha256": "315f6f7c15b0a29d728e88e8733ded802060ab36c970af7695867aca4263adef",
+        "text": "{\n  \"mcpServers\": {\n    \"scopedSession\": {\n      \"type\": \"stdio\",\n      \"command\": \"/usr/bin/node\",\n      \"args\": [\n        \"/home/destin/youcoded-dev/worktrees/sessions/cc-reliability-options/docs/active/investigations/2026-10-18-claude-mods-tests/probe/scoped-mcp.mjs\",\n        \"/tmp/cc-scoped-2G7ftb/scoped-mcp-3DXgAA/session-mcp.jsonl\",\n        \"session\"\n      ]\n    }\n  }\n}"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-mcp-3DXgAA/project/scoped-meta.json",
+        "sha256": "3e9f461c53d01943106a4be2a1c8c5211aaf651a6eb5252a146f8dad10ec91c5",
+        "text": "{\n  \"mode\": \"mcp\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "tool_use_id": "toolu_fake_1792355042392_0",
+              "type": "tool_result",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "SCOPED_MCP_session:echo-73"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        }
+      }
+    }
+  },
+  {
+    "batch": "scoped-batch",
+    "mode": "broken",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "5f3ce61d85325ba04b7ba36dffa49f4cb1a57ea8cab54a7b08509e679eaf5c34",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  on('prompt.context',async($,e,next)=>{const r=await next(e);events.push({event:'context-hook',mode});return mode==='context'||mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/session-mcp.json",
+        "sha256": "b1c05a4b9ac839fc714e74cf1a20951f7fcac6a8fefa639bc60fc1ccb4cf2365",
+        "text": "{\n  \"mcpServers\": {\n    \"scopedSession\": {\n      \"type\": \"stdio\",\n      \"command\": \"/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/deliberately-missing-server\",\n      \"args\": []\n    }\n  }\n}"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-broken-ld04fG/project/scoped-meta.json",
+        "sha256": "de8ea6423a767b7172cf19a10a67e2642c159fac0e63c48a800c447076198c2d",
+        "text": "{\n  \"mode\": \"broken\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        }
+      }
+    }
+  },
+  {
+    "batch": "scoped-batch",
+    "mode": "abort",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-abort-mFctaW/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "5f3ce61d85325ba04b7ba36dffa49f4cb1a57ea8cab54a7b08509e679eaf5c34",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  on('prompt.context',async($,e,next)=>{const r=await next(e);events.push({event:'context-hook',mode});return mode==='context'||mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-2G7ftb/scoped-abort-mFctaW/project/scoped-meta.json",
+        "sha256": "66137f75467a24836e512a8a796fe966df9600f9d5bd1fdcc2f932bf17d9fed5",
+        "text": "{\n  \"mode\": \"abort\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        }
+      }
+    }
+  },
+  {
+    "batch": "scoped-context-followup",
+    "mode": "context",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-vGvCiv/scoped-context-3XDvLm/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "321b7b030e50b5fe617f7473a43f47570d77cb8d137f1846255cc69cacc0c946",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  // WHY: context may be eagerly cached before session.start's timer; load the immutable session fixture here, not from timer state.\n  on('prompt.context',async($,e,next)=>{const meta=JSON.parse(await $.fs.read((await $.session.cwd())+'/scoped-meta.json')),r=await next(e);events.push({event:'context-hook',mode:meta.mode});return meta.mode==='context'||meta.mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-vGvCiv/scoped-context-3XDvLm/project/scoped-meta.json",
+        "sha256": "065242d89b54c8d81299f9637f171bb9c41f72429f0201a0dc3ade94b0d2895f",
+        "text": "{\n  \"mode\": \"context\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\n# scopedApplication\nSCOPED_APP_CONTEXT_73\n\nThis is ambient context — do not narrate it to the user unless they ask or it is directly relevant to their request.\n</system-reminder>"
+            },
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        }
+      }
+    }
+  },
+  {
+    "batch": "scoped-context-followup",
+    "mode": "installed",
+    "files": [
+      {
+        "path": "/tmp/cc-scoped-vGvCiv/scoped-installed-QEdET8/market/plugins/scoped-probe/hooks/register.ts",
+        "sha256": "321b7b030e50b5fe617f7473a43f47570d77cb8d137f1846255cc69cacc0c946",
+        "text": "// WHY: record actual model-facing context separately from unchanged submitted user text; no profile hooks.\nexport function register(on) {\n  let started=false, completed=0, active='', mode=''; const events=[];\n  on('prompt.submit',($,e,next)=>{events.push({event:'submit-hook',text:e.text,origin:e.origin});return next(mode==='submit'?{...e,context:[...(e.context??[]),'SCOPED_SUBMIT_CONTEXT_73']}:e);});\n  // WHY: context may be eagerly cached before session.start's timer; load the immutable session fixture here, not from timer state.\n  on('prompt.context',async($,e,next)=>{const meta=JSON.parse(await $.fs.read((await $.session.cwd())+'/scoped-meta.json')),r=await next(e);events.push({event:'context-hook',mode:meta.mode});return meta.mode==='context'||meta.mode==='installed'?{...r,blocks:[...r.blocks,{name:'scopedApplication',text:'SCOPED_APP_CONTEXT_73'}]}:r;});\n  on('turn.start',($,e,next)=>{active=e.turnId;events.push({event:'start',data:e});return next(e);});\n  on('turn.complete',($,e,next)=>{completed++;events.push({event:'complete',data:e});return next(e);});\n  on('session.measure',($,e,next)=>{events.push({event:'measure',data:e});return next(e);});\n  on('tool.check',async($,e,next)=>e.tool.startsWith('mcp__')?{decision:'allow',reason:'Only inert synthetic MCP tools exposed'}:next(e));\n  on('session.start',async($,e,next)=>{\n    const r=await next(e);if(started)return r;started=true;\n    $.clock.after(2000,async()=>{\n      const cwd=await $.session.cwd(),meta=JSON.parse(await $.fs.read(cwd+'/scoped-meta.json'));mode=meta.mode;const rows=[];\n      const save=async(done)=>$.fs.write(cwd+'/scoped-report.json',JSON.stringify({handshake:true,version:await $.session.version(),id:await $.session.id(),mode,events,rows,done}));\n      await save(false);\n      try {\n        rows.push({stage:'before',usage:await $.session.usage()});\n        const goal=completed+1;rows.push({submitted:meta.text,result:await $.prompt.submit({text:meta.text,asUser:true})});\n        if(mode==='abort'){for(let n=0;n<100&&!active;n++)await $.clock.sleep(100);await $.clock.sleep(700);rows.push({abort:active,result:await $.turn.abort({turnId:active})});}\n        for(let n=0;n<240&&completed<goal;n++)await $.clock.sleep(100);\n        rows.push({completed:completed>=goal,stage:'after',usage:await $.session.usage(),messages:await $.session.messages()});\n      }catch(error){rows.push({error:String(error)});}\n      await save(true);\n    });return r;\n  });\n}\n"
+      },
+      {
+        "path": "/tmp/cc-scoped-vGvCiv/scoped-installed-QEdET8/project/scoped-meta.json",
+        "sha256": "3ab70b4498adf823f8cee68be1948515bddb70b201a0bea20518a67ae31e97f6",
+        "text": "{\n  \"mode\": \"installed\",\n  \"text\": \"SYNTHETIC original user text 73\"\n}"
+      }
+    ],
+    "instructionFileExists": false,
+    "modelUserMessages": [
+      [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "<system-reminder>\n# scopedApplication\nSCOPED_APP_CONTEXT_73\n\nThis is ambient context — do not narrate it to the user unless they ask or it is directly relevant to their request.\n</system-reminder>"
+            },
+            {
+              "type": "text",
+              "text": "<system-reminder>\nAttribution for git commits and pull requests you create from here on (this replaces Claude Code's own earlier attribution guidance, such as a previous copy of this reminder; the user's own instructions about these lines, such as a CLAUDE.md or memory rule, take precedence over this reminder, but do not add attribution lines this reminder leaves out):\n- End git commit messages with:\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n- End pull request descriptions with:\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n</system-reminder>\n"
+            },
+            {
+              "type": "text",
+              "text": "SYNTHETIC original user text 73"
+            }
+          ]
+        }
+      ]
+    ],
+    "submitted": {
+      "submitted": "SYNTHETIC original user text 73",
+      "result": {
+        "text": "SYNTHETIC original user text 73",
+        "origin": {
+          "kind": "plugin",
+          "name": "scoped-probe",
+          "asUser": true
+        }
+      }
+    }
+  }
+]

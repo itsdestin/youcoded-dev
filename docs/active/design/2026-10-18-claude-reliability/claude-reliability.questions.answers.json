@@ -1,0 +1,107 @@
+{
+ "deck": "claude-reliability-options",
+ "started": "2026-10-18T18:57:13.844Z",
+ "submitted": "2026-10-18T19:02:31Z",
+ "cur": 2,
+ "answers": {
+  "1": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792349953959,
+   "seconds": 24,
+   "theme": "morning-rounds"
+  },
+  "2": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792349953959,
+   "note": "most interesting in getting /model, /clear and /compact. interested in knowing what else might be able to work tho!",
+   "seconds": 24,
+   "theme": "morning-rounds"
+  },
+  "3": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792349953959,
+   "seconds": 24,
+   "theme": "morning-rounds"
+  },
+  "4": {
+   "v": "other",
+   "t": 1792349953959,
+   "note": "need to think through the pros/cons of this further. how would this impact the ways in which we record chat history and resume sessions? any other uninteneded consequences?",
+   "seconds": 24,
+   "theme": "morning-rounds"
+  },
+  "5": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792349953959,
+   "seconds": 24,
+   "theme": "morning-rounds"
+  },
+  "6": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792350008648,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "7": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792350008648,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "8": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792350008648,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "9": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792350008648,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "10": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792350008648,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "11": {
+   "v": "other",
+   "t": 1792350150843,
+   "note": "kinda confused about what you mean exactly. however, if were investigating/exploring changing how we manage conversation records and transcripts, i think i would like this to be a separate piece of work that also explores how we might make claude code and native harness sessions cross-compatible/resumable without duplicating conversations in the resume browser/history.",
+   "seconds": 35,
+   "theme": "morning-rounds"
+  },
+  "12": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792350150843,
+   "seconds": 35,
+   "theme": "morning-rounds"
+  },
+  "13": {
+   "v": "pick",
+   "pick": "test",
+   "t": 1792350150843,
+   "seconds": 35,
+   "theme": "morning-rounds"
+  },
+  "14": {
+   "v": "other",
+   "t": 1792350150843,
+   "note": "the agent sdk just doesn't really work for our subscription-based usage. hard no on integrating agent sdk for the time being",
+   "seconds": 35,
+   "theme": "morning-rounds"
+  }
+ }
+}

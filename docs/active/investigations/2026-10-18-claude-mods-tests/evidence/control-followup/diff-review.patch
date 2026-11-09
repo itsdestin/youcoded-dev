@@ -1,0 +1,116 @@
+diff --git a/docs/active/investigations/2026-10-18-claude-mods-tests/probe/control-followup-probe.mjs b/docs/active/investigations/2026-10-18-claude-mods-tests/probe/control-followup-probe.mjs
+new file mode 100644
+index 00000000..3ffd857c
+--- /dev/null
++++ b/docs/active/investigations/2026-10-18-claude-mods-tests/probe/control-followup-probe.mjs
+@@ -0,0 +1,63 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import http from 'node:http';
++import crypto from 'node:crypto';
++import {spawnSync,execFileSync} from 'node:child_process';
++import {createRequire} from 'node:module';
++import {makeIsolatedRoot,sleep,stripAnsi} from '../../../../../youcoded/desktop/test-conpty/cc-capture-lib.mjs';
++import {startFakeApi,fakeApiEnv} from '../../../../../youcoded/desktop/test-conpty/fake-anthropic.mjs';
++const base=new URL('../',import.meta.url).pathname,evidence=path.join(base,'evidence/control-followup');
++const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
++function files(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>{const p=path.join(dir,e.name);return p===evidence?[]:e.isDirectory()?files(p):[p];});}
++function processes(root){const rows=[];for(const pid of fs.readdirSync('/proc').filter(n=>/^\d+$/.test(n))){try{const cmd=fs.readFileSync('/proc/'+pid+'/cmdline','utf8');if(cmd.includes(root))rows.push({pid:Number(pid),cmd:cmd.replaceAll('\0',' ')});}catch{}}return rows;}
++if(process.argv[2]==='--launch'){
++  if(fs.existsSync(evidence))throw Error('Refusing existing evidence');fs.mkdirSync(evidence);
++  const baseline=Object.fromEntries(files(base).map(p=>[p,hash(p)]));
++  const sandbox=fs.mkdtempSync('/tmp/cc-control-followup-'),home=path.join(sandbox,'launcher-home');fs.mkdirSync(home);
++  const env={PATH:'/usr/local/bin:/usr/bin:/bin',HOME:home,TMPDIR:sandbox,LANG:'C.UTF-8',LC_ALL:'C.UTF-8',CONTROL_NETNS:'1'};
++  // WHY: loopback fake services share only this network/PID namespace; all host source and real profiles remain read-only.
++  const args=['--ro-bind','/','/','--bind',sandbox,sandbox,'--bind',evidence,evidence,'--dev','/dev','--proc','/proc','--unshare-net','--unshare-pid','--die-with-parent','--clearenv'];
++  for(const [k,v]of Object.entries(env))args.push('--setenv',k,v);
++  args.push('--','/usr/bin/node',new URL(import.meta.url).pathname,'--inside');
++  const result=spawnSync('/usr/bin/bwrap',args,{env,encoding:'utf8',timeout:100000,maxBuffer:200000});
++  const preservation=Object.entries(baseline).map(([file,before])=>({file,before,after:hash(file),unchanged:before===hash(file)}));
++  const report={command:['/usr/bin/bwrap',...args],env,sandbox,exitCode:result.status,signal:result.signal,error:result.error?.message,stdout:result.stdout,stderr:result.stderr,preservation,remainingSandboxProcesses:processes(sandbox),cleanup:'PID namespace exit kills remaining owned namespace children'};
++  fs.writeFileSync(path.join(evidence,'launch.json'),JSON.stringify(report,null,2),{flag:'wx'});
++  console.log(result.stdout);console.error(result.stderr);console.log(JSON.stringify({exit:result.status,preserved:preservation.every(r=>r.unchanged),remaining:report.remainingSandboxProcesses}));process.exit(result.status??1);
++}
++if(process.argv[2]!=='--inside'||process.env.CONTROL_NETNS!=='1')throw Error('Use --launch');
++const require=createRequire(new URL('../../../../../youcoded/desktop/package.json',import.meta.url)),pty=require('node-pty');
++const iso=makeIsolatedRoot('control-state'),binary='/home/destin/.local/bin/claude',plugin=path.join(iso.root,'plugin');
++const env={PATH:'/usr/local/bin:/usr/bin:/bin',TERM:'xterm-256color',LANG:'C.UTF-8',LC_ALL:'C.UTF-8',HOME:iso.home,CLAUDE_CONFIG_DIR:iso.configDir,TMPDIR:iso.root,XDG_CONFIG_HOME:path.join(iso.home,'.config'),XDG_CACHE_HOME:path.join(iso.home,'.cache'),XDG_DATA_HOME:path.join(iso.home,'.local/share'),XDG_STATE_HOME:path.join(iso.home,'.local/state'),XDG_RUNTIME_DIR:path.join(iso.root,'runtime'),DISABLE_AUTOUPDATER:'1',DISABLE_TELEMETRY:'1',DISABLE_ERROR_REPORTING:'1',CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC:'1'};
++fs.mkdirSync(env.XDG_RUNTIME_DIR,{mode:0o700});fs.mkdirSync(path.join(plugin,'.claude-plugin'),{recursive:true});fs.mkdirSync(path.join(plugin,'hooks'));
++fs.writeFileSync(path.join(plugin,'.claude-plugin/plugin.json'),JSON.stringify({name:'isolated-control-followup',version:'0.0.1',description:'Synthetic offline control followup'}));
++fs.writeFileSync(path.join(plugin,'hooks/hooks.json'),JSON.stringify({modules:['./register.ts']}));fs.copyFileSync(new URL('control-followup-fixture.ts',import.meta.url),path.join(plugin,'hooks/register.ts'));
++fs.writeFileSync(path.join(iso.configDir,'.claude.json'),JSON.stringify({hasCompletedOnboarding:true,theme:'dark',numStartups:3,projects:{[iso.project]:{hasTrustDialogAccepted:true}}}));
++// WHY: no Write allow rule: distinguish a real core ask from vetoing an already allowed operation.
++const policy={permissions:{defaultMode:'default'}};fs.writeFileSync(path.join(iso.configDir,'settings.json'),JSON.stringify(policy));
++const serviceEvents=[];
++const service=http.createServer((req,res)=>{const decision=req.url==='/external-allow.txt'?'allow':'deny';serviceEvents.push({path:req.url,decision});res.writeHead(200,{'content-type':'application/json'});res.end(JSON.stringify({decision}));});
++await new Promise(r=>service.listen(0,'127.0.0.1',r));
++const title='SYNTHETIC_CONTROL_'+path.basename(iso.root),metadata={url:'http://127.0.0.1:'+service.address().port,settings:path.join(iso.configDir,'settings.json'),title};fs.writeFileSync(path.join(iso.project,'control-service.json'),JSON.stringify(metadata));
++const names=['external-allow','external-deny'],requests=[];
++const api=await startFakeApi(names.flatMap(name=>[{tools:[{name:'Write',input:{file_path:path.join(iso.project,name+'.txt'),content:'SYNTHETIC_'+name+'\n'}}]},{text:'LOCAL_COMPLETION_'+name,wordMs:0}]),{onRequest(req,body){requests.push({path:req.url,model:body.model,output_config:body.output_config,dummyAuth:req.headers.authorization==='Bearer fake-token-for-local-capture',messages:body.messages?.slice(-12)});}});
++const childEnv={...env,...fakeApiEnv(api.url)},args=['--plugin-dir',plugin,'--debug-file',path.join(iso.root,'debug.log')];
++const commands=[['--version'],['plugin','validate',plugin,'--json']].map(args=>({args,output:execFileSync(binary,args,{env,cwd:iso.project,encoding:'utf8',timeout:15000})}));
++let exit=null,raw='';const child=pty.spawn(binary,args,{cwd:iso.project,env:childEnv,name:'xterm-256color',cols:110,rows:40});child.onData(d=>raw=(raw+d).slice(-65000));child.onExit(e=>exit=e);
++const report={...iso,binary,binarySha256:hash(fs.realpathSync(binary)),commands,cliCommand:[binary,...args],environment:childEnv,policy,metadata,pid:child.pid,networkNamespace:fs.readlinkSync('/proc/self/ns/net'),cliNetworkNamespace:fs.readlinkSync('/proc/'+child.pid+'/ns/net')};
++try{
++ const file=path.join(iso.project,'control-report.json'),deadline=Date.now()+70000;
++ while(Date.now()<deadline&&exit===null){await sleep(150);if(fs.existsSync(file)){try{if(JSON.parse(fs.readFileSync(file,'utf8')).done)break;}catch{}}}
++ report.modReport=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):null;
++ await sleep(1000);report.requests=requests;report.serviceEvents=serviceEvents;report.raw=stripAnsi(raw);report.turnsUsed=api.turnsUsed;
++ report.files=Object.fromEntries(names.map(name=>{const p=path.join(iso.project,name+'.txt');return [name,{exists:fs.existsSync(p),content:fs.existsSync(p)?fs.readFileSync(p,'utf8'):null}];}));
++ report.settingsAfter=JSON.parse(fs.readFileSync(metadata.settings,'utf8'));
++ report.persisted=files(iso.configDir).filter(p=>/\.jsonl?$/.test(p)&&!p.includes('/plugins/')).map(p=>({path:p,text:fs.readFileSync(p,'utf8')}));
++ const types=path.join(plugin,'.claude-plugin/types/claude-code/index.d.ts');if(fs.existsSync(types))fs.copyFileSync(types,path.join(evidence,'emitted.d.ts'));
++ if(fs.existsSync(path.join(iso.root,'debug.log')))fs.copyFileSync(path.join(iso.root,'debug.log'),path.join(evidence,'debug.log'));
++}finally{
++ if(exit===null)child.kill();for(let n=0;n<30&&exit===null;n++)await sleep(100);
++ await api.close();service.closeAllConnections();await new Promise(r=>service.close(r));report.childExit=exit;report.serversClosed=true;
++}
++fs.writeFileSync(path.join(evidence,'run.json'),JSON.stringify(report,null,2),{flag:'wx'});
++console.log(JSON.stringify({done:report.modReport?.done,rows:report.modReport?.rows.map(r=>({name:r.name,ok:r.ok,error:r.error,result:r.value?.result})),events:report.modReport?.events,files:report.files,settingsAfter:report.settingsAfter,childExit:exit,serversClosed:true}));
+diff --git a/docs/active/investigations/2026-10-18-claude-mods-tests/probe/control-followup-check.mjs b/docs/active/investigations/2026-10-18-claude-mods-tests/probe/control-followup-check.mjs
+new file mode 100644
+index 00000000..ddcffcc8
+--- /dev/null
++++ b/docs/active/investigations/2026-10-18-claude-mods-tests/probe/control-followup-check.mjs
+@@ -0,0 +1,41 @@
++// WHY: validate saved actual-CLI evidence without launching a process or mutating any profile.
++import fs from 'node:fs';
++import assert from 'node:assert/strict';
++const dir=new URL('../evidence/control-followup/',import.meta.url);
++const r=JSON.parse(fs.readFileSync(new URL('run.json',dir))),l=JSON.parse(fs.readFileSync(new URL('launch.json',dir)));
++let checks=0;function check(value,label){assert.ok(value,label);checks++;}
++const step=name=>r.modReport.rows.find(x=>x.name===name);
++check(r.commands[0].output==='2.1.302 (Claude Code)\n','actual CLI version');
++check(r.modReport.done,'all independent steps finished');
++for(const name of ['baseline','mode-plan','mode-default','effort-low','rename','external-allow','external-deny'])check(step(name)?.ok,name);
++for(const [name,mode]of [['mode-plan','plan'],['mode-default','default']]){
++ const v=step(name).value;
++ check(v.result.value===mode,name+' setter');
++ check(v.state.rows.find(x=>x.key==='permissionMode').value===mode,name+' list getter');
++ check(JSON.parse(v.state.settings).permissions.defaultMode===mode,name+' persisted settings');
++}
++check(!r.policy.permissions.allow,'no ordinary allow rule');
++check(r.policy.permissions.defaultMode==='default','initial default mode');
++check(r.settingsAfter.permissions.defaultMode==='default','default restored');
++const model=step('effort-low').value.state.model;
++check(JSON.parse(step('effort-low').value.state.settings).modelSettings[model].effortLevel==='low','effort persisted per-model');
++check(r.requests.length===4&&r.requests.every(q=>q.output_config?.effort==='low'&&q.dummyAuth),'actual fake-model requests carry low effort and dummy auth');
++const titleRows=r.persisted.flatMap(f=>f.text.split('\n').flatMap(line=>{try{return [JSON.parse(line)];}catch{return [];}}));
++check(titleRows.some(x=>x.type==='custom-title'&&x.customTitle===r.metadata.title&&x.sessionId===step('rename').value.id),'rename persisted with same session id');
++for(const name of ['external-allow','external-deny']){
++ check(step(name).value.completed,name+' turn completed');
++ const event=r.modReport.events.find(x=>x.event==='underlying'&&x.input.file_path.endsWith('/'+name+'.txt'));
++ check(event?.realCall&&event.underlying.decision==='ask',name+' core decision is ask');
++}
++check(r.files['external-allow'].content==='SYNTHETIC_external-allow\n','allowed file exact contents');
++check(!r.files['external-deny'].exists,'denied file absent');
++const results=r.requests.flatMap(q=>(q.messages??[]).flatMap(m=>Array.isArray(m.content)?m.content.filter(b=>b.type==='tool_result'):[]));
++check(results.some(b=>!b.is_error&&String(b.content).includes('/external-allow.txt')),'model saw write success');
++check(results.some(b=>b.is_error&&String(b.content).includes('Explicit synthetic external deny')),'model saw error denial');
++check(r.serviceEvents.length===2&&r.serviceEvents[0].decision==='allow'&&r.serviceEvents[1].decision==='deny','explicit external responses');
++check(r.serversClosed&&r.childExit!==null,'exact child and both servers stopped');
++check(r.networkNamespace===r.cliNetworkNamespace,'CLI shares isolated fake-service net namespace');
++check(l.command.includes('--unshare-net')&&l.command.includes('--unshare-pid')&&l.command.includes('--clearenv'),'namespace and env isolation');
++check(l.exitCode===0&&l.preservation.every(p=>p.unchanged),'launch success and prior files preserved');
++check(l.remainingSandboxProcesses.length===0,'no sandbox children remain');
++console.log(`PASS ${checks} checks: controls, persisted settings/title, core ask → external allow/deny, model results, isolation, cleanup, preservation.`);
