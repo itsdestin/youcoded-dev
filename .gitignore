@@ -158,3 +158,5 @@ docs/active/design/2026-10-01-home-device-pages/runs/
 docs/active/design/2026-10-04-home-redesign/*.html
 docs/active/design/2026-10-04-home-redesign/*-runs/
 docs/active/design/2026-10-04-home-redesign/images/
+# Same for the notify-user decks (2026-10-26): runs*/ is ~60 MB of shoot output; the decks' pictures are in images/.
+docs/active/design/2026-10-26-notify-user/runs*/
