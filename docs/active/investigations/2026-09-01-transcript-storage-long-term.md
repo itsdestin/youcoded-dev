@@ -7,6 +7,15 @@ topic: Transcript storage has no long-term plan — GitHub will run out, and lar
 
 # Transcript storage has no long-term plan
 
+> **Status 2026-11-09 — read `docs/active/plans/2026-11-02-slim-synced-chats.md` first.** That plan is now the
+> current document for sync size (card #98): new measurements (GitHub 3.78 GB on 2026-11-02, ~5 GB by early
+> December; 56% of chat bytes are pictures), the chosen near-term fix (slim the synced copy of chats), and a later
+> one-time history fresh start. The numbers below are from July–September and are out of date. Two points here no
+> longer hold: the cap is no longer "today everything rides" (35 chats were over 50 MB on 2026-11-02), and
+> "history compaction would not help" is weaker now (a latest-only copy was 2.9 GB vs 3.78 GB). What remains
+> current is the long-term goal (every chat on every device, possibly not on GitHub) and the "Not synced to this
+> device yet" wording problem.
+
 Parked for a proper design pass. This report preserves the measurements so the pass doesn't start from zero.
 
 **Root.** Conversation transcripts are append-only JSONL that grow without bound, and sync stores them as full copies in a git repo on GitHub. Three problems follow.
