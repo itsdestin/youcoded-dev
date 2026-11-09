@@ -1,0 +1,165 @@
+{
+ "deck": "master-plan-questions-2",
+ "started": "2026-10-07T23:20:39.953Z",
+ "submitted": "2026-10-07T23:33:12Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "v": "picks",
+   "picks": [
+    "next",
+    "waiting",
+    "combine",
+    "drift",
+    "ready"
+   ],
+   "t": 1791415460125,
+   "seconds": 55,
+   "theme": "creme"
+  },
+  "Q-2": {
+   "v": "picks",
+   "picks": [
+    "session-start",
+    "weekly"
+   ],
+   "t": 1791415460125,
+   "seconds": 55,
+   "theme": "creme"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "recent-activity",
+   "t": 1791415460125,
+   "note": "confused about the \"150 branches\" claim. have we not been cleaning up? there's absolutely no way we have more than 10 branches of real, open work.",
+   "seconds": 55,
+   "theme": "creme"
+  },
+  "Q-4": {
+   "v": "pick",
+   "t": 1791415460125,
+   "note": "i think i mostly want a single ui review surface, always taken from latest master. the full card of basically every settings menu, page, etc. and i want a diff view/history so i can see what each pr merged into master changed over time.",
+   "pick": "merged",
+   "seconds": 55,
+   "theme": "creme"
+  },
+  "S-1": {
+   "v": "other",
+   "t": 1791415587610,
+   "note": "i dont think this is the best way to group/prioritize our app vision. ask me questions in chat to help elucidate.",
+   "seconds": 32,
+   "theme": "creme"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1791415587610,
+   "note": "i'm not sure. i want to talk this through further maybe.",
+   "seconds": 32,
+   "theme": "creme"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "inbox",
+   "t": 1791415587610,
+   "seconds": 32,
+   "theme": "creme"
+  },
+  "Q-7": {
+   "v": "picks",
+   "picks": [
+    "chat",
+    "github",
+    "testers",
+    "decks"
+   ],
+   "t": 1791415587610,
+   "seconds": 32,
+   "theme": "creme"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "auto-plus-line",
+   "t": 1791415785782,
+   "note": "i think, for big builds/feature, every session should ask me what the merge/completion goal/condition is. this should be recorded in 1-3 sentences per branch.",
+   "seconds": 66,
+   "theme": "creme"
+  },
+  "Q-9": {
+   "v": "picks",
+   "picks": [
+    "git-status",
+    "attach-perf",
+    "attach-shots"
+   ],
+   "t": 1791415785782,
+   "seconds": 66,
+   "theme": "creme"
+  },
+  "Q-10": {
+   "v": "other",
+   "t": 1791415785782,
+   "note": "im really confused. i think most of these are done. i asked you yesterday and you said we only had a handful of unmerged branches.",
+   "seconds": 66,
+   "theme": "creme"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "evidence-inline",
+   "t": 1791415843732,
+   "seconds": 19,
+   "theme": "creme"
+  },
+  "Q-12": {
+   "v": "pick",
+   "t": 1791415843732,
+   "pick": "code-changed",
+   "note": "unsure where this is relevant",
+   "seconds": 19,
+   "theme": "creme"
+  },
+  "Q-13": {
+   "v": "pick",
+   "pick": "previous-only",
+   "t": 1791415843732,
+   "seconds": 19,
+   "theme": "creme"
+  },
+  "Q-14": {
+   "v": "pick",
+   "pick": "generated-first",
+   "t": 1791415991502,
+   "seconds": 37,
+   "theme": "creme"
+  },
+  "Q-15": {
+   "v": "picks",
+   "picks": [
+    "active",
+    "tree",
+    "reports",
+    "shots",
+    "releases",
+    "public",
+    "perf"
+   ],
+   "t": 1791415991502,
+   "seconds": 37,
+   "theme": "creme"
+  },
+  "Q-16": {
+   "v": "other",
+   "t": 1791415991502,
+   "note": "i have no attachment to the current roadmap format at all. would be fine to completely trash and restart if that's what was best for future management. idk",
+   "seconds": 37,
+   "theme": "creme"
+  },
+  "Q-17": {
+   "v": "pick",
+   "t": 1791415991502,
+   "note": "i didnt like that draft. maybe take some inspiration, but mostly toss it. this should be built from scratch largely",
+   "pick": "ideas-only",
+   "seconds": 37,
+   "theme": "creme"
+  }
+ }
+}

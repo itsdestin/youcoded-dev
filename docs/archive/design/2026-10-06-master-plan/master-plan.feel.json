@@ -1,0 +1,69 @@
+{
+  "title": "The command center — three looks for the whole page, pick the feel",
+  "key": "master-plan-feel",
+  "out": "master-plan.feel.html",
+  "images": "images/master-plan.feel",
+  "runs": {
+    "today": "runs/feel"
+  },
+  "labels": {
+    "today": "Drawn from this morning's code"
+  },
+  "themes": [
+    "creme",
+    "midnight"
+  ],
+  "crops": {
+    "a-open": [
+      "concepts",
+      "a-one-scroll",
+      "1440x900+0+0"
+    ],
+    "b-open": [
+      "concepts",
+      "b-map-hero",
+      "1440x900+0+0"
+    ],
+    "c-open": [
+      "concepts",
+      "c-two-lanes",
+      "1440x900+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "YouCoded command center",
+      "path": "The page you open in the morning, as it first appears",
+      "headline": "Which overall feel should the command center have?",
+      "notice": "Whichever you pick becomes the skeleton: the briefing, the map and the screen gallery all live on it. Every tag and count on these pages has a hover explanation; clicking a system opens its parts. The pictures are the first screen only.",
+      "risk": "All three are drawn from the same real data this morning, so the numbers are honest but the buttons do nothing yet.",
+      "variants": [
+        {
+          "id": "a-one-scroll",
+          "label": "One page you scroll",
+          "crop": "a-open",
+          "summary": "Everything on one page, top to bottom: four numbers with buttons, what to pick up next, the efforts in flight, then eight system cards, then the screens. No tabs; you scroll.",
+          "measured": "Map starts 600 px down",
+          "risk": "The map's second row and the screens are below the fold, so the opening picture is mostly the briefing."
+        },
+        {
+          "id": "b-map-hero",
+          "label": "The map is the room",
+          "crop": "b-open",
+          "summary": "The map fills the screen as a diagram with lines between the systems, counts on the lines; the morning list runs down the right side in your order; screens below.",
+          "measured": "8 lines, 7 boxes on screen",
+          "risk": "Two lines cross near Foundations and one loops around the edge; a diagram with lines always has a few of these."
+        },
+        {
+          "id": "c-two-lanes",
+          "label": "Two lanes, three tabs",
+          "crop": "c-open",
+          "summary": "Three tabs: Today, Map, Screens. The map is two lanes, What you see above and Behind the scenes below, one column per system, with in-flight work pinned to the lane it lives in.",
+          "measured": "16 boxes, 2 lanes",
+          "risk": "The most grid-like of the three; the briefing is a tab away rather than in view."
+        }
+      ]
+    }
+  ]
+}

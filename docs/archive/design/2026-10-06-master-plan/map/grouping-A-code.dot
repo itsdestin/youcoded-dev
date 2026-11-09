@@ -1,0 +1,395 @@
+digraph G{ size="21,21"; compound=true; newrank=true; nodesep=0.12; ranksep=0.5; pad=0.2; fontname="Helvetica"; labelloc=t; label="Grouping A - 68.4% of links stay inside a group (node size = files, line width = imports, links of 8+ shown)"; node[shape=box,style="filled,rounded",fontname="Helvetica",fontsize=9,fillcolor=white,margin="0.06,0.03"]; edge[color="#00000055",arrowsize=0.4];
+subgraph cluster_0{label="renderer/components (misc) + UI Workbench (520 files)";fontsize=14;style="filled,rounded";fillcolor="#dbeafe";color="#555555";
+  "U:renderer/components (root files) (misc)"[label="unclaimed: renderer/components (misc)",width=1.75,fontsize=11,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/hooks/use-*"[label="unclaimed: renderer/hooks/use-*",width=1.45,fontsize=11,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  {rank=same; "U:renderer/components (root files) (misc)"->"U:renderer/hooks/use-*"[style=invis];}
+  "S:9"[label="UI Workbench",width=1.43,fontsize=11];
+  {rank=same; "U:renderer/hooks/use-*"->"S:9"[style=invis];}
+  "U:renderer/state (misc)"[label="unclaimed: renderer/state (misc)",width=1.25,fontsize=11,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components (root files) (misc)"->"U:renderer/state (misc)"[style=invis,weight=10];
+  "S:24"[label="UI control primitives",width=1.18,fontsize=11];
+  "U:renderer/hooks/use-*"->"S:24"[style=invis,weight=10];
+  {rank=same; "U:renderer/state (misc)"->"S:24"[style=invis];}
+  "S:4"[label="Remote access",width=1.12,fontsize=9];
+  "S:9"->"S:4"[style=invis,weight=10];
+  {rank=same; "S:24"->"S:4"[style=invis];}
+  "U:renderer/components/marketplace"[label="unclaimed: renderer/components/marketplace",width=1.10,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/state (misc)"->"U:renderer/components/marketplace"[style=invis,weight=10];
+  "U:renderer/components/project-view"[label="unclaimed: renderer/components/project-view",width=1.07,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:24"->"U:renderer/components/project-view"[style=invis,weight=10];
+  {rank=same; "U:renderer/components/marketplace"->"U:renderer/components/project-view"[style=invis];}
+  "S:6"[label="React renderer / chrome",width=0.99,fontsize=9];
+  "S:4"->"S:6"[style=invis,weight=10];
+  {rank=same; "U:renderer/components/project-view"->"S:6"[style=invis];}
+  "U:renderer/utils"[label="unclaimed: renderer/utils",width=0.99,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/marketplace"->"U:renderer/utils"[style=invis,weight=10];
+  "U:other small dirs"[label="unclaimed: other small dirs",width=0.95,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/project-view"->"U:other small dirs"[style=invis,weight=10];
+  {rank=same; "U:renderer/utils"->"U:other small dirs"[style=invis];}
+  "U:renderer/components/buddy"[label="unclaimed: renderer/components/buddy",width=0.95,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:6"->"U:renderer/components/buddy"[style=invis,weight=10];
+  {rank=same; "U:other small dirs"->"U:renderer/components/buddy"[style=invis];}
+  "S:32"[label="Claude Code prompts",width=0.91,fontsize=9];
+  "U:renderer/utils"->"S:32"[style=invis,weight=10];
+  "S:10"[label="Screenshots by name",width=0.91,fontsize=9];
+  "U:other small dirs"->"S:10"[style=invis,weight=10];
+  {rank=same; "S:32"->"S:10"[style=invis];}
+  "U:renderer/components/guide"[label="unclaimed: renderer/components/guide",width=0.87,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/buddy"->"U:renderer/components/guide"[style=invis,weight=10];
+  {rank=same; "S:10"->"U:renderer/components/guide"[style=invis];}
+  "U:renderer/components/tags"[label="unclaimed: renderer/components/tags",width=0.87,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:32"->"U:renderer/components/tags"[style=invis,weight=10];
+  "U:renderer/components/tool-views"[label="unclaimed: renderer/components/tool-views",width=0.87,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:10"->"U:renderer/components/tool-views"[style=invis,weight=10];
+  {rank=same; "U:renderer/components/tags"->"U:renderer/components/tool-views"[style=invis];}
+  "S:44"[label="Status bar & /usage",width=0.84,fontsize=9];
+  "U:renderer/components/guide"->"S:44"[style=invis,weight=10];
+  {rank=same; "U:renderer/components/tool-views"->"S:44"[style=invis];}
+  "S:54"[label="Voice prompting",width=0.82,fontsize=9];
+  "U:renderer/components/tags"->"S:54"[style=invis,weight=10];
+  "U:renderer"[label="unclaimed: renderer",width=0.82,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/tool-views"->"U:renderer"[style=invis,weight=10];
+  {rank=same; "S:54"->"U:renderer"[style=invis];}
+  "U:renderer/components/development"[label="unclaimed: renderer/components/development",width=0.82,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:44"->"U:renderer/components/development"[style=invis,weight=10];
+  {rank=same; "U:renderer"->"U:renderer/components/development"[style=invis];}
+  "S:31"[label="PTY I/O & keyboard",width=0.79,fontsize=9];
+  "S:54"->"S:31"[style=invis,weight=10];
+  "U:renderer/components (root files)/session-*"[label="unclaimed: renderer/components/session-*",width=0.79,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer"->"U:renderer/components (root files)/session-*"[style=invis,weight=10];
+  {rank=same; "S:31"->"U:renderer/components (root files)/session-*"[style=invis];}
+  "U:renderer/components (root files)/theme-*"[label="unclaimed: renderer/components/theme-*",width=0.79,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/development"->"U:renderer/components (root files)/theme-*"[style=invis,weight=10];
+  {rank=same; "U:renderer/components (root files)/session-*"->"U:renderer/components (root files)/theme-*"[style=invis];}
+  "U:renderer/components/assistant-settings"[label="unclaimed: renderer/components/assistant-setti",width=0.79,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:31"->"U:renderer/components/assistant-settings"[style=invis,weight=10];
+  "U:renderer/components/first-run"[label="unclaimed: renderer/components/first-run",width=0.79,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components (root files)/session-*"->"U:renderer/components/first-run"[style=invis,weight=10];
+  {rank=same; "U:renderer/components/assistant-settings"->"U:renderer/components/first-run"[style=invis];}
+  "U:renderer/themes"[label="unclaimed: renderer/themes",width=0.79,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components (root files)/theme-*"->"U:renderer/themes"[style=invis,weight=10];
+  {rank=same; "U:renderer/components/first-run"->"U:renderer/themes"[style=invis];}
+  "S:42"[label="What the assistant was given",width=0.76,fontsize=9];
+  "U:renderer/components/assistant-settings"->"S:42"[style=invis,weight=10];
+  "S:0"[label="Model switcher recommendations",width=0.76,fontsize=9];
+  "U:renderer/components/first-run"->"S:0"[style=invis,weight=10];
+  {rank=same; "S:42"->"S:0"[style=invis];}
+  "S:5"[label="Find in loaded chat messages",width=0.76,fontsize=9];
+  "U:renderer/themes"->"S:5"[style=invis,weight=10];
+  {rank=same; "S:0"->"S:5"[style=invis];}
+  "S:57"[label="Mascot rigs",width=0.76,fontsize=9];
+  "S:42"->"S:57"[style=invis,weight=10];
+  "U:renderer/components (root files)/model-*"[label="unclaimed: renderer/components/model-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:0"->"U:renderer/components (root files)/model-*"[style=invis,weight=10];
+  {rank=same; "S:57"->"U:renderer/components (root files)/model-*"[style=invis];}
+  "U:renderer/components (root files)/resume-*"[label="unclaimed: renderer/components/resume-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:5"->"U:renderer/components (root files)/resume-*"[style=invis,weight=10];
+  {rank=same; "U:renderer/components (root files)/model-*"->"U:renderer/components (root files)/resume-*"[style=invis];}
+  "U:renderer/components (root files)/sync-*"[label="unclaimed: renderer/components/sync-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:57"->"U:renderer/components (root files)/sync-*"[style=invis,weight=10];
+  "S:61"[label="App telemetry",width=0.73,fontsize=9];
+  "U:renderer/components (root files)/model-*"->"S:61"[style=invis,weight=10];
+  {rank=same; "U:renderer/components (root files)/sync-*"->"S:61"[style=invis];}
+  "S:26"[label="Narrow / mobile viewport",width=0.73,fontsize=9];
+  "U:renderer/components (root files)/resume-*"->"S:26"[style=invis,weight=10];
+  {rank=same; "S:61"->"S:26"[style=invis];}
+  "S:25"[label="Hover hints",width=0.73,fontsize=9];
+  "U:renderer/components (root files)/sync-*"->"S:25"[style=invis,weight=10];
+  "U:renderer/components/git"[label="unclaimed: renderer/components/git",width=0.73,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:61"->"U:renderer/components/git"[style=invis,weight=10];
+  {rank=same; "S:25"->"U:renderer/components/git"[style=invis];}
+  "U:renderer/components/header"[label="unclaimed: renderer/components/header",width=0.73,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:26"->"U:renderer/components/header"[style=invis,weight=10];
+  {rank=same; "U:renderer/components/git"->"U:renderer/components/header"[style=invis];}
+  "U:renderer/components/mascot"[label="unclaimed: renderer/components/mascot",width=0.73,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:25"->"U:renderer/components/mascot"[style=invis,weight=10];
+  "S:7"[label="Error states",width=0.68,fontsize=9];
+  "U:renderer/components/git"->"S:7"[style=invis,weight=10];
+  {rank=same; "U:renderer/components/mascot"->"S:7"[style=invis];}
+  "S:67"[label="Build & release",width=0.63,fontsize=9];
+  "U:renderer/components/header"->"S:67"[style=invis,weight=10];
+  {rank=same; "S:7"->"S:67"[style=invis];}
+  "U:renderer/hooks (misc)"[label="unclaimed: renderer/hooks (misc)",width=0.63,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/mascot"->"U:renderer/hooks (misc)"[style=invis,weight=10];
+}
+subgraph cluster_1{label="renderer/components/game + Games arcade (31 files)";fontsize=14;style="filled,rounded";fillcolor="#fde68a";color="#555555";
+  "U:renderer/components/game"[label="unclaimed: renderer/components/game",width=0.99,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:59"[label="Games arcade",width=0.91,fontsize=9];
+  "U:renderer/components/game"->"S:59"[style=invis,weight=10];
+  "U:renderer/state/marketplace-*"[label="unclaimed: renderer/state/marketplace-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:59"->"U:renderer/state/marketplace-*"[style=invis,weight=10];
+  "U:renderer/game"[label="unclaimed: renderer/game",width=0.73,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/state/marketplace-*"->"U:renderer/game"[style=invis,weight=10];
+}
+subgraph cluster_2{label="Document comments + renderer/components/artifact-views (179 files)";fontsize=14;style="filled,rounded";fillcolor="#d1fae5";color="#555555";
+  "U:renderer/components/artifact-views"[label="unclaimed: renderer/components/artifact-views",width=1.30,fontsize=11,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:27"[label="Document comments",width=1.21,fontsize=11];
+  {rank=same; "U:renderer/components/artifact-views"->"S:27"[style=invis];}
+  "U:main/office"[label="unclaimed: main/office",width=1.02,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  {rank=same; "S:27"->"U:main/office"[style=invis];}
+  "U:main/artifacts"[label="unclaimed: main/artifacts",width=0.97,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/artifact-views"->"U:main/artifacts"[style=invis,weight=10];
+  "S:30"[label="YouCoded Pages",width=0.95,fontsize=9];
+  "S:27"->"S:30"[style=invis,weight=10];
+  {rank=same; "U:main/artifacts"->"S:30"[style=invis];}
+  "U:renderer/components/office"[label="unclaimed: renderer/components/office",width=0.93,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:main/office"->"U:renderer/components/office"[style=invis,weight=10];
+  {rank=same; "S:30"->"U:renderer/components/office"[style=invis];}
+  "S:28"[label="Artifact viewer",width=0.89,fontsize=9];
+  "U:main/artifacts"->"S:28"[style=invis,weight=10];
+  "U:main/doc-comments"[label="unclaimed: main/doc-comments",width=0.89,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:30"->"U:main/doc-comments"[style=invis,weight=10];
+  {rank=same; "S:28"->"U:main/doc-comments"[style=invis];}
+  "U:renderer/components/pages"[label="unclaimed: renderer/components/pages",width=0.89,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/office"->"U:renderer/components/pages"[style=invis,weight=10];
+  {rank=same; "U:main/doc-comments"->"U:renderer/components/pages"[style=invis];}
+  "S:29"[label="Office",width=0.84,fontsize=9];
+  "S:28"->"S:29"[style=invis,weight=10];
+  "U:renderer/components/context-menu"[label="unclaimed: renderer/components/context-menu",width=0.84,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:main/doc-comments"->"U:renderer/components/context-menu"[style=invis,weight=10];
+  {rank=same; "S:29"->"U:renderer/components/context-menu"[style=invis];}
+  "U:shared/artifacts"[label="unclaimed: shared/artifacts",width=0.82,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/pages"->"U:shared/artifacts"[style=invis,weight=10];
+  {rank=same; "U:renderer/components/context-menu"->"U:shared/artifacts"[style=invis];}
+  "U:main/remote-*"[label="unclaimed: main/remote-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:29"->"U:main/remote-*"[style=invis,weight=10];
+  "U:renderer/state/artifact-*"[label="unclaimed: renderer/state/artifact-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:renderer/components/context-menu"->"U:renderer/state/artifact-*"[style=invis,weight=10];
+  {rank=same; "U:main/remote-*"->"U:renderer/state/artifact-*"[style=invis];}
+  "U:shared/doc-*"[label="unclaimed: shared/doc-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:shared/artifacts"->"U:shared/doc-*"[style=invis,weight=10];
+  {rank=same; "U:renderer/state/artifact-*"->"U:shared/doc-*"[style=invis];}
+}
+subgraph cluster_3{label="IPC bridge + main (misc) (357 files)";fontsize=14;style="filled,rounded";fillcolor="#fbcfe8";color="#555555";
+  "U:main (misc)"[label="unclaimed: main (misc)",width=1.50,fontsize=11,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:2"[label="IPC bridge",width=1.49,fontsize=11];
+  {rank=same; "U:main (misc)"->"S:2"[style=invis];}
+  "U:shared (misc)"[label="unclaimed: shared (misc)",width=1.45,fontsize=11,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  {rank=same; "S:2"->"U:shared (misc)"[style=invis];}
+  "U:main/conversations"[label="unclaimed: main/conversations",width=0.99,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:main (misc)"->"U:main/conversations"[style=invis,weight=10];
+  "U:main/sync-spaces"[label="unclaimed: main/sync-spaces",width=0.97,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:2"->"U:main/sync-spaces"[style=invis,weight=10];
+  {rank=same; "U:main/conversations"->"U:main/sync-spaces"[style=invis];}
+  "S:53"[label="Local engine & models",width=0.95,fontsize=9];
+  "U:shared (misc)"->"S:53"[style=invis,weight=10];
+  {rank=same; "U:main/sync-spaces"->"S:53"[style=invis];}
+  "S:1"[label="Chat & transcript",width=0.95,fontsize=9];
+  "U:main/conversations"->"S:1"[style=invis,weight=10];
+  "S:36"[label="Conversation store",width=0.87,fontsize=9];
+  "U:main/sync-spaces"->"S:36"[style=invis,weight=10];
+  {rank=same; "S:1"->"S:36"[style=invis];}
+  "S:37"[label="Conversation handoff between computers",width=0.84,fontsize=9];
+  "S:53"->"S:37"[style=invis,weight=10];
+  {rank=same; "S:36"->"S:37"[style=invis];}
+  "S:18"[label="In-app updates",width=0.84,fontsize=9];
+  "S:1"->"S:18"[style=invis,weight=10];
+  "U:main/theme-*"[label="unclaimed: main/theme-*",width=0.84,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:36"->"U:main/theme-*"[style=invis,weight=10];
+  {rank=same; "S:18"->"U:main/theme-*"[style=invis];}
+  "S:38"[label="Chat Search",width=0.82,fontsize=9];
+  "S:37"->"S:38"[style=invis,weight=10];
+  {rank=same; "U:main/theme-*"->"S:38"[style=invis];}
+  "S:35"[label="Session naming",width=0.82,fontsize=9];
+  "S:18"->"S:35"[style=invis,weight=10];
+  "U:main/buddy-*"[label="unclaimed: main/buddy-*",width=0.82,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:main/theme-*"->"U:main/buddy-*"[style=invis,weight=10];
+  {rank=same; "S:35"->"U:main/buddy-*"[style=invis];}
+  "U:main/models"[label="unclaimed: main/models",width=0.82,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:38"->"U:main/models"[style=invis,weight=10];
+  {rank=same; "U:main/buddy-*"->"U:main/models"[style=invis];}
+  "S:65"[label="Claude Code hooks the app registers",width=0.79,fontsize=9];
+  "S:35"->"S:65"[style=invis,weight=10];
+  "S:33"[label="Git surface",width=0.79,fontsize=9];
+  "U:main/buddy-*"->"S:33"[style=invis,weight=10];
+  {rank=same; "S:65"->"S:33"[style=invis];}
+  "U:main/chatsearch-index"[label="unclaimed: main/chatsearch-index",width=0.79,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:main/models"->"U:main/chatsearch-index"[style=invis,weight=10];
+  {rank=same; "S:33"->"U:main/chatsearch-index"[style=invis];}
+  "U:shared/session-*"[label="unclaimed: shared/session-*",width=0.79,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:65"->"U:shared/session-*"[style=invis,weight=10];
+  "S:40"[label="Cloud context defaults",width=0.76,fontsize=9];
+  "S:33"->"S:40"[style=invis,weight=10];
+  {rank=same; "U:shared/session-*"->"S:40"[style=invis];}
+  "S:8"[label="Multi-window session detach",width=0.76,fontsize=9];
+  "U:main/chatsearch-index"->"S:8"[style=invis,weight=10];
+  {rank=same; "S:40"->"S:8"[style=invis];}
+  "S:60"[label="Friends presence",width=0.76,fontsize=9];
+  "U:shared/session-*"->"S:60"[style=invis,weight=10];
+  "S:50"[label="Claude Code's own sign-in",width=0.76,fontsize=9];
+  "S:40"->"S:50"[style=invis,weight=10];
+  {rank=same; "S:60"->"S:50"[style=invis];}
+  "S:52"[label="OpenRouter key check & Sign in with OpenRouter",width=0.76,fontsize=9];
+  "S:8"->"S:52"[style=invis,weight=10];
+  {rank=same; "S:50"->"S:52"[style=invis];}
+  "S:34"[label="Sync spaces & GitHub",width=0.76,fontsize=9];
+  "S:60"->"S:34"[style=invis,weight=10];
+  "U:main/github-*"[label="unclaimed: main/github-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:50"->"U:main/github-*"[style=invis,weight=10];
+  {rank=same; "S:34"->"U:main/github-*"[style=invis];}
+  "U:main/marketplace-*"[label="unclaimed: main/marketplace-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:52"->"U:main/marketplace-*"[style=invis,weight=10];
+  {rank=same; "U:main/github-*"->"U:main/marketplace-*"[style=invis];}
+  "U:main/project-*"[label="unclaimed: main/project-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:34"->"U:main/project-*"[style=invis,weight=10];
+  "U:main/sync-*"[label="unclaimed: main/sync-*",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:main/github-*"->"U:main/sync-*"[style=invis,weight=10];
+  {rank=same; "U:main/project-*"->"U:main/sync-*"[style=invis];}
+  "U:main/engine"[label="unclaimed: main/engine",width=0.76,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "U:main/marketplace-*"->"U:main/engine"[style=invis,weight=10];
+  {rank=same; "U:main/sync-*"->"U:main/engine"[style=invis];}
+  "S:58"[label="Registries & plugins",width=0.73,fontsize=9];
+  "U:main/project-*"->"S:58"[style=invis,weight=10];
+  "S:19"[label="App logging + bug reports",width=0.73,fontsize=9];
+  "U:main/sync-*"->"S:19"[style=invis,weight=10];
+  {rank=same; "S:58"->"S:19"[style=invis];}
+  "S:3"[label="The runtime",width=0.73,fontsize=9];
+  "U:main/engine"->"S:3"[style=invis,weight=10];
+  {rank=same; "S:19"->"S:3"[style=invis];}
+  "S:56"[label="Prerequisite installer",width=0.73,fontsize=9];
+  "S:58"->"S:56"[style=invis,weight=10];
+  "S:51"[label="Sign in with ChatGPT",width=0.73,fontsize=9];
+  "S:19"->"S:51"[style=invis,weight=10];
+  {rank=same; "S:56"->"S:51"[style=invis];}
+  "S:14"[label="Perf lab / stress suite",width=0.63,fontsize=9];
+  "S:3"->"S:14"[style=invis,weight=10];
+  {rank=same; "S:51"->"S:14"[style=invis];}
+  "S:64"[label="Marketplace catalog",width=0.63,fontsize=9];
+  "S:56"->"S:64"[style=invis,weight=10];
+  "S:45"[label="Status push",width=0.63,fontsize=9];
+  "S:51"->"S:45"[style=invis,weight=10];
+  {rank=same; "S:64"->"S:45"[style=invis];}
+  "S:17"[label="Desktop packaging + release",width=0.63,fontsize=9];
+  "S:14"->"S:17"[style=invis,weight=10];
+  {rank=same; "S:45"->"S:17"[style=invis];}
+}
+subgraph cluster_4{label="main/harness + Native runtime (160 files)";fontsize=14;style="filled,rounded";fillcolor="#e9d5ff";color="#555555";
+  "U:main/harness"[label="unclaimed: main/harness",width=1.66,fontsize=11,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:43"[label="Specialists",width=1.00,fontsize=9];
+  {rank=same; "U:main/harness"->"S:43"[style=invis];}
+  "S:39"[label="Native runtime",width=0.99,fontsize=9];
+  "U:main/harness"->"S:39"[style=invis,weight=10];
+  "S:46"[label="Native permissions",width=0.97,fontsize=9];
+  "S:43"->"S:46"[style=invis,weight=10];
+  {rank=same; "S:39"->"S:46"[style=invis];}
+  "U:main/providers"[label="unclaimed: main/providers",width=0.95,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:39"->"U:main/providers"[style=invis,weight=10];
+  "S:41"[label="Prompt caching across providers",width=0.89,fontsize=9];
+  "S:46"->"S:41"[style=invis,weight=10];
+  {rank=same; "U:main/providers"->"S:41"[style=invis];}
+  "S:47"[label="Admin password card",width=0.82,fontsize=9];
+  "U:main/providers"->"S:47"[style=invis,weight=10];
+  "S:49"[label="Harness evaluator",width=0.82,fontsize=9];
+  "S:41"->"S:49"[style=invis,weight=10];
+  {rank=same; "S:47"->"S:49"[style=invis];}
+  "S:48"[label="Full Auto safety stops",width=0.73,fontsize=9];
+  "S:47"->"S:48"[style=invis,weight=10];
+  "U:renderer/components/specialists"[label="unclaimed: renderer/components/specialists",width=0.73,fontsize=9,fillcolor="#fff7d6",style="filled,rounded,dashed"];
+  "S:49"->"U:renderer/components/specialists"[style=invis,weight=10];
+  {rank=same; "S:48"->"U:renderer/components/specialists"[style=invis];}
+}
+subgraph cluster_5{label="No code links (dev tools, workers) (0 files)";fontsize=14;style="filled,rounded";fillcolor="#fed7aa";color="#555555";
+  "S:11"[label="UI review rig",width=1.47,fontsize=9];
+  "S:12"[label="Landing page + demo clips",width=1.34,fontsize=9];
+  {rank=same; "S:11"->"S:12"[style=invis];}
+  "S:13"[label="Promo video",width=1.47,fontsize=9];
+  "S:11"->"S:13"[style=invis,weight=10];
+  "S:15"[label="Luna live cache-measurement rig",width=0.79,fontsize=9];
+  "S:12"->"S:15"[style=invis,weight=10];
+  {rank=same; "S:13"->"S:15"[style=invis];}
+  "S:16"[label="Roadmap",width=0.87,fontsize=9];
+  "S:13"->"S:16"[style=invis,weight=10];
+  "S:20"[label="Session workspace startup + reorientation",width=0.82,fontsize=9];
+  "S:15"->"S:20"[style=invis,weight=10];
+  {rank=same; "S:16"->"S:20"[style=invis];}
+  "S:21"[label="Session close-out + workspace retrospective",width=0.76,fontsize=9];
+  "S:16"->"S:21"[style=invis,weight=10];
+  "S:22"[label="CI health and the test-suite inventory",width=0.68,fontsize=9];
+  "S:20"->"S:22"[style=invis,weight=10];
+  {rank=same; "S:21"->"S:22"[style=invis];}
+  "S:23"[label="Desktop checks",width=0.63,fontsize=9];
+  "S:21"->"S:23"[style=invis,weight=10];
+  "S:55"[label="Android runtime",width=0.63,fontsize=9];
+  "S:22"->"S:55"[style=invis,weight=10];
+  {rank=same; "S:23"->"S:55"[style=invis];}
+  "S:62"[label="Website analytics",width=0.63,fontsize=9];
+  "S:23"->"S:62"[style=invis,weight=10];
+  "S:63"[label="Marketplace worker",width=0.63,fontsize=9];
+  "S:55"->"S:63"[style=invis,weight=10];
+  {rank=same; "S:62"->"S:63"[style=invis];}
+  "S:66"[label="Archived youcoded-core plugin",width=0.63,fontsize=9];
+  "S:62"->"S:66"[style=invis,weight=10];
+}
+"U:main (misc)"->"U:shared (misc)"[constraint=false,penwidth=2.13];
+"U:main/artifacts"->"U:shared/artifacts"[constraint=false,penwidth=2.19];
+"U:main/artifacts"->"S:28"[constraint=false,penwidth=2.56];
+"U:main (misc)"->"S:1"[constraint=false,penwidth=2.06];
+"S:27"->"U:shared/doc-*"[constraint=false,penwidth=2.35];
+"S:3"->"U:main (misc)"[constraint=false,penwidth=2.60];
+"S:3"->"U:main/harness"[constraint=false,penwidth=2.06,color="#c2410c99"];
+"S:3"->"S:2"[constraint=false,penwidth=1.98];
+"S:27"->"U:main/doc-comments"[constraint=false,penwidth=2.13];
+"U:main/engine"->"S:53"[constraint=false,penwidth=2.25];
+"S:53"->"U:shared (misc)"[constraint=false,penwidth=1.98];
+"U:main/harness"->"S:39"[constraint=false,penwidth=2.75];
+"S:39"->"U:main/harness"[constraint=false,penwidth=3.16];
+"S:49"->"U:main/harness"[constraint=false,penwidth=2.48];
+"U:main/harness"->"S:49"[constraint=false,penwidth=2.06];
+"S:39"->"S:41"[constraint=false,penwidth=2.13];
+"S:39"->"S:43"[constraint=false,penwidth=1.98];
+"S:2"->"U:shared (misc)"[constraint=false,penwidth=2.90];
+"S:2"->"U:main/marketplace-*"[constraint=false,penwidth=1.90];
+"S:2"->"U:main (misc)"[constraint=false,penwidth=3.10];
+"S:2"->"S:1"[constraint=false,penwidth=2.19];
+"S:2"->"U:main/artifacts"[constraint=false,penwidth=2.44,color="#c2410c99"];
+"S:2"->"S:4"[constraint=false,penwidth=2.48,color="#c2410c99"];
+"S:2"->"U:main/conversations"[constraint=false,penwidth=2.06];
+"U:main/models"->"S:53"[constraint=false,penwidth=2.13];
+"U:main/office"->"S:29"[constraint=false,penwidth=2.06];
+"S:29"->"U:main/office"[constraint=false,penwidth=2.35];
+"S:4"->"U:shared (misc)"[constraint=false,penwidth=1.90,color="#c2410c99"];
+"S:6"->"U:renderer/components (root files) (misc)"[constraint=false,penwidth=3.11];
+"S:6"->"U:renderer/state (misc)"[constraint=false,penwidth=2.52];
+"S:6"->"U:renderer/hooks/use-*"[constraint=false,penwidth=2.85];
+"S:6"->"S:4"[constraint=false,penwidth=1.90];
+"U:renderer/components (root files) (misc)"->"U:renderer/hooks/use-*"[constraint=false,penwidth=3.16];
+"U:renderer/components (root files) (misc)"->"U:renderer/state (misc)"[constraint=false,penwidth=3.10];
+"U:renderer/components (root files) (misc)"->"S:24"[constraint=false,penwidth=3.41];
+"U:renderer/components (root files) (misc)"->"S:10"[constraint=false,penwidth=2.06];
+"U:renderer/components (root files) (misc)"->"S:1"[constraint=false,penwidth=2.25,color="#c2410c99"];
+"U:renderer/components (root files) (misc)"->"U:renderer/utils"[constraint=false,penwidth=2.25];
+"U:renderer/components (root files) (misc)"->"U:shared (misc)"[constraint=false,penwidth=2.44,color="#c2410c99"];
+"U:renderer/components (root files) (misc)"->"S:4"[constraint=false,penwidth=2.40];
+"S:30"->"U:renderer/components/pages"[constraint=false,penwidth=1.98];
+"U:renderer/components/artifact-views"->"S:27"[constraint=false,penwidth=1.98];
+"U:renderer/components/artifact-views"->"S:24"[constraint=false,penwidth=2.06,color="#c2410c99"];
+"U:renderer/components/buddy"->"S:1"[constraint=false,penwidth=1.90,color="#c2410c99"];
+"U:renderer/components/buddy"->"U:renderer/state (misc)"[constraint=false,penwidth=2.19];
+"U:renderer/components/buddy"->"U:renderer/components (root files) (misc)"[constraint=false,penwidth=2.19];
+"S:27"->"U:renderer/components/context-menu"[constraint=false,penwidth=1.98];
+"S:27"->"S:24"[constraint=false,penwidth=2.19,color="#c2410c99"];
+"U:renderer/components/game"->"S:59"[constraint=false,penwidth=2.25];
+"S:59"->"U:renderer/components/game"[constraint=false,penwidth=2.13];
+"U:renderer/components/game"->"U:renderer/state (misc)"[constraint=false,penwidth=1.98,color="#c2410c99"];
+"U:renderer/components/game"->"S:24"[constraint=false,penwidth=1.90,color="#c2410c99"];
+"U:renderer/components/marketplace"->"U:shared (misc)"[constraint=false,penwidth=2.19,color="#c2410c99"];
+"U:renderer/components/marketplace"->"U:renderer/state/marketplace-*"[constraint=false,penwidth=2.19,color="#c2410c99"];
+"U:renderer/components/marketplace"->"S:24"[constraint=false,penwidth=2.48];
+"U:renderer/components/marketplace"->"U:renderer/state (misc)"[constraint=false,penwidth=1.90];
+"U:renderer/components/office"->"S:29"[constraint=false,penwidth=1.90];
+"U:renderer/components/pages"->"S:30"[constraint=false,penwidth=1.90];
+"U:renderer/components/project-view"->"S:24"[constraint=false,penwidth=2.56];
+"U:renderer/components/project-view"->"U:renderer/hooks/use-*"[constraint=false,penwidth=2.25];
+"U:renderer/components/project-view"->"S:10"[constraint=false,penwidth=2.06];
+"U:renderer/components/project-view"->"U:shared/artifacts"[constraint=false,penwidth=2.06,color="#c2410c99"];
+"U:renderer/components/tool-views"->"U:shared (misc)"[constraint=false,penwidth=1.98,color="#c2410c99"];
+"U:renderer/components/tool-views"->"U:renderer/components (root files) (misc)"[constraint=false,penwidth=1.90];
+"S:9"->"U:renderer/state (misc)"[constraint=false,penwidth=1.90];
+"S:9"->"U:renderer/components (root files) (misc)"[constraint=false,penwidth=2.13];
+"S:9"->"S:1"[constraint=false,penwidth=2.13,color="#c2410c99"];
+"S:9"->"U:shared (misc)"[constraint=false,penwidth=2.35,color="#c2410c99"];
+"U:renderer/hooks/use-*"->"U:renderer/state (misc)"[constraint=false,penwidth=2.80];
+"U:renderer/state (misc)"->"S:1"[constraint=false,penwidth=2.25,color="#c2410c99"];
+"S:1"->"U:renderer/state (misc)"[constraint=false,penwidth=1.98,color="#c2410c99"];
+"U:shared (misc)"->"S:1"[constraint=false,penwidth=1.98];
+}
