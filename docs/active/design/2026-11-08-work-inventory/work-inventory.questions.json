@@ -9,9 +9,9 @@
       "words": true,
       "surface": "The whole workspace",
       "path": "Every repo, on this computer and on GitHub",
-      "headline": "What I counted: 161 cards, about 100 work folders, about 90 unfinished branches, 8 open non-bot pull requests.",
-      "changed": "Five reviewers checked every card and every branch against what is actually in the app today. Roughly half the work folders are finished and simply never removed. About a dozen are real unfinished work. A handful hold files that were never saved anywhere but this disk.",
-      "notice": "Six sessions are running right now (Android fixes, Pages, the test-suite rethink, mesh sync design, local models, analytics). Nothing below touches those. Full findings: docs/active/investigations/2026-11-08-work-inventory/ in this session's folder.",
+      "headline": "What I counted: 140 open cards, 21 closed. About 50 session folders here, about 90 unfinished branches on GitHub, 8 open pull requests.",
+      "changed": "Five reviewers checked every card and every branch against what is actually in the app today. About 20 of the session folders are finished and simply never removed. About 15 branches were replaced by something newer. About 12 are real unfinished work. A handful of folders hold files never saved anywhere but this disk.",
+      "notice": "Five sessions are running right now (Android fixes, Pages, the test-suite rethink, mesh sync design, local models). Nothing below touches them. Full findings and the card-to-workstream map: docs/active/investigations/2026-11-08-work-inventory/ on this session's branch.",
       "yes": "Understood",
       "no": "Something's off"
     },
@@ -20,38 +20,38 @@
       "words": true,
       "surface": "Work cards",
       "path": "The cards folder and the Work board",
-      "headline": "The cards are noticeably out of date: many say work is pending that already shipped, and many say done-nothing while work exists.",
-      "changed": "Examples: 14 closed cards still say 'waiting on Destin' or 'nothing shipped' though they shipped. #213 Android says 'Done: nothing yet' while 57 commits of fixes sit on its branch. #172 Electron upgrade is already done. #133 one-settings-screen is obsolete (the phone already uses the desktop's settings). 9 cards still say 'blocks release 1.3.2', which shipped Oct 21. 55 of 75 open cards have no priority. 28 of 50 work branches aren't linked from any card. The whole security program (merged Nov 1-7) has no card.",
-      "notice": "Two weeks of merged work (security hardening, buddy rebuild, outside-file comments, analytics, voice, the send-blocked fix, the freeze fixes) is merged but in no released version yet. The last release is 1.3.3 (Oct 23).",
+      "headline": "The cards are out of date in both directions: shipped work shown as pending, and real progress shown as none.",
+      "changed": "14 closed cards still say 'waiting on Destin' or 'nothing shipped', though they shipped. The Android card (#213) says 'Done: nothing yet' while 57 commits of fixes sit on its branch. #172 (Electron upgrade) is already done. #133 (one settings screen for desktop and phone) is obsolete: the phone already shows the desktop's settings. 5 cards name version 1.3.2 as their target, which shipped Oct 21. 55 of 140 open cards have no priority. 28 of 50 work branches aren't linked from any card. The security program merged Nov 1-7 has no card at all.",
+      "notice": "Two weeks of merged work (security hardening, buddy rebuild, outside-file comments, analytics, voice, the fix for messages that wouldn't send, the freeze fixes) is in the code but in no released version. The last release is 1.3.3 (Oct 23).",
       "yes": "Understood",
       "no": "Something's off"
     },
     {
       "id": "P-1",
-      "page": "Protect work that exists only on this computer",
-      "intro": "These are files no backup has. Losing this laptop or cleaning the wrong folder would lose them."
+      "page": "Housekeeping",
+      "intro": "Save what's at risk, then clear what's finished. Nothing here changes the app."
     },
     {
       "id": "Q-1",
       "words": true,
       "surface": "Work folders",
-      "path": "worktrees/sessions/ (148, 163, cc-reliability, the three 29-* bench folders, persona, user-notify, narrow-screens)",
-      "headline": "Should I save the never-saved files now, by committing each onto its own branch and backing it up to GitHub?",
-      "today": "Some old work folders hold changes that were never committed. The biggest: about 1,800 lines of speed-test lab tools (card #148), a half-done crash-recovery wording fix (card #163), your answers on an old reliability review deck, and three unsaved CI plan docs.",
-      "problem": "They exist only on this disk. Cleanup tools, a disk failure or a mistaken delete would lose them, and the cards don't mention them.",
-      "proposal": "Commit each pile onto its own existing branch and push it. That is a backup, not a release. Nothing changes in the app. Then each pile gets decided on its card.",
+      "path": "worktrees/sessions/ (the 148, 163, cc-reliability, 11-direct-controls, persona, user-notify and narrow-screens folders, and three CI bench folders)",
+      "headline": "Save the never-saved files now, by committing each pile onto its own branch and backing it up to GitHub?",
+      "today": "Some old work folders hold changes that were never committed. The real work among them: about 1,800 lines of speed-test lab tools (card #148), a half-done fix to what the app says after a crash (card #163), and your answers on an old reliability review deck. The rest is regenerated screenshots and plan drafts that were later rewritten.",
+      "problem": "They exist only on this disk. A cleanup tool, a disk failure or a mistaken delete would lose them, and no card mentions them.",
+      "proposal": "Commit each pile onto its own existing branch and push it. That is a backup, not a release. Each pile is then decided on its card.",
       "options": [
         {
           "id": "save-all",
           "label": "Save all piles",
           "recommended": true,
           "pros": ["Nothing can be lost while you decide.", "Costs nothing. Branches can be deleted later."],
-          "cons": ["Adds a few more branches to GitHub until they're cleaned up."]
+          "cons": ["A few more branches on GitHub until they're cleaned up."]
         },
         {
           "id": "save-real-only",
           "label": "Only the real work",
-          "summary": "Save the speed lab, the crash-recovery fix and your deck answers. Throw away the rest (old screenshots, plan drafts later rewritten).",
+          "summary": "Save the speed lab, the crash-wording fix and your deck answers. Throw away the rest.",
           "pros": ["Less clutter."],
           "cons": ["A reviewer judged 'not worth keeping'. It might be wrong."]
         },
@@ -59,70 +59,65 @@
           "id": "save-none",
           "label": "Don't save",
           "pros": ["Nothing new on GitHub."],
-          "cons": ["They stay at risk. Next cleanup could delete them."]
+          "cons": ["They stay at risk. The next cleanup could delete them."]
         }
       ]
     },
     {
-      "id": "P-2",
-      "page": "Clean up what's finished or superseded",
-      "intro": "Leftovers make every new session's startup report long and confusing, and hide the work that matters."
-    },
-    {
       "id": "Q-2",
       "words": true,
-      "surface": "Work folders and branches",
+      "surface": "Finished work folders and branches",
       "path": "worktrees/sessions/ and GitHub branches in all five repos",
-      "headline": "Remove about 50 finished work folders and their branches, here and on GitHub?",
-      "today": "About 41 folders in the five repos hold work that's already in the app (merged, or the same change landed another way). 4 more are empty leftovers. The automatic cleaner skips them because they hold throwaway screenshots and temp files it can't be sure about.",
+      "headline": "Remove the finished leftovers: about 20 session folders here, and about 16 branches on GitHub whose work is already in the app?",
+      "today": "About 20 session folders (48 repo copies between them) hold work that's already landed. 4 more folders are empty. About 16 GitHub branches have nothing the app lacks. The automatic cleaner skips the folders because they hold throwaway screenshots and temp files it can't be sure about.",
       "problem": "Every session's startup report lists them as warnings, so real problems get buried. They also slow down tools that scan every folder.",
-      "proposal": "After saving anything from Q-1, delete the finished folders and their branches. I'd first double-check each one has nothing that isn't already in the app, and skip anything a running session uses.",
+      "proposal": "After saving anything from the previous question, delete the finished folders and branches. Before each delete I re-check it holds nothing missing from the app, and I skip anything a running session uses.",
       "options": [
         {
           "id": "all",
           "label": "Remove them all",
           "recommended": true,
-          "pros": ["Startup report shrinks to the work that matters.", "Every one was checked: all of its content is already in the app."],
+          "pros": ["Startup report shrinks to the work that matters.", "Each one was checked: everything in it is already in the app."],
           "cons": ["Old throwaway screenshots in them are gone for good."]
         },
         {
           "id": "keep-branches",
           "label": "Folders only",
-          "summary": "Remove the folders on this computer but keep their branches on GitHub for a month.",
+          "summary": "Remove the folders on this computer but keep their GitHub branches for a month.",
           "pros": ["A safety net if a check was wrong."],
-          "cons": ["GitHub branch list stays cluttered. Needs a second pass later."]
+          "cons": ["GitHub stays cluttered. Needs a second pass later."]
         },
         {
           "id": "no",
           "label": "Leave them",
           "pros": ["No risk at all."],
-          "cons": ["The clutter keeps growing (about 20 new leftovers in two weeks)."]
+          "cons": ["The clutter keeps growing: about 20 new leftovers in two weeks."]
         }
       ]
     },
     {
       "id": "Q-3",
       "words": true,
-      "surface": "Branches with unique but outdated work",
-      "path": "Six CI speed experiments (29-*), release-1-3-2, the old roadmap and browser wrap-ups, the 1.3.1 dependency fix, an early copy of the Android branch, an older helper-plans copy, the sync-retry pull request",
-      "headline": "Drop these 14 branches whose work was replaced by something newer?",
-      "today": "Each has commits that aren't in the app, but a later change replaced every one. Examples: the CI experiments lost to a different approach that shipped (their pull requests are already closed). The release-1-3-2 notes were rewritten on master. The roadmap file they edit no longer exists.",
+      "surface": "Branches replaced by newer work",
+      "path": "Six CI speed experiments (one is pull request #272), release-1-3-2, two old wrap-ups, the 1.3.1 dependency fix, an early copy of the Android branch, an older helper-plans copy, a duplicate of a freeze fix, and the 2-month-old sync-retry pull request #444",
+      "headline": "Drop about 15 branches whose work was replaced by something newer?",
+      "today": "Each has commits that aren't in the app, but a later change replaced every one. The CI experiments lost to a different approach that shipped, and their pull requests are already closed. The release-1-3-2 notes were rewritten. The roadmap file two of them edit no longer exists.",
       "problem": "They look like unfinished work in every report, so each new session wonders whether to rescue them.",
-      "proposal": "Delete them. A one-line note goes on the card each belongs to, saying what was dropped and why.",
-      "risk": "One judgement (the 1.3.1 dependency fix) is medium confidence: the files it changes are gone from the app, but I didn't confirm what replaced them.",
+      "proposal": "Delete them, with a one-line note on the card each belongs to saying what was dropped and why. Anything saved under the first question stays until its card decides.",
+      "risk": "Two calls are medium confidence: the 1.3.1 dependency fix (its files are gone from the app, but I didn't confirm what replaced them) and pull request #272, whose checks pass but whose script no longer exists on master.",
       "options": [
         {
           "id": "drop",
-          "label": "Drop all 14",
+          "label": "Drop them all",
           "recommended": true,
           "pros": ["Clears the most confusing leftovers.", "Each was checked against what replaced it."],
           "cons": ["Can't be brought back once deleted from GitHub."]
         },
         {
-          "id": "drop-but-dependency",
-          "label": "Keep the doubtful one",
-          "pros": ["Keeps the one medium-confidence call for a closer look."],
-          "cons": ["One more leftover until someone checks it."]
+          "id": "drop-but-doubtful",
+          "label": "Keep the two doubtful",
+          "pros": ["Keeps the two medium-confidence calls for a closer look."],
+          "cons": ["Two more leftovers until someone checks them."]
         }
       ]
     },
@@ -131,24 +126,24 @@
       "words": true,
       "surface": "The workspace's main folder",
       "path": "~/youcoded-dev itself, and the marketplace's shared copy",
-      "headline": "Move your personal files out of the YouCoded workspace and throw away stale leftovers there?",
-      "today": "The main folder holds: your Anthropic essay (.docx), flappy-bird.html (a copy already lives in ~/flappy-bird), about 10 empty 'Untitled' Word/Excel/PowerPoint files, and 141 MB of old landing-page screenshots. The marketplace's shared copy has 5 edited files that are older drafts of what's already on GitHub.",
+      "headline": "Move your personal files out of the YouCoded workspace, archive the Flappy prototype, and throw away stale leftovers?",
+      "today": "The main folder holds your Anthropic essay (.docx) and 10 'Untitled' Word, Excel and PowerPoint files from Oct 5-23. Six of those are blank; four have content, and one looks like a copy of the essay. Also there: flappy-bird.html, the prototype of the arcade's Flappy game (the game shipped; the prototype has unsaved Sep 11 edits), and 141 MB of old landing-page screenshots whose sources were archived Oct 16. The marketplace's shared copy has 5 edited files that are older drafts of what's already on GitHub.",
       "problem": "Personal files in a project folder risk being committed to a public repo by mistake. The stale edits block that shared copy from updating.",
-      "proposal": "Move the essay to ~/Documents. Leave ~/flappy-bird as the only copy of flappy-bird. Delete the empty Untitled files, the old screenshots and the 5 stale marketplace edits. I'd check each Untitled file is truly empty first.",
+      "proposal": "Move the essay and all 10 Untitled files to ~/Documents/youcoded-dev-leftovers (I don't open them). Archive flappy-bird.html with its edits under the workspace's prototypes archive. Delete the old screenshots and the 5 stale marketplace edits.",
       "options": [
         {
           "id": "do-all",
           "label": "Do all of it",
           "recommended": true,
-          "pros": ["Nothing personal can leak into a public repo.", "The shared copies can update again."],
-          "cons": ["If an Untitled file had something you wanted, it moves to the trash rather than staying put."]
+          "pros": ["Nothing personal can leak into a public repo.", "Nothing of yours is deleted, only moved.", "The shared copies can update again."],
+          "cons": ["You sort the leftovers folder yourself, or leave it."]
         },
         {
           "id": "move-only",
-          "label": "Move, don't delete",
-          "summary": "Move everything into one folder (~/Documents/youcoded-dev-leftovers) and you sort it later.",
-          "pros": ["Nothing is destroyed."],
-          "cons": ["You end up sorting it yourself."]
+          "label": "Only move the files",
+          "summary": "Move the personal files, leave everything else as it is.",
+          "pros": ["Smallest change."],
+          "cons": ["The stale screenshots and marketplace edits stay."]
         }
       ]
     },
@@ -157,17 +152,17 @@
       "words": true,
       "surface": "Automatic library updates",
       "path": "Dependabot pull requests in four repos",
-      "headline": "Land the six safe automatic library updates, close the two broken ones, and give the risky three to the release workstream?",
-      "today": "GitHub's bot opened 12 update requests. Six pass all checks and change little (#701 Android build tools, #334-336 promo-video tools, marketplace #119 server tools, themes #39). Two are stale and failing (#466, marketplace #89, both a test-tool major version). Three are big jumps that fail Android or app tests (#702, #703, #714). Marketplace #115 fails a version check.",
+      "headline": "Land the six safe library updates, close the two broken ones, and hand the four big ones to the release workstream?",
+      "today": "GitHub's bot opened 12 update requests. Six pass every check and change little. Two are stale and failing (a test-tool major version, twice). Four are big jumps that fail Android or app tests, or a version check.",
       "problem": "Open update requests pile up and hide security fixes. The big ones can break the Android app if merged carelessly.",
-      "proposal": "Land the six green ones, close the two dead ones, and make the three big ones plus #115 a task in the release workstream (page 5).",
+      "proposal": "Land the six green ones, close the two dead ones, and make the four big ones one task in the release workstream.",
       "options": [
         {
           "id": "yes",
           "label": "Yes, as described",
           "recommended": true,
           "pros": ["Six fewer open items, all passing their checks.", "Risky ones get done carefully, not rushed."],
-          "cons": ["Landing even small updates changes what the next release contains."]
+          "cons": ["Even small updates change what the next release contains."]
         },
         {
           "id": "release-only",
@@ -178,9 +173,9 @@
       ]
     },
     {
-      "id": "P-3",
-      "page": "Small finished work waiting on your word",
-      "intro": "These are done or nearly done. Each needs a land-it or drop-it."
+      "id": "P-2",
+      "page": "Finished work waiting on your word",
+      "intro": "Done or nearly done. Each needs land-it or drop-it."
     },
     {
       "id": "Q-6",
@@ -188,32 +183,25 @@
       "pick": "several",
       "surface": "Small finished branches",
       "path": "Several repos",
-      "headline": "Which of these small, finished pieces should be landed? Unpicked ones get closed with a note on their card.",
-      "today": "Each is finished, small and checked by its session, but was never landed because landing waits on your word.",
-      "problem": "Finished work rots: every day it falls further behind and gets harder to land. Some of it, like your Nov 1 rule, is something you already decided.",
-      "proposal": "Pick the ones to land. I'd update each, re-run its checks, land it and clean up its branch and card.",
+      "headline": "Which of these finished pieces should land? Unpicked ones get closed with a note on their card.",
+      "today": "Each is finished, small and checked by its session, but never landed because landing waits on your word.",
+      "problem": "Finished work rots: every day it falls further behind and gets harder to land. One of them is a rule you already decided.",
+      "proposal": "Pick what lands. I update each, re-run its checks, land it, and clean up its branch and card.",
       "options": [
         {
-          "id": "workstream-rule",
-          "label": "One-branch rule",
+          "id": "records",
+          "label": "Four with no app change",
           "recommended": true,
-          "summary": "Your Nov 1 rule ('one workstream = one branch per repo'; helpers commit onto it, never onto their own) into the main rules.",
-          "pros": ["Supervisors need exactly this rule. It's your own decision, and it never landed."],
+          "summary": "Your Nov 1 rule ('one workstream = one branch per repo; helpers commit onto it, never onto their own') into the main rules. Fixes for 3 failing overnight tests. Two record-only pull requests (#267 freeze work, #271 Windows fixes). The sync plan docs.",
+          "pros": ["Nothing you'll see in the app changes.", "Supervisors need that rule, and it's your own decision."],
           "cons": ["None found."]
-        },
-        {
-          "id": "nightly-tests",
-          "label": "Nightly test fixes",
-          "summary": "Fixes 3 failing overnight tests. No change to the app.",
-          "pros": ["Your rule is failing tests get fixed when found."],
-          "cons": ["None found. It lands cleanly."]
         },
         {
           "id": "keychain",
           "label": "Keychain wording",
           "summary": "When a Linux computer has no secure password store, the app says so instead of 'helper could not start'.",
           "pros": ["Honest error, per the error-message standard."],
-          "cons": ["Tiny user-visible wording change."]
+          "cons": ["Tiny wording change users will see."]
         },
         {
           "id": "analytics-phones",
@@ -225,71 +213,32 @@
         {
           "id": "crash-wording",
           "label": "Crash recovery wording",
-          "summary": "After a crash, a tool step that was interrupted says 'may have run' instead of 'canceled' (card #163, half done, needs a hand merge).",
+          "summary": "After a crash, an interrupted tool step says 'may have run' instead of 'canceled' (card #163, half done, needs a hand merge).",
           "pros": ["Stops the app claiming something didn't happen when it may have."],
-          "cons": ["Needs about an hour to update and test."]
-        },
-        {
-          "id": "freeze-windows-docs",
-          "label": "Two record PRs",
-          "summary": "Workspace PRs #267 and #271: records of the freeze work and the Windows fixes. Both cards already closed.",
-          "pros": ["Closes two stale pull requests.", "Keeps the record."],
-          "cons": ["Docs only, so landing them changes nothing in the app."]
-        },
-        {
-          "id": "sync-docs",
-          "label": "Sync plan docs",
-          "summary": "The 'slim synced chats' plan and the sync rethink brief. Docs only, inputs to the sync workstream.",
-          "pros": ["Sync supervisor starts from them on master instead of a side branch."],
-          "cons": ["Docs only."]
+          "cons": ["About an hour to update and test."]
         }
       ]
+    },
+    {
+      "id": "P-3",
+      "page": "Big unfinished projects that went stale",
+      "intro": "Three large builds fell 1,700-2,600 changes behind the app. Reviving any of them means rewriting most of it."
     },
     {
       "id": "Q-7",
       "words": true,
-      "surface": "CI speed experiment",
-      "path": "Workspace pull request #272 (card #29)",
-      "headline": "Close the faster-checks-for-card-only-changes experiment (pull request #272)?",
-      "today": "An experiment to make GitHub's checks finish faster when a change touches only cards. Its checks pass, but the script it changes no longer exists on master.",
-      "problem": "Landing it means rewriting it against today's tools, and card #29 has bigger CI work queued.",
-      "proposal": "Close it and leave a note on #29. The release workstream can redo it if speed still matters.",
-      "options": [
-        {
-          "id": "close",
-          "label": "Close it",
-          "recommended": true,
-          "pros": ["One less stale item.", "The idea stays on card #29."],
-          "cons": ["Card-only changes keep their current check time."]
-        },
-        {
-          "id": "redo",
-          "label": "Redo it",
-          "pros": ["Faster checks on every card change."],
-          "cons": ["About half a day of work for a modest gain."]
-        }
-      ]
-    },
-    {
-      "id": "P-4",
-      "page": "Big unfinished projects that went stale",
-      "intro": "Three large builds fell 1,700-2,600 changes behind the app. Reviving each means rewriting a lot of it."
-    },
-    {
-      "id": "Q-8",
-      "words": true,
       "surface": "Helper plans",
-      "path": "Card #74 (approve a multi-step job up front), branch with 140 commits",
-      "headline": "Helper plans was built but is now very stale. Shelve it, revive it, or rebuild it fresh later?",
-      "today": "A full version (the assistant proposes a step-by-step plan that you approve before helpers run it) was built in September: 34,000 lines on its own branch. The app moved on 1,705 changes since. 40 places conflict. Its review deck was never answered. A separate branch holds the only copy of your decision record for it (506 files).",
+      "path": "Card #74 (approve a multi-step job up front), a branch with 140 commits",
+      "headline": "Helper plans was built but is now very stale. Shelve it with its design record, revive it, or drop it?",
+      "today": "A full version (the assistant proposes a step-by-step plan you approve before helpers run it) was built in September: 34,000 lines on its own branch. The app moved on 1,705 changes since, and 40 places conflict. Its review deck was never answered. A separate branch holds the only copy of your decision record for it (506 files).",
       "problem": "Reviving means days of untangling the chat engine's core, and the design may no longer fit. Leaving it means the card claims more progress than exists.",
-      "proposal": "Shelve: land the decision record onto master as a doc (so it's never lost), keep one snapshot branch, delete the other copies, and mark card #74 'explore, design reference exists'.",
+      "proposal": "Shelve: land the decision record on master as a doc so it's never lost, keep one snapshot branch, delete the other copies, and mark card #74 as exploration with a design reference.",
       "options": [
         {
           "id": "shelve",
           "label": "Shelve with record",
           "recommended": true,
-          "pros": ["Your decisions are safe on master.", "No multi-day rebase on a feature nobody's waiting for."],
+          "pros": ["Your decisions are safe on master.", "No multi-day rebase on a feature nobody is waiting for."],
           "cons": ["When you want it, it's mostly a rebuild using the old design as a guide."]
         },
         {
@@ -307,21 +256,21 @@
       ]
     },
     {
-      "id": "Q-9",
+      "id": "Q-8",
       "words": true,
       "surface": "Project skills and tools",
       "path": "Card #75 (choose skills and tools per project), app pull request #571, workspace #203",
-      "headline": "Per-project skills and tools was nearly done but is now very stale. Rebuild on today's app, or close it?",
-      "today": "A per-project switchboard for which skills and tools the assistant uses was built, with design decisions and a contract, and was 'awaiting UI review'. It's now 1,788 changes behind with 22 conflicts. The security work since then rewrote how plugins install.",
+      "headline": "Per-project skills and tools was nearly done but is now very stale. Rebuild it on today's app, or close it?",
+      "today": "A per-project switchboard for which skills and tools the assistant uses was built, with your design decisions and a signed contract, and was awaiting your look. It's now 1,788 changes behind with 22 conflicts. The security work since then rewrote how plugins install.",
       "problem": "Card #75 says 'human polish and review', but the branch can't be reviewed or landed as it is.",
-      "proposal": "Rebuild it on today's app, using its approved decisions and contract as the spec, inside the 'Projects, skills and Claude Code' workstream. Close the two old pull requests once the rebuild starts.",
+      "proposal": "Rebuild it on today's app inside the Projects workstream, using its approved decisions and contract as the spec. Close the two old pull requests once the rebuild starts.",
       "options": [
         {
           "id": "rebuild",
           "label": "Rebuild from spec",
           "recommended": true,
           "pros": ["Your approved decisions carry over.", "Fits the new plugin safety work instead of fighting it."],
-          "cons": ["One to two days of agent work plus a fresh look-over by you."]
+          "cons": ["One to two days of agent work plus a fresh look from you."]
         },
         {
           "id": "rebase",
@@ -338,14 +287,14 @@
       ]
     },
     {
-      "id": "Q-10",
+      "id": "Q-9",
       "words": true,
       "surface": "OneDrive and Google Drive",
       "path": "App pull request #476 (OneDrive) and card #155 (Google files)",
-      "headline": "Close the paused OneDrive fix (keeping a card for it), and keep Google files paused until its decision?",
-      "today": "OneDrive: a Windows-only fix for freezes when browsing OneDrive folders, paused with two known breakages (content search and folder watching turned off). It's 2,598 changes behind and no card tracks it. Google files: paused on purpose, waiting on your choice of building our own Google sign-in or using an existing tool (rclone).",
+      "headline": "Close the paused OneDrive fix (keeping a card for the problem), and leave Google files paused until its decision?",
+      "today": "OneDrive: a Windows-only fix for freezes when browsing OneDrive folders, paused with two known breakages (content search and folder watching turned off). It's 2,598 changes behind and no card tracks it. Google files: paused on purpose, waiting on your choice between building our own Google sign-in and using an existing tool (rclone).",
       "problem": "Neither can be finished as it is. The OneDrive freeze still affects Windows users.",
-      "proposal": "OneDrive: write a card describing the freeze and the earlier attempt, then close the pull requests and delete the branches. Google: leave as it is. The connected-accounts workstream will ask you its question.",
+      "proposal": "OneDrive: write a card describing the freeze and the earlier attempt, then close the pull requests and delete the branches. Google: leave as it is. The connected-accounts workstream asks you its question when it starts.",
       "options": [
         {
           "id": "yes",
@@ -363,14 +312,14 @@
       ]
     },
     {
-      "id": "Q-11",
+      "id": "Q-10",
       "words": true,
       "surface": "Approved designs that were never built",
       "path": "Branches: user-notify, narrow-screen-proposals, persona-prompt-eval, usage-visibility, dev-xray-tools, offline-auth, command-center concepts, model-picker-tags",
-      "headline": "Move your answered design decks onto master and give each design a card, then delete its branch?",
-      "today": "Eight designs got your answers on decks but were never built. Examples: the assistant notifying you when it needs you, the phone and narrow-window layout, a better assistant persona prompt, usage stats, X-ray dev tools. Your answers live only on side branches, and most have no card.",
+      "headline": "Move your answered design decks onto master, give each design a card, then delete its branch?",
+      "today": "Eight designs got your answers on decks but were never built: the assistant notifying you when it needs you, the phone and narrow-window layout, a better assistant persona, usage stats, X-ray dev tools and others. Your answers live only on side branches, and most have no card.",
       "problem": "This is the most common way work goes missing here: a design gets approved, the session ends, and nothing points to it again.",
-      "proposal": "Copy each design's docs and your answers onto master, write or update a card for each (so it shows up on the Work board), then delete the branch. The relevant workstream picks it up.",
+      "proposal": "Copy each design's docs and your answers onto master, write or update a card for each so it shows on the Work board, then delete the branch. The right workstream picks it up.",
       "options": [
         {
           "id": "yes",
@@ -388,10 +337,10 @@
       ]
     },
     {
-      "id": "Q-12",
+      "id": "Q-11",
       "words": true,
       "surface": "Marketing",
-      "path": "Google Ads beginner experiment plan, and the marketing-ads branch",
+      "path": "The Google Ads beginner experiment plan, and the marketing-ads branch",
       "headline": "Is the Google Ads experiment YouCoded work that belongs here with a card, or its own project?",
       "today": "A plan for a beginner Google Ads experiment sits unsaved in the workspace, and an older marketing-ads branch exists. Neither has a card.",
       "problem": "The workspace rule says only YouCoded work lives here. Ads to grow YouCoded is a gray area.",
@@ -413,19 +362,19 @@
       ]
     },
     {
-      "id": "P-5",
-      "page": "Fix the cards",
-      "intro": "So the Work board tells the truth, and supervisors start from accurate cards."
+      "id": "P-4",
+      "page": "Fix the cards, and stop the drift",
+      "intro": "So the Work board tells the truth, supervisors start from accurate cards, and this doesn't happen again."
     },
     {
-      "id": "Q-13",
+      "id": "Q-12",
       "words": true,
       "surface": "Work cards",
       "path": "cards/ and the Work board",
       "headline": "Correct every card that's factually wrong today, in one pass?",
-      "today": "See the second card on page 1. Shipped work is described as pending, and pending work as not started. 9 cards have labels for releases that already happened. Some links point to docs or branches that don't exist. Some cards repeat the same 'chat started' line 77 times.",
+      "today": "See the second card on page 1. Shipped work is described as pending, and pending work as not started. Five cards target a release that already happened. Some links point to docs or branches that don't exist. Three cards repeat the same 'chat started' line 26 to 77 times.",
       "problem": "You and every agent read these cards to decide what to do next. Wrong cards waste sessions and hide real problems.",
-      "proposal": "One pass that fixes only facts. It rewrites stale progress lines, closes cards that are truly done (#172 Electron), marks #133 obsolete, removes dead release and blocker labels, trims repeated lines, fixes dead links, and links every live branch to its card. No priorities or groupings change in this pass.",
+      "proposal": "One pass that fixes only facts: rewrites stale progress lines, closes what's truly done (#172), marks #133 obsolete, removes dead release labels, trims repeated lines, fixes dead links, links every live branch to its card, and adds one card recording the security program and its leftovers. Priorities and groupings don't change in this pass.",
       "options": [
         {
           "id": "yes",
@@ -443,13 +392,13 @@
       ]
     },
     {
-      "id": "Q-14",
+      "id": "Q-13",
       "words": true,
       "pick": "several",
       "surface": "Work cards",
       "path": "cards/",
       "headline": "Which card reorganizations do you want?",
-      "today": "Several cards are grab-bags ('five small faults', 'eight follow-ups'). Some cover the same thing twice, and a few aren't YouCoded work at all.",
+      "today": "Several cards are grab-bags ('five small faults', 'eight follow-ups'). Some cover the same thing twice. A few aren't YouCoded work at all.",
       "problem": "A grab-bag can never be closed, so it lingers. Duplicates split progress across two places.",
       "proposal": "Pick any. Each is done with a one-line note on the affected cards.",
       "options": [
@@ -476,13 +425,6 @@
           "cons": ["They leave the Work board."]
         },
         {
-          "id": "security-card",
-          "label": "Security umbrella card",
-          "summary": "One card for the security program, recording what shipped Nov 1-7 and linking its leftovers (#161, #216, #217, #219, #221, #223, #124).",
-          "pros": ["The biggest recent work gets a record and a home for what's left."],
-          "cons": ["None found."]
-        },
-        {
           "id": "retest",
           "label": "Re-test 'probably fixed'",
           "summary": "About 10 cards describe bugs that look already fixed (#4, #7, #10, #11, #34, #35, #43, #66, #99, #101). An agent re-tests each in a dev copy and closes what's gone.",
@@ -492,182 +434,104 @@
       ]
     },
     {
-      "id": "Q-15",
+      "id": "Q-14",
       "words": true,
       "surface": "Work cards",
       "path": "Priorities on cards",
-      "headline": "55 open cards have no priority. Should I propose priorities for every card on a deck you approve?",
+      "headline": "55 of 140 open cards have no priority. Should I draft one for each, for you to approve on a follow-up deck?",
       "today": "Every card from #147 up has no P1/P2/P3. Some older P1s were deferred but still say P1 (#33, #60, #77).",
       "problem": "Supervisors need to know what matters most in their area. Without priorities they guess.",
-      "proposal": "Yes means I draft a priority for every open card with a one-line reason, and you approve or change them on a follow-up deck. No leaves priorities as they are.",
+      "proposal": "Yes: I draft a priority for every open card with a one-line reason, and you approve or change them on a follow-up deck. No: priorities stay as they are and each supervisor proposes its own when it starts.",
       "options": [
         {
           "id": "yes",
           "label": "Draft, I approve",
           "recommended": true,
-          "pros": ["Your call, with the legwork done."],
-          "cons": ["One more deck to answer (about 75 quick rows)."]
+          "pros": ["Your call, with the legwork done.", "One view across all areas."],
+          "cons": ["One more deck to answer, about 140 quick rows."]
         },
         {
           "id": "supervisor",
           "label": "Supervisors decide",
-          "summary": "Each supervisor proposes priorities for its own area when it starts.",
           "pros": ["Spread out, with more context per area."],
           "cons": ["No single view across areas."]
         }
       ]
     },
     {
-      "id": "P-6",
-      "page": "Workstreams for supervisor agents",
-      "intro": "Grouping the remaining work into areas one supervisor (with many helpers) could own end to end."
+      "id": "Q-15",
+      "words": true,
+      "surface": "How work lands",
+      "path": "Wrap-up notes, archived decks and answers, card updates",
+      "headline": "Should record-only changes land on master without waiting for your word?",
+      "today": "Card edits already save straight to master (your Oct 16 rule). Everything else waits for you to say 'merge', including wrap-up notes, archived decks with your answers, and progress docs. Two of the open pull requests and five of the unmerged branches are exactly that: records with no code.",
+      "problem": "A record that waits gets stranded on a side branch when the session ends. Several of your answered decks are only on side branches today because of this.",
+      "proposal": "Records land on their own: anything under the docs archive, deck answers, wrap-up notes and card files. Never rules, guidance, scripts or app code. Those still wait for you.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Yes, records land",
+          "recommended": true,
+          "pros": ["Your decisions stop getting stranded.", "Fewer 'ready to merge?' interruptions for docs."],
+          "cons": ["A record lands before you've read it. You can still ask for it to be changed."]
+        },
+        {
+          "id": "no",
+          "label": "Keep asking",
+          "pros": ["You see everything first."],
+          "cons": ["Stranded records keep happening."]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "Workstreams and supervisors",
+      "intro": "Every open card is grouped into one of 14 areas. One supervisor (with many helpers) owns an area end to end. The full map is workstreams.md in the findings folder."
     },
     {
       "id": "Q-16",
       "words": true,
+      "pick": "several",
       "surface": "Workstreams",
-      "path": "How cards get grouped",
-      "headline": "How should a workstream be recorded, so a supervisor knows exactly what it owns?",
-      "today": "Cards have tags and an area, but nothing says 'these 12 cards are one job for one supervisor'. Overlapping tags mean one card can look like it belongs to three areas.",
-      "problem": "Two supervisors could grab the same card, or a card belongs to no one and is never done.",
-      "proposal": "Pick how to record it.",
+      "path": "The 14 areas every open card was sorted into",
+      "headline": "Pick any area whose grouping you'd change. 'All fine' approves them as they are.",
+      "today": "140 open cards, each placed in exactly one area by code region and expertise. Sizes are rough agent-work estimates: S about a day, M a few days, L about a week, XL more than a week.",
+      "problem": "A supervisor needs one coherent area: the same code, the same expertise, few collisions with other supervisors.",
+      "proposal": "Pick any you'd regroup and say how in the note. Pages, Android, local models, mesh sync and the test rethink already have running sessions; their supervisors continue those branches.",
       "options": [
-        {
-          "id": "field",
-          "label": "A workstream field",
-          "recommended": true,
-          "summary": "Each card gets one 'workstream:' line. Each workstream gets a short brief doc: goal, cards, branches, what done means, what needs you. The Work board can group by it.",
-          "pros": ["Each card has exactly one owner.", "Cards keep their own history and numbers."],
-          "cons": ["Small change to the card tool and the Work board."]
-        },
-        {
-          "id": "parent-cards",
-          "label": "Parent cards",
-          "summary": "One big card per workstream that lists its child cards.",
-          "pros": ["No tool change."],
-          "cons": ["Lists drift out of sync with the cards, the same problem we have now."]
-        },
-        {
-          "id": "merge-cards",
-          "label": "Merge into big cards",
-          "pros": ["Fewest cards."],
-          "cons": ["Loses each item's own progress and history. Grab-bags never close."]
-        }
+        {"id": "all-fine", "label": "All fine", "recommended": true, "summary": "The 14 areas below stand as they are."},
+        {"id": "android", "label": "Phone and Android", "summary": "XL, 20 cards. The Android app and reaching your computer from a phone: the startup crash, sync, attach, phone-sized screens, the secure phone connection, phone sign-in expiry, the Play Store listing. Continues the running Android session. Release-critical."},
+        {"id": "release", "label": "Release and tests", "summary": "L, 9 cards. Ship the next version (two weeks of merged work is unreleased), the release pipeline, unreliable tests, trying automatic updates on a real Mac and Windows, gradual rollout, the four big library updates, the AUR listing. Continues the test-rethink session. Needs you for real Mac/Windows checks."},
+        {"id": "workspace", "label": "Workspace tooling", "summary": "M, 16 cards. Dev copies fully walled off from your real app, screenshot and review tools, the secrets scan, the cleaner that skips leftovers, cards that update themselves when work closes, branches linked to cards automatically. Nothing you'll see in the app, but every other area gets faster and safer."},
+        {"id": "security", "label": "Security, accounts, marketplace", "summary": "M, 8 cards. Leftovers from the Nov 1-7 security program, server traffic limits, malicious Word files, walling off file previews, sign-in loopholes, marketplace listing faults, game cheating. Two items need you: a Cloudflare setting and an Alpine patch."},
+        {"id": "sync", "label": "Sync and devices", "summary": "M, 6 cards. Sync growth and conflicts, sync security gaps, the same chat on two computers, Mesh and Cloud ideas. Continues the mesh-sync design session; that decision comes first."},
+        {"id": "engine", "label": "Engine and models", "summary": "L, 11 cards. YouCoded's own engine: sessions that stop early, tool permissions and 'Always allow', commands stuck on Running, local models (running session, built, awaiting your review), downloads and the Gemma licence, model picker, cloud cost in long chats, splitting the oversized engine code. Some fixes need paid model runs under a cap you set."},
+        {"id": "helpers", "label": "Helpers and automations", "summary": "XL, 9 cards, design-first. Helper plans, scheduled work, helper permissions and cost, many helpers in parallel, isolated zero-context helpers, parked ideas. Depends on the helper-plans answer and needs several design decks from you before building."},
+        {"id": "projects", "label": "Projects, skills, Claude Code", "summary": "XL, 8 cards. The built-in 'Your Assistant' project and no-folder chats, the engine matching Claude Code with a tool-connections screen, per-project skills and tools (rebuild), a home for skills without Claude Code, Claude Code connection faults, the assistant's browser follow-ups, a plain terminal option. Several old release-blockers."},
+        {"id": "chat", "label": "Chat and speed", "summary": "L, 13 cards. Past conversations, conversation names, vanishing or stuck messages, cards that stick, reload returning to the wrong chat, slow session switching and typing, speed-test gaps, power cost of themes, terminal lag, faster app open. Speed work needs careful before/after measuring."},
+        {"id": "files", "label": "Files and Office", "summary": "L, 9 cards. Search stopping early in big projects, ways Office saving can lose work, Office faults and privacy gaps, missing file kinds, document comments, tracking files changed by commands, slow cases, unseen deliverables. Self-contained; Office testing is slow."},
+        {"id": "accounts", "label": "Connected accounts", "summary": "L, 7 cards, paused. Google files, Calendar, Gmail, Microsoft and Apple, contacts and tasks, Signal, assistant control of desktop apps. Waits on your Google sign-in decision."},
+        {"id": "design", "label": "Look and screens", "summary": "L, 12 cards. Error wording that guesses, hover hints and contrast, dialogs and window drag, small conveniences, themes faults, the design guide's open questions, wallpaper-following background, the first-run tour, a sidebar chat list, parked motion and voice ideas. Many decks for you to look at."},
+        {"id": "pages", "label": "Pages", "summary": "M, 4 cards. Pages' next phases, sharing without GitHub, Pages on Android, real thumbnails. Already a running session."},
+        {"id": "small", "label": "Small items, no supervisor", "summary": "7 cards picked up singly: feature usage stats, subreddit moderation, two small fixes, a public roadmap, credit on commits, a games idea, the Linux tray icon. Plus #82 (your Z13 kit) moving out."}
       ]
     },
     {
       "id": "Q-17",
       "words": true,
-      "pick": "several",
-      "surface": "Workstreams",
-      "path": "The proposed groupings of every open card",
-      "headline": "Here are 12 proposed workstreams. Pick the ones whose grouping looks right. Unpicked ones I'll regroup.",
-      "today": "75 open cards across 40-odd tags. The groupings below came from both card reviewers, then were merged so every open card sits in exactly one.",
-      "problem": "A supervisor needs one coherent area: the same code, the same expertise, few conflicts with other supervisors.",
-      "proposal": "Pick every grouping that looks right to you. Sizes: S about a day, M a few days, L about a week, XL more than a week of agent work.",
-      "options": [
-        {
-          "id": "android",
-          "label": "Phone and Android",
-          "summary": "XL. #213 (running now), #182, #1, #112, #114, #115, #117, #118, #177, #194, #203, #205, #219, #99, the phone game rooms on the server, Play Store listing.",
-          "pros": ["Most release-critical area. Already has a running session to build on."],
-          "cons": ["Biggest. Its 57-commit branch should land first."]
-        },
-        {
-          "id": "release",
-          "label": "Release and tests",
-          "summary": "L. Ship the next version (2 weeks of merged work is unreleased), #29, #13, #15, #16, #189 (real Mac/Windows try), #184, #188, the test-suite rethink (running now), the three big library updates.",
-          "pros": ["Gets security fixes to users."],
-          "cons": ["Needs you for real Mac/Windows checks and the release go-ahead."]
-        },
-        {
-          "id": "workspace",
-          "label": "Workspace tooling",
-          "summary": "M. Dev copies fully walled off (#17/#218), #18, #19, #22, #24, #147, #151, #175, #178, #195 secrets scan, #196, #209, #212, plus the cleanup tool skipping leftovers.",
-          "pros": ["Self-contained. Makes every other supervisor faster and safer."],
-          "cons": ["Nothing you'll see in the app."]
-        },
-        {
-          "id": "security",
-          "label": "Security follow-ups",
-          "summary": "S-M. New umbrella card, #161, #216, #217, #221, #223, #55 leftovers, #43 game cheating.",
-          "pros": ["Small and clear."],
-          "cons": ["Two items need you (a Cloudflare setting, an Alpine patch)."]
-        },
-        {
-          "id": "sync",
-          "label": "Sync and devices",
-          "summary": "L. #98, #121, #124, #125, #127, #119, #164, plus the mesh-sync design (running now) and the sync rethink brief.",
-          "pros": ["Design work already under way."],
-          "cons": ["The mesh decision must come first."]
-        },
-        {
-          "id": "engine",
-          "label": "Engine and models",
-          "summary": "L. YouCoded's own engine: #148 stops early, #62, #66 permissions, #220, #176, #226 local models (running now), #45, #47, #69 cost, persona prompt.",
-          "pros": ["One area of the code, one expertise."],
-          "cons": ["Some fixes need paid model runs. You set a spend cap."]
-        },
-        {
-          "id": "helpers",
-          "label": "Helpers and automations",
-          "summary": "XL, design-first. #74 plans, #70, #71, #61 schedules, #63, #64, #197-199.",
-          "pros": ["Big new capability."],
-          "cons": ["Depends on Q-8, and needs many design decks from you before building."]
-        },
-        {
-          "id": "projects",
-          "label": "Projects, skills, Claude Code",
-          "summary": "XL. #57 Your Assistant project, #59 engine parity, #75 rebuild, #77, #11, #12, #87 browser, #92.",
-          "pros": ["Several old release-blockers in one place."],
-          "cons": ["Touches many screens. Must coordinate with Engine."]
-        },
-        {
-          "id": "chat-perf",
-          "label": "Chat and speed",
-          "summary": "L. #3, #4, #7, #10, #146, #173, #190, #94 slow switching and typing, #96, #100, #104, #106, #109.",
-          "pros": ["The things you feel every day."],
-          "cons": ["Speed work needs careful before/after measuring."]
-        },
-        {
-          "id": "files",
-          "label": "Files and Office",
-          "summary": "L. #33, #34 lost-work risks, #35, #38, #39, #41, #101, #208.",
-          "pros": ["Self-contained. #34 protects people's work."],
-          "cons": ["Office testing is slow."]
-        },
-        {
-          "id": "accounts",
-          "label": "Connected accounts",
-          "summary": "L, paused. #155 Google files, #156 Calendar, #157 Gmail, #158, #159, #160, #206 Signal.",
-          "pros": ["One design covers all the integrations."],
-          "cons": ["Waits on your Google sign-in decision."]
-        },
-        {
-          "id": "design",
-          "label": "Look and screens",
-          "summary": "L. #134 error wording, #135, #139, #142, #143, #130 themes, #145, #149/#150 design guide, #152, #214 first-run tour, #222, #225 phone marketplace, Pages (#90, #202-204 running now) kept separate.",
-          "pros": ["Consistency fixes across the app."],
-          "cons": ["Lots of decks for you to look at."]
-        }
-      ]
-    },
-    {
-      "id": "Q-18",
-      "words": true,
       "surface": "Supervisors",
       "path": "How a supervisor session works",
       "headline": "Approve this way of running a supervisor?",
       "today": "Today one session works one card. Large efforts (security: 12 branches) ended as piles of branches that needed combining before you could review them.",
-      "problem": "Without a fixed pattern, each supervisor invents its own, and you get surprise branches, surprise merges or work that's never reported.",
-      "proposal": "Each supervisor gets: its workstream brief and cards. One branch per repo, with all its helpers committing onto it. Strong (Opus) helpers do the building, and a fresh helper reviews each piece. It backs up to GitHub as it goes, updates its cards as each piece finishes, shows you decks only at real decision points, and never lands anything without your word. Its last report names one branch per repo and says what's done, what's verified and what needs you.",
+      "problem": "Without a fixed pattern each supervisor invents its own, and you get surprise branches, surprise merges or work that's never reported.",
+      "proposal": "Each card gets a 'workstream' line and each area a short brief: goal, cards, branches, what done means, what needs you. A supervisor gets its brief, uses one branch per repo with every helper committing onto it, has strong (Opus-class) helpers build and a fresh helper review each piece, backs up to GitHub as it goes, updates its cards as pieces finish, shows you decks only at real decision points, and never lands anything without your word. Its final report names one branch per repo: what's done, what's verified, what needs you.",
       "options": [
         {
           "id": "approve",
           "label": "Approve as written",
           "recommended": true,
-          "pros": ["Matches your existing rules (no merge without you, one branch).", "One branch per area makes review easy."],
-          "cons": ["Big branches mean bigger reviews. A supervisor can still pause to land a finished part early if you say so."]
+          "pros": ["Matches your existing rules: no merge without you, one branch per workstream.", "One branch per area makes review easy."],
+          "cons": ["Big branches mean bigger reviews. A supervisor can still ask to land a finished part early."]
         },
         {
           "id": "land-pieces",
@@ -679,50 +543,48 @@
       ]
     },
     {
-      "id": "Q-19",
+      "id": "Q-18",
       "words": true,
       "surface": "Supervisors",
-      "path": "How many run at once",
-      "headline": "How many supervisors should run at the same time to start?",
-      "today": "Six sessions are already running (Android, Pages, test rethink, mesh sync, local models, analytics).",
-      "problem": "More at once is faster, but they collide when two touch the same files, they use a lot of your plan's usage, and each produces decks for you to answer.",
-      "proposal": "Start with two or three areas that rarely touch the same code. Add more once the pattern works.",
+      "path": "Which areas start first",
+      "headline": "Which areas should get a supervisor first?",
+      "today": "Five sessions already run (Android, Pages, test rethink, mesh sync, local models).",
+      "problem": "More at once is faster, but supervisors collide when two touch the same files, they use a lot of your plan's usage, and each produces decks for you to answer.",
+      "proposal": "Start with areas that rarely touch the same code, then add more once the pattern works.",
       "options": [
         {
-          "id": "two-three",
-          "label": "Two or three",
+          "id": "three",
+          "label": "My three",
           "recommended": true,
-          "summary": "My picks: Phone and Android (continuing the running session), Release and tests (gets security fixes out), and Workspace tooling (makes the rest smoother).",
+          "summary": "Phone and Android (continuing the running session), Release and tests (gets the security fixes to users), Workspace tooling (makes the rest smoother and stops the drift).",
           "pros": ["Low collision risk.", "A manageable number of decks for you."],
           "cons": ["Other areas wait a week or so."]
         },
         {
-          "id": "five-six",
-          "label": "Five or six",
+          "id": "six",
+          "label": "Those plus three more",
+          "summary": "Add Security, Files and Office, and Chat and speed, which are also self-contained.",
           "pros": ["Much faster across the board."],
           "cons": ["Higher usage, more collisions, more decks at once."]
         },
         {
           "id": "one",
           "label": "One, as a trial",
-          "pros": ["Prove the pattern first."],
+          "summary": "Release and tests only, to prove the pattern.",
+          "pros": ["Lowest risk."],
           "cons": ["Slowest."]
         }
       ]
     },
     {
-      "id": "Q-20",
+      "id": "Q-19",
       "words": true,
       "surface": "Next steps",
       "path": "This session",
       "headline": "After you submit, should this session carry out every Yes above, then write the workstream briefs?",
       "today": "Everything above is a proposal. Nothing has been changed, deleted or landed.",
-      "problem": "The cleanup and card fixes are mechanical and could take a few hours of agent work.",
-      "proposal": "Yes: I carry out your answers in this order: save at-risk work, clean up, land what you picked, fix cards, then write a brief for each approved workstream (goal, cards, branches, what done means). Then I hand you a ready-to-paste start message per supervisor. No: I stop after saving the findings.",
-      "yes": "Yes, do it",
-      "no": "Stop there",
-      "changed": "This session carries out every Yes above in the order listed, then writes the workstream briefs.",
-      "notice": "You'll get one summary at the end and start messages for each supervisor."
+      "problem": "The cleanup and card fixes are mechanical and take a few hours of agent work.",
+      "proposal": "Yes: I carry out your answers in order (save at-risk work, clean up, land what you picked, fix cards, then write a brief per approved area) and hand you a ready-to-paste start message per supervisor. No: I stop after saving the findings."
     }
   ]
 }
