@@ -78,29 +78,34 @@ Read from the desktop's saved conversations and settings, read-only (sessions
 5. **The two "too long" errors differ.** Fault 1's pre-check error and fault 2's
    engine refusal use different words, and only the second offers Summarize.
 
-## Plan (proposed to Destin 2026-11-08, order not yet approved)
+## Resolution (2026-11-09, card #226, branch session/local-model-hardening)
 
-1. **MTP drafting for models that carry the heads** — about 2× faster replies on the
-   27B, nothing to download. Keep the existing "Speculative decoding" switch as the
-   one control; fall back to `--spec-default` for models without the heads. Measure
-   first: MTP alone vs MTP plus the n-gram drafter, on a normal answer and on a file
-   rewrite; with `--cache-type-k q8_0`; on the 35B MoE.
-2. **Find the leaking in-flight request (fault 3)** — reproduce in a dev instance
-   with a tiny model and a small window; pin with a test.
-3. **Size tool results to the room left (fault 1)** — the model gets the start of
-   the output plus how to read the rest, instead of a dead end. Cloud models keep
-   today's caps.
-4. **Reject junk summaries (fault 2)** — empty, tool-call markup, or implausibly
-   short for what it replaces → one retry, else keep history untouched and say so.
-5. **Trace the cloud-model load attempts (fault 4)** and **make the two errors one
-   (fault 5)**, with the same Summarize action.
-6. **ROCm button wording** — `BACKEND_LABELS.rocm` and the EngineCard note still say
-   "reads faster, writes slower" (September); replace with what holds now.
+| Item | Outcome | Commit |
+|---|---|---|
+| Fault 3, request left counted as running | Root cause: the model-load "hi" (`EngineSupervisor.loadModel`) and the model check (`EngineManager.probeModelLoad`) read the answer only on failure; trackedFetch held `inFlight` until a body was read. Both read it now; an aborted request also stops counting. | b3b0b1e29 |
+| Fault 1, tool results vs the window | Cut to the room below the compaction trigger before history/transcript (`tool-result-room.ts`, 3 chars/token, floor 2,000). | b3a125c1e |
+| Fault 2, junk summaries | `isJunkSummary` + one plain-prose retry; junk twice keeps history. | b3a125c1e |
+| Fault 5, two too-long errors | `ContextCannotFitError` classified like the engine's refusal. | b3a125c1e |
+| Fault 4, cloud ids sent to the local engine | Already fixed on this branch by 04c209dc3 (only `local-engine` bindings warm/load); present in v1.3.3. Stale config entries are inert and left alone. | — |
+| ROCm wording | "usually slower in real use". | 253a19b92 |
+| MTP | On per model for DENSE models whose file has the heads; MoE left out. 27B: replies 6.7 → 11.6-11.9 t/s, rewrites 42 → 57, opening read ~4% slower, works with a vision projector. 9B (no heads) refuses to load with it, hence per file. | efaa9558d |
+| Speculative decoding copy | No longer says other replies are unchanged. | 1552bd6e0 |
+
+**End-to-end (isolated dev app, Qwen3.5-9B, 32k window, the desktop's question):** run 2
+went through cleanly — the 52k-character file was cut to 35,727 characters with the
+"read the rest" notice, the model compacted twice with real summaries ("## Goal …"),
+22 tool calls, ~20.9k of 32k at the end (it then paused on a permission ask for a
+command outside the project, by design). Run 1 ended once with a too-long refusal
+right after the cut read (~22.6k real tokens, measured with the 9B tokenizer); the
+"reply allowance pushed it over" theory was tested on the engine and is FALSE
+(21.4k prompt + 11.5k max_tokens is accepted). Not reproduced; a too-long turn now
+logs the refusal's token counts (`logTurnFailure` `tokenCounts`) so a recurrence can
+be diagnosed.
 
 ## Not yet verified / open
 
 - Windows and macOS: none of this session's speed work was measured there.
-- Pending runs: 9B and 2B kept-reading cost; MTP on the 35B MoE (need the USB drive).
+- Pending runs: 9B and 2B kept-reading cost (not rerun; the 27B/35B result stands).
 - Picking a context size from the hardware instead of the fixed 32,768 default
   (the desktop's 12 GB card could likely hold 64k for the 9B) — larger, riskier; later.
 - Model sleep (15 min) still drops every reading; the background read costs the chip
