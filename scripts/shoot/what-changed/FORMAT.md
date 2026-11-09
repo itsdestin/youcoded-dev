@@ -4,7 +4,8 @@ The contract between the three parts of "What changed since last release": the *
 `shoot`, writes one `*.elements.json` beside each picture), the **comparer** (`compare.mjs`, writes
 `changes.json` and the highlight pictures) and the **viewer**: the work board's Screens tab (`pages/work-board/renderer/make_changes.py <run>` turns a
 run into `<run>/board/`; `node scripts/manage.mjs --changes <run>` shows it — Destin, 2026-11-04: the comparison
-lives in the existing Screens tab and its picture popup, not a page of its own). The older `viewer/` is superseded.
+lives in the existing Screens tab and its picture popup, not a page of its own). The older stand-alone `viewer/` and
+`serve.mjs` (with its Keep / Not this file, `decisions.json`) are superseded and no longer kept in step with this file.
 Change this file first when a part needs a new field.
 
 ## Folder
@@ -19,7 +20,6 @@ Change this file first when a part needs a new field.
   after/<screen name>/<theme>.png
   after/<screen name>/<theme>.elements.json
   diff/<screen name>/<theme>.mask.png  changed pixels nothing in the element lists explains (optional)
-  decisions.json                       the viewer's Keep / Not this answers (below)
 ```
 
 ## `*.elements.json` (recorder)
@@ -63,7 +63,8 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
     {
       "name": "settings/about", "theme": "meadow-mist",
       "status": "changed | unchanged | new | nobefore | removed | failed",
-      "reason": "only when failed or new: why",
+      "reason": "only when failed, new or nobefore: why",
+      "whatsNew": "new only: one plain sentence saying what to look for (from the screen list's whats-new.ts)",
       "before": "before/settings/about/meadow-mist.png",
       "after": "after/settings/about/meadow-mist.png",
       "mask": "diff/settings/about/meadow-mist.mask.png",
@@ -99,18 +100,11 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
 - `shift` is a shared offset the comparer found (a row inserted above), reported once so the elements
   below are not each listed as `moved`.
 
-## `decisions.json` (viewer)
-
-```json
-{ "run": "<run folder name>", "decidedAt": "...", "screens": { "settings/about": { "verdict": "keep | not-this", "note": "" } } }
-```
-
-Decisions are per screen name (both themes together).
-
-## Edge cases the viewer relies on
+## Edge cases the board relies on
 
 - `removed` screen: `after` is `null`; only the before picture shows.
 - `failed` screen: `before` / `after` may be absent; no picture shows.
 - `moved` change: `beforeBox` is drawn dashed on the before picture.
-- `decisions.json`'s `run` is the run folder's name (the server fills it in; `changes.json` carries none).
-- Counts: a screen name is "changed" when any of its themes is; "changed" includes removed.
+- Counts: a screen name is "changed" when any of its themes is; "changed" includes removed. The board counts screen
+  names (a name such as `chat` holds many situations, `chat#…`), so its numbers are smaller than `changes.json`'s
+  picture counts.

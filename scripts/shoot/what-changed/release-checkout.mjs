@@ -2,9 +2,10 @@
 // repo at the tag, kept under the workspace's gitignored scratch/ and reused on later runs.
 //
 // WHY node_modules is a hardlink copy (`cp -al`) of the after checkout's, never a link to it and
-// never a fresh install: workspace rule (docs/PITFALLS.md -> Worktrees). That is only valid when
-// the two lockfiles are identical, so a differing lockfile is refused with a clear message
-// instead of building the old app against the wrong packages.
+// never a fresh install: workspace rule (docs/PITFALLS.md -> Worktrees). Both sides therefore use
+// TODAY's packages. When the lockfiles differ the run goes ahead and names the changed packages
+// (run.json `packagesDiffer`, and the summary), because a look change that comes only from a
+// package update cannot show (see the WHY at the lockfile check below).
 //
 // Remove it later:  git -C youcoded worktree remove --force scratch/release-<tag>
 import { spawnSync } from 'node:child_process';

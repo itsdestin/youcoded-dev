@@ -210,9 +210,24 @@ Spec: `docs/archive/specs/2026-09-24-shoot-and-explore.md`. Tests: `node --test 
 ## What changed since the last release
 
 `node scripts/shoot/what-changed.mjs [--since v1.3.3] [--after .] [--themes a,b|all] [--only 'settings/*'] [--out <dir>]`
-makes (once, reused) a detached checkout of the newest `v*` tag at `scratch/release-<tag>` with a hardlink copy of this
-checkout's `node_modules` (refuses if the lockfiles differ), shoots every screen on both sides, and writes
-`<out>/changes.json` (format: `what-changed/FORMAT.md`). Every picture shoot takes also gets a
-`<theme>.elements.json` beside it (buttons, fields, words, pictures with boxes; `--no-elements` turns it off).
-`--compare-only <run>` redoes just the comparison. Remove the release checkout with
-`git -C youcoded worktree remove --force scratch/release-<tag>`.
+compares every shipping screen at the last release with the current code (`--help` lists every option):
+
+1. **Release side.** A detached checkout of the newest `v*` tag at `scratch/release-<tag>` (made once, reused), with a
+   hardlink copy of this checkout's `node_modules`. When the lockfiles differ it goes ahead and names the changed
+   packages in `run.json` (a look change caused only by a package update cannot show). Then its **photo copy**
+   (`what-changed/photo-copy.mjs`, at `scratch/release-photo/`): the release's own app code with today's photo-only
+   screen list, practice pages and sample data laid over it, so the release can be photographed on every screen today's
+   list knows. A screen the release cannot open is listed as such, never pictured from the wrong code.
+2. **Pictures.** Both sides with `--freeze` (fixed clock, fixed "random", reduced motion), default themes Meadow Mist and
+   Halftone Dimension. Developer catalogues and personal sample Pages are left out. Each picture gets a
+   `<theme>.elements.json` beside it (buttons, fields, words, pictures with boxes; `--no-elements` turns it off).
+3. **Compare** (`what-changed/compare.mjs`) into `<out>/changes.json` (format: `what-changed/FORMAT.md`). Every
+   changed picture is then taken once more per side, and differences that also appear between a side's own two
+   pictures (flicker) are dropped.
+
+`--compare-only <run>` redoes just the comparison (reusing the repeat pictures). **To look at a run:**
+`python3 pages/work-board/renderer/make_changes.py <run>`, then `node scripts/manage.mjs --no-git --changes <run>`; the
+work board's Screens tab then has "Changed since <release>" and "New since <release>" filters, and each picture's
+popup compares both sides. Restart `manage.mjs` after rebuilding, or it keeps serving the old page. A state marked
+`newIn: 'after'` in the screen list needs a one-sentence "what to look for" in `screens/whats-new.ts` (a test enforces
+it); the board shows it. Remove the release checkout with `git -C youcoded worktree remove --force scratch/release-<tag>`.
