@@ -152,3 +152,21 @@ Not copied, deliberately:
   - `docs/active/design/2026-10-26-notify-user/notify-user.review.json`
   - `docs/active/plans/2026-10-26-notify-user.md`
 
+
+## Ideas needing a card
+
+Three short entries to turn into cards. None has a card today.
+
+### 1. Manage a past chat from its chat-search card
+Source: branch `origin/session/chatsearch-card-roadmap` (tip dfab5c42e), Destin 2026-10-12, priority P3.
+When the assistant searches your chat history, each chat it names shows up as a card with only Preview and Resume. Idea: let you rename it, add or remove tags, edit its note, and mark it complete or priority right on that card, without opening the Resume browser. It came up while sorting 55 unfinished September/October chats, where every change had to go through the assistant.
+
+### 2. "Syncing..." disappears before the sync has finished
+Source: youcoded PR #444 (branch `session/sync-retry-feedback`), idea only; the branch is 3,000 commits behind and conflicts, so rewrite rather than rebase.
+In Sync settings, after you press Try again, the "Syncing..." indicator vanishes as soon as the request is accepted, not when the sync really ends, so you get no sign of whether it worked. Still true on master (the sync panel's `runSpacesSyncNow` clears it early). The fix on the branch was: the button reads "Trying again..." and "Syncing..." stays until the real result arrives (about +73/-16 lines); its WHY comment is in commit df56d0a78. Close PR #444 once this is a card.
+
+### 3. OneDrive read protection (stop online-only files freezing the app)
+Source: draft PRs youcoded #476 and youcoded-dev #97 (both still open, no comments), one commit 4e6286041 "WIP: preserve incomplete OneDrive read protection" (2026-09-15), handoff `docs/active/handoffs/2026-09-15-onedrive-paused.md` on that branch. Never merged or rebuilt; nothing equivalent on master.
+Problem: on Windows, YouCoded silently makes OneDrive download online-only files while browsing project folders, previews, project instructions or starting a chat, which freezes the app and sometimes the computer (Destin, 2026-10-18: "downloads from onedrive still freeze the computer/app completely more or less"). The branch shows a cloud icon on such files and asks "Download and open / Not now" first; project instructions get a small card in that chat. It needs a helper process, a Windows file-status check and one-time permission tokens (68 files, +3282/-154).
+Known faults introduced by the branch: Windows content search became filenames-only, and Windows recursive project watching was switched off. Other gaps: older readers (rule indexing, specialist discovery) unguarded; no real Windows+OneDrive test; Android unverified. The nearest thing on master is youcoded #632 (removed blocking file checks in the folder watcher), which does not close the freeze.
+Suggested card: "Stop OneDrive downloads freezing the app", blocked on a real Windows+OneDrive test; rebuild from the branch after removing the two Windows shortcuts. Keep both PRs open until then; they are the only record. Card #93 mentions it but no card tracks it.
