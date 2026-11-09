@@ -1,0 +1,203 @@
+{
+  "title": "Phones and narrow windows — try the options",
+  "key": "narrow-screens-live-2",
+  "out": "narrow-screens-2.live.html",
+  "stage": "design",
+  "live": {
+    "worktree": "sessions/narrow-screen-proposals/youcoded",
+    "paneWidth": 390
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Top bar",
+      "path": "The strip across the top of a phone screen",
+      "headline": "Which top bar do you want on a phone?",
+      "hint": "Each phone below is the real app on practice data, as the Android app. Tap ☰, the session name and the buttons in each.",
+      "risk": "These are the Android app's top bar. A phone browser connected to your computer looks the same once REMOTE moves into the pill row (step 3).",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "summary": "What the Android app shows now: the name in a pill, \"+10\" beside it, an arrow for the list. ☰ opens a small menu.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "today"
+          },
+          "app": "default"
+        },
+        {
+          "id": "name",
+          "label": "Full name, small count",
+          "summary": "Your option A. Same buttons; the \"+10\" chip becomes a small 10 on the arrow, so it no longer reads as a separate button.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "name"
+          },
+          "app": "default"
+        },
+        {
+          "id": "drawer",
+          "label": "Side drawer",
+          "summary": "Your option C. The name is a plain title. ☰ opens one panel from the left: your sessions, then Games, Files, Pages, Projects, Settings last — like the Claude and ChatGPT apps.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "drawer"
+          },
+          "app": "default"
+        },
+        {
+          "id": "pair",
+          "label": "Two buttons each side",
+          "summary": "Your idea. ☰ and Projects on the left; + New session and the chat/terminal switch on the right; the name in the middle.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "pair"
+          },
+          "risk": "On the narrowest phones (360 wide) the name has about 140 pixels left — roughly 16 letters.",
+          "app": "default"
+        }
+      ]
+    },
+    {
+      "id": "L-2",
+      "surface": "Session list",
+      "path": "Tap the session name (or its arrow) at the top",
+      "headline": "Which way should the session list open on a phone?",
+      "hint": "Tap the session name at the top of each phone to open its list. The side-drawer version is on the step before.",
+      "risk": "All three new shapes use the same squeezed rows: status as a coloured dot instead of the word, the model name without \"Claude Code ·\", and the folder name given room before anything else.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "summary": "What the Android app shows now: a box under the top bar, rows with Working/Inactive words and long model names cut off.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "today"
+          },
+          "app": "default"
+        },
+        {
+          "id": "dropdown",
+          "label": "Drops down, full width",
+          "summary": "Same place as today, edge to edge, with the squeezed rows.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "name",
+            "narrowList": "dropdown"
+          },
+          "app": "default"
+        },
+        {
+          "id": "sheet",
+          "label": "Slides up from the bottom",
+          "summary": "Rises from the bottom with a grab bar; New session and Resume sit at the bottom edge, in thumb reach. Tap the dimmed chat to close.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "name",
+            "narrowList": "sheet"
+          },
+          "app": "default"
+        },
+        {
+          "id": "full",
+          "label": "Its own screen",
+          "summary": "A whole screen titled \"Your sessions\" with a close button.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "name",
+            "narrowList": "full"
+          },
+          "app": "default"
+        }
+      ]
+    },
+    {
+      "id": "L-3",
+      "surface": "Status pills",
+      "path": "The row of pills under the message box, on a phone browser connected to your computer",
+      "headline": "Is this the pill row you meant: one swipeable line of short pills, with Remote as a chip?",
+      "hint": "Swipe the pill row under the message box sideways. Tap any pill: each still does what it does today.",
+      "changed": "One row instead of two. Model shows its icon and name only; permissions show a shield and the short word; helpers show an icon and a count; the theme shows a palette icon; announcements a star. A \"Remote\" chip comes first, replacing REMOTE in the top bar. The pencil stays pinned at the right end.",
+      "notice": "The chat gets one more line of room, and the top bar loses the REMOTE label.",
+      "risk": "The Remote chip is fully rounded while the other pills have small corners, so the row's shapes don't quite match yet. \"Remote\" stays generic because the app has no name for your computer to show.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640,
+        "params": {
+          "connection": "remote",
+          "narrowPills": "compact"
+        }
+      },
+      "yes": "Yes, this",
+      "no": "Not this"
+    },
+    {
+      "id": "L-4",
+      "surface": "Shortcuts",
+      "path": "The message box on a phone",
+      "headline": "Is this the shortcuts button you meant?",
+      "hint": "The row of shortcut chips above the message box is gone. Tap the new button between the paperclip and the compass.",
+      "changed": "The chips (Journal, Inbox…) move into a menu that opens above a new button in the message box, built like the paperclip and mic. \"Edit shortcuts\" sits at the bottom of the menu.",
+      "notice": "One more line of chat on screen at all times. Choosing a shortcut fills the message box exactly as tapping the chip did.",
+      "risk": "The icon is three stacked pills, chosen because a lightning bolt already means Fast mode in the pill row. New users may not guess what it is until they tap it once.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640,
+        "params": {
+          "narrowChips": "button",
+          "platform": "android"
+        }
+      },
+      "yes": "Yes, this",
+      "no": "Not this"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Top bar",
+      "path": "Settings → Appearance",
+      "headline": "If you like two of the top bars, should people be able to choose between them?",
+      "today": "There is one phone top bar, picked for everyone.",
+      "problem": "You said you were open to both the full-name bar and the side drawer, and that people might want either.",
+      "proposal": "Pick one for everyone now, or offer the two you like most as a choice in Appearance.",
+      "options": [
+        {
+          "id": "one",
+          "label": "One for everyone",
+          "pros": [
+            "Simpler: one layout to learn, explain and keep working.",
+            "Can still add a choice later."
+          ],
+          "cons": [
+            "Someone who prefers the other style has no way to get it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "setting",
+          "label": "A choice in Appearance",
+          "pros": [
+            "Each person gets the style they like."
+          ],
+          "cons": [
+            "Two layouts to keep working on every phone change.",
+            "One more setting most people will never open."
+          ]
+        }
+      ]
+    }
+  ]
+}
