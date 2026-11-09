@@ -14,9 +14,9 @@ vision: sync.follow.safety, sync.added.longchats
 work: session/sync-slim-history
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: Measured 2026-11-02 (GitHub 3.78 GB, +1.2 GB/month, 56% pictures); plan for slimming synced chats written, independently reviewed, revised (rev 2)
+Next: Destin's go-ahead, then build the slim rule and test that Claude Code can continue a slimmed chat in a dev copy; history fresh start (piece 2) after
+Blocked: Waiting on Destin's go-ahead to build
 
 Chats
 - 2026-11-09 session/sync-slim-history: Slim synced chats (pictures out of sync copies), plan in docs/active/plans/2026-11-02-slim-synced-chats.md
