@@ -16,9 +16,9 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: Steps 1, 1b, 2 and 3 built and tried (not on master). Step 4 automations: screens approved (round 3, 2026-11-07); build plan settled on decks plan / plan-b (2026-11-08) — links to pages/projects, per-job rules, saved Claude runs, no system notifications, devices via the mesh.
-Next: Step 4: Destin answers deck pages-finish-step4-plan-c (permissions explained; one or two 'not listed' rows), then one design-review round on docs/active/specs/2026-11-07-pages-step4-automations-technical-design.md, then build.
-Blocked: none
+Done: Steps 1, 1b, 2 and 3 built on session/90-pages-finish and tried by Destin (not on master). Step 4 (automations): screens approved and drawn in the workbench (fake backend only); build plan settled on decks plan to plan-f (per-job permissions, Advanced settings fold cards, practice runs on copies).
+Next: Step 4: Destin submits deck pages-finish-step4-plan-g (what a command may reach; started, not submitted); then draw the remaining screens, one design review, build. Then steps 5-6. Status: docs/active/specs/2026-10-24-pages-finish-architecture.md, 'Where this stands'.
+Blocked: Step 4 build waits on the plan-g deck.
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
