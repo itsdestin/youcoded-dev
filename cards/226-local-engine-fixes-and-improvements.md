@@ -10,6 +10,7 @@ finish: On session/local-model-hardening: MTP on per model where the file suppor
 created: 2026-11-09
 why: Destin 2026-11-08: one workstream for the local engine — the context faults found on the desktop plus everything we know about making any one model run as fast as it can on the user's hardware; to be finished in the local-model-hardening session. Reference: docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md
 priority: P3
+work: session/local-model-hardening
 ---
 Progress
 Done: nothing yet.
@@ -17,6 +18,7 @@ Next: plan it.
 Blocked: nothing.
 
 Chats
+- 2026-11-09 session/local-model-hardening: speed work (warm-up, per-chat slots) built; context faults and MTP to fix here
 
 Merged in #48 "Local models: open decisions, faults and ideas"
 Progress
