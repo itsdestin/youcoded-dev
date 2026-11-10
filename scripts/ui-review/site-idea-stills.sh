@@ -22,6 +22,9 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"; WS="$(cd "$HERE/../.." && pwd)"
 CHECKOUT="${1:?app checkout}"; GALLERY="${2:?gallery output folder}"
+# WHY up front: with magick missing the old loop died on the first picture AFTER a full (slow)
+# shoot. Say so before shooting anything.
+command -v magick >/dev/null || { echo "[site-idea-stills] magick (ImageMagick) is not installed — it makes the final pictures" >&2; exit 1; }
 THEME="${SITE_STILL_THEME:-youcoded}"; W="${SITE_STILL_W:-1400}"; H="${SITE_STILL_H:-875}"
 read -r -a SHOOT <<<"${SITE_STILLS_SHOOT:-node $WS/scripts/shoot/shoot.mjs}"
 # screen name : output name
@@ -53,11 +56,16 @@ node -e '
   }
 ' "$SHOTS/manifest.json" "${#SCREENS[@]}"
 
-mkdir -p "$GALLERY"
+# WHY convert into the run's temp dir first: writing straight into the gallery meant a failure on
+# picture 3 left two new pictures beside two old ones (a mixed set). Nothing reaches the gallery
+# unless all four were made.
+mkdir -p "$RUN/final"
 for p in "${SCREENS[@]}"; do
-  src="$SHOTS/${p%%:*}/$THEME.png"; out="$GALLERY/idea-${p##*:}.webp"
+  src="$SHOTS/${p%%:*}/$THEME.png"
   [[ -f "$src" ]] || { echo "[site-idea-stills] missing picture $src" >&2; exit 1; }
   # `!` so the aspect ratio can never drift off the site's 1216x760 box.
-  magick "$src" -resize 1216x760! -quality 80 "$out"
+  magick "$src" -resize 1216x760! -quality 80 "$RUN/final/idea-${p##*:}.webp" || { echo "[site-idea-stills] magick failed on ${p%%:*}; nothing was written to $GALLERY" >&2; exit 1; }
 done
+mkdir -p "$GALLERY"
+for p in "${SCREENS[@]}"; do mv -f "$RUN/final/idea-${p##*:}.webp" "$GALLERY/idea-${p##*:}.webp"; done
 echo "[site-idea-stills] wrote ${#SCREENS[@]} pictures to $GALLERY (theme $THEME, shot at ${W}x${H})"
