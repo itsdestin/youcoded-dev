@@ -1,0 +1,467 @@
+{
+  "title": "Real-app testing: where it stands and what to change",
+  "key": "test-rethink-questions-2",
+  "out": "test-rethink.questions-2.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Testing",
+      "path": "The whole effort",
+      "headline": "The goal is to catch show-stoppers before users do, without slowing everyday work; looks and wording come second.",
+      "changed": "The phone test on 1 November found six show-stoppers. Five were \"it doesn't work\" problems and four happened only on the phone. None was about looks or wording. Yet most of the building since went into comparing pictures of computer screens.",
+      "notice": "If this holds, the rest of this deck leans toward \"does it work, especially on the phone\" and away from more picture-comparing tools.",
+      "yes": "That's the goal",
+      "no": "Not quite"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Release walk-through",
+      "path": "The robot that installs the app and uses it like a new user",
+      "headline": "How often should the walk-through run?",
+      "today": "A script installs the finished app on throwaway Linux, Windows and Mac machines and does 20 things a new user does: sign in, chat, save a file, attach a file, install a theme, reopen the app, and so on. You chose release-only because we expected it to take 30 to 60 minutes. Measured, it takes 3 to 4 minutes per machine. It uses the capped test key ($15 a month limit); the cost of one run has not been measured yet.",
+      "problem": "Run only at release, a break made three weeks ago shows up on release day, mixed in with hundreds of other changes, and blocks the release while the cause is hunted down.",
+      "proposal": "Run it overnight as well. Your everyday work is not slowed either way: it never runs while you iterate.",
+      "options": [
+        {
+          "id": "nightly",
+          "label": "Every night",
+          "pros": [
+            "A break shows up the next day, when only one day of changes could have caused it.",
+            "Release day stops being the first time anyone finds out.",
+            "Adds nothing to the wait on everyday changes."
+          ],
+          "cons": [
+            "Spends test-key money every night. I would measure one run first and tell you the monthly figure before turning it on.",
+            "One more daily result to look at."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "weekly",
+          "label": "Once a week",
+          "pros": [
+            "About a seventh of the nightly cost.",
+            "Still catches a break long before release day."
+          ],
+          "cons": [
+            "A break can sit for up to a week, with a week of changes to search through."
+          ]
+        },
+        {
+          "id": "release-only",
+          "label": "Release only",
+          "summary": "What you chose on 1 November.",
+          "pros": [
+            "Cheapest: $1 to $3 a release by the earlier estimate."
+          ],
+          "cons": [
+            "Breaks are found late and block the release.",
+            "The check itself can rot unnoticed between releases."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Daily checks",
+      "path": "Morning engine check and outside-services check",
+      "headline": "When should a new daily check be switched on?",
+      "today": "Two daily checks are built but off: one starts the app's engine on a computer and on the phone's engine, the other asks every outside service the app depends on whether it answers. Both would fail from day one, because they detect bugs that are known and not yet fixed (the phone crash, the phone sync bug, the dead games address). Separately, two checks that already run every day have been failing and nobody acted: the nightly test run for at least five days, and the Claude Code popup watcher since about 29 October.",
+      "problem": "A check that is always red teaches you to ignore red. Then the day it turns red for a new reason looks the same as every other day.",
+      "proposal": "Decide the rule for turning checks on.",
+      "options": [
+        {
+          "id": "green-first",
+          "label": "Only once it passes",
+          "pros": [
+            "Red always means something new broke.",
+            "Simple: no list of excuses to keep up to date."
+          ],
+          "cons": [
+            "No daily phone check until the Android repairs (card #213) are in the app."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "known-list",
+          "label": "On now, known bugs excused",
+          "summary": "Each check carries a short list of known problems and only fails on something not on the list.",
+          "pros": [
+            "Watching starts today, even with known bugs outstanding."
+          ],
+          "cons": [
+            "The list needs upkeep, and a bug left on it too long becomes invisible again."
+          ]
+        },
+        {
+          "id": "red-now",
+          "label": "On now, red until fixed",
+          "pros": [
+            "Nothing extra to build."
+          ],
+          "cons": [
+            "Red every morning for a known reason, which is how the two existing failing checks got ignored."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Daily checks",
+      "path": "How a failure reaches you",
+      "headline": "Where should a failed check show up for you?",
+      "today": "A failed check turns red on GitHub and GitHub emails you. That is the only signal, and it is the same signal the two already-failing checks have been sending for days.",
+      "problem": "Emails from GitHub are easy to miss among the rest, and they describe the failure in developer terms.",
+      "proposal": "Pick where you would actually see it.",
+      "options": [
+        {
+          "id": "board",
+          "label": "On the work board",
+          "summary": "A plain line per check on the board you already open: passed, or what failed in everyday words.",
+          "pros": [
+            "It is where you already look at the state of the app.",
+            "Says what broke in plain words."
+          ],
+          "cons": [
+            "Needs building, and the board update has to be installed into your real app with your yes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "session-start",
+          "label": "At the start of each chat",
+          "summary": "The assistant is told what is red when a work session starts, and tells you.",
+          "pros": [
+            "You hear about it without opening anything.",
+            "The assistant can offer to fix it on the spot."
+          ],
+          "cons": [
+            "You only hear when you start a session in this workspace."
+          ]
+        },
+        {
+          "id": "email",
+          "label": "GitHub email only",
+          "pros": [
+            "Nothing to build."
+          ],
+          "cons": [
+            "The same channel that is being ignored today."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Existing tests",
+      "path": "The nightly test run on the app's main line",
+      "headline": "Should I fix the nightly tests that are already failing, before anything else?",
+      "today": "The app's existing nightly test run has failed for at least the last five nights, in the Windows and Mac test groups. This is not caused by the testing work in this deck; it was already broken on the main line.",
+      "problem": "The morning engine check uses the builds that nightly run makes, and a red nightly hides any new failure behind the old ones.",
+      "proposal": "Yes: I find the causes and fix them now, on this work's branch, before the other steps. No: I leave it and carry on; it stays red. Windows-only or Mac-only causes may need a couple of rounds, since those machines are GitHub's."
+    },
+    {
+      "id": "P-2",
+      "page": "The phone",
+      "intro": "Four of the six show-stoppers happened only on the phone. This is where the least has been built."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Phone testing",
+      "path": "Using the app on a phone before a release",
+      "headline": "How should the phone app itself be tested before a release?",
+      "today": "One phone check exists: it runs the phone's engine on a GitHub machine with no phone, and it reproduced the startup crash and the sync bug. Nothing checks the phone's screens. \"Attach file does nothing\" and \"the phone gets computer screens\" would still ship unnoticed. You asked on 1 November whether free GitHub machines could do this. We tried one kind and it cannot run a pretend phone. The ordinary kind can, but our phone app is built only for real phone chips, so it may not run there. That was never tried.",
+      "problem": "The part of the app that failed worst is the part with the least protection.",
+      "proposal": "Pick the route. The first one is a short trial with an uncertain result.",
+      "options": [
+        {
+          "id": "trial-then-flip",
+          "label": "Try a pretend phone first",
+          "summary": "A short trial on the ordinary free machines. If it works, the walk-through runs on a pretend phone for free. If not, fall back to your Flip7 checklist.",
+          "pros": [
+            "If it works: phone coverage every night, free, with nothing for you to do.",
+            "If it fails, little is lost and you still get the checklist."
+          ],
+          "cons": [
+            "May not work. A pretend phone also misses things only a real phone shows, like the fold and the real keyboard."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "flip-checklist",
+          "label": "Flip7 checklist each release",
+          "summary": "A written list of about ten things you do by hand on your own phone before each release, roughly 10 minutes.",
+          "pros": [
+            "Free and available now.",
+            "A real phone, so it sees what users see."
+          ],
+          "cons": [
+            "Relies on you doing it every release.",
+            "Only at release, so a phone break can sit for weeks."
+          ]
+        },
+        {
+          "id": "dedicated-phone",
+          "label": "Buy a test phone",
+          "summary": "A cheap phone, about $150 to $250, left plugged in for the script to drive.",
+          "pros": [
+            "A real phone, checked without you."
+          ],
+          "cons": [
+            "Costs money, needs building, and a plugged-in phone needs looking after."
+          ]
+        },
+        {
+          "id": "not-now",
+          "label": "Leave it for now",
+          "pros": [
+            "No effort."
+          ],
+          "cons": [
+            "The next phone-only show-stopper ships the same way the last four did."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Sync",
+      "path": "Backup and sync between two copies of the app",
+      "headline": "Should I set up a separate test account so sync can be tested for real?",
+      "today": "\"Sync always fails on the phone\" was one of the six show-stoppers. The engine check catches that one cause. Nothing checks that a chat or file made on one copy of the app actually arrives on another, because that needs an account to sync through, and it must not be yours.",
+      "problem": "Sync can break in a way the engine check does not see, and you would find out from your own data not arriving.",
+      "proposal": "Yes: I tell you exactly which account to create (a spare GitHub account used only for tests), you create it, and I build the sync step. No: sync stays covered only by the engine check."
+    },
+    {
+      "id": "P-3",
+      "page": "Looks: what changed since the last release",
+      "intro": "The picture comparison on the work board's Screens tab. It took the most building and matches the goal least."
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Work board, Screens tab",
+      "path": "\"Changed since\" and \"New since\" the last release",
+      "headline": "What should happen to the written list of changes beside each picture?",
+      "today": "The tool takes a picture of 680 screens and situations at the last release and now, in two themes, and shows you the ones that differ. Beside each pair it lists what changed: this button was added, this word moved, this area scrolled. In the latest run, 96 pictures changed. For 25 of the 48 changed situations the two themes describe the same change differently. 26 pictures list ten or more items and one lists 61.",
+      "problem": "The pictures are easy to judge by eye. The list beside them is long, repeats itself and sometimes disagrees with itself, and it is the part that costs the most to keep working.",
+      "proposal": "Decide how much of the list to keep.",
+      "options": [
+        {
+          "id": "pictures-only",
+          "label": "Pictures and highlight only",
+          "summary": "Before and after side by side with the changed area marked. No item-by-item list, except changed wording, which is hard to spot by eye.",
+          "pros": [
+            "What you judge is the picture, and that part is reliable.",
+            "Much less to maintain."
+          ],
+          "cons": [
+            "You find the change inside the highlighted area yourself.",
+            "The work already put into the list is set aside."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "fix-list",
+          "label": "Keep the list, fix it",
+          "summary": "One merged description per situation across both themes, and long lists folded into \"this area changed\".",
+          "pros": [
+            "Tells you in words what to look for."
+          ],
+          "cons": [
+            "More building on the part least tied to the goal, with no certainty the noise goes away."
+          ]
+        },
+        {
+          "id": "wait",
+          "label": "Leave it, decide after a release",
+          "summary": "Change nothing. Use it as it is for the next release, then decide from experience.",
+          "pros": [
+            "No more effort until you know whether you use it."
+          ],
+          "cons": [
+            "The first real use is with the noisy list."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Looks",
+      "path": "Three look areas no test covers any more",
+      "headline": "Is checking these three look areas only at release acceptable?",
+      "today": "The cleanup removed tests that pinned styling, as you asked. Three areas are now protected only by you looking at pictures: terminal backgrounds, the built-in themes' colours in the first instant the app opens, and the styling of floating windows. The picture comparison runs only before a release.",
+      "problem": "One of these could break on the main line and stay broken for weeks, in the app you use daily, until the next release review.",
+      "proposal": "Yes: release-only is fine; you would notice in daily use anyway. No: I run the picture comparison for just these three areas weekly and report only if something changed."
+    },
+    {
+      "id": "P-4",
+      "page": "Cleanup, leftovers and order",
+      "intro": "Smaller decisions that close this work out."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Test cleanup",
+      "path": "Trimming the existing tests",
+      "headline": "Should the test cleanup stop here?",
+      "today": "You guessed many tests could be merged or dropped, and I first estimated a third. After sorting them, about 7.5% of the test code was cut (1,285 files down to 1,243). Most large test files turned out to check different behaviours. A guard now stops new tests from pinning wording.",
+      "problem": "Further trimming means reading the smaller files one by one for small gains, with some risk of dropping a test that mattered.",
+      "proposal": "Yes: stop; the guard keeps it from growing back the wrong way. No: sweep the smaller files too."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Test cleanup",
+      "path": "Tests for your personal Pages",
+      "headline": "What should happen to the 44 personal-page test files that now run nowhere?",
+      "today": "Tests for your own Pages (not part of the app everyone gets) were moved out of the app's test run so they stop slowing it. They can still be run by hand, but nothing runs them automatically any more.",
+      "problem": "A change to the app could break one of your personal Pages and no check would say so.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "nightly",
+          "label": "Run them nightly",
+          "pros": [
+            "Your Pages stay protected.",
+            "No effect on everyday speed."
+          ],
+          "cons": [
+            "One more nightly result that can go red."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "manual",
+          "label": "Leave them manual",
+          "pros": [
+            "Nothing to build."
+          ],
+          "cons": [
+            "In practice they will not be run."
+          ]
+        },
+        {
+          "id": "delete",
+          "label": "Delete them",
+          "pros": [
+            "Less to keep."
+          ],
+          "cons": [
+            "Your Pages lose their only tests."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Release walk-through",
+      "path": "Steps planned but not built",
+      "headline": "Which missing walk-through steps should be built?",
+      "today": "You asked for the walk-through to cover install, first chat, chat tasks, files, sessions, sync, browser and marketplace. All are built except sync. Two more were planned and not built: making a Page, and a long task that keeps going with the app in the background.",
+      "problem": "Each unbuilt step is something users do that could break without the walk-through noticing.",
+      "proposal": "Pick any that are worth building now. Sync also needs the test account from the phone page.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "sync",
+          "label": "Sync between two copies",
+          "pros": [
+            "Covers one of the six show-stoppers end to end."
+          ],
+          "cons": [
+            "Needs the separate test account."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "page",
+          "label": "Build a Page",
+          "pros": [
+            "Pages are a headline feature."
+          ],
+          "cons": [
+            "Slower and costs more test-key money per run, since the assistant builds something real."
+          ]
+        },
+        {
+          "id": "background",
+          "label": "Long task in the background",
+          "pros": [
+            "Catches work stopping when the window is not in front."
+          ],
+          "cons": [
+            "Adds minutes to every run."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Order of work",
+      "path": "This testing work and the Android repairs (card #213)",
+      "headline": "Which should go into the app first: these testing tools, or the Android repairs?",
+      "today": "Card #213 is the repair job for everything the phone test found. Another chat has been doing it; its latest save was 8 November and it is not in the app yet. It and this testing work changed eight of the same files, so whichever goes second has to reconcile them. GitHub can only run the new checks against other work once they are on the main line.",
+      "problem": "Android repairs first means phone fixes land with nothing automatic confirming them. Testing tools first means the fixes wait a little longer.",
+      "proposal": "This only sets the order. Nothing merges until you say so.",
+      "options": [
+        {
+          "id": "tools-first",
+          "label": "Testing tools first",
+          "summary": "With the daily checks parked until they can pass.",
+          "pros": [
+            "The Android repairs can be proven by the walk-through and the phone engine check before they land.",
+            "The test cleanup stops drifting away from the main line."
+          ],
+          "cons": [
+            "The Android repair chat has to reconcile the eight shared files.",
+            "Phone fixes reach users slightly later."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "android-first",
+          "label": "Android repairs first",
+          "pros": [
+            "Users get the phone fixes soonest."
+          ],
+          "cons": [
+            "The fixes land unproven by anything automatic.",
+            "This testing work has to reconcile the eight shared files."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Leftovers",
+      "path": "Old files from building the picture comparison",
+      "headline": "May I delete the old picture-comparison leftovers?",
+      "today": "Building the comparison left eight earlier practice runs on this computer, about 12 GB, and an older stand-alone viewer that the work board's Screens tab replaced. The latest run (run 9) and the Screens tab do not use any of it.",
+      "problem": "12 GB of disk is taken by files nothing reads, and the old viewer is code that will quietly stop working.",
+      "proposal": "Yes: I delete the eight old runs and the old viewer with its test, and keep run 9. No: everything stays."
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "surface": "Work board",
+      "path": "Your real YouCoded app, Pages, Work board",
+      "headline": "May I install the updated work board into your real app?",
+      "today": "The \"Changed since\" and \"New since\" views exist only in the development copy of the work board. The board you open in your real app is the older one.",
+      "problem": "You cannot review the picture comparison where you normally work until the board is updated, and that means writing to your real Pages folder, which I never do without your yes.",
+      "proposal": "Yes: I back up the current board, install the new one, and check it opens. The board may briefly reload while you have it open. No: it stays in the development copy until you say."
+    }
+  ]
+}
