@@ -239,6 +239,15 @@ is found and `mode normal` / `mode auto` both land; (3) `say` with a very long m
 file path, card #7) is sent by the real Enter and the box empties; (4) `click` finds a permission
 card's button by its label; (5) one message appears once, not twice.
 
+## Trying a Page without the app
+
+`node scripts/page-standin.mjs <pageFolder> [--port N]` serves the folder's `page.html` at a
+`127.0.0.1` address with a stub `window.youcoded` (card #239). Its saved data is the folder's
+`data.json`; `youcoded.fetch` answers only from an optional `fetch.json` (exact URL to
+`{status, body}`); session, chats and program abilities exist only when `page.json` declares that
+connection. It never reaches a network or uses a token, and it is not the app's sandbox, so a page
+that works there can still be refused in the app. Full list: the script's header.
+
 ## Analytics: team devices and test runs
 
 Only official release builds send the app's anonymous daily check-in (`desktop/src/main/official-build.ts`, stamped by the release workflows), so dev windows, source builds and `-releasetest`/test builds never count. Two switches cover the rest:
