@@ -1213,22 +1213,28 @@ print(p)`;
       assert.equal(await c.evaluate("document.querySelectorAll('.callpics, .qpic.row').length"), 0, 'no row thumbnails');
       assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .attcard').length"), 1, 'the row with pictures has one Attachments card');
       assert.equal(await c.evaluate("document.querySelector('.attcard.open')"), null, 'a list that is not a gallery starts with its card closed');
-      assert.equal(await c.evaluate("document.querySelector('.attlabel').textContent + ' ' + document.querySelector('.attn').textContent + ' ' + document.querySelector('.attcm').hidden"), 'Attachments 2 true', 'closed: the word, how many pictures, and no comment count yet');
+      assert.equal(await c.evaluate("document.querySelector('.attlabel').textContent + ' ' + document.querySelector('.attn').textContent"), 'Attachments 2', 'closed: the word and how many pictures');
       await c.evaluate("document.querySelector('.atthead').click()"); await sleep(100);
-      assert.equal(await c.evaluate("[...document.querySelectorAll('.attcard figcaption')].map(f=>f.textContent).join()"), 'Before,After', 'a pair is labelled');
-      assert.ok(await c.evaluate("(()=>{const im=[...document.querySelectorAll('.attcard img')],b=document.querySelector('.attbody').getBoundingClientRect();return im.length===2&&Math.abs(im[0].width-im[1].width)<3&&im[0].width>b.width*0.4})()"), 'a before/after pair is side by side, equal and large');
-      // An area dragged on the "before" picture: its comment box sits right under THAT picture, inside the card.
-      await c.evaluate(`(()=>{const img=document.querySelector('.attcard img'),r=img.getBoundingClientRect();
-        img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+20,clientY:r.top+20}));
-        document.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+120,clientY:r.top+90}));
+      // Round 8 (Destin: "a single card for each image. clicking that should open our popup image screen/comment menu").
+      assert.equal(await c.evaluate("[...document.querySelectorAll('.attcard .atttile .tilename')].map(f=>f.textContent).join()"), 'Before,After', 'one tile per picture, each named');
+      assert.ok(await c.evaluate("(()=>{const t=[...document.querySelectorAll('.attcard .atttile')].map(x=>x.getBoundingClientRect());return t.length===2&&t[0].width===224&&t[1].width===224&&Math.abs(t[0].top-t[1].top)<1})()"), 'tiles are the app\'s fixed width, side by side');
+      assert.equal(await c.evaluate("document.querySelectorAll('.attcard .markable').length"), 0, 'nothing is drawn on inside the card');
+      await c.evaluate("document.querySelector('.attcard .atttile').click()"); await sleep(300);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .lbbox.markable img').length"), 1, 'a tile opens the picture window');
+      assert.match(await c.evaluate("document.querySelector('.viewer .vtitle').textContent"), / · Before$/, 'titled with the row\'s words and the tile\'s name');
+      // An area dragged on the picture in the window: its comment box sits beside the picture.
+      await c.evaluate(`(()=>{const img=document.querySelector('.viewer .lbbox img'),r=img.getBoundingClientRect();
+        img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+r.width*0.2,clientY:r.top+r.height*0.2}));
+        document.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+r.width*0.6,clientY:r.top+r.height*0.6}));
         document.dispatchEvent(new PointerEvent('pointerup',{}));})()`);
       await sleep(150);
-      assert.equal(await c.evaluate("document.querySelectorAll('.attcard figure:first-child .attmarks .markt').length"), 1, 'the comment for an area sits under its own picture');
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 1, 'the comment for an area sits beside its picture');
       assert.equal(await c.evaluate("document.querySelectorAll('.marklist[data-sid=\"K-1\"] .markt').length"), 0, 'and is not repeated in a list at the top of the question');
-      await c.evaluate("document.querySelector('.attcard .markt').value='the old one'; document.querySelector('.attcard .markt').dispatchEvent(new Event('input',{bubbles:true}))");
+      await c.evaluate("document.querySelector('.viewer .markt').value='the old one'; document.querySelector('.viewer .markt').dispatchEvent(new Event('input',{bubbles:true}))");
+      await c.evaluate("document.querySelector('.viewer .vclose').click()"); await sleep(100);
+      assert.equal(await c.evaluate("(()=>{const e=document.querySelector('.atttile .tilecm');return !e.hidden&&e.textContent})()"), '1 comment', 'the tile says how many comments are on its picture');
       await c.evaluate("document.querySelector('.atthead').click()"); await sleep(50);
       assert.equal(await c.evaluate("document.querySelector('.attbody').hidden"), true, 'the card closes again');
-      assert.equal(await c.evaluate("(()=>{const e=document.querySelector('.attcm');return !e.hidden&&e.textContent})()"), '1 comment', 'closed, it still says how many comments are on its pictures');
       // A written question's own picture still enlarges, one picture only.
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-9\"] .qpic > a').click()"); await sleep(100);
       assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vstage img').length"), 1, 'the picture opens in the viewer, over the page');
@@ -1385,7 +1391,7 @@ print(p)`;
 
 // Round 7, second half (2026-11-10): history woven into the deck (state pill, trail, Settled fold,
 // "Since last round" line, related decks with a line each), a row's More, "Built from", and video proof.
-test('round 7: trail, state pill, settled fold, since-last-round line, More, Built from, and a video that cannot be dragged on', async () => {
+test('round 8: rows grouped by state with no badges, one Details fold per row, a plain since-last-round sentence, and a video tile that cannot be dragged on', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-r7b-'));
   const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)});
 from fixture import words_spec
@@ -1418,40 +1424,43 @@ print(p)`;
       await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c);
       const q = e => c.evaluate(e);
       // the one line at the top of the first page, and the related deck with its own line
-      assert.equal(await q("document.querySelector('.since').textContent.replace(/\\s+/g, ' ')"), 'Since last round: 1 new · 1 changed from your comments · 1 settled');
+      assert.equal(await q("document.querySelector('.since').textContent.replace(/\\s+/g, ' ')"), 'Since last round: 1 new, 1 changed, 1 settled.');
+      assert.equal(await q("document.querySelectorAll('.topnotes button, .topnotes a:not(.btn)').length"), 0, 'a plain sentence: nothing in it is a link');
       assert.match(await q("document.querySelector('.reltop li').textContent"), /Round 6 deck.*Where you chose the trail\./);
-      // new and changed rows come first; the settled one is folded into one line at the foot
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.card.calls > ul > li.call')].map(l => l.dataset.call))")), ['chg', 'new']);
-      assert.match(await q("document.querySelector('.settledhead').textContent"), /^Settled\s*1$/);
-      assert.equal(await q("document.querySelector('.settledbody').hidden"), true);
-      // the pills say what happened to each row
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('li.call .stpill')].map(p => p.textContent))")), ['Changed from your comment', 'New this round', 'Settled in Round 4']);
-      // the trail is closed until asked for, then walks round by round and ends in Now
-      assert.equal(await q("document.querySelector('li[data-call=chg] .metapanel.trail').hidden"), true);
-      await q("document.querySelector('li[data-call=chg] .trailtog').click()");
-      assert.equal(await q("document.querySelector('li[data-call=chg] .metapanel.trail').hidden"), false);
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('li[data-call=chg] .tround')].map(p => p.textContent))")), ['Round 3', 'Round 4', 'Now']);
+      // Round 8: a row's state is its GROUP (New, Changed, Already settled), never a badge on the row.
+      assert.equal(await q("document.querySelectorAll('.stpill').length"), 0, 'no state badges');
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.card.calls .grph')].map(h => h.textContent))")), ['New1', 'Changed1']);
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.card.calls > .grp > ul > li.call')].map(l => l.dataset.call))")), ['new', 'chg']);
+      assert.match(await q("document.querySelector('.settledfold .foldhead').textContent"), /^Already settled\s*1$/);
+      assert.equal(await q("document.querySelector('.settledfold > .foldbody').hidden"), true);
+      // ONE Details fold per row, closed until asked for: the rounds, then Now, then Built from.
+      assert.equal(await q("document.querySelectorAll('li[data-call=chg] .fold.details').length"), 1);
+      assert.equal(await q("document.querySelector('li[data-call=chg] .fold.details .foldbody').hidden"), true);
+      assert.ok(await q("(()=>{const h=document.querySelector('li[data-call=chg] .foldhead').getBoundingClientRect(),c=document.querySelector('li[data-call=chg] .foldhead .chev').getBoundingClientRect();return c.left>h.left+h.width*0.9})()"), 'the chevron sits at the right, as in the app');
+      await q("document.querySelector('li[data-call=chg] .fold.details .foldhead').click()");
+      assert.equal(await q("document.querySelector('li[data-call=chg] .fold.details .foldbody').hidden"), false);
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('li[data-call=chg] .roundname')].map(p => p.textContent))")), ['Round 3', 'Round 4']);
+      assert.match(await q("document.querySelector('li[data-call=chg] .tnow').textContent"), /^Now/);
       assert.equal(await q("document.querySelector('li[data-call=chg] .tline dd.decided').textContent"), '“there is no notes button”', 'his words are quoted');
       assert.equal(await q("getComputedStyle(document.querySelector('li[data-call=chg] .tnow')).fontSize"), '12px');
-      // "Built from": the (i) lists what is reused and what is new
-      await q("document.querySelector('li[data-call=chg] .how.lbl').scrollIntoView({block:'center'})"); await sleep(200);
-      const pt = JSON.parse(await q("(()=>{const r=document.querySelector('li[data-call=chg] .how.lbl').getBoundingClientRect();return JSON.stringify({x:r.x+r.width/2,y:r.y+r.height/2})})()"));
-      await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: pt.x, y: pt.y }); await sleep(200);
-      assert.equal(await q("getComputedStyle(document.querySelector('li[data-call=chg] .how.lbl .tip')).display"), 'block');
-      assert.match(await q("document.querySelector('li[data-call=chg] .how.lbl .tip').textContent"), /Reused from the app.*The pencil button.*New in this design.*The star/);
-      // a video is in the Attachments card with controls, not playing by itself, and cannot be dragged on
+      assert.match(await q("document.querySelector('li[data-call=chg] .dpart.reuse').textContent"), /Reused from the app.*The pencil button.*New in this design.*The star/);
+      // a video is a tile like any picture; its window plays it with controls and cannot be dragged on
       await q("document.querySelector('li[data-call=new] .atthead').click()");
-      assert.equal(await q("(()=>{const v=document.querySelector('li[data-call=new] video.attvid');return v && v.controls && !v.autoplay && v.paused;})()"), true);
-      assert.equal(await q("document.querySelectorAll('li[data-call=new] .attmarks, li[data-call=new] a.attimg').length"), 0);
-      // jumping from the summary opens the fold and shows the settled row
-      await q("document.querySelector('.sincepart.settled').click()"); await sleep(400);
-      assert.equal(await q("document.querySelector('.settledbody').hidden"), false);
-      // the second page: a run/skip row's More
+      await q("document.querySelector('li[data-call=new] .atttile[data-video=\"1\"]').click()"); await sleep(200);
+      assert.equal(await q("(()=>{const v=document.querySelector('.viewer .lbbox video');return v && v.controls && !v.autoplay && v.paused;})()"), true);
+      assert.equal(await q("document.querySelector('.viewer .lbbox').classList.contains('markable')"), false);
+      await q("document.querySelector('.viewer .vclose').click()");
+      // the settled group opens like any fold
+      await q("document.querySelector('.settledfold .foldhead').click()"); await sleep(100);
+      assert.equal(await q("document.querySelector('.settledfold > .foldbody').hidden"), false);
+      // the second page: a run/skip row's fuller explanation is inside its Details
       await q("document.querySelector('#save').click()"); await sleep(400);
       assert.equal(await q("document.querySelector('.topnotes') === null"), true, 'the summary is only on the first page');
-      assert.equal(await q("document.querySelector('.metapanel.more').hidden"), true);
-      await q("document.querySelector('.moretog').click()");
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.metapanel.more dt')].map(d => d.textContent))")), ['What it does', 'What comes back', 'Why, for this build']);
+      assert.equal(await q("document.querySelector('.fold.details .foldbody').hidden"), true);
+      await q("document.querySelector('.fold.details .foldhead').click()");
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.fold.details .dpart.more .dh')].map(d => d.textContent))")), ['What it does', 'What comes back', 'Why, for this build']);
+      // nothing on the page is an underlined link or a bare disclosure triangle
+      assert.equal(await q("[...document.querySelectorAll('#cards a, #cards button')].filter(e => getComputedStyle(e).textDecorationLine.includes('underline')).length"), 0);
       assert.deepEqual(c.errors, []);
     } finally { await c.close(); }
   } finally { srv.kill(); }
@@ -1590,8 +1599,8 @@ print(p)`;
     assert.ok(await ev("document.querySelector('.result.pillbtn').getBoundingClientRect().height >= 32"), 'the status pill is at least 32px tall');
     // Pictures: a tiny drag draws nothing, a real one does, and taking the last area away withdraws the answer.
     await ev("(()=>{const h=document.querySelector('.atthead'); if(!h.closest('.attcard').classList.contains('open')) h.click();})()"); await sleep(200);
-    await ev("document.querySelector('.attimg img').scrollIntoView({block:'center'})"); await sleep(200);
-    const r = await ev("(()=>{const i=document.querySelector('.attimg img').getBoundingClientRect();return {x:i.left,y:i.top,w:i.width,h:i.height}})()");
+    await ev("document.querySelector('.atttile').click()"); await sleep(400);
+    const r = await ev("(()=>{const i=document.querySelector('.viewer .lbbox img').getBoundingClientRect();return {x:i.left,y:i.top,w:i.width,h:i.height}})()");
     const drag = async (a, b, d, e2) => {
       const x0 = r.x + r.w * a, y0 = r.y + r.h * b, x1 = r.x + r.w * d, y1 = r.y + r.h * e2;
       await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0, y: y0 });
@@ -1600,10 +1609,11 @@ print(p)`;
       await c.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x1, y: y1, button: 'left', clickCount: 1 }); await sleep(200);
     };
     await drag(0.3, 0.3, 0.315, 0.32);
-    assert.equal(await ev("document.querySelectorAll('.attmarks .markrow').length"), 0, 'a drag under 3% makes no area');
+    assert.equal(await ev("document.querySelectorAll('.viewer .vcomments .markrow').length"), 0, 'a drag under 3% makes no area');
     await drag(0.3, 0.3, 0.6, 0.6);
-    assert.equal(await ev("document.querySelectorAll('.attmarks .markrow').length"), 1, 'a real drag makes one');
+    assert.equal(await ev("document.querySelectorAll('.viewer .vcomments .markrow').length"), 1, 'a real drag makes one');
     await ev("document.querySelector('.markx:not(.callx)').click()"); await sleep(200);
+    await ev("document.querySelector('.viewer .vclose').click()"); await sleep(100);
     assert.equal(await ev("JSON.stringify(Object.keys(JSON.parse(localStorage.getItem('deck:' + DECK.key)).answers['G-1'] || {}).includes('marks'))"), 'false');
     // One summary: the page and the server agree on the same state.
     const st = { deck: 'x', submitted: '2026-11-10T10:00:00Z', notes: 'general words', notesAttach: [{ kind: 'path', name: 'a.txt', path: '/tmp/a.txt' }],

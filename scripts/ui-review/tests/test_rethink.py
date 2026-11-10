@@ -275,13 +275,15 @@ class RethinkTests(unittest.TestCase):
     def test_round_seven_trail_page_source_pins(self):
         js = open(os.path.join(DECK, 'page.js')).read()
         css = open(os.path.join(DECK, 'page.css')).read()
-        for needle in ('class="stpill', 'trailtog', 'class="settledfold"', 'class="since"', 'class="reltop"', 'moretog',
-                       "reuseTip", 'class="attvid"', 'isVideo'):
+        # Round 8 (Destin, round 7: "VERYY busy… badges don't really make much sense… we don't use the
+        # bare > dropdowns anywhere, nor the linked underline text"): groups, one fold, tiles.
+        for needle in ('class="grph"', 'detailsFold', 'class="since"', 'class="reltop"', 'reuseBody', 'class="atttile"', 'isVideo', 'STATE_GROUPS'):
             self.assertIn(needle, js, needle)
-        # a video has no area-dragging: its figure carries no `attimg` link and no `attmarks` host
-        self.assertRegex(js, r'isVideo\(src\) \? `<figure class="qpic att vid">(?:(?!attmarks).)*</figure>` :')
-        self.assertRegex(css, r'\.how\.lbl')
-        self.assertRegex(css, r'\.stpill\.new\{color:var\(--mark\)\}')
+        for gone in ('stpill', 'metatog', 'sincepart', 'settledhead', 'attmarks'):
+            self.assertNotIn(gone, js, gone)
+            self.assertNotIn(gone, css, gone)
+        self.assertRegex(css, r'\.atttile\{[^}]*width:224px')
+        self.assertNotRegex(css, r'text-decoration:underline')
 
     # ── the running screen behind a frozen one (round 7b) ───────────────────────────────────
     def test_live_screen_field_is_validated_in_plain_words(self):

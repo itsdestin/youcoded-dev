@@ -42,13 +42,15 @@ a feature with a signed contract. Several designs of one thing are ONE Choice sl
 ## Lists: rows that stand unless he changes them
 **Invariant:** a words step with `calls` is a list: one pencil per row, no answer button (a list
 left alone is accepted when he moves on), `wording` rows refused. A row's `picture` / `before`
-(image or short video) sit in an Attachments card, never thumbnails. A list shows a state pill only
+(image or short video) are tiles in an Attachments card (the app's Deliverables card); a tile opens the
+picture viewer. A row's `state` is its group heading, never a badge; `trail`/`more`/`reuse` share one
+Details fold. No underlined links, no bare ">" openers. A list shows a state pill only
 once it has something to say. `context: true` is never answered, counted, accepted or listed on the
 finish screen. A pencil pressed again keeps a saved comment; the small x removes it. Any comment box
 takes pasted pictures and paths as pills. Question decks end every page with a comment box; only
 picture-style decks have the header Notes button. Rows may carry `state`, `trail`, `more`, `reuse`; a
-run/skip check must carry `more`. **Why:** "simplify down to a single pencil"; "rows with images
-should have an attachements card". **Guard:** `test_rethink.py`, `deck-render.test.mjs`.
+run/skip check must carry `more`. **Why:** "simplify down to a single pencil"; "barely any of this looks like
+youcoded native ui elements" (round 7). **Guard:** `test_rethink.py`, `deck-render.test.mjs`.
 
 ## Wording is edited on the real screen, after the build
 **Invariant:** no text box per label. A `screen` step edits `shoot --page`'s still copy, scrubbed of

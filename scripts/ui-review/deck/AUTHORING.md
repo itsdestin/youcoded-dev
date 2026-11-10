@@ -642,17 +642,19 @@ an older section, this wins.
 Source: Destin's round-6 remarks on the deck itself. Where this contradicts a section above, this
 wins.
 
-- **Pictures in a row are an Attachments card.** A row's `picture` / `before` no longer draw
-  thumbnails at its right. Under the row's words sits a card copied from the app's Deliverables
-  card: closed, one line (document glyph | "Attachments", the picture count, a "n comments" pill
-  once he has written on them, chevron); opened, every picture at full row width, a before/after
-  pair side by side, each labelled. He drags a rectangle on a picture there and its numbered
-  comment box sits directly under that picture. Cards on a `gallery: true` list start open; others
-  start closed; which he opened is remembered across page changes. A click on a picture inside a
-  card does nothing extra. The full-window viewer now only enlarges a written question's own
-  picture: one picture, its question's words as the title, its comments beside it, no arrows and
-  no strip of other pictures. Areas keep the shape `marks[] = {pic, x, y, w, h, text}`; for a
-  row `pic` is `row <id>` (after / single) or `row <id> before`.
+- **Pictures in a row are an Attachments card of tiles.** A row's `picture` / `before` never draw
+  thumbnails at its right. Under the row's words sits a true copy of the app's Deliverables card
+  (`DeliverablesCard.tsx`): closed, one line (document glyph | "Attachments", the count, chevron at
+  the right); opened, a sideways strip of fixed-width tiles, ONE per picture or clip: the preview on
+  top, then its name ("Before" / "After", or the file name) and a small outlined open-arrow. The
+  whole tile is the button: it opens the full-window picture viewer with that row's words as the
+  title and its comments beside it; he drags a rectangle THERE, never inside the card. A tile
+  shows "n comments" on its corner once he has written on its picture. Cards on a `gallery: true`
+  list start open; others start closed; which he opened is remembered across page changes. The
+  viewer shows one picture, no arrows and no strip of other pictures. Areas keep the shape
+  `marks[] = {pic, x, y, w, h, text}`; for a row `pic` is `row <id>` (after / single) or
+  `row <id> before`. Nothing can be dragged on in a `context` list. (Destin, round 7: "a single
+  card for each image. clicking that should open our popup image screen/comment menu".)
 - **Pictures and file paths in any comment box become pills.** Paste (or drop) an image into a row
   comment, an area comment, a question's note, a typed answer, the page-foot box or the general
   notes box: the deck server keeps it in `<spec stem>.attachments/` under a name it makes itself
@@ -682,37 +684,43 @@ wins.
 
 Source: Destin's round-6 remarks. Where this contradicts a section above, this wins.
 
-- **A trail on an item.** A list row or a written question may carry `"state": "new" | "changed"
-  | "settled"` and `"trail": [{"round": "Round 3", "asked": "his words", "built": "what was
+- **State is a group, never a badge.** A list row or a written question may carry `"state": "new"
+  | "changed" | "settled"`. A list with any stated row draws small plain headings with a count —
+  **New**, **Changed**, **Already settled**, in that order — and each row sits under its heading
+  in the order written; rows with no state come first under no heading. No row carries a state
+  pill: the only coloured pills on a page are real statuses (Passed, Unclear, …) and a card's
+  answered state. `"fold_settled": true` makes the settled group one closed fold row. (Destin,
+  round 7: the badges "don't really make much sense, not to mention the colors make them visually
+  confusing next to the unclear/pass/fail chips".)
+- **One "Details" fold per row.** `trail`, `more` and `reuse` on a list row (or `trail` / `reuse`
+  on a written question) all open from ONE fold row drawn like the app's `FoldRow`: a boxed line,
+  "Details" at the left, plain chips for what is inside ("2 rounds", "What it does", "Built
+  from"), the chevron at the right. There are no bare ">" openers and no underlined links
+  anywhere on a deck. `"trail": [{"round": "Round 3", "asked": "his words", "built": "what was
   built", "said": "his reaction"}, …]` (each part optional, at least one of asked / built / said;
-  60 words each; his words are quoted as written). `state` is a small pill on the row
-  ("New this round", "Changed from your comment", "Settled in Round N, taken from the last
-  trail step's `round`); on a question it sits beside "Question n of m". The trail is closed
-  behind "How this changed · n rounds" under the row's words; opened it is a rail with one stop per
-  round — **You asked** / **Built** / **You said**, his words in the same quote style as a row's
-  `decided` — ending in **Now**. Which expanders he opened are remembered across page changes.
-  `"fold_settled": true` on a list folds its settled rows into one closed "Settled (n)" line at the
-  foot; new and changed rows come first, in the order given. Put these on every item from the
-  second round on; leave them off in the first.
+  60 words each; his words quoted as written) draws one small block per round, then **Now**. Put
+  `state` and `trail` on every item from the second round on; leave them off in the first.
 - **Since last round.** When any row or question has a `state`, the first page of a paged deck
-  opens with one line: "Since last round: 3 new · 2 changed from your comments · 11 settled"; each
-  part jumps to the first such item (opening the Settled fold, changing page if needed).
+  opens with one plain sentence: "Since last round: 3 new, 2 changed, 11 settled." Nothing in it
+  is pressable; the group headings do the navigating.
 - **Related decks at the top.** Each `related` entry may carry `"how"` (one line, 40 words at most)
-  saying how it relates; `related` entries are listed at the top of the first page with that
+  saying how it relates; `related` entries are listed at the top of the first page as small outlined buttons, each with that
   line, and also behind the header's History button. **History stays** as the full record.
 - **`more` on a list row.** `"more": {"does", "returns", "why"}` (any of them, 120 words each) or one
-  plain string: a "More" expander (chevron) under the row opens the labelled parts — *What it
-  does*, *What comes back*, *Why, for this build*. A row whose `result` is `run` or `skip` (a check
+  plain string: inside the row's Details fold, as labelled parts — *What it does*, *What comes
+  back*, *Why, for this build*. A row whose `result` is `run` or `skip` (a check
   he switches on or off before the build) MUST carry `more` with at least `does` and `why`; the
   builder refuses it otherwise ("a switch he cannot understand was his complaint").
 - **`reuse`: what a design is built from.** `"reuse": {"from": ["Settings → About popup", …],
   "new": ["the star button", …], "note": "one sentence"}` on a written option, a list row, a
-  written question or a picture step. A small "Built from" (i), the same hover tip as Today's
-  "how it was checked", lists *Reused from the app* and *New in this design*. The assistant works
+  written question or a picture step. On a row or question it is a "Built from" part inside
+  Details; on an option card or a picture step's headline (where a fold would fight the click) it
+  is a small (i) hover tip. Either lists *Reused from the app* and *New in this design*. The assistant works
   this out itself — which kinds of parts the screen needs, every existing app part that could do the
   job, adopt it, say what is new — and records it here; it is never a chat question.
 - **Proof can be a video.** A row's `picture` / `before` may be a `.webm` or `.mp4` file beside the
-  spec. It sits in the row's Attachments card with native controls, never playing by itself. No
+  spec. It is a tile like any picture (its first frame as the preview); the viewer plays it with native
+  controls, never by itself. No
   area can be dragged on a video. (The deck server answers whole files only, so seeking inside a
   long clip may be limited; keep proof clips short.)
 - **Invariants stated once, here.** Every `Today` carries `checked` (how it was confirmed), shown

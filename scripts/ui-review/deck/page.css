@@ -579,7 +579,7 @@ body[data-layout="pages"] #notesbtn{display:none}
 .screenedits .from{color:var(--fg-muted);text-decoration:line-through} .screenedits .arrow{color:var(--fg-muted)} .screenedits .to{flex:1} .screenedits .linkbtn{flex:none}
 /* Open large: the card covers the window, so the screen is shown at (or near) its real size. */
 .card.screen.big{position:fixed;inset:0;z-index:70;margin:0;border:0;border-radius:0;overflow:auto;background:var(--well)}
-.linkbtn{display:inline-block;margin:0;padding:0;border:0;background:none;color:var(--link);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline}
+.linkbtn{margin:0;background:none;font:inherit;cursor:pointer}
 /* Every screen that changed, side by side: tiles, pictures first. */
 /* A picture opened large, over the page. */
 /* Notes about anything else: a button in the header, a small panel under it. */
@@ -652,19 +652,7 @@ body:not([data-layout="pages"]) #back{display:none}
 .attlabel{font-size:12px;font-weight:600;color:var(--fg-2)}
 .attn{font:11px var(--font);color:var(--fg-muted)}
 .attfill{flex:1 1 auto}
-/* A comment count is a status, so it is a small tinted pill (design guide -> Status and notices). */
-.attcm{padding:1px 8px;border-radius:999px;font:600 11px/1.5 var(--font);color:var(--link);border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent);white-space:nowrap}
-.attcm[hidden]{display:none}
-.attchev{flex:none;width:14px;height:14px;color:var(--fg-muted);opacity:.4;transition:transform .15s} .attcard.open .attchev{transform:rotate(180deg)}
 .attbody{padding:4px 12px 12px} .attbody[hidden]{display:none}
-.attpics{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
-.attpics.pair{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media (max-width:900px){.attpics.pair{grid-template-columns:minmax(0,1fr)}}
-.qpic.att{align-items:stretch;gap:6px;min-width:0}
-.qpic.att figcaption{order:0;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-faint)}
-.qpic>a.attimg.markable{display:block;width:100%;line-height:0}
-.qpic.att img{display:block;width:100%;height:auto;max-width:100%;max-height:none;cursor:crosshair}
-.attmarks{display:flex;flex-direction:column;gap:6px} .attmarks:empty{display:none}
 /* Pills in a comment box (round 7, Destin: "attach/paste images/filepaths in these input boxes and
    have them work as pills like youcoded"). A picture is a small card with its thumbnail, name and
    an x (the app's AttachmentChip, shrunk to a line); a path is the recessed file pill
@@ -722,66 +710,21 @@ body:not([data-layout="pages"]) #back{display:none}
    (i) tip (.how). Nothing here is a new kind of control. */
 .callflags{flex:none;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:46%}
 .callflags:empty{display:none}
-.stpill{display:inline-block;margin-top:3px;padding:2px 9px;border-radius:999px;font:600 11px/1.5 var(--font);white-space:nowrap;color:var(--fg-muted);border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent);text-transform:none;letter-spacing:0}
-.stpill.new{color:var(--mark)} .stpill.changed{color:var(--link)} .stpill.settled{color:var(--fg-muted)}
-.pages article.q .qnum .stpill{margin-top:0}
-.metabar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin-top:8px}
-.metatog{display:inline-flex;align-items:center;gap:5px;padding:2px 4px 2px 0;border:0;background:transparent;color:var(--fg-muted);font:inherit;font-size:12px;cursor:pointer}
-.metatog:focus-visible,.settledhead:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius-sm)}
-@media (hover:hover){.metatog:hover{color:var(--fg)}}
-.metatog .tchev,.settledhead .tchev{flex:none;width:13px;height:13px;transform:rotate(-90deg);transition:transform .15s}
-.metatog.open .tchev,.settledhead.open .tchev{transform:none}
-.metan{padding:0 7px;border-radius:999px;background:color-mix(in srgb,var(--fg) 10%,transparent);font-size:11px;line-height:1.6;color:var(--fg-2)}
-.metapanel[hidden],.settledbody[hidden]{display:none}
-.metapanel{margin-top:8px}
 /* One labelled line per part: the label in a narrow left column so a long story scans down its left edge. */
 .tlines{margin:0;display:flex;flex-direction:column;gap:6px}
 .tline{display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:baseline}
 .tline dt{font:600 11px/1.5 var(--font);color:var(--fg-faint);text-transform:none}
 .tline dd{margin:0;font-size:12px;line-height:1.5;color:var(--fg-2)}
 .tline dd.decided{margin:0}
-.metapanel.more{padding:10px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well)}
-/* The trail: a thin rail, a dot per round, "Now" lit in the accent colour at the end. */
-.tsteps{list-style:none;margin:0;padding:2px 0 0 4px;display:flex;flex-direction:column}
-.tstep{position:relative;display:flex;gap:12px;padding:0 0 12px}
-.tstep::before{content:"";position:absolute;left:4px;top:12px;bottom:-2px;width:1px;background:var(--edge)}
-.tstep:last-child{padding-bottom:0} .tstep:last-child::before{display:none}
-.tdot{flex:none;width:9px;height:9px;margin-top:4px;border-radius:50%;background:var(--well);border:2px solid var(--fg-faint);box-sizing:border-box;position:relative;z-index:1}
-.tstep.now .tdot{border-color:var(--accent);background:var(--accent)}
-.tbody{flex:1 1 auto;min-width:0}
-/* `.pages .card p` sets 14px for every paragraph in a card, so these name their parents to stay at 12px. */
-.card .tbody p.tround{margin:0 0 4px;font:600 12px/1.4 var(--font);color:var(--fg)}
-.card .tstep.now p.tround{color:var(--accent);margin:0}
-.card .tbody p.tnow{margin:0;font-size:12px;color:var(--fg-2)}
-.tstep.now .tbody{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10px}
 @media (max-width:760px){.tline{grid-template-columns:1fr;gap:1px}.callflags{max-width:none}}
-/* Settled (n): one closed line at the foot, like the Attachments card's. */
-.settledfold{list-style:none}
-.settledhead{width:100%;display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well);color:var(--fg-2);font:inherit;font-size:13px;text-align:left;cursor:pointer}
-@media (hover:hover){.settledhead:hover{background:color-mix(in srgb,var(--inset) 50%,transparent)}}
-.settledbody{margin:6px 0 0!important;padding:0 0 0 12px!important;border-left:1px solid var(--edge)}
-/* Built from: a labelled (i) whose tip lists what the design reuses and what is new. */
-.how.lbl{display:inline-flex;width:auto;height:auto;gap:5px;padding:1px 8px 1px 3px;border-radius:999px;margin-left:0;vertical-align:baseline}
-.how.lbl .howlbl{font:500 11px/1.5 var(--font);color:var(--fg-muted);text-transform:none;letter-spacing:0}
-.how.lbl i{display:grid;place-items:center;width:15px;height:15px;border:1px solid var(--fg-faint);border-radius:50%}
-.metabar .how.lbl{margin-left:0}
-.h3 .how.lbl,.ohead .how.lbl,#headline .how.lbl{margin-left:10px}
 .tip .tiph{display:block;margin:6px 0 2px;font:600 11px/1.4 var(--font);color:var(--fg)} .tip .tiph:first-child{margin-top:0}
 .tip .tipl{margin:0 0 2px;padding-left:16px;list-style:disc;font-size:12px;line-height:1.45;color:var(--fg-2)}
 .card .tip p.tipnote{margin:6px 0 0;font-size:12px;color:var(--fg-muted)}
 /* The line at the top of the first page. */
 .topnotes{display:flex;flex-direction:column;gap:10px;margin:0 0 4px;padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--panel)}
 .since{margin:0;font-size:13px;color:var(--fg-2)} .since b{color:var(--fg);font-weight:600}
-.sincepart{padding:0;border:0;border-bottom:1px solid currentColor;background:none;font:inherit;cursor:pointer} .sincepart.new{color:var(--mark)} .sincepart.changed{color:var(--link)} .sincepart.settled{color:var(--fg-muted)}
-.sincepart:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.reltop h3{margin:0 0 4px;font:600 12px/1.4 var(--font);color:var(--fg-muted)}
-.reltop ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px}
-.reltop li{font-size:13px;color:var(--fg-2)} .reltop a{color:var(--link)} .relhow{margin-left:8px;color:var(--fg-muted);font-size:12px}
-.reltop .relhow::before{content:"— "}
-.flash{animation:flashrow 1.6s ease-out}
-@keyframes flashrow{0%,40%{box-shadow:0 0 0 2px var(--accent)}100%{box-shadow:0 0 0 2px transparent}}
-/* Proof as a video: same card, native controls, never playing on its own. */
-.qpic.att.vid{margin:0} .attvid{display:block;width:100%;max-height:70vh;border-radius:var(--radius-md);background:#000}
+.reltop ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.reltop li{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;font-size:13px;color:var(--fg-2)} .relhow{color:var(--fg-muted);font-size:12px}
 
 /* ── review fixes, 2026-11-10 ─────────────────────────────────────────────────────────────
    WHY each (reviews of the deck): a picture is drawn on with a finger, so the browser must not take
@@ -812,8 +755,80 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
   .qstate{position:static;display:inline-block;margin:0 0 6px}
   .pages article.q .qh{padding-right:0}
   /* every small control is at least 32px tall */
-  .metatog,.sincepart,.linkbtn,#histbtn,.btn.sm,.settledhead,.thumb,.atthead{min-height:32px}
-  .metatog{padding:6px 4px 6px 0} .sincepart{padding:6px 2px;border-bottom:0;text-decoration:underline} .linkbtn{padding:6px 2px}
+  .linkbtn,#histbtn,.btn.sm,.thumb,.atthead,.foldhead{min-height:32px}
   .attpill .px,.markx{min-width:32px;min-height:32px}
   .iconbtn{min-width:32px;min-height:32px}
 }
+
+/* ── round 8: the deck drawn from the app's own parts ─────────────────────────────────────────
+   WHY (Destin, 2026-11-10, round 7: "this has suddently become VERYY busy and confusing… barely
+   any of this looks like youcoded native ui elements. like we don't use the bare > dropdowns
+   anywhere, nor the linked underline text at the top of the page… i wanted these too look like
+   'deliverables' which meant a single card for each image"). Each rule below names the app part it
+   copies; sizes are that part's own (youcoded/desktop/src/renderer/components). */
+
+/* Group headings inside a list (app: ui/SectionLabel — small, muted, sentence case, a count beside
+   it). A row's state is WHERE it sits, so no row carries a coloured state badge. */
+.card.calls{display:flex;flex-direction:column;gap:16px}
+.grp{display:flex;flex-direction:column;gap:8px;min-width:0}
+.grph{margin:0;display:flex;align-items:center;gap:8px;font:600 12px/1.4 var(--font);color:var(--fg-muted);text-transform:none;letter-spacing:0}
+.grpn,.fchip{padding:0 7px;border-radius:999px;background:color-mix(in srgb,var(--fg) 8%,transparent);font:500 11px/1.7 var(--font);color:var(--fg-2);white-space:nowrap}
+
+/* The fold row (app: ui/FoldRow and the Deliverables header): a boxed line in the well colour, its
+   label at the left, small plain chips saying what is inside, the chevron at the RIGHT, turning
+   when open. Used for a row's Details, the "Already settled" group and a round in History. */
+.fold{margin-top:10px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well);overflow:hidden}
+.grp>.fold{margin-top:0}
+.foldhead{width:100%;box-sizing:border-box;display:flex;align-items:center;gap:8px;padding:6px 12px;border:0;background:transparent;color:var(--fg-2);font:inherit;text-align:left;cursor:pointer;list-style:none}
+.foldhead::-webkit-details-marker{display:none}
+@media (hover:hover){.foldhead:hover,.atthead:hover{background:color-mix(in srgb,var(--inset) 50%,transparent)}}
+.foldhead:focus-visible,.atthead:focus-visible,.atttile:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.foldtitle{font-size:12px;font-weight:600;color:var(--fg-2)}
+.foldchips{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.foldfill{flex:1 1 auto}
+.chev{flex:none;width:14px;height:14px;color:var(--fg-muted);transition:transform .15s}
+.fold.open>.foldhead .chev,details.fold[open]>.foldhead .chev,.attcard.open .chev{transform:rotate(180deg)}
+.foldbody{padding:4px 12px 12px;display:flex;flex-direction:column;gap:12px} .foldbody[hidden]{display:none}
+.settledfold>.foldbody{padding:4px 8px 8px}
+/* Inside Details: plain sections with a small heading each (no rail, no dots). */
+.dpart{display:flex;flex-direction:column;gap:6px;min-width:0}
+.dh{margin:0;font:600 11px/1.4 var(--font);color:var(--fg-muted);text-transform:none;letter-spacing:0}
+.card .dpart p,.card .foldbody p{margin:0;font-size:12px;line-height:1.5;color:var(--fg-2)}
+.round{display:flex;flex-direction:column;gap:4px;padding:8px 10px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset)}
+.card .round p.roundname{font-weight:600;color:var(--fg)}
+.card .dpart p.tnow b{margin-right:8px;color:var(--fg)}
+.card .dpart p.dsub{font-weight:600;color:var(--fg-2)} .dlist{margin:0;padding-left:16px;list-style:disc;font-size:12px;line-height:1.5;color:var(--fg-2)}
+.card .dpart p.dnote{color:var(--fg-muted)}
+
+/* Attachments (app: DeliverablesCard). Closed: one line. Open: a sideways strip of tiles, each
+   224px wide (the app's w-56; 176px on a phone, its w-44): the preview 112px tall on top (h-28),
+   then the name and a small outlined open-arrow. The whole tile is the button. */
+.attbody{padding:0 8px 8px}
+.attstrip{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.atttile{flex:none;width:224px;display:flex;flex-direction:column;padding:0;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);color:var(--fg);font:inherit;text-align:left;overflow:hidden;cursor:pointer;transition:border-color .15s}
+@media (hover:hover){.atttile:hover{border-color:var(--fg-muted)} .atttile:hover .tileopen{border-color:var(--fg-muted)}}
+.tilepv{position:relative;display:block;width:100%;height:112px;border-bottom:1px solid var(--edge);background:var(--well);overflow:hidden}
+.tilepv img,.tilepv video{display:block;width:100%;height:100%;object-fit:cover;object-position:top center}
+/* How many comments he has left on this picture: the app's count badge, on the preview's corner. */
+.tilecm{position:absolute;right:6px;top:6px;padding:1px 8px;border-radius:999px;background:var(--accent);color:var(--on-accent);font:600 11px/1.6 var(--font)} .tilecm[hidden]{display:none}
+.tilefoot{display:flex;align-items:center;gap:8px;padding:8px 10px;min-width:0}
+.tiletext{flex:1 1 auto;min-width:0} .tilename{display:block;font-size:13px;font-weight:600;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tileopen{flex:none;display:inline-flex;padding:4px;border:1px solid var(--edge);border-radius:var(--radius-sm);color:var(--fg-2);transition:border-color .15s}
+@media (max-width:700px){.atttile{width:176px} .tilepv{height:64px}}
+
+/* The picture window shows a clip the same way it shows a picture. */
+.viewer .lbbox video{display:block;max-width:100%;max-height:calc(100vh - 210px);border:1px solid var(--edge);border-radius:var(--radius-md);background:#000}
+/* A bin, not an ×, takes a comment away (design guide: × means close). */
+.markx{display:grid;place-items:center} .markx .bin{width:16px;height:16px}
+
+/* The top of the first page: a plain sentence, then related decks as small outlined buttons. No
+   underlined links anywhere on a deck (the app has none). */
+.since{color:var(--fg-2)}
+.reltop{display:flex;flex-direction:column;gap:6px}
+.linkbtn{height:28px;padding:0 10px;border:1px solid var(--edge-strong);border-radius:var(--radius-md);color:var(--fg);font-size:12px;text-decoration:none;display:inline-flex;align-items:center}
+@media (hover:hover){.linkbtn:hover{background:var(--inset)}}
+.histrel{flex-direction:row;flex-wrap:wrap} a.btn{text-decoration:none}
+/* History: each round is the same fold row. */
+.histbody details.fold{padding:0;margin:0 0 10px;background:var(--panel)} .histbody details.fold[open]{padding-bottom:12px}
+.histbody details.fold>.foldhead{padding:10px 14px;font-weight:400} .histbody details.fold>.foldhead .foldtitle{font-size:14px;color:var(--fg)}
+.histbody details.fold>:not(summary){margin-left:14px;margin-right:14px}
