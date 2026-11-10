@@ -1,0 +1,79 @@
+{
+ "deck": "review-deck-rethink-round6",
+ "started": "2026-11-10T10:02:56.511Z",
+ "submitted": "2026-11-10T10:33:44Z",
+ "cur": 5,
+ "answers": {
+  "Q-1": {
+   "note": "i think rows with images should have an \"attachements\" row/expandable card at the bottom kind of like the \"deliverables\" row/card in youcoded chats.",
+   "t": 1794305120519,
+   "v": "other",
+   "seconds": 144,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "trail",
+   "t": 1794305456487,
+   "note": "maybe? but i think we need to refine the ui/ux of this further",
+   "seconds": 336,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "switch",
+   "t": 1794305558538,
+   "note": "want to do this in the best/simplest way possible, may want to think through this a bit more",
+   "seconds": 102,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "t": 1794306481853,
+   "changes": {
+    "reuse": "uhh i dont want this to be a chat thing. i just mean the model needs to understand these for itself and possibly record them in the deck along new screen proposals somehow. possibly behind an (i) or something"
+   },
+   "v": "other",
+   "seconds": 462,
+   "theme": "midnight"
+  },
+  "C-1": {
+   "v": "yes",
+   "seconds": 462,
+   "theme": "midnight",
+   "t": 1794306481853
+  },
+  "M-1": {
+   "changes": {
+    "guide": "is this a \"check\"? this seems more like a pre-build task?",
+    "phone": "this is confusing. just phone width? doesn't really say why or what you intend to do with them or how this check is helpful to our broader goals or the broader feature build?",
+    "tests": "this is also kinda a weird way to integrate this"
+   },
+   "v": "other",
+   "t": 1794306675485,
+   "seconds": 194,
+   "theme": "midnight"
+  },
+  "W-1": {
+   "v": "yes",
+   "seconds": 74,
+   "theme": "midnight",
+   "t": 1794306823187
+  },
+  "N-1": {
+   "v": "yes",
+   "seconds": 74,
+   "theme": "midnight",
+   "t": 1794306823187
+  }
+ },
+ "built": {
+  "at": "2026-11-10T09:57:13Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "bfd614f20"
+ },
+ "pageNotes": {
+  "P-4": "/home/destin/Pictures/Screenshots/Screenshot_20261110_031417.png this was an odd interactive \"not reviewed\" card i hadnt seen before?",
+  "P-5": "this page also has \"not reviewed\" in the top right. what that mean? i think these checks cards need to have more elaborate/expandable descriptiosn of what they actually entail and why they are/aren't recommended for the specific build",
+  "P-6": "we should build everything i've suggested so far before you provide another round of decks. i think i'd like you to hand various elements of htis off to reviewers with fresh context and do another drift/silent reversals review of our decks so far relating to this work"
+ }
+}
