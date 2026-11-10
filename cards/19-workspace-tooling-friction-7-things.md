@@ -11,9 +11,9 @@ area: Workspace
 work: chore/conversation-triage-script
 ---
 Progress
-Done: a far-behind dependency folder is now replaced with a fresh install automatically when a new work folder starts (on master since 2026-10-21, commit 3abe3f0ee; PR youcoded-dev#298 merged 2026-10-22). The triage tool idea was dropped on 2026-09-02, so its item is closed.
-Next: close the two finished items; move dev-instance bullets (i)-(iv) into cards 17 and 218; move the worker-dependencies item to card 212; decide the open annoyances (conflict-marker commit guard, log visibility, evaluator CI gate, CI report accuracy, commit steps for workspace docs).
-Blocked: none recorded.
+Done: On branch session/workspace-tools-batch (not merged): g - a commit holding merge-conflict markers is refused, in session folders too, with a CI backstop; test-launcher fixes moved under #17. Already finished: h (fresh install for far-behind packages), c (triage script branch is gone), docs items a, c, e, f, i (the old roadmap is retired).
+Next: The conflict-marker check reaches existing copies only after setup.sh is re-run (not run overnight). Still open, each a decision not a defect: one-off Fallow/React Doctor scans; the app log keeps only 500 lines in Claude Code's folder; no CI gate for the evaluator; the ten parked ideas. Suggest closing this card and filing only the ones Destin wants.
+Blocked: nothing.
 
 Chats
 
