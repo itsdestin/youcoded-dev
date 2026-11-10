@@ -9,8 +9,8 @@ finish: The phone app's bundled Node.js comes from Alpine's package; the securit
 created: 2026-11-05
 ---
 Progress
-Done: Alpine has since shipped the fixed Node.js (24.22.1), checked 2026-11-09. The phone app's last release (v1.3.3, 2026-10-23) still has the older one. The daily security watch has an open issue for this (youcoded issue 720).
-Next: when Destin says go, rebuild and release the phone app with the new Node.js. No code change expected. Decide what goes into that release (the phone-finish work in cards 213 and 1 is not merged yet).
-Blocked: Nothing from Alpine any more. The release waits on Destin's go and on the phone-finish decision.
+Done: Alpine shipped the fixed Node.js (24.22.1, now 24.22.1-r1 on v3.24); the phone build takes Alpine's current Node package at build time, so the next phone release gets it with no change. Checked 2026-11-10.
+Next: Before cutting 1.4: the phone build compiles musl (the C library under everything) from the upstream 1.2.6 download and applies only our own resolver patch, so it is MISSING the three security patches Alpine adds on top (CVE-2026-6042, CVE-2026-40200, CVE-2026-107891 — Alpine musl 1.2.6-r3). Make build-runtime.sh fetch and apply Alpine's musl patch set from aports for the pinned branch (or take musl from Alpine's package), run the runtime tests, and try it on a real phone. Also teach the security watch that musl is built from source, so it compares against Alpine's patch list rather than only the package version. Release with 1.4 (Destin 2026-11-10: no separate security release).
+Blocked: A real-phone test of the musl change; the 1.4 release date is Destin's.
 
 Chats
