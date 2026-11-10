@@ -225,6 +225,15 @@ if [[ $RUN_FULL -eq 0 ]]; then
   for f in "${OUTSIDE[@]:-}"; do
     [[ -n "$f" ]] || continue
     base=$(basename "$f"); stem=${base%.*}; pats=(-e "$base"); (( ${#stem} >= 8 )) && pats+=(-e "$stem")
+    # WHY (review 2026-11-10): a changed README.md / CHANGELOG.md / package.json selected every desktop test that merely
+    # MENTIONS that name (15 of ~1200 in a measured fixture) — noise that hides the real selection. For names this
+    # generic, match the path fragment (parent dir + name; a root-level file by its full path "./name") instead.
+    # Timing was measured too: 200 changed non-desktop files plan in ~1.3 s total, so no batching is needed.
+    case "$base" in
+      README*|CHANGELOG*|LICENSE*|NOTICE*|CONTRIBUTING*|package.json|package-lock.json|tsconfig*.json|index.*|.gitignore|.gitattributes)
+        par=$(basename "$(dirname "$f")")
+        if [[ "$par" == "." ]]; then pats=(-e "\.\./$base" -e "'\.\.', *[\"']$base") ; else pats=(-e "$par/$base"); fi ;;
+    esac
     case "$f" in
       app/*)     pats+=(-e "'app', *'src'" -e "\.\./app" -e "app/src") ;;
       .github/*) pats+=(-e "\.github") ;;
