@@ -895,3 +895,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-02 #211 Analytics: honest numbers, team-device exclusion and a clearer dashboard (youcoded#711, wecoded-marketplace#113, youcoded-admin#21, youcoded-dev#330)
 - [x] 2026-11-03 #215 Voice typing: say when the microphone hears nothing (youcoded#712, youcoded-dev#331)
 - [x] 2026-11-08 #224 Can't send in a Claude Code chat: "Queue identity is not ready" (youcoded#719)
+- [x] 2026-11-10 #172 Upgrade the desktop engine to prevent selection-layout crashes (youcoded dd20559df — Electron 44.10 landed in the Nov 2026 security merge (#713); verified by the 2026-11-09 inventory)
