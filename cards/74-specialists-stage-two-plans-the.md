@@ -14,9 +14,9 @@ work: feat/specialists-plans-ui, feat/specialists-plans-5b, docs/specialists-pla
 vision: chat.steer.plans, agents.added.budget
 ---
 Progress
-Done: The helper "plans" feature is fully built on a separate, unmerged branch (about 140 changes; last real work 2026-09-26). It lets the assistant propose several helper jobs as one plan, you approve it on a card, and it resumes if interrupted. None of it is in the app yet.
-Next: bring that branch up to today's app code (it is about 1,705 changes behind, with 40-odd clashing files), re-test it, then rebuild the review screens for Destin.
-Blocked: no hard blocker, but the catch-up step is large and untested.
+Done: Chat-only plans were fully built in Sep 2026 on feat/specialists-plans-ui (140 commits; its 40 decisions live only on docs/specialists-plans-decisions). On 2026-10-24 Destin decided to fold plans into a workflow builder (saved rows of steps with a Run button) instead; that chat ended with four phases proposed and no reply. Nothing of it is on master. The rev-3 spec and START-HERE handoff landed on master 2026-11-10 (docs/active/design/2026-10-24-workflow-builder/).
+Next: Destin approves or changes the rev-3 four-phase plan when the Helpers and automations workstream starts; rebuild on today's app, reusing the old engine parts. Keep feat/specialists-plans-ui and docs/specialists-plans-decisions until their reusable parts are copied (duplicates 5b and plans-r12-* were deleted 2026-11-10).
+Blocked: Destin's answer on the rev-3 plan. Pages automations (card #61, running) ships single jobs first; chains of jobs wait on this.
 
 Chats
 - 2026-10-24 session/74-specialists-plans: chat started
