@@ -1,0 +1,163 @@
+{
+ "deck": "mesh-sync-questions-5",
+ "started": "2026-11-10T08:49:49.507Z",
+ "submitted": "2026-11-10T09:10:19Z",
+ "cur": 4,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794300761479,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794300761479,
+   "note": "yeah, sign in missing or project folder missing should be a stop to ask",
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1794300761479,
+   "note": "",
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794300761479,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "S-5": {
+   "v": "yes",
+   "t": 1794300761479,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "S-6": {
+   "v": "yes",
+   "t": 1794300761479,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "relay-first",
+   "t": 1794301065894,
+   "note": "i want to understand potential costs and such first though. we're currently on free cloudflare i think",
+   "seconds": 152,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794301065894,
+   "note": "30 days with \"every device has them\" as the requirement would likely quickly result in us storing a LOT of chats, which i'm not super comfortable with. i'd think something more like 24h from when the conversation was last active? how might other platforms/applications/services handle this?",
+   "seconds": 152,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "other",
+   "dk": true,
+   "t": 1794301234256,
+   "note": "uhhh you may have taken this further than i had imagined intially, but i might be open to it? you should review this for fragility/errors/unintended consequences tho",
+   "seconds": 56,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "allow-warn",
+   "t": 1794301234256,
+   "seconds": 56,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "quit-and-tell",
+   "t": 1794301234256,
+   "note": "should simplify. offline - some chats may not have synced.",
+   "seconds": 56,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "same-system",
+   "t": 1794301295873,
+   "seconds": 58,
+   "theme": "midnight"
+  },
+  "N-1": {
+   "v": "yes",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279
+  },
+  "N-2": {
+   "v": "yes",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279
+  },
+  "N-3": {
+   "v": "yes",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279,
+   "note": ""
+  },
+  "N-4": {
+   "v": "other",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279,
+   "note": "this one is quite confusing and the circumstance causing it unclear?"
+  },
+  "N-5": {
+   "v": "yes",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279,
+   "note": "this should probably be built/framed as \"enable sync for this project and fetch the folder first\". and just enable continuous sync for the project"
+  },
+  "N-6": {
+   "v": "other",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279,
+   "note": "still a bit confusing about what this is, how it actually resolves, and what it means for the user"
+  },
+  "N-7": {
+   "v": "yes",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279
+  },
+  "N-8": {
+   "v": "yes",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279
+  },
+  "N-9": {
+   "v": "yes",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279
+  },
+  "N-10": {
+   "v": "yes",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279,
+   "note": "card to eventually improve the mangement/resolution view for forked conversation versions"
+  },
+  "Q-7": {
+   "v": "other",
+   "seconds": 47,
+   "theme": "midnight",
+   "t": 1794301818279,
+   "dk": true
+  }
+ }
+}
