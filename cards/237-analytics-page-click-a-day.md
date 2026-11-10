@@ -1,7 +1,7 @@
 ---
 id: 237
 title: Analytics page: click a day for detail, one range for every card, deeper breakdowns
-stage: polish
+stage: merged
 tags: analytics, dashboard, backend
 related: 211
 branch: 237-analytics-page-click-a-day
