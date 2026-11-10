@@ -16,7 +16,7 @@ vision: sync.added.conflictcopy
 ---
 Progress
 Done: the Backup & Sync panel now has a 'Using the same conversation on two devices' section (SyncPanel.tsx:90) and the takeover dialog says 'couldn't confirm' (takeover-dialog-copy.ts:47). Sync safety (youcoded#563) stops sync from overwriting files.
-Next: choose the design for picking between conflicting copies; the approved deck is on backup branch session/sync-safety-audit-20260908 and needs review.
+Next: Choose the design for picking between conflicting copies — but sync is being rebuilt (cards #64, #241, #243), so decide there. Correction 2026-11-10: branch session/sync-safety-audit-20260908 holds no deck; its one extra commit is September code (a backup-target fix and unfinished conversation-heal safety). It is now backed up on GitHub and is probably superseded by the rebuild.
 Blocked: the design decision with Destin; the restart-vanish and 'newest time' behaviour need a re-test.
 
 Chats
