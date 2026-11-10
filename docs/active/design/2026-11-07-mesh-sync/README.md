@@ -22,6 +22,8 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-2.json` + `.answers.json` | Deck round 2 (4 statements + 13 questions), submitted 2026-11-08. Confirmed round 1; decided several mechanics; asked for deeper explanation on connection, cost, what travels, wake and sleep. |
 | `connection-options.md` | The explainer written in answer: three pipes with prices, the sleep reframe, what travels with measured sizes, Android sleep, security failure stories, pairing options, the true mesh, side-by-side negatives, and the standing-decisions list. |
 | `mesh-sync.questions-3.json` + `.answers.json` | Deck round 3 (7 statements + 9 questions). **Not submitted.** Saved progress: all seven statements marked Holds; Q-1 to Q-4 skipped; Q-5 onward unanswered. Treat the statements as provisional until submitted. |
+| `mesh-sync.questions-4.json` + `.answers.json` | Deck round 4 (2 statements + 17 questions), submitted 2026-11-09. A second session's whole-design review: one copying system, keepers, pairing, closing the host, retired devices, viewer gaps. Supersedes round 3's Q-1 to Q-4 and Q-8. |
+| `mesh-sync.questions-5.json` | Deck round 5: restates the round-4 answers Destin wrote in his own words, and asks what round 4 left open. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
 Serve a deck for Destin with `python3 scripts/ui-review/review-cards.py serve <spec.json> --no-build --timeout 1440` from the workspace root; put the printed link in chat as the last line. Never rebuild an answered deck.
@@ -62,6 +64,23 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - The dream is to work without any central server or service of ours, in the spirit of open source and forkability. — D2 Q-1: "the dream would be for this to be able to function entirely without a central server or host service".
 - Neither the server relay nor Tailscale feels like the mesh he envisions. — chat 2026-11-08: "neither of these yet sound or feel like the true 'mesh' i've been envisioning".
 
+### Round 4 (2026-11-09), a second session's review
+- The goal: it feels like claude.ai, but the user's own devices are the server, and nothing in the middle is required or trusted. — D4 S-1 Holds.
+- "Mesh" means four properties, not a networking technology: devices pair with each other; keys live only on devices; any device can catch another up; whatever sits in the middle is blind and replaceable. — D4 S-2 Holds.
+- One copying system: the host sends each new line; a device catches up by asking for everything after the last line it has. The separate slow GitHub copy stops being how devices stay current. — D4 Q-1 pick one-system.
+- Keepers (something always on that holds sealed lines): build to offer both the user's own always-on device and an optional YouCoded relay. Which is built first is undecided; he asked for architecture, cost and speed of each. — D4 Q-2: "we should build to offer either a or c … if users cont have a device or just prefer, they can use youcoded relay".
+- The new sync is end-to-end encrypted. Sealing cloud backups is a follow-up after the new system exists; the user separately chooses whether chats are backed up to a cloud at all, and whether backups are sealed with a passphrase. — D4 Q-3: "this should be a later follow up … a user should separately be able to decide both 1) whether chats are backed up to cloud at all, or just stored on their own devices, and 2) whether backed up chats are encrypted with a passphrase".
+- A new device joins by pairing with an existing device; no account is needed for sync (the relay may ask for sign-in against abuse). — D4 Q-4 pick pair-only.
+- A computer stays awake while a reply it is running is unfinished. — D4 Q-5 yes.
+- Closing the host shows the normal close menu. A chat marked complete closes on every device. Otherwise the app quits at once provided every finished reply is on the other devices; it does not wait for a running reply, whose half is dropped; the chat stays listed on other devices with a notice that the host disconnected and an offer to host it there. — D4 Q-6 note (verbatim in the answers file).
+- Removing a device locks it out and frees its chats to be continued elsewhere. — D4 Q-9 pick remove-frees.
+- A chat opened without its folder can talk only; the note saying so is added at the end of the chat on the new device, and nothing earlier is cut or edited. — D4 Q-11 pick talk-only + note.
+- A continued chat keeps its exact model, provider and project settings. Only when the sign-in is genuinely missing on this device: block until the user signs in (Claude Code), or offer the model picker before resuming. — D4 Q-12 note.
+- Today's in-app notifications are enough for this work; cross-device alerts and user-customizable notifications for automations are recorded as one unified card. — D4 Q-13 note.
+- A viewing device has the same limits a phone has today; the gaps are recorded in one central place and each shows a plain message such as "x is not currently supported from a remote client." — D4 Q-14 pick same-as-phone + note.
+- A chat can be started from one device to run on another. — D4 Q-15 yes.
+- Not settled in round 4: the full list of Continue-here warning states and wording (Q-7: "i'd want to see all of the specific warning states/causes/messages"); how duplicates are prevented (Q-8: "there's a smarter way to do this"); how project files travel (Q-10: "is there a simpler or more unified/robust system we could build?"). All three are asked again in round 5.
+
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
 1. "Default runner = the device he's typing on" → replaced by host-stays-until-offline-or-chip (D1 Q-4, Q-5, Q-15).
@@ -71,17 +90,15 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 
 ## Open items (nothing below is decided)
 
-1. **The pipe:** relay through our server, Tailscale, or a true mesh (devices pair directly; dumb replaceable helpers in the middle). Destin skipped D3 Q-1. The mesh cannot be chosen honestly without a measured spike (explainer §8); the spike is new code and needs his word.
-2. **Pairing method** for getting a key onto a new device: pair by code, passphrase, or both (explainer §6).
-3. **Whether the GitHub sync copy gets sealed too**, which would make a recovery phrase mandatory (explainer §6).
-4. **Mailbox:** does something hold undelivered words for a device that was asleep (D3 Q-2).
-5. **Self-host address setting** (D3 Q-3), **who pays** (D3 Q-4).
-6. **Helper transcripts** on demand or always (D3 Q-5); **which smaller pieces always travel** (D3 Q-6).
-7. **Phone wake** behaviour (D3 Q-7; D2 Q-9 "we'll need to think this through a bit further").
-8. **How a chat opens without its folder** (D3 Q-8).
-9. **How "accidental forks are eliminated" is actually achieved** given a single host, and how rare splits reconcile automatically (D1 Q-6 states the goal; no mechanism is agreed).
-10. **A multi-device-aware assistant** (proposal §5.4) was never put to Destin as a question.
-11. **The design document itself** is not yet rewritten from the answers; that was to follow deck 3.
+1. **Which keeper is built first**, and how long a relay holds lines (round 5).
+2. **How duplicates are prevented**: proposal in round 5 is that a takeover is itself a line in the chat.
+3. **Taking over, or closing the host, when nothing else is reachable** (round 5).
+4. **How project files travel** (round 5).
+5. **The Continue-here states and wording** (round 5).
+6. **Helper transcripts**, **which smaller pieces always travel**, **phone wake**: unchanged from round 3 (D3 Q-5, Q-6, Q-7), deferred to a later round.
+7. **A multi-device-aware assistant** (proposal §5.4) was never put to Destin as a question.
+8. **Two cards** he asked to have recorded (cloud-backup choices; unified alerts) are proposed in round 5, not yet filed.
+9. **The design document itself** is not yet rewritten from the answers.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)
 
@@ -92,7 +109,7 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 - Phone: runs the same engine and sync, has synced project folders; lacks the assistant browser, Office, admin commands, folder picker, shared storage, local models, Python and friends; no per-reply wake lock; Doze cuts the network for all apps.
 - Session context sizes on Destin's desktop: main transcripts median 1.1 MB (p90 11 MB, max 312 MB); helper transcripts 8.4 GB across 327 chats; saved long outputs 510 MB; undo history 488 MB across 537 sessions; memory 200 KB; plans 52 KB. Only the main transcript, names, tags and handoff notes sync today.
 - Conflict copies analysed 2026-11-07: of 26, 13 identical, 10 subsets, 3 true forks.
-- Prompt cache on Destin's plan lasts about an hour, not the 5 minutes the proposal assumed; compaction never shrinks a transcript; newest-name-wins already exists; the phone "drops resume" bug the proposal cites was in code deleted 2026-10-14.
+- Prompt cache on Destin's plan lasts about an hour, not the 5 minutes the proposal assumed; compaction never shrinks a transcript (re-checked 2026-11-09 against 295 compactions, 125 automatic and 170 manual, in the Claude Code chats on Destin's desktop: every line before the compaction marker is still in the file; `youcoded/docs/cc-dependencies.md` says compact 'rewrites the SAME transcript file', which means same file and id, not a shorter file); newest-name-wins already exists; the phone "drops resume" bug the proposal cites was in code deleted 2026-10-14.
 - Toolkits for a true mesh: Syncthing (model), Hyperswarm (JavaScript, runs in Node), Iroh (Rust, no official Node bindings). Android path untested for any of them.
 
 ## Stale documentation found (reported, not edited)
