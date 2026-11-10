@@ -12,8 +12,8 @@ vision: social.friends.signin, social.friends.signout
 work: session/security-server-batch
 ---
 Progress
-Done: The phone forgets its saved key and stops retrying after the 'expired' answer, and the computer sends that answer (both on master, unreleased; re-checked 2026-11-10). The account-takeover hole from #55 is closed (marketplace PR #114, app PR #713, Nov 5). #55 was folded in here on 2026-11-10; its leftovers were each re-checked against the code that day and are listed below.
-Next: Destin decides the two notice questions below; each build is small after that. Still owed by hand: one real phone sign-in on a released build (no record that it was ever done after the Nov 5 fix).
+Done: Both notices built on session/security-server-batch (not landed): an expired phone stays in the Remote access device list as a faded row reading 'Signed out after 90 days unused' with Remove; and a notice with 'Sign in again' when the app signs you out of your account by itself (all four code paths, now logged too).
+Next: Destin reviews the before/after deck (sign-out-notices) before they land. Still owed by hand: one real phone sign-in on a released build.
 Blocked: nothing.
 
 Chats
