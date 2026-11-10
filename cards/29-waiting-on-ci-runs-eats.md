@@ -13,9 +13,9 @@ vision: everywhere.added.update
 work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record, session/29-hotfix-lane, session/test-suite-rethink
 ---
 Progress
-Done: Bug-fix release lane is live (earlier). Checked 2026-11-10: recent Desktop CI successes take 5-10 minutes (older ones 21-28), Workspace CI about 5; so a real timing already exists. PR #272 (workspace) still applies with one small conflict; the app half is 2 commits that exist ONLY on this computer (worktrees/sessions/29-ci-fastpaths/youcoded) and conflict with what master built since.
-Next: Destin: keep or drop the test-speed experiments. DROP (RECOMMENDED): close PR #272 and delete both branches; you lose nothing you use, waits are already down to 5-10 minutes; first back up the 2 unsaved app commits to GitHub so nothing is lost by accident. KEEP: finish and rebase it; card-only changes would get a green check in a few minutes instead of the full run; cost: reworking CI rules that overlap master's, and a mistake could let a code change skip the full tests.
-Blocked: Destin's keep-or-drop.
+Done: Destin, 2026-11-10: test-speed experiments dropped. The two app changes that existed only on his computer were backed up (branch session/29-ci-fastpaths in the app repo, commits 6ad3d2b87 and a85342b9a); PR #272 closed; the 29-ci-fastpaths work folder removed. Both session/29-ci-fastpaths branches stay on GitHub as the backup.
+Next: Nothing for the experiments. The card's other ideas (a nightly rehearsal build; running one test file on one system) are still unbuilt.
+Blocked: 
 
 Chats
 - 2026-10-22 session/29-hotfix-lane: chat started
