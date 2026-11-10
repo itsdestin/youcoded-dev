@@ -10,9 +10,9 @@ created: 2026-11-05
 work: session/219-musl-patches
 ---
 Progress
-Done: Alpine shipped the fixed Node.js (24.22.1, now 24.22.1-r1 on v3.24); the phone build takes Alpine's current Node package at build time, so the next phone release gets it with no change. Checked 2026-11-10.
-Next: Before cutting 1.4: the phone build compiles musl (the C library under everything) from the upstream 1.2.6 download and applies only our own resolver patch, so it is MISSING the three security patches Alpine adds on top (CVE-2026-6042, CVE-2026-40200, CVE-2026-107891 — Alpine musl 1.2.6-r3). Make build-runtime.sh fetch and apply Alpine's musl patch set from aports for the pinned branch (or take musl from Alpine's package), run the runtime tests, and try it on a real phone. Also teach the security watch that musl is built from source, so it compares against Alpine's patch list rather than only the package version. Release with 1.4 (Destin 2026-11-10: no separate security release).
-Blocked: A real-phone test of the musl change; the 1.4 release date is Destin's.
+Done: Alpine shipped the fixed Node.js (24.22.1-r1 on v3.24); the phone build takes Alpine's current Node package at build time, so the next phone release gets it with no change (checked 2026-11-10). The phone's C library (musl) now carries Alpine's own security patches too: youcoded PR #723 (merged 2026-11-10) vendors Alpine's musl 1.2.6-r3 patch set in app/runtime/alpine-musl-patches/ with checksums, applies it before our resolver patch at build time, and the daily security watch reports when Alpine publishes a newer set ('android-musl' check). Both Android CI builds passed with it. Before, the phone silently lacked CVE-2026-6042, CVE-2026-40200 and CVE-2026-107891 fixes.
+Next: Ship with 1.4 (Destin 2026-11-10: no separate security release). At the 1.4 release gate: install the releaseTest build on a real phone and confirm the backend starts and chats work; if Alpine has published musl 1.2.6-r4 or newer by then, run 'python3 app/runtime/alpine-musl-patches.py refresh' first and re-run the runtime tests.
+Blocked: The 1.4 release date is Destin's; the real-phone test waits for it.
 
 Chats
 - 2026-11-10 session/219-musl-patches: chat started
