@@ -11,7 +11,7 @@
     "study": "flock /tmp/promo-render.lock remotion render src/index.ts"
   },
   "dependencies": {
-    "@remotion/cli": "4.0.520",
+    "@remotion/cli": "4.0.540",
     "@remotion/google-fonts": "4.0.520",
     "@remotion/layout-utils": "^4.0.520",
     "@remotion/transitions": "4.0.520",

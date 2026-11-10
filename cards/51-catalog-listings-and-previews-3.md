@@ -11,11 +11,10 @@ summary: Marketplace fixes: listings that undersell, install and library faults,
 area: Marketplace & library
 side: screens
 vision: marketplace.browse, marketplace.setup.install
-work: session/google-connections-planning
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: Phone users are now counted as phones (marketplace update, Nov 2 2026). A warning and off-switch for plugins that turn unsafe shipped (Nov 8 2026).
+Next: split this card into three: (1) listings and previews, (2) install problems, (3) comments and the Likely safe badge.
 Blocked: nothing recorded.
 
 See also #130: Both are about theme preview pictures being unreliable (51b in the marketplace, 130a for themes you build yourself), and Destin asked to fix the whole class.

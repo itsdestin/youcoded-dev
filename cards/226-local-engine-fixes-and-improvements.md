@@ -1,18 +1,26 @@
 ---
-id: 48
-title: Local models: open decisions, faults and ideas
-stage: planning
-priority: P3
-tags: local-models, settings/local-models, desktop, performance, bug
-branch: 48-local-engine-3-open-decisions
-roadmap: local-models: Local engine: 3 open decisions.
-created: 2026-10-15
-summary: Local models: what to do when two big models won't fit, three small screen faults, and ideas such as running in the background.
-area: Settings
-side: both
-platform: Desktop only
+id: 226
+title: Local engine fixes and improvements
+stage: polish
+tags: local-models, settings/local-models, native-harness, performance, desktop, bug
+related: 176
 vision: chat.converse.local, yours.model.localsettings
+branch: 226-local-engine-fixes-and-improvements
+finish: On session/local-model-hardening: MTP on per model where the file supports it; tool results sized to the room left; junk summaries refused; no request left counted as running; no local-engine entries for cloud models; one consistent too-long error with Summarize; ROCm wording matches the measurements; measured, tested, verify.sh green
+created: 2026-11-09
+why: Destin 2026-11-08: one workstream for the local engine — the context faults found on the desktop plus everything we know about making any one model run as fast as it can on the user's hardware; to be finished in the local-model-hardening session. Reference: docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md
+priority: P3
+work: session/local-model-hardening
 ---
+Progress
+Done: The fixes listed below are finished and saved on the work branch (not yet on the main app). Fixed: the local model no longer gets stuck showing 'busy' after loading; long chats on small context windows now size search results to the room left, refuse junk summaries, and show one clear 'too long' message with Summarize; models with the right files now use a speed boost (MTP) for dense models, roughly doubling reply speed on the 27B model; the ROCm and Speculative decoding wording now matches what was measured; cloud chats no longer wake the local engine; a too-long chat logs its token counts. Testing: the full check was reported green, and one end-to-end 9B test was clean; a second run hit an unexplained 'too long' error that was not reproduced.
+Next: Destin reviews the work; then the 7 app commits and 2 workspace doc commits are pushed to the backup copy.
+Blocked: the push waits on Destin's OK for a secrets-scan false positive (a field name in an app test).
+
+Chats
+- 2026-11-09 session/local-model-hardening: speed work (warm-up, per-chat slots) built; context faults and MTP to fix here
+
+Merged in #48 "Local models: open decisions, faults and ideas"
 Progress
 Done: nothing recorded.
 Next: not decided.

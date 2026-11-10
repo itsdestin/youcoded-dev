@@ -14,8 +14,8 @@ side: behind
 vision: social.friends.forfeit
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
+Done: Checked 2026-11-09 against the live server code. The fake-win gap is still open: a friend with a modified app can still record a permanent win against you once you are offline (no proof of play required), and the two result messages have no rate limit. No app sends the forfeit message today, so only a hand-made client can trigger it. Fix options are written up in docs/active/investigations/2026-09-01-game-forfeit-unattested-record.md.
+Next: Destin decides the fix (remove the forfeit message until a real client exists, or require the server to have seen the match start). The rate-limit fix is small and can be done alone.
 Blocked: nothing recorded.
 
 Chats

@@ -1,9 +1,9 @@
 ---
 id: 52
 title: Marketplace ideas, including the assistant searching it
-stage: planning
+stage: explore
 priority: P1
-tags: marketplace, catalog, native-harness, tools, marketplace-screen, desktop, release-blocker, feature
+tags: marketplace, catalog, native-harness, tools, marketplace-screen, desktop, feature
 branch: 52-parked-ideas-4-marketplace-ideas
 roadmap: marketplace: Parked ideas: 4 marketplace ideas, none designed.
 created: 2026-10-15
@@ -13,8 +13,8 @@ side: both
 vision: marketplace.browse.fromchat, marketplace.browse.promptpacks, marketplace.publish.tipjar, marketplace.publish.publicregistry
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: nothing built yet. The assistant has no way to search the marketplace yet.
+Next: decide whether the assistant marketplace search is still wanted. The three other ideas (prompt packs, public registry, tip jar) stay parked.
 Blocked: nothing recorded.
 
 See also #63: 52(a)'s installable packs that replace the assistant's prompt and tools are close to 63(i)'s custom harness builder with a shareable manifest.

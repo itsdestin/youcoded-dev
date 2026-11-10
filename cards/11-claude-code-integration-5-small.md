@@ -5,7 +5,6 @@ stage: planning
 priority: P3
 tags: claude-code-integration, regression, bug
 branch: 11-claude-code-integration-5-small
-roadmap: claude-code-integration: Claude Code integration: 5 small faults.
 created: 2026-10-15
 summary: A broken settings file is replaced without telling you, one warning looks different from the rest, and Android needs a newer Claude Code.
 area: Chat
@@ -14,18 +13,14 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: Direct-control foundation, conservative legacy @file handling and owner-approved Escape Stop were integrated with Claude queues in app PR #657 (a00cb691604c4013d50f1b15f96011bb1d37a27c), following real Haiku A/B and no-cost Stop checks. #169 adds durable queue/recovery, direct Dismiss, edit/reload safety and burst fixes; it is merged/closed. Final integrated desktop verification, Android JVM/APK CI and Linux packaging checks passed. Original source11 checkout and separate test copies were preserved, not authoritative evidence of unmerged product code.
-Next: Retain the original five-fault scope and broader direct-control follow-ups: initial Auto-mode display, instructions/provenance/ask-deny parity, control-bridge lifecycle and native first-run/structured media work coordinated with #12; actual Android-device/Windows/macOS runtime acceptance. #169 queue functionality is completed, not an outstanding integration task.
-Blocked: No merge blocker for the direct-control/queue foundation: it landed in #657. No release or production-app update was performed. Retained .4/.2 test copies are older snapshots; do not infer current implementation or running-window state from them. Broader #11 work remains open.
+Done: The Claude direct controls and the message queue that waits for you now work in the app (app PR #657, merged 2026-10-20; tracked as card 169).
+Next: Fix or verify the open items from the original five: (a) a broken settings file is backed up and replaced with no message to you; (b) a settings change can be skipped with no message when another program is busy with the file; (e) the saved test recordings of Claude Code are old (version 2.1.281), so a newer Claude Code could break the app without tests failing. Check (c) and (d), which look already fixed. The wider direct-control follow-ups move to card 12 or a new card.
+Blocked: Nothing blocks the shipped part. Needs a real Android, Windows and Mac run to confirm the rest.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
 
 Chats
 - 2026-10-19 session/11-claude-direct-controls: chat started
-- 2026-10-19 session/11-claude-direct-controls: chat started
-- 2026-10-19 session/11-claude-direct-controls: chat started
-- 2026-10-18 session/11-claude-direct-controls: chat started
-- 2026-10-18 session/11-claude-direct-controls: chat started
 - 2026-10-18 session/11-claude-direct-controls: chat started
 
 From the old roadmap (claude-code-integration, status confirmed, seen on all, last checked 2026-09-16)

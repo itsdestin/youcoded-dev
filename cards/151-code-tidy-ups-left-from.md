@@ -2,6 +2,7 @@
 id: 151
 title: Code tidy-ups left from older reviews
 stage: explore
+priority: P3
 tags: dev-workspace, housekeeping, desktop, remote-access
 branch: 151-code-tidy-ups-left-from
 created: 2026-10-16
@@ -11,9 +12,9 @@ area: Developer tools
 side: behind
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: item 1 (message times use each reply's own time, shipped in PR #675, 2026-10-22) and item 2 (phone server duplicates removed by the remote-access refactor, PR #604, 2026-10-05).
+Next: item 3 (merge three repeated status-reading loops into one helper) and item 4 (fix the folder-path comparison, after deciding the right shared helper).
+Blocked: item 5 needs Destin to choose delete or keep for the unused marketplace settings plumbing.
 
 Chats
 

@@ -9,8 +9,8 @@ created: 2026-11-01
 why: Analytics session 2026-11-01: workspace-start provisions node_modules only for youcoded/desktop. The shared wecoded-marketplace/worker/node_modules was stale (vitest-pool-workers 0.5.41 against a lockfile wanting ^0.22, so tsc failed), and the glob-guard hook blocks npm ci inside a worktree even when there is no hardlink farm to damage. Workaround that cost ~6 calls: npm ci in a scratch folder, then move node_modules in.
 ---
 Progress
-Done: RECURRED 2026-11-07 (security-apparatus): worker worktree had no dependencies; a clean install in a scratch copy under /tmp was refused by glob-guard (it is not a worktree), and cp -al fails across filesystems (/tmp is tmpfs). ~5 calls lost; fell back to the PR's worker-ci run.
-Next: plan it.
+Done: nothing built yet. Problem seen on 2026-11-01, 11-05 and 11-07: a new worker-side workspace starts without its tools installed, so type-checking and tests fail until a manual workaround (about 5 extra steps each time).
+Next: make the workspace startup helper also set up the marketplace worker folder, the same way it already does for the desktop app. Then test it in a fresh worker workspace.
 Blocked: nothing.
 
 Chats

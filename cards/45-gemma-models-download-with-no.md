@@ -14,9 +14,9 @@ side: screens
 vision: chat.converse.local
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Downloads for the app's own models now stop safely if the disk fills up (shipped in 1.3.x, youcoded PR #497 and commit 40a01e22b). The shared download code is not yet merged: models, the engine and voice each still download in their own way.
+Next: Decide with Destin whether to split this card: (1) add Google's Gemma licence terms to the model download screen (small, user-visible, possibly required); (2) merge the three download paths into one (internal cleanup, no screen change, on hold).
+Blocked: Nothing recorded as blocking. Refactor is on hold by Destin's choice since 2026-09-18.
 
 Chats
 

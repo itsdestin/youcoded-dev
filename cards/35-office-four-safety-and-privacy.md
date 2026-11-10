@@ -14,9 +14,9 @@ platform: Desktop only
 vision: chat.files.office
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: The document converter is now sealed inside its own job folder, and on Linux it has no network access (shipped in version 1.3.1, commit 3ce5f0b6d). Picture downloads from web addresses check every address they resolve to and every redirect before fetching (office-pictures.ts).
+Next: test whether Mac and Windows can still fetch pictures from a document, check Windows folder privacy, stop the error log from copying document text, close the Teredo and second-lookup gaps for web-address pictures, and decide separately about the seven cosmetic faults.
+Blocked: needs a Windows and a Mac machine to test; the seven cosmetic faults need the running app to re-check.
 
 Chats
 

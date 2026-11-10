@@ -1,0 +1,912 @@
+{
+  "title": "The command center — what it is for, before anything else is drawn",
+  "key": "master-plan-questions-2",
+  "out": "master-plan.questions-2.html",
+  "stage": "ask",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "pick": "several",
+      "surface": "YouCoded plan",
+      "path": "The planning Page you asked for, opened from the Pages list",
+      "headline": "Which decisions should this surface help you make? Pick every one that matters.",
+      "today": "Your plans live in sixteen roadmap files, about 130 active documents, 70-odd leftover branches, 155 speed reports and hundreds of answered review decks. Nothing joins them. To decide anything you ask an assistant to go look.",
+      "problem": "Each decision costs a fresh investigation, and the answer depends on which assistant looked and what it happened to find.",
+      "proposal": "The surface is built around the decisions you actually make. Pick the ones you make most; the first version serves those and leaves the rest for later.",
+      "options": [
+        {
+          "id": "next",
+          "label": "What to work on next",
+          "pros": [
+            "Turns the roadmap into a short, ranked pile instead of sixteen files.",
+            "Shows what is small enough to finish in one session."
+          ],
+          "cons": [
+            "Needs every item to carry a priority and a size, which many do not today."
+          ]
+        },
+        {
+          "id": "waiting",
+          "label": "What is waiting on me",
+          "pros": [
+            "Review decks, merge calls and unanswered questions in one list.",
+            "You see at a glance whether an assistant is blocked on you."
+          ],
+          "cons": [
+            "Only as complete as the records sessions leave behind."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "combine",
+          "label": "What overlaps or could be combined",
+          "pros": [
+            "Catches two sessions quietly doing the same thing.",
+            "Finds old branches that a newer one has made pointless."
+          ],
+          "cons": [
+            "Overlap is a judgment call; the surface can only flag likely cases."
+          ]
+        },
+        {
+          "id": "drift",
+          "label": "What is drifting from the vision",
+          "pros": [
+            "Shows work that belongs to no goal, so you can kill it or home it.",
+            "Shows goals that nothing is serving."
+          ],
+          "cons": [
+            "Only works once every item points at a goal, which is a sorting job you have to do once."
+          ]
+        },
+        {
+          "id": "measure",
+          "label": "What got faster, slower, or was never measured",
+          "pros": [
+            "Connects speed reports to the builds they measured.",
+            "Shows a change that landed without a measurement."
+          ],
+          "cons": [
+            "Speed runs on different machines or branches do not compare cleanly; the surface must say when they do not."
+          ]
+        },
+        {
+          "id": "ready",
+          "label": "What is ready to review, merge or release",
+          "pros": [
+            "Each branch shows how far it got: tests, review, your acceptance.",
+            "The merge call stops being a memory exercise."
+          ],
+          "cons": [
+            "Depends on sessions recording their steps, which some skip."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "pick": "several",
+      "surface": "YouCoded plan",
+      "path": "The planning Page you asked for, opened from the Pages list",
+      "headline": "When would you actually open it? Pick every moment that fits.",
+      "today": "There is no routine moment to look at the whole picture. You see one session's work at a time, in that session's chat.",
+      "problem": "A surface nobody opens on a schedule goes stale and stops being trusted. Knowing the moment decides what the opening view must show.",
+      "proposal": "The opening view is tuned to the moment you pick most. Everything else is one click deeper.",
+      "options": [
+        {
+          "id": "session-start",
+          "label": "Starting a work session",
+          "pros": [
+            "You choose what to do with the whole picture in front of you.",
+            "An assistant can be pointed at an item instead of a description."
+          ],
+          "cons": [
+            "Must load fast and read in seconds, or you will skip it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "session-end",
+          "label": "When a session finishes and asks for a merge call",
+          "pros": [
+            "You decide merge with the branch's evidence beside it, not from the chat's claim."
+          ],
+          "cons": [
+            "Only useful if the branch's tests, review and screenshots are recorded where the surface can find them."
+          ]
+        },
+        {
+          "id": "weekly",
+          "label": "A weekly look at the big picture",
+          "pros": [
+            "Vision, goals and drift make sense at this pace, not daily."
+          ],
+          "cons": [
+            "A week of changes is a long list; needs a 'since you last looked' view."
+          ]
+        },
+        {
+          "id": "sharing",
+          "label": "When deciding what to show the public",
+          "pros": [
+            "Public roadmap updates become a deliberate act with a diff you approve."
+          ],
+          "cons": [
+            "Rare, so it should not shape the opening view."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "The 'active work' list, which you chose as the opening view",
+      "headline": "What makes a piece of work count as active?",
+      "today": "There are 72 session branches in the workspace and 87 in the app, most left over from finished or abandoned sessions. A plan marked 'active' may be months old. Nothing says which are alive.",
+      "problem": "If 'active' means 'has a branch', the opening view is a wall of ghosts. If it means 'you said so', you have to maintain the list by hand.",
+      "proposal": "One rule decides what the opening view shows. Everything that fails it goes into a separate 'stale' pile you can sweep.",
+      "options": [
+        {
+          "id": "recent-activity",
+          "label": "Touched in the last few days",
+          "pros": [
+            "Needs no bookkeeping: a commit, an edit or a running assistant counts.",
+            "Ghosts fall off on their own."
+          ],
+          "cons": [
+            "Work you paused for a week disappears until you touch it again."
+          ],
+          "measured": "Anything with a commit, file edit or deck answer in the last 7 days",
+          "recommended": true
+        },
+        {
+          "id": "declared",
+          "label": "A session declared it when it started",
+          "pros": [
+            "Every active item has a stated purpose and owner.",
+            "Paused work stays visible until you close it."
+          ],
+          "cons": [
+            "Depends on every session doing it; a skipped declaration means invisible work."
+          ]
+        },
+        {
+          "id": "has-branch",
+          "label": "Any branch not yet merged",
+          "pros": [
+            "Nothing is ever missed."
+          ],
+          "cons": [
+            "Today that is over 150 branches, most of them dead."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "The 'recently completed' section",
+      "headline": "What counts as a recently completed build you want to see screenshots and decks for?",
+      "today": "Work passes through several finish lines: the assistant says it is done, tests pass, you answer the acceptance deck, the branch merges, a release is tagged. Screenshots and decks are taken at different ones.",
+      "problem": "'Completed' means something different at each line. The surface has to pick one as the headline and show the others as steps.",
+      "proposal": "The 'recently completed' list is keyed to one finish line. The other lines show as a progress strip on each item.",
+      "options": [
+        {
+          "id": "merged",
+          "label": "Merged into the main branch",
+          "pros": [
+            "Unambiguous and recorded by Git with a date.",
+            "The 'shipped' list already uses this."
+          ],
+          "cons": [
+            "A merge can happen without you having seen the final screens."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "accepted",
+          "label": "You answered its acceptance deck",
+          "pros": [
+            "Marks the moment you personally approved it."
+          ],
+          "cons": [
+            "Many small fixes never get a deck, so they would never appear."
+          ]
+        },
+        {
+          "id": "released",
+          "label": "Shipped in a tagged release",
+          "pros": [
+            "Matches what users actually received."
+          ],
+          "cons": [
+            "Releases are weeks apart; the list would rarely change."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "The shape of the tree",
+      "intro": "These decide how vision, systems and small items hang together, so an idea can be traced up to a goal."
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "The 'Vision' section at the top of the tree",
+      "headline": "The top of the tree is five goals, and every system and item hangs under one of them.",
+      "changed": "Stated from your own description: 1. You own your data, agents and apps, with a choice of providers. 2. Anyone can build and improve software, not just coders. 3. A GitHub for normal people: find, remix, publish, review, report. 4. Pages, tools, agents and setup belong together. 5. Your devices work as one. If a goal is missing or wrongly cut, say so in the note.",
+      "notice": "Every roadmap item, plan and branch shows which goal it serves, and a 'drift' view lists what serves none.",
+      "yes": "Holds",
+      "no": "Recut it"
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "The layer between a goal and a roadmap item",
+      "headline": "What sits between a goal and an individual item?",
+      "today": "Roadmap items are filed by area: sixteen files such as marketplace, sync, native-harness. Areas are where code lives, not what the work is for. A big idea like 'Pages as apps' is spread across several areas and plans.",
+      "problem": "Without a middle layer, a goal has hundreds of items under it and you cannot see progress on anything in between.",
+      "proposal": "One middle layer is added. Items point at it; it points at a goal.",
+      "options": [
+        {
+          "id": "initiatives",
+          "label": "Named initiatives",
+          "summary": "A handful of multi-session efforts such as 'Pages can use your files' or 'Marketplace remix with provenance', each with a plan and a done-state.",
+          "pros": [
+            "Reads as what you are trying to achieve this quarter.",
+            "Progress is countable: items done out of items in the initiative."
+          ],
+          "cons": [
+            "Someone has to name them and sort items in, once."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "systems",
+          "label": "Major systems",
+          "summary": "Pages, Marketplace, Agent runtime, Sync, Remote access and so on, each with its subsystems.",
+          "pros": [
+            "Stable: systems rarely change.",
+            "Close to the existing area files, so little re-sorting."
+          ],
+          "cons": [
+            "Says where work is, not why; drift is harder to see."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Both, initiatives inside systems",
+          "pros": [
+            "Answers both 'where' and 'why'."
+          ],
+          "cons": [
+            "Two things to maintain and a deeper tree to click through."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "Any item on the plan",
+      "headline": "Must every item point at a goal, or may unsorted ones exist?",
+      "today": "Nothing today links an item to anything above it. Sorting the existing backlog is a one-time job of a few hours for an assistant, with you confirming the doubtful ones.",
+      "problem": "Forcing a home for everything makes filing slower and tempts wrong guesses. Allowing orphans lets the drift pile grow unnoticed.",
+      "proposal": "Pick how strict the rule is. Either way the surface shows the unsorted count.",
+      "options": [
+        {
+          "id": "inbox",
+          "label": "Unsorted allowed, shown as an inbox",
+          "pros": [
+            "A new idea can be dropped in mid-session without a decision.",
+            "The inbox is itself a 'what needs me' item, so it does not rot quietly."
+          ],
+          "cons": [
+            "You have to clear it now and then."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "required",
+          "label": "Required, filing refuses an orphan",
+          "pros": [
+            "The tree is always complete."
+          ],
+          "cons": [
+            "Assistants will guess a home rather than stop to ask, and wrong homes are worse than none."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "pick": "several",
+      "surface": "YouCoded plan",
+      "path": "A bug or request's record, showing who reported it and when",
+      "headline": "Where do bugs and requests come from today? Pick every source you use.",
+      "today": "You asked to see who reported a thing, when, how often and in what words. Right now a bug lands wherever the session that heard it put it: a roadmap line in your words, a plan, or nowhere.",
+      "problem": "A source the surface does not read is a report that never shows up, and a report that loses its original wording cannot be checked later.",
+      "proposal": "Each source you pick gets a way in that keeps the original words, author and date.",
+      "options": [
+        {
+          "id": "chat",
+          "label": "You, in chat or by voice, mid-session",
+          "pros": [
+            "The most common source, so the biggest win."
+          ],
+          "cons": [
+            "Needs the assistant to file it with your words intact, every time."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "github",
+          "label": "GitHub issues from others",
+          "pros": [
+            "Author, date and wording are already kept there."
+          ],
+          "cons": [
+            "Read-only at first; replies still happen on GitHub."
+          ]
+        },
+        {
+          "id": "testers",
+          "label": "Friends or testers telling you directly",
+          "pros": [
+            "Captures feedback that would otherwise be lost."
+          ],
+          "cons": [
+            "You have to relay it; the surface cannot hear it."
+          ]
+        },
+        {
+          "id": "decks",
+          "label": "Notes you type on review decks",
+          "pros": [
+            "Already recorded with a date; often the sharpest feedback."
+          ],
+          "cons": [
+            "Buried in hundreds of answer files today."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "How assistants report in",
+      "intro": "Most of the work is done by assistant sessions. These decide what they must leave behind so the picture stays true after they close."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "An active work item, showing which session owns it",
+      "headline": "How should a session declare what it is working on?",
+      "today": "Starting a session creates a branch and a small record with its name and paths. Nothing records what it is for, which roadmap item it serves, or whether it is still alive. 388 such records exist for 74 branches.",
+      "problem": "The surface cannot tell a session building a feature from one that read a file and quit. You cannot see what an assistant is doing without opening its chat.",
+      "proposal": "Every session leaves a short status it keeps current. Pick how much of that is automatic.",
+      "options": [
+        {
+          "id": "auto-plus-line",
+          "label": "Automatic facts plus one written line",
+          "summary": "Branch, commits and edited files are recorded on their own; the assistant adds a one-line purpose at start and updates it at blockers and finish.",
+          "pros": [
+            "The facts are always right even when the assistant forgets.",
+            "The line gives you the 'why' in a glance."
+          ],
+          "cons": [
+            "A forgotten line shows as 'purpose unknown', which you will see sometimes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "facts-only",
+          "label": "Automatic facts only",
+          "pros": [
+            "Nothing for the assistant to forget."
+          ],
+          "cons": [
+            "You read branch names and file lists to guess what is happening."
+          ]
+        },
+        {
+          "id": "full-log",
+          "label": "A running log the assistant writes",
+          "pros": [
+            "Richest story of what happened."
+          ],
+          "cons": [
+            "Assistants write long logs nobody reads, and skip them under pressure."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "pick": "several",
+      "surface": "YouCoded plan",
+      "path": "Any status on the plan",
+      "headline": "Which updates may happen without asking you? Pick every one you would allow.",
+      "today": "Status changes today are typed by assistants into roadmap files, so a claim and a fact look the same.",
+      "problem": "Too much automation and the plan changes under you. Too little and you approve a hundred trivial updates.",
+      "proposal": "Updates you pick happen on their own, with the evidence shown. Everything else waits in 'needs your review'.",
+      "options": [
+        {
+          "id": "git-status",
+          "label": "Done when its branch merges",
+          "pros": [
+            "Git already knows; no claim involved."
+          ],
+          "cons": [
+            "A merge of a half-finished item marks it done."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "attach-perf",
+          "label": "A speed report attaches to the build it measured",
+          "pros": [
+            "Reports already record the commit they ran on."
+          ],
+          "cons": [
+            "None you would notice."
+          ]
+        },
+        {
+          "id": "attach-shots",
+          "label": "Screenshots and decks attach to their build",
+          "pros": [
+            "You see the latest pictures without hunting."
+          ],
+          "cons": [
+            "Decks do not record a commit today; that has to be added."
+          ]
+        },
+        {
+          "id": "priority",
+          "label": "An assistant changes an item's priority",
+          "pros": [
+            "Faster triage."
+          ],
+          "cons": [
+            "Your ranking drifts without you noticing."
+          ]
+        },
+        {
+          "id": "goals",
+          "label": "An assistant edits goals or initiatives",
+          "pros": [
+            "Keeps the top of the tree current."
+          ],
+          "cons": [
+            "The vision is yours; silent edits there would be the worst surprise."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "The 'stale' pile beside active work",
+      "headline": "What should happen with the 150-odd leftover branches?",
+      "today": "Finished sessions were supposed to remove their branches. Most did not. They sit in the workspace, some holding unmerged work, most holding nothing.",
+      "problem": "They make 'active work' unreadable and hide the few that still hold something worth keeping.",
+      "proposal": "The surface sorts them by whether they hold unmerged changes, and you decide what to do with the pile.",
+      "options": [
+        {
+          "id": "sort-then-sweep",
+          "label": "Show the pile sorted, sweep on my say-so",
+          "pros": [
+            "Nothing is deleted without you.",
+            "Branches with unmerged work are shown first, with what they contain."
+          ],
+          "cons": [
+            "One sweeping session with you, roughly an hour."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "auto-hide",
+          "label": "Hide anything idle over a month",
+          "pros": [
+            "Clean view immediately."
+          ],
+          "cons": [
+            "Hidden is not gone; unmerged work stays lost."
+          ]
+        },
+        {
+          "id": "ignore",
+          "label": "Leave them, show only active",
+          "pros": [
+            "No work now."
+          ],
+          "cons": [
+            "The same mess in six months."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "What makes a status believable",
+      "intro": "A plan full of claims is what you have now. These decide how the surface tells a fact from a claim."
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "Any status label on the plan",
+      "headline": "How should the surface show whether a status is verified or just claimed?",
+      "today": "A roadmap line saying 'confirmed' was typed by an assistant. Whether tests ran, a review happened or the branch merged is not visible next to it.",
+      "problem": "You cannot tell 'done' from 'said done', so you re-ask, which is the problem this surface exists to end.",
+      "proposal": "Every status carries its evidence. Pick how loudly.",
+      "options": [
+        {
+          "id": "evidence-inline",
+          "label": "Evidence written beside it",
+          "summary": "'Merged 3 days ago, PR 609, tests passed, no deck.'",
+          "pros": [
+            "No hover, no click: the fact and its proof read as one line.",
+            "'No deck' and 'no tests' are visible absences."
+          ],
+          "cons": [
+            "Denser rows."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "badge",
+          "label": "A verified or claimed badge, detail on click",
+          "pros": [
+            "Cleaner rows."
+          ],
+          "cons": [
+            "You click to learn why, and absences hide."
+          ]
+        },
+        {
+          "id": "status-only",
+          "label": "Just the status",
+          "pros": [
+            "Simplest."
+          ],
+          "cons": [
+            "Same as today."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "A completed build's screenshots",
+      "headline": "When is a screenshot current, and when should it be marked stale?",
+      "today": "Screenshots are taken for review decks and for checks, into folders named by date. None records which version of the code it shows.",
+      "problem": "A picture from before the last fix looks identical to one from after it. You could approve a screen that no longer exists.",
+      "proposal": "Each picture records the code version it was taken from. Pick the rule for 'stale'.",
+      "options": [
+        {
+          "id": "code-changed",
+          "label": "Stale when that screen's code changed since",
+          "pros": [
+            "Precise: an untouched screen stays current for months.",
+            "Points at exactly which screens need re-shooting."
+          ],
+          "cons": [
+            "Needs a map from screens to the files that draw them, which mostly exists already."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "merge-based",
+          "label": "Stale when anything merged since",
+          "pros": [
+            "Simple rule."
+          ],
+          "cons": [
+            "Nearly everything is stale nearly always."
+          ]
+        },
+        {
+          "id": "age",
+          "label": "Stale after a fixed number of days",
+          "pros": [
+            "Simplest."
+          ],
+          "cons": [
+            "Wrong in both directions."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "A build's speed results",
+      "headline": "A speed result is compared to what?",
+      "today": "155 speed reports exist, each naming the code version, branch and machine it ran on. There is no chosen baseline and no trend; comparing two is a manual job.",
+      "problem": "'Faster' means nothing without 'than what', and a run from a different machine or a dirty branch is not comparable.",
+      "proposal": "The surface compares each run to one reference and refuses to compare runs that are not alike.",
+      "options": [
+        {
+          "id": "pinned-plus-prev",
+          "label": "A baseline you pin, plus the previous main-branch run",
+          "pros": [
+            "Pinned shows long-term direction; previous shows what the last change did.",
+            "Both are explicit, so a bad comparison is visible."
+          ],
+          "cons": [
+            "You re-pin after a big change, about once a release."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "last-release",
+          "label": "The last tagged release",
+          "pros": [
+            "Automatic, meaningful to users."
+          ],
+          "cons": [
+            "Weeks old; small regressions hide in the gap."
+          ]
+        },
+        {
+          "id": "previous-only",
+          "label": "Only the previous run",
+          "pros": [
+            "Automatic."
+          ],
+          "cons": [
+            "Slow drift over many runs never shows."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "The first useful version",
+      "intro": "The full idea is large. These pick the smallest version that shows you the whole picture, and where it runs."
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "Where the surface lives",
+      "headline": "Where should the first version run?",
+      "today": "You chose an in-app planning Page with scoped folder access. Today a Page can read only its own small saved file; it cannot open workspace files, run Git or read GitHub. That file access is designed but not built. Separately, on 5 September you approved a developer screen inside the app that lists branches, and it was built but never merged. And the app already opens any page by path.",
+      "problem": "Much of what you want (branches, merges, speed reports, screenshots) is not in files a Page could read even with folder access; it needs a collector that runs Git and gathers everything into one snapshot. The question is what shows that snapshot first.",
+      "proposal": "A collector builds the snapshot either way. Pick what displays it first; the in-app Page stays the destination.",
+      "options": [
+        {
+          "id": "generated-first",
+          "label": "A generated page opened by path, in-app Page next",
+          "summary": "The collector writes a page into the workspace; you open it like any file. The Page version follows once Pages can use files.",
+          "pros": [
+            "Works this week with no app changes and shows screenshots directly.",
+            "Proves which views you actually use before anything is built into the app."
+          ],
+          "cons": [
+            "Editing goes through an assistant until the Page version exists.",
+            "Two steps instead of one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "page-first",
+          "label": "In-app Page first, fed by the collector",
+          "summary": "The collector writes into the Page's own saved file, which a Page can read today.",
+          "pros": [
+            "Lives inside the app from day one."
+          ],
+          "cons": [
+            "That file is capped at one megabyte, so no screenshots and a trimmed plan.",
+            "Editing still waits on the file-access work."
+          ]
+        },
+        {
+          "id": "dev-screen",
+          "label": "A developer screen inside the app, on its own address",
+          "summary": "Like the September branch dashboard: real app code with full access to Git and files, shown only in development.",
+          "pros": [
+            "Full access to everything, no size cap, follows your theme.",
+            "The September branch already has a working start."
+          ],
+          "cons": [
+            "App code, so every change goes through the full build and test route.",
+            "Not a Page, so it cannot be shared or remixed through the marketplace later."
+          ]
+        },
+        {
+          "id": "page-after-access",
+          "label": "Build Pages file access first, then the Page",
+          "pros": [
+            "One build, the final shape."
+          ],
+          "cons": [
+            "Weeks before you see anything; the file-access design has open questions of its own."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-15",
+      "words": true,
+      "pick": "several",
+      "surface": "YouCoded plan",
+      "path": "The sections of the first version",
+      "headline": "Which sections must the first version have? Pick every must-have.",
+      "today": "Everything below exists somewhere on disk or on GitHub. Each section is a collector reading one of them and a view showing it.",
+      "problem": "Doing all of them first means weeks before you see anything. Doing too few means it does not answer your questions and you stop opening it.",
+      "proposal": "The ones you pick are in version one. The rest are listed on the page as 'coming', so the shape is visible from the start.",
+      "options": [
+        {
+          "id": "active",
+          "label": "Active work and who owns it",
+          "pros": [
+            "Your chosen opening view."
+          ],
+          "cons": [
+            "None."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "tree",
+          "label": "Goals, initiatives and the items under them",
+          "pros": [
+            "The 'why' behind everything else."
+          ],
+          "cons": [
+            "Needs the one-time sorting of the backlog."
+          ]
+        },
+        {
+          "id": "reports",
+          "label": "Bugs and requests with source and date",
+          "pros": [
+            "Answers who said what, when."
+          ],
+          "cons": [
+            "Old items have no recorded source; only new ones will."
+          ]
+        },
+        {
+          "id": "perf",
+          "label": "Speed results against a baseline",
+          "pros": [
+            "Reports already exist; mostly a view."
+          ],
+          "cons": [
+            "Baseline must be pinned once."
+          ]
+        },
+        {
+          "id": "shots",
+          "label": "Recent builds with their screenshots and decks",
+          "pros": [
+            "See the result, not the claim."
+          ],
+          "cons": [
+            "Old decks have no code version; shows 'unknown' until new ones record it."
+          ]
+        },
+        {
+          "id": "releases",
+          "label": "Release history",
+          "pros": [
+            "Which version has what."
+          ],
+          "cons": [
+            "Rarely changes."
+          ]
+        },
+        {
+          "id": "public",
+          "label": "The public roadmap snapshot and its approval",
+          "pros": [
+            "Starts the public side."
+          ],
+          "cons": [
+            "Depends on the tree being sorted first."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-16",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "The roadmap files behind the surface",
+      "headline": "Should the roadmap files change to carry the new links, or stay as they are?",
+      "today": "Each roadmap item ends with a line of short tags: area, status, priority, date checked. Adding a goal or initiative tag there is a small change to a format every session already uses. The alternative keeps the files untouched and holds the links in a separate map.",
+      "problem": "A separate map drifts from the files it describes, which is the two-copies problem you said to avoid. Changing the format means every session's filing habit changes a little.",
+      "proposal": "Pick which. The checker tool is updated either way so a wrong tag is caught.",
+      "options": [
+        {
+          "id": "tag-in-file",
+          "label": "Add a tag to each item",
+          "pros": [
+            "One source: the item carries its own home.",
+            "The existing checker can enforce it."
+          ],
+          "cons": [
+            "A one-time pass over about 130 items."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "separate-map",
+          "label": "A separate map file",
+          "pros": [
+            "Roadmap files untouched."
+          ],
+          "cons": [
+            "Two things to keep in step; the map rots."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-17",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "The branches part of 'active work'",
+      "headline": "What should happen to the September branch dashboard that was built but never merged?",
+      "today": "On 5 September you approved a developer screen listing every branch copy with Running, saved, pushed, merged and would-deleting-lose-work status, a Stop button, test runs with a verdict line, and a multi-select 'request cleanup' button. It was built over 32 files with tests and then left unmerged.",
+      "problem": "It overlaps the branches section of this surface. Building that section again from nothing wastes work you already approved; merging it as-is adds a second, separate dashboard.",
+      "proposal": "Pick how much of it comes forward.",
+      "options": [
+        {
+          "id": "reuse",
+          "label": "Reuse its parts as the branches section",
+          "pros": [
+            "Your September decisions carry over without re-asking.",
+            "Its branch status and delete-cost checks are exactly what 'stale pile' needs."
+          ],
+          "cons": [
+            "A month old; must be rebased and re-verified before anything else lands on it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ideas-only",
+          "label": "Take the ideas, rebuild them here",
+          "pros": [
+            "One surface, one code path."
+          ],
+          "cons": [
+            "Repeats a few days of work."
+          ]
+        },
+        {
+          "id": "drop",
+          "label": "Drop it",
+          "pros": [
+            "Nothing to rebase."
+          ],
+          "cons": [
+            "Approved work and its tests are thrown away."
+          ]
+        }
+      ]
+    }
+  ]
+}

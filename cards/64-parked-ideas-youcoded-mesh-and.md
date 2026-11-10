@@ -2,12 +2,11 @@
 id: 64
 title: Ideas: YouCoded Mesh and Cloud
 stage: explore
+work: session/mesh-sync-design
 priority: P3
 tags: native-harness, sessions, feature
-release: v1.4
 needs: 61
 branch: 64-parked-ideas-youcoded-mesh-and
-roadmap: native-harness: Parked ideas: YouCoded Mesh and Cloud — 2 things (v1.4, not
 created: 2026-10-15
 summary: Let your devices share requests and scheduled jobs automatically, with an optional paid cloud fallback when all are offline.
 area: Devices & sync
@@ -15,9 +14,9 @@ side: both
 vision: sync.mesh.handoff, sync.mesh.cloud, agents.background.device
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: waits on #61 — Mesh and Cloud decide where scheduled duties and automations run, so the automations themselves must exist first.
+Done: Design interview with Destin on how chats follow you across devices, 2026-11-06 to 2026-11-09. Three question decks (rounds 1 and 2 answered; round 3 saved, not yet submitted), a written explainer, and a draft spec. No app code changed. Record: branch session/mesh-sync-design (youcoded-dev, pushed), folder docs/active/design/2026-11-07-mesh-sync/README.md.
+Next: Destin submits or finishes round 3 deck; then decide the open questions the explainer lists. Build waits until he approves the design.
+Blocked: Automatic device choice for scheduled jobs may depend on card 61 (Agents & Automations). Not confirmed in the spec.
 
 See also #119: Reaching your computer through a YouCoded account without Tailscale (119) is part of the same long-term Mesh and Cloud idea as 64.
 

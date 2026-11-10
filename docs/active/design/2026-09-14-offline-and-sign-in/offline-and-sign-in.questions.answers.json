@@ -1,0 +1,84 @@
+{
+ "deck": "offline-and-sign-in-questions",
+ "started": "2026-09-15T01:45:52.721Z",
+ "submitted": "2026-09-15T03:35:08Z",
+ "cur": 3,
+ "answers": {
+  "Q-route": {
+   "v": "pick",
+   "pick": "pictures-then-build",
+   "seconds": 24,
+   "theme": "meadow-mist"
+  },
+  "S-cause": {
+   "v": "yes",
+   "seconds": 62,
+   "theme": "meadow-mist"
+  },
+  "Q-bypass-card": {
+   "v": "pick",
+   "pick": "card",
+   "seconds": 62,
+   "theme": "meadow-mist"
+  },
+  "Q-typed-early": {
+   "v": "pick",
+   "pick": "refuse",
+   "seconds": 62,
+   "theme": "meadow-mist"
+  },
+  "S-honest": {
+   "v": "yes",
+   "seconds": 1535,
+   "theme": "meadow-mist"
+  },
+  "Q-offline-signin": {
+   "v": "pick",
+   "pick": "stop-and-say",
+   "seconds": 1535,
+   "theme": "meadow-mist"
+  },
+  "Q-offline-chat": {
+   "v": "pick",
+   "pick": "chat-card",
+   "seconds": 1535,
+   "theme": "meadow-mist"
+  },
+  "Q-offline-midway": {
+   "v": "yes",
+   "seconds": 1535,
+   "theme": "meadow-mist"
+  },
+  "Q-check-when": {
+   "v": "other",
+   "note": "between. on app open and when a message fails. dont need the every 30 min check",
+   "seconds": 41,
+   "theme": "meadow-mist"
+  },
+  "Q-offer-where": {
+   "v": "pick",
+   "pick": "notice-and-dot",
+   "seconds": 41,
+   "theme": "meadow-mist"
+  },
+  "Q-claude-relogin": {
+   "v": "pick",
+   "pick": "browser-in-app",
+   "note": "we should run claude --login or whatever the command is for the user basically. i think thats how first launch works, but im not sure.",
+   "seconds": 41,
+   "theme": "meadow-mist"
+  },
+  "Q-openrouter": {
+   "v": "other",
+   "note": "depends on how user connected to openrouter. we offer api key and are about to set up browser oauth, so it should use whichever the user initially connected with",
+   "seconds": 41,
+   "theme": "meadow-mist"
+  },
+  "Q-resend": {
+   "v": "no",
+   "seconds": 41,
+   "theme": "meadow-mist",
+   "note": "should have a retry button"
+  }
+ }
+}

@@ -5,7 +5,6 @@ stage: planning
 priority: P3
 tags: perf, performance, themes-screen, polish
 branch: 100-theme-and-animation-costs-on
-roadmap: perf: Theme and animation costs on screen (3 things).
 created: 2026-10-15
 summary: Some themes' effects make the graphics chip work much harder than plain themes; decide defaults for weaker computers.
 area: Settings
@@ -13,9 +12,9 @@ side: both
 vision: yours.look.reduced, yours.look.themes
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Measuring tool shipped (youcoded-dev#250, youcoded#616, 2026-10-08): theme graphics cost can now be measured on the real graphics chip without showing a window. Reduced Effects now stops theme animations (youcoded 0211a9a5a, 2026-09-10). Mascot animation slowed to 30 frames per second (youcoded#573, 2026-09-26).
+Next: (1) Destin decides whether particle and glass effects are on by default on weaker computers; (2) cap theme animations even when Reduced Effects is off (card's item b); (3) measure card-grid blur (item c) once a test scene exists.
+Blocked: the high-refresh smoothness check needs Destin's eyes on the real screen.
 
 Chats
 

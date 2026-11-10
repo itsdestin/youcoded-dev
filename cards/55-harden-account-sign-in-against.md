@@ -13,8 +13,8 @@ side: behind
 vision: social.friends.signin, social.friends.signout
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: (a) The account-takeover hole is closed. Signing in is now tied to the app that started it, with a limit on sign-in attempts and a sign-out-everywhere option. Shipped on Nov 5 (marketplace PR #114, app PR #713). Still to check: one real phone sign-in as a final test.
+Next: (b) decide how the owner is told when they get signed out without warning, and fold it into card 216.
 Blocked: nothing recorded.
 
 Chats

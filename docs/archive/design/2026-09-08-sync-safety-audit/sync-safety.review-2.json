@@ -1,0 +1,23 @@
+{
+  "title": "Sync — find the saved copies",
+  "key": "sync-safety-copy-review-2",
+  "out": "sync-safety.review-2.html",
+  "images": "images/sync-safety.review-2",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/sync-safety-audit-20260908/scratch/sync-safety-before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/sync-safety-audit-20260908/scratch/sync-safety-after-2"
+  },
+  "themes": ["midnight", "halftone-dimension"],
+  "crops": {"sync-conflict": ["sync-safety", "settings-backup-sync", "450x600+495+150"]},
+  "steps": [{
+    "id": "S-conflict-copy-2",
+    "surface": "Backup & Sync",
+    "path": "Settings → Backup & Sync → conflict notice",
+    "crop": "sync-conflict",
+    "headline": "Find the saved copies without learning how sync works.",
+    "changed": "The notice says conflicting changes were saved in separate files.",
+    "notice": "Look for “(from …)” in their names. Help also explains that they appear in the same folder as the affected file.",
+    "risk": "This changes the wording only; it does not add a list of affected files.",
+    "highlight": {"box": [40, 263, 370, 40]}
+  }]
+}

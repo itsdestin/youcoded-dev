@@ -2,6 +2,7 @@
 id: 13
 title: Unreliable tests and test cleanup
 stage: planning
+work: session/test-suite-rethink
 priority: P3
 tags: dev-workspace, tests, regression, bug
 branch: 13-flaky-and-load-sensitive-tests
@@ -11,8 +12,8 @@ summary: Nine automatic checks fail at random or under load, and eight test left
 area: Workspace
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: since this card was written, these are fixed: (1) test runs no longer collide with each other's temporary folder (commit 780de530b, 2026-08-28); (2) the step-guard row test flake (2026-09-10, docs/shipped.md); (3) every test file is now type-checked, the exclusion list is cleared (2026-10-12).
+Next: split the card into a flaky-checks group and a leftover-cleanup group; re-check Windows and macOS CI logs for the items marked unverifiable; re-count the fixed-sleep and blocking-call numbers.
 Blocked: nothing recorded.
 
 Chats

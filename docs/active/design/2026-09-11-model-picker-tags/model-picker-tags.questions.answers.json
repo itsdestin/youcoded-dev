@@ -1,0 +1,101 @@
+{
+ "deck": "model-picker-tags-questions",
+ "started": "2026-09-11T15:02:00.246Z",
+ "submitted": "2026-09-11T15:09:19Z",
+ "cur": 3,
+ "answers": {
+  "Q-1": {
+   "note": "i would rather have some sort of value measurement that scales based on benchmark performance and cost. a user should quickly be able to tell kimi (great value) from fable (poor value). hovering should show the real full listed in/out price",
+   "v": "other",
+   "seconds": 39,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "other",
+   "note": "\"FREE - LOCAL\"",
+   "seconds": 39,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "other",
+   "note": "\"SUBSCRIPTION PLAN\"",
+   "seconds": 39,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 39,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "artificial-analysis",
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "other",
+   "note": "i think i also want this to be our own custom scaled ranking that maybe scales and adjusts against the latest frontier models. should be a numbered 0-100 scale with 100 being true frontier and 0 being extremely poor intelligence. i also think i want our capability metric to account for instruction following/hallucination likelihood. show full stats on hover or click maybe",
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "not-rated",
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "Q-13": {
+   "v": "pick",
+   "pick": "borrow",
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "fixed-feel",
+   "seconds": 22,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "estimate",
+   "seconds": 22,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "none",
+   "seconds": 22,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "seconds": 10,
+   "theme": "midnight",
+   "pick": "desktop-first"
+  },
+  "Q-11": {
+   "v": "pick",
+   "seconds": 10,
+   "theme": "midnight",
+   "pick": "filters"
+  },
+  "Q-12": {
+   "v": "pick",
+   "seconds": 10,
+   "theme": "midnight",
+   "pick": "all-three"
+  }
+ }
+}

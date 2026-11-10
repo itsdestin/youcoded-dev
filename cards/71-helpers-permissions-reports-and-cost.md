@@ -15,9 +15,9 @@ vision: chat.steer.specialists, agents.added.helpers
 work: session/specialist-permission-overflow, session/welcome-back-recovery
 ---
 Progress
-Done: Approved Specialists popup visual fix merged in youcoded#649 (9a53615497088a356e88ce1578b65bba6a820040): contained permission explanations and rounded nested permission cards using the outer card's theme radius; permission behavior unchanged. Local desktop verification and required Linux/Android CI passed.
-Next: Tracked in docs/active/handoffs/2026-10-24-specialists-and-plans-START-HERE.md §4 C (items C1–C5, C7, C8).
-Blocked: No blocker for the shipped visual fix; original transcript deletion still depends on delete-conversation work.
+Done: The Specialists permission-card layout fix (the card no longer overflows) shipped as youcoded PR #649 on 2026-10-19.
+Next: Still open, not yet decided: (a) hired helpers run shell commands in auto-edit without asking, (b) how a finished helper's report arrives, (c) helpers re-pay the full cost of their starting instructions each time, (d) the 'Needs you' label is hard to read on pale themes.
+Blocked: Deleting old helper chat records waits on a general delete-a-conversation feature that does not exist yet.
 
 See also #137: 71's unreadable amber 'Needs you' label on pale themes is one instance of 137's fixed-amber warning text that vanishes on pale themes.
 

@@ -1,7 +1,7 @@
 ---
 id: 41
 title: Track files Claude changes by running commands
-stage: planning
+stage: explore
 priority: P3
 tags: files, files-panel, feature
 report: docs/active/investigations/2026-10-13-command-file-tracking.md
@@ -14,9 +14,9 @@ side: both
 vision: chat.files.drawer
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: nothing built. The options were written up on 2026-10-13 (docs/active/investigations/2026-10-13-command-file-tracking.md) and Destin parked the work that day.
+Next: Destin chooses how files made by commands get labelled and filtered, through a questions deck, before any build.
+Blocked: waiting on Destin's decision; no technical blocker.
 
 Chats
 

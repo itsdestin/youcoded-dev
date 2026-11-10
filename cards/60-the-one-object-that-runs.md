@@ -3,10 +3,9 @@ id: 60
 title: Split up the oversized code (chat engine and app shell)
 stage: planning
 priority: P1
-tags: native-harness, sessions, desktop, release-blocker, user-interface, performance, housekeeping
+tags: native-harness, sessions, desktop, user-interface, performance, housekeeping
 report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 60-the-one-object-that-runs
-roadmap: native-harness: **v1.3.1 release blocker.** The one object that runs a nativ
 created: 2026-10-15
 summary: Two very large code files (the chat engine and the app shell) are hard to change safely and need splitting into parts.
 area: Chat
@@ -15,9 +14,9 @@ platform: Desktop only
 paused: On hold since 2026-09-18 until other cleanup lands
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: yes — the old roadmap marked it blocked; see below.
+Done: The first pieces are in. Specialist helper definitions were split into their own files (harness/specialists/, commits 0a34d46f2 and c5402be19), and two small cleanups shipped early in youcoded#573 (2026-09-26). The big split of the conversation engine and the app screen has not started.
+Next: Waiting on Destin. Paused since 2026-09-18. Restart only after the native-session-host test split is confirmed merged, which needs checking.
+Blocked: Not blocked by a bug. Paused by Destin's choice.
 
 Chats
 
