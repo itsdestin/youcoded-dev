@@ -1,0 +1,142 @@
+{
+ "deck": "mesh-sync-questions-4",
+ "started": "2026-11-10T02:39:27.026Z",
+ "submitted": "2026-11-10T03:16:12Z",
+ "cur": 4,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794278416431,
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794278416431,
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "one-system",
+   "t": 1794279099016,
+   "seconds": 171,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794279099016,
+   "note": "i think we should build to offer either a or c. i think many youcoded users will either already be somewhat technical, or will quickly be encourage by youcoded itself to become more technical. as such, they may have or buy things like a rasperry pi or have an always-on mac mini or something that could host, in which case they should be allowed to pursue that option. if users cont have a device or just prefer, they can use youcoded relay? want to further understand what the architecture/cost/speed/etc would look like for each before we determine which to invest in first.",
+   "seconds": 171,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1794279099016,
+   "note": "i think this should be a later follow up. it seems this work would likely remove github from its involvement in sync quite a bit. i think we should ensure the new sync is end-to-end encrypted, but encrypting github/google/icloud backups and chats should be a follow up for after the new system is constructed. i think a user should separately be able to decide both 1) whether chats are backed up to cloud at all, or just stored on their own devices, and 2) whether backed up chats are encrypted with a passphrase. again, this can be follow-up card. may also offer to encrypt personal sync files or others. also interested in the encrypted grok bot vault concept though that may just be tangential.",
+   "seconds": 171,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "pair-only",
+   "t": 1794279099016,
+   "seconds": 171,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "yes",
+   "t": 1794279855473,
+   "note": "",
+   "seconds": 151,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "finish-then-quit",
+   "t": 1794279855473,
+   "note": "it should show the normal close window/end sessions menu, allow me to set flags/mark complete/etc. if i mark a session complete when closing host device, that session should close on all other network devices as well. if i *dont* mark the session complete, then it should still quit at once IF the latest full reply is saved. it should not wait for additional replies to complete, but we need to be sure all replies up until the close are present on the other devices,\\. but the session should remain in the session list on all other network devices with a notice that the host device disconnected and an offer to host the session on current device instead. make sense? partial reply on close could be dropped or something, resumed from the new host,",
+   "seconds": 151,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "other",
+   "t": 1794279855473,
+   "note": "i think i'd want to see all of the specific warning states/causes/messages ",
+   "seconds": 151,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "note": "i feel like there's a smarter way to do this. this seems a bit odd to me? and potentially prone to error?",
+   "t": 1794279855473,
+   "v": "other",
+   "dk": true,
+   "seconds": 151,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "t": 1794279855473,
+   "pick": "remove-frees",
+   "seconds": 151,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "other",
+   "t": 1794280548494,
+   "note": "i feel like we need to think through this further. what are the real risks of this approach? is there a simpler or more unified/robust system we could build? anything we're missing or underthinking?",
+   "seconds": 116,
+   "theme": "midnight"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "talk-only",
+   "t": 1794280548494,
+   "note": "just to be clear tho, this should basically be attached at the end of the transcript or injected before the first response on a new device. we shouldn't like cut/edit prior device details if that makes sense",
+   "seconds": 116,
+   "theme": "midnight"
+  },
+  "Q-12": {
+   "v": "other",
+   "dk": true,
+   "t": 1794280548494,
+   "note": "this doesn't make sense to me. typically it will be the same user who has the same accounts, and we should default to using the exact existing model/provider/project/etc settings of a chat. we shouldn't continue with a different model unless the login is genuinely missing on this device, in which case we need to either 1) block until the user signs in for claude code (claude code and native sessions aren't currently interchangeable) or 2) offer model selector before the user actually resumes the session on the current device",
+   "seconds": 116,
+   "theme": "midnight"
+  },
+  "Q-13": {
+   "v": "other",
+   "t": 1794280548494,
+   "note": "kinda confused about what hte issue is here and what you're proposing, but i feel like our current in-app notifications are fine for now. we may already have a card or something to build a more robust notification system, but either way we should record more comprehensive, cross-device alerts and user-customizable notifications for automations and such as a single unified card",
+   "seconds": 116,
+   "theme": "midnight"
+  },
+  "Q-14": {
+   "v": "pick",
+   "pick": "same-as-phone",
+   "t": 1794280548494,
+   "note": "we'll just need to ensure all gaps are properly/centrally recorded, and also that all surfaces show user-friendly explanations/errors like \"x is not currently supported from a remote client.\"",
+   "seconds": 116,
+   "theme": "midnight"
+  },
+  "Q-15": {
+   "v": "yes",
+   "t": 1794280548494,
+   "seconds": 116,
+   "theme": "midnight"
+  },
+  "Q-16": {
+   "v": "yes",
+   "t": 1794280571410,
+   "seconds": 12,
+   "theme": "midnight"
+  },
+  "Q-17": {
+   "v": "other",
+   "dk": true,
+   "t": 1794280571410,
+   "seconds": 12,
+   "theme": "midnight"
+  }
+ }
+}
