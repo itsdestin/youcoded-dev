@@ -75,6 +75,11 @@ function save(file, state) {
  */
 const NODE_MODULES_PROVISIONS = {
   youcoded: ['desktop'],
+  // WHY (card #212, 5th hit 2026-11-09): a server worktree started with no dependencies, so
+  // tsc and vitest failed until the session rebuilt an install by hand in a scratch folder
+  // (~5 calls each on 11-01, 11-05, 11-07 twice, 11-09). Listed here, the shared copy is
+  // linked in and, when it is outdated, fillMissingPackages swaps in a fresh install.
+  'wecoded-marketplace': ['worker'],
 };
 
 function copyTree(src, dest) {
