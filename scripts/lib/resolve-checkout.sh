@@ -1,9 +1,6 @@
 # Resolve "which youcoded checkout do you mean?" — used by run-workbench.sh.
 #
-# (run-dev.sh still carries its own copy. This header claimed both used it from
-# the day it was written; corrected 2026-09-10, and folding run-dev into it is
-# filed as dev-workspace work rather than done here — it is the
-# launcher that paints a real window on Destin's desktop.)
+# Used by run-workbench.sh and run-dev.sh (run-dev folded in 2026-11, card #19 i).
 #
 # WHY it is shared: run-workbench had its own three-line version that only knew
 # `worktrees/<name>/desktop`. Session worktrees live at

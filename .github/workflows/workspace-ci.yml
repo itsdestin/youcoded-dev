@@ -259,6 +259,12 @@ jobs:
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/resolve-checkout.test.sh
 
+      # Card #19: run-dev.sh resolves session worktrees by name, validates --offset, and --list shows
+      # running instances. Dry-run/list only, so no app window is launched.
+      - name: run-dev.sh resolves, validates and lists without launching
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/run-dev-resolve.test.sh
+
       # The pre-merge report must say whether the branch still merges cleanly — two branches
       # passed every check on 2026-09-04 and conflicted on the (since retired) generated roadmap table at merge.
       - name: close-out.sh reports a merge conflict before anyone asks "ready to merge?"
