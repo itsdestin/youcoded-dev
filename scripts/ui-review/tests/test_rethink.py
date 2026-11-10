@@ -283,6 +283,46 @@ class RethinkTests(unittest.TestCase):
         self.assertRegex(css, r'\.how\.lbl')
         self.assertRegex(css, r'\.stpill\.new\{color:var\(--mark\)\}')
 
+    # ── the running screen behind a frozen one (round 7b) ───────────────────────────────────
+    def test_live_screen_field_is_validated_in_plain_words(self):
+        # Destin, 2026-11-10: "the dropdown menus in that about popup should probably still work" — a
+        # screen step may name the app's own screen, which the served deck runs and freezes.
+        scr = {k: v for k, v in CALLS.items() if k != 'calls'}
+        def add(**kw):
+            return lambda r: (r.update({'live': {'worktree': 'w'}}), r['steps'].append({**scr, **kw}))
+        self.assertEqual(self.errs(add(liveScreen='settings/about')), [])           # live alone is fine
+        e = self.errs(add(liveScreen='Settings About'))
+        self.assertTrue(any('liveScreen is a screen name' in x and '"settings/about"' in x for x in e), e)
+        e = self.errs(lambda r: r['steps'].append({**scr, 'liveScreen': 'settings/about'}))   # no live.worktree
+        self.assertTrue(any('needs "live": {"worktree"' in x for x in e), e)
+
+    def test_live_screen_reaches_the_page_and_ships_the_freeze_function(self):
+        from deck.live import has_live
+        scr = {k: v for k, v in CALLS.items() if k != 'calls'}
+        s = spec_with(self.tmp, lambda r: (r.update({'live': {'worktree': 'w'}}), r['steps'].append({**scr, 'liveScreen': 'settings/about'})))
+        self.assertTrue(has_live(s))   # so serve builds the practice app through the live-pane path
+        d = deck_data(s, {})
+        st = [x for x in d['steps'] if x['id'] == 'K-1'][0]
+        self.assertEqual((st['kind'], st['screen'], st['liveScreen']), ('screen', '', 'settings/about'))
+        self.assertIn('data-frozen', d['live']['freeze'])
+        self.assertIn('document.styleSheets', d['live']['freeze'])
+        # a deck with no live step carries no freeze function and starts no practice app
+        plain = spec_with(self.tmp, lambda r: None)
+        self.assertFalse(has_live(plain))
+        self.assertNotIn('live', deck_data(plain, {}))
+
+    def test_summary_prints_what_was_open_when_a_word_was_changed(self):
+        spec = {'key': 'k', 'steps': [{'id': 'K-1'}]}
+        edits = {'Pick a game': {'from': 'Pick a game', 'to': 'Choose a game', 'state': 'About, Your account (optional) open'},
+                 '7': {'from': 'Start', 'to': 'Go'}}                                  # an old position-keyed edit still reads
+        out = summary(spec, {'answers': {'K-1': {'v': 'other', 'edits': edits}}})
+        self.assertIn('reword "Pick a game" → "Choose a game" — seen with: About, Your account (optional) open', out)
+        self.assertIn('reword "Start" → "Go"\n', out + '\n')
+        js = open(os.path.join(DECK, 'page.js')).read()
+        self.assertIn("' — seen with: ' + t.state", js)   # page.js prints the same line in its own summary
+        for needle in ('USER_STATE', 'data-entry-key', '.quick-chip', '.status-bar', 'editOf', 'liveframe', "'/app/probe.txt'"):
+            self.assertIn(needle, js, needle)
+
 
 if __name__ == '__main__':
     unittest.main()

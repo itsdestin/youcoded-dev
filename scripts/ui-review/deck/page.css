@@ -563,6 +563,18 @@ body[data-layout="pages"] #notesbtn{display:none}
 .screenbar{display:flex;align-items:center;gap:10px;margin:0 0 8px} .screenbar .hint{flex:1;margin:0;color:var(--fg-muted);font-size:13px}
 .screenwrap{position:relative;overflow:hidden;border:1px solid var(--edge);border-radius:var(--radius-md)}
 .screenframe{display:block;border:0;transform-origin:0 0;width:1440px;height:900px}
+/* The switch above the screen (Use it / Edit words): the design guide's contained SegmentedTabs —
+   a tinted trough, the chosen part in the accent. WHY (Destin, 2026-11-10): "a switch above the screen". */
+.seg{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset)} .seg[hidden]{display:none}
+.seg button{font:inherit;font-size:12px;font-weight:500;padding:5px 12px;border:0;border-radius:calc(var(--radius-md) - 2px);background:transparent;color:var(--fg-2);cursor:pointer}
+@media (hover:hover){.seg button:hover{background:var(--panel)}} .seg button.on,.seg button.on:hover{background:var(--accent);color:var(--on-accent)}
+.screennote{margin:0 0 8px;font-size:13px;color:var(--fg-muted)} .screennote[hidden]{display:none} .screennote.bad{color:var(--fg)}
+/* The running copy sits over the still one, in the same place and at the same zoom; the one not in use is
+   faded out and ignores the pointer (not display:none — a frame nobody can see could not be measured). */
+.liveframe{position:absolute;left:0;top:0;background:var(--well)}
+.card.screen[data-mode=use] .screenframe:not(.liveframe),.card.screen[data-mode=edit] .liveframe{opacity:0;pointer-events:none}
+/* the state line sits under the change on its own row, so the words keep their width */
+.screenedits li{flex-wrap:wrap} .screenedits .from{flex:1 1 40%} .screenedits .to{flex:1 1 40%} .screenedits .state{order:5;flex:1 0 100%;color:var(--fg-muted);font-size:12px} .screenedits li.away{opacity:.6}
 .screenedits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px} .screenedits:not(:empty){margin-top:10px}
 .screenedits li{display:flex;gap:10px;align-items:baseline;padding:8px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);font-size:13px}
 .screenedits .from{color:var(--fg-muted);text-decoration:line-through} .screenedits .arrow{color:var(--fg-muted)} .screenedits .to{flex:1} .screenedits .linkbtn{flex:none}

@@ -1036,11 +1036,13 @@ def _validate_words(spec, st, sid, errors, warnings):
         _validate_dev(spec, st, sid, errors)
     elif is_calls(st):
         _validate_calls({**st, '_base': spec.get('_base', '')}, sid, errors)
-    elif st.get('screen') is not None:
+    elif st.get('screen') is not None or st.get('liveScreen') is not None:
         # A SCREEN step (round 4): a still copy of an app screen (`shoot --page`) whose words he
         # retypes in place. Only after the build — before it there is no real screen to copy.
-        f = st['screen']
-        if not isinstance(f, str) or not f.endswith('.html') or os.path.isabs(f) or '..' in f.split('/'):
+        f = st.get('screen')
+        if f is None:
+            pass   # a live-only step (`liveScreen` alone): the served deck runs the app and freezes it
+        elif not isinstance(f, str) or not f.endswith('.html') or os.path.isabs(f) or '..' in f.split('/'):
             errors.append(f'{sid}: screen is an .html file beside the spec, saved by `shoot <name> --page` (no leading slash, no "..")')
         elif not os.path.exists(os.path.join(spec.get('_base', ''), f)):
             errors.append(f'{sid}: screen {f} does not exist beside the spec — save it with `node scripts/shoot/shoot.mjs <screen name> --page`')
@@ -1048,6 +1050,17 @@ def _validate_words(spec, st, sid, errors, warnings):
             with open(os.path.join(spec.get('_base', ''), f), encoding='utf-8', errors='replace') as fh:
                 if 'data-frozen=' not in fh.read(4000):
                     errors.append(f'{sid}: screen {f} was not saved by `shoot --page` — a page with its own code cannot be shown for editing')
+        # WHY `liveScreen` (Destin, 2026-11-10, on the frozen About popup: "i think the dropdown
+        # menus in that about popup should probably still work?" — he chose "a switch above the
+        # screen: Use it / Edit words"): the screen's name as `shoot --list` prints it. The served
+        # deck then runs the practice app opened on it, and freezes it as it stands when he
+        # switches to Edit words. `screen` stays as the picture shown when the app cannot run.
+        ls = st.get('liveScreen')
+        if ls is not None:
+            if not isinstance(ls, str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]*(/[a-z0-9-]+)*(#[a-z0-9-]+)?', ls):
+                errors.append(f'{sid}: liveScreen is a screen name as `node scripts/shoot/shoot.mjs --list` prints it, like "settings/about"')
+            elif not (spec.get('live') or {}).get('worktree'):
+                errors.append(f'{sid}: liveScreen runs the practice app, so the deck needs "live": {{"worktree": "<name>"}} (the checkout whose app to run)')
         for k in ('options', 'rows', 'today', 'answer'):
             if st.get(k):
                 errors.append(f'{sid}: a screen step has no {k} — he edits the words on the screen itself')

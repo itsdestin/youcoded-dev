@@ -542,9 +542,38 @@ The deck shows the file in a frame, opened zoomed on the screen's panel (the pop
 up to 1.5×); "Whole screen" shows all of it. Every run of text, and the grey hint in an empty
 box, can be clicked and retyped; the layout re-wraps as the app's would. Nothing on it can be
 pressed. Each change is listed under the frame with "Put back" and saved as
-`answers[step].edits[<n>] = {from, to}`; the summary prints `reword "old" → "new"`. A screen
-he leaves alone is accepted when he moves on, like a list. Text drawn by code at run time
-(a terminal, a chart) is a picture in the file and cannot be edited.
+`answers[step].edits[<key>] = {from, to, state}`; the summary prints `reword "old" → "new" —
+seen with: <state>`. A screen he leaves alone is accepted when he moves on, like a list. Text
+drawn by code at run time (a terminal, a chart) is a picture in the file and cannot be edited.
+
+**`"liveScreen": "settings/about"`** (round 7b, 2026-11-10: "the dropdown menus in that about
+popup should probably still work?") — the screen's name as `shoot --list` prints it. `screen`
+may be left out (a live-only step) or kept as the picture shown when the app cannot run. The deck
+needs `"live": {"worktree": "<name>"}`. When the deck is **served** and the practice app builds,
+the card gets a switch, **Use it / Edit words**: Use it is the practice app running in the frame,
+opened on that screen (menus, fold rows, tabs all work); Edit words freezes it as it stands with
+the same `freeze.mjs` function `shoot --page` uses and arms the editing above. Switching back
+returns to the same running app. A step with a saved file opens on Edit words; a live-only step
+on Use it. Opened as a plain file, served `--no-live`, or with an app that fails to build, there
+is no switch and the saved file shows as before (a live-only step says it needs the served deck).
+No deck without such a step builds or starts the app any differently.
+- **Edits are keyed by the original words** (a second identical text is `words #2`; text over 80
+  characters is its first 60 plus its length), not by position, so a change made in one state
+  reappears wherever the same words are found. Edits made in a state he has left stay listed
+  (dimmed) under the frame, with Put back. `state` is a short line read off the frozen screen:
+  the dialog's title, the selected tabs, and each opened control (`About, Your account
+  (optional) open`) — a session re-opens the screen like that to see the words in place. Old
+  answers with `edits[<n>] = {from, to}` (a position) still read and print.
+- **What can be edited:** only text inside the screen's panel (the top-most dialog, found the way
+  `shoot` finds it, plus any menu opened over it) that is really visible there, and never text
+  inside `[data-entry-key]` (chat messages — the running app only; the saved file drops it),
+  `.quick-chip`, `.status-bar`, `[data-model-chip]`, `.input-bar-container` or
+  `[data-session-strip]`: one person's own state, not copy everyone sees. Changes show only in
+  Edit words, not in the running app.
+- The practice app is built the way live panes build it (`serve.py` `_ensure_app`; the freeze
+  function ships in `DECK.live.freeze` only when a step names `liveScreen`). A screen that needs
+  other practice data (`scenario`, `params` in the screen list) reloads once under it; the
+  screen list's own `open` click steps and `viewport` are not replayed (the frame is 1440x900).
 
 ### Also added in round 4
 

@@ -1260,7 +1260,7 @@ print(p)`;
     assert.deepEqual(saved.answers['K-1'].changes, { sound: 'play the chime' });
     assert.equal(saved.answers['K-1'].marks[0].pic, 'row sound before', 'an area on a row picture is named for its row and which picture');
     assert.equal(saved.answers['K-1'].marks[0].text, 'the old one');
-    assert.deepEqual(saved.answers['S-1'].edits, { 0: { from: 'Pick a game', to: 'Choose a game' } }, 'words retyped on the screen are saved as from and to');
+    assert.deepEqual(saved.answers['S-1'].edits, { 'Pick a game': { from: 'Pick a game', to: 'Choose a game' } }, 'words retyped on the screen are saved as from and to');
     assert.equal(Object.values(saved.pageNotes)[0], 'header is busy', 'the comment at the foot of the page is saved beside the answers');
     assert.deepEqual(saved.answers['K-1'].results, { size: 'fail' }, 'a status he changed is saved against its row');
     assert.ok(saved.built && saved.built.at, 'the answers file records which build he was shown');
@@ -1455,4 +1455,83 @@ print(p)`;
       assert.deepEqual(c.errors, []);
     } finally { await c.close(); }
   } finally { srv.kill(); }
+});
+
+// ── Use it / Edit words (round 7b) ───────────────────────────────────────────────────────────
+// Destin, 2026-11-10, on the frozen About popup: "i think the dropdown menus in that about popup
+// should probably still work?" A screen step that names `liveScreen` runs the practice app in the
+// frame (Use it) and freezes it as it stands (Edit words). No real practice app here: serve is
+// started through a wrapper that points the build at a stand-in script printing a folder with ONE
+// tiny page — it has the same `__youcodedScreens` door the real app has, a dialog with a fold row
+// whose hidden sentence only exists once opened, and one chat message sitting behind the dialog.
+test('Use it runs the app, Edit words freezes it as it stands, and a change keeps what was open', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-usit-'));
+  const dist = join(tmp, 'dist'); mkdirSync(dist);
+  writeFileSync(join(dist, 'index.html'), `<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;font:14px sans-serif}
+.dlg{position:fixed;left:400px;top:150px;width:420px;height:300px;background:#fff;border:1px solid #000;z-index:5}
+.msg{position:absolute;left:410px;top:200px;z-index:1}</style></head><body>
+<div class="msg" data-entry-key="m1">One person's own chat message, long enough to count</div><div id="root"></div>
+<script>window.__youcodedScreens={list:()=>[{name:'settings/about'}],open:async()=>{root.innerHTML='<div role="dialog" class="dlg" aria-label="About"><span data-screen="settings/about" hidden></span><h2>About</h2><p>Always shown words</p><button id="f" aria-expanded="false">Your account</button><p id="hid" hidden>Hidden sentence about accounts</p></div>';
+f.onclick=()=>{const o=f.getAttribute('aria-expanded')!=='true';f.setAttribute('aria-expanded',String(o));hid.hidden=!o};return {ok:true}}};</script></body></html>`);
+  writeFileSync(join(tmp, 'build.mjs'), `console.log(${JSON.stringify(dist)});`);
+  mkdirSync(join(tmp, 'tree', 'desktop'), { recursive: true });
+  const py = `import sys, json; sys.path.insert(0, ${JSON.stringify(HERE)})
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)}); raw = json.load(open(p))
+raw['live'] = {'worktree': 'w'}
+raw['steps'] = [{'id': 'S-1', 'words': True, 'surface': 'Settings', 'path': 'About', 'headline': 'The words on the About popup', 'screen': 'about.html', 'liveScreen': 'settings/about'}]
+open(__import__('os').path.join(__import__('os').path.dirname(p), 'about.html'), 'w').write('<!doctype html><html data-frozen="1440x900"><head><meta charset="utf-8"></head><body><h1>Saved copy words</h1></body></html>')
+json.dump(raw, open(p, 'w')); print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const wrap = (extra) => `import sys, runpy; sys.path.insert(0, ${JSON.stringify(join(HERE, '..'))})
+import deck.serve as sv
+sv.resolve_worktree = lambda n: ${JSON.stringify(join(tmp, 'tree'))}
+sv.SHOOT_BUILD_SCRIPT = ${JSON.stringify(join(tmp, 'build.mjs'))}
+sys.argv = [${JSON.stringify(RC)}, 'serve', ${JSON.stringify(spec)}, '--no-build', '--timeout', '2'${extra}]
+runpy.run_path(${JSON.stringify(RC)}, run_name='__main__')`;
+  const servers = [];
+  const start = async (extra) => { const port = await freePort(); const s = spawn('python3', ['-c', wrap(`, '--port', '${port}'${extra}`)], { stdio: ['ignore', 'pipe', 'pipe'] }); servers.push(s); await sleep(1200); return port; };
+  try {
+    const port = await start('');
+    const c = await cdp(await freePort(), 1500, 1100);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      const until = async (js, n = 80) => { for (let i = 0; i < n && !(await c.evaluate(js).catch(() => false)); i++) await sleep(250); assert.ok(await c.evaluate(js).catch(() => false), 'timed out waiting for: ' + js); };
+      await until("!!window.__deckReady && !document.querySelector('.seg').hidden");
+      assert.equal(await c.evaluate("document.querySelector('.card.screen').dataset.mode"), 'edit', 'a step with a saved file opens on that file, as before');
+      await c.evaluate("document.querySelector('.seg [data-mode=use]').click()");
+      await until("document.querySelector('.liveframe') && document.querySelector('.liveframe')._ready");
+      await c.evaluate("document.querySelector('.liveframe').contentDocument.getElementById('f').click()");
+      await c.evaluate("document.querySelector('.seg [data-mode=edit]').click()");
+      await until("(()=>{const f=document.querySelector('.screenframe:not(.liveframe)');return f.src.startsWith('blob:')&&f._armed&&f._armed===f.contentDocument&&document.querySelector('.card.screen').dataset.mode==='edit'})()");
+      const keys = JSON.parse(await c.evaluate("JSON.stringify([...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].map(e=>e.dataset.k))"));
+      assert.deepEqual(keys, ['About', 'Always shown words', 'Your account', 'Hidden sentence about accounts'], 'the sentence the fold hid is there, and the chat message behind the popup is not editable');
+      await c.evaluate(`(()=>{const t=[...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].find(e=>e.dataset.k.startsWith('Hidden'));t.textContent='Shown after opening';t.dispatchEvent(new Event('input',{bubbles:true}))})()`);
+      await sleep(900);
+      const saved = JSON.parse(await c.evaluate("fetch('/answers').then(r=>r.text())")).answers['S-1'].edits;
+      assert.deepEqual(saved, { 'Hidden sentence about accounts': { from: 'Hidden sentence about accounts', to: 'Shown after opening', state: 'About, Your account open' } }, 'saved by its words, with what was open');
+      // Back to the running app: the change stays listed; the fold is still open there. Freezing again puts it back on the screen.
+      await c.evaluate("document.querySelector('.seg [data-mode=use]').click()"); await sleep(300);
+      assert.equal(await c.evaluate("document.querySelectorAll('.screenedits li').length"), 1, 'the change stays listed while he is in Use it');
+      assert.equal(await c.evaluate("document.querySelector('.liveframe').contentDocument.getElementById('f').getAttribute('aria-expanded')"), 'true', 'the running app kept its fold open');
+      await c.evaluate("document.querySelector('.seg [data-mode=edit]').click()"); await sleep(400);
+      await until("(()=>{const f=document.querySelector('.screenframe:not(.liveframe)');return f._armed&&f._armed===f.contentDocument&&[...f.contentDocument.querySelectorAll('[data-w]')].some(e=>e.textContent==='Shown after opening')})()");
+      await c.evaluate("document.querySelector('.screenundo').click()"); await sleep(300);
+      assert.equal(await c.evaluate("[...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].some(e=>e.textContent==='Hidden sentence about accounts')"), true, 'Put back restores the words');
+      assert.deepEqual(c.errors, []);
+    } finally { await c.close(); }
+    // Served without the practice app: no switch, the saved file as before. (One server per spec at a time: stop the first.)
+    servers[0].kill(); await sleep(600);
+    const port2 = await start(", '--no-live'");
+    const c2 = await cdp(await freePort(), 1500, 1100);
+    try {
+      await c2.send('Page.navigate', { url: `http://127.0.0.1:${port2}/questions.html` });
+      for (let i = 0; i < 40 && !(await c2.evaluate("!!window.__deckReady && !!document.querySelector('.screenframe')._armed").catch(() => false)); i++) await sleep(250);
+      await sleep(600);
+      assert.equal(await c2.evaluate("document.querySelector('.seg').hidden"), true, 'no switch when the app cannot run');
+      assert.equal(await c2.evaluate("document.querySelector('.screenframe').contentDocument.querySelector('[data-w]').dataset.k"), 'Saved copy words', 'the saved file is shown');
+    } finally { await c2.close(); }
+  } finally { for (const s of servers) s.kill(); }
 });

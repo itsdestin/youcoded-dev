@@ -141,7 +141,10 @@ def extras(a):
     # {from, to} from a screen he retyped words on (round 4); a plain string from a wording row.
     for k, t in (a.get('edits') or {}).items():
         if isinstance(t, dict):
-            out.append(f'\n    reword "{t.get("from", "")}" → "{t.get("to", "")}"')
+            # `state` (round 7b): what was open on the screen when he made the change — a session
+            # re-opens the screen in that state to see the words in place.
+            seen = f' — seen with: {t["state"]}' if t.get('state') else ''
+            out.append(f'\n    reword "{t.get("from", "")}" → "{t.get("to", "")}"{seen}')
         else:
             out.append(f'\n    reword {k} — "{(t or "").strip()}"')
     for i, m in enumerate(a.get('marks') or []):

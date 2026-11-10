@@ -459,16 +459,55 @@
   // every piece of text in it can be clicked and retyped, so a longer label wraps, pushes and
   // clips exactly as it would in the app. Each change is saved as {from, to} and listed under
   // the frame with a way to put it back.
-  const screenCard = st => `<section class="card screen" data-sid="${esc(st.id)}"><div class="screenbar"><p class="hint">Click any words on this screen and retype them. Nothing on it can be pressed.</p><button type="button" class="btn sm screenbig" data-sid="${esc(st.id)}">Whole screen</button></div><div class="screenwrap"><iframe class="screenframe" data-sid="${esc(st.id)}" src="${esc(st.screen)}" title="${esc(st.headline)}" scrolling="no" tabindex="-1"></iframe></div><ul class="screenedits" data-sid="${esc(st.id)}"></ul></section>`;
+  // WHY a switch and a second frame (Destin, 2026-11-10, on the frozen About popup: "i think the
+  // dropdown menus in that about popup should probably still work?"; he picked "a switch above the
+  // screen: Use it / Edit words — the practice app runs for real in the frame: open any dropdown,
+  // then switch to Edit words and it freezes as it stands", asking for "the best/simplest way
+  // possible"): a step that names `liveScreen` gets, when the deck is served, a running copy of the
+  // app opened on that screen next to the still copy. Edit words freezes the running copy with the
+  // SAME function `shoot --page` uses (DECK.live.freeze = scripts/shoot/freeze.mjs) and shows that.
+  // Opened as a plain file, or served without the practice app, the switch never appears and the
+  // saved file is shown exactly as before.
+  const screenCard = st => `<section class="card screen" data-sid="${esc(st.id)}" data-live-name="${esc(st.liveScreen || '')}"><div class="screenbar"><p class="hint">${esc(EDIT_HINT)}</p><div class="seg" role="tablist" aria-label="How to use this screen" hidden><button type="button" role="tab" data-mode="use">Use it</button><button type="button" role="tab" data-mode="edit">Edit words</button></div><button type="button" class="btn sm screenbig" data-sid="${esc(st.id)}">Whole screen</button></div><p class="screennote" hidden></p><div class="screenwrap"><iframe class="screenframe" data-sid="${esc(st.id)}"${st.screen ? ` src="${esc(st.screen)}"` : ''} title="${esc(st.headline)}" scrolling="no" tabindex="-1"></iframe></div><ul class="screenedits" data-sid="${esc(st.id)}"></ul></section>`;
+  const EDIT_HINT = 'Click any words on this screen and retype them. Nothing on it can be pressed.';
+  const USE_HINT = 'This is the running app: open menus and fold rows as you like. Then choose Edit words and it freezes just as it stands. Your changes show only in Edit words.';
   const listy = st => st.kind === 'calls' || st.kind === 'screen';
   // A change is kept only while it differs from the words the screen came with.
-  function setScreenEdit(sid, n, from, to) {
+  // WHY keyed by the original words (+ which occurrence) and not by position (Destin, 2026-11-10:
+  // the screen can now be frozen in different states, so "the 7th piece of text" means different
+  // things in each): the same words found on a later freeze take the same change. `legacy` is the
+  // old position key of an answers file from before this — read, and replaced when that text is
+  // edited again. `state` says what was open when he made it, for the session reading the answers.
+  function setScreenEdit(sid, k, from, to, legacy) {
     if (state.submitted) return;
+    const fr = $(`.screenframe:not(.liveframe)[data-sid="${CSS.escape(sid)}"]`);
     const a = { ...(state.answers[sid] || {}) }; const ed = { ...(a.edits || {}) };
-    if (to === null || to === from) delete ed[n]; else ed[n] = { from: from.trim(), to: to.trim() };
+    if (legacy != null) delete ed[legacy];
+    if (to === null || to === from) delete ed[k]; else ed[k] = { from: from.trim(), to: to.trim(), ...(fr && fr._state ? { state: fr._state } : {}) };
     if (Object.keys(ed).length) { a.edits = ed; a.v = 'other'; delete a.dk; }
     else { delete a.edits; if (a.v === 'other' && !openRows(a) && !(a.marks || []).length) delete a.v; }
     state.answers[sid] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  }
+  // The saved change for one piece of text: by its words, else by the position an old file used.
+  const editOf = (ed, el) => Object.hasOwn(ed, el.dataset.k) ? el.dataset.k
+    : (Object.hasOwn(ed, el.dataset.w) && ed[el.dataset.w].from === el.dataset.orig.trim() ? el.dataset.w : null);
+  // WHY (round 5: "things that would be specific to a session/user state shouldn't be editable in
+  // this view, like the quick chips, status bar chips, or message bubble text"): beyond the panel
+  // rule below, a screen with no popup of its own (the chat itself) still holds one person's
+  // messages, chips and status chips. These are the app's own markers for them — message rows
+  // (`data-entry-key`, which only the running copy still has: the saved file drops it), the quick
+  // chips, the status bar and its model chip, the typing box and the session strip.
+  const USER_STATE = '[data-entry-key],.quick-chip,.quick-chip-edit,.status-bar,[data-model-chip],.input-bar-container,[data-session-strip]';
+  // What was open on the screen, in a few words, so a change can be put back in context.
+  function describeState(doc, pb) {
+    const seen = el => { const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false;
+      if (pb.length !== 4) return true; const x = r.left + r.width / 2, y = r.top + r.height / 2; return x >= pb[0] && x <= pb[0] + pb[2] && y >= pb[1] && y <= pb[1] + pb[3]; };
+    const say = el => (el.getAttribute('aria-label') || (el.innerText || el.textContent || '').split('\n').find(l => l.trim()) || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+    const dlg = [...doc.querySelectorAll('[role=dialog]')].filter(seen).pop();
+    const title = dlg ? (dlg.getAttribute('aria-label') || say(dlg.querySelector('h1,h2,h3') || dlg)) : '';
+    const tabs = [...doc.querySelectorAll('[role=tab][aria-selected=true]')].filter(seen).map(e => say(e) + ' tab');
+    const open = [...doc.querySelectorAll('[aria-expanded=true]')].filter(seen).map(e => say(e) + ' open');
+    return [title, ...tabs, ...open].filter(x => x.trim() && x !== ' tab' && x !== ' open').join(', ').slice(0, 160);
   }
   const wordOf = el => el.matches('input,textarea') ? el.value : el.textContent;
   // Called once per loaded frame: sizes it, puts scrolled parts back where they were, and
@@ -478,8 +517,13 @@
     let doc; try { doc = fr.contentDocument; } catch (e) { return; }
     if (!doc || !doc.body || !doc.body.childElementCount || fr._armed === doc) return;
     fr._armed = doc; const sid = fr.dataset.sid;
+    // A freshly frozen copy takes the stage BEFORE it is measured: what is covered is judged by
+    // what is drawn, and a frame that is still faded out would be judged as if nothing covered it.
+    const card = fr.closest('.card.screen');
+    if (fr._want) { card.dataset.mode = fr._want; fr._want = ''; void fr.offsetHeight; }
     const size = (doc.documentElement.getAttribute('data-frozen') || '1440x900').split('x').map(Number);
     fr.dataset.panel = doc.documentElement.getAttribute('data-frozen-panel') || '';
+    if (card.dataset.live && !card._zoom && fr.dataset.panel) card._zoom = fr.dataset.panel;   // the frame keeps ONE zoom across Use it / Edit words, so switching never jumps
     fr.dataset.w = size[0]; fr.dataset.h = size[1]; fr.style.width = size[0] + 'px'; fr.style.height = size[1] + 'px';
     doc.querySelectorAll('[data-frozen-scroll]').forEach(el => { const p = el.getAttribute('data-frozen-scroll').split(',').map(Number); el.scrollLeft = p[0]; el.scrollTop = p[1]; });
     const css = doc.createElement('style');
@@ -492,23 +536,26 @@
     // users will see the same"): around a popup sits the chat behind it — one person's messages,
     // not the app's wording. With a panel, only text whose middle falls inside it is editable.
     const pb = (fr.dataset.panel || '').split(',').map(Number);
-    const inPanel = el => { if (pb.length !== 4) return true; const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2; if (!(x >= pb[0] && x <= pb[0] + pb[2] && y >= pb[1] && y <= pb[1] + pb[3])) return false;
+    const inPanel = el => { if (el.closest(USER_STATE)) return false; if (pb.length !== 4) return true; const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2; if (!(x >= pb[0] && x <= pb[0] + pb[2] && y >= pb[1] && y <= pb[1] + pb[3])) return false;
       // …and it must be what is actually SEEN there: chat text lying behind the popup has its middle
       // inside the popup's box too, but the popup covers it.
       const top = doc.elementFromPoint(x, y); return !top || top === el || el.contains(top) || top.contains(el); };
-    let n = 0;
+    fr._state = describeState(doc, pb);
+    let n = 0; const occ = {};
+    // Each piece of text is known by its own words (the same words twice: first, second…).
+    const keyOf = o => { let b = o.trim().replace(/\s+/g, ' '); if (b.length > 80) b = b.slice(0, 60) + '… (' + b.length + ' characters)'; occ[b] = (occ[b] || 0) + 1; return occ[b] > 1 ? b + ' #' + occ[b] : b; };
     texts.forEach(t => {
       const p = t.parentElement;
       if (!t.nodeValue.trim() || !p || p.closest('svg,textarea,select,option,style,script,title') || !inPanel(p)) return;
       const s = doc.createElement('span'); s.dataset.w = String(n++); s.dataset.orig = t.nodeValue; s.spellcheck = false;
-      t.replaceWith(s); s.appendChild(t);
+      s.dataset.k = keyOf(t.nodeValue); t.replaceWith(s); s.appendChild(t);
     });
     // The grey hint in an empty box is wording too: shown as the box's text, in the hint's colour.
     doc.querySelectorAll('input,textarea').forEach(el => {
       const texty = el.tagName === 'TEXTAREA' || /^(text|search|email|url|tel|password|)$/.test(el.getAttribute('type') || '');
       if (texty && el.placeholder && !el.value && inPanel(el)) {
         el.style.color = getComputedStyle(el, '::placeholder').color;
-        el.dataset.w = String(n++); el.dataset.orig = el.placeholder; el.value = el.placeholder; el.removeAttribute('placeholder');
+        el.dataset.w = String(n++); el.dataset.k = keyOf(el.placeholder); el.dataset.orig = el.placeholder; el.value = el.placeholder; el.removeAttribute('placeholder');
       } else el.readOnly = true;
     });
     // Nothing on a still screen acts: a click only places the caret.
@@ -516,58 +563,155 @@
     doc.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); e.target.blur && e.target.blur(); } }, true);
     // A space typed inside a button would otherwise press it instead of being typed.
     doc.addEventListener('keyup', e => { if (e.key === ' ' && e.target.closest && e.target.closest('[data-w]')) e.preventDefault(); }, true);
-    doc.addEventListener('input', e => { const el = e.target.closest ? e.target.closest('[data-w]') : null; if (el) setScreenEdit(sid, el.dataset.w, el.dataset.orig, wordOf(el)); }, true);
+    doc.addEventListener('input', e => { const el = e.target.closest ? e.target.closest('[data-w]') : null; if (el) { const ed = (state.answers[sid] || {}).edits || {}; const old = editOf(ed, el); setScreenEdit(sid, el.dataset.k, el.dataset.orig, wordOf(el), old && old !== el.dataset.k ? old : null); } }, true);
     doc.addEventListener('focusout', () => paintScreens(), true);
     paintScreens();
   }
   // Frame at its real size, scaled to the width it is given, so nothing re-wraps by being shown smaller.
   function fitScreens() {
-    $$('.screenframe').forEach(fr => {
+    $$('.screenframe:not(.liveframe)').forEach(fr => {
       const w = +fr.dataset.w, h = +fr.dataset.h, wrap = fr.parentElement; if (!w || !wrap.clientWidth) return;
-      const big = !!fr.closest('.card.screen.big'); const p = (fr.dataset.panel || '').split(',').map(Number);
+      // The running copy (when there is one) sits over the still one and is fitted identically.
+      const lf = fr.closest('.card.screen').querySelector('.liveframe'); const place = (tf, ht) => { fr.style.transform = tf; wrap.style.height = ht; if (lf) { lf.style.transform = tf; lf.style.width = w + 'px'; lf.style.height = h + 'px'; } };
+      const big = !!fr.closest('.card.screen.big'); const p = ((fr.closest('.card.screen')._zoom) || fr.dataset.panel || '').split(',').map(Number);
       // Opened large, or a screen with no panel of its own: the whole window, fitted to the width.
       if (big || p.length !== 4 || p[2] > w * 0.8) {
         const k = Math.min(1.25, wrap.clientWidth / w);
-        fr.style.transform = 'scale(' + k + ')'; wrap.style.height = Math.round(h * k) + 'px'; return;
+        place('scale(' + k + ')', Math.round(h * k) + 'px'); return;
       }
       // WHY zoomed on the panel (Destin, round 4: pictures "rendered far too small to be
       // useful"): a popup is a small part of a 1440-wide window; shown whole, its words are
       // tiny. The frame opens on the popup with some of the screen around it, enlarged up to
       // 1.5×; "Whole screen" shows the rest.
       const M = 70; let rx = Math.max(0, p[0] - M), ry = Math.max(0, p[1] - M);
-      let rw = Math.min(w, p[0] + p[2] + M) - rx; const rh = Math.min(h, p[1] + p[3] + M) - ry;
+      let rw = Math.min(w, p[0] + p[2] + M) - rx; // A card that can run the app lets the popup GROW (a folded row opened) without clipping it: 200px more below.
+      const rh = Math.min(h, p[1] + p[3] + M + (fr.closest('.card.screen').dataset.live ? 200 : 0)) - ry;
       const k = Math.min(1.5, wrap.clientWidth / rw);
       const want = Math.min(w, wrap.clientWidth / k);            // spare width shows more of the screen either side
       rx = Math.max(0, Math.min(w - want, rx - (want - rw) / 2)); rw = want;
-      fr.style.transform = 'translate(' + (-rx * k) + 'px,' + (-ry * k) + 'px) scale(' + k + ')'; wrap.style.height = Math.round(rh * k) + 'px';
+      place('translate(' + (-rx * k) + 'px,' + (-ry * k) + 'px) scale(' + k + ')', Math.round(rh * k) + 'px');
     });
   }
   function paintScreens() {
-    $$('.screenframe').forEach(fr => {
-      if (!fr._hooked) { fr._hooked = true; fr.addEventListener('load', () => armScreen(fr)); }
+    $$('.screenframe:not(.liveframe)').forEach(fr => {
+      if (!fr._hooked) { fr._hooked = true; fr.addEventListener('load', () => armScreen(fr)); setupLive(fr); }
       armScreen(fr);
-      const doc = fr._armed; if (!doc) return;
+      const doc = fr._armed; const card = fr.closest('.card.screen');
       const ed = (state.answers[fr.dataset.sid] || {}).edits || {};
-      doc.querySelectorAll('[data-w]').forEach(el => {
-        const on = el.dataset.w in ed; el.classList.toggle('chg', on);
+      const shown = new Set();
+      if (doc) doc.querySelectorAll('[data-w]').forEach(el => {
+        const key = editOf(ed, el); const on = key !== null; if (on) shown.add(key);
+        el.classList.toggle('chg', on);
         if (el.matches('input,textarea')) el.readOnly = !!state.submitted; else el.contentEditable = state.submitted ? 'false' : 'plaintext-only';
         if (doc.activeElement === el) return;   // never under his caret
         // Whitespace around the words is the screen's own spacing: kept from the original.
         const lead = el.dataset.orig.match(/^\s*/)[0], tail = el.dataset.orig.match(/\s*$/)[0];
-        const want = on ? (el.matches('input,textarea') ? ed[el.dataset.w].to : lead + ed[el.dataset.w].to + tail) : el.dataset.orig;
+        const want = on ? (el.matches('input,textarea') ? ed[key].to : lead + ed[key].to + tail) : el.dataset.orig;
         if (wordOf(el) !== want) { if (el.matches('input,textarea')) el.value = want; else el.textContent = want; }
       });
+      // A change made in a state he has left stays listed (dimmed while its words are not on the screen).
       const list = $(`.screenedits[data-sid="${CSS.escape(fr.dataset.sid)}"]`);
-      if (list) list.innerHTML = Object.entries(ed).map(([k, x]) => `<li><span class="from">${esc(x.from)}</span><span class="arrow" aria-hidden="true">→</span><span class="to">${x.to ? esc(x.to) : '<i>(removed)</i>'}</span>${state.submitted ? '' : `<button type="button" class="linkbtn screenundo" data-sid="${esc(fr.dataset.sid)}" data-n="${esc(k)}">Put back</button>`}</li>`).join('');
+      if (list) list.innerHTML = Object.entries(ed).map(([k, x]) => `<li${doc && card.dataset.mode !== 'use' && !shown.has(k) ? ' class="away" title="These words are not on the screen as it is frozen now"' : ''}><span class="from">${esc(x.from)}</span><span class="arrow" aria-hidden="true">→</span><span class="to">${x.to ? esc(x.to) : '<i>(removed)</i>'}</span>${x.state ? `<span class="state">${esc(x.state)}</span>` : ''}${state.submitted ? '' : `<button type="button" class="linkbtn screenundo" data-sid="${esc(fr.dataset.sid)}" data-n="${esc(k)}">Put back</button>`}</li>`).join('');
     });
     fitScreens();
+  }
+  // ── the running copy of the screen (Use it) ────────────────────────────────────────────
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const screenNote = (card, text, bad) => { const p = card.querySelector('.screennote'); p.hidden = !text; p.textContent = text || ''; p.classList.toggle('bad', !!bad); };
+  const liveUrl = extra => '/app/index.html?' + new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', theme, scenario: 'default', ...extra });
+  // The panel on the running copy, the way `shoot` finds it (scripts/shoot/shoot.mjs MARK_CHECK):
+  // the screen's own mark, else the top-most dialog, that is really showing and not covered; a
+  // menu opened over it is part of it. Null when there is none — the whole screen is then the panel.
+  function livePanel(doc, name) {
+    const win = doc.defaultView, W = win.innerWidth, H = win.innerHeight;
+    const box = s => { const r = s.getBoundingClientRect(); if (r.width < 2 || r.height < 2 || r.right <= 0 || r.bottom <= 0 || r.left >= W || r.top >= H) return null;
+      for (let e = s; e && e !== doc.body; e = e.parentElement) { const cs = win.getComputedStyle(e); if (cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity === 0) return null; }
+      const x = Math.min(Math.max(r.left + r.width / 2, 1), W - 2), y = Math.min(Math.max(r.top + Math.min(r.height / 2, 60), 1), H - 2); const hit = doc.elementFromPoint(x, y);
+      return hit && s.contains(hit) ? r : null; };
+    const sel = '[role=dialog], .layer-surface, .settings-drawer';
+    const marks = [...doc.querySelectorAll('[data-screen]')], mine = new Set(marks.filter(m => m.getAttribute('data-screen') === String(name).split('#')[0]).map(m => m.closest(sel) || m.parentElement));
+    const all = new Set(marks.map(m => m.closest(sel) || m.parentElement)); doc.querySelectorAll('[role=dialog]').forEach(d => all.add(d));
+    const good = [...all].filter(el => el && box(el)); const named = good.filter(el => mine.has(el));
+    const top = (named.length ? named : good).pop(); if (!top) return null;
+    let r = top.getBoundingClientRect(), x0 = r.left, y0 = r.top, x1 = r.right, y1 = r.bottom;
+    doc.querySelectorAll('[role=menu],[role=listbox]').forEach(m => { const b = box(m); if (b) { x0 = Math.min(x0, b.left); y0 = Math.min(y0, b.top); x1 = Math.max(x1, b.right); y1 = Math.max(y1, b.bottom); } });
+    x0 = Math.max(0, x0); y0 = Math.max(0, y0);
+    return [x0, y0, Math.min(W, x1) - x0, Math.min(H, y1) - y0].map(Math.round);
+  }
+  // Called once per card. The switch appears only when the practice app is really being served
+  // by this deck — opened as a plain file, served with --no-live, or with an app that failed to
+  // build, there is nothing to run and the saved file is all there is (a live-only step says so).
+  function setupLive(fr) {
+    const card = fr.closest('.card.screen'), name = card.dataset.liveName; if (!name || card._liveInit) return; card._liveInit = true;
+    if (!fr.dataset.w) { fr.dataset.w = 1440; fr.dataset.h = 900; fr.style.width = '1440px'; fr.style.height = '900px'; }
+    const off = () => { if (!fr.getAttribute('src')) screenNote(card, 'This step runs the app itself, so it needs the deck opened from its served link (review-cards.py serve), with the app available.', true); };
+    if (location.protocol === 'file:' || !DECK.live || DECK.live.base || !DECK.live.freeze) return off();
+    // `probe.txt` is no file: the server answers the app's own page without rebuilding it, so asking costs nothing.
+    fetch('/app/probe.txt', { cache: 'no-store' }).then(r => r.ok, () => false).then(ok => {
+      if (!ok) return off();
+      if (fr.dataset.panel && !card._zoom) card._zoom = fr.dataset.panel;
+      card.dataset.live = '1'; card.querySelector('.seg').hidden = false;
+      setMode(card, fr.getAttribute('src') ? 'edit' : 'use');
+    });
+  }
+  function setMode(card, mode) {
+    const fr = card.querySelector('.screenframe:not(.liveframe)');
+    card.querySelectorAll('.seg [data-mode]').forEach(b => { const on = b.dataset.mode === mode; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+    card.querySelector('.screenbar .hint').textContent = mode === 'use' ? USE_HINT : EDIT_HINT;
+    if (mode === 'use') { card.dataset.mode = 'use'; openLive(card); fitScreens(); }
+    else freezeLive(card, fr);
+  }
+  function openLive(card) {
+    if (card._lf) { fitScreens(); return; }
+    const name = card.dataset.liveName, lf = document.createElement('iframe');
+    lf.className = 'screenframe liveframe'; lf.dataset.sid = card.dataset.sid; lf.title = 'The running app'; lf.scrolling = 'no';
+    lf.addEventListener('load', () => liveLoaded(card, lf, name));
+    card.querySelector('.screenwrap').appendChild(lf); card._lf = lf; screenNote(card, 'Starting the app…');
+    lf.src = liveUrl({});
+  }
+  async function liveLoaded(card, lf, name) {
+    try {
+      const win = lf.contentWindow;
+      for (const t0 = Date.now(); !(win.__youcodedScreens && win.document.body && win.document.body.innerText.trim().length > 20); await sleep(200)) if (Date.now() - t0 > 40000) throw new Error('the app did not start within 40 seconds');
+      const entry = (win.__youcodedScreens.list() || []).find(e => e.name === name);
+      if (!entry) throw new Error('“' + name + '” is not in the app’s screen list');
+      // A screen that needs other practice data (a scenario, a switch) reloads the app once under it.
+      const extra = { ...(entry.scenario && entry.scenario !== 'default' ? { scenario: entry.scenario } : {}), ...(entry.params || {}) };
+      if (Object.keys(extra).length && !lf._cfg) { lf._cfg = 1; lf.src = liveUrl(extra); return; }
+      screenNote(card, 'Opening the screen…');
+      let box = null;
+      for (let i = 0; i < 3 && !box; i++) { const r = await win.__youcodedScreens.open(name); if (!r.ok) throw new Error(r.reason); await sleep(1500); box = livePanel(win.document, name); }
+      if (!box) throw new Error('it did not show on screen');
+      lf._ready = true; if (!card._zoom) card._zoom = box.join(',');
+      screenNote(card, ''); fitScreens();
+    } catch (e) {
+      screenNote(card, 'The app could not open this screen: ' + (e && e.message || e) + '.' + (card.querySelector('.screenframe:not(.liveframe)').getAttribute('src') ? ' Edit words still works on the saved copy.' : ''), true);
+    }
+  }
+  // Freeze the running copy as it stands and show it as the still copy (Edit words).
+  async function freezeLive(card, fr) {
+    const lf = card._lf;
+    if (!lf || !lf._ready) { card.dataset.mode = 'edit'; fitScreens(); paintScreens(); return; }   // nothing running: the saved copy
+    if (fr._busy) return; fr._busy = true; screenNote(card, 'Freezing the screen as it stands…');
+    try {
+      const doc = lf.contentDocument, box = livePanel(doc, card.dataset.liveName);
+      let html = await lf.contentWindow.eval(DECK.live.freeze);
+      if (box) html = html.replace(' data-frozen="', ' data-frozen-panel="' + box.join(',') + '" data-frozen="');
+      if (fr._blob) URL.revokeObjectURL(fr._blob);
+      fr._blob = URL.createObjectURL(new Blob([html], { type: 'text/html' })); fr._want = 'edit'; fr.src = fr._blob;
+      screenNote(card, '');
+    } catch (e) {
+      screenNote(card, 'Could not freeze the screen: ' + (e && e.message || e) + '.', true);
+      setMode(card, 'use');
+    } finally { fr._busy = false; }
   }
   function closeScreenBig() { const b = $('.card.screen.big'); if (!b) return false; b.classList.remove('big'); b.querySelector('.screenbig').textContent = 'Whole screen'; fitScreens(); return true; }
   document.addEventListener('click', e => {
     const big = e.target.closest('.screenbig');
     if (big) { const card = big.closest('.card.screen'); const on = !card.classList.contains('big'); closeScreenBig(); card.classList.toggle('big', on); big.textContent = on ? 'Close' : 'Whole screen'; fitScreens(); return; }
+    const sw = e.target.closest('.seg [data-mode]'); if (sw) { setMode(sw.closest('.card.screen'), sw.dataset.mode); return; }
     const u = e.target.closest('.screenundo');
-    if (u) { const ed = (state.answers[u.dataset.sid] || {}).edits || {}; if (ed[u.dataset.n]) setScreenEdit(u.dataset.sid, u.dataset.n, ed[u.dataset.n].from, null); }
+    if (u) { const ed = (state.answers[u.dataset.sid] || {}).edits || {}; if (Object.hasOwn(ed, u.dataset.n)) setScreenEdit(u.dataset.sid, u.dataset.n, ed[u.dataset.n].from, null); }
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeScreenBig(); });
   window.addEventListener('resize', fitScreens);
@@ -1239,7 +1383,7 @@
     for (const [k, t] of Object.entries(a.changes || {})) out.push('\n    change ' + k + ' — "' + String(t || '').trim() + '"');
     (a.asks || []).forEach(k => out.push('\n    more context wanted on ' + k));
     // {from, to} from a screen he retyped words on; a plain string from a round-3 wording row.
-    for (const [k, t] of Object.entries(a.edits || {})) out.push(t && typeof t === 'object' ? '\n    reword "' + t.from + '" → "' + t.to + '"' : '\n    reword ' + k + ' — "' + String(t || '').trim() + '"');
+    for (const [k, t] of Object.entries(a.edits || {})) out.push(t && typeof t === 'object' ? '\n    reword "' + t.from + '" → "' + t.to + '"' + (t.state ? ' — seen with: ' + t.state : '') : '\n    reword ' + k + ' — "' + String(t || '').trim() + '"');
     (a.marks || []).forEach((m, i) => out.push('\n    area ' + (i + 1) + ' on ' + m.pic + ' (left ' + m.x + '%, top ' + m.y + '%, ' + m.w + '% wide, ' + m.h + '% tall) — "' + String(m.text || '').trim() + '"'));
     // Pictures and file paths he pasted into a box (round 7): the path is what a session opens.
     for (const [k, l] of Object.entries(a.attach || {})) (l || []).forEach(p => out.push('\n    attached to ' + attachLabel(k) + ' — ' + pillWords(p)));
@@ -1313,7 +1457,7 @@
     const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
     const rows = DECK.steps.map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
-      const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k), Object.entries(a.edits || {}).map(([k, t]) => t && typeof t === 'object' ? '“' + t.from + '” → “' + t.to + '”' : k + ' reworded: ' + String(t || '').trim()),
+      const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k), Object.entries(a.edits || {}).map(([k, t]) => t && typeof t === 'object' ? '“' + t.from + '” → “' + t.to + '”' + (t.state ? ' (seen with: ' + t.state + ')' : '') : k + ' reworded: ' + String(t || '').trim()),
         (a.marks || []).map((m, j) => 'Area ' + (j + 1) + ' on ' + m.pic + ': ' + String(m.text || '').trim()),
         Object.values(a.attach || {}).flat().concat((a.marks || []).flatMap(m => m.attach || [])).map(p => 'Attached: ' + p.name)).filter(Boolean).join(' · ');
       return `<tr><td class="n">${i + 1}</td>`

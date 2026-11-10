@@ -166,10 +166,15 @@ def _words_step(spec, st):
             d['fold_settled'] = True   # rows marked settled fold into one "Settled (n)" line (round 7)
         if st.get('gallery'):
             d['gallery'] = True    # every screen that changed, as tiles side by side (round 3, S-1)
-    elif st.get('screen'):
+    elif st.get('screen') or st.get('liveScreen'):
         # A still copy of an app screen whose words he retypes in place (round 4; freeze.mjs).
         d['kind'] = 'screen'
-        d['screen'] = st['screen']
+        d['screen'] = st.get('screen', '')
+        # WHY (Destin, 2026-11-10: "the dropdown menus in that about popup should probably still
+        # work"): the screen's name in the app's screen list. When the deck is served the card can
+        # run the practice app on it ("Use it") and freeze it as it stands ("Edit words").
+        if st.get('liveScreen'):
+            d['liveScreen'] = st['liveScreen']
     elif st.get('options'):
         d['kind'] = 'decide'
         d['options'] = [_option(o) for o in st['options']]
@@ -384,7 +389,9 @@ def _history(spec):
             notes = [t for t in [(a.get('text') or '').strip(), (a.get('note') or '').strip()] if t]
             notes += [f'{rows.get(k) or k} — {(t or "").strip()}' for k, t in (a.get('changes') or {}).items() if (t or '').strip()]
             notes += [f'On a picture — {(m.get("text") or "").strip()}' for m in a.get('marks') or [] if (m.get('text') or '').strip()]
-            notes += [f'Reword “{t.get("from", "")}” to “{t.get("to", "")}”' if isinstance(t, dict) else f'{rows.get(k) or k} reworded — {t}'
+            # `state` (round 7b): what was open on the screen when the words were changed.
+            notes += [f'Reword “{t.get("from", "")}” to “{t.get("to", "")}”' + (f' (seen with: {t["state"]})' if t.get('state') else '')
+                      if isinstance(t, dict) else f'{rows.get(k) or k} reworded — {t}'
                       for k, t in (a.get('edits') or {}).items()]
             items.append({'page': page, 'headline': st.get('headline', st.get('id', '')), 'answer': answer, 'notes': notes})
         general = (saved.get('notes') or '').strip()
@@ -393,6 +400,18 @@ def _history(spec):
         rounds.append({'title': old.get('title', name), 'when': (saved.get('submitted') or '')[:10], 'items': items})
     related = [{'title': r['title'], 'href': r['path'], **({'how': r['how']} if r.get('how') else {})} for r in spec.get('related') or []]
     return {'history': rounds, 'related': related} if rounds or related else {}
+
+
+def _freeze_source():
+    """The text of scripts/shoot/freeze.mjs's FREEZE (an expression that returns a screen as one
+    still HTML page when evaluated inside a page). Read by importing the module, so its escapes
+    are resolved by JavaScript itself rather than by a pattern of mine."""
+    path = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'shoot', 'freeze.mjs')
+    r = subprocess.run(['node', '-e', "import(require('url').pathToFileURL(process.argv[1])).then(m=>process.stdout.write(m.FREEZE))", path],
+                       capture_output=True, text=True)
+    if r.returncode != 0 or not r.stdout.strip():
+        raise SpecError(f'could not read the freeze function from {path}: {(r.stderr or "empty").strip()[:300]}')
+    return r.stdout
 
 
 def deck_data(spec, boxes):
@@ -420,6 +439,11 @@ def deck_data(spec, boxes):
         # builds and serves it, and a failure there is a build error, not a stopped process.
         **({'command': f'bash scripts/run-workbench.sh {tree}'} if base else {}),
     }} if has_live(spec) else {}
+    # The freeze function itself, shipped only when a step can freeze the running app. WHY here and
+    # not copied into page.js: scripts/shoot/freeze.mjs is the ONE definition of "a screen as a
+    # still page"; a second copy would drift. One short `node` start, only for such a deck.
+    if any(st.get('liveScreen') for st in spec['steps']):
+        live['live']['freeze'] = _freeze_source()
     # A question deck is PAGES (design 3.1): `pages` lists the step ids on each, and page.js
     # switches to the scrolling reading column when it is there. Absent for any deck with a
     # picture, which keeps one step per screen — `steps` itself never carries the markers.

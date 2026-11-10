@@ -51,9 +51,8 @@ attachements card"; of the header Notes button: "nah i wanted like an extra more
 region at the bottom of each page". **Guard:** `test_rethink.py`, `deck-render.test.mjs`.
 
 ## Wording is edited on the real screen, after the build
-**Invariant:** never a text box per label. `shoot <screen> --page` saves a still copy; a `screen`
-step shows it, every text editable, saved as `edits`. **Why:** wording boxes were "terrible"
-(2026-11-10). **Guard:** `deck-render.test.mjs`.
+**Invariant:** no text box per label. A `screen` step edits `shoot --page`'s still copy;
+`liveScreen` adds Use it / Edit words. **Why:** boxes were "terrible" (2026-11-10). **Guard:** `deck-render.test.mjs`.
 
 ## A slide decides, not the deck
 **Invariant:** `runs`/`labels`, `"pick": "several"`, `"answer": "words"` sit on the SLIDE;
