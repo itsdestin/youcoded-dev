@@ -78,7 +78,15 @@ done
 # nothing reads them and plans/site-gallery.json is no longer run from here), so they are neither
 # regenerated nor deleted: existing files in docs/gallery stay as they are.
 mkdir -p "$OUT/gallery"
-bash "$HERE/site-idea-stills.sh" "$TDIR" "$OUT/gallery"
+# WHY opt-in (Destin, 2026-11-10): he has NOT approved the regenerated idea pictures (the paint
+# one came out with no brush strokes), so a normal run must leave the site's four hand-made
+# pictures exactly as they are. Set SITE_IDEA_STILLS=1 to regenerate them once he approves;
+# drop this switch when he does.
+if [[ "${SITE_IDEA_STILLS:-0}" == "1" ]]; then
+  bash "$HERE/site-idea-stills.sh" "$TDIR" "$OUT/gallery"
+else
+  echo "[site-assets] idea pictures left as they are (set SITE_IDEA_STILLS=1 to regenerate)"
+fi
 du -sh "$OUT/media" "$OUT/gallery"
 
 # 4. embed — vite build is independent of the dev server; empties docs/site (see step 2)

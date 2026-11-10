@@ -200,7 +200,7 @@ Spec: `docs/archive/specs/2026-08-31-live-review-panes-design.md`.
 
 Rebuild every landing-page asset at once (loops, the four ideas-wall pictures, live embed):
 `bash scripts/ui-review/site-assets.sh <worktree> [--out <dir>]` — refuses to overwrite the ideas-wall pictures
-when any shot failed verification; `--out` writes everything to a scratch folder instead.
+when any shot failed verification, and leaves them alone unless `SITE_IDEA_STILLS=1` (not yet approved); `--out` writes everything to a scratch folder instead.
 
 **`"zoom": 1.25`** (scene field, default 1) films the page zoomed in the way Ctrl+= does in the
 app: the layout runs at width/zoom × height/zoom CSS px and Chrome paints it at `zoom` device
