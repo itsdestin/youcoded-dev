@@ -263,6 +263,12 @@ jobs:
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-untracked-warning.test.sh
 
+      # Card #22 (e): a branch with no commits and an uncommitted implementation was called "landed"
+      # and offered for deletion four times. Dirty worktree must override the "landed" wording.
+      - name: close-out.sh never calls uncommitted work landed
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-dirty-worktree.test.sh
+
       # The refactor's edit lock (docs/active/locks/) is only a promise unless close-out says it aloud.
       - name: close-out.sh flags a branch that edits locked files
         if: ${{ !cancelled() }}
