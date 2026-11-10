@@ -444,8 +444,8 @@ def _validate_calls(st, sid, errors):
         if c['id'] in seen:
             errors.append(f'{sid}: call id "{c["id"]}" is used twice')
         seen.add(c['id'])
-        if c.get('result') is not None and c['result'] not in ('pass', 'fail', 'unclear', 'todo'):
-            errors.append(f'{sid}/{c["id"]}: result is pass, fail, unclear, or todo (left for him to try)')
+        if c.get('result') is not None and c['result'] not in ('pass', 'fail', 'unclear', 'todo', 'run', 'skip'):
+            errors.append(f'{sid}/{c["id"]}: result is pass, fail, unclear, todo (left for him to try), or before a build run / skip (a check he may switch on or off)')
         # `before` (round 3): the same screen before the change, so a row is a before/after pair.
         for pk in ('picture', 'before'):
             if c.get(pk) is None:

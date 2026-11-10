@@ -520,6 +520,9 @@ body[data-served] .callt,body[data-served] .markt{padding-right:44px}
 /* A row's status: a small tinted pill (design guide: a status is a Pill, sentence case). As a
    button it opens the four statuses — he can set any of them (round 4). */
 .result{display:inline-block;padding:2px 9px;border-radius:999px;font:600 11px/1.5 var(--font);border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent);white-space:nowrap}
+.result.run{color:var(--yes)} .result.skip{color:var(--fg-muted)}
+.card.calls.context .call{background:transparent;border-style:dashed}
+.iconbtn[hidden]{display:none}
 .result.pass{color:var(--yes)} .result.fail{color:var(--no)} .result.unclear{color:var(--mark)} .result.todo{color:var(--fg-muted)}
 .result.pillbtn{flex:none;align-self:flex-start;margin-top:3px;cursor:pointer;font-family:var(--font)} .result.pillbtn::after{content:" ▾";opacity:.7} .result.pillbtn:disabled{cursor:default} .result.pillbtn:disabled::after{content:""}
 .result.pillbtn.yours{border-style:solid;border-color:currentColor;box-shadow:0 0 0 1px currentColor}

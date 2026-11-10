@@ -285,7 +285,11 @@
   // left for him to try were three different-looking rows, and only I could set the status.
   // Every such row now carries the same pill at its top right; pressing it opens the four
   // statuses. His choice is saved as answers[step].results[row] and shown in place of mine.
-  const RESULT = { pass: 'Passed', fail: 'Failed', unclear: 'Unclear', todo: 'Not tried' };
+  // `run` / `skip` (round 5, Q-1: "could i just request or enable our various agent-reviewers for a
+  // build from a single menu in the pre-build deck?"): before a build the Checks list is that
+  // menu — each suggested check or reviewer carries a Will run / Skip pill he flips.
+  const RESULT = { pass: 'Passed', fail: 'Failed', unclear: 'Unclear', todo: 'Not tried', run: 'Will run', skip: 'Skip' };
+  const PLAN = ['run', 'skip'];
   const resultOf = (sid, c) => ((state.answers[sid] || {}).results || {})[c.id] || c.result;
   const resultPill = (st, c) => c.result ? `<button type="button" class="result pillbtn" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" data-own="${esc(c.result)}" aria-haspopup="menu"></button>` : '';
   function setResult(sid, cid, own, val) {
@@ -294,7 +298,7 @@
     if (val === own) delete rs[cid]; else rs[cid] = val;
     if (Object.keys(rs).length) a.results = rs; else delete a.results;
     // A check HE marks failed is something to act on, so the list counts as changed.
-    if (Object.values(rs).includes('fail')) { a.v = 'other'; delete a.dk; }
+    if (Object.values(rs).some(x => x === 'fail' || PLAN.includes(x))) { a.v = 'other'; delete a.dk; }
     else if (a.v === 'other' && !openRows(a) && !(a.marks || []).length) delete a.v;
     state.answers[sid] = a; paintState(); save();
   }
@@ -307,7 +311,7 @@
     if (!pill || state.submitted || (was && was.dataset.for === pill.dataset.sid + '/' + pill.dataset.call)) return;
     const m = document.createElement('div'); m.className = 'resultmenu'; m.setAttribute('role', 'menu'); m.dataset.for = pill.dataset.sid + '/' + pill.dataset.call;
     const now = pill.dataset.now;
-    m.innerHTML = Object.keys(RESULT).map(k => `<button type="button" role="menuitemradio" aria-checked="${k === now}" data-v="${k}" data-sid="${esc(pill.dataset.sid)}" data-call="${esc(pill.dataset.call)}" data-own="${esc(pill.dataset.own)}"><span class="result ${k}">${RESULT[k]}</span>${k === pill.dataset.own ? '<span class="mine">my result</span>' : ''}</button>`).join('');
+    m.innerHTML = Object.keys(RESULT).filter(k => PLAN.includes(k) === PLAN.includes(pill.dataset.own)).map(k => `<button type="button" role="menuitemradio" aria-checked="${k === now}" data-v="${k}" data-sid="${esc(pill.dataset.sid)}" data-call="${esc(pill.dataset.call)}" data-own="${esc(pill.dataset.own)}"><span class="result ${k}">${RESULT[k]}</span>${k === pill.dataset.own ? `<span class="mine">${PLAN.includes(k) ? 'my suggestion' : 'my result'}</span>` : ''}</button>`).join('');
     document.body.appendChild(m);
     const r = pill.getBoundingClientRect();
     m.style.top = (r.bottom + scrollY + 4) + 'px'; m.style.left = Math.max(8, r.right + scrollX - m.offsetWidth) + 'px';
@@ -324,7 +328,10 @@
   // 38%-wide picture beside two lines of text left most of the row empty.
   const rowPic = (src, pk, cap) => `<figure class="qpic row"><a href="${esc(src)}" title="Open larger" data-pk="${esc(pk)}"><img src="${esc(src)}" alt=""></a>${cap ? `<figcaption>${esc(cap)}</figcaption>` : ''}</figure>`;
   const rowPics = c => (c.before ? rowPic(c.before, 'row ' + c.id + ' before', 'Before') : '') + (c.picture ? rowPic(c.picture, 'row ' + c.id, c.before ? 'After' : '') : '');
-  const callsCard = st => `<section class="card calls${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${c.picture || c.before ? `<div class="callpics">${rowPics(c)}</div>` : ''}${resultPill(st, c)}<button type="button" class="iconbtn calledit" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div></li>`).join('')}</ul></section>`;
+  // WHY `context` (round 5, E-1: "was this supposed to be context or questions? it has edit arrows"):
+  // a list of facts for him to read looked exactly like a list of choices to change. A context
+  // list says so and carries no pencils; a correction goes in the page's comment box.
+  const callsCard = st => `<section class="card calls${st.context ? ' context' : ''}${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${c.picture || c.before ? `<div class="callpics">${rowPics(c)}</div>` : ''}${resultPill(st, c)}<button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div></li>`).join('')}</ul></section>`;
 
   // ── Edit the words on the real screen (round 4) ─────────────────────────────────────────
   // WHY (Destin, 2026-11-10): wording rows — a text box per label beside a small picture —
@@ -361,17 +368,27 @@
     css.textContent = '[data-w]{cursor:text;outline:1px dashed transparent;outline-offset:2px;border-radius:2px}[data-w]:hover{outline-color:rgba(120,160,255,.8)}[data-w]:focus{outline:2px solid rgb(90,140,255)}[data-w].chg{outline:2px solid rgb(240,170,60);background:rgba(240,170,60,.16)}a,button,label,select{cursor:default!important}';
     doc.head.appendChild(css);
     const tw = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT); const texts = []; while (tw.nextNode()) texts.push(tw.currentNode);
+    // WHY only inside the screen's own panel (round 5: "things that would be specific to a
+    // session/user state shouldn't be editable in this view, like the quick chips, status bar
+    // chips, or message bubble text. editable elements should be limited to menus/copy that all
+    // users will see the same"): around a popup sits the chat behind it — one person's messages,
+    // not the app's wording. With a panel, only text whose middle falls inside it is editable.
+    const pb = (fr.dataset.panel || '').split(',').map(Number);
+    const inPanel = el => { if (pb.length !== 4) return true; const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2; if (!(x >= pb[0] && x <= pb[0] + pb[2] && y >= pb[1] && y <= pb[1] + pb[3])) return false;
+      // …and it must be what is actually SEEN there: chat text lying behind the popup has its middle
+      // inside the popup's box too, but the popup covers it.
+      const top = doc.elementFromPoint(x, y); return !top || top === el || el.contains(top) || top.contains(el); };
     let n = 0;
     texts.forEach(t => {
       const p = t.parentElement;
-      if (!t.nodeValue.trim() || !p || p.closest('svg,textarea,select,option,style,script,title')) return;
+      if (!t.nodeValue.trim() || !p || p.closest('svg,textarea,select,option,style,script,title') || !inPanel(p)) return;
       const s = doc.createElement('span'); s.dataset.w = String(n++); s.dataset.orig = t.nodeValue; s.spellcheck = false;
       t.replaceWith(s); s.appendChild(t);
     });
     // The grey hint in an empty box is wording too: shown as the box's text, in the hint's colour.
     doc.querySelectorAll('input,textarea').forEach(el => {
       const texty = el.tagName === 'TEXTAREA' || /^(text|search|email|url|tel|password|)$/.test(el.getAttribute('type') || '');
-      if (texty && el.placeholder && !el.value) {
+      if (texty && el.placeholder && !el.value && inPanel(el)) {
         el.style.color = getComputedStyle(el, '::placeholder').color;
         el.dataset.w = String(n++); el.dataset.orig = el.placeholder; el.value = el.placeholder; el.removeAttribute('placeholder');
       } else el.readOnly = true;

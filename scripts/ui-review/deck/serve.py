@@ -81,7 +81,7 @@ def extras(a):
     under the step's line so a session reading the summary cannot miss them."""
     out = []
     # A check status HE set (round 4): every status pill is his to change.
-    names = {'pass': 'Passed', 'fail': 'Failed', 'unclear': 'Unclear', 'todo': 'Not tried'}
+    names = {'pass': 'Passed', 'fail': 'Failed', 'unclear': 'Unclear', 'todo': 'Not tried', 'run': 'Will run', 'skip': 'Skip'}
     for k, v in (a.get('results') or {}).items():
         out.append(f'\n    status {k} — he set it to {names.get(v, v)}')
     for k, t in (a.get('changes') or {}).items():

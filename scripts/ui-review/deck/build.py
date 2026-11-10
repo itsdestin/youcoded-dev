@@ -158,6 +158,8 @@ def _words_step(spec, st):
         d['calls'] = [{k: c[k] for k in ('id', 'call', 'why', 'picture', 'before', 'decided', 'result') if c.get(k)} for c in st['calls']]
         if st.get('numbered'):
             d['numbered'] = True   # a behind-the-scenes story: the rows are steps, in order
+        if st.get('context'):
+            d['context'] = True    # facts to read, not choices: no pencils (round 5, E-1)
         if st.get('gallery'):
             d['gallery'] = True    # every screen that changed, as tiles side by side (round 3, S-1)
     elif st.get('screen'):

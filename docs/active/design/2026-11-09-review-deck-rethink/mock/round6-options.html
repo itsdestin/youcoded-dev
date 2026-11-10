@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Round 6 option drawings</title>
+<!-- Drawings for the round-6 deck: three ways to show pictures in a list, three ways to show a
+     topic's history. Open with #a1 … #b3 to show one. Schematic on purpose: boxes, not the real deck. -->
+<style>
+ :root{--bg:#0b0f17;--panel:#161b25;--inset:#1f2530;--edge:#2f3745;--fg:#e6e9ef;--mut:#8b93a3;--acc:#ffb020;--link:#5aa0ff;--yes:#2e9b57}
+ *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 'Cascadia Mono','Fira Code',monospace;padding:22px}
+ section{display:none} section:target{display:block}
+ h1{font-size:15px;margin:0 0 14px;color:var(--mut);font-weight:500}
+ .row{border:1px solid var(--edge);background:var(--inset);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+ .t{margin:0} .s{margin:2px 0 0;color:var(--mut);font-size:12.5px}
+ .pic{background:linear-gradient(135deg,#243049,#1a2233);border:1px solid var(--edge);border-radius:8px;display:grid;place-items:center;color:var(--mut);font-size:12px;position:relative}
+ .pic i{position:absolute;border:2px solid var(--link);background:rgba(90,160,255,.15);border-radius:4px}
+ .pic b{position:absolute;left:-9px;top:-9px;width:18px;height:18px;border-radius:9px;background:var(--link);color:#fff;font-size:11px;display:grid;place-items:center}
+ .box{border:1px solid var(--edge);background:#0e131c;border-radius:10px;padding:8px 10px;color:var(--mut);font-size:12.5px;margin-top:8px}
+ .pill{display:inline-block;padding:1px 9px;border-radius:99px;font-size:11px;font-weight:600;border:1px solid currentColor;background:rgba(255,255,255,.04)}
+ .new{color:var(--acc)} .chg{color:var(--link)} .same{color:var(--mut)} .ok{color:var(--yes)}
+ .flex{display:flex;gap:14px} .grow{flex:1;min-width:0}
+ .q{border-left:2px solid var(--acc);padding-left:9px;font-style:italic;color:#c9cfdb;font-size:12.5px;margin:6px 0 0}
+ .dot{width:10px;height:10px;border-radius:5px;background:var(--acc);flex:none;margin-top:5px}
+ .line{border-left:2px solid var(--edge);margin-left:4px;padding-left:16px}
+ .note{color:var(--mut);font-size:12px;margin-top:10px}
+</style>
+
+<section id="a1"><h1>A · Picture leads each row</h1>
+ <div class="row flex"><div class="pic" style="flex:0 0 56%;height:230px">the changed screen, large<i style="left:12%;top:20%;width:30%;height:34%"><b>1</b></i></div>
+  <div class="grow"><p class="t">List rows got one pencil instead of two buttons.</p><p class="s">Pictures moved right and shrank.</p><p class="q">"simplify down to a single pencil"</p>
+   <div class="box"><span style="color:var(--link)">1</span> this header is too busy</div><div class="box">Add a comment, or drag on the picture…</div></div></div>
+ <div class="row flex"><div class="pic" style="flex:0 0 56%;height:230px">next changed screen</div>
+  <div class="grow"><p class="t">A comment box sits at the foot of every page.</p><p class="s">The Notes button in the header is gone.</p><div class="box">Add a comment, or drag on the picture…</div></div></div>
+ <p class="note">Every picture is big where it sits. No separate viewer. A page with many pictures gets long.</p></section>
+
+<section id="a2"><h1>B · Small, even thumbnails; a row opens in place</h1>
+ <div class="row flex"><div class="grow"><p class="t">Every check row has the same status pill.</p><p class="s">You can change any of them.</p></div><div class="pic" style="flex:0 0 120px;height:70px">thumb</div></div>
+ <div class="row" style="border-color:var(--acc)"><div class="flex"><div class="grow"><p class="t">List rows got one pencil instead of two buttons.</p><p class="s">Pictures moved right and shrank.</p><p class="q">"simplify down to a single pencil"</p></div><span class="pill same">Close ▴</span></div>
+  <div class="flex" style="margin-top:10px"><div class="pic grow" style="height:250px">the picture, full row width<i style="left:10%;top:18%;width:28%;height:36%"><b>1</b></i></div>
+   <div style="flex:0 0 30%"><div class="box"><span style="color:var(--link)">1</span> this header is too busy</div><div class="box">Drag on the picture to add a comment…</div><p class="note">↓ next row with a picture</p></div></div></div>
+ <div class="row flex"><div class="grow"><p class="t">A comment box sits at the foot of every page.</p><p class="s">The Notes button in the header is gone.</p></div><div class="pic" style="flex:0 0 120px;height:70px">thumb</div></div>
+ <p class="note">Rows stay short and all thumbnails are one size. The opened row keeps its own words beside the picture.</p></section>
+
+<section id="a3"><h1>C · List on the left, one large picture pane on the right</h1>
+ <div class="flex"><div style="flex:0 0 40%">
+   <div class="row"><p class="t">Every check row has the same status pill.</p><p class="s">You can change any of them.</p></div>
+   <div class="row" style="border-color:var(--acc)"><p class="t">List rows got one pencil instead of two buttons.</p><p class="s">Pictures moved right and shrank.</p><p class="q">"simplify down to a single pencil"</p></div>
+   <div class="row"><p class="t">A comment box sits at the foot of every page.</p><p class="s">The Notes button in the header is gone.</p></div>
+   <div class="row"><p class="t">A History button in the header.</p><p class="s">Your earlier answers, newest first.</p></div></div>
+  <div class="grow"><div class="pic" style="height:300px">picture of the row you are on — stays in view as you scroll<i style="left:10%;top:18%;width:28%;height:36%"><b>1</b></i></div>
+   <div class="box"><span style="color:var(--link)">1</span> this header is too busy</div><div class="box">Drag on the picture to add a comment…</div></div></div>
+ <p class="note">Words and picture always side by side. Clicking or scrolling to a row swaps the picture. Needs a wide window.</p></section>
+
+<section id="b1"><h1>A · Each item carries its own trail</h1>
+ <div class="row"><div class="flex"><p class="t grow">A click on any picture opens a full-window viewer.</p><span class="pill chg">Changed in round 5</span></div>
+  <div class="line" style="margin-top:10px">
+   <p class="s"><b style="color:var(--fg)">Round 2</b> · you asked: <i>"rectangular drag-regions… highlight any size rectangle"</i></p>
+   <p class="s"><b style="color:var(--fg)">Round 3</b> · built: pictures open large in the deck · you said: <i>"opens in a separate tab, which is strange"</i></p>
+   <p class="s"><b style="color:var(--fg)">Round 4</b> · built: large view inside the deck · you said: <i>"we can make a much better… surface for image comments"</i></p>
+   <p class="s"><b style="color:var(--acc)">Now</b> · full-window viewer with comments beside the picture</p></div></div>
+ <div class="row"><div class="flex"><p class="t grow">Every list row has one pencil.</p><span class="pill same">Settled in round 3 ▾</span></div></div>
+ <div class="row"><div class="flex"><p class="t grow">A comment box at the foot of every page.</p><span class="pill new">New this round</span></div></div>
+ <p class="note">History lives on the row it belongs to. Settled rows fold shut.</p></section>
+
+<section id="b2"><h1>B · The deck opens on what changed since last time</h1>
+ <div class="row" style="border-color:var(--acc)"><p class="t">Since round 4: <b>3 new</b> · <b>2 changed from your comments</b> · <b>11 settled</b></p></div>
+ <h1 style="margin-top:14px">New</h1>
+ <div class="row flex"><p class="t grow">A comment box at the foot of every page.</p><span class="pill new">New</span></div>
+ <h1>Changed from your comments</h1>
+ <div class="row"><div class="flex"><p class="t grow">A click on any picture opens a full-window viewer.</p><span class="pill chg">Changed</span></div><p class="q">Round 4, you: "more space and a better surface to actually leave/manage comments"</p><p class="s">Before: the large view closed when you drew an area.</p></div>
+ <h1>Settled <span class="pill same">11 ▾</span></h1>
+ <div class="row" style="opacity:.55"><p class="t">Every list row has one pencil. · "All fine" is gone. · Voice shows words as you speak. · …</p></div>
+ <p class="note">Sorted by what needs your eyes. Each changed row quotes the comment that caused it. Settled things fold away.</p></section>
+
+<section id="b3"><h1>C · A "how this got here" page, round by round</h1>
+ <div class="flex"><div class="dot"></div><div class="grow"><p class="t"><b>Round 5</b> · today</p><div class="row"><p class="s">You asked for: editing words on the real screen · statuses you can set · comment box per page</p><p class="s">Built: all three · picture viewer · History</p><p class="s">Still open: answer-button styling</p></div></div></div>
+ <div class="flex"><div class="dot" style="background:var(--edge)"></div><div class="grow"><p class="t"><b>Round 4</b> · Nov 10</p><div class="row"><p class="s">You asked for: one pencil per row · no "All fine" · voice like YouCoded</p><p class="s">You rejected: wording boxes ("this system is terrible")</p></div></div></div>
+ <div class="flex"><div class="dot" style="background:var(--edge)"></div><div class="grow"><p class="t"><b>Round 3</b> · Nov 9</p><div class="row"><p class="s">You decided: rows stand unless changed · finish line is a walkthrough with nothing changed</p></div></div></div>
+ <div class="flex"><div class="dot" style="background:var(--edge)"></div><div class="grow"><p class="t"><b>Round 1–2</b> · Nov 9</p><div class="row"><p class="s">You asked for: areas on pictures · one text box per answer · voice input</p></div></div></div>
+ <p class="note">One page that tells the story top to bottom. The working pages stay as they are.</p></section>
