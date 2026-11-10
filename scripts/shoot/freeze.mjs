@@ -67,6 +67,11 @@ export const FREEZE = `(async () => {
   { const all = document.querySelectorAll('*'); const mine = root.querySelectorAll('*');
     all.forEach((el, i) => { if ((el.scrollTop || el.scrollLeft) && mine[i]) mine[i].setAttribute('data-frozen-scroll', el.scrollLeft + ',' + el.scrollTop); }); }
   root.querySelectorAll('script, style, link, iframe, noscript, base').forEach((n) => n.remove());
+  // Internal ids the app hangs on elements (data-entry-key and the like) are dropped. WHY
+  // (2026-11-10): the first two saved screens were committed beside a deck and the secrets
+  // scanner stopped the push — an attribute named "…key" holding a random-looking id reads as
+  // a password to it. Nothing in a still page uses them.
+  root.querySelectorAll('*').forEach((n) => { for (const at of [...n.attributes]) if (/^data-.*(key|token|secret)/i.test(at.name)) n.removeAttribute(at.name); });
   await Promise.all([...root.querySelectorAll('img[src]')].map(async (img) => {
     img.removeAttribute('srcset'); img.removeAttribute('loading');
     try { img.setAttribute('src', await pack(new URL(img.getAttribute('src'), document.baseURI).href)); } catch {}
