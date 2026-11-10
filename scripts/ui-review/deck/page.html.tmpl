@@ -6,7 +6,7 @@
 <header class="top"><div class="wrap">
   <div class="where"><span class="id" id="wtitle"></span><span class="sep">·</span><span class="eyebrow" id="wsub"></span></div>
   <div class="nav"><button class="btn ghost sm" id="prev">‹ Prev</button><div class="steps" id="steps" title="Click a segment to revisit that step"></div><button class="btn ghost sm" id="next">Next ›</button></div>
-  <span class="saved" id="saved" hidden></span><span class="count" id="count"></span><button class="btn" id="done">Done<span class="long"> — Submit Feedback</span></button>
+  <span class="saved" id="saved" hidden></span><span class="count" id="count"></span><button class="btn ghost sm" id="notesbtn" title="Notes about anything else — not tied to one question">Notes</button><button class="btn" id="done">Done<span class="long"> — Submit Feedback</span></button>
 </div></header>
 <main><div class="step on" id="step">
   <div class="thumbs" id="thumbs"></div>
@@ -17,6 +17,7 @@
       <div class="controls" id="controls">
         <span class="answers" id="answers"></span>
         <input class="note" id="note" placeholder="Add a note (optional)">
+        <button class="btn" id="back" hidden>‹ Back</button>
         <button class="btn primary" id="save">Save &amp; Next ›</button>
       </div>
     </div>
@@ -35,6 +36,7 @@
 </div></section>
 </main>
 </div>
+<div class="notespanel" id="notespanel" hidden><h3>Notes about anything else<button type="button" id="notesx" aria-label="Close notes">×</button></h3><div class="markrow"><textarea class="markt" id="gnote" rows="3" placeholder="Anything not tied to one question — about this deck, or the work as a whole"></textarea></div></div>
 <div class="loupe" id="loupe"></div>
 <div class="veil" id="veil"><div class="dlg"><h2>Submit your feedback?</h2><p id="dlg-text"></p>
 <div class="warn" id="skipped"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg><span><span id="skipn"></span> Skipped steps are sent as "no answer"; Claude leaves those unchanged.</span></div>

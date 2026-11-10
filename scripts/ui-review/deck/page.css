@@ -526,3 +526,78 @@ body[data-served] .callt,body[data-served] .markt{padding-right:44px}
 .card.calls.numbered .calltext::before{counter-increment:stepn;content:counter(stepn);position:absolute;left:0;top:0;display:grid;place-items:center;width:22px;height:22px;border:1px solid var(--edge);border-radius:50%;font:600 11px/1 var(--font);color:var(--fg-muted)}
 .callbox,.markrow{flex-wrap:wrap}
 @media (max-width:760px){.callrow{flex-wrap:wrap}.qpic.row{flex-basis:100%}.callbtns{flex-direction:row}}
+/* ── round 3, 2026-11-10 ─────────────────────────────────────────────────────────────── */
+/* WHY boxed rows (Destin, round 3: "these can be smarter and better utilize youcoded design
+   principles"; design guide → Lists and menus, Card levels): a list's rows are soft boxes with
+   a small gap, never lines across the full width of the card; a row's quick action sits at
+   its top right. The list card itself loses its own box so the rows are not a box in a box. */
+.card.calls{background:transparent;border:0;padding:0}
+.card.calls ul{gap:6px}
+.card.calls .call,.card.calls .call:first-child{padding:10px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset)}
+.callrow{gap:12px}
+.call.chg .callwhat{text-decoration:none}
+.call.chg{border-color:color-mix(in srgb,var(--link) 55%,var(--edge))}
+/* The pencil: one quiet icon per row, lit while its comment box is open. */
+.iconbtn{flex:none;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg-muted);cursor:pointer}
+.iconbtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn.on{color:var(--link);background:color-mix(in srgb,var(--link) 14%,transparent)}
+.iconbtn:disabled{opacity:.4;cursor:default}
+@media (hover:hover){.iconbtn:hover:not(:disabled){color:var(--fg);background:color-mix(in srgb,var(--fg) 10%,transparent)}}
+/* A row's picture: a thumbnail at the right, opened large in the deck by a click. */
+.callpics{flex:none;display:flex;gap:8px;align-items:flex-start}
+.qpic.row{flex:none;margin:0;gap:3px} .qpic.row img{max-height:84px;max-width:150px;cursor:zoom-in!important}
+.qpic.row figcaption{order:0;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-faint)}
+/* Every text box: the app's message-box look — the inset colour, a soft corner, a faint
+   edge that turns to the theme colour while it is being typed in (design guide → The message box). */
+.callt,.markt,.copyt,.pages .qrow textarea.note,.ans-write{border-color:color-mix(in srgb,var(--edge) 60%,transparent);border-radius:var(--radius-lg);background:var(--well)}
+.callt:focus,.markt:focus,.copyt:focus,.note:focus,.ans-write:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.callbox{margin-top:8px}
+/* A wording row: the box IS the words. */
+.copyt{flex:1 1 auto;min-width:0;font:inherit;font-size:14px;min-height:36px;padding:8px 12px;line-height:1.4;resize:none;overflow:hidden;border:1px solid var(--edge);color:var(--fg)}
+body[data-served] .copyt{padding-right:44px}
+.callbox.word{margin:6px 0} .call.wording .callwhat{font:500 11px/1.3 var(--font);text-transform:uppercase;letter-spacing:.07em;color:var(--fg-muted);margin:0}
+.copyundo{display:inline-block;margin:0 0 6px;padding:0;border:0;background:none;color:var(--link);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline} .copyundo[hidden]{display:none}
+/* Every screen that changed, side by side: tiles, pictures first. */
+.card.calls.gallery ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:12px}
+.card.calls.gallery .callrow{flex-wrap:wrap}
+.card.calls.gallery .callpics{order:-1;flex:1 1 100%;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
+.card.calls.gallery .qpic.row img{max-height:230px;max-width:100%}
+.card.calls.gallery .calltext{flex:1 1 0}
+/* A picture opened large, over the page. */
+.lightbox{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;background:rgba(0,0,0,.78);cursor:zoom-out}
+.lbbox{position:relative;line-height:0;max-width:100%}
+.lbbox img{display:block;max-width:calc(100vw - 48px);max-height:calc(100vh - 90px);border-radius:var(--radius-md);box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.lbhint{margin:0;font-size:12px;color:#d8d8d8}
+/* Notes about anything else: a button in the header, a small panel under it. */
+#notesbtn{flex:none;position:relative} #notesbtn.has::after{content:"";position:absolute;top:5px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--link)}
+.notespanel{position:fixed;top:74px;right:24px;z-index:40;width:min(420px,calc(100vw - 32px));padding:12px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--panel);box-shadow:0 12px 36px rgba(0,0,0,.45)}
+.notespanel[hidden]{display:none}
+.notespanel h3{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px;font:600 13px/1.2 var(--font);color:var(--fg)}
+.notespanel h3 button{border:0;background:none;color:var(--fg-muted);font-size:18px;line-height:1;cursor:pointer}
+.notespanel .markt{min-height:72px}
+/* The microphone while it listens: four bars and a clock, as in the app. Wider, but it sits
+   inside the box's own right edge, so nothing around the box moves. */
+.mic.rec{width:66px;flex:0 0 66px;gap:6px;padding:0;justify-content:center;margin-left:-76px;border-radius:999px;box-shadow:none;display:inline-flex!important;align-items:center;font:500 11px/1 var(--font);font-variant-numeric:tabular-nums}
+.mic .bars{display:inline-flex;align-items:flex-end;gap:2px;height:14px} .mic .bars i{display:block;width:2px;height:4px;border-radius:1px;background:currentColor}
+textarea.hearing,input.hearing{padding-right:96px!important}
+/* Tidy-ups approved in round 2 (R-12), for decks of pages: the title is said once, in the
+   header; there is ONE way forward (the filled button at the foot) with Back directly left of
+   it (design guide → Buttons: filled on the right, outlined beside it); the header keeps
+   only the progress bar, the count, Notes and Done, so it is the same on every page. */
+body[data-layout="pages"] .top #prev,body[data-layout="pages"] .top #next{display:none}
+body[data-layout="pages"] .top .where{max-width:46%} body[data-layout="pages"] .top .where .id{max-width:none;flex:0 1 auto}
+body[data-layout="pages"] .top .where .sep,body[data-layout="pages"] .top .where .eyebrow{display:none}
+.pages .page-head .intro{margin:0;font-size:14px}
+.content.pages #controls{gap:8px} #back[hidden]{display:none}
+body:not([data-layout="pages"]) #back{display:none}
+.pages article.q .qnum .n:empty{display:none}
+/* Room for Notes in the header without squeezing the step bar under the title. */
+.top .where{max-width:34%}
+/* A before/after pair is two pictures wide, so its tile takes two columns. */
+.card.calls.gallery .call.pair{grid-column:span 2} @media (max-width:900px){.card.calls.gallery .call.pair{grid-column:auto}}
+.qpic.row img{max-height:96px;max-width:170px}
+/* Fix (round 3): the microphone sits over the box's right edge by a negative margin; its
+   margins used to add up to MORE than its own width, so the box beside it grew 8px wider than
+   the row that holds it. The sum is now exactly zero, resting or listening. */
+.mic{margin:0 10px 0 -42px}
+#back{height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);padding:0 clamp(14px,1.4vw,26px)}

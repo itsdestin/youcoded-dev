@@ -446,12 +446,21 @@ def _validate_calls(st, sid, errors):
         seen.add(c['id'])
         if c.get('result') is not None and c['result'] not in ('pass', 'fail', 'unclear'):
             errors.append(f'{sid}/{c["id"]}: result is pass, fail or unclear')
-        if c.get('picture') is not None:
-            pic = c['picture']
+        # `before` (round 3): the same screen before the change, so a row is a before/after pair.
+        for pk in ('picture', 'before'):
+            if c.get(pk) is None:
+                continue
+            pic = c[pk]
             if not isinstance(pic, str) or os.path.isabs(pic) or '..' in pic.split('/'):
-                errors.append(f'{sid}/{c["id"]}: picture is a file path beside the spec (no leading slash, no "..")')
+                errors.append(f'{sid}/{c["id"]}: {pk} is a file path beside the spec (no leading slash, no "..")')
             elif not os.path.exists(os.path.join(st.get('_base', ''), pic)):
-                errors.append(f'{sid}/{c["id"]}: picture {pic} does not exist beside the spec')
+                errors.append(f'{sid}/{c["id"]}: {pk} {pic} does not exist beside the spec')
+        if c.get('before') and not c.get('picture'):
+            errors.append(f'{sid}/{c["id"]}: before needs a picture beside it — the after')
+        # `wording` (round 3, S-3) makes the row an editable box: it must hold the words
+        # that are on screen today, or the ones proposed — never an empty box to fill in.
+        if c.get('wording') is not None and not (isinstance(c['wording'], str) and c['wording'].strip()):
+            errors.append(f'{sid}/{c["id"]}: wording is the current or suggested text, not empty')
         for k in ('call', 'why'):
             if word_count(c[k]) > CALL_WORDS_MAX:
                 errors.append(f'{sid}/{c["id"]}: {k} is {word_count(c[k])} words (max {CALL_WORDS_MAX}) — one line he can skim')

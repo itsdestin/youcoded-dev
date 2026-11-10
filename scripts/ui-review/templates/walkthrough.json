@@ -1,0 +1,68 @@
+{
+  "_comment": [
+    "WALKTHROUGH — the whole of one piece of work, end to end, as pages of LISTS he scrolls. Shown twice: before building (drawings, suggested checks) and after (screenshots, check results). Same pages both times, so the second read is quick.",
+    "A list row stands unless he opens its pencil and types. He can drag a rectangle on any picture. A list he leaves untouched is accepted when he moves to the next page — there is no button to press.",
+    "Pages, in this order (Destin, 2026-11-10): 1 What you asked for and what you got · 2 Every screen that changed · 3 Behind the scenes · 4 Choices I made · 5 Checks, ending with what is left for him to verify. Drop a page that would be empty; never add a sixth.",
+    "The work is FINISHED when he has gone through this deck after the build and changed nothing. There is no separate sign-off deck."
+  ],
+  "title": "Saved searches — walkthrough",
+  "key": "saved-searches-walkthrough",
+  "out": "saved-searches.walkthrough.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {"id": "p1", "page": "What you asked for, and what you got", "intro": "One row per thing you asked for, in your own words."},
+    {
+      "_comment": "One row per request. `decided` quotes him — the words the row came from. `picture` is a file beside this spec; `before` beside it makes the row a before/after pair. Every change he asked for must be a row here: this page is the checklist for the finish line.",
+      "id": "W-1", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "What you asked for, and what you got",
+      "calls": [
+        {"id": "save", "call": "A search can be saved by name and run again in one press.", "why": "A star at the right of the search box saves what is typed.", "decided": "i run the same search every monday"}
+      ]
+    },
+    {"id": "p2", "page": "Every screen that changed", "intro": "All the pictures in one place. Click one to open it large; drag on it to comment on a part."},
+    {
+      "_comment": "`gallery: true` lays the rows out as tiles, pictures first. A row with `before` is two pictures wide. One tile per screen or state that looks different after this work — nothing else.",
+      "id": "W-2", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Every screen that changed", "gallery": true,
+      "calls": [
+        {"id": "box", "call": "The search box", "why": "Gains a star at its right edge."}
+      ]
+    },
+    {"id": "p3", "page": "Behind the scenes", "intro": "What happens that has no screen, in order."},
+    {
+      "_comment": "`numbered: true` — the rows are steps in the order they happen. Plain words: what he would notice, or what it protects him from. No file names, no code words.",
+      "id": "W-3", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "What happens when you save a search", "numbered": true,
+      "calls": [
+        {"id": "s1", "call": "You press the star. The words in the box are stored on this computer under the name you give.", "why": "Nothing is sent anywhere."}
+      ]
+    },
+    {"id": "p4", "page": "Choices I made", "intro": "Things you could notice that I decided without asking."},
+    {
+      "_comment": "Anything he could notice by using the app that he was not asked about: wording, what happens when something fails, defaults and sizes. A row with `wording` is an editable box filled with the words on screen; give it a `picture` showing where they appear.",
+      "id": "W-4", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Choices I made",
+      "calls": [
+        {"id": "limit", "call": "You can save twenty searches.", "why": "More than that no longer fits the menu without scrolling."},
+        {"id": "empty", "call": "Message when nothing is saved yet", "why": "Shown in the saved-searches menu.", "wording": "No saved searches yet"}
+      ]
+    },
+    {"id": "p5", "page": "Checks", "intro": "Before the build: checks I suggest. After: what each one showed."},
+    {
+      "_comment": "After the build every row carries `result` (pass / fail / unclear) and, where there is one, a picture as proof. Before the build, leave `result` off: the rows are the checks you SUGGEST, and he edits the list with the pencils. Never report a check you did not run.",
+      "id": "W-5", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Checks I ran, and what they showed",
+      "calls": [
+        {"id": "c1", "call": "A saved search survives closing and reopening the app.", "why": "Saved, closed the dev window, reopened it, pressed the search.", "result": "pass"}
+      ]
+    },
+    {
+      "_comment": "What only he can judge: feel, motion, sound, his real data. One row each, saying exactly what to do and what he should see.",
+      "id": "W-6", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Left for you to try",
+      "calls": [
+        {"id": "v1", "call": "Save a search of your own and run it tomorrow.", "why": "I cannot see your real sessions."}
+      ]
+    }
+  ]
+}

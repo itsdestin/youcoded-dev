@@ -1,0 +1,50 @@
+{
+  "_comment": [
+    "WORDING — every piece of on-screen text for one screen or menu, each in its own editable box, already filled in. He retypes the ones he wants different; untouched ones stand.",
+    "Use it instead of a pick-one question per label. Fill each box with the words on screen today, or the ones you propose — never an empty box (Destin, 2026-11-10: \"should be pre-filled with the suggested or existing copy\").",
+    "Give the rows a `picture` of the screen the words sit on, so he sees them in context (same answer: \"a screenshot of the actual menu in the app\"). One picture on the first row of a screen is enough.",
+    "His changes arrive as answers[step].edits[<row id>] = the new words. A box he left alone is not in the file."
+  ],
+  "title": "Saved searches — the wording",
+  "key": "saved-searches-wording",
+  "out": "saved-searches.wording.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "T-1",
+      "words": true,
+      "surface": "Chat search",
+      "path": "The saved-searches menu",
+      "headline": "The words in the saved-searches menu",
+      "calls": [
+        {
+          "_comment": "call: WHERE the words appear. why: when he would see them. wording: the words themselves.",
+          "id": "title",
+          "call": "Menu title",
+          "why": "Top of the menu, always shown.",
+          "wording": "Saved searches"
+        },
+        {
+          "id": "empty",
+          "call": "Message when nothing is saved",
+          "why": "Shown until the first search is saved.",
+          "wording": "No saved searches yet",
+          "_comment": "Add \"picture\": \"<file beside this spec>\" to a row to show the screen the words sit on; he opens it large with a click."
+        },
+        {
+          "id": "full",
+          "call": "Message at the limit",
+          "why": "Shown when a twenty-first search is saved.",
+          "wording": "Remove one to save another"
+        }
+      ],
+      "_comment": "One list per screen or menu. A wording step is an ordinary list whose rows carry `wording`; rows without it stay plain rows with a pencil, so one list can mix both.",
+      "_comment_headline": "headline: which screen these words belong to."
+    }
+  ],
+  "_comment_title": "title: what this deck is about, in his words.",
+  "_comment_key": "key: a short name for this deck. His answers are saved under it."
+}

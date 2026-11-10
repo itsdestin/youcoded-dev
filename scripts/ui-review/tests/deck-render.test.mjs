@@ -999,6 +999,10 @@ test('a save that fails says so and retries, and a restart or a stale page loses
   await sleep(800); await open(2);
   await c.evaluate("document.querySelector('.ans[data-v=yes]').click()");
   await until(async () => (await savedText()) === 'Saved ✓', '"Saved"');
+  // Fix (2026-11-10): "Saved ✓" is already on screen from the page LOAD, so the wait above can
+  // return before this click's save has landed — the file was then read too early (ENOENT),
+  // and the failed test left its browser open, hanging the whole run. Wait for the file itself.
+  await until(async () => { try { return onDisk()['S-2'].v === 'yes'; } catch { return false; } }, 'the first answer to reach the file');
   assert.equal(onDisk()['S-2'].v, 'yes');
   // The server dies while the page is open: the next answer says it is NOT saved.
   await open(1);
@@ -1159,7 +1163,8 @@ raw['steps'] = [{'id': 'Q-9', 'words': True, 'surface': 'Games', 'path': 'Questi
     'checked': 'Opened the games screen today.', 'picture': 'pic.png', 'caption': 'The board today.'},
   {'id': 'K-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Calls I made for you',
     'calls': [{'id': 'size', 'call': 'The board is five rows tall.', 'why': 'It matches the other games.'},
-              {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.'}]}]
+              {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.', 'picture': 'pic.png', 'before': 'pic.png'},
+              {'id': 'title', 'call': 'The title above the board', 'why': 'Shown on every game.', 'wording': 'Pick a game'}]}]
 json.dump(raw, open(p, 'w'))
 print(p)`;
   const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
@@ -1174,7 +1179,7 @@ print(p)`;
       await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
       for (let i = 0; i < 40 && !(await c.evaluate("!!window.__deckReady && !!document.querySelector('.markable img') && document.querySelector('.markable img').complete").catch(() => false)); i++) await sleep(250);
       assert.equal(await c.evaluate("document.querySelectorAll('.how .tip').length"), 1, 'Today carries its how-it-was-checked note');
-      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .n').textContent.startsWith('List')"), true, 'a calls list is not called a Question');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .n').textContent"), '', 'a list carries no "Question n of m" label');
       assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .note').length"), 0, 'a calls list has no shared note box');
       await c.evaluate(`(()=>{const img=document.querySelector('.markable img'),r=img.getBoundingClientRect();
         img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+40,clientY:r.top+30}));
@@ -1182,20 +1187,33 @@ print(p)`;
         document.dispatchEvent(new PointerEvent('pointerup',{}));})()`);
       await sleep(100);
       await c.evaluate(`(()=>{const t=document.querySelector('.markt');t.value='too cramped';t.dispatchEvent(new Event('input',{bubbles:true}));
-        document.querySelectorAll('.callchg')[1].click();
+        document.querySelectorAll('.calledit')[1].click();
         const b=document.querySelectorAll('.callt')[1];b.value='play the chime';b.dispatchEvent(new Event('input',{bubbles:true}));})()`);
       await sleep(900);
       assert.equal(await c.evaluate("document.querySelectorAll('.markable .mark').length"), 1, 'the area is drawn on the picture');
       assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"Q-9\"] .ans[data-v=other]').classList.contains('on')"), true, 'an area with no button pressed reads as Other');
-      await c.evaluate("document.querySelectorAll('.callask')[0].click()"); await sleep(500);
-      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .ans').disabled"), true, 'All fine is off while a call is marked for change');
+      // Round 3: one pencil per row, no "All fine", no second button.
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .ans').length"), 0, 'a list has no answer button');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .calledit').length"), 2, 'one pencil per ordinary row; a wording row is its own box');
+      assert.equal(await c.evaluate("document.querySelector('.copyt').value"), 'Pick a game', 'a wording box starts filled with the current words');
+      await c.evaluate(`(()=>{const t=document.querySelector('.copyt');t.value='Choose a game';t.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      // A picture opens large inside the deck, not in a new tab; a click closes it.
+      assert.equal(await c.evaluate("document.querySelectorAll('.qpic a[target]').length"), 0, 'no picture opens a browser tab');
+      await c.evaluate("document.querySelector('.qpic.row a').click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.lightbox img').length"), 1, 'the picture opens over the page');
+      await c.evaluate("document.querySelector('.lightbox').click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.lightbox').length"), 0, 'a click closes it');
+      // Notes tied to no question.
+      await c.evaluate(`(()=>{document.querySelector('#notesbtn').click();const g=document.querySelector('#gnote');g.value='header is busy';g.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      await sleep(700);
       assert.deepEqual(c.errors, []);
     } finally { await c.close(); }
     const saved = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
     assert.equal(saved.answers['Q-9'].marks[0].text, 'too cramped');
     assert.ok(saved.answers['Q-9'].marks[0].w > 30 && saved.answers['Q-9'].marks[0].h > 30, JSON.stringify(saved.answers['Q-9'].marks[0]));
     assert.deepEqual(saved.answers['K-1'].changes, { sound: 'play the chime' });
-    assert.deepEqual(saved.answers['K-1'].asks, ['size'], 'More context is recorded per row');
+    assert.deepEqual(saved.answers['K-1'].edits, { title: 'Choose a game' }, 'a retyped wording is saved against its row');
+    assert.equal(saved.notes, 'header is busy', 'general notes are saved beside the answers');
     assert.ok(saved.built && saved.built.at, 'the answers file records which build he was shown');
   } finally { srv.kill(); }
 });

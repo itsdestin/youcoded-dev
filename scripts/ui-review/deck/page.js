@@ -213,7 +213,7 @@
   // WHY (Destin, 2026-11-04: "i want to visualize some of these options better"): a written
   // question about how something LOOKS drew "Other — need to see it" seven times out of ten.
   // A question, and each of its options, may now carry a picture; a click opens it full size.
-  const pictureFig = (x, cls) => x.picture ? `<figure class="qpic${cls || ''}"><a href="${esc(x.picture)}" target="_blank" rel="noopener" title="Open full size"><img src="${esc(x.picture)}" alt=""></a>${x.caption ? `<figcaption>${esc(x.caption)}</figcaption>` : ''}</figure>` : '';
+  const pictureFig = (x, cls) => x.picture ? `<figure class="qpic${cls || ''}"><a href="${esc(x.picture)}" title="Open larger"><img src="${esc(x.picture)}" alt=""></a>${x.caption ? `<figcaption>${esc(x.caption)}</figcaption>` : ''}</figure>` : '';
   // The three parts of a question, one card each.
   // WHY the little (i) (Destin, 2026-11-09, rethink Q-7): stale "Today" facts were the worst
   // fault in past decks. A question may say how and when its Today was checked (`checked`);
@@ -280,7 +280,22 @@
   // result. "More context" is his own addition (round 2, R-3): a row he cannot judge yet is
   // neither fine nor changed — it asks the session to explain, in the next round.
   const RESULT = { pass: 'Passed', fail: 'Failed', unclear: 'Unclear' };
-  const callsCard = st => `<section class="card calls${st.numbered ? ' numbered' : ''}"><ul>${st.calls.map(c => `<li class="call" data-call="${esc(c.id)}"><div class="callrow">${c.picture ? `<figure class="qpic row"><a href="${esc(c.picture)}" target="_blank" rel="noopener" title="Open full size" data-pk="${esc('row ' + c.id)}"><img src="${esc(c.picture)}" alt=""></a></figure>` : ''}<div class="calltext">${c.result ? `<span class="result ${esc(c.result)}">${RESULT[c.result]}</span>` : ''}<p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div><div class="callbtns"><button type="button" class="btn sm callchg" data-sid="${esc(st.id)}" data-call="${esc(c.id)}">Change this</button><button type="button" class="btn sm callask" data-sid="${esc(st.id)}" data-call="${esc(c.id)}">More context</button></div></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="What should it be instead?"></textarea></div></li>`).join('')}</ul></section>`;
+  // WHY one pencil (Destin, 2026-11-10, round 3: "simplify down to a single pencil/edit icon on
+  // each of these rows that opens the comment box. and i can steer myself instead of the
+  // separate change/more context buttons"). Two worded buttons per row were noise; the box says
+  // whatever he wants — change it, explain it, or a stray thought.
+  const PENCIL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg>';
+  // A row's picture is a small thumbnail at the row's right edge that opens large IN the deck.
+  // WHY (round 3: "the images on this page are inserted kinda strange and it introduces a lot
+  // of deadspace … tapping the image … opens it in a separate tab, which is strange"): a
+  // 38%-wide picture beside two lines of text left most of the row empty.
+  const rowPic = (src, pk, cap) => `<figure class="qpic row"><a href="${esc(src)}" title="Open larger" data-pk="${esc(pk)}"><img src="${esc(src)}" alt=""></a>${cap ? `<figcaption>${esc(cap)}</figcaption>` : ''}</figure>`;
+  const rowPics = c => (c.before ? rowPic(c.before, 'row ' + c.id + ' before', 'Before') : '') + (c.picture ? rowPic(c.picture, 'row ' + c.id, c.before ? 'After' : '') : '');
+  // A row with `wording` IS the wording: an editable box filled with the current or suggested
+  // text (round 3, S-3: "should be pre-filled with the suggested or existing copy", with "a
+  // screenshot of the actual menu in the app/context of what i'm editing" — the row's picture).
+  const wordingBox = (st, c) => `<div class="callbox word"><textarea class="copyt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" data-orig="${esc(c.wording)}"></textarea></div><button type="button" class="copyundo" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" hidden>Put back the original</button>`;
+  const callsCard = st => `<section class="card calls${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.wording ? ' wording' : ''}${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext">${c.result ? `<span class="result ${esc(c.result)}">${RESULT[c.result]}</span>` : ''}<p class="callwhat">${esc(c.call)}</p>${c.wording ? wordingBox(st, c) : ''}<p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${c.picture || c.before ? `<div class="callpics">${rowPics(c)}</div>` : ''}${c.wording ? '' : `<button type="button" class="iconbtn calledit" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button>`}</div>${c.wording ? '' : `<div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div>`}</li>`).join('')}</ul></section>`;
   // The body of one step, in the order the cards are read.
   const cardsFor = st => st.kind === 'calls' ? callsCard(st) + noticeCard(st)
     : st.kind === 'question' ? pictureFig(st) + partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
@@ -318,8 +333,10 @@
   const answerButtons = st => {
     const picks = pickList(st);
     if (st.answer === 'words') return writeBox(st);
-    // A calls list has one button: nothing to change. Changing one is done on its own line.
-    if (st.kind === 'calls') return `<button class="btn ans" data-v="yes"><span>All fine</span></button>`;
+    // WHY no button (Destin, 2026-11-10, round 3: "i honestly dont even know if we need it,
+    // could probably integrate with the next page button"): a list he leaves untouched is
+    // accepted when he moves on (acceptLists); a row he wants changed has its own pencil.
+    if (st.kind === 'calls') return '';
     // Fix (2026-09-10): every answer label goes in a <span>. `.ans` hides its overflow and
     // centres its content, and the ellipsis rule beside it (page.css) targets `.ans>span` —
     // so a label written as bare text was clipped at BOTH ends with no ellipsis, reading as
@@ -558,19 +575,21 @@
     // The eyebrow names the SET of questions. The implicit page (one page, no marker) is named
     // after the deck, which the chip and the header already say twice — so it gets no third.
     const named = pg.intro || pg.title !== DECK.title;
-    $('#cards').innerHTML = (named ? `<div class="page-head"><p class="eyebrow">${esc(pg.title)}</p>${pg.intro ? `<p class="intro">${esc(pg.intro)}</p>` : ''}</div>` : '')
+    // WHY no title here (Destin, round 2 R-12, "title once"): the header already names the
+    // page; printed again above the first question it was the same words twice in one screen.
+    $('#cards').innerHTML = (named && pg.intro ? `<div class="page-head"><p class="intro">${esc(pg.intro)}</p></div>` : '')
       + steps.map((st, i) => `<article class="q" data-id="${esc(st.id)}">`
         // Fix (Destin, 2026-09-06): "too hard to quickly navigate between questions and tell
         // them apart". A page of questions had nothing between one and the next but a 14px gap,
         // so on a tall question you cannot see where you are. Each one now names itself.
         // A calls list asks nothing, so it is not called a "Question" (rethink round 2).
-        + `<p class="qnum"><span class="n">${st.kind === 'calls' ? 'List' : 'Question'} ${i + 1} of ${steps.length}</span><span class="qtick" aria-hidden="true">answered</span></p>`
+        + `<p class="qnum"><span class="n">${st.kind === 'calls' ? '' : 'Question ' + (steps.filter(x => x.kind !== 'calls').indexOf(st) + 1) + ' of ' + steps.filter(x => x.kind !== 'calls').length}</span><span class="qtick" aria-hidden="true">answered</span></p>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
         + `<div class="qbody">${cardsFor(st)}</div>`
-        + `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
+        + (st.kind === 'calls' ? '' : `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
         // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A
         // question answered by typing already has its box, so it gets no second note box.
-        + (st.answer === 'words' || st.kind === 'calls' ? '' : `<textarea class="note" rows="1" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></textarea>`) + `</div>`
+        + (st.answer === 'words' ? '' : `<textarea class="note" rows="1" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></textarea>`) + `</div>`)
         + `</article>`).join('');
     // Every control carries the id of the question it belongs to, so one click handler on the
     // column can answer any of them without knowing which article it came from.
@@ -589,10 +608,10 @@
   $('#cards').addEventListener('click', e => {
     const open = e.target.closest('.opendev');
     if (open) { openDev(open); return; }
-    const chg = e.target.closest('.callchg');
+    const chg = e.target.closest('.calledit');
     if (chg) { toggleCall(chg.dataset.sid, chg.dataset.call); return; }
-    const ask = e.target.closest('.callask');
-    if (ask) { toggleAsk(ask.dataset.sid, ask.dataset.call); return; }
+    const und = e.target.closest('.copyundo');
+    if (und) { setWording(und.dataset.sid, und.dataset.call, null); return; }
     const mx = e.target.closest('.markx');
     if (mx) { removeMark(mx.dataset.sid, +mx.dataset.i); return; }
     const b = e.target.closest('.copycmd'); if (!b) return;
@@ -608,6 +627,8 @@
     if (w) { writeAnswer(w.dataset.id, w.value); return; }
     const ct = e.target.closest('.callt');
     if (ct && !state.submitted) { const a = state.answers[ct.dataset.sid] || {}; if (a.changes && ct.dataset.call in a.changes) { a.changes[ct.dataset.call] = ct.value; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); } return; }
+    const cp = e.target.closest('.copyt');
+    if (cp) { setWording(cp.dataset.sid, cp.dataset.call, cp.value); return; }
     const mt = e.target.closest('.markt');
     if (mt && !state.submitted) { const m = ((state.answers[mt.dataset.sid] || {}).marks || [])[+mt.dataset.i]; if (m) { m.text = mt.value; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); } return; }
     const n = e.target.closest('.note[data-id]'); if (!n || !PAGES) return;
@@ -651,36 +672,52 @@
     if (cid in ch) delete ch[cid]; else ch[cid] = '';
     // Any line marked for change makes the answer "something else"; none left, and an answer
     // that only existed because of a change is withdrawn rather than left as a bare Other.
-    if (cid in ch && a.asks) { a.asks = a.asks.filter(x => x !== cid); if (!a.asks.length) delete a.asks; }
     if (Object.keys(ch).length) { a.changes = ch; a.v = 'other'; delete a.dk; }
-    else { delete a.changes; if (a.v === 'other' && !a.asks) delete a.v; }
+    else { delete a.changes; if (a.v === 'other' && !openRows(a) && !(a.marks || []).length) delete a.v; }
     state.answers[sid] = a; paintState(); save();
     const box = $(`.callt[data-sid="${CSS.escape(sid)}"][data-call="${CSS.escape(cid)}"]`); if (box && cid in ch) box.focus();
   }
-  function toggleAsk(sid, cid) {
+  // An edited wording is kept only while it differs from what the box started with, so
+  // retyping the original (or "Put back the original") leaves no change behind.
+  function setWording(sid, cid, text) {
     if (state.submitted) return;
-    const a = { ...(state.answers[sid] || {}) }; let asks = (a.asks || []).slice();
-    if (asks.includes(cid)) asks = asks.filter(x => x !== cid);
-    else { asks.push(cid); if (a.changes && cid in a.changes) { a.changes = { ...a.changes }; delete a.changes[cid]; if (!Object.keys(a.changes).length) delete a.changes; } }
-    if (asks.length) { a.asks = asks; a.v = 'other'; delete a.dk; } else { delete a.asks; if (a.v === 'other' && !a.changes) delete a.v; }
-    state.answers[sid] = a; paintState(); save();
+    const box = $(`.copyt[data-sid="${CSS.escape(sid)}"][data-call="${CSS.escape(cid)}"]`); if (!box) return;
+    const a = { ...(state.answers[sid] || {}) }; const ed = { ...(a.edits || {}) };
+    if (text === null || text === box.dataset.orig) delete ed[cid]; else ed[cid] = text;
+    if (Object.keys(ed).length) { a.edits = ed; a.v = 'other'; delete a.dk; }
+    else { delete a.edits; if (a.v === 'other' && !openRows(a) && !(a.marks || []).length) delete a.v; }
+    state.answers[sid] = a;
+    if (text === null) { box.value = box.dataset.orig; grow(box); }
+    paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
   }
-  const openRows = a => Object.keys((a || {}).changes || {}).length + ((a || {}).asks || []).length;
+  // `asks` is read for answers saved before the pencil replaced "More context" (round 2 decks).
+  const openRows = a => Object.keys((a || {}).changes || {}).length + ((a || {}).asks || []).length + Object.keys((a || {}).edits || {}).length;
+  // A list he read and left alone is accepted by moving on — the job "All fine" used to do.
+  // Only lists on the page he is LEAVING: one he never opened stays unanswered, honestly.
+  function acceptLists() {
+    if (state.submitted || !PAGES) return;
+    pageSteps(cur).forEach(st => {
+      if (st.kind !== 'calls') return;
+      const a = state.answers[st.id] || {};
+      if (!a.v || a.v === 'skip') state.answers[st.id] = { ...a, v: 'yes' };
+    });
+  }
   function paintCalls() {
     $$('.card.calls .call').forEach(li => {
-      const btn = li.querySelector('.callchg'), box = li.querySelector('.callt'), wrap = li.querySelector('.callbox');
-      const ch = (state.answers[btn.dataset.sid] || {}).changes || {}; const on = btn.dataset.call in ch;
-      const askBtn = li.querySelector('.callask'), asked = ((state.answers[btn.dataset.sid] || {}).asks || []).includes(btn.dataset.call);
-      askBtn.classList.toggle('on', asked); askBtn.disabled = !!state.submitted; askBtn.textContent = asked ? 'Context asked ✓' : 'More context';
-      li.classList.toggle('chg', on); wrap.hidden = !on; btn.textContent = on ? 'Undo' : 'Change this'; btn.disabled = !!state.submitted; box.disabled = !!state.submitted;
-      if (document.activeElement !== box) { box.value = on ? ch[btn.dataset.call] : ''; grow(box); }
-    });
-    // The one answer button reads as what it now means.
-    $$('.card.calls').forEach(card => {
-      const scope = card.closest('article.q') || document; const sid = card.querySelector('.callchg').dataset.sid;
-      const n = openRows(state.answers[sid]);
-      const b = scope.querySelector('.ans[data-v="yes"]'); if (!b) return;
-      b.disabled = !!state.submitted || n > 0; b.querySelector('span').textContent = n ? n + ' flagged' : 'All fine';
+      const btn = li.querySelector('.calledit');
+      if (btn) {
+        const box = li.querySelector('.callt'), wrap = li.querySelector('.callbox');
+        const ch = (state.answers[btn.dataset.sid] || {}).changes || {}; const on = btn.dataset.call in ch;
+        li.classList.toggle('chg', on); wrap.hidden = !on; btn.classList.toggle('on', on); btn.disabled = !!state.submitted; box.disabled = !!state.submitted;
+        btn.title = on ? 'Take this comment away' : 'Comment on this, or say what to change';
+        if (document.activeElement !== box) { box.value = on ? ch[btn.dataset.call] : ''; grow(box); }
+      }
+      const cp = li.querySelector('.copyt');
+      if (cp) {
+        const ed = (state.answers[cp.dataset.sid] || {}).edits || {}; const on = cp.dataset.call in ed;
+        li.classList.toggle('chg', on); li.querySelector('.copyundo').hidden = !on || !!state.submitted; cp.disabled = !!state.submitted;
+        if (document.activeElement !== cp) { cp.value = on ? ed[cp.dataset.call] : cp.dataset.orig; grow(cp); }
+      }
     });
     addMics();
   }
@@ -715,10 +752,29 @@
     // On a page the forward button is navigation, not "save this answer" — it is never disabled
     // for an unanswered question, because there are several of them on screen.
     $('#save').disabled = !!state.submitted; $('#save').textContent = cur === LAST ? 'Done' : 'Next page ›';
+    $('#back').hidden = PAGES.length === 1; $('#back').disabled = cur === 0;
     $('#prev').disabled = cur === 0; $('#next').disabled = cur === LAST; $('#next').textContent = cur === LAST ? 'Last page' : 'Next ›';
   }
 
+  // ── NOTES ABOUT ANYTHING ELSE ──────────────────────────────────────────────────────────
+  // WHY (Destin, 2026-11-10, round 3: "there is no additional/separate notes button for me to
+  // leave misc/unrelated comments/notes. so we should add something like that"): a thought
+  // that belongs to no question had to be typed under whichever question was nearest. One
+  // box, reachable from the header on every page, saved as `notes` beside the answers.
+  const gnote = $('#gnote');
+  $('#notesbtn').onclick = () => {
+    const p = $('#notespanel'); p.hidden = !p.hidden;
+    if (!p.hidden) { gnote.value = state.notes || ''; gnote.disabled = !!state.submitted; addMics(); grow(gnote); gnote.focus(); }
+  };
+  $('#notesx').onclick = () => { $('#notespanel').hidden = true; };
+  gnote.addEventListener('input', () => {
+    if (state.submitted) return;
+    if (gnote.value.trim()) state.notes = gnote.value; else delete state.notes;
+    paintNotes(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  });
+  const paintNotes = () => $('#notesbtn').classList.toggle('has', !!(state.notes || '').trim());
   function paintState() {
+    paintNotes();
     if (PAGES) { paintPage(); paintCalls(); return; }
     const a = state.answers[DECK.steps[cur].id] || {};
     $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick) && (b.dataset.dk !== '1' || !!a.dk)));
@@ -844,7 +900,7 @@
     // they may still MOVE. A submitted deck is a read-only record he can page back through;
     // record()/save() are what must not run, not the navigation itself.
     if (state.submitted) { cur = Math.max(0, Math.min(LAST, i)); zoom = 1; hideFinished(); render(); return; }
-    record(); cur = Math.max(0, Math.min(LAST, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render();
+    acceptLists(); record(); cur = Math.max(0, Math.min(LAST, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render();
   }
   // Fix: save on EVERY answer, not only when the step changes — a tab closed on the last
   // answered step used to lose that answer entirely. The note debounces so a sentence typed
@@ -858,6 +914,7 @@
     state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
   });
   $('#save').onclick = () => { if (cur === LAST) openDialog(); else go(cur + 1); };
+  $('#back').onclick = () => go(cur - 1);
   // From the finish screen, Prev means "back into the deck" — the step he left, not the one
   // before it; and there is nothing after the end, so Next is off there (see showFinished).
   const step = d => go(document.body.dataset.screen === 'finished' ? cur : cur + d);
@@ -869,17 +926,19 @@
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
     // Mirrors serve.py's summary(): a note prints plainly, right after the answer, same words.
     for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a)); }
-    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
+    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + ((state.notes || '').trim() ? 'general notes — "' + state.notes.trim() + '"\n' : '') + lines.join('\n');
   }
   // Mirrors serve.py's extras(): lines he marked for change, and areas he marked on a picture.
   function extras(a) {
     const out = [];
     for (const [k, t] of Object.entries(a.changes || {})) out.push('\n    change ' + k + ' — "' + String(t || '').trim() + '"');
     (a.asks || []).forEach(k => out.push('\n    more context wanted on ' + k));
+    for (const [k, t] of Object.entries(a.edits || {})) out.push('\n    reword ' + k + ' — "' + String(t || '').trim() + '"');
     (a.marks || []).forEach((m, i) => out.push('\n    area ' + (i + 1) + ' on ' + m.pic + ' (left ' + m.x + '%, top ' + m.y + '%, ' + m.w + '% wide, ' + m.h + '% tall) — "' + String(m.text || '').trim() + '"'));
     return out.join('');
   }
   function openDialog() {
+    acceptLists(); paintState();
     record(); save();
     // Fix: record() already banked elapsed seconds into the current step's answer; without resetting
     // stepStart, a Done -> Keep reviewing -> Done round trip would add those seconds a second time.
@@ -945,7 +1004,7 @@
     const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
     const rows = DECK.steps.map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
-      const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k),
+      const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k), Object.entries(a.edits || {}).map(([k, t]) => k + ' reworded: ' + String(t || '').trim()),
         (a.marks || []).map((m, j) => 'Area ' + (j + 1) + ' on ' + m.pic + ': ' + String(m.text || '').trim())).filter(Boolean).join(' · ');
       return `<tr><td class="n">${i + 1}</td>`
         + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
@@ -955,7 +1014,9 @@
         + `<td class="src when">${a.t && v !== 'skip' ? esc(clock(a.t)) : '—'}</td>`
         + `</tr>`;
     }).join('');
-    $('#responses').querySelector('tbody').innerHTML = rows;
+    const general = (state.notes || '').trim();
+    $('#responses').querySelector('tbody').innerHTML = rows
+      + (general ? `<tr><td class="n">+</td><td class="step-cell">Notes about anything else</td><td class="v">—</td><td>${esc(general)}</td><td class="src when">—</td></tr>` : '');
     const when = (state.submitted || '').slice(0, 16).replace('T', ' ');
     const parts = [counts.yes + ' yes', counts.no + ' no', counts.other + ' other'];
     if (counts.pick) parts.splice(2, 0, counts.pick + ' picked');
@@ -1119,6 +1180,26 @@
     a.marks.splice(i, 1); if (!a.marks.length) delete a.marks;
     drawMarks(); save();
   }
+  // ── A picture opens large INSIDE the deck ──────────────────────────────────────────────
+  // WHY (Destin, 2026-11-10, round 3: "tapping the image briefly once opens it in a separate
+  // tab, which is strange/unexpected behaviour"). The large view sits over the page; areas can
+  // be dragged on it exactly as on the small one — easier, in fact, since it is bigger — and a
+  // click anywhere, or Esc, closes it.
+  function openBig(a) {
+    closeBig();
+    const lb = document.createElement('div'); lb.className = 'lightbox';
+    lb.innerHTML = `<div class="lbbox"><img src="${esc(a.getAttribute('href'))}" alt=""></div><p class="lbhint">${a.classList.contains('markable') && !state.submitted ? 'Drag across any part to comment on it · ' : ''}click anywhere or press Esc to close</p>`;
+    if (a.classList.contains('markable')) { const b = lb.firstChild; b.classList.add('markable'); b.dataset.sid = a.dataset.sid; b.dataset.pk = a.dataset.pk; }
+    document.body.appendChild(lb); drawMarks();
+  }
+  function closeBig() { const lb = $('.lightbox'); if (lb) lb.remove(); }
+  document.addEventListener('click', e => {
+    if (!e.target.closest) return;
+    if (e.target.closest('.lightbox')) { closeBig(); return; }
+    const a = e.target.closest('.qpic > a'); if (!a) return;
+    e.preventDefault(); openBig(a);
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeBig(); });
   let drag = null, swallowClick = false;
   const pct = n => Math.round(n * 10) / 10;
   document.addEventListener('pointerdown', e => {
@@ -1148,6 +1229,7 @@
     a.marks = (a.marks || []).concat([{ pic: d.box.dataset.pk, ...d.rect, text: '' }]);
     // An area with a comment IS a response; with no button pressed it counts as "something else".
     if (!a.v || a.v === 'skip') a.v = 'other';
+    closeBig();   // an area drawn on the large view: back to the page, where its comment box is
     state.answers[sid] = a; paintState(); drawMarks(); save();
     const boxes = $$(`.markt[data-sid="${CSS.escape(sid)}"]`); if (boxes.length) boxes[boxes.length - 1].focus();
   });
@@ -1163,7 +1245,7 @@
   const MIC_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>';
   const grow = box => { if (box.tagName === 'TEXTAREA') { box.style.height = 'auto'; box.style.height = (box.scrollHeight + 2) + 'px'; } };
   function addMics() {
-    $$('textarea.note, input.note, textarea.ans-write, textarea.callt, textarea.markt').forEach(box => {
+    $$('textarea.note, input.note, textarea.ans-write, textarea.callt, textarea.markt, textarea.copyt').forEach(box => {
       grow(box);
       // A box the layout is not showing (the shared note row on a question page) gets no button.
       const off = box.hidden || box.offsetParent === null;
@@ -1183,13 +1265,22 @@
   }
   function voiceEnd() {
     clearInterval(voice.timer); voice.timer = null;
-    if (voice.btn) { voice.btn.classList.remove('rec', 'wait'); voice.btn.style.boxShadow = ''; voice.btn.title = 'Speak instead of typing'; }
+    if (voice.btn) { voice.btn.classList.remove('rec', 'wait'); voice.btn.innerHTML = MIC_SVG; voice.btn.title = 'Speak instead of typing'; }
+    if (voice.box) voice.box.classList.remove('hearing');
     voice.box = voice.btn = null;
   }
   function voiceApply(st) {
-    // The ring around the button IS the sound meter, as on the app's own microphone: it grows
-    // with how loud the room is, so he can see it is hearing him before any word appears.
-    if (voice.btn) voice.btn.style.boxShadow = st.status === 'recording' ? `0 0 0 ${2 + Math.round(Math.min(1, st.level || 0) * 7)}px color-mix(in srgb, var(--accent) 35%, transparent)` : '';
+    // WHY four bars and a clock (Destin, round 3: "more like how it actually works in
+    // youcoded"): the app's own microphone shows exactly this while it listens (VoiceMeter in
+    // VoiceButton.tsx — same four gates, same heights). They sit INSIDE the box's right edge,
+    // so nothing beside the box moves (the round-2 fault was a line that squeezed the box).
+    if (voice.btn && st.status === 'recording') {
+      if (!voice.btn.querySelector('.bars')) { voice.btn.innerHTML = '<span class="bars"><i></i><i></i><i></i><i></i></span><span class="secs">0:00</span>'; voice.t0 = Date.now(); voice.box.classList.add('hearing'); }
+      const lv = Math.min(1, st.level || 0);
+      voice.btn.querySelectorAll('.bars i').forEach((b, i) => { b.style.height = (4 + Math.round(Math.max(0, Math.min(1, (lv - [0.15, 0.35, 0.6, 0.85][i] * 0.6) / 0.5)) * 10)) + 'px'; });
+      const sec = Math.floor((Date.now() - voice.t0) / 1000);
+      voice.btn.querySelector('.secs').textContent = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+    }
     if (!voice.box || st.seq === voice.seq) return;
     voice.seq = st.seq;
     if (st.status === 'recording' || st.status === 'finishing' || st.final) {
@@ -1200,7 +1291,7 @@
     // Fix (Destin, round 2: "it kinda bugged out … made the size/shape of the text box wonky"):
     // the "Listening" line was a new item in the same row as the box, so the box was squeezed
     // and jumped each time the line appeared. The state is now the button's tooltip only.
-    voice.btn.title = st.status === 'recording' ? 'Listening — press again to stop' : st.status === 'loading' ? 'Getting voice ready…' : st.status === 'finishing' ? 'Finishing…' : 'Speak instead of typing';
+    voice.btn.title = st.status === 'recording' ? 'Listening — press to stop, or just stop talking' : st.status === 'loading' ? 'Getting voice ready…' : st.status === 'finishing' ? 'Finishing…' : 'Speak instead of typing';
     voice.btn.classList.toggle('wait', st.status === 'finishing' || st.status === 'loading');
     if (st.error) voiceSay(voice.btn, st.error);
     if (st.status === 'idle' || st.status === 'off') voiceEnd();
@@ -1214,14 +1305,17 @@
       voicePost('stop').then(voiceApply).catch(err => { voiceSay(voice.btn, 'Voice input did not stop: ' + err.message); voiceEnd(); });
       return;
     }
-    voice.box = box; voice.btn = btn; voice.base = box.value.trim(); voice.seq = -1;
+    // A wording box still holding its original text is REPLACED by what he says; anywhere
+    // else his words are added after what is already typed.
+    voice.box = box; voice.btn = btn; voice.seq = -1;
+    voice.base = box.matches('.copyt') && box.value === box.dataset.orig ? '' : box.value.trim();
     voiceSay(btn, ''); btn.classList.add('wait'); box.focus();
     voicePost('start').then(st => {
       voiceApply(st);
       if (voice.box) voice.timer = setInterval(() => voicePost('poll').then(voiceApply).catch(() => {}), 150);
     }).catch(err => { voiceSay(btn, 'Voice input did not start: ' + err.message); voiceEnd(); });
   });
-  document.addEventListener('input', e => { if (e.target.matches && e.target.matches('textarea.note, textarea.ans-write, textarea.callt, textarea.markt')) grow(e.target); });
+  document.addEventListener('input', e => { if (e.target.matches && e.target.matches('textarea.note, textarea.ans-write, textarea.callt, textarea.markt, textarea.copyt')) grow(e.target); });
   load().then(() => {
     const q = new URLSearchParams(location.search);
     // An answers file written before this deck had pages can carry a `cur` past the last page;

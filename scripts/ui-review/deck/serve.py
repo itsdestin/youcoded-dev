@@ -84,6 +84,9 @@ def extras(a):
         out.append(f'\n    change {k} — "{(t or "").strip()}"')
     for k in a.get('asks') or []:
         out.append(f'\n    more context wanted on {k}')
+    # A wording row he retyped (round 3, S-3): the row's id and the words he wants instead.
+    for k, t in (a.get('edits') or {}).items():
+        out.append(f'\n    reword {k} — "{(t or "").strip()}"')
     for i, m in enumerate(a.get('marks') or []):
         out.append(f'\n    area {i + 1} on {m.get("pic")} (left {m.get("x")}%, top {m.get("y")}%, '
                    f'{m.get("w")}% wide, {m.get("h")}% tall) — "{(m.get("text") or "").strip()}"')
@@ -122,7 +125,9 @@ def summary(spec, state):
             + (f'{counts["pick"]} picked · ' if counts['pick'] else '')
             + (f'{counts["picks"]} multi-picked · ' if counts['picks'] else '')
             + (f'{counts["wrote"]} written · ' if counts['wrote'] else '') + f'{counts["skip"]} skipped')
-    return head + '\n' + '\n'.join(lines)
+    # Notes tied to no question (round 3): first, so a session reading the summary meets them.
+    general = (state.get('notes') or '').strip()
+    return head + '\n' + (f'general notes — "{general}"\n' if general else '') + '\n'.join(lines)
 
 
 class _Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
