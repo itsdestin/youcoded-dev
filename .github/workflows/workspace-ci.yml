@@ -89,6 +89,15 @@ jobs:
         if: ${{ !cancelled() }}
         run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs .claude/hooks/cards-edit-check.test.mjs
 
+      # Card #19 (g) backstop: the pre-commit hook refuses merge-conflict markers, but hooks only
+      # exist on clones where setup.sh was re-run (and --no-verify skips them). This scans every
+      # tracked file for an opening/closing marker at column 0, same narrow pattern as the hook.
+      - name: No merge-conflict markers in tracked files
+        run: |
+          if git grep -nE '^(<<<<<<<|>>>>>>>)( |$)'; then
+            echo "::error::unresolved merge-conflict markers (listed above)"; exit 1
+          fi
+
       # The workbench boot check reported "All 16 workbench routes mount cleanly"
       # against a port nothing was serving — verified 2026-09-02 on a dead port,
       # exit 0. CLAUDE.md tells every session to trust that check. These two cases
@@ -118,6 +127,13 @@ jobs:
       - name: Test workspace-start
         if: ${{ !cancelled() }}
         run: node --test scripts/workspace-start.test.mjs
+
+      # safe-push.sh is the only thing standing between a failed secrets scan and a push (card #195);
+      # a regression that lets a push through after a failed or missing scan must turn the build red.
+      # The real-gitleaks case skips itself on this runner (gitleaks not installed); the rest use a stub.
+      - name: Test safe-push
+        if: ${{ !cancelled() }}
+        run: node --test scripts/safe-push.test.mjs
 
       # prune-worktrees.mjs is the tool that decides which of the ~60 accumulated worktrees
       # are safe to delete — a wrong "safe" verdict here destroys someone's unpushed work, so
@@ -180,6 +196,18 @@ jobs:
         if: ${{ !cancelled() }}
         run: node --test scripts/shoot/tests/*.test.mjs
 
+      # drag-fuzz's output writer (card #18(f)): 60 fake scenarios, frames kept out of the
+      # summary. No browser needed. Further ui-review node tests are added to this step's list.
+      - name: Test ui-review script helpers
+        if: ${{ !cancelled() }}
+        run: node --test scripts/ui-review/tests/drag-fuzz-output.test.mjs
+
+      # The Page stand-in (card #239): a stub window.youcoded over a page folder's data.json,
+      # loopback only, no forwarding. Fixture page in a temp folder, ephemeral port.
+      - name: Test the page stand-in
+        if: ${{ !cancelled() }}
+        run: node --test scripts/page-standin.test.mjs
+
       # The Luna cache-measurement rig's offline tests (2026-09-23): gate ceilings, usage
       # parsing, adapters and isolation checks — no network, no quota. The one test that
       # needs the private OpenCode source checkout skips itself here.
@@ -209,7 +237,7 @@ jobs:
       - name: Test the review deck
         if: ${{ !cancelled() }}
         working-directory: scripts/ui-review/tests
-        run: python3 -m unittest -v test_spec test_tokens test_live test_words test_contract test_site_copy_editor
+        run: python3 -m unittest -v test_spec test_tokens test_live test_words test_contract test_site_copy_editor test_acceptance_verdicts test_shared_keys
 
       # close-out.sh is the one script in here that a session is TOLD to obey line by
       # line (the wrap-up skill: "finish every line it reports"), so a wrong TODO in it
@@ -243,6 +271,12 @@ jobs:
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/resolve-checkout.test.sh
 
+      # Card #19: run-dev.sh resolves session worktrees by name, validates --offset, and --list shows
+      # running instances. Dry-run/list only, so no app window is launched.
+      - name: run-dev.sh resolves, validates and lists without launching
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/run-dev-resolve.test.sh
+
       # The pre-merge report must say whether the branch still merges cleanly — two branches
       # passed every check on 2026-09-04 and conflicted on the (since retired) generated roadmap table at merge.
       - name: close-out.sh reports a merge conflict before anyone asks "ready to merge?"
@@ -255,6 +289,12 @@ jobs:
       - name: close-out.sh warns about untracked files in the shared checkout
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-untracked-warning.test.sh
+
+      # Card #22 (e): a branch with no commits and an uncommitted implementation was called "landed"
+      # and offered for deletion four times. Dirty worktree must override the "landed" wording.
+      - name: close-out.sh never calls uncommitted work landed
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-dirty-worktree.test.sh
 
       # The refactor's edit lock (docs/active/locks/) is only a promise unless close-out says it aloud.
       - name: close-out.sh flags a branch that edits locked files
