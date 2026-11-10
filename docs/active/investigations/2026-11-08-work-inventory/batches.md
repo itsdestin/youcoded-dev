@@ -127,7 +127,9 @@ Security gaps with no intended screen change. Touches: sync server, marketplace 
 - **#51** Split into #51 (listings and previews), #244 (installs) and #245 (comments, admin, "Likely safe" badge). Built from #244: a theme whose files changed without a version bump shows Update; the Google Messages tool server registers on Windows only. NOT built: a launch-time repair for vanished plugins — no evidence the wipe still happens (automatic refresh has been off since April; plugins from July to November are intact). Docker listings, Todoist and the Messaging wording change what listings show and are options on #244.
 - **#55** Folded into #216; every leftover re-checked and still true. Both notice questions are on #216.
 - **#223** Rebuilt (security library 0.48.0 → 0.58.0, newer Go). Never run: needs a Windows computer and a paired phone before release.
-- **What deploys when the marketplace branch reaches master:** the Worker (sync identity check and game rate limit) deploys by itself within minutes and reaches every released app version at once; the Messaging plugin 1.0.1 appears in the catalog within the hour. The app change ships only with the next app release.
+- **What deploys when the marketplace branch reaches master:** the Worker (game rate limit and forfeits switched off; no sync change) deploys by itself within minutes and reaches every released app version at once; the Messaging plugin 1.0.1 appears in the catalog within the hour. The app change ships only with the next app release.
+
+**Destin's decisions, 2026-11-10 (wave-1 deck).** #124: HELD — sync is being rebuilt elsewhere, so the fix was taken off the branch (reverted) and does not land. #43: the forfeit message is switched off on the server. #223: lands without a Windows test (his words: nobody uses it and it will probably be deleted or replaced). #216: build both notices, shown on a review deck before landing. Everything else lands (marketplace PR #122, app PR #724, workspace PR #355).
 
 ## Batch 6 — Look and wording, to the approved guide
 
