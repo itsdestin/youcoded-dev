@@ -12,9 +12,9 @@ area: Developer tools
 side: behind
 ---
 Progress
-Done: item 1 (message times use each reply's own time, shipped in PR #675, 2026-10-22) and item 2 (phone server duplicates removed by the remote-access refactor, PR #604, 2026-10-05).
-Next: item 3 (merge three repeated status-reading loops into one helper) and item 4 (fix the folder-path comparison, after deciding the right shared helper).
-Blocked: item 5 needs Destin to choose delete or keep for the unused marketplace settings plumbing.
+Done: Items 1-2 shipped earlier. On branch session/workspace-tools-batch (not merged) (app): item 3 - three copied status-reading loops are one tested helper, behaviour identical; item 4 - one rule decides whether two folder paths are the same folder (capital letters ignored on Windows and Mac only), used everywhere including add, rename and describe. Only visible effect: on Linux, 'Docs' and 'docs' are now two folders, not one.
+Next: Item 5, Destin: the unused plugin-settings plumbing (about 10 files; no screen uses it, no marketplace entry declares settings). DELETE (RECOMMENDED): you see no change; less dead code to keep tested; rebuildable from history if plugin settings forms ever return. KEEP: you see no change; ready if plugin settings are planned soon; cost: dead code keeps being maintained.
+Blocked: item 5 needs Destin's delete-or-keep.
 
 Chats
 
