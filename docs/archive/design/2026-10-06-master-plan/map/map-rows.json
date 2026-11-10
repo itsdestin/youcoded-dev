@@ -1,0 +1,946 @@
+[
+ {
+  "name": "Model switcher recommendations (desktop + Android shared renderer)",
+  "paths": [
+   "youcoded/desktop/src/renderer/components/model/ModelPicker.tsx",
+   "youcoded/desktop/src/shared/recommended-models.ts",
+   "youcoded/desktop/src/renderer/components/assistant-settings/pages.tsx",
+   "youcoded/desktop/src/main/providers/chatgpt-auth.ts"
+  ]
+ },
+ {
+  "name": "Chat & transcript",
+  "paths": [
+   "youcoded/desktop/src/renderer/state/chat-reducer.ts",
+   "youcoded/desktop/src/renderer/state/cc-background.ts",
+   "youcoded/desktop/src/main/transcript-watcher.ts",
+   "youcoded/desktop/src/main/transcript-page.ts",
+   "youcoded/desktop/src/main/transcript-page-source.ts",
+   "youcoded/desktop/src/renderer/state/first-page-loader.ts",
+   "youcoded/desktop/src/renderer/state/screen-feed.ts",
+   "youcoded/desktop/src/renderer/state/transcript-event-actions.ts",
+   "youcoded/desktop/src/renderer/state/transcript-batch.ts",
+   "youcoded/desktop/src/shared/transcript-event-types.ts",
+   "youcoded/desktop/src/shared/types.ts",
+   "youcoded/desktop/src/shared/attention-classifier.ts"
+  ]
+ },
+ {
+  "name": "IPC bridge (parity) — ONE table both doors serve",
+  "paths": [
+   "youcoded/desktop/src/shared/backend-contract.ts",
+   "youcoded/desktop/src/main/ipc/channel-def.ts",
+   "youcoded/desktop/src/main/ipc/channel-table.ts",
+   "youcoded/desktop/src/main/ipc/",
+   "file-gates.ts",
+   "session-state.ts",
+   "youcoded/desktop/scripts/generate-preload-channels.mjs",
+   "youcoded/desktop/src/main/preload.ts",
+   "youcoded/desktop/src/main/remote-server.ts",
+   "youcoded/desktop/src/main/ipc-handlers.ts",
+   "youcoded/desktop/src/renderer/remote-shim.ts",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt"
+  ]
+ },
+ {
+  "name": "The runtime (\"the core\") and the two doors",
+  "paths": [
+   "youcoded/desktop/src/main/create-runtime.ts",
+   "main.ts",
+   "youcoded/desktop/src/main/platform.ts",
+   "electron-platform.ts",
+   "youcoded/desktop/src/main/main.ts"
+  ]
+ },
+ {
+  "name": "Remote access (reaching this computer from another device)",
+  "paths": [
+   "youcoded/desktop/src/main/remote-server.ts",
+   "youcoded/desktop/src/main/remote-devices.ts",
+   "youcoded/desktop/src/main/remote-paths.ts",
+   "youcoded/desktop/src/main/remote-config.ts",
+   "youcoded/desktop/src/renderer/remote-shim.ts",
+   "window.claude",
+   "youcoded/desktop/src/shared/capabilities.ts",
+   "youcoded/desktop/src/renderer/platform.ts",
+   "youcoded/desktop/src/main/session-record.ts",
+   "publish.ts",
+   "youcoded/desktop/src/main/session-live.ts",
+   "youcoded/desktop/src/shared/session-live-types.ts",
+   "youcoded/desktop/src/main/session-screens.ts",
+   "youcoded/desktop/src/shared/prompt-card-reader.ts",
+   "youcoded/desktop/src/shared/stuck-tracker.ts",
+   "youcoded/desktop/tests/session-screens.test.ts",
+   "youcoded/desktop/src/renderer/hooks/useSendReconcile.ts",
+   "youcoded/desktop/src/renderer/state/submit-outgoing.ts",
+   "youcoded/desktop/src/renderer/state/send-reconcile.ts",
+   "youcoded/desktop/tests/send-reconcile.test.tsx",
+   "youcoded/desktop/src/renderer/state/pending-action.ts",
+   "phone-actions.ts",
+   "phone-session-actions.ts",
+   "permission-answer.ts",
+   "youcoded/desktop/tests/instant-buttons.test.tsx",
+   "youcoded/desktop/src/main/session-open.ts",
+   "audience-fill.ts",
+   "youcoded/desktop/src/renderer/state/session-fill.ts",
+   "youcoded/desktop/src/renderer/hooks/useRemoteWatch.ts",
+   "youcoded/desktop/src/renderer/state/watch-set.ts",
+   "youcoded/desktop/src/renderer/hooks/useSessionSummaries.ts",
+   "youcoded/desktop/src/main/prefs-service.ts",
+   "youcoded/desktop/src/renderer/android-local-bridge.ts",
+   "youcoded/desktop/src/renderer/components/SettingsPanel.tsx"
+  ]
+ },
+ {
+  "name": "Find in loaded chat messages",
+  "paths": [
+   "youcoded/desktop/src/renderer/components/ChatFindBar.tsx",
+   "youcoded/desktop/src/renderer/hooks/use-chat-message-find.ts",
+   "youcoded/desktop/src/renderer/components/chat-message-find.ts",
+   "youcoded/desktop/src/renderer/components/ContentFindBar.tsx"
+  ]
+ },
+ {
+  "name": "React renderer / chrome",
+  "paths": [
+   "youcoded/desktop/src/renderer/App.tsx",
+   "youcoded/desktop/src/renderer/components/HeaderBar.tsx",
+   "youcoded/desktop/src/renderer/components/SessionStrip.tsx",
+   "youcoded/desktop/src/renderer/components/header/drag-order.ts",
+   "youcoded/desktop/src/renderer/components/header/pack-sessions.ts",
+   "youcoded/desktop/src/renderer/styles/globals.css",
+   "youcoded/desktop/src/renderer/styles/motion.css",
+   "youcoded/desktop/src/renderer/styles/float-chrome.css",
+   "youcoded/desktop/src/renderer/themes/theme-engine.ts",
+   "youcoded/desktop/src/renderer/hooks/use-wallpaper-header-ink.ts",
+   "youcoded/desktop/src/renderer/themes/wallpaper-header-ink.ts",
+   "youcoded/desktop/src/renderer/components/ChatEdgeFade.tsx",
+   "youcoded/desktop/src/renderer/components/header/control-states.ts",
+   "youcoded/desktop/src/renderer/hooks/use-switch-first-frame.ts",
+   "youcoded/desktop/src/renderer/hooks/use-chatview-handlers.ts",
+   "youcoded/desktop/src/renderer/hooks/use-chunked-reveal.ts",
+   "youcoded/desktop/src/renderer/hooks/use-entry-folding.ts"
+  ]
+ },
+ {
+  "name": "Error states (every user-facing failure message)",
+  "paths": [
+   "youcoded/desktop/src/renderer/components/ui/states.tsx",
+   "youcoded/desktop/src/renderer/utils/ipc-error.ts"
+  ]
+ },
+ {
+  "name": "Multi-window session detach",
+  "paths": [
+   "youcoded/desktop/src/renderer/components/SessionStrip.tsx",
+   "youcoded/desktop/src/renderer/session-drag-model.ts",
+   "youcoded/desktop/src/renderer/components/SessionDropZone.tsx",
+   "youcoded/desktop/src/main/window-registry.ts",
+   "youcoded/desktop/src/main/pending-acquire.ts",
+   "youcoded/desktop/src/main/main.ts"
+  ]
+ },
+ {
+  "name": "UI Workbench (dev-only)",
+  "paths": [
+   "youcoded/desktop/src/renderer/dev/workbench/",
+   "youcoded/desktop/src/renderer/index.tsx",
+   "scripts/run-workbench.sh"
+  ]
+ },
+ {
+  "name": "Screenshots by name (`shoot`) and click-through (`explore`), dev-only",
+  "paths": [
+   "scripts/shoot/shoot.mjs",
+   "scripts/shoot/explore.mjs",
+   "explore-page.mjs",
+   "scripts/shoot/journeys.mjs",
+   "driver.mjs",
+   "youcoded/desktop/tests/journeys/",
+   "scripts/shoot/engine.mjs",
+   "youcoded/desktop/src/renderer/shoot-mode.tsx",
+   "youcoded/desktop/src/renderer/shoot-app-screens.ts",
+   "youcoded/desktop/src/renderer/dev/workbench/screens/"
+  ]
+ },
+ {
+  "name": "UI review rig (dev-only)",
+  "paths": [
+   "scripts/ui-review/shot.mjs",
+   "scripts/ui-review/tester-kit.md",
+   "scripts/ui-review/ux-tester.md",
+   "scripts/ui-review/code-reviewer.md",
+   "scripts/ui-review/grader.md",
+   "scripts/ui-review/contract-agent.md",
+   "scripts/ui-review/plans/site-gallery.json",
+   "scripts/ui-review/review-cards.py",
+   "scripts/ui-review/deck/",
+   "scripts/ui-review/templates/",
+   "tryit.json",
+   "scripts/ui-review/deck/AUTHORING.md",
+   "scripts/ui-review/deck/live.py",
+   "/app/",
+   "scripts/ui-review/design-check/",
+   "shot.mjs"
+  ]
+ },
+ {
+  "name": "Landing page + demo clips (live at youcoded.ai via `youcoded/docs/CNAME`; the old itsdestin.github.io/youcoded address redirects there)",
+  "paths": [
+   "youcoded/docs/index.html",
+   "scripts/ui-review/site-assets.sh",
+   "scripts/ui-review/record.mjs",
+   "scripts/ui-review/scenes/",
+   "scripts/ui-review/site-copy-editor.py",
+   "edits.md",
+   "scripts/ui-review/copy-preview.py",
+   "youcoded/desktop/src/renderer/dev/workbench/fixtures/replies/"
+  ]
+ },
+ {
+  "name": "Promo video (the Reddit cut shipped 2026-09-04, the second cut 2026-09-09; the tooling stays for the next film, dev-only)",
+  "paths": [
+   "scripts/promo/README.md",
+   "scripts/promo/music/song.py",
+   "scripts/ui-review/scenes/promo-flappy.json",
+   "scripts/ui-review/scenes/flappy-pilot.js",
+   "scripts/promo/film.sh",
+   "scripts/promo/src/",
+   "scripts/promo/src/timeline.ts",
+   "scripts/promo/src/beats/beat.ts",
+   "scripts/promo/src/beats/Beat1.tsx",
+   "scripts/promo/src/host/engine.ts",
+   "scripts/promo/src/Promo.tsx",
+   "scripts/promo/cues.sh",
+   "still-sheets.sh",
+   "line-sheets.sh",
+   "script-editor.py",
+   "scripts/promo/render.sh"
+  ]
+ },
+ {
+  "name": "Perf lab / stress suite (dev-only)",
+  "paths": [
+   "scripts/perf-lab/run.mjs",
+   "scripts/perf-lab/scenario-idle.mjs",
+   "scripts/perf-lab/probe-ipc.mjs",
+   "scripts/perf-lab/gpu.mjs",
+   "scripts/perf-lab/layout-cost.mjs",
+   "scripts/perf-lab/late-content.mjs",
+   "scripts/perf-lab/real-scale-startup.mjs",
+   "youcoded/desktop/src/main/perf-marks.ts",
+   "scripts/measure-idle-cpu.mjs",
+   "scripts/resize-bench.mjs",
+   "scripts/tool-arg-stream-probe.mjs"
+  ]
+ },
+ {
+  "name": "Luna live cache-measurement rig (dev-only; spends ChatGPT-plan quota — ask first)",
+  "paths": [
+   "scripts/luna/live-repeat-comparison.mjs",
+   "scripts/luna/live-tool-comparison.mjs",
+   "scripts/luna/live-lifecycle-comparison.mjs",
+   "scripts/luna/request-gate.mjs",
+   "scripts/luna/live-native-cdp.mjs"
+  ]
+ },
+ {
+  "name": "Roadmap (the backlog itself)",
+  "paths": [
+   "ROADMAP.md",
+   "docs/roadmap/native-harness.md",
+   "docs/archive/roadmap/",
+   "scripts/roadmap-check.mjs",
+   ".claude/hooks/roadmap-edit-check.mjs",
+   "scripts/fixtures/roadmap/"
+  ]
+ },
+ {
+  "name": "Desktop packaging + release (how a build becomes an installer)",
+  "paths": [
+   "youcoded/desktop/electron-builder.yml",
+   "youcoded/.github/workflows/desktop-release.yml",
+   "youcoded/.github/workflows/desktop-test-build.yml",
+   "youcoded/scripts/build-icons.mjs",
+   "youcoded/scripts/icons/brand-icons.html",
+   "youcoded/desktop/src/main/theme-icon-swap.ts"
+  ]
+ },
+ {
+  "name": "In-app updates (the Update button, and what it refuses)",
+  "paths": [
+   "youcoded/desktop/src/main/update-release-status.ts",
+   "/releases",
+   "/releases/latest",
+   "youcoded/desktop/src/main/update-settings.ts",
+   "~/.youcoded/config.json",
+   "updates.betaChannel",
+   "youcoded/desktop/src/main/update-manifest-verify.ts",
+   "youcoded/desktop/src/main/linux-install-kind.ts",
+   "process.execPath",
+   "youcoded/desktop/src/main/update-installer.ts",
+   "youcoded/desktop/src/main/update-signing-key.ts",
+   "youcoded/desktop/scripts/generate-release-manifest.mjs",
+   "youcoded/desktop/src/renderer/components/UpdatePanel.tsx"
+  ]
+ },
+ {
+  "name": "App logging + bug reports (what the app leaves behind)",
+  "paths": [
+   "youcoded/desktop/src/main/logger.ts",
+   "~/.claude/desktop.log",
+   "youcoded/desktop/src/main/dev-tools.ts",
+   "youcoded/desktop/src/main/crash-diagnostics.ts"
+  ]
+ },
+ {
+  "name": "Session workspace startup + reorientation (dev-only)",
+  "paths": [
+   "scripts/workspace-start.mjs",
+   "scripts/workspace-sync.mjs",
+   "scripts/workspace-sync.sh",
+   ".claude/hooks/context-inject.sh",
+   "scripts/workspace-repos.json",
+   "setup.sh",
+   "scripts/git-hooks/pre-commit"
+  ]
+ },
+ {
+  "name": "Session close-out + workspace retrospective (dev-only)",
+  "paths": [
+   "scripts/close-out.sh",
+   "scripts/prune-worktrees.mjs",
+   ".claude/skills/wrap-up/SKILL.md",
+   "docs/wrap-ups.md",
+   "scripts/audit-anchors.mjs"
+  ]
+ },
+ {
+  "name": "CI health and the test-suite inventory (dev-only)",
+  "paths": [
+   "scripts/ci-health.mjs",
+   "scripts/test-inventory.mjs",
+   "docs/active/plans/2026-09-16-test-inventory.md"
+  ]
+ },
+ {
+  "name": "Desktop checks (types, lint, design check — dev-only)",
+  "paths": [
+   "scripts/verify.sh",
+   "youcoded/desktop/.oxlintrc.json",
+   "youcoded/desktop/.oxlintrc.design.json",
+   "youcoded/desktop/tsconfig.json",
+   "youcoded/.github/workflows/desktop-ci.yml"
+  ]
+ },
+ {
+  "name": "UI control primitives",
+  "paths": [
+   "youcoded/desktop/src/renderer/components/ui/",
+   "youcoded/desktop/src/renderer/components/ui/Button.tsx",
+   "youcoded/desktop/src/renderer/components/overlays/Overlay.tsx"
+  ]
+ },
+ {
+  "name": "Hover hints (the app's own, not `title=`)",
+  "paths": [
+   "youcoded/desktop/src/renderer/components/ui/Tooltip.tsx",
+   "youcoded/desktop/src/renderer/components/ui/anchor-position.ts",
+   "youcoded/desktop/src/renderer/components/ui/AnchorTip.tsx"
+  ]
+ },
+ {
+  "name": "Narrow / mobile viewport",
+  "paths": [
+   "youcoded/desktop/src/renderer/hooks/use-narrow-viewport.ts",
+   "youcoded/desktop/src/renderer/components/OverflowMenu.tsx",
+   "youcoded/desktop/src/renderer/components/NarrowViewToggle.tsx"
+  ]
+ },
+ {
+  "name": "Document comments (Google-Docs-style comments in the file viewer; Word/Excel comments live inside the file — or, while Office has the file open, go through its editor — and everything else in a .youcoded/comments folder in the project)",
+  "paths": [
+   "youcoded/desktop/src/main/doc-comments/doc-comments-dispatch.ts",
+   "youcoded/desktop/src/main/doc-comments/live-comments.ts",
+   "youcoded/desktop/src/main/office/office-comments.ts",
+   "youcoded/desktop/src/main/doc-comments/doc-comments-store.ts",
+   "youcoded/desktop/src/main/doc-comments/docx-comments.ts",
+   "xlsx-comments.ts",
+   "DocxComments.kt",
+   "XlsxComments.kt",
+   "youcoded/desktop/src/main/doc-comments/write-pipeline.ts",
+   "youcoded/desktop/src/main/doc-comments/pending-mutation-queue.ts",
+   "youcoded/desktop/src/main/claude-code-doc-comments-mcp.ts",
+   "DocCommentsPendingQueue.kt",
+   "youcoded/app/src/main/assets/doc-comments-mcp.js",
+   "youcoded/desktop/src/main/harness/tools/doc-comments-tools.ts",
+   "youcoded/desktop/src/renderer/state/doc-comments-store.ts",
+   "youcoded/desktop/src/renderer/components/comments/",
+   "use-quote-marks.ts"
+  ]
+ },
+ {
+  "name": "Artifact viewer",
+  "paths": [
+   "youcoded/desktop/src/main/artifacts/read-binary-access.ts",
+   "youcoded/desktop/src/main/artifacts/visible-artifacts.ts",
+   "youcoded/desktop/src/shared/artifacts/canonicalize.ts",
+   "youcoded/desktop/src/shared/artifacts/resolve-tracked-path.ts",
+   "youcoded/desktop/src/shared/artifacts/migrate-relative-externals.ts",
+   "youcoded/desktop/src/main/artifacts/write-authorization.ts",
+   "../",
+   "youcoded/desktop/src/shared/artifacts/editable-path-policy.ts",
+   "EditablePathPolicy.kt",
+   "ProjectManager.kt",
+   "youcoded/desktop/src/renderer/state/deliverable-auto-open.ts",
+   "youcoded/desktop/src/renderer/components/DeliverablesCard.tsx"
+  ]
+ },
+ {
+  "name": "Office (Word / Excel / PowerPoint editing in the desktop app — Euro-Office editors from the separate AGPL add-on itsdestin/youcoded-office, converted by a native x2t in main; desktop only, docx/xlsx/pptx only)",
+  "paths": [
+   "youcoded/desktop/src/main/office/office-ipc.ts",
+   "youcoded/desktop/src/main/office/office-commands.ts",
+   "youcoded/desktop/src/main/office/office-protocol.ts",
+   "office-sessions.ts",
+   "youcoded/desktop/src/main/office/x2t.ts",
+   "youcoded/desktop/src/main/office/office-recovery.ts",
+   "versions.ts",
+   "youcoded/desktop/src/main/office/office-comments.ts",
+   "youcoded/desktop/src/main/doc-comments/live-comments.ts",
+   "youcoded/desktop/src/renderer/components/office/EditorFrame.tsx",
+   "OfficeView.tsx",
+   "office-store.ts",
+   "youcoded/desktop/src/shared/office-types.ts",
+   "youcoded/desktop/office-pin.json",
+   "youcoded/desktop/scripts/fetch-office.mjs",
+   "PIN.json"
+  ]
+ },
+ {
+  "name": "YouCoded Pages — personal/project pages framed in the app, pinned in the header, built by the `/page-builder` skill",
+  "paths": [
+   "youcoded/desktop/src/main/pages/pages-store.ts",
+   "youcoded/desktop/src/main/pages/pages-service.ts",
+   "youcoded/desktop/src/main/pages/page-connections.ts",
+   "youcoded/desktop/src/main/pages/page-fetch.ts",
+   "youcoded/desktop/src/main/pages/connections-store.ts",
+   "youcoded/desktop/src/shared/pages-types.ts",
+   "youcoded/desktop/src/renderer/components/pages/PageHost.tsx",
+   "youcoded/desktop/src/renderer/components/pages/PagesEmptyCard.tsx",
+   "youcoded/desktop/src/renderer/components/pages/page-theme.ts",
+   "youcoded.fetch",
+   "youcoded/desktop/src/renderer/components/pages/page-connections.tsx",
+   "youcoded/desktop/src/renderer/components/ScreenBand.tsx",
+   "youcoded/desktop/src/renderer/utils/shortcut-gate.ts",
+   "wecoded-marketplace/wecoded-pages-plugin/skills/page-builder/SKILL.md"
+  ]
+ },
+ {
+  "name": "PTY I/O & keyboard",
+  "paths": [
+   "youcoded/desktop/src/main/session-manager.ts",
+   "youcoded/desktop/src/main/pty-worker.js",
+   "youcoded/desktop/src/renderer/state/pty-input-gate.ts",
+   "youcoded/desktop/src/shared/cc-input-focus.ts",
+   "youcoded/desktop/src/main/session-screens.ts",
+   "youcoded/desktop/src/renderer/state/screen-input-store.ts",
+   "pty-input-gate.ts",
+   "youcoded/desktop/src/renderer/components/TerminalView.tsx"
+  ]
+ },
+ {
+  "name": "Claude Code prompts — permission cards, the plan card, the startup dialogs and the \"Initializing session…\" cover",
+  "paths": [
+   "youcoded/desktop/src/renderer/state/prompt-input.ts",
+   "youcoded/desktop/src/renderer/state/ink-menu-driver.ts",
+   "youcoded/desktop/src/main/menu-answer-lock.ts",
+   "MenuAnswerLock.kt",
+   "youcoded/desktop/src/renderer/parser/plan-menu-parser.ts",
+   "youcoded/desktop/src/renderer/state/plan-menu-driver.ts",
+   "youcoded/desktop/src/renderer/parser/kept-card-binding.ts",
+   "youcoded/desktop/src/main/permission-auto-approve.ts",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/runtime/PermissionAutoApprove.kt",
+   "youcoded/desktop/src/renderer/components/InitializingCover.tsx",
+   "youcoded/desktop/src/renderer/state/startup-dialog-store.ts",
+   "youcoded/desktop/src/main/startup-dialog-log.ts",
+   "~/.claude/desktop.log",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/parser/EventBridge.kt"
+  ]
+ },
+ {
+  "name": "Git surface (status, review, watching)",
+  "paths": [
+   "youcoded/desktop/src/main/git/git-service.ts",
+   "youcoded/desktop/src/main/git/git-watcher.ts",
+   "youcoded/desktop/src/main/git/porcelain.ts",
+   "youcoded/desktop/src/main/git/git-exec.ts",
+   "youcoded/desktop/src/renderer/components/git/GitReviewView.tsx"
+  ]
+ },
+ {
+  "name": "Sync spaces & GitHub",
+  "paths": [
+   "youcoded/desktop/src/main/sync-spaces/engine.ts",
+   "youcoded/desktop/src/main/sync-spaces/git-transport.ts",
+   "youcoded/desktop/src/main/sync-spaces/project-registry.ts",
+   "youcoded/desktop/src/main/sync-hub-socket.ts"
+  ]
+ },
+ {
+  "name": "Session naming — who named a conversation, the user or the assistant; Off/Basic/AI, the review schedule, and the rename UI",
+  "paths": [
+   "youcoded/desktop/src/main/conversations/naming-core.ts",
+   "youcoded/desktop/src/main/conversations/naming-store.ts",
+   "youcoded/desktop/src/main/session-namer.ts",
+   "youcoded/desktop/src/main/naming-settings.ts",
+   "~/.youcoded/config.json",
+   "youcoded/desktop/hook-scripts/title-update.sh",
+   "youcoded/app/src/main/assets/title-update.sh",
+   "~/.claude/topics/naming-mode",
+   "youcoded/desktop/src/renderer/components/SessionRenameDialog.tsx",
+   "youcoded/desktop/src/renderer/components/assistant-settings/SessionNaming.tsx"
+  ]
+ },
+ {
+  "name": "Conversation store",
+  "paths": [
+   "youcoded/desktop/src/main/conversations/store-core.ts",
+   "youcoded/desktop/src/main/conversations/transcript-mirror.ts",
+   "youcoded/desktop/src/main/conversations/portable-model.ts",
+   "youcoded/desktop/src/shared/model-ids.ts",
+   "message.model",
+   "youcoded/desktop/src/renderer/components/takeover-dialog-copy.ts",
+   "youcoded/desktop/src/main/session-browser.ts",
+   "youcoded/desktop/src/main/scan-cache.ts",
+   "youcoded/desktop/src/main/session-id-mapping.ts"
+  ]
+ },
+ {
+  "name": "Conversation handoff between computers (admission, confirmed final messages, pending tab)",
+  "paths": [
+   "youcoded/desktop/src/main/conversations/resume-admission.ts",
+   "youcoded/desktop/src/main/conversations/handoff-attempt.ts",
+   "youcoded/desktop/src/main/conversations/handoff-transcript.ts",
+   "handoff-receipt.ts",
+   "youcoded/desktop/src/main/conversations/handoff-transport.ts",
+   "handoff-exit.ts",
+   "youcoded/desktop/src/main/session-manager.ts",
+   "youcoded/desktop/src/renderer/state/pending-handoff.ts",
+   "youcoded/desktop/src/renderer/components/PendingHandoffView.tsx",
+   "youcoded/desktop/src/renderer/components/HandoffFreshnessInline.tsx",
+   "wecoded-marketplace/worker/src/sync/room.ts"
+  ]
+ },
+ {
+  "name": "Chat Search (chatsearch)",
+  "paths": [
+   "youcoded/desktop/src/main/chatsearch-index/index-core.ts",
+   "youcoded/desktop/src/main/chatsearch-index/index-format.ts",
+   "youcoded/desktop/src/main/chatsearch-index/index-store.ts",
+   "youcoded/desktop/src/main/chatsearch-index/meta-builder.ts",
+   "youcoded/desktop/src/main/chatsearch-index/index-service.ts",
+   "youcoded/desktop/src/main/conversations/lane-guards.ts",
+   "wecoded-marketplace/youcoded-chatsearch/skills/chatsearch/scripts/chatsearch.js"
+  ]
+ },
+ {
+  "name": "Native runtime (harness) — `SessionProvider` has three values: claude, native, and **shell, a plain terminal with no assistant in it**, created only by `engine:run-in-terminal` (`session-manager.ts` → `prepareRunInTerminal`)",
+  "paths": [
+   "youcoded/desktop/src/main/harness/harness-session.ts",
+   "youcoded/desktop/src/main/harness/native-session-host.ts",
+   "youcoded/desktop/src/main/harness/prompt-assembly.ts",
+   "youcoded/desktop/src/main/harness/prompts/shared-doctrine.ts",
+   "youcoded/desktop/src/main/harness/prompts/assistant-default.ts",
+   "youcoded/desktop/src/main/harness/prompts/coder-default.ts",
+   "youcoded/desktop/src/main/session-namer.ts",
+   "youcoded/desktop/src/renderer/components/model/ModelPicker.tsx",
+   "youcoded/desktop/src/main/providers/provider-registry.ts",
+   "youcoded/desktop/src/main/harness/capability-profile.ts",
+   "youcoded/desktop/src/main/harness/skills/skill-catalog.ts",
+   "youcoded/desktop/src/main/harness/injection/path-triggers.ts",
+   "youcoded/desktop/src/main/harness/mcp/mcp-manager.ts",
+   "youcoded/desktop/src/main/mcp-reconciler.ts",
+   "youcoded/desktop/src/main/harness/tools/send-user-file.ts",
+   "youcoded/desktop/src/main/harness/tools/registry.ts"
+  ]
+ },
+ {
+  "name": "Cloud context defaults — Assistant settings → General → Context (independent OpenRouter/ChatGPT 250k / 1M; local models unchanged)",
+  "paths": [
+   "youcoded/desktop/src/main/providers/cloud-context.ts",
+   "youcoded/desktop/src/main/providers/model-catalog.ts",
+   "youcoded/desktop/src/main/harness/context-settings-store.ts",
+   "config.json",
+   "native.context",
+   "youcoded/desktop/src/renderer/components/assistant-settings/SavedContextSettings.tsx"
+  ]
+ },
+ {
+  "name": "Prompt caching across providers, and ChatGPT cache continuation & diagnostics (youcoded#461 2026-09-09, youcoded#464 2026-09-10)",
+  "paths": [
+   "youcoded/desktop/src/main/providers/prompt-cache.ts",
+   "youcoded/desktop/src/main/harness/compaction.ts",
+   "youcoded/desktop/src/main/harness/cache-usage.ts",
+   "youcoded/desktop/src/main/harness/harness-session.ts",
+   "usage.expectedRebuild",
+   "youcoded/desktop/src/main/providers/chatgpt-request-diagnostics.ts",
+   "youcoded/desktop/src/main/providers/chatgpt-model.ts",
+   "youcoded/desktop/src/main/providers/provider-registry.ts",
+   "youcoded/desktop/src/main/harness/openai-continuation.ts",
+   "youcoded/desktop/src/main/harness/accepted-history-capture.ts",
+   "youcoded/desktop/src/main/harness/accepted-history-store.ts",
+   "youcoded/desktop/src/main/harness/session-store.ts",
+   "youcoded/desktop/src/main/harness/native-session-host.ts",
+   "youcoded/desktop/scripts/chatgpt-cache-summary.mjs"
+  ]
+ },
+ {
+  "name": "\"What the assistant was given\" — the line above every chat and the panel behind it. **Almost nothing is cut at session start**: only the root instruction file is, and skills/rules are read when they are USED, so a skill's row reports what WOULD be shortened. A Claude Code chat is described from what this machine can honestly answer for (files on disk, installed skills) and says nothing about the CLI's own prompt, tools or trimming",
+  "paths": [
+   "youcoded/desktop/src/main/harness/native-session-host.ts",
+   "youcoded/desktop/src/main/claude-code-context.ts",
+   "youcoded/desktop/src/main/harness/prompt-assembly.ts",
+   "youcoded/desktop/src/renderer/components/SessionContextPopup.tsx",
+   "youcoded/desktop/src/renderer/components/SessionContextBanner.tsx",
+   "youcoded/desktop/src/renderer/components/session-context-facts.ts"
+  ]
+ },
+ {
+  "name": "Specialists (native subagents, plan 1a + 1b + 1c)",
+  "paths": [
+   "youcoded/desktop/src/main/harness/specialists/registry.ts",
+   "youcoded/desktop/src/main/harness/specialists/builtins.ts",
+   "youcoded/desktop/src/main/harness/specialists/child-permissions.ts",
+   "youcoded/desktop/src/main/harness/specialists/child-ask-router.ts",
+   "youcoded/desktop/src/main/harness/specialists/delegation-ledger.ts",
+   "youcoded/desktop/src/main/harness/specialists/delegated-models.ts",
+   "youcoded/desktop/src/main/harness/specialists/names.ts",
+   "youcoded/desktop/src/main/harness/specialists/catalog.ts",
+   "youcoded/desktop/src/main/harness/specialists/definition-files.ts",
+   "youcoded/desktop/src/main/harness/specialists/frontmatter.ts",
+   "youcoded/desktop/src/main/harness/tools/model-search.ts",
+   "youcoded/desktop/src/main/harness/native-session-host.ts",
+   "youcoded/desktop/src/renderer/components/SpecialistsChip.tsx",
+   "youcoded/desktop/src/renderer/components/SpecialistsSection.tsx",
+   "youcoded/desktop/src/renderer/components/SpecialistEnvelope.tsx",
+   "youcoded/desktop/src/renderer/hooks/useSpecialists.ts"
+  ]
+ },
+ {
+  "name": "Status bar & `/usage` (what every number counts)",
+  "paths": [
+   "youcoded/desktop/src/renderer/components/StatusBar.tsx",
+   "youcoded/desktop/src/renderer/components/UsageCard.tsx",
+   "youcoded/desktop/src/renderer/state/status-widgets.ts",
+   "youcoded/desktop/src/renderer/state/session-totals.ts",
+   "youcoded/desktop/src/renderer/state/usage-snapshot.ts",
+   "youcoded/desktop/src/renderer/state/cache-reuse.ts",
+   "youcoded/desktop/src/main/harness/pricing.ts",
+   "youcoded/desktop/src/main/harness/harness-session.ts",
+   "youcoded/desktop/hook-scripts/statusline.sh"
+  ]
+ },
+ {
+  "name": "Status push (the 10 s status bar data)",
+  "paths": [
+   "youcoded/desktop/src/main/status-push-gate.ts",
+   "youcoded/desktop/src/main/ipc-handlers.ts"
+  ]
+ },
+ {
+  "name": "Native permissions (Always-allow grants; the per-session mode chip)",
+  "paths": [
+   "youcoded/desktop/src/main/harness/permission-store.ts",
+   "youcoded/desktop/src/main/harness/native-session-host.ts",
+   "youcoded/desktop/src/main/harness/permission-mode-store.ts",
+   "youcoded/desktop/src/renderer/App.tsx",
+   "youcoded/desktop/src/shared/permission-types.ts",
+   "youcoded/desktop/src/shared/subject-glob.ts",
+   "youcoded/desktop/src/shared/bash-grant-shapes.ts",
+   "youcoded/desktop/src/main/harness/permission-engine.ts",
+   "harness-session.ts",
+   "youcoded/desktop/src/main/harness/tools/rm-target.ts",
+   "youcoded/desktop/src/main/harness/tools/bash-secret-paths.ts",
+   "youcoded/desktop/src/main/harness/tools/shell-words.ts",
+   "youcoded/desktop/src/renderer/components/permissions/deny-list-copy.ts",
+   "youcoded/desktop/src/renderer/components/PermissionsSection.tsx",
+   "youcoded/desktop/src/renderer/components/permissions/describe-rule.ts",
+   "youcoded/desktop/src/renderer/components/permissions/permissions-explainer.ts"
+  ]
+ },
+ {
+  "name": "Admin password card (sudo from chat: approval, the in-app password prompt, what the model is told)",
+  "paths": [
+   "youcoded/desktop/src/main/harness/tools/admin-command.ts",
+   "youcoded/desktop/src/main/harness/askpass/askpass-server.ts",
+   "youcoded/desktop/src/main/harness/askpass/verify.ts",
+   "youcoded/desktop/scripts/askpass/",
+   "youcoded/desktop/src/main/harness/admin-password-service.ts",
+   "youcoded/desktop/src/main/harness/admin-capability.ts",
+   "admin-password-startup.ts",
+   "youcoded/desktop/src/renderer/components/permissions/AdminPasswordPrompt.tsx",
+   "AdminRunStrip.tsx",
+   "AdminRefusedNote.tsx"
+  ]
+ },
+ {
+  "name": "Full Auto safety stops (outside edits, risky commands, specialists)",
+  "paths": [
+   "youcoded/desktop/src/main/harness/permission-broker.ts",
+   "youcoded/desktop/src/main/harness/harness-session.ts",
+   "youcoded/desktop/src/main/harness/specialists/child-ask-router.ts",
+   "youcoded/desktop/src/renderer/components/permissions/FullAutoStops.tsx",
+   "youcoded/desktop/src/renderer/components/ToolCard.tsx"
+  ]
+ },
+ {
+  "name": "Harness evaluator",
+  "paths": [
+   "youcoded/desktop/src/main/harness/eval/run-case.ts",
+   "youcoded/desktop/src/main/harness/eval/matrix.ts",
+   "youcoded/desktop/src/main/harness/eval/assertions.ts",
+   "youcoded/desktop/src/main/harness/eval/judge.ts",
+   "youcoded/desktop/src/main/harness/eval/paths.ts",
+   "youcoded/desktop/src/main/harness/eval/cases/index.ts",
+   "youcoded/desktop/test-engine/harness-eval.mjs",
+   "youcoded/desktop/test-engine/harness-eval-worker.mjs"
+  ]
+ },
+ {
+  "name": "Claude Code's own sign-in, read LIVE",
+  "paths": [
+   "youcoded/desktop/src/main/providers/claude-account.ts",
+   "youcoded/desktop/src/shared/claude-account-types.ts",
+   "youcoded/desktop/src/renderer/components/model/availability.ts",
+   "youcoded/desktop/src/renderer/components/ModelProvidersPopup.tsx",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/runtime/DevTools.kt"
+  ]
+ },
+ {
+  "name": "Sign in with ChatGPT — TWO routes: `codex` (default; the Codex CLI's client id, usage bars, any plan) and `official` (OpenAI's own sign-in, built in but OFF until the Codex route breaks — `YOUCODED_CHATGPT_ROUTE=official`; no usage source; Plus/Pro)",
+  "paths": [
+   "youcoded/desktop/src/main/providers/chatgpt-auth.ts",
+   "youcoded/.github/workflows/chatgpt-route-watch.yml",
+   "youcoded/desktop/test-engine/chatgpt-route-watch.mjs",
+   "main.ts",
+   "youcoded/desktop/src/main/providers/chatgpt-oauth.ts",
+   "youcoded/desktop/src/main/providers/chatgpt-model.ts",
+   "youcoded/desktop/src/main/providers/provider-registry.ts",
+   "youcoded/desktop/src/renderer/components/plan-windows.tsx",
+   "youcoded/desktop/src/renderer/hooks/use-provider-type.ts",
+   "SessionInfo.providerType"
+  ]
+ },
+ {
+  "name": "OpenRouter key check & Sign in with OpenRouter (youcoded#533, 2026-09-18)",
+  "paths": [
+   "youcoded/desktop/src/main/providers/openrouter-health.ts",
+   "youcoded/desktop/src/main/providers/openrouter-oauth.ts",
+   "youcoded/desktop/src/main/providers/provider-error-code.ts",
+   "youcoded/desktop/src/main/providers/provider-registry.ts",
+   "youcoded/desktop/src/renderer/components/ModelProvidersPopup.tsx",
+   "youcoded/desktop/src/renderer/components/AttentionBanner.tsx"
+  ]
+ },
+ {
+  "name": "Local engine & models",
+  "paths": [
+   "youcoded/desktop/src/main/engine/engine-supervisor.ts",
+   "youcoded/desktop/src/main/engine/model-presets.ts",
+   "models.ini",
+   "youcoded/desktop/src/main/engine/rocm-prereqs.ts",
+   "youcoded/desktop/src/main/models/gguf-header.ts",
+   "youcoded/desktop/src/main/models/fit-estimator.ts",
+   "youcoded/desktop/src/main/models/gpu-detector.ts",
+   "youcoded/desktop/src/main/models/quant-parser.ts",
+   ".",
+   "youcoded/desktop/src/main/models/add-vision.ts",
+   "youcoded/desktop/src/main/models/model-downloader.ts",
+   "youcoded/desktop/src/main/models/download-manifest.ts",
+   "youcoded/desktop/src/main/engine/cache-scan.ts",
+   "youcoded/desktop/src/main/providers/provider-registry.ts",
+   "youcoded/desktop/scripts/generate-engine-pin.mjs",
+   "youcoded/desktop/src/shared/engine-types.ts",
+   "EngineCard.tsx",
+   "LocalModelsSection.tsx"
+  ]
+ },
+ {
+  "name": "Voice prompting",
+  "paths": [
+   "youcoded/desktop/src/main/voice/voice-service.ts",
+   "youcoded/desktop/src/main/voice/voice-worker.ts",
+   "youcoded/desktop/src/main/voice/voice-assets.ts",
+   "youcoded/desktop/src/main/voice/voice-pin.ts",
+   "youcoded/desktop/src/renderer/voice-capture.ts",
+   "youcoded/desktop/src/shared/voice-types.ts",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/runtime/VoiceRecognizer.kt"
+  ]
+ },
+ {
+  "name": "Android runtime",
+  "paths": [
+   "youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/runtime/PtyBridge.kt",
+   "youcoded/app/src/main/assets/claude-wrapper.js"
+  ]
+ },
+ {
+  "name": "Prerequisite installer (Git for everyone; Node.js and Claude Code on demand — 2026-10-02 / 2026-09-14)",
+  "paths": [
+   "youcoded/desktop/src/main/prerequisite-installer.ts",
+   "youcoded/desktop/src/main/first-run.ts",
+   "youcoded/desktop/src/main/first-run-local.ts"
+  ]
+ },
+ {
+  "name": "Mascot rigs (the buddy's body, faces and poses)",
+  "paths": [
+   "youcoded/desktop/src/renderer/components/mascot/mascot-poses.ts",
+   "youcoded/desktop/src/renderer/components/mascot/MascotRig.tsx",
+   "youcoded/desktop/src/renderer/components/mascot/rig-body-loop.ts",
+   "youcoded/desktop/src/renderer/components/mascot/default-buddy-rig.ts",
+   "wecoded-marketplace/wecoded-themes-plugin/skills/theme-builder/scripts/build-mascot.mjs",
+   "mascot-faces.mjs",
+   "wecoded-themes/scripts/flatten-rig.mjs",
+   "wecoded-themes/scripts/audit-rigs.mjs"
+  ]
+ },
+ {
+  "name": "Registries & plugins",
+  "paths": [
+   "youcoded/desktop/src/main/claude-code-registry.ts",
+   "youcoded/desktop/src/main/local-theme-synthesizer.ts",
+   "youcoded/desktop/src/shared/bundled-plugins.ts",
+   "youcoded/desktop/src/main/mcp-reconciler.ts",
+   "mcp-manifest.json",
+   "~/.claude.json",
+   "McpReconciler.kt",
+   "wecoded-themes/.github/workflows/validate-theme.yml",
+   "wecoded-themes/scripts/changed-theme-slugs.mjs",
+   "wecoded-themes/scripts/audit-contrast.mjs",
+   "background.average-color",
+   "wecoded-themes/.github/workflows/update-registry.yml"
+  ]
+ },
+ {
+  "name": "Games arcade (4 games, leaderboards, head-to-head)",
+  "paths": [
+   "youcoded/desktop/src/renderer/components/game/game-registry.ts",
+   "youcoded/desktop/src/renderer/components/game/ArcadeShell.tsx",
+   "youcoded/desktop/src/renderer/components/game/arcade-api.ts",
+   "youcoded/desktop/src/renderer/components/game/head-to-head.ts",
+   "youcoded/desktop/src/renderer/components/game/local-best.ts",
+   "youcoded/desktop/src/main/arcade-handlers.ts",
+   "youcoded/desktop/src/renderer/state/game-types.ts",
+   "youcoded/desktop/src/renderer/state/game-reducer.ts",
+   "youcoded/desktop/src/renderer/hooks/useMatchReport.ts",
+   "useChessGame.ts",
+   "usePartyGame.ts",
+   "youcoded/desktop/src/renderer/components/game/ChessBoard.tsx",
+   "ConnectFourBoard.tsx",
+   "youcoded/desktop/partykit/src/chess-room.ts",
+   "connect-four-room.ts",
+   "wecoded-marketplace/worker/src/games/routes.ts",
+   "wecoded-marketplace/worker/src/games/records.ts",
+   "wecoded-marketplace/worker/src/games/registry.ts",
+   "wecoded-marketplace/worker/src/social/presence-room.ts",
+   "wecoded-marketplace/worker/migrations/0007_games.sql"
+  ]
+ },
+ {
+  "name": "Friends presence (who is online; the socket that heals itself after sleep)",
+  "paths": [
+   "youcoded/desktop/src/main/presence-socket.ts",
+   "youcoded/desktop/src/main/social-handlers.ts",
+   "youcoded/desktop/src/main/reconnecting-ws.ts",
+   "youcoded/desktop/src/renderer/hooks/usePresence.ts"
+  ]
+ },
+ {
+  "name": "App telemetry (who used the app — the daily device heartbeat)",
+  "paths": [
+   "youcoded/desktop/src/main/analytics-service.ts",
+   "/app/heartbeat",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/analytics/AnalyticsService.kt",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/analytics/Salt.kt",
+   "youcoded/desktop/src/main/analytics-salt.ts",
+   "youcoded/desktop/src/renderer/components/AboutPopup.tsx",
+   "wecoded-marketplace/worker/src/app/routes.ts",
+   "/app/install",
+   "wecoded-marketplace/worker/src/lib/analytics.ts",
+   "wecoded-marketplace/worker/src/admin/analytics.ts",
+   "/admin/analytics/*",
+   "wecoded-marketplace/worker/src/lib/admin-filter.ts",
+   "youcoded-admin/skills/analytics/dashboard/index.html",
+   "youcoded-admin/skills/analytics/SKILL.md"
+  ]
+ },
+ {
+  "name": "Website analytics (separate from app telemetry)",
+  "paths": [
+   "youcoded/docs/site-analytics.mjs",
+   "youcoded/docs/site-analytics-ui.mjs",
+   "wecoded-marketplace/worker/src/site-analytics/routes.ts",
+   "wecoded-marketplace/worker/src/site-analytics/admin.ts",
+   "wecoded-marketplace/worker/migrations/0008_site_analytics.sql",
+   "youcoded-admin/skills/analytics/dashboard/server.mjs",
+   "youcoded-admin/skills/analytics/dashboard/website-data.mjs"
+  ]
+ },
+ {
+  "name": "Marketplace worker",
+  "paths": [
+   "wecoded-marketplace/worker/src/lib/analytics.ts",
+   "wecoded-marketplace/worker/src/lib/admin-filter.ts"
+  ]
+ },
+ {
+  "name": "Marketplace catalog (serve + hourly ingest)",
+  "paths": [
+   "wecoded-marketplace/worker/src/catalog/routes.ts",
+   "wecoded-marketplace/worker/src/catalog/publish.ts",
+   "wecoded-marketplace/worker/src/catalog/auth.ts",
+   "wecoded-marketplace/worker/migrations/0006_catalog.sql",
+   "wecoded-marketplace/scripts/catalog/build.mjs",
+   "wecoded-marketplace/scripts/catalog/lib/capabilities.mjs",
+   "wecoded-marketplace/scripts/catalog/sources/",
+   "youcoded/desktop/src/main/skill-provider.ts",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/skills/MarketplaceFetcher.kt"
+  ]
+ },
+ {
+  "name": "Claude Code hooks the app registers (`~/.claude/settings.json`)",
+  "paths": [
+   "youcoded/desktop/src/main/hook-reconciler.ts",
+   "youcoded/desktop/src/main/legacy-cleanup.ts",
+   "~/.claude/plugins/youcoded-core/",
+   "youcoded/desktop/src/main/claude-code-registry.ts",
+   "youcoded/desktop/src/main/hook-relay.ts",
+   "EventBridge.kt",
+   "youcoded/desktop/scripts/install-hooks.js",
+   "youcoded/desktop/src/main/claude-settings.ts",
+   "youcoded/desktop/src/main/launch-settings-chores.ts",
+   "youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt"
+  ]
+ },
+ {
+  "name": "Archived youcoded-core plugin (read-only history; not a release target)",
+  "paths": [
+   "youcoded-core/hooks/hooks-manifest.json",
+   "youcoded-core/plugin.json"
+  ]
+ },
+ {
+  "name": "Build & release",
+  "paths": [
+   "youcoded-admin/skills/release/SKILL.md",
+   "youcoded/app/build.gradle.kts",
+   "youcoded/scripts/build-web-ui.sh",
+   "youcoded/.github/workflows/desktop-test-build.yml",
+   "youcoded/desktop/src/shared/version-line.ts"
+  ]
+ }
+]

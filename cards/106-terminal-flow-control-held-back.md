@@ -15,8 +15,8 @@ platform: Desktop only
 vision: chat.converse.multi
 ---
 Progress
-Done: 2026-10-21: pty-worker-flow 'delivers a large flood byte for byte' failed ONCE on Linux 7.2 at load ~90 (12388904 vs 12388903 chars: one extra character in ~12 MB) and passed alone, in 3 reruns, and under added load. Not reproduced; the test now reports the first differing position and its context on failure (session/fix-anthropic-many-image-brick), so the next occurrence says whether it is a doubled \\r or duplicated output.
-Next: If it recurs, read the first-difference message before changing the worker.
+Done: 2026-10-08: the screen-update cap and most of the flow control shipped (youcoded#616; the cap is at transcript-batch.ts:155). 2026-10-14: a program's last lines are kept more reliably (youcoded#619). 2026-10-21: a rare test failure was made easier to diagnose (youcoded#670). Still open: stale screen parts under very heavy output; typing and lag with 17 or more chats open (partly fixed 2026-09-17: a chat's terminal now loads only when first viewed); program end lines possibly lost.
+Next: re-test the three open items with a real build before deciding a fix.
 Blocked: nothing recorded.
 
 Chats

@@ -165,20 +165,37 @@ case "$CMD" in
 
   load)
     what=${1:?"load what? release | beta | <tag> | run:<id> | <file>"}
-    case $OS in win) pat='YouCoded-Installer-*.exe' ;; mac) pat='YouCoded-Installer-*-x64.dmg' ;; linux) pat="${VM_LINUX_FMT:-*.AppImage}" ;; esac
+    # WHY ext as well as pat (card #16 d): pat is the exact installer we want (the Mac guest is x64, so the x64 dmg), ext is
+    # any installer of this platform. A CI run's artifact may be named differently, and run:<id> used to DELETE every file
+    # not matching pat, so a differently-named dmg ended as "nothing matched" with the evidence already gone.
+    case $OS in win) pat='YouCoded-Installer-*.exe'; ext='*.exe' ;; mac) pat="${VM_MAC_FMT:-YouCoded-Installer-*-x64.dmg}"; ext='*.dmg' ;; linux) pat="${VM_LINUX_FMT:-*.AppImage}"; ext="$pat" ;; esac
     rm -rf "$SERVE/incoming"; mkdir -p "$SERVE/incoming"
     case "$what" in
       release) gh release download -R $REPO -p "$pat" -D "$SERVE/incoming" ;;
       beta) tag=$(gh release list -R $REPO --json tagName,isPrerelease -q '[.[]|select(.isPrerelease)][0].tagName')
             gh release download "$tag" -R $REPO -p "$pat" -D "$SERVE/incoming" ;;
-      run:*) gh run download "${what#run:}" -R $REPO -D "$SERVE/incoming"
-             find "$SERVE/incoming" -type f ! -name "$pat" -delete ;;
+      run:*) gh run download "${what#run:}" -R $REPO -D "$SERVE/incoming" ;;
       v*|[0-9]*) gh release download "$what" -R $REPO -p "$pat" -D "$SERVE/incoming" ;;
       *) cp "$what" "$SERVE/incoming/" ;;
     esac
-    f=$(find "$SERVE/incoming" -type f -name "$pat" | head -1)
-    [ -n "$f" ] || f=$(find "$SERVE/incoming" -type f | head -1)
-    [ -n "$f" ] || { echo "nothing matched $pat" >&2; exit 1; }
+    f=$(find "$SERVE/incoming" -type f -name "$pat" | sort | head -1)
+    if [ -z "$f" ]; then
+      # WHY three tiers, and refuse on a tie (review 2026-11-10): the first rewrite dropped the old "any file in incoming/" fallback, so
+      # a .deb/.msi/.zip, or a run artifact with an unexpected name, said "nothing matched" where it used to load. Order: this platform's
+      # installer extension, then any file that is not obvious release metadata. With more than one candidate at a tier we do not guess
+      # (an unrelated .exe or a sibling archive could be loaded into the guest): list them and stop.
+      cands=$(find "$SERVE/incoming" -type f -name "$ext" | sort)
+      [ -n "$cands" ] || cands=$(find "$SERVE/incoming" -type f ! -name '*.yml' ! -name '*.yaml' ! -name '*.json' ! -name '*.txt' ! -name '*.md' ! -name '*.blockmap' ! -name '*.sha*' ! -name '*.sig' ! -name '*.asc' | sort)
+      if [ -n "$cands" ] && [ "$(printf '%s\n' "$cands" | grep -c .)" -gt 1 ]; then
+        echo "nothing matched $pat, and several other files could be the installer:" >&2
+        printf '%s\n' "$cands" | sed "s|^$SERVE/incoming/|  |" >&2
+        echo "load one explicitly: vm.sh $OS load <file>" >&2; exit 1
+      fi
+      f=$cands
+      [ -z "$f" ] || echo "note: nothing matched $pat; using $(basename "$f")" >&2
+    fi
+    [ -n "$f" ] || { echo "nothing matched $pat (or $ext)" >&2; exit 1; }
+    case $OS:$f in mac:*arm64*) echo "warning: this looks like an arm64 build; the Mac guest is x64 and cannot run it" >&2 ;; esac
     base=$(basename "$f"); mv "$f" "$SERVE/$base"
     # WHY HTTP from 10.0.2.2: the guest-side copy from the SMB share silently copied nothing
     # (2026-09-10), and only a real download can carry the internet mark.
@@ -186,7 +203,12 @@ case "$CMD" in
       setsid nohup python3 -m http.server "$HTTP_PORT" --bind 127.0.0.1 -d "$SERVE" > "$SHOTS/http.log" 2>&1 < /dev/null &
       sleep 1
     fi
-    url="http://10.0.2.2:$HTTP_PORT/$base"
+    # WHY encoded and quoted (card #16 d): a name with a space or quote broke the guest's URL and shell command.
+    # enc is the percent-encoded URL form; qbase is the name escaped for the guest's shell; psbase doubles
+    # apostrophes for PowerShell's single-quoted strings.
+    enc=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$base")
+    qbase=$(printf '%q' "$base"); psbase=${base//\'/\'\'}
+    url="http://10.0.2.2:$HTTP_PORT/$enc"
     case $OS in
       win)
         # WHY the Zone.Identifier stream: it is the "Mark of the Web" a browser download carries;
@@ -195,15 +217,15 @@ case "$CMD" in
         # WHY the team-device file (analytics deck D-2/D-3): a test VM runs an official installer, so
         # without it every fresh guest counts as a brand-new real user. The app marks its check-ins
         # "team" and the owner dashboard leaves them out. It sits beside, not inside, setup's state.
-        ps="New-Item -ItemType Directory -Force 'C:\\Users\\$GUEST_USER\\.claude' | Out-Null; New-Item -ItemType File -Force 'C:\\Users\\$GUEST_USER\\.claude\\youcoded-team-device' | Out-Null; \$ProgressPreference='SilentlyContinue'; \$d='C:\\Users\\$GUEST_USER\\Downloads\\$base'; Invoke-WebRequest -UseBasicParsing '$url' -OutFile \$d; Set-Content -Path \$d -Stream Zone.Identifier -Value \"[ZoneTransfer]\`r\`nZoneId=3\`r\`nHostUrl=https://youcoded.ai/\"; (Get-Item \$d).Length"
+        ps="New-Item -ItemType Directory -Force 'C:\\Users\\$GUEST_USER\\.claude' | Out-Null; New-Item -ItemType File -Force 'C:\\Users\\$GUEST_USER\\.claude\\youcoded-team-device' | Out-Null; \$ProgressPreference='SilentlyContinue'; \$d='C:\\Users\\$GUEST_USER\\Downloads\\$psbase'; Invoke-WebRequest -UseBasicParsing '$url' -OutFile \$d; Set-Content -Path \$d -Stream Zone.Identifier -Value \"[ZoneTransfer]\`r\`nZoneId=3\`r\`nHostUrl=https://youcoded.ai/\"; (Get-Item \$d).Length"
         out=$(VM_EXEC_TIMEOUT=900 bash "$(dirname "$0")/vm-exec.sh" "$DIR" powershell.exe -NoProfile -Command "$ps")
         echo "$out" | grep -q "^exitcode: 0" || { echo "$out" >&2; echo "load failed" >&2; exit 1; } ;;
       linux)
         # WHY wget: stock Ubuntu desktop ships without curl.
-        gssh "mkdir -p ~/.claude && touch ~/.claude/youcoded-team-device && wget -q -O ~/Downloads/$base '$url' && ls -l ~/Downloads/$base" ;;
+        gssh "mkdir -p ~/.claude && touch ~/.claude/youcoded-team-device && wget -q -O ~/Downloads/$qbase '$url' && ls -l ~/Downloads/$qbase" ;;
       mac)
         # WHY the quarantine xattr: Gatekeeper only assesses files a browser marked as downloaded.
-        gssh "mkdir -p ~/.claude && touch ~/.claude/youcoded-team-device && curl -fsSL -o ~/Downloads/$base '$url' && xattr -w com.apple.quarantine '0081;$(printf '%x' "$(date +%s)");Safari;' ~/Downloads/$base && ls -l ~/Downloads/$base" ;;
+        gssh "mkdir -p ~/.claude && touch ~/.claude/youcoded-team-device && curl -fsSL -o ~/Downloads/$qbase '$url' && xattr -w com.apple.quarantine '0081;$(printf '%x' "$(date +%s)");Safari;' ~/Downloads/$qbase && ls -l ~/Downloads/$qbase" ;;
     esac
     echo "loaded $base into $NAME's Downloads (marked as an internet download; guest marked as a team device for analytics)"
     ;;

@@ -1,0 +1,134 @@
+{
+  "title": "Your YouCoded plan, in one place",
+  "key": "master-plan-questions",
+  "out": "master-plan.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Planning Page",
+      "path": "The first screen of your private planning Page",
+      "headline": "What should the planning Page help you understand first?",
+      "today": "YouCoded's direction, roadmap entries and detailed plans live in separate documents. Their current status still needs checking, and the Page has not been designed.",
+      "problem": "When you open a shared plan, it may be hard to tell the long-term vision from the work that needs attention now.",
+      "proposal": "Choose what the opening view puts first. The Page can still link the vision, active work and detailed plans; this is about what you see first.",
+      "options": [
+        {
+          "id": "vision-first",
+          "label": "Vision first",
+          "pros": ["Shows what the work is ultimately for.", "Makes it easier to see how individual plans fit together."],
+          "cons": ["You may need to look further down to find what needs attention now."]
+        },
+        {
+          "id": "active-work",
+          "label": "Active work",
+          "pros": ["Puts current priorities and ongoing work within easy reach.", "Helps you decide what to look at next."],
+          "cons": ["The long-term direction may feel less prominent at first."],
+          "recommended": true
+        },
+        {
+          "id": "balanced-overview",
+          "label": "Balanced overview",
+          "pros": ["Shows direction and current work together.", "Avoids making either one the whole story."],
+          "cons": ["Each part may get less room and detail on the opening view."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Planning Page",
+      "path": "Editing an initiative or opening its detailed plan",
+      "headline": "What should you be able to edit directly on the planning Page?",
+      "today": "Planning is kept in version-controlled records and linked Markdown plans. The private Page is not built yet; public information is intended to be a separate, read-only snapshot.",
+      "problem": "If every change means leaving the Page to edit files, small planning updates can feel cumbersome. Editing long documents in a compact view may also get in the way.",
+      "proposal": "Choose how much editing belongs on the Page. Detailed plans can remain openable as documents either way.",
+      "options": [
+        {
+          "id": "structured-fields",
+          "label": "Planning fields",
+          "summary": "Edit the structured planning details on the Page; open detailed plans as documents to edit them.",
+          "pros": ["Makes common updates quick and easy to scan.", "Keeps long-form writing in the document where it is easiest to work."],
+          "cons": ["You leave the Page to revise a detailed plan."],
+          "recommended": true
+        },
+        {
+          "id": "edit-linked-documents",
+          "label": "Edit plan documents",
+          "summary": "Also edit the full linked plans directly in the Page.",
+          "pros": ["Lets you read and revise a plan without switching views.", "Keeps more of the planning work in one place."],
+          "cons": ["Long documents can be harder to edit comfortably in a planning view.", "The Page has more editing controls to learn."]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Choosing which files Pages can use",
+      "intro": "These questions are about reusable file access for Pages—not a general file browser."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Pages file access",
+      "path": "Choosing files or a folder for a Page to use",
+      "headline": "How should you let a Page keep access to your files?",
+      "today": "Pages can keep their own small data and make mediated network requests, but they do not have general access to your device's files.",
+      "problem": "A Page that works with your documents would otherwise need you to choose files again and again—or might ask for broader access than you intended.",
+      "proposal": "Choose how ongoing access should work. Access would be limited to what you approve, shown when the Page asks, and revocable; reading and changing files would be separate permissions.",
+      "options": [
+        {
+          "id": "selected-files",
+          "label": "Choose files each time",
+          "pros": ["You decide exactly which files are available for each task.", "Nothing keeps access to a folder in the background."],
+          "cons": ["Repeated work means choosing the same files again."]
+        },
+        {
+          "id": "scoped-folder",
+          "label": "Grant a folder",
+          "pros": ["A Page can keep working with files in a folder you chose.", "You do not have to pick the same files every time."],
+          "cons": ["You need to review and revoke folder access when you no longer want it."],
+          "recommended": true
+        },
+        {
+          "id": "both-access-options",
+          "label": "Both choices",
+          "summary": "Choose individual files for one-off work, or grant a folder for ongoing work; manage and revoke folder access later.",
+          "pros": ["Fits quick tasks and repeated work.", "You can choose a smaller set of files when that is all a Page needs."],
+          "cons": ["There are two ways to choose access, so the choice needs a clear explanation."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Public planning snapshot",
+      "path": "Reviewing what will appear on the public planning page",
+      "headline": "How should you approve updates to the public planning page?",
+      "today": "The public view is intended to be a generated, read-only snapshot. Private planning content must be left out, not sent to a public page and merely hidden.",
+      "problem": "A private note or unfinished plan appearing publicly could reveal information you never meant to share.",
+      "proposal": "Choose when a public snapshot may be updated. Its contents should be shown for review before publication, with private material excluded from the public output.",
+      "options": [
+        {
+          "id": "approve-every-update",
+          "label": "Approve each update",
+          "pros": ["You see the proposed public information before it goes live.", "Nothing new is published until you approve it."],
+          "cons": ["You must review and approve every update."],
+          "recommended": true
+        },
+        {
+          "id": "approve-changes-only",
+          "label": "Approve content changes",
+          "pros": ["You review changes to what the public can see.", "Routine updates that do not change public content need not interrupt you."],
+          "cons": ["You need a clear way to tell content changes from routine updates."]
+        },
+        {
+          "id": "keep-it-private",
+          "label": "Keep it private",
+          "pros": ["No planning information is published publicly.", "You can revisit public sharing later."],
+          "cons": ["Visitors cannot see an up-to-date public planning page."]
+        }
+      ]
+    }
+  ]
+}

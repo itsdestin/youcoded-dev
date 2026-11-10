@@ -1,0 +1,40 @@
+{
+ "deck": "narrow-screens-live-4",
+ "started": "2026-11-05T10:03:17.271Z",
+ "submitted": "2026-11-05T10:07:27Z",
+ "cur": 3,
+ "answers": {
+  "L-1": {
+   "v": "yes",
+   "t": 1793873055223,
+   "seconds": 58,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "L-2": {
+   "v": "pick",
+   "pick": "dropdown",
+   "t": 1793873137352,
+   "seconds": 82,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "L-3": {
+   "v": "yes",
+   "t": 1793873180512,
+   "note": "the fad effect seems a little broken on the right side? especially compared to the quick chips above the input bar",
+   "seconds": 43,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "none-yet",
+   "t": 1793873246614,
+   "note": "this would be a later think to replace with the full screen/side panel hub and a different title style. not a think today. reparately we need to make the whole hoverable area of the current name dropdown button area clickable. ",
+   "seconds": 67,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}

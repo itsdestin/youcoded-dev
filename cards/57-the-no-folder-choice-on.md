@@ -3,21 +3,22 @@ id: 57
 title: "No folder" chats and a built-in "Your Assistant" project
 stage: planning
 priority: P1
-tags: native-harness, sessions, release-blocker, projects, feature
+tags: native-harness, sessions, projects, feature
 branch: 57-the-no-folder-choice-on
-roadmap: native-harness: **v1.3.1 release blocker.** The "No folder" choice on the ne
 created: 2026-10-15
 summary: Chats with no project folder: test the "No folder" choice, decide incognito rules, and maybe a built-in "Your Assistant" project.
 area: Chat
 side: both
 vision: projects.folder.nofolder, projects.folder.builtin
+work: session/android-ux-test
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: Chats can start with "No folder," which runs the assistant in a clean, empty folder the app keeps (no files or instructions). Shipped in the September 2026 build. On the phone, a session with no folder now opens that same clean spot (shipped 2026-09-16).
+Next: re-test the desktop "No folder" choice; decide what an incognito chat keeps and leaves out (not built yet); decide whether a built-in "Your Assistant" project gets built (not built yet).
+Blocked: the phone part is in an unmerged Android test branch (session/android-ux-test), waiting on card #213.
 
 Chats
+- 2026-11-08 session/android-ux-test: Phone stopgap (card #213, youcoded 47d32af06): the phone no longer offers its app-private Home as a project, shows the No folder row, and opens a new session with no folder there. Destin 2026-11-08: fold the phone into this card's rethink of presets and no-folder sessions.
 
 From the old roadmap (native-harness › sessions, status needs-verify, seen on all, last checked 2026-09-19)
 **v1.3.1 release blocker.** The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested or thought through (Destin, 2026-09-19: "we didn't really like think that through… I didn't test it at all"). Test that it works, then turn it into an incognito mode; what incognito keeps and leaves out needs deciding. Goes with the "Your Assistant" item below

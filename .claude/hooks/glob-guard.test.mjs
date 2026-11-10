@@ -539,3 +539,40 @@ for (const cmd of [
     assert.equal(run(cmd).blocked, false, `should have allowed: ${cmd}`);
   });
 }
+
+// ---------------------------------------------------------------------------
+// Wait-loop note — never a block, only context for Claude (stdout JSON, exit 0)
+// ---------------------------------------------------------------------------
+
+/** The additionalContext the hook adds for `command`, or '' when it adds none. */
+function note(command) {
+  const r = spawnSync('python3', [HOOK], {
+    input: JSON.stringify({ tool_name: 'Bash', tool_input: { command }, cwd: CWD }),
+    encoding: 'utf8', env: { ...process.env, GLOB_GUARD_PROC: NO_PROC },
+  });
+  assert.equal(r.status, 0, 'a wait loop is never blocked');
+  return r.stdout.trim() ? JSON.parse(r.stdout).hookSpecificOutput.additionalContext : '';
+}
+
+test('notes (does not block) the loop that ran 32 hours on 2026-11-03', () => {
+  assert.match(note('cd /w; until rg -q "journeys:" scratch/v2.log 2>/dev/null && rg -q "pictures" scratch/v2.log; do sleep 10; done; tail -n 15 scratch/v2.log'), /no time limit/);
+});
+
+test('notes a multi-line while … sleep wait', () => {
+  assert.notEqual(note('while ! test -f done.flag\ndo\n  sleep 2\ndone'), '');
+});
+
+test('adds no note when the loop is wrapped in timeout', () => {
+  assert.equal(note("timeout 600 bash -c 'until rg -q ok log; do sleep 5; done'"), '');
+});
+
+test('adds no note when the loop counts or checks elapsed time', () => {
+  assert.equal(note('for i in $(seq 30); do rg -q ok log && break; sleep 1; done'), '');
+  assert.equal(note('until rg -q ok log || [ $SECONDS -gt 300 ]; do sleep 5; done'), '');
+  assert.equal(note('n=0; while ! curl -s x; do n=$((n+1)); sleep 1; done'), '');
+});
+
+test('adds no note to ordinary commands or loops without sleep', () => {
+  assert.equal(note('npm test'), '');
+  assert.equal(note('while read l; do echo "$l"; done < f'), '');
+});

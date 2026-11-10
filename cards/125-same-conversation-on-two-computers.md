@@ -2,6 +2,7 @@
 id: 125
 title: Same chat on two computers: warnings and takeover ideas
 stage: planning
+work: session/sync-rethink-investigation
 priority: P3
 tags: sync, bug
 report: docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
@@ -14,7 +15,7 @@ side: both
 vision: sync.added.takeover
 ---
 Progress
-Done: nothing recorded.
+Done: Chat moves between computers with a confirmed handoff (youcoded#557, merged 2026-09-24, in v1.3.3).
 Next: not decided.
 Blocked: nothing recorded.
 

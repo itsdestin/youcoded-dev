@@ -190,7 +190,16 @@ def main(argv):
         def log_message(self, *x): pass
         def _j(self, code, obj):
             b = json.dumps(obj).encode(); self.send_response(code); self.send_header('Content-Type', 'application/json'); self.send_header('Content-Length', str(len(b))); self.end_headers(); self.wfile.write(b)
+        def _wrong_origin(self):
+            # WHY (code scanning, 2026-11): same pin as ui-review/deck/serve.py. Host alone stopped
+            # DNS rebinding on POST only; a cross-site form POST still carries Host 127.0.0.1, so
+            # Origin must be checked too, and GETs (answers, stills) needed the Host pin as well.
+            port = self.server.server_address[1]
+            mine = {f'127.0.0.1:{port}', f'localhost:{port}', f'[::1]:{port}'}
+            origin = self.headers.get('Origin')
+            return (self.headers.get('Host') or '') not in mine or (origin is not None and origin not in {f'http://{m}' for m in mine})
         def do_GET(self):
+            if self._wrong_origin(): return self._j(403, {'error': 'loopback only'})
             if self.path == '/answers': return self._j(200, json.load(open(OUT)) if os.path.exists(OUT) else {})
             if self.path.startswith('/stills/'):
                 f = os.path.join(STILLS, os.path.basename(self.path))
@@ -199,8 +208,7 @@ def main(argv):
                 return self._j(404, {})
             self.send_response(200); self.send_header('Content-Type', 'text/html; charset=utf-8'); self.send_header('Content-Length', str(len(page))); self.end_headers(); self.wfile.write(page)
         def do_POST(self):
-            host = (self.headers.get('Host') or '').split(':')[0]
-            if host not in ('127.0.0.1', 'localhost'): return self._j(403, {'error': 'loopback only'})
+            if self._wrong_origin(): return self._j(403, {'error': 'loopback only'})
             n = int(self.headers.get('Content-Length') or 0); state = json.loads(self.rfile.read(n) or b'{}')
             if self.path == '/submit':
                 import datetime; state['submitted'] = datetime.datetime.now().isoformat(timespec='seconds')

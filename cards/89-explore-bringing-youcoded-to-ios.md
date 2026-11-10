@@ -5,7 +5,6 @@ stage: explore
 priority: P2
 tags: other-features, misc, feature
 branch: 89-explore-bringing-youcoded-to-ios
-roadmap: other-features: Explore bringing YouCoded to iOS. Today an iPhone only reach
 created: 2026-10-15
 summary: iPhones can only use YouCoded through Safari pointed at another device; compare ways to offer a real iPhone app.
 area: Devices & sync
@@ -13,9 +12,9 @@ side: both
 vision: everywhere.added.ios
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: nothing yet. No iPhone work has started and no branch exists.
+Next: a written comparison of the three options (a full iPhone app, a phone app that only controls a computer, or a web client) covering cost, App Store limits and what each can do; timing follows the Android rebuild (card 1).
+Blocked: Destin postponed this at the 2026-10-05 triage, saying 1.3.2 or later and tied to the Google Play / iPhone listings.
 
 Chats
 

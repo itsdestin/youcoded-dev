@@ -1,0 +1,38 @@
+{
+ "deck": "security-changes-round4",
+ "started": "2026-11-03T06:42:14.278Z",
+ "submitted": "2026-11-03T06:43:46Z",
+ "cur": 3,
+ "answers": {
+  "E-1": {
+   "note": "",
+   "t": 1793688159830,
+   "v": "yes",
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-1b": {
+   "v": "other",
+   "t": 1793688213512,
+   "note": "what? this still doesn't look right. i need to review all of these surfaces. and what you're actually changing",
+   "seconds": 54,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1793688221275,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-3": {
+   "v": "yes",
+   "t": 1793688225660,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

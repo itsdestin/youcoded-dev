@@ -1,0 +1,132 @@
+{
+  "title": "Usage statistics — round 2, decluttered",
+  "key": "usage-stats-review-2",
+  "out": "usage-stats.review-2.html",
+  "stage": "design",
+  "images": "images/usage-stats.review-2",
+  "runs": {
+    "after": "runs2/after"
+  },
+  "labels": {
+    "after": "Proposed"
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Chat",
+      "path": "Click the 5h, 7d or Cost chip in the bar along the bottom of the window",
+      "crop": "popup",
+      "headline": "The Usage window, redone: one account at a time, with your use drawn against its limit.",
+      "changed": "Tabs pick the account. Under its limit bars, two charts share one timeline: how full the 7-day limit was (it drops at each reset), and tokens per day. Then each model's share.",
+      "notice": "You can see which days pushed your limit up, and when it reset, without boxes or tiles in the way.",
+      "risk": "The numbers here are made up.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "id": "B-2",
+      "surface": "Chat",
+      "path": "Usage window → 24 hours",
+      "crop": "popup-24h",
+      "headline": "24 hours pairs your hourly use with the 5-hour limit.",
+      "changed": "The top line switches to the 5-hour limit, and the bars become tokens per hour. 2 weeks and 3 months use the 7-day limit.",
+      "notice": "Each range answers one question: am I burning through the 5-hour limit today, or the weekly one?",
+      "risk": "Hourly history is kept for the last day only; longer ranges are by day.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "id": "B-3",
+      "surface": "Chat",
+      "path": "Usage window → ChatGPT",
+      "crop": "popup-chatgpt",
+      "headline": "ChatGPT's tab adds its per-model limit and extra credits under the plan bars.",
+      "changed": "The same layout, plus the two lines you approved for the ChatGPT card.",
+      "notice": "Everything that can stop a ChatGPT reply is on one screen.",
+      "risk": "Those two lines appear only when ChatGPT reports them.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "id": "B-4",
+      "surface": "Chat",
+      "path": "Usage window → OpenRouter",
+      "crop": "popup-openrouter",
+      "headline": "OpenRouter shows credit left and dollars spent per day instead of a limit.",
+      "changed": "OpenRouter has no plan limit, so there is no top line: credit left, then money spent per day, then each model's cost.",
+      "notice": "You see how fast your balance is going and which model is spending it.",
+      "risk": "Only shown once your OpenRouter key works.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "id": "B-5",
+      "surface": "Settings",
+      "path": "Settings → Assistant settings → Cloud providers, scrolled to the bottom",
+      "crop": "settings-usage",
+      "headline": "The same view sits at the bottom of Cloud providers, as you asked.",
+      "changed": "Under the accounts and your own API keys, a Usage heading and the same view as the window. The separate Usage tab is gone.",
+      "notice": "The popup and Settings always show identical numbers, because they are one piece.",
+      "risk": "You scroll past the account cards to reach it.",
+      "highlight": {
+        "box": [
+          1,
+          31,
+          98,
+          68
+        ]
+      }
+    }
+  ],
+  "crops": {
+    "popup": [
+      "u",
+      "popup",
+      "420x525+510+188"
+    ],
+    "popup-openrouter": [
+      "u",
+      "popup-openrouter",
+      "420x408+510+246"
+    ],
+    "popup-chatgpt": [
+      "u",
+      "popup-chatgpt",
+      "420x588+510+156"
+    ],
+    "popup-24h": [
+      "u",
+      "popup-24h",
+      "420x525+510+188"
+    ],
+    "settings-usage": [
+      "u",
+      "settings-usage",
+      "644x700+486+100"
+    ]
+  }
+}

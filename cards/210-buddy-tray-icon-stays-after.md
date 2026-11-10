@@ -2,6 +2,7 @@
 id: 210
 title: Buddy tray icon stays after turning Minimize to tray off (Linux)
 stage: explore
+priority: P3
 tags: buddy, desktop, bug, linux
 related: 85
 vision: yours.look.buddy

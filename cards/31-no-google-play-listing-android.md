@@ -4,7 +4,6 @@ title: Public launch: company paperwork and the Google Play listing
 stage: planning
 priority: P1
 tags: dev-workspace, release, android, operations, housekeeping
-release: v1.3.2
 report: docs/active/handoffs/2026-10-20-product-formalization-status.md
 branch: 31-no-google-play-listing-android
 roadmap: dev-workspace: No Google Play listing — Android installs only from a GitHub
@@ -15,9 +14,9 @@ platform: Android only
 vision: everywhere.added.play, together.added.legal
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: 2026-11-05: the privacy policy on the website was rewritten to match what the app and the server really do (youcoded PR #717).
+Next: Destin has not decided when Google Play happens. The Play developer account (in the company's name) and the trademark filing are not started.
+Blocked: nothing recorded; the Play listing waits on the Android rebuild (card 1, phase P6).
 
 See also #1: The Android rebuild in 1 aims at a Google Play listing; 31 is the Play account and store paperwork that listing needs.
 

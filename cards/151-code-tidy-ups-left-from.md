@@ -2,6 +2,7 @@
 id: 151
 title: Code tidy-ups left from older reviews
 stage: explore
+priority: P3
 tags: dev-workspace, housekeeping, desktop, remote-access
 branch: 151-code-tidy-ups-left-from
 created: 2026-10-16
@@ -11,9 +12,9 @@ area: Developer tools
 side: behind
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Items 1-2 shipped earlier. On branch session/workspace-tools-batch (not merged) (app): item 3 - three copied status-reading loops are one tested helper, behaviour identical; item 4 - one rule decides whether two folder paths are the same folder (capital letters ignored on Windows and Mac only), used everywhere including add, rename and describe. Only visible effect: on Linux, 'Docs' and 'docs' are now two folders, not one.
+Next: Destin 2026-11-10: item 5 DELETED - the unused plugin-settings plumbing, including the dead missing-settings check (app PR #727, commit e325d7e4c; a test fails if it grows back). Items 1 and 2 remain.
+Blocked: 
 
 Chats
 

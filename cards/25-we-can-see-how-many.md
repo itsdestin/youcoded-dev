@@ -12,8 +12,8 @@ area: Settings
 side: behind
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: Setup steps, stopped-coming-back and team-device filtering shipped with card #211 (youcoded PR #711, Nov 2 2026). Still not decided: which features people use, and whether to collect that at all (a privacy choice for Destin).
+Next: Destin decides whether to scope a per-feature usage plan, or to close this card as covered by #211 with the usage question moved to a new card.
 Blocked: nothing recorded.
 
 Chats

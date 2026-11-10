@@ -1,0 +1,124 @@
+{
+ "deck": "security-changes-round3",
+ "started": "2026-11-02T10:19:59.260Z",
+ "submitted": "2026-11-02T10:23:08Z",
+ "cur": 15,
+ "answers": {
+  "W-2": {
+   "v": "yes",
+   "t": 1793614828793,
+   "seconds": 30,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-3": {
+   "v": "yes",
+   "t": 1793614839614,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-4": {
+   "v": "yes",
+   "t": 1793614843586,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-5": {
+   "v": "yes",
+   "t": 1793614847492,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-1": {
+   "v": "yes",
+   "t": 1793614873801,
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-1b": {
+   "v": "other",
+   "t": 1793614899647,
+   "note": "this is too busy and cluttered",
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1793614921578,
+   "note": "replace got it with an x in the top right",
+   "seconds": 22,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-1b": {
+   "v": "yes",
+   "t": 1793614929746,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-1": {
+   "v": "yes",
+   "t": 1793614939132,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "yes",
+   "t": 1793614942899,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "yes",
+   "t": 1793614946648,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-1": {
+   "v": "other",
+   "t": 1793614969887,
+   "note": "that's not how that's supposed to look and not how we've styled this anywhere else. fix it",
+   "seconds": 23,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-2": {
+   "v": "yes",
+   "t": 1793614974626,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-1": {
+   "v": "yes",
+   "t": 1793614976853,
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-2": {
+   "v": "yes",
+   "t": 1793614979406,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "same-site",
+   "t": 1793614987679,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

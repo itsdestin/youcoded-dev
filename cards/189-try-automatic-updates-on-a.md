@@ -2,6 +2,7 @@
 id: 189
 title: Try automatic updates on a real Mac and Windows computer before the next release
 stage: planning
+priority: P2
 tags: desktop, updates, release
 related: 183, 188
 branch: 189-try-automatic-updates-on-a
@@ -10,7 +11,7 @@ why: Automatic updates (#183) are merged; the install steps (Mac swap and passwo
 ---
 Progress
 Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Next: pick a Mac (admin and non-admin) and a Windows computer, and run the install steps by hand: Mac password box and disk-image fallback, Windows quiet install on quit, and Restart to update.
+Blocked: needs a real Mac and a real Windows computer; none are available in this workspace.
 
 Chats

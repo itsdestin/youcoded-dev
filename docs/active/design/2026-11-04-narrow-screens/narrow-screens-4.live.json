@@ -1,0 +1,137 @@
+{
+  "title": "Phones and narrow windows — round 4",
+  "key": "narrow-screens-live-4",
+  "out": "narrow-screens-4.live.html",
+  "stage": "design",
+  "live": {
+    "worktree": "sessions/narrow-screen-proposals/youcoded",
+    "paneWidth": 390
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Top bar",
+      "path": "The strip across the top of a phone screen",
+      "headline": "Is the status-lights top bar tidy enough now?",
+      "hint": "Tap the name or the lights to open your sessions; the lights fade while the list is open. Hold the pointer over the name to see the one shared highlight.",
+      "changed": "The name, its arrow and the lights are one button with one highlight, and tapping the lights opens the list too. The arrow sits closer to the name. The lights are centred under the name and hide while the list is open.",
+      "notice": "Less empty space between the name and the arrow, and the lights belong to the name.",
+      "risk": "On a phone with many sessions the lights stop at 12; the rest only show in the list.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640,
+        "params": {
+          "platform": "android",
+          "narrowTop": "lights"
+        }
+      },
+      "yes": "Yes, this",
+      "no": "Not yet"
+    },
+    {
+      "id": "L-2",
+      "surface": "Session list",
+      "path": "Tap the session name at the top",
+      "headline": "How should the session list open from the name?",
+      "hint": "Tap the session name in each phone. Round 2 didn't settle this, so the lights bar has used the first one so far.",
+      "risk": "All three use the squeezed phone rows: status as a coloured dot, the model name alone, and the folder name given room first.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640
+      },
+      "variants": [
+        {
+          "id": "dropdown",
+          "label": "Drops down, full width",
+          "summary": "Opens under the top bar, edge to edge, the way the list opens today.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "lights",
+            "narrowList": "dropdown"
+          },
+          "app": "default"
+        },
+        {
+          "id": "sheet",
+          "label": "Slides up from the bottom",
+          "summary": "Rises from the bottom with a grab bar; New session and Resume sit at the bottom edge, in thumb reach. Tap the dimmed chat to close.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "lights",
+            "narrowList": "sheet"
+          },
+          "app": "default"
+        },
+        {
+          "id": "full",
+          "label": "Its own screen",
+          "summary": "A whole screen titled \"Your sessions\" with a close button.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "lights",
+            "narrowList": "full"
+          },
+          "app": "default"
+        }
+      ]
+    },
+    {
+      "id": "L-3",
+      "surface": "Status pills",
+      "path": "The row of pills under the message box, on a phone browser connected to your computer",
+      "headline": "Do the pills line up with the shortcut chips above them now?",
+      "hint": "Compare the pill row with the Journal / Inbox chips above the message box, then swipe it sideways.",
+      "changed": "The pills now use the shortcut chips' own measures: the same height, rounder corners, the same inner padding and gap, and the same distance from the screen edge.",
+      "notice": "The first pill starts where the first chip starts, and pills no longer slide under the edge fade at rest.",
+      "risk": "On the Android app the shortcut chips are a little taller than in a phone browser, so there the two rows would differ by a few pixels until the pills are rebuilt from the chips' shared piece.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640,
+        "params": {
+          "connection": "remote",
+          "narrowPills": "compact"
+        }
+      },
+      "yes": "Yes, this",
+      "no": "Not yet"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Top bar",
+      "path": "Settings → Appearance",
+      "headline": "What should the Appearance choice switch between?",
+      "today": "Phones have one top bar: a pill with the session name, a \"+10\" chip and an arrow, with ☰ on the left.",
+      "problem": "You chose a choice in Appearance, and you've now picked the status-lights bar. The choice needs two things to switch between.",
+      "proposal": "Offer the new status-lights bar and today's bar, so anyone who preferred the old one keeps it.",
+      "options": [
+        {
+          "id": "today-vs-lights",
+          "label": "Today's bar or the lights bar",
+          "pros": [
+            "Nobody loses the layout they're used to.",
+            "Both bars already exist, so it adds the least to keep working."
+          ],
+          "cons": [
+            "Today's bar still has the cramped \"+10\" chip for anyone who keeps it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "none-yet",
+          "label": "No choice for now",
+          "pros": [
+            "One phone layout to keep working while the lights bar settles in.",
+            "The choice can be added once people say they miss the old bar."
+          ],
+          "cons": [
+            "People who prefer today's bar have no way back."
+          ]
+        }
+      ]
+    }
+  ]
+}

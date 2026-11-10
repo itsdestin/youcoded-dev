@@ -1,0 +1,43 @@
+{
+  "title": "Voice typing \u2014 the simpler warning line",
+  "key": "voice-no-sound-live-2",
+  "out": "no-sound-2.live.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "live": {
+    "worktree": "sessions/voice-no-sound/youcoded",
+    "paneWidth": 520
+  },
+  "steps": [
+    {
+      "id": "N-1b",
+      "surface": "Chat",
+      "path": "The band above the message box while the mic is on",
+      "headline": "The amber band is now one line: \"No sound detected \u2014 device may be muted\".",
+      "changed": "From your note on the last page: the second line of advice is gone. The card after you stop still gives the fuller advice.",
+      "measured": "3 seconds of silence before it warns",
+      "notice": "A muted mic is caught while you are still talking, instead of after you stop. It turns green again the moment any sound arrives.",
+      "risk": "Only fires on true silence. A working mic in a quiet room still sends faint hiss, so a normal pause should never trigger it.",
+      "live": {
+        "surface": "voice-no-sound",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "before",
+          "label": "Before",
+          "candidate": "strip-before",
+          "summary": "Today: green Listening even when the mic sends nothing."
+        },
+        {
+          "id": "after",
+          "label": "After",
+          "candidate": "strip-silent",
+          "summary": "One amber line after 3 seconds of pure silence."
+        }
+      ]
+    }
+  ]
+}

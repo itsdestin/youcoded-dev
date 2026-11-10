@@ -163,11 +163,46 @@ test('refuses foreign path and pre-existing branch collisions', t => {
   assert.match(f.start('beta').stderr, /branch.*already exists/i);
 });
 
-test('missing recorded worktree is not silently recreated', t => {
+test('missing recorded worktree holding UNMERGED commits is not silently recreated', t => {
+  // WHY the commit (card #22 c): a vanished folder whose branch carries work the default branch lacks is the
+  // card's item (b) — it must stay a loud refusal. Only a fully merged/empty branch may be forgotten (next test).
   const f = fixture(t), first = f.ok('alpha');
+  fs.writeFileSync(path.join(first.workspace, 'work.txt'), 'only copy');
+  git(first.workspace, 'add', 'work.txt'); git(first.workspace, 'commit', '-m', 'unmerged session work');
   git(f.root, 'worktree', 'remove', first.workspace);
   assert.match(f.start('alpha').stderr, /Missing.*worktree/i);
   assert.equal(fs.existsSync(first.workspace), false);
+  assert.match(git(f.root, 'log', '-1', '--format=%s', 'session/alpha'), /unmerged session work/); // the commit survives
+});
+
+test('resuming after cleanup removed a merged session worktree starts it fresh instead of refusing (card #22 a/c)', t => {
+  const f = fixture(t), first = f.ok('alpha');
+  // The session's work lands on master through a merge, then post-merge cleanup removes the folder
+  // (worktree + branch stay behind in the shared repo's records, manifest keeps pointing at the folder).
+  fs.writeFileSync(path.join(first.workspace, 'work.txt'), 'merged work');
+  git(first.workspace, 'add', 'work.txt'); git(first.workspace, 'commit', '-m', 'session work');
+  git(first.workspace, 'push', 'origin', 'session/alpha:master');
+  git(f.root, 'worktree', 'remove', first.workspace);
+  const again = f.ok('alpha');
+  assert.equal(again.repositories.workspace.status, 'recreated');
+  assert.equal(fs.existsSync(path.join(again.workspace, 'work.txt')), true, 'fresh worktree starts from the merged master');
+  assert.equal(git(again.workspace, 'symbolic-ref', '--short', 'HEAD'), 'session/alpha');
+  // and a third start simply resumes
+  assert.equal(f.ok('alpha').repositories.workspace.status, 'resumed');
+});
+
+test('a removed component worktree no longer blocks resuming the session (card #22 c)', t => {
+  const f = fixture(t);
+  const youcodedRepo = f.repo('youcoded', 'master', path.join(f.root, 'youcoded'));
+  const first = f.ok('alpha', ['youcoded']);
+  git(path.join(f.root, 'youcoded'), 'worktree', 'remove', first.repositories.youcoded.path); // merged cleanup of the component only
+  // resuming WITHOUT naming the component: the stale entry is dropped, the workspace resumes
+  const out = f.ok('alpha');
+  assert.equal(out.repositories.workspace.status, 'resumed');
+  assert.equal(out.repositories.youcoded, undefined);
+  // asking for it again recreates it
+  assert.equal(f.ok('alpha', ['youcoded']).repositories.youcoded.status, 'recreated');
+  void youcodedRepo;
 });
 
 test('rejects switched branch on resume', t => {

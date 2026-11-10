@@ -13,8 +13,8 @@ side: screens
 vision: yours.look.themes
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: parked idea (a), the taskbar and Dock icon that follows the theme, appears shipped in youcoded PR #605 (merged 2026-10-05). Minimalist chrome style shipped in PR #569 (2026-09-26), which may cover idea (c).
+Next: fix the drawn preview picture for self-built themes (fault a); make Android use the theme's font (fault c); re-run the contrast audit for the light-theme brand colours (fault b, count disputed: 25 on 4 themes, not 27 on 5); run the three visual checks in a dev instance; confirm whether the icon-override field still exists (idea b).
 Blocked: nothing recorded.
 
 See also #51: Both are about theme preview pictures being unreliable (51b in the marketplace, 130a for themes you build yourself), and Destin asked to fix the whole class.

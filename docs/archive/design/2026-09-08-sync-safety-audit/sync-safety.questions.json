@@ -1,0 +1,65 @@
+{
+  "title": "Safer sync — keeping your files and your choices",
+  "key": "sync-safety-questions",
+  "stage": "ask",
+  "out": "sync-safety.questions.html",
+  "steps": [
+    {
+      "id": "Q-approach",
+      "words": true,
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync",
+      "headline": "Should I fix safety first, then simplify sync without replacing it?",
+      "today": "Live sync and additional backups use separate jobs. They disagree about pause and success, and some failure paths can remove recovery copies or mishandle files.",
+      "problem": "A full rewrite would change many working behaviors at once. Tiny isolated patches would leave the duplicated rules that caused several problems.",
+      "proposal": "Use staged fixes: first protect files and honor existing controls; then share backup rules and truthful status; finally review explanations in the existing interface. Preserve all current features, file coverage and normal deletion behavior unless a later answer explicitly changes them.",
+      "options": [
+        {"id": "staged", "label": "Safety-first batches", "pros": ["Each safety fix gets a reproducing test and independent review.", "Keeps familiar controls while removing duplicated rules."], "cons": ["Several review checkpoints rather than one big replacement."], "recommended": true},
+        {"id": "patches", "label": "Safety fixes only", "pros": ["Smallest immediate change to working behavior."], "cons": ["Duplicated backup rules and broader usability issues remain for later."]},
+        {"id": "redesign", "label": "Redesign first", "pros": ["Reconsiders the complete sync experience together."], "cons": ["Delays safety fixes and puts more working behavior at risk."]}
+      ]
+    },
+    {
+      "id": "Q-deletion",
+      "words": true,
+      "surface": "Synced files and conversations",
+      "path": "A synced project folder, or a stored conversation",
+      "headline": "Should this pass add new deletion controls, or make existing behavior safe and explicit first?",
+      "today": "Ordinary synced file deletions propagate. Missing conversation copies can return from another copy, and deleting an active project's whole folder can trigger a download again. Stop syncing keeps the folder.",
+      "problem": "A missing file does not tell us whether you deliberately erased it, cleared local storage, lost access to a drive, or suffered a failed download.",
+      "proposal": "First stop repair and cleanup from inventing deletions, and explain existing behavior. A new Remove from this device or Delete everywhere action would be a separate visible design with confirmation and recovery rules, not a hidden change to ordinary file deletion.",
+      "options": [
+        {"id": "existing", "label": "Secure existing actions first", "pros": ["No surprise change to which deletions reach other devices.", "Keeps automatic conversation preservation while fixing unsafe failures."], "cons": ["Explicit remove-local and delete-everywhere controls remain a follow-up."], "recommended": true},
+        {"id": "new-controls", "label": "Design deletion controls too", "pros": ["Users could explicitly choose local removal versus deletion across devices."], "cons": ["Needs additional UI review and decisions about offline devices, recovery and old backups."]}
+      ]
+    },
+    {
+      "id": "Q-retention",
+      "words": true,
+      "surface": "Additional backups",
+      "path": "Settings → Backup & Sync → Additional backups",
+      "headline": "Should cleanup keep the last good backup even when it exceeds the normal age limit?",
+      "today": "Project and conversation backups expire after 30 days. Personal settings backups thin out over time and expire after 90 days. Cleanup can run even when the new backup failed.",
+      "problem": "Deleting old copies on schedule can leave no usable backup when copying is broken. Keeping them longer consumes storage and retains older deleted content longer.",
+      "proposal": "Keep the current age schedules for healthy backups, but do not remove the last verified recovery copy or prune after a failed replacement. Pause must stop both copying and cleanup. Existing backups without proof of completion need conservative handling, not guessed success.",
+      "options": [
+        {"id": "recovery", "label": "Prioritize recovery", "pros": ["A failed backup cannot erase the remaining verified recovery option."], "cons": ["Some older data remains longer and uses more storage until backups recover."], "recommended": true},
+        {"id": "strict", "label": "Keep strict age limits", "pros": ["Old backup content expires on its current schedule."], "cons": ["All recovery copies can expire during a prolonged backup failure; this must be clearly explained."]}
+      ]
+    },
+    {
+      "id": "Q-transparency",
+      "words": true,
+      "surface": "Backup & Sync and project actions",
+      "path": "Settings → Backup & Sync; Projects → Stop syncing",
+      "headline": "Should sync explanations stay in the existing screens, with details available when needed?",
+      "today": "The panel can report All synced after an unsuccessful network attempt. Large-file exclusions are not clearly shown, and conflict instructions misidentify which version is the named copy.",
+      "problem": "Users cannot reliably tell what reached another device, what was excluded, or what stopping and cleanup will do.",
+      "proposal": "Keep the current layout and controls. Show truthful progress and last-success information, persistent conflict and excluded-file details, and concise consequences beside stop and backup controls. Show you before-and-after mockups before changing the interface.",
+      "options": [
+        {"id": "existing-screens", "label": "Improve existing screens", "pros": ["Keeps familiar navigation and features.", "Important facts appear where users make the decision."], "cons": ["A small amount of additional detail needs room in the existing panel."], "recommended": true},
+        {"id": "minimal-copy", "label": "Correct wording only", "pros": ["Least visible change."], "cons": ["Finding affected files and understanding incomplete backups remains difficult."]}
+      ]
+    }
+  ]
+}

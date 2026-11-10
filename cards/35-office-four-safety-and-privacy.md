@@ -14,9 +14,9 @@ platform: Desktop only
 vision: chat.files.office
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: The document converter is now sealed inside its own job folder, and on Linux it has no network access (shipped in version 1.3.1, commit 3ce5f0b6d). Picture downloads from web addresses check every address they resolve to and every redirect before fetching (office-pictures.ts). 2026-11-10: the error log no longer copies the editor's text (which could hold words from the document); it records only the length, the kind of error and the position in the editor's own code. Built and reviewed on branch session/release-safety (app repo), NOT merged yet. Cost: the editor's own wording of a fault is no longer in the log.
+Next: Destin: merge decision for session/release-safety. Then (Batch 4): test whether Mac and Windows can still fetch pictures from a document, check Windows folder privacy, close the Teredo and second-lookup gaps for web-address pictures, and decide separately about the seven cosmetic faults. Also worth a look: the converter's own error output (up to 4000 characters) still goes to the log; it holds file paths, and would hold document words only if the converter quotes content in its errors (not checked).
+Blocked: needs a Windows and a Mac machine to test; the seven cosmetic faults need the running app to re-check.
 
 Chats
 

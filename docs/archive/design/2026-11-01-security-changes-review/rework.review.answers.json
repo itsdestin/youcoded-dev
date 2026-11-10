@@ -1,0 +1,110 @@
+{
+ "deck": "security-changes-rework",
+ "started": "2026-11-02T08:46:59.852Z",
+ "submitted": "2026-11-02T08:51:49Z",
+ "cur": 12,
+ "answers": {
+  "W-2": {
+   "note": "this still doesn;t match any other permission card. we should reuse the existing style. why is it transparent instead of frosted?",
+   "t": 1793609257952,
+   "v": "other",
+   "seconds": 38,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-1": {
+   "v": "yes",
+   "t": 1793609280708,
+   "seconds": 23,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-1b": {
+   "v": "yes",
+   "t": 1793609312426,
+   "note": "no. look at how we handle destructive actions elsewhere, with second level menus. we should do the same",
+   "seconds": 32,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "T-1": {
+   "v": "yes",
+   "t": 1793609318583,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "other",
+   "t": 1793609360963,
+   "note": "this is almost worse somehow. look for similar examples of errors with details and follow the examples",
+   "seconds": 42,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-1b": {
+   "v": "other",
+   "t": 1793609371455,
+   "note": "doesnt match any existing styling",
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-1": {
+   "v": "no",
+   "t": 1793609411239,
+   "note": "try again. some of these are not things i asked you to solidify like the small amber chip",
+   "seconds": 40,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1793609425011,
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1793609439459,
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1793609480824,
+   "seconds": 41,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1793609490492,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1793609495702,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1793609508461,
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

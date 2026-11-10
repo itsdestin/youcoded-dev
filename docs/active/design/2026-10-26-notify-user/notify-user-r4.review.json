@@ -1,0 +1,31 @@
+{
+  "title": "Notifications, round 4: one line, or a small card when it doesn't fit",
+  "key": "notify-user-r4-review",
+  "out": "notify-user-r4.review.html",
+  "images": "images/notify-user-r4.review",
+  "runs": { "after": "runs-r4/after" },
+  "steps": [
+    {
+      "id": "R4-1",
+      "surface": "Chat",
+      "path": "A reply where the assistant flagged something for you",
+      "crop": "chat#notify",
+      "new": true,
+      "headline": "When it fits, the notification is one line in the tab: \"Draft ready · Pick a headline and I'll finish it.\"",
+      "changed": "The label and message sit side by side in a single-line pill on the reply's top edge, instead of stacked.",
+      "notice": "The assistant is now told its notification shows beside its reply, so it should say only what is ready or what to look at, in one short sentence, never repeating the reply.",
+      "risk": "The assistant may still sometimes write a long message; then you get the card on the next slide instead of the line."
+    },
+    {
+      "id": "R4-2",
+      "surface": "Chat",
+      "path": "The same reply where the line doesn't fit (here, a phone)",
+      "crop": "chat#notify-phone",
+      "new": true,
+      "headline": "When the line would wrap, it becomes a small card nested at the top of the reply instead.",
+      "changed": "Label over message, inside the reply rather than on its edge. The same thing happens on a computer when the message is too long for the reply's width.",
+      "notice": "It switches back to the one-line tab by itself if the window gets wide enough.",
+      "risk": ""
+    }
+  ]
+}

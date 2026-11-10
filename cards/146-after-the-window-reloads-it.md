@@ -14,9 +14,9 @@ side: both
 vision: chat.converse.multi
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: FIXED on branch session/release-safety (app repo), NOT merged yet (2026-11-10). After a reload, a desktop window reopens the chat it was showing; each window remembers its own; if that chat is gone it opens the first chat as before. Phones are unchanged. Tested in a dev copy: three chats and reload on the last and the middle one, a message typed after reload went to the right chat, two reloads in a row, a closed chat, no chats at all, two windows, and a full quit and relaunch. All passed, no errors. Reviewed twice; full desktop checks pass.
+Next: Destin: merge decision for session/release-safety. Side effect fixed on the workspace branch of the same name: the screenshot tool reuses one tab, so it now clears that tab's memory between screens.
+Blocked: Waiting for Destin's word to merge.
 
 Chats
 
