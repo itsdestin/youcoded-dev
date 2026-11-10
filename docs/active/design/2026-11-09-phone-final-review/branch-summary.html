@@ -23,29 +23,15 @@
 <main>
   <h1>What the phone branch changes</h1>
   <p class="soft">Card #213, branch <code>session/android-ux-test</code> in the app and the server. Written 10 Nov 2026. Nothing is merged.</p>
-  <nav><a href="#decide">Your decisions</a><a href="#phone">Phone app</a><a href="#pc">Computer app</a><a href="#remote">Remote access</a><a href="#behind">Behind the scenes</a><a href="#review">Review</a><a href="#proof">How it was checked</a></nav>
+  <nav><a href="#decide">Decisions</a><a href="#phone">Phone app</a><a href="#pc">Computer app</a><a href="#remote">Remote access</a><a href="#behind">Behind the scenes</a><a href="#review">Review</a><a href="#proof">How it was checked</a></nav>
 
-  <h2 id="decide">1. Three things I need you to decide</h2>
-  <div class="box ask">
-    <h3>A. New sessions start in "auto" on the computer too</h3>
-    <p>You asked for Claude Code to always start in auto unless Skip permissions is on. That is built for every device, not only the phone. On a computer it means a new or resumed session lets Claude act without asking each time, where today it asks. Nothing on screen announces the change except the badge.</p>
+  <h2 id="decide">1. Your decisions (10 Nov)</h2>
+  <div class="box">
     <ul>
-      <li><b>Keep it everywhere (what you asked for):</b> one behaviour on phone and computer, and the badge is right from the first second. The catch: computer users get a quieter, more hands-off Claude without being told. Two things I could not test: a computer with an old Claude Code that does not know auto (the session may fail to start), and an account that has never accepted Claude's "Enable auto mode?" question (it may be asked at each new session until answered).</li>
-      <li><b>Phone only for now:</b> the computer keeps today's behaviour. The catch: phone and computer differ, and the computer's badge goes back to guessing for its first seconds.</li>
+      <li><b>Start mode:</b> "auto is fine as built". New and resumed sessions start in auto on the phone and the computer, unless Skip permissions is on, or you or the folder set a default mode. Two cases remain untested: a computer with an old Claude Code that does not know auto, and an account that has never accepted Claude's "Enable auto mode?" question.</li>
+      <li><b>Attachments:</b> kept seven days, then cleaned up.</li>
+      <li><b>Arrow buttons:</b> left as they are for now. They stay phone-layout only and still cover the right end of Claude Code's input line.</li>
     </ul>
-    <p>My recommendation: keep it everywhere only if you try it on your own computer first; otherwise phone only for this release. A folder's own default mode, and your own default in Claude's settings, are both respected either way.</p>
-  </div>
-  <div class="box ask">
-    <h3>B. Attachments are cleaned up after one day</h3>
-    <p>Files you attach on the phone are copied into the app and removed a day later, to stop them piling up. If you come back to a chat two days later and ask about "the file I sent", it is gone.</p>
-    <ul>
-      <li><b>Keep one day:</b> least storage used. The catch above stands.</li>
-      <li><b>Seven days (my recommendation):</b> covers coming back to a chat later in the week, for a little more storage.</li>
-    </ul>
-  </div>
-  <div class="box ask">
-    <h3>C. The arrow buttons you asked about</h3>
-    <p>Two open points from your message about the phone's scroll controls: whether the up and down arrow buttons should also appear on the computer, and the fact that on the phone they sit on top of the right end of Claude Code's own input line. Neither is changed yet.</p>
   </div>
 
   <h2 id="phone">2. Phone app</h2>
@@ -79,7 +65,7 @@
     <li>The skills drawer slides smoothly while dragged.</li>
     <li>The "Home" project is gone from folder lists; a session with no folder opens in an empty one. Older sessions that were filed under Home still appear in Resume and All sessions (the list is built from every saved conversation, not from the folder list); they are just no longer grouped under a Home project. Nothing is deleted.</li>
     <li>Backup and sync shows the phone's real name instead of "localhost", sizes in MB/GB, and device rows that fit.</li>
-    <li>Attachments keep their real names, and there is a size limit with a clear message.</li>
+    <li>Attachments keep their real names, there is a size limit with a clear message, and copies are cleaned up after seven days.</li>
     <li>Games: two-player rooms work again (after the server is merged). Solo games were unaffected.</li>
     <li>"Needs you" alerts: on a locked phone they now say only "A session needs you"; the detail shows after unlocking.</li>
   </ul>
@@ -92,7 +78,7 @@
   </div>
   <h3>What you may notice</h3>
   <ul>
-    <li><b>Start mode:</b> see decision A.</li>
+    <li><b>Start mode:</b> new and resumed sessions start in AUTO (see section 1).</li>
     <li><b>Terminal:</b> the grey second scroll bar is gone; only the green one shows. It cannot be dragged (the grey one could). With a wallpaper theme, the strip above the terminal and under its last row is tinted like the rest of the sheet.</li>
     <li><b>Narrow window (under about 640 wide):</b> tighter bubbles, popups sized to fit, taller answer buttons and quick chips, and slightly more left padding in the terminal. The chat scroll bar and message times stay, as you decided ("spacing yes, rest no").</li>
     <li><b>Quick chips for new installs</b> read Summarize, Plan my day, Explain this. Existing lists are untouched.</li>
@@ -150,7 +136,6 @@
   </ul>
   <h3>Found and left, with reasons</h3>
   <ul>
-    <li><b>Decision A and B above.</b></li>
     <li><b>Older Home sessions on the phone</b> no longer sit under a project row. They still show in Resume and All sessions (confirmed by reading how that list is built, not on a phone).</li>
     <li><b>A stray local web request could bring the app forward once</b> while a YouCoded account sign-in is open, and use up the real return. It needs a lucky guess of a hidden number; low risk, no data exposed.</li>
     <li><b>Scrolling a very long chat on the computer</b> may be slightly less smooth from a fix made for the phone. Not measured.</li>
