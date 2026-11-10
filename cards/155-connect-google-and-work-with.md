@@ -13,7 +13,7 @@ paused: Destin paused this work: unsure the selected-file OAuth design is the be
 ---
 Progress
 Done: 2026-10-17 Destin approved a plan to connect Google and edit selected Drive files; the first version was built as a backup on a work branch and pushed on 2026-10-24, but not merged or released. Nothing is in the app yet.
-Next: Destin decides whether to compare a different approach (using rclone for all Google Drive work) against the current sign-in design, before anything more is built or any Google setup happens.
+Next: When this resumes, start from the 2026-09-26 everyday-actions proposal and Destin's answers (docs/active/design/2026-09-26-everyday-actions/) plus the integrations research (docs/active/investigations/2026-09-26-integrations-rebuild/): Destin 2026-11-10 folded that design into this card; his safety and permission rules there are the part to keep. The rclone-vs-own-sign-in question is still his to answer.
 Blocked: waiting on that decision; Calendar and Gmail work (cards 156, 157) waits behind this one.
 
 Chats
