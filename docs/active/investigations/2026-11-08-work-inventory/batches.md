@@ -120,6 +120,15 @@ Security gaps with no intended screen change. Touches: sync server, marketplace 
 - **#216** Phone sign-in expiry: owner notice and retry after an 'expired' answer — MIXED: whether the owner is told when a phone is signed out is your decision; the build is small after that.
 - **#223** Google Messages connector: rebuild its Windows program with the patched security library — Rebuild the Google Messages connector with the patched library.
 
+**Run on 2026-11-10 (session `security-server-batch`, branch `session/security-server-batch` in `wecoded-marketplace` and `youcoded`; not merged).** Each item was re-checked against the code first.
+
+- **#124** Built, server only: each sync connection is tied to the first device identity it uses. It has a cost Destin must weigh before it deploys (up to 45 seconds of ignored session-lock messages after an unclean reconnect) and does not close the gap fully; the trade-off and three options are on the card.
+- **#43** Rate limit built (30 result messages per account per 5 minutes). Forfeit options are on the card.
+- **#51** Split into #51 (listings and previews), #244 (installs) and #245 (comments, admin, "Likely safe" badge). Built from #244: a theme whose files changed without a version bump shows Update; the Google Messages tool server registers on Windows only. NOT built: a launch-time repair for vanished plugins — no evidence the wipe still happens (automatic refresh has been off since April; plugins from July to November are intact). Docker listings, Todoist and the Messaging wording change what listings show and are options on #244.
+- **#55** Folded into #216; every leftover re-checked and still true. Both notice questions are on #216.
+- **#223** Rebuilt (security library 0.48.0 → 0.58.0, newer Go). Never run: needs a Windows computer and a paired phone before release.
+- **What deploys when the marketplace branch reaches master:** the Worker (sync identity check and game rate limit) deploys by itself within minutes and reaches every released app version at once; the Messaging plugin 1.0.1 appears in the catalog within the hour. The app change ships only with the next app release.
+
 ## Batch 6 — Look and wording, to the approved guide
 
 Only changes the design guide and the error-message standard already call for. These ARE visible, so the report lists every one. Touches: settings, marketplace, project view, error messages across the app.
