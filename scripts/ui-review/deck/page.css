@@ -637,3 +637,16 @@ body:not([data-layout="pages"]) #back{display:none}
 .vthumb img{height:100%;border-radius:calc(var(--radius-md) - 2px)} .vthumb:hover{opacity:1} .vthumb.on{opacity:1;border-color:var(--accent)}
 .vthumb b{position:absolute;top:-6px;right:-6px;display:grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--link);color:#fff;font:700 11px/1 var(--font)}
 @media (max-width:900px){.vmain{flex-direction:column} .vside{width:auto;border-left:0;border-top:1px solid var(--edge);max-height:34vh} .vnav{display:none}}
+/* History (round 4): earlier rounds of the topic and related decks, over the whole window. */
+#histbtn{flex:none} #histbtn[hidden]{display:none}
+.histpanel{position:fixed;inset:0;z-index:65;display:flex;flex-direction:column;background:var(--well);color:var(--fg)}
+.histbody{flex:1;overflow:auto;padding:18px max(16px,calc((100vw - 980px)/2)) 40px;display:flex;flex-direction:column;gap:22px}
+.histbody h3{margin:0 0 10px;font:600 13px/1.2 var(--font);text-transform:uppercase;letter-spacing:.07em;color:var(--fg-muted)}
+.histbody h4{margin:14px 0 6px;font:600 13px/1.3 var(--font);color:var(--fg-muted)}
+.histbody details{border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--panel);padding:0 14px;margin-bottom:10px}
+.histbody summary{display:flex;align-items:baseline;gap:12px;padding:12px 0;font:600 14px/1.3 var(--font);cursor:pointer} .histbody details[open]{padding-bottom:12px}
+.hwhen{font:400 12px/1 var(--font);color:var(--fg-muted)}
+.histrow{padding:10px 12px;margin-top:6px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset)}
+.histrow .hq{margin:0 0 4px} .histrow .decided{margin:6px 0 0}
+.hans{display:inline-block;padding:2px 9px;border-radius:999px;font:600 11px/1.5 var(--font);color:var(--link);border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent)}
+.histrel{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px} .histrel a{color:var(--link)}

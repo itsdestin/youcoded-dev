@@ -319,6 +319,74 @@ def _built(spec):
                       'branch': git('rev-parse', '--abbrev-ref', 'HEAD'), 'commit': git('rev-parse', '--short', 'HEAD')}}
 
 
+def _history(spec):
+    """Earlier rounds of this topic and related decks, for the History panel (page.js).
+
+    WHY (Destin, rethink round 2 R-10/R-11, round 4 N-1 "build it next"): every round was a
+    new link and the earlier ones were gone from view — what he had already decided on a topic
+    could only be found by a session reading files. A deck now names its `earlier` rounds (spec
+    files beside it, newest first) and `related` decks; the builder reads each earlier round's
+    questions and HIS saved answers into the page, so one link shows the new round first and
+    everything he said before behind one button. Read-only: an earlier round is a record."""
+    base = spec.get('_base', '')
+    names = {'yes': 'Yes', 'no': 'No', 'other': 'Something else', 'skip': 'Not answered'}
+    rounds = []
+    for name in spec.get('earlier') or []:
+        path = os.path.join(base, name)
+        try:
+            with open(path, encoding='utf-8') as f:
+                old = json.load(f)
+        except (OSError, ValueError):
+            continue   # spec.py already refused a missing file; a broken one is simply left out
+        ans_path = os.path.splitext(path)[0] + '.answers.json'
+        saved = {}
+        if os.path.exists(ans_path):
+            try:
+                with open(ans_path, encoding='utf-8') as f:
+                    saved = json.load(f)
+            except (OSError, ValueError):
+                saved = {}
+        answers = saved.get('answers') or {}
+        items, page = [], ''
+        for st in old.get('steps') or []:
+            if not isinstance(st, dict):
+                continue
+            if 'page' in st:
+                page = st['page']
+                note = ((saved.get('pageNotes') or {}).get(st.get('id')) or '').strip()
+                if note:
+                    items.append({'page': page, 'headline': 'About this page', 'answer': '', 'notes': [note]})
+                continue
+            a = answers.get(st.get('id')) or {}
+            v = a.get('v') or 'skip'
+            rows = {c.get('id'): c.get('call', '') for c in st.get('calls') or [] if isinstance(c, dict)}
+            opts = {o.get('id'): o.get('label', '') for o in st.get('options') or [] if isinstance(o, dict)}
+            if v == 'pick':
+                answer = opts.get(a.get('pick')) or str(a.get('pick') or '')
+            elif v == 'picks':
+                answer = ', '.join(opts.get(p) or str(p) for p in a.get('picks') or [])
+            elif v == 'wrote':
+                answer = ''
+            elif st.get('calls') and v == 'yes':
+                answer = 'Accepted as listed'
+            elif st.get('calls') and v == 'other':
+                answer = 'Changed'
+            else:
+                answer = names.get(v, v)
+            notes = [t for t in [(a.get('text') or '').strip(), (a.get('note') or '').strip()] if t]
+            notes += [f'{rows.get(k) or k} — {(t or "").strip()}' for k, t in (a.get('changes') or {}).items() if (t or '').strip()]
+            notes += [f'On a picture — {(m.get("text") or "").strip()}' for m in a.get('marks') or [] if (m.get('text') or '').strip()]
+            notes += [f'Reword “{t.get("from", "")}” to “{t.get("to", "")}”' if isinstance(t, dict) else f'{rows.get(k) or k} reworded — {t}'
+                      for k, t in (a.get('edits') or {}).items()]
+            items.append({'page': page, 'headline': st.get('headline', st.get('id', '')), 'answer': answer, 'notes': notes})
+        general = (saved.get('notes') or '').strip()
+        if general:
+            items.insert(0, {'page': '', 'headline': 'Notes about anything else', 'answer': '', 'notes': [general]})
+        rounds.append({'title': old.get('title', name), 'when': (saved.get('submitted') or '')[:10], 'items': items})
+    related = [{'title': r['title'], 'href': r['path']} for r in spec.get('related') or []]
+    return {'history': rounds, 'related': related} if rounds or related else {}
+
+
 def deck_data(spec, boxes):
     runs = run_names(spec)
     steps = [_live_step(spec, st) if is_live(st)
@@ -350,7 +418,7 @@ def deck_data(spec, boxes):
     pg = pages(spec)
     paged = {'pages': [{'id': p['id'], 'title': p['title'], 'intro': p['intro'],
                         'steps': [st['id'] for st in p['steps']]} for p in pg]} if pg else {}
-    return {**live, **paged, **_built(spec), 'title': spec['title'], 'key': spec['key'], 'runs': runs,
+    return {**live, **paged, **_built(spec), **_history(spec), 'title': spec['title'], 'key': spec['key'], 'runs': runs,
             # Any other run name (`round3`) shows as written unless `labels` names it.
             'runLabels': {**{r: r for r in spec['runs']}, 'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},

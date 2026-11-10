@@ -642,9 +642,34 @@ def box_errors(box, sid):
     return []
 
 
+def _validate_history(spec, errors):
+    """`earlier`: spec files of this topic's earlier rounds, beside this one, newest first.
+    `related`: other decks or documents on the same subject, each {title, path}. Both feed the
+    History panel (build.py _history)."""
+    base = spec.get('_base', '')
+    ok = lambda p: isinstance(p, str) and p and not os.path.isabs(p) and '..' not in p.split('/')
+    earlier = spec.get('earlier')
+    if earlier is not None:
+        if not isinstance(earlier, list) or not all(ok(p) and p.endswith('.json') for p in earlier):
+            errors.append('earlier is a list of spec files beside this one (the earlier rounds of this topic, newest first)')
+        else:
+            for p in earlier:
+                if not os.path.exists(os.path.join(base, p)):
+                    errors.append(f'earlier: {p} does not exist beside the spec')
+    related = spec.get('related')
+    if related is not None:
+        if not isinstance(related, list) or not all(isinstance(r, dict) and isinstance(r.get('title'), str) and r['title'].strip() and ok(r.get('path')) for r in related):
+            errors.append('related is a list of {title, path} — other decks or documents on this subject, paths beside the spec')
+        else:
+            for r in related:
+                if not os.path.exists(os.path.join(base, r['path'])):
+                    errors.append(f'related: {r["path"]} does not exist beside the spec')
+
+
 def validate(spec):
     """Returns (errors, warnings) as 'step-id: message' lines. Errors block crop/build."""
     errors, warnings, ids = [], [], set()
+    _validate_history(spec, errors)
     for i, st in enumerate(spec['steps']):
         # A slide may show fewer captures than the deck holds, so "is this a before/after?" is
         # asked per slide rather than once for the whole deck.

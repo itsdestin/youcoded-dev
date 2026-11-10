@@ -1335,6 +1335,33 @@
   // tab, which is strange/unexpected behaviour"). The large view sits over the page; areas can
   // be dragged on it exactly as on the small one — easier, in fact, since it is bigger — and a
   // click anywhere, or Esc, closes it.
+  // ── HISTORY: earlier rounds of this topic, and related decks ───────────────────────────
+  // WHY (Destin, round 2 R-10 "evolving deck, new first", R-11 "Related list"; round 4 N-1
+  // "build it next"): each round was a separate link and what he had already said was out of
+  // sight. The header's History button opens every earlier round (newest first) with each
+  // question and his own answer and comments, and the list of related decks. Read-only.
+  if ((DECK.history || []).length || (DECK.related || []).length) {
+    const hb = $('#histbtn'); hb.hidden = false;
+    hb.textContent = 'History' + ((DECK.history || []).length ? ' (' + DECK.history.length + ')' : '');
+    hb.onclick = () => {
+      if ($('.histpanel')) { $('.histpanel').remove(); return; }
+      const p = document.createElement('div'); p.className = 'histpanel';
+      const round = (r, i) => {
+        let page = null;
+        const rows = r.items.map(it => {
+          const head = it.page !== page ? `<h4>${esc(page = it.page)}</h4>` : '';
+          return head + `<div class="histrow"><p class="hq">${esc(it.headline)}</p>${it.answer ? `<span class="hans">${esc(it.answer)}</span>` : ''}${it.notes.map(n => `<p class="decided">${esc(n)}</p>`).join('')}</div>`;
+        }).join('');
+        return `<details${i === 0 ? ' open' : ''}><summary>${esc(r.title)}<span class="hwhen">${r.when ? 'answered ' + esc(r.when) : 'not submitted'}</span></summary>${rows || '<p class="hint">Nothing was answered.</p>'}</details>`;
+      };
+      p.innerHTML = `<div class="vbar"><span class="vtitle">History of this topic</span><button type="button" class="btn sm histx">Close</button></div><div class="histbody">`
+        + ((DECK.related || []).length ? `<section><h3>Related</h3><ul class="histrel">${DECK.related.map(r => `<li><a href="${esc(r.href)}" target="_blank" rel="noopener">${esc(r.title)}</a></li>`).join('')}</ul></section>` : '')
+        + ((DECK.history || []).length ? `<section><h3>Earlier rounds, newest first</h3>${DECK.history.map(round).join('')}</section>` : '') + `</div>`;
+      document.body.appendChild(p);
+      p.querySelector('.histx').onclick = () => p.remove();
+    };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('.histpanel')) $('.histpanel').remove(); });
+  }
   // ── THE PICTURE VIEWER ──────────────────────────────────────────────────────────────────
   // WHY (Destin, round 4: pictures "rendered far too small to be useful… i just need to have
   // more space and a better surface to actually leave/manage comments and such and quickly

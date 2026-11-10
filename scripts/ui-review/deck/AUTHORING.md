@@ -542,6 +542,23 @@ pressed. Each change is listed under the frame with "Put back" and saved as
 he leaves alone is accepted when he moves on, like a list. Text drawn by code at run time
 (a terminal, a chart) is a picture in the file and cannot be edited.
 
+### Also added in round 4
+
+- **Status pills are his to change.** A row's `result` (`pass`, `fail`, `unclear`, or `todo` for
+  "left for him to try") is a pill at the row's right; pressing it opens the four statuses.
+  His choice arrives as `answers[step].results[<row id>]`.
+- **A comment box at the foot of every page** replaces the header Notes button on question
+  decks: `pageNotes[<page marker id>]`, printed first in the summary.
+- **The picture viewer.** Any picture opens over the whole window with its comments beside it
+  and every picture of the page in a strip; it stays open while he drags areas and types.
+  Shoot pictures narrow (`--width 1000`) or cropped to the changed part so words stay readable.
+- **History.** `"earlier": ["<older round>.json", …]` (spec files beside this one, newest
+  first) and `"related": [{"title", "path"}]` put a History button in the header: every
+  earlier round's questions with his own answers and comments, read-only. One topic, one
+  folder; each new round names the rounds before it.
+- **Each card's state** is a pill at its top right (Not answered / Answered 12:47 / Accepted /
+  2 changes).
+
 ### Which starting point for a question about looks
 
 | He needs to judge… | Copy | Note |
