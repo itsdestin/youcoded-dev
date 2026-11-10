@@ -11,8 +11,8 @@ why: Destin, 2026-11-08/09: 'for a specific day I want to see which versions wer
 work: session/analytics-day-detail
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Shipped 2026-11-09. Page: click any bar for a day panel (website first on the Website tab: download clicks by platform, sources per installer; app: versions, systems, places, who was online). The range drives every card; long-term cards are grouped apart. Chart splits by version, by system and by download platform. Server: new one-day answer, and counts that follow the range. Live server checked after deploy.
+Next: Nothing.
 Blocked: nothing.
 
 Chats
