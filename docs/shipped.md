@@ -899,3 +899,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-10 #20 Try the full new-feature process on a real feature (obsolete, no code: the feature process has since run end to end on the buddy rebuild (#709), outside-file comments (#707) and the security decks (#713); verified 2026-11-09)
 - [x] 2026-11-10 #237 Analytics page: click a day for detail, one range for every card, deeper breakdowns (wecoded-marketplace#121, youcoded-dev#350)
 - [x] 2026-11-10 #212 Worker worktrees start without working dependencies (youcoded-dev#352)
+- [x] 2026-11-10 #43 Games: a cheater can fake a win when you go offline (wecoded-marketplace#122)
