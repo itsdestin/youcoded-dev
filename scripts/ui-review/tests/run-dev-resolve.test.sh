@@ -32,6 +32,15 @@ expect() { # <label> <want-regex> <exit 0|1> <args...>
 
 echo "run-dev:"
 expect "session name resolves to worktrees/sessions/<name>/youcoded" "Checkout: +$SESS\$" 0 my-feature --dry-run
+# The regression (reviewer, 2026-11-10): a bare run from a session worktree's own scripts/
+# must launch that session's youcoded, not the shared checkout. Session-shaped copy of the scripts.
+SW="$WS/worktrees/sessions/my-feature"
+mkdir -p "$SW/scripts/lib"
+cp "$ROOT/scripts/run-dev.sh" "$ROOT/scripts/dev-isolation.sh" "$SW/scripts/"
+cp "$ROOT/scripts/lib/resolve-checkout.sh" "$SW/scripts/lib/"
+out="$(bash "$SW/scripts/run-dev.sh" --dry-run 2>&1)" || true
+if grep -Eq "Checkout: +$SESS\$" <<<"$out"; then echo "  ok   no argument, from a session's own scripts/, uses that session's youcoded"
+else echo "  FAIL no argument from a session used the wrong checkout"; echo "$out" | sed 's/^/       /'; fail=1; fi
 expect "branch name still resolves" "Checkout: +$SESS\$" 0 feat/x --dry-run
 expect "an unknown name still fails" "no worktree or branch matching" 1 nope --dry-run
 expect "--offset abc is refused with a clear message" "--offset must be a whole number" 1 --offset abc --dry-run
