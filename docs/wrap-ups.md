@@ -948,9 +948,6 @@ recurred — the repetition is the data.
 - Destin said: Pages chart recipe "add to roadmap"; phone Pages squeeze "roadmap item" → roadmap: other-features.md Pages follow-ups (e), (h)
 - deleted/merged: the old painted scroll-fade band and 5 private fade copies (one CSS-only fade); Focus timer and Week planner samples; the PITFALLS pre-merge incognito note (checked at merge instead)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 ## 2026-10-18 — Windows 1.3.1 buddy, refused sends and watcher blocking (youcoded#632, source merged)
 - Linux-shaped mocks missed inherited `pointer-events:none`, ConPTY wrap flags, ASCII prompts and session-created-before-size ordering → applied: real-rig computed-style test, four Windows captures, retry and event-order regressions; actual VM clicks/drags and composer → local fake API → reply tested (automatic prevention, less repeated investigation).
 - Review found async watcher probes could monopolize libuv across roots and deferred re-adds could lose new-file events or fire ready early → applied: global two-slot lifetime, real chokidar event/readiness regressions and Windows filesystem check (automatic prevention).
@@ -960,7 +957,6 @@ recurred — the repetition is the data.
 - Pre-merge CI exposed test-path/cleanup mistakes and a real parent-snapshot removal race → applied: normalized paths, bounded waits, faithful filtered-stream regressions, and a parent-scan barrier (mutation-proven). Changing the test to re-filter excluded entries would have hidden the production race; that workaround was rejected.
 - deleted/merged: removed the obsolete synchronous watcher exemption; app merged as `1e8797ec3` via #632. Full local verification: 20,434 passed. Windows/macOS CI and required Linux/Android checks passed. Task notes archived; the unrelated original #85 items remain open and remaining cloud-file validation is recorded under #93. No installer release performed.
 
->>>>>>> origin/session/85-windows-131-regressions
 ## 2026-10-17 — standalone swipe keyboard distribution (session/82-z13-keyboard-release; swipe-keyboard: standalone-packaging)
 - Synthetic fallback-marker contents and a developer Qt tool PATH hid fresh-user failures → applied: real stock InputPanel/active-engine test, ordinary-user native package check/removal in CI, and an Arch qtpaths location regression (automatic prevention, less repeat investigation).
 - Source snapshots could include arbitrary untracked files; upstream builds used mutable Python dependencies and host-specific CPU flags → applied: tracked-source allowlist, pinned/hash-checked wheels/models, portable defaults and executable packaging regressions in swipe-keyboard (automatic prevention).
@@ -1430,11 +1426,9 @@ recurred — the repetition is the data.
 - Driving a dev window's message box through `cdp-eval` hit xterm's hidden textarea first (3 wasted calls) → dropped: `scripts/shoot/explore.mjs` already acts like a user; I didn't reach for it.
 - RECURRED (also the 2026-11-0x voice entry): `first-draw-stability` journey failed once under load (21 px drift at load ~30), passed 3/3 alone and on the next full verify → reported to Destin with the question whether to fix it now; not filed (flakes are fixed, not carded).
 - deleted/merged: none found; looked at the queue docs (`cc-dependencies.md` lifetime line updated in place rather than added beside).
-=======
 ## 2026-10-17 — investigate installed-app freezes after session creation (session/93-session-freezes, app + workspace)
 - RECURRED: performance instrumentation concealed the event being investigated. A histogram reset missed a deliberate 2300 ms main-thread block → applied: independent timer-lateness lower bound and deterministic regressions in `hitch-recorder.test.ts`; compiled recorder measured 2303 ms. Serves automatic detection, not a claim that the original 27-second incident is solved.
 - First-30 input details crowded out severe frame evidence; the report called absent script attribution graphics work → applied: bounded 30+5 severe reservations at both trust boundaries, red/green recorder tests, and `hitch-report.test.mjs` assertions for honest unknown attribution and lower-bound timing. Serves fewer misdirected investigations.
 - Worker shutdown can itself wait on stuck synchronous I/O (fresh reviewer P1) → applied: bounded retirement waiting, single-slot retention, explicit queued refusal/recovery and a never-resolving-terminate regression in `session-discovery.test.ts`.
 - Native discovery factory occupied constructor slot 10, despite an old comment saying ninth; an initial test passed its fake into the wrong slot → applied: corrected behavioral injection test and production composition-root test; dropped as another general rule because types and review already cover positional-dependency mistakes.
 - deleted/merged: removed unsupported graphics-cause/precision claims from the report and shortened obsolete MCP review-history comments in touched native-host code. Original incident attribution stays open under #93. After Destin authorized merge/close, app PR #629 merged with desktop and Android CI green; implementation record archived at `docs/archive/plans/2026-10-17-session-freezes.md`. No unrelated cleanup, live-app changes or release tag.
->>>>>>> origin/session/93-session-freezes
