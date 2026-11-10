@@ -7,6 +7,7 @@ tags: android, security, release
 branch: 219-rebuild-the-android-app-once
 finish: The phone app's bundled Node.js comes from Alpine's package; the security audit found it carries a known flaw that Alpine had not yet patched. When Alpine ships the fix, refresh the runtime pins and rebuild the Android app.
 created: 2026-11-05
+work: session/219-musl-patches
 ---
 Progress
 Done: Alpine shipped the fixed Node.js (24.22.1, now 24.22.1-r1 on v3.24); the phone build takes Alpine's current Node package at build time, so the next phone release gets it with no change. Checked 2026-11-10.
@@ -14,3 +15,4 @@ Next: Before cutting 1.4: the phone build compiles musl (the C library under eve
 Blocked: A real-phone test of the musl change; the 1.4 release date is Destin's.
 
 Chats
+- 2026-11-10 session/219-musl-patches: chat started
