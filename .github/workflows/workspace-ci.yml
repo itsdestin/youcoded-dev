@@ -89,11 +89,6 @@ jobs:
         if: ${{ !cancelled() }}
         run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs .claude/hooks/cards-edit-check.test.mjs
 
-      # The workbench boot check reported "All 16 workbench routes mount cleanly"
-      # against a port nothing was serving — verified 2026-09-02 on a dead port,
-      # exit 0. CLAUDE.md tells every session to trust that check. These two cases
-      # need no Chrome (the preflight now runs before the browser launches), so
-      # they belong on this runner.
       # Card #19 (g) backstop: the pre-commit hook refuses merge-conflict markers, but hooks only
       # exist on clones where setup.sh was re-run (and --no-verify skips them). This scans every
       # tracked file for an opening/closing marker at column 0, same narrow pattern as the hook.
@@ -103,6 +98,11 @@ jobs:
             echo "::error::unresolved merge-conflict markers (listed above)"; exit 1
           fi
 
+      # The workbench boot check reported "All 16 workbench routes mount cleanly"
+      # against a port nothing was serving — verified 2026-09-02 on a dead port,
+      # exit 0. CLAUDE.md tells every session to trust that check. These two cases
+      # need no Chrome (the preflight now runs before the browser launches), so
+      # they belong on this runner.
       # The two guards that keep the SHARED checkout from drifting: the commit
       # guard and workspace-sync.sh. Both are only ever exercised on Destin's
       # machine, so CI is the only thing that would notice them rotting.
