@@ -91,7 +91,8 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - The missing-folder state is framed as turning on sync for that project on this device and fetching it, after which the project syncs continuously. — D5 N-5: "enable sync for this project and fetch the folder first".
 - Continue-here states N-1, N-2, N-3, N-5, N-7, N-8, N-9, N-10 hold as drafted.
 - Cards filed on his word: #241 cloud-backup choices (D5 S-5), #242 alerts on every device (D5 S-6; filed beside #232, which is mid-build, rather than rewriting it), #243 better view for forked-chat versions (D5 N-10).
-- Not settled: how long the relay holds lines (Q-2: 30 days is too much; "something more like 24h from when the conversation was last active?"); whether a takeover is written into the chat (Q-3: "open to it … review this for fragility/errors/unintended consequences"); states N-4 and N-6 ("confusing").
+- The relay holds a chat's locked lines until 48 hours after the last line was added to that chat (so a chat still being worked on stays fully held), and deletes sooner once every device has them. Devices catch each other up directly for anything older. — chat 2026-11-10: "we can definitely just leave the live-sync relay to like 48h then" and "the 48 hours should start when the last line from that conversation is added. that way a conversation i'm still actively working on, but started a day or two before, will still sync if i open my phone tomorrow". A per-user size cap (1 GB suggested) is proposed, not yet confirmed.
+- Not settled (the relay holding time below is now settled above): how long the relay holds lines (Q-2: 30 days is too much; "something more like 24h from when the conversation was last active?"); whether a takeover is written into the chat (Q-3: "open to it … review this for fragility/errors/unintended consequences"); states N-4 and N-6 ("confusing").
 
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
@@ -102,7 +103,7 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 
 ## Open items (nothing below is decided)
 
-1. **How long the relay holds lines**: Destin leans to 24 hours after the chat was last active (D5 Q-2); asked in chat 2026-11-10.
+1. **A per-user size cap on what the relay holds** (1 GB suggested); awaiting his word.
 2. **Takeover written into the chat's record**: reviewed for fragility in chat 2026-11-10; awaiting his word.
 3. **States N-4 and N-6**: proposed to merge into one "this device may be behind" notice; awaiting his word.
 4. **Helper transcripts**, **which smaller pieces always travel**, **phone wake**: unchanged from round 3 (D3 Q-5, Q-6, Q-7).
