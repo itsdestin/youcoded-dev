@@ -1,6 +1,6 @@
 // scripts/perf-lab/phone/device.mjs — the phone side of the phone speed lab: adb, the page's debugging connection,
 // real touches, process CPU counters and memory. Only the YouCoded Dev copy (com.youcoded.app.dev) is ever driven:
-// the release-test copy is not inspectable, and Destin's own app (com.youcoded.app) is never touched.
+// (the only test copy since 2026-11-10; it is the inspectable one), and Destin's own app (com.youcoded.app) is never touched.
 //
 // PRIVACY (Destin's standing rule): the lab takes no pictures at all, and before every step it checks that the dev
 // copy is the window in front — a locked phone, the notification shade or any other app stops the run.

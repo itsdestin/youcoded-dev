@@ -31,7 +31,7 @@ its page is inspectable) installed and in front, unlocked. Reports: `perf-report
 
 - **Never takes a picture.** It reads layout only to find what to tap.
 - **Stops if the dev copy is not in front** (locked phone, notification shade, another app) — checked before every step.
-- **Only the dev copy.** The release-test copy is not inspectable; Destin's own app is never touched.
+- **Only the dev copy.** It is the only test copy and the inspectable one; Destin's own app is never touched.
 - **No messages, no conversations.** The only chat it uses is an empty "New session".
 - A step that could not be done (nothing to tap) is reported as **failed**, never as a fast result; `check` expressions
   confirm the step really happened (the keyboard really opened).
