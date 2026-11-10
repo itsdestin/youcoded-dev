@@ -8,6 +8,7 @@ branch: 237-analytics-page-click-a-day
 finish: Clicking a day shows that day's website and app detail; the 7/30/90 range drives every card; download clicks split by platform
 created: 2026-11-10
 why: Destin, 2026-11-08/09: 'for a specific day I want to see which versions were online, which regions or countries those versions were from'; 'the day/month/3month toggles at the top seem like they should apply to most submenus'; 'i want to see a breakdown of download clicks by clicked platform in day view. these kind of quality-of-life and expanded detail metrics are vital'.
+work: session/analytics-day-detail
 ---
 Progress
 Done: nothing yet.
@@ -15,3 +16,4 @@ Next: plan it.
 Blocked: nothing.
 
 Chats
+- 2026-11-10 session/analytics-day-detail: Built the day view, the one-range page and the deeper breakdowns; server side merged and live
