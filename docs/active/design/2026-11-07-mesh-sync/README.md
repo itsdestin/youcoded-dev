@@ -23,7 +23,7 @@ research fact checked against the code. Nothing else is approved.
 | `connection-options.md` | The explainer written in answer: three pipes with prices, the sleep reframe, what travels with measured sizes, Android sleep, security failure stories, pairing options, the true mesh, side-by-side negatives, and the standing-decisions list. |
 | `mesh-sync.questions-3.json` + `.answers.json` | Deck round 3 (7 statements + 9 questions). **Not submitted.** Saved progress: all seven statements marked Holds; Q-1 to Q-4 skipped; Q-5 onward unanswered. Treat the statements as provisional until submitted. |
 | `mesh-sync.questions-4.json` + `.answers.json` | Deck round 4 (2 statements + 17 questions), submitted 2026-11-09. A second session's whole-design review: one copying system, keepers, pairing, closing the host, retired devices, viewer gaps. Supersedes round 3's Q-1 to Q-4 and Q-8. |
-| `mesh-sync.questions-5.json` | Deck round 5: restates the round-4 answers Destin wrote in his own words, and asks what round 4 left open. |
+| `mesh-sync.questions-5.json` + `.answers.json` | Deck round 5 (16 statements + 7 questions), submitted 2026-11-10. Restated his round-4 rules; decided relay first, files on the same system, offline behaviour; reviewed ten Continue-here states. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
 Serve a deck for Destin with `python3 scripts/ui-review/review-cards.py serve <spec.json> --no-build --timeout 1440` from the workspace root; put the printed link in chat as the last line. Never rebuild an answered deck.
@@ -81,6 +81,18 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - A chat can be started from one device to run on another. — D4 Q-15 yes.
 - Not settled in round 4: the full list of Continue-here warning states and wording (Q-7: "i'd want to see all of the specific warning states/causes/messages"); how duplicates are prevented (Q-8: "there's a smarter way to do this"); how project files travel (Q-10: "is there a simpler or more unified/robust system we could build?"). All three are asked again in round 5.
 
+### Round 5 (2026-11-10)
+- The round-4 restatements all hold: closing the host (D5 S-1), talk-only note added at the end (S-3), viewer limits in one list with plain messages (S-4).
+- A missing sign-in or a missing project folder is a stop-and-ask before continuing; Claude Code chats wait for sign-in, native chats show the model picker. — D5 S-2 Holds: "sign in missing or project folder missing should be a stop to ask".
+- The relay is built first, the own-device keeper after. He wants the costs understood first. — D5 Q-1 pick relay-first: "i want to understand potential costs and such first though".
+- Continue here works with no connection to anything, with a clear warning. — D5 Q-4 pick allow-warn.
+- Closing the host while offline quits and says so, in simple words. — D5 Q-5 pick quit-and-tell: "should simplify. offline - some chats may not have synced."
+- Project files travel on the same system as chats; GitHub becomes optional backup. — D5 Q-6 pick same-system.
+- The missing-folder state is framed as turning on sync for that project on this device and fetching it, after which the project syncs continuously. — D5 N-5: "enable sync for this project and fetch the folder first".
+- Continue-here states N-1, N-2, N-3, N-5, N-7, N-8, N-9, N-10 hold as drafted.
+- Cards filed on his word: #241 cloud-backup choices (D5 S-5), #242 alerts on every device (D5 S-6; filed beside #232, which is mid-build, rather than rewriting it), #243 better view for forked-chat versions (D5 N-10).
+- Not settled: how long the relay holds lines (Q-2: 30 days is too much; "something more like 24h from when the conversation was last active?"); whether a takeover is written into the chat (Q-3: "open to it … review this for fragility/errors/unintended consequences"); states N-4 and N-6 ("confusing").
+
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
 1. "Default runner = the device he's typing on" → replaced by host-stays-until-offline-or-chip (D1 Q-4, Q-5, Q-15).
@@ -90,15 +102,12 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 
 ## Open items (nothing below is decided)
 
-1. **Which keeper is built first**, and how long a relay holds lines (round 5).
-2. **How duplicates are prevented**: proposal in round 5 is that a takeover is itself a line in the chat.
-3. **Taking over, or closing the host, when nothing else is reachable** (round 5).
-4. **How project files travel** (round 5).
-5. **The Continue-here states and wording** (round 5).
-6. **Helper transcripts**, **which smaller pieces always travel**, **phone wake**: unchanged from round 3 (D3 Q-5, Q-6, Q-7), deferred to a later round.
-7. **A multi-device-aware assistant** (proposal §5.4) was never put to Destin as a question.
-8. **Two cards** he asked to have recorded (cloud-backup choices; unified alerts) are proposed in round 5, not yet filed.
-9. **The design document itself** is not yet rewritten from the answers.
+1. **How long the relay holds lines**: Destin leans to 24 hours after the chat was last active (D5 Q-2); asked in chat 2026-11-10.
+2. **Takeover written into the chat's record**: reviewed for fragility in chat 2026-11-10; awaiting his word.
+3. **States N-4 and N-6**: proposed to merge into one "this device may be behind" notice; awaiting his word.
+4. **Helper transcripts**, **which smaller pieces always travel**, **phone wake**: unchanged from round 3 (D3 Q-5, Q-6, Q-7).
+5. **A multi-device-aware assistant** (proposal §5.4) was never put to Destin as a question.
+6. **The design document itself** is not yet rewritten from the answers.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)
 
