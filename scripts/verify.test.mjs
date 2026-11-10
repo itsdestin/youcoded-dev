@@ -29,6 +29,35 @@ test('large changed-file lists still schedule screen and journey verification', 
   }
 });
 
+// Card #15 (b): a change OUTSIDE desktop/ that a desktop test reads (Android manifest, a Kotlin file,
+// a workflow) used to print "tests: none" while CI failed. The planner must select the test that names it.
+test('a changed file outside desktop/ selects the desktop tests that read it', { skip: process.platform === 'win32' }, () => {
+  const root = mkdtempSync(join(tmpdir(), 'youcoded-verify-outside-'));
+  const script = fileURLToPath(new URL('./verify.sh', import.meta.url));
+  try {
+    execFileSync('git', ['init', '-q', root]);
+    mkdirSync(join(root, 'desktop/node_modules'), { recursive: true });
+    mkdirSync(join(root, 'desktop/tests'), { recursive: true });
+    mkdirSync(join(root, 'app/src/main/kotlin'), { recursive: true });
+    writeFileSync(join(root, 'desktop/package.json'), '{}');
+    writeFileSync(join(root, 'desktop/tests/manifest.test.ts'), "readFileSync(join(__dirname, '..', '..', 'app', 'src', 'main', 'AndroidManifest.xml'));\n");
+    writeFileSync(join(root, 'desktop/tests/scan.test.ts'), "const ANDROID = join(__dirname, '..', '..', 'app', 'src', 'main', 'kotlin');\n");
+    writeFileSync(join(root, 'desktop/tests/unrelated.test.ts'), "expect(1).toBe(1);\n");
+    // Commit desktop/ first so only the app/ files below count as changed (package.json would force a full run).
+    execFileSync('git', ['-C', root, 'add', 'desktop/package.json', 'desktop/tests']);
+    execFileSync('git', ['-C', root, '-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'Fixture']);
+    writeFileSync(join(root, 'app/src/main/AndroidManifest.xml'), '<manifest/>');
+    writeFileSync(join(root, 'app/src/main/kotlin/Some.kt'), '');
+    const out = execFileSync('bash', [script, root, '--base', 'HEAD', '--dry-run'], { encoding: 'utf8' });
+    assert.doesNotMatch(out, /tests: none/);
+    assert.match(out, /vitest related --run.*tests\/manifest\.test\.ts/);
+    assert.match(out, /vitest related --run.*tests\/scan\.test\.ts/, 'a test scanning the Kotlin tree by directory is selected by an app/ change');
+    assert.doesNotMatch(out, /unrelated\.test\.ts/);
+  } finally {
+    rmSync(root, { recursive: true, force: true, maxRetries: 3 });
+  }
+});
+
 // Close-session friction, proposal 18: a failed test run's files are rerun alone, and the
 // summary says which fail on their own and which only failed under load — never as a pass.
 import { failedFiles, verdict } from './lib/verify-rerun.mjs';

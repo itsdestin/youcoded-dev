@@ -207,6 +207,36 @@ if [[ ${#DATA_TESTS[@]} -gt 0 ]]; then
   REL+=("${DATA_TESTS[@]}")
 fi
 
+# WHY (card #15 b): CHANGED above keeps only `desktop/` paths, so an edit OUTSIDE desktop/ that
+# desktop tests read at runtime — the Android manifest, a Kotlin file, build.gradle.kts, a CI workflow —
+# printed "tests: none" here while the same tests failed on CI. Select the tests that name the changed
+# (or deleted) file, the same way DATA_TESTS does for desktop data files. Kotlin/Gradle files under app/
+# are also read by tests that scan the whole Android source tree by directory (no file name in the test),
+# so any app/ change additionally selects tests that spell that tree, and a .github/ change those that
+# read workflows. Known blind spot: a test that reads a non-desktop file only through a directory walk
+# not matching these spellings; a --full run covers it.
+mapfile -t OUTSIDE < <(
+  { git -C "$CHECKOUT" diff --name-only --diff-filter=ACMRD "$BASE...HEAD" 2>/dev/null
+    git -C "$CHECKOUT" diff --name-only --diff-filter=ACMRD HEAD 2>/dev/null
+    git -C "$CHECKOUT" ls-files --others --exclude-standard 2>/dev/null
+  } | grep -v '^desktop/' | grep -v '^$' | sort -u || true)
+OUTSIDE_TESTS=()
+if [[ $RUN_FULL -eq 0 ]]; then
+  for f in "${OUTSIDE[@]:-}"; do
+    [[ -n "$f" ]] || continue
+    base=$(basename "$f"); stem=${base%.*}; pats=(-e "$base"); (( ${#stem} >= 8 )) && pats+=(-e "$stem")
+    case "$f" in
+      app/*)     pats+=(-e "'app', *'src'" -e "\.\./app" -e "app/src") ;;
+      .github/*) pats+=(-e "\.github") ;;
+    esac
+    while IFS= read -r t; do [[ -n "$t" ]] && OUTSIDE_TESTS+=("$t"); done < <(cd "$DESKTOP" && grep -rlE "${pats[@]}" tests --include='*.test.ts' --include='*.test.tsx' 2>/dev/null || true)
+  done
+  if [[ ${#OUTSIDE_TESTS[@]} -gt 0 ]]; then
+    mapfile -t OUTSIDE_TESTS < <(printf '%s\n' "${OUTSIDE_TESTS[@]}" | sort -u)
+    REL+=("${OUTSIDE_TESTS[@]}")
+  fi
+fi
+
 # Source-scanning guards — the `*-authority` suites and their relatives — read
 # the source tree at RUNTIME (guard-scope, or their own join(__dirname,'..','src')).
 # `vitest related` walks the IMPORT graph, so it can never relate one of them to a
@@ -257,7 +287,7 @@ elif [[ -n "$BROAD_HIT" ]]; then
 elif [[ ${#REL[@]} -eq 0 ]]; then
   echo "  tests: none — no changed TS/JS files under desktop/"
 else
-  echo "  tests: related to ${#CHANGED[@]} changed file(s) + ${#SCANNERS[@]} source-scanning guards${DATA_TESTS:+ + ${#DATA_TESTS[@]} naming a changed/deleted data file}"
+  echo "  tests: related to ${#CHANGED[@]} changed file(s) + ${#SCANNERS[@]} source-scanning guards${DATA_TESTS:+ + ${#DATA_TESTS[@]} naming a changed/deleted data file}${OUTSIDE_TESTS:+ + ${#OUTSIDE_TESTS[@]} reading a changed file outside desktop/}"
 fi
 echo ""
 
