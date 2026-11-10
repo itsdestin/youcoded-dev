@@ -11,8 +11,8 @@ why: Destin, 2026-11-10: 'this send failed or broke our queue fro some reason?' 
 work: session/246-long-paste-not-sent
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Cause found and reproduced (offline real-queue probe + dev app): Claude Code 2.1.322 shortens any box text over 10,000 characters to first 500 + '[...Truncated text #N +L lines...]' + last 500 (1,034-1,037 chars); the queue's read-back no longer equals the message, so it refuses Enter -> Unconfirmed. Enter still submits the full original (measured). Probes on app branch session/246-long-paste-not-sent (b81695d99).
+Next: Destin picks a fix: A accept Claude Code's shortened form as ours (recommended), B send long messages without the box, C split, D send as file.
 Blocked: nothing.
 
 Chats
