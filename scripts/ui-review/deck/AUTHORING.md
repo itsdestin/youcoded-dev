@@ -592,7 +592,39 @@ No deck without such a step builds or starts the app any differently.
   earlier round's questions with his own answers and comments, read-only. One topic, one
   folder; each new round names the rounds before it.
 - **Each card's state** is a pill at its top right (Not answered / Answered 12:47 / Accepted /
-  2 changes).
+  2 changes); a list's pill shows only once it has something to say.
+
+### Review fixes (2026-11-10)
+
+From a code review of the server, one of the page and a fresh-eyes tester. Where this contradicts
+an older section, this wins.
+
+- **A pencil pressed again keeps a saved comment**; it only returns to the box. A small x beside
+  the comment takes it away. An empty box still closes on the second press.
+- **`"context": true` lists** are never counted as answered, never accepted by moving on, and are
+  not in the summaries or the finish table. An untouched list that was accepted reads **Left as
+  listed** (not "Yes, build it") on the finish screen. The "Accepted" pill shows only once he has
+  moved on from the page (`accepted: true` beside `v: "yes"` in the answers) or changed a row.
+- **A status he changes** (any of them) counts as a change on the box and in the header, shows
+  "changed from: <what it was>" and an outline; the pill is a 32px-tall control with a chevron, and
+  its menu marks the starting value "Suggested" (run/skip) or "my result".
+- **The finish screen** names things as the page does ("Page 2, Question 3 of 3") and shows option
+  labels, never their ids; the submitted page says "Sent. You can close this tab."
+- **One summary:** the page's `summaryOf(state)` and `serve.py` `summary()` print the same text for
+  the same state (a test feeds one state to both). Page notes print in page order.
+- **A drag under 3% of the picture** makes no area; taking the last area away withdraws the answer.
+- **Saved screens** are scrubbed when `shoot --page` / Edit words freezes them (event handlers,
+  `javascript:` addresses, meta refresh, forms' targets, objects, remote pictures and `@import` are
+  removed), shown in a frame that may not run scripts, and refused by the builder if they still
+  carry any of those (`spec.live_code_in`). Re-save an old screen if the builder refuses it.
+- **A screen opened zoomed** fits the window's height too; a count of his edits sits above the frame.
+  Opened as a plain file, the page says words cannot be edited there.
+- **Serving:** saves are locked and use their own temp file; a saved `submitted` is never removed by
+  a later autosave; bodies that are not objects get 400; at most 200 attached pictures; the deck
+  folder's symlinks pointing outside it are not served; a recording is cancelled when the page stops
+  polling (or closes); the archive of a submitted review is never overwritten.
+- A page flushes a pending save when its tab is hidden or closed. A re-served deck that was already
+  submitted still starts a fresh review (the earlier answers are kept beside it) — by design.
 
 ### Which starting point for a question about looks
 

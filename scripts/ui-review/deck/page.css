@@ -503,7 +503,6 @@ body[data-served] .callt,body[data-served] .markt{padding-right:44px}
 .chip .built{color:inherit;opacity:.7;border-left-color:currentColor}
 .responses td.when{white-space:nowrap}
 /* round 2: rows that carry a picture, a source quote and a check result */
-.callbtns{flex:none;display:flex;flex-direction:row;gap:6px;align-items:flex-start}
 .decided{margin:6px 0 0;padding-left:10px;border-left:2px solid var(--mark);font-size:12px;font-style:italic;color:var(--fg-2)}
 /* A row's status: a small tinted pill (design guide: a status is a Pill, sentence case). As a
    button it opens the four statuses — he can set any of them (round 4). */
@@ -534,7 +533,7 @@ body[data-layout="pages"] #notesbtn{display:none}
 .card.calls.numbered ul{counter-reset:stepn} .card.calls.numbered .calltext{position:relative;padding-left:32px}
 .card.calls.numbered .calltext::before{counter-increment:stepn;content:counter(stepn);position:absolute;left:0;top:0;display:grid;place-items:center;width:22px;height:22px;border:1px solid var(--edge);border-radius:50%;font:600 11px/1 var(--font);color:var(--fg-muted)}
 .callbox,.markrow{flex-wrap:wrap}
-@media (max-width:760px){.callrow{flex-wrap:wrap}.callbtns{flex-direction:row}}
+@media (max-width:760px){.callrow{flex-wrap:wrap}}
 /* ── round 3, 2026-11-10 ─────────────────────────────────────────────────────────────── */
 /* WHY boxed rows (Destin, round 3: "these can be smarter and better utilize youcoded design
    principles"; design guide → Lists and menus, Card levels): a list's rows are soft boxes with
@@ -783,3 +782,38 @@ body:not([data-layout="pages"]) #back{display:none}
 @keyframes flashrow{0%,40%{box-shadow:0 0 0 2px var(--accent)}100%{box-shadow:0 0 0 2px transparent}}
 /* Proof as a video: same card, native controls, never playing on its own. */
 .qpic.att.vid{margin:0} .attvid{display:block;width:100%;max-height:70vh;border-radius:var(--radius-md);background:#000}
+
+/* ── review fixes, 2026-11-10 ─────────────────────────────────────────────────────────────
+   WHY each (reviews of the deck): a picture is drawn on with a finger, so the browser must not take
+   the gesture to scroll; a status pill must read as a control; a picked option must not look like
+   the Recommended tint; and the header and the state pill must not squash the title on a phone. */
+.markable img{touch-action:none}
+.result.pillbtn{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:4px 12px;font-size:12px}
+.result.pillbtn::after{content:"\25BE";font-size:14px;line-height:1;opacity:.9}
+.result.pillbtn:disabled::after{content:""}
+.callrow .callflags{align-self:flex-start}
+li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.reswas{margin:4px 0 0;font-size:11px;color:var(--accent)}
+.reswas[hidden]{display:none}
+.card.variant{position:relative}
+.card.variant.on,.pages .card.variant.on{background:color-mix(in srgb,var(--accent) 14%,var(--inset));border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.card.variant.on::after{content:"\2713";position:absolute;right:10px;bottom:10px;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--on-accent);font:700 13px/1 var(--font)}
+.editcount{margin:8px 0 0;font-size:13px}
+.editcount[hidden]{display:none}
+.callbox .markx.callx{align-self:flex-start}
+@media (max-width:700px){
+  /* header: the title gets its own row so the progress bar can no longer sit on top of it */
+  .top{height:auto;min-height:56px;padding:14px 12px 8px}
+  .wrap{flex-wrap:wrap;gap:6px 10px}
+  .top .where,body[data-layout="pages"] .top .where{max-width:100%;flex:1 1 100%}
+  .top .where .id{max-width:100%}
+  .nav{flex:1 1 90px}
+  /* the state pill moves into the flow above the heading instead of squeezing it */
+  .qstate{position:static;display:inline-block;margin:0 0 6px}
+  .pages article.q .qh{padding-right:0}
+  /* every small control is at least 32px tall */
+  .metatog,.sincepart,.linkbtn,#histbtn,.btn.sm,.settledhead,.thumb,.atthead{min-height:32px}
+  .metatog{padding:6px 4px 6px 0} .sincepart{padding:6px 2px;border-bottom:0;text-decoration:underline} .linkbtn{padding:6px 2px}
+  .attpill .px,.markx{min-width:32px;min-height:32px}
+  .iconbtn{min-width:32px;min-height:32px}
+}

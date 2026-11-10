@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, dirname } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import net from 'node:net';
 // WHY the driver is not in this file any more: `review-cards.py preview` needs the same
@@ -614,7 +614,7 @@ test('submit lands on a finish screen that reads the answers back, and the deck 
     assert.equal(await c.evaluate("document.querySelector('#step').hidden"), true, 'the step is put away');
     // The sentence Destin asked for, verbatim — it is the whole point of the screen.
     assert.equal(await c.evaluate("document.querySelector('.finished .lede').textContent.trim()"),
-      'The Assistant should receive your responses in just a moment.');
+      'Sent. You can close this tab. The Assistant should receive your responses in just a moment.');
     // Every step is read back, including the one with no answer.
     const rows = JSON.parse(await c.evaluate("JSON.stringify([...document.querySelectorAll('#responses tbody tr')].map(r=>[...r.cells].map(c=>c.textContent.trim())))"));
     assert.equal(rows.length, 3);
@@ -1534,4 +1534,100 @@ runpy.run_path(${JSON.stringify(RC)}, run_name='__main__')`;
       assert.equal(await c2.evaluate("document.querySelector('.screenframe').contentDocument.querySelector('[data-w]').dataset.k"), 'Saved copy words', 'the saved file is shown');
     } finally { await c2.close(); }
   } finally { for (const s of servers) s.kill(); }
+});
+
+// Review fixes (2026-11-10): what three reviews of the deck found, driven the way a hand would —
+// a background list is never answered, the finish table names things as the page does, a second
+// press of the pencil keeps a comment, a tiny drag draws nothing, a typed-answer box locks on
+// Submit, and the page's summary is character-for-character the server's.
+test('review fixes: context lists, finish wording, pencil, tiny drags, locked boxes, one summary', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-rf-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
+def lst(i, h, calls, **kw): return {'id': i, 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': h, 'calls': calls, **kw}
+raw['steps'] = [{'id': 'P-1', 'page': 'Rows', 'intro': 'Judge the rows.'},
+  lst('G-1', 'Screens', [{'id': 'g', 'call': 'Board moved.', 'why': 'Matches.', 'picture': 'pic.png'}, {'id': 'h', 'call': 'Second.', 'why': 'Ok.', 'result': 'run', 'more': {'does': 'Runs it.', 'returns': 'A list.', 'why': 'Cheap.'}}]),
+  lst('G-2', 'Untouched', [{'id': 'u', 'call': 'Left alone.', 'why': 'Fine.'}]),
+  lst('C-1', 'What exists today', [{'id': 'x', 'call': 'Fact one.', 'why': 'Read.'}], context=True),
+  {'id': 'P-2', 'page': 'Questions', 'intro': 'Answer.'},
+  {'id': 'Q-1', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Which one?', 'today': 'Five run.', 'problem': 'Slow.', 'proposal': 'Pick.', 'checked': 'Read today.',
+   'options': [{'id': 'lead', 'label': 'First option', 'pros': ['Good.'], 'cons': ['Bad.']}, {'id': 'trail', 'label': 'Second', 'pros': ['Good.'], 'cons': ['Bad.']}]},
+  {'id': 'Q-3', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Describe it', 'today': 'None.', 'problem': 'Unknown.', 'proposal': 'Tell me.', 'checked': 'Read today.', 'answer': 'words'}]
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1280, 900);
+  const ev = e => c.evaluate(e);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/${basename(spec).replace(/\.json$/, '.html')}` });
+    for (let i = 0; i < 40 && !(await ev('!!window.__deckReady').catch(() => false)); i++) await sleep(250); await sleep(300);
+    assert.match(await ev("document.querySelector('#count').textContent"), /0 of 4 answered/, 'a background list is not counted as something to answer');
+    assert.equal(await ev("document.querySelector('.qstate').hidden"), true, 'an untouched list shows no state pill (not "Accepted")');
+    // The pencil: a second press keeps a saved comment; only the x takes it away.
+    await ev("document.querySelector('.calledit[data-sid=\"G-1\"][data-call=\"g\"]').click()"); await sleep(100);
+    await ev(`(()=>{const t=document.querySelector('.callt[data-sid="G-1"][data-call="g"]');t.value='keep me';t.dispatchEvent(new Event('input',{bubbles:true}));})()`); await sleep(100);
+    await ev("document.querySelector('.calledit[data-sid=\"G-1\"][data-call=\"g\"]').click()"); await sleep(100);
+    assert.equal(await ev("document.querySelector('.callt[data-sid=\"G-1\"][data-call=\"g\"]').value"), 'keep me', 'a second press of the pencil must not delete the comment');
+    assert.equal(await ev("document.querySelector('.callt[data-sid=\"G-1\"][data-call=\"g\"]').closest('.callbox').hidden"), false);
+    await ev("document.querySelector('.callx[data-sid=\"G-1\"][data-call=\"g\"]').click()"); await sleep(100);
+    assert.equal(await ev("document.querySelector('.callt[data-sid=\"G-1\"][data-call=\"g\"]').closest('.callbox').hidden"), true, 'the small x takes the comment away');
+    // A status he changes looks changed, and the header agrees with the box.
+    await ev("document.querySelector('.result.pillbtn').click()"); await sleep(50);
+    await ev("document.querySelector('.resultmenu button[data-v=skip]').click()"); await sleep(100);
+    assert.equal(await ev("document.querySelector('.reswas').textContent"), 'changed from: Will run');
+    assert.match(await ev("document.querySelector('#count').textContent"), /1 of 4 answered/);
+    assert.ok(await ev("document.querySelector('.result.pillbtn').getBoundingClientRect().height >= 32"), 'the status pill is at least 32px tall');
+    // Pictures: a tiny drag draws nothing, a real one does, and taking the last area away withdraws the answer.
+    await ev("(()=>{const h=document.querySelector('.atthead'); if(!h.closest('.attcard').classList.contains('open')) h.click();})()"); await sleep(200);
+    await ev("document.querySelector('.attimg img').scrollIntoView({block:'center'})"); await sleep(200);
+    const r = await ev("(()=>{const i=document.querySelector('.attimg img').getBoundingClientRect();return {x:i.left,y:i.top,w:i.width,h:i.height}})()");
+    const drag = async (a, b, d, e2) => {
+      const x0 = r.x + r.w * a, y0 = r.y + r.h * b, x1 = r.x + r.w * d, y1 = r.y + r.h * e2;
+      await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0, y: y0 });
+      await c.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: x0, y: y0, button: 'left', clickCount: 1 });
+      for (let i = 1; i <= 4; i++) await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0 + (x1 - x0) * i / 4, y: y0 + (y1 - y0) * i / 4, button: 'left', buttons: 1 });
+      await c.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x1, y: y1, button: 'left', clickCount: 1 }); await sleep(200);
+    };
+    await drag(0.3, 0.3, 0.315, 0.32);
+    assert.equal(await ev("document.querySelectorAll('.attmarks .markrow').length"), 0, 'a drag under 3% makes no area');
+    await drag(0.3, 0.3, 0.6, 0.6);
+    assert.equal(await ev("document.querySelectorAll('.attmarks .markrow').length"), 1, 'a real drag makes one');
+    await ev("document.querySelector('.markx:not(.callx)').click()"); await sleep(200);
+    assert.equal(await ev("JSON.stringify(Object.keys(JSON.parse(localStorage.getItem('deck:' + DECK.key)).answers['G-1'] || {}).includes('marks'))"), 'false');
+    // One summary: the page and the server agree on the same state.
+    const st = { deck: 'x', submitted: '2026-11-10T10:00:00Z', notes: 'general words', notesAttach: [{ kind: 'path', name: 'a.txt', path: '/tmp/a.txt' }],
+      pageNotes: { 'P-2': 'about questions', 'P-1': 'about rows' }, pageAttach: { 'P-1': [{ kind: 'image', name: 'p.png', path: '/tmp/p.png' }] },
+      answers: { 'G-1': { v: 'other', results: { h: 'weird' }, changes: { g: 'x' }, marks: [{ pic: 'row g', x: 1, y: 2, w: 3, h: 4, text: 'm' }] }, 'Q-1': { v: 'pick', pick: 'lead', note: 'n' }, 'Q-3': { v: 'wrote', text: 'hello' }, 'C-1': { v: 'yes' } } };
+    const mine = await ev(`window.__deckSummaryOf(${JSON.stringify(st)})`);
+    const theirs = spawnSync('python3', ['-c', `import sys, json; sys.path.insert(0, ${JSON.stringify(join(HERE, '..'))});
+from deck.spec import load_spec; from deck.serve import summary
+print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())), end='')`], { input: JSON.stringify(st), encoding: 'utf8' });
+    assert.equal(theirs.status, 0, theirs.stderr);
+    assert.equal(mine, theirs.stdout, 'the page and serve.py must print the same summary for the same state');
+    assert.ok(!mine.includes('undefined') && !mine.includes('C-1'), 'no "undefined", and a background list has no line');
+    // Finish: labels, not ids; the numbering the page uses; a list left alone reads "Left as listed".
+    await ev("document.querySelector('#save').click()"); await sleep(300);
+    await ev("document.querySelector('.card.variant[data-pick=\"lead\"]').click()"); await sleep(100);
+    await ev("document.querySelector('#done').click()"); await sleep(200);
+    const warn = await ev("document.querySelector('#skipn').textContent");
+    assert.match(warn, /Page 2, Question 2 of 2/, warn); assert.ok(!/step 4|step \d/.test(warn), warn);
+    await ev("document.querySelector('#submit').click()"); await sleep(1200);
+    const rows = await ev("[...document.querySelectorAll('#responses tbody tr')].map(r => r.innerText.replace(/\\s+/g, ' '))");
+    assert.ok(rows.some(t => /Untouched.*Left as listed/.test(t)), 'a list he moved past untouched is worded as left as listed: ' + rows.join(' // '));
+    assert.ok(rows.some(t => /First option/.test(t)) && !rows.some(t => /\blead\b/.test(t)), 'the option label, never its internal id: ' + rows.join(' // '));
+    assert.ok(!rows.some(t => /What exists today/.test(t)), 'a background list is not in the finish table');
+    assert.equal(await ev("document.querySelector('.ans-write').disabled"), true, 'the typed-answer box locks on Submit');
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
 });

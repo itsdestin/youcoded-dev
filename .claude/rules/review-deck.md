@@ -43,16 +43,17 @@ a feature with a signed contract. Several designs of one thing are ONE Choice sl
 **Invariant:** a words step with `calls` is a list: one pencil per row, no answer button (a list
 left alone is accepted when he moves on), `wording` rows refused. A row's `picture` / `before`
 (image or short video) sit in an Attachments card, never thumbnails. A list shows a state pill only
-once it has something to say; `context: true` never does. Any comment box takes pasted pictures and
-paths as pills. Question decks end every page with a comment box; only picture-style decks have the
-header Notes button. Rows may carry `state`, `trail`, `more`, `reuse`; a run/skip check must carry
-`more`. **Why:** "simplify down to a single pencil"; "rows with images should have an
-attachements card"; of the header Notes button: "nah i wanted like an extra more visible input
-region at the bottom of each page". **Guard:** `test_rethink.py`, `deck-render.test.mjs`.
+once it has something to say. `context: true` is never answered, counted, accepted or listed on the
+finish screen. A pencil pressed again keeps a saved comment; the small x removes it. Any comment box
+takes pasted pictures and paths as pills. Question decks end every page with a comment box; only
+picture-style decks have the header Notes button. Rows may carry `state`, `trail`, `more`, `reuse`; a
+run/skip check must carry `more`. **Why:** "simplify down to a single pencil"; "rows with images
+should have an attachements card". **Guard:** `test_rethink.py`, `deck-render.test.mjs`.
 
 ## Wording is edited on the real screen, after the build
-**Invariant:** no text box per label. A `screen` step edits `shoot --page`'s still copy;
-`liveScreen` adds Use it / Edit words. **Why:** boxes were "terrible" (2026-11-10). **Guard:** `deck-render.test.mjs`.
+**Invariant:** no text box per label. A `screen` step edits `shoot --page`'s still copy, scrubbed of
+anything that runs and framed without scripts; `liveScreen` adds Use it / Edit words. **Why:** boxes
+were "terrible" (2026-11-10). **Guard:** `deck-render.test.mjs`, `freeze.test.mjs`.
 
 ## A slide decides, not the deck
 **Invariant:** `runs`/`labels`, `"pick": "several"`, `"answer": "words"` sit on the SLIDE;
@@ -63,8 +64,7 @@ one ask across decks. **Guard:** `test_spec.py`, `test_words.py`.
 **Invariant:** questions share one page until a marker (`{"id", "page", "intro"}`); a contract
 deck is never paged. Each carries `today`, `problem`, `proposal`, `options[]` with `pros`, `cons`,
 at most one `recommended: true`; inline "Today: …" is refused. Every Today says, behind its (i),
-how and when it was checked (`checked`). **Why:** 28 of 28 options drifted; stale Todays were the
-worst fault. **Guard:** `test_words.py`.
+how and when it was checked (`checked`). **Why:** stale Todays were the worst fault. **Guard:** `test_words.py`.
 
 ## Look at it before he does
 **Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve` (re-serve
@@ -75,4 +75,4 @@ turn and stop. An edit under `deck/` ships only after `selfie` has shown him bef
 ## Themes and pictures
 **Invariant:** never hand-order `themes` (the deck opens on his app's theme; `--theme` overrides,
 `"theme": "fixed"` pins). A picture step shows ONE full-window shot, live page as an extra, never
-instead. **Why:** "this deck is hard to review cuz the images are small". **Guard:** `test_spec.py`.
+instead. **Guard:** `test_spec.py`.

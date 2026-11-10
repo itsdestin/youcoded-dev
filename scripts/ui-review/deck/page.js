@@ -4,6 +4,8 @@
 (function () {
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
   const N = DECK.steps.length, runs = DECK.runs;
+  // WHY (review 2026-11-10): a background-only list asks nothing, so it is never counted as answered or as missing.
+  const asked = DECK.steps.filter(x => !x.context), NA = asked.length;
   let cur = 0, theme = DECK.themes[0], zoom = 1, loupeOn = true, server = false, stepStart = Date.now();
   // PAGES MODE. A question deck (no pictures anywhere) is not one screen per question: it is one
   // scrolling page per SET of questions. Destin (2026-09-04): "my mindset should stay in the same
@@ -77,7 +79,7 @@
       f.addEventListener('load', () => {
         if (!f.isConnected) return;
         delete f.dataset.appliedTheme;
-        try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* gone */ }
+        try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, LIVE_ORIGIN); } catch (e) { /* gone */ }
       }, { once: true });
       f.src = f.dataset.src;
     });
@@ -294,8 +296,9 @@
     const a = { ...(state.answers[sid] || {}) }; const rs = { ...(a.results || {}) };
     if (val === own) delete rs[cid]; else rs[cid] = val;
     if (Object.keys(rs).length) a.results = rs; else delete a.results;
-    // A check HE marks failed is something to act on, so the list counts as changed.
-    if (Object.values(rs).some(x => x === 'fail' || PLAN.includes(x))) { a.v = 'other'; delete a.dk; }
+    // WHY any status he changed counts (UX review 2026-11-10): only fail/run/skip did, so changing a
+    // status to "Passed" showed "1 change" on the box but left the header's answered count behind.
+    if (Object.keys(rs).length) { a.v = 'other'; delete a.dk; }
     else if (a.v === 'other' && !openRows(a) && !(a.marks || []).length) delete a.v;
     state.answers[sid] = a; paintState(); save();
   }
@@ -308,7 +311,7 @@
     if (!pill || state.submitted || (was && was.dataset.for === pill.dataset.sid + '/' + pill.dataset.call)) return;
     const m = document.createElement('div'); m.className = 'resultmenu'; m.setAttribute('role', 'menu'); m.dataset.for = pill.dataset.sid + '/' + pill.dataset.call;
     const now = pill.dataset.now;
-    m.innerHTML = Object.keys(RESULT).filter(k => PLAN.includes(k) === PLAN.includes(pill.dataset.own)).map(k => `<button type="button" role="menuitemradio" aria-checked="${k === now}" data-v="${k}" data-sid="${esc(pill.dataset.sid)}" data-call="${esc(pill.dataset.call)}" data-own="${esc(pill.dataset.own)}"><span class="result ${k}">${RESULT[k]}</span>${k === pill.dataset.own ? `<span class="mine">${PLAN.includes(k) ? 'my suggestion' : 'my result'}</span>` : ''}</button>`).join('');
+    m.innerHTML = Object.keys(RESULT).filter(k => PLAN.includes(k) === PLAN.includes(pill.dataset.own)).map(k => `<button type="button" role="menuitemradio" aria-checked="${k === now}" data-v="${k}" data-sid="${esc(pill.dataset.sid)}" data-call="${esc(pill.dataset.call)}" data-own="${esc(pill.dataset.own)}"><span class="result ${k}">${RESULT[k]}</span>${k === pill.dataset.own ? `<span class="mine">${PLAN.includes(k) ? 'Suggested' : 'my result'}</span>` : ''}</button>`).join('');
     document.body.appendChild(m);
     const r = pill.getBoundingClientRect();
     m.style.top = (r.bottom + scrollY + 4) + 'px'; m.style.left = Math.max(8, r.right + scrollX - m.offsetWidth) + 'px';
@@ -439,7 +442,7 @@
   const callLi = (st, c) => {
     const more = c.more ? moreHtml(c, st.id) : '', trail = trailHtml(c, st.id, c.id), reuse = reuseTip(c);
     const bar = more || trail || reuse ? `<div class="metabar">${more ? more.tog : ''}${trail ? trail.tog : ''}${reuse}</div>${more ? more.panel : ''}${trail ? trail.panel : ''}` : '';
-    return `<li class="call${c.before ? ' pair' : ''}${c.state ? ' st-' + esc(c.state) : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div><div class="callflags">${statePill(c)}${resultPill(st, c)}</div><button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div>${bar}<div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div>${attCard(st, c)}</li>`;
+    return `<li class="call${c.before ? ' pair' : ''}${c.state ? ' st-' + esc(c.state) : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div><div class="callflags">${statePill(c)}${resultPill(st, c)}</div><button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div>${bar}<div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea><button type="button" class="markx callx" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Take this comment away" aria-label="Take this comment away">×</button></div>${attCard(st, c)}</li>`;
   };
   // `fold_settled`: new and changed rows first in the order given, then ONE closed line, "Settled (n)",
   // holding the rest (Destin, round 6, "new first, settled folded below").
@@ -468,7 +471,7 @@
   // SAME function `shoot --page` uses (DECK.live.freeze = scripts/shoot/freeze.mjs) and shows that.
   // Opened as a plain file, or served without the practice app, the switch never appears and the
   // saved file is shown exactly as before.
-  const screenCard = st => `<section class="card screen" data-sid="${esc(st.id)}" data-live-name="${esc(st.liveScreen || '')}"><div class="screenbar"><p class="hint">${esc(EDIT_HINT)}</p><div class="seg" role="tablist" aria-label="How to use this screen" hidden><button type="button" role="tab" data-mode="use">Use it</button><button type="button" role="tab" data-mode="edit">Edit words</button></div><button type="button" class="btn sm screenbig" data-sid="${esc(st.id)}">Whole screen</button></div><p class="screennote" hidden></p><div class="screenwrap"><iframe class="screenframe" data-sid="${esc(st.id)}"${st.screen ? ` src="${esc(st.screen)}"` : ''} title="${esc(st.headline)}" scrolling="no" tabindex="-1"></iframe></div><ul class="screenedits" data-sid="${esc(st.id)}"></ul></section>`;
+  const screenCard = st => `<section class="card screen" data-sid="${esc(st.id)}" data-live-name="${esc(st.liveScreen || '')}"><div class="screenbar"><p class="hint">${esc(EDIT_HINT)}</p><div class="seg" role="tablist" aria-label="How to use this screen" hidden><button type="button" role="tab" data-mode="use">Use it</button><button type="button" role="tab" data-mode="edit">Edit words</button></div><button type="button" class="btn sm screenbig" data-sid="${esc(st.id)}">Whole screen</button></div><p class="editcount" hidden><button type="button" class="linkbtn editjump" data-sid="${esc(st.id)}"></button></p><p class="screennote" hidden></p><div class="screenwrap"><iframe class="screenframe" sandbox="allow-same-origin" data-sid="${esc(st.id)}"${st.screen ? ` src="${esc(st.screen)}"` : ''} title="${esc(st.headline)}" scrolling="no" tabindex="-1"></iframe></div><ul class="screenedits" id="edits-${esc(st.id)}" data-sid="${esc(st.id)}"></ul></section>`;
   const EDIT_HINT = 'Click any words on this screen and retype them. Nothing on it can be pressed.';
   const USE_HINT = 'This is the running app: open menus and fold rows as you like. Then choose Edit words and it freezes just as it stands. Your changes show only in Edit words.';
   const listy = st => st.kind === 'calls' || st.kind === 'screen';
@@ -514,7 +517,11 @@
   // makes each run of text its own editable piece, numbered in page order (the file never
   // changes, so the numbers are the same on every load and saved changes find their place).
   function armScreen(fr) {
-    let doc; try { doc = fr.contentDocument; } catch (e) { return; }
+    let doc; try { doc = fr.contentDocument; } catch (e) { doc = null; }
+    // WHY say so (review 2026-11-10): opened as a plain file, the browser keeps a saved screen out of
+    // reach, so nothing could be edited while the hint still said "click any words".
+    if (!doc && fr.getAttribute('src') && !fr._warned) { fr._warned = true; screenNote(fr.closest('.card.screen'), 'The words on this screen cannot be edited here: the deck was opened as a plain file. Open it from its served link (review-cards.py serve) to edit.', true); return; }
+    if (!doc) return;
     if (!doc || !doc.body || !doc.body.childElementCount || fr._armed === doc) return;
     fr._armed = doc; const sid = fr.dataset.sid;
     // A freshly frozen copy takes the stage BEFORE it is measured: what is covered is judged by
@@ -586,7 +593,9 @@
       const M = 70; let rx = Math.max(0, p[0] - M), ry = Math.max(0, p[1] - M);
       let rw = Math.min(w, p[0] + p[2] + M) - rx; // A card that can run the app lets the popup GROW (a folded row opened) without clipping it: 200px more below.
       const rh = Math.min(h, p[1] + p[3] + M + (fr.closest('.card.screen').dataset.live ? 200 : 0)) - ry;
-      const k = Math.min(1.5, wrap.clientWidth / rw);
+      // WHY also capped by the window's height (UX review 2026-11-10): zoomed to the width alone, a tall popup
+      // was taller than the window and its foot was cut off; now the whole popup fits what he can see.
+      const k = Math.min(1.5, wrap.clientWidth / rw, Math.max(0.4, (innerHeight - 300) / rh));
       const want = Math.min(w, wrap.clientWidth / k);            // spare width shows more of the screen either side
       rx = Math.max(0, Math.min(w - want, rx - (want - rw) / 2)); rw = want;
       place('translate(' + (-rx * k) + 'px,' + (-ry * k) + 'px) scale(' + k + ')', Math.round(rh * k) + 'px');
@@ -611,7 +620,9 @@
       });
       // A change made in a state he has left stays listed (dimmed while its words are not on the screen).
       const list = $(`.screenedits[data-sid="${CSS.escape(fr.dataset.sid)}"]`);
-      if (list) list.innerHTML = Object.entries(ed).map(([k, x]) => `<li${doc && card.dataset.mode !== 'use' && !shown.has(k) ? ' class="away" title="These words are not on the screen as it is frozen now"' : ''}><span class="from">${esc(x.from)}</span><span class="arrow" aria-hidden="true">→</span><span class="to">${x.to ? esc(x.to) : '<i>(removed)</i>'}</span>${x.state ? `<span class="state">${esc(x.state)}</span>` : ''}${state.submitted ? '' : `<button type="button" class="linkbtn screenundo" data-sid="${esc(fr.dataset.sid)}" data-n="${esc(k)}">Put back</button>`}</li>`).join('');
+      // WHY a count above the frame (UX review 2026-11-10): the list of his edits sits below a tall frame, out of sight.
+      { const ec = card.querySelector('.editcount'), n = Object.keys(ed).length; if (ec) { ec.hidden = !n; ec.querySelector('button').textContent = n + (n === 1 ? ' change' : ' changes') + ' made — see the list below'; } }
+      if (list) list.innerHTML = Object.entries(ed).map(([k, x]) => `<li${doc && card.dataset.mode !== 'use' && !shown.has(k) ? ' class="away" title="These words are not on the screen as it is frozen now"' : ''}><span class="from">${esc(x.from)}</span><span class="arrow" aria-hidden="true">→</span><span class="to">${x.to ? esc(x.to) : '<i>(removed)</i>'}</span>${state.submitted ? '' : `<button type="button" class="linkbtn screenundo" data-sid="${esc(fr.dataset.sid)}" data-n="${esc(k)}">Put back</button>`}</li>`).join('');
     });
     fitScreens();
   }
@@ -710,6 +721,7 @@
     const big = e.target.closest('.screenbig');
     if (big) { const card = big.closest('.card.screen'); const on = !card.classList.contains('big'); closeScreenBig(); card.classList.toggle('big', on); big.textContent = on ? 'Close' : 'Whole screen'; fitScreens(); return; }
     const sw = e.target.closest('.seg [data-mode]'); if (sw) { setMode(sw.closest('.card.screen'), sw.dataset.mode); return; }
+    const jump = e.target.closest('.editjump'); if (jump) { const l = $(`.screenedits[data-sid="${CSS.escape(jump.dataset.sid)}"]`); if (l) l.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     const u = e.target.closest('.screenundo');
     if (u) { const ed = (state.answers[u.dataset.sid] || {}).edits || {}; if (Object.hasOwn(ed, u.dataset.n)) setScreenEdit(u.dataset.sid, u.dataset.n, ed[u.dataset.n].from, null); }
   });
@@ -787,7 +799,7 @@
     // WHY (Destin, 2026-11-09): one text field per question — a typed answer hides the note box.
     $('#note').hidden = st.answer === 'words' || listy(st);
     addMics();
-    if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
+    if (state.submitted) $$('.ans,.ans-write').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
   // `id` is the step being answered. On a page every question has its own answer row, so the
   // id comes from the button that was clicked; on a one-step screen there is only one step.
@@ -852,11 +864,27 @@
     }
   }
   // `extra`'s answers join `base`'s; where both hold one, the newer wins (a missing time is oldest).
+  // WHY the notes are folded in too (review 2026-11-10): only `answers` used to be merged, so after
+  // a crash recovery or a refused save the page notes, general notes and pasted-picture pills he had
+  // typed were dropped for whichever side was not the base. Notes carry no time, so where both sides
+  // hold words the longer wins (nothing typed is thrown away); a pill is kept if either side has it.
+  const longer = (x, y) => (!x ? y : !y ? x : y.length > x.length ? y : x);
+  const unionPills = (x, y) => { const out = [...(x || [])]; for (const p of y || []) if (!out.some(q => q.path === p.path)) out.push(p); return out; };
   function merged(base, extra) {
     const out = { ...base, answers: { ...(base.answers || {}) } };
     for (const [id, a] of Object.entries((extra && extra.answers) || {})) {
       const b = out.answers[id];
       if (a && (!b || (a.t || 0) > (b.t || 0))) out.answers[id] = a;
+    }
+    if (extra) {
+      const pn = { ...(base.pageNotes || {}) };
+      for (const [k, v] of Object.entries(extra.pageNotes || {})) { const w = longer(pn[k], v); if (w) pn[k] = w; }
+      if (Object.keys(pn).length) out.pageNotes = pn;
+      const gn = longer(base.notes, extra.notes); if (gn) out.notes = gn;
+      const pa = { ...(base.pageAttach || {}) };
+      for (const [k, v] of Object.entries(extra.pageAttach || {})) { const u = unionPills(pa[k], v); if (u.length) pa[k] = u; }
+      if (Object.keys(pa).length) out.pageAttach = pa;
+      const na = unionPills(base.notesAttach, extra.notesAttach); if (na.length) out.notesAttach = na;
     }
     return out;
   }
@@ -880,17 +908,17 @@
         const next = sameRound ? merged(disk && disk.answers ? disk : { ...local, answers: {} }, local) : disk;
         if (next && next.answers) Object.assign(state, next);
         for (const [id, a] of Object.entries(state.answers || {})) if (a) { const { t, ...rest } = a; stamped[id] = JSON.stringify(rest); }
-        if (sameRound && JSON.stringify(next.answers) !== JSON.stringify((disk && disk.answers) || {})) save();   // the backup held something the file lost
+        if (sameRound && JSON.stringify([next.answers, next.pageNotes, next.notes, next.pageAttach, next.notesAttach]) !== JSON.stringify([disk && disk.answers || {}, disk && disk.pageNotes, disk && disk.notes, disk && disk.pageAttach, disk && disk.notesAttach])) save();   // the backup held something the file lost
         else showSaved(true);   // what is on screen is what is in the file, so say so from the start
         return;
       }
     } catch (e) { /* not served */ }
     if (local && local.answers) Object.assign(state, local);
   }
-  let retry = null;
+  let retry = null, lastSig = '', loaded = false;
   const post = () => fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) });
   async function save() {
-    stamp();
+    stamp(); lastSig = JSON.stringify(state);
     try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) { /* no storage */ }
     if (!server) return;
     clearTimeout(retry);
@@ -900,10 +928,11 @@
         // This page is older than the file (it was open across a server restart). Fold the
         // file's answers in — the newer of each wins — and save the union, instead of losing either.
         const disk = await (await fetch('/answers', { cache: 'no-store' })).json();
-        Object.assign(state, merged(state, disk)); paintState();
+        Object.assign(state, merged(state, disk)); paintState(); if (PAGES) { const pn = $('#pnote'); if (pn && document.activeElement !== pn) pn.value = (state.pageNotes || {})[PAGES[cur].id] || ''; }
         r = await post();
       }
       if (!r.ok) throw new Error('HTTP ' + r.status);
+      lastSig = JSON.stringify(state);   // what is on disk now (a refused save folds the file in first)
       showSaved(true);
     } catch (e) {
       showSaved(false, (e && e.message) || String(e));
@@ -1023,7 +1052,7 @@
     // Every control carries the id of the question it belongs to, so one click handler on the
     // column can answer any of them without knowing which article it came from.
     $$('#cards article.q').forEach(art => art.querySelectorAll('.ans').forEach(b => b.dataset.id = art.dataset.id));
-    if (state.submitted) $$('#cards .ans,#cards .note').forEach(e => e.disabled = true);
+    if (state.submitted) $$('#cards .ans,#cards .note,#cards .ans-write').forEach(e => e.disabled = true);   // WHY .ans-write too (review 2026-11-10): the typed-answer box stayed live after Submit and looked saved
     layout(); paintState(); addMics(); wireMarks();
   }
   // Delegated, and bound once: renderPage() replaces the whole column on every page change.
@@ -1037,9 +1066,10 @@
   $('#cards').addEventListener('click', e => {
     const open = e.target.closest('.opendev');
     if (open) { openDev(open); return; }
+    const cx = e.target.closest('.callx'); if (cx) { toggleCall(cx.dataset.sid, cx.dataset.call, true); return; }
     const chg = e.target.closest('.calledit');
     if (chg) { toggleCall(chg.dataset.sid, chg.dataset.call); return; }
-    const mx = e.target.closest('.markx');
+    const mx = e.target.closest('.markx:not(.callx)');
     if (mx) { removeMark(mx.dataset.sid, +mx.dataset.i); return; }
     const b = e.target.closest('.copycmd'); if (!b) return;
     const code = b.parentElement.querySelector('code');
@@ -1091,9 +1121,16 @@
     if (text.trim()) { a.v = 'wrote'; a.text = text; delete a.dk; } else { delete a.v; delete a.text; }
     state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
   }
-  function toggleCall(sid, cid) {
+  function toggleCall(sid, cid, remove) {
     if (state.submitted) return;
     const a = { ...(state.answers[sid] || {}) }; const ch = { ...(a.changes || {}) };
+    // WHY (UX review 2026-11-10): a second press of the pencil on a row with a saved comment used to
+    // delete it with no warning. Now it only goes back to the box; taking a comment away is the
+    // small x beside it. An EMPTY box may still be closed by the pencil.
+    if (remove && !(cid in ch)) return;   // the x only ever takes an existing comment away
+    if (!remove && cid in ch && String(ch[cid] || '').trim()) {
+      const box = $(`.callt[data-sid="${CSS.escape(sid)}"][data-call="${CSS.escape(cid)}"]`); if (box) box.focus(); return;
+    }
     if (cid in ch) {
       delete ch[cid];
       // WHY: pictures and paths pasted into that change's box belong to it; leaving them would
@@ -1114,9 +1151,13 @@
   function acceptLists() {
     if (state.submitted || !PAGES) return;
     pageSteps(cur).forEach(st => {
-      if (!listy(st)) return;
+      // WHY not a background-only list (review 2026-11-10): `context: true` rows ask nothing, so
+      // leaving the page must never count as answering them.
+      if (!listy(st) || st.context) return;
       const a = state.answers[st.id] || {};
-      if (!a.v || a.v === 'skip') state.answers[st.id] = { ...a, v: 'yes' };
+      // `accepted` marks a list that stands because he moved on — the only thing that lets its pill
+      // say "Accepted" (review 2026-11-10: the pill showed on a group he had not left or touched).
+      if (!a.v || a.v === 'skip') state.answers[st.id] = { ...a, v: 'yes', accepted: true };
     });
   }
   function paintCalls() {
@@ -1124,7 +1165,15 @@
       const now = ((state.answers[p.dataset.sid] || {}).results || {})[p.dataset.call] || p.dataset.own;
       p.dataset.now = now; p.className = 'result pillbtn ' + now + (now !== p.dataset.own ? ' yours' : '');
       p.textContent = RESULT[now]; p.disabled = !!state.submitted;
-      p.title = now !== p.dataset.own ? 'You set this. My result was: ' + RESULT[p.dataset.own] : 'Press to change this status';
+      p.title = now !== p.dataset.own ? 'You set this. ' + (PLAN.includes(p.dataset.own) ? 'The suggestion was: ' : 'My result was: ') + RESULT[p.dataset.own] : 'Press to change this status';
+      // WHY a visible "changed from" line and outline (UX review 2026-11-10): a status he changed
+      // looked the same as one that was always Skip. The row now says what it was and wears the accent.
+      const li = p.closest('li.call'); if (li) {
+        const was = now !== p.dataset.own; li.classList.toggle('reschg', was);
+        let w = li.querySelector('.reswas');
+        if (was && !w) { w = document.createElement('p'); w.className = 'reswas'; li.querySelector('.calltext').appendChild(w); }
+        if (w) { w.hidden = !was; w.textContent = was ? 'changed from: ' + RESULT[p.dataset.own] : ''; }
+      }
     });
     $$('.card.calls .call').forEach(li => {
       const btn = li.querySelector('.calledit');
@@ -1132,7 +1181,8 @@
         const box = li.querySelector('.callt'), wrap = li.querySelector('.callbox');
         const ch = (state.answers[btn.dataset.sid] || {}).changes || {}; const on = btn.dataset.call in ch;
         li.classList.toggle('chg', on); wrap.hidden = !on; btn.classList.toggle('on', on); btn.disabled = !!state.submitted; box.disabled = !!state.submitted;
-        btn.title = on ? 'Take this comment away' : 'Comment on this, or say what to change';
+        btn.title = on ? 'Go to your comment' : 'Comment on this, or say what to change';
+        { const x = li.querySelector('.callx'); if (x) x.disabled = !!state.submitted; }
         if (document.activeElement !== box) { box.value = on ? ch[btn.dataset.call] : ''; grow(box); }
       }
     });
@@ -1170,7 +1220,7 @@
         // he has written something, or "Accepted" after he moves on. A background-only (`context`) list
         // never has a pill: there is nothing on it to accept or change. A QUESTION still says
         // "Not answered" / "Answered 12:47", because it does ask for something.
-        const quiet = listy(st) && (!!st.context || (!on && !n));
+        const quiet = listy(st) && (!!st.context || (!n && !(a.accepted && a.v === 'yes')));
         tk.hidden = quiet; art.classList.toggle('nostate', quiet);
         tk.className = 'qstate ' + (!on && !n ? 'none' : listy(st) && n ? 'chg' : 'ok');
         tk.textContent = quiet ? '' : !on && !n ? 'Not answered' : listy(st) ? (n ? n + (n === 1 ? ' change' : ' changes') : 'Accepted') : 'Answered' + (a.t ? ' ' + clock(a.t) : '');
@@ -1178,11 +1228,11 @@
     });
     // A segment is a PAGE: solid once every question on it is answered, half-lit while some are.
     $$('#steps span').forEach((seg, i) => {
-      const on = pageSteps(i), n = on.filter(st => { const x = state.answers[st.id]; return x && x.v && x.v !== 'skip'; }).length;
+      const on = pageSteps(i).filter(st => !st.context), n = on.filter(st => { const x = state.answers[st.id]; return x && x.v && x.v !== 'skip'; }).length;
       seg.className = (on.length && n === on.length ? 'done' : n ? 'part' : '') + (i === cur ? ' on' : '');
     });
-    const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
-    $('#count').textContent = 'page ' + (cur + 1) + ' of ' + PAGES.length + ' · ' + done + ' of ' + N + ' answered' + (state.submitted ? ' · submitted, read-only' : '');
+    const done = asked.filter(x => { const y = state.answers[x.id]; return y && y.v && y.v !== 'skip'; }).length;
+    $('#count').textContent = 'page ' + (cur + 1) + ' of ' + PAGES.length + ' · ' + done + ' of ' + NA + ' answered' + (state.submitted ? ' · submitted, read-only' : '');
     // On a page the forward button is navigation, not "save this answer" — it is never disabled
     // for an unanswered question, because there are several of them on screen.
     $('#save').disabled = !!state.submitted; $('#save').textContent = cur === LAST ? 'Done' : 'Next page ›';
@@ -1194,7 +1244,7 @@
   // WHY (Destin, 2026-11-10, round 3: "there is no additional/separate notes button for me to
   // leave misc/unrelated comments/notes. so we should add something like that"): a thought
   // that belongs to no question had to be typed under whichever question was nearest. One
-  // box, reachable from the header on every page, saved as `notes` beside the answers.
+  // box saved as `notes` beside the answers. (Only picture-style decks show the header Notes button; question decks use the foot-of-page box.)
   document.addEventListener('input', e => {
     const pn = e.target.closest && e.target.closest('.pnote'); if (!pn || state.submitted) return;
     const all = { ...(state.pageNotes || {}) };
@@ -1202,10 +1252,6 @@
     if (Object.keys(all).length) state.pageNotes = all; else delete state.pageNotes;
     grow(pn); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
   });
-  // Page notes, in page order, for both summaries.
-  // Pictures and paths attached under the page-foot box or the general notes box, for both summaries.
-  const pageAttachLines = () => (PAGES || []).flatMap(p => ((state.pageAttach || {})[p.id] || []).map(x => 'about the page "' + p.title + '" attached — ' + pillWords(x) + '\n'))
-    .concat((state.notesAttach || []).map(x => 'general notes attached — ' + pillWords(x) + '\n')).join('');
   const pageNoteList = () => (PAGES || []).map(p => [p.title, ((state.pageNotes || {})[p.id] || '').trim()]).filter(x => x[1]);
   const gnote = $('#gnote');
   $('#notesbtn').onclick = () => {
@@ -1230,7 +1276,7 @@
     // Never while he is typing in it: assigning `value` would put the caret back at the end.
     const w = $('#answers .ans-write'); if (w && document.activeElement !== w) w.value = a.text || '';
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
-    const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
+    const done = asked.filter(x => { const y = state.answers[x.id]; return y && y.v && y.v !== 'skip'; }).length;
     $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
     // browsing a submitted deck must never re-arm Save & Next
     $('#save').disabled = !!state.submitted || !(a.v && a.v !== 'skip');
@@ -1368,18 +1414,38 @@
   $$('#steps span').forEach((s, i) => s.onclick = () => go(i));
 
   // ── submit ──
-  function summary() {
-    const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
-    // Mirrors serve.py's summary(): a note prints plainly, right after the answer, same words.
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a)); }
-    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + pageNoteList().map(([t, n]) => 'about the page "' + t + '" — "' + n + '"\n').join('') + ((state.notes || '').trim() ? 'general notes — "' + state.notes.trim() + '"\n' : '') + pageAttachLines() + lines.join('\n');
+  // WHY ONE function over a state (review 2026-11-10): the page and serve.py each printed their own
+  // summary and they disagreed (counts in the header, the order of notes, "undefined" for an unknown
+  // status). This mirrors serve.py's summary() line for line, takes the state as an argument, and is
+  // exposed as window.__deckSummaryOf so a test can feed the SAME state to both and compare.
+  function summaryOf(S) {
+    const counts = { yes: 0, no: 0, other: 0, pick: 0, picks: 0, wrote: 0, skip: 0 }; const lines = [];
+    for (const st of DECK.steps) {
+      if (st.context) continue;   // a background-only list asks nothing: no answer, no line
+      const a = (S.answers || {})[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
+      const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && st.variants ? 'none' : (v === 'other' && a.dk ? "don't know" : v));
+      lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a));
+    }
+    const when = (S.submitted || '').slice(0, 16).replace('T', ' ');
+    const head = DECK.key + ' · ' + (when ? 'submitted ' + when : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · '
+      + (counts.pick ? counts.pick + ' picked · ' : '') + (counts.picks ? counts.picks + ' multi-picked · ' : '') + (counts.wrote ? counts.wrote + ' written · ' : '') + counts.skip + ' skipped';
+    // Page order, then any key the deck no longer has a page for (as serve.py does).
+    const ids = (PAGES || []).map(pg => pg.id), titleOf = k => { const pg = (PAGES || []).find(x => x.id === k); return pg ? pg.title : k; };
+    const keysOf = o => ids.filter(k => k in (o || {})).concat(Object.keys(o || {}).filter(k => !ids.includes(k)));
+    let paged = keysOf(S.pageNotes).filter(k => String((S.pageNotes || {})[k] || '').trim()).map(k => 'about the page "' + titleOf(k) + '" — "' + String(S.pageNotes[k]).trim() + '"\n').join('');
+    paged += keysOf(S.pageAttach).map(k => ((S.pageAttach || {})[k] || []).map(x => 'about the page "' + titleOf(k) + '" attached — ' + pillWords(x) + '\n').join('')).join('');
+    const general = String(S.notes || '').trim();
+    const gattached = (S.notesAttach || []).map(x => 'general notes attached — ' + pillWords(x) + '\n').join('');
+    return head + '\n' + paged + (general ? 'general notes — "' + general + '"\n' : '') + gattached + lines.join('\n');
   }
+  const summary = () => summaryOf(state);
+  window.__deckSummaryOf = summaryOf;
   const pillWords = p => p.kind === 'image' ? 'picture "' + p.name + '" saved at ' + p.path : 'file ' + p.path;
   const attachLabel = k => k === 'note' ? 'his note' : k === 'text' ? 'his typed answer' : k.startsWith('change:') ? 'change ' + k.slice(7) : k;
   // Mirrors serve.py's extras(): lines he marked for change, and areas he marked on a picture.
   function extras(a) {
     const out = [];
-    for (const [k, v] of Object.entries(a.results || {})) out.push('\n    status ' + k + ' — he set it to ' + RESULT[v]);
+    for (const [k, v] of Object.entries(a.results || {})) out.push('\n    status ' + k + ' — he set it to ' + (RESULT[v] || v));
     for (const [k, t] of Object.entries(a.changes || {})) out.push('\n    change ' + k + ' — "' + String(t || '').trim() + '"');
     (a.asks || []).forEach(k => out.push('\n    more context wanted on ' + k));
     // {from, to} from a screen he retyped words on; a plain string from a round-3 wording row.
@@ -1397,13 +1463,14 @@
     // stepStart, a Done -> Keep reviewing -> Done round trip would add those seconds a second time.
     // paintState() repaints so a step that record() just marked "skip" turns grey immediately.
     stepStart = Date.now(); paintState();
-    const missing = DECK.steps.map((st, i) => [(state.answers[st.id] || {}).v, i]).filter(([v]) => !v || v === 'skip').map(([, i]) => i + 1);
+    // Context lists are never "missing"; each missing one is named the way the page names it.
+    const missing = asked.filter(st => { const v = (state.answers[st.id] || {}).v; return !v || v === 'skip'; });
     $('#skipped').style.display = missing.length ? 'flex' : 'none';
-    $('#skipn').textContent = missing.length + (missing.length === 1 ? ' step has' : ' steps have') + ' no answer (step' + (missing.length > 1 ? 's ' : ' ') + missing.join(', ') + ').';
+    $('#skipn').textContent = missing.length + (missing.length === 1 ? ' step has' : ' steps have') + ' no answer (' + missing.map(whereOf).join('; ') + ').';
     // The list names steps ("2 steps have no answer") because a question is what he answers;
     // going there means opening the PAGE that question sits on.
-    const pageOf = i => PAGES ? Math.max(0, PAGES.findIndex(p => p.steps.includes(DECK.steps[i].id))) : i;
-    $('#first').style.display = missing.length ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(pageOf(missing[0] - 1)); };
+    const pageOf = st => PAGES ? Math.max(0, PAGES.findIndex(p => p.steps.includes(st.id))) : DECK.steps.indexOf(st);
+    $('#first').style.display = missing.length ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(pageOf(missing[0])); };
     $('#dlg-text').innerHTML = server
       ? 'Your answers have been saving to a file next to this deck as you went. Submitting tells Claude you\'re finished — it picks them up in the session and replies there. <b>Nothing to copy or paste</b>: close this tab and go back to the conversation.'
       : 'This deck is not being served, so Claude is not watching it. Copy the feedback below and paste it into the chat.';
@@ -1432,7 +1499,7 @@
   function lockSubmitted() {
     $('#done').innerHTML = 'Submitted ✓<span class="long"> — view responses</span>';
     $('#done').onclick = showFinished; $('#done').disabled = false;
-    $$('.ans,#save,#note').forEach(e => e.disabled = true); paintState(); drawMarks();
+    $$('.ans,.ans-write,#save,#note').forEach(e => e.disabled = true); $$('.pnote').forEach(e => e.disabled = true); paintState(); drawMarks();
   }
 
   // ── the finish screen ──
@@ -1444,23 +1511,33 @@
     if (v === 'skip') return 'No answer';
     // Fix: a words QUESTION offers `options`, not the `variants`/`panes` pickList knows about, so
     // its answers read back on the finish screen as a bare id ("all-five-plus-new"). Look in both.
-    const label = id => { const o = (pickList(st) || st.options || []).find(x => x.id === id); return id + (o ? ' — ' + o.label : ''); };
+    // WHY the label alone (UX review 2026-11-10): the finish table printed the internal option id ("lead — …").
+    const label = id => { const o = (pickList(st) || st.options || []).find(x => x.id === id); return o ? o.label : id; };
     if (v === 'pick') return label(a.pick);
     if (v === 'picks') return (a.picks || []).map(label).join('; ');
     if (v === 'wrote') return '“' + String(a.text || '').trim() + '”';
+    if (listy(st) && v === 'other') { const n = openRows(a) + (a.marks || []).length + Object.keys(a.results || {}).length; return n + (n === 1 ? ' change' : ' changes'); }
     if (v === 'other' && (a.changes || a.asks)) return openRows(a) + ' flagged';
     if (v === 'other') return a.dk ? "Don't know" : 'Something else';
     if (v === 'no') return pickList(st) ? 'None of these' : noLabel(st);
+    // WHY (UX review 2026-11-10): a list he moved past untouched was printed as "Yes, build it".
+    if (listy(st)) return 'Left as listed';
     return yesLabel(st);
+  };
+  // Where a step is, in the numbering the page itself shows ("Question 3 of 3"), never a bare index.
+  const whereOf = st => {
+    if (!PAGES) return 'Step ' + (DECK.steps.indexOf(st) + 1);
+    const pi = PAGES.findIndex(p => p.steps.includes(st.id)), qs = pageSteps(pi).filter(x => !listy(x));
+    return 'Page ' + (pi + 1) + (listy(st) ? '' : ', Question ' + (qs.indexOf(st) + 1) + ' of ' + qs.length);
   };
   function renderResponses() {
     const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
-    const rows = DECK.steps.map((st, i) => {
+    const rows = asked.map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
       const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k), Object.entries(a.edits || {}).map(([k, t]) => t && typeof t === 'object' ? '“' + t.from + '” → “' + t.to + '”' + (t.state ? ' (seen with: ' + t.state + ')' : '') : k + ' reworded: ' + String(t || '').trim()),
         (a.marks || []).map((m, j) => 'Area ' + (j + 1) + ' on ' + m.pic + ': ' + String(m.text || '').trim()),
         Object.values(a.attach || {}).flat().concat((a.marks || []).flatMap(m => m.attach || [])).map(p => 'Attached: ' + p.name)).filter(Boolean).join(' · ');
-      return `<tr><td class="n">${i + 1}</td>`
+      return `<tr><td class="n">${esc(whereOf(st))}</td>`
         + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
         + `<td class="v" data-v="${esc(v)}">${esc(ANS_LABEL(st, a))}</td>`
         // WHY its own column (rethink Q-6): when he answered each one, without altering the answer text.
@@ -1475,7 +1552,7 @@
     const parts = [counts.yes + ' yes', counts.no + ' no', counts.other + ' other'];
     if (counts.pick) parts.splice(2, 0, counts.pick + ' picked');
     if (counts.skip) parts.push(counts.skip + ' with no answer');
-    $('#fin-meta').textContent = N + (N === 1 ? ' step' : ' steps') + ' · ' + parts.join(' · ') + (when ? ' · submitted ' + when : '');
+    $('#fin-meta').textContent = NA + (NA === 1 ? ' step' : ' steps') + ' · ' + parts.join(' · ') + (when ? ' · submitted ' + when : '');
   }
   function showFinished() {
     renderResponses(); $('#step').hidden = true; $('#finished').hidden = false; document.body.dataset.screen = 'finished';
@@ -1483,7 +1560,7 @@
     // be labelling a step nobody is looking at. The progress strip stays: it is the summary at
     // a glance, and clicking a segment is still the way back into that step (a one-page deck hides the strip; `‹ Back to the deck` is its way back).
     $('#wtitle').textContent = DECK.title; $('#wsub').textContent = 'review complete';
-    $('#count').textContent = 'all ' + N + ' steps · read-only';
+    $('#count').textContent = 'all ' + NA + ' steps · read-only';
     $('#prev').disabled = false; $('#next').disabled = true;   // Prev goes back into the deck; nothing follows the end
   }
   function hideFinished() { $('#finished').hidden = true; $('#step').hidden = false; document.body.dataset.screen = 'deck'; }
@@ -1515,7 +1592,8 @@
   }
   $('#zin').onclick = () => setZoom(zoom + 0.1); $('#zout').onclick = () => setZoom(zoom - 0.1); $('#replay').onclick = replay;
   document.addEventListener('keydown', e => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    // WHY more than boxes (review 2026-11-10): a focused proof video uses the arrows to seek; they paged the deck away (and accepted the lists left behind).
+    if (e.target.closest && e.target.closest('input,textarea,select,video,audio,[contenteditable],[role=menu],[role=listbox]')) return;
     if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1);   // go() decides what a submitted deck is allowed to do
     if (e.key === '+' || e.key === '=') setZoom(zoom + 0.1); if (e.key === '-') setZoom(zoom - 0.1); if (e.key === '0') setZoom(1);
     if (e.key === 'r' && curStep().kind === 'clip') replay();
@@ -1541,7 +1619,7 @@
         // overwrites that request. Retry on its painted-theme acknowledgement,
         // never claim readiness from the earlier size report.
         f.dataset.themeRetries = String(Number(f.dataset.themeRetries || 0) + 1);
-        try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (err) { /* gone */ }
+        try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, LIVE_ORIGIN); } catch (err) { /* gone */ }
       }
       return;
     }
@@ -1645,13 +1723,16 @@
     if (state.submitted) return;
     const a = state.answers[sid]; if (!a || !a.marks) return;
     a.marks.splice(i, 1); if (!a.marks.length) delete a.marks;
-    drawMarks(); save();
+    // WHY (review 2026-11-10): the last area gone left the answer stuck on "Other" with nothing
+    // behind it. Same rule every other way of taking a thing back already follows.
+    if (a.v === 'other' && !openRows(a) && !(a.marks || []).length && !Object.keys(a.results || {}).length) delete a.v;
+    paintState(); drawMarks(); save();
   }
   // ── A picture opens large INSIDE the deck ──────────────────────────────────────────────
   // WHY (Destin, 2026-11-10, round 3: "tapping the image briefly once opens it in a separate
   // tab, which is strange/unexpected behaviour"). The large view sits over the page; areas can
-  // be dragged on it exactly as on the small one — easier, in fact, since it is bigger — and a
-  // click anywhere, or Esc, closes it.
+  // be dragged on it exactly as on the small one — easier, in fact, since it is bigger — and the
+  // Close button, or Esc, closes it.
   // ── The top of the first page: what changed since last round, and the related decks ────────
   // WHY (Destin, rounds 2 and 6: "new first, settled folded below", new items marked, and on return
   // "only what changed"; and "a list at the top of a deck, with one line on how each relates"). One
@@ -1679,8 +1760,9 @@
     const it = stateItems().find(i => i.state === k); if (!it) return;
     const pageOf = PAGES.findIndex(p => p.steps.includes(it.sid));
     const show = () => {
-      if (it.cid && it.state === 'settled') { const h = $(`.settledhead[data-sid="${CSS.escape(it.sid)}"]`); if (h && !h.classList.contains('open')) h.click(); }
-      const el = it.cid ? $(`li.call[data-call="${CSS.escape(it.cid)}"]`) : $(`article.q[data-id="${CSS.escape(it.sid)}"]`);
+      if (it.cid && it.state === 'settled') { const h = $(`.settledhead[data-sid="${CSS.escape(it.sid)}"]`);  if (h && !h.classList.contains('open')) h.click(); }
+      // WHY scoped to the step (review 2026-11-10): row ids are only unique within one list, so the first match on the page could be another list's row.
+      const el = it.cid ? $(`article.q[data-id="${CSS.escape(it.sid)}"] li.call[data-call="${CSS.escape(it.cid)}"]`) : $(`article.q[data-id="${CSS.escape(it.sid)}"]`);
       if (!el) return; el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1800);
     };
     if (pageOf >= 0 && pageOf !== cur) go(pageOf);
@@ -1760,7 +1842,7 @@
     const side = v.querySelector('.vcomments'), act = document.activeElement;
     // Never rebuilt under his caret: typing in a comment repaints the page, and would lose his place.
     if (!(act && act.closest && act.closest('.vcomments') && side.querySelectorAll('.markrow').length === mine.length))
-      side.innerHTML = mine.map(([m, i]) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="2" data-sid="${esc(a.dataset.sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(a.dataset.sid)}" data-i="${i}" title="Take this comment away" aria-label="Take this comment away">×</button></div>`).join('')
+      side.innerHTML = mine.map(([m, i]) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="2" data-sid="${esc(a.dataset.sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(a.dataset.sid)}" data-i="${i}" title="Take this comment away" aria-label="Take this comment away"${state.submitted ? ' disabled' : ''}>×</button></div>`).join('')
         + `<p class="markhint">${!a.classList.contains('markable') || state.submitted ? '' : mine.length ? 'Drag across another part to add a comment.' : 'Drag across any part of the picture to comment on it.'}</p>`;
   }
   function closeBig() { const v = $('.viewer'); if (v) v.remove(); viewA = null; }
@@ -1770,7 +1852,7 @@
     if (v) {
       const x = e.target.closest('.markx');
       if (e.target.closest('.vclose')) { closeBig(); drawMarks(); }
-      else if (x) { v.querySelector('.vcomments').innerHTML = ''; removeMark(x.dataset.sid, +x.dataset.i); }
+      else if (x && !x.disabled) { removeMark(x.dataset.sid, +x.dataset.i); }   // WHY no early clearing (review 2026-11-10): removeMark repaints the list; clearing first emptied the view even when the removal was refused after Submit
       return;
     }
     const a = e.target.closest('.qpic > a'); if (!a) return;
@@ -1790,7 +1872,7 @@
   document.addEventListener('pointerdown', e => {
     if (state.submitted || e.button !== 0 || !e.target.closest) return;
     const img = e.target.closest('.markable img'); if (!img) return;
-    drag = { box: img.closest('.markable'), r: img.getBoundingClientRect(), x0: e.clientX, y0: e.clientY, el: null };
+    drag = { box: img.closest('.markable'), r: img.getBoundingClientRect(), x0: e.clientX, y0: e.clientY, el: null, id: e.pointerId };
     e.preventDefault();   // otherwise the browser starts dragging the image itself
   });
   document.addEventListener('pointermove', e => {
@@ -1806,10 +1888,14 @@
                   w: pct(Math.abs(x2 - x1) / r.width * 100), h: pct(Math.abs(y2 - y1) / r.height * 100) };
     drag.el.style.cssText = `left:${drag.rect.x}%;top:${drag.rect.y}%;width:${drag.rect.w}%;height:${drag.rect.h}%`;
   });
+  // WHY (review 2026-11-10): a touch the browser took over for scrolling ends in pointercancel; without
+  // this the drag stayed "on" and the next move anywhere drew a stray area.
+  document.addEventListener('pointercancel', () => { const d = drag; drag = null; if (d && d.el) d.el.remove(); });
   document.addEventListener('pointerup', () => {
     const d = drag; drag = null; if (!d || !d.el) return;
     d.el.remove(); swallowClick = true; setTimeout(() => { swallowClick = false; }, 0);
-    if (!d.rect || d.rect.w < 1 || d.rect.h < 1) return;
+    // WHY 3% (UX review 2026-11-10): a 1% x 2% slip left a barely visible dot that counted as an answer.
+    if (!d.rect || d.rect.w < 3 || d.rect.h < 3) return;
     const sid = d.box.dataset.sid, a = { ...(state.answers[sid] || {}) };
     a.marks = (a.marks || []).concat([{ pic: d.box.dataset.pk, ...d.rect, text: '' }]);
     // An area with a comment IS a response; with no button pressed it counts as "something else".
@@ -1914,8 +2000,12 @@
     const t = (e.clipboardData.getData('text') || '').trim();
     if (looksLikePath(t)) { e.preventDefault(); addPath(box, t); }
   }, true);
-  document.addEventListener('dragover', e => { const box = e.target.closest && e.target.closest(BOX_SEL); if (box && !state.submitted && slotOf(box) && [...(e.dataTransfer ? e.dataTransfer.types : [])].includes('Files')) e.preventDefault(); });
+  // WHY every file drag is claimed (review 2026-11-10): a file dropped anywhere but a box made the
+  // browser open it in this tab, taking the deck (and an unsaved note) away.
+  const hasFiles = e => [...(e.dataTransfer ? e.dataTransfer.types : [])].includes('Files');
+  document.addEventListener('dragover', e => { if (hasFiles(e)) { e.preventDefault(); const box = e.target.closest && e.target.closest(BOX_SEL); if (!(box && !state.submitted && slotOf(box)) && e.dataTransfer) e.dataTransfer.dropEffect = 'none'; } });
   document.addEventListener('drop', e => {
+    if (hasFiles(e)) e.preventDefault();
     const box = e.target.closest && e.target.closest(BOX_SEL); if (!box || state.submitted || !slotOf(box) || !e.dataTransfer) return;
     const files = [...(e.dataTransfer.files || [])];
     if (files.length) {
@@ -1970,6 +2060,9 @@
     voice.box = voice.btn = null;
   }
   function voiceApply(st) {
+    // WHY (review 2026-11-10): if the page was redrawn while recording, the box he was speaking into is
+    // gone — words would go into a dead node and nothing be saved. Stop the microphone instead.
+    if (voice.box && !voice.box.isConnected) { voicePost('cancel').catch(() => {}); voiceEnd(); return; }
     // WHY four bars and a clock (Destin, round 3: "more like how it actually works in
     // youcoded"): the app's own microphone shows exactly this while it listens (VoiceMeter in
     // VoiceButton.tsx — same four gates, same heights). They sit INSIDE the box's right edge,
@@ -1984,8 +2077,14 @@
     if (!voice.box || st.seq === voice.seq) return;
     voice.seq = st.seq;
     if (st.status === 'recording' || st.status === 'finishing' || st.final) {
-      const text = voice.base + (voice.base && st.text ? ' ' : '') + (st.text || '');
+      // WHY re-base when he typed (review 2026-11-10): every poll used to rewrite the box from the
+      // words heard, wiping anything he typed meanwhile. If the box is no longer what we wrote, his
+      // text becomes the base and only words heard AFTER this point are added to it.
+      if (voice.lastSet != null && voice.box.value !== voice.lastSet) { voice.base = voice.box.value.trim(); voice.heard = voice.lastText || ''; }
+      const heard = voice.heard || '', fresh = (st.text || '').startsWith(heard) ? (st.text || '').slice(heard.length).trim() : (st.text || '');
+      const text = voice.base + (voice.base && fresh ? ' ' : '') + fresh;
       if (voice.box.value !== text) { voice.box.value = text; voice.box.dispatchEvent(new Event('input', { bubbles: true })); grow(voice.box); }
+      voice.lastSet = voice.box.value; voice.lastText = st.text || '';
     }
     voice.btn.classList.toggle('rec', st.status === 'recording');
     // Fix (Destin, round 2: "it kinda bugged out … made the size/shape of the text box wonky"):
@@ -2006,7 +2105,7 @@
       return;
     }
     // His words are added after what is already typed.
-    voice.box = box; voice.btn = btn; voice.seq = -1;
+    voice.box = box; voice.btn = btn; voice.seq = -1; voice.lastSet = null; voice.heard = ''; voice.lastText = '';
     voice.base = box.value.trim();
     voiceSay(btn, ''); btn.classList.add('wait'); box.focus();
     voicePost('start').then(st => {
@@ -2015,13 +2114,28 @@
     }).catch(err => { voiceSay(btn, 'Voice input did not start: ' + err.message); voiceEnd(); });
   });
   document.addEventListener('input', e => { if (e.target.matches && e.target.matches('textarea.note, textarea.ans-write, textarea.callt, textarea.markt')) grow(e.target); });
+  // WHY on leaving (review 2026-11-10): the 300 ms wait before saving a note was never flushed when the
+  // tab closed, so a note typed in that window was lost; and a microphone could stay recording after
+  // the page went away. The server also cancels a recording whose polls stop (serve.py VoiceBridge).
+  function flush() {
+    if (!loaded || state.submitted) return;
+    stamp();
+    const sig = JSON.stringify(state); if (sig === lastSig) return;
+    try { localStorage.setItem(LS, sig); } catch (e) { /* no storage */ }
+    if (server) { lastSig = sig; try { fetch('/answers', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body: sig }).catch(() => {}); } catch (e) { /* too large for a keepalive send */ } }
+  }
+  window.addEventListener('pagehide', () => {
+    flush();
+    if (voice.box && navigator.sendBeacon) navigator.sendBeacon('/voice', new Blob([JSON.stringify({ cmd: 'cancel' })], { type: 'application/json' }));
+  });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
   load().then(() => {
     const q = new URLSearchParams(location.search);
     // An answers file written before this deck had pages can carry a `cur` past the last page;
     // clamping to LAST lands on the last page instead of rendering nothing.
     cur = q.get('step') ? Math.max(0, Math.min(LAST, +q.get('step') - 1)) : Math.max(0, Math.min(LAST, state.cur || 0));
     if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
-    stepStart = Date.now(); render();
+    stepStart = Date.now(); stamp(); lastSig = JSON.stringify(state); loaded = true; render();   // WHY lastSig now: a page that has changed nothing must not rewrite the browser backup when it closes
     if (state.submitted) { lockSubmitted(); showFinished(); }   // an archived deck re-opened after its submit lands on the finish screen — its answers, read back — instead of a step full of dead buttons
   });
 })();
