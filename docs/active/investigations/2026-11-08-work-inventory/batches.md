@@ -84,7 +84,7 @@ Lost-work and sync faults. Touches: file viewer, Office editor, sync.
 - **#229** The 'Syncing…' sign disappears before the sync has actually finished — Fix: the "Syncing…" sign goes away too early.
 - **#127** Sync: six leftover cleanups and rare edge cases — The decided cleanups (ignore stray temporary files, stop reading the old index).
 - **#98** Sync: growth, very long chats and the first download — Piece 1 has a written plan and waits for your go-ahead; no screen change.
-- **#121** Sync conflicts and the Backup & Sync panel's wording — Retests only. MIXED: choosing between conflicting copies is design-first (listed again there in spirit; the card stays whole).
+- **#121** Sync conflicts and the Backup & Sync panel's wording — Retests only. MIXED: how you choose between conflicting copies is a design choice for you and is left on the card.
 
 ## Batch 5 — Security and server
 
