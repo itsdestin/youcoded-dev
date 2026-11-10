@@ -71,6 +71,8 @@ test('a changed README.md selects only tests that name its path, not any mention
     writeFileSync(join(root, 'desktop/package.json'), '{}');
     writeFileSync(join(root, 'desktop/tests/mention.test.ts'), "// see the README.md for why\nexpect(1).toBe(1);\n");
     writeFileSync(join(root, 'desktop/tests/reads-docs.test.ts'), "readFileSync(join(__dirname, '..', '..', 'docs/README.md'));\n");
+    // Committed in the fixture (not added later): a new untracked test is itself a changed file and would be listed whatever the patterns say.
+    writeFileSync(join(root, 'desktop/tests/segmented.test.ts'), "readFileSync(join(root, 'docs', 'README.md'));\n");
     execFileSync('git', ['-C', root, 'add', 'desktop/package.json', 'desktop/tests']);
     execFileSync('git', ['-C', root, '-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'Fixture']);
     writeFileSync(join(root, 'README.md'), 'x');
@@ -81,7 +83,6 @@ test('a changed README.md selects only tests that name its path, not any mention
     assert.match(out, /vitest related --run.*tests\/reads-docs\.test\.ts/);
     assert.doesNotMatch(out, /mention\.test\.ts/);
     // The segmented spelling must be selected too (review 2026-11-10, second pass).
-    writeFileSync(join(root, 'desktop/tests/segmented.test.ts'), "readFileSync(join(root, 'docs', 'README.md'));\n");
     out = execFileSync('bash', [script, root, '--base', 'HEAD', '--dry-run'], { encoding: 'utf8' });
     assert.match(out, /tests\/segmented\.test\.ts/, "join(root, 'docs', 'README.md') is a read of docs/README.md");
   } finally {
