@@ -217,6 +217,28 @@ live-acceptance run):
    it is not a sandbox. Any other launcher: `HOME=<throwaway> bash scripts/dev-isolation.sh <command>`.
    Check with `HOME=<throwaway> bash scripts/dev-isolation.sh gh auth status`, which must say not logged in.
 
+## Driving a dev window's Claude Code chat
+
+`node scripts/shoot/dev-chat.mjs [--worktree <name>] <verb>` (card #209) runs the chat steps a
+Claude Code test needs, against a dev window `run-dev.sh` started. Each call attaches, does one
+thing and detaches:
+
+- `new <folder>`: a new Claude Code chat there; says yes to the trust-folder prompt.
+- `mode normal|auto`: clicks the permission chip until it reads that mode (auto mode never shows
+  permission cards, so switch to normal to test them).
+- `say "<text>"`: types with real key events and presses Enter once. It never presses it twice.
+- `click "<label>"`: a real click on the one visible button with that label.
+- `shot [file.png]`: a picture (default `scratch/dev-chat/`).
+
+It reaches a window only through the marker `run-dev.sh` writes (the same rule `explore --dev`
+follows), so it cannot attach to the installed app. **Unproven against a real window** (written
+without launching one). A session it makes is a real conversation in the profile's transcripts
+(see item 6 above), so launch the window against a throwaway `HOME`. The first real run must confirm:
+(1) `new` reaches a chat on screen and the trust button's label contains "trust"; (2) the chip
+is found and `mode normal` / `mode auto` both land; (3) `say` with a very long message (a long
+file path, card #7) is sent by the real Enter and the box empties; (4) `click` finds a permission
+card's button by its label; (5) one message appears once, not twice.
+
 ## Analytics: team devices and test runs
 
 Only official release builds send the app's anonymous daily check-in (`desktop/src/main/official-build.ts`, stamped by the release workflows), so dev windows, source builds and `-releasetest`/test builds never count. Two switches cover the rest:
