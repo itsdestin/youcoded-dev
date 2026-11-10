@@ -55,6 +55,8 @@ Sorted from each card's own notes. Sizes were not re-measured.
 
 ## Batch 1 — Release safety (start first)
 
+**Done 2026-11-10** (session `release-safety`; app PR #726 and the workspace branch of the same name, landed on Destin's word). Fixed: #146, the #35 log part, #220's one confirmed fault. Retested and passed: #10, #7's long-message case, #88's warning (cards stay open for the parts no retest could cover). #62's queued-message edit still fails on YouCoded's own engine and was handed to the #246 session. #176 waits for Destin (explanation: `docs/active/investigations/2026-11-10-unknown-model-size-explained.md`); #238 waits for the Mac tester. His answers came through the wave-1 deck, so the session's own questions deck (`docs/archive/design/2026-11-10-release-safety/`) has no answers file.
+
 Quick checks and small fixes that protect the next release. No screen is redesigned. Touches: chat view, custom models, Office error log, updates. Checked against the code on 2026-11-10. The crash-recovery change left over from #163 is NOT here: it is a 6-file change to how a reopened chat is repaired, not a wording fix, and belongs in Batch 2 after a review.
 
 - **#7** Chat view glitches: vanishing, stuck or misdrawn messages — Retest the long-message case. The reload case is #146. The floating-item overlap has no test, so this card will not fully close on a retest.
