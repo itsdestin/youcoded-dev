@@ -15,7 +15,7 @@ work: session/sync-rethink-investigation, session/security-server-batch
 ---
 Progress
 Done: Computers stopped making GitHub backups of settings and service keys (2026-10-13, c2b786bf6); the phone app's copy went with the Android rebuild (2026-10-14, 5670e68b8). New password files no longer upload (2026-09-23, 1f618eeb3, PR youcoded#563). Device-impersonation gap (c): a server-side fix is built on branch session/security-server-batch (not merged) — each connection is tied to the first device identity it uses, and a second live connection cannot use an identity another connection holds.
-Next: Destin reads the trade-off below before this deploys. Also still open: whether to accept the old password files already in history (history rewrite was declined 2026-09-23).
+Next: HELD by Destin (2026-11-10, wave-1 deck Q-3): sync and mesh are being rebuilt in another session (mesh-sync-design, cards #64/#241/#243), so the fix built on session/security-server-batch for the old system is not to land. The rebuild must close the same gap: in the sync room the device id comes from the message, not the signed-in connection, and each install should prove who it is. Old password files in history: still his call.
 Blocked: nothing; the history rewrite is declined, not blocked.
 
 Chats
