@@ -493,3 +493,45 @@ Source: Destin's answers in `docs/active/design/2026-11-09-review-deck-rethink/`
   time he gave it, now shown beside "answered" and on the finish screen.
 - **Voice**: every text box has a microphone while the deck is served (`voice-helper.mjs`).
 - The printed summary lists changed calls and areas under their step's line.
+
+## Added in round 3 (2026-11-10)
+
+Source: `review-deck-rethink.round3.answers.json`. Where this contradicts the section above,
+this wins.
+
+- **One pencil per list row.** "Change this" and "More context" are gone; the pencil opens one
+  comment box and his words arrive as `answers[step].changes[<row id>]` — a change, a question
+  or a stray thought, his to say. (`asks` appears only in answers from round-2 decks.)
+- **No "All fine".** A list has no answer button. When he moves to another page or presses
+  Done, every list on the page he is leaving that he did not touch is saved as `v: "yes"`. A
+  list on a page he never opened stays unanswered.
+- **Row pictures** are thumbnails at the row's right edge. `before` beside `picture` makes a
+  before/after pair. A click opens the picture large inside the deck (never a browser tab);
+  dragging on the large view marks an area exactly as on the small one.
+- **`wording`** on a row turns it into an editable box holding that text. `call` says where
+  the words appear, `why` when he would see them. Always pre-filled, with the current words
+  or the ones you propose. Give the row a `picture` of the screen they sit on. A retyped box
+  arrives as `answers[step].edits[<row id>]`; an untouched one is not in the file. Speaking
+  into an untouched box replaces its text; anywhere else speech is added after what is typed.
+- **`gallery: true`** on a list lays the rows out as tiles, pictures first — the "every screen
+  that changed" page of a walkthrough. A before/after tile is two columns wide.
+- **Notes about anything else**: a Notes button in the header on every page. Saved as the
+  top-level `notes` string in the answers file and printed first in the summary
+  (`general notes — "…"`).
+- **Question decks**: the page title is said once, in the header; Back sits directly left of
+  the one Next button at the foot; a list carries no "Question n of m" label.
+- **Voice** follows the app's method (`voice-helper.mjs`): a sentence is closed off at a pause
+  and not heard again, passes are chained a fifth of a second apart, and two seconds of quiet
+  after speech stop the microphone. While listening the microphone shows four level bars and
+  a clock inside the box. Still no custom vocabulary.
+
+### Which starting point for a question about looks
+
+| He needs to judge… | Copy | Note |
+|---|---|---|
+| one change, before and after | `approve.json` | one full-window picture per step |
+| several designs of one thing | `choice.json` | three or four side by side; never a yes/no each |
+| one new screen with nothing before it | `brief.json` | `"new": true` once it is built |
+| a path through several screens | `walkthrough.json`, page 2 | tiles in the order a person meets them |
+| on-screen wording | `wording.json` | boxes pre-filled, a picture of the screen |
+| a whole piece of work | `walkthrough.json` | before the build and again after |

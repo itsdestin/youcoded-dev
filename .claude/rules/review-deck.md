@@ -7,7 +7,7 @@ paths:
   - "docs/active/design/**/*.json"
   - "scripts/ui-review/deck/**"
   - "scripts/ui-review/templates/**"
-last_verified: 2026-09-06
+last_verified: 2026-11-10
 verify:
   - path: scripts/ui-review/templates/questions.json
   - path: scripts/ui-review/deck/AUTHORING.md
@@ -32,9 +32,12 @@ sign-off is a slide.
 | judge motion or a transition | **Clip** | Yes / No |
 | operate a design, or a real screen | **Live** | Yes / No, or pick one |
 | say whether it WORKS, in a dev window | **Try-it** | Yes it works / No |
-| ask anything answered in words — unbuilt, or already built | **Question** | Yes / No / Don't know, or pick one |
-| sign off the definition of done | **Contract** | Yes that is done / No |
-| accept the graded contract | **Acceptance** | Yes accept / No |
+| ask anything answered in words — unbuilt, or already built | **Question** | Yes / No / Other, or pick one |
+| show a whole piece of work end to end, before and after building | **Walkthrough** (`walkthrough.json`) | rows stand; a pencil per row to comment or change |
+| let him retype on-screen wording | **Wording** (`wording.json`) | edits the filled-in boxes |
+
+Contract and Acceptance decks are retired for new work (`.claude/rules/feature-flow.md` → The
+finish line); the kinds still build for a feature that already has a signed contract.
 
 Other + a note is on every slide. Several designs of one thing are ONE Choice slide, never a
 yes/no each. A slide shot in one theme carries `themes`.
@@ -42,6 +45,16 @@ yes/no each. A slide shot in one theme carries `themes`.
 **A trade-off is a Question, even when the thing already works.** Hung off an Approve slide
 it reaches him as a picture he has seen and three ideas in one paragraph — on 2026-09-09 that
 came back as "confused". If "should it" fits your headline, it is a Question.
+
+## Lists: rows that stand unless he changes them
+**Invariant:** a words step with `calls` is a list. Each row has ONE pencil that opens a comment
+box; there is no "All fine" button — a list he leaves alone is accepted when he moves on. A row
+may carry `decided` (his words), `picture` (+ `before`), `result`, or `wording` (an editable
+box, always pre-filled). `gallery: true` lays rows out as picture tiles. Pictures open large
+inside the deck, where he can drag a rectangle to comment on a part. A Notes button in the
+header takes comments tied to no question (`notes` in the answers file).
+**Why:** rounds 2–3: "simplify down to a single pencil"; "no separate notes button".
+**Guard:** `test_rethink.py`, `deck-render.test.mjs`.
 
 ## A slide decides, not the deck
 **Invariant:** `runs`/`labels` (which pictures), `"pick": "several"` and `"answer": "words"` sit
