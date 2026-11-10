@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { scan, applyPrune, sweep, formatSweep, parseWorktreeList, groupKeyFor, repoDirFor } from './prune-worktrees.mjs';
+import { scan, applyPrune, sweep, removeStaleManifests, formatSweep, parseWorktreeList, groupKeyFor, repoDirFor } from './prune-worktrees.mjs';
 
 // Only the FIXTURE's own commits need an author identity (the script under test never
 // runs `git commit`), so this env is passed explicitly to the fixture's own git() calls
@@ -361,4 +361,37 @@ test('sweep never removes the session named in excludeKeys (the one starting up)
   assert.equal(s.results.length, 0);
   assert.ok(fs.existsSync(mine));
   assert.equal(s.stale.length, 0, 'an excluded live session is not "stale"');
+});
+
+// Card #22 (a): cleanup removed worktrees and branches but never the session manifest, so 179 of 198
+// manifests were stale and a reused key hit "Missing recorded worktree".
+function writeManifest(f, key, paths) {
+  const dir = path.join(f.root, '.git', 'youcoded-sessions'); fs.mkdirSync(dir, { recursive: true });
+  const file = path.join(dir, `${key}.json`);
+  fs.writeFileSync(file, JSON.stringify({ version: 1, session: key, workspace: paths[0], repositories: Object.fromEntries(paths.map((p, i) => [i ? 'youcoded' : 'workspace', { path: p }])) }));
+  return file;
+}
+
+test('applyPrune removes the session manifest with the session, and only that one', t => {
+  const f = fixture(t);
+  const gone = path.join(f.root, 'worktrees', 'sessions', 'gone-key'), kept = path.join(f.root, 'worktrees', 'sessions', 'kept-key');
+  f.addWorktree('workspace', gone, 'session/gone-key'); f.addWorktree('workspace', kept, 'session/kept-key');
+  const goneManifest = writeManifest(f, 'gone-key', [gone]), keptManifest = writeManifest(f, 'kept-key', [kept]);
+  const [r] = applyPrune({ root: f.root, inventory: f.inventory, targets: ['gone-key'], invokingCwd: f.dir, fetch: false });
+  assert.equal(r.status, 'removed');
+  assert.equal(fs.existsSync(goneManifest), false, 'manifest of a removed session must go');
+  assert.equal(fs.existsSync(keptManifest), true, 'a live session manifest must stay');
+});
+
+test('removeStaleManifests clears fully-stale manifests but not live, locked or unreadable ones', t => {
+  const f = fixture(t);
+  const live = path.join(f.root, 'worktrees', 'sessions', 'live'); fs.mkdirSync(live, { recursive: true });
+  const stale = writeManifest(f, 'stale', [path.join(f.root, 'worktrees', 'sessions', 'stale')]);
+  const half = writeManifest(f, 'half', [path.join(f.root, 'worktrees', 'sessions', 'half'), live]); // one folder still exists
+  const locked = writeManifest(f, 'locked', [path.join(f.root, 'worktrees', 'sessions', 'locked')]);
+  fs.mkdirSync(locked.replace(/\.json$/, '.lock'));
+  const junk = path.join(path.dirname(stale), 'junk.json'); fs.writeFileSync(junk, '{not json');
+  assert.deepEqual(removeStaleManifests(f.root), ['stale']);
+  assert.equal(fs.existsSync(stale), false);
+  for (const keep of [half, locked, junk]) assert.equal(fs.existsSync(keep), true, keep);
 });

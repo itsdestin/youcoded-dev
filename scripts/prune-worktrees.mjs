@@ -357,9 +357,37 @@ export function applyPrune({ root: givenRoot, inventory, targets, excludeKeys = 
     }
     if (error) { results.push({ target, groupDir, status: 'error', removed, notes, error }); continue; }
     try { if (exists(groupDir) && fs.readdirSync(groupDir).length === 0) fs.rmdirSync(groupDir); } catch { /* not empty, or already gone — fine either way */ }
+    // WHY here: the group is fully gone, so the manifest naming it is now a record of nothing
+    // (card #22 a). Failures to clean it are harmless — removeStaleManifests retries at every sweep.
+    removeStaleManifests(root);
     results.push({ target, groupDir, status: 'removed', removed, notes });
   }
   return results;
+}
+
+// WHY (card #22 a): cleanup removed a session's worktrees and branches but never its manifest
+// (<git-common-dir>/youcoded-sessions/<key>.json), so 179 of 198 manifests were stale and a
+// reused key hit "Missing recorded worktree". A manifest is only a record of worktrees that
+// workspace-start created: once EVERY folder it names is gone, it describes nothing and the
+// remaining safety (an existing unmerged branch refusing a fresh start) is enforced by
+// workspace-start's own branch check, not by the manifest. Held back: a key whose startup lock
+// is present (a startup may be writing it right now), and any unreadable file (left for a human).
+export function removeStaleManifests(root) {
+  let dir;
+  try { dir = path.join(fs.realpathSync(git(root, 'rev-parse', '--path-format=absolute', '--git-common-dir')), 'youcoded-sessions'); } catch { return []; }
+  const removed = [];
+  let names; try { names = fs.readdirSync(dir); } catch { return []; }
+  for (const name of names) {
+    if (!name.endsWith('.json') || exists(path.join(dir, name.replace(/\.json$/, '.lock')))) continue;
+    try {
+      const state = JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'));
+      const paths = [state.workspace, ...Object.values(state.repositories || {}).map(r => r && r.path)];
+      if (!paths.length || paths.some(p => typeof p !== 'string' || exists(p))) continue;
+      fs.unlinkSync(path.join(dir, name));
+      removed.push(name.replace(/\.json$/, ''));
+    } catch { /* unreadable or odd manifest: leave it for a human */ }
+  }
+  return removed;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -383,7 +411,10 @@ export function sweep({ root, inventory, excludeKeys = [], minAgeDays = 3, stale
   // WHY not in-use/current/excluded: those are live sessions, not forgotten ones.
   const live = new Set(['in-use', 'current-session', 'excluded']);
   const stale = report.notSafe.filter(c => !c.reasons.some(r => live.has(r)) && c.lastActive && now - c.lastActive >= staleDays * DAY_MS);
-  return { root: report.root, results, keptForLeftovers, stale, notes: report.notes };
+  // WHY: the ~500 manifests that piled up before applyPrune cleaned its own are cleared here, at the same
+  // session-start run that clears worktrees (card #22 a).
+  const manifestsRemoved = removeStaleManifests(report.root);
+  return { root: report.root, results, keptForLeftovers, stale, notes: report.notes, manifestsRemoved };
 }
 
 export function formatSweep(s) {
@@ -397,6 +428,7 @@ export function formatSweep(s) {
     lines.push(`worktree sweep: ${s.stale.length} folder(s) untouched for 2+ weeks are NOT merged or have unsaved changes — tell Destin and ask whether to keep them (details: node scripts/prune-worktrees.mjs):`);
     for (const c of s.stale) lines.push(`  ${rel(c.dir)} (${c.reasons.join(', ')}; last active ${new Date(c.lastActive).toISOString().slice(0, 10)})`);
   }
+  if (s.manifestsRemoved && s.manifestsRemoved.length) lines.push(`worktree sweep: cleared ${s.manifestsRemoved.length} leftover session record(s) whose folders are gone`);
   for (const n of s.notes) lines.push(`worktree sweep note: ${n}`);
   return lines.join('\n');
 }
