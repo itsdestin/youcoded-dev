@@ -11,7 +11,7 @@ why: 2026-11-09: Pages/analytics/ is ignored by git, so three rounds of edits ea
 ---
 Progress
 Done: On branch session/workspace-tools-batch (not merged): scripts/page-standin.mjs serves any page folder for testing away from the running app, with the page's own saved data and no internet, tokens or write-back (9 tests).
-Next: Destin: 1) where the Analytics page's source should live. This workspace repo is PUBLIC, which is why the folder is ignored. Options: a private repo such as youcoded-admin (RECOMMENDED: history, owner-only); track only the page file here and keep the numbers ignored (risk: internal page logic becomes public; needs a scan first); or wait for the Pages 'Versions' menu being built on session/90-pages-finish. 2) whether the stand-in may also read the live analytics numbers with your sign-in (read-only).
-Blocked: Destin's two choices.
+Next: Destin, 2026-11-10: the Analytics page's source goes in a PRIVATE repo. To do: move the page folder into a private repo (youcoded-admin or a new one) and point the app's copy at it. Still open: whether the local stand-in may read the live analytics numbers with his sign-in.
+Blocked: 
 
 Chats
