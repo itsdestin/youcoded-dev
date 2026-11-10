@@ -1,0 +1,34 @@
+{
+  "title": "Notifications, round 2: the outline around the reply, and the jump button at the top",
+  "key": "notify-user-r2-review",
+  "out": "notify-user-r2.review.html",
+  "images": "images/notify-user-r2.review",
+  "runs": { "after": "runs-r2/after" },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Chat",
+      "path": "A reply where the assistant flagged something for you",
+      "headline": "Which look should a reply with a new notification have?",
+      "notice": "In all three the blue goes around the whole reply, and the notification sits at its end under a thin line. The blue goes away when you send a message, click the reply, or rest your pointer on it for a moment; the label and message stay, plain.",
+      "risk": "Resting the pointer on the reply for about half a second counts as seeing it, so a mouse that stops there by chance clears it too.",
+      "variants": [
+        { "id": "outline", "label": "Outline", "crop": "chat#notify", "summary": "A blue outline with a soft glow around the reply. The reply itself keeps its usual colour." },
+        { "id": "tint", "label": "Outline and tint", "crop": "chat#notify-tint", "summary": "The same outline, and the reply's background turns faintly blue too. Stands out most.", "risk": "On themes with a coloured bubble, the blue tint mixes with it." },
+        { "id": "tab", "label": "Outline and tab", "crop": "chat#notify-tab", "summary": "The same outline, with the label as a small tab on the reply's top edge, so you see what it is before reading.", "risk": "The tab needs a little extra space above the reply." }
+      ]
+    },
+    {
+      "id": "R2-2",
+      "surface": "Chat",
+      "path": "A conversation where the assistant notified you, then kept writing",
+      "crop": "chat#notify-jump",
+      "new": true,
+      "headline": "\"Jump to notification\" now sits at the top of the chat, just under the bar of conversations.",
+      "changed": "It moved from above the message box to the top of the chat, centred over the chat (it moves with it when a side panel is open).",
+      "notice": "It no longer shares the bottom with \"Jump to bottom\"; each has its own end of the screen.",
+      "risk": "",
+      "highlight": { "box": [44, 4.5, 12, 4.5] }
+    }
+  ]
+}
