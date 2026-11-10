@@ -13,7 +13,7 @@ area: Workspace
 ---
 Progress
 Done: Checked every item against master and 34 failed CI runs (2026-11-10). Flaky items b, d, e, f, g, h, i are already fixed on master (40 of 40 repeat runs clean); a and c could not be reproduced. On branch session/workspace-tools-batch (not merged) (app): one real flake not on the card fixed (background-command 'nothing new' test), two fixed waits replaced by real signals, and the Windows sign-in port failure fixed in the app (retries when Windows refuses a port). Test type-check exclusions: done (0 files).
-Next: Split what is left into its own cards or drop: ~605 unreviewed blocking-call entries (a triage report's reclassification was never applied); lint gaps to re-measure; bundle-size budget and nightly coverage; duplicated listeners. Test regrouping and source-text tests belong to session/test-suite-rethink. Destin's call: master's only required check is the Linux build, not the tests - require the test runs too, or leave as is.
+Next: Destin, 2026-11-10: do NOT require the test runs on master yet. 3 of the last 8 runs failed; revisit once the unreliable tests are fixed. Still open: split what is left into its own cards or drop (~605 unreviewed blocking-call entries, lint gaps, bundle-size budget and nightly coverage, duplicated listeners).
 Blocked: nothing.
 
 Chats
