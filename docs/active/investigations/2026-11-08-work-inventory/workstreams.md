@@ -1,5 +1,7 @@
 # Open cards by workstream (2026-11-09)
 
+**Not adopted (Destin, 2026-11-10).** He did not approve these 14 areas or one supervisor per area. The sorting in use is `batches.md` in this folder. Kept as a record of what was proposed.
+
 140 open cards, each in exactly one workstream. Sizes are rough agent-work estimates. Branches named are the live ones found in the inventory.
 
 ## A Phone and Android — 20 cards
