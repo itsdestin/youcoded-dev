@@ -4,7 +4,6 @@ title: Rebuild the Android app to match desktop
 stage: build
 priority: P2
 tags: android-only, android, perf, performance, feature
-release: v1.3.2
 report: docs/active/plans/2026-10-14-android-clean-rebuild-plan.md
 branch: 1-rebuild-the-android-app-into
 roadmap: android-only: Rebuild the Android app into a premium, complete mobile equi
@@ -13,22 +12,19 @@ summary: The phone app would get the same built-in assistant, real file access, 
 area: Devices & sync
 side: both
 platform: Android only
-work: session/android-setup-20261014, session/android-setup-closeout, session/android-setup-wrapup, session/1-android-chatgpt-access
+work: session/android-ux-test
 vision: everywhere.platforms.android, everywhere.added.play
 ---
 Progress
-Done: ChatGPT account-access subtask merged to master in youcoded#664 (520d503fe): Android local sign-in enabled; remote host card/status/usage retained with host-device guidance; narrow provider actions no longer overlap. UI approved; local desktop/JVM checks and CI Linux/Android APK gates passed. Broader Android rebuild remains open.
-Next: Verify ChatGPT browser sign-in on an updated Android test build; continue the existing broader Android rebuild phases.
-Blocked: No connected phone was available for real OAuth verification; no installation or release was requested.
+Done: The phone app now runs the computer's own engine (clean rebuild phases P1-P3, youcoded#625, shipped in v1.3.2). ChatGPT sign-in on the phone is fixed in the app (youcoded#664, shipped in v1.3.2).
+Next: hide computer-only features on the phone and show "not on this device" (P4), then phone-only features like notifications and sharing (P5), then the Google Play listing (P6, waits on Destin). Also next: confirm ChatGPT sign-in on a phone test build.
+Blocked: no connected phone was available for real sign-in testing, and no release has been requested.
 
 See also #31: The Android rebuild in 1 aims at a Google Play listing; 31 is the Play account and store paperwork that listing needs.
 
 See also #112: 112's remaining item (a), Android joining the shared phone protocol, is phases A2 to A4 of the Android rebuild in 1.
 
 Chats
-- 2026-10-20 session/1-android-chatgpt-access: chat started
-- 2026-10-20 session/1-android-chatgpt-access: chat started
-- 2026-10-20 session/1-android-chatgpt-access: chat started
 - 2026-10-20 session/1-android-chatgpt-access: chat started
 
 From the old roadmap (android-only, status in-flight, seen on android, last checked 2026-10-04)

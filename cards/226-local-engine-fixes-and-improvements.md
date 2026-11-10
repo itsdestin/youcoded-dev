@@ -1,7 +1,7 @@
 ---
 id: 226
 title: Local engine fixes and improvements
-stage: planning
+stage: polish
 tags: local-models, settings/local-models, native-harness, performance, desktop, bug
 related: 176
 vision: chat.converse.local, yours.model.localsettings
@@ -13,9 +13,9 @@ priority: P3
 work: session/local-model-hardening
 ---
 Progress
-Done: All of it built on session/local-model-hardening, verify.sh --full green (2026-11-09): stuck 'busy' engine fixed (b3b0b1e29); tool results sized to the room left, junk summaries refused, one too-long error (b3a125c1e); MTP per model for dense models with heads (efaa9558d, 27B replies 6.7 -> 11.6-11.9 t/s); ROCm and Speculative decoding wording (253a19b92, 1552bd6e0); cloud ids on the local engine already fixed by 04c209dc3; too-long turns log token counts (c83ab6ed1). End-to-end 9B/32k: run 2 clean, run 1 one unexplained too-long (not reproduced).
-Next: After the OK: mark it, re-scan, push both branches; then Destin's review. Full status and open list: docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md (on the branch).
-Blocked: Pushes wait on Destin's OK to mark one secrets-scan false positive (a model-file field name in an app test). Held: 7 app commits, 2 workspace doc commits.
+Done: The fixes listed below are finished and saved on the work branch (not yet on the main app). Fixed: the local model no longer gets stuck showing 'busy' after loading; long chats on small context windows now size search results to the room left, refuse junk summaries, and show one clear 'too long' message with Summarize; models with the right files now use a speed boost (MTP) for dense models, roughly doubling reply speed on the 27B model; the ROCm and Speculative decoding wording now matches what was measured; cloud chats no longer wake the local engine; a too-long chat logs its token counts. Testing: the full check was reported green, and one end-to-end 9B test was clean; a second run hit an unexplained 'too long' error that was not reproduced.
+Next: Destin reviews the work; then the 7 app commits and 2 workspace doc commits are pushed to the backup copy.
+Blocked: the push waits on Destin's OK for a secrets-scan false positive (a field name in an app test).
 
 Chats
 - 2026-11-09 session/local-model-hardening: speed work (warm-up, per-chat slots) built; context faults and MTP to fix here

@@ -10,39 +10,25 @@ created: 2026-10-15
 summary: Releases: test runs take an hour for small fixes, bug-fix releases can't ship on their own, and six build loose ends remain.
 area: Workspace
 vision: everywhere.added.update
-work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record, session/29-hotfix-lane
+work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record, session/29-hotfix-lane, session/test-suite-rethink
 ---
 Progress
-Done: Hotfix lane merged: youcoded#686 (bug-fix releases own the last number; betas lead to the next feature release), youcoded-admin#19 (hotfix skill, major bugs only with Destin's consent), youcoded-dev#305 (docs; audit skips anchors in repos CI does not clone).
-Next: The rest of this card (faster test runs, build upkeep) is other sessions' work.
-Blocked: No blocker for the merged checkpoint. Five-minute cold/default/all-platform CI is not established; no paid runner, release/signing or branch-protection changes authorized.
+Done: The bug-fix release lane is live: a small fix can now ship as its own version without waiting for the next big release (youcoded#686, youcoded-admin#19, youcoded-dev#305, merged 2026-10-23; releases v1.3.2 and v1.3.3 went out). Beta version numbers now restart after each big release (youcoded#633, merged 2026-10-18).
+Next: Decide what to do with the open test-speed experiments (PR #272 and the session/29-ci-fastpaths branch). Get one real timing run of the full test suite before calling it faster. Save or delete the unsaved experiment work (only on this device). Build upkeep (model-list check, package size, dependency upgrades) is separate work.
+Blocked: No blocker for the release lane. The fast-test work needs Destin's decision on whether to keep it, and any paid or signing change still needs his approval.
 
 Chats
 - 2026-10-22 session/29-hotfix-lane: chat started
 - 2026-10-19 session/29-ci-followup-record: chat started
 - 2026-10-19 session/29-full-ci-five-minute: chat started
 - 2026-10-19 session/29-full-ci-source-probe: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-source-probe: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
 - 2026-10-19 session/29-android-paired-bench: chat started
-- 2026-10-19 session/29-linux-ci-winner: chat started
 - 2026-10-19 session/29-linux-ci-winner: chat started
 - 2026-10-19 session/29-linux-build-bench: chat started
 - 2026-10-19 session/29-android-build-bench: chat started
 - 2026-10-18 session/29-android-build-bench: chat started
-- 2026-10-18 session/29-android-build-bench: chat started
-- 2026-10-18 session/29-linux-build-bench: chat started
 - 2026-10-18 session/29-linux-build-bench: chat started
 - 2026-10-18 session/29-ci-fastpaths: chat started
-- 2026-10-18 session/29-ci-fastpaths: chat started
-- 2026-10-18 session/29-ci-fastpaths: chat started
-- 2026-10-18 session/29-beta-counter-reset: chat started
 - 2026-10-18 session/29-beta-counter-reset: chat started
 - 2026-10-18 session/release-1-3-2: 1.3.1 preflight: cross-platform test repairs, exact reusable dependency source and Android source/notices pipeline; candidate branch only, no release.
 

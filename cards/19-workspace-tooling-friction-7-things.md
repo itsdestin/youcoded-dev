@@ -5,16 +5,15 @@ stage: planning
 priority: P3
 tags: dev-workspace, rigs, knowledge, housekeeping
 branch: 19-workspace-tooling-friction-7-things
-roadmap: dev-workspace: Workspace tooling friction: 7 things.
 created: 2026-10-15
 summary: Workspace tools: seven annoyances, docs upkeep, and ten improvement ideas for how chats work on YouCoded.
 area: Workspace
 work: chore/conversation-triage-script
 ---
 Progress
-Done: (h) fresh-install half built on branch session/2-message-timestamps-wrapup (not yet merged): workspace-start now replaces a far-behind node_modules itself (freshInstall: npm ci beside the component, swapped in), and fill-missing-deps.mjs --fresh runs it on demand; test red before green. 4th hit 2026-10-21. Earlier: glob-guard guard 8 judges a leading absolute 'cd <non-worktree> &&' as where the install runs (session/short-campaign-links, 3rd hit)
-Next: (h) merge that branch; then workspace-start provisioning wecoded-marketplace/worker node_modules (shared copy was too old for vitest-pool-workers 2026-10-21); glob-guard guard 8 also blocks a plain text search whose pattern contains an install command (2026-10-21)
-Blocked: nothing recorded.
+Done: a far-behind dependency folder is now replaced with a fresh install automatically when a new work folder starts (on master since 2026-10-21, commit 3abe3f0ee; PR youcoded-dev#298 merged 2026-10-22). The triage tool idea was dropped on 2026-09-02, so its item is closed.
+Next: close the two finished items; move dev-instance bullets (i)-(iv) into cards 17 and 218; move the worker-dependencies item to card 212; decide the open annoyances (conflict-marker commit guard, log visibility, evaluator CI gate, CI report accuracy, commit steps for workspace docs).
+Blocked: none recorded.
 
 Chats
 

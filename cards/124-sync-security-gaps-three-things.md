@@ -11,12 +11,12 @@ summary: Old password files may stay in sync history, Android backups copy servi
 area: Devices & sync
 side: behind
 vision: sync.added.securitygaps
-work: session/google-connections-planning
+work: session/sync-rethink-investigation
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: Computers stopped making GitHub backups of settings and service keys (2026-10-13, c2b786bf6); the phone app's copy went with the Android rebuild (2026-10-14, 5670e68b8). New password files no longer upload (2026-09-23, 1f618eeb3, PR youcoded#563).
+Next: decide the fix for the device-impersonation gap in the sync room (wecoded-marketplace worker/src/sync/room.ts, lease handler: device id comes from the message, not the signed-in connection). Also decide whether to accept the old password files already in history (history rewrite was declined 2026-09-23).
+Blocked: nothing; the history rewrite is declined, not blocked.
 
 Chats
 - 2026-10-18 session/google-connections-planning: Recovered parked connection-sync idea: Google/Outlook/iCloud connections remain per-device; user explicitly deferred syncing sign-ins because of risk (September 27: "i dont want to deal with the risk rn"). Not approved implementation and not a prerequisite for #155-159. Future design must examine credential transport/storage; paired-phone use of a host connection is distinct from copying credentials. Source: cceb33f0:docs/roadmap/sync.md and docs/active/design/2026-09-26-everyday-actions/proposal.md section 8. Preservation only.

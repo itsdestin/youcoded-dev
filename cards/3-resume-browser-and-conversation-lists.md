@@ -13,8 +13,8 @@ side: screens
 vision: chat.converse.resume, chat.converse.search, chat.converse.tags
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: Resume browser filter chips restyled (youcoded#469, 2026-09-10). Tags on chip colours made readable (youcoded#506, 2026-09-17). Organize sheet no longer closes the whole browser on Escape (youcoded#562, 2026-09-24). Resumed conversations reopen on their own model, not a helper's (youcoded#678, 2026-10-22). Projects tab conversation cards now show tags.
+Next: not decided. Open gaps still to check: no close button, no top-bar label, search cannot find words inside a chat, Priority not in the Tags filter, phone-width truncation.
 Blocked: nothing recorded.
 
 Chats

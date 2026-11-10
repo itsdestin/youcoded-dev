@@ -4,7 +4,6 @@ title: Sync conflicts and the Backup & Sync panel's wording
 stage: planning
 priority: P2
 tags: sync, settings/sync, desktop, bug
-release: v1.3.3
 report: docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
 branch: 121-two-devices-editing-the-same
 roadmap: sync: Two devices editing the same file: no way in the app to see
@@ -12,13 +11,13 @@ created: 2026-10-15
 summary: Two devices editing the same file or chat leave no way to find or choose between copies, and the Backup & Sync panel's wording is unclear.
 area: Devices & sync
 side: both
-work: session/sync-safety-audit-20260908
+work: session/sync-safety-audit-20260908, session/sync-rethink-investigation
 vision: sync.added.conflictcopy
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: the Backup & Sync panel now has a 'Using the same conversation on two devices' section (SyncPanel.tsx:90) and the takeover dialog says 'couldn't confirm' (takeover-dialog-copy.ts:47). Sync safety (youcoded#563) stops sync from overwriting files.
+Next: choose the design for picking between conflicting copies; the approved deck is on backup branch session/sync-safety-audit-20260908 and needs review.
+Blocked: the design decision with Destin; the restart-vanish and 'newest time' behaviour need a re-test.
 
 Chats
 

@@ -15,8 +15,8 @@ vision: chat.converse.native, chat.converse.queue
 work: session/fix-anthropic-many-image-brick
 ---
 Progress
-Done: (e) shipped: youcoded #670 (270fab99e) + youcoded-dev #293 (351d8c4e), 2026-10-21 — a failed reply's card offers Try again (no new message) and the fix per error kind; same work also shipped stuck-conversation fixes, per-provider output caps and cut-off-reply recovery.
-Next: Faults (a)–(d), (f)–(h) remain.
+Done: The "Try again" button on a failed reply shipped on 2026-10-21 (app PR #670, dev PR #293), along with stuck-conversation fixes, per-provider length caps and recovery for cut-off replies. Queued-message editing appears fixed in code (attachments carried over, queue visible after reload) but still needs a real re-test.
+Next: Still to check or fix: (a) ChatGPT card refresh after a plan upgrade; (b) thinking bubble flicker on slow streams; (d) the Replace/Append choice (the silent overwrite is blocked, but the choice was never built); (f) cut-off summary wording; (g) exact request kept for resume; (h) pasted paths eaten as commands (deprioritized Aug 10).
 Blocked: nothing recorded.
 
 Chats

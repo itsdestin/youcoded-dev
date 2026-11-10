@@ -12,6 +12,6 @@ why: ooh this is also interesting. idk if we have enough users for this atm, but
 Progress
 Done: nothing yet.
 Next: plan it.
-Blocked: waits on #183.
+Blocked: nothing. The earlier wait on #183 ended when #183 was merged on 2026-10-23.
 
 Chats

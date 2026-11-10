@@ -6,7 +6,6 @@ priority: P1
 tags: files, projects, desktop, bug
 report: docs/active/specs/2026-09-18-project-files-background-index.md
 branch: 33-v1-3-1-release-blocker
-roadmap: files: v1.3.1 release blocker: searching a big project stops early,
 created: 2026-10-15
 summary: File discovery can be incomplete and text search stops at 200 matches; complete search remains future work, not a 1.3.1 gate.
 area: Files & documents

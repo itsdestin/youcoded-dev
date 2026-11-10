@@ -5,7 +5,6 @@ stage: planning
 priority: P3
 tags: other-features, misc, feature
 branch: 87-browser-follow-ups-the-assistant
-roadmap: other-features: Browser follow-ups (the assistant's own browser, shipped 202
 created: 2026-10-15
 summary: The new built-in browser lacks phone support, file uploads, tab extras and hand-testing on Mac and Windows.
 area: Chat
@@ -14,9 +13,9 @@ vision: chat.steer.websearch
 work: session/google-connections-planning, session/87-browser-tool-robustness
 ---
 Progress
-Done: Browser tool hardening merged and pushed in youcoded#643 (bf695cfbdd72f1db44b5742b5d4d4f13b541bf95): clear descriptions, split navigation/history/zoom, validation, cancellation, handoff, waits, continuation and honest receipts. Independent review passed; 233 focused tests and 6,318 integrated tests passed; Linux desktop and Android CI passed.
-Next: Original eight browser follow-ups remain: phone controls, uploads, tab extras, My Chrome polish, per-chat storage, specialist access, downloader platforms and hand-testing. This hardening session is finished.
-Blocked: No blocker for merged hardening; no release or paid model evaluation requested.
+Done: The assistant's browser got its clarity and recovery hardening (youcoded#643, shipped in v1.3.2 and v1.3.3). The browser panel's open button now shows the assistant's own window (youcoded#682, shipped in v1.3.3). A new "ask before visiting each new website" safety step is in the app but not yet released (commit 4aebbb483, 2026-10-31).
+Next: Eight follow-ups still open: phone controls, file uploads, tab extras, My Chrome polish, per-chat sign-ins, helper-agent access, Browser download on other platforms, and testing on Mac and Windows.
+Blocked: None.
 
 Chats
 - 2026-10-19 session/87-browser-tool-robustness: chat started

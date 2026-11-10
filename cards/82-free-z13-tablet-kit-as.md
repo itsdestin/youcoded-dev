@@ -9,30 +9,16 @@ roadmap: operations: Free "Z13 tablet kit" as a marketing post: package Destin's
 created: 2026-10-15
 summary: Package Destin's tablet setup and swipe keyboard as a free download for other Z13 owners, as a post that points to YouCoded.
 area: Release & business
-work: session/82-z13-keyboard-release
 ---
 Swipe Keyboard work now lives in ~/swipe-keyboard-dev (its own workspace, 2026-10-24); a copy of this card tracks the keyboard side there. This one keeps the YouCoded marketing post.
 
 Progress
-Done: Published Swipe Keyboard v0.1.0-r3 at https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.1.0-r3 from source commit 0f458bb. All seven uploaded asset digests verified. Exact Arch package tested across Qt6.11/KF6.27 and Qt6.12/KF6.31; installed/activated on Destin CachyOS without OS update. All 96 installed payload files match; live KWin process loads system plugin; recording off; legacy files/settings/recordings preserved in private migration backup. Final Fedora RPM real KDE touchscreen/KWrite checks pass. Dedicated test VM stopped. Old release marked superseded, not overwritten.
-Next: Destin can try swipe/candidate/backspace on the device and use the public release/setup links for the first Reddit post. Draft supplied separately; no Reddit post submitted. Maintenance/update automation is follow-up #165; broader tablet kit/video remain deferred.
-Blocked: No release or installation blocker. Human touchscreen feedback on the device remains a user check.
+Done: The Swipe Keyboard typing add-on was published as a public test release (v0.1.0-r3, 2026-10-18), and its work moved to its own project folder on 2026-10-24. Nothing for the free Z13 kit or the Reddit post has been written or posted yet.
+Next: Destin decides whether the free post goes ahead and whether this card stays here or moves.
+Blocked: No technical blocker. The open choice is Destin's.
 
 Chats
 - 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-18 session/82-z13-keyboard-release: chat started
-- 2026-10-17 session/82-z13-keyboard-release: chat started
-- 2026-10-17 session/82-z13-keyboard-release: chat started
 - 2026-10-17 session/82-z13-keyboard-release: chat started
 
 From the old roadmap (operations, status decision, seen on n/a, last checked 2026-10-14)

@@ -6,18 +6,17 @@ priority: P1
 tags: perf, performance, chat, desktop, bug
 report: docs/active/investigations/2026-09-29-performance-status.md
 branch: 94-the-app-still-feels-sluggish
-roadmap: perf: The app still feels sluggish: chat-switch pauses and typing
 created: 2026-10-15
 summary: Switching chats can pause, opening a long chat can interrupt typing, and some switch animations cost more than they should.
 area: Chat
 side: behind
-work: backup/performance-stream-attribution-wip
+work: backup/performance-stream-attribution-wip, session/93-batcher-counters
 vision: chat.converse.multi
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Shipped in the app. Find now searches messages already loaded in a chat (youcoded#591, 2026-10-04). Switching is cheaper: closed panels cost nothing on a switch, and a switch click was cut about 15-20% in the lab (youcoded#616, 2026-10-08, in v1.3.1 or later).
+Next: Measure switching and typing again in the installed app (the built-in timer records each switch). Then choose fixes for the three open problems: typing pauses while a long chat loads in the background (not reproduced in one run on current master), unexplained pauses of several hundred milliseconds when switching or resizing, and the switch animation cost (Destin decides whether a cheaper look is acceptable).
+Blocked: Destin's decision on the animation look (docs/active/... rule .claude/rules/session-strip-motion.md forbids changing it otherwise). The paused experiments on backup/performance-stream-attribution-wip must not be applied over master.
 
 See also #102: 94's chat-switch pauses (item c) are the same slow session-switch clicks that 102 measures in detail.
 

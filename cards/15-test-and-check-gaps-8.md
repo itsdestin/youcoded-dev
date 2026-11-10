@@ -11,9 +11,9 @@ summary: Some features, like the Office editor and Claude Code's startup menus, 
 area: Workspace
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: none yet. Several of the eight gaps are partly fixed or out of date: the voice-install guard moved to lint and ast-grep rules (2026-09-16), the Claude Code startup-screen replay test exists but is tied to the 2.1.281 recordings, and the quick check now covers deleted data files (2026-09-23).
+Next: decide, item by item, which gaps still matter to a user (for example, a newer Claude Code changing its wording and the app hanging). Then either turn each into a test or drop it.
+Blocked: needs Destin's call on the voice-install guard scope and on whether the Mac timing issue is worth re-testing on a Mac.
 
 See also #11: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
 

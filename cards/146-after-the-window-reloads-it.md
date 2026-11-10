@@ -14,9 +14,9 @@ side: both
 vision: chat.converse.multi
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: The cause is found in the code. When the app window reloads, it opens the oldest chat that is still open, not the chat you were on. Nothing on the desktop saves which chat was on screen (phones already remember theirs). Not fixed on master as of 2026-11-08.
+Next: Decide whether to fix it (remember the chat on screen across a reload, desktop only). Then re-test on a dev copy of the app, not the installed one, to confirm what the user sees.
+Blocked: Nothing recorded. The live behaviour needs a re-test on the dev instance.
 
 Chats
 

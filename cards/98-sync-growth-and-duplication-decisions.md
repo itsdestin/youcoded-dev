@@ -11,12 +11,12 @@ summary: Sync: large projects may miss edits or duplicate history, very long cha
 area: Devices & sync
 side: behind
 vision: sync.follow.safety, sync.added.longchats
-work: session/sync-slim-history
+work: session/sync-slim-history, session/sync-rethink-investigation, session/mesh-sync-design
 ---
 Progress
-Done: Measured 2026-11-02 (GitHub 3.78 GB, +1.2 GB/month, 56% pictures); plan for slimming synced chats written, independently reviewed, revised (rev 2)
-Next: Destin's go-ahead, then build the slim rule and test that Claude Code can continue a slimmed chat in a dev copy; history fresh start (piece 2) after
-Blocked: Waiting on Destin's go-ahead to build
+Done: (1) Sync watches only files that can sync and stops watching big folders, so it no longer uses hundreds of thousands of file watches (shipped 2026-09-29, app PR #590). (2) A slow first download is no longer cut off after 5 minutes (shipped 2026-10-05, app PR #607). (3) Files that are too big are no longer uploaded, and the app now says so (shipped 2026-09-16, app PR #483).
+Next: piece 1 — leave pictures and duplicate file copies out of the synced copy of Claude Code chats. The plan is written (on branch session/sync-slim-history) but no code has started. Piece 2 — a one-time fresh start of the GitHub history — comes after piece 1. Still open: old versions of conversations are kept forever; conversations over 50 MB do not reach other devices; a first download may show no progress (needs a check in the running app).
+Blocked: Destin's go-ahead on piece 1.
 
 Chats
 - 2026-11-09 session/sync-slim-history: Slim synced chats (pictures out of sync copies), plan in docs/active/plans/2026-11-02-slim-synced-chats.md

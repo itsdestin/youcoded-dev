@@ -3,10 +3,9 @@ id: 133
 title: Make one settings screen for desktop and phone
 stage: planning
 priority: P1
-tags: user-interface, settings, release-blocker, housekeeping
+tags: user-interface, settings, housekeeping
 report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 133-the-settings-screen-exists-twice
-roadmap: user-interface: **v1.3.1 release blocker.** The settings screen exists twice
 created: 2026-10-15
 summary: Settings is built twice, once per platform, so every change is made twice and the two can disagree.
 area: Settings
@@ -15,9 +14,9 @@ paused: On hold since 2026-09-18; resumes with the wider simplification work
 vision: everywhere.platforms.onecore
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: yes — the old roadmap marked it blocked; see below.
+Done: nothing yet. The desktop and phone settings are still two separate screens in one file, so every change is still made twice.
+Next: after the wider cleanup (card #60) restarts, make one shared settings screen and show Destin a before-and-after review for both phone and desktop in every theme.
+Blocked: on hold by Destin since 2026-09-18.
 
 Chats
 

@@ -1,7 +1,7 @@
 ---
 id: 4
 title: Conversation names: four loose ends
-stage: planning
+stage: explore
 priority: P3
 tags: chat-data, session-drawer, desktop, needs-repro, bug
 branch: 4-session-naming-four-loose-ends
@@ -14,9 +14,9 @@ platform: Desktop only
 vision: chat.converse.tags
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: The naming feature shipped 2026-09-09 (youcoded merge 9d445011), with three modes (Off, Basic, AI) and hand-typed names kept safe. The counter-undercount bug was fixed in c019d71d9.
+Next: (1) Decide item (a) is a permanent product choice and close it. (2) Re-test (c) crash-reload names in a dev instance. (3) Wait for a fresh sighting of (d). (4) Item (b) is probably not a bug; re-test or drop.
+Blocked: needs a live test of crash reload.
 
 Chats
 
