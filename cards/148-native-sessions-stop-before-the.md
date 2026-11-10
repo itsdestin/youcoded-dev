@@ -15,7 +15,7 @@ work: session/148-harness-performance-lab
 Progress
 Done: Gemini text transport retry passed within original USD10 cap using refreshed endpoint-specific pricing and USD0.47 reservation; no old hold reclaimed. Actual native Qwen two-turn client check failed upstream before any tool/verifier result, retained USD0.50. Fixed gateway budget denials to non-retryable402 and now retain upstream HTTP status. 21 focused tests pass. All five text canaries validated; actual OpenRouter usage USD0.000041446.
 Next: Obtain sufficient approved reservation headroom, then diagnose native tool/continuity request failure with improved diagnostics and validate Pi/OpenCode conversations before full suite.
-Blocked: Conservative ledger USD9.734296196, remaining USD0.265703804 under unchanged USD10 cap; this is not actual spending. Unknown failure holds retained. Gateway/container network stopped. Comprehensive readiness false; no full evaluation.
+Blocked: The spending-limit test is paused at about 0.27 USD left of a 10 USD cap. Its unsaved lab files were committed and pushed to session/148-harness-performance-lab on 2026-11-09 (backup, not merged). Needs Destin's decision on spending.
 
 Chats
 - 2026-10-21 session/148-harness-performance-lab: chat started
