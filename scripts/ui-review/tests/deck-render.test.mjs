@@ -1162,7 +1162,7 @@ raw['steps'] = [{'id': 'Q-9', 'words': True, 'surface': 'Games', 'path': 'Questi
     'today': 'The board sits left of the chat.', 'problem': 'It is cramped.', 'proposal': 'Move it above.',
     'checked': 'Opened the games screen today.', 'picture': 'pic.png', 'caption': 'The board today.'},
   {'id': 'K-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Calls I made for you',
-    'calls': [{'id': 'size', 'call': 'The board is five rows tall.', 'why': 'It matches the other games.'},
+    'calls': [{'id': 'size', 'call': 'The board is five rows tall.', 'why': 'It matches the other games.', 'result': 'unclear'},
               {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.', 'picture': 'pic.png', 'before': 'pic.png'}]},
   {'id': 'S-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'The words on the games menu', 'screen': 'menu.html'}]
 # A still copy of a screen, as \`shoot --page\` saves one: the size it was laid out at, where its panel sits.
@@ -1210,11 +1210,26 @@ print(p)`;
       // A picture opens large inside the deck, not in a new tab; a click closes it.
       assert.equal(await c.evaluate("document.querySelectorAll('.qpic a[target]').length"), 0, 'no picture opens a browser tab');
       await c.evaluate("document.querySelector('.qpic.row a').click()"); await sleep(100);
-      assert.equal(await c.evaluate("document.querySelectorAll('.lightbox img').length"), 1, 'the picture opens over the page');
-      await c.evaluate("document.querySelector('.lightbox').click()"); await sleep(100);
-      assert.equal(await c.evaluate("document.querySelectorAll('.lightbox').length"), 0, 'a click closes it');
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vstage img').length"), 1, 'the picture opens in the viewer, over the page');
+      assert.ok(await c.evaluate("document.querySelectorAll('.viewer .vthumb').length") >= 2, 'every picture of the page is in the strip');
+      // Round 4: an area drawn in the viewer keeps it open, with its comment box beside the picture.
+      await c.evaluate(`(()=>{const img=document.querySelector('.viewer .lbbox img'),r=img.getBoundingClientRect();
+        img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+20,clientY:r.top+20}));
+        document.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+120,clientY:r.top+90}));
+        document.dispatchEvent(new PointerEvent('pointerup',{}));})()`);
+      await sleep(150);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 1, 'the new area has its comment box in the viewer');
+      await c.evaluate("document.querySelector('.viewer .markx').click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 0, 'a comment can be taken away in the viewer');
+      await c.evaluate("document.querySelector('.viewer .vclose').click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer').length"), 0, 'Close closes it');
       // Notes tied to no question.
-      await c.evaluate(`(()=>{document.querySelector('#notesbtn').click();const g=document.querySelector('#gnote');g.value='header is busy';g.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      await c.evaluate(`(()=>{const g=document.querySelector('.pnote');g.value='header is busy';g.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      // Round 4: every status pill is his to change.
+      await c.evaluate("document.querySelector('.result.pillbtn').click()"); await sleep(50);
+      await c.evaluate("document.querySelector('.resultmenu button[data-v=fail]').click()"); await sleep(50);
+      assert.equal(await c.evaluate("document.querySelector('.result.pillbtn').textContent"), 'Failed', 'the pill shows the status he set');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .qstate').textContent"), '2 changes', 'the card says how much he changed');
       await sleep(700);
       assert.deepEqual(c.errors, []);
     } finally { await c.close(); }
@@ -1223,7 +1238,8 @@ print(p)`;
     assert.ok(saved.answers['Q-9'].marks[0].w > 30 && saved.answers['Q-9'].marks[0].h > 30, JSON.stringify(saved.answers['Q-9'].marks[0]));
     assert.deepEqual(saved.answers['K-1'].changes, { sound: 'play the chime' });
     assert.deepEqual(saved.answers['S-1'].edits, { 0: { from: 'Pick a game', to: 'Choose a game' } }, 'words retyped on the screen are saved as from and to');
-    assert.equal(saved.notes, 'header is busy', 'general notes are saved beside the answers');
+    assert.equal(Object.values(saved.pageNotes)[0], 'header is busy', 'the comment at the foot of the page is saved beside the answers');
+    assert.deepEqual(saved.answers['K-1'].results, { size: 'fail' }, 'a status he changed is saved against its row');
     assert.ok(saved.built && saved.built.at, 'the answers file records which build he was shown');
   } finally { srv.kill(); }
 });

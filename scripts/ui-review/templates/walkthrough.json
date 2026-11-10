@@ -56,11 +56,11 @@
       ]
     },
     {
-      "_comment": "What only he can judge: feel, motion, sound, his real data. One row each, saying exactly what to do and what he should see.",
+      "_comment": "What only he can judge: feel, motion, sound, his real data. One row each, saying exactly what to do and what he should see. `result: todo` gives the row the same status pill as a check (Not tried); he sets it himself — every status pill is his to change, yours included.",
       "id": "W-6", "words": true, "surface": "Chat search", "path": "The search box above the session list",
       "headline": "Left for you to try",
       "calls": [
-        {"id": "v1", "call": "Save a search of your own and run it tomorrow.", "why": "I cannot see your real sessions."}
+        {"id": "v1", "call": "Save a search of your own and run it tomorrow.", "why": "I cannot see your real sessions.", "result": "todo"}
       ]
     }
   ]

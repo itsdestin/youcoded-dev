@@ -83,7 +83,7 @@ class RethinkTests(unittest.TestCase):
         # text boxes on a typed answer. Both were one-line causes; these keep them from returning.
         js = open(os.path.join(DECK, 'page.js')).read()
         css = open(os.path.join(DECK, 'page.css')).read()
-        self.assertIn('class="qtick"', js)
+        self.assertIn('class="qstate"', js)   # the answered mark: a status pill, never the finish circle
         self.assertNotRegex(js, r'<span class="tick"')            # `.tick` is the finish screen's 56px circle
         self.assertRegex(js, re.escape("(st.answer === 'words' ? ''"))   # no note box beside a typed answer
         self.assertRegex(js, re.escape("(listy(st) ? '' : `<div class=\"qrow\">"))   # a list has no answer row at all
@@ -109,6 +109,10 @@ class RethinkTests(unittest.TestCase):
         spec = {'key': 'k', 'steps': [{'id': 'K-1'}]}
         out = summary(spec, {'notes': 'header is busy', 'answers': {'K-1': {'v': 'other', 'edits': {'7': {'from': 'Pick a game', 'to': 'Choose a game'}}}}})
         self.assertIn('general notes — "header is busy"', out)
+        out2 = summary({'key': 'k', 'steps': [{'id': 'P-1', 'page': 'Checks'}, {'id': 'K-1'}]},
+                      {'pageNotes': {'P-1': 'pictures too small'}, 'answers': {'K-1': {'v': 'other', 'results': {'c4': 'pass'}}}})
+        self.assertIn('about the page "Checks" — "pictures too small"', out2)
+        self.assertIn('status c4 — he set it to Passed', out2)
         self.assertIn('reword "Pick a game" → "Choose a game"', out)
 
 

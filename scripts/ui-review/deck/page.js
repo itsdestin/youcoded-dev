@@ -279,7 +279,40 @@
   // picture (areas work on it), the words of his it came from (`decided`), and a check's
   // result. "More context" is his own addition (round 2, R-3): a row he cannot judge yet is
   // neither fine nor changed — it asks the session to explain, in the next round.
-  const RESULT = { pass: 'Passed', fail: 'Failed', unclear: 'Unclear' };
+  // WHY `todo` and a pill he can press (Destin, 2026-11-10, on the Checks page: "these should
+  // probably all be more similar and i should be able to update the statuses myself for all
+  // including the ones you put unclear for"): a check I ran, one I could not settle and one
+  // left for him to try were three different-looking rows, and only I could set the status.
+  // Every such row now carries the same pill at its top right; pressing it opens the four
+  // statuses. His choice is saved as answers[step].results[row] and shown in place of mine.
+  const RESULT = { pass: 'Passed', fail: 'Failed', unclear: 'Unclear', todo: 'Not tried' };
+  const resultOf = (sid, c) => ((state.answers[sid] || {}).results || {})[c.id] || c.result;
+  const resultPill = (st, c) => c.result ? `<button type="button" class="result pillbtn" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" data-own="${esc(c.result)}" aria-haspopup="menu"></button>` : '';
+  function setResult(sid, cid, own, val) {
+    if (state.submitted) return;
+    const a = { ...(state.answers[sid] || {}) }; const rs = { ...(a.results || {}) };
+    if (val === own) delete rs[cid]; else rs[cid] = val;
+    if (Object.keys(rs).length) a.results = rs; else delete a.results;
+    // A check HE marks failed is something to act on, so the list counts as changed.
+    if (Object.values(rs).includes('fail')) { a.v = 'other'; delete a.dk; }
+    else if (a.v === 'other' && !openRows(a) && !(a.marks || []).length) delete a.v;
+    state.answers[sid] = a; paintState(); save();
+  }
+  function closeResultMenu() { const m = $('.resultmenu'); if (m) m.remove(); }
+  document.addEventListener('click', e => {
+    const opt = e.target.closest('.resultmenu button');
+    if (opt) { setResult(opt.dataset.sid, opt.dataset.call, opt.dataset.own, opt.dataset.v); closeResultMenu(); return; }
+    const pill = e.target.closest('.result.pillbtn');
+    const was = $('.resultmenu'); closeResultMenu();
+    if (!pill || state.submitted || (was && was.dataset.for === pill.dataset.sid + '/' + pill.dataset.call)) return;
+    const m = document.createElement('div'); m.className = 'resultmenu'; m.setAttribute('role', 'menu'); m.dataset.for = pill.dataset.sid + '/' + pill.dataset.call;
+    const now = pill.dataset.now;
+    m.innerHTML = Object.keys(RESULT).map(k => `<button type="button" role="menuitemradio" aria-checked="${k === now}" data-v="${k}" data-sid="${esc(pill.dataset.sid)}" data-call="${esc(pill.dataset.call)}" data-own="${esc(pill.dataset.own)}"><span class="result ${k}">${RESULT[k]}</span>${k === pill.dataset.own ? '<span class="mine">my result</span>' : ''}</button>`).join('');
+    document.body.appendChild(m);
+    const r = pill.getBoundingClientRect();
+    m.style.top = (r.bottom + scrollY + 4) + 'px'; m.style.left = Math.max(8, r.right + scrollX - m.offsetWidth) + 'px';
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeResultMenu(); });
   // WHY one pencil (Destin, 2026-11-10, round 3: "simplify down to a single pencil/edit icon on
   // each of these rows that opens the comment box. and i can steer myself instead of the
   // separate change/more context buttons"). Two worded buttons per row were noise; the box says
@@ -291,7 +324,7 @@
   // 38%-wide picture beside two lines of text left most of the row empty.
   const rowPic = (src, pk, cap) => `<figure class="qpic row"><a href="${esc(src)}" title="Open larger" data-pk="${esc(pk)}"><img src="${esc(src)}" alt=""></a>${cap ? `<figcaption>${esc(cap)}</figcaption>` : ''}</figure>`;
   const rowPics = c => (c.before ? rowPic(c.before, 'row ' + c.id + ' before', 'Before') : '') + (c.picture ? rowPic(c.picture, 'row ' + c.id, c.before ? 'After' : '') : '');
-  const callsCard = st => `<section class="card calls${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext">${c.result ? `<span class="result ${esc(c.result)}">${RESULT[c.result]}</span>` : ''}<p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${c.picture || c.before ? `<div class="callpics">${rowPics(c)}</div>` : ''}<button type="button" class="iconbtn calledit" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div></li>`).join('')}</ul></section>`;
+  const callsCard = st => `<section class="card calls${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${c.picture || c.before ? `<div class="callpics">${rowPics(c)}</div>` : ''}${resultPill(st, c)}<button type="button" class="iconbtn calledit" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div></li>`).join('')}</ul></section>`;
 
   // ── Edit the words on the real screen (round 4) ─────────────────────────────────────────
   // WHY (Destin, 2026-11-10): wording rows — a text box per label beside a small picture —
@@ -691,14 +724,20 @@
         // them apart". A page of questions had nothing between one and the next but a 14px gap,
         // so on a tall question you cannot see where you are. Each one now names itself.
         // A calls list asks nothing, so it is not called a "Question" (rethink round 2).
-        + `<p class="qnum"><span class="n">${listy(st) ? '' : 'Question ' + (steps.filter(x => !listy(x)).indexOf(st) + 1) + ' of ' + steps.filter(x => !listy(x)).length}</span><span class="qtick" aria-hidden="true">answered</span></p>`
+        + `<p class="qnum"><span class="n">${listy(st) ? '' : 'Question ' + (steps.filter(x => !listy(x)).indexOf(st) + 1) + ' of ' + steps.filter(x => !listy(x)).length}</span></span></p><span class="qstate" aria-live="polite"></span>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
         + `<div class="qbody">${cardsFor(st)}</div>`
         + (listy(st) ? '' : `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
         // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A
         // question answered by typing already has its box, so it gets no second note box.
         + (st.answer === 'words' ? '' : `<textarea class="note" rows="1" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></textarea>`) + `</div>`)
-        + `</article>`).join('');
+        + `</article>`).join('')
+      // WHY (Destin, round 4, on the header Notes button: "nah i wanted like an extra more
+      // visible input region at the bottom of each page"): a thought about the page as a whole
+      // gets a box he cannot miss, where he ends up after reading it — one per page, saved as
+      // pageNotes[page id].
+      + `<section class="pagenote"><label for="pnote">Anything else about this page</label><div class="pnotebox"><textarea class="pnote" id="pnote" rows="2" data-page="${esc(pg.id)}" placeholder="A comment on the page as a whole, or anything no row or question covers"></textarea></div></section>`;
+    { const pn = $('#pnote'); pn.value = (state.pageNotes || {})[pg.id] || ''; pn.disabled = !!state.submitted; }
     // Every control carries the id of the question it belongs to, so one click handler on the
     // column can answer any of them without knowing which article it came from.
     $$('#cards article.q').forEach(art => art.querySelectorAll('.ans').forEach(b => b.dataset.id = art.dataset.id));
@@ -794,6 +833,12 @@
     });
   }
   function paintCalls() {
+    $$('.result.pillbtn').forEach(p => {
+      const now = ((state.answers[p.dataset.sid] || {}).results || {})[p.dataset.call] || p.dataset.own;
+      p.dataset.now = now; p.className = 'result pillbtn ' + now + (now !== p.dataset.own ? ' yours' : '');
+      p.textContent = RESULT[now]; p.disabled = !!state.submitted;
+      p.title = now !== p.dataset.own ? 'You set this. My result was: ' + RESULT[p.dataset.own] : 'Press to change this status';
+    });
     $$('.card.calls .call').forEach(li => {
       const btn = li.querySelector('.calledit');
       if (btn) {
@@ -825,7 +870,15 @@
       art.classList.toggle('done', !!(a.v && a.v !== 'skip'));
       // WHY the time (Destin, 2026-11-09, rethink Q-6): when each question was answered is
       // worth more than cover-page copy. It is already in the answers file; this shows it.
-      const tk = art.querySelector('.qtick'); if (tk) tk.textContent = 'answered' + (a.t ? ' ' + clock(a.t) : '');
+      // WHY a pill (Destin, round 4: "answered status could be a top-right status pill instead
+      // of plaintext and checkmark"): the design guide's shape for a status is a small tinted
+      // pill; it now also says what a LIST's state is, which the old tick could not.
+      const tk = art.querySelector('.qstate');
+      if (tk) {
+        const on = !!(a.v && a.v !== 'skip'), st = stepById(art.dataset.id) || {}, n = openRows(a) + (a.marks || []).length + Object.keys(a.results || {}).length;
+        tk.className = 'qstate ' + (!on ? 'none' : listy(st) && n ? 'chg' : 'ok');
+        tk.textContent = !on ? (listy(st) ? 'Not reviewed' : 'Not answered') : listy(st) ? (n ? n + (n === 1 ? ' change' : ' changes') : 'Accepted') : 'Answered' + (a.t ? ' ' + clock(a.t) : '');
+      }
     });
     // A segment is a PAGE: solid once every question on it is answered, half-lit while some are.
     $$('#steps span').forEach((seg, i) => {
@@ -846,6 +899,15 @@
   // leave misc/unrelated comments/notes. so we should add something like that"): a thought
   // that belongs to no question had to be typed under whichever question was nearest. One
   // box, reachable from the header on every page, saved as `notes` beside the answers.
+  document.addEventListener('input', e => {
+    const pn = e.target.closest && e.target.closest('.pnote'); if (!pn || state.submitted) return;
+    const all = { ...(state.pageNotes || {}) };
+    if (pn.value.trim()) all[pn.dataset.page] = pn.value; else delete all[pn.dataset.page];
+    if (Object.keys(all).length) state.pageNotes = all; else delete state.pageNotes;
+    grow(pn); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  });
+  // Page notes, in page order, for both summaries.
+  const pageNoteList = () => (PAGES || []).map(p => [p.title, ((state.pageNotes || {})[p.id] || '').trim()]).filter(x => x[1]);
   const gnote = $('#gnote');
   $('#notesbtn').onclick = () => {
     const p = $('#notespanel'); p.hidden = !p.hidden;
@@ -1011,11 +1073,12 @@
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
     // Mirrors serve.py's summary(): a note prints plainly, right after the answer, same words.
     for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a)); }
-    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + ((state.notes || '').trim() ? 'general notes — "' + state.notes.trim() + '"\n' : '') + lines.join('\n');
+    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + pageNoteList().map(([t, n]) => 'about the page "' + t + '" — "' + n + '"\n').join('') + ((state.notes || '').trim() ? 'general notes — "' + state.notes.trim() + '"\n' : '') + lines.join('\n');
   }
   // Mirrors serve.py's extras(): lines he marked for change, and areas he marked on a picture.
   function extras(a) {
     const out = [];
+    for (const [k, v] of Object.entries(a.results || {})) out.push('\n    status ' + k + ' — he set it to ' + RESULT[v]);
     for (const [k, t] of Object.entries(a.changes || {})) out.push('\n    change ' + k + ' — "' + String(t || '').trim() + '"');
     (a.asks || []).forEach(k => out.push('\n    more context wanted on ' + k));
     // {from, to} from a screen he retyped words on; a plain string from a round-3 wording row.
@@ -1101,7 +1164,7 @@
         + `</tr>`;
     }).join('');
     const general = (state.notes || '').trim();
-    $('#responses').querySelector('tbody').innerHTML = rows
+    $('#responses').querySelector('tbody').innerHTML = pageNoteList().map(([t, n]) => `<tr><td class="n">+</td><td class="step-cell">About the page “${esc(t)}”</td><td class="v">—</td><td>${esc(n)}</td><td class="src when">—</td></tr>`).join('') + rows
       + (general ? `<tr><td class="n">+</td><td class="step-cell">Notes about anything else</td><td class="v">—</td><td>${esc(general)}</td><td class="src when">—</td></tr>` : '');
     const when = (state.submitted || '').slice(0, 16).replace('T', ' ');
     const parts = [counts.yes + ' yes', counts.no + ' no', counts.other + ' other'];
@@ -1258,6 +1321,7 @@
         ? marks.map((m, i) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="1" data-sid="${esc(sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(sid)}" data-i="${i}" title="Remove this area" aria-label="Remove this area"${state.submitted ? ' disabled' : ''}>×</button></div>`).join('')
         : (state.submitted ? '' : '<p class="markhint">Drag across any part of the picture to comment on that area.</p>');
     });
+    paintViewer();
     addMics();
   }
   function removeMark(sid, i) {
@@ -1271,21 +1335,81 @@
   // tab, which is strange/unexpected behaviour"). The large view sits over the page; areas can
   // be dragged on it exactly as on the small one — easier, in fact, since it is bigger — and a
   // click anywhere, or Esc, closes it.
+  // ── THE PICTURE VIEWER ──────────────────────────────────────────────────────────────────
+  // WHY (Destin, round 4: pictures "rendered far too small to be useful… i just need to have
+  // more space and a better surface to actually leave/manage comments and such and quickly
+  // scan through all of the changes at once"; and on the old large view, which closed as soon
+  // as an area was drawn: "we can make a much better and more useful/intuitive surface for
+  // image comments to be edited/saved/viewed"). A click on any picture opens the viewer over
+  // the whole window: the picture as large as fits, its comments beside it (drawn areas, each
+  // with its box, added and taken away without leaving), and a strip of every picture on the
+  // page underneath, so he can go through all of them with the arrow keys.
+  let viewAt = -1;
+  const viewPics = () => $$('#cards .qpic > a, #inner .qpic > a');
+  const picTitle = a => {
+    const row = a.closest('.call'), cap = a.parentElement.querySelector('figcaption'), art = a.closest('article.q');
+    const what = row ? row.querySelector('.callwhat').textContent : art ? art.querySelector('.qh').textContent : '';
+    return { what, cap: cap ? cap.textContent : '' };
+  };
   function openBig(a) {
-    closeBig();
-    const lb = document.createElement('div'); lb.className = 'lightbox';
-    lb.innerHTML = `<div class="lbbox"><img src="${esc(a.getAttribute('href'))}" alt=""></div><p class="lbhint">${a.classList.contains('markable') && !state.submitted ? 'Drag across any part to comment on it · ' : ''}click anywhere or press Esc to close</p>`;
-    if (a.classList.contains('markable')) { const b = lb.firstChild; b.classList.add('markable'); b.dataset.sid = a.dataset.sid; b.dataset.pk = a.dataset.pk; }
-    document.body.appendChild(lb); drawMarks();
+    const pics = viewPics(); viewAt = Math.max(0, pics.indexOf(a));
+    let v = $('.viewer');
+    if (!v) {
+      v = document.createElement('div'); v.className = 'viewer';
+      v.innerHTML = `<div class="vbar"><span class="vcount"></span><span class="vtitle"></span><button type="button" class="btn sm vclose">Close</button></div>`
+        + `<div class="vmain"><button type="button" class="vnav" data-d="-1" aria-label="Previous picture">‹</button><div class="vstage"><div class="lbbox"><img alt=""></div></div><button type="button" class="vnav" data-d="1" aria-label="Next picture">›</button>`
+        + `<aside class="vside"><h3>Comments on this picture</h3><div class="vcomments"></div></aside></div><div class="vstrip"></div>`;
+      document.body.appendChild(v);
+    }
+    paintViewer(); drawMarks();
   }
-  function closeBig() { const lb = $('.lightbox'); if (lb) lb.remove(); }
+  function paintViewer() {
+    const v = $('.viewer'); if (!v) return;
+    const pics = viewPics(), a = pics[viewAt]; if (!a) { closeBig(); return; }
+    const t = picTitle(a), box = v.querySelector('.lbbox'), img = box.querySelector('img');
+    if (img.getAttribute('src') !== a.getAttribute('href')) img.src = a.getAttribute('href');
+    box.classList.toggle('markable', a.classList.contains('markable')); box.dataset.sid = a.dataset.sid || ''; box.dataset.pk = a.dataset.pk || '';
+    v.querySelector('.vcount').textContent = (viewAt + 1) + ' of ' + pics.length;
+    v.querySelector('.vtitle').textContent = t.what + (t.cap ? ' · ' + t.cap : '');
+    v.querySelectorAll('.vnav').forEach(b => { b.disabled = pics.length < 2; });
+    const marks = (state.answers[a.dataset.sid] || {}).marks || [];
+    const count = p => ((state.answers[p.dataset.sid] || {}).marks || []).filter(m => m.pic === p.dataset.pk).length;
+    v.querySelector('.vstrip').innerHTML = pics.map((p, i) => { const n = count(p); return `<button type="button" class="vthumb${i === viewAt ? ' on' : ''}" data-i="${i}" title="${esc(picTitle(p).what)}"><img src="${esc(p.getAttribute('href'))}" alt="">${n ? `<b>${n}</b>` : ''}</button>`; }).join('');
+    // Only this picture's areas, under the numbers they carry on the picture.
+    const mine = marks.map((m, i) => [m, i]).filter(x => x[0].pic === a.dataset.pk);
+    const side = v.querySelector('.vcomments'), act = document.activeElement;
+    // Never rebuilt under his caret: typing in a comment repaints the page, and would lose his place.
+    if (!(act && act.closest && act.closest('.vcomments') && side.querySelectorAll('.markrow').length === mine.length))
+      side.innerHTML = mine.map(([m, i]) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="2" data-sid="${esc(a.dataset.sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(a.dataset.sid)}" data-i="${i}" title="Take this comment away" aria-label="Take this comment away">×</button></div>`).join('')
+        + `<p class="markhint">${!a.classList.contains('markable') || state.submitted ? '' : mine.length ? 'Drag across another part to add a comment.' : 'Drag across any part of the picture to comment on it.'}</p>`;
+  }
+  function closeBig() { const v = $('.viewer'); if (v) v.remove(); viewAt = -1; }
+  const viewStep = d => { const n = viewPics().length; if (n) { viewAt = (viewAt + d + n) % n; $('.viewer .vcomments').innerHTML = ''; paintViewer(); drawMarks(); } };
   document.addEventListener('click', e => {
     if (!e.target.closest) return;
-    if (e.target.closest('.lightbox')) { closeBig(); return; }
+    const v = e.target.closest('.viewer');
+    if (v) {
+      const nav = e.target.closest('.vnav'), th = e.target.closest('.vthumb'), x = e.target.closest('.markx');
+      if (e.target.closest('.vclose')) { closeBig(); drawMarks(); }
+      else if (nav) viewStep(+nav.dataset.d);
+      else if (th) viewStep(+th.dataset.i - viewAt);
+      else if (x) { v.querySelector('.vcomments').innerHTML = ''; removeMark(x.dataset.sid, +x.dataset.i); }
+      return;
+    }
     const a = e.target.closest('.qpic > a'); if (!a) return;
     e.preventDefault(); openBig(a);
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeBig(); });
+  document.addEventListener('input', e => {
+    const mt = e.target.closest && e.target.closest('.viewer .markt'); if (!mt || state.submitted) return;
+    const m = ((state.answers[mt.dataset.sid] || {}).marks || [])[+mt.dataset.i];
+    if (m) { m.text = mt.value; grow(mt); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); }
+  });
+  document.addEventListener('keydown', e => {
+    if (!$('.viewer')) return;
+    if (e.key === 'Escape') { closeBig(); drawMarks(); return; }
+    if (e.target.matches && e.target.matches('textarea,input')) return;   // arrows move the caret while typing
+    if (e.key === 'ArrowLeft') viewStep(-1); else if (e.key === 'ArrowRight') viewStep(1);
+  });
   let drag = null, swallowClick = false;
   const pct = n => Math.round(n * 10) / 10;
   document.addEventListener('pointerdown', e => {
@@ -1315,9 +1439,9 @@
     a.marks = (a.marks || []).concat([{ pic: d.box.dataset.pk, ...d.rect, text: '' }]);
     // An area with a comment IS a response; with no button pressed it counts as "something else".
     if (!a.v || a.v === 'skip') a.v = 'other';
-    closeBig();   // an area drawn on the large view: back to the page, where its comment box is
     state.answers[sid] = a; paintState(); drawMarks(); save();
-    const boxes = $$(`.markt[data-sid="${CSS.escape(sid)}"]`); if (boxes.length) boxes[boxes.length - 1].focus();
+    // Drawn in the viewer: it stays open and the new comment's box, beside the picture, takes the caret.
+    const boxes = $$(`${$('.viewer') ? '.viewer ' : ''}.markt[data-sid="${CSS.escape(sid)}"]`); if (boxes.length) boxes[boxes.length - 1].focus();
   });
   // The click that ends a drag must not also open the picture or pick the design under it.
   document.addEventListener('click', e => { if (swallowClick) { swallowClick = false; e.preventDefault(); e.stopPropagation(); } }, true);
@@ -1331,7 +1455,7 @@
   const MIC_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>';
   const grow = box => { if (box.tagName === 'TEXTAREA') { box.style.height = 'auto'; box.style.height = (box.scrollHeight + 2) + 'px'; } };
   function addMics() {
-    $$('textarea.note, input.note, textarea.ans-write, textarea.callt, textarea.markt').forEach(box => {
+    $$('textarea.note, input.note, textarea.ans-write, textarea.callt, textarea.markt, textarea.pnote').forEach(box => {
       grow(box);
       // A box the layout is not showing (the shared note row on a question page) gets no button.
       const off = box.hidden || box.offsetParent === null;

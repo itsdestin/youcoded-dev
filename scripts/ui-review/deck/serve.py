@@ -80,6 +80,10 @@ def extras(a):
     the areas he dragged on a picture, each with where it is and what he said about it. Printed
     under the step's line so a session reading the summary cannot miss them."""
     out = []
+    # A check status HE set (round 4): every status pill is his to change.
+    names = {'pass': 'Passed', 'fail': 'Failed', 'unclear': 'Unclear', 'todo': 'Not tried'}
+    for k, v in (a.get('results') or {}).items():
+        out.append(f'\n    status {k} — he set it to {names.get(v, v)}')
     for k, t in (a.get('changes') or {}).items():
         out.append(f'\n    change {k} — "{(t or "").strip()}"')
     for k in a.get('asks') or []:
@@ -131,7 +135,10 @@ def summary(spec, state):
             + (f'{counts["wrote"]} written · ' if counts['wrote'] else '') + f'{counts["skip"]} skipped')
     # Notes tied to no question (round 3): first, so a session reading the summary meets them.
     general = (state.get('notes') or '').strip()
-    return head + '\n' + (f'general notes — "{general}"\n' if general else '') + '\n'.join(lines)
+    # A comment box sits at the foot of every page (round 4); its words print first, by page.
+    titles = {s['id']: s.get('page', s['id']) for s in spec.get('steps', []) if isinstance(s, dict) and 'page' in s}
+    paged = ''.join(f'about the page "{titles.get(k, k)}" — "{(t or "").strip()}"\n' for k, t in (state.get('pageNotes') or {}).items() if (t or '').strip())
+    return head + '\n' + paged + (f'general notes — "{general}"\n' if general else '') + '\n'.join(lines)
 
 
 class _Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
