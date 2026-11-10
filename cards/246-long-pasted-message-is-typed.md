@@ -11,8 +11,8 @@ why: Destin, 2026-11-10: 'this send failed or broke our queue fro some reason?' 
 work: session/246-long-paste-not-sent
 ---
 Progress
-Done: Cause found and reproduced (offline real-queue probe + dev app): Claude Code 2.1.322 shortens any box text over 10,000 characters to first 500 + '[...Truncated text #N +L lines...]' + last 500 (1,034-1,037 chars); the queue's read-back no longer equals the message, so it refuses Enter -> Unconfirmed. Enter still submits the full original (measured). Probes on app branch session/246-long-paste-not-sent (b81695d99).
-Next: Destin picks a fix: A accept Claude Code's shortened form as ours (recommended), B send long messages without the box, C split, D send as file.
+Done: Fix A built on app branch session/246-long-paste-not-sent (c82fd37a0): the queue accepts Claude Code's exact shortened box (first 500 + marker + last 500, built from our own text) and Enter submits the whole text. Unit tests (5 new, seen red with the fix off), offline real-CLI queue smoke (all modes, short and 170-line), verify.sh all green. Real dev-app sessions on Claude Code 2.1.322: idle 10,377; exactly 10,000 and 10,001; while writing; mid-task between tool steps; picture attached; @file mention; 50,000; two long queued back to back; Stop then send; short message; own draft in Claude Code's box (waited, then sent); phone-sized remote browser; permission card up (send held in chat box, sent after). All arrived whole, none Unconfirmed.
+Next: Destin reviews; open question: Dismiss on an Unconfirmed row did not refill the chat box in the 2026-11-10 dev reproduction (unexplained, separate).
 Blocked: nothing.
 
 Chats
