@@ -100,6 +100,12 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - States N-4 and N-6 are merged into one notice: "Desktop is offline and may have newer messages or files than this device. Continuing here could create a second version." — chat 2026-11-10: "ok".
 - (Superseded wording kept for the record) Round 5 left open: how long the relay holds lines (Q-2: 30 days is too much; "something more like 24h from when the conversation was last active?"); whether a takeover is written into the chat (Q-3: "open to it … review this for fragility/errors/unintended consequences"); states N-4 and N-6 ("confusing").
 
+### Destin's two comments on `design.md` (2026-11-10), kept here because he asked for the comments themselves to be removed
+- On "The host sends each new line … everything after the last line I have": "i think i'm still at least a little confused about how exactly the catch up would work, and how various devices will handle chats that are outdated but don't have available lines on the relay after the 48hr expiration."
+- On "A home device cannot be reached from outside the home without something in the middle": "why is a relay needed? what would it take to allow any and every user to fully self-host their own youcoded data/connections/etc? the goal would be to offer fully equivalent central-hosted and self-hosted options for users who don't want to use oour services or, eventually, pay me since we can't financially support the servers ourselves forever."
+- In chat the same day: what happens past the 1 GB threshold needs fleshing out; the self-hosted keeper should be "its own fully self-contained youcoded instance/super-host or something like that".
+- All four are answered in chat and asked as choices in round 7. **Do not reply on document comments; answers go in chat or a deck** (Destin, 2026-11-10).
+
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
 1. "Default runner = the device he's typing on" → replaced by host-stays-until-offline-or-chip (D1 Q-4, Q-5, Q-15).

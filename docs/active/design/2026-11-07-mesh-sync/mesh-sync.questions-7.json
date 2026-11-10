@@ -102,7 +102,7 @@
   {
    "id": "P-2",
    "page": "Hosting it yourself",
-   "intro": "Why something in the middle exists at all: home internet and mobile data let your devices call out, but block calls coming in. Two devices that can each only call out cannot call each other; both must call the same place, which joins them. That place is the relay. It does not have to be ours. It can be a copy you run, or your own always-on device, provided that device can be reached from outside."
+   "intro": "Why something in the middle exists at all: home internet and mobile data let your devices call out, but block calls coming in. Two devices that can each only call out cannot call each other; both must call the same place, which joins them. That place is the relay. It does not have to be ours. It can be a copy you run, or your own always-on device, provided that device can be reached from outside. Hosting everything yourself takes three things, each asked about below: a super-host on your own hardware; a way to reach it from outside; and a relay setting in the app, so nothing has to point at us."
   },
   {
    "id": "S-1",
