@@ -195,21 +195,17 @@
   // letter — Destin (2026-09-04): one grey paragraph per option was unreadable, and
   // "(recommended)" written into the label read as part of the option's name.
   const bullets = (o, k) => (o[k] || []).length ? `<ul class="${k}">${o[k].map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
-  // Fix (2026-09-05): the chip printed the WHOLE option id, so `default-and-sunbreak` ate about
-  // 150px of the card's own gutter and squeezed the option's words. The chip is a handle, not
-  // the id: show at most KEY_MAX characters and keep the full id in its tooltip. Nothing else
-  // changes — the answers file, the printed summary and the finish screen all still carry it in
-  // full. (Chosen over a length LIMIT on ids: five committed specs already use long, readable
-  // ids, and those ids are what a session reads back out of the answers file.)
-  const KEY_MAX = 10;
-  const chip = id => `<span class="key" title="${esc(id)}">${esc(id.length > KEY_MAX ? id.slice(0, KEY_MAX - 1) + '…' : id)}</span>`;
+  // WHY no id chip at the right of a written option (round 7: "also remove the small option-id chips
+  // shown at the right of written options (e.g. lead, trail)" - approved for removal in an earlier
+  // round): the ids are for the answers file and the printed summary, which still carry them in full;
+  // on the page the heading (Option A, Option B) already names the option.
   // Fix (Destin, 2026-09-06): "add big ass clear 'Option A. Option B.' headers on the
   // selectable options". The option's own id (`all-three`) was doing that job in a small chip,
   // which named the thing without announcing that it is the thing you pick. The heading is now
   // the position — Option A, Option B — and the id follows it quietly, because the answers file,
   // the summary and any contract row still speak in ids.
   const LETTERS = 'ABCDEFGH';
-  const optionCard = (o, cls, i) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}${chip(o.id)}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${pictureFig(o, ' opt')}${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+  const optionCard = (o, cls, i) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${pictureFig(o, ' opt')}${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
   // WHY (Destin, 2026-11-04: "i want to visualize some of these options better"): a written
   // question about how something LOOKS drew "Other — need to see it" seven times out of ten.
   // A question, and each of its options, may now carry a picture; a click opens it full size.
@@ -322,16 +318,53 @@
   // separate change/more context buttons"). Two worded buttons per row were noise; the box says
   // whatever he wants — change it, explain it, or a stray thought.
   const PENCIL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg>';
-  // A row's picture is a small thumbnail at the row's right edge that opens large IN the deck.
-  // WHY (round 3: "the images on this page are inserted kinda strange and it introduces a lot
-  // of deadspace … tapping the image … opens it in a separate tab, which is strange"): a
-  // 38%-wide picture beside two lines of text left most of the row empty.
-  const rowPic = (src, pk, cap) => `<figure class="qpic row"><a href="${esc(src)}" title="Open larger" data-pk="${esc(pk)}"><img src="${esc(src)}" alt=""></a>${cap ? `<figcaption>${esc(cap)}</figcaption>` : ''}</figure>`;
-  const rowPics = c => (c.before ? rowPic(c.before, 'row ' + c.id + ' before', 'Before') : '') + (c.picture ? rowPic(c.picture, 'row ' + c.id, c.before ? 'After' : '') : '');
+  // ── ATTACHMENTS: a row's pictures live in a card at the row's foot ─────────────────────
+  // WHY (Destin, 2026-11-10, round 7, on the old thumbnails and picture viewer: "the embeds in
+  // the rows are very tiny and feel inconsistently styled/sized/etc", and "i think rows with
+  // images should have an 'attachements' row/expandable card at the bottom kind of like the
+  // 'deliverables' row/card in youcoded chats"). The card copies DeliverablesCard.tsx: one closed
+  // line (document glyph | label, count, chevron) in the well colour with a hairline edge; opened,
+  // every picture sits at full row width, all alike, a before/after pair side by side with
+  // each labelled, and the comments for a picture's areas sit directly under that picture.
+  const ATT_GLYPH = '<svg class="attglyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>';
+  const ATT_CHEV = '<svg class="attchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>';
+  // Which cards he opened, kept here (not in the markup) because the page re-renders on every
+  // page change ("remember which cards he opened across repaints"). A list that is a
+  // `gallery` — the "every screen that changed" page — starts open; any other starts closed,
+  // like the app's Deliverables card.
+  const attOpenMap = {};
+  const attKey = (sid, cid) => sid + '/' + cid;
+  const attIsOpen = (st, c) => { const k = attKey(st.id, c.id); return k in attOpenMap ? attOpenMap[k] : !!st.gallery; };
+  const attFig = (st, src, pk, label) => `<figure class="qpic att">${label ? `<figcaption>${esc(label)}</figcaption>` : ''}<a class="attimg" href="${esc(src)}" data-pk="${esc(pk)}"><img src="${esc(src)}" alt="${esc(label || '')}"></a><div class="attmarks" data-sid="${esc(st.id)}" data-pk="${esc(pk)}"></div></figure>`;
+  const attCard = (st, c) => {
+    if (!(c.picture || c.before)) return '';
+    const open = attIsOpen(st, c), n = (c.before ? 1 : 0) + (c.picture ? 1 : 0);
+    return `<div class="attcard${open ? ' open' : ''}" data-sid="${esc(st.id)}" data-call="${esc(c.id)}"><button type="button" class="atthead" aria-expanded="${open}">${ATT_GLYPH}<span class="attbar" aria-hidden="true">|</span><span class="attlabel">Attachments</span><span class="attn">${n}</span><span class="attcm" hidden></span><span class="attfill"></span>${ATT_CHEV}</button>`
+      + `<div class="attbody"${open ? '' : ' hidden'}><div class="attpics${c.before ? ' pair' : ''}">`
+      + (c.before ? attFig(st, c.before, 'row ' + c.id + ' before', 'Before') : '')
+      + (c.picture ? attFig(st, c.picture, 'row ' + c.id, c.before ? 'After' : '') : '')
+      + `</div></div></div>`;
+  };
+  // How many areas he has commented on across a row's pictures, shown on the closed card so a
+  // closed card still says "pictures are here, and you have written on them".
+  function paintAtt() {
+    $$('.attcard').forEach(card => {
+      const pks = ['row ' + card.dataset.call, 'row ' + card.dataset.call + ' before'];
+      const n = (((state.answers[card.dataset.sid] || {}).marks) || []).filter(m => pks.includes(m.pic)).length;
+      const cm = card.querySelector('.attcm'); cm.hidden = !n; cm.textContent = n + (n === 1 ? ' comment' : ' comments');
+      card.classList.toggle('has', !!n);
+    });
+  }
+  document.addEventListener('click', e => {
+    const h = e.target.closest && e.target.closest('.atthead'); if (!h) return;
+    const card = h.closest('.attcard'), on = !card.classList.contains('open');
+    attOpenMap[attKey(card.dataset.sid, card.dataset.call)] = on;
+    card.classList.toggle('open', on); h.setAttribute('aria-expanded', on); card.querySelector('.attbody').hidden = !on;
+  });
   // WHY `context` (round 5, E-1: "was this supposed to be context or questions? it has edit arrows"):
   // a list of facts for him to read looked exactly like a list of choices to change. A context
   // list says so and carries no pencils; a correction goes in the page's comment box.
-  const callsCard = st => `<section class="card calls${st.context ? ' context' : ''}${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${c.picture || c.before ? `<div class="callpics">${rowPics(c)}</div>` : ''}${resultPill(st, c)}<button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div></li>`).join('')}</ul></section>`;
+  const callsCard = st => `<section class="card calls${st.context ? ' context' : ''}${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${resultPill(st, c)}<button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div>${attCard(st, c)}</li>`).join('')}</ul></section>`;
 
   // ── Edit the words on the real screen (round 4) ─────────────────────────────────────────
   // WHY (Destin, 2026-11-10): wording rows — a text box per label beside a small picture —
@@ -829,7 +862,12 @@
   function toggleCall(sid, cid) {
     if (state.submitted) return;
     const a = { ...(state.answers[sid] || {}) }; const ch = { ...(a.changes || {}) };
-    if (cid in ch) delete ch[cid]; else ch[cid] = '';
+    if (cid in ch) {
+      delete ch[cid];
+      // WHY: pictures and paths pasted into that change's box belong to it; leaving them would
+      // print "attached to change x" for a change he took back.
+      if (a.attach) { a.attach = { ...a.attach }; delete a.attach['change:' + cid]; if (!Object.keys(a.attach).length) delete a.attach; }
+    } else ch[cid] = '';
     // Any line marked for change makes the answer "something else"; none left, and an answer
     // that only existed because of a change is withdrawn rather than left as a bare Other.
     if (Object.keys(ch).length) { a.changes = ch; a.v = 'other'; delete a.dk; }
@@ -893,8 +931,17 @@
       const tk = art.querySelector('.qstate');
       if (tk) {
         const on = !!(a.v && a.v !== 'skip'), st = stepById(art.dataset.id) || {}, n = openRows(a) + (a.marks || []).length + Object.keys(a.results || {}).length;
-        tk.className = 'qstate ' + (!on ? 'none' : listy(st) && n ? 'chg' : 'ok');
-        tk.textContent = !on ? (listy(st) ? 'Not reviewed' : 'Not answered') : listy(st) ? (n ? n + (n === 1 ? ' change' : ' changes') : 'Accepted') : 'Answered' + (a.t ? ' ' + clock(a.t) : '');
+        // WHY a list carries no pill until it has something to say (Destin, round 7: "this was an odd
+        // interactive 'not reviewed' card i hadnt seen before?" and "this page also has 'not reviewed'
+        // in the top right. what that mean?"). A list he has not touched is not "waiting" for anything:
+        // it stands unless he changes it, so "Not reviewed" invented a task. It shows "2 changes" once
+        // he has written something, or "Accepted" after he moves on. A background-only (`context`) list
+        // never has a pill: there is nothing on it to accept or change. A QUESTION still says
+        // "Not answered" / "Answered 12:47", because it does ask for something.
+        const quiet = listy(st) && (!!st.context || (!on && !n));
+        tk.hidden = quiet; art.classList.toggle('nostate', quiet);
+        tk.className = 'qstate ' + (!on && !n ? 'none' : listy(st) && n ? 'chg' : 'ok');
+        tk.textContent = quiet ? '' : !on && !n ? 'Not answered' : listy(st) ? (n ? n + (n === 1 ? ' change' : ' changes') : 'Accepted') : 'Answered' + (a.t ? ' ' + clock(a.t) : '');
       }
     });
     // A segment is a PAGE: solid once every question on it is answered, half-lit while some are.
@@ -924,6 +971,9 @@
     grow(pn); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
   });
   // Page notes, in page order, for both summaries.
+  // Pictures and paths attached under the page-foot box or the general notes box, for both summaries.
+  const pageAttachLines = () => (PAGES || []).flatMap(p => ((state.pageAttach || {})[p.id] || []).map(x => 'about the page "' + p.title + '" attached — ' + pillWords(x) + '\n'))
+    .concat((state.notesAttach || []).map(x => 'general notes attached — ' + pillWords(x) + '\n')).join('');
   const pageNoteList = () => (PAGES || []).map(p => [p.title, ((state.pageNotes || {})[p.id] || '').trim()]).filter(x => x[1]);
   const gnote = $('#gnote');
   $('#notesbtn').onclick = () => {
@@ -939,7 +989,7 @@
   const paintNotes = () => $('#notesbtn').classList.toggle('has', !!(state.notes || '').trim());
   function paintState() {
     paintNotes();
-    if (PAGES) { paintPage(); paintCalls(); paintScreens(); return; }
+    if (PAGES) { paintPage(); paintCalls(); paintScreens(); paintPills(); return; }
     const a = state.answers[DECK.steps[cur].id] || {};
     $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick) && (b.dataset.dk !== '1' || !!a.dk)));
     $$('.card.variant').forEach(c => c.classList.toggle('on', chosen(a, c.dataset.pick)));
@@ -953,7 +1003,7 @@
     // browsing a submitted deck must never re-arm Save & Next
     $('#save').disabled = !!state.submitted || !(a.v && a.v !== 'skip');
     $('#prev').disabled = cur === 0; $('#next').disabled = cur === N - 1; $('#next').textContent = cur === N - 1 ? 'Last step' : 'Next ›';
-    paintCalls();
+    paintCalls(); paintPills();
   }
 
   // ── layout: try each arrangement for real, keep the one that shows the pictures largest (spec §3.4) ──
@@ -1090,8 +1140,10 @@
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
     // Mirrors serve.py's summary(): a note prints plainly, right after the answer, same words.
     for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a)); }
-    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + pageNoteList().map(([t, n]) => 'about the page "' + t + '" — "' + n + '"\n').join('') + ((state.notes || '').trim() ? 'general notes — "' + state.notes.trim() + '"\n' : '') + lines.join('\n');
+    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + pageNoteList().map(([t, n]) => 'about the page "' + t + '" — "' + n + '"\n').join('') + ((state.notes || '').trim() ? 'general notes — "' + state.notes.trim() + '"\n' : '') + pageAttachLines() + lines.join('\n');
   }
+  const pillWords = p => p.kind === 'image' ? 'picture "' + p.name + '" saved at ' + p.path : 'file ' + p.path;
+  const attachLabel = k => k === 'note' ? 'his note' : k === 'text' ? 'his typed answer' : k.startsWith('change:') ? 'change ' + k.slice(7) : k;
   // Mirrors serve.py's extras(): lines he marked for change, and areas he marked on a picture.
   function extras(a) {
     const out = [];
@@ -1101,6 +1153,9 @@
     // {from, to} from a screen he retyped words on; a plain string from a round-3 wording row.
     for (const [k, t] of Object.entries(a.edits || {})) out.push(t && typeof t === 'object' ? '\n    reword "' + t.from + '" → "' + t.to + '"' : '\n    reword ' + k + ' — "' + String(t || '').trim() + '"');
     (a.marks || []).forEach((m, i) => out.push('\n    area ' + (i + 1) + ' on ' + m.pic + ' (left ' + m.x + '%, top ' + m.y + '%, ' + m.w + '% wide, ' + m.h + '% tall) — "' + String(m.text || '').trim() + '"'));
+    // Pictures and file paths he pasted into a box (round 7): the path is what a session opens.
+    for (const [k, l] of Object.entries(a.attach || {})) (l || []).forEach(p => out.push('\n    attached to ' + attachLabel(k) + ' — ' + pillWords(p)));
+    (a.marks || []).forEach((m, i) => (m.attach || []).forEach(p => out.push('\n    attached to area ' + (i + 1) + ' — ' + pillWords(p))));
     return out.join('');
   }
   function openDialog() {
@@ -1171,7 +1226,8 @@
     const rows = DECK.steps.map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
       const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k), Object.entries(a.edits || {}).map(([k, t]) => t && typeof t === 'object' ? '“' + t.from + '” → “' + t.to + '”' : k + ' reworded: ' + String(t || '').trim()),
-        (a.marks || []).map((m, j) => 'Area ' + (j + 1) + ' on ' + m.pic + ': ' + String(m.text || '').trim())).filter(Boolean).join(' · ');
+        (a.marks || []).map((m, j) => 'Area ' + (j + 1) + ' on ' + m.pic + ': ' + String(m.text || '').trim()),
+        Object.values(a.attach || {}).flat().concat((a.marks || []).flatMap(m => m.attach || [])).map(p => 'Attached: ' + p.name)).filter(Boolean).join(' · ');
       return `<tr><td class="n">${i + 1}</td>`
         + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
         + `<td class="v" data-v="${esc(v)}">${esc(ANS_LABEL(st, a))}</td>`
@@ -1316,7 +1372,9 @@
     if (!PAGES && !['clip', 'live'].includes(DECK.steps[cur].kind))
       $$('#inner .frame .pic').forEach(p => { if (p.querySelector('img')) one(p, DECK.steps[cur].id, p.closest('.frame').dataset.run); });
     // One list of comments per step: before the answer row on a page, atop the cards otherwise.
-    [...new Set($$('.markable').map(b => b.dataset.sid))].forEach(sid => {
+    // WHY not for pictures inside an Attachments card (round 7): their comments sit under the
+    // picture itself, so a second list at the top of the page would show every comment twice.
+    [...new Set($$('.markable').filter(b => !b.closest('.attcard')).map(b => b.dataset.sid))].forEach(sid => {
       if ($(`.marklist[data-sid="${CSS.escape(sid)}"]`)) return;
       const l = document.createElement('div'); l.className = 'marklist'; l.dataset.sid = sid;
       const art = $(`#cards article.q[data-id="${CSS.escape(sid)}"]`);
@@ -1324,6 +1382,7 @@
     });
     drawMarks();
   }
+  const pks_of = l => [...l.closest('.attcard').querySelectorAll('.attmarks')].map(x => x.dataset.pk);
   function drawMarks() {
     $$('.markable .mark').forEach(m => m.remove());
     $$('.markable').forEach(box => ((state.answers[box.dataset.sid] || {}).marks || []).forEach((m, i) => {
@@ -1332,14 +1391,23 @@
       el.style.cssText = `left:${m.x}%;top:${m.y}%;width:${m.w}%;height:${m.h}%`; el.innerHTML = `<b>${i + 1}</b>`;
       box.appendChild(el);
     }));
+    // One list per picture, directly under it, inside the card (round 7). Numbers are the same
+    // ones drawn on the picture, counted across the whole step.
+    $$('.attmarks').forEach(l => {
+      const sid = l.dataset.sid, marks = (state.answers[sid] || {}).marks || [];
+      const mine = marks.map((m, i) => [m, i]).filter(x => x[0].pic === l.dataset.pk);
+      l.innerHTML = mine.map(([m, i]) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="1" data-sid="${esc(sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(sid)}" data-i="${i}" title="Take this comment away" aria-label="Take this comment away"${state.submitted ? ' disabled' : ''}>×</button></div>`).join('')
+        // The hint is said once per card (under its last picture), not under both halves of a pair.
+        + (state.submitted || [...l.closest('.attcard').querySelectorAll('.attmarks')].pop() !== l ? '' : `<p class="markhint">${(state.answers[sid] || {}).marks && marks.some(m => pks_of(l).includes(m.pic)) ? 'Drag across another part to add a comment.' : 'Drag across any part of a picture to comment on that area.'}</p>`);
+    });
     $$('.marklist').forEach(l => {
       const sid = l.dataset.sid, marks = (state.answers[sid] || {}).marks || [];
       l.innerHTML = marks.length
         ? marks.map((m, i) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="1" data-sid="${esc(sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(sid)}" data-i="${i}" title="Remove this area" aria-label="Remove this area"${state.submitted ? ' disabled' : ''}>×</button></div>`).join('')
         : (state.submitted ? '' : '<p class="markhint">Drag across any part of the picture to comment on that area.</p>');
     });
-    paintViewer();
-    addMics();
+    paintViewer(); paintAtt();
+    addMics(); paintPills();
   }
   function removeMark(sid, i) {
     if (state.submitted) return;
@@ -1388,37 +1456,38 @@
   // the whole window: the picture as large as fits, its comments beside it (drawn areas, each
   // with its box, added and taken away without leaving), and a strip of every picture on the
   // page underneath, so he can go through all of them with the arrow keys.
-  let viewAt = -1;
-  const viewPics = () => $$('#cards .qpic > a, #inner .qpic > a');
+  // WHY one picture, no arrows, no strip (Destin, 2026-11-10, round 7: the viewer was "still deeply
+  // odd… the arrows that let me click between pictures are weird cuz they fully lose the context
+  // of the question each picture is connected to and its purpose"). Pictures in a row now live in
+  // that row's Attachments card, large, so this window only enlarges ONE picture of a written
+  // question — with the question's own words as its title and its comments beside it — and
+  // never walks on to another question's picture.
+  let viewA = null;
   const picTitle = a => {
     const row = a.closest('.call'), cap = a.parentElement.querySelector('figcaption'), art = a.closest('article.q');
     const what = row ? row.querySelector('.callwhat').textContent : art ? art.querySelector('.qh').textContent : '';
     return { what, cap: cap ? cap.textContent : '' };
   };
   function openBig(a) {
-    const pics = viewPics(); viewAt = Math.max(0, pics.indexOf(a));
+    viewA = a;
     let v = $('.viewer');
     if (!v) {
       v = document.createElement('div'); v.className = 'viewer';
-      v.innerHTML = `<div class="vbar"><span class="vcount"></span><span class="vtitle"></span><button type="button" class="btn sm vclose">Close</button></div>`
-        + `<div class="vmain"><button type="button" class="vnav" data-d="-1" aria-label="Previous picture">‹</button><div class="vstage"><div class="lbbox"><img alt=""></div></div><button type="button" class="vnav" data-d="1" aria-label="Next picture">›</button>`
-        + `<aside class="vside"><h3>Comments on this picture</h3><div class="vcomments"></div></aside></div><div class="vstrip"></div>`;
+      v.innerHTML = `<div class="vbar"><span class="vtitle"></span><button type="button" class="btn sm vclose">Close</button></div>`
+        + `<div class="vmain"><div class="vstage"><div class="lbbox"><img alt=""></div></div>`
+        + `<aside class="vside"><h3>Comments on this picture</h3><div class="vcomments"></div></aside></div>`;
       document.body.appendChild(v);
     }
     paintViewer(); drawMarks();
   }
   function paintViewer() {
     const v = $('.viewer'); if (!v) return;
-    const pics = viewPics(), a = pics[viewAt]; if (!a) { closeBig(); return; }
+    const a = viewA; if (!a || !a.isConnected) { closeBig(); return; }
     const t = picTitle(a), box = v.querySelector('.lbbox'), img = box.querySelector('img');
     if (img.getAttribute('src') !== a.getAttribute('href')) img.src = a.getAttribute('href');
     box.classList.toggle('markable', a.classList.contains('markable')); box.dataset.sid = a.dataset.sid || ''; box.dataset.pk = a.dataset.pk || '';
-    v.querySelector('.vcount').textContent = (viewAt + 1) + ' of ' + pics.length;
     v.querySelector('.vtitle').textContent = t.what + (t.cap ? ' · ' + t.cap : '');
-    v.querySelectorAll('.vnav').forEach(b => { b.disabled = pics.length < 2; });
     const marks = (state.answers[a.dataset.sid] || {}).marks || [];
-    const count = p => ((state.answers[p.dataset.sid] || {}).marks || []).filter(m => m.pic === p.dataset.pk).length;
-    v.querySelector('.vstrip').innerHTML = pics.map((p, i) => { const n = count(p); return `<button type="button" class="vthumb${i === viewAt ? ' on' : ''}" data-i="${i}" title="${esc(picTitle(p).what)}"><img src="${esc(p.getAttribute('href'))}" alt="">${n ? `<b>${n}</b>` : ''}</button>`; }).join('');
     // Only this picture's areas, under the numbers they carry on the picture.
     const mine = marks.map((m, i) => [m, i]).filter(x => x[0].pic === a.dataset.pk);
     const side = v.querySelector('.vcomments'), act = document.activeElement;
@@ -1427,33 +1496,28 @@
       side.innerHTML = mine.map(([m, i]) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="2" data-sid="${esc(a.dataset.sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(a.dataset.sid)}" data-i="${i}" title="Take this comment away" aria-label="Take this comment away">×</button></div>`).join('')
         + `<p class="markhint">${!a.classList.contains('markable') || state.submitted ? '' : mine.length ? 'Drag across another part to add a comment.' : 'Drag across any part of the picture to comment on it.'}</p>`;
   }
-  function closeBig() { const v = $('.viewer'); if (v) v.remove(); viewAt = -1; }
-  const viewStep = d => { const n = viewPics().length; if (n) { viewAt = (viewAt + d + n) % n; $('.viewer .vcomments').innerHTML = ''; paintViewer(); drawMarks(); } };
+  function closeBig() { const v = $('.viewer'); if (v) v.remove(); viewA = null; }
   document.addEventListener('click', e => {
     if (!e.target.closest) return;
     const v = e.target.closest('.viewer');
     if (v) {
-      const nav = e.target.closest('.vnav'), th = e.target.closest('.vthumb'), x = e.target.closest('.markx');
+      const x = e.target.closest('.markx');
       if (e.target.closest('.vclose')) { closeBig(); drawMarks(); }
-      else if (nav) viewStep(+nav.dataset.d);
-      else if (th) viewStep(+th.dataset.i - viewAt);
       else if (x) { v.querySelector('.vcomments').innerHTML = ''; removeMark(x.dataset.sid, +x.dataset.i); }
       return;
     }
     const a = e.target.closest('.qpic > a'); if (!a) return;
-    e.preventDefault(); openBig(a);
+    e.preventDefault();
+    // A picture in an Attachments card is already large and is for dragging on: a click does not
+    // open a second, bigger copy over the page.
+    if (!a.closest('.attcard')) openBig(a);
   });
   document.addEventListener('input', e => {
     const mt = e.target.closest && e.target.closest('.viewer .markt'); if (!mt || state.submitted) return;
     const m = ((state.answers[mt.dataset.sid] || {}).marks || [])[+mt.dataset.i];
     if (m) { m.text = mt.value; grow(mt); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); }
   });
-  document.addEventListener('keydown', e => {
-    if (!$('.viewer')) return;
-    if (e.key === 'Escape') { closeBig(); drawMarks(); return; }
-    if (e.target.matches && e.target.matches('textarea,input')) return;   // arrows move the caret while typing
-    if (e.key === 'ArrowLeft') viewStep(-1); else if (e.key === 'ArrowRight') viewStep(1);
-  });
+  document.addEventListener('keydown', e => { if ($('.viewer') && e.key === 'Escape') { closeBig(); drawMarks(); } });
   let drag = null, swallowClick = false;
   const pct = n => Math.round(n * 10) / 10;
   document.addEventListener('pointerdown', e => {
@@ -1489,6 +1553,121 @@
   });
   // The click that ends a drag must not also open the picture or pick the design under it.
   document.addEventListener('click', e => { if (swallowClick) { swallowClick = false; e.preventDefault(); e.stopPropagation(); } }, true);
+  // ── PICTURES AND FILE PATHS IN ANY COMMENT BOX, AS PILLS ──────────────────────────────
+  // WHY (Destin, 2026-11-10, round 7: "i need to be able to attach/paste images/filepaths in these
+  // input boxes and have them work as pills like youcoded"). The app's message box turns a picture
+  // into a small card with its name and an x (AttachmentChip.tsx) and a file path into a recessed
+  // pill with the file's name (FilepathToken.tsx); the deck's boxes now do the same. A pasted or
+  // dropped picture is saved by the deck server beside the spec (POST /attach) and the pill keeps
+  // where it is; a pasted path becomes a pill showing the file's name, the full path on hover.
+  // The pills are saved WITH the box they sit under, so the session reading the answers sees them:
+  //   answers[step].attach["note" | "text" | "change:<row id>"] = [pill, ...]
+  //   answers[step].marks[i].attach = [pill, ...]      (an area's own box)
+  //   pageAttach[page id] = [pill, ...]   notesAttach = [pill, ...]
+  //   pill = {kind: "image", name, path, url} | {kind: "path", name, path}
+  const BOX_SEL = 'textarea.note, input.note, textarea.ans-write, textarea.callt, textarea.markt, textarea.pnote';
+  const baseName = p => String(p).replace(/\\/g, '/').split('/').filter(Boolean).pop() || String(p);
+  const FILE_GLYPH = '<svg class="pg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>';
+  const IMG_GLYPH = '<svg class="pg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5L11 18"/></svg>';
+  // Where a box keeps its pills, found from the box alone, so a paste needs no bookkeeping.
+  function slotOf(el) {
+    if (el.id === 'gnote') return { get: () => state.notesAttach || [], set: l => { if (l.length) state.notesAttach = l; else delete state.notesAttach; } };
+    if (el.classList.contains('pnote')) {
+      const p = el.dataset.page;
+      return { get: () => (state.pageAttach || {})[p] || [], set: l => {
+        const all = { ...(state.pageAttach || {}) }; if (l.length) all[p] = l; else delete all[p];
+        if (Object.keys(all).length) state.pageAttach = all; else delete state.pageAttach; } };
+    }
+    if (el.classList.contains('markt')) {
+      const sid = el.dataset.sid, i = +el.dataset.i, m = () => ((state.answers[sid] || {}).marks || [])[i];
+      return { get: () => (m() || {}).attach || [], set: l => { const x = m(); if (!x) return; if (l.length) x.attach = l; else delete x.attach; } };
+    }
+    let sid, key;
+    if (el.classList.contains('callt')) { sid = el.dataset.sid; key = 'change:' + el.dataset.call; }
+    else if (el.classList.contains('ans-write')) { sid = el.dataset.id; key = 'text'; }
+    else if (el.classList.contains('note')) { sid = el.dataset.id || (PAGES ? '' : DECK.steps[cur].id); key = 'note'; }
+    if (!sid || !key) return null;
+    return { get: () => ((state.answers[sid] || {}).attach || {})[key] || [], set: l => {
+      const a = { ...(state.answers[sid] || {}) }, at = { ...(a.attach || {}) };
+      if (l.length) at[key] = l; else delete at[key];
+      if (Object.keys(at).length) a.attach = at; else delete a.attach;
+      state.answers[sid] = a; } };
+  }
+  const pillHtml = (p, i, ro) => {
+    const x = ro ? '' : `<button type="button" class="px" data-i="${i}" title="Take this away" aria-label="Take ${esc(p.name)} away">×</button>`;
+    return p.kind === 'image'
+      ? `<span class="attpill img" title="${esc(p.path)}"><span class="pthumb">${IMG_GLYPH}<img src="${esc(p.url || '')}" alt=""></span><span class="nm">${esc(p.name)}</span>${x}</span>`
+      : `<span class="attpill file" title="${esc(p.path)}">${FILE_GLYPH}<span class="nm">${esc(p.name)}</span>${x}</span>`;
+  };
+  function pillsWrap(box, make) {
+    let w = box._pills;
+    if (w && w.isConnected) return w;
+    if (!make) return null;
+    w = document.createElement('div'); w.className = 'attpills'; w._box = box; box._pills = w;
+    (box.closest('.pnotebox') ? box.closest('.pagenote') : box.parentElement).appendChild(w);
+    return w;
+  }
+  function paintPills() {
+    $$(BOX_SEL).forEach(box => {
+      const slot = slotOf(box); if (!slot) return;
+      const list = slot.get(), w = pillsWrap(box, list.length > 0 || !!box._pillMsg); if (!w) return;
+      const sig = JSON.stringify(list) + (state.submitted ? '|ro|' : '|') + (box._pillMsg || '');
+      if (w._sig === sig) return; w._sig = sig;
+      w.hidden = !list.length && !box._pillMsg;
+      w.innerHTML = list.map((p, i) => pillHtml(p, i, !!state.submitted)).join('') + (box._pillMsg ? `<p class="micerr">${esc(box._pillMsg)}</p>` : '');
+    });
+  }
+  const pillMsg = (box, msg) => { box._pillMsg = msg; paintPills(); };
+  async function addImage(box, file) {
+    const slot = slotOf(box); if (!slot) return;
+    // Said plainly: a deck opened as a plain file has no server to keep a picture, and a paste
+    // that silently did nothing would look broken.
+    if (!server) { pillMsg(box, 'This page is open as a plain file, not from the deck server, so a pasted picture has nowhere to be saved. Open the deck from its link to paste pictures; a file path can still be pasted.'); return; }
+    pillMsg(box, 'Adding the picture…');
+    try {
+      const r = await fetch('/attach?name=' + encodeURIComponent(file.name || 'pasted picture'), { method: 'POST', headers: { 'content-type': file.type || 'application/octet-stream' }, body: file });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'the server answered ' + r.status);
+      slot.set(slot.get().concat([{ kind: 'image', name: d.name, path: d.path, url: d.url }]));
+      box._pillMsg = ''; paintPills(); save();
+    } catch (e) { pillMsg(box, 'The picture was not added: ' + ((e && e.message) || e)); }
+  }
+  // A path starts with / or ~/, runs on one line, and has a name straight after the slash
+  // ("/ and then some words" is a sentence, not a path).
+  const looksLikePath = t => t.length > 1 && t.length <= 1024 && !/[\r\n]/.test(t) && /^(~\/|\/)[^\s/]/.test(t);
+  function addPath(box, text) {
+    const slot = slotOf(box); if (!slot) return;
+    const have = slot.get(); if (have.some(p => p.path === text)) return;
+    slot.set(have.concat([{ kind: 'path', name: baseName(text), path: text }])); box._pillMsg = ''; paintPills(); save();
+  }
+  document.addEventListener('paste', e => {
+    const box = e.target.closest && e.target.closest(BOX_SEL); if (!box || state.submitted || !slotOf(box) || !e.clipboardData) return;
+    const imgs = [...(e.clipboardData.files || [])].filter(f => /^image\//.test(f.type));
+    if (imgs.length) { e.preventDefault(); imgs.forEach(f => addImage(box, f)); return; }
+    const t = (e.clipboardData.getData('text') || '').trim();
+    if (looksLikePath(t)) { e.preventDefault(); addPath(box, t); }
+  }, true);
+  document.addEventListener('dragover', e => { const box = e.target.closest && e.target.closest(BOX_SEL); if (box && !state.submitted && slotOf(box) && [...(e.dataTransfer ? e.dataTransfer.types : [])].includes('Files')) e.preventDefault(); });
+  document.addEventListener('drop', e => {
+    const box = e.target.closest && e.target.closest(BOX_SEL); if (!box || state.submitted || !slotOf(box) || !e.dataTransfer) return;
+    const files = [...(e.dataTransfer.files || [])];
+    if (files.length) {
+      e.preventDefault();
+      const imgs = files.filter(f => /^image\//.test(f.type));
+      imgs.forEach(f => addImage(box, f));
+      if (!imgs.length) pillMsg(box, 'Only pictures can be dropped here. For another kind of file, paste its path.');
+      return;
+    }
+    const t = (e.dataTransfer.getData('text') || '').trim();
+    if (looksLikePath(t)) { e.preventDefault(); addPath(box, t); }
+  });
+  document.addEventListener('click', e => {
+    const x = e.target.closest && e.target.closest('.attpills .px'); if (!x || state.submitted) return;
+    const box = x.closest('.attpills')._box, slot = box && slotOf(box); if (!slot) return;
+    slot.set(slot.get().filter((_, i) => i !== +x.dataset.i)); paintPills(); save();
+  });
+  // After submit the server stops, so a thumbnail may no longer load: fall back to the glyph.
+  document.addEventListener('error', e => { if (e.target.matches && e.target.matches('.attpill img')) e.target.classList.add('gone'); }, true);
   // ── VOICE: speak into any text box ─────────────────────────────────────────────────────
   // WHY (Destin, 2026-11-09): "I want to be able to respond to these decks with my voice, and
   // typing is really frustrating sometimes." Every text box gets a microphone button. The page

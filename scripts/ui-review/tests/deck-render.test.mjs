@@ -1209,18 +1209,39 @@ print(p)`;
       assert.equal(await c.evaluate("document.querySelector('.screenframe').contentDocument.querySelector('button').textContent"), 'Start', 'Put back restores the words on the screen');
       // A picture opens large inside the deck, not in a new tab; a click closes it.
       assert.equal(await c.evaluate("document.querySelectorAll('.qpic a[target]').length"), 0, 'no picture opens a browser tab');
-      await c.evaluate("document.querySelector('.qpic.row a').click()"); await sleep(100);
+      // Round 7: a row's pictures are NOT small right-hand thumbnails; they live in an Attachments card.
+      assert.equal(await c.evaluate("document.querySelectorAll('.callpics, .qpic.row').length"), 0, 'no row thumbnails');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .attcard').length"), 1, 'the row with pictures has one Attachments card');
+      assert.equal(await c.evaluate("document.querySelector('.attcard.open')"), null, 'a list that is not a gallery starts with its card closed');
+      assert.equal(await c.evaluate("document.querySelector('.attlabel').textContent + ' ' + document.querySelector('.attn').textContent + ' ' + document.querySelector('.attcm').hidden"), 'Attachments 2 true', 'closed: the word, how many pictures, and no comment count yet');
+      await c.evaluate("document.querySelector('.atthead').click()"); await sleep(100);
+      assert.equal(await c.evaluate("[...document.querySelectorAll('.attcard figcaption')].map(f=>f.textContent).join()"), 'Before,After', 'a pair is labelled');
+      assert.ok(await c.evaluate("(()=>{const im=[...document.querySelectorAll('.attcard img')],b=document.querySelector('.attbody').getBoundingClientRect();return im.length===2&&Math.abs(im[0].width-im[1].width)<3&&im[0].width>b.width*0.4})()"), 'a before/after pair is side by side, equal and large');
+      // An area dragged on the "before" picture: its comment box sits right under THAT picture, inside the card.
+      await c.evaluate(`(()=>{const img=document.querySelector('.attcard img'),r=img.getBoundingClientRect();
+        img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+20,clientY:r.top+20}));
+        document.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+120,clientY:r.top+90}));
+        document.dispatchEvent(new PointerEvent('pointerup',{}));})()`);
+      await sleep(150);
+      assert.equal(await c.evaluate("document.querySelectorAll('.attcard figure:first-child .attmarks .markt').length"), 1, 'the comment for an area sits under its own picture');
+      assert.equal(await c.evaluate("document.querySelectorAll('.marklist[data-sid=\"K-1\"] .markt').length"), 0, 'and is not repeated in a list at the top of the question');
+      await c.evaluate("document.querySelector('.attcard .markt').value='the old one'; document.querySelector('.attcard .markt').dispatchEvent(new Event('input',{bubbles:true}))");
+      await c.evaluate("document.querySelector('.atthead').click()"); await sleep(50);
+      assert.equal(await c.evaluate("document.querySelector('.attbody').hidden"), true, 'the card closes again');
+      assert.equal(await c.evaluate("(()=>{const e=document.querySelector('.attcm');return !e.hidden&&e.textContent})()"), '1 comment', 'closed, it still says how many comments are on its pictures');
+      // A written question's own picture still enlarges, one picture only.
+      await c.evaluate("document.querySelector('article.q[data-id=\"Q-9\"] .qpic > a').click()"); await sleep(100);
       assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vstage img').length"), 1, 'the picture opens in the viewer, over the page');
-      assert.ok(await c.evaluate("document.querySelectorAll('.viewer .vthumb').length") >= 2, 'every picture of the page is in the strip');
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vthumb, .viewer .vnav, .viewer .vstrip').length"), 0, 'no arrows, no strip of other pictures');
       // Round 4: an area drawn in the viewer keeps it open, with its comment box beside the picture.
       await c.evaluate(`(()=>{const img=document.querySelector('.viewer .lbbox img'),r=img.getBoundingClientRect();
         img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+20,clientY:r.top+20}));
         document.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+120,clientY:r.top+90}));
         document.dispatchEvent(new PointerEvent('pointerup',{}));})()`);
       await sleep(150);
-      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 1, 'the new area has its comment box in the viewer');
-      await c.evaluate("document.querySelector('.viewer .markx').click()"); await sleep(100);
-      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 0, 'a comment can be taken away in the viewer');
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 2, 'the earlier area and the new one both have their boxes in the viewer');
+      await c.evaluate("[...document.querySelectorAll('.viewer .markx')].pop().click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 1, 'a comment can be taken away in the viewer');
       await c.evaluate("document.querySelector('.viewer .vclose').click()"); await sleep(100);
       assert.equal(await c.evaluate("document.querySelectorAll('.viewer').length"), 0, 'Close closes it');
       // Notes tied to no question.
@@ -1229,7 +1250,7 @@ print(p)`;
       await c.evaluate("document.querySelector('.result.pillbtn').click()"); await sleep(50);
       await c.evaluate("document.querySelector('.resultmenu button[data-v=fail]').click()"); await sleep(50);
       assert.equal(await c.evaluate("document.querySelector('.result.pillbtn').textContent"), 'Failed', 'the pill shows the status he set');
-      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .qstate').textContent"), '2 changes', 'the card says how much he changed');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .qstate').textContent"), '3 changes', 'the card says how much he changed (a comment, an area, a status)');
       await sleep(700);
       assert.deepEqual(c.errors, []);
     } finally { await c.close(); }
@@ -1237,9 +1258,127 @@ print(p)`;
     assert.equal(saved.answers['Q-9'].marks[0].text, 'too cramped');
     assert.ok(saved.answers['Q-9'].marks[0].w > 30 && saved.answers['Q-9'].marks[0].h > 30, JSON.stringify(saved.answers['Q-9'].marks[0]));
     assert.deepEqual(saved.answers['K-1'].changes, { sound: 'play the chime' });
+    assert.equal(saved.answers['K-1'].marks[0].pic, 'row sound before', 'an area on a row picture is named for its row and which picture');
+    assert.equal(saved.answers['K-1'].marks[0].text, 'the old one');
     assert.deepEqual(saved.answers['S-1'].edits, { 0: { from: 'Pick a game', to: 'Choose a game' } }, 'words retyped on the screen are saved as from and to');
     assert.equal(Object.values(saved.pageNotes)[0], 'header is busy', 'the comment at the foot of the page is saved beside the answers');
     assert.deepEqual(saved.answers['K-1'].results, { size: 'fail' }, 'a status he changed is saved against its row');
     assert.ok(saved.built && saved.built.at, 'the answers file records which build he was shown');
+  } finally { srv.kill(); }
+});
+
+// Round 7 (2026-11-10): the Attachments card, pills in comment boxes, buttons that follow the design
+// guide, and the card state pill. Driven like a hand would: open a card, change page and come back,
+// paste a picture and a path, press an answer.
+test('round 7: attachments card, pasted pills, guide-following buttons, and a state pill that is only shown when it has something to say', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-r7-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
+def lst(i, h, calls, **kw): return {'id': i, 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': h, 'calls': calls, **kw}
+raw['steps'] = [{'id': 'P-1', 'page': 'Rows', 'intro': 'Judge the rows.'},
+  lst('G-1', 'Every screen that changed', [{'id': 'g', 'call': 'Board moved.', 'why': 'Matches.', 'before': 'pic.png', 'picture': 'pic.png'}], gallery=True),
+  lst('L-2', 'Calls I made', [{'id': 'a', 'call': 'No sound.', 'why': 'None else.', 'picture': 'pic.png'}, {'id': 'b', 'call': 'Five rows.', 'why': 'Matches.'}]),
+  lst('C-1', 'What exists today', [{'id': 'x', 'call': 'Fact one.', 'why': 'Read.'}, {'id': 'y', 'call': 'Fact two.', 'why': 'Read.'}], context=True),
+  {'id': 'P-2', 'page': 'Questions', 'intro': 'Answer.'},
+  {'id': 'Q-1', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Which one?', 'today': 'Five run.', 'problem': 'Slow.', 'proposal': 'Pick.', 'checked': 'Read today.',
+   'options': [{'id': 'lead', 'label': 'First', 'pros': ['Good.'], 'cons': ['Bad.']}, {'id': 'trail', 'label': 'Second', 'pros': ['Good.'], 'cons': ['Bad.']}]},
+  {'id': 'Q-2', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Run twice?', 'today': 'Twice.', 'problem': 'Slow.', 'proposal': 'Once.', 'checked': 'Read today.'},
+  {'id': 'Q-3', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Describe it', 'today': 'None.', 'problem': 'Unknown.', 'proposal': 'Tell me.', 'checked': 'Read today.', 'answer': 'words'}]
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("!!window.__deckReady").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  const png = `(async()=>{const c=document.createElement('canvas');c.width=90;c.height=60;const x=c.getContext('2d');x.fillStyle='#c33';x.fillRect(0,0,90,60);const b=await new Promise(r=>c.toBlob(r,'image/png'));return new File([b],'my screenshot.png',{type:'image/png'})})()`;
+  const paste = (sel, kind) => `(async()=>{const el=document.querySelector(${JSON.stringify(sel)});const dt=new DataTransfer();
+    ${kind === 'image' ? `dt.items.add(await ${png});` : `dt.setData('text', ${JSON.stringify(kind)});`}
+    el.focus();el.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,cancelable:true}));})()`;
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1440, 1000);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      await ready(c);
+      // ── the card state pill: nothing until there is something to say; never on a background list ──
+      const vis = sel => `(()=>{const e=document.querySelector(${JSON.stringify(sel)});return !!e && getComputedStyle(e).display!=='none' && !e.hidden})()`;
+      assert.equal(await c.evaluate(vis('article.q[data-id="G-1"] .qstate')), false, 'an untouched list carries no pill');
+      assert.equal(await c.evaluate(vis('article.q[data-id="L-2"] .qstate')), false);
+      assert.equal(await c.evaluate(vis('article.q[data-id="C-1"] .qstate')), false, 'a background list never has one');
+      assert.equal(await c.evaluate("document.body.innerText.includes('Not reviewed')"), false);
+      // a background-only list: dashed from the FIRST row, nothing to press
+      assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"C-1\"] .call')].map(e=>getComputedStyle(e).borderTopStyle).join()"), 'dashed,dashed', 'the first row is dashed like the rest');
+      assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"C-1\"] .calledit')].every(e=>getComputedStyle(e).display==='none') && getComputedStyle(document.querySelector('article.q[data-id=\"C-1\"] .call')).cursor"), 'default', 'no pencil, no pointer');
+      // ── attachments: a gallery's card is open by itself; another stays closed until opened ──
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"G-1\"] .attcard').classList.contains('open')"), true, 'the "every screen that changed" list opens its cards');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .attcard').classList.contains('open')"), false);
+      await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .atthead').click()");
+      // typing a comment gives the list a pill that says how much it holds
+      await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .calledit').click()"); await sleep(60);
+      await c.evaluate("(()=>{const b=document.querySelector('article.q[data-id=\"L-2\"] .callt');b.value='add a chime';b.dispatchEvent(new Event('input',{bubbles:true}))})()");
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .qstate').textContent"), '1 change');
+      assert.equal(await c.evaluate("(()=>{const s=getComputedStyle(document.querySelector('article.q[data-id=\"L-2\"] .qstate'));return s.pointerEvents+' '+s.borderTopWidth})()"), 'none 0px', 'the pill cannot be pressed and is not drawn as a bordered control');
+      // ── pictures and paths pasted into boxes become pills, saved under their box ──
+      await c.evaluate(paste('article.q[data-id="L-2"] .callt', 'image')); await sleep(900);
+      await c.evaluate(paste('article.q[data-id="L-2"] .callt', '/home/destin/youcoded-dev/docs/MAP.md')); await sleep(100);
+      await c.evaluate(paste('article.q[data-id="L-2"] .callt', '/ this is a sentence, not a path')); await sleep(100);
+      assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"L-2\"] .attpill')].map(p=>p.textContent.replace('×','').trim()).join('|')"), 'my screenshot.png|MAP.md', 'a picture and a path are pills; a sentence that starts with a slash is left as text');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .attpill.file').title"), '/home/destin/youcoded-dev/docs/MAP.md', 'the full path is the tooltip');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .callt').value"), 'add a chime', 'the pasted path did not also land as raw text');
+      assert.equal(await c.evaluate("(()=>{const i=document.querySelector('article.q[data-id=\"L-2\"] .attpill.img img');return i.complete&&i.naturalWidth>0})()"), true, 'the thumbnail loads from the deck server');
+      // leave the page and come back: the open card and the pills are still there
+      await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
+      // ── buttons follow the design guide ──
+      assert.equal(await c.evaluate("document.querySelectorAll('.card.variant .ohead .key').length"), 0, 'no option-id chips on written options');
+      assert.equal(await c.evaluate("[...document.querySelectorAll('button.btn.primary')].filter(b=>b.offsetParent).length"), 1, 'one filled button in view');
+      assert.equal(await c.evaluate("(()=>{const y=getComputedStyle(document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=yes]')),n=getComputedStyle(document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=no]')),b=getComputedStyle(document.querySelector('#back'));return y.borderTopColor===n.borderTopColor&&y.borderTopColor===b.borderTopColor&&y.backgroundColor===n.backgroundColor&&y.backgroundColor!==getComputedStyle(document.querySelector('#save')).backgroundColor})()"), true, 'answer buttons are outlined alike, in the same full-strength outline as Back, and not filled');
+      assert.equal(await c.evaluate("(()=>{const q=document.querySelector('article.q[data-id=\"Q-2\"]');return q.querySelector('.ans[data-v=yes]').getBoundingClientRect().left>q.querySelector('.note').getBoundingClientRect().right-1})()"), true, 'the answer buttons sit at the right of their line');
+      await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=yes]').click()"); await sleep(100);
+      assert.equal(await c.evaluate("(()=>{const on=document.querySelector('article.q[data-id=\"Q-2\"] .ans.on');return !!on && on.dataset.v==='yes' && getComputedStyle(on).backgroundColor!==getComputedStyle(document.querySelector('#save')).backgroundColor && getComputedStyle(on,'::before').content.includes('✓')})()"), true, 'the chosen answer shows a tick and does not become a second filled button');
+      assert.match(await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .qstate').textContent"), /^Answered/);
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"Q-1\"] .qstate').textContent"), 'Not answered', 'a question still says so');
+      // a picture in the typed answer, a path in the page-foot box
+      await c.evaluate(paste('article.q[data-id="Q-3"] .ans-write', 'image')); await sleep(900);
+      await c.evaluate(paste('#pnote', '~/system/global.md')); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"Q-3\"] .attpill.img').length + ',' + document.querySelectorAll('.pagenote .attpill.file').length"), '1,1');
+      await c.evaluate("document.querySelector('#back').click()"); await sleep(300);
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"G-1\"] .attcard').classList.contains('open') + ',' + document.querySelector('article.q[data-id=\"L-2\"] .attcard').classList.contains('open')"), 'true,true', 'cards he opened stay open when the page is redrawn');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"L-2\"] .attpill').length"), 2, 'pills come back with the page');
+      await sleep(700);
+    } finally { await c.close(); }
+    const saved = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
+    const l2 = saved.answers['L-2'].attach['change:a'];
+    assert.deepEqual(l2.map(p => [p.kind, p.name]), [['image', 'my screenshot.png'], ['path', 'MAP.md']]);
+    assert.equal(l2[1].path, '/home/destin/youcoded-dev/docs/MAP.md');
+    assert.ok(existsSync(l2[0].path) && l2[0].path.includes('.attachments'), 'the picture is kept beside the spec');
+    assert.equal(saved.answers['Q-3'].attach.text[0].kind, 'image');
+    assert.equal(Object.values(saved.pageAttach)[0][0].path, '~/system/global.md');
+    // a reload restores them
+    const c2 = await cdp(await freePort(), 1440, 1000);
+    try {
+      await c2.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c2);
+      assert.equal(await c2.evaluate("document.querySelectorAll('article.q[data-id=\"L-2\"] .attpill').length"), 2, 'pills are restored on reload');
+      if (await c2.evaluate("!document.querySelector('.pagenote .attpill')")) { await c2.evaluate("document.querySelector('#save').click()"); await sleep(300); }
+      await c2.evaluate("document.querySelector('.pagenote .px').click()"); await sleep(100);
+      assert.equal(await c2.evaluate("document.querySelectorAll('.pagenote .attpill').length"), 0, 'the x takes a pill away');
+      await sleep(700);
+    } finally { await c2.close(); }
+    // opened as a plain file there is no server to keep a picture: say so
+    const c3 = await cdp(await freePort(), 1440, 1000);
+    try {
+      await c3.send('Page.navigate', { url: 'file://' + spec.replace(/\.json$/, '.html') }); await ready(c3);
+      await c3.evaluate("(()=>{const b=[...document.querySelectorAll('.pnote')][0];window.__box=b})()");
+      await c3.evaluate(paste('.pnote', 'image')); await sleep(300);
+      assert.match(await c3.evaluate("document.querySelector('.attpills .micerr').textContent"), /plain file.*deck server/, 'image paste says plainly that it needs the served deck');
+      assert.equal(await c3.evaluate("document.querySelectorAll('.attpill').length"), 0);
+    } finally { await c3.close(); }
   } finally { srv.kill(); }
 });

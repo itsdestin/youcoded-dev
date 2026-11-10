@@ -116,5 +116,76 @@ class RethinkTests(unittest.TestCase):
         self.assertIn('reword "Pick a game" → "Choose a game"', out)
 
 
+    # ── round 7 (2026-11-10) ────────────────────────────────────────────────────────────────
+    def test_summary_prints_pasted_pictures_and_paths_under_their_box(self):
+        # "attach/paste images/filepaths in these input boxes and have them work as pills": the session
+        # reading the summary must see the path of every picture and file, tied to the box it sat under.
+        spec = {'key': 'k', 'steps': [{'id': 'P-1', 'page': 'Checks'}, {'id': 'K-1'}]}
+        img = {'kind': 'image', 'name': 'shot.png', 'path': '/d/r.attachments/a.png', 'url': '/r.attachments/a.png'}
+        fil = {'kind': 'path', 'name': 'MAP.md', 'path': '/home/d/docs/MAP.md'}
+        out = summary(spec, {
+            'pageAttach': {'P-1': [fil]}, 'notesAttach': [img],
+            'answers': {'K-1': {'v': 'other', 'changes': {'c1': 'x'}, 'attach': {'change:c1': [img], 'note': [fil]},
+                                'marks': [{'pic': 'row c1', 'x': 1, 'y': 2, 'w': 3, 'h': 4, 'text': 't', 'attach': [fil]}]}}})
+        self.assertIn('attached to change c1 — picture "shot.png" saved at /d/r.attachments/a.png', out)
+        self.assertIn('attached to his note — file /home/d/docs/MAP.md', out)
+        self.assertIn('attached to area 1 — file /home/d/docs/MAP.md', out)
+        self.assertIn('about the page "Checks" attached — file /home/d/docs/MAP.md', out)
+        self.assertIn('general notes attached — picture "shot.png" saved at /d/r.attachments/a.png', out)
+
+    def test_attach_endpoint_keeps_only_pictures_under_a_server_made_name(self):
+        import threading
+        import urllib.error
+        import urllib.request
+        from deck.serve import ATTACH_MAX, make_server
+        spec = load_spec(words_spec(self.tmp))
+        srv, url = make_server(spec, 0, lambda state: None)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        base = url.rsplit('/', 1)[0]
+        png = b'\x89PNG\r\n\x1a\n' + b'\x00' * 40
+
+        def post(body, ctype='image/png', name='../../evil name.png', host=None):
+            req = urllib.request.Request(base + '/attach?name=' + urllib.request.quote(name), data=body, method='POST',
+                                         headers={'content-type': ctype, **({'Host': host} if host else {})})
+            try:
+                r = urllib.request.urlopen(req, timeout=5)
+                return r.status, json.loads(r.read())
+            except urllib.error.HTTPError as e:
+                return e.code, json.loads(e.read() or b'{}')
+        try:
+            code, d = post(png)
+            self.assertEqual(code, 200, d)
+            folder = os.path.join(spec['_base'], spec['_stem'] + '.attachments')
+            self.assertEqual(os.path.dirname(d['path']), folder, 'saved beside the spec, never where the browser said')
+            self.assertRegex(os.path.basename(d['path']), r'^\d{8}-\d{6}-[0-9a-f]{8}\.png$')
+            self.assertEqual(open(d['path'], 'rb').read(), png)
+            self.assertNotIn('..', d['name']); self.assertNotIn('/', d['name'])
+            self.assertEqual(urllib.request.urlopen(base + d['url'], timeout=5).read(), png, 'the pill thumbnail can be fetched')
+            self.assertEqual(post(b'<svg onload=x>')[0], 415, 'a picture is judged by its bytes')
+            self.assertEqual(post(png, ctype='text/plain')[0], 415, 'images only')
+            self.assertEqual(post(b'\x89PNG\r\n\x1a\n' + b'\x00' * ATTACH_MAX)[0], 413, 'size-capped')
+            self.assertEqual(post(png, host='evil.example')[0], 403, 'same origin check as the other POSTs')
+        finally:
+            srv.shutdown()
+
+
+    def test_round_seven_page_source_pins(self):
+        # Four things Destin asked for on 2026-11-10, each a one-line cause that is easy to undo:
+        js = open(os.path.join(DECK, 'page.js')).read()
+        css = open(os.path.join(DECK, 'page.css')).read()
+        # 1. a row's pictures are an Attachments card; no thumbnails, no walking between pictures
+        self.assertIn('class="attcard', js)
+        self.assertNotRegex(js, r'class="callpics"|class="vnav"|class="vstrip"|viewStep')
+        # 3. option-id chips are gone from written options; the one filled button is the foot's
+        self.assertNotIn('chip(o.id)', js)
+        self.assertRegex(css, r'\.btn\{border-color:var\(--edge-strong\)\}')
+        self.assertNotRegex(css, r'\.ans\[data-v="yes"\]\{border-color:color-mix')
+        # 4. "Not reviewed" is gone, and the state pill is not drawn as an outlined control
+        self.assertNotIn("'Not reviewed'", js)
+        self.assertRegex(css, r'\.qstate\{border:0;')
+        self.assertRegex(css, r'\.qstate\{[^}]*pointer-events:none')
+        self.assertRegex(css, r'\.card\.calls\.context \.call:first-child\{[^}]*dashed')
+
+
 if __name__ == '__main__':
     unittest.main()

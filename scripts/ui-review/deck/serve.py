@@ -14,6 +14,7 @@ import json
 import mimetypes
 import os
 import re
+import secrets
 import shutil
 import signal
 import socketserver
@@ -74,6 +75,54 @@ def dropped_answers(apath, incoming):
     return sorted(have - keep)
 
 
+# WHY (Destin, 2026-11-10, round 7: "i need to be able to attach/paste images/filepaths in these input
+# boxes and have them work as pills like youcoded"): a picture pasted into a deck box is kept beside
+# the spec, in `<spec stem>.attachments/`, so the session reading the answers can open it by path.
+# Images only, size-capped, and named by the SERVER — the browser's own file name is never used on
+# disk, so a hostile name ("../../x") has nowhere to go.
+ATTACH_MAX = 10 * 1024 * 1024
+_IMAGE_MAGIC = ((b'\x89PNG\r\n\x1a\n', '.png'), (b'\xff\xd8\xff', '.jpg'), (b'GIF87a', '.gif'), (b'GIF89a', '.gif'))
+
+
+def image_ext(data):
+    """The file extension for these bytes if they are a picture we accept, else None. Judged by the
+    bytes, not by what the browser claimed."""
+    for magic, ext in _IMAGE_MAGIC:
+        if data.startswith(magic):
+            return ext
+    if data[:4] == b'RIFF' and data[8:12] == b'WEBP':
+        return '.webp'
+    return None
+
+
+def save_attachment(spec, data, client_name=''):
+    """Write one pasted picture to `<spec stem>.attachments/`. Returns (status, body): 200 with
+    {ok, name, path, url}, 413 too large, 415 not a picture."""
+    if len(data) > ATTACH_MAX:
+        return 413, {'error': f'that picture is larger than {ATTACH_MAX // (1024 * 1024)} MB'}
+    ext = image_ext(data)
+    if not ext:
+        return 415, {'error': 'only pictures (png, jpeg, gif, webp) can be attached'}
+    folder = os.path.join(spec['_base'], spec['_stem'] + '.attachments')
+    os.makedirs(folder, exist_ok=True)
+    saved = time.strftime('%Y%m%d-%H%M%S') + '-' + secrets.token_hex(4) + ext
+    with open(os.path.join(folder, saved), 'wb') as f:
+        f.write(data)
+    # The name he sees on the pill: the browser's name with any folders and odd characters taken off.
+    shown = re.sub(r'[^\w. -]', '', os.path.basename((client_name or '').replace('\\', '/')))[:60].strip() or 'picture' + ext
+    return 200, {'ok': True, 'name': shown, 'path': os.path.join(folder, saved),
+                 'url': '/' + spec['_stem'] + '.attachments/' + saved}
+
+
+def pill_words(p):
+    """One pasted picture or file path, as the summary words it (page.js pillWords is the twin)."""
+    return f'picture "{p.get("name")}" saved at {p.get("path")}' if p.get('kind') == 'image' else f'file {p.get("path")}'
+
+
+def attach_label(k):
+    return 'his note' if k == 'note' else 'his typed answer' if k == 'text' else 'change ' + k[7:] if k.startswith('change:') else k
+
+
 def extras(a):
     """What an answer carries beyond its button and note (Destin, 2026-11-09, rethink Q-5 and
     Q-10): the lines of a "calls I made" list he marked for change, each with his own words, and
@@ -98,6 +147,13 @@ def extras(a):
     for i, m in enumerate(a.get('marks') or []):
         out.append(f'\n    area {i + 1} on {m.get("pic")} (left {m.get("x")}%, top {m.get("y")}%, '
                    f'{m.get("w")}% wide, {m.get("h")}% tall) — "{(m.get("text") or "").strip()}"')
+    # Pictures and file paths he pasted into a box (round 7): the path is what a session opens.
+    for k, lst in (a.get('attach') or {}).items():
+        for p in lst or []:
+            out.append(f'\n    attached to {attach_label(k)} — {pill_words(p)}')
+    for i, m in enumerate(a.get('marks') or []):
+        for p in m.get('attach') or []:
+            out.append(f'\n    attached to area {i + 1} — {pill_words(p)}')
     return ''.join(out)
 
 
@@ -138,7 +194,10 @@ def summary(spec, state):
     # A comment box sits at the foot of every page (round 4); its words print first, by page.
     titles = {s['id']: s.get('page', s['id']) for s in spec.get('steps', []) if isinstance(s, dict) and 'page' in s}
     paged = ''.join(f'about the page "{titles.get(k, k)}" — "{(t or "").strip()}"\n' for k, t in (state.get('pageNotes') or {}).items() if (t or '').strip())
-    return head + '\n' + paged + (f'general notes — "{general}"\n' if general else '') + '\n'.join(lines)
+    for k, lst in (state.get('pageAttach') or {}).items():
+        paged += ''.join(f'about the page "{titles.get(k, k)}" attached — {pill_words(p)}\n' for p in lst or [])
+    gattached = ''.join(f'general notes attached — {pill_words(p)}\n' for p in state.get('notesAttach') or [])
+    return head + '\n' + paged + (f'general notes — "{general}"\n' if general else '') + gattached + '\n'.join(lines)
 
 
 class _Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
@@ -274,6 +333,25 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
             if self._wrong_origin():
                 return self._json(403, {'error': 'wrong host or origin'})
             n = int(self.headers.get('content-length') or 0)
+            if self.path.split('?')[0] == '/attach':
+                # A pasted picture arrives as the raw bytes (never JSON). The same Host/Origin check
+                # as every other POST ran above. Too large is refused before the body is read.
+                if n > ATTACH_MAX:
+                    # Read and throw away a modest oversize body first, so the browser receives the
+                    # reason instead of a dropped connection; a body far beyond that is just cut off.
+                    left = n if n <= 3 * ATTACH_MAX else 0
+                    while left > 0:
+                        chunk = self.rfile.read(min(left, 1 << 20))
+                        if not chunk:
+                            break
+                        left -= len(chunk)
+                    self.close_connection = True
+                    return self._json(413, {'error': f'that picture is larger than {ATTACH_MAX // (1024 * 1024)} MB'})
+                if not (self.headers.get('content-type') or '').startswith('image/'):
+                    return self._json(415, {'error': 'only pictures (png, jpeg, gif, webp) can be attached'})
+                from urllib.parse import parse_qs, urlparse
+                nm = (parse_qs(urlparse(self.path).query).get('name') or [''])[0]
+                return self._json(*save_attachment(spec, self.rfile.read(n), nm))
             try:
                 state = json.loads(self.rfile.read(n) or b'{}')
             except (ValueError, TypeError):

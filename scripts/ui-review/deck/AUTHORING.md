@@ -569,3 +569,44 @@ he leaves alone is accepted when he moves on, like a list. Text drawn by code at
 | a path through several screens | `walkthrough.json`, page 2 | tiles in the order a person meets them |
 | on-screen wording, after the build | a `screen` step | he types on a still copy of the real screen |
 | a whole piece of work | `walkthrough.json` | before the build and again after |
+
+## Added in round 7 (2026-11-10)
+
+Source: Destin's round-6 remarks on the deck itself. Where this contradicts a section above, this
+wins.
+
+- **Pictures in a row are an Attachments card.** A row's `picture` / `before` no longer draw
+  thumbnails at its right. Under the row's words sits a card copied from the app's Deliverables
+  card: closed, one line (document glyph | "Attachments", the picture count, a "n comments" pill
+  once he has written on them, chevron); opened, every picture at full row width, a before/after
+  pair side by side, each labelled. He drags a rectangle on a picture there and its numbered
+  comment box sits directly under that picture. Cards on a `gallery: true` list start open; others
+  start closed; which he opened is remembered across page changes. A click on a picture inside a
+  card does nothing extra. The full-window viewer now only enlarges a written question's own
+  picture: one picture, its question's words as the title, its comments beside it, no arrows and
+  no strip of other pictures. Areas keep the shape `marks[] = {pic, x, y, w, h, text}`; for a
+  row `pic` is `row <id>` (after / single) or `row <id> before`.
+- **Pictures and file paths in any comment box become pills.** Paste (or drop) an image into a row
+  comment, an area comment, a question's note, a typed answer, the page-foot box or the general
+  notes box: the deck server keeps it in `<spec stem>.attachments/` under a name it makes itself
+  (`POST /attach?name=…`, raw image bytes; images only, judged by their bytes; 10 MB cap; same
+  Host/Origin check as every POST) and a pill with a small thumbnail, the name and an x appears under
+  the box. Paste text that is one line starting `/` or `~/` and it becomes a pill with the file's
+  name, the full path as its tooltip. Opened as a plain file, an image paste says it needs the served
+  deck. Saved shapes (a pill is `{kind: "image", name, path, url}` or `{kind: "path", name, path}`):
+  `answers[step].attach["note" | "text" | "change:<row id>"] = [pill…]`,
+  `answers[step].marks[i].attach = [pill…]`, `pageAttach[<page id>] = [pill…]`,
+  `notesAttach = [pill…]`. Printed in both summaries as `attached to <box> — picture "…" saved at
+  <path>` / `file <path>`; shown read-only after submit. The `.attachments` folder is not
+  committed by itself: stage it only if the pictures should outlive the scratch round.
+- **Buttons follow the design guide.** One filled button per view (the foot's Next / Done); answer
+  buttons and everything else are outlined in the full-strength outline (`--edge-strong`, not the
+  faint divider), never a green or red outline; on a question the note box is at the left and Yes /
+  No / Other at the right of the same line; the chosen answer is an accent outline with a tick, not a
+  second filled button. Written options no longer show their id as a chip (ids stay in the answers
+  file and summaries).
+- **The card state pill is a status, not a control.** A tinted pill with a dot, no outline, cannot be
+  pressed. A question says "Not answered" / "Answered 12:47". A list has NO pill until it has
+  something to say ("2 changes", or "Accepted" once he moves on); a `context: true` list never has one.
+  On a `context` list every row is dashed (the first used to be drawn solid) and nothing on it has a
+  pointer or a pencil.

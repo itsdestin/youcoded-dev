@@ -47,12 +47,12 @@ it reaches him as a picture he has seen and three ideas in one paragraph — on 
 came back as "confused". If "should it" fits your headline, it is a Question.
 
 ## Lists: rows that stand unless he changes them
-**Invariant:** a words step with `calls` is a list. Each row has ONE pencil that opens a comment
-box; there is no "All fine" button — a list he leaves alone is accepted when he moves on. A row
-may carry `decided` (his words), `picture` (+ `before`) or `result`; `wording` rows are refused. `gallery: true` lays rows out as picture tiles. Pictures open large
-inside the deck, where he can drag a rectangle to comment on a part. A Notes button in the
-header takes comments tied to no question (`notes` in the answers file).
-**Why:** rounds 2–3: "simplify down to a single pencil"; "no separate notes button".
+**Invariant:** a words step with `calls` is a list: one pencil per row, no "All fine" (a list he leaves
+alone is accepted when he moves on), `wording` rows refused. A row's `picture` / `before` are an
+**Attachments card** at its foot (closed: counts; open: large, comments under each picture; a
+`gallery: true` list opens them) — never thumbnails. A list shows a state pill only once it has
+something to say; a `context: true` list never does. Any comment box takes pasted pictures and paths as pills.
+**Why:** "simplify down to a single pencil"; "rows with images should have an attachements card" (round 7).
 **Guard:** `test_rethink.py`, `deck-render.test.mjs`.
 
 ## Wording is edited on the real screen, after the build

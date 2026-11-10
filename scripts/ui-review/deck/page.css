@@ -89,18 +89,8 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .card.part h3{color:var(--fg-dim)}
 .frame.pickable{cursor:pointer;border-radius:var(--radius-md);padding:4px;margin:-4px} .frame.pickable.on{outline:2px solid var(--mark);outline-offset:2px} .frame.pickable figcaption .key{margin-right:6px}
 .ans{border-color:var(--edge)}
-/* Yes and No carry their meaning in the RESTING state — a tinted border and a tinted label,
-   the same quiet-colour idiom `.card.risk` already uses for amber. Destin (2026-09-01) wanted
-   green/red back but not as a status dot, and it has to live here rather than in the chosen
-   state: amber-when-picked is now the single signal for "this is the one I picked", shared
-   with the lettered cards, and two colours competing for that job is what the dots were.
-   Mixed toward the theme's own edge/text rather than used neat, so it reads on light themes
-   too — #2E9B57 on #F2F2F2 is not enough contrast for 13px text on its own.
-   The chosen rule below is deliberately LAST: it takes the border, and leaves the label its
-   colour, so a picked answer still says which one it was. */
-.ans[data-v="yes"]{border-color:color-mix(in srgb,var(--yes) 50%,var(--edge));color:color-mix(in srgb,var(--yes) 72%,var(--fg))}
-.ans[data-v="no"]{border-color:color-mix(in srgb,var(--no) 50%,var(--edge));color:color-mix(in srgb,var(--no) 72%,var(--fg))}
-.ans.on{background:var(--inset);border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)}
+/* The resting and chosen looks of an answer button are in the round 7 block at the foot of this file
+   (design guide -> Buttons): a full-strength outline, an accent outline + tick when chosen. */
 main{flex:1;min-height:0;display:flex;justify-content:center;padding:14px 20px 16px;overflow:auto}
 .step{position:relative;display:flex;width:min(var(--content),100%);flex-direction:column;gap:10px;min-height:0}
 .thumbs{position:absolute;left:calc(100% + 16px);top:0;display:flex;flex-direction:column;gap:10px}
@@ -515,7 +505,6 @@ body[data-served] .callt,body[data-served] .markt{padding-right:44px}
 /* round 2: rows that carry a picture, a source quote, a check result, and More context */
 .callbtns{flex:none;display:flex;flex-direction:row;gap:6px;align-items:flex-start}
 .callask.on{border-color:var(--link);color:var(--link)}
-.qpic.row{flex:0 0 min(38%,420px);margin:0} .qpic.row img{max-height:300px}
 .decided{margin:6px 0 0;padding-left:10px;border-left:2px solid var(--mark);font-size:12px;font-style:italic;color:var(--fg-2)}
 /* A row's status: a small tinted pill (design guide: a status is a Pill, sentence case). As a
    button it opens the four statuses — he can set any of them (round 4). */
@@ -546,7 +535,7 @@ body[data-layout="pages"] #notesbtn{display:none}
 .card.calls.numbered ul{counter-reset:stepn} .card.calls.numbered .calltext{position:relative;padding-left:32px}
 .card.calls.numbered .calltext::before{counter-increment:stepn;content:counter(stepn);position:absolute;left:0;top:0;display:grid;place-items:center;width:22px;height:22px;border:1px solid var(--edge);border-radius:50%;font:600 11px/1 var(--font);color:var(--fg-muted)}
 .callbox,.markrow{flex-wrap:wrap}
-@media (max-width:760px){.callrow{flex-wrap:wrap}.qpic.row{flex-basis:100%}.callbtns{flex-direction:row}}
+@media (max-width:760px){.callrow{flex-wrap:wrap}.callbtns{flex-direction:row}}
 /* ── round 3, 2026-11-10 ─────────────────────────────────────────────────────────────── */
 /* WHY boxed rows (Destin, round 3: "these can be smarter and better utilize youcoded design
    principles"; design guide → Lists and menus, Card levels): a list's rows are soft boxes with
@@ -565,9 +554,6 @@ body[data-layout="pages"] #notesbtn{display:none}
 .iconbtn:disabled{opacity:.4;cursor:default}
 @media (hover:hover){.iconbtn:hover:not(:disabled){color:var(--fg);background:color-mix(in srgb,var(--fg) 10%,transparent)}}
 /* A row's picture: a thumbnail at the right, opened large in the deck by a click. */
-.callpics{flex:none;display:flex;gap:8px;align-items:flex-start}
-.qpic.row{flex:none;margin:0;gap:3px} .qpic.row img{max-height:84px;max-width:150px;cursor:zoom-in!important}
-.qpic.row figcaption{order:0;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-faint)}
 /* Every text box: the app's message-box look — the inset colour, a soft corner, a faint
    edge that turns to the theme colour while it is being typed in (design guide → The message box). */
 .callt,.markt,.pages .qrow textarea.note,.ans-write{border-color:color-mix(in srgb,var(--edge) 60%,transparent);border-radius:var(--radius-lg);background:var(--well)}
@@ -585,11 +571,6 @@ body[data-layout="pages"] #notesbtn{display:none}
 .card.screen.big{position:fixed;inset:0;z-index:70;margin:0;border:0;border-radius:0;overflow:auto;background:var(--well)}
 .linkbtn{display:inline-block;margin:0;padding:0;border:0;background:none;color:var(--link);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline}
 /* Every screen that changed, side by side: tiles, pictures first. */
-.card.calls.gallery ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:12px}
-.card.calls.gallery .callrow{flex-wrap:wrap}
-.card.calls.gallery .callpics{order:-1;flex:1 1 100%;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
-.card.calls.gallery .qpic.row img{max-height:440px;max-width:100%}
-.card.calls.gallery .calltext{flex:1 1 0}
 /* A picture opened large, over the page. */
 /* Notes about anything else: a button in the header, a small panel under it. */
 #notesbtn{flex:none;position:relative} #notesbtn.has::after{content:"";position:absolute;top:5px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--link)}
@@ -617,8 +598,6 @@ body:not([data-layout="pages"]) #back{display:none}
 /* Room for Notes in the header without squeezing the step bar under the title. */
 .top .where{max-width:34%}
 /* A before/after pair is two pictures wide, so its tile takes two columns. */
-.card.calls.gallery .call.pair{grid-column:span 2} @media (max-width:900px){.card.calls.gallery .call.pair{grid-column:auto}}
-.qpic.row img{max-height:96px;max-width:170px}
 /* Fix (round 3): the microphone sits over the box's right edge by a negative margin; its
    margins used to add up to MORE than its own width, so the box beside it grew 8px wider than
    the row that holds it. The sum is now exactly zero, resting or listening. */
@@ -628,18 +607,13 @@ body:not([data-layout="pages"]) #back{display:none}
    picture of the page in a strip underneath. */
 .viewer{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:var(--well);color:var(--fg)}
 .vbar{flex:none;display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--edge)}
-.vcount{flex:none;font:600 12px/1 var(--font);color:var(--fg-muted)} .vtitle{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vtitle{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vmain{flex:1;min-height:0;display:flex;align-items:stretch}
 .vstage{flex:1;min-width:0;display:grid;place-items:center;padding:14px;overflow:auto}
 .viewer .lbbox{position:relative;line-height:0} .viewer .lbbox img{display:block;max-width:100%;max-height:calc(100vh - 210px);border:1px solid var(--edge);border-radius:var(--radius-md)}
-.vnav{flex:none;width:44px;border:0;background:transparent;color:var(--fg-muted);font-size:30px;cursor:pointer} .vnav:hover{color:var(--fg);background:var(--inset)} .vnav:disabled{visibility:hidden}
 .vside{flex:none;width:min(360px,32vw);display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-left:1px solid var(--edge);background:var(--panel);overflow:auto}
 .vside h3{margin:0;font:600 13px/1.2 var(--font)} .vcomments{display:flex;flex-direction:column;gap:8px} .vcomments .markt{flex:1 1 auto;min-width:0;min-height:56px}
-.vstrip{flex:none;display:flex;gap:8px;padding:10px 16px;border-top:1px solid var(--edge);overflow-x:auto}
-.vthumb{position:relative;flex:none;height:76px;padding:0;border:2px solid transparent;border-radius:var(--radius-md);background:none;cursor:pointer;line-height:0;opacity:.6}
-.vthumb img{height:100%;border-radius:calc(var(--radius-md) - 2px)} .vthumb:hover{opacity:1} .vthumb.on{opacity:1;border-color:var(--accent)}
-.vthumb b{position:absolute;top:-6px;right:-6px;display:grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--link);color:#fff;font:700 11px/1 var(--font)}
-@media (max-width:900px){.vmain{flex-direction:column} .vside{width:auto;border-left:0;border-top:1px solid var(--edge);max-height:34vh} .vnav{display:none}}
+@media (max-width:900px){.vmain{flex-direction:column} .vside{width:auto;border-left:0;border-top:1px solid var(--edge);max-height:34vh}}
 /* History (round 4): earlier rounds of the topic and related decks, over the whole window. */
 #histbtn{flex:none} #histbtn[hidden]{display:none}
 .histpanel{position:fixed;inset:0;z-index:65;display:flex;flex-direction:column;background:var(--well);color:var(--fg)}
@@ -653,3 +627,80 @@ body:not([data-layout="pages"]) #back{display:none}
 .histrow .hq{margin:0 0 4px} .histrow .decided{margin:6px 0 0}
 .hans{display:inline-block;padding:2px 9px;border-radius:999px;font:600 11px/1.5 var(--font);color:var(--link);border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent)}
 .histrel{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px} .histrel a{color:var(--link)}
+
+/* ── round 7, 2026-11-10 ─────────────────────────────────────────────────────────────── */
+/* Derived outline colour: the app's own `--edge-strong` (globals.css), which the deck's token set
+   does not carry. Design guide -> Buttons: outlined buttons use the FULL-STRENGTH outline. */
+:root{--edge-strong:color-mix(in srgb,var(--edge) 65%,var(--fg) 35%)}
+/* Attachments card (copies DeliverablesCard.tsx): a closed one-line row at the foot of a list row,
+   in the well colour with a hairline edge; opened, the pictures at full row width. */
+.attcard{margin-top:10px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well);overflow:hidden}
+.atthead{width:100%;display:flex;align-items:center;gap:8px;padding:6px 12px;border:0;background:transparent;color:var(--fg-2);font:inherit;text-align:left;cursor:pointer}
+@media (hover:hover){.atthead:hover{background:color-mix(in srgb,var(--inset) 50%,transparent)}}
+.attglyph{flex:none;width:14px;height:14px;color:var(--fg-dim)}
+.attbar{color:var(--fg-faint);font-size:12px;user-select:none}
+.attlabel{font-size:12px;font-weight:600;color:var(--fg-2)}
+.attn{font:11px var(--font);color:var(--fg-muted)}
+.attfill{flex:1 1 auto}
+/* A comment count is a status, so it is a small tinted pill (design guide -> Status and notices). */
+.attcm{padding:1px 8px;border-radius:999px;font:600 11px/1.5 var(--font);color:var(--link);border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent);white-space:nowrap}
+.attcm[hidden]{display:none}
+.attchev{flex:none;width:14px;height:14px;color:var(--fg-muted);opacity:.4;transition:transform .15s} .attcard.open .attchev{transform:rotate(180deg)}
+.attbody{padding:4px 12px 12px} .attbody[hidden]{display:none}
+.attpics{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.attpics.pair{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:900px){.attpics.pair{grid-template-columns:minmax(0,1fr)}}
+.qpic.att{align-items:stretch;gap:6px;min-width:0}
+.qpic.att figcaption{order:0;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-faint)}
+.qpic>a.attimg.markable{display:block;width:100%;line-height:0}
+.qpic.att img{display:block;width:100%;height:auto;max-width:100%;max-height:none;cursor:crosshair}
+.attmarks{display:flex;flex-direction:column;gap:6px} .attmarks:empty{display:none}
+/* Pills in a comment box (round 7, Destin: "attach/paste images/filepaths in these input boxes and
+   have them work as pills like youcoded"). A picture is a small card with its thumbnail, name and
+   an x (the app's AttachmentChip, shrunk to a line); a path is the recessed file pill
+   (FilepathToken: --well fill, hairline edge, mono basename). They sit directly under their box. */
+.attpills{flex:1 1 100%;order:99;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;min-width:0}
+.attpills[hidden]{display:none}
+.markrow>.attpills{margin-left:28px}
+.attpills .micerr{margin:0;flex:1 1 100%}
+.attpill{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:2px 4px 2px 8px;border-radius:var(--radius-md);background:var(--well);border:1px solid var(--edge-strong);color:var(--fg);font:12px/1.4 var(--font)}
+.attpill .pg{flex:none;width:13px;height:13px;color:var(--fg-dim)}
+.attpill .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px}
+.attpill.img{padding-left:3px}
+.attpill .pthumb{position:relative;flex:none;width:28px;height:28px;border-radius:5px;overflow:hidden;background:var(--inset);border:1px solid var(--edge);display:grid;place-items:center}
+.attpill .pthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--inset)} .attpill .pthumb img.gone{display:none}
+.attpill .px{flex:none;width:20px;height:20px;padding:0;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--fg-muted);font-size:15px;line-height:1;cursor:pointer}
+@media (hover:hover){.attpill .px:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 12%,transparent)}}
+/* Answer buttons follow the design guide -> Buttons (round 7, Destin: "buttons could be better themed
+   to match prefered button fill/positioning guidance"):
+   - one FILLED button per view: the foot's Next / Done (`.btn.primary`); nothing else is filled;
+   - everything else is OUTLINED with the full-strength outline (`--edge-strong`), never the faint
+     divider colour and never a green or red outline (status colours go only in a tint, never on a
+     button the guide calls outlined);
+   - actions at the right: on a question the note box takes the left and the answer buttons sit at
+     the right of the same line (principle 6);
+   - the chosen answer is an accent outline with a faint accent tint and a tick, so it reads as
+     "picked" without becoming a second filled button that competes with Next. */
+.btn{border-color:var(--edge-strong)}
+.btn.ghost{border-color:transparent} .btn.primary{border-color:var(--accent)}
+.ans,.ans[data-v="yes"],.ans[data-v="no"]{border-color:var(--edge-strong);color:var(--fg)}
+.ans.on{background:color-mix(in srgb,var(--accent) 14%,transparent);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:700}
+.ans.on::before{content:"✓";flex:none;font-weight:700}
+.card.variant.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.pages .qrow{justify-content:flex-end}
+.pages .qrow .note,.pages .qrow .ans-write{order:1}
+.pages .qrow .ans{order:2}
+/* A card's state is a status, not a control (round 7, Destin: "this was an odd interactive 'not
+   reviewed' card i hadnt seen before?"). The old pill was an outlined, rounded shape in coloured
+   text, which is what a button looks like. Now it is the design guide's status Pill (Status and
+   notices): a tinted fill with a status dot, normal-colour words, no outline, and it cannot be
+   pointed at. */
+.qstate{border:0;color:var(--fg);padding:2px 10px 2px 9px;background:color-mix(in srgb,var(--st,var(--fg-faint)) 16%,transparent);pointer-events:none;cursor:default;user-select:none}
+.qstate::before{content:"";display:inline-block;width:6px;height:6px;margin-right:6px;border-radius:50%;background:var(--st,var(--fg-faint));vertical-align:1px}
+.qstate.none{--st:var(--fg-faint);color:var(--fg)} .qstate.ok{--st:var(--yes);color:var(--fg)} .qstate.chg{--st:var(--mark);color:var(--fg)}
+.pages article.q.nostate .qh{padding-right:0}
+/* A background-only list: dashed rows from the FIRST row down. `.card.calls .call:first-child`
+   (one class more than `.call`) used to win for row one and draw it solid. */
+.card.calls.context .call,.card.calls.context .call:first-child{background:transparent;border-style:dashed}
+.card.calls.context .call{cursor:default}
+.pages .qrow .mic,.pages .qrow .micerr{order:1}
