@@ -13,8 +13,8 @@ side: behind
 ---
 Progress
 Done: Items 1-2 shipped earlier. On branch session/workspace-tools-batch (not merged) (app): item 3 - three copied status-reading loops are one tested helper, behaviour identical; item 4 - one rule decides whether two folder paths are the same folder (capital letters ignored on Windows and Mac only), used everywhere including add, rename and describe. Only visible effect: on Linux, 'Docs' and 'docs' are now two folders, not one.
-Next: Item 5, Destin: the unused plugin-settings plumbing (about 10 files; no screen uses it, no marketplace entry declares settings). DELETE (RECOMMENDED): you see no change; less dead code to keep tested; rebuildable from history if plugin settings forms ever return. KEEP: you see no change; ready if plugin settings are planned soon; cost: dead code keeps being maintained.
-Blocked: item 5 needs Destin's delete-or-keep.
+Next: Destin 2026-11-10: item 5 DELETED - the unused plugin-settings plumbing, including the dead missing-settings check (app PR #727, commit e325d7e4c; a test fails if it grows back). Items 1 and 2 remain.
+Blocked: 
 
 Chats
 
