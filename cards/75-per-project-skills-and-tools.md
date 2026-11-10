@@ -1,7 +1,7 @@
 ---
 id: 75
 title: Choose skills and tools per project
-stage: polish
+stage: planning
 priority: P1
 tags: native-harness, skills-mcp, projects, desktop
 branch: 75-per-project-skills-and-tools
