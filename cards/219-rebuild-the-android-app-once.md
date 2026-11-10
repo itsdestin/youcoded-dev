@@ -1,7 +1,7 @@
 ---
 id: 219
 title: Rebuild the Android app once Alpine patches its Node.js
-stage: planning
+stage: build
 priority: P2
 tags: android, security, release
 branch: 219-rebuild-the-android-app-once
