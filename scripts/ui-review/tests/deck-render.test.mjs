@@ -1163,8 +1163,10 @@ raw['steps'] = [{'id': 'Q-9', 'words': True, 'surface': 'Games', 'path': 'Questi
     'checked': 'Opened the games screen today.', 'picture': 'pic.png', 'caption': 'The board today.'},
   {'id': 'K-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Calls I made for you',
     'calls': [{'id': 'size', 'call': 'The board is five rows tall.', 'why': 'It matches the other games.'},
-              {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.', 'picture': 'pic.png', 'before': 'pic.png'},
-              {'id': 'title', 'call': 'The title above the board', 'why': 'Shown on every game.', 'wording': 'Pick a game'}]}]
+              {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.', 'picture': 'pic.png', 'before': 'pic.png'}]},
+  {'id': 'S-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'The words on the games menu', 'screen': 'menu.html'}]
+# A still copy of a screen, as \`shoot --page\` saves one: the size it was laid out at, where its panel sits.
+open(os.path.join(os.path.dirname(p), 'menu.html'), 'w').write('<!doctype html><html data-frozen-panel="10,10,200,120" data-frozen="400x300"><head><meta charset="utf-8"></head><body><h1>Pick a game</h1><button>Start</button><input placeholder="Search games"></body></html>')
 json.dump(raw, open(p, 'w'))
 print(p)`;
   const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
@@ -1194,9 +1196,17 @@ print(p)`;
       assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"Q-9\"] .ans[data-v=other]').classList.contains('on')"), true, 'an area with no button pressed reads as Other');
       // Round 3: one pencil per row, no "All fine", no second button.
       assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .ans').length"), 0, 'a list has no answer button');
-      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .calledit').length"), 2, 'one pencil per ordinary row; a wording row is its own box');
-      assert.equal(await c.evaluate("document.querySelector('.copyt').value"), 'Pick a game', 'a wording box starts filled with the current words');
-      await c.evaluate(`(()=>{const t=document.querySelector('.copyt');t.value='Choose a game';t.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .calledit').length"), 2, 'one pencil per row');
+      // Round 4: the words are retyped on a still copy of the real screen, not in a list of boxes.
+      for (let i = 0; i < 40 && !(await c.evaluate("document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]').length === 3").catch(() => false)); i++) await sleep(250);
+      assert.equal(await c.evaluate("[...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].map(e=>e.matches('input')?e.value:e.textContent).join('|')"), 'Pick a game|Start|Search games', 'every piece of text, and a box hint, is editable');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"S-1\"] .ans, article.q[data-id=\"S-1\"] .note').length"), 0, 'a screen has no answer buttons or note box');
+      await c.evaluate(`(()=>{const t=document.querySelector('.screenframe').contentDocument.querySelector('h1 [data-w]');t.textContent='Choose a game';t.dispatchEvent(new Event('input',{bubbles:true}));
+        const b=document.querySelector('.screenframe').contentDocument.querySelector('button [data-w]');b.textContent='Go';b.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.screenedits li').length"), 2, 'each change is listed under the screen');
+      await c.evaluate("document.querySelectorAll('.screenundo')[1].click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelector('.screenframe').contentDocument.querySelector('button').textContent"), 'Start', 'Put back restores the words on the screen');
       // A picture opens large inside the deck, not in a new tab; a click closes it.
       assert.equal(await c.evaluate("document.querySelectorAll('.qpic a[target]').length"), 0, 'no picture opens a browser tab');
       await c.evaluate("document.querySelector('.qpic.row a').click()"); await sleep(100);
@@ -1212,7 +1222,7 @@ print(p)`;
     assert.equal(saved.answers['Q-9'].marks[0].text, 'too cramped');
     assert.ok(saved.answers['Q-9'].marks[0].w > 30 && saved.answers['Q-9'].marks[0].h > 30, JSON.stringify(saved.answers['Q-9'].marks[0]));
     assert.deepEqual(saved.answers['K-1'].changes, { sound: 'play the chime' });
-    assert.deepEqual(saved.answers['K-1'].edits, { title: 'Choose a game' }, 'a retyped wording is saved against its row');
+    assert.deepEqual(saved.answers['S-1'].edits, { 0: { from: 'Pick a game', to: 'Choose a game' } }, 'words retyped on the screen are saved as from and to');
     assert.equal(saved.notes, 'header is busy', 'general notes are saved beside the answers');
     assert.ok(saved.built && saved.built.at, 'the answers file records which build he was shown');
   } finally { srv.kill(); }

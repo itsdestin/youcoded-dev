@@ -13,6 +13,7 @@
 //   shoot --all                                       everything
 //   shoot --check                                     open every screen once (one theme), press Escape once; exit 1 on any failure
 //
+//   shoot settings/about --page                       also save the screen as one still web page (words editable on a deck)
 // Options: --worktree <name|branch|path> (default: the checkout this script sits in, else
 // the main one) · --themes a,b | all · --width N [--height N] · --contrast · --collect <classes.json> · --out <dir>
 //
@@ -31,6 +32,7 @@ import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
 import { mergeManifest, readManifest } from './manifest.mjs';
 import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
 import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES } from './themes.mjs';
+import { FREEZE } from './freeze.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -45,7 +47,7 @@ const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false };
+const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false, page: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
   if (a === '--tag') opt.tags.push(next());
@@ -62,6 +64,7 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--list') opt.list = true;
   else if (a === '--all') opt.all = true;
   else if (a === '--check') opt.check = true;
+  else if (a === '--page') opt.page = true;
   else if (a === '-h' || a === '--help') { console.log(readHelp()); process.exit(0); }
   else if (a.startsWith('--')) die(`unknown option ${a} (see shoot --help)`);
   // WHY (submit-ticket friction, proposal 17): a zsh variable holding several names arrives as
@@ -269,6 +272,19 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
     r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
+    // --page: the same screen as one still web page beside its picture, for a deck's
+    // edit-the-words-in-place step (freeze.mjs says why). A failure here is reported on the
+    // record and does not cost the picture.
+    if (opt.page) {
+      try {
+        // Where the screen's own panel sits (the popup, the menu) rides in the file, so the
+        // deck can open zoomed on it instead of showing a small popup in a large window.
+        const box = r.panel ? ` data-frozen-panel="${[r.panel.x, r.panel.y, r.panel.w, r.panel.h].map(Math.round).join(',')}"` : '';
+        r.page = join(dir, `${theme}.html`);
+        writeFileSync(r.page, (await tab.evaluate(FREEZE, 60_000)).replace(' data-frozen="', `${box} data-frozen="`));
+      }
+      catch (e) { r.page = null; r.pageError = String(e.message || e); }
+    }
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));

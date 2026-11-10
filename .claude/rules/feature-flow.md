@@ -34,7 +34,10 @@ Order: questions → drawings → **walkthrough (before)** → build → checks 
 - **Asked** (a question, in the first design rounds): the main paths a person takes, a screen's
   big-picture layout, how parts and functions affect each other, anything removed, money, privacy.
 - **Listed** (a row he can change, in the walkthrough): everything else he could notice by using
-  the app — wording, what happens when something fails, defaults, sizes, order.
+  the app — what happens when something fails, defaults, sizes, order.
+- **Wording, last:** never asked or listed before the build. After it, a `screen` step shows the
+  real popup or menu and he retypes its words in place ("directly edit text on the real ui
+  surface so i can see it in context", 2026-11-10).
 - **Never shown:** only what cannot be detected by using the app.
 
 Unsure → Listed. Never decide an Asked item silently; never ask a Listed one as a question.
@@ -50,7 +53,8 @@ first. "Wait on the deck" = keep building, no deck until he asks.
 ## Questions before drawing
 **Invariant:** opening questions are a words-only deck (`<feature>.questions.json`) holding only
 Asked items, with the fields `.claude/rules/review-deck.md` requires; a question about looks
-carries a picture. **Why:** a chat answer is not a record. **Guard:** `test_words.py`.
+carries a picture. Before the build he steers by TALKING: decks invite him to shape the
+interface in his own words, and each round fills the gaps his last answers left. **Why:** a chat answer is not a record. **Guard:** `test_words.py`.
 
 ## The walkthrough, before and after the build
 **Invariant:** one deck (`scripts/ui-review/templates/walkthrough.json`), shown before building
@@ -58,7 +62,8 @@ carries a picture. **Why:** a chat answer is not a record. **Guard:** `test_word
 1. What you asked for and what you got — one row per request, his own words quoted.
 2. Every screen that changed — all pictures together, before beside after.
 3. Behind the scenes — numbered plain steps for logic that has no screen.
-4. Choices I made — every Listed item; on-screen wording as editable boxes.
+4. Choices I made — every Listed item. After the build only: a `screen` step per popup or
+   menu whose words he may want to change.
 5. Checks — suggested before, results after; then what is left for him to try.
 
 Drop an empty page. Every row stands unless he changes it.

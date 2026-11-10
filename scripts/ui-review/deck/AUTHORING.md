@@ -508,11 +508,8 @@ this wins.
 - **Row pictures** are thumbnails at the row's right edge. `before` beside `picture` makes a
   before/after pair. A click opens the picture large inside the deck (never a browser tab);
   dragging on the large view marks an area exactly as on the small one.
-- **`wording`** on a row turns it into an editable box holding that text. `call` says where
-  the words appear, `why` when he would see them. Always pre-filled, with the current words
-  or the ones you propose. Give the row a `picture` of the screen they sit on. A retyped box
-  arrives as `answers[step].edits[<row id>]`; an untouched one is not in the file. Speaking
-  into an untouched box replaces its text; anywhere else speech is added after what is typed.
+- **`wording` rows are retired** (round 4): the builder refuses them. See "Editing the words
+  on the real screen" below.
 - **`gallery: true`** on a list lays the rows out as tiles, pictures first — the "every screen
   that changed" page of a walkthrough. A before/after tile is two columns wide.
 - **Notes about anything else**: a Notes button in the header on every page. Saved as the
@@ -525,6 +522,26 @@ this wins.
   after speech stop the microphone. While listening the microphone shows four level bars and
   a clock inside the box. Still no custom vocabulary.
 
+### Editing the words on the real screen (round 4, 2026-11-10)
+
+Wording is never asked before the build, and never as a text box per label ("this system is
+terrible… directly edit text on the real ui surface so i can see it in context"). After the
+build:
+
+1. `node scripts/shoot/shoot.mjs <screen name> --page --themes <one> --out <folder>` saves
+   `<theme>.html` beside each picture: the screen's own elements and styling with all code
+   removed (`scripts/shoot/freeze.mjs`). Copy it beside the spec.
+2. Add a step `{"id", "words": true, "surface", "path", "headline", "screen": "<file>.html"}`.
+   No `calls`, `options`, `today` or `answer`.
+
+The deck shows the file in a frame, opened zoomed on the screen's panel (the popup or menu,
+up to 1.5×); "Whole screen" shows all of it. Every run of text, and the grey hint in an empty
+box, can be clicked and retyped; the layout re-wraps as the app's would. Nothing on it can be
+pressed. Each change is listed under the frame with "Put back" and saved as
+`answers[step].edits[<n>] = {from, to}`; the summary prints `reword "old" → "new"`. A screen
+he leaves alone is accepted when he moves on, like a list. Text drawn by code at run time
+(a terminal, a chart) is a picture in the file and cannot be edited.
+
 ### Which starting point for a question about looks
 
 | He needs to judge… | Copy | Note |
@@ -533,5 +550,5 @@ this wins.
 | several designs of one thing | `choice.json` | three or four side by side; never a yes/no each |
 | one new screen with nothing before it | `brief.json` | `"new": true` once it is built |
 | a path through several screens | `walkthrough.json`, page 2 | tiles in the order a person meets them |
-| on-screen wording | `wording.json` | boxes pre-filled, a picture of the screen |
+| on-screen wording, after the build | a `screen` step | he types on a still copy of the real screen |
 | a whole piece of work | `walkthrough.json` | before the build and again after |

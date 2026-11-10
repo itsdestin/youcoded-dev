@@ -549,14 +549,20 @@ body[data-served] .callt,body[data-served] .markt{padding-right:44px}
 .qpic.row figcaption{order:0;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-faint)}
 /* Every text box: the app's message-box look — the inset colour, a soft corner, a faint
    edge that turns to the theme colour while it is being typed in (design guide → The message box). */
-.callt,.markt,.copyt,.pages .qrow textarea.note,.ans-write{border-color:color-mix(in srgb,var(--edge) 60%,transparent);border-radius:var(--radius-lg);background:var(--well)}
-.callt:focus,.markt:focus,.copyt:focus,.note:focus,.ans-write:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.callt,.markt,.pages .qrow textarea.note,.ans-write{border-color:color-mix(in srgb,var(--edge) 60%,transparent);border-radius:var(--radius-lg);background:var(--well)}
+.callt:focus,.markt:focus,.note:focus,.ans-write:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .callbox{margin-top:8px}
-/* A wording row: the box IS the words. */
-.copyt{flex:1 1 auto;min-width:0;font:inherit;font-size:14px;min-height:36px;padding:8px 12px;line-height:1.4;resize:none;overflow:hidden;border:1px solid var(--edge);color:var(--fg)}
-body[data-served] .copyt{padding-right:44px}
-.callbox.word{margin:6px 0} .call.wording .callwhat{font:500 11px/1.3 var(--font);text-transform:uppercase;letter-spacing:.07em;color:var(--fg-muted);margin:0}
-.copyundo{display:inline-block;margin:0 0 6px;padding:0;border:0;background:none;color:var(--link);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline} .copyundo[hidden]{display:none}
+/* Edit the words on the real screen (round 4): a still copy of the app screen in a frame. */
+.card.screen{padding:10px 12px}
+.screenbar{display:flex;align-items:center;gap:10px;margin:0 0 8px} .screenbar .hint{flex:1;margin:0;color:var(--fg-muted);font-size:13px}
+.screenwrap{position:relative;overflow:hidden;border:1px solid var(--edge);border-radius:var(--radius-md)}
+.screenframe{display:block;border:0;transform-origin:0 0;width:1440px;height:900px}
+.screenedits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px} .screenedits:not(:empty){margin-top:10px}
+.screenedits li{display:flex;gap:10px;align-items:baseline;padding:8px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);font-size:13px}
+.screenedits .from{color:var(--fg-muted);text-decoration:line-through} .screenedits .arrow{color:var(--fg-muted)} .screenedits .to{flex:1} .screenedits .linkbtn{flex:none}
+/* Open large: the card covers the window, so the screen is shown at (or near) its real size. */
+.card.screen.big{position:fixed;inset:0;z-index:70;margin:0;border:0;border-radius:0;overflow:auto;background:var(--well)}
+.linkbtn{display:inline-block;margin:0;padding:0;border:0;background:none;color:var(--link);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline}
 /* Every screen that changed, side by side: tiles, pictures first. */
 .card.calls.gallery ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:12px}
 .card.calls.gallery .callrow{flex-wrap:wrap}

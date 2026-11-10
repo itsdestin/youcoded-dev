@@ -12,6 +12,10 @@ node scripts/shoot/shoot.mjs --all                        everything
 node scripts/shoot/shoot.mjs --check                      open every screen once (light); exit 1 on a miss
 ```
 
+**`--page`** also saves each screen as `<theme>.html` beside its picture: one still web page (the
+screen's elements and styling, pictures and fonts packed in, all code removed — `freeze.mjs`), for a
+review deck's edit-the-words-on-the-real-screen step (`scripts/ui-review/deck/AUTHORING.md`).
+
 **Which code:** `--worktree`, `--before` and `--after` take a worktree name (`ui-review-infra`),
 a branch that has a worktree, or a folder — a checkout, or a workspace worktree (`.` from its
 root). `master` means the shared checkout exactly as it sits on disk (it may be behind, or not

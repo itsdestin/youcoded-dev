@@ -291,13 +291,121 @@
   // 38%-wide picture beside two lines of text left most of the row empty.
   const rowPic = (src, pk, cap) => `<figure class="qpic row"><a href="${esc(src)}" title="Open larger" data-pk="${esc(pk)}"><img src="${esc(src)}" alt=""></a>${cap ? `<figcaption>${esc(cap)}</figcaption>` : ''}</figure>`;
   const rowPics = c => (c.before ? rowPic(c.before, 'row ' + c.id + ' before', 'Before') : '') + (c.picture ? rowPic(c.picture, 'row ' + c.id, c.before ? 'After' : '') : '');
-  // A row with `wording` IS the wording: an editable box filled with the current or suggested
-  // text (round 3, S-3: "should be pre-filled with the suggested or existing copy", with "a
-  // screenshot of the actual menu in the app/context of what i'm editing" — the row's picture).
-  const wordingBox = (st, c) => `<div class="callbox word"><textarea class="copyt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" data-orig="${esc(c.wording)}"></textarea></div><button type="button" class="copyundo" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" hidden>Put back the original</button>`;
-  const callsCard = st => `<section class="card calls${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.wording ? ' wording' : ''}${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext">${c.result ? `<span class="result ${esc(c.result)}">${RESULT[c.result]}</span>` : ''}<p class="callwhat">${esc(c.call)}</p>${c.wording ? wordingBox(st, c) : ''}<p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${c.picture || c.before ? `<div class="callpics">${rowPics(c)}</div>` : ''}${c.wording ? '' : `<button type="button" class="iconbtn calledit" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button>`}</div>${c.wording ? '' : `<div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div>`}</li>`).join('')}</ul></section>`;
+  const callsCard = st => `<section class="card calls${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext">${c.result ? `<span class="result ${esc(c.result)}">${RESULT[c.result]}</span>` : ''}<p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${c.picture || c.before ? `<div class="callpics">${rowPics(c)}</div>` : ''}<button type="button" class="iconbtn calledit" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div></li>`).join('')}</ul></section>`;
+
+  // ── Edit the words on the real screen (round 4) ─────────────────────────────────────────
+  // WHY (Destin, 2026-11-10): wording rows — a text box per label beside a small picture —
+  // came back "this system is terrible… directly edit text on the real ui surface so i can see
+  // it in context". A `screen` step shows a still copy of the app screen (shoot --page,
+  // scripts/shoot/freeze.mjs: the app's own elements and styling, no code) in a frame, and
+  // every piece of text in it can be clicked and retyped, so a longer label wraps, pushes and
+  // clips exactly as it would in the app. Each change is saved as {from, to} and listed under
+  // the frame with a way to put it back.
+  const screenCard = st => `<section class="card screen" data-sid="${esc(st.id)}"><div class="screenbar"><p class="hint">Click any words on this screen and retype them. Nothing on it can be pressed.</p><button type="button" class="btn sm screenbig" data-sid="${esc(st.id)}">Whole screen</button></div><div class="screenwrap"><iframe class="screenframe" data-sid="${esc(st.id)}" src="${esc(st.screen)}" title="${esc(st.headline)}" scrolling="no" tabindex="-1"></iframe></div><ul class="screenedits" data-sid="${esc(st.id)}"></ul></section>`;
+  const listy = st => st.kind === 'calls' || st.kind === 'screen';
+  // A change is kept only while it differs from the words the screen came with.
+  function setScreenEdit(sid, n, from, to) {
+    if (state.submitted) return;
+    const a = { ...(state.answers[sid] || {}) }; const ed = { ...(a.edits || {}) };
+    if (to === null || to === from) delete ed[n]; else ed[n] = { from: from.trim(), to: to.trim() };
+    if (Object.keys(ed).length) { a.edits = ed; a.v = 'other'; delete a.dk; }
+    else { delete a.edits; if (a.v === 'other' && !openRows(a) && !(a.marks || []).length) delete a.v; }
+    state.answers[sid] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  }
+  const wordOf = el => el.matches('input,textarea') ? el.value : el.textContent;
+  // Called once per loaded frame: sizes it, puts scrolled parts back where they were, and
+  // makes each run of text its own editable piece, numbered in page order (the file never
+  // changes, so the numbers are the same on every load and saved changes find their place).
+  function armScreen(fr) {
+    let doc; try { doc = fr.contentDocument; } catch (e) { return; }
+    if (!doc || !doc.body || !doc.body.childElementCount || fr._armed === doc) return;
+    fr._armed = doc; const sid = fr.dataset.sid;
+    const size = (doc.documentElement.getAttribute('data-frozen') || '1440x900').split('x').map(Number);
+    fr.dataset.panel = doc.documentElement.getAttribute('data-frozen-panel') || '';
+    fr.dataset.w = size[0]; fr.dataset.h = size[1]; fr.style.width = size[0] + 'px'; fr.style.height = size[1] + 'px';
+    doc.querySelectorAll('[data-frozen-scroll]').forEach(el => { const p = el.getAttribute('data-frozen-scroll').split(',').map(Number); el.scrollLeft = p[0]; el.scrollTop = p[1]; });
+    const css = doc.createElement('style');
+    css.textContent = '[data-w]{cursor:text;outline:1px dashed transparent;outline-offset:2px;border-radius:2px}[data-w]:hover{outline-color:rgba(120,160,255,.8)}[data-w]:focus{outline:2px solid rgb(90,140,255)}[data-w].chg{outline:2px solid rgb(240,170,60);background:rgba(240,170,60,.16)}a,button,label,select{cursor:default!important}';
+    doc.head.appendChild(css);
+    const tw = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT); const texts = []; while (tw.nextNode()) texts.push(tw.currentNode);
+    let n = 0;
+    texts.forEach(t => {
+      const p = t.parentElement;
+      if (!t.nodeValue.trim() || !p || p.closest('svg,textarea,select,option,style,script,title')) return;
+      const s = doc.createElement('span'); s.dataset.w = String(n++); s.dataset.orig = t.nodeValue; s.spellcheck = false;
+      t.replaceWith(s); s.appendChild(t);
+    });
+    // The grey hint in an empty box is wording too: shown as the box's text, in the hint's colour.
+    doc.querySelectorAll('input,textarea').forEach(el => {
+      const texty = el.tagName === 'TEXTAREA' || /^(text|search|email|url|tel|password|)$/.test(el.getAttribute('type') || '');
+      if (texty && el.placeholder && !el.value) {
+        el.style.color = getComputedStyle(el, '::placeholder').color;
+        el.dataset.w = String(n++); el.dataset.orig = el.placeholder; el.value = el.placeholder; el.removeAttribute('placeholder');
+      } else el.readOnly = true;
+    });
+    // Nothing on a still screen acts: a click only places the caret.
+    ['click', 'submit', 'dragstart', 'auxclick'].forEach(ev => doc.addEventListener(ev, e => e.preventDefault(), true));
+    doc.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); e.target.blur && e.target.blur(); } }, true);
+    // A space typed inside a button would otherwise press it instead of being typed.
+    doc.addEventListener('keyup', e => { if (e.key === ' ' && e.target.closest && e.target.closest('[data-w]')) e.preventDefault(); }, true);
+    doc.addEventListener('input', e => { const el = e.target.closest ? e.target.closest('[data-w]') : null; if (el) setScreenEdit(sid, el.dataset.w, el.dataset.orig, wordOf(el)); }, true);
+    doc.addEventListener('focusout', () => paintScreens(), true);
+    paintScreens();
+  }
+  // Frame at its real size, scaled to the width it is given, so nothing re-wraps by being shown smaller.
+  function fitScreens() {
+    $$('.screenframe').forEach(fr => {
+      const w = +fr.dataset.w, h = +fr.dataset.h, wrap = fr.parentElement; if (!w || !wrap.clientWidth) return;
+      const big = !!fr.closest('.card.screen.big'); const p = (fr.dataset.panel || '').split(',').map(Number);
+      // Opened large, or a screen with no panel of its own: the whole window, fitted to the width.
+      if (big || p.length !== 4 || p[2] > w * 0.8) {
+        const k = Math.min(1.25, wrap.clientWidth / w);
+        fr.style.transform = 'scale(' + k + ')'; wrap.style.height = Math.round(h * k) + 'px'; return;
+      }
+      // WHY zoomed on the panel (Destin, round 4: pictures "rendered far too small to be
+      // useful"): a popup is a small part of a 1440-wide window; shown whole, its words are
+      // tiny. The frame opens on the popup with some of the screen around it, enlarged up to
+      // 1.5×; "Whole screen" shows the rest.
+      const M = 70; let rx = Math.max(0, p[0] - M), ry = Math.max(0, p[1] - M);
+      let rw = Math.min(w, p[0] + p[2] + M) - rx; const rh = Math.min(h, p[1] + p[3] + M) - ry;
+      const k = Math.min(1.5, wrap.clientWidth / rw);
+      const want = Math.min(w, wrap.clientWidth / k);            // spare width shows more of the screen either side
+      rx = Math.max(0, Math.min(w - want, rx - (want - rw) / 2)); rw = want;
+      fr.style.transform = 'translate(' + (-rx * k) + 'px,' + (-ry * k) + 'px) scale(' + k + ')'; wrap.style.height = Math.round(rh * k) + 'px';
+    });
+  }
+  function paintScreens() {
+    $$('.screenframe').forEach(fr => {
+      if (!fr._hooked) { fr._hooked = true; fr.addEventListener('load', () => armScreen(fr)); }
+      armScreen(fr);
+      const doc = fr._armed; if (!doc) return;
+      const ed = (state.answers[fr.dataset.sid] || {}).edits || {};
+      doc.querySelectorAll('[data-w]').forEach(el => {
+        const on = el.dataset.w in ed; el.classList.toggle('chg', on);
+        if (el.matches('input,textarea')) el.readOnly = !!state.submitted; else el.contentEditable = state.submitted ? 'false' : 'plaintext-only';
+        if (doc.activeElement === el) return;   // never under his caret
+        // Whitespace around the words is the screen's own spacing: kept from the original.
+        const lead = el.dataset.orig.match(/^\s*/)[0], tail = el.dataset.orig.match(/\s*$/)[0];
+        const want = on ? (el.matches('input,textarea') ? ed[el.dataset.w].to : lead + ed[el.dataset.w].to + tail) : el.dataset.orig;
+        if (wordOf(el) !== want) { if (el.matches('input,textarea')) el.value = want; else el.textContent = want; }
+      });
+      const list = $(`.screenedits[data-sid="${CSS.escape(fr.dataset.sid)}"]`);
+      if (list) list.innerHTML = Object.entries(ed).map(([k, x]) => `<li><span class="from">${esc(x.from)}</span><span class="arrow" aria-hidden="true">→</span><span class="to">${x.to ? esc(x.to) : '<i>(removed)</i>'}</span>${state.submitted ? '' : `<button type="button" class="linkbtn screenundo" data-sid="${esc(fr.dataset.sid)}" data-n="${esc(k)}">Put back</button>`}</li>`).join('');
+    });
+    fitScreens();
+  }
+  function closeScreenBig() { const b = $('.card.screen.big'); if (!b) return false; b.classList.remove('big'); b.querySelector('.screenbig').textContent = 'Whole screen'; fitScreens(); return true; }
+  document.addEventListener('click', e => {
+    const big = e.target.closest('.screenbig');
+    if (big) { const card = big.closest('.card.screen'); const on = !card.classList.contains('big'); closeScreenBig(); card.classList.toggle('big', on); big.textContent = on ? 'Close' : 'Whole screen'; fitScreens(); return; }
+    const u = e.target.closest('.screenundo');
+    if (u) { const ed = (state.answers[u.dataset.sid] || {}).edits || {}; if (ed[u.dataset.n]) setScreenEdit(u.dataset.sid, u.dataset.n, ed[u.dataset.n].from, null); }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeScreenBig(); });
+  window.addEventListener('resize', fitScreens);
   // The body of one step, in the order the cards are read.
   const cardsFor = st => st.kind === 'calls' ? callsCard(st) + noticeCard(st)
+    : st.kind === 'screen' ? screenCard(st) + noticeCard(st)
     : st.kind === 'question' ? pictureFig(st) + partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
@@ -336,7 +444,7 @@
     // WHY no button (Destin, 2026-11-10, round 3: "i honestly dont even know if we need it,
     // could probably integrate with the next page button"): a list he leaves untouched is
     // accepted when he moves on (acceptLists); a row he wants changed has its own pencil.
-    if (st.kind === 'calls') return '';
+    if (listy(st)) return '';
     // Fix (2026-09-10): every answer label goes in a <span>. `.ans` hides its overflow and
     // centres its content, and the ellipsis rule beside it (page.css) targets `.ans>span` —
     // so a label written as bare text was clipped at BOTH ends with no ellipsis, reading as
@@ -365,7 +473,7 @@
     // file keeps three values, and both summaries print "don't know" for it.
     $('#answers').innerHTML = answerButtons(st);
     // WHY (Destin, 2026-11-09): one text field per question — a typed answer hides the note box.
-    $('#note').hidden = st.answer === 'words' || st.kind === 'calls';
+    $('#note').hidden = st.answer === 'words' || listy(st);
     addMics();
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
@@ -377,7 +485,7 @@
     const st = stepById(id) || {};
     // "All fine" cannot sit beside a line marked Change this — the yes that contradicts its
     // own note was a real fault in past decks. The button is disabled then; this is the backstop.
-    if (st.kind === 'calls' && v === 'yes' && openRows(state.answers[id])) return;
+    if (listy(st) && v === 'yes' && openRows(state.answers[id])) return;
     // SEVERAL: the same click toggles membership instead of replacing the answer, so "A and C,
     // not B" is a real answer rather than a sentence in the note box (Destin, 2026-09-06).
     if (v === 'pick' && st.pick === 'several') {
@@ -583,10 +691,10 @@
         // them apart". A page of questions had nothing between one and the next but a 14px gap,
         // so on a tall question you cannot see where you are. Each one now names itself.
         // A calls list asks nothing, so it is not called a "Question" (rethink round 2).
-        + `<p class="qnum"><span class="n">${st.kind === 'calls' ? '' : 'Question ' + (steps.filter(x => x.kind !== 'calls').indexOf(st) + 1) + ' of ' + steps.filter(x => x.kind !== 'calls').length}</span><span class="qtick" aria-hidden="true">answered</span></p>`
+        + `<p class="qnum"><span class="n">${listy(st) ? '' : 'Question ' + (steps.filter(x => !listy(x)).indexOf(st) + 1) + ' of ' + steps.filter(x => !listy(x)).length}</span><span class="qtick" aria-hidden="true">answered</span></p>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
         + `<div class="qbody">${cardsFor(st)}</div>`
-        + (st.kind === 'calls' ? '' : `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
+        + (listy(st) ? '' : `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
         // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A
         // question answered by typing already has its box, so it gets no second note box.
         + (st.answer === 'words' ? '' : `<textarea class="note" rows="1" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></textarea>`) + `</div>`)
@@ -610,8 +718,6 @@
     if (open) { openDev(open); return; }
     const chg = e.target.closest('.calledit');
     if (chg) { toggleCall(chg.dataset.sid, chg.dataset.call); return; }
-    const und = e.target.closest('.copyundo');
-    if (und) { setWording(und.dataset.sid, und.dataset.call, null); return; }
     const mx = e.target.closest('.markx');
     if (mx) { removeMark(mx.dataset.sid, +mx.dataset.i); return; }
     const b = e.target.closest('.copycmd'); if (!b) return;
@@ -627,8 +733,6 @@
     if (w) { writeAnswer(w.dataset.id, w.value); return; }
     const ct = e.target.closest('.callt');
     if (ct && !state.submitted) { const a = state.answers[ct.dataset.sid] || {}; if (a.changes && ct.dataset.call in a.changes) { a.changes[ct.dataset.call] = ct.value; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); } return; }
-    const cp = e.target.closest('.copyt');
-    if (cp) { setWording(cp.dataset.sid, cp.dataset.call, cp.value); return; }
     const mt = e.target.closest('.markt');
     if (mt && !state.submitted) { const m = ((state.answers[mt.dataset.sid] || {}).marks || [])[+mt.dataset.i]; if (m) { m.text = mt.value; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); } return; }
     const n = e.target.closest('.note[data-id]'); if (!n || !PAGES) return;
@@ -677,19 +781,6 @@
     state.answers[sid] = a; paintState(); save();
     const box = $(`.callt[data-sid="${CSS.escape(sid)}"][data-call="${CSS.escape(cid)}"]`); if (box && cid in ch) box.focus();
   }
-  // An edited wording is kept only while it differs from what the box started with, so
-  // retyping the original (or "Put back the original") leaves no change behind.
-  function setWording(sid, cid, text) {
-    if (state.submitted) return;
-    const box = $(`.copyt[data-sid="${CSS.escape(sid)}"][data-call="${CSS.escape(cid)}"]`); if (!box) return;
-    const a = { ...(state.answers[sid] || {}) }; const ed = { ...(a.edits || {}) };
-    if (text === null || text === box.dataset.orig) delete ed[cid]; else ed[cid] = text;
-    if (Object.keys(ed).length) { a.edits = ed; a.v = 'other'; delete a.dk; }
-    else { delete a.edits; if (a.v === 'other' && !openRows(a) && !(a.marks || []).length) delete a.v; }
-    state.answers[sid] = a;
-    if (text === null) { box.value = box.dataset.orig; grow(box); }
-    paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
-  }
   // `asks` is read for answers saved before the pencil replaced "More context" (round 2 decks).
   const openRows = a => Object.keys((a || {}).changes || {}).length + ((a || {}).asks || []).length + Object.keys((a || {}).edits || {}).length;
   // A list he read and left alone is accepted by moving on — the job "All fine" used to do.
@@ -697,7 +788,7 @@
   function acceptLists() {
     if (state.submitted || !PAGES) return;
     pageSteps(cur).forEach(st => {
-      if (st.kind !== 'calls') return;
+      if (!listy(st)) return;
       const a = state.answers[st.id] || {};
       if (!a.v || a.v === 'skip') state.answers[st.id] = { ...a, v: 'yes' };
     });
@@ -711,12 +802,6 @@
         li.classList.toggle('chg', on); wrap.hidden = !on; btn.classList.toggle('on', on); btn.disabled = !!state.submitted; box.disabled = !!state.submitted;
         btn.title = on ? 'Take this comment away' : 'Comment on this, or say what to change';
         if (document.activeElement !== box) { box.value = on ? ch[btn.dataset.call] : ''; grow(box); }
-      }
-      const cp = li.querySelector('.copyt');
-      if (cp) {
-        const ed = (state.answers[cp.dataset.sid] || {}).edits || {}; const on = cp.dataset.call in ed;
-        li.classList.toggle('chg', on); li.querySelector('.copyundo').hidden = !on || !!state.submitted; cp.disabled = !!state.submitted;
-        if (document.activeElement !== cp) { cp.value = on ? ed[cp.dataset.call] : cp.dataset.orig; grow(cp); }
       }
     });
     addMics();
@@ -775,7 +860,7 @@
   const paintNotes = () => $('#notesbtn').classList.toggle('has', !!(state.notes || '').trim());
   function paintState() {
     paintNotes();
-    if (PAGES) { paintPage(); paintCalls(); return; }
+    if (PAGES) { paintPage(); paintCalls(); paintScreens(); return; }
     const a = state.answers[DECK.steps[cur].id] || {};
     $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick) && (b.dataset.dk !== '1' || !!a.dk)));
     $$('.card.variant').forEach(c => c.classList.toggle('on', chosen(a, c.dataset.pick)));
@@ -933,7 +1018,8 @@
     const out = [];
     for (const [k, t] of Object.entries(a.changes || {})) out.push('\n    change ' + k + ' — "' + String(t || '').trim() + '"');
     (a.asks || []).forEach(k => out.push('\n    more context wanted on ' + k));
-    for (const [k, t] of Object.entries(a.edits || {})) out.push('\n    reword ' + k + ' — "' + String(t || '').trim() + '"');
+    // {from, to} from a screen he retyped words on; a plain string from a round-3 wording row.
+    for (const [k, t] of Object.entries(a.edits || {})) out.push(t && typeof t === 'object' ? '\n    reword "' + t.from + '" → "' + t.to + '"' : '\n    reword ' + k + ' — "' + String(t || '').trim() + '"');
     (a.marks || []).forEach((m, i) => out.push('\n    area ' + (i + 1) + ' on ' + m.pic + ' (left ' + m.x + '%, top ' + m.y + '%, ' + m.w + '% wide, ' + m.h + '% tall) — "' + String(m.text || '').trim() + '"'));
     return out.join('');
   }
@@ -1004,7 +1090,7 @@
     const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
     const rows = DECK.steps.map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
-      const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k), Object.entries(a.edits || {}).map(([k, t]) => k + ' reworded: ' + String(t || '').trim()),
+      const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k), Object.entries(a.edits || {}).map(([k, t]) => t && typeof t === 'object' ? '“' + t.from + '” → “' + t.to + '”' : k + ' reworded: ' + String(t || '').trim()),
         (a.marks || []).map((m, j) => 'Area ' + (j + 1) + ' on ' + m.pic + ': ' + String(m.text || '').trim())).filter(Boolean).join(' · ');
       return `<tr><td class="n">${i + 1}</td>`
         + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
@@ -1245,7 +1331,7 @@
   const MIC_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>';
   const grow = box => { if (box.tagName === 'TEXTAREA') { box.style.height = 'auto'; box.style.height = (box.scrollHeight + 2) + 'px'; } };
   function addMics() {
-    $$('textarea.note, input.note, textarea.ans-write, textarea.callt, textarea.markt, textarea.copyt').forEach(box => {
+    $$('textarea.note, input.note, textarea.ans-write, textarea.callt, textarea.markt').forEach(box => {
       grow(box);
       // A box the layout is not showing (the shared note row on a question page) gets no button.
       const off = box.hidden || box.offsetParent === null;
@@ -1305,17 +1391,16 @@
       voicePost('stop').then(voiceApply).catch(err => { voiceSay(voice.btn, 'Voice input did not stop: ' + err.message); voiceEnd(); });
       return;
     }
-    // A wording box still holding its original text is REPLACED by what he says; anywhere
-    // else his words are added after what is already typed.
+    // His words are added after what is already typed.
     voice.box = box; voice.btn = btn; voice.seq = -1;
-    voice.base = box.matches('.copyt') && box.value === box.dataset.orig ? '' : box.value.trim();
+    voice.base = box.value.trim();
     voiceSay(btn, ''); btn.classList.add('wait'); box.focus();
     voicePost('start').then(st => {
       voiceApply(st);
       if (voice.box) voice.timer = setInterval(() => voicePost('poll').then(voiceApply).catch(() => {}), 150);
     }).catch(err => { voiceSay(btn, 'Voice input did not start: ' + err.message); voiceEnd(); });
   });
-  document.addEventListener('input', e => { if (e.target.matches && e.target.matches('textarea.note, textarea.ans-write, textarea.callt, textarea.markt, textarea.copyt')) grow(e.target); });
+  document.addEventListener('input', e => { if (e.target.matches && e.target.matches('textarea.note, textarea.ans-write, textarea.callt, textarea.markt')) grow(e.target); });
   load().then(() => {
     const q = new URLSearchParams(location.search);
     // An answers file written before this deck had pages can carry a `cur` past the last page;

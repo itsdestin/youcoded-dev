@@ -457,10 +457,11 @@ def _validate_calls(st, sid, errors):
                 errors.append(f'{sid}/{c["id"]}: {pk} {pic} does not exist beside the spec')
         if c.get('before') and not c.get('picture'):
             errors.append(f'{sid}/{c["id"]}: before needs a picture beside it — the after')
-        # `wording` (round 3, S-3) makes the row an editable box: it must hold the words
-        # that are on screen today, or the ones proposed — never an empty box to fill in.
-        if c.get('wording') is not None and not (isinstance(c['wording'], str) and c['wording'].strip()):
-            errors.append(f'{sid}/{c["id"]}: wording is the current or suggested text, not empty')
+        # `wording` rows (round 3: a text box per label beside a small picture) are refused.
+        # WHY (Destin, 2026-11-10): "this system is terrible… directly edit text on the real ui
+        # surface so i can see it in context" — that is a `screen` step, after the build.
+        if c.get('wording') is not None:
+            errors.append(f'{sid}/{c["id"]}: wording rows are retired — after the build, add a step with "screen": a file saved by `shoot <name> --page`, and he retypes the words on the screen itself; before the build, wording is not asked')
         for k in ('call', 'why'):
             if word_count(c[k]) > CALL_WORDS_MAX:
                 errors.append(f'{sid}/{c["id"]}: {k} is {word_count(c[k])} words (max {CALL_WORDS_MAX}) — one line he can skim')
@@ -899,6 +900,21 @@ def _validate_words(spec, st, sid, errors, warnings):
         _validate_dev(spec, st, sid, errors)
     elif is_calls(st):
         _validate_calls({**st, '_base': spec.get('_base', '')}, sid, errors)
+    elif st.get('screen') is not None:
+        # A SCREEN step (round 4): a still copy of an app screen (`shoot --page`) whose words he
+        # retypes in place. Only after the build — before it there is no real screen to copy.
+        f = st['screen']
+        if not isinstance(f, str) or not f.endswith('.html') or os.path.isabs(f) or '..' in f.split('/'):
+            errors.append(f'{sid}: screen is an .html file beside the spec, saved by `shoot <name> --page` (no leading slash, no "..")')
+        elif not os.path.exists(os.path.join(spec.get('_base', ''), f)):
+            errors.append(f'{sid}: screen {f} does not exist beside the spec — save it with `node scripts/shoot/shoot.mjs <screen name> --page`')
+        else:
+            with open(os.path.join(spec.get('_base', ''), f), encoding='utf-8', errors='replace') as fh:
+                if 'data-frozen=' not in fh.read(4000):
+                    errors.append(f'{sid}: screen {f} was not saved by `shoot --page` — a page with its own code cannot be shown for editing')
+        for k in ('options', 'rows', 'today', 'answer'):
+            if st.get(k):
+                errors.append(f'{sid}: a screen step has no {k} — he edits the words on the screen itself')
     # A words step with options is ALWAYS a question — there is no other reason to offer a
     # choice — so it owes the three parts even when its author forgot `today` entirely.
     elif is_question(st) or st.get('options'):

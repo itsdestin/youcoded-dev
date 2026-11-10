@@ -39,12 +39,11 @@
     },
     {"id": "p4", "page": "Choices I made", "intro": "Things you could notice that I decided without asking."},
     {
-      "_comment": "Anything he could notice by using the app that he was not asked about: wording, what happens when something fails, defaults and sizes. A row with `wording` is an editable box filled with the words on screen; give it a `picture` showing where they appear.",
+      "_comment": "Anything he could notice by using the app that he was not asked about: what happens when something fails, defaults, sizes, order. NOT wording: before the build he steers by talking and wording is not asked (Destin, 2026-11-10). AFTER the build, add one step per popup or menu whose words he may want to change: {\"id\", \"words\": true, \"surface\", \"path\", \"headline\", \"screen\": \"<file>.html\"}, the file saved beside this spec by `node scripts/shoot/shoot.mjs <screen name> --page`. He retypes the words on the screen itself.",
       "id": "W-4", "words": true, "surface": "Chat search", "path": "The search box above the session list",
       "headline": "Choices I made",
       "calls": [
-        {"id": "limit", "call": "You can save twenty searches.", "why": "More than that no longer fits the menu without scrolling."},
-        {"id": "empty", "call": "Message when nothing is saved yet", "why": "Shown in the saved-searches menu.", "wording": "No saved searches yet"}
+        {"id": "limit", "call": "You can save twenty searches.", "why": "More than that no longer fits the menu without scrolling."}
       ]
     },
     {"id": "p5", "page": "Checks", "intro": "Before the build: checks I suggest. After: what each one showed."},

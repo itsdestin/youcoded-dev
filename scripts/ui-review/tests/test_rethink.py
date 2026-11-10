@@ -86,24 +86,30 @@ class RethinkTests(unittest.TestCase):
         self.assertIn('class="qtick"', js)
         self.assertNotRegex(js, r'<span class="tick"')            # `.tick` is the finish screen's 56px circle
         self.assertRegex(js, re.escape("(st.answer === 'words' ? ''"))   # no note box beside a typed answer
-        self.assertRegex(js, re.escape("(st.kind === 'calls' ? '' : `<div class=\"qrow\">"))   # a list has no answer row at all
+        self.assertRegex(js, re.escape("(listy(st) ? '' : `<div class=\"qrow\">"))   # a list has no answer row at all
 
     def test_round_three_rows(self):
-        # Round 3 (2026-11-10): a row may be a before/after pair or an editable wording box,
-        # a list may be a gallery, and the summary carries retyped wording and general notes.
+        # Round 3 (2026-11-10): a row may be a before/after pair, a list may be a gallery, and
+        # the summary carries general notes. Round 4: wording ROWS are refused; words are
+        # retyped on a still copy of the real screen (a `screen` step) and arrive as {from, to}.
         from deck.serve import summary
         def add(r):
             r['steps'].append({**CALLS, 'gallery': True, 'calls': [
-                {'id': 'w', 'call': 'Menu title', 'why': 'Top of the menu.', 'wording': 'Pick a game'}]})
+                {'id': 'w', 'call': 'Menu title', 'why': 'Top of the menu.'}]})
         self.assertEqual(self.errs(add), [])
-        e = self.errs(lambda r: r['steps'].append({**CALLS, 'calls': [{'id': 'w', 'call': 'x', 'why': 'y', 'wording': ' '}]}))
-        self.assertTrue(any('wording is the current or suggested text' in x for x in e), e)
+        e = self.errs(lambda r: r['steps'].append({**CALLS, 'calls': [{'id': 'w', 'call': 'x', 'why': 'y', 'wording': 'Pick a game'}]}))
+        self.assertTrue(any('wording rows are retired' in x for x in e), e)
+        scr = {k: v for k, v in CALLS.items() if k != 'calls'}
+        e = self.errs(lambda r: r['steps'].append({**scr, 'screen': 'nope.html'}))
+        self.assertTrue(any('screen nope.html does not exist' in x for x in e), e)
+        e = self.errs(lambda r: r['steps'].append({**scr, 'screen': '/etc/x.html'}))
+        self.assertTrue(any('screen is an .html file beside the spec' in x for x in e), e)
         e = self.errs(lambda r: r['steps'].append({**CALLS, 'calls': [{'id': 'w', 'call': 'x', 'why': 'y', 'before': 'nope.png'}]}))
         self.assertTrue(any('before nope.png does not exist' in x for x in e), e)
         spec = {'key': 'k', 'steps': [{'id': 'K-1'}]}
-        out = summary(spec, {'notes': 'header is busy', 'answers': {'K-1': {'v': 'other', 'edits': {'w': 'Choose a game'}}}})
+        out = summary(spec, {'notes': 'header is busy', 'answers': {'K-1': {'v': 'other', 'edits': {'7': {'from': 'Pick a game', 'to': 'Choose a game'}}}}})
         self.assertIn('general notes — "header is busy"', out)
-        self.assertIn('reword w — "Choose a game"', out)
+        self.assertIn('reword "Pick a game" → "Choose a game"', out)
 
 
 if __name__ == '__main__':

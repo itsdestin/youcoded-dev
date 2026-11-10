@@ -85,8 +85,12 @@ def extras(a):
     for k in a.get('asks') or []:
         out.append(f'\n    more context wanted on {k}')
     # A wording row he retyped (round 3, S-3): the row's id and the words he wants instead.
+    # {from, to} from a screen he retyped words on (round 4); a plain string from a wording row.
     for k, t in (a.get('edits') or {}).items():
-        out.append(f'\n    reword {k} — "{(t or "").strip()}"')
+        if isinstance(t, dict):
+            out.append(f'\n    reword "{t.get("from", "")}" → "{t.get("to", "")}"')
+        else:
+            out.append(f'\n    reword {k} — "{(t or "").strip()}"')
     for i, m in enumerate(a.get('marks') or []):
         out.append(f'\n    area {i + 1} on {m.get("pic")} (left {m.get("x")}%, top {m.get("y")}%, '
                    f'{m.get("w")}% wide, {m.get("h")}% tall) — "{(m.get("text") or "").strip()}"')

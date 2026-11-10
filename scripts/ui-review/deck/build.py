@@ -155,11 +155,15 @@ def _words_step(spec, st):
         # Small choices the assistant made itself: one line and its reason each; page.js gives
         # every line its own Change this button and text box.
         d['kind'] = 'calls'
-        d['calls'] = [{k: c[k] for k in ('id', 'call', 'why', 'picture', 'before', 'wording', 'decided', 'result') if c.get(k)} for c in st['calls']]
+        d['calls'] = [{k: c[k] for k in ('id', 'call', 'why', 'picture', 'before', 'decided', 'result') if c.get(k)} for c in st['calls']]
         if st.get('numbered'):
             d['numbered'] = True   # a behind-the-scenes story: the rows are steps, in order
         if st.get('gallery'):
             d['gallery'] = True    # every screen that changed, as tiles side by side (round 3, S-1)
+    elif st.get('screen'):
+        # A still copy of an app screen whose words he retypes in place (round 4; freeze.mjs).
+        d['kind'] = 'screen'
+        d['screen'] = st['screen']
     elif st.get('options'):
         d['kind'] = 'decide'
         d['options'] = [_option(o) for o in st['options']]
