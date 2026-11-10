@@ -1,0 +1,490 @@
+{
+  "title": "Pages: a fresh review, and how to make it better",
+  "key": "pages-finish-review",
+  "out": "pages-finish-review.questions.html",
+  "themes": ["midnight", "light"],
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-picture",
+      "words": true,
+      "surface": "Pages",
+      "path": "The whole Pages work, as it stands today",
+      "headline": "This is where the Pages work stands. Does it match your understanding?",
+      "changed": "Pages are small apps inside YouCoded. The goal: build sign-ins, files, chat and automations once for the whole app, so almost any small app can be a page. Working and tried by you: page settings, approval cards, pages using your files, a chat in every page, and Versions with Put back. Automations: screens only, nothing runs. Accounts and sharing: not started.",
+      "notice": "None of it is in the main app yet. It has sat apart for two weeks and already clashes with the main app in one place. All standard checks pass on the computer version; the phone app was not checked.",
+      "yes": "Matches",
+      "no": "Something's off"
+    },
+    {
+      "id": "Q-route",
+      "words": true,
+      "surface": "Pages",
+      "path": "What happens next",
+      "headline": "Should the working parts ship first, with automations starting small afterwards?",
+      "today": "Three finished parts (settings and approvals, files, chat in a page) wait on automations, which is the hardest part and has no working code.",
+      "problem": "The longer the finished parts wait, the further they drift from the main app, and you get nothing new to use in the meantime.",
+      "proposal": "Pick the route. The later pages of this deck ask about the details of whichever you pick.",
+      "options": [
+        {
+          "id": "ship-then-small",
+          "label": "Ship, then small automations",
+          "recommended": true,
+          "pros": [
+            "You get the working parts in the main app soon, with the problems on the next page fixed first.",
+            "Automations starts with jobs that actually run, so later choices come from real use."
+          ],
+          "cons": [
+            "Two rounds of trying instead of one.",
+            "Some automation settings you already approved arrive later."
+          ]
+        },
+        {
+          "id": "all-together",
+          "label": "Finish everything, ship once",
+          "pros": [
+            "Everything you designed arrives together."
+          ],
+          "cons": [
+            "Weeks more with nothing shipped.",
+            "The hardest open questions block the finished parts too."
+          ]
+        },
+        {
+          "id": "ship-as-is",
+          "label": "Ship the working parts as they are",
+          "pros": [
+            "Fastest."
+          ],
+          "cons": [
+            "The problems on the next page ship with it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Problems found in the working parts",
+      "intro": "A fresh check of settings, files and the page chat found these. Each one asks what you want done about it."
+    },
+    {
+      "id": "Q-skipask",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "A page's own chat, when it wants to change or delete a file",
+      "headline": "Should a page's chat always ask before changing or deleting your files?",
+      "today": "A page's chat follows the app's own setting. If \"skip permissions\" is on, the page's chat changes and deletes files without asking.",
+      "problem": "That chat reads notes and data the page itself wrote. A badly made page, or later a page from someone else, could word those so the assistant does something you never asked for, with no question shown.",
+      "proposal": "Choose how careful a page's chat is. Ordinary chats are not affected by any of these.",
+      "options": [
+        {
+          "id": "always-ask",
+          "label": "Page chats always ask",
+          "pros": [
+            "Nothing a page wrote can cause a silent change to your files."
+          ],
+          "cons": [
+            "More questions in page chats, even on pages you made yourself."
+          ]
+        },
+        {
+          "id": "others-ask",
+          "label": "Ask only on other people's pages",
+          "recommended": true,
+          "pros": [
+            "Your own pages stay as quick as today.",
+            "Pages from others, once sharing exists, can never skip asking."
+          ],
+          "cons": [
+            "A page you made that pulls in outside content keeps today's risk."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave it following the app setting",
+          "pros": [
+            "No change; one setting rules everything."
+          ],
+          "cons": [
+            "The risk stays, and grows once pages can be shared."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-approvals",
+      "words": true,
+      "surface": "Page approvals",
+      "path": "What a page keeps after it is rewritten",
+      "headline": "When a page is rewritten, should it keep the access you approved earlier?",
+      "today": "You approve what a page can reach: files, websites, services. If the page is later rewritten, by its chat, by Put back or by an update, it keeps all of that access. A small \"this page changed\" banner is the only sign.",
+      "problem": "The page you approved and the page now using that access may not be the same thing. For your own pages that is fine. For a page from someone else, an update could quietly use access you gave the earlier version.",
+      "proposal": "Choose when a rewritten page has to ask again.",
+      "options": [
+        {
+          "id": "others-reask",
+          "label": "Ask again on other people's pages",
+          "recommended": true,
+          "pros": [
+            "Your own pages never nag you after you or the chat change them.",
+            "An update to someone else's page cannot use old approvals."
+          ],
+          "cons": [
+            "Only matters once sharing exists, so it is built with sharing, not now."
+          ]
+        },
+        {
+          "id": "always-reask",
+          "label": "Ask again after every rewrite",
+          "pros": [
+            "Safest: access always matches the page you last looked at."
+          ],
+          "cons": [
+            "Every change the page chat makes brings the approval card back."
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Keep as today",
+          "pros": [
+            "No extra cards."
+          ],
+          "cons": [
+            "Sharing pages would ship with this hole."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-deletepage",
+      "words": true,
+      "surface": "Pages",
+      "path": "Deleting a page",
+      "headline": "When you delete a page, what should happen to its saved versions and chats?",
+      "today": "Deleting a page removes the page. Its saved earlier versions, which include copies of its data, and its chat records stay on the computer with no way to see or remove them.",
+      "problem": "Old money data from a deleted bank page would sit on disk forever, where you cannot find it.",
+      "proposal": "Choose what deleting a page does with what it leaves behind.",
+      "options": [
+        {
+          "id": "remove-all",
+          "label": "Remove them too",
+          "recommended": true,
+          "pros": [
+            "Delete means gone; nothing private is left behind."
+          ],
+          "cons": [
+            "A page deleted by mistake cannot be brought back from its versions."
+          ]
+        },
+        {
+          "id": "keep-30",
+          "label": "Keep for 30 days, then remove",
+          "pros": [
+            "A mistaken delete can be undone for a month."
+          ],
+          "cons": [
+            "Needs a place in the app to find and restore deleted pages, which does not exist yet."
+          ]
+        },
+        {
+          "id": "ask",
+          "label": "Ask each time",
+          "pros": [
+            "You decide per page."
+          ],
+          "cons": [
+            "One more question in a popup that already asks about linked automations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-fixes",
+      "words": true,
+      "surface": "Pages",
+      "path": "Four smaller repairs before shipping",
+      "headline": "I will fix these four smaller problems before the working parts ship.",
+      "changed": "1. A page's name and notes can be worded to look like instructions from you to the assistant; they will be clearly marked as the page's words. 2. A page can open browser tabs by itself, without limit, for sites it is allowed; opening a tab will need a real click. 3. Put back can leave a mix of old and new if the page saves at the same moment; it will happen as one step. 4. The part that passes messages between a page and the app has almost no automatic checks; they will be added.",
+      "notice": "The only one you would see: a page that opened a website on its own will now wait for you to click. The rest are invisible unless something goes wrong.",
+      "yes": "Fix all four",
+      "no": "Not all of them"
+    },
+    {
+      "id": "P-3",
+      "page": "Automations: how big is the first version?",
+      "intro": "Eleven rounds of design and nothing runs yet. These ask what the first working version leaves out, and a few choices nobody made."
+    },
+    {
+      "id": "Q-commands",
+      "words": true,
+      "surface": "Automations",
+      "path": "Jobs that run programs on your computer",
+      "headline": "Should the first version of automations be able to run programs on your computer?",
+      "today": "The design lets a job run programs (tidy a folder, run a script, back up photos). The question of how to keep those safe is what stopped the last deck. I tested the proposed protection: it works, but only on Mac and Linux, and only with Claude. Windows, phones and other models have none.",
+      "problem": "Most everyday jobs (a money check, a price watch, a weekly briefing, a research digest) run no programs at all, yet every job is waiting on this one question.",
+      "proposal": "Choose whether the first version includes running programs. Jobs can still read and change files in their listed folders, use page data and visit websites either way.",
+      "options": [
+        {
+          "id": "later",
+          "label": "No, add it after",
+          "recommended": true,
+          "pros": [
+            "Automations work sooner, the same way on every computer and model.",
+            "The protection gets designed against real jobs you actually want."
+          ],
+          "cons": [
+            "Jobs like turning voice memos into notes, backups and running your own script wait.",
+            "A job cannot delete files until then; it can only read, write and move them."
+          ]
+        },
+        {
+          "id": "where-safe",
+          "label": "Yes, only where protected",
+          "pros": [
+            "Program jobs work on Mac and Linux with Claude from day one."
+          ],
+          "cons": [
+            "The same job behaves differently on Windows, phones and other models: there it asks before every program.",
+            "Adds the hardest piece to the first version."
+          ]
+        },
+        {
+          "id": "ask-everywhere",
+          "label": "Yes, asking each time",
+          "pros": [
+            "Works the same everywhere."
+          ],
+          "cons": [
+            "Not hands-off: a job that runs programs waits for you every time."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-practice",
+      "words": true,
+      "surface": "Automations",
+      "path": "Practice runs",
+      "headline": "Should practice runs on copies be in the first version?",
+      "today": "You approved practice runs: a job works on copies of its folders and page data, holds back anything it would send, and ends with a report.",
+      "problem": "It is a large piece to build. Copying a big folder such as Pictures is slow. And a practice run costs the same usage as a real one.",
+      "proposal": "Choose when practice runs arrive. Without them, the first run of a new job is a real run, and anything set to Asks first still asks.",
+      "options": [
+        {
+          "id": "later",
+          "label": "After the first version",
+          "recommended": true,
+          "pros": [
+            "The first version arrives sooner.",
+            "Practice runs can be shaped by which jobs turned out risky."
+          ],
+          "cons": [
+            "Until then the only way to try a job is to run it for real, with asks on."
+          ]
+        },
+        {
+          "id": "now",
+          "label": "In the first version",
+          "pros": [
+            "You can try any job safely from day one."
+          ],
+          "cons": [
+            "Noticeably more to build and try before anything ships."
+          ]
+        },
+        {
+          "id": "drop",
+          "label": "Drop them",
+          "pros": [
+            "Simplest; Asks first already covers risky steps."
+          ],
+          "cons": [
+            "No safe way to see what a job would do before it does it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-models",
+      "words": true,
+      "surface": "Automations",
+      "path": "Which models a job can use",
+      "headline": "Should the first version run jobs on every model, or on Claude only?",
+      "today": "The design runs jobs two ways: through your Claude subscription, and through the app's own engine for ChatGPT, OpenRouter and the rest. Each way has to be built and checked separately.",
+      "problem": "Two ways double the things that can go wrong in a first version. But Claude-only leaves out everyone without a Claude subscription.",
+      "proposal": "Choose what the first version supports.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Every model",
+          "recommended": true,
+          "pros": [
+            "Everyone can use automations, whatever they pay for.",
+            "With programs left out, the two ways behave almost the same."
+          ],
+          "cons": [
+            "More to build and check before the first version."
+          ]
+        },
+        {
+          "id": "claude",
+          "label": "Claude first",
+          "pros": [
+            "Fastest route to something you can use yourself."
+          ],
+          "cons": [
+            "People on other models see automations they cannot run yet."
+          ]
+        },
+        {
+          "id": "others",
+          "label": "Other models first",
+          "pros": [
+            "No reliance on how Claude's own program behaves between its updates."
+          ],
+          "cons": [
+            "Your own Claude subscription cannot run jobs yet."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-cap",
+      "words": true,
+      "surface": "Automations",
+      "path": "Jobs that run on a subscription",
+      "headline": "Should jobs on a subscription have a cap, so they cannot use up your plan?",
+      "today": "Jobs on paid models stop at a monthly dollar limit. Jobs on a subscription have no limit; the app only shows how much they used. You also chose no limit on how many jobs run at once.",
+      "problem": "Jobs share your plan with your own chats. A job that runs often, or several at once, could use up the plan and leave you unable to chat until it resets. My two small test runs each cost about 3 to 10 cents' worth.",
+      "proposal": "Choose what protects your plan.",
+      "options": [
+        {
+          "id": "runs-cap",
+          "label": "A runs-per-day cap per job",
+          "recommended": true,
+          "pros": [
+            "Easy to understand: \"at most 10 runs a day\".",
+            "Pre-filled, so a runaway job stops by itself."
+          ],
+          "cons": [
+            "One long run can still use a lot."
+          ]
+        },
+        {
+          "id": "at-once",
+          "label": "Limit jobs running at once",
+          "pros": [
+            "Stops a pile-up when many jobs come due together."
+          ],
+          "cons": [
+            "Changes your earlier \"no limit\" answer; some jobs start late."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "No cap, show usage only",
+          "pros": [
+            "Nothing ever stops a job you wanted."
+          ],
+          "cons": [
+            "You find out after your plan is used up."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-closed",
+      "words": true,
+      "surface": "Automations",
+      "path": "A job that is running or waiting when YouCoded closes",
+      "headline": "If YouCoded closes while a job is running or waiting for you, what happens to it?",
+      "today": "Not decided. The design says a waiting job continues after a restart, but that is unproven, and it says nothing about a job that was mid-run.",
+      "problem": "Closing the app or the computer sleeping will happen daily. Without a rule, a job could vanish silently or repeat work it already did.",
+      "proposal": "Choose the rule. Each job could later get its own setting; this is the pre-filled one.",
+      "options": [
+        {
+          "id": "resume",
+          "label": "Pick up where it stopped",
+          "recommended": true,
+          "pros": [
+            "A question you were asked is still there when you come back.",
+            "No repeated work."
+          ],
+          "cons": [
+            "Needs testing on each model before I can promise it; where it cannot work, the job starts over and says so."
+          ]
+        },
+        {
+          "id": "restart",
+          "label": "Start over next time",
+          "pros": [
+            "Simple and dependable."
+          ],
+          "cons": [
+            "Work already done is repeated, and so is its cost."
+          ]
+        },
+        {
+          "id": "stopped",
+          "label": "Mark it stopped",
+          "pros": [
+            "Nothing runs without you choosing."
+          ],
+          "cons": [
+            "You have to notice and press Run now."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-delete",
+      "words": true,
+      "surface": "Automations",
+      "path": "An automation's details popup",
+      "headline": "An automation needs a Delete button; the approved screens have none.",
+      "changed": "Today an automation can be paused but never removed. I will add Delete to the details popup, with a confirm, and show you before and after pictures before it is built.",
+      "notice": "Deleting removes the job and its past runs. Pages linked to it lose that link and carry on.",
+      "yes": "Add it",
+      "no": "Leave it out"
+    },
+    {
+      "id": "P-4",
+      "page": "Loose ends",
+      "intro": "Three short ones."
+    },
+    {
+      "id": "Q-notify",
+      "words": true,
+      "surface": "Notifications",
+      "path": "System notifications, for chats and automations",
+      "headline": "Should I file a work item for building all system notifications together later?",
+      "today": "You decided automations show orange dots only, and that all system notifications (a Notifications menu replacing Sound) get built together later. Nothing records that later work.",
+      "problem": "Without a work item it can be forgotten, and automations stay silent unless you are looking at the app.",
+      "proposal": "Yes files one work item now; nothing is built. No leaves it unrecorded."
+    },
+    {
+      "id": "Q-fence-other",
+      "words": true,
+      "surface": "Automations",
+      "path": "The last deck, on what a program may reach",
+      "answer": "words",
+      "prompt": "What you meant, or \"skip\"",
+      "headline": "On the last deck you picked \"other\" about protecting programs, with no note. What did you mean?",
+      "today": "That deck proposed keeping every program a job runs inside the job's own folders and websites. You chose \"other\" and left the note empty.",
+      "problem": "I cannot tell whether you disliked the idea, wanted something different, or just stopped there.",
+      "proposal": "Type what you had in mind. If programs wait until after the first version, this can wait too."
+    },
+    {
+      "id": "Q-missed",
+      "words": true,
+      "surface": "Pages",
+      "path": "Anything this review missed",
+      "answer": "words",
+      "prompt": "Something else to look at or change",
+      "headline": "Is there anything about Pages that bothers you and is not on this deck?",
+      "today": "This review covered the working parts, the automations design and the open decisions.",
+      "problem": "You have used the working parts; I have only read them.",
+      "proposal": "Type anything that felt wrong, slow or confusing when you tried it."
+    }
+  ]
+}
