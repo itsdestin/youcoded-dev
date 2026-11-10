@@ -1,0 +1,457 @@
+{
+ "title": "Review deck rethink, round 3",
+ "key": "review-deck-rethink-round3",
+ "out": "review-deck-rethink.round3.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Sample walkthrough 1 of 4: what you asked for, and what you got",
+   "intro": "A real walkthrough of the deck changes built so far, in the proposed format. Every row stands unless you press Change this or More context. Drag on any picture."
+  },
+  {
+   "id": "W-1",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "What you asked for, and what you got",
+   "calls": [
+    {
+     "id": "areas",
+     "call": "Drag a rectangle on any picture to comment on that area.",
+     "why": "A numbered box opens under the picture. The rectangle and your words are saved together.",
+     "picture": "pictures/built-area.png",
+     "decided": "\"rectangular drag-regions instead of single-dot pins \u2026 highlight any size rectangle within an image and comment on it\""
+    },
+    {
+     "id": "lists",
+     "call": "Lists where every row stands unless you flag it, each with its own text box.",
+     "why": "Used for calls I made, and for every page of this walkthrough. Also shows the microphone while listening.",
+     "picture": "pictures/built-calls.png",
+     "decided": "\"each item i choose to change should have its own little text box underneath/attached to it\""
+    },
+    {
+     "id": "stamp",
+     "call": "The deck shows when it was built and from which version; each answer shows its time.",
+     "why": "Top-left label on every page, and an Answered column on the finish screen.",
+     "picture": "pictures/built-finish.png",
+     "decided": "\"tracking the date/time and branch/commit a deck was built against, specific date/time each question is answered by me\""
+    },
+    {
+     "id": "checked",
+     "call": "A small (i) beside \"Today\" says how and when I checked that fact.",
+     "why": "Hover it. It is visible in the first picture above.",
+     "decided": "\"can just be hidden behind a little (i) hover popup next to the today section header\""
+    },
+    {
+     "id": "voice",
+     "call": "A microphone in every text box, using the same speech model as YouCoded.",
+     "why": "Press, speak, press again. A ring grows with your voice.",
+     "decided": "\"I want to be able to respond to these decks with my voice\""
+    },
+    {
+     "id": "one-box",
+     "call": "A question answered by typing has no second note box.",
+     "why": "It was a one-line cause.",
+     "decided": "\"there should never be two text fields in an answer\""
+    },
+    {
+     "id": "circle",
+     "call": "The big green circle no longer appears on an answered question.",
+     "why": "The finish-screen circle style was leaking onto the word \"answered\".",
+     "decided": "\"weird green answered circle \u2026 distorts the card\""
+    },
+    {
+     "id": "other",
+     "call": "\"Don't know\" is now \"Other\" on yes/no questions.",
+     "why": "One button, same meaning. A typed-answer question has no extra button at all.",
+     "decided": "\"i think this should also just be other\""
+    },
+    {
+     "id": "more",
+     "call": "A \"More context\" button on every list row.",
+     "why": "A row you cannot judge yet is flagged for me to explain next round, instead of counting as accepted.",
+     "decided": "\"something like your additional context button could be useful\""
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Sample walkthrough 2 of 4: behind the scenes",
+   "intro": "What happens when you use it, in order, for the parts with no screen of their own."
+  },
+  {
+   "id": "W-2",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "What happens when you speak an answer, and when you submit",
+   "calls": [
+    {
+     "id": "s1",
+     "call": "You press the microphone. The page asks the deck's own small helper to start listening.",
+     "why": "The app refuses the microphone to any page shown inside it, so the page cannot listen by itself."
+    },
+    {
+     "id": "s2",
+     "call": "The helper records from this computer's microphone and runs the speech files YouCoded already downloaded.",
+     "why": "Nothing new is downloaded and the running app is never contacted."
+    },
+    {
+     "id": "s3",
+     "call": "About once a second it listens to the whole recording again and sends the words so far to the box.",
+     "why": "Listening again from the start lets later words correct earlier ones. The app does the same."
+    },
+    {
+     "id": "s4",
+     "call": "You press again. It makes one last pass, stops, and the words stay in the box.",
+     "why": "There is no automatic stop on silence. A recording left running stops after five minutes."
+    },
+    {
+     "id": "s5",
+     "call": "Every answer, area and flagged row is written to a file beside the deck within a third of a second.",
+     "why": "A crash or closed tab loses nothing already entered."
+    },
+    {
+     "id": "s6",
+     "call": "You submit. The deck stops, and the chat reads that file, including each rectangle's position.",
+     "why": "The chat is told the moment the deck stops; nothing to copy or paste."
+    }
+   ],
+   "numbered": true
+  },
+  {
+   "id": "P-3",
+   "page": "Sample walkthrough 3 of 4: calls I made",
+   "intro": "Visible choices I made without asking, since round 2."
+  },
+  {
+   "id": "W-3",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Calls I made for you",
+   "calls": [
+    {
+     "id": "blue",
+     "call": "Your rectangles are drawn in blue.",
+     "why": "The amber box on screenshots already means \"this is what changed\". Yours needed a different colour."
+    },
+    {
+     "id": "tiny",
+     "call": "A drag smaller than one hundredth of the picture is ignored.",
+     "why": "It is almost always a shaky click."
+    },
+    {
+     "id": "block",
+     "call": "\"All fine\" is switched off while any row is flagged.",
+     "why": "A yes that contradicts a flagged row was a real fault in past decks."
+    },
+    {
+     "id": "no-line",
+     "call": "The \"Listening\" line under the box is gone; the state shows when you hover the microphone.",
+     "why": "That line was the most likely cause of the box changing shape."
+    },
+    {
+     "id": "vocab",
+     "call": "Voice does not use your custom word list yet.",
+     "why": "The deck's helper is separate from the app. \"YouCoded\" may be misspelled."
+    },
+    {
+     "id": "side",
+     "call": "A row's two buttons sit side by side, and a row's picture sits to its left.",
+     "why": "Keeps rows short."
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Sample walkthrough 4 of 4: checks",
+   "intro": "After a build, each check you chose shows its result. Before a build, this page would instead list suggested checks for you to tick or add to."
+  },
+  {
+   "id": "W-4",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Checks I ran, and what they showed",
+   "calls": [
+    {
+     "id": "auto",
+     "call": "All 331 automatic checks of the deck tool.",
+     "why": "Run after the last change today.",
+     "result": "pass"
+    },
+    {
+     "id": "drag",
+     "call": "A test browser dragged an area, typed in it, flagged a row, and the saved file held all of it.",
+     "why": "This is now a permanent automatic check.",
+     "result": "pass"
+    },
+    {
+     "id": "remove",
+     "call": "Removing one of two areas keeps the other, with its comment, after a reload.",
+     "why": "Tested by hand in a test browser.",
+     "result": "pass"
+    },
+    {
+     "id": "you",
+     "call": "Rectangles and lists used by a real person.",
+     "why": "You used both in round 2 and your areas and changes arrived with their positions.",
+     "result": "pass"
+    },
+    {
+     "id": "shape",
+     "call": "The microphone no longer changes the text box's shape.",
+     "why": "I removed the likely cause but could not reproduce what you saw.",
+     "result": "unclear"
+    },
+    {
+     "id": "shots",
+     "call": "Rectangles on real before-and-after screenshot slides.",
+     "why": "Built, but only tried on pictures inside written questions.",
+     "result": "unclear"
+    }
+   ]
+  },
+  {
+   "id": "W-5",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Left for you to verify",
+   "calls": [
+    {
+     "id": "speak",
+     "call": "Speak into a note box and watch whether the box keeps its shape.",
+     "why": "Only a real voice can test this."
+    },
+    {
+     "id": "words",
+     "call": "Check that your spoken words come out right.",
+     "why": "I cannot speak."
+    }
+   ]
+  },
+  {
+   "id": "P-5",
+   "page": "Is that the right shape?",
+   "intro": "You asked what each page is, how it earns its place, and what to merge or drop."
+  },
+  {
+   "id": "S-1",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "The pages of a walkthrough, and why each is there",
+   "calls": [
+    {
+     "id": "p1",
+     "call": "Page 1, What you asked for and what you got: one row per request, with your own words, a picture where there is a screen, and what it does.",
+     "why": "Merges two of my six parts (purpose, screens). It is the checklist for the finish line: every change you asked for must be a row."
+    },
+    {
+     "id": "p2",
+     "call": "Page 2, Behind the scenes: numbered plain steps.",
+     "why": "The only place you see logic that has no screen, and how parts connect."
+    },
+    {
+     "id": "p3",
+     "call": "Page 3, Calls I made.",
+     "why": "Nothing visible gets decided silently."
+    },
+    {
+     "id": "p4",
+     "call": "Page 4, Checks, ending with what is left for you to verify.",
+     "why": "\"Left for you\" was too short for its own page, so it closes this one."
+    },
+    {
+     "id": "nav",
+     "call": "Moving around uses the deck's normal page bar, one page per part. The row of chips in my drawing is dropped.",
+     "why": "You found chips plus pages confusing."
+    },
+    {
+     "id": "before",
+     "call": "Before building, the same four pages appear with drawings instead of screenshots, and suggested checks instead of results.",
+     "why": "Same shape both times, so the second read is quick."
+    }
+   ]
+  },
+  {
+   "id": "S-2",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Who decides what, revised from your note",
+   "calls": [
+    {
+     "id": "flows",
+     "call": "ASKED as a question: core user flows. The steps a person takes to get something done, and their order.",
+     "why": "You named this."
+    },
+    {
+     "id": "big",
+     "call": "ASKED: big-picture interface design. Which screens exist, what sits where, how a new control looks.",
+     "why": "You named this."
+    },
+    {
+     "id": "interact",
+     "call": "ASKED: how features and parts of the app affect each other.",
+     "why": "You named this."
+    },
+    {
+     "id": "remove",
+     "call": "ASKED: anything that removes or changes what an existing control does, or touches money or privacy.",
+     "why": "These are the surprises that cost trust."
+    },
+    {
+     "id": "copy",
+     "call": "LISTED with my default, yours to overrule: wording on menus, buttons and messages.",
+     "why": "You suggested this move."
+    },
+    {
+     "id": "fail",
+     "call": "LISTED: what happens when something fails.",
+     "why": "You suggested this move."
+    },
+    {
+     "id": "small",
+     "call": "LISTED: defaults, limits, sizes, spacing, and which existing style is reused.",
+     "why": "One obvious answer from the design guide."
+    },
+    {
+     "id": "never",
+     "call": "NEVER SHOWN: only what you could not detect by using the app in any way. File names, how the code is organised, test code.",
+     "why": "If it changes speed, storage, battery, cost, or what leaves the computer, it is not in this group; it is listed."
+    },
+    {
+     "id": "unsure",
+     "call": "When unsure between asked and listed: listed.",
+     "why": "Your answer to R-5."
+    },
+    {
+     "id": "when",
+     "call": "Asked items come in the first questions round. Listed items come in the walkthrough.",
+     "why": "You wanted the big questions during initial design."
+    }
+   ]
+  },
+  {
+   "id": "S-3",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should decks get a page where you edit on-screen wording directly?",
+   "today": "Wording is asked as pick-one options or a single typed answer. Only the website has an edit-in-place tool.",
+   "problem": "For a menu with ten labels, that is ten questions, or my defaults with no easy way to fix one.",
+   "proposal": "A deck item that lists each piece of wording in its own editable box, filled with my default and labelled with where it appears. Retype any; untouched ones stand.",
+   "options": [
+    {
+     "id": "boxes",
+     "label": "Editable boxes, labelled by where they appear",
+     "pros": [
+      "Fix any wording in seconds.",
+      "Fits the lists you already use."
+     ],
+     "cons": [
+      "You see the words in a list, not on the screen itself."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "in-place",
+     "label": "Edit directly on a live copy of the screen",
+     "pros": [
+      "You see every word where it will sit."
+     ],
+     "cons": [
+      "Much more to build, and only works once the screen exists."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "Wording stays slow to steer."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-4",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Ready-made starting points for questions about looks",
+   "calls": [
+    {
+     "id": "ba",
+     "call": "Before and after of one change: two pictures side by side, yes or no.",
+     "why": "Exists today; gets clearer instructions."
+    },
+    {
+     "id": "fan",
+     "call": "A fan of alternatives for one thing: three or four designs side by side, pick one.",
+     "why": "Exists today as the \"choice\" slide; underused."
+    },
+    {
+     "id": "new",
+     "call": "One new screen with nothing before it: one picture, build it or not.",
+     "why": "Exists today."
+    },
+    {
+     "id": "flow",
+     "call": "A flow: several screens in the order a person meets them, each open to rectangles.",
+     "why": "New. Today a flow gets split into unrelated slides."
+    },
+    {
+     "id": "words",
+     "call": "Wording in place: the editable boxes from the question above.",
+     "why": "New, if you approve it."
+    },
+    {
+     "id": "rule",
+     "call": "Instructions will say which of these to use when, with one filled-in example each.",
+     "why": "You asked for better templates and clearer instructions."
+    }
+   ]
+  },
+  {
+   "id": "S-5",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "In a deck that grows over rounds, how should pages be grouped?",
+   "today": "Not built yet. You picked \"new first, settled folded below\" and asked for more thought on grouping.",
+   "problem": "If new questions all jump to one page, they lose their topic. If they stay in topic pages, you hunt for them.",
+   "proposal": "Pages keep their topic names across rounds. A page with anything new is marked in the page bar and opens first. Inside a page, new rows sit on top and settled ones fold below with your answer shown.",
+   "options": [
+    {
+     "id": "topic",
+     "label": "Keep topic pages; mark and open the ones with something new",
+     "pros": [
+      "A new question keeps its context.",
+      "Pages do not get renamed or reshuffled."
+     ],
+     "cons": [
+      "New items can be spread over several pages."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "one-new",
+     "label": "One \"New this round\" page first, then the topic pages",
+     "pros": [
+      "Everything new is in one place."
+     ],
+     "cons": [
+      "A new question sits apart from the settled ones it relates to."
+     ]
+    }
+   ]
+  }
+ ]
+}

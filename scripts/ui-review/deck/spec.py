@@ -444,6 +444,14 @@ def _validate_calls(st, sid, errors):
         if c['id'] in seen:
             errors.append(f'{sid}: call id "{c["id"]}" is used twice')
         seen.add(c['id'])
+        if c.get('result') is not None and c['result'] not in ('pass', 'fail', 'unclear'):
+            errors.append(f'{sid}/{c["id"]}: result is pass, fail or unclear')
+        if c.get('picture') is not None:
+            pic = c['picture']
+            if not isinstance(pic, str) or os.path.isabs(pic) or '..' in pic.split('/'):
+                errors.append(f'{sid}/{c["id"]}: picture is a file path beside the spec (no leading slash, no "..")')
+            elif not os.path.exists(os.path.join(st.get('_base', ''), pic)):
+                errors.append(f'{sid}/{c["id"]}: picture {pic} does not exist beside the spec')
         for k in ('call', 'why'):
             if word_count(c[k]) > CALL_WORDS_MAX:
                 errors.append(f'{sid}/{c["id"]}: {k} is {word_count(c[k])} words (max {CALL_WORDS_MAX}) — one line he can skim')
@@ -881,7 +889,7 @@ def _validate_words(spec, st, sid, errors, warnings):
     elif is_dev(st):
         _validate_dev(spec, st, sid, errors)
     elif is_calls(st):
-        _validate_calls(st, sid, errors)
+        _validate_calls({**st, '_base': spec.get('_base', '')}, sid, errors)
     # A words step with options is ALWAYS a question — there is no other reason to offer a
     # choice — so it owes the three parts even when its author forgot `today` entirely.
     elif is_question(st) or st.get('options'):

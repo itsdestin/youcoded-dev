@@ -275,7 +275,12 @@
   // item i choose to change should have its own little text box underneath"). Small choices
   // the assistant made itself, one line each with its reason. Each stands unless he presses
   // Change this, which opens a box under THAT line for what he wants instead.
-  const callsCard = st => `<section class="card calls"><ul>${st.calls.map(c => `<li class="call" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p></div><button type="button" class="btn sm callchg" data-sid="${esc(st.id)}" data-call="${esc(c.id)}">Change this</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="What should it be instead?"></textarea></div></li>`).join('')}</ul></section>`;
+  // Round 2 widened the row so a WALKTHROUGH is built from the same list: a row may show a
+  // picture (areas work on it), the words of his it came from (`decided`), and a check's
+  // result. "More context" is his own addition (round 2, R-3): a row he cannot judge yet is
+  // neither fine nor changed — it asks the session to explain, in the next round.
+  const RESULT = { pass: 'Passed', fail: 'Failed', unclear: 'Unclear' };
+  const callsCard = st => `<section class="card calls${st.numbered ? ' numbered' : ''}"><ul>${st.calls.map(c => `<li class="call" data-call="${esc(c.id)}"><div class="callrow">${c.picture ? `<figure class="qpic row"><a href="${esc(c.picture)}" target="_blank" rel="noopener" title="Open full size" data-pk="${esc('row ' + c.id)}"><img src="${esc(c.picture)}" alt=""></a></figure>` : ''}<div class="calltext">${c.result ? `<span class="result ${esc(c.result)}">${RESULT[c.result]}</span>` : ''}<p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div><div class="callbtns"><button type="button" class="btn sm callchg" data-sid="${esc(st.id)}" data-call="${esc(c.id)}">Change this</button><button type="button" class="btn sm callask" data-sid="${esc(st.id)}" data-call="${esc(c.id)}">More context</button></div></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="What should it be instead?"></textarea></div></li>`).join('')}</ul></section>`;
   // The body of one step, in the order the cards are read.
   const cardsFor = st => st.kind === 'calls' ? callsCard(st) + noticeCard(st)
     : st.kind === 'question' ? pictureFig(st) + partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
@@ -307,8 +312,9 @@
   // WRITE: the answer IS words he types, not one of a list. Destin (2026-09-06): naming and
   // wording decisions had to be faked as a pick-one from options invented in advance, so an
   // answer that was not on the list was never heard. `Don't know` stays — a shrug is an answer.
-  const writeBox = st => `<textarea class="write ans-write" data-id="${esc(st.id)}" rows="2" placeholder="${esc(st.prompt || 'Type your answer…')}"></textarea>`
-    + `<button class="btn ans" data-v="other" data-dk="1"><span>Don't know</span></button>`;
+  // WHY no button beside it any more (Destin, 2026-11-09, round 2: "Don't know" and "Other"
+  // "basically serve the same purpose in my mind"): the box is the answer; a shrug is typed.
+  const writeBox = st => `<textarea class="write ans-write" data-id="${esc(st.id)}" rows="2" placeholder="${esc(st.prompt || 'Type your answer…')}"></textarea>`;
   const answerButtons = st => {
     const picks = pickList(st);
     if (st.answer === 'words') return writeBox(st);
@@ -320,7 +326,7 @@
     // one button overlapping the next. A contract deck hit it every time: its default "No,
     // something is missing" is the longest label the builder has.
     return st.kind === 'question'
-      ? `<button class="btn ans" data-v="yes"><span>${esc(yesLabel(st))}</span></button><button class="btn ans" data-v="no"><span>${esc(noLabel(st))}</span></button><button class="btn ans" data-v="other" data-dk="1"><span>Don't know</span></button>`
+      ? `<button class="btn ans" data-v="yes"><span>${esc(yesLabel(st))}</span></button><button class="btn ans" data-v="no"><span>${esc(noLabel(st))}</span></button><button class="btn ans" data-v="other"><span>Other</span></button>`
       : picks || st.kind === 'decide'
       ? (picks ? `<button class="btn ans" data-v="no"><span>None of these</span></button>` : '')
         + `<button class="btn ans" data-v="other"><span>Other</span></button>`
@@ -354,7 +360,7 @@
     const st = stepById(id) || {};
     // "All fine" cannot sit beside a line marked Change this — the yes that contradicts its
     // own note was a real fault in past decks. The button is disabled then; this is the backstop.
-    if (st.kind === 'calls' && v === 'yes' && Object.keys((state.answers[id] || {}).changes || {}).length) return;
+    if (st.kind === 'calls' && v === 'yes' && openRows(state.answers[id])) return;
     // SEVERAL: the same click toggles membership instead of replacing the answer, so "A and C,
     // not B" is a real answer rather than a sentence in the note box (Destin, 2026-09-06).
     if (v === 'pick' && st.pick === 'several') {
@@ -585,6 +591,8 @@
     if (open) { openDev(open); return; }
     const chg = e.target.closest('.callchg');
     if (chg) { toggleCall(chg.dataset.sid, chg.dataset.call); return; }
+    const ask = e.target.closest('.callask');
+    if (ask) { toggleAsk(ask.dataset.sid, ask.dataset.call); return; }
     const mx = e.target.closest('.markx');
     if (mx) { removeMark(mx.dataset.sid, +mx.dataset.i); return; }
     const b = e.target.closest('.copycmd'); if (!b) return;
@@ -643,24 +651,36 @@
     if (cid in ch) delete ch[cid]; else ch[cid] = '';
     // Any line marked for change makes the answer "something else"; none left, and an answer
     // that only existed because of a change is withdrawn rather than left as a bare Other.
+    if (cid in ch && a.asks) { a.asks = a.asks.filter(x => x !== cid); if (!a.asks.length) delete a.asks; }
     if (Object.keys(ch).length) { a.changes = ch; a.v = 'other'; delete a.dk; }
-    else { delete a.changes; if (a.v === 'other') delete a.v; }
+    else { delete a.changes; if (a.v === 'other' && !a.asks) delete a.v; }
     state.answers[sid] = a; paintState(); save();
     const box = $(`.callt[data-sid="${CSS.escape(sid)}"][data-call="${CSS.escape(cid)}"]`); if (box && cid in ch) box.focus();
   }
+  function toggleAsk(sid, cid) {
+    if (state.submitted) return;
+    const a = { ...(state.answers[sid] || {}) }; let asks = (a.asks || []).slice();
+    if (asks.includes(cid)) asks = asks.filter(x => x !== cid);
+    else { asks.push(cid); if (a.changes && cid in a.changes) { a.changes = { ...a.changes }; delete a.changes[cid]; if (!Object.keys(a.changes).length) delete a.changes; } }
+    if (asks.length) { a.asks = asks; a.v = 'other'; delete a.dk; } else { delete a.asks; if (a.v === 'other' && !a.changes) delete a.v; }
+    state.answers[sid] = a; paintState(); save();
+  }
+  const openRows = a => Object.keys((a || {}).changes || {}).length + ((a || {}).asks || []).length;
   function paintCalls() {
     $$('.card.calls .call').forEach(li => {
       const btn = li.querySelector('.callchg'), box = li.querySelector('.callt'), wrap = li.querySelector('.callbox');
       const ch = (state.answers[btn.dataset.sid] || {}).changes || {}; const on = btn.dataset.call in ch;
+      const askBtn = li.querySelector('.callask'), asked = ((state.answers[btn.dataset.sid] || {}).asks || []).includes(btn.dataset.call);
+      askBtn.classList.toggle('on', asked); askBtn.disabled = !!state.submitted; askBtn.textContent = asked ? 'Context asked ✓' : 'More context';
       li.classList.toggle('chg', on); wrap.hidden = !on; btn.textContent = on ? 'Undo' : 'Change this'; btn.disabled = !!state.submitted; box.disabled = !!state.submitted;
       if (document.activeElement !== box) { box.value = on ? ch[btn.dataset.call] : ''; grow(box); }
     });
     // The one answer button reads as what it now means.
     $$('.card.calls').forEach(card => {
       const scope = card.closest('article.q') || document; const sid = card.querySelector('.callchg').dataset.sid;
-      const n = Object.keys((state.answers[sid] || {}).changes || {}).length;
+      const n = openRows(state.answers[sid]);
       const b = scope.querySelector('.ans[data-v="yes"]'); if (!b) return;
-      b.disabled = !!state.submitted || n > 0; b.querySelector('span').textContent = n ? n + ' to change' : 'All fine';
+      b.disabled = !!state.submitted || n > 0; b.querySelector('span').textContent = n ? n + ' flagged' : 'All fine';
     });
     addMics();
   }
@@ -855,6 +875,7 @@
   function extras(a) {
     const out = [];
     for (const [k, t] of Object.entries(a.changes || {})) out.push('\n    change ' + k + ' — "' + String(t || '').trim() + '"');
+    (a.asks || []).forEach(k => out.push('\n    more context wanted on ' + k));
     (a.marks || []).forEach((m, i) => out.push('\n    area ' + (i + 1) + ' on ' + m.pic + ' (left ' + m.x + '%, top ' + m.y + '%, ' + m.w + '% wide, ' + m.h + '% tall) — "' + String(m.text || '').trim() + '"'));
     return out.join('');
   }
@@ -915,7 +936,7 @@
     if (v === 'pick') return label(a.pick);
     if (v === 'picks') return (a.picks || []).map(label).join('; ');
     if (v === 'wrote') return '“' + String(a.text || '').trim() + '”';
-    if (v === 'other' && a.changes) return 'Change ' + Object.keys(a.changes).length;
+    if (v === 'other' && (a.changes || a.asks)) return openRows(a) + ' flagged';
     if (v === 'other') return a.dk ? "Don't know" : 'Something else';
     if (v === 'no') return pickList(st) ? 'None of these' : noLabel(st);
     return yesLabel(st);
@@ -924,7 +945,7 @@
     const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
     const rows = DECK.steps.map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
-      const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()),
+      const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k),
         (a.marks || []).map((m, j) => 'Area ' + (j + 1) + ' on ' + m.pic + ': ' + String(m.text || '').trim())).filter(Boolean).join(' · ');
       return `<tr><td class="n">${i + 1}</td>`
         + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
@@ -1061,8 +1082,9 @@
   function wireMarks() {
     const one = (box, sid, pic) => { box.classList.add('markable'); box.dataset.sid = sid; box.dataset.pk = pic; };
     $$('.qpic > a').forEach(a => {
+      if (a.closest('.card.calls') && !a.dataset.pk) return;
       const art = a.closest('article.q'), opt = a.closest('.card.variant');
-      one(a, art ? art.dataset.id : DECK.steps[cur].id, opt ? 'option ' + opt.dataset.pick : 'the picture');
+      one(a, art ? art.dataset.id : DECK.steps[cur].id, a.dataset.pk || (opt ? 'option ' + opt.dataset.pick : 'the picture'));
     });
     if (!PAGES && !['clip', 'live'].includes(DECK.steps[cur].kind))
       $$('#inner .frame .pic').forEach(p => { if (p.querySelector('img')) one(p, DECK.steps[cur].id, p.closest('.frame').dataset.run); });
@@ -1161,7 +1183,7 @@
   }
   function voiceEnd() {
     clearInterval(voice.timer); voice.timer = null;
-    if (voice.btn) { voice.btn.classList.remove('rec', 'wait'); voice.btn.style.boxShadow = ''; const p = voice.btn.nextElementSibling; if (p && p.classList.contains('quiet')) p.hidden = true; }
+    if (voice.btn) { voice.btn.classList.remove('rec', 'wait'); voice.btn.style.boxShadow = ''; voice.btn.title = 'Speak instead of typing'; }
     voice.box = voice.btn = null;
   }
   function voiceApply(st) {
@@ -1175,7 +1197,10 @@
       if (voice.box.value !== text) { voice.box.value = text; voice.box.dispatchEvent(new Event('input', { bubbles: true })); grow(voice.box); }
     }
     voice.btn.classList.toggle('rec', st.status === 'recording');
-    voiceSay(voice.btn, st.error ? '' : st.status === 'recording' ? 'Listening — press the microphone again to stop' : st.status === 'loading' ? 'Getting voice ready…' : st.status === 'finishing' ? 'Finishing…' : '', true);
+    // Fix (Destin, round 2: "it kinda bugged out … made the size/shape of the text box wonky"):
+    // the "Listening" line was a new item in the same row as the box, so the box was squeezed
+    // and jumped each time the line appeared. The state is now the button's tooltip only.
+    voice.btn.title = st.status === 'recording' ? 'Listening — press again to stop' : st.status === 'loading' ? 'Getting voice ready…' : st.status === 'finishing' ? 'Finishing…' : 'Speak instead of typing';
     voice.btn.classList.toggle('wait', st.status === 'finishing' || st.status === 'loading');
     if (st.error) voiceSay(voice.btn, st.error);
     if (st.status === 'idle' || st.status === 'off') voiceEnd();

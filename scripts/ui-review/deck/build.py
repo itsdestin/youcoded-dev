@@ -155,7 +155,9 @@ def _words_step(spec, st):
         # Small choices the assistant made itself: one line and its reason each; page.js gives
         # every line its own Change this button and text box.
         d['kind'] = 'calls'
-        d['calls'] = [{'id': c['id'], 'call': c['call'], 'why': c['why']} for c in st['calls']]
+        d['calls'] = [{k: c[k] for k in ('id', 'call', 'why', 'picture', 'decided', 'result') if c.get(k)} for c in st['calls']]
+        if st.get('numbered'):
+            d['numbered'] = True   # a behind-the-scenes story: the rows are steps, in order
     elif st.get('options'):
         d['kind'] = 'decide'
         d['options'] = [_option(o) for o in st['options']]

@@ -442,8 +442,8 @@ print(p)`;
       assert.equal(await c.evaluate("document.querySelector('#wsub').textContent"), 'Statements, not questions.');
       assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.dataset.id)"), ['Q-3', 'Q-4', 'Q-5']);
       assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-3\"] .ans')].map(b=>b.textContent).join(',')"), 'Holds,Fails,Other');
-      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-4\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', "Don't know"]);
-      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-5\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', "Don't know"]);
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-4\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', 'Other']);
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-5\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', 'Other']);
       assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Done', 'the last page finishes the deck');
       // Q-4 answers Don't know; Q-5 answers Yes — two DIFFERENT question-kind steps in two
       // different states, so the finish screen has to tell them apart, not just echo one value.
@@ -454,7 +454,8 @@ print(p)`;
       assert.deepEqual([answers.answers['Q-1'].v, answers.answers['Q-1'].pick], ['pick', 'a']);
       assert.equal(answers.answers['Q-1'].note, 'smaller');
       assert.deepEqual([answers.answers['Q-2'].v, answers.answers['Q-2'].pick], ['pick', 'b']);
-      assert.deepEqual([answers.answers['Q-4'].v, answers.answers['Q-4'].dk], ['other', true], "don't know is Other with a flag");
+      // Round 2 (2026-11-09): "Don't know" became plain "Other" — one button, no flag.
+      assert.deepEqual([answers.answers['Q-4'].v, answers.answers['Q-4'].dk], ['other', undefined]);
       assert.equal(answers.answers['Q-5'].v, 'yes', 'the second question-kind step answers yes');
       // A page marker is not a step: it is never in the deck's steps and never gets an answer.
       assert.equal(await c.evaluate('DECK.steps.some(s => s.id === "P-2")'), false);
@@ -486,7 +487,7 @@ print(p)`;
       const rows = JSON.parse(await c.evaluate(
         "JSON.stringify([...document.querySelectorAll('#responses tbody tr')].map(r=>[...r.cells].map(c=>c.textContent.trim())))"));
       assert.equal(rows.length, 5, 'five steps, not two pages');
-      assert.equal(rows[3][2], "Don't know");
+      assert.equal(rows[3][2], 'Something else');
       assert.equal(rows[4][2], 'Yes', 'a question answered yes reads back as "Yes", not the picture deck\'s "Yes, keep it"');
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
@@ -1185,7 +1186,8 @@ print(p)`;
         const b=document.querySelectorAll('.callt')[1];b.value='play the chime';b.dispatchEvent(new Event('input',{bubbles:true}));})()`);
       await sleep(900);
       assert.equal(await c.evaluate("document.querySelectorAll('.markable .mark').length"), 1, 'the area is drawn on the picture');
-      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"Q-9\"] .ans[data-dk]').classList.contains('on')"), false, "an area does not light Don't know");
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"Q-9\"] .ans[data-v=other]').classList.contains('on')"), true, 'an area with no button pressed reads as Other');
+      await c.evaluate("document.querySelectorAll('.callask')[0].click()"); await sleep(500);
       assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .ans').disabled"), true, 'All fine is off while a call is marked for change');
       assert.deepEqual(c.errors, []);
     } finally { await c.close(); }
@@ -1193,6 +1195,7 @@ print(p)`;
     assert.equal(saved.answers['Q-9'].marks[0].text, 'too cramped');
     assert.ok(saved.answers['Q-9'].marks[0].w > 30 && saved.answers['Q-9'].marks[0].h > 30, JSON.stringify(saved.answers['Q-9'].marks[0]));
     assert.deepEqual(saved.answers['K-1'].changes, { sound: 'play the chime' });
+    assert.deepEqual(saved.answers['K-1'].asks, ['size'], 'More context is recorded per row');
     assert.ok(saved.built && saved.built.at, 'the answers file records which build he was shown');
   } finally { srv.kill(); }
 });

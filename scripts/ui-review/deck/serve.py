@@ -82,6 +82,8 @@ def extras(a):
     out = []
     for k, t in (a.get('changes') or {}).items():
         out.append(f'\n    change {k} — "{(t or "").strip()}"')
+    for k in a.get('asks') or []:
+        out.append(f'\n    more context wanted on {k}')
     for i, m in enumerate(a.get('marks') or []):
         out.append(f'\n    area {i + 1} on {m.get("pic")} (left {m.get("x")}%, top {m.get("y")}%, '
                    f'{m.get("w")}% wide, {m.get("h")}% tall) — "{(m.get("text") or "").strip()}"')

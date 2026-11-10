@@ -515,3 +515,14 @@ body[data-served] .callt,body[data-served] .markt{padding-right:44px}
 .calltext .src{font-size:12px;color:var(--fg-muted)}
 .chip .built{color:inherit;opacity:.7;border-left-color:currentColor}
 .responses td.when{white-space:nowrap}
+/* round 2: rows that carry a picture, a source quote, a check result, and More context */
+.callbtns{flex:none;display:flex;flex-direction:row;gap:6px;align-items:flex-start}
+.callask.on{border-color:var(--link);color:var(--link)}
+.qpic.row{flex:0 0 min(38%,420px);margin:0} .qpic.row img{max-height:300px}
+.decided{margin:6px 0 0;padding-left:10px;border-left:2px solid var(--mark);font-size:12px;font-style:italic;color:var(--fg-2)}
+.result{display:inline-block;margin:0 0 6px;padding:2px 8px;border-radius:999px;font:600 11px/1.5 var(--font);border:1px solid currentColor}
+.result.pass{color:var(--yes)} .result.fail{color:var(--no)} .result.unclear{color:var(--mark)}
+.card.calls.numbered ul{counter-reset:stepn} .card.calls.numbered .calltext{position:relative;padding-left:32px}
+.card.calls.numbered .calltext::before{counter-increment:stepn;content:counter(stepn);position:absolute;left:0;top:0;display:grid;place-items:center;width:22px;height:22px;border:1px solid var(--edge);border-radius:50%;font:600 11px/1 var(--font);color:var(--fg-muted)}
+.callbox,.markrow{flex-wrap:wrap}
+@media (max-width:760px){.callrow{flex-wrap:wrap}.qpic.row{flex-basis:100%}.callbtns{flex-direction:row}}
