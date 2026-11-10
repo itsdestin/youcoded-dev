@@ -1,0 +1,112 @@
+{
+ "deck": "pages-finish-review",
+ "started": "2026-11-10T08:07:27.284Z",
+ "submitted": "2026-11-10T08:17:28Z",
+ "cur": 3,
+ "answers": {
+  "S-picture": {
+   "v": "yes",
+   "t": 1794298112143,
+   "seconds": 33,
+   "theme": "midnight"
+  },
+  "Q-route": {
+   "v": "pick",
+   "pick": "all-together",
+   "t": 1794298112143,
+   "seconds": 33,
+   "theme": "midnight"
+  },
+  "Q-skipask": {
+   "v": "other",
+   "t": 1794298368694,
+   "note": "this makes no sense at all. there is no single \"app setting\" for permissions, each session gets its own. also i thought we already had decided on a user prompt to approve page instructions and such. if its the regular in page chat, i should be able to pick between permissions modes for that specific chat like i would in a real full session",
+   "seconds": 64,
+   "theme": "midnight"
+  },
+  "Q-approvals": {
+   "v": "pick",
+   "pick": "others-reask",
+   "t": 1794298368694,
+   "seconds": 64,
+   "theme": "midnight"
+  },
+  "Q-deletepage": {
+   "v": "pick",
+   "pick": "remove-all",
+   "t": 1794298368694,
+   "note": "but we should make this very clear with a danger/confirmation prompt",
+   "seconds": 64,
+   "theme": "midnight"
+  },
+  "S-fixes": {
+   "v": "yes",
+   "t": 1794298368694,
+   "seconds": 64,
+   "theme": "midnight"
+  },
+  "Q-commands": {
+   "v": "other",
+   "t": 1794298562466,
+   "note": "i think the last deck far overcomplicated this. you reall need to just look through all of my works in both past conversations and earlier decks on this feature/subject. you should review all of my guidance before we proceed and figure out if the current proposal adheres",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-practice": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1794298562466,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-models": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1794298562466,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-cap": {
+   "v": "pick",
+   "t": 1794298562466,
+   "pick": "runs-cap",
+   "note": "but this should only be used in contexts wehre it makes sense. a job set to only run every 12h doesnt need a runs per day cap.",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-closed": {
+   "v": "pick",
+   "pick": "resume",
+   "t": 1794298562466,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "S-delete": {
+   "v": "yes",
+   "t": 1794298562466,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-notify": {
+   "v": "yes",
+   "t": 1794298647450,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-fence-other": {
+   "v": "wrote",
+   "text": "this question lacks enough context for me to remember what we're talking about",
+   "t": 1794298647450,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-missed": {
+   "v": "other",
+   "dk": true,
+   "t": 1794298647450,
+   "note": "again i want you to really review all guidance i've given directly on this feature so we know where we've drifted",
+   "seconds": 28,
+   "theme": "midnight"
+  }
+ }
+}
