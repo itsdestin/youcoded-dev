@@ -73,3 +73,28 @@ test('a file name with spaces and an apostrophe is encoded in the URL and quoted
   assert.match(cmd, /-o ~\/Downloads\/You\\ Coded\\'s\\ Installer-1\.0-x64\.dmg /);
   assert.doesNotMatch(cmd, /Downloads\/You Coded/, 'a raw space would split the guest command');
 });
+
+// Review 2026-11-10: the "any file in incoming/" fallback was lost, and ties were guessed.
+test('a run artifact with another installer type (.zip) still loads, with a note', t => {
+  const f = fixture(t, ['pkg/YouCoded-1.4.0.zip', 'pkg/latest-mac.yml']);
+  const r = f.run('load', 'run:99');
+  assert.equal(r.status, 0, r.stderr + r.stdout);
+  assert.match(r.stderr, /using YouCoded-1\.4\.0\.zip/);
+  assert.ok(f.served('YouCoded-1.4.0.zip'));
+});
+
+test('several candidates and none matching the installer pattern: refuses and lists them, loads nothing', t => {
+  const f = fixture(t, ['a/One.dmg', 'a/Two.dmg']);
+  const r = f.run('load', 'run:99');
+  assert.notEqual(r.status, 0);
+  assert.match(r.stderr, /One\.dmg/); assert.match(r.stderr, /Two\.dmg/);
+  assert.ok(!f.served('One.dmg') && !f.served('Two.dmg'));
+  assert.equal(f.log().filter(l => l[0] === 'ssh').length, 0, 'the guest was never contacted');
+});
+
+test('several candidates but one matches the installer pattern: that one is chosen', t => {
+  const f = fixture(t, ['a/Other.dmg', 'a/YouCoded-Installer-1.4.0-x64.dmg', 'a/Extra.zip']);
+  const r = f.run('load', 'run:99');
+  assert.equal(r.status, 0, r.stderr);
+  assert.ok(f.served('YouCoded-Installer-1.4.0-x64.dmg'));
+});

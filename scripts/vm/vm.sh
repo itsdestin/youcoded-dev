@@ -180,7 +180,18 @@ case "$CMD" in
     esac
     f=$(find "$SERVE/incoming" -type f -name "$pat" | sort | head -1)
     if [ -z "$f" ]; then
-      f=$(find "$SERVE/incoming" -type f -name "$ext" | sort | head -1)
+      # WHY three tiers, and refuse on a tie (review 2026-11-10): the first rewrite dropped the old "any file in incoming/" fallback, so
+      # a .deb/.msi/.zip, or a run artifact with an unexpected name, said "nothing matched" where it used to load. Order: this platform's
+      # installer extension, then any file that is not obvious release metadata. With more than one candidate at a tier we do not guess
+      # (an unrelated .exe or a sibling archive could be loaded into the guest): list them and stop.
+      cands=$(find "$SERVE/incoming" -type f -name "$ext" | sort)
+      [ -n "$cands" ] || cands=$(find "$SERVE/incoming" -type f ! -name '*.yml' ! -name '*.yaml' ! -name '*.json' ! -name '*.txt' ! -name '*.md' ! -name '*.blockmap' ! -name '*.sha*' ! -name '*.sig' ! -name '*.asc' | sort)
+      if [ -n "$cands" ] && [ "$(printf '%s\n' "$cands" | grep -c .)" -gt 1 ]; then
+        echo "nothing matched $pat, and several other files could be the installer:" >&2
+        printf '%s\n' "$cands" | sed "s|^$SERVE/incoming/|  |" >&2
+        echo "load one explicitly: vm.sh $OS load <file>" >&2; exit 1
+      fi
+      f=$cands
       [ -z "$f" ] || echo "note: nothing matched $pat; using $(basename "$f")" >&2
     fi
     [ -n "$f" ] || { echo "nothing matched $pat (or $ext)" >&2; exit 1; }
