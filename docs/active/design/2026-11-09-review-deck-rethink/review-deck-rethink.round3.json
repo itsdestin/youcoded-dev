@@ -178,7 +178,7 @@
    "calls": [
     {
      "id": "auto",
-     "call": "All 331 automatic checks of the deck tool.",
+     "call": "All 353 automatic checks of the deck tool.",
      "why": "Run after the last change today.",
      "result": "pass"
     },
