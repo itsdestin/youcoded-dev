@@ -12,8 +12,8 @@
 // textarea's value did not send (card #209; the old recipe in docs/local-dev.md: "React's Enter
 // handler is flaky with synthetic KeyboardEvents"). CDP Input.* events are what the browser
 // itself would deliver, so the page sees a real keystroke.
-import { existsSync, readFileSync, statSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { basename, join, resolve } from 'node:path';
 
 const sleepReal = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -26,6 +26,21 @@ const sleepReal = (ms) => new Promise((r) => setTimeout(r, ms));
  * page's address must be the dev server's http://localhost:<vitePort>, which the installed app
  * (a packaged file page) never is.
  */
+/**
+ * True only when the process's command line IS run-dev.sh being run: argv[0] is run-dev.sh itself
+ * (executed directly) or a shell whose first non-flag argument is run-dev.sh.
+ * WHY not "the text appears anywhere": `vim scripts/run-dev.sh`, or a pid reused by something that
+ * merely mentions the file, passed the old substring check. (Second review, 2026-11-10.)
+ */
+export function isRunDevCmdline(cmd) {
+  const argv = String(cmd).split('\0').filter((a) => a !== '');
+  if (argv.length === 0) return false;
+  if (basename(argv[0]) === 'run-dev.sh') return true;
+  if (!['bash', 'sh', 'dash', 'zsh', 'env'].includes(basename(argv[0]))) return false;
+  const script = argv.slice(1).find((a) => !a.startsWith('-'));
+  return script !== undefined && basename(script) === 'run-dev.sh';
+}
+
 export function assertDevMarker(marker, readCmd = (pid) => readFileSync(`/proc/${pid}/cmdline`, 'utf8')) {
   if (!marker || !Number.isInteger(marker.devtoolsPort) || !Number.isInteger(marker.vitePort) || !marker.pid) {
     throw new Error('dev-chat: refusing to attach — no valid dev-window marker (run-dev.sh writes one)');
@@ -33,12 +48,46 @@ export function assertDevMarker(marker, readCmd = (pid) => readFileSync(`/proc/$
   // Asserted again here (findDevWindow checks it too) because this is the rule that keeps the
   // installed app out: only run-dev.sh writes a marker, and the installed app is never run-dev.sh.
   let cmd = null; try { cmd = readCmd(marker.pid); } catch { /* no /proc */ }
-  if (cmd !== null && !cmd.includes('run-dev.sh')) throw new Error('dev-chat: refusing to attach — the marker\'s process is not run-dev.sh');
+  if (cmd !== null && !isRunDevCmdline(cmd)) throw new Error('dev-chat: refusing to attach — the marker\'s process is not run-dev.sh');
   return marker;
 }
 
-export async function attachDev(checkout, { findDevWindow, attachPage, readCmd }) {
-  const marker = assertDevMarker(findDevWindow(checkout), readCmd);
+const pidAlive = (pid) => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
+const readMarkers = (checkout) => {
+  const dir = join(checkout, 'desktop', '.dev-instances');
+  const out = [];
+  for (const f of existsSync(dir) ? readdirSync(dir).filter((x) => x.endsWith('.json')) : []) {
+    try { out.push(JSON.parse(readFileSync(join(dir, f), 'utf8'))); } catch { /* unreadable marker: skip */ }
+  }
+  return out;
+};
+
+/**
+ * The marker to drive. WHY counted here: engine.mjs findDevWindow returns the FIRST live marker in
+ * directory order, so with two dev instances from one checkout a command could land in whichever
+ * window sorted first — a chat message sent to the wrong app. Here more than one live instance is
+ * refused unless the caller names one by --offset (the number run-dev.sh recorded in the marker).
+ */
+export function pickMarker(checkout, offset, { listMarkers = readMarkers, isAlive = pidAlive, readCmd = (pid) => readFileSync(`/proc/${pid}/cmdline`, 'utf8') } = {}) {
+  const live = listMarkers(checkout).filter((m) => {
+    if (!m || !m.pid || !isAlive(m.pid)) return false;
+    let cmd = null; try { cmd = readCmd(m.pid); } catch { /* no /proc */ }
+    return cmd === null || isRunDevCmdline(cmd);
+  });
+  const describe = (m) => `offset ${m.offset} (profile ${m.profile ?? '?'}, port ${m.vitePort})`;
+  if (offset !== undefined) {
+    const hit = live.filter((m) => String(m.offset) === String(offset));
+    if (hit.length === 0) throw new Error(`dev-chat: no live dev window has offset ${offset}. Live: ${live.map(describe).join('; ') || '(none)'}`);
+    return hit[0];
+  }
+  if (live.length > 1) throw new Error(`dev-chat: ${live.length} dev windows are running from this checkout — name one with --offset <n>: ${live.map(describe).join('; ')}`);
+  return live[0] ?? null;
+}
+
+export async function attachDev(checkout, { findDevWindow, attachPage, readCmd, offset, listMarkers, isAlive }) {
+  // Zero live markers: fall through to the engine, whose error says how to start a dev window.
+  const picked = pickMarker(checkout, offset, { listMarkers, isAlive, readCmd });
+  const marker = assertDevMarker(picked ?? findDevWindow(checkout), readCmd);
   const prefix = `http://localhost:${marker.vitePort}`;
   const tab = await attachPage(marker.devtoolsPort, prefix);
   const origin = await tab.evaluate('location.origin').catch(() => null);
@@ -54,7 +103,10 @@ export async function attachDev(checkout, { findDevWindow, attachPage, readCmd }
 }
 
 // ─── In-page helpers (as source text, run through tab.evaluate) ──────────────
-const VISIBLE = `(el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && !el.disabled; }`;
+const VISIBLE = `(el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && !el.disabled && !el.closest('[aria-hidden="true"]'); }`;
+// WHY the aria-hidden exclusion lives here: a background chat pane is kept mounted but hidden
+// (aria-hidden), and its textarea/buttons have real size, so without it a message could be typed
+// into, or a click land on, a chat that is not the one on screen. newChat already excluded them.
 
 // The message box: the textarea inside a <form> (docs/local-dev.md: there are two textareas).
 const BOX = `(() => { const vis = ${VISIBLE}; return [...document.querySelectorAll('form textarea')].filter(vis)[0] || null; })()`;
@@ -124,12 +176,26 @@ export async function newChat(tab, folder, { sleep = sleepReal, trustWaitMs = 30
     shown = await tab.evaluate(`[...document.querySelectorAll('[data-chat-session-id]')].some((x) => x.dataset.chatSessionId === ${sid} && !x.closest('[aria-hidden="true"]'))`);
     if (!shown) await sleep(100);
   }
-  // The trust prompt is a pair of buttons ("Yes, I trust this folder" / "No, exit"). Only a button
-  // whose label says trust (and not "don't") is ever clicked here.
+  // The trust prompt is the app's TrustGate overlay (renderer/components/TrustGate.tsx): a title
+  // <p> reading exactly TRUST_PROMPT_TITLE ('Trust This Folder?', shared/ink-select-parser.ts) with
+  // its buttons ("Yes, I trust this folder" / "No, exit") in the same container. WHY this narrow:
+  // the old "any visible button saying trust" could have clicked a button elsewhere in the app. Now
+  // only a "Yes … trust" button inside the container of the one visible title is ever clicked, and
+  // more than one candidate is refused.
   let trusted = false;
   const t0 = Date.now();
   while (Date.now() - t0 < trustWaitMs) {
-    const p = await tab.evaluate(`(() => { const vis = ${VISIBLE}; const b = [...document.querySelectorAll('button')].filter(vis).find((x) => /trust/i.test(x.innerText) && !/don.?t|no,/i.test(x.innerText)); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, text: b.innerText.trim() }; })()`);
+    const p = await tab.evaluate(`(() => { const vis = ${VISIBLE};
+      const titles = [...document.querySelectorAll('p')].filter(vis).filter((x) => x.innerText.trim() === 'Trust This Folder?');
+      if (titles.length === 0) return null;
+      if (titles.length > 1) return { ambiguous: titles.length + ' trust prompts' };
+      const all = [...titles[0].parentElement.querySelectorAll('button')].filter(vis);
+      const yes = all.filter((x) => /^yes\\b.*\\btrust\\b/i.test(x.innerText.trim()));
+      if (yes.length > 1) return { ambiguous: yes.length + ' trust buttons' };
+      if (yes.length === 0) return { none: all.map((x) => x.innerText.trim()) };
+      const r = yes[0].getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, text: yes[0].innerText.trim() }; })()`);
+    if (p?.ambiguous) throw new Error(`new: not clicking — ${p.ambiguous} on screen`);
+    if (p?.none) throw new Error(`new: the trust prompt is up but has no "Yes, I trust…" button (buttons: ${p.none.join(' | ') || 'none'}) — not clicking`);
     if (p) { await mouseClick(tab, p.x, p.y); trusted = true; await sleep(500); break; }
     // Once the message box exists with no prompt in sight, the folder was already trusted.
     if (await tab.evaluate(BOX)) break;
@@ -143,10 +209,18 @@ export async function say(tab, text, { sleep = sleepReal, waitMs = 5000 } = {}) 
   if (!text) throw new Error('nothing to say');
   const boxed = await tab.evaluate(`(() => { const t = ${BOX}; if (!t) return false; t.focus(); return document.activeElement === t; })()`);
   if (!boxed) throw new Error('no message box is on screen (is a chat open?)');
+  const readBox = () => tab.evaluate(`(() => { const t = ${BOX}; return t ? t.value : null; })()`);
+  // WHY refuse a non-empty box: typing appends, so a half-typed draft ("hello") plus `say "run
+  // tests"` would send "hellorun tests". Someone's draft is never cleared for them.
+  const before = await readBox();
+  if (typeof before === 'string' && before.length > 0) {
+    throw new Error(`the message box already holds ${before.length} characters of someone's draft — not typing over it. Send or clear it first.`);
+  }
   await tab.send('Input.insertText', { text });
-  const typed = await tab.evaluate(`(() => { const t = ${BOX}; return t ? t.value : null; })()`);
-  if (typeof typed !== 'string' || typed.length < text.length) {
-    throw new Error(`the box holds ${typed === null ? 'nothing' : typed.length + ' of ' + text.length + ' characters'} after typing — not sending`);
+  const typed = await readBox();
+  // WHY exact equality (not "at least as long"): anything else in the box goes out with the message.
+  if (typed !== text) {
+    throw new Error(`the box holds ${typed === null ? 'nothing' : typed.length + ' characters'} after typing, not exactly the ${text.length} typed — not sending`);
   }
   const key = { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 };
   await tab.send('Input.dispatchKeyEvent', { type: 'keyDown', ...key, text: '\r', unmodifiedText: '\r' });

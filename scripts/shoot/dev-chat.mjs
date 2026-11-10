@@ -8,7 +8,7 @@
 // real run must confirm is in docs/local-dev.md -> "Driving a dev window's Claude Code chat".
 //
 // Usage (each call attaches, does one thing, detaches):
-//   node scripts/shoot/dev-chat.mjs [--worktree <name|path>] new <folder>
+//   node scripts/shoot/dev-chat.mjs [--worktree <name|path>] [--offset <n>] new <folder>
 //   node scripts/shoot/dev-chat.mjs [--worktree …] mode normal|auto
 //   node scripts/shoot/dev-chat.mjs [--worktree …] say "<text>"
 //   node scripts/shoot/dev-chat.mjs [--worktree …] click "<button label>"
@@ -32,10 +32,18 @@ const die = (m) => { console.error(m); process.exit(1); };
 
 const args = process.argv.slice(2);
 let worktree = '';
-if (args[0] === '--worktree') { worktree = args[1] ?? die('--worktree needs a name or path'); args.splice(0, 2); }
+// --offset picks one dev window when several run from the same checkout (the number run-dev.sh
+// recorded in its marker); without it, more than one live window is refused.
+let offset;
+while (args[0] === '--worktree' || args[0] === '--offset') {
+  const [flag, val] = args.splice(0, 2);
+  if (val === undefined) die(`${flag} needs a value`);
+  if (flag === '--worktree') worktree = val;
+  else { if (!/^\d+$/.test(val)) die('--offset needs a whole number'); offset = val; }
+}
 const [verb, ...rest] = args;
 const need = (n, what) => { if (rest.length < n || !rest[0]) die(`usage: dev-chat.mjs ${verb} ${what}`); };
-if (!['new', 'mode', 'say', 'click', 'shot'].includes(verb)) die('usage: dev-chat.mjs [--worktree <w>] new <folder> | mode normal|auto | say "<text>" | click "<label>" | shot [file.png]');
+if (!['new', 'mode', 'say', 'click', 'shot'].includes(verb)) die('usage: dev-chat.mjs [--worktree <w>] [--offset <n>] new <folder> | mode normal|auto | say "<text>" | click "<label>" | shot [file.png]');
 if (verb === 'new') need(1, '<folder>');
 if (verb === 'mode') need(1, 'normal|auto');
 if (verb === 'say') need(1, '"<text>"');
@@ -47,7 +55,7 @@ const checkout = worktree ? resolveCheckout(worktree) : existsSync(join(local, '
 
 let tab;
 try {
-  tab = await attachDev(checkout, { findDevWindow, attachPage });
+  tab = await attachDev(checkout, { findDevWindow, attachPage, offset });
   let out;
   if (verb === 'new') out = await newChat(tab, rest[0]);
   else if (verb === 'mode') out = await setMode(tab, rest[0]);

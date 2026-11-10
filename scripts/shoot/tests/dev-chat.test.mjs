@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertDevMarker, attachDev, clickLabel, newChat, say, setMode } from '../dev-chat-lib.mjs';
+import { assertDevMarker, attachDev, clickLabel, isRunDevCmdline, newChat, pickMarker, say, setMode } from '../dev-chat-lib.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const noSleep = async () => {};
@@ -72,7 +72,7 @@ test('source guard: no port or URL option and no connection of its own; the engi
     const src = readFileSync(join(HERE, '..', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
     assert.doesNotMatch(src, /new WebSocket|\/json\/version|\b9222\b|['"]--port|['"]--url|\/opt\/YouCoded/i, `${f} must not open its own connection`);
   }
-  assert.match(readFileSync(join(HERE, '..', 'dev-chat.mjs'), 'utf8'), /attachDev\(checkout, \{ findDevWindow, attachPage \}\)/);
+  assert.match(readFileSync(join(HERE, '..', 'dev-chat.mjs'), 'utf8'), /attachDev\(checkout, \{ findDevWindow, attachPage, offset \}\)/);
 });
 
 // ─── say ─────────────────────────────────────────────────────────────────────
@@ -148,7 +148,7 @@ test('new: creates a Claude Code chat in the folder (not the native runtime) and
   const tab = stubTab({
     'window.claude.session.create': (e) => { created = e; return { id: 's-1' }; },
     'data-chat-session-id': true,
-    'trust': () => (++polls < 2 ? null : { x: 9, y: 9, text: 'Yes, I trust this folder' }),
+    'Trust This Folder?': () => (++polls < 2 ? null : { x: 9, y: 9, text: 'Yes, I trust this folder' }),
     'form textarea': null,
   });
   const out = await newChat(tab, tmpdir(), { sleep: noSleep, trustWaitMs: 5000 });
@@ -162,4 +162,76 @@ test('new: creates a Claude Code chat in the folder (not the native runtime) and
 test('new: a missing folder or a failed create is a plain error', async () => {
   await assert.rejects(newChat(stubTab({}), '/no/such/folder/here', { sleep: noSleep }), /is not a folder/);
   await assert.rejects(newChat(stubTab({ 'window.claude.session.create': { error: 'boom' } }), tmpdir(), { sleep: noSleep }), /session\.create failed: boom/);
+});
+
+// ─── second-review fixes (2026-11-10) ────────────────────────────────────────
+test('say: a box that already holds a draft is refused before anything is typed or sent', async () => {
+  const tab = stubTab({ 'focus()': true, 'return t ? t.value : null': () => 'hello' });
+  await assert.rejects(say(tab, 'run tests', { sleep: noSleep }), /already holds 5 characters/);
+  assert.equal(tab.sent.length, 0);
+});
+
+test('say: the box must equal the text exactly before Enter (extra content is refused)', async () => {
+  let value = '';
+  const tab = stubTab({ 'focus()': true, 'return t ? t.value : null': () => value },
+    { onSend: (m, p) => { if (m === 'Input.insertText') value = `>> ${p.text}`; } });
+  await assert.rejects(say(tab, 'run tests', { sleep: noSleep }), /not exactly the 9 typed/);
+  assert.equal(tab.sent.some((s) => s.params.type === 'keyDown'), false);
+});
+
+test('hidden panes: the shared visibility helper excludes aria-hidden ancestors (box, buttons, mode chip)', async () => {
+  const seen = [];
+  const tab = stubTab({ 'focus()': (e) => { seen.push(e); return true; }, 'return t ? t.value : null': '' }, { onSend: () => {} });
+  await say(tab, 'x', { sleep: noSleep, waitMs: 0 }).catch(() => {});
+  assert.ok(seen.length > 0 && seen.every((e) => e.includes(`closest('[aria-hidden="true"]')`)), 'BOX finder must skip aria-hidden panes');
+  const labelSrc = [];
+  await clickLabel(stubTab({ 'document.querySelectorAll': (e) => { labelSrc.push(e); return { x: 1, y: 1, label: 'a' }; } }), 'a', { sleep: noSleep });
+  assert.match(labelSrc[0], /closest\('\[aria-hidden="true"\]'\)/);
+});
+
+test('run-dev.sh check: only run-dev.sh actually being run counts', () => {
+  assert.equal(isRunDevCmdline('bash\0scripts/run-dev.sh\0x'), true);
+  assert.equal(isRunDevCmdline('/bin/bash\0-e\0./scripts/run-dev.sh\0--offset\x00100'), true);
+  assert.equal(isRunDevCmdline('/x/run-dev.sh\0a'), true);
+  assert.equal(isRunDevCmdline('vim\0scripts/run-dev.sh'), false);
+  assert.equal(isRunDevCmdline('bash\0-c\0echo run-dev.sh'), false);
+  assert.equal(isRunDevCmdline('/opt/YouCoded/youcoded'), false);
+  assert.throws(() => assertDevMarker({ pid: 7, devtoolsPort: 1, vitePort: 2 }, () => 'vim\0scripts/run-dev.sh'), /not run-dev\.sh/);
+});
+
+test('two live dev windows: refused unless --offset names one; the candidates are listed', async () => {
+  const markers = [{ pid: 1, devtoolsPort: 9272, vitePort: 5223, offset: 50, profile: 'a' }, { pid: 2, devtoolsPort: 9322, vitePort: 5273, offset: 100, profile: 'b' }];
+  const deps = { listMarkers: () => markers, isAlive: () => true, readCmd: () => 'bash\0scripts/run-dev.sh' };
+  assert.throws(() => pickMarker('/x', undefined, deps), /2 dev windows.*--offset.*offset 50.*offset 100/);
+  assert.equal(pickMarker('/x', '100', deps).pid, 2);
+  assert.throws(() => pickMarker('/x', '7', deps), /no live dev window has offset 7/);
+  // A dead pid or a non-run-dev.sh process is not "live": one remaining window is picked without --offset.
+  assert.equal(pickMarker('/x', undefined, { ...deps, isAlive: (p) => p === 1 }).pid, 1);
+  assert.equal(pickMarker('/x', undefined, { ...deps, readCmd: (p) => (p === 1 ? 'vim\0scripts/run-dev.sh' : 'bash\0scripts/run-dev.sh') }).pid, 2);
+  assert.equal(pickMarker('/x', undefined, { ...deps, listMarkers: () => [] }), null);
+});
+
+test('attachDev passes --offset through to the picker and never attaches on an ambiguous pair', async () => {
+  let attached = false;
+  const markers = [{ pid: 1, devtoolsPort: 9272, vitePort: 5223, offset: 50 }, { pid: 2, devtoolsPort: 9322, vitePort: 5273, offset: 100 }];
+  const deps = { listMarkers: () => markers, isAlive: () => true, readCmd: () => 'bash\0scripts/run-dev.sh', findDevWindow: () => { throw new Error('unused'); },
+    attachPage: async (port, prefix) => { attached = [port, prefix]; return { evaluate: async (e) => (e === 'location.origin' ? prefix : true), close: async () => {} }; } };
+  await assert.rejects(attachDev('/x', deps), /name one with --offset/);
+  assert.equal(attached, false);
+  await attachDev('/x', { ...deps, offset: '100' });
+  assert.deepEqual(attached, [9322, 'http://localhost:5273']);
+});
+
+test('new: only the trust prompt\'s own "Yes, I trust" button is clicked; several candidates or no yes-button are refused', async () => {
+  const base = { 'window.claude.session.create': { id: 's-2' }, 'data-chat-session-id': true };
+  const src = [];
+  const ok = stubTab({ ...base, 'Trust This Folder?': (e) => { src.push(e); return { x: 1, y: 1, text: 'Yes, I trust this folder' }; } });
+  await newChat(ok, tmpdir(), { sleep: noSleep, trustWaitMs: 5000 });
+  // The page-side finder is scoped to the title's container, not "any button saying trust".
+  assert.match(src[0], /Trust This Folder\?/);
+  assert.match(src[0], /parentElement\.querySelectorAll\('button'\)/);
+  await assert.rejects(newChat(stubTab({ ...base, 'Trust This Folder?': { ambiguous: '2 trust buttons' } }), tmpdir(), { sleep: noSleep, trustWaitMs: 5000 }), /not clicking — 2 trust buttons/);
+  const none = stubTab({ ...base, 'Trust This Folder?': { none: ['No, exit'] } });
+  await assert.rejects(newChat(none, tmpdir(), { sleep: noSleep, trustWaitMs: 5000 }), /no "Yes, I trust…" button/);
+  assert.equal(none.sent.length, 0);
 });
