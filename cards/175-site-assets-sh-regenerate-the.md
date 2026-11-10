@@ -11,7 +11,7 @@ why: The landing page's bottom strip became an ideas wall on 2026-10-21 (card #7
 ---
 Progress
 Done: On branch session/workspace-tools-batch (not merged): the release script now makes the four idea pictures itself (shoots the four pages, refuses if any failed, replaces all four or none) and no longer requires the 48 unused pictures. Sample output was made in a scratch folder only; the live website pictures were not touched.
-Next: Destin, 2026-11-10: do NOT replace the site's idea pictures. The regenerate step is now off unless SITE_IDEA_STILLS=1. Fix the paint picture (no brush strokes) and show him the four again.
+Next: Destin 2026-11-10: do NOT replace the site's idea pictures; the regenerate step is off unless SITE_IDEA_STILLS=1. Paint picture fixed (app PR #727: the workbench paint page now redraws once its paper is sized, and opens with a sun, cloud, hills and tree). Waiting for Destin to look at the four new pictures again; then decide on deleting the 48 unused stills.
 Blocked: nothing.
 
 Chats
