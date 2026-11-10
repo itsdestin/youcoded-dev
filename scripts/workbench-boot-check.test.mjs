@@ -50,3 +50,30 @@ test('does not report routes as passing against a dead port', async () => {
   assert.doesNotMatch(stdout, /^ok /m);
   assert.doesNotMatch(stdout, /mount cleanly/);
 });
+
+// ── Every `view=` the app can show must have a boot route (card #18(i)) ──────────────
+// WHY: three of the eight views (buddy-group, buddy-chat, buddy-session) shipped in the
+// app's view switch with no route in ROUTES, so a crash on them was invisible to this
+// check. The list is read from the app's own source so a ninth view fails here at once.
+// CI has no app checkout, so the test skips there rather than passing by accident.
+import { existsSync, readFileSync } from 'node:fs';
+import { resolveCheckout } from './shoot/engine.mjs';
+
+const WORKSPACE = path.resolve(path.dirname(SCRIPT), '..');
+function appRendererIndex() {
+  let checkout = null;
+  if (existsSync(path.join(WORKSPACE, 'youcoded', 'desktop'))) checkout = path.join(WORKSPACE, 'youcoded');
+  else { try { checkout = resolveCheckout(''); } catch { checkout = null; } }
+  const file = checkout && path.join(checkout, 'desktop', 'src', 'renderer', 'index.tsx');
+  return file && existsSync(file) ? file : null;
+}
+
+test('every __view value in the app has a ROUTES entry', (t) => {
+  const file = appRendererIndex();
+  if (!file) { t.skip('no youcoded app checkout here (CI): view list cannot be read'); return; }
+  const views = [...new Set([...readFileSync(file, 'utf8').matchAll(/__view === '([\w-]+)'/g)].map((m) => m[1]))];
+  assert.ok(views.length >= 8, `expected to find the app's view switch in ${file}, found ${views.length}`);
+  const routes = readFileSync(SCRIPT, 'utf8');
+  const missing = views.filter((v) => !new RegExp(`&view=${v}'`).test(routes));
+  assert.deepEqual(missing, [], `views with no boot route in workbench-boot-check.mjs: ${missing.join(', ')}`);
+});
