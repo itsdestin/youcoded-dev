@@ -573,5 +573,6 @@ strip packs to ONE pill while a scenario needs three. Both together —
 FUZZ_H=900`. **A `worst:` line of all dashes, with no numbered scenario rows above it, is a
 run that drove zero drags, not a clean sweep** (it printed exactly that six times on
 2026-09-07 before anyone noticed); the sweep now exits 1 rather than saying it. Frames of
-any scenario are in `drag-fuzz.json` — but the write of that file throws on a 60-drag run
-(filed as dev-workspace work), so read the scores off stdout until that is fixed.
+a scenario that FAILED are in `drag-fuzz-frames.ndjson` (one line per failing scenario; passing
+scenarios keep no frames, so a 60-drag run no longer overflows). `drag-fuzz.json` holds only the
+scores and `drag-fuzz.md` the table.
