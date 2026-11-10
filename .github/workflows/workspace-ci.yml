@@ -119,6 +119,13 @@ jobs:
         if: ${{ !cancelled() }}
         run: node --test scripts/workspace-start.test.mjs
 
+      # safe-push.sh is the only thing standing between a failed secrets scan and a push (card #195);
+      # a regression that lets a push through after a failed or missing scan must turn the build red.
+      # The real-gitleaks case skips itself on this runner (gitleaks not installed); the rest use a stub.
+      - name: Test safe-push
+        if: ${{ !cancelled() }}
+        run: node --test scripts/safe-push.test.mjs
+
       # prune-worktrees.mjs is the tool that decides which of the ~60 accumulated worktrees
       # are safe to delete — a wrong "safe" verdict here destroys someone's unpushed work, so
       # its classification (merged/dirty/unmerged/unpushed/nested-dirty-component/missing-dir/
