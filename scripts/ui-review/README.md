@@ -25,7 +25,7 @@ What stays here is everything built ON those pictures and on the running rendere
 
 | File | Job |
 |---|---|
-| `review-cards.py` + `deck/` + `crops.json` | **the review surface** — the one page Destin answers on, in nine step kinds (approve, brief, choice, decide, clip, live, question, contract, acceptance) and eight commands (`build`, `preview`, `serve`, `wait`, `record`, `selfie`, `contract-check`, `acceptance`). `serve` builds, serves on 127.0.0.1, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background; it opens no browser, so put its printed `[deck] http://…` line in chat as the last line of your turn. Live panes come from the deck's own server (`/app/`, the photo-only build). **Which kind to pick: `.claude/rules/review-deck.md`. Every field, command and refusal: `deck/AUTHORING.md`. One worked template per kind: `templates/`.** |
+| `review-cards.py` + `deck/` + `crops.json` | **the review surface** — the one page Destin answers on, in nine step kinds (approve, brief, choice, decide, clip, live, question, contract, acceptance; the last two only finish a feature that already has a signed contract — new work is steered through the walkthrough deck, `.claude/rules/feature-flow.md`) and eight commands (`build`, `preview`, `serve`, `wait`, `record`, `selfie`, `contract-check`, `acceptance`). `serve` builds, serves on 127.0.0.1, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background; it opens no browser, so put its printed `[deck] http://…` line in chat as the last line of your turn. Live panes come from the deck's own server (`/app/`, the photo-only build). **Which kind to pick: `.claude/rules/review-deck.md`. Every field, command and refusal: `deck/AUTHORING.md`. One worked template per kind: `templates/`.** |
 | `record.mjs` + `scenes/*.json` | a scripted scene filmed as a WebM loop + WebP poster (below). |
 | `record-pair.sh` + `montage-ab.sh` | before/after clips and sheets for a deck's CLIP steps. |
 | `site-assets.sh` | regenerates the landing page's loops, gallery (`shot.mjs` + `plans/site-gallery.json`, the one plan still in use) and embed. |
@@ -35,7 +35,7 @@ What stays here is everything built ON those pictures and on the running rendere
 | `dom-size-sweep.mjs` | every screen of the shoot list, opened by name in the `stress` scenario, under 8,000 elements (below). |
 | `drag-probe.mjs`, `drag-fuzz.mjs` | per-frame positions during a session-pill drag (below). |
 | `design-check/` | lint:design warnings boxed on the real screen (`shoot --collect`). |
-| `tester-kit.md`, `ux-tester.md`, `code-reviewer.md`, `grader.md`, `contract-agent.md` | the feature flow's reviewer briefs. |
+| `tester-kit.md`, `ux-tester.md`, `code-reviewer.md`, `grader.md`, `contract-agent.md` | the reviewer briefs. `ux-tester` and `code-reviewer` are the checks Destin switches on or off in a build's checks menu; `grader` and `contract-agent` remain only for a feature that already has a signed contract (`.claude/rules/feature-flow.md`, Older work with a contract). |
 
 **The DOM-size sweep** (`dom-size-sweep.mjs`) opens every default-scenario screen of the shoot
 list in the `stress` scenario (2,000 rows) and counts the elements each builds. Any screen over

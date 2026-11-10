@@ -1382,3 +1382,77 @@ print(p)`;
     } finally { await c3.close(); }
   } finally { srv.kill(); }
 });
+
+// Round 7, second half (2026-11-10): history woven into the deck (state pill, trail, Settled fold,
+// "Since last round" line, related decks with a line each), a row's More, "Built from", and video proof.
+test('round 7: trail, state pill, settled fold, since-last-round line, More, Built from, and a video that cannot be dragged on', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-r7b-'));
+  const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); d = os.path.dirname(p)
+open(os.path.join(d, 'proof.webm'), 'wb').write(b'\\x1a\\x45\\xdf\\xa3' + b'\\x00' * 40)
+json.dump({'title': 'older', 'key': 'older', 'out': 'older.html', 'steps': []}, open(os.path.join(d, 'older.json'), 'w'))
+T = [{'round': 'Round 3', 'asked': 'there is no notes button', 'built': 'A Notes button.', 'said': 'i wanted a box at the foot'}, {'round': 'Round 4', 'built': 'A box at the foot of every page.'}]
+def lst(i, h, calls, **kw): return {'id': i, 'words': True, 'surface': 'Decks', 'path': 'Rows', 'headline': h, 'calls': calls, **kw}
+raw['related'] = [{'title': 'Round 6 deck', 'path': 'older.json', 'how': 'Where you chose the trail.'}]
+raw['steps'] = [{'id': 'P-1', 'page': 'One', 'intro': 'Judge the rows.'},
+  lst('L-1', 'What you asked for', [
+    {'id': 'old', 'call': 'Settled thing.', 'why': 'Done.', 'state': 'settled', 'trail': T},
+    {'id': 'chg', 'call': 'Changed thing.', 'why': 'Follows you.', 'state': 'changed', 'trail': T, 'reuse': {'from': ['The pencil button'], 'new': ['The star'], 'note': 'Only the star is new.'}},
+    {'id': 'new', 'call': 'New thing.', 'why': 'Fresh.', 'state': 'new', 'picture': 'proof.webm'}], fold_settled=True),
+  {'id': 'P-2', 'page': 'Two', 'intro': 'Checks.'},
+  lst('L-2', 'Checks', [{'id': 'c', 'call': 'Phone width.', 'why': 'Narrow page.', 'result': 'skip', 'more': {'does': 'Opens it narrow.', 'returns': 'A picture.', 'why': 'Not suggested: desktop only.'}}])]
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("!!window.__deckReady").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1200, 1000);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c);
+      const q = e => c.evaluate(e);
+      // the one line at the top of the first page, and the related deck with its own line
+      assert.equal(await q("document.querySelector('.since').textContent.replace(/\\s+/g, ' ')"), 'Since last round: 1 new · 1 changed from your comments · 1 settled');
+      assert.match(await q("document.querySelector('.reltop li').textContent"), /Round 6 deck.*Where you chose the trail\./);
+      // new and changed rows come first; the settled one is folded into one line at the foot
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.card.calls > ul > li.call')].map(l => l.dataset.call))")), ['chg', 'new']);
+      assert.match(await q("document.querySelector('.settledhead').textContent"), /^Settled\s*1$/);
+      assert.equal(await q("document.querySelector('.settledbody').hidden"), true);
+      // the pills say what happened to each row
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('li.call .stpill')].map(p => p.textContent))")), ['Changed from your comment', 'New this round', 'Settled in Round 4']);
+      // the trail is closed until asked for, then walks round by round and ends in Now
+      assert.equal(await q("document.querySelector('li[data-call=chg] .metapanel.trail').hidden"), true);
+      await q("document.querySelector('li[data-call=chg] .trailtog').click()");
+      assert.equal(await q("document.querySelector('li[data-call=chg] .metapanel.trail').hidden"), false);
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('li[data-call=chg] .tround')].map(p => p.textContent))")), ['Round 3', 'Round 4', 'Now']);
+      assert.equal(await q("document.querySelector('li[data-call=chg] .tline dd.decided').textContent"), '“there is no notes button”', 'his words are quoted');
+      assert.equal(await q("getComputedStyle(document.querySelector('li[data-call=chg] .tnow')).fontSize"), '12px');
+      // "Built from": the (i) lists what is reused and what is new
+      await q("document.querySelector('li[data-call=chg] .how.lbl').scrollIntoView({block:'center'})"); await sleep(200);
+      const pt = JSON.parse(await q("(()=>{const r=document.querySelector('li[data-call=chg] .how.lbl').getBoundingClientRect();return JSON.stringify({x:r.x+r.width/2,y:r.y+r.height/2})})()"));
+      await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: pt.x, y: pt.y }); await sleep(200);
+      assert.equal(await q("getComputedStyle(document.querySelector('li[data-call=chg] .how.lbl .tip')).display"), 'block');
+      assert.match(await q("document.querySelector('li[data-call=chg] .how.lbl .tip').textContent"), /Reused from the app.*The pencil button.*New in this design.*The star/);
+      // a video is in the Attachments card with controls, not playing by itself, and cannot be dragged on
+      await q("document.querySelector('li[data-call=new] .atthead').click()");
+      assert.equal(await q("(()=>{const v=document.querySelector('li[data-call=new] video.attvid');return v && v.controls && !v.autoplay && v.paused;})()"), true);
+      assert.equal(await q("document.querySelectorAll('li[data-call=new] .attmarks, li[data-call=new] a.attimg').length"), 0);
+      // jumping from the summary opens the fold and shows the settled row
+      await q("document.querySelector('.sincepart.settled').click()"); await sleep(400);
+      assert.equal(await q("document.querySelector('.settledbody').hidden"), false);
+      // the second page: a run/skip row's More
+      await q("document.querySelector('#save').click()"); await sleep(400);
+      assert.equal(await q("document.querySelector('.topnotes') === null"), true, 'the summary is only on the first page');
+      assert.equal(await q("document.querySelector('.metapanel.more').hidden"), true);
+      await q("document.querySelector('.moretog').click()");
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.metapanel.more dt')].map(d => d.textContent))")), ['What it does', 'What comes back', 'Why, for this build']);
+      assert.deepEqual(c.errors, []);
+    } finally { await c.close(); }
+  } finally { srv.kill(); }
+});

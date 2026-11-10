@@ -431,6 +431,103 @@ PART_WORDS_MAX = 60     # each of Today / The problem / Proposal
 BULLET_WORDS_MAX = 25   # each pro or con
 
 
+# ── round 7: a trail on a row or question, a fuller "More", and what a design reuses ────────────
+# WHY (Destin, 2026-11-10, round 7). History: he marked the History button Failed ("i was
+# expecting something that integrated a bit better and more clearly showed how the feature
+# kinda evolved/refined over time and deck rounds") and picked "Each item carries its own trail".
+# More: "i think these checks cards need to have more elaborate/expandable descriptiosn of what
+# they actually entail and why they are/aren't recommended for the specific build". Reuse: the
+# model should "adopt existing elements where possible and explain what styling/text/etc came
+# from scratch", recorded "possibly behind an (i)".
+STATES = ('new', 'changed', 'settled')
+TRAIL_PARTS = ('round', 'asked', 'built', 'said')
+TRAIL_WORDS_MAX = 60     # each part of one trail step
+MORE_WORDS_MAX = 120     # each part of a row's More
+MORE_PARTS = ('does', 'returns', 'why')
+REUSE_ITEMS_MAX = 12
+
+
+def _validate_state_trail(x, where, errors):
+    """`state` and `trail` — on a list row or on a written question."""
+    if x.get('state') is not None and x['state'] not in STATES:
+        errors.append(f'{where}: state is new, changed or settled — what happened to this item since his last round')
+    trail = x.get('trail')
+    if trail is None:
+        return
+    if not isinstance(trail, list) or not trail:
+        errors.append(f'{where}: trail is a list of steps, one per round, each with any of round, asked, built, said')
+        return
+    for i, t in enumerate(trail, 1):
+        if not isinstance(t, dict) or not any(isinstance(t.get(k), str) and t[k].strip() for k in ('asked', 'built', 'said')):
+            errors.append(f'{where}: trail step {i} needs at least one of asked (his words), built (what was built) or said (his reaction), as text')
+            continue
+        for k in TRAIL_PARTS:
+            v = t.get(k)
+            if v is None:
+                continue
+            if not isinstance(v, str) or not v.strip():
+                errors.append(f'{where}: trail step {i}: {k} is plain text, or left out')
+            elif word_count(v) > TRAIL_WORDS_MAX:
+                errors.append(f'{where}: trail step {i}: {k} is {word_count(v)} words (max {TRAIL_WORDS_MAX}) — quote the part that matters')
+        for k in t:
+            if k not in TRAIL_PARTS:
+                errors.append(f'{where}: trail step {i} has "{k}" — a trail step holds round, asked, built, said')
+        # `built` is the assistant's own copy; `asked` and `said` are HIS words, quoted as he wrote them.
+        if isinstance(t.get('built'), str):
+            for w in banned_in(t['built']):
+                errors.append(f'{where}: trail step {i}: built uses banned word "{w}"')
+
+
+def _validate_more(c, where, errors):
+    """A row's fuller explanation: `{does, returns, why}` (any of them) or one plain string."""
+    more = c.get('more')
+    needs = c.get('result') in ('run', 'skip')
+    if more is None:
+        if needs:
+            errors.append(f'{where}: a check he switches on or off needs "more" with at least does (what it actually does, step by step) and why (why it is or is not suggested for this build) — a switch he cannot understand was his complaint')
+        return
+    parts = {'does': more} if isinstance(more, str) else more
+    if not isinstance(parts, dict) or not parts:
+        errors.append(f'{where}: more is a short text, or an object with does, returns and why')
+        return
+    for k, v in parts.items():
+        if k not in MORE_PARTS:
+            errors.append(f'{where}: more has "{k}" — it holds does, returns and why')
+        elif not isinstance(v, str) or not v.strip():
+            errors.append(f'{where}: more.{k} is plain text, or left out')
+        else:
+            if word_count(v) > MORE_WORDS_MAX:
+                errors.append(f'{where}: more.{k} is {word_count(v)} words (max {MORE_WORDS_MAX}) — shorter, or split the row')
+            for w in banned_in(v):
+                errors.append(f'{where}: more.{k} uses banned word "{w}"')
+    if needs and (isinstance(more, str) or not all(isinstance(more.get(k), str) and more[k].strip() for k in ('does', 'why'))):
+        errors.append(f'{where}: a check he switches on or off needs more.does and more.why, not only some of it')
+
+
+def _validate_reuse(x, where, errors):
+    """`reuse` — what a design took from the app and what it made new: {from: [..], new: [..], note}."""
+    r = x.get('reuse')
+    if r is None:
+        return
+    if not isinstance(r, dict) or not r or any(k not in ('from', 'new', 'note') for k in r):
+        errors.append(f'{where}: reuse is {{"from": [parts of the app it reuses], "new": [parts made from scratch], "note": one sentence}}')
+        return
+    for k in ('from', 'new'):
+        v = r.get(k)
+        if v is None:
+            continue
+        if not isinstance(v, list) or not v or len(v) > REUSE_ITEMS_MAX or not all(isinstance(i, str) and i.strip() for i in v):
+            errors.append(f'{where}: reuse.{k} is a short list (up to {REUSE_ITEMS_MAX}) of plain names')
+        else:
+            for i in v:
+                for w in banned_in(i):
+                    errors.append(f'{where}: reuse.{k} uses banned word "{w}"')
+    if r.get('note') is not None and (not isinstance(r['note'], str) or not r['note'].strip() or word_count(r['note']) > PART_WORDS_MAX):
+        errors.append(f'{where}: reuse.note is one plain sentence (up to {PART_WORDS_MAX} words)')
+    if not r.get('from') and not r.get('new'):
+        errors.append(f'{where}: reuse names at least one reused part (from) or one new part (new)')
+
+
 def _validate_calls(st, sid, errors):
     calls = st.get('calls')
     if not isinstance(calls, list) or not calls:
@@ -446,6 +543,9 @@ def _validate_calls(st, sid, errors):
         seen.add(c['id'])
         if c.get('result') is not None and c['result'] not in ('pass', 'fail', 'unclear', 'todo', 'run', 'skip'):
             errors.append(f'{sid}/{c["id"]}: result is pass, fail, unclear, todo (left for him to try), or before a build run / skip (a check he may switch on or off)')
+        _validate_state_trail(c, f'{sid}/{c["id"]}', errors)
+        _validate_more(c, f'{sid}/{c["id"]}', errors)
+        _validate_reuse(c, f'{sid}/{c["id"]}', errors)
         # `before` (round 3): the same screen before the change, so a row is a before/after pair.
         for pk in ('picture', 'before'):
             if c.get(pk) is None:
@@ -467,6 +567,8 @@ def _validate_calls(st, sid, errors):
                 errors.append(f'{sid}/{c["id"]}: {k} is {word_count(c[k])} words (max {CALL_WORDS_MAX}) — one line he can skim')
             for w in banned_in(c[k]):
                 errors.append(f'{sid}/{c["id"]}: {k} uses banned word "{w}"')
+    if st.get('fold_settled') is not None and not isinstance(st['fold_settled'], bool):
+        errors.append(f'{sid}: fold_settled is true or false — true folds the rows marked settled into one line at the foot')
     for k in ('options', 'rows', 'today', 'answer'):
         if st.get(k):
             errors.append(f'{sid}: a calls list has no {k} — a call he wants changed gets its own text box')
@@ -659,8 +761,12 @@ def _validate_history(spec, errors):
     related = spec.get('related')
     if related is not None:
         if not isinstance(related, list) or not all(isinstance(r, dict) and isinstance(r.get('title'), str) and r['title'].strip() and ok(r.get('path')) for r in related):
-            errors.append('related is a list of {title, path} — other decks or documents on this subject, paths beside the spec')
+            errors.append('related is a list of {title, path, how} — other decks or documents on this subject, paths beside the spec, and one line on how each relates')
         else:
+            # `how` (round 7; round 2 asked for "a list at the top of a deck, with one line on how each relates")
+            for r in related:
+                if r.get('how') is not None and (not isinstance(r['how'], str) or not r['how'].strip() or word_count(r['how']) > CALL_WORDS_MAX):
+                    errors.append(f'related: {r["title"]}: how is one plain line (up to {CALL_WORDS_MAX} words) on how this deck relates')
             for r in related:
                 if not os.path.exists(os.path.join(base, r['path'])):
                     errors.append(f'related: {r["path"]} does not exist beside the spec')
@@ -694,6 +800,9 @@ def validate(spec):
             errors.append(f'{sid}: pick must be "one" or "several"')
         elif st.get('pick') == 'several' and not (st.get('options') or st.get('variants')):
             errors.append(f'{sid}: pick "several" needs options or variants to pick between')
+        if not is_calls(st):
+            _validate_state_trail(st, sid, errors)
+            _validate_reuse(st, sid, errors)
         if 'answer' in st and st['answer'] != 'words':
             errors.append(f'{sid}: answer must be "words" — the only shape whose answer is typed')
         if st.get('answer') == 'words' and (st.get('options') or st.get('variants')):
@@ -865,6 +974,8 @@ def _validate_options(st, sid, errors, warnings, minimum):
     seen = set()
     for i, o in enumerate(opts):
         oid = o.get('id') or f'option {i + 1}'
+        if isinstance(o, dict):
+            _validate_reuse(o, f'{sid}/{oid}', errors)
         if not o.get('id'):
             errors.append(f'{sid}: {oid} has no id')
         elif o['id'] in seen:

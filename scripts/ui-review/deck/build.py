@@ -92,7 +92,9 @@ def _option(o):
             'measured': o.get('measured', ''), 'cost': o.get('cost', ''),
             # WHY: a written option may show a picture of itself (spec.py _validate_pictures).
             **({'picture': o['picture']} if o.get('picture') else {}),
-            **({'caption': o['caption']} if o.get('caption') else {})}
+            **({'caption': o['caption']} if o.get('caption') else {}),
+            # WHY (round 7): what the design reuses from the app, behind a small (i) on the option.
+            **({'reuse': o['reuse']} if o.get('reuse') else {})}
 
 
 # The rows keys, verbatim into deck data — page.js draws them as a table (feature-flow design §3).
@@ -113,7 +115,7 @@ def _decide_step(spec, st, boxes, runs):
         # Today / The problem / Proposal ride along exactly as on a words-only decide.
         # WHY (submit-ticket friction, proposal 20): validate accepted them and page.js draws
         # them, but this step dropped them — a picture decide reached Destin without them.
-        **{k: st[k] for k in QUESTION_FIELDS + ('checked',) if st.get(k)},
+        **{k: st[k] for k in QUESTION_FIELDS + ('checked', 'trail', 'state', 'reuse') if st.get(k)},
     }
 
 
@@ -153,13 +155,15 @@ def _words_step(spec, st):
         d['no'] = st.get('no') or 'No, something is missing'
     elif is_calls(st):
         # Small choices the assistant made itself: one line and its reason each; page.js gives
-        # every line its own Change this button and text box.
+        # every line its own pencil and comment box.
         d['kind'] = 'calls'
-        d['calls'] = [{k: c[k] for k in ('id', 'call', 'why', 'picture', 'before', 'decided', 'result') if c.get(k)} for c in st['calls']]
+        d['calls'] = [{k: c[k] for k in ('id', 'call', 'why', 'picture', 'before', 'decided', 'result', 'trail', 'state', 'more', 'reuse') if c.get(k)} for c in st['calls']]
         if st.get('numbered'):
             d['numbered'] = True   # a behind-the-scenes story: the rows are steps, in order
         if st.get('context'):
             d['context'] = True    # facts to read, not choices: no pencils (round 5, E-1)
+        if st.get('fold_settled'):
+            d['fold_settled'] = True   # rows marked settled fold into one "Settled (n)" line (round 7)
         if st.get('gallery'):
             d['gallery'] = True    # every screen that changed, as tiles side by side (round 3, S-1)
     elif st.get('screen'):
@@ -170,12 +174,12 @@ def _words_step(spec, st):
         d['kind'] = 'decide'
         d['options'] = [_option(o) for o in st['options']]
     elif is_question(st):
-        # A question with nothing to pick between is answered Yes / No / Don't know, which is a
+        # A question with nothing to pick between is answered Yes / No / Other, which is a
         # different answer row from both the decide and the statement — so it gets its own kind.
         d['kind'] = 'question'
     # The three parts of a question ride as their own keys; page.js draws one card each.
     # `picture`/`caption` ride with them: a file beside the spec, shown above the three cards.
-    for k in QUESTION_FIELDS + ('picture', 'caption', 'checked'):
+    for k in QUESTION_FIELDS + ('picture', 'caption', 'checked', 'trail', 'state', 'reuse'):
         if st.get(k):
             d[k] = st[k]
     return d
@@ -279,6 +283,8 @@ def _still_step(spec, st, boxes):
         # about a pair.
         **({'runs': runs} if st.get('runs') else {}),
         **({'labels': st['labels']} if st.get('labels') else {}),
+        # WHY (round 7): what this design reuses from the app, behind a small (i) beside the headline.
+        **{k: st[k] for k in ('reuse', 'trail', 'state') if st.get(k)},
         # A NEW state of something built: one picture, but keep-or-remove, not build-or-leave.
         # page.js already prefers a step's own yes/no over its one-picture brief wording, so the
         # words are decided here and the page needed no change (games-social friction, 5).
@@ -385,7 +391,7 @@ def _history(spec):
         if general:
             items.insert(0, {'page': '', 'headline': 'Notes about anything else', 'answer': '', 'notes': [general]})
         rounds.append({'title': old.get('title', name), 'when': (saved.get('submitted') or '')[:10], 'items': items})
-    related = [{'title': r['title'], 'href': r['path']} for r in spec.get('related') or []]
+    related = [{'title': r['title'], 'href': r['path'], **({'how': r['how']} if r.get('how') else {})} for r in spec.get('related') or []]
     return {'history': rounds, 'related': related} if rounds or related else {}
 
 

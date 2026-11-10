@@ -253,7 +253,7 @@ with everything else. It is also the slide a `review` stage accepts.
 | `measured` | no | a number (must contain a digit) |
 | `recommended` | no | `true` on at most ONE option; the page badges it |
 
-With options he **picks one**, or Other. Without them: **Yes / No / Don't know**.
+With options he **picks one**, or Other. Without them: **Yes / No / Other**.
 
 ### Statement — something you assert (also `"words": true`)
 
@@ -281,7 +281,7 @@ can carry them.
 | Field | On | What it does |
 |---|---|---|
 | `"pick": "several"` | any slide with `options` or `variants` | he may choose more than one; clicking a chosen one again unpicks it. One line above the cards says so. Unpicking the last leaves the slide unanswered |
-| `"answer": "words"` | a words slide with nothing to pick | the answer is a line he types. `prompt` is the placeholder. *Don't know* stays |
+| `"answer": "words"` | a words slide with nothing to pick | the answer is a line he types. `prompt` is the placeholder |
 
 They land in the answers file as `{"v": "picks", "picks": ["a", "c"]}` and
 `{"v": "wrote", "text": "…"}`, and print in the summary as `picks a, c` and `wrote "…"`.
@@ -382,7 +382,7 @@ drafts in round 4 and nothing said so.
      "started": "<iso>", "submitted": "<iso>",
      "answers": {"<step id>": {"v": "yes|no|other|pick",
                                "pick": "<option or variant id>",   // when v is "pick"
-                               "dk": true,                          // "Don't know" (Other with a flag)
+                               "dk": true,                          // only in files from before round 2 ("Don't know"); never written now
                                "note": "…"}}}
 
 A note carries no tag: a note is a note (Destin, 2026-09-04). Old files carrying `note_kind`
@@ -410,11 +410,11 @@ signal that the review is over:
     saved-searches-questions · submitted 2026-09-05 04:58 · 2 yes · 0 no · 1 other · 2 picked · 0 skipped
     Q-1 yes
     Q-2 pick under-box — "keep it to three"
-    Q-3 don't know
+    Q-3 other
 
 One line per step, in spec order, page markers skipped. `pick <id>` is the option he chose,
-`none` is *None of these* on a pick-one, `other` is Other and `don't know` is the third button
-on a yes/no question.
+`none` is *None of these* on a pick-one and `other` is Other. (`don't know` appears only when
+reading an answers file saved before round 2.)
 
 ## Commands
 
@@ -486,7 +486,8 @@ Source: Destin's answers in `docs/active/design/2026-11-09-review-deck-rethink/`
   written one. An area with no button pressed is stored as `v: "other"`.
 - **Calls list**: a words step with `"calls": [{"id", "call", "why"}]` and no `today`. Small
   choices you made yourself, one line and its reason each (40 words at most). Each stands
-  unless he presses Change this; his words arrive as `answers[step].changes[<call id>]`.
+  unless he opens its pencil (round 3; before that a "Change this" button); his words arrive as
+  `answers[step].changes[<call id>]`.
 - **Word caps**: `today`, `problem`, `proposal` are 60 words each at most; each pro or con 25.
 - **Build stamp**: the chip shows when the deck was built and the short version it was built
   from; the same goes into the answers file as `built`. Each answer already carries `t`, the
@@ -512,9 +513,12 @@ this wins.
   on the real screen" below.
 - **`gallery: true`** on a list lays the rows out as tiles, pictures first — the "every screen
   that changed" page of a walkthrough. A before/after tile is two columns wide.
-- **Notes about anything else**: a Notes button in the header on every page. Saved as the
-  top-level `notes` string in the answers file and printed first in the summary
-  (`general notes — "…"`).
+- **Notes about anything else**: a Notes button in the header, on picture-style decks only (a
+  deck with no page markers, one step per screen). Those decks have no page foot, so the button
+  and the "Notes about anything else" row of the finish table are their only place for a general
+  comment — both stay. Saved as the top-level `notes` string in the answers file and printed first
+  in the summary (`general notes — "…"`). A question deck (paged) has no header Notes button: it
+  has the comment box at the foot of every page instead (round 4, below).
 - **Question decks**: the page title is said once, in the header; Back sits directly left of
   the one Next button at the foot; a list carries no "Question n of m" label.
 - **Voice** follows the app's method (`voice-helper.mjs`): a sentence is closed off at a pause
@@ -548,7 +552,9 @@ he leaves alone is accepted when he moves on, like a list. Text drawn by code at
   "left for him to try") is a pill at the row's right; pressing it opens the four statuses.
   His choice arrives as `answers[step].results[<row id>]`.
 - **A comment box at the foot of every page** replaces the header Notes button on question
-  decks: `pageNotes[<page marker id>]`, printed first in the summary.
+  decks only (paged decks): `pageNotes[<page marker id>]`, printed first in the summary. WHY:
+  "nah i wanted like an extra more visible input region at the bottom of each page". Picture-style
+  decks keep the header button (see "Notes about anything else" above).
 - **The picture viewer.** Any picture opens over the whole window with its comments beside it
   and every picture of the page in a strip; it stays open while he drags areas and types.
   Shoot pictures narrow (`--width 1000`) or cropped to the changed part so words stay readable.
@@ -610,3 +616,43 @@ wins.
   something to say ("2 changes", or "Accepted" once he moves on); a `context: true` list never has one.
   On a `context` list every row is dashed (the first used to be drawn solid) and nothing on it has a
   pointer or a pencil.
+
+### Also added in round 7 (the history woven in; More; Built from; video proof)
+
+Source: Destin's round-6 remarks. Where this contradicts a section above, this wins.
+
+- **A trail on an item.** A list row or a written question may carry `"state": "new" | "changed"
+  | "settled"` and `"trail": [{"round": "Round 3", "asked": "his words", "built": "what was
+  built", "said": "his reaction"}, …]` (each part optional, at least one of asked / built / said;
+  60 words each; his words are quoted as written). `state` is a small pill on the row
+  ("New this round", "Changed from your comment", "Settled in Round N, taken from the last
+  trail step's `round`); on a question it sits beside "Question n of m". The trail is closed
+  behind "How this changed · n rounds" under the row's words; opened it is a rail with one stop per
+  round — **You asked** / **Built** / **You said**, his words in the same quote style as a row's
+  `decided` — ending in **Now**. Which expanders he opened are remembered across page changes.
+  `"fold_settled": true` on a list folds its settled rows into one closed "Settled (n)" line at the
+  foot; new and changed rows come first, in the order given. Put these on every item from the
+  second round on; leave them off in the first.
+- **Since last round.** When any row or question has a `state`, the first page of a paged deck
+  opens with one line: "Since last round: 3 new · 2 changed from your comments · 11 settled"; each
+  part jumps to the first such item (opening the Settled fold, changing page if needed).
+- **Related decks at the top.** Each `related` entry may carry `"how"` (one line, 40 words at most)
+  saying how it relates; `related` entries are listed at the top of the first page with that
+  line, and also behind the header's History button. **History stays** as the full record.
+- **`more` on a list row.** `"more": {"does", "returns", "why"}` (any of them, 120 words each) or one
+  plain string: a "More" expander (chevron) under the row opens the labelled parts — *What it
+  does*, *What comes back*, *Why, for this build*. A row whose `result` is `run` or `skip` (a check
+  he switches on or off before the build) MUST carry `more` with at least `does` and `why`; the
+  builder refuses it otherwise ("a switch he cannot understand was his complaint").
+- **`reuse`: what a design is built from.** `"reuse": {"from": ["Settings → About popup", …],
+  "new": ["the star button", …], "note": "one sentence"}` on a written option, a list row, a
+  written question or a picture step. A small "Built from" (i), the same hover tip as Today's
+  "how it was checked", lists *Reused from the app* and *New in this design*. The assistant works
+  this out itself — which kinds of parts the screen needs, every existing app part that could do the
+  job, adopt it, say what is new — and records it here; it is never a chat question.
+- **Proof can be a video.** A row's `picture` / `before` may be a `.webm` or `.mp4` file beside the
+  spec. It sits in the row's Attachments card with native controls, never playing by itself. No
+  area can be dragged on a video. (The deck server answers whole files only, so seeking inside a
+  long clip may be limited; keep proof clips short.)
+- **Invariants stated once, here.** Every `Today` carries `checked` (how it was confirmed), shown
+  behind the (i).

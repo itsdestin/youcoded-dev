@@ -187,5 +187,102 @@ class RethinkTests(unittest.TestCase):
         self.assertRegex(css, r'\.card\.calls\.context \.call:first-child\{[^}]*dashed')
 
 
+    # ── round 7 (2026-11-10): trail / state / fold, More, Built from, video proof ──────────────
+    TRAIL = [{'round': 'Round 3', 'asked': 'there is no notes button', 'built': 'A Notes button.', 'said': 'i wanted a box at the foot'}]
+
+    def test_a_row_trail_and_state_reach_the_page_and_are_checked_in_plain_words(self):
+        calls = [{'id': 'a', 'call': 'One.', 'why': 'Because.', 'state': 'changed', 'trail': self.TRAIL},
+                 {'id': 'b', 'call': 'Two.', 'why': 'Because.', 'state': 'settled'}]
+        s = spec_with(self.tmp, lambda r: r['steps'].append({**CALLS, 'fold_settled': True, 'calls': calls}))
+        self.assertEqual(validate(s)[0], [])
+        st = [x for x in deck_data(s, {})['steps'] if x['id'] == 'K-1'][0]
+        self.assertEqual(st['calls'][0]['trail'], self.TRAIL)
+        self.assertEqual([c.get('state') for c in st['calls']], ['changed', 'settled'])
+        self.assertTrue(st['fold_settled'])
+        def bad(**kw):
+            return self.errs(lambda r: r['steps'].append({**CALLS, 'calls': [{'id': 'a', 'call': 'One.', 'why': 'Because.', **kw}]}))
+        self.assertTrue(any('state is new, changed or settled' in x for x in bad(state='done')))
+        self.assertTrue(any('trail step 1 needs at least one of asked' in x for x in bad(trail=[{'round': 'Round 3'}])))
+        self.assertTrue(any('trail is a list of steps' in x for x in bad(trail='Round 3')))
+        self.assertTrue(any('trail step 1: said is' in x and 'words (max' in x for x in bad(trail=[{'said': 'word ' * 61}])))
+        self.assertTrue(any('trail step 1 has "when"' in x for x in bad(trail=[{'said': 'x', 'when': 'now'}])))
+        e = self.errs(lambda r: r['steps'].append({**CALLS, 'fold_settled': 'yes'}))
+        self.assertTrue(any('fold_settled is true or false' in x for x in e), e)
+
+    def test_a_question_carries_a_state_and_a_trail(self):
+        s = spec_with(self.tmp, lambda r: r['steps'][0].update({'state': 'new', 'trail': self.TRAIL}))
+        self.assertEqual(validate(s)[0], [])
+        q = deck_data(s, {})['steps'][0]
+        self.assertEqual((q['state'], q['trail']), ('new', self.TRAIL))
+        self.assertTrue(any('Q-1: state is new, changed or settled' in x for x in self.errs(lambda r: r['steps'][0].update({'state': 'old'}))))
+
+    def test_more_is_optional_but_a_run_or_skip_switch_must_explain_itself(self):
+        row = lambda **kw: {'id': 'c', 'call': 'Check it.', 'why': 'Because.', **kw}
+        def errs(r):
+            return self.errs(lambda raw: raw['steps'].append({**CALLS, 'calls': [r]}))
+        self.assertEqual(errs(row(more={'does': 'Opens it.', 'returns': 'A row.', 'why': 'Because.'})), [])
+        self.assertEqual(errs(row(more='Just a plain explanation.')), [])
+        self.assertEqual(errs(row(result='run', more={'does': 'Opens it.', 'why': 'Suggested on.'})), [])
+        e = errs(row(result='run'))
+        self.assertTrue(any('K-1/c: a check he switches on or off needs "more"' in x for x in e), e)
+        e = errs(row(result='skip', more={'does': 'Opens it.'}))
+        self.assertTrue(any('needs more.does and more.why' in x for x in e), e)
+        e = errs(row(result='skip', more='A plain string has no why.'))
+        self.assertTrue(any('needs more.does and more.why' in x for x in e), e)
+        self.assertTrue(any('more has "because"' in x for x in errs(row(more={'does': 'x', 'because': 'y'}))))
+        self.assertTrue(any('more.does is' in x and 'words (max 120)' in x for x in errs(row(more={'does': 'word ' * 121}))))
+        s = spec_with(self.tmp, lambda raw: raw['steps'].append({**CALLS, 'calls': [row(result='run', more={'does': 'a', 'why': 'b'})]}))
+        self.assertEqual([c['more'] for c in [x for x in deck_data(s, {})['steps'] if x['id'] == 'K-1'][0]['calls']], [{'does': 'a', 'why': 'b'}])
+
+    def test_reuse_rides_on_an_option_a_row_and_a_picture_step(self):
+        reuse = {'from': ['Settings About popup'], 'new': ['The star button'], 'note': 'Only the star is drawn new.'}
+        def mut(r):
+            r['steps'][0]['options'][0]['reuse'] = reuse
+            r['steps'].append({**CALLS, 'calls': [{**CALLS['calls'][0], 'reuse': reuse}]})
+        s = spec_with(self.tmp, mut)
+        self.assertEqual(validate(s)[0], [])
+        steps = {x['id']: x for x in deck_data(s, {})['steps']}
+        self.assertEqual(steps['Q-1']['options'][0]['reuse'], reuse)
+        self.assertEqual(steps['K-1']['calls'][0]['reuse'], reuse)
+        # a picture step keeps it too (make_fixture's S-1 is a screenshot step)
+        from fixture import make_fixture
+        fx = make_fixture(tempfile.mkdtemp())
+        with open(fx) as f:
+            raw2 = json.load(f)
+        raw2['steps'][0]['reuse'] = reuse
+        with open(fx, 'w') as f:
+            json.dump(raw2, f)
+        s2 = load_spec(fx)
+        self.assertEqual(validate(s2)[0], [])
+        self.assertEqual(deck_data(s2, {})['steps'][0]['reuse'], reuse)
+        for bad, msg in (({'from': 'popup'}, 'reuse.from is a short list'), ({'from': []}, 'reuse.from is a short list'),
+                         ({'new': ['x'], 'extra': 1}, 'reuse is {'), ({'note': 'only a note'}, 'names at least one'), ('popup', 'reuse is {')):
+            e = self.errs(lambda r, b=bad: r['steps'][0]['options'][0].update({'reuse': b}))
+            self.assertTrue(any(msg in x for x in e), (bad, e))
+
+    def test_related_decks_may_say_how_they_relate(self):
+        def mut(r):
+            r['related'] = [{'title': 'Round 6', 'path': os.path.basename(self.fixture_path()), 'how': 'Where you picked the trail.'}]
+        s = spec_with(self.tmp, mut)
+        self.assertEqual(validate(s)[0], [])
+        self.assertEqual(deck_data(s, {})['related'][0]['how'], 'Where you picked the trail.')
+        e = self.errs(lambda r: r.update({'related': [{'title': 'Round 6', 'path': os.path.basename(self.fixture_path()), 'how': ' '}]}))
+        self.assertTrue(any('how is one plain line' in x for x in e), e)
+
+    def fixture_path(self):
+        return words_spec(self.tmp)
+
+    def test_round_seven_trail_page_source_pins(self):
+        js = open(os.path.join(DECK, 'page.js')).read()
+        css = open(os.path.join(DECK, 'page.css')).read()
+        for needle in ('class="stpill', 'trailtog', 'class="settledfold"', 'class="since"', 'class="reltop"', 'moretog',
+                       "reuseTip", 'class="attvid"', 'isVideo'):
+            self.assertIn(needle, js, needle)
+        # a video has no area-dragging: its figure carries no `attimg` link and no `attmarks` host
+        self.assertRegex(js, r'isVideo\(src\) \? `<figure class="qpic att vid">(?:(?!attmarks).)*</figure>` :')
+        self.assertRegex(css, r'\.how\.lbl')
+        self.assertRegex(css, r'\.stpill\.new\{color:var\(--mark\)\}')
+
+
 if __name__ == '__main__':
     unittest.main()

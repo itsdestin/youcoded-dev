@@ -205,7 +205,7 @@
   // the position — Option A, Option B — and the id follows it quietly, because the answers file,
   // the summary and any contract row still speak in ids.
   const LETTERS = 'ABCDEFGH';
-  const optionCard = (o, cls, i) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${pictureFig(o, ' opt')}${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+  const optionCard = (o, cls, i) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}${reuseTip(o)}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${pictureFig(o, ' opt')}${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
   // WHY (Destin, 2026-11-04: "i want to visualize some of these options better"): a written
   // question about how something LOOKS drew "Other — need to see it" seven times out of ten.
   // A question, and each of its options, may now carry a picture; a click opens it full size.
@@ -269,12 +269,13 @@
     + `<p class="src devnote">This opens a separate dev window on your desktop, alongside your own app — never your own app itself. It takes a few seconds to appear. Close it when you are done.</p></section>`;
   // CALLS I MADE FOR YOU (Destin, 2026-11-09, rethink Q-10: "super helpful. but i think each
   // item i choose to change should have its own little text box underneath"). Small choices
-  // the assistant made itself, one line each with its reason. Each stands unless he presses
-  // Change this, which opens a box under THAT line for what he wants instead.
+  // the assistant made itself, one line each with its reason. Each stands unless he opens its
+  // pencil, which opens a box under THAT line for what he wants instead (round 3 replaced the
+  // worded "Change this" and "More context" buttons with that one pencil).
   // Round 2 widened the row so a WALKTHROUGH is built from the same list: a row may show a
   // picture (areas work on it), the words of his it came from (`decided`), and a check's
-  // result. "More context" is his own addition (round 2, R-3): a row he cannot judge yet is
-  // neither fine nor changed — it asks the session to explain, in the next round.
+  // result. (Round 2 also had a "More context" button; round 3 folded it into the pencil, so
+  // a question about a row is just a comment in that row's box.)
   // WHY `todo` and a pill he can press (Destin, 2026-11-10, on the Checks page: "these should
   // probably all be more similar and i should be able to update the statuses myself for all
   // including the ones you put unclear for"): a check I ran, one I could not settle and one
@@ -318,6 +319,73 @@
   // separate change/more context buttons"). Two worded buttons per row were noise; the box says
   // whatever he wants — change it, explain it, or a stray thought.
   const PENCIL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg>';
+  // ── ROUND 7: a trail, a state, a fuller "More", and what a design reuses ───────────────────
+  // WHY (Destin, 2026-11-10, round 7, on the History button: "i dont think that's at all what i
+  // imagined… i was expecting something that integrated a bit better and more clearly showed how
+  // the feature kinda evolved/refined over time and deck rounds"; he picked "Each item carries its
+  // own trail" and added "i think we need to refine the ui/ux of this further"). So the story is
+  // told where the item is: a small pill on the row says what happened to it since his last round
+  // (new / changed from his comment / settled), and one expander under its words walks round by
+  // round through what he asked, what was built and what he said — his own words quoted exactly
+  // like a row's `decided` quote — ending in "Now". Settled rows fold into one line at the foot.
+  const STATE_WORDS = { new: 'New this round', changed: 'Changed from your comment', settled: 'Settled' };
+  const lastRound = x => { const t = (x.trail || []).filter(t => t.round).pop(); return t ? t.round : ''; };
+  const stateLabel = x => x.state === 'settled' && lastRound(x) ? 'Settled in ' + lastRound(x) : STATE_WORDS[x.state] || '';
+  const statePill = x => x.state ? `<span class="stpill ${esc(x.state)}">${esc(stateLabel(x))}</span>` : '';
+  const CHEV = '<svg class="tchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>';
+  // Which expanders he opened, kept outside the markup because the page redraws on every page change.
+  const openMap = {};
+  const okey = (kind, sid, cid) => kind + '|' + sid + '|' + (cid || '');
+  const isOpen = (kind, sid, cid) => !!openMap[okey(kind, sid, cid)];
+  const quoted = t => /^["“]/.test(t.trim()) ? t.trim() : '“' + t.trim() + '”';
+  // The trail: one block per round on a thin rail, each part labelled on the left and the words on
+  // the right, so a long story still scans down the left edge. The last stop is always "Now".
+  const trailHtml = (x, sid, cid) => {
+    if (!(x.trail || []).length) return '';
+    const steps = x.trail.map(t => `<li class="tstep"><span class="tdot" aria-hidden="true"></span><div class="tbody">${t.round ? `<p class="tround">${esc(t.round)}</p>` : ''}<dl class="tlines">`
+      + (t.asked ? `<div class="tline"><dt>You asked</dt><dd class="decided">${esc(quoted(t.asked))}</dd></div>` : '')
+      + (t.built ? `<div class="tline"><dt>Built</dt><dd>${esc(t.built)}</dd></div>` : '')
+      + (t.said ? `<div class="tline"><dt>You said</dt><dd class="decided">${esc(quoted(t.said))}</dd></div>` : '')
+      + `</dl></div></li>`).join('');
+    const now = x.state === 'new' ? 'New this round, nothing before it.' : x.state === 'changed' ? 'Changed to follow your last comment, as written above.' : x.state === 'settled' ? 'Settled: you changed nothing since.' : 'As written above.';
+    const open = isOpen('trail', sid, cid), n = x.trail.length;
+    return { tog: `<button type="button" class="metatog trailtog${open ? ' open' : ''}" data-kind="trail" data-sid="${esc(sid)}" data-call="${esc(cid || '')}" aria-expanded="${open}">${CHEV}How this changed<span class="metan">${n} ${n === 1 ? 'round' : 'rounds'}</span></button>`,
+      panel: `<div class="metapanel trail"${open ? '' : ' hidden'}><ol class="tsteps">${steps}<li class="tstep now"><span class="tdot" aria-hidden="true"></span><div class="tbody"><p class="tround">Now</p><p class="tnow">${esc(now)}</p></div></li></ol></div>` };
+  };
+  // More: the fuller explanation of a row — what a check does, what comes back, why it is or is
+  // not suggested for THIS build (Destin, round 7: "more elaborate/expandable descriptiosn of what
+  // they actually entail and why they are/aren't recommended for the specific build").
+  const MORE_LABELS = { does: 'What it does', returns: 'What comes back', why: 'Why, for this build' };
+  const moreHtml = (c, sid) => {
+    if (!c.more) return '';
+    const parts = typeof c.more === 'string' ? { does: c.more } : c.more;
+    const keys = ['does', 'returns', 'why'].filter(k => parts[k]);
+    const open = isOpen('more', sid, c.id);
+    return { tog: `<button type="button" class="metatog moretog${open ? ' open' : ''}" data-kind="more" data-sid="${esc(sid)}" data-call="${esc(c.id)}" aria-expanded="${open}">${CHEV}More</button>`,
+      panel: `<div class="metapanel more"${open ? '' : ' hidden'}><dl class="tlines">${keys.map(k => `<div class="tline"><dt>${MORE_LABELS[k]}</dt><dd>${esc(parts[k])}</dd></div>`).join('')}</dl></div>` };
+  };
+  // "Built from": the small (i) beside Today's, listing what a design took from the app and what it
+  // made new. WHY (Destin, 2026-11-10: "i dont want this to be a chat thing… the model needs to
+  // understand these for itself and possibly record them in the deck along new screen proposals
+  // somehow. possibly behind an (i) or something").
+  const infoTip = (label, body, cls) => `<span class="how ${cls || ''}" tabindex="0" aria-label="${esc(label)}"><i>i</i>${cls === 'lbl' ? `<span class="howlbl">${esc(label)}</span>` : ''}<span class="tip">${body}</span></span>`;
+  const reuseTip = x => {
+    const r = x && x.reuse; if (!r) return '';
+    const list = (h, a) => a && a.length ? `<b class="tiph">${h}</b><ul class="tipl">${a.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '';
+    return infoTip('Built from', list('Reused from the app', r.from) + list('New in this design', r.new) + (r.note ? `<p class="tipnote">${esc(r.note)}</p>` : ''), 'lbl');
+  };
+  document.addEventListener('click', e => {
+    const t = e.target.closest && e.target.closest('.metatog');
+    if (t) {
+      const k = okey(t.dataset.kind, t.dataset.sid, t.dataset.call), on = !openMap[k]; openMap[k] = on;
+      t.classList.toggle('open', on); t.setAttribute('aria-expanded', on);
+      // the panel sits in the same row (or question) as its button
+      const want = t.closest('li, article').querySelector(`:scope .metapanel.${t.dataset.kind}`); if (want) want.hidden = !on;
+      return;
+    }
+    const f = e.target.closest && e.target.closest('.settledhead');
+    if (f) { const on = !openMap['fold|' + f.dataset.sid]; openMap['fold|' + f.dataset.sid] = on; f.classList.toggle('open', on); f.setAttribute('aria-expanded', on); f.nextElementSibling.hidden = !on; }
+  });
   // ── ATTACHMENTS: a row's pictures live in a card at the row's foot ─────────────────────
   // WHY (Destin, 2026-11-10, round 7, on the old thumbnails and picture viewer: "the embeds in
   // the rows are very tiny and feel inconsistently styled/sized/etc", and "i think rows with
@@ -335,7 +403,11 @@
   const attOpenMap = {};
   const attKey = (sid, cid) => sid + '/' + cid;
   const attIsOpen = (st, c) => { const k = attKey(st.id, c.id); return k in attOpenMap ? attOpenMap[k] : !!st.gallery; };
-  const attFig = (st, src, pk, label) => `<figure class="qpic att">${label ? `<figcaption>${esc(label)}</figcaption>` : ''}<a class="attimg" href="${esc(src)}" data-pk="${esc(pk)}"><img src="${esc(src)}" alt="${esc(label || '')}"></a><div class="attmarks" data-sid="${esc(st.id)}" data-pk="${esc(pk)}"></div></figure>`;
+  // WHY (Destin, round 2, check results "with proof", pictures or clips; round 7): proof may be a
+  // short video. It sits in the same card with controls, never playing by itself, and has no
+  // area-dragging: a rectangle on a moving picture would point at nothing.
+  const isVideo = src => /\.(webm|mp4)(\?|#|$)/i.test(src);
+  const attFig = (st, src, pk, label) => isVideo(src) ? `<figure class="qpic att vid">${label ? `<figcaption>${esc(label)}</figcaption>` : ''}<video class="attvid" src="${esc(src)}" controls preload="metadata" playsinline></video></figure>` : `<figure class="qpic att">${label ? `<figcaption>${esc(label)}</figcaption>` : ''}<a class="attimg" href="${esc(src)}" data-pk="${esc(pk)}"><img src="${esc(src)}" alt="${esc(label || '')}"></a><div class="attmarks" data-sid="${esc(st.id)}" data-pk="${esc(pk)}"></div></figure>`;
   const attCard = (st, c) => {
     if (!(c.picture || c.before)) return '';
     const open = attIsOpen(st, c), n = (c.before ? 1 : 0) + (c.picture ? 1 : 0);
@@ -364,7 +436,20 @@
   // WHY `context` (round 5, E-1: "was this supposed to be context or questions? it has edit arrows"):
   // a list of facts for him to read looked exactly like a list of choices to change. A context
   // list says so and carries no pencils; a correction goes in the page's comment box.
-  const callsCard = st => `<section class="card calls${st.context ? ' context' : ''}${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${st.calls.map(c => `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div>${resultPill(st, c)}<button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div>${attCard(st, c)}</li>`).join('')}</ul></section>`;
+  const callLi = (st, c) => {
+    const more = c.more ? moreHtml(c, st.id) : '', trail = trailHtml(c, st.id, c.id), reuse = reuseTip(c);
+    const bar = more || trail || reuse ? `<div class="metabar">${more ? more.tog : ''}${trail ? trail.tog : ''}${reuse}</div>${more ? more.panel : ''}${trail ? trail.panel : ''}` : '';
+    return `<li class="call${c.before ? ' pair' : ''}${c.state ? ' st-' + esc(c.state) : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div><div class="callflags">${statePill(c)}${resultPill(st, c)}</div><button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div>${bar}<div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea></div>${attCard(st, c)}</li>`;
+  };
+  // `fold_settled`: new and changed rows first in the order given, then ONE closed line, "Settled (n)",
+  // holding the rest (Destin, round 6, "new first, settled folded below").
+  const callsCard = st => {
+    const fold = st.fold_settled ? st.calls.filter(c => c.state === 'settled') : [];
+    const live = fold.length ? st.calls.filter(c => c.state !== 'settled') : st.calls;
+    const open = isOpen('fold', st.id);
+    const foldLi = fold.length ? `<li class="settledfold"><button type="button" class="settledhead${open ? ' open' : ''}" data-sid="${esc(st.id)}" aria-expanded="${open}">${CHEV}<span>Settled</span><span class="metan">${fold.length}</span></button><ul class="settledbody"${open ? '' : ' hidden'}>${fold.map(c => callLi(st, c)).join('')}</ul></li>` : '';
+    return `<section class="card calls${st.context ? ' context' : ''}${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}"><ul>${live.map(c => callLi(st, c)).join('')}${foldLi}</ul></section>`;
+  };
 
   // ── Edit the words on the real screen (round 4) ─────────────────────────────────────────
   // WHY (Destin, 2026-11-10): wording rows — a text box per label beside a small picture —
@@ -517,8 +602,8 @@
   // exactly the buttons it would get on a screen of its own.
   // WRITE: the answer IS words he types, not one of a list. Destin (2026-09-06): naming and
   // wording decisions had to be faked as a pick-one from options invented in advance, so an
-  // answer that was not on the list was never heard. `Don't know` stays — a shrug is an answer.
-  // WHY no button beside it any more (Destin, 2026-11-09, round 2: "Don't know" and "Other"
+  // answer that was not on the list was never heard.
+  // WHY no "Don't know" button (Destin, 2026-11-09, round 2: "Don't know" and "Other"
   // "basically serve the same purpose in my mind"): the box is the answer; a shrug is typed.
   const writeBox = st => `<textarea class="write ans-write" data-id="${esc(st.id)}" rows="2" placeholder="${esc(st.prompt || 'Type your answer…')}"></textarea>`;
   const answerButtons = st => {
@@ -551,9 +636,9 @@
     // options." The cards are the better of the two (they carry the summary, the measurement
     // and the risk), so they are now the only place you pick. What stays here is only what a
     // card CANNOT say: none of them, or something else entirely.
-    // A QUESTION with no options is answered Yes / No / Don't know: a shrug is a real answer
-    // and must not have to be typed into Other. It rides as Other with `dk` so the answers
-    // file keeps three values, and both summaries print "don't know" for it.
+    // A QUESTION with no options is answered Yes / No / Other (round 2 dropped the third button,
+    // "Don't know"). `dk` is still READ — an answers file from before round 2 may carry it, and
+    // both summaries print "don't know" for it — but no button writes it any more.
     $('#answers').innerHTML = answerButtons(st);
     // WHY (Destin, 2026-11-09): one text field per question — a typed answer hides the note box.
     $('#note').hidden = st.answer === 'words' || listy(st);
@@ -566,8 +651,8 @@
     if (state.submitted) return;
     id = id || (PAGES ? '' : DECK.steps[cur].id); if (!id) return;
     const st = stepById(id) || {};
-    // "All fine" cannot sit beside a line marked Change this — the yes that contradicts its
-    // own note was a real fault in past decks. The button is disabled then; this is the backstop.
+    // A list's `yes` (accepted by moving on, see acceptLists) cannot sit beside a row with a
+    // comment — a yes that contradicts its own note was a real fault in past decks. Backstop.
     if (listy(st) && v === 'yes' && openRows(state.answers[id])) return;
     // SEVERAL: the same click toggles membership instead of replacing the answer, so "A and C,
     // not B" is a real answer rather than a sentence in the note box (Destin, 2026-09-06).
@@ -581,7 +666,7 @@
     }
     const a = { ...(state.answers[id] || {}), v }; if (v === 'pick') a.pick = pick; else delete a.pick;
     if (v !== 'picks') delete a.picks;
-    if (dk) a.dk = true; else delete a.dk;   // "Don't know" is Other with a flag; anything else clears it
+    if (dk) a.dk = true; else delete a.dk;   // only an old answers file carries `dk` (see renderAnswers); nothing passes it now
     state.answers[id] = a; paintState(); save();
     const n = PAGES ? $(`#cards article.q[data-id="${CSS.escape(id)}"] .note`) : $('#note'); if (n) n.focus();
   }
@@ -726,6 +811,7 @@
     if (st.kind === 'clip') $$('#inner video').forEach(v => v.addEventListener('loadedmetadata', layout));
     $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
     $('#headline').textContent = st.headline;
+    if (st.reuse) $('#headline').insertAdjacentHTML('beforeend', reuseTip(st));   // round 7: what this design reuses
     $('#cards').innerHTML = cardsFor(st);
     // Fix: this ran BEFORE #cards was filled in, so it bound handlers to the PREVIOUS step's
     // cards and the current step's got none — a lettered card looked clickable (pointer
@@ -769,13 +855,15 @@
     // WHY no title here (Destin, round 2 R-12, "title once"): the header already names the
     // page; printed again above the first question it was the same words twice in one screen.
     $('#cards').innerHTML = (named && pg.intro ? `<div class="page-head"><p class="intro">${esc(pg.intro)}</p></div>` : '')
+      + (cur === 0 ? topNotes() : '')
       + steps.map((st, i) => `<article class="q" data-id="${esc(st.id)}">`
         // Fix (Destin, 2026-09-06): "too hard to quickly navigate between questions and tell
         // them apart". A page of questions had nothing between one and the next but a 14px gap,
         // so on a tall question you cannot see where you are. Each one now names itself.
         // A calls list asks nothing, so it is not called a "Question" (rethink round 2).
-        + `<p class="qnum"><span class="n">${listy(st) ? '' : 'Question ' + (steps.filter(x => !listy(x)).indexOf(st) + 1) + ' of ' + steps.filter(x => !listy(x)).length}</span></span></p><span class="qstate" aria-live="polite"></span>`
+        + `<p class="qnum"><span class="n">${listy(st) ? '' : 'Question ' + (steps.filter(x => !listy(x)).indexOf(st) + 1) + ' of ' + steps.filter(x => !listy(x)).length}</span></span>${listy(st) ? '' : statePill(st) + reuseTip(st)}</p><span class="qstate" aria-live="polite"></span>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
+        + (listy(st) ? '' : (() => { const t = trailHtml(st, st.id, ''); return t ? `<div class="metabar">${t.tog}</div>${t.panel}` : ''; })())
         + `<div class="qbody">${cardsFor(st)}</div>`
         + (listy(st) ? '' : `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
         // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A
@@ -1420,6 +1508,41 @@
   // tab, which is strange/unexpected behaviour"). The large view sits over the page; areas can
   // be dragged on it exactly as on the small one — easier, in fact, since it is bigger — and a
   // click anywhere, or Esc, closes it.
+  // ── The top of the first page: what changed since last round, and the related decks ────────
+  // WHY (Destin, rounds 2 and 6: "new first, settled folded below", new items marked, and on return
+  // "only what changed"; and "a list at the top of a deck, with one line on how each relates"). One
+  // line counts the items by state and each count jumps to the first such item; the related decks
+  // follow, each with its one line.
+  const stateItems = () => {
+    const out = [];
+    DECK.steps.forEach(st => {
+      if (st.kind === 'calls') st.calls.forEach(c => { if (c.state) out.push({ state: c.state, sid: st.id, cid: c.id }); });
+      else if (st.state) out.push({ state: st.state, sid: st.id, cid: '' });
+    });
+    return out;
+  };
+  function topNotes() {
+    const items = stateItems(), n = k => items.filter(i => i.state === k).length;
+    const parts = [['new', n('new') + ' new'], ['changed', n('changed') + ' changed from your comments'], ['settled', n('settled') + ' settled']].filter(([k]) => n(k));
+    const rel = DECK.related || [];
+    if (!parts.length && !rel.length) return '';
+    return `<section class="topnotes">`
+      + (parts.length ? `<p class="since"><b>Since last round:</b> ${parts.map(([k, t]) => `<button type="button" class="sincepart ${k}" data-state="${k}">${esc(t)}</button>`).join(' · ')}</p>` : '')
+      + (rel.length ? `<div class="reltop"><h3>Related decks</h3><ul>${rel.map(r => `<li><a href="${esc(r.href)}" target="_blank" rel="noopener">${esc(r.title)}</a>${r.how ? `<span class="relhow">${esc(r.how)}</span>` : ''}</li>`).join('')}</ul></div>` : '')
+      + `</section>`;
+  }
+  function jumpToState(k) {
+    const it = stateItems().find(i => i.state === k); if (!it) return;
+    const pageOf = PAGES.findIndex(p => p.steps.includes(it.sid));
+    const show = () => {
+      if (it.cid && it.state === 'settled') { const h = $(`.settledhead[data-sid="${CSS.escape(it.sid)}"]`); if (h && !h.classList.contains('open')) h.click(); }
+      const el = it.cid ? $(`li.call[data-call="${CSS.escape(it.cid)}"]`) : $(`article.q[data-id="${CSS.escape(it.sid)}"]`);
+      if (!el) return; el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1800);
+    };
+    if (pageOf >= 0 && pageOf !== cur) go(pageOf);
+    show();
+  }
+  document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.sincepart'); if (b) jumpToState(b.dataset.state); });
   // ── HISTORY: earlier rounds of this topic, and related decks ───────────────────────────
   // WHY (Destin, round 2 R-10 "evolving deck, new first", R-11 "Related list"; round 4 N-1
   // "build it next"): each round was a separate link and what he had already said was out of

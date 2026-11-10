@@ -16,7 +16,13 @@
       "id": "W-1", "words": true, "surface": "Chat search", "path": "The search box above the session list",
       "headline": "What you asked for, and what you got",
       "calls": [
-        {"id": "save", "call": "A search can be saved by name and run again in one press.", "why": "A star at the right of the search box saves what is typed.", "decided": "i run the same search every monday"}
+        {"id": "save", "call": "A search can be saved by name and run again in one press.", "why": "A star at the right of the search box saves what is typed.", "decided": "i run the same search every monday",
+         "_comment_trail": "ROUND 2 ONWARD: `state` (new / changed / settled) puts a pill on the row; `trail` is an expander under it that walks round by round through his words (asked, said), what was built, and ends in Now. Leave both off in round 1. A list with `fold_settled: true` folds its settled rows into one Settled (n) line at the foot.",
+         "state": "changed",
+         "trail": [
+           {"round": "Round 1", "asked": "i run the same search every monday", "built": "A star that saves the words in the box.", "said": "make the star bigger and put the name field first"},
+           {"round": "Round 2", "built": "A larger star; the name field comes first."}
+         ]}
       ]
     },
     {"id": "p2", "page": "Every screen that changed", "intro": "All the pictures in one place. Click one to open it large; drag on it to comment on a part."},
@@ -52,7 +58,12 @@
       "id": "W-5", "words": true, "surface": "Chat search", "path": "The search box above the session list",
       "headline": "Checks I ran, and what they showed",
       "calls": [
-        {"id": "c1", "call": "A saved search survives closing and reopening the app.", "why": "Saved, closed the dev window, reopened it, pressed the search.", "result": "pass"}
+        {"id": "c1", "call": "A saved search survives closing and reopening the app.", "why": "Saved, closed the dev window, reopened it, pressed the search.", "result": "pass"},
+        {"_comment": "BEFORE the build a checks-menu row has result run (Will run) or skip, and MUST carry `more`: does (what it actually does, step by step), why (why it is or is not suggested for THIS build), and optionally returns (what comes back to him). Up to 120 words each.",
+         "id": "c2", "call": "A fresh reviewer reads the finished change.", "why": "Looks for anything that breaks a rule or could surprise you.", "result": "run",
+         "more": {"does": "A reviewer who has seen none of this conversation reads the changed files and the written design, then lists anything that breaks a rule or could surprise you.",
+                  "returns": "One status row here (passed, failed or unclear) and a short plain-words list of what it found.",
+                  "why": "Suggested on: saved searches are stored on this computer, so a mistake could lose your data."}}
       ]
     },
     {
