@@ -12,9 +12,9 @@ side: behind
 vision: everywhere.firstrun.setup
 ---
 Progress
-Done: A second test computer type (Fedora Linux with the KDE desktop) is set up and can be started fresh for testing. The shared test-computer setup was added to the workspace on 2026-10-18. Windows and Mac have had a first-run check on their test computers (recorded 2026-10-04).
-Next: Check first-time setup on Ubuntu Linux and on Linux install packages (AppImage, .deb, .rpm, Arch). Check Windows setup on a PC without the Microsoft app installer. Speed up the Mac test computer (save a ready state). Ask Destin before replying to the Linux app catalog request (#8053). Ask Destin whether the first real push from a computer without GitHub's tool has been done.
-Blocked: Nothing recorded in the card. The Mac test computer has no saved ready state, so each start is a slow full boot.
+Done: On branch session/workspace-tools-batch (not merged): the Mac test machine's installer loader no longer deletes files, handles file names with spaces, and refuses instead of guessing when two installers match (tested with stand-ins only; real proof needs a Mac test-machine start).
+Next: Needs test machines started, not done overnight: first-run checks of the .deb and .rpm on the Ubuntu and Fedora test computers (scriptable); a saved ready state for the Mac. Needs Destin: taskbar icon check, first push from a computer without GitHub's tool, the Linux app catalog reply (#8053). No Arch test computer exists.
+Blocked: nothing for the scripted part; Destin's hands for the rest.
 
 Chats
 
