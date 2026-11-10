@@ -225,7 +225,7 @@ jobs:
       - name: Test the review deck
         if: ${{ !cancelled() }}
         working-directory: scripts/ui-review/tests
-        run: python3 -m unittest -v test_spec test_tokens test_live test_words test_contract test_site_copy_editor
+        run: python3 -m unittest -v test_spec test_tokens test_live test_words test_contract test_site_copy_editor test_acceptance_verdicts
 
       # close-out.sh is the one script in here that a session is TOLD to obey line by
       # line (the wrap-up skill: "finish every line it reports"), so a wrong TODO in it
