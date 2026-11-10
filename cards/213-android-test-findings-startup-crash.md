@@ -1,7 +1,7 @@
 ---
 id: 213
 title: Android test findings: startup crash, sync, attach, phone screens and polish
-stage: build
+stage: polish
 tags: android, bug, release-blocker, user-interface
 branch: 213-android-test-findings-startup-crash
 finish: Every yes in findings.questions.answers.json is fixed and verified on a real phone; report at docs/active/investigations/2026-11-01-android-ux-test/report.md
@@ -10,9 +10,9 @@ why: A hands-on phone test on 2026-11-01 found the Android app can't start its a
 work: session/android-ux-test
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: All 34 findings from the 2026-11-01 phone test are answered or fixed. Fullscreen mode and No folder on the phone were confirmed by Destin on 2026-11-09. Terminal direct-typing was tried and reverted, so it is not in the app. Nothing is merged to master yet: the work sits on three unmerged branches (app: 60 commits; workspace; marketplace: 1 commit). Full status: docs/active/investigations/2026-11-01-android-ux-test/report.md on branch session/android-ux-test.
+Next: Destin's merge decision. The Worker (marketplace branch) must deploy with the app, or game rooms break. Release with other workstreams.
+Blocked: nothing
 
 Chats
 - 2026-11-02 session/android-ux-test: Fixing all Android test findings from the 2026-11-01 deck

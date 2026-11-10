@@ -2,6 +2,7 @@
 id: 223
 title: Google Messages connector: rebuild its Windows program with the patched security library
 stage: explore
+priority: P3
 tags: marketplace, security
 branch: 223-google-messages-connector-rebuild-its
 created: 2026-11-08

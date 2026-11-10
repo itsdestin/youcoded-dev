@@ -1,7 +1,7 @@
 ---
 id: 226
 title: Local engine fixes and improvements
-stage: planning
+stage: polish
 tags: local-models, settings/local-models, native-harness, performance, desktop, bug
 related: 176
 vision: chat.converse.local, yours.model.localsettings
@@ -13,9 +13,9 @@ priority: P3
 work: session/local-model-hardening
 ---
 Progress
-Done: Background read of a chat's opening; each chat keeps its own engine slot (--no-cache-idle-slots + id_slot); ROCm re-measured (stays optional — the merged-in '24-46% slower' line is out of date, see engine-dependencies.md); kept-reading cost measured (none on 27B); MTP measured (27B 6.7 -> 11-15 t/s). MTP history: found 2026-07-14 (+25% on the 35B MoE), lost when knowledge-debt.md was deleted 2026-07-15, never on the roadmap.
-Next: MTP per model via models.ini (a model without the heads refuses to load with it); find the request left counted as running; size tool results to the room left; refuse junk summaries; trace cloud-model local-engine entries; one too-long error; ROCm wording; finish 35B/9B/2B runs
-Blocked: nothing
+Done: The fixes listed below are finished and saved on the work branch (not yet on the main app). Fixed: the local model no longer gets stuck showing 'busy' after loading; long chats on small context windows now size search results to the room left, refuse junk summaries, and show one clear 'too long' message with Summarize; models with the right files now use a speed boost (MTP) for dense models, roughly doubling reply speed on the 27B model; the ROCm and Speculative decoding wording now matches what was measured; cloud chats no longer wake the local engine; a too-long chat logs its token counts. Testing: the full check was reported green, and one end-to-end 9B test was clean; a second run hit an unexplained 'too long' error that was not reproduced.
+Next: Destin reviews the work; then the 7 app commits and 2 workspace doc commits are pushed to the backup copy.
+Blocked: the push waits on Destin's OK for a secrets-scan false positive (a field name in an app test).
 
 Chats
 - 2026-11-09 session/local-model-hardening: speed work (warm-up, per-chat slots) built; context faults and MTP to fix here

@@ -3,10 +3,9 @@ id: 59
 title: YouCoded's own engine matches Claude Code, with a tool-connections screen
 stage: planning
 priority: P1
-tags: native-harness, sessions, release-blocker, skills-mcp, settings, desktop, feature
+tags: native-harness, sessions, skills-mcp, settings, desktop, feature
 report: docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 branch: 59-native-runtime-parity-program-everything
-roadmap: native-harness: **v1.3.1 release blocker.** Native Runtime Parity Program —
 created: 2026-10-15
 summary: Close what still separates chats on YouCoded's own engine from Claude Code, including a settings screen to add and remove tool connections.
 area: Chat
@@ -14,9 +13,9 @@ side: both
 vision: chat.harness.parity, projects.controls.mcp, agents.added.mcp
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: The session context panel (every chat shows what it started with) shipped 2026-09-10.
+Next: a settings screen to add, edit and remove tool connections (the MCP screen); then Android and first-run parity; then the working-folder rules for Bash, which wait on a decision from Destin.
+Blocked: the working-folder rules need a decision from Destin, not code.
 
 See also #76: The native parity program in 59 includes 'MCP phase 2', which is likely the same unbuilt MCP settings screen and Claude Code server sharing that 76 describes.
 

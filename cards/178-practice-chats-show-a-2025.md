@@ -1,7 +1,8 @@
 ---
 id: 178
-title: Practice chats show a 2025 date under every bubble
+title: Made-up demo chats show "Jul 29, 2025" under every message
 stage: planning
+priority: P3
 tags: dev-workspace, website, workbench
 related: 2
 branch: 178-practice-chats-show-a-2025
@@ -11,7 +12,7 @@ why: Since message times name the day (card #2), the workbench's made-up chats a
 ---
 Progress
 Done: nothing yet.
-Next: plan it.
+Next: choose one shared start time for the made-up chats (today, at the same clock time each day) so screenshots stay identical from day to day, then change the seven workbench files that copy the old date.
 Blocked: nothing.
 
 Chats

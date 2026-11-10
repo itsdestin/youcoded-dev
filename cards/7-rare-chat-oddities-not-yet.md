@@ -1,7 +1,7 @@
 ---
 id: 7
 title: Chat view glitches: vanishing, stuck or misdrawn messages
-stage: planning
+stage: explore
 priority: P2
 tags: chat-data, desktop, needs-repro, claude-code-integration, chat, user-interface, bug
 branch: 7-rare-chat-oddities-not-yet
@@ -12,19 +12,13 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.converse
-work: session/7-compaction-boundaries
 ---
 Progress
-Done: Compaction-boundary repair shipped in app PR #661, merge 2cbea256388667b304b8704b8bf47fe09b5ae48c. Exact tested-tree match; local desktop gates passed; hosted Linux shards/all four packages and Android JVM/debug/releaseTest APKs passed (run39437693807). Approved reviews and scoped plan archived under docs/archive/*/2026-10-19-compaction-boundaries*.
-Next: Other existing chat-view glitch requests on this broad card remain open; compaction-boundary scope is complete. New 2026-10-30 (card #207 dev-window test): long messages (~200 characters, with a long file path) sent to a Claude Code chat sometimes sat in Claude Code's typing box and never sent; 53-character messages always went through. Seen 4 times. Twice the text was sent by calling window.claude.session.sendInput from outside, which skips the message box's retry; twice through the message box itself (filled in from outside, then the send button or real Enter keystrokes), when the box emptied and no bubble appeared, with nothing in either chat's transcript. Separately, one Bash approval showed only in the terminal view, with no card in chat. Next: reproduce by hand in a dev window by typing a long message with a long path; turn on the pty-worker trace (ECHO_TIMEOUT lines) to see whether the echo wait ran out.
-Blocked: No blocker for the shipped compaction scope. No release/installed-app/device-runtime or Windows/macOS validation claim.
+Done: The compaction-boundary fix (chat dividers in the right order after a summary) shipped in app PR #661 on 2026-10-20 and is on the main branch. Also already fixed and not listed on this card: a blank chat over a live conversation (PR #582, 2026-09-28); a pasted tab doubling a message (PR #558, 2026-09-24); the empty bubble above permission cards (commit 807fe9b66, 2026-09-02).
+Next: Re-test by hand in a dev window the long-message stuck case, with a long file path, after PR #719 (2026-11-08). Re-test the reload-to-wrong-session case and the floating-item overlap. Remaining sightings stay needs-repro.
+Blocked: None for the shipped part. No release or Windows/macOS check has been made.
 
 Chats
-- 2026-10-20 session/7-compaction-boundaries: chat started
-- 2026-10-20 session/7-compaction-boundaries: chat started
-- 2026-10-20 session/7-compaction-boundaries: chat started
-- 2026-10-20 session/7-compaction-boundaries: chat started
-- 2026-10-20 session/7-compaction-boundaries: chat started
 - 2026-10-20 session/7-compaction-boundaries: chat started
 
 From the old roadmap (chat-data, status needs-verify, seen on desktop, last checked 2026-08-12)

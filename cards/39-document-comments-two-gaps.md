@@ -5,22 +5,18 @@ stage: planning
 priority: P3
 tags: files, files-panel, polish
 branch: 39-document-comments-two-gaps
-roadmap: files: Document comments: two gaps.
 created: 2026-10-15
 summary: Comments show only "5h ago" with no exact time, and on the phone an open comments panel doesn't update by itself.
 area: Files & documents
 side: screens
 vision: chat.files.comments
-work: session/39-comment-popup
 ---
 Progress
-Done: Shipped comment popup and hover-card frosting, reliable Add comment flow, and removal of the slim rail in favor of narrow hover comments/full expanded panel; approved in two reviews and merged in youcoded#636 (f61cab2ee).
-Next: Original card requests remain: exact comment timestamps and refreshing an already-open phone comments panel after remote changes.
-Blocked: 
+Done: The comment popup looks right now (frosted hover card, reliable Add comment button), and the thin side marker strip is gone. Shipped in the app update from October 21 (v1.3.2).
+Next: (a) Hovering a comment should show its exact time, not just "5h ago". (b) On a phone, check whether an open comments list refreshes by itself when a comment changes on the computer; the code looks like it already does this, so test on a phone first before building anything.
+Blocked: none.
 
 Chats
-- 2026-10-18 session/39-comment-popup: chat started
-- 2026-10-18 session/39-comment-popup: chat started
 - 2026-10-18 session/39-comment-popup: chat started
 
 From the old roadmap (files, status confirmed, seen on all, last checked 2026-09-28)

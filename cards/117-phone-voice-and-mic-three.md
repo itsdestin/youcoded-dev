@@ -15,9 +15,9 @@ platform: Phone and web
 vision: chat.converse.voice, everywhere.platforms.web
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: waits on #115 — A phone browser can only use the microphone on an encrypted connection, which 115 builds.
+Done: Part (c) shipped 2026-09-05 (youcoded commit f44f05d4c): a phone that pairs with a computer now sees 'Voice typing is off while you are connected to another computer' instead of the 'voice stopped' message.
+Next: Part (a), a phone microphone, waits on card 115 (encrypted phone connection), not yet built. Part (b), a phone that stays listening after pairing mid-speech, is probably still open; needs a real-phone re-test.
+Blocked: waits on #115.
 
 See also #115: 115's encrypted browser connection is exactly what would give a phone browser the microphone that 117(a) is missing.
 

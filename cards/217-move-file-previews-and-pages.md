@@ -8,8 +8,8 @@ finish: Security deck question Q-14 (2026-11): file previews and YouCoded Pages 
 created: 2026-11-05
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: nothing yet. Destin said yes to this on 2026-10-31 (security decisions deck, question Q-14), so it is the next security project after the current release.
+Next: its own design review, then a plan.
 Blocked: nothing.
 
 Chats

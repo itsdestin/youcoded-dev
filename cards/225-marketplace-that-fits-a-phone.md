@@ -2,6 +2,7 @@
 id: 225
 title: Marketplace that fits a phone, like an app store
 stage: explore
+work: session/narrow-screen-proposals, session/android-ux-test
 tags: marketplace, marketplace-screen, android, user-interface
 related: 213
 branch: 225-marketplace-that-fits-a-phone

@@ -2,6 +2,7 @@
 id: 147
 title: Management surface: the next round
 stage: planning
+priority: P2
 tags: management-surface, dev-workspace, housekeeping
 branch: 147-management-surface-the-next-round
 created: 2026-10-16
@@ -10,11 +11,10 @@ summary: Three follow-ups: rebuild priority and version tags, make Screens compl
 area: Developer tools
 side: screens
 vision: together.workflow.surface
-work: session/work-cards-20261014
 ---
 Progress
-Done: the Work board runs as Destin's own YouCoded page (merged 2026-10-16)
-Next: the three follow-ups below, starting with a full human review in a new session
+Done: The Work board page is live in Destin's Pages folder (shipped Oct 16, 2026). The priority and version tags were removed on Oct 16 and have not been brought back.
+Next: (1) Bring back priority and version tags in a way that works. (2) Make the Screens tab cover every app screen, with better picture history and sorting. (3) Run a full review of the whole page for usefulness, in a new session.
 Blocked: nothing.
 
 Chats

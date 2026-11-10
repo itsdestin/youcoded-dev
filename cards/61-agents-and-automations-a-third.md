@@ -2,9 +2,9 @@
 id: 61
 title: Agents & Automations: work that runs on a schedule
 stage: explore
+work: session/90-pages-finish, session/74-specialists-plans
 priority: P2
 tags: native-harness, sessions, feature
-release: v1.3.2
 report: docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 needs: 63
 branch: 61-agents-and-automations-a-third
@@ -16,9 +16,9 @@ side: both
 vision: agents.background.scheduled, agents.background.view
 ---
 Progress
-Done: Being designed as Pages step 4 (card #90): decisions in docs/active/specs/2026-10-24-pages-finish-architecture.md 'Step 4 decisions'.
-Next: Follow card #90 step 4; chains of jobs wait on #74.
-Blocked: none
+Done: Being designed as part of the Pages work (card #90, step 4). Screens and main decisions are approved, recorded on the unmerged branch session/90-pages-finish; nothing is built yet.
+Next: Destin's answer to the remaining "what a command may reach" question, then build step 4 under #90; chains of jobs wait on #74.
+Blocked: one pending Destin decision (plan-g). The design docs are not on master yet.
 
 Chats
 

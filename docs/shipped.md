@@ -895,3 +895,5 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-02 #211 Analytics: honest numbers, team-device exclusion and a clearer dashboard (youcoded#711, wecoded-marketplace#113, youcoded-admin#21, youcoded-dev#330)
 - [x] 2026-11-03 #215 Voice typing: say when the microphone hears nothing (youcoded#712, youcoded-dev#331)
 - [x] 2026-11-08 #224 Can't send in a Claude Code chat: "Queue identity is not ready" (youcoded#719)
+- [x] 2026-11-10 #172 Upgrade the desktop engine to prevent selection-layout crashes (youcoded dd20559df — Electron 44.10 landed in the Nov 2026 security merge (#713); verified by the 2026-11-09 inventory)
+- [x] 2026-11-10 #20 Try the full new-feature process on a real feature (obsolete, no code: the feature process has since run end to end on the buddy rebuild (#709), outside-file comments (#707) and the security decks (#713); verified 2026-11-09)

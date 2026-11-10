@@ -2,6 +2,8 @@
 id: 203
 title: Pages on the Android app: folder and all-files access
 stage: explore
+work: session/90-pages-finish
+priority: P3
 branch: 203-pages-on-the-android-app
 created: 2026-10-25
 ---

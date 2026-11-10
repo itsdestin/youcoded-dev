@@ -1,7 +1,9 @@
 ---
 id: 156
 title: Add Google Calendar to connected accounts
-stage: planning
+stage: explore
+work: session/155-google-files
+priority: P3
 tags: google, integrations, calendar, feature
 needs: 155
 vision: marketplace.browse.integrations
@@ -11,7 +13,7 @@ why: Destin approved Calendar next after the Google files-first milestone on 202
 ---
 Progress
 Done: nothing yet.
-Next: Design the Calendar follow-up after #155. Listed September actions are candidates only; the approved decision is sequencing and reuse of Google accounts, not a final Calendar action list or permission set.
-Blocked: waits on #155.
+Next: Wait for the Google files work (#155) to be decided. Then write the Calendar design: which actions to offer, what permission each needs, and how recurring events and time zones work.
+Blocked: #155 is paused (its unfinished work is saved on its branch, not released). No design document exists yet for this card's actions list.
 
 Chats

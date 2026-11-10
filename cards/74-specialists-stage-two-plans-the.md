@@ -1,11 +1,10 @@
 ---
 id: 74
 title: Helper plans: approve a multi-step job up front
-stage: explore
+stage: planning
 priority: P2
 tags: native-harness, specialists, desktop, feature
 branch: 74-specialists-stage-two-plans-the
-roadmap: native-harness: Specialists stage two — plans: the model proposes a multi-st
 created: 2026-10-15
 summary: The assistant would propose a plan of several helpers, you approve it on a card, and it resumes if interrupted.
 area: Chat
@@ -15,9 +14,9 @@ work: feat/specialists-plans-ui, feat/specialists-plans-5b, docs/specialists-pla
 vision: chat.steer.plans, agents.added.budget
 ---
 Progress
-Done: Stage two (plans) is BUILT on unmerged youcoded branch feat/specialists-plans-ui (~140 commits, 40 decisions, last work 2026-09-26); final review deck shown 2026-09-26, never answered. Consolidated 2026-10-24 into docs/active/handoffs/2026-10-24-specialists-and-plans-START-HERE.md, the one remaining-work list (A–D).
-Next: A1: bring the branch up to today's master (~1,430 commits behind, 40 conflicting files), verify, then rebuild the review deck for Destin.
-Blocked: nothing
+Done: The helper "plans" feature is fully built on a separate, unmerged branch (about 140 changes; last real work 2026-09-26). It lets the assistant propose several helper jobs as one plan, you approve it on a card, and it resumes if interrupted. None of it is in the app yet.
+Next: bring that branch up to today's app code (it is about 1,705 changes behind, with 40-odd clashing files), re-test it, then rebuild the review screens for Destin.
+Blocked: no hard blocker, but the catch-up step is large and untested.
 
 Chats
 - 2026-10-24 session/74-specialists-plans: chat started

@@ -3,9 +3,8 @@ id: 66
 title: Assistant tools and permissions: faults and unclear "Always allow"
 stage: planning
 priority: P1
-tags: native-harness, tools, desktop, permissions, tool-cards, release-blocker, bug
+tags: native-harness, tools, desktop, permissions, tool-cards, bug
 branch: 66-tools-and-permissions-small-faults
-roadmap: native-harness: Tools and permissions: small faults and checks — 6 things.
 created: 2026-10-15
 summary: Small models stumble on edits, local models lack Skip Permissions, huge pictures stall, and "Always allow" doesn't say why it didn't cover a command.
 area: Chat
@@ -15,14 +14,11 @@ vision: chat.steer.permissions, chat.converse.native
 work: session/66-passwordless-admin
 ---
 Progress
-Done: Shipped scoped passwordless-admin approvals in app PR #650 (5fa56a2ee6b94b6980cbb478dc7f65ee60e526fc): exact command, saved Full Auto and session-only choices; independent review findings fixed; integrated desktop verification and Linux/Android CI passed. Records: docs/archive/design/2026-10-19-passwordless-admin/.
-Next: Other existing #66 requests remain open; this scoped admin-approval session is complete.
-Blocked: Nothing for the shipped admin-approval subtask.
+Done: Scoped passwordless admin approvals shipped (youcoded PR #650, 2026-10-19). Also shipped in the wider Always-allow rework (PR #713, 2026-11-05): per-part chained commands and edit choices. Floor-forced permission cards now say why (commit 9bf0805a5).
+Next: Still open, per code check: (1) Local and OpenRouter sessions have no Skip Permissions option; (2) Edit tool does not normalise curly quotes or dashes; (3) the picture cache is never cleaned up; (4) the old PermissionOverrides code still exists. Several other items need a test in the running app or a research run before anyone can say whether they are still open.
+Blocked: Nothing for the admin part. Other items wait on a decision about splitting the card.
 
 Chats
-- 2026-10-19 session/66-passwordless-admin: chat started
-- 2026-10-19 session/66-passwordless-admin: chat started
-- 2026-10-19 session/66-passwordless-admin: chat started
 - 2026-10-19 session/66-passwordless-admin: chat started
 
 From the old roadmap (native-harness › tools, status confirmed, seen on desktop, last checked 2026-08-12)
