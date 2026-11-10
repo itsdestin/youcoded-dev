@@ -1,0 +1,98 @@
+{
+ "deck": "review-deck-rethink-round5",
+ "started": "2026-11-10T09:17:14.488Z",
+ "submitted": "2026-11-10T09:48:50Z",
+ "cur": 5,
+ "answers": {
+  "W-1": {
+   "v": "other",
+   "t": 1794302584501,
+   "changes": {
+    "viewer": "this is better, but still deeply odd? the arrows that let me click between pictures are weird cuz they fully lose the context of the question each picture is connected to and its purpose. and again, the embeds in the rows are very tiny and feel inconsistently styled/sized/etc. there's gotta be a better way to integrate these"
+   },
+   "seconds": 350,
+   "theme": "midnight"
+  },
+  "T-1": {
+   "v": "yes",
+   "seconds": 77,
+   "theme": "midnight",
+   "t": 1794302737089
+  },
+  "T-2": {
+   "v": "yes",
+   "seconds": 77,
+   "theme": "midnight",
+   "t": 1794302737089
+  },
+  "F-1": {
+   "changes": {
+    "late": "i think this is mostly just because our pre-build design  process has been poor tho. but it depends on the context of what we're building, and i may sometimes request to change workflows.",
+    "rare": "probably just cuz these haven't come up as much in the builds we've been doing. defnitely still care about some things like defaults and phone layout. we should have pre-built workflows to ensure new builds utilize the principles from previous commit history performance optimizations and similar."
+   },
+   "v": "other",
+   "t": 1794302973067,
+   "seconds": 236,
+   "theme": "midnight"
+  },
+  "R-2": {
+   "changes": {
+    "early": "to be clear though a new session and related decks should always start with a model exploration of what exists. i really like when i get the \"here's how i understand this or what the current state is; holds/fails\" questions at the start of a new build or shortly after the first round of scope questions. it helps me verify the models intuition/understanding at the beginning of a project. the model should really think through the kinds of elements of the build i might want to comment on or where our understandings might differ or be incomplete when it poses me the first/early rounds quetions.",
+    "shown": "ehh i think the very first deck can generally ask me to just vent some general guidance for what my vision of ui/ux flows is, as a general basis/outline to build on. if i skip, the model can do whatever it wants for first ui rounds, but it should preferably get some guidance from me before building.",
+    "model": "i think we should instruct models to 1) think about the types of elements it might consider using for hte page and how they might be classified, 2) review all existing elements within youcoded that might work, 3) adopt existing elements where possible and explain what styling/text/etc came from scratch and how it tried to maximize reuse and similarity with existing youcoded elements.",
+    "after": "want to discuss the typical current and ideal flow of feature start-to-finish deck rounds more",
+    "never": "i think i want to be slightly more involved in tests maybe? we have an active branch to make our test suites more experience based and human like, and i htink i want to somewhat better understand what our new/deleted tests do as we chagne in the future even though i haven't cared much yet."
+   },
+   "v": "other",
+   "t": 1794303662385,
+   "seconds": 689,
+   "theme": "midnight"
+  },
+  "E-1": {
+   "changes": {
+    "contract": "yeah we're gonna drop this and completely rethink some of how we organize this. like i think the grader will either be replaced or modified quite a bit given the changes we're making? separately i'm confused. was this supposed to be context or questions? it has edit arrows...."
+   },
+   "v": "other",
+   "t": 1794303938487,
+   "seconds": 138,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "other",
+   "t": 1794303938487,
+   "note": "i think we need to consider this more thoughtfully. i want to utilize/integrate some of the other changes we've made to also allow me to further automate/speed youcoded development, and i think having some automatic code reviews and such is useful. i'm unsure how this works with the checks page in the pre-build deck? could i just request or enable our various agent-reviewers for a build from a single menu in the pre-build deck?",
+   "seconds": 138,
+   "theme": "midnight"
+  },
+  "W-6": {
+   "results": {
+    "y1": "unclear",
+    "y4": "pass",
+    "y3": "fail"
+   },
+   "t": 1794304129706,
+   "changes": {
+    "y1": "see comments there",
+    "y3": "i dont think that's at all what i imagined given what we'd discussed? i was expecting something that integrated a bit better and more clearly showed how the feature kinda evolved/refined over time and deck rounds?"
+   },
+   "v": "other",
+   "seconds": 96,
+   "theme": "midnight"
+  },
+  "W-5": {
+   "v": "yes",
+   "seconds": 96,
+   "theme": "midnight",
+   "t": 1794304129706
+  }
+ },
+ "built": {
+  "at": "2026-11-10T09:10:07Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "794b4f2e1"
+ },
+ "pageNotes": {
+  "P-1": "i need to be able to attach/paste images/filepaths in these input boxes and have them work as pills like youcoded.",
+  "P-2": "okay i mean this is a great first draft! i think the dropdown menus in that about popup should probably still work? i also think some things that would be specific to a session/user state shouldn't be editable in this view, like the quick chips, status bar chips, or message bubble text. editable elements should be limited to menus/copy that all users will see the same"
+ }
+}
