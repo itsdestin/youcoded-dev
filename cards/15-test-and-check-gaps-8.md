@@ -12,8 +12,8 @@ area: Workspace
 ---
 Progress
 Done: On branch session/workspace-tools-batch (not merged): (a) the Office editor's early script now has 20 tests that it changes only what it should; (b) the quick check now picks tests for changes outside the desktop folder (Android manifest, workflows); (d) a damaged verdicts file is tested; (e) review-tool tests no longer print ~80 warnings; (h) the daily Claude Code pop-up check had failed 3 days because Claude Code renamed a tab ('Recently denied' to 'Recently blocked') - check updated to accept both. (f) is moot (test exists).
-Next: Two calls for Destin. 1) Voice-install guard: WIDEN it (recommended: users see nothing, about an hour, stops a future edit quietly needing a program a stranger's computer lacks) or LEAVE it (no work; the gap stays). 2) Mac timing issue, never reproduced: DROP it until a Mac user reports it (recommended: costs nothing) or RE-TEST on the slow Mac test machine (hours, may show nothing). Also optional: refresh the saved Claude Code pop-up recordings to the current version.
-Blocked: the two calls above.
+Next: Destin 2026-11-10: voice-install guard WIDENED (workspace PR #358: also catches execSync, fork, require()/import() and the node: spelling; real source still clean). Mac timing item (c) DROPPED until a Mac user reports it. Optional and still open: refresh the saved Claude Code pop-up recordings to the current version.
+Blocked: 
 
 See also #11: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
 
