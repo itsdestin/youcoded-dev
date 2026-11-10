@@ -325,6 +325,15 @@ test('guard: conflict markers are refused even with YOUCODED_ALLOW_MAIN_COMMIT',
   assert.match(r.out, /merge-conflict markers/);
   rmSync(p.root, { recursive: true, force: true });
 });
+test('guard: conflict markers are refused even when an external diff driver is configured', () => {
+  const p = makePair();
+  installHook(p.local);
+  // /bin/true prints nothing, as a driver that hides the patch would; without --no-ext-diff the hook sees no markers.
+  const r = commitWith(p.local, `${MARK} HEAD\nx\n${MARK_END} o\n`, { YOUCODED_ALLOW_MAIN_COMMIT: '1', GIT_EXTERNAL_DIFF: '/bin/true' });
+  assert.notEqual(r.code, 0);
+  assert.match(r.out, /merge-conflict markers/);
+  rmSync(p.root, { recursive: true, force: true });
+});
 test('guard: a markdown "=======" underline is not a conflict marker', () => {
   const p = makePair();
   installHook(p.local);

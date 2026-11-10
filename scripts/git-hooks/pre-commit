@@ -40,7 +40,9 @@ set -euo pipefail
 # fixture): build it in code ('<'.repeat(7)) so it is not at column 0, or commit
 # with YOUCODED_ALLOW_CONFLICT_MARKERS=1 for that one commit.
 if [ -z "${YOUCODED_ALLOW_CONFLICT_MARKERS:-}" ]; then
-    marker_hits=$(git diff --cached -U0 --no-color --diff-filter=ACMR \
+    # WHY --no-ext-diff: a configured external diff driver (diff.external, GIT_EXTERNAL_DIFF) replaces the
+    # patch text this awk reads, so markers would slip through unseen.
+    marker_hits=$(git diff --cached -U0 --no-color --no-ext-diff --diff-filter=ACMR \
         | awk '/^\+\+\+ /{f=substr($0,7);next} /^\+(<<<<<<<|>>>>>>>)( |$)/{print f": "substr($0,2)}' || true)
     if [ -n "$marker_hits" ]; then
         {
