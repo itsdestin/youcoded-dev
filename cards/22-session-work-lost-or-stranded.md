@@ -11,9 +11,9 @@ area: Workspace
 vision: together.added.closeout
 ---
 Progress
-Done: Checkpoint-backup subtask merged: workspace PR #290 (48232bb1) restores regular own-work checkpoint backups with every-push secrets checks; app PR #666 (4a5951e3e) contains the exact approved concise native boundary. All local desktop/workspace checks and required GitHub Linux tests/packages plus Android JVM/debug/releaseTest builds passed. Remote ancestry verified; app merged tree exactly matches tested candidate.
-Next: Remaining #22 lifecycle, cleanup and stranded-work issues are still open; checkpoint-backup instruction repair is complete.
-Blocked: No blocker for this subtask. No app release or installed-app update was requested or performed.
+Done: Checkpoint backups merged earlier (PR #290). Built on branch session/workspace-tools-batch (not merged): (e) close-out no longer says 'the work landed' or suggests deleting a folder that holds unsaved or untracked work; (a) cleanup removes a finished session's record, and stale records are cleared at session start; (c) a session can be resumed after cleanup removed its folder, only when all its work is already in master; (f) session start names any idle folder whose work exists only on this computer after 1 day. Each has a test that fails without the fix.
+Next: Destin: merge the branch. (b) folder vanished mid-session and (d) fresh folder missing a package: no cause provable, no recurrence since the 2026-09/10 fixes; close with those two recorded as 'no cause found', or keep open as a watch item.
+Blocked: nothing.
 
 Chats
 - 2026-10-21 session/22-checkpoint-backups: chat started
