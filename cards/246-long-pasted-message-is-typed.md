@@ -1,7 +1,7 @@
 ---
 id: 246
 title: Long pasted message is typed into Claude Code but never sent; shows Unconfirmed
-stage: explore
+stage: merged
 tags: claude-code-integration, chat-data, sessions, bug
 related: 193, 224
 branch: 246-long-pasted-message-is-typed
