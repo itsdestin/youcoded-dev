@@ -212,3 +212,16 @@ The emulator on the computer can't run the app's bundled programs; it shows "und
   doesn't mention this.
 - **The flip phone has two displays:** `adb exec-out screencap -p -d 4633128672291735937` is the inner screen.
 - The ICU test patch used for this run is not committed; its exact change is in #1 above.
+
+## Final review round (2026-11-09 to 2026-11-10)
+
+What the finished branch changes, per device, with pictures, the independent review's findings (fixed and left) and
+the open decisions: `docs/active/design/2026-11-09-phone-final-review/branch-summary.html`. Terminal view per device
+and how it got that way: `terminal-by-device.html` in the same folder.
+
+Notes for the test-infrastructure work running in parallel:
+- The ICU start-up crash has no explicit check of its own beyond the build failing when the data is missing; an
+  update-from-an-older-install test does not exist.
+- `worker/test/presence-hidden.test.ts` ("a visible device keeps the account online…") failed once under heavy
+  machine load and never again; its failure text was not captured.
+
