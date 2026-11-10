@@ -47,7 +47,7 @@ test('clean range: scanner runs over the outgoing range, then the push happens (
   const r = run([f.clone], { SAFE_PUSH_GITLEAKS: stub(f.dir, 0) });
   assert.equal(r.status, 0, r.stderr);
   assert.ok(remoteHas(f.remote, f.branch), 'branch should be on the remote');
-  assert.match(fs.readFileSync(path.join(f.dir, 'scanner-args'), 'utf8'), /--log-opts=HEAD --not --remotes=origin/);
+  assert.match(fs.readFileSync(path.join(f.dir, 'scanner-args'), 'utf8'), /--log-opts=[0-9a-f]{40} --not [0-9a-f]{40}/);
 });
 
 test('scanner reports a finding (non-zero): nothing is pushed, exit non-zero', (t) => {
@@ -124,4 +124,42 @@ test('REAL gitleaks: clean commit pushes; a planted secret is blocked even if a 
   assert.notEqual(bad.status, 0, 'planted secret must block the push');
   assert.equal(git(f.remote, 'rev-parse', f.branch), before, 'remote branch must not move');
   assert.ok(!bad.stderr.includes(FAKE_SECRET), 'secret value must not be printed');
+});
+
+// Regression (reviewer, 2026-11-10): a stale remote-tracking ref (branch deleted on the remote)
+// at HEAD counted as "already published", so the range was empty and the push ran unscanned.
+test('a stale remote-tracking ref (branch gone from the remote) does not hide commits from the scan', (t) => {
+  const f = fixture(t);
+  commit(f.clone, 'b.txt', 'b\n', 'work');
+  git(f.clone, 'update-ref', 'refs/remotes/origin/ghost', 'HEAD');
+  const r = run([f.clone], { SAFE_PUSH_GITLEAKS: stub(f.dir, 1) });
+  assert.notEqual(r.status, 0, 'the scanner must run and block');
+  assert.ok(fs.existsSync(path.join(f.dir, 'scanner-args')), 'scanner must have been run');
+  assert.ok(!remoteHas(f.remote, f.branch), 'must NOT push');
+});
+
+// Regression: `rev-list | wc -l` turned a git error into "0 commits" and pushed.
+test('rev-list failure: nothing is pushed', (t) => {
+  const f = fixture(t);
+  commit(f.clone, 'b.txt', 'b\n', 'work');
+  const real = execFileSync('which', ['git'], { encoding: 'utf8' }).trim();
+  const shim = path.join(f.dir, 'shim'); fs.mkdirSync(shim);
+  fs.writeFileSync(path.join(shim, 'git'), `#!/usr/bin/env bash\nfor a in "$@"; do [[ "$a" == rev-list ]] && exit 128; done\nexec "${real}" "$@"\n`, { mode: 0o755 });
+  const r = run([f.clone], { SAFE_PUSH_GITLEAKS: stub(f.dir, 0), PATH: `${shim}:${process.env.PATH}` });
+  assert.notEqual(r.status, 0);
+  assert.match(r.stderr, /rev-list failed/);
+  assert.ok(!remoteHas(f.remote, f.branch));
+});
+
+// Regression: scan and push were two separate looks at HEAD.
+test('a commit made between the scan and the push is not pushed', (t) => {
+  const f = fixture(t);
+  commit(f.clone, 'b.txt', 'b\n', 'work');
+  const scanned = git(f.clone, 'rev-parse', 'HEAD');
+  const p = path.join(f.dir, 'committing-scanner.sh');
+  fs.writeFileSync(p, `#!/usr/bin/env bash\ncd "${f.clone}" && echo late > late.txt && git add late.txt && git commit -qm late\nexit 0\n`, { mode: 0o755 });
+  const r = run([f.clone], { SAFE_PUSH_GITLEAKS: p });
+  assert.equal(r.status, 0, r.stderr);
+  assert.notEqual(git(f.clone, 'rev-parse', 'HEAD'), scanned, 'the scanner did add a commit');
+  assert.equal(git(f.remote, 'rev-parse', f.branch), scanned, 'only the scanned commit is on the remote');
 });

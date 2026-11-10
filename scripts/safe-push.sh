@@ -48,15 +48,36 @@ case "$BRANCH" in
 esac
 [[ -n "$DEFAULT" && "$BRANCH" == "$DEFAULT" ]] && die "refusing to push $BRANCH — it is the remote's default branch." 3
 
-# Refresh what we know about the remote so the range is exact. Best effort: if offline the
-# range is only ever LARGER than needed (more scanned), never smaller, and the push itself fails.
-git -C "$REPO" fetch -q "$REMOTE" 2>/dev/null || true
+# Refresh the local remote-tracking refs. --prune drops refs for branches the remote no longer
+# has. Best effort: the real "published" set below comes from the remote itself, not from these.
+git -C "$REPO" fetch -q --prune "$REMOTE" 2>/dev/null || true
 
-# WHY this range: every commit reachable from HEAD that no branch of the remote has. It covers
-# intermediate versions (a secret added then deleted is still in history) and a brand-new
-# branch with no upstream (everything not already on any remote branch).
-RANGE="HEAD --not --remotes=$REMOTE"
-COUNT=$(git -C "$REPO" rev-list $RANGE 2>/dev/null | wc -l | tr -d ' ')
+# WHY one SHA (race): the scan and the push must be about the SAME commit. Capturing HEAD once
+# and pushing "$SHA:refs/heads/..." means a commit made between the scan and the push (a hook,
+# another session, a scanner that commits) is simply not pushed, rather than pushed unscanned.
+SHA=$(git -C "$REPO" rev-parse --verify -q "HEAD^{commit}") || die "cannot resolve HEAD." 2
+
+# WHY the published set comes from `ls-remote`, not from `--remotes=$REMOTE`: a remote-tracking
+# ref outlives its branch (GitHub deletes a branch after merge; a plain fetch keeps the stale
+# ref), and a stale ref at HEAD made the range empty, so "no new commits to scan" and an
+# UNSCANNED push. ls-remote asks the remote what it has right now; only tips that exist locally
+# can be ancestors of HEAD, so only those are used. If the remote cannot be asked, refuse: the
+# push would fail anyway, and guessing here is how an unscanned push gets through.
+TIPS_RAW=$(git -C "$REPO" ls-remote --heads "$REMOTE" 2>/dev/null) || die "cannot ask '$REMOTE' which branches it has — push NOT done." 6
+NOT=()
+while read -r tip _ref; do
+  [[ -n "$tip" ]] && git -C "$REPO" cat-file -e "$tip^{commit}" 2>/dev/null && NOT+=("$tip")
+done <<<"$TIPS_RAW"
+
+# WHY every commit reachable from the SHA that no remote branch has: it covers intermediate
+# versions (a secret added then deleted is still in history) and a brand-new branch with no
+# upstream (everything not already on any remote branch).
+if [[ ${#NOT[@]} -gt 0 ]]; then RANGE="$SHA --not ${NOT[*]}"; else RANGE="$SHA"; fi
+# WHY the exit status is checked: a failing rev-list used to look like "0 commits" through
+# `| wc -l`, which meant "nothing to scan" and a push.
+# shellcheck disable=SC2086
+LIST=$(git -C "$REPO" rev-list $RANGE 2>/dev/null) || die "could not list the commits to be published (git rev-list failed) — push NOT done." 7
+if [[ -n "$LIST" ]]; then COUNT=$(printf '%s\n' "$LIST" | wc -l | tr -d ' '); else COUNT=0; fi
 
 SCANNER="${SAFE_PUSH_GITLEAKS:-gitleaks}"
 if ! command -v "$SCANNER" >/dev/null 2>&1; then
@@ -79,4 +100,4 @@ fi
 # -u only when the branch has no upstream yet (brand-new branch).
 UP=()
 git -C "$REPO" rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1 || UP=(-u)
-exec git -C "$REPO" push ${UP[@]+"${UP[@]}"} "$REMOTE" "HEAD:refs/heads/$BRANCH"
+exec git -C "$REPO" push ${UP[@]+"${UP[@]}"} "$REMOTE" "$SHA:refs/heads/$BRANCH"
