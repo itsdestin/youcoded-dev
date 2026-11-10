@@ -1,0 +1,129 @@
+{
+ "deck": "review-deck-rethink-round2",
+ "started": "2026-11-10T03:18:24.835Z",
+ "submitted": "2026-11-10T03:35:23Z",
+ "cur": 4,
+ "answers": {
+  "R-1": {
+   "marks": [
+    {
+     "pic": "the picture",
+     "x": 2.4,
+     "y": 5.1,
+     "w": 30.2,
+     "h": 3.6,
+     "text": "testingggg sexy"
+    },
+    {
+     "pic": "the picture",
+     "x": 34.1,
+     "y": 53.3,
+     "w": 31.9,
+     "h": 22.8,
+     "text": "gooooood boy"
+    }
+   ],
+   "v": "yes",
+   "t": 1794281050792,
+   "note": "seems to work on my end. how's it look for you?",
+   "seconds": 115,
+   "theme": "midnight"
+  },
+  "R-2": {
+   "v": "yes",
+   "t": 1794281050792,
+   "seconds": 115,
+   "theme": "midnight"
+  },
+  "R-3": {
+   "t": 1794281050792,
+   "changes": {
+    "dont-know": "i think this should also just be \"other\"? i think they basically serve the same purpose in my mind.",
+    "no-quick-replies": "i am realizing, on these quick-check rows, something like your \"additional context\" button could be useful?",
+    "picture-rule": "i think we may also do well to offer better template slides/questions, and clearer instructions, for different types of \"questions about looks\". there are a range of things a model may do well to present in a deck in different ways, from before/after comparisons to a fan of alternatives",
+    "mic": "uhh it kinda bugged out quite a bit and make the size/shape of the text box wonky."
+   },
+   "v": "other",
+   "seconds": 115,
+   "theme": "midnight"
+  },
+  "R-4": {
+   "v": "other",
+   "t": 1794281291732,
+   "note": "i think this still needs to be a bit clearer. what qualifies as \"build details no user can notice\"? i also think the \"listed\" list is a bit narrow? could probably start with defaults for some things like copy on menus and what happens on failure. i mostly want to be involved in core/optimal user flows, big-picture interface design, broader \"how different functions/app elements interact\" kind of questions during initial discussion/design rounds. i also think we may want a separate type of deck question/page to allow me to directly edit copy in menus, kinda like what we offer with our website copy editor page thing",
+   "seconds": 121,
+   "theme": "midnight"
+  },
+  "R-5": {
+   "v": "pick",
+   "pick": "list",
+   "t": 1794281291732,
+   "seconds": 121,
+   "theme": "midnight"
+  },
+  "R-6": {
+   "v": "other",
+   "t": 1794281574936,
+   "marks": [
+    {
+     "pic": "the picture",
+     "x": 0.9,
+     "y": 1.2,
+     "w": 92.8,
+     "h": 8.3,
+     "text": "kinda confused about what navigation is supposed to look like, cuz these top chips exist but i also see 2/3 on the same page?"
+    }
+   ],
+   "note": "i kinda want to go through what each of these pages would actually be, understand how they earn their place, and whether we should remove/add/consolidate/reorganize any of these to present information in a more clear/concise/useful way?",
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "R-7": {
+   "v": "pick",
+   "pick": "change",
+   "t": 1794281574936,
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "R-8": {
+   "v": "pick",
+   "pick": "steer",
+   "t": 1794281574936,
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "R-9": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1794281574936,
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "R-10": {
+   "v": "pick",
+   "t": 1794281670594,
+   "pick": "new-first",
+   "note": "we may need to be slightly more thoughtful about how questions/pages are grouped/organized in these new decks with history",
+   "seconds": 48,
+   "theme": "midnight"
+  },
+  "R-11": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1794281670594,
+   "seconds": 48,
+   "theme": "midnight"
+  },
+  "R-12": {
+   "v": "yes",
+   "t": 1794281721406,
+   "seconds": 51,
+   "theme": "midnight"
+  }
+ },
+ "built": {
+  "at": "2026-11-10T02:49:32Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "6351b0253"
+ }
+}
