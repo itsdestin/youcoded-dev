@@ -11,9 +11,9 @@ area: Workspace
 vision: together.workflow.decks, together.added.shoot
 ---
 Progress
-Done: three of the ten listed faults look fixed in later work: Office editor sharing (youcoded commits 56a8ab9cf, c1c3a936d, a446ff0d8), duplicate spec keys (review-cards.py:183 and spec.py duplicate-id checks), and 1.5x screenshots (commit c670f7cf9). Not checked by running the app: the live-step check, viewer hangs, deck clipping, the drag-sweep crash and the terminal width.
-Next: re-test the unverified faults in the review rig, then split what is still open into separate cards or close it. Still open per code: touch emulation is missing; 7 of 8 workbench URL switches are not covered by the boot check; the before/after diff card is not confirmed built.
-Blocked: nothing recorded.
+Done: Checked all ten against master (2026-11-10). Fixed already: b (viewers stuck loading), c (shared Office editor), e (duplicate keys; test added), h's 1.5x scale. On branch session/workspace-tools-batch (not merged): f - the drag sweep no longer keeps every frame in memory (frames saved only for failing drags); i - the boot check now starts all 8 window kinds (19 routes boot) and a guard fails if a new one is not covered.
+Next: Leave to session/review-deck-rethink: d (clipped cards), g (before/after diff card). Leave to the shoot sessions: touch emulation. a is stale (that rig was retired) - close it. j (terminal wraps at two-thirds width) needs a test window to check. 17 workbench switches are named by no screen; adding them waits for session/test-suite-rethink to land.
+Blocked: nothing.
 
 Chats
 
