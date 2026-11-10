@@ -331,6 +331,7 @@
     $('#answers').innerHTML = answerButtons(st);
     // WHY (Destin, 2026-11-09): one text field per question — a typed answer hides the note box.
     $('#note').hidden = st.answer === 'words';
+    addMics();
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
   // `id` is the step being answered. On a page every question has its own answer row, so the
@@ -538,13 +539,13 @@
         + `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
         // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A
         // question answered by typing already has its box, so it gets no second note box.
-        + (st.answer === 'words' ? '' : `<input class="note" data-id="${esc(st.id)}" placeholder="Add a note (optional)">`) + `</div>`
+        + (st.answer === 'words' ? '' : `<textarea class="note" rows="1" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></textarea>`) + `</div>`
         + `</article>`).join('');
     // Every control carries the id of the question it belongs to, so one click handler on the
     // column can answer any of them without knowing which article it came from.
     $$('#cards article.q').forEach(art => art.querySelectorAll('.ans').forEach(b => b.dataset.id = art.dataset.id));
     if (state.submitted) $$('#cards .ans,#cards .note').forEach(e => e.disabled = true);
-    layout(); paintState();
+    layout(); paintState(); addMics();
   }
   // Delegated, and bound once: renderPage() replaces the whole column on every page change.
   $('#cards').addEventListener('click', e => {
@@ -972,6 +973,68 @@
     layoutLive();
   });
   window.addEventListener('resize', layout);
+  // ── VOICE: speak into any text box ─────────────────────────────────────────────────────
+  // WHY (Destin, 2026-11-09): "I want to be able to respond to these decks with my voice, and
+  // typing is really frustrating sometimes." Every text box gets a microphone button. The page
+  // only says start/stop: serve.py's helper listens on this computer's microphone and runs the
+  // app's own Parakeet model (voice-helper.mjs says why the page does not open the microphone
+  // itself). Words appear in the box as he speaks and are saved exactly like typed ones,
+  // because the box is sent the same `input` event typing sends.
+  const MIC_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>';
+  const grow = box => { if (box.tagName === 'TEXTAREA') { box.style.height = 'auto'; box.style.height = (box.scrollHeight + 2) + 'px'; } };
+  function addMics() {
+    $$('textarea.note, input.note, textarea.ans-write').forEach(box => {
+      grow(box);
+      // A box the layout is not showing (the shared note row on a question page) gets no button.
+      const off = box.hidden || box.offsetParent === null;
+      if (box.nextElementSibling && box.nextElementSibling.classList.contains('mic')) { box.nextElementSibling.hidden = off; return; }
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'mic'; b.title = 'Speak instead of typing'; b.setAttribute('aria-label', 'Speak instead of typing');
+      b.innerHTML = MIC_SVG; b.hidden = off;
+      box.insertAdjacentElement('afterend', b);
+    });
+  }
+  const voice = { box: null, btn: null, base: '', timer: null, seq: -1 };
+  const voicePost = cmd => fetch('/voice', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ cmd }) }).then(r => r.json());
+  function voiceSay(btn, msg) {
+    // Never a silent failure: what went wrong is written under the box it belongs to.
+    let p = btn.nextElementSibling; if (!p || !p.classList.contains('micerr')) { p = document.createElement('p'); p.className = 'micerr'; btn.insertAdjacentElement('afterend', p); }
+    p.textContent = msg; p.hidden = !msg;
+  }
+  function voiceEnd() {
+    clearInterval(voice.timer); voice.timer = null;
+    if (voice.btn) voice.btn.classList.remove('rec', 'wait');
+    voice.box = voice.btn = null;
+  }
+  function voiceApply(st) {
+    if (!voice.box || st.seq === voice.seq) return;
+    voice.seq = st.seq;
+    if (st.status === 'recording' || st.status === 'finishing' || st.final) {
+      const text = voice.base + (voice.base && st.text ? ' ' : '') + (st.text || '');
+      if (voice.box.value !== text) { voice.box.value = text; voice.box.dispatchEvent(new Event('input', { bubbles: true })); grow(voice.box); }
+    }
+    voice.btn.classList.toggle('rec', st.status === 'recording');
+    voice.btn.classList.toggle('wait', st.status === 'finishing' || st.status === 'loading');
+    if (st.error) voiceSay(voice.btn, st.error);
+    if (st.status === 'idle' || st.status === 'off') voiceEnd();
+  }
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.mic'); if (!btn || state.submitted) return;
+    const box = btn.previousElementSibling; if (!box) return;
+    if (voice.box) {
+      // A press while listening stops it — on this box or any other; one recording at a time.
+      voice.btn.classList.remove('rec'); voice.btn.classList.add('wait');
+      voicePost('stop').then(voiceApply).catch(err => { voiceSay(voice.btn, 'Voice input did not stop: ' + err.message); voiceEnd(); });
+      return;
+    }
+    voice.box = box; voice.btn = btn; voice.base = box.value.trim(); voice.seq = -1;
+    voiceSay(btn, ''); btn.classList.add('wait'); box.focus();
+    voicePost('start').then(st => {
+      voiceApply(st);
+      if (voice.box) voice.timer = setInterval(() => voicePost('poll').then(voiceApply).catch(() => {}), 350);
+    }).catch(err => { voiceSay(btn, 'Voice input did not start: ' + err.message); voiceEnd(); });
+  });
+  document.addEventListener('input', e => { if (e.target.matches && e.target.matches('textarea.note, textarea.ans-write')) grow(e.target); });
   load().then(() => {
     const q = new URLSearchParams(location.search);
     // An answers file written before this deck had pages can carry a `cur` past the last page;

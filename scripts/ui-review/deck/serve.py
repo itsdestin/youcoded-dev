@@ -14,6 +14,7 @@ import json
 import mimetypes
 import os
 import re
+import shutil
 import signal
 import socketserver
 import subprocess
@@ -143,6 +144,7 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
     # One dev window per try-it slide, so pressing the button twice does not leave two apps
     # fighting over the same profile. Keyed by step id; a dead entry is forgotten.
     dev_windows = {}
+    voice = VoiceBridge()   # one speech helper per served deck, started on first use
     # The practice app's built folder for /app/* — filled in by `_ensure_app`, which (re)builds
     # it (cheap: ensureBuild reuses the cache when nothing changed) at server start and again
     # every time the pane page itself is asked for, so an edit to a candidate shows on the next
@@ -266,12 +268,112 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
                 self._json(200, {'ok': True})
                 on_submit(state)
                 return
+            if self.path == '/voice':
+                return self._json(200, voice.handle(state))
             if self.path == '/dev':
                 return self._json(*launch_dev(spec, dev_windows, state.get('step')))
             return self._json(404, {'error': 'unknown path'})
 
     srv = _Server(('127.0.0.1', port), Handler)
+    srv.voice = voice   # so serve() can stop the helper when the deck closes
     return srv, f'http://127.0.0.1:{srv.server_address[1]}/{spec["out"]}'
+
+
+class VoiceBridge:
+    """Voice typing: one `voice-helper.mjs` process per served deck, started the first time a
+    microphone button is pressed (loading the speech model takes about a second and ~700 MB of
+    memory, so a deck nobody speaks to never pays for it).
+
+    WHY it lives in the server (Destin, 2026-11-09): he answers decks by voice. The page cannot
+    use the browser's microphone when the deck is shown inside the YouCoded app (the app refuses
+    it to every page but its own), so the page only presses start/stop and the helper listens
+    on this computer's microphone itself. The state the page polls is a plain dict; `seq` rises
+    with every change so a poll can tell new words from old ones."""
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.proc = None
+        self.state = {'status': 'off', 'text': '', 'error': '', 'seq': 0}
+
+    def _set(self, **kw):
+        with self.lock:
+            self.state.update(kw)
+            self.state['seq'] += 1
+
+    def _read(self, proc):
+        for line in proc.stdout:
+            try:
+                ev = json.loads(line)
+            except ValueError:
+                continue
+            kind = ev.get('type')
+            if kind == 'ready':
+                self._set(status='idle', error='')
+            elif kind == 'partial':
+                self._set(text=ev.get('text', ''))
+            elif kind == 'final':
+                self._set(status='idle', text=ev.get('text', ''), final=True)
+            elif kind == 'error':
+                self._set(status='idle', error=ev.get('message', 'voice input failed'))
+        with self.lock:
+            if self.proc is proc:
+                self.proc = None
+                # The helper is gone: without an error of its own, say only that — never a guess.
+                self.state.update(status='off', error=self.state['error'] or 'voice input stopped unexpectedly')
+                self.state['seq'] += 1
+
+    def _ensure(self):
+        with self.lock:
+            if self.proc and self.proc.poll() is None:
+                return True
+        node = shutil.which('node')
+        if not node:
+            self._set(status='off', error='voice input needs Node.js, which was not found on this computer')
+            return False
+        proc = subprocess.Popen([node, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'voice-helper.mjs')],
+                                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, bufsize=1)
+        with self.lock:
+            self.proc = proc
+            self.state.update(status='loading', error='', text='')
+            self.state['seq'] += 1
+        threading.Thread(target=self._read, args=(proc,), daemon=True).start()
+        return True
+
+    def _send(self, word):
+        with self.lock:
+            proc = self.proc
+        if proc and proc.poll() is None:
+            try:
+                proc.stdin.write(word + '\n')
+                proc.stdin.flush()
+            except OSError:
+                pass
+
+    def handle(self, body):
+        cmd = body.get('cmd')
+        if cmd == 'start':
+            if self._ensure():
+                # Wait for the model the first time, so "start" never races the load.
+                deadline = time.monotonic() + 20
+                while self.state['status'] == 'loading' and time.monotonic() < deadline:
+                    time.sleep(0.05)
+                if self.state['status'] == 'idle':
+                    self._set(status='recording', text='', error='', final=False)
+                    self._send('start')
+        elif cmd == 'stop':
+            if self.state['status'] == 'recording':
+                self._set(status='finishing')
+                self._send('stop')
+        elif cmd == 'cancel':
+            self._send('cancel')
+        with self.lock:
+            return dict(self.state)
+
+    def close(self):
+        with self.lock:
+            proc, self.proc = self.proc, None
+        if proc and proc.poll() is None:
+            proc.terminate()
 
 
 def launch_dev(spec, windows, step_id):

@@ -459,3 +459,22 @@ body[data-served="1"] .opendev{display:inline-flex}
 .frame.gone .pic{display:grid;place-items:center;min-height:120px;padding:16px;border:1px dashed var(--edge);border-radius:var(--radius-md);font-size:12px;line-height:1.5;color:var(--fg-muted);text-align:center}
 
 /* WHY pre-line on card text (2026-10-15): a field listing many items (the roadmap-move deck, one line per item) ran together into one wall; a line break the author wrote now shows. Ordinary prose has none, so it is unchanged. */
+
+/* ── VOICE: a microphone on every text box (page.js "VOICE"). The button is a sibling laid over
+   the box's right end with a negative margin, so it takes no room of its own and no layout
+   has to make space for it. Hidden unless the deck is served: a plain file has no helper. */
+.mic{display:none;flex:0 0 32px;width:32px;height:32px;margin:0 2px 0 -42px;align-self:center;position:relative;z-index:1;place-items:center;border:0;border-radius:50%;background:transparent;color:var(--fg-muted);cursor:pointer;padding:0}
+body[data-served] .mic:not([hidden]){display:grid}
+.mic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media (hover:hover){.mic:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 10%,transparent)}}
+.mic.rec{color:#fff;background:var(--no);animation:micpulse 1.2s ease-in-out infinite}
+.mic.wait{color:var(--mark);animation:micpulse .7s ease-in-out infinite}
+@keyframes micpulse{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.mic.rec,.mic.wait{animation:none}}
+body[data-served] .note,body[data-served] .ans-write{padding-right:44px}
+.micerr{flex:1 1 100%;margin:0;font-size:12px;color:var(--no)}
+/* A note on a question page grows with what is said into it instead of scrolling sideways. */
+.pages .qrow textarea.note{height:auto;min-height:clamp(34px,4.4vh,52px);padding:9px 12px;line-height:1.4;resize:none;overflow:hidden}
+body[data-served] .pages .qrow textarea.note{padding-right:44px}
+/* The narrow one-step layout is a three-column grid; the microphone shares the note's cell. */
+.compact .controls .mic{grid-column:2;justify-self:end;margin:0 8px 0 0}
