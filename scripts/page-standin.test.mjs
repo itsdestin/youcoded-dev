@@ -1,17 +1,22 @@
 // page-standin: serves a page with a stub window.youcoded backed by the folder's own data.json,
 // binds loopback only, answers fetch from local data only, and refuses odd hosts.
 // Run: node --test scripts/page-standin.test.mjs
-import { test } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import vm from 'node:vm';
 import { createStandin, stubScript } from './page-standin.mjs';
 
+// WHY: every fixture made a temp dir that was never removed (6 left behind per run).
+const made = [];
+const tmpDir = (prefix) => { const d = mkdtempSync(join(tmpdir(), prefix)); made.push(d); return d; };
+after(() => { for (const d of made) rmSync(d, { recursive: true, force: true }); });
+
 function fixture({ data, fetchMap, connections = [] } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'standin-'));
+  const dir = tmpDir('standin-');
   writeFileSync(join(dir, 'page.html'), '<!doctype html><html><head><title>Fixture</title></head><body><h1 id=x>hi</h1></body></html>');
   writeFileSync(join(dir, 'page.json'), JSON.stringify({ name: 'Fixture', connections }));
   if (data !== undefined) writeFileSync(join(dir, 'data.json'), JSON.stringify(data));
@@ -52,7 +57,7 @@ test('binds 127.0.0.1 only, and refuses a request whose Host is anything else', 
 });
 
 test('a folder with no page.html is refused plainly', async () => {
-  await assert.rejects(createStandin(mkdtempSync(join(tmpdir(), 'standin-empty-'))), /no page\.html/);
+  await assert.rejects(createStandin(tmpDir('standin-empty-')), /no page\.html/);
 });
 
 test('no data.json means data is null; invalid JSON is a plain error on load, not a crash', async () => {

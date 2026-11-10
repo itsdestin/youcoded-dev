@@ -1,10 +1,15 @@
 // Card #18(f): 60 scenarios must not leave a giant results file or hold every frame.
-import test from 'node:test';
+import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, statSync, existsSync } from 'node:fs';
+import { mkdtempSync, readFileSync, statSync, existsSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { retainScenario, writeSummary, FRAMES_FILE } from '../drag-fuzz-output.mjs';
+
+// WHY: each test made a temp dir and never removed it (2 left behind per run).
+const made = [];
+const tmpDir = () => { const d = mkdtempSync(join(tmpdir(), 'dfo-')); made.push(d); return d; };
+after(() => { for (const d of made) rmSync(d, { recursive: true, force: true }); });
 
 const fakeScenario = (n, failing) => ({
   desc: { n, pointer: 'mouse' },
@@ -15,7 +20,7 @@ const fakeScenario = (n, failing) => ({
 });
 
 test('60 scenarios: summary has no frames; frames file holds only the failing ones', () => {
-  const out = mkdtempSync(join(tmpdir(), 'dfo-'));
+  const out = tmpDir();
   const results = [];
   for (let n = 1; n <= 60; n++) {
     const full = fakeScenario(n, n % 10 === 0); // 6 failures
@@ -35,7 +40,7 @@ test('60 scenarios: summary has no frames; frames file holds only the failing on
 });
 
 test('an all-clean run writes no frames file', () => {
-  const out = mkdtempSync(join(tmpdir(), 'dfo-'));
+  const out = tmpDir();
   retainScenario(fakeScenario(1, false), out);
   assert.equal(existsSync(join(out, FRAMES_FILE)), false);
 });
