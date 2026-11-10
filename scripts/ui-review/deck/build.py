@@ -2,13 +2,15 @@
 """Assemble one self-describing HTML page: page.html.tmpl + page.css + page.js + the theme tokens
 + the deck data as one JSON object. Refuses when a picture or a box is missing, or a writing
 rule is broken — a deck with a hole in it is worse than no deck (spec §5)."""
+import datetime
 import html
 import json
 import os
+import subprocess
 
 from .crops import image_name, is_focus_crop
 from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
-from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
+from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_calls, is_choice, is_clip, is_contract,
                     is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
                     workspace_root)
 
@@ -111,7 +113,7 @@ def _decide_step(spec, st, boxes, runs):
         # Today / The problem / Proposal ride along exactly as on a words-only decide.
         # WHY (submit-ticket friction, proposal 20): validate accepted them and page.js draws
         # them, but this step dropped them — a picture decide reached Destin without them.
-        **{k: st[k] for k in QUESTION_FIELDS if st.get(k)},
+        **{k: st[k] for k in QUESTION_FIELDS + ('checked',) if st.get(k)},
     }
 
 
@@ -149,6 +151,11 @@ def _words_step(spec, st):
         d['rows'] = [{k: r.get(k, '') for k in ROW_KEYS} for r in st['rows']]
         d['yes'] = st.get('yes') or 'Yes, that is done'
         d['no'] = st.get('no') or 'No, something is missing'
+    elif is_calls(st):
+        # Small choices the assistant made itself: one line and its reason each; page.js gives
+        # every line its own Change this button and text box.
+        d['kind'] = 'calls'
+        d['calls'] = [{'id': c['id'], 'call': c['call'], 'why': c['why']} for c in st['calls']]
     elif st.get('options'):
         d['kind'] = 'decide'
         d['options'] = [_option(o) for o in st['options']]
@@ -158,7 +165,7 @@ def _words_step(spec, st):
         d['kind'] = 'question'
     # The three parts of a question ride as their own keys; page.js draws one card each.
     # `picture`/`caption` ride with them: a file beside the spec, shown above the three cards.
-    for k in QUESTION_FIELDS + ('picture', 'caption'):
+    for k in QUESTION_FIELDS + ('picture', 'caption', 'checked'):
         if st.get(k):
             d[k] = st[k]
     return d
@@ -290,6 +297,20 @@ def _answer_shape(st):
     return d
 
 
+def _built(spec):
+    """When this deck was built and from which version of the work (Destin, 2026-11-09, rethink
+    Q-6: "tracking the date/time and branch/commit a deck was built against"). Stale decks were
+    his worst complaint; this lets him — and the session reading the answers — see at a glance
+    whether a deck is older than the work it describes. Outside a git folder: the time alone."""
+    def git(*args):
+        try:
+            return subprocess.run(['git', *args], cwd=spec.get('_base') or '.', capture_output=True, text=True, timeout=5).stdout.strip()
+        except (OSError, subprocess.SubprocessError):
+            return ''
+    return {'built': {'at': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                      'branch': git('rev-parse', '--abbrev-ref', 'HEAD'), 'commit': git('rev-parse', '--short', 'HEAD')}}
+
+
 def deck_data(spec, boxes):
     runs = run_names(spec)
     steps = [_live_step(spec, st) if is_live(st)
@@ -321,7 +342,7 @@ def deck_data(spec, boxes):
     pg = pages(spec)
     paged = {'pages': [{'id': p['id'], 'title': p['title'], 'intro': p['intro'],
                         'steps': [st['id'] for st in p['steps']]} for p in pg]} if pg else {}
-    return {**live, **paged, 'title': spec['title'], 'key': spec['key'], 'runs': runs,
+    return {**live, **paged, **_built(spec), 'title': spec['title'], 'key': spec['key'], 'runs': runs,
             # Any other run name (`round3`) shows as written unless `labels` names it.
             'runLabels': {**{r: r for r in spec['runs']}, 'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},

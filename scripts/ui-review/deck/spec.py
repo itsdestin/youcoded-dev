@@ -419,6 +419,41 @@ def is_dev(step):
     return is_words(step) and 'dev' in step
 
 
+def is_calls(step):
+    """A CALLS list: a words step whose body is `calls` — small choices the assistant made
+    itself, each `{id, call, why}`. Destin (2026-11-09, rethink Q-10) wanted these listed, not
+    asked one by one and not made silently; each stands unless he marks it for change."""
+    return is_words(step) and 'calls' in step
+
+
+CALL_WORDS_MAX = 40
+PART_WORDS_MAX = 60     # each of Today / The problem / Proposal
+BULLET_WORDS_MAX = 25   # each pro or con
+
+
+def _validate_calls(st, sid, errors):
+    calls = st.get('calls')
+    if not isinstance(calls, list) or not calls:
+        errors.append(f'{sid}: calls is a non-empty list of {{id, call, why}}')
+        return
+    seen = set()
+    for c in calls:
+        if not isinstance(c, dict) or not all(isinstance(c.get(k), str) and c.get(k).strip() for k in ('id', 'call', 'why')):
+            errors.append(f'{sid}: every call needs id, call (what was chosen) and why (the reason), as text')
+            continue
+        if c['id'] in seen:
+            errors.append(f'{sid}: call id "{c["id"]}" is used twice')
+        seen.add(c['id'])
+        for k in ('call', 'why'):
+            if word_count(c[k]) > CALL_WORDS_MAX:
+                errors.append(f'{sid}/{c["id"]}: {k} is {word_count(c[k])} words (max {CALL_WORDS_MAX}) — one line he can skim')
+            for w in banned_in(c[k]):
+                errors.append(f'{sid}/{c["id"]}: {k} uses banned word "{w}"')
+    for k in ('options', 'rows', 'today', 'answer'):
+        if st.get(k):
+            errors.append(f'{sid}: a calls list has no {k} — a call he wants changed gets its own text box')
+
+
 def is_question(step):
     """A QUESTION step: a words step that asks something, keyed on `today` — the first of the
     three parts every question carries (what exists / what goes wrong / what would change).
@@ -845,6 +880,8 @@ def _validate_words(spec, st, sid, errors, warnings):
         _validate_rows(spec, st, sid, errors)
     elif is_dev(st):
         _validate_dev(spec, st, sid, errors)
+    elif is_calls(st):
+        _validate_calls(st, sid, errors)
     # A words step with options is ALWAYS a question — there is no other reason to offer a
     # choice — so it owes the three parts even when its author forgot `today` entirely.
     elif is_question(st) or st.get('options'):
@@ -897,6 +934,26 @@ def _validate_question(st, sid, errors, warnings):
                           f'and what would change — today / problem / proposal)')
         else:
             inline_label_errors(st[k], sid, k, errors)
+            # WHY a cap (Destin, 2026-11-09, rethink Q-9: a cap, "but … sufficient so as to
+            # actually allow for useful descriptions"): "wall of text" and "way too much copy"
+            # were repeated complaints. 97 in 100 past boxes already fit in 60 words; the ones
+            # that did not were the walls.
+            if word_count(st[k]) > PART_WORDS_MAX:
+                errors.append(f'{sid}: {k} is {word_count(st[k])} words (max {PART_WORDS_MAX}) — say it shorter, or split the question')
+    for o in st.get('options') or []:
+        for k in ('pros', 'cons'):
+            for b in (o.get(k) or []) if isinstance(o, dict) else []:
+                if word_count(b) > BULLET_WORDS_MAX:
+                    errors.append(f'{sid}/{o.get("id")}: a {k[:-1]} is {word_count(b)} words (max {BULLET_WORDS_MAX}) — one point per line')
+    # `checked`: how, and when, the Today claim was confirmed (rethink Q-7). Optional by his
+    # choice (Q-8: "clearer instructions rather than … additional automatic checks"), but when
+    # present it is copy he reads behind the (i), so it obeys the same word rules.
+    if st.get('checked') is not None:
+        if not isinstance(st['checked'], str) or not st['checked'].strip():
+            errors.append(f'{sid}: checked is one plain sentence — how and when Today was confirmed')
+        else:
+            for w in banned_in(st['checked']):
+                errors.append(f'{sid}: checked uses banned word "{w}"')
     if not st.get('options'):
         return
     _validate_options(st, sid, errors, warnings, minimum=1)

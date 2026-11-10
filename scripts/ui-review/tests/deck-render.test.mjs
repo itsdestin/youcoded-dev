@@ -1139,3 +1139,60 @@ test('a slide lists the other screens its change also reaches', async () => {
     assert.deepEqual(c.errors, []);
   } finally { c.close(); srv.kill(); }
 });
+
+// The 2026-11-09 rethink, driven like a hand would: drag an area on a picture, mark one call
+// for change. Pins what Destin asked for — "rectangular drag-regions … comment on it", and a
+// calls list where "each item i choose to change should have its own little text box".
+test('an area dragged on a picture and a changed call are saved, and neither lights Don\'t know', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-rethink-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
+raw['steps'] = [{'id': 'Q-9', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Keep this layout?',
+    'today': 'The board sits left of the chat.', 'problem': 'It is cramped.', 'proposal': 'Move it above.',
+    'checked': 'Opened the games screen today.', 'picture': 'pic.png', 'caption': 'The board today.'},
+  {'id': 'K-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Calls I made for you',
+    'calls': [{'id': 'size', 'call': 'The board is five rows tall.', 'why': 'It matches the other games.'},
+              {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.'}]}]
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1440, 900);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      for (let i = 0; i < 40 && !(await c.evaluate("!!window.__deckReady && !!document.querySelector('.markable img') && document.querySelector('.markable img').complete").catch(() => false)); i++) await sleep(250);
+      assert.equal(await c.evaluate("document.querySelectorAll('.how .tip').length"), 1, 'Today carries its how-it-was-checked note');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .n').textContent.startsWith('List')"), true, 'a calls list is not called a Question');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .note').length"), 0, 'a calls list has no shared note box');
+      await c.evaluate(`(()=>{const img=document.querySelector('.markable img'),r=img.getBoundingClientRect();
+        img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+40,clientY:r.top+30}));
+        document.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+200,clientY:r.top+150}));
+        document.dispatchEvent(new PointerEvent('pointerup',{}));})()`);
+      await sleep(100);
+      await c.evaluate(`(()=>{const t=document.querySelector('.markt');t.value='too cramped';t.dispatchEvent(new Event('input',{bubbles:true}));
+        document.querySelectorAll('.callchg')[1].click();
+        const b=document.querySelectorAll('.callt')[1];b.value='play the chime';b.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      await sleep(900);
+      assert.equal(await c.evaluate("document.querySelectorAll('.markable .mark').length"), 1, 'the area is drawn on the picture');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"Q-9\"] .ans[data-dk]').classList.contains('on')"), false, "an area does not light Don't know");
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .ans').disabled"), true, 'All fine is off while a call is marked for change');
+      assert.deepEqual(c.errors, []);
+    } finally { await c.close(); }
+    const saved = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
+    assert.equal(saved.answers['Q-9'].marks[0].text, 'too cramped');
+    assert.ok(saved.answers['Q-9'].marks[0].w > 30 && saved.answers['Q-9'].marks[0].h > 30, JSON.stringify(saved.answers['Q-9'].marks[0]));
+    assert.deepEqual(saved.answers['K-1'].changes, { sound: 'play the chime' });
+    assert.ok(saved.built && saved.built.at, 'the answers file records which build he was shown');
+  } finally { srv.kill(); }
+});

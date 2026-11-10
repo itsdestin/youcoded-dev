@@ -65,6 +65,7 @@ let bytes = 0;
 let decoding = false;
 let decodedBytes = 0;  // how much had been heard at the last refresh
 let timer = null;
+let lastLevel = 0;
 
 async function hear() {
   // Every pass re-hears the whole recording from the start (the app does the same): the model
@@ -94,6 +95,11 @@ function start() {
   r.stdout.on('data', d => {
     if (rec !== r) return;
     chunks.push(d); bytes += d.length;
+    // WHY: the page draws a ring that grows with the sound, like the app's own microphone, so
+    // he can see it is hearing him before the first words appear. Loudness of this slice only.
+    const n = Math.floor(d.length / 4); let sum = 0;
+    for (let i = 0; i < n; i++) { const v = d.readFloatLE(i * 4); sum += v * v; }
+    if (n && Date.now() - lastLevel > 90) { lastLevel = Date.now(); out({ type: 'level', v: Math.min(1, Math.sqrt(sum / n) * 6) }); }
     if (bytes / 4 / RATE > MAX_SECONDS) stop();
   });
   r.on('error', err => { if (rec === r) { stopRecorder(); out({ type: 'error', message: `The microphone could not be opened: ${err.message}` }); } });

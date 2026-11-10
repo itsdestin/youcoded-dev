@@ -20,6 +20,7 @@
     change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
     warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
+  const clock = t => new Date(t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   if (window.top !== window) document.body.classList.add('embedded');
   // What the stage shows for a step: one frame per run (before/after, or today), or — for a CHOICE
@@ -214,12 +215,15 @@
   // A question, and each of its options, may now carry a picture; a click opens it full size.
   const pictureFig = (x, cls) => x.picture ? `<figure class="qpic${cls || ''}"><a href="${esc(x.picture)}" target="_blank" rel="noopener" title="Open full size"><img src="${esc(x.picture)}" alt=""></a>${x.caption ? `<figcaption>${esc(x.caption)}</figcaption>` : ''}</figure>` : '';
   // The three parts of a question, one card each.
-  const partCard = (title, text) => `<section class="card part"><h3>${esc(title)}</h3><p>${esc(text)}</p></section>`;
+  // WHY the little (i) (Destin, 2026-11-09, rethink Q-7): stale "Today" facts were the worst
+  // fault in past decks. A question may say how and when its Today was checked (`checked`);
+  // he asked for it tucked behind a hover mark beside the header, not as more copy to read.
+  const partCard = (title, text, how) => `<section class="card part"><h3>${esc(title)}${how ? `<span class="how" tabindex="0" aria-label="How this was checked"><i>i</i><span class="tip">${esc(how)}</span></span>` : ''}</h3><p>${esc(text)}</p></section>`;
   // Fix (Destin, 2026-09-06): "do 3 cards side-by-side horizontally". Stacked, the three
   // explanations were three screens of scrolling before the first thing he can answer.
   const partCards = st => {
     const cards = [['Today', st.today], ['The problem', st.problem], ['Proposal', st.proposal]]
-      .filter(([, t]) => t).map(([h, t]) => partCard(h, t)).join('');
+      .filter(([, t]) => t).map(([h, t], i) => partCard(h, t, h === 'Today' ? st.checked : '')).join('');
     return cards ? `<div class="parts">${cards}</div>` : '';
   };
   // No card at all when there is nothing to put in it: a slide showing a REAL screen of the app
@@ -267,8 +271,14 @@
     + `<button type="button" class="btn copycmd">Copy the command</button></div>`
     + `<pre class="cmd"><code>${esc(st.command)}</code></pre>`
     + `<p class="src devnote">This opens a separate dev window on your desktop, alongside your own app — never your own app itself. It takes a few seconds to appear. Close it when you are done.</p></section>`;
+  // CALLS I MADE FOR YOU (Destin, 2026-11-09, rethink Q-10: "super helpful. but i think each
+  // item i choose to change should have its own little text box underneath"). Small choices
+  // the assistant made itself, one line each with its reason. Each stands unless he presses
+  // Change this, which opens a box under THAT line for what he wants instead.
+  const callsCard = st => `<section class="card calls"><ul>${st.calls.map(c => `<li class="call" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p></div><button type="button" class="btn sm callchg" data-sid="${esc(st.id)}" data-call="${esc(c.id)}">Change this</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="What should it be instead?"></textarea></div></li>`).join('')}</ul></section>`;
   // The body of one step, in the order the cards are read.
-  const cardsFor = st => st.kind === 'question' ? pictureFig(st) + partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
+  const cardsFor = st => st.kind === 'calls' ? callsCard(st) + noticeCard(st)
+    : st.kind === 'question' ? pictureFig(st) + partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + alsoCard(st) + riskCard(st)
@@ -302,6 +312,8 @@
   const answerButtons = st => {
     const picks = pickList(st);
     if (st.answer === 'words') return writeBox(st);
+    // A calls list has one button: nothing to change. Changing one is done on its own line.
+    if (st.kind === 'calls') return `<button class="btn ans" data-v="yes"><span>All fine</span></button>`;
     // Fix (2026-09-10): every answer label goes in a <span>. `.ans` hides its overflow and
     // centres its content, and the ellipsis rule beside it (page.css) targets `.ans>span` —
     // so a label written as bare text was clipped at BOTH ends with no ellipsis, reading as
@@ -330,7 +342,7 @@
     // file keeps three values, and both summaries print "don't know" for it.
     $('#answers').innerHTML = answerButtons(st);
     // WHY (Destin, 2026-11-09): one text field per question — a typed answer hides the note box.
-    $('#note').hidden = st.answer === 'words';
+    $('#note').hidden = st.answer === 'words' || st.kind === 'calls';
     addMics();
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
@@ -340,6 +352,9 @@
     if (state.submitted) return;
     id = id || (PAGES ? '' : DECK.steps[cur].id); if (!id) return;
     const st = stepById(id) || {};
+    // "All fine" cannot sit beside a line marked Change this — the yes that contradicts its
+    // own note was a real fault in past decks. The button is disabled then; this is the backstop.
+    if (st.kind === 'calls' && v === 'yes' && Object.keys((state.answers[id] || {}).changes || {}).length) return;
     // SEVERAL: the same click toggles membership instead of replacing the answer, so "A and C,
     // not B" is a real answer rather than a sentence in the note box (Destin, 2026-09-06).
     if (v === 'pick' && st.pick === 'several') {
@@ -357,6 +372,15 @@
     const n = PAGES ? $(`#cards article.q[data-id="${CSS.escape(id)}"] .note`) : $('#note'); if (n) n.focus();
   }
   $('#deck-title').textContent = DECK.title; document.title = DECK.title;
+  // WHY (Destin, 2026-11-09, rethink Q-6): which version of the work a deck was built from,
+  // and when, proves its value on every deck — stale decks were his top complaint. It sits
+  // quietly in the chip, and rides into the answers file so the record says what he was shown.
+  if (DECK.built) {
+    const b = DECK.built, when = new Date(b.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    const el = document.createElement('span'); el.className = 'built'; el.textContent = 'built ' + when + (b.commit ? ' · ' + b.commit : '');
+    el.title = 'This deck was built ' + when + (b.branch ? ' from the work on ' + b.branch : '') + (b.commit ? ' (version ' + b.commit + ')' : '') + '.';
+    $('.chip').append(el); state.built = b;
+  }
   document.body.dataset.screen = 'deck';   // 'finished' once submitted — read by deck-render.test.mjs
   // One segment per page when the deck is pages, one per step otherwise.
   $('#steps').innerHTML = (PAGES || DECK.steps).map(() => '<span></span>').join('');
@@ -509,7 +533,7 @@
       render();
     });
     $$('#inner img').forEach(i => i.addEventListener('load', layout));
-    layout(); paintState();
+    layout(); paintState(); wireMarks();
   }
   // ── the question page: every question of one set, on one scrolling reading column ──────────
   function renderPage() {
@@ -533,19 +557,20 @@
         // Fix (Destin, 2026-09-06): "too hard to quickly navigate between questions and tell
         // them apart". A page of questions had nothing between one and the next but a 14px gap,
         // so on a tall question you cannot see where you are. Each one now names itself.
-        + `<p class="qnum"><span class="n">Question ${i + 1} of ${steps.length}</span><span class="qtick" aria-hidden="true">answered</span></p>`
+        // A calls list asks nothing, so it is not called a "Question" (rethink round 2).
+        + `<p class="qnum"><span class="n">${st.kind === 'calls' ? 'List' : 'Question'} ${i + 1} of ${steps.length}</span><span class="qtick" aria-hidden="true">answered</span></p>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
         + `<div class="qbody">${cardsFor(st)}</div>`
         + `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
         // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A
         // question answered by typing already has its box, so it gets no second note box.
-        + (st.answer === 'words' ? '' : `<textarea class="note" rows="1" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></textarea>`) + `</div>`
+        + (st.answer === 'words' || st.kind === 'calls' ? '' : `<textarea class="note" rows="1" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></textarea>`) + `</div>`
         + `</article>`).join('');
     // Every control carries the id of the question it belongs to, so one click handler on the
     // column can answer any of them without knowing which article it came from.
     $$('#cards article.q').forEach(art => art.querySelectorAll('.ans').forEach(b => b.dataset.id = art.dataset.id));
     if (state.submitted) $$('#cards .ans,#cards .note').forEach(e => e.disabled = true);
-    layout(); paintState(); addMics();
+    layout(); paintState(); addMics(); wireMarks();
   }
   // Delegated, and bound once: renderPage() replaces the whole column on every page change.
   $('#cards').addEventListener('click', e => {
@@ -558,6 +583,10 @@
   $('#cards').addEventListener('click', e => {
     const open = e.target.closest('.opendev');
     if (open) { openDev(open); return; }
+    const chg = e.target.closest('.callchg');
+    if (chg) { toggleCall(chg.dataset.sid, chg.dataset.call); return; }
+    const mx = e.target.closest('.markx');
+    if (mx) { removeMark(mx.dataset.sid, +mx.dataset.i); return; }
     const b = e.target.closest('.copycmd'); if (!b) return;
     const code = b.parentElement.querySelector('code');
     navigator.clipboard.writeText(code.textContent).then(
@@ -569,6 +598,10 @@
   $('#cards').addEventListener('input', e => {
     const w = e.target.closest('.ans-write[data-id]');
     if (w) { writeAnswer(w.dataset.id, w.value); return; }
+    const ct = e.target.closest('.callt');
+    if (ct && !state.submitted) { const a = state.answers[ct.dataset.sid] || {}; if (a.changes && ct.dataset.call in a.changes) { a.changes[ct.dataset.call] = ct.value; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); } return; }
+    const mt = e.target.closest('.markt');
+    if (mt && !state.submitted) { const m = ((state.answers[mt.dataset.sid] || {}).marks || [])[+mt.dataset.i]; if (m) { m.text = mt.value; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); } return; }
     const n = e.target.closest('.note[data-id]'); if (!n || !PAGES) return;
     state.answers[n.dataset.id] = { ...(state.answers[n.dataset.id] || {}), note: n.value };
     paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
@@ -604,12 +637,41 @@
     if (text.trim()) { a.v = 'wrote'; a.text = text; delete a.dk; } else { delete a.v; delete a.text; }
     state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
   }
+  function toggleCall(sid, cid) {
+    if (state.submitted) return;
+    const a = { ...(state.answers[sid] || {}) }; const ch = { ...(a.changes || {}) };
+    if (cid in ch) delete ch[cid]; else ch[cid] = '';
+    // Any line marked for change makes the answer "something else"; none left, and an answer
+    // that only existed because of a change is withdrawn rather than left as a bare Other.
+    if (Object.keys(ch).length) { a.changes = ch; a.v = 'other'; delete a.dk; }
+    else { delete a.changes; if (a.v === 'other') delete a.v; }
+    state.answers[sid] = a; paintState(); save();
+    const box = $(`.callt[data-sid="${CSS.escape(sid)}"][data-call="${CSS.escape(cid)}"]`); if (box && cid in ch) box.focus();
+  }
+  function paintCalls() {
+    $$('.card.calls .call').forEach(li => {
+      const btn = li.querySelector('.callchg'), box = li.querySelector('.callt'), wrap = li.querySelector('.callbox');
+      const ch = (state.answers[btn.dataset.sid] || {}).changes || {}; const on = btn.dataset.call in ch;
+      li.classList.toggle('chg', on); wrap.hidden = !on; btn.textContent = on ? 'Undo' : 'Change this'; btn.disabled = !!state.submitted; box.disabled = !!state.submitted;
+      if (document.activeElement !== box) { box.value = on ? ch[btn.dataset.call] : ''; grow(box); }
+    });
+    // The one answer button reads as what it now means.
+    $$('.card.calls').forEach(card => {
+      const scope = card.closest('article.q') || document; const sid = card.querySelector('.callchg').dataset.sid;
+      const n = Object.keys((state.answers[sid] || {}).changes || {}).length;
+      const b = scope.querySelector('.ans[data-v="yes"]'); if (!b) return;
+      b.disabled = !!state.submitted || n > 0; b.querySelector('span').textContent = n ? n + ' to change' : 'All fine';
+    });
+    addMics();
+  }
+  // (Painting note: a button carrying `dk` — "Don't know" — lights only for a real shrug. An
+  // area or a changed call also stores "other", with no button pressed, and must not light it.)
   // Chosen, whichever shape the answer has: one pick, or one of several.
   const chosen = (a, id) => a.v === 'picks' ? (a.picks || []).includes(id) : (a.v === 'pick' && a.pick === id);
   function paintPage() {
     $$('#cards article.q').forEach(art => {
       const a = state.answers[art.dataset.id] || {};
-      art.querySelectorAll('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
+      art.querySelectorAll('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick) && (b.dataset.dk !== '1' || !!a.dk)));
       art.querySelectorAll('.card.variant').forEach(c => c.classList.toggle('on', chosen(a, c.dataset.pick)));
       const n = art.querySelector('.note');
       // Never while he is typing in it: assigning `value` puts the caret back at the end.
@@ -619,6 +681,9 @@
       if (w && document.activeElement !== w) w.value = a.text || '';
       // An answered question takes the same green edge the mock-up used for `done`.
       art.classList.toggle('done', !!(a.v && a.v !== 'skip'));
+      // WHY the time (Destin, 2026-11-09, rethink Q-6): when each question was answered is
+      // worth more than cover-page copy. It is already in the answers file; this shows it.
+      const tk = art.querySelector('.qtick'); if (tk) tk.textContent = 'answered' + (a.t ? ' ' + clock(a.t) : '');
     });
     // A segment is a PAGE: solid once every question on it is answered, half-lit while some are.
     $$('#steps span').forEach((seg, i) => {
@@ -634,9 +699,9 @@
   }
 
   function paintState() {
-    if (PAGES) { paintPage(); return; }
+    if (PAGES) { paintPage(); paintCalls(); return; }
     const a = state.answers[DECK.steps[cur].id] || {};
-    $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
+    $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick) && (b.dataset.dk !== '1' || !!a.dk)));
     $$('.card.variant').forEach(c => c.classList.toggle('on', chosen(a, c.dataset.pick)));
     $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', chosen(a, f.dataset.run)));
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
@@ -648,6 +713,7 @@
     // browsing a submitted deck must never re-arm Save & Next
     $('#save').disabled = !!state.submitted || !(a.v && a.v !== 'skip');
     $('#prev').disabled = cur === 0; $('#next').disabled = cur === N - 1; $('#next').textContent = cur === N - 1 ? 'Last step' : 'Next ›';
+    paintCalls();
   }
 
   // ── layout: try each arrangement for real, keep the one that shows the pictures largest (spec §3.4) ──
@@ -782,8 +848,15 @@
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
     // Mirrors serve.py's summary(): a note prints plainly, right after the answer, same words.
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a)); }
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
+  }
+  // Mirrors serve.py's extras(): lines he marked for change, and areas he marked on a picture.
+  function extras(a) {
+    const out = [];
+    for (const [k, t] of Object.entries(a.changes || {})) out.push('\n    change ' + k + ' — "' + String(t || '').trim() + '"');
+    (a.marks || []).forEach((m, i) => out.push('\n    area ' + (i + 1) + ' on ' + m.pic + ' (left ' + m.x + '%, top ' + m.y + '%, ' + m.w + '% wide, ' + m.h + '% tall) — "' + String(m.text || '').trim() + '"'));
+    return out.join('');
   }
   function openDialog() {
     record(); save();
@@ -826,7 +899,7 @@
   function lockSubmitted() {
     $('#done').innerHTML = 'Submitted ✓<span class="long"> — view responses</span>';
     $('#done').onclick = showFinished; $('#done').disabled = false;
-    $$('.ans,#save,#note').forEach(e => e.disabled = true); paintState();
+    $$('.ans,#save,#note').forEach(e => e.disabled = true); paintState(); drawMarks();
   }
 
   // ── the finish screen ──
@@ -842,6 +915,7 @@
     if (v === 'pick') return label(a.pick);
     if (v === 'picks') return (a.picks || []).map(label).join('; ');
     if (v === 'wrote') return '“' + String(a.text || '').trim() + '”';
+    if (v === 'other' && a.changes) return 'Change ' + Object.keys(a.changes).length;
     if (v === 'other') return a.dk ? "Don't know" : 'Something else';
     if (v === 'no') return pickList(st) ? 'None of these' : noLabel(st);
     return yesLabel(st);
@@ -850,11 +924,15 @@
     const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
     const rows = DECK.steps.map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
-      const note = (a.note || '').trim();
+      const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()),
+        (a.marks || []).map((m, j) => 'Area ' + (j + 1) + ' on ' + m.pic + ': ' + String(m.text || '').trim())).filter(Boolean).join(' · ');
       return `<tr><td class="n">${i + 1}</td>`
         + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
         + `<td class="v" data-v="${esc(v)}">${esc(ANS_LABEL(st, a))}</td>`
-        + `<td>${note ? esc(note) : '<span class="src">—</span>'}</td></tr>`;
+        // WHY its own column (rethink Q-6): when he answered each one, without altering the answer text.
+        + `<td>${note ? esc(note) : '<span class="src">—</span>'}</td>`
+        + `<td class="src when">${a.t && v !== 'skip' ? esc(clock(a.t)) : '—'}</td>`
+        + `</tr>`;
     }).join('');
     $('#responses').querySelector('tbody').innerHTML = rows;
     const when = (state.submitted || '').slice(0, 16).replace('T', ' ');
@@ -973,6 +1051,86 @@
     layoutLive();
   });
   window.addEventListener('resize', layout);
+  // ── AREAS: drag a rectangle on any picture and comment on it ───────────────────────────
+  // WHY (Destin, 2026-11-09, rethink Q-5: "rectangular drag-regions instead of single-dot
+  // pins? so i could highlight any size rectangle within an image and comment on it"). A note
+  // box cannot say WHERE. Dragging on a picture draws a numbered rectangle and opens a comment
+  // box for it; the answers file keeps the rectangle as percentages of the picture, so the
+  // session reading it knows exactly which part he meant. A plain click still does what it
+  // did (open the picture, pick a design); only a drag makes an area.
+  function wireMarks() {
+    const one = (box, sid, pic) => { box.classList.add('markable'); box.dataset.sid = sid; box.dataset.pk = pic; };
+    $$('.qpic > a').forEach(a => {
+      const art = a.closest('article.q'), opt = a.closest('.card.variant');
+      one(a, art ? art.dataset.id : DECK.steps[cur].id, opt ? 'option ' + opt.dataset.pick : 'the picture');
+    });
+    if (!PAGES && !['clip', 'live'].includes(DECK.steps[cur].kind))
+      $$('#inner .frame .pic').forEach(p => { if (p.querySelector('img')) one(p, DECK.steps[cur].id, p.closest('.frame').dataset.run); });
+    // One list of comments per step: before the answer row on a page, atop the cards otherwise.
+    [...new Set($$('.markable').map(b => b.dataset.sid))].forEach(sid => {
+      if ($(`.marklist[data-sid="${CSS.escape(sid)}"]`)) return;
+      const l = document.createElement('div'); l.className = 'marklist'; l.dataset.sid = sid;
+      const art = $(`#cards article.q[data-id="${CSS.escape(sid)}"]`);
+      if (art) art.insertBefore(l, art.querySelector('.qrow')); else $('#cards').prepend(l);
+    });
+    drawMarks();
+  }
+  function drawMarks() {
+    $$('.markable .mark').forEach(m => m.remove());
+    $$('.markable').forEach(box => ((state.answers[box.dataset.sid] || {}).marks || []).forEach((m, i) => {
+      if (m.pic !== box.dataset.pk) return;
+      const el = document.createElement('span'); el.className = 'mark';
+      el.style.cssText = `left:${m.x}%;top:${m.y}%;width:${m.w}%;height:${m.h}%`; el.innerHTML = `<b>${i + 1}</b>`;
+      box.appendChild(el);
+    }));
+    $$('.marklist').forEach(l => {
+      const sid = l.dataset.sid, marks = (state.answers[sid] || {}).marks || [];
+      l.innerHTML = marks.length
+        ? marks.map((m, i) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="1" data-sid="${esc(sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(sid)}" data-i="${i}" title="Remove this area" aria-label="Remove this area"${state.submitted ? ' disabled' : ''}>×</button></div>`).join('')
+        : (state.submitted ? '' : '<p class="markhint">Drag across any part of the picture to comment on that area.</p>');
+    });
+    addMics();
+  }
+  function removeMark(sid, i) {
+    if (state.submitted) return;
+    const a = state.answers[sid]; if (!a || !a.marks) return;
+    a.marks.splice(i, 1); if (!a.marks.length) delete a.marks;
+    drawMarks(); save();
+  }
+  let drag = null, swallowClick = false;
+  const pct = n => Math.round(n * 10) / 10;
+  document.addEventListener('pointerdown', e => {
+    if (state.submitted || e.button !== 0 || !e.target.closest) return;
+    const img = e.target.closest('.markable img'); if (!img) return;
+    drag = { box: img.closest('.markable'), r: img.getBoundingClientRect(), x0: e.clientX, y0: e.clientY, el: null };
+    e.preventDefault();   // otherwise the browser starts dragging the image itself
+  });
+  document.addEventListener('pointermove', e => {
+    if (!drag) return;
+    if (!drag.el) {
+      if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 6) return;   // a shaky click is still a click
+      drag.el = document.createElement('span'); drag.el.className = 'mark live'; drag.box.appendChild(drag.el);
+      loupe.style.display = 'none';
+    }
+    const r = drag.r, cx = v => Math.max(r.left, Math.min(r.right, v)), cy = v => Math.max(r.top, Math.min(r.bottom, v));
+    const x1 = cx(drag.x0), x2 = cx(e.clientX), y1 = cy(drag.y0), y2 = cy(e.clientY);
+    drag.rect = { x: pct((Math.min(x1, x2) - r.left) / r.width * 100), y: pct((Math.min(y1, y2) - r.top) / r.height * 100),
+                  w: pct(Math.abs(x2 - x1) / r.width * 100), h: pct(Math.abs(y2 - y1) / r.height * 100) };
+    drag.el.style.cssText = `left:${drag.rect.x}%;top:${drag.rect.y}%;width:${drag.rect.w}%;height:${drag.rect.h}%`;
+  });
+  document.addEventListener('pointerup', () => {
+    const d = drag; drag = null; if (!d || !d.el) return;
+    d.el.remove(); swallowClick = true; setTimeout(() => { swallowClick = false; }, 0);
+    if (!d.rect || d.rect.w < 1 || d.rect.h < 1) return;
+    const sid = d.box.dataset.sid, a = { ...(state.answers[sid] || {}) };
+    a.marks = (a.marks || []).concat([{ pic: d.box.dataset.pk, ...d.rect, text: '' }]);
+    // An area with a comment IS a response; with no button pressed it counts as "something else".
+    if (!a.v || a.v === 'skip') a.v = 'other';
+    state.answers[sid] = a; paintState(); drawMarks(); save();
+    const boxes = $$(`.markt[data-sid="${CSS.escape(sid)}"]`); if (boxes.length) boxes[boxes.length - 1].focus();
+  });
+  // The click that ends a drag must not also open the picture or pick the design under it.
+  document.addEventListener('click', e => { if (swallowClick) { swallowClick = false; e.preventDefault(); e.stopPropagation(); } }, true);
   // ── VOICE: speak into any text box ─────────────────────────────────────────────────────
   // WHY (Destin, 2026-11-09): "I want to be able to respond to these decks with my voice, and
   // typing is really frustrating sometimes." Every text box gets a microphone button. The page
@@ -983,7 +1141,7 @@
   const MIC_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>';
   const grow = box => { if (box.tagName === 'TEXTAREA') { box.style.height = 'auto'; box.style.height = (box.scrollHeight + 2) + 'px'; } };
   function addMics() {
-    $$('textarea.note, input.note, textarea.ans-write').forEach(box => {
+    $$('textarea.note, input.note, textarea.ans-write, textarea.callt, textarea.markt').forEach(box => {
       grow(box);
       // A box the layout is not showing (the shared note row on a question page) gets no button.
       const off = box.hidden || box.offsetParent === null;
@@ -996,17 +1154,20 @@
   }
   const voice = { box: null, btn: null, base: '', timer: null, seq: -1 };
   const voicePost = cmd => fetch('/voice', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ cmd }) }).then(r => r.json());
-  function voiceSay(btn, msg) {
+  function voiceSay(btn, msg, quiet) {
     // Never a silent failure: what went wrong is written under the box it belongs to.
     let p = btn.nextElementSibling; if (!p || !p.classList.contains('micerr')) { p = document.createElement('p'); p.className = 'micerr'; btn.insertAdjacentElement('afterend', p); }
-    p.textContent = msg; p.hidden = !msg;
+    p.textContent = msg; p.hidden = !msg; p.classList.toggle('quiet', !!quiet);
   }
   function voiceEnd() {
     clearInterval(voice.timer); voice.timer = null;
-    if (voice.btn) voice.btn.classList.remove('rec', 'wait');
+    if (voice.btn) { voice.btn.classList.remove('rec', 'wait'); voice.btn.style.boxShadow = ''; const p = voice.btn.nextElementSibling; if (p && p.classList.contains('quiet')) p.hidden = true; }
     voice.box = voice.btn = null;
   }
   function voiceApply(st) {
+    // The ring around the button IS the sound meter, as on the app's own microphone: it grows
+    // with how loud the room is, so he can see it is hearing him before any word appears.
+    if (voice.btn) voice.btn.style.boxShadow = st.status === 'recording' ? `0 0 0 ${2 + Math.round(Math.min(1, st.level || 0) * 7)}px color-mix(in srgb, var(--accent) 35%, transparent)` : '';
     if (!voice.box || st.seq === voice.seq) return;
     voice.seq = st.seq;
     if (st.status === 'recording' || st.status === 'finishing' || st.final) {
@@ -1014,6 +1175,7 @@
       if (voice.box.value !== text) { voice.box.value = text; voice.box.dispatchEvent(new Event('input', { bubbles: true })); grow(voice.box); }
     }
     voice.btn.classList.toggle('rec', st.status === 'recording');
+    voiceSay(voice.btn, st.error ? '' : st.status === 'recording' ? 'Listening — press the microphone again to stop' : st.status === 'loading' ? 'Getting voice ready…' : st.status === 'finishing' ? 'Finishing…' : '', true);
     voice.btn.classList.toggle('wait', st.status === 'finishing' || st.status === 'loading');
     if (st.error) voiceSay(voice.btn, st.error);
     if (st.status === 'idle' || st.status === 'off') voiceEnd();
@@ -1031,10 +1193,10 @@
     voiceSay(btn, ''); btn.classList.add('wait'); box.focus();
     voicePost('start').then(st => {
       voiceApply(st);
-      if (voice.box) voice.timer = setInterval(() => voicePost('poll').then(voiceApply).catch(() => {}), 350);
+      if (voice.box) voice.timer = setInterval(() => voicePost('poll').then(voiceApply).catch(() => {}), 150);
     }).catch(err => { voiceSay(btn, 'Voice input did not start: ' + err.message); voiceEnd(); });
   });
-  document.addEventListener('input', e => { if (e.target.matches && e.target.matches('textarea.note, textarea.ans-write')) grow(e.target); });
+  document.addEventListener('input', e => { if (e.target.matches && e.target.matches('textarea.note, textarea.ans-write, textarea.callt, textarea.markt')) grow(e.target); });
   load().then(() => {
     const q = new URLSearchParams(location.search);
     // An answers file written before this deck had pages can carry a `cur` past the last page;

@@ -478,3 +478,40 @@ body[data-served] .note,body[data-served] .ans-write{padding-right:44px}
 body[data-served] .pages .qrow textarea.note{padding-right:44px}
 /* The narrow one-step layout is a three-column grid; the microphone shares the note's cell. */
 .compact .controls .mic{grid-column:2;justify-self:end;margin:0 8px 0 0}
+/* ── rethink, 2026-11-09 ─────────────────────────────────────────────────────────────── */
+/* The (i) beside "Today": how and when that claim was checked, on hover or keyboard focus. */
+.how{position:relative;display:inline-grid;place-items:center;width:15px;height:15px;margin-left:6px;border:1px solid var(--fg-faint);border-radius:50%;vertical-align:-2px;cursor:help;text-transform:none;letter-spacing:0}
+.how i{font:italic 600 10px/1 Georgia,serif;color:var(--fg-muted)}
+.how .tip{display:none;position:absolute;left:-8px;top:calc(100% + 8px);z-index:20;width:max-content;max-width:min(320px,70vw);padding:8px 10px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--panel);color:var(--fg-2);font:400 12px/1.45 var(--font);box-shadow:0 8px 24px rgba(0,0,0,.35);text-align:left;white-space:normal}
+.how:hover .tip,.how:focus .tip{display:block}
+.how:focus{outline:2px solid var(--accent);outline-offset:1px}
+/* When the deck was built, quietly, in the chip. */
+.chip .built{margin-left:10px;padding-left:10px;border-left:1px solid var(--edge);color:var(--fg-faint);font-size:11px;white-space:nowrap}
+@media (max-width:760px){.chip .built{display:none}}
+/* Calls I made for you: one line each, its own Change this, its own box underneath. */
+.card.calls ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.card.calls .call{padding:10px 0;border-top:1px solid var(--edge)} .card.calls .call:first-child{border-top:0;padding-top:0}
+.callrow{display:flex;align-items:flex-start;gap:14px} .calltext{flex:1 1 auto;min-width:0}
+.callwhat{margin:0 0 3px;color:var(--fg)} .calltext .src{margin:0}
+.callchg{flex:none} .call.chg .callwhat{text-decoration:line-through;text-decoration-color:var(--fg-faint)}
+.callbox{display:flex;align-items:flex-start;margin-top:8px} .callbox[hidden]{display:none}
+.callt,.markt{flex:1 1 auto;min-width:0;font:inherit;font-size:clamp(12px,0.85vw,14px);min-height:36px;padding:8px 12px;line-height:1.4;resize:none;overflow:hidden;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)}
+.callt::placeholder,.markt::placeholder{color:var(--fg-muted)}
+body[data-served] .callt,body[data-served] .markt{padding-right:44px}
+/* Areas dragged on a picture. */
+.markable{position:relative} .qpic>a.markable{display:inline-block;line-height:0;max-width:100%}
+.markable img{cursor:crosshair!important;user-select:none;-webkit-user-drag:none}
+.mark{position:absolute;box-sizing:border-box;border:2px solid var(--link);border-radius:4px;background:color-mix(in srgb,var(--link) 16%,transparent);box-shadow:0 0 0 1px rgba(0,0,0,.45);pointer-events:none;line-height:1}
+.mark b,.markrow>b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--link);color:#fff;font:700 11px/1 var(--font)}
+.mark b{position:absolute;left:-10px;top:-10px;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.marklist{display:flex;flex-direction:column;gap:6px} .marklist:empty{display:none}
+.markrow{display:flex;align-items:flex-start;gap:8px} .markrow>b{flex:none;margin-top:8px}
+.markx{flex:none;width:32px;height:36px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg-muted);font-size:18px;cursor:pointer} .markx:hover{color:var(--no)}
+.markhint{margin:0;font-size:12px;color:var(--fg-faint)}
+/* The microphone, like the app's: accent while listening, a ring that follows the sound. */
+.mic.rec{color:var(--on-accent);background:var(--accent);animation:none;transition:box-shadow 90ms steps(3)}
+.micerr.quiet{color:var(--fg-muted)}
+.callbox .mic,.markrow .mic{align-self:flex-start;margin-top:2px}
+.calltext .src{font-size:12px;color:var(--fg-muted)}
+.chip .built{color:inherit;opacity:.7;border-left-color:currentColor}
+.responses td.when{white-space:nowrap}

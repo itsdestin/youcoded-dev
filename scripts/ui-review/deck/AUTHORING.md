@@ -466,3 +466,30 @@ That they fail loudly is correct; leave them as the record they are.
 test_tokens` (no binaries; also in CI). The renderer and the picture commands need Chrome and
 `magick`: `python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests
 -p 'test_*.py'` and `node --test scripts/ui-review/tests/deck-render.test.mjs`.
+
+## Added in the 2026-11-09 rethink
+
+Source: Destin's answers in `docs/active/design/2026-11-09-review-deck-rethink/`.
+
+- **One text box per answer.** A question answered by typing (`"answer": "words"`) has no
+  separate note box. A calls list has none either.
+- **`checked`** (on any question with `today`): one plain sentence saying how and when the
+  Today claim was confirmed. Shown behind the small (i) beside "Today". State it for every
+  Today you assert; a stale Today was the worst fault in past decks.
+- **`picture` + `caption`** (on a written question and on each option): a file beside the
+  spec. A question about how something looks carries one. This is an instruction, not a
+  refusal.
+- **Areas.** He can drag a rectangle on any picture (a written question's picture or a
+  screenshot step) and comment on it. The answers file holds them as
+  `answers[step].marks[] = {pic, x, y, w, h, text}`, with the rectangle in percent of the
+  picture; `pic` is the run name on a screenshot step, `the picture` or `option <id>` on a
+  written one. An area with no button pressed is stored as `v: "other"`.
+- **Calls list**: a words step with `"calls": [{"id", "call", "why"}]` and no `today`. Small
+  choices you made yourself, one line and its reason each (40 words at most). Each stands
+  unless he presses Change this; his words arrive as `answers[step].changes[<call id>]`.
+- **Word caps**: `today`, `problem`, `proposal` are 60 words each at most; each pro or con 25.
+- **Build stamp**: the chip shows when the deck was built and the short version it was built
+  from; the same goes into the answers file as `built`. Each answer already carries `t`, the
+  time he gave it, now shown beside "answered" and on the finish screen.
+- **Voice**: every text box has a microphone while the deck is served (`voice-helper.mjs`).
+- The printed summary lists changed calls and areas under their step's line.

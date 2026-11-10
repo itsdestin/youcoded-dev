@@ -74,6 +74,20 @@ def dropped_answers(apath, incoming):
     return sorted(have - keep)
 
 
+def extras(a):
+    """What an answer carries beyond its button and note (Destin, 2026-11-09, rethink Q-5 and
+    Q-10): the lines of a "calls I made" list he marked for change, each with his own words, and
+    the areas he dragged on a picture, each with where it is and what he said about it. Printed
+    under the step's line so a session reading the summary cannot miss them."""
+    out = []
+    for k, t in (a.get('changes') or {}).items():
+        out.append(f'\n    change {k} — "{(t or "").strip()}"')
+    for i, m in enumerate(a.get('marks') or []):
+        out.append(f'\n    area {i + 1} on {m.get("pic")} (left {m.get("x")}%, top {m.get("y")}%, '
+                   f'{m.get("w")}% wide, {m.get("h")}% tall) — "{(m.get("text") or "").strip()}"')
+    return ''.join(out)
+
+
 def summary(spec, state):
     """One line per step, ledger id first, in spec order (spec §4.5)."""
     counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'picks': 0, 'wrote': 0, 'skip': 0}
@@ -99,7 +113,7 @@ def summary(spec, state):
         # Fix: a note is a note (Destin, 2026-09-04) — no tag to print. An older answers
         # file may still carry a leftover per-note category alongside it; it is simply
         # never read here, so it has no effect on the summary.
-        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else ''))
+        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else '') + extras(a))
     when = (state.get('submitted') or '')[:16].replace('T', ' ')
     head = (f'{spec["key"]} · {"submitted " + when if when else "not submitted"} · '
             f'{counts["yes"]} yes · {counts["no"]} no · {counts["other"]} other · '
@@ -309,6 +323,11 @@ class VoiceBridge:
             kind = ev.get('type')
             if kind == 'ready':
                 self._set(status='idle', error='')
+            elif kind == 'level':
+                # Ten a second while listening: no `seq` bump — it is not new words, and the
+                # page reads it on every poll anyway.
+                with self.lock:
+                    self.state['level'] = ev.get('v', 0)
             elif kind == 'partial':
                 self._set(text=ev.get('text', ''))
             elif kind == 'final':
