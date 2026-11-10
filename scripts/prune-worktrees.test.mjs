@@ -331,6 +331,28 @@ test('sweep deletes verify logs and screenshots with a worktree, but keeps one h
   assert.deepEqual(s.keptForLeftovers[0].leftovers, ['scratch/']);
 });
 
+test('sweep treats deck previews, serve-port files, the Office add-on and .wrangler as disposable (2026-11-10)', t => {
+  // WHY: these were the leftovers that kept 11 merged worktrees alive through every sweep until the 2026-11-09 inventory.
+  const f = fixture(t);
+  const deckJunk = path.join(f.root, 'worktrees', 'sessions', 'deck-junk');
+  f.addWorktree('workspace', deckJunk, 'session/deck-junk');
+  // A worktree's `.git` is a file; the shared exclude file lives in the main checkout's .git/info.
+  fs.mkdirSync(path.join(f.root, '.git', 'info'), { recursive: true });
+  fs.appendFileSync(path.join(f.root, '.git', 'info', 'exclude'), 'preview/\n*.serve-port\noffice-addon/\n.wrangler/\n');
+  fs.mkdirSync(path.join(deckJunk, 'docs', 'design', 'x', 'preview'), { recursive: true });
+  fs.writeFileSync(path.join(deckJunk, 'docs', 'design', 'x', 'preview', 'contact.png'), 'png\n');
+  fs.writeFileSync(path.join(deckJunk, 'docs', 'design', 'x', 'x.review.serve-port'), '1234\n');
+  fs.mkdirSync(path.join(deckJunk, 'office-addon'), { recursive: true });
+  fs.writeFileSync(path.join(deckJunk, 'office-addon', 'x2t'), 'bin\n');
+  fs.mkdirSync(path.join(deckJunk, 'worker', '.wrangler'), { recursive: true });
+  fs.writeFileSync(path.join(deckJunk, 'worker', '.wrangler', 'state'), 'x\n');
+  fs.mkdirSync(path.join(deckJunk, 'scratch', 'readme-shots-1'), { recursive: true });
+  fs.writeFileSync(path.join(deckJunk, 'scratch', 'readme-shots-1', 'a.png'), 'png\n');
+  const s = sweep({ root: f.root, inventory: f.inventory, invokingCwd: f.dir, fetch: false, now: Date.now() + 4 * DAY });
+  assert.ok(!fs.existsSync(deckJunk), 'a merged worktree holding only regenerable deck/tool output is removed');
+  assert.deepEqual(s.keptForLeftovers.map(c => c.dir), []);
+});
+
 test('sweep never removes the session named in excludeKeys (the one starting up)', t => {
   const f = fixture(t);
   const mine = path.join(f.root, 'worktrees', 'sessions', 'mine');

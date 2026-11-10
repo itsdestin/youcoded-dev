@@ -250,6 +250,9 @@ if [[ "$MERGED" == yes ]]; then
   # worktree (this workspace's, and every component repo's), `node scripts/prune-worktrees.mjs`
   # is the dry-run tool that reports which ones are actually safe to delete.
   note "other worktrees: node scripts/prune-worktrees.mjs (dry run; --apply <key> needs Destin naming the exact ones)"
+  # GitHub deletes a merged pull request's branch on its own (delete-branch-on-merge, all repos, 2026-11-10);
+  # a branch that landed another way (cherry-pick, folded into a different branch) is the one still to delete.
+  note "remote branch: deleted automatically when its PR merged; delete by hand only if it landed another way"
 else
   if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
     pass "pushed to origin — a reviewer can see it"
