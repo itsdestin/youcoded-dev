@@ -1,0 +1,144 @@
+{
+ "deck": "wave-1-results-2026-11-10",
+ "started": "2026-11-10T22:05:58.377Z",
+ "submitted": "2026-11-10T22:18:40Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794348521577,
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794348521577,
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "t": 1794348521577,
+   "note": "i think we're fully rebuilding the sync/mesh systems in a different session, so idk if a \"fix\" for the older version of the system makes much sense? i think we should just ensure hte other session currently rebuilding sync/mesh is aware of the issues",
+   "pick": "hold",
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "all",
+   "t": 1794348521577,
+   "note": "nobody uses google messages rn and it will probably be deleted or replaced anyway, so i dont wnat to waste time testing it",
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "now",
+   "t": 1794348632735,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "other",
+   "t": 1794348632735,
+   "note": "kinda confused about this. want to further investigate to understand real risks/benefits/alternatives/etc",
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "remove",
+   "t": 1794348632735,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "skip",
+   "t": 1794348632735,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "other",
+   "t": 1794348883708,
+   "note": "kinda confused what this would look like in practice, but it sounds like extra unnecessary friction",
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "drop",
+   "t": 1794348883708,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "Q-11": {
+   "v": "other",
+   "t": 1794348883708,
+   "note": "confused. you should review change history relating to this, i feel like we were having significant problems with iterating on the app because the test runs were taking an unbearably long time, but i cant remember the specifics",
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "private",
+   "t": 1794348883708,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "Q-13": {
+   "v": "other",
+   "t": 1794348883708,
+   "note": "not at all enough contedxt. idk what any of this means",
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "Q-14": {
+   "v": "other",
+   "t": 1794348883708,
+   "note": "what?",
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "Q-15": {
+   "v": "pick",
+   "pick": "off",
+   "t": 1794348942277,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "Q-16": {
+   "v": "pick",
+   "pick": "notice",
+   "t": 1794348942277,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "Q-17": {
+   "v": "pick",
+   "pick": "notice",
+   "t": 1794348942277,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "Q-18": {
+   "v": "other",
+   "t": 1794349119850,
+   "note": "confused. idk what you're talking about, literally not an ounce of useful context here",
+   "seconds": 89,
+   "theme": "midnight"
+  },
+  "Q-19": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1794349119850,
+   "note": "are these both still actually useful/active?",
+   "seconds": 89,
+   "theme": "midnight"
+  }
+ }
+}
