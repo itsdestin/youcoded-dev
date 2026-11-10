@@ -1,0 +1,117 @@
+{
+ "deck": "review-deck-rethink-questions",
+ "started": "2026-11-10T01:23:27.938Z",
+ "submitted": "2026-11-10T02:28:22Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "v": "yes",
+   "t": 1794273916125,
+   "note": "Are we sure that there's nothing currently in the deck? Or like currently in assisted instructions that tells the assistant how to use the deck? I thought we included something like that, but I could be mistaken. Um As far as the purpose, I mean like that's generally right. I think I might want to talk through the specifics of how we're steering future sessions, if we're creating new instructions. Um But yeah, that's at least generally right. But like I w what kinds of decisions are those future sessions going to ask me to make? What kinds of decisions are they gonna make without asking? Um like I think we need to discuss those details further.",
+   "seconds": 108,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "yes",
+   "t": 1794274128448,
+   "seconds": 53,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "yes",
+   "t": 1794274128448,
+   "seconds": 53,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1794274128448,
+   "note": "if anything this is way too many buttons. my note in the \"other\" text field typically explains exactly what my issue(s) is/are, and all of the other options you're providing here are just text that i could typically include in the other box in a more nuanced and useful way. i don't see a world in which you ever have to \"guess\" what other means?",
+   "seconds": 53,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "pins",
+   "t": 1794274128448,
+   "note": "that's epic, you're a smarty-pants. maybe we could make this like rectangular drag-regions instead of single-dot pins? so i could highlight any size rectangle within an image and comment on it",
+   "seconds": 53,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "other",
+   "t": 1794274516907,
+   "note": "i think some of this looks like copy for the sake of copy. like i dont need a full sentence just to explain the number of questions/slides. i think there are far more useful things we could focus on, like tracking the date/time and branch/commit a deck was built against, specific date/time each question is answered by me, etc. i'm open to this cover page, and some of it seems useful, but each thing needs to really prove its value",
+   "seconds": 78,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "show",
+   "t": 1794274516907,
+   "note": "i think the \"how it was checked\" can just be hidden behind a little (i) hover popup next to the \"today\" section header",
+   "seconds": 78,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "other",
+   "t": 1794274516907,
+   "note": "i think this would be better done by clearer instructions rather than overcomplicating with additional automatic checks? also i feel like the \"every question is marked as..\" categories you mentioned are just kinda bad/insufficient and overlap?",
+   "seconds": 78,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "cap",
+   "t": 1794274516907,
+   "note": "but the cap needs to be sufficient so as to actually allow for useful descriptions.",
+   "seconds": 78,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "list",
+   "t": 1794274516907,
+   "note": "yeah this is actually super helpful. but i think each item i choose to change should have its own little text box underneath/attached to it",
+   "seconds": 78,
+   "theme": "midnight"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "twice",
+   "t": 1794277145160,
+   "note": "i think i want to steer this a bit further and review the current proposed design further. but i like your direction i think",
+   "seconds": 1314,
+   "theme": "midnight"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "walk",
+   "t": 1794277145160,
+   "note": "the independent reviewer subagent check think should remain as a utility we can utilize for any build, but i always want to directly it a bit more clearly. this is where the \"how its reviewed\" kinda section of hte contract comes in. i want to be able to directly steer a bunch of specific reviews \"have subagents check x/y/z or overall user flow for x end-to-end, or do a visual check of every app screen or every submenu of X to check for Y\". then you can provide videos/images with pass/fail/other rankings for whichever automated/agent checks i request, give me a list of things i may still want to verify myself, and always proactively suggest at least a handful of automated checks/reviews that would be simple, boost confidence, make my life easier, etc. going back to this actual question: a finished feature should be one for which every feature/flow/ux/ui change i've requested is recorded in a well-designed pre-build deck, then approved entirely without additional change requests in a post-build deck. ",
+   "seconds": 1314,
+   "theme": "midnight"
+  },
+  "Q-13": {
+   "v": "other",
+   "t": 1794277696851,
+   "note": "maybe adjacent or unrelated, but is an \"always on service\" like what you mentioned to host decks/programs/local servers something that might make sense to build into youcoded as an offered agent tool or something? do we already offer this in some capacity via pages or anything else? i think for the time being we can just leave the decks as they are, but i am still curious about whether youcoded can provide/manage servers/localhost decks and such for various niche user use-cases.",
+   "seconds": 184,
+   "theme": "midnight"
+  },
+  "Q-14": {
+   "v": "other",
+   "t": 1794277696851,
+   "note": "i think we should continue to allow the agent to split something into two distinct links/decks if the features or purposes are truly different. but i think for others (pre-build decks, primary question decks, post-build decks, etc) we should offer some sort of combined single-document kinda like what you described that keeps older rounds/comments/questions as a sort of history? so instead of getting a bunch of new review decks, i get a single deck that kind of \"evolves\" in response to my questions and keeps my earlier responses when the deck topic is the same? the agent could also possibly link tangential deck files somehow or list filepaths to track related but separate decks if that makes sense?",
+   "seconds": 184,
+   "theme": "midnight"
+  },
+  "Q-15": {
+   "v": "wrote",
+   "text": "i think we got a lot of it? i do think there's maybe some additional minor aesthetic things to improve (button/text/card styling, header resizing across pages/tabs, other weird resizes, making the microphone icon/experience a bit cleaner (like youcoded offers), making sure images in any combination are always sized/cropped to properly maximize useful screen space and connection between the images if any, etc.",
+   "t": 1794277696851,
+   "seconds": 184,
+   "theme": "midnight"
+  }
+ }
+}
