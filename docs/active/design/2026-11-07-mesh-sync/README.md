@@ -25,6 +25,7 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-4.json` + `.answers.json` | Deck round 4 (2 statements + 17 questions), submitted 2026-11-09. A second session's whole-design review: one copying system, keepers, pairing, closing the host, retired devices, viewer gaps. Supersedes round 3's Q-1 to Q-4 and Q-8. |
 | `mesh-sync.questions-5.json` + `.answers.json` | Deck round 5 (16 statements + 7 questions), submitted 2026-11-10. Restated his round-4 rules; decided relay first, files on the same system, offline behaviour; reviewed ten Continue-here states. |
 | `mesh-sync.questions-6.json` | Deck round 6: the three questions held over from round 3 (helper transcripts, smaller pieces, phone awake). |
+| `mesh-sync.questions-7.json` | Deck round 7: catch-up, what happens at the 1 GB limit, the super-host, self-hosting the relay, who pays. Written in answer to Destin's two comments on `design.md`. |
 | `design.md` | DRAFT of the full design, written from the answers, each rule tagged with its source. Not yet read by Destin. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
