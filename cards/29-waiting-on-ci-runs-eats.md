@@ -13,9 +13,9 @@ vision: everywhere.added.update
 work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record, session/29-hotfix-lane, session/test-suite-rethink
 ---
 Progress
-Done: The bug-fix release lane is live: a small fix can now ship as its own version without waiting for the next big release (youcoded#686, youcoded-admin#19, youcoded-dev#305, merged 2026-10-23; releases v1.3.2 and v1.3.3 went out). Beta version numbers now restart after each big release (youcoded#633, merged 2026-10-18).
-Next: Decide what to do with the open test-speed experiments (PR #272 and the session/29-ci-fastpaths branch). Get one real timing run of the full test suite before calling it faster. Save or delete the unsaved experiment work (only on this device). Build upkeep (model-list check, package size, dependency upgrades) is separate work.
-Blocked: No blocker for the release lane. The fast-test work needs Destin's decision on whether to keep it, and any paid or signing change still needs his approval.
+Done: Bug-fix release lane is live (earlier). Checked 2026-11-10: recent Desktop CI successes take 5-10 minutes (older ones 21-28), Workspace CI about 5; so a real timing already exists. PR #272 (workspace) still applies with one small conflict; the app half is 2 commits that exist ONLY on this computer (worktrees/sessions/29-ci-fastpaths/youcoded) and conflict with what master built since.
+Next: Destin: keep or drop the test-speed experiments. DROP (RECOMMENDED): close PR #272 and delete both branches; you lose nothing you use, waits are already down to 5-10 minutes; first back up the 2 unsaved app commits to GitHub so nothing is lost by accident. KEEP: finish and rebase it; card-only changes would get a green check in a few minutes instead of the full run; cost: reworking CI rules that overlap master's, and a mistake could let a code change skip the full tests.
+Blocked: Destin's keep-or-drop.
 
 Chats
 - 2026-10-22 session/29-hotfix-lane: chat started
