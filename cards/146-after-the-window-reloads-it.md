@@ -14,9 +14,9 @@ side: both
 vision: chat.converse.multi
 ---
 Progress
-Done: The cause is found in the code. When the app window reloads, it opens the oldest chat that is still open, not the chat you were on. Nothing on the desktop saves which chat was on screen (phones already remember theirs). Not fixed on master as of 2026-11-08.
-Next: Decide whether to fix it (remember the chat on screen across a reload, desktop only). Then re-test on a dev copy of the app, not the installed one, to confirm what the user sees.
-Blocked: Nothing recorded. The live behaviour needs a re-test on the dev instance.
+Done: FIXED on branch session/release-safety (app repo), NOT merged yet (2026-11-10). After a reload, a desktop window reopens the chat it was showing; each window remembers its own; if that chat is gone it opens the first chat as before. Phones are unchanged. Tested in a dev copy: three chats and reload on the last and the middle one, a message typed after reload went to the right chat, two reloads in a row, a closed chat, no chats at all, two windows, and a full quit and relaunch. All passed, no errors. Reviewed twice; full desktop checks pass.
+Next: Destin: merge decision for session/release-safety. Side effect fixed on the workspace branch of the same name: the screenshot tool reuses one tab, so it now clears that tab's memory between screens.
+Blocked: Waiting for Destin's word to merge.
 
 Chats
 
