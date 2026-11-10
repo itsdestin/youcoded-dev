@@ -1,0 +1,124 @@
+# Card fixes applied cbb63c540
+
+- #1: removed release: line; progress rewritten (3 lines); work: dropped finished session/android-setup-20261014, session/android-setup-closeout, session/android-setup-wrapup, session/1-android-chatgpt-access; work: linked session/android-ux-test; chats: 3 repeated lines removed
+- #10: stage planning -> explore; removed roadmap: line; progress rewritten (3 lines)
+- #100: removed roadmap: line; progress rewritten (3 lines)
+- #101: removed roadmap: line; progress rewritten (3 lines)
+- #104: removed roadmap: line; progress rewritten (3 lines)
+- #106: progress rewritten (3 lines)
+- #109: removed roadmap: line; progress rewritten (3 lines)
+- #11: removed roadmap: line; progress rewritten (3 lines); chats: 4 repeated lines removed
+- #112: progress rewritten (3 lines)
+- #113: removed roadmap: line; progress rewritten (3 lines); work: linked session/android-ux-test
+- #114: removed roadmap: line; progress rewritten (3 lines)
+- #115: progress rewritten (3 lines)
+- #117: progress rewritten (3 lines)
+- #118: progress rewritten (3 lines)
+- #119: removed release: line; removed roadmap: line; work: linked session/mesh-sync-design
+- #121: removed release: line; progress rewritten (3 lines); work: linked session/sync-rethink-investigation
+- #124: progress rewritten (3 lines); work: dropped finished session/google-connections-planning; work: linked session/sync-rethink-investigation
+- #125: progress rewritten (3 lines); work: linked session/sync-rethink-investigation
+- #127: progress rewritten (3 lines)
+- #13: progress rewritten (3 lines); work: linked session/test-suite-rethink
+- #130: progress rewritten (3 lines)
+- #133: removed roadmap: line; removed release-blocker tag; progress rewritten (3 lines)
+- #134: progress rewritten (3 lines)
+- #135: stage planning -> build; removed release: line; progress rewritten (3 lines)
+- #139: progress rewritten (3 lines); work: linked session/narrow-screen-proposals; chats: 1 repeated lines removed
+- #142: removed roadmap: line; progress rewritten (3 lines)
+- #145: removed roadmap: line; progress rewritten (3 lines)
+- #146: progress rewritten (3 lines)
+- #147: priority P2 (suggested P2); progress rewritten (3 lines); work: dropped finished session/work-cards-20261014; removed work: line
+- #148: progress rewritten (3 lines); chats: 37 repeated lines removed
+- #149: stage planning -> explore; priority P3 (suggested P3); progress rewritten (3 lines)
+- #15: progress rewritten (3 lines)
+- #150: priority P3 (suggested P3); progress rewritten (3 lines); work: linked session/narrow-screen-proposals
+- #151: priority P3 (suggested low); progress rewritten (3 lines)
+- #152: priority P3 (suggested P3)
+- #155: progress rewritten (3 lines); chats: 2 repeated lines removed
+- #156: stage planning -> explore; priority P3 (suggested low); progress rewritten (3 lines); work: linked session/155-google-files
+- #157: progress rewritten (3 lines)
+- #16: removed roadmap: line; progress rewritten (3 lines)
+- #160: progress rewritten (3 lines)
+- #161: priority P3 (suggested low); progress rewritten (3 lines)
+- #164: priority P3 (suggested P3); progress rewritten (3 lines)
+- #17: stage planning -> explore; removed roadmap: line; progress rewritten (3 lines)
+- #173: priority P3 (suggested P3); progress rewritten (3 lines)
+- #175: priority P3 (suggested P3); progress rewritten (3 lines); title -> Make the website's idea pictures refresh themselves on each release
+- #176: progress rewritten (3 lines); title -> Custom AI models: long chats fail, and the app can't offer to shorten them
+- #177: progress rewritten (3 lines); work: linked session/android-ux-test
+- #178: priority P3 (suggested P3); progress rewritten (3 lines); title -> Made-up demo chats show "Jul 29, 2025" under every message
+- #18: removed roadmap: line; progress rewritten (3 lines)
+- #182: stage build -> polish; priority P2 (suggested high — SHOW DESTIN); progress rewritten (3 lines); work: dropped finished session/remote-access-audit; removed work: line
+- #184: progress rewritten (3 lines)
+- #185: priority P3 (suggested low); progress rewritten (3 lines)
+- #186: progress rewritten (3 lines)
+- #188: priority P3 (suggested low); progress rewritten (3 lines)
+- #189: priority P2 (suggested high — SHOW DESTIN); progress rewritten (3 lines)
+- #19: removed roadmap: line; progress rewritten (3 lines)
+- #195: priority P2 (suggested high — SHOW DESTIN); progress rewritten (1 lines)
+- #196: priority P3 (suggested low); progress rewritten (3 lines); work: linked session/android-ux-test
+- #197: progress rewritten (2 lines)
+- #199: priority P3 (suggested P3)
+- #202: progress rewritten (3 lines)
+- #203: priority P3 (suggested P3); work: linked session/90-pages-finish
+- #204: progress rewritten (3 lines); work: linked session/90-pages-finish
+- #205: progress rewritten (3 lines); work: linked session/user-notify
+- #208: priority P3 (suggested low); progress rewritten (3 lines)
+- #210: priority P3 (suggested P3)
+- #212: progress rewritten (3 lines)
+- #213: stage build -> polish; progress rewritten (3 lines)
+- #214: priority P3 (suggested low); progress rewritten (2 lines)
+- #216: priority P2 (suggested P2); progress rewritten (3 lines)
+- #217: progress rewritten (3 lines)
+- #218: priority P2 (suggested P2); progress rewritten (3 lines)
+- #219: priority P2 (suggested high — SHOW DESTIN); progress rewritten (3 lines)
+- #22: removed roadmap: line; work: dropped finished session/162-linux-update-feedback, session/93-file-viewer-freezes, session/welcome-back-recovery, session/22-checkpoint-backups; removed work: line; chats: 2 repeated lines removed
+- #221: progress rewritten (3 lines)
+- #222: progress rewritten (3 lines); work: linked session/narrow-screen-proposals
+- #223: priority P3 (suggested low)
+- #225: work: linked session/narrow-screen-proposals, session/android-ux-test
+- #226: stage planning -> polish; progress rewritten (3 lines)
+- #24: stage planning -> explore; progress rewritten (3 lines)
+- #25: progress rewritten (2 lines)
+- #27: progress rewritten (3 lines)
+- #29: progress rewritten (3 lines); work: linked session/test-suite-rethink; chats: 14 repeated lines removed
+- #3: progress rewritten (3 lines)
+- #31: removed release: line; progress rewritten (3 lines)
+- #33: removed roadmap: line
+- #35: progress rewritten (3 lines)
+- #38: progress rewritten (3 lines)
+- #39: removed roadmap: line; progress rewritten (3 lines); work: dropped finished session/39-comment-popup; removed work: line; chats: 2 repeated lines removed
+- #4: stage planning -> explore; progress rewritten (3 lines)
+- #41: stage planning -> explore; progress rewritten (3 lines)
+- #43: progress rewritten (3 lines)
+- #45: progress rewritten (3 lines)
+- #47: progress rewritten (3 lines); work: dropped finished session/google-connections-planning, session/custom-providers-catalog
+- #51: progress rewritten (3 lines); work: dropped finished session/google-connections-planning; removed work: line
+- #52: stage planning -> explore; removed release-blocker tag; progress rewritten (3 lines)
+- #55: progress rewritten (3 lines)
+- #57: removed roadmap: line; removed release-blocker tag; progress rewritten (3 lines)
+- #59: removed roadmap: line; removed release-blocker tag; progress rewritten (3 lines)
+- #60: removed roadmap: line; removed release-blocker tag; progress rewritten (3 lines)
+- #61: removed release: line; progress rewritten (3 lines); work: linked session/90-pages-finish, session/74-specialists-plans
+- #62: progress rewritten (3 lines)
+- #64: removed release: line; removed roadmap: line; progress rewritten (3 lines); work: linked session/mesh-sync-design
+- #66: removed roadmap: line; removed release-blocker tag; progress rewritten (3 lines); chats: 3 repeated lines removed
+- #69: progress rewritten (3 lines)
+- #7: stage planning -> explore; progress rewritten (3 lines); work: dropped finished session/7-compaction-boundaries; removed work: line; chats: 5 repeated lines removed
+- #70: progress rewritten (3 lines); work: linked session/74-specialists-plans, feat/specialists-plans-ui
+- #71: progress rewritten (3 lines)
+- #74: stage explore -> planning; removed roadmap: line; progress rewritten (3 lines)
+- #75: progress rewritten (3 lines)
+- #77: removed roadmap: line; progress rewritten (3 lines)
+- #80: removed roadmap: line; progress rewritten (3 lines)
+- #82: progress rewritten (3 lines); work: dropped finished session/82-z13-keyboard-release; removed work: line; chats: 13 repeated lines removed
+- #86: progress rewritten (3 lines)
+- #87: removed roadmap: line; progress rewritten (3 lines)
+- #88: stage planning -> polish; progress rewritten (3 lines)
+- #89: removed roadmap: line; progress rewritten (3 lines)
+- #90: removed release: line; progress rewritten (3 lines); chats: 2 repeated lines removed
+- #94: removed roadmap: line; progress rewritten (3 lines); work: linked session/93-batcher-counters
+- #96: progress rewritten (3 lines); work: dropped finished session/93-file-viewer-freezes, session/96-merged-evaluation; chats: 1 repeated lines removed
+- #98: progress rewritten (3 lines); work: linked session/sync-rethink-investigation, session/mesh-sync-design
+- #99: progress rewritten (3 lines)
