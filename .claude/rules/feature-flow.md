@@ -25,81 +25,73 @@ verify:
 ---
 # Feature flow — the deck is the one surface
 
-Rewritten 2026-11-10 from Destin's answers in `docs/active/design/2026-11-09-review-deck-rethink/`.
-Order: questions → drawings → **walkthrough (before)** → build → checks he chose →
-**walkthrough (after)** → his merge call. No contract deck, no acceptance deck.
+From Destin's answers, rounds 1–6, `docs/active/design/2026-11-09-review-deck-rethink/`.
+No contract or acceptance deck. He may ask for another order on any build.
 
-## Who decides what
-**Invariant:** three groups, sorted by what Destin could notice.
-- **Asked** (a question, in the first design rounds): the main paths a person takes, a screen's
-  big-picture layout, how parts and functions affect each other, anything removed, money, privacy.
-- **Listed** (a row he can change, in the walkthrough): everything else he could notice by using
-  the app — what happens when something fails, defaults, sizes, order.
-- **Wording, last:** never asked or listed before the build. After it, a `screen` step shows the
-  real popup or menu and he retypes its words in place ("directly edit text on the real ui
-  surface so i can see it in context", 2026-11-10).
-- **Never shown:** only what cannot be detected by using the app.
+## The order
+1. **Explore first:** the screens, their code, his earlier decisions on the subject.
+2. **First deck.** Page 1, "Here is how I understand this": statements about what exists and
+   what he wants, each marked Holds / Fails. Then scope and hard-rule questions, and one
+   large skippable box for how he pictures the screens and the path.
+3. **Design decks.** Two to four drawn designs per screen; he picks or combines. Repeat.
+4. **Walkthrough before the build**, ending in the checks menu.
+5. **Build**; the checks he switched on run.
+6. **Walkthrough after the build** — the main steering round. Finished when he goes through
+   it and changes nothing; nothing merges without his word.
+7. **Wording pass** on the real screens (`screen` steps), last.
 
-Unsure → Listed. Never decide an Asked item silently; never ask a Listed one as a question.
-**Why:** "i mostly want involvement in core/optimal user flows, big-picture interface design,
-how functions/elements interact" (round 2, R-4). **Guard:** none — candidate.
+Small work with clear direction may start at step 6; ask first.
+**Why:** round 6, S-1. **Guard:** none — candidate.
 
-## Short route for small work
-**Invariant:** small work with clear direction may skip the questions and the
-before-walkthrough; the after-walkthrough (or one review deck) is the first thing he sees. Ask
-first. "Wait on the deck" = keep building, no deck until he asks.
-**Why:** "just show them to me. this is a simple feature" (2026-09-10). **Guard:** none — candidate.
+## What is asked, shown, listed, never shown
+**Invariant:**
+- **Asked in words, early:** only scope and hard rules — in for now, later, must not change,
+  money, privacy, and where his understanding and yours may differ.
+- **Shown, never asked in words:** layout, placement, the path between screens.
+- **Listed as rows:** **defaults and phone layout first** (he cares), then failure and empty
+  states, sizes, order, speed.
+- **Wording:** never before the build.
+- **Never shown:** code organisation, libraries, a reviewer's raw report (one status row
+  instead). Tests added or removed ARE shown, in plain words.
 
-## Questions before drawing
-**Invariant:** opening questions are a words-only deck (`<feature>.questions.json`) holding only
-Asked items, with the fields `.claude/rules/review-deck.md` requires; a question about looks
-carries a picture. Before the build he steers by TALKING: decks invite him to shape the
-interface in his own words, and each round fills the gaps his last answers left. **Why:** a chat answer is not a record. **Guard:** `test_words.py`.
+**Why:** 784 answered decks analysed (round 5, F-1). **Guard:** none — candidate.
+
+## Reuse the app's own parts
+**Invariant:** for each screen, list the kinds of parts it needs, review every existing
+YouCoded part that could do the job, adopt them, and record on each design what is reused
+and what is new, behind its (i) — not as chat or questions.
+**Why:** "match the rest of the app": 196 of his notes. **Guard:** none — candidate.
 
 ## The walkthrough, before and after the build
-**Invariant:** one deck (`scripts/ui-review/templates/walkthrough.json`), shown before building
-(drawings, suggested checks) and again after (screenshots, results), same pages both times:
-1. What you asked for and what you got — one row per request, his own words quoted.
-2. Every screen that changed — all pictures together, before beside after.
-3. Behind the scenes — numbered plain steps for logic that has no screen.
-4. Choices I made — every Listed item. After the build only: a `screen` step per popup or
-   menu whose words he may want to change.
-5. Checks — suggested before, results after; then what is left for him to try.
+**Invariant:** one deck (`scripts/ui-review/templates/walkthrough.json`), same pages both times:
+what you asked for (his words quoted) · every changed screen · behind the scenes · choices I
+made · checks, then what is left for him to try. After the build add: each hard rule he
+stated, as a check with its result; anything on screen in no approved picture, marked "new,
+not shown before". Each page's first line says what he is judging. Rows stand unless
+changed; a background-only list is `context: true`.
+**Why:** his surprises were unapproved elements and broken early rules.
+**Guard:** `test_build.py`, `test_rethink.py`.
 
-Drop an empty page. Every row stands unless he changes it.
-**Why:** "full end-to-end context of a build… every design decision, every screenshot, backend
-logic in layman's terms" (2026-11-09); he hated the contract deck.
-**Guard:** `test_build.py` (the template validates), `test_rethink.py`.
+## The checks menu
+**Invariant:** before the build the Checks page lists every suggested check and reviewer
+(`scripts/ui-review/{code-reviewer,ux-tester}.md`) with a Will run / Skip switch; each row
+says what it does, what comes back, and why it is or is not suggested for THIS build.
+Preparation (reading the design guide) is not a check. Suggest the code reviewer on for
+security, his data, background work or several devices. After the build each chosen check
+is a row with its status — his to change — and proof. Never report a check not run.
+**Why:** round 6, Q-1; the code reviewer has the strong record. **Guard:** none — candidate.
 
-## The finish line
-**Invariant:** work is finished when Destin has gone through the after-walkthrough and changed
-nothing. A change he makes is built and the walkthrough shown again. Nothing merges without
-his word. **Why:** round 2, R-9. **Guard:** none — candidate.
+## Records
+**Invariant:** `docs/**/*.answers.json` are tracked; a contradiction with something approved
+goes on a deck; each round names its `earlier` rounds. **Guard:** none — candidate.
 
-## Checks are his to steer
-**Invariant:** the context-free UX tester, the code reviewer and any other fresh-eyes check
-(`scripts/ui-review/{ux-tester,code-reviewer}.md`) are tools, not fixed steps. Before the build
-the Checks page suggests which to run and why; he edits the list. After, each one he chose is a
-row with pass / fail / unclear and a picture or clip as proof. Never report a check that was not
-run. **Why:** round 2, R-8: he directs the checks and wants proof. **Guard:** none — candidate.
-
-## Answers files are committed
-**Invariant:** `docs/**/*.answers.json` are tracked; only `scratch/` is ignored.
-**Why:** the only record of decisions. **Guard:** none — candidate.
-
-## Reopen only through a deck
-**Invariant:** when building contradicts something he approved, show it on a deck (one question,
-or the walkthrough again) and wait. **Why:** a chat answer is not a record. **Guard:** none — candidate.
-
-## The build stage is reviewed, capped, recorded
-**Invariant:** technical design → reviewer rounds writing
-`docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings accepted / rejected /
-already handled; stop on a round accepting nothing, cap three) → task breakdown → subagent
-build with a per-task reviewer, both checking `.claude/rules/performance.md`. Every design
-reviewer gets the answered before-walkthrough and names any row the design does not deliver.
-**Why:** #183's design rounds never saw what he approved and missed a row. **Guard:** none — candidate.
+## The build stage
+**Invariant:** technical design → reviewer rounds in
+`docs/active/reviews/<date>-<feature>-design-review-<n>.md` (cap three) → tasks → build,
+checking `.claude/rules/performance.md`. Reviewers get the answered before-walkthrough.
+**Guard:** none — candidate.
 
 ## Older work with a contract
-**Invariant:** a feature that already has a signed `<feature>.contract.json` finishes under it
-(`review-cards.py contract-check`, `close-out.sh` still read it). Write no new contract.
+**Invariant:** a feature with a signed `<feature>.contract.json` finishes under it
+(`review-cards.py contract-check`, `close-out.sh`). Write no new contract.
 **Guard:** `test_contract.py`, `close-out-contract.test.sh`.
