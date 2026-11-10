@@ -272,7 +272,11 @@ export function scan({ root: givenRoot, inventory, excludeKeys = [], skipProcess
       if (invokingReal && (groupReal === invokingReal || invokingReal.startsWith(groupReal + path.sep))) reasons.push('current-session');
       if (matchesExclude(group.dir, excludeKeys, root)) reasons.push('excluded');
       const ignored = ignoredFiles(resolvedPath);
-      allEntries.push({ repo: name, path: resolvedPath, branch, reasons, ignored, leftovers: nonDisposableLeftovers(resolvedPath, ignored),
+      // WHY (card #22 f): "unmerged" does not say whether the work is safe on GitHub. Commits that NO remote
+      // branch reaches exist only on this disk — a committed-but-unpushed branch was lost across machines.
+      let onlyHere = 0;
+      try { onlyHere = Number(git(resolvedPath, 'rev-list', '--count', 'HEAD', '--not', '--remotes')) || 0; } catch { /* unreadable: reported via reasons above */ }
+      allEntries.push({ repo: name, path: resolvedPath, branch, reasons, onlyHere, ignored, leftovers: nonDisposableLeftovers(resolvedPath, ignored),
         lastActive: lastActivityMs(resolvedPath), groupDir: group.dir, groupKind: group.kind });
     }
   }
@@ -402,7 +406,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * applyPrune right before removal. Everything else is only reported: `stale` lists
  * not-safe groups untouched for `staleDays`, for a human to decide on.
  */
-export function sweep({ root, inventory, excludeKeys = [], minAgeDays = 3, staleDays = 14, now = Date.now(), fetch = true, invokingCwd = process.cwd() }) {
+export function sweep({ root, inventory, excludeKeys = [], minAgeDays = 3, staleDays = 14, atRiskHours = 24, now = Date.now(), fetch = true, invokingCwd = process.cwd() }) {
   const report = scan({ root, inventory, excludeKeys, invokingCwd, fetch });
   const old = c => c.lastActive && now - c.lastActive >= minAgeDays * DAY_MS;
   const due = report.candidates.filter(c => old(c) && !c.leftovers.length);
@@ -411,10 +415,16 @@ export function sweep({ root, inventory, excludeKeys = [], minAgeDays = 3, stale
   // WHY not in-use/current/excluded: those are live sessions, not forgotten ones.
   const live = new Set(['in-use', 'current-session', 'excluded']);
   const stale = report.notSafe.filter(c => !c.reasons.some(r => live.has(r)) && c.lastActive && now - c.lastActive >= staleDays * DAY_MS);
+  // WHY (card #22 f): the 2-week `stale` list is far too slow for work that lives on one disk only — a finished
+  // implementation sat uncommitted 14 hours and a committed-but-unpushed branch was lost across machines. Any
+  // not-live folder idle `atRiskHours`+ that holds uncommitted files or commits no remote has is named at every
+  // session start. Live sessions (in-use/current/excluded) are skipped: they are being worked on right now.
+  const atRisk = report.notSafe.filter(c => !c.reasons.some(r => live.has(r)) && c.lastActive && now - c.lastActive >= atRiskHours * 3600 * 1000 && !stale.includes(c)
+    && c.entries.some(e => e.reasons.includes('dirty') || e.onlyHere > 0));
   // WHY: the ~500 manifests that piled up before applyPrune cleaned its own are cleared here, at the same
   // session-start run that clears worktrees (card #22 a).
   const manifestsRemoved = removeStaleManifests(report.root);
-  return { root: report.root, results, keptForLeftovers, stale, notes: report.notes, manifestsRemoved };
+  return { root: report.root, results, keptForLeftovers, stale, atRisk, notes: report.notes, manifestsRemoved };
 }
 
 export function formatSweep(s) {
@@ -429,6 +439,13 @@ export function formatSweep(s) {
     for (const c of s.stale) lines.push(`  ${rel(c.dir)} (${c.reasons.join(', ')}; last active ${new Date(c.lastActive).toISOString().slice(0, 10)})`);
   }
   if (s.manifestsRemoved && s.manifestsRemoved.length) lines.push(`worktree sweep: cleared ${s.manifestsRemoved.length} leftover session record(s) whose folders are gone`);
+  if (s.atRisk && s.atRisk.length) {
+    lines.push(`worktree sweep: ${s.atRisk.length} folder(s) hold work that exists ONLY on this computer (uncommitted, or committed but never pushed) and have sat idle 1+ day — do not delete; commit and push them, or tell Destin:`);
+    for (const c of s.atRisk) {
+      const dirty = c.entries.filter(e => e.reasons.includes('dirty')).length, here = c.entries.reduce((n, e) => n + (e.onlyHere || 0), 0);
+      lines.push(`  ${rel(c.dir)} (${[dirty ? `uncommitted files in ${dirty} checkout(s)` : '', here ? `${here} commit(s) on no remote` : ''].filter(Boolean).join(', ')}; last active ${new Date(c.lastActive).toISOString().slice(0, 10)})`);
+    }
+  }
   for (const n of s.notes) lines.push(`worktree sweep note: ${n}`);
   return lines.join('\n');
 }

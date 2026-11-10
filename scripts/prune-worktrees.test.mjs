@@ -395,3 +395,22 @@ test('removeStaleManifests clears fully-stale manifests but not live, locked or 
   assert.equal(fs.existsSync(stale), false);
   for (const keep of [half, locked, junk]) assert.equal(fs.existsSync(keep), true, keep);
 });
+
+// Card #22 (f): work that lives on one disk only must be named at session start long before the 2-week "stale" list.
+test('sweep names idle folders whose work exists only on this computer (uncommitted, or committed but never pushed)', t => {
+  const f = fixture(t);
+  const sess = k => path.join(f.root, 'worktrees', 'sessions', k);
+  f.addWorktree('workspace', sess('unpushed'), 'session/unpushed'); f.makeUnmerged(sess('unpushed'));
+  f.addWorktree('workspace', sess('pushed'), 'session/pushed'); fs.writeFileSync(path.join(sess('pushed'), 'p.txt'), 'p\n'); git(sess('pushed'), 'add', 'p.txt'); git(sess('pushed'), 'commit', '-m', 'pushed work'); f.push('workspace', 'session/pushed'); // different commit id than 'unpushed', or the push would make both reachable
+  f.addWorktree('workspace', sess('dirty'), 'session/dirty'); f.makeDirty(sess('dirty'));
+  const run = days => sweep({ root: f.root, inventory: f.inventory, invokingCwd: f.dir, fetch: false, now: Date.now() + days * DAY });
+  assert.equal(run(0.2).atRisk.length, 0, 'recent activity is not reported');
+  const s = run(2);
+  assert.deepEqual(s.atRisk.map(c => path.basename(c.dir)).sort(), ['dirty', 'unpushed']); // the pushed branch is safe on GitHub
+  const text = formatSweep(s);
+  assert.match(text, /exists ONLY on this computer/);
+  assert.match(text, /unpushed .*1 commit\(s\) on no remote/);
+  assert.match(text, /dirty .*uncommitted files/);
+  assert.ok(fs.existsSync(sess('unpushed')) && fs.existsSync(sess('dirty')), 'reported, never deleted');
+  assert.deepEqual(run(21).atRisk.map(c => path.basename(c.dir)), [], 'past two weeks they move to the existing stale list instead of being listed twice');
+});
