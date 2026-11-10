@@ -87,7 +87,10 @@ def _option(o):
     return {'id': o['id'], 'label': o['label'], 'summary': (o.get('summary') or '').strip(),
             'pros': list(o.get('pros') or []), 'cons': list(o.get('cons') or []),
             'recommended': bool(o.get('recommended')),
-            'measured': o.get('measured', ''), 'cost': o.get('cost', '')}
+            'measured': o.get('measured', ''), 'cost': o.get('cost', ''),
+            # WHY: a written option may show a picture of itself (spec.py _validate_pictures).
+            **({'picture': o['picture']} if o.get('picture') else {}),
+            **({'caption': o['caption']} if o.get('caption') else {})}
 
 
 # The rows keys, verbatim into deck data — page.js draws them as a table (feature-flow design §3).
@@ -154,7 +157,8 @@ def _words_step(spec, st):
         # different answer row from both the decide and the statement — so it gets its own kind.
         d['kind'] = 'question'
     # The three parts of a question ride as their own keys; page.js draws one card each.
-    for k in QUESTION_FIELDS:
+    # `picture`/`caption` ride with them: a file beside the spec, shown above the three cards.
+    for k in QUESTION_FIELDS + ('picture', 'caption'):
         if st.get(k):
             d[k] = st[k]
     return d

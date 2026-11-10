@@ -208,7 +208,11 @@
   // the position — Option A, Option B — and the id follows it quietly, because the answers file,
   // the summary and any contract row still speak in ids.
   const LETTERS = 'ABCDEFGH';
-  const optionCard = (o, cls, i) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}${chip(o.id)}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+  const optionCard = (o, cls, i) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}${chip(o.id)}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${pictureFig(o, ' opt')}${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+  // WHY (Destin, 2026-11-04: "i want to visualize some of these options better"): a written
+  // question about how something LOOKS drew "Other — need to see it" seven times out of ten.
+  // A question, and each of its options, may now carry a picture; a click opens it full size.
+  const pictureFig = (x, cls) => x.picture ? `<figure class="qpic${cls || ''}"><a href="${esc(x.picture)}" target="_blank" rel="noopener" title="Open full size"><img src="${esc(x.picture)}" alt=""></a>${x.caption ? `<figcaption>${esc(x.caption)}</figcaption>` : ''}</figure>` : '';
   // The three parts of a question, one card each.
   const partCard = (title, text) => `<section class="card part"><h3>${esc(title)}</h3><p>${esc(text)}</p></section>`;
   // Fix (Destin, 2026-09-06): "do 3 cards side-by-side horizontally". Stacked, the three
@@ -264,11 +268,11 @@
     + `<pre class="cmd"><code>${esc(st.command)}</code></pre>`
     + `<p class="src devnote">This opens a separate dev window on your desktop, alongside your own app — never your own app itself. It takes a few seconds to appear. Close it when you are done.</p></section>`;
   // The body of one step, in the order the cards are read.
-  const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
+  const cardsFor = st => st.kind === 'question' ? pictureFig(st) + partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + alsoCard(st) + riskCard(st)
-    : st.kind === 'decide' ? partCards(st) + pickHint(st) + noticeCard(st) + alsoCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
+    : st.kind === 'decide' ? (st.words ? pictureFig(st) : '') + partCards(st) + pickHint(st) + noticeCard(st) + alsoCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
     : changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st);
 
   // A one-picture slide is a BRIEF (nothing built yet): "keep / revert" would ask about work that
@@ -325,6 +329,8 @@
     // and must not have to be typed into Other. It rides as Other with `dk` so the answers
     // file keeps three values, and both summaries print "don't know" for it.
     $('#answers').innerHTML = answerButtons(st);
+    // WHY (Destin, 2026-11-09): one text field per question — a typed answer hides the note box.
+    $('#note').hidden = st.answer === 'words';
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
   // `id` is the step being answered. On a page every question has its own answer row, so the
@@ -526,11 +532,13 @@
         // Fix (Destin, 2026-09-06): "too hard to quickly navigate between questions and tell
         // them apart". A page of questions had nothing between one and the next but a 14px gap,
         // so on a tall question you cannot see where you are. Each one now names itself.
-        + `<p class="qnum"><span class="n">Question ${i + 1} of ${steps.length}</span><span class="tick" aria-hidden="true">answered</span></p>`
+        + `<p class="qnum"><span class="n">Question ${i + 1} of ${steps.length}</span><span class="qtick" aria-hidden="true">answered</span></p>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
         + `<div class="qbody">${cardsFor(st)}</div>`
         + `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
-        + `<input class="note" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></div>`
+        // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A
+        // question answered by typing already has its box, so it gets no second note box.
+        + (st.answer === 'words' ? '' : `<input class="note" data-id="${esc(st.id)}" placeholder="Add a note (optional)">`) + `</div>`
         + `</article>`).join('');
     // Every control carries the id of the question it belongs to, so one click handler on the
     // column can answer any of them without knowing which article it came from.

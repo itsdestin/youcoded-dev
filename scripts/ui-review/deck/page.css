@@ -138,9 +138,19 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
    two of them is bigger than any gap inside one, and an answered question says so where the
    number is rather than only by a border tint you have to hunt for. */
 .pages article.q .qnum{margin:0 0 -4px;display:flex;align-items:center;gap:8px;font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-faint)}
-.pages article.q .qnum .tick{display:none;color:var(--yes);letter-spacing:.06em}
-.pages article.q .qnum .tick::before{content:"✓ ";font-weight:700}
-.pages article.q.done .qnum .tick{display:inline}
+/* WHY (Destin, 2026-11-09): this mark was class `tick`, which is also the finish screen's
+   56px green circle further down — so every answered question drew that circle behind the
+   word and pushed the card out of shape. It has its own name now. */
+.pages article.q .qnum .qtick{display:none;color:var(--yes);letter-spacing:.06em}
+.pages article.q .qnum .qtick::before{content:"✓ ";font-weight:700}
+.pages article.q.done .qnum .qtick{display:inline}
+/* A picture inside a written question or one of its options (page.js pictureFig). */
+.qpic{margin:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.qpic img{display:block;max-width:100%;max-height:min(62vh,640px);border:1px solid var(--edge);border-radius:var(--radius-md);cursor:zoom-in}
+.qpic.opt{margin:6px 0 8px} .qpic.opt img{max-height:min(46vh,420px)}
+/* The caption sits ABOVE: a drawing of a deck inside a deck reads as a second question until
+   something says it is a picture. */
+.qpic figcaption{order:-1;font-size:12px;color:var(--fg-muted)}
 .pages article.q.done .qnum .n{color:var(--fg-muted)}
 .pages .qbody{display:flex;flex-direction:column;gap:10px}
 /* Fix (Destin, 2026-09-06): "difficult to differentiate the different explanations section

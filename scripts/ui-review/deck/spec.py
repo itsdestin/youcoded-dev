@@ -849,6 +849,7 @@ def _validate_words(spec, st, sid, errors, warnings):
     # choice — so it owes the three parts even when its author forgot `today` entirely.
     elif is_question(st) or st.get('options'):
         _validate_question(st, sid, errors, warnings)
+        _validate_pictures(spec, st, sid, errors)
     else:
         for k in ('changed', 'notice'):
             if not st.get(k):
@@ -865,6 +866,25 @@ def _validate_words(spec, st, sid, errors, warnings):
         errors.append(f'{sid}: themes must be a non-empty list of theme names')
     if word_count(st.get('risk')) > RISK_WARN:
         warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
+
+
+def _validate_pictures(spec, st, sid, errors):
+    """A written question, and each of its options, may carry `picture` — a file path relative
+    to the spec — and a short `caption`. WHY (Destin, 2026-11-04): written options about a
+    layout came back "need to see it"; refusing a missing file here keeps a broken-image icon
+    off a page he is asked to decide on."""
+    for where, x in [(sid, st)] + [(f'{sid}/{o.get("id")}', o) for o in (st.get('options') or []) if isinstance(o, dict)]:
+        pic = x.get('picture')
+        if pic is None:
+            if x.get('caption'):
+                errors.append(f'{where}: caption describes a picture — add "picture"')
+            continue
+        if not isinstance(pic, str) or os.path.isabs(pic) or '..' in pic.split('/'):
+            errors.append(f'{where}: picture is a file path beside the spec (no leading slash, no "..")')
+        elif not os.path.exists(os.path.join(spec.get('_base', ''), pic)):
+            errors.append(f'{where}: picture {pic} does not exist beside the spec')
+        for w in banned_in(x.get('caption')):
+            errors.append(f'{where}: caption uses banned word "{w}"')
 
 
 def _validate_question(st, sid, errors, warnings):
