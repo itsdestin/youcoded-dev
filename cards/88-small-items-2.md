@@ -13,8 +13,8 @@ side: both
 vision: together.added.reddit
 ---
 Progress
-Done: The Reddit community link is in the app's Settings, under Help and feedback, as "Community on Reddit". It also appears in a Help tip. Shipped September 10, 2026.
-Next: (1) Destin decides whether to add a link on the website. (2) Run the app in a dev build with many chats arriving at once and check whether the warning still appears. If it does not, close this card.
+Done: The Reddit community link is in the app's Settings, under Help and feedback, as 'Community on Reddit'. It also appears in a Help tip. Shipped September 10, 2026. RETESTED 2026-11-10 in a dev copy: the warning did not appear with 13 chats reloading on the computer, nor with 15 chats on a remote browser (reload and first sign-in); 0 warnings, 0 errors.
+Next: Only Destin's choice is left: add a community link on the website or not. Once he answers, this card can close (the warning part is confirmed gone).
 Blocked: nothing.
 
 Chats
