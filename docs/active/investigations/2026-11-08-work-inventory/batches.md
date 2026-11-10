@@ -55,17 +55,17 @@ Sorted from each card's own notes. Sizes were not re-measured.
 
 ## Batch 1 — Release safety (start first)
 
-Quick checks and small fixes that protect the next release. No screen is redesigned. Touches: chat view, custom models, Office error log, updates.
+Quick checks and small fixes that protect the next release. No screen is redesigned. Touches: chat view, custom models, Office error log, updates. Checked against the code on 2026-11-10. The crash-recovery change left over from #163 is NOT here: it is a 6-file change to how a reopened chat is repaired, not a wording fix, and belongs in Batch 2 after a review.
 
-- **#7** Chat view glitches: vanishing, stuck or misdrawn messages — Retest in a test copy; close or confirm.
+- **#7** Chat view glitches: vanishing, stuck or misdrawn messages — Retest the long-message case. The reload case is #146. The floating-item overlap has no test, so this card will not fully close on a retest.
 - **#10** Question and approval cards that stick or vanish — Retest; close or confirm.
 - **#62** Chat on YouCoded's own engine: eight small faults — Retest the queued-message edit; the other small faults go to Batch 2.
-- **#88** Two small items: a warning and a community link — Retest the stray warning; the website-link choice stays yours.
-- **#220** Check native sessions for commands stuck showing Running — Retest; close or confirm.
-- **#146** Reload returns to the wrong chat — Fix: after a reload, return to the chat you were on.
-- **#176** Custom AI models: long chats fail, and the app can't offer to shorten them — Fix the two remaining "chat too long" gaps on custom models.
+- **#88** Two small items: a warning and a community link — Retest the stray warning (hard to stage: needs many chats arriving at once); the website-link choice stays yours.
+- **#220** Check native sessions for commands stuck showing Running — Nothing fixed yet. Check restored and never-ending background commands on the native engine; fix what is found.
+- **#146** Reload returns to the wrong chat — Fix: after a reload, return to the chat you were on. Checked 2026-11-10: still open, cause at App.tsx:1909, one to two hours.
+- **#176** Custom AI models: long chats fail, and the app can't offer to shorten them — MIXED. Gap 1 (unknown hosted models assume a 250k size): a lower default means summaries arrive sooner, so the number is your choice. Gap 2 needs a real endpoint's error text and stays parked until one is captured.
 - **#35** Office editor: faults, safety and privacy gaps — Only the part where the error log copies document text. The rest is in Batch 4.
-- **#238** A Mac that tested the betas landed on 1.3.1 after 1.3.3 was out, and has stayed there — Find the cause only. A fix that changes how updates behave comes back to you.
+- **#238** A Mac that tested the betas landed on 1.3.1 after 1.3.3 was out, and has stayed there — Checked 2026-11-10: reading the code cannot settle it; the code says that Mac should have been offered 1.3.3. Needs that Mac's log, so the session only prepares what to ask the tester for.
 
 ## Batch 2 — Chat and engine fixes
 
