@@ -3,7 +3,30 @@ status: draft
 ---
 # Open cards sorted three ways (2026-11-10)
 
-**A proposal for Destin, not adopted.** Replaces the 14-area sorting in `workstreams.md`, which he did not approve.
+**Status:** Destin called this "roughly right" in chat on 2026-11-10 and chose to work through it slowly, wave by wave. Individual placements may still change. It replaces the 14-area sorting in `workstreams.md`, which he did not approve.
+
+## What Destin said about grouping and supervisors
+
+- Opening request (2026-11-09): consolidate open cards into session-scoped tasks for agents working in the same subject area, and hand related work to supervisor agents with strong helpers.
+- Deck answer Q-13: changes that affect the same code, screens or user flows belong together so one supervisor can weigh them; split a grab-bag card only if its contents are genuinely unrelated.
+- Chat, 2026-11-10: a handful of mostly autonomous sessions should clear most cards (fixes, pre-approved improvements, optimisations, research). Major screen or flow changes and big features that need iterative design stay out. Bigger feature builds that are mostly finished are also held until he has tested them, even when no product choice is left.
+- Chat, 2026-11-10: the one-branch rule means a feature he names at the start of a session stays on one branch inside that session unless he approves otherwise.
+- Chat, 2026-11-10: quick work that is vital to a safe next release is split out and started first.
+
+Not from him, and not adopted: one supervisor per broad area, per-area briefs, an area label on cards, and landing everything at the end.
+
+## Order
+
+| Wave | Sessions | Why together |
+|---|---|---|
+| 1 | Batch 1, Batch 7, Batch 5 | Three separate places: the chat, the developer tools, the servers. |
+| 2 | Batch 2, Batch 4 | Chat fixes build on what Batch 1 confirmed; files and sync are separate from chat. |
+| 3 | Batch 3, Batch 6 | Speed numbers mean something only after the fixes; wording goes last so it does not collide with fixes on the same screens. |
+| Later | Phone follow-ups | After the held Android branch lands. |
+
+Each session works on one branch, reports every user-visible change, leaves MIXED parts on the card, and lands nothing without his word. A held branch is best tested before the batch that overlaps it starts.
+
+## The sort
 
 The test applied to each card, as agreed in chat on 2026-11-10:
 
@@ -23,11 +46,11 @@ Sorted from each card's own notes. Sizes were not re-measured.
 | Batch 4 — Files and sync reliability | 10 |
 | Batch 5 — Security and server | 6 |
 | Batch 6 — Look and wording, to the approved guide | 4 |
-| Batch 7 — Workspace tools and tests | 17 |
+| Batch 7 — Workspace tools and tests | 16 |
 | Phone follow-ups — after the Android branch lands | 6 |
 | HOLD — built, waiting for you to test | 6 |
 | HOLD — design approved, not built yet | 3 |
-| DESIGN-FIRST — stays out of the batches | 60 |
+| DESIGN-FIRST — stays out of the batches | 64 |
 | YOUR CALL OR YOUR HANDS — no agent work yet | 12 |
 
 ## Batch 1 — Release safety (start first)
@@ -113,8 +136,7 @@ Tools that agents and tests use. Nothing here ships to users.
 - **#13** Unreliable tests and test cleanup — Fix the unreliable tests; clean up leftovers.
 - **#15** Eight behaviors no automatic test protects — Turn the gaps that still matter into tests. Two items need your call.
 - **#16** First-time setup untested on Linux, Windows, Mac — First-run checks on the Linux packages; speed up the Mac test machine.
-- **#17** Test copies of the app can change the real one — MIXED: you decide what a test copy may share with your real app; then the fix.
-- **#218** Dev instances share the real youcoded-defaults.json — Fold into #17.
+- **#17** Test copies of the app can change the real one — MIXED: you decide what a test copy may share with your real app; then the fix. Now includes the old #218 (test copies writing your real new-session defaults).
 - **#18** Screenshot and review-page tools: ten faults — Retest the review-tool faults; fix what is confirmed.
 - **#19** Workspace tools: annoyances, docs upkeep and ideas — Close finished items; move the rest to the right cards.
 - **#22** Six ways a work session's progress can go missing — The remaining ways session work can be stranded.
@@ -222,6 +244,10 @@ Needs a design or product choice from you, or is a big feature. Each is its own 
 - **#228** Google Ads: a small beginner experiment to see whether paid search brings people to YouCoded
 - **#52** Marketplace ideas, including the assistant searching it
 - **#44** Idea: a laptop's AI key opens the games panel
+- **#240** System notifications, built together: a Notifications menu replacing Sound
+- **#241** Cloud backup choices: back up chats at all, and lock backups with a passphrase — Waits on #64.
+- **#242** Alerts on every device, and notifications you can customise (including automations)
+- **#243** A better view for managing and resolving versions of a forked chat — Waits on #64.
 
 ## YOUR CALL OR YOUR HANDS — no agent work yet
 
