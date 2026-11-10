@@ -1,0 +1,170 @@
+{
+ "title": "Your chats on every device — round 6: the last three held-over questions",
+ "key": "mesh-sync-questions-6",
+ "out": "mesh-sync.questions-6.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Three questions held over since round 3",
+   "intro": "These were written for round 3 and never answered. They are the last open choices before the design is complete. Each stands alone."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "An open chat",
+   "path": "A chat with helpers, opened on a second device",
+   "headline": "When should the work of the assistant's helpers reach your other devices?",
+   "today": "Helpers' own transcripts sit beside the chat and never sync. On your desktop they are 8.4 GB across 327 chats, half your whole store.",
+   "problem": "Copying them everywhere multiplies storage on every device and would fill the relay's 1 GB limit quickly; skipping them leaves a helper's details empty when you expand them on another device.",
+   "proposal": "Pick one.",
+   "options": [
+    {
+     "id": "on-demand",
+     "label": "Fetch a helper's transcript when you expand it",
+     "pros": [
+      "Other devices store a few MB per chat you actually dig into, never 8 GB.",
+      "The chat itself reads identically; only the expand step waits a moment."
+     ],
+     "cons": [
+      "Expanding a helper on a device that is offline shows a 'not fetched yet' notice.",
+      "A new host that needs a helper's details reads them a beat later."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "always",
+     "label": "Copy them everywhere, like the chat",
+     "pros": [
+      "Every detail is present instantly on every device."
+     ],
+     "cons": [
+      "Every device grows by the whole helper store; the phone would hold gigabytes it will rarely open."
+     ]
+    },
+    {
+     "id": "never",
+     "label": "Leave them on the device that made them",
+     "pros": [
+      "Simplest and smallest."
+     ],
+     "cons": [
+      "Helper details are gone for good when a chat moves hosts."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "An open chat",
+   "path": "Any chat, opened on a second device",
+   "headline": "Which smaller pieces should always travel with a chat?",
+   "today": "Only the chat file, its name, tags and handoff notes sync. Saved long outputs, pasted images, undo history, memory notes and plans stay on the device that made them.",
+   "problem": "A chat that moves hosts without them may show broken images, redo work it already did, or forget project habits.",
+   "proposal": "Pick every piece that should always travel. Sizes are measured on your desktop.",
+   "options": [
+    {
+     "id": "memory-plans",
+     "label": "Memory notes and plans (250 KB in total today)",
+     "pros": [
+      "The assistant keeps its project habits and plans on every host.",
+      "Tiny."
+     ],
+     "cons": [
+      "Memory keyed to a folder path needs translating when the project lives elsewhere."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "attachments",
+     "label": "Pasted images and dropped files (up to 32 MB each)",
+     "pros": [
+      "No broken images when a chat opens elsewhere."
+     ],
+     "cons": [
+      "A chat full of screenshots grows the sync by their size."
+     ]
+    },
+    {
+     "id": "spill",
+     "label": "Saved long outputs (510 MB in total today)",
+     "pros": [
+      "A new host can reread what the assistant saved instead of redoing it."
+     ],
+     "cons": [
+      "A few MB per heavy chat."
+     ]
+    },
+    {
+     "id": "undo",
+     "label": "Undo history (about 1 MB per chat)",
+     "pros": [
+      "Undo of earlier edits works after a switch when the project sits in the same place."
+     ],
+     "cons": [
+      "Useless where the project path differs; adds about 1 MB per chat."
+     ]
+    }
+   ],
+   "pick": "several"
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "The phone",
+   "path": "A chat hosted on the phone, screen off",
+   "headline": "How should a phone-hosted chat behave when the screen is off?",
+   "today": "Nothing holds the phone awake during a reply. After the phone has been still and dark for a while, Android cuts the network for every app until the user picks it up.",
+   "problem": "A reply can stall mid-way when the screen locks, and a pocketed phone cannot host at all.",
+   "proposal": "Pick one. Google allows asking for a battery exemption only when the app's core function needs it.",
+   "options": [
+    {
+     "id": "lock-plus-toggle",
+     "label": "Stay awake per reply, plus an opt-in setting to exempt the app from battery limits",
+     "pros": [
+      "Replies finish with the screen off, no permission needed.",
+      "Users who host from the phone can opt in once, with the battery cost explained."
+     ],
+     "cons": [
+      "Opted-in phones use more battery when hosting.",
+      "Still no promise in the deepest sleep without the opt-in."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "lock-only",
+     "label": "Stay awake per reply only",
+     "pros": [
+      "No permission prompts ever."
+     ],
+     "cons": [
+      "A pocketed phone drops as host; viewers see 'host asleep' and may Continue here."
+     ]
+    },
+    {
+     "id": "ask-at-setup",
+     "label": "Ask for the battery exemption during setup",
+     "pros": [
+      "Phone hosting works out of the box."
+     ],
+     "cons": [
+      "A permission prompt before the user has seen any value; may be refused by Google's review."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "The whole design",
+   "headline": "Anything still missing before I hand you the full design to read?",
+   "today": "Five rounds of your answers are recorded, each traced to your words. A draft of the full design is written from them.",
+   "problem": "Anything not asked by now would be decided by me while writing, which you ruled out.",
+   "proposal": "Write anything, or leave it empty.",
+   "answer": "words",
+   "prompt": "e.g. what happens to chats I have today"
+  }
+ ]
+}

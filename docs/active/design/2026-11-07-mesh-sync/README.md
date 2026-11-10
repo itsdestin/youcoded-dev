@@ -24,6 +24,8 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-3.json` + `.answers.json` | Deck round 3 (7 statements + 9 questions). **Not submitted.** Saved progress: all seven statements marked Holds; Q-1 to Q-4 skipped; Q-5 onward unanswered. Treat the statements as provisional until submitted. |
 | `mesh-sync.questions-4.json` + `.answers.json` | Deck round 4 (2 statements + 17 questions), submitted 2026-11-09. A second session's whole-design review: one copying system, keepers, pairing, closing the host, retired devices, viewer gaps. Supersedes round 3's Q-1 to Q-4 and Q-8. |
 | `mesh-sync.questions-5.json` + `.answers.json` | Deck round 5 (16 statements + 7 questions), submitted 2026-11-10. Restated his round-4 rules; decided relay first, files on the same system, offline behaviour; reviewed ten Continue-here states. |
+| `mesh-sync.questions-6.json` | Deck round 6: the three questions held over from round 3 (helper transcripts, smaller pieces, phone awake). |
+| `design.md` | DRAFT of the full design, written from the answers, each rule tagged with its source. Not yet read by Destin. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
 Serve a deck for Destin with `python3 scripts/ui-review/review-cards.py serve <spec.json> --no-build --timeout 1440` from the workspace root; put the printed link in chat as the last line. Never rebuild an answered deck.
@@ -91,8 +93,11 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - The missing-folder state is framed as turning on sync for that project on this device and fetching it, after which the project syncs continuously. — D5 N-5: "enable sync for this project and fetch the folder first".
 - Continue-here states N-1, N-2, N-3, N-5, N-7, N-8, N-9, N-10 hold as drafted.
 - Cards filed on his word: #241 cloud-backup choices (D5 S-5), #242 alerts on every device (D5 S-6; filed beside #232, which is mid-build, rather than rewriting it), #243 better view for forked-chat versions (D5 N-10).
-- The relay holds a chat's locked lines until 48 hours after the last line was added to that chat (so a chat still being worked on stays fully held), and deletes sooner once every device has them. Devices catch each other up directly for anything older. — chat 2026-11-10: "we can definitely just leave the live-sync relay to like 48h then" and "the 48 hours should start when the last line from that conversation is added. that way a conversation i'm still actively working on, but started a day or two before, will still sync if i open my phone tomorrow". A per-user size cap (1 GB suggested) is proposed, not yet confirmed.
-- Not settled (the relay holding time below is now settled above): how long the relay holds lines (Q-2: 30 days is too much; "something more like 24h from when the conversation was last active?"); whether a takeover is written into the chat (Q-3: "open to it … review this for fragility/errors/unintended consequences"); states N-4 and N-6 ("confusing").
+- The relay holds a chat's locked lines until 48 hours after the last line was added to that chat (so a chat still being worked on stays fully held), and deletes sooner once every device has them. Devices catch each other up directly for anything older. — chat 2026-11-10: "we can definitely just leave the live-sync relay to like 48h then" and "the 48 hours should start when the last line from that conversation is added. that way a conversation i'm still actively working on, but started a day or two before, will still sync if i open my phone tomorrow".
+- The relay holds at most 1 GB per user, as a safety limit. — chat 2026-11-10: "fine to keep the 1gb cap".
+- A takeover is recorded as a divider in the chat, built like the existing "Model switched to …" divider, visible to the user, and it carries a message the assistant can read. — chat 2026-11-10: "yes the takeover should be a divider and a message/notification readable by the model, that's what i was asking for originally"; visible: "yese". Review cautions accepted with it: YouCoded keeps the line beside Claude Code's own file; a waking host checks for it before letting a reply continue; the notice says files already changed by a dropped reply stay changed.
+- States N-4 and N-6 are merged into one notice: "Desktop is offline and may have newer messages or files than this device. Continuing here could create a second version." — chat 2026-11-10: "ok".
+- (Superseded wording kept for the record) Round 5 left open: how long the relay holds lines (Q-2: 30 days is too much; "something more like 24h from when the conversation was last active?"); whether a takeover is written into the chat (Q-3: "open to it … review this for fragility/errors/unintended consequences"); states N-4 and N-6 ("confusing").
 
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
@@ -103,12 +108,8 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 
 ## Open items (nothing below is decided)
 
-1. **A per-user size cap on what the relay holds** (1 GB suggested); awaiting his word.
-2. **Takeover written into the chat's record**: reviewed for fragility in chat 2026-11-10; awaiting his word.
-3. **States N-4 and N-6**: proposed to merge into one "this device may be behind" notice; awaiting his word.
-4. **Helper transcripts**, **which smaller pieces always travel**, **phone wake**: unchanged from round 3 (D3 Q-5, Q-6, Q-7).
-5. **A multi-device-aware assistant** (proposal §5.4) was never put to Destin as a question.
-6. **The design document itself** is not yet rewritten from the answers.
+1. **Helper transcripts**, **which smaller pieces always travel**, **phone wake**: asked in round 6.
+2. **The design document** `design.md` in this folder is a draft written from the answers; it needs Destin's read.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)
 
