@@ -12,8 +12,47 @@
 // into the file, so it needs no server). What is dropped: all scripts — nothing in the file
 // can run, click through or load anything.
 //
+// WHY a scrub step (review 2026-11-10): "nothing in the file can run" was only true of <script>
+// tags. `scrubFrozen` also takes out inline handlers (onclick=…), javascript: links, forms'
+// targets, objects/embeds, meta refresh, remote pictures and remote @imports, so a screen saved
+// from a page that carried any of them cannot run code or fetch from the network when the deck
+// opens it (and the deck also frames it with no scripts allowed).
+//
+// It is a real function, exported so a test can run it; FREEZE below carries its source.
+export function scrubFrozen(root) {
+  const DANGER = /^(javascript|vbscript):|^data:text\/html/i;
+  // WHY strip whitespace/control characters first: "java\tscript:" still runs in a browser.
+  const clean = (v) => String(v || '').replace(/[\u0000-\u0020]+/g, '');
+  const cssClean = (t) => String(t || '')
+    .replace(/@import[^;]*;?/gi, '')
+    .replace(/url\(\s*(["']?)\s*(?!data:|#)[^)]*\)/gi, 'url("")');
+  root.querySelectorAll('script, link, iframe, frame, noscript, base, object, embed, applet').forEach((n) => n.remove());
+  root.querySelectorAll('meta[http-equiv]').forEach((n) => { if (/refresh/i.test(n.getAttribute('http-equiv'))) n.remove(); });
+  root.querySelectorAll('style').forEach((n) => { n.textContent = cssClean(n.textContent); });
+  root.querySelectorAll('*').forEach((n) => {
+    for (const at of [...n.attributes]) {
+      const name = at.name.toLowerCase();
+      if (name.startsWith('on')) { n.removeAttribute(at.name); continue; }
+      if (['href', 'src', 'action', 'formaction', 'xlink:href', 'data', 'poster'].includes(name) && DANGER.test(clean(at.value))) n.removeAttribute(at.name);
+    }
+    if (n.tagName.toLowerCase() === 'form') { n.removeAttribute('action'); n.removeAttribute('target'); }
+    n.removeAttribute('formaction');
+    // Pictures: only ones packed into the file stay. A fetch that failed left the remote address.
+    if (['img', 'source', 'video', 'audio', 'image', 'input', 'track'].includes(n.tagName.toLowerCase())) {
+      for (const k of ['src', 'poster']) { const v = n.getAttribute(k); if (v != null && !/^data:/i.test(v.trim())) n.removeAttribute(k); }
+      n.removeAttribute('srcset');
+    }
+    if (n.tagName.toLowerCase() === 'use') {
+      for (const k of ['href', 'xlink:href']) { const v = n.getAttribute(k); if (v != null && !v.trim().startsWith('#')) n.removeAttribute(k); }
+    }
+    const st = n.getAttribute('style');
+    if (st && /url\(|@import/i.test(st)) n.setAttribute('style', cssClean(st));
+  });
+}
+
 // FREEZE is evaluated inside the page (engine.mjs tab.evaluate) and returns the file's text.
 export const FREEZE = `(async () => {
+  const scrubFrozen = ${scrubFrozen.toString()};
   const MAX = 4e6;                                   // a single picture or font above this stays a link
   const cache = new Map();
   const pack = (u) => {
@@ -45,7 +84,9 @@ export const FREEZE = `(async () => {
     let text = null;
     try { text = [...s.cssRules].map((r) => r.cssText).join('\\n'); } catch {}
     if (text === null && s.href) { try { text = await (await fetch(s.href)).text(); } catch {} }
-    if (text === null) { if (s.href) imports += '@import url("' + s.href + '");\\n'; continue; }
+    // A sheet that could not be read is simply left out (it used to be re-linked with @import,
+    // which made the saved file load it from the network).
+    if (text === null) continue;
     css += await packUrls(text, s.href || document.baseURI) + '\\n';
   }
   const root = document.documentElement.cloneNode(true);
@@ -81,6 +122,7 @@ export const FREEZE = `(async () => {
   // Entrance motion would replay every time the file opens; a still page shows the end state.
   style.textContent = imports + css + '\\n*,*::before,*::after{animation-duration:0s!important;animation-delay:0s!important;transition:none!important}';
   root.querySelector('head').appendChild(style);
+  scrubFrozen(root);
   const meta = document.createElement('meta'); meta.setAttribute('charset', 'utf-8');
   root.querySelector('head').prepend(meta);
   root.setAttribute('data-frozen', innerWidth + 'x' + innerHeight);   // the size it was laid out at — the deck frames it at this size

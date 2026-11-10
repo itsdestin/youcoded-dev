@@ -136,6 +136,9 @@ async function pass() {
     if (p.closes) { segments.push(text); dropOpen(p.n); out({ type: 'partial', text: joined('') }); }
     else out({ type: 'partial', text: joined(text) });
   } catch (err) {
+    // WHY stop the recorder too (review 2026-11-10): the server reports "idle" on an error, so the
+    // microphone must really be off, or the page shows idle over a live parec.
+    stopRecorder();
     out({ type: 'error', message: `Could not turn the recording into words: ${err.message}` });
   } finally {
     passing = false;

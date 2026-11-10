@@ -24,7 +24,7 @@ import threading
 import time
 
 from .live import has_live
-from .spec import UI_REVIEW, SpecError, is_page, workspace_root
+from .spec import UI_REVIEW, SpecError, is_page, pages as spec_pages, workspace_root
 
 # WHY not workspace_root() (2026-09-26): that is where the SUB-REPO checkouts are cloned once
 # (youcoded/, wecoded-themes/) and shared across every worktree — it is NOT where this deck
@@ -53,10 +53,48 @@ def lock_path(spec):
 
 
 def write_atomic(path, obj):
-    tmp = path + '.tmp'
-    with open(tmp, 'w') as f:
-        json.dump(obj, f, indent=1)
-    os.replace(tmp, path)
+    # WHY a temp name of its own per write (review 2026-11-10): every writer used the same
+    # "<path>.tmp", so two overlapping saves (autosave plus Submit, or two tabs) shared one
+    # file and one of them died with no reply — a lost Submit. mkstemp gives each its own.
+    import tempfile
+    fd, tmp = tempfile.mkstemp(prefix=os.path.basename(path) + '.', suffix='.tmp', dir=os.path.dirname(path) or '.')
+    try:
+        with os.fdopen(fd, 'w') as f:
+            json.dump(obj, f, indent=1)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+        raise
+
+
+# WHY one lock around check-then-write (review 2026-11-10): the stale-page guard reads the saved
+# file and then writes it; two requests interleaving between those steps defeated the guard.
+_SAVE_LOCK = threading.Lock()
+
+
+def save_state(apath, state, submit=False):
+    """Guard and write one answers state under the lock. Returns (status, body).
+    A saved `submitted` is never removed: a late autosave from a tab that has not seen the
+    submit carries it forward instead of erasing it."""
+    with _SAVE_LOCK:
+        dropped = dropped_answers(apath, state)
+        if dropped:
+            return 409, {'error': 'refused: this page would drop the saved answers for '
+                          + ', '.join(dropped) + ' — reload the page to pick up what is on disk'}
+        try:
+            with open(apath) as f:
+                saved = json.load(f)
+        except (OSError, ValueError):
+            saved = None
+        if isinstance(saved, dict) and saved.get('submitted') and saved.get('deck') == state.get('deck'):
+            state['submitted'] = saved['submitted']
+        if submit:
+            state['submitted'] = state.get('submitted') or time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+        write_atomic(apath, state)
+    return 200, {'ok': True}
 
 
 def dropped_answers(apath, incoming):
@@ -81,6 +119,8 @@ def dropped_answers(apath, incoming):
 # Images only, size-capped, and named by the SERVER — the browser's own file name is never used on
 # disk, so a hostile name ("../../x") has nowhere to go.
 ATTACH_MAX = 10 * 1024 * 1024
+# WHY a count cap (review 2026-11-10): a paste loop could otherwise fill the disk.
+ATTACH_COUNT_MAX = 200
 _IMAGE_MAGIC = ((b'\x89PNG\r\n\x1a\n', '.png'), (b'\xff\xd8\xff', '.jpg'), (b'GIF87a', '.gif'), (b'GIF89a', '.gif'))
 
 
@@ -105,6 +145,8 @@ def save_attachment(spec, data, client_name=''):
         return 415, {'error': 'only pictures (png, jpeg, gif, webp) can be attached'}
     folder = os.path.join(spec['_base'], spec['_stem'] + '.attachments')
     os.makedirs(folder, exist_ok=True)
+    if len(os.listdir(folder)) >= ATTACH_COUNT_MAX:
+        return 413, {'error': f'this deck already holds {ATTACH_COUNT_MAX} attached pictures — no more can be added'}
     saved = time.strftime('%Y%m%d-%H%M%S') + '-' + secrets.token_hex(4) + ext
     with open(os.path.join(folder, saved), 'wb') as f:
         f.write(data)
@@ -167,6 +209,8 @@ def summary(spec, state):
     for st in spec['steps']:
         if is_page(st):
             continue   # a page marker asks nothing — no answer, so no line
+        if st.get('context'):
+            continue   # a background-only list asks nothing either (review 2026-11-10): never counted, never a line
         a = (state.get('answers') or {}).get(st['id']) or {}
         v = a.get('v') or 'skip'
         counts[v] = counts.get(v, 0) + 1
@@ -194,11 +238,27 @@ def summary(spec, state):
             + (f'{counts["wrote"]} written · ' if counts['wrote'] else '') + f'{counts["skip"]} skipped')
     # Notes tied to no question (round 3): first, so a session reading the summary meets them.
     general = (state.get('notes') or '').strip()
-    # A comment box sits at the foot of every page (round 4); its words print first, by page.
-    titles = {s['id']: s.get('page', s['id']) for s in spec.get('steps', []) if isinstance(s, dict) and 'page' in s}
-    paged = ''.join(f'about the page "{titles.get(k, k)}" — "{(t or "").strip()}"\n' for k, t in (state.get('pageNotes') or {}).items() if (t or '').strip())
-    for k, lst in (state.get('pageAttach') or {}).items():
-        paged += ''.join(f'about the page "{titles.get(k, k)}" attached — {pill_words(p)}\n' for p in lst or [])
+    # A comment box sits at the foot of every page (round 4); its words print first, by PAGE ORDER.
+    # WHY page order and an implicit-page title (review 2026-11-10): the page printed these in page
+    # order and this in saved order, so the two summaries disagreed; both now follow the deck's pages,
+    # then any key the deck no longer has a page for.
+    pg = spec_pages(spec) or []
+    ids = [p['id'] for p in pg]
+    titles = {p['id']: p['title'] for p in pg}
+    for st in spec.get('steps', []):
+        if isinstance(st, dict) and 'page' in st:
+            titles.setdefault(st['id'], st.get('page') or st['id'])
+        ids = ids + [st['id']] if (isinstance(st, dict) and 'page' in st and st['id'] not in ids) else ids
+
+    def keys_of(d):
+        d = d or {}
+        return [k for k in ids if k in d] + [k for k in d if k not in ids]
+    pn = state.get('pageNotes') or {}
+    paged = ''.join(f'about the page "{titles.get(k, k)}" — "{(pn[k] or "").strip()}"\n' for k in keys_of(pn) if (pn[k] or '').strip())
+    pa = state.get('pageAttach') or {}
+    for k in keys_of(pa):
+        paged += ''.join(f'about the page "{titles.get(k, k)}" attached — {pill_words(p)}\n' for p in pa[k] or [])
+    general = (state.get('notes') or '').strip()
     gattached = ''.join(f'general notes attached — {pill_words(p)}\n' for p in state.get('notesAttach') or [])
     return head + '\n' + paged + (f'general notes — "{general}"\n' if general else '') + gattached + '\n'.join(lines)
 
@@ -325,6 +385,12 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
                 self.send_header('content-length', '0')
                 self.end_headers()
                 return
+            # WHY (review 2026-11-10): a symlink inside the deck folder was served even when it
+            # points outside it. Resolve the real file and refuse anything beyond the folder.
+            root = os.path.realpath(spec['_base'])
+            real = os.path.realpath(self.translate_path(self.path))
+            if os.path.commonpath([real, root]) != root:
+                return self._json(404, {'error': 'not a page'})
             return super().do_GET()
 
         def list_directory(self, path):
@@ -335,7 +401,15 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
         def do_POST(self):
             if self._wrong_origin():
                 return self._json(403, {'error': 'wrong host or origin'})
-            n = int(self.headers.get('content-length') or 0)
+            # WHY (review 2026-11-10): a negative Content-Length passed the size cap and then
+            # read(-1) hung a thread until the client left. Anything not a plain count is refused.
+            try:
+                n = int(self.headers.get('content-length') or 0)
+            except ValueError:
+                n = -1
+            if n < 0:
+                self.close_connection = True
+                return self._json(400, {'error': 'bad content-length'})
             if self.path.split('?')[0] == '/attach':
                 # A pasted picture arrives as the raw bytes (never JSON). The same Host/Origin check
                 # as every other POST ran above. Too large is refused before the body is read.
@@ -361,6 +435,10 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
                 # WHY: a non-JSON body must get a reply, not a dropped connection —
                 # json.loads raising unhandled here leaves the client hanging.
                 return self._json(400, {'error': 'body is not JSON'})
+            # WHY (review 2026-11-10): `5` or `[1]` as a body used to be written into the answers
+            # file, or crashed the handler with no reply. Every JSON route wants an object.
+            if not isinstance(state, dict):
+                return self._json(400, {'error': 'body must be a JSON object'})
             if self.path in ('/answers', '/submit'):
                 # WHY refuse rather than overwrite (2026-09-16, dev-workspace.md → rigs): a deck
                 # page left open across a server restart posts ITS state, which can be older
@@ -368,17 +446,12 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
                 # edits in site-copy-editor.py on 2026-09-10. The deck is the surface he answers
                 # every UI review on, so a stale page here loses review answers. A write may add
                 # or change answers; it may never make a saved answer disappear.
-                dropped = dropped_answers(apath, state)
-                if dropped:
-                    return self._json(409, {'error': 'refused: this page would drop the saved answers for '
-                                            + ', '.join(dropped) + ' — reload the page to pick up what is on disk'})
-            if self.path == '/answers':
-                write_atomic(apath, state)
-                return self._json(200, {'ok': True})
-            if self.path == '/submit':
-                state['submitted'] = state.get('submitted') or time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
-                write_atomic(apath, state)
-                self._json(200, {'ok': True})
+                code, reply = save_state(apath, state, submit=self.path == '/submit')
+                if code != 200:
+                    return self._json(code, reply)
+                if self.path == '/answers':
+                    return self._json(200, reply)
+                self._json(200, reply)
                 on_submit(state)
                 return
             if self.path == '/voice':
@@ -407,6 +480,24 @@ class VoiceBridge:
         self.lock = threading.Lock()
         self.proc = None
         self.state = {'status': 'off', 'text': '', 'error': '', 'seq': 0}
+        self.last_seen = time.monotonic()
+        self.stopping = False
+        # WHY a watchdog (review 2026-11-10): a tab closed mid-recording sent nothing, so the
+        # microphone stayed open for minutes. The page polls while it records; when the polls
+        # stop for VOICE_QUIET_S the recording is cancelled here.
+        threading.Thread(target=self._watch, daemon=True).start()
+
+    VOICE_QUIET_S = 5
+
+    def _watch(self):
+        while not self.stopping:
+            time.sleep(1)
+            with self.lock:
+                live = self.state['status'] in ('recording', 'finishing')   # not 'loading': start() blocks on it, sending no polls
+                quiet = time.monotonic() - self.last_seen > self.VOICE_QUIET_S
+            if live and quiet:
+                self._send('cancel')
+                self._set(status='idle', text='')
 
     def _set(self, **kw):
         with self.lock:
@@ -432,6 +523,9 @@ class VoiceBridge:
             elif kind == 'final':
                 self._set(status='idle', text=ev.get('text', ''), final=True)
             elif kind == 'error':
+                # WHY also cancel (review 2026-11-10): the helper may still be recording when it
+                # reports an error; "idle" on the page must never mean a live microphone.
+                self._send('cancel')
                 self._set(status='idle', error=ev.get('message', 'voice input failed'))
         with self.lock:
             if self.proc is proc:
@@ -468,6 +562,8 @@ class VoiceBridge:
                 pass
 
     def handle(self, body):
+        with self.lock:
+            self.last_seen = time.monotonic()
         cmd = body.get('cmd')
         if cmd == 'start':
             if self._ensure():
@@ -488,6 +584,8 @@ class VoiceBridge:
             return dict(self.state)
 
     def close(self):
+        self.stopping = True
+        self._send('cancel')   # the helper stops parec itself rather than relying on a closed pipe
         with self.lock:
             proc, self.proc = self.proc, None
         if proc and proc.poll() is None:
@@ -574,8 +672,16 @@ def rotate_submitted(spec, log=print):
     when = state.get('submitted')
     if not when:
         return None
+    # WHY a free-name check (review 2026-11-10): minute precision let two submits in one minute
+    # overwrite the earlier history file. The minute name is kept when free (what older notes
+    # point at); otherwise seconds, then a counter, are added.
     stamp = ''.join(c for c in when[:16] if c.isdigit()) or 'submitted'
+    full = ''.join(c for c in when[:19] if c.isdigit()) or stamp
     dest = os.path.join(spec['_base'], f'{spec["_stem"]}.answers.{stamp}.json')
+    n = 1
+    while os.path.exists(dest):
+        n += 1
+        dest = os.path.join(spec['_base'], f'{spec["_stem"]}.answers.{full}.json' if n == 2 else f'{spec["_stem"]}.answers.{full}-{n}.json')
     os.replace(apath, dest)
     log(f'[deck] the previous review of this deck was submitted {when[:16].replace("T", " ")} — kept as {os.path.basename(dest)}; starting a fresh one')
     return dest
@@ -728,7 +834,8 @@ def rewrite_stale_live(html, log=print):
     for p in panes:
         query = (p.get('url') or '').split('?', 1)
         p['url'] = '/app/index.html' + ('?' + query[1] if len(query) > 1 else '')
-    blob = json.dumps(data).replace('</', '<\\/')
+    from .build import embed_json
+    blob = embed_json(data)
     log('[deck] this page\'s live panes pointed at the old fixed workbench port — rewritten onto '
         'this deck\'s own /app/ address; reload any pane that was already open')
     return html[:m.start(2)] + blob + html[m.end(2):]
@@ -807,6 +914,9 @@ def serve(spec, port=0, timeout_min=1440, log=print, live=True):
         srv.serve_forever()
     finally:
         timer.cancel()
+        # WHY (review 2026-11-10): nothing ever called close(), so a library caller was left with
+        # the speech helper (and a possibly recording microphone) running after serve() returned.
+        srv.voice.close()
         srv.server_close()
         try:
             os.remove(lock)

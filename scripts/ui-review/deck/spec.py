@@ -1019,6 +1019,24 @@ def _validate_options(st, sid, errors, warnings, minimum):
             warnings.append(f'{sid}/{oid}: measured has no number in it')
 
 
+_LIVE_CODE = (
+    (re.compile(r'<\s*script', re.I), 'a <script>'),
+    (re.compile(r'<[a-z][^<>]*\son[a-z]+\s*=', re.I), 'an inline handler (on…=)'),
+    (re.compile(r'(?:java|vb)script\s*:', re.I), 'a javascript: address'),
+    (re.compile(r'<\s*(?:object|embed|iframe)\b', re.I), 'an object/embed/iframe'),
+    (re.compile(r'<meta[^>]+http-equiv\s*=\s*["\']?refresh', re.I), 'a meta refresh'),
+    (re.compile(r'@import', re.I), 'an @import'),
+)
+
+
+def live_code_in(text):
+    """What a "still" screen file carries that could run or load, in words; '' when it is clean."""
+    for rx, what in _LIVE_CODE:
+        if rx.search(text):
+            return what
+    return ''
+
+
 def _validate_words(spec, st, sid, errors, warnings):
     """No picture, so every picture field is refused rather than required — the same stance
     as _validate_live. The question shape is the existing one: `options` → pick one. A
@@ -1048,8 +1066,13 @@ def _validate_words(spec, st, sid, errors, warnings):
             errors.append(f'{sid}: screen {f} does not exist beside the spec — save it with `node scripts/shoot/shoot.mjs <screen name> --page`')
         else:
             with open(os.path.join(spec.get('_base', ''), f), encoding='utf-8', errors='replace') as fh:
-                if 'data-frozen=' not in fh.read(4000):
-                    errors.append(f'{sid}: screen {f} was not saved by `shoot --page` — a page with its own code cannot be shown for editing')
+                text = fh.read()
+            if 'data-frozen=' not in text[:4000]:
+                errors.append(f'{sid}: screen {f} was not saved by `shoot --page` — a page with its own code cannot be shown for editing')
+            elif live_code_in(text):
+                # WHY (review 2026-11-10): the marker alone is trivially copied onto a hand-made
+                # page. The file must also carry nothing that runs or loads from the network.
+                errors.append(f'{sid}: screen {f} holds {live_code_in(text)} — a page with its own code cannot be shown for editing; save it again with `shoot --page`')
         # WHY `liveScreen` (Destin, 2026-11-10, on the frozen About popup: "i think the dropdown
         # menus in that about popup should probably still work?" — he chose "a switch above the
         # screen: Use it / Edit words"): the screen's name as `shoot --list` prints it. The served

@@ -457,6 +457,14 @@ def deck_data(spec, boxes):
             'steps': steps}
 
 
+def embed_json(obj):
+    """JSON safe to sit inside a <script> block. WHY every `<` becomes \\u003c (review 2026-11-10):
+    escaping only `</` left `<!--` + `<script` in an answer text to switch the browser into a
+    state where the real closing tag no longer ends the block, blanking the deck — and his notes
+    are copied into later decks. \\u003c is still plain JSON, so nothing reading it changes."""
+    return json.dumps(obj).replace('<', '\\u003c')
+
+
 def build_page(spec, boxes):
     errors, warnings = validate(spec)
     for st in spec['steps']:
@@ -505,5 +513,5 @@ def build_page(spec, boxes):
     # hardcoded data-theme="midnight" on <html>, so any deck whose first theme isn't Midnight flashed
     # the wrong palette before page.js's render() ran. Substitute the spec's actual first theme.
     page = page.replace('__TITLE__', html.escape(spec['title'])).replace('__THEME__', html.escape(spec['themes'][0]))
-    page = page.replace('__DECK__', json.dumps(deck_data(spec, boxes)).replace('</', '<\\/'))
+    page = page.replace('__DECK__', embed_json(deck_data(spec, boxes)))
     return page, warnings
