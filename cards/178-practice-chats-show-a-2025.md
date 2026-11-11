@@ -1,7 +1,7 @@
 ---
 id: 178
 title: Made-up demo chats show "Jul 29, 2025" under every message
-stage: planning
+stage: merged
 priority: P3
 tags: dev-workspace, website, workbench
 related: 2
