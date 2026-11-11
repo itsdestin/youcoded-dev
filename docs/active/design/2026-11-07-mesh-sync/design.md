@@ -48,6 +48,11 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
 - **Everything is locked end to end.** Only your devices can read it. [D2 Q-2]
 - **A new device joins by pairing with one you already have.** No account is needed for sync;
   our relay may ask for a sign-in to stop abuse. [D4 Q-4]
+- **Devices on the same wifi talk directly,** with the same locking as every other path, so
+  home use needs no relay. Others on a shared wifi can see that a YouCoded device is there,
+  nothing more. This path needs its own security review before release. [chat 2026-11-11]
+- **A home super-host is reached from outside** through our relay by default, or through the
+  user's own front door. [chat 2026-11-11]
 - **Removing a device locks it out** and frees the chats it was hosting to be continued
   elsewhere. [D4 Q-9]
 
