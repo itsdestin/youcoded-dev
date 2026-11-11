@@ -65,7 +65,23 @@ A keeper is something always on that holds locked lines it cannot read.
   - Lines are deleted sooner, once every device has them.
   - It holds at most 1 GB per user. [chat 2026-11-10]
   - Anything older, a device gets from your other devices when both are on.
-- **Your own device as keeper** holds everything with no time limit, and can host chats too.
+  - It keeps, with no time limit, one small note per chat: the latest line number and which
+    device has it. No words of the chat. So a device knows for certain when it is behind.
+    [D7 Q-1]
+  - At 1 GB it releases whole chats, least recently used first. The host shows: "Relay full.
+    3 older chats will reach Phone when both are on." Nothing is lost. [D7 Q-3]
+- **Catching up.** Whenever two of your devices are on together they compare every chat and
+  the one ahead fills in the other. Any device can do this, not only the host. [D7 P-1 as
+  described; Q-1]
+- **A device known to be behind** can still read the chat as far as it has it. Continuing
+  there is allowed under an honest name: "Continue from here as a new version". [D7 Q-2]
+- **A device not seen for 30 days** triggers a one-time prompt on your other devices offering
+  to remove it. Nothing is removed without a yes. [D7 Q-4]
+- **Your own device as keeper is a super-host:** a complete YouCoded with no window, on a
+  device at home. It pairs like any device, holds every chat and project with no time or
+  size limit, hosts chats, catches devices up, passes live words, and opens in a browser. It
+  holds your keys, so it must be hardware you trust. [D7 S-1, Q-5]
+- **Payment** is undecided; the relay is free for everyone at the fixed limits. [D7 Q-8]
 - **Cost of the relay** (estimate from Cloudflare's price list and a guessed usage, not
   measured): free today and up to a few hundred heavy users; about $25 a month at 1,000.
 - **Cloud backup is separate and later.** The user will choose whether chats are backed up to
@@ -170,7 +186,9 @@ conflict copies from November 5 are left alone. [D1 Q-16, Q-17; D2 S-4]
    concern is lost work when a chat moves without them.)
 2. What travels with a chat besides its lines. (Round 6 Q-2 not decided; he is fine dropping
    images.)
-3. Round 7: catch-up, the 1 GB limit, self-hosting. Unanswered.
+3. How a home super-host is reached from outside; how the new system relates to today's
+   remote access; whether a relay of one's own exists apart from a super-host. (Round 7 Q-6,
+   Q-7 not decided.)
 4. Never asked: what happens to the chats and GitHub sync storage users have today when the
    new system arrives.
 5. Never asked: how the 30 days of replaced file versions are shown to the user.

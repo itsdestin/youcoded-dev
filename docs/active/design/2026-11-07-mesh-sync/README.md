@@ -112,6 +112,17 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - Smaller pieces that travel, NOT decided. — D6 Q-2: "i think we're underthinkging/undersonsidering this. with option a, what would that actually look like for a typical session? how would we determine what consistutes a syncable plan vs any other normal document? i'm fine to drop images and such. just want to understand what a session/chat actually needs to continue working on a range of project types across devices"
 - Measured 2026-11-11 on this session's own chat (Claude Code, desktop): the main chat file holds each helper's task and, once it finishes, its final report; the helper's own working file (1 to 2 MB each here) is needed only to see its steps or to send that helper a follow-up. Plans sit in Claude Code's own `~/.claude/plans/` folder, outside any project. Memory, skills and settings are backup-only today (`youcoded/docs/sync-spaces.md`), not synced between devices.
 
+### Round 7 (answered 2026-11-11)
+- The relay keeps, with no time limit, one small note per chat: its latest line number and which device has it; no words of the chat. A device then knows for certain when it is behind. — D7 Q-1: yes.
+- Continue here on a chat this device knows is behind: allowed, named honestly. Button "Continue from here as a new version"; the other device's newer lines stay as the other version. — D7 Q-2: "fork-knowingly".
+- At the 1 GB limit the relay releases whole chats, least recently used first; host shows "Relay full. 3 older chats will reach Phone when both are on." — D7 Q-3: "release-oldest-chat".
+- A one-time prompt offers to remove a device not seen for 30 days; nothing is removed without a yes. — D7 Q-4: yes.
+- Super-host: a complete YouCoded with no window, pairs like any device, holds everything with no limit, hosts chats, catches devices up, passes live words, openable in a browser; it holds keys. — D7 S-1: yes.
+- A super-host lives on a device at home. A rented server was NOT picked. — D7 Q-5: picked "home" only.
+- Payment: no decision; free for everyone at the fixed limits for now. — D7 Q-8: "decide-later", note: "i think i'd definitely be leaning toward option a, with some support from donations, but idk. i think for the time being it's just going to be free for everyone at our current fixed limits, and we may reopen the cost/payment conversation after i begin actually encountering issues"
+- Reaching a home super-host from outside, NOT decided. — D7 Q-6: "i think i'm a bit confused as to where this begins to overlap or replace our existing remote access system? and the pros/cons of alternative options for how this superhost thing would work? i think the premise of the super-host offering is that it should allow self hosting and also reduce load/strain on our servers/relay when possible."
+- Self-hosted relay, NOT decided. — D7 Q-7: "i'm extremely confused".
+
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
 1. "Default runner = the device he's typing on" → replaced by host-stays-until-offline-or-chip (D1 Q-4, Q-5, Q-15).
@@ -122,7 +133,7 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 ## Open items (nothing below is decided)
 
 1. **Helper transcripts** and **what travels with a chat**: round 6 answers asked for a fuller explanation; given in chat 2026-11-11 with a new proposal, awaiting his answer.
-1a. **Round 7** (catch-up, 1 GB limit, self-hosting) is served and unanswered.
+1a. **How a home super-host is reached from outside, how it relates to today's remote access, and whether a relay of one's own exists apart from a super-host**: round 7 Q-6 and Q-7 came back confused; re-explained in chat 2026-11-11, awaiting his answer.
 2. **The design document** `design.md` in this folder is a draft written from the answers; it needs Destin's read.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)
