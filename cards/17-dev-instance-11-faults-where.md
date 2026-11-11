@@ -11,7 +11,7 @@ area: Developer tools
 side: behind
 ---
 Progress
-Done: On branch session/workspace-tools-batch (not merged): the test-copy launcher now runs the session's own code (a fault introduced and caught the same night), checks its port offset early, and lists running test copies. Nothing about sharing was changed.
+Done: Landed on master 2026-11-10 (workspace PR #356): the test-copy launcher now runs the session's own code (a fault introduced and caught the same night), checks its port offset early, and lists running test copies. Nothing about sharing was changed.
 Next: Destin decides what a test copy may share with his real app. Today it shares themes, providers and keys, engine settings, new-session defaults, favourites, saved folders, pinned pages, all of ~/YouCoded, sync, and chat history. A) Share nothing by default: a test copy can never change your real app, but starts signed out with no keys every time. B) Private by default plus an opt-in 'borrow my sign-ins' (RECOMMENDED): quick tests work signed in, nothing is written back; cost: your keys exist in a second place and a test could spend real money, so it needs a clear 'test copy' banner. C) Keep today's sharing and guard only the worst files (defaults, engine settings, pinned pages): least work, but leaks remain and each new file needs its own guard.
 Blocked: Destin's choice of A, B or C.
 
