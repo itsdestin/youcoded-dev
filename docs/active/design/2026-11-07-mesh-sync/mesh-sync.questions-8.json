@@ -1,0 +1,194 @@
+{
+ "title": "Your chats on every device — round 8: the last four choices",
+ "key": "mesh-sync-questions-8",
+ "out": "mesh-sync.questions-8.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "What moves with a chat",
+   "intro": "Measured on your desktop: a chat is its lines, plus a small folder beside it. The lines already hold every helper's task and its final report. The folder holds each helper's step-by-step working file (1 to 2 MB each), long outputs the assistant saved to reread, and the chat's plan and to-do list. Separately, the assistant has a setup that belongs to the device, not to any chat: skills, plugins, connected tools and your global instructions."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "An open chat",
+   "path": "A chat continued on a second device",
+   "headline": "How much of a chat's folder should travel with it?",
+   "today": "Only the chat's lines sync. Helper working files, saved outputs, the plan and the to-do list stay on the device that made them. Helper files are 8.4 GB on your desktop, half of everything stored.",
+   "problem": "A chat continued elsewhere without its folder still has every helper's final report, but the assistant cannot send a helper a follow-up, cannot reread a saved output, and loses the plan it was following. You called that lost work.",
+   "proposal": "Under every option, the rule for what belongs to a chat is by location: whatever sits in that chat's own folder. Documents inside a project travel as project files, already decided. Pasted images and undo history are dropped, as you said was fine.",
+   "options": [
+    {
+     "id": "recent-complete",
+     "label": "Recent chats complete everywhere; older chats fetch their folder when opened",
+     "recommended": true,
+     "pros": [
+      "A chat used in the last 48 hours is whole on every device, so switching devices mid-work loses nothing.",
+      "A phone holds megabytes, not 8.4 GB.",
+      "Matches the relay's 48 hours, so there is one time rule to remember."
+     ],
+     "cons": [
+      "Opening an older chat on another device waits a moment while its folder arrives.",
+      "If the only device holding an old chat's folder is off, you can continue with the helpers' reports only. The notice says so before you continue."
+     ]
+    },
+    {
+     "id": "everything-everywhere",
+     "label": "Every chat's folder on every device, always",
+     "pros": [
+      "Nothing is ever fetched late; every chat is whole everywhere, even offline."
+     ],
+     "cons": [
+      "Every device, phones included, stores the full 8.4 GB and growing.",
+      "A new device's first sync takes far longer."
+     ]
+    },
+    {
+     "id": "lines-only",
+     "label": "Lines only; the folder stays where it was made",
+     "pros": [
+      "Smallest and simplest."
+     ],
+     "cons": [
+      "The lost work you described: no helper follow-ups, no saved outputs, no plan after a switch."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "The assistant's setup",
+   "path": "A chat continued on a device with a different setup",
+   "headline": "Should keeping skills, plugins and connected tools the same on every device be part of this work?",
+   "today": "The setup is copied to a cloud backup once a day and never brought back down. Each device has whatever you installed on it.",
+   "problem": "A chat that used a skill on the desktop moves to a phone without it. The assistant there cannot use that skill, and may behave differently because your global instructions differ too.",
+   "proposal": "Under every option, the Continue here notice names what this device lacks, as you already decided.",
+   "options": [
+    {
+     "id": "separate-card",
+     "label": "A separate card, built after chats sync",
+     "recommended": true,
+     "pros": [
+      "Chats on every device arrives sooner and with less risk.",
+      "The setup has hard cases of its own that deserve their own questions: a plugin that cannot run on a phone, and sign-ins for connected tools, which should not be copied around lightly."
+     ],
+     "cons": [
+      "Until that card is built you install skills on each device yourself, and a moved chat can be missing some."
+     ]
+    },
+    {
+     "id": "in-this-design",
+     "label": "Part of this design",
+     "pros": [
+      "The full promise from day one: every device behaves the same."
+     ],
+     "cons": [
+      "Roughly doubles the size of this work, and adds several more rounds of questions before anything is built."
+     ]
+    },
+    {
+     "id": "never",
+     "label": "Leave setups separate for good",
+     "pros": [
+      "Each device stays exactly as you set it up; nothing installs itself."
+     ],
+     "cons": [
+      "A moved chat keeps hitting missing skills forever."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "What the new system replaces",
+   "intro": "Two older ideas overlap with the new system. Each question asks whether it stays."
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Settings, Remote access; and the phone's Connect to a computer screen",
+   "headline": "What should happen to today's remote access?",
+   "today": "The phone app or a web browser can open one computer's whole YouCoded: its chats, its settings, its files, everything on that computer's screen. It works only through Tailscale, and one computer at a time.",
+   "problem": "The new system gives every device every chat without Tailscale. Keeping both means two ways to reach a chat from the phone, with different rules and different screens.",
+   "proposal": "Pick one.",
+   "options": [
+    {
+     "id": "replace-keep-browser",
+     "label": "Replace it inside the apps; keep the open-in-a-browser view",
+     "recommended": true,
+     "pros": [
+      "One way to reach chats in the apps, with no Tailscale and no Connect screen.",
+      "A browser on a borrowed computer can still open one of your devices, and that is also how you look inside a super-host.",
+      "Less old code to keep working."
+     ],
+     "cons": [
+      "The phone app shows its own settings and files plus all your chats, no longer the computer's whole screen. Changing a setting on the desktop from the phone would need the browser view.",
+      "The browser view still needs Tailscale, as today."
+     ]
+    },
+    {
+     "id": "keep-both",
+     "label": "Keep remote access as it is, beside the new system",
+     "pros": [
+      "Nothing you use today goes away."
+     ],
+     "cons": [
+      "Two ways to do nearly the same thing; users must learn which is which.",
+      "Both must be kept working and secure."
+     ]
+    },
+    {
+     "id": "replace-all",
+     "label": "Replace it everywhere, the browser view too",
+     "pros": [
+      "Simplest: one system and nothing else."
+     ],
+     "cons": [
+      "No way to use YouCoded from a device without the app installed.",
+      "A super-host would have no screen to look at."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Hosting it yourself",
+   "path": "Backup & Sync in settings, the relay choice",
+   "headline": "Should users be able to run a relay of their own that is not a super-host?",
+   "today": "Neither exists yet. You approved the super-host: one of your own devices at home, always on, holding everything, able to read your chats because it is yours. Our relay holds locked lines it cannot read.",
+   "problem": "A self-run relay would be a third thing: a copy of our relay on the user's own account or machine, blind like ours. It adds a setting and an install path, for a job the super-host already does.",
+   "proposal": "Under both options, using no keeper at all still works: your devices catch each other up whenever two are on together.",
+   "options": [
+    {
+     "id": "drop",
+     "label": "No. Self-hosting means running a super-host",
+     "recommended": true,
+     "pros": [
+      "One thing to explain and one thing to set up.",
+      "Fewer settings: use the YouCoded relay, or your super-host, or neither."
+     ],
+     "cons": [
+      "A user with no always-on device at home, who also does not want our relay, has no middle option.",
+      "Nobody can run a blind relay for family or friends; a super-host can read what it holds, so it only suits its owner."
+     ]
+    },
+    {
+     "id": "keep",
+     "label": "Yes. Offer it as a third choice",
+     "pros": [
+      "Covers users who want nothing of ours and have no home device to leave on.",
+      "One person could run a blind relay for several people."
+     ],
+     "cons": [
+      "A third thing to build, test and explain, used by very few.",
+      "Setting it up is technical: an account with a hosting company and a guided install."
+     ]
+    }
+   ]
+  }
+ ]
+}
