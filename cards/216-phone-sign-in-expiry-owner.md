@@ -12,8 +12,8 @@ vision: social.friends.signin, social.friends.signout
 work: session/security-server-batch
 ---
 Progress
-Done: Both notices built on session/security-server-batch (not landed): an expired phone stays in the Remote access device list as a faded row reading 'Signed out after 90 days unused' with Remove; and a notice with 'Sign in again' when the app signs you out of your account by itself (all four code paths, now logged too).
-Next: Destin reviews the before/after deck (sign-out-notices) before they land. Still owed by hand: one real phone sign-in on a released build.
+Done: Landed 2026-11-10 (youcoded#724, unreleased): an expired phone stays in the Remote access device list as a faded row reading 'Signed out after 90 days unused' with Remove; a notice with 'Sign in again' appears when the app signs you out of your account by itself (four code paths, all logged). Approved on the sign-out-notices review deck.
+Next: Ships with the next app release. Known limits: the notice lasts 30 seconds with no close button; each open window shows its own; a re-paired phone shows beside its old faded row until Remove. Still owed by hand: one real phone sign-in on a released build. Leftovers from #55 below are untouched.
 Blocked: nothing.
 
 Chats
