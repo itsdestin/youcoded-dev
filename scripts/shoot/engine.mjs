@@ -313,8 +313,9 @@ async function makeTab(b, targetId) {
       // WHY (2026-11-11): a tab is reused from screen to screen and the app remembers, per tab, which chat it was on
       // (desktop-place.ts, card #146). A screen that opened another chat left the next screens in this tab on that
       // chat: 9 file and project screens went "no opener registered" in the full check and passed alone. Each screen
-      // starts with the tab's own memory emptied, once, here (not on every load: a journey may reload on purpose).
-      await evaluate(`try{sessionStorage.clear()}catch{}`, 5000).catch(() => {});
+      // starts with that one memory emptied, once, here (not on every load: a journey may reload on purpose).
+      // Only that one key: emptying everything made two different screens draw the same picture (chat = dev/toast#none).
+      await evaluate(`try{sessionStorage.removeItem('youcoded-desktop-place')}catch{}`, 5000).catch(() => {});
       if (themeScript) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScript });
       const effects = reducedEffects ? `localStorage.setItem('youcoded-reduced-effects','1');` : '';
       themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});${effects}}catch{}` })).identifier;
