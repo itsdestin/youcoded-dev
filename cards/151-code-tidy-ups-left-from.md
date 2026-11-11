@@ -12,7 +12,7 @@ area: Developer tools
 side: behind
 ---
 Progress
-Done: Items 1-2 shipped earlier. On branch session/workspace-tools-batch (not merged) (app): item 3 - three copied status-reading loops are one tested helper, behaviour identical; item 4 - one rule decides whether two folder paths are the same folder (capital letters ignored on Windows and Mac only), used everywhere including add, rename and describe. Only visible effect: on Linux, 'Docs' and 'docs' are now two folders, not one.
+Done: Items 1-2 shipped earlier. Landed on master 2026-11-10 (app PR #727): item 3 - three copied status-reading loops are one tested helper, behaviour identical; item 4 - one rule decides whether two folder paths are the same folder (capital letters ignored on Windows and Mac only), used everywhere including add, rename and describe. Only visible effect: on Linux, 'Docs' and 'docs' are now two folders, not one.
 Next: Destin 2026-11-10: item 5 DELETED - the unused plugin-settings plumbing, including the dead missing-settings check (app PR #727, commit e325d7e4c; a test fails if it grows back). Items 1 and 2 remain.
 Blocked: 
 
