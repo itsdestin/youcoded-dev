@@ -69,10 +69,12 @@ TIP = {
   'today.bugs.count': 'How many bugs on the roadmap are marked top priority or due in the next release.',
   'today.startfix': 'Starts a session with this bug\'s roadmap entry and a picture of the screen pasted in.',
   'today.notbug': 'Closes this bug with a note saying why it no longer happens.',
-  'today.release': 'What has changed since the last version people downloaded. Click to show or hide it.',
-  'today.relgroup': 'Changes people will notice in this part of the app.',
-  'today.allchanges': 'Opens the full list of all 67 changes, each with pictures from before and after.',
-  'today.testrelease': 'Builds a test version for a few people to try before everyone gets it.',
+  'today.release': 'Everything merged since the last official release, worked out fresh each time this page opens: what people would get if a release went out today. Click to show or hide it.',
+  'rel.fresh': 'When the list was last checked against GitHub, where the app\'s code lives. If GitHub cannot be reached it says so and shows the last copy this computer saved.',
+  'rel.written': 'Lines someone wrote by hand in the changelog for the next release.',
+  'rel.more': 'This change is linked to more work items than fit here. Open the first ones to find the rest.',
+  'rel.groupcount': 'How many changes since the last release are in this group.',
+  'today.allchanges': 'Shows every change in each group, not just the first few. Press again to fold them.',
 
   # ---------------------------------------------------------------- screens: the control row
   'scr.search': 'Type part of a screen\'s name, where it is, or what it does.',

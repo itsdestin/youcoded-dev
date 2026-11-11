@@ -71,22 +71,9 @@ LEFTOVERS = dict(
   worktrees=['compaction-handoff-20260922 (Sept 23)','model-picker-tags (Sept 11)','pages-empty-before (Sept 23)','plugin-project-controls (Sept 24)',
              'specialists-plans-wrapup (Sept 26)','theme-plugin-update (Sept 23)','specialists-plans-decisions (Sept 26)','plans-r12-after (Sept 19)','plans-r12-before (Sept 18)','specialists-plans (Sept 26)'],
 )
-BUGS = [  # from the roadmap's next-release and top-priority entries; it records no reporter
-  dict(title='Searching a big project stops early, for file names and for text inside files', place='Projects', src='top priority, confirmed, checked Sept 18', screens=['projects/files/filter']),
-  dict(title='Error messages still guess at causes in many places', place='Chat', src='top priority, confirmed, checked Sept 11, full list of messages attached', screens=['chat#openrouter-key-rejected','settings/sync#auth-error']),
-  dict(title='Mac downloads may open as "broken": nothing is signed or notarized', place='Getting started', src='top priority', screens=['first-run']),
-  dict(title='After a wide "Always allow", a later command that only looks similar may run without asking', place='Chat', src='top priority, in the assistant', screens=['settings/assistant/permissions','chat#bubbles-approval']),
-  dict(title='Gemma models download with no licence notice', place='Settings', src='in local models', screens=['settings/assistant/local']),
-  dict(title='The settings screen exists twice, once for desktop and once for phone', place='Settings', src='in the interface, blocked on simplification', screens=['settings']),
-]
-RELEASE = dict(version='v1.3.0', date='Sept 20', beta='Sept 19', merges=67, groups=[
-  ('Chat', ['Switching between chats is faster, and many open tabs no longer slow things down','Verified chat performance fixes','Scrolling feels right again; a chat no longer vanishes; a stuck drag in the switcher is fixed','Custom words for voice dictation; voice reliability','Oversized images are handled safely','Picking up a conversation again, and what a helper agent is doing, both show properly'], ['chat','chat/switcher','chat/resume','chat/status-bar']),
-  ('Pages', ['Pages can connect to Home Assistant'], ['pages/library/connections']),
-  ('Settings and account', ['Sign in with the official ChatGPT flow','The buddy can be hidden from the tray','A cleaner minimal-chrome theme; the Mac dock icon; a sudo prompt that explains itself'], ['settings/account','settings/buddy','settings/appearance']),
-  ('Devices and sync', ['Sync repairs itself more robustly and explains what it did','Sync watches only what it should'], ['settings/sync']),
-  ('Installing', ['Windows builds are signed','Windows developer mode is no longer required','Linux catalog screenshots'], ['first-run']),
-  ('Behind the scenes', ['One shared engine for desktop and Android','Startup speed; an always-on hitch recorder','Brand identity and the website','Tools for reviewing screens, doc clean-ups, a shorter changelog'], []),
-])
+# WHY no BUGS or RELEASE tables any more (Destin, 2026-11-11): both were typed in from a roadmap and an old release that
+# no longer match anything. Bugs are work items now, and the release section is worked out each time the page is drawn
+# (scripts/release-view.mjs, drawn by release_tab.py).
 SUGGEST = dict(
   title='Finish "Project skills & tools"',
   why='It is the most finished unfinished thing: a top-priority item, changes waiting for review since Sept 24, tests passing, waiting only on your review of the screens. Low effort for a feature users will feel.',
@@ -159,7 +146,6 @@ QUESTIONS = [  # question -> screen-name patterns that light up. Worked out by r
   ('Where do marketplace add-ons show up?', ['marketplace','library','chat/skills','chat/specialists','chat/commands','settings/assistant/specialists','pages/library']),
   ('Where are permissions set or asked?', ['settings/assistant/permissions','chat/first-time-warning','chat#bubbles-approval','chat#bubbles-edit-approval','projects/files/folder/Locked','pages/library/connections','marketplace/detail/connection','settings/account/connections']),
   ('What is being worked on right now?', None),   # from EFFORTS
-  ('What changed since the last release?', None), # from RELEASE
   ('Which screens have a phone version?', ['#phone']),
 ]
 BLOCKS = [  # building blocks x places. 2 = set here, 1 = used here, 0 = not present. From the repo check, first draft.
@@ -202,11 +188,6 @@ def matches(n, pats):
     return any((pat.startswith('#') and pat in n) or n == pat or n.startswith(pat.rstrip('/') + '/') or n.startswith(pat + '#') or (pat.endswith('/') and n.startswith(pat)) for pat in pats)
 def work_on(n):
     return [e for e in EFFORTS if e['screens'] and matches(n, e['screens'])]
-light = {}
-for q, pats in QUESTIONS:
-    if pats is None and q.startswith('What is being'): pats = sorted({s for e in EFFORTS for s in e['screens']})
-    if pats is None: pats = sorted({s for g in RELEASE['groups'] for s in g[2]})
-    light[q] = [n for n in names if matches(n, pats)]
 
 E = html.escape
 from tooltips import TIP, TRACK_SHORT
@@ -257,29 +238,21 @@ if LIVE_CARDS:
 else:
     today = ttab.render(EFFORTS, DEV_ONLY, LEFTOVERS, SUGGEST, pic, T, sechead, fold)
 
-if not LIVE_CARDS:  # WHY: in the live page every bug is a work card already
-    b = []
-    for x in BUGS:
-        b.append(f'''<div class="row">{pic(x['screens'])}<div class="body"><div class="t-sm">{E(x['title'])}</div><div class="hint wrap">In {E(x['place'])} · {E(x['src'])}</div></div>
-          <div class="acts">{btn('Start a fix','today.startfix')}{btn('Not a bug anymore','today.notbug')}</div></div>''')
-    today.append(fold('Bugs users hit', len(BUGS), 'From the roadmap, which does not record who reported them.', ''.join(b), 'today.bugs', 'today.bugs.count'))
-
-r = ['<div class="relgrid">']
-for g, items, scr in RELEASE['groups']:
-    r.append(f'<div class="card inset"><div class="eyebrow"><span data-tip="{T("today.relgroup")}">{E(g)}</span></div><ul class="t-xs">' + ''.join(f'<li>{E(i)}</li>' for i in items) + '</ul></div>')
-r.append(f'</div><div class="t-xs muted note">The most recent test version went out {E(RELEASE["beta"])}.</div><div class="acts right">{btn("See all 67 changes","today.allchanges")}{btn("Start a test release","today.testrelease")}</div>')
-_rel_hint = f'{RELEASE["version"]} went out {RELEASE["date"]}; {RELEASE["merges"]} changes have landed since. What users will notice.'
+# WHY (Destin, 2026-11-11): the release section comes from the facts the program worked out for this drawing; without
+# them (the page opened as a plain file) it says so rather than showing numbers typed in once.
+import release_tab as rtab
+_rel = _payload.get('release') if LIVE_CARDS else {'ok': False, 'reason': 'The release list is only worked out when the page is run from the workspace (node scripts/manage.mjs) or inside YouCoded.'}
 if LIVE_CARDS:
     # WHY: the live page draws every section in one group look (2026-10-16), this one included
-    today.append(ltab.group(T, 'release', 'Since the last release', _rel_hint, 'today.release', 'today.release', '', ''.join(r), tick=False))
+    today.append(ltab.group(T, 'release', 'Since the last release', rtab.hint(_rel), 'today.release', 'rel.groupcount', '' if rtab.count(_rel) is None else rtab.count(_rel), rtab.body(_rel, T), tick=False))
 else:
-    today.append(fold('Since the last release', None, _rel_hint, ''.join(r), 'today.release'))
+    today.append(fold('Since the last release', None, rtab.hint(_rel), rtab.body(_rel, T), 'today.release'))
 
 # ----------------------------------------------------------------------------- SCREENS
 # WHY cut (2026-10-13, Destin: "just wayyy too many controls"): screens_tab.py now draws one
 # control row and the picture popup; this only feeds it the page's data.
 QPATS = [(q, pats) for q, pats in QUESTIONS if pats and not pats[0].startswith('#')]
-REL_PATS = sorted({s for g in RELEASE['groups'] for s in g[2]})
+REL_PATS = []  # WHY empty: the Screens list used to light up screens from the typed release list; nothing reads it now
 SGROUPS = stab.build(HERE, names, place_of, DESC, EFFORTS, REL_PATS, QPATS, matches)
 app = [stab.head_controls(TIP), '<p class="t-xs muted scount" id="scount"></p><div id="sbody"></div>']
 cols = ['Chat','Projects','Pages','Marketplace','Settings','Devices & sync']
@@ -357,7 +330,7 @@ CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9
 # WHY the header holds only the tabs, the theme, the Draft tag and the date (2026-10-13 cut): every
 # other control moved into the tab it belongs to, or was removed.
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
-<style>{CSS}{stab.CSS}{VCSS}{ttab.CSS}{ltab.CSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}{uic.CSS}</style></head><body>
+<style>{CSS}{stab.CSS}{VCSS}{ttab.CSS}{ltab.CSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}{uic.CSS}{rtab.CSS}</style></head><body>
 <div class="screen">
 <header class="band"><div class="bl"><span class="badge draft" tabindex="0" data-tip="{T('draft')}">Draft ⓘ</span></div>
 <div class="btitle">{ICON_HOME}YouCoded</div>
@@ -414,6 +387,7 @@ $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 {ttab.JS}
 {ltab.JS}
 {uic.JS}
+{rtab.JS}
 </script></body></html>'''
 page = page.replace('<span class="chev" aria-hidden="true">›</span>', CHEV).replace('<span class="chev">›</span>', CHEV)
 # WHY (Destin, 2026-10-16, plan deck Q-7/Q-8): the same approved page, made to run as his own YouCoded page

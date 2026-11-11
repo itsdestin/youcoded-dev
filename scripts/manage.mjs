@@ -24,6 +24,7 @@ import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import os from 'node:os';
+import { releaseFacts } from './release-view.mjs';
 import { loadCards, neededBy, setStage, deleteCards, combineCards, STAGES, STAGE_WORD } from './cards.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -37,15 +38,19 @@ const TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg'
 
 /** Build the full page from the cards. Cached until a card file changes. */
 let cache = { key: '', html: '' };
-export function buildPage(root, { pageMode = false, tidy = null } = {}) {
+export function buildPage(root, { pageMode = false, tidy = null, release } = {}) {
   const dir = path.join(root, 'cards');
-  const key = (pageMode ? 'page|' + JSON.stringify(tidy) + '|' : '') + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
+  // WHY read here, before the cache check (Destin, 2026-11-11): "Since the last release" must be worked out every time the
+  // page is drawn, so a new release tag or a newly merged change can never hide behind a cached page. `release` is passed
+  // in by the tests; otherwise it is read from the app folder (a tiny GitHub check, then git).
+  release ??= releaseFacts(path.join(workspaceOf(root), 'youcoded'), loadCards(root));
+  const key = 'rel|' + JSON.stringify(release) + '|' + (pageMode ? 'page|' + JSON.stringify(tidy) + '|' : '') + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
   if (key === cache.key && cache.html) return cache.html;
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'manage-page-'));
   try {
     // WHY no guessed "Working" in page mode (Destin, plan deck S-3): inside YouCoded the page asks the app which
     // chats are open right now, so a branch saved in the last day must not pass for a chat that is working
-    fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify({ ...cardsPayload(root, { guessWorking: !pageMode }), ...(tidy ? { tidy } : {}) }));
+    fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify({ ...cardsPayload(root, { guessWorking: !pageMode }), ...(tidy ? { tidy } : {}), release }));
     execFileSync('python3', [path.join(PAGE_DIR, 'build.py'), '--cards-json', path.join(tmp, 'cards.json'), '--out', path.join(tmp, 'page.html'), ...(pageMode ? ['--page-mode'] : [])], { cwd: PAGE_DIR, stdio: ['ignore', 'pipe', 'pipe'] });
     cache = { key, html: fs.readFileSync(path.join(tmp, 'page.html'), 'utf8') };
     return cache.html;

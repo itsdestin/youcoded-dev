@@ -22,7 +22,7 @@ HINT = {'polish': 'Built, and waiting on you: review it, ask for polish, or merg
         'build': 'Chats are building these.',
         'planning': 'Agreed, ready to plan the build. Planning items never overlap.',
         'explore': 'Not settled yet. These may overlap or contradict each other; combine them when one is ready to plan.',
-        'merged': 'In master; ships with the next release.'}
+        'merged': 'Finished and in master. Some already went out in a release; "Since the last release" shows what is going out next.'}
 
 
 def next_line(c):
@@ -71,8 +71,10 @@ def group(T, key, title, hint, tip, ctip, count, body, open_=False, tick=True):
     tools right): the heading row itself folds the group, its tools sit at the right, cards follow."""
     # WHY a real button (Destin, 2026-10-16: "i hate clickable elements that are bare text")
     tools = (f'<button class="btn sm" data-tickall="{key}" data-tip="Ticks every item shown in this group.">Tick all</button>' if tick and count else '')
+    # WHY no count when it is '' (2026-11-11): the release section has none while its facts cannot be read; an empty pill would look broken
+    cnt = f'<span class="cnt" data-tip="{T(ctip)}">{count}</span>' if count != '' else ''
     return (f'<details class="lsec lgroup" data-stage="{key}"{" open" if open_ else ""}><summary class="lghead" data-tip="{T(tip)}">'
-            f'<span class="gtext"><span class="gh">{E(title)}<span class="cnt" data-tip="{T(ctip)}">{count}</span></span><span class="gdesc">{E(hint)}</span></span>'
+            f'<span class="gtext"><span class="gh">{E(title)}{cnt}</span><span class="gdesc">{E(hint)}</span></span>'
             f'<span class="lgtools">{tools}<span class="chev" aria-hidden="true">›</span></span></summary><div class="lgbody">{body}</div></details>')
 
 
@@ -142,7 +144,7 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic, tidy=None):
     # WHY exploration and merged appear here too (2026-10-16): bulk edit has to reach every item, and exploring items are the ones most often combined
     out.append(group(T, 'explore', 'Preliminary exploration', 'Not settled yet. These may overlap or contradict each other; combine them when one is ready to plan.', 'today.explore', 'today.explore.count', len(by['explore']), cards_of('explore')))
     if by['merged']:
-        out.append(group(T, 'merged', 'Merged', 'In master; ships with the next release.', 'today.merged', 'today.merged.count', len(by['merged']), cards_of('merged')))
+        out.append(group(T, 'merged', 'Merged', 'Finished and in master. Some already went out in a release; "Since the last release" shows what is going out next.', 'today.merged', 'today.merged.count', len(by['merged']), cards_of('merged')))
     n_tidy, tidy_html = live_tidy(tidy) if tidy is not None else tt.tidy(leftovers, dev_only, fold, [c['id'] for c in cards], raw=True)
     out.append('<p class="t-xs muted lnone" id="lnone" hidden>Nothing matches.</p>')
     # ---- the bulk bar (Destin, 2026-10-15: bulk edit in v1)
