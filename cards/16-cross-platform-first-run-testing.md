@@ -12,7 +12,7 @@ side: behind
 vision: everywhere.firstrun.setup
 ---
 Progress
-Done: On branch session/workspace-tools-batch (not merged): the Mac test machine's installer loader no longer deletes files, handles file names with spaces, and refuses instead of guessing when two installers match (tested with stand-ins only; real proof needs a Mac test-machine start).
+Done: Landed on master 2026-11-10 (workspace PR #356): the Mac test machine's installer loader no longer deletes files, handles file names with spaces, and refuses instead of guessing when two installers match (tested with stand-ins only; real proof needs a Mac test-machine start).
 Next: Needs test machines started, not done overnight: first-run checks of the .deb and .rpm on the Ubuntu and Fedora test computers (scriptable); a saved ready state for the Mac. Needs Destin: taskbar icon check, first push from a computer without GitHub's tool, the Linux app catalog reply (#8053). No Arch test computer exists.
 Blocked: nothing for the scripted part; Destin's hands for the rest.
 
