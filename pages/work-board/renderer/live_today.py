@@ -95,12 +95,13 @@ def live_tidy(t):
     notes = [c for c in idle if c.get('notesOnly')]
     work = [c for c in idle if not c.get('notesOnly')]
     if work:
-        rows.append(row(f'{len(work)} copies idle 2+ weeks with unsaved or unmerged work, and no item',
+        # WHY the singular (2026-11-11): the board read "1 copies idle"
+        rows.append(row(f'{len(work)} cop{"y" if len(work) == 1 else "ies"} idle 2+ weeks with unsaved or unmerged work, and no item',
                         ', '.join(f'{c["name"]} (last {c["last"]})' for c in work),
                         'Save as backup branches', "Starts a chat that saves each copy's changes as a backup branch, so they can be cleaned up safely.",
                         'Save each of these idle copies of work as a backup branch on GitHub, then show me what each held so I can decide: ' + ', '.join(c['name'] for c in work) + '.'))
     if notes:
-        rows.append(row(f'{len(notes)} copies that hold only notes or research', ', '.join(c['name'] for c in notes),
+        rows.append(row(f'{len(notes)} cop{"y" if len(notes) == 1 else "ies"} that hold{"s" if len(notes) == 1 else ""} only notes or research', ', '.join(c['name'] for c in notes),
                         'Keep the notes, close the copies', 'Starts a chat that keeps the notes in the workspace and closes the copies.',
                         'These copies of work hold only notes or research: ' + ', '.join(c['name'] for c in notes) + '. Keep the notes in the workspace and close the copies.'))
     if not rows:
@@ -145,7 +146,8 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic, tidy=None):
     out.append(group(T, 'explore', 'Preliminary exploration', 'Not settled yet. These may overlap or contradict each other; combine them when one is ready to plan.', 'today.explore', 'today.explore.count', len(by['explore']), cards_of('explore')))
     if by['merged']:
         out.append(group(T, 'merged', 'Merged', 'Finished and in master. Some already went out in a release; "Since the last release" shows what is going out next.', 'today.merged', 'today.merged.count', len(by['merged']), cards_of('merged')))
-    n_tidy, tidy_html = live_tidy(tidy) if tidy is not None else tt.tidy(leftovers, dev_only, fold, [c['id'] for c in cards], raw=True)
+    # WHY no snapshot fallback (2026-11-11): the old fallback was a hand-typed list of leftovers from Oct 12, shown as if current
+    n_tidy, tidy_html = live_tidy(tidy) if tidy is not None else ('', '<p class="t-xs muted">The leftover-work check could not be run here, so nothing is shown rather than an old list.</p>')
     out.append('<p class="t-xs muted lnone" id="lnone" hidden>Nothing matches.</p>')
     # ---- the bulk bar (Destin, 2026-10-15: bulk edit in v1)
     out.append('''<div class="lbulk layer" id="lbulk" hidden role="toolbar" aria-label="Edit ticked items"><span class="n" id="lbn"></span>

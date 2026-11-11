@@ -51,7 +51,7 @@
 /* ---- groups on a full screen: 'h2 text-base font-medium text-fg' + 'text-xs text-fg-muted mt-0.5'
         (LibraryScreen:350, TabHeading); 16px between groups, 8px between rows (decisions SP) ---- */
 .sec{margin:0 0 24px}
-.sechead{display:flex;align-items:flex-start;gap:12px;margin:0 0 8px;padding:0 4px}
+.sechead{display:flex;align-items:flex-start;gap:12px;margin:0 0 8px;padding:0 0 0 4px} /* WHY no right padding (2026-11-11): the Show all button sat 4px short of the right edge of the cards under it */
 .sechead .gtext{flex:1;min-width:0}
 .gh{font-size:16px;font-weight:500;color:var(--fg);margin:0}
 .gdesc{font-size:12px;color:var(--fg-muted);margin:2px 0 0}
@@ -144,3 +144,10 @@ body:has(.panel.open) .cc-main{padding-right:416px}
 .shotbtn{padding:0;border:0;background:none;cursor:pointer;border-radius:var(--radius-md);flex:none;display:block;transition:transform 200ms steps(5)}
 @media (hover:hover){.shotbtn:hover{transform:scale(1.02)}} .shotbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .shotbtn .shot{display:block}
+
+/* WHY (2026-11-11, Destin: "some of the hover effects just feel a little broken"): an audit of every clickable class found these with no
+   hover or no keyboard-focus ring (guide: every clickable thing answers hover, press and focus). Hover sits behind (hover:hover). */
+button:focus-visible,summary:focus-visible,select:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sstrip button,.vshot,.lpick{transition:background-color 120ms steps(4),border-color 120ms steps(4)}
+@media (hover:hover){.sstrip button:hover,.vshot:hover{border-color:var(--edge-strong)} .lpick:hover{background:var(--inset)}}
+.sstrip button:active,.vshot:active{border-color:var(--fg-muted)} .lpick{border-radius:var(--radius-md)}

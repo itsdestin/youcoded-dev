@@ -77,7 +77,7 @@ def body(rel, T):
             det = f'<div class="t-2xs muted reldetail">{E(c["detail"])}</div>' if c.get('detail') else ''
             extra = i >= SHOW
             hidden += extra
-            lis.append(f'<li{" class=\"relextra\" hidden" if extra else ""}><span class="reltext">{E(c["text"])}</span>{chips}{det}</li>')
+            lis.append(f'<li{" class=\"relextra\" hidden" if extra else ""}><span class="reltext">{E(c["text"])}</span> {chips}{det}</li>')
         out.append(f'<div class="card inset"><div class="eyebrow"><span data-tip="{E(g["hint"])}">{E(g["title"])}</span> <span class="cnt" data-tip="{T("rel.groupcount")}">{len(g["changes"])}</span></div><ul class="t-xs">{"".join(lis)}</ul></div>')
     out.append('</div>')
     if hidden:

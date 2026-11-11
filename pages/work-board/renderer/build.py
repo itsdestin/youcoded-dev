@@ -253,8 +253,9 @@ else:
 # control row and the picture popup; this only feeds it the page's data.
 QPATS = [(q, pats) for q, pats in QUESTIONS if pats and not pats[0].startswith('#')]
 REL_PATS = []  # WHY empty: the Screens list used to light up screens from the typed release list; nothing reads it now
-SGROUPS = stab.build(HERE, names, place_of, DESC, EFFORTS, REL_PATS, QPATS, matches)
-app = [stab.head_controls(TIP), '<p class="t-xs muted scount" id="scount"></p><div id="sbody"></div>']
+# WHY no efforts in the live board (2026-11-11): EFFORTS is the typed Oct 12 list; it made tiles say "being changed" and the popup list work last touched 30 days ago
+SGROUPS = stab.build(HERE, names, place_of, DESC, [] if LIVE_CARDS else EFFORTS, REL_PATS, QPATS, matches)
+app = [stab.head_controls(TIP, work=not LIVE_CARDS), '<p class="t-xs muted scount" id="scount"></p><div id="sbody"></div>']
 cols = ['Chat','Projects','Pages','Marketplace','Settings','Devices & sync']
 BDOT = {2: 'bdot.2', 1: 'bdot.1', 0: 'bdot.0'}
 bt = ['<p class="t-xs muted">Filled dot: you set it here. Hollow: it is used here. A first draft; it will be built properly later.</p><div class="tablewrap"><table class="blocks"><thead><tr><th></th>' + ''.join(f'<th><span data-tip="{T("scr.blocks.col")}">{E(c)}</span></th>' for c in cols) + '<th></th></tr></thead><tbody>']
@@ -329,12 +330,14 @@ ICON_MAP=_ic('<path d="M9 4l-6 3v13l6-3 6 3 6-3V4l-6 3z"/><path d="M9 4v13M15 7v
 CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span>'
 # WHY the header holds only the tabs, the theme, the Draft tag and the date (2026-10-13 cut): every
 # other control moved into the tab it belongs to, or was removed.
+import datetime as _dt
+_drawn = _dt.datetime.now().strftime('%b %-d, %-I:%M %p')
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
 <style>{CSS}{stab.CSS}{VCSS}{ttab.CSS}{ltab.CSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}{uic.CSS}{rtab.CSS}</style></head><body>
 <div class="screen">
 <header class="band"><div class="bl"><span class="badge draft" tabindex="0" data-tip="{T('draft')}">Draft ⓘ</span></div>
 <div class="btitle">{ICON_HOME}YouCoded</div>
-<div class="br"><span class="muted t-2xs asof" data-tip="{T('asof')}">Facts as of Oct 12</span><div class="bandpill" data-tip="{T('theme')}"><select id="theme" aria-label="Theme" data-tip="{T('theme')}"><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="creme">Creme</option></select></div></div></header>
+<div class="br"><span class="muted t-2xs asof" data-tip="{T('asof')}">Drawn {_drawn}</span><div class="bandpill" data-tip="{T('theme')}"><select id="theme" aria-label="Theme" data-tip="{T('theme')}"><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="creme">Creme</option></select></div></div></header>
 <div class="screen-body"><div class="pane">
 <div class="panehead hline" id="panehead"><div class="tabs" role="tablist" aria-label="Views"><button role="tab" aria-selected="true" data-view="today" data-tip="{T('tab.today')}">{ICON_TODAY}Today</button><button role="tab" aria-selected="false" data-view="app" data-tip="{T('tab.screens')}">{ICON_SCREENS}Screens <span class="count" data-tip="{T('tab.screens.count')}">{len(SGROUPS)}</span></button><button role="tab" aria-selected="false" data-view="vision" data-tip="{T('tab.vision')}">{ICON_MAP}Big picture</button></div></div>
 <div class="panescroll fadescroll" id="scroller"><main class="cc-main">
@@ -380,7 +383,7 @@ document.addEventListener('keydown',e=>{{if(e.key==='Escape'&&!(typeof DCUR!=='u
 $$('[data-view]').forEach(b=>b.onclick=()=>{{$$('[data-view]').forEach(x=>x.setAttribute('aria-selected',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.view));closePanel();$('#scroller').scrollTop=0;$$('#panehead .lensbar').forEach(l=>l.hidden=l.dataset.view!==b.dataset.view);fades()}});
 $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 </script><script>
-{stab.JS % (json.dumps(SGROUPS), json.dumps([dict(title=e['title'], days=e['days']) for e in EFFORTS]), json.dumps({k: w for k, _, w in stab.KINDS}), json.dumps([p for p, _ in PLACES] + ['Other']), json.dumps(TIP))}
+{stab.JS % (json.dumps(SGROUPS), json.dumps([] if LIVE_CARDS else [dict(title=e['title'], days=e['days']) for e in EFFORTS]), json.dumps({k: w for k, _, w in stab.KINDS}), json.dumps([p for p, _ in PLACES] + ['Other']), json.dumps(TIP))}
 </script><script>
 {(VJS % (json.dumps(vision_nodes), json.dumps(STATUS_WORD)))}
 {bptab.JS}

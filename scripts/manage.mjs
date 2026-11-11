@@ -44,7 +44,7 @@ export function buildPage(root, { pageMode = false, tidy = null, release } = {})
   // page is drawn, so a new release tag or a newly merged change can never hide behind a cached page. `release` is passed
   // in by the tests; otherwise it is read from the app folder (a tiny GitHub check, then git).
   release ??= releaseFacts(path.join(workspaceOf(root), 'youcoded'), loadCards(root));
-  const key = 'rel|' + JSON.stringify(release) + '|' + (pageMode ? 'page|' + JSON.stringify(tidy) + '|' : '') + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
+  const key = 'rel|' + JSON.stringify(release) + '|' + (pageMode ? 'page|' : '') + 'tidy|' + JSON.stringify(tidy) + '|' + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
   if (key === cache.key && cache.html) return cache.html;
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'manage-page-'));
   try {
@@ -241,14 +241,20 @@ function readBody(req) {
   return new Promise((res, rej) => { let b = ''; req.on('data', d => { b += d; if (b.length > 1e6) req.destroy(); }); req.on('end', () => { try { res(JSON.parse(b || '{}')); } catch (e) { rej(e); } }); });
 }
 
-export function makeServer(root, { useGit = true } = {}) {
+/** Tidy up facts for the browser runner, the same ones the YouCoded page's program works out. WHY (2026-11-11): without them
+ *  the browser copy showed a hand-typed Oct 12 snapshot of leftover work as if it were today's. Imported late: the program imports this file. */
+async function tidyNow(root) {
+  try { const { tidyFacts } = await import('./work-items-program.mjs'); return tidyFacts(root, loadCards(root), { cacheScan: true }); } catch { return null; }
+}
+
+export function makeServer(root, { useGit = true, tidy = false } = {}) {
   return http.createServer(async (req, res) => {
     const send = (code, obj, type = 'application/json') => { res.writeHead(code, { 'content-type': type, 'cache-control': 'no-store' }); res.end(type === 'application/json' ? JSON.stringify(obj) : obj); };
     try {
       // WHY only 127.0.0.1 and same-origin posts: this server writes files; nothing else on the network or in another tab may drive it
       const origin = req.headers.origin;
       if (req.method === 'POST' && origin && origin !== `http://${req.headers.host}`) return send(403, { error: 'Refused: request came from another page.' });
-      if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) { if (useGit) pull(root); return send(200, buildPage(root), 'text/html; charset=utf-8'); }
+      if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) { if (useGit) pull(root); return send(200, buildPage(root, { tidy: tidy ? await tidyNow(root) : null }), 'text/html; charset=utf-8'); }
       if (req.method === 'GET' && !req.url.startsWith('/api/')) {
         // WHY the containment check: only files inside the page's own folder are served, never ../ outside it
         const rel = decodeURIComponent(req.url.split('?')[0]).replace(/^\/+/, '');
@@ -279,7 +285,7 @@ function main() {
   const argv = process.argv.slice(2);
   const opt = k => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : undefined; };
   const root = opt('--root') || execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
-  const srv = makeServer(root, { useGit: !argv.includes('--no-git') });
+  const srv = makeServer(root, { useGit: !argv.includes('--no-git'), tidy: true });
   srv.listen(Number(opt('--port') || 0), '127.0.0.1', () => console.log(`[manage] http://127.0.0.1:${srv.address().port}/`));
 }
 
