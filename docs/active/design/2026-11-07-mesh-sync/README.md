@@ -106,6 +106,12 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - In chat the same day: what happens past the 1 GB threshold needs fleshing out; the self-hosted keeper should be "its own fully self-contained youcoded instance/super-host or something like that".
 - All four are answered in chat and asked as choices in round 7. **Do not reply on document comments; answers go in chat or a deck** (Destin, 2026-11-10).
 
+### Round 6 (answered 2026-11-11)
+- Phone-hosted chat, screen off: the phone stays awake for each reply, plus an opt-in setting to exempt the app from battery limits. — D6 Q-3: picked "lock-plus-toggle".
+- Helper transcripts, NOT decided. — D6 Q-1: "idek what option A means or how that would work? the primary issue with helpers is that active sessions may rely on them and their transcripts to copmlete work, so syncing a conversation without its help transcripts would directly lead to significant lost work/effort."
+- Smaller pieces that travel, NOT decided. — D6 Q-2: "i think we're underthinkging/undersonsidering this. with option a, what would that actually look like for a typical session? how would we determine what consistutes a syncable plan vs any other normal document? i'm fine to drop images and such. just want to understand what a session/chat actually needs to continue working on a range of project types across devices"
+- Measured 2026-11-11 on this session's own chat (Claude Code, desktop): the main chat file holds each helper's task and, once it finishes, its final report; the helper's own working file (1 to 2 MB each here) is needed only to see its steps or to send that helper a follow-up. Plans sit in Claude Code's own `~/.claude/plans/` folder, outside any project. Memory, skills and settings are backup-only today (`youcoded/docs/sync-spaces.md`), not synced between devices.
+
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
 1. "Default runner = the device he's typing on" → replaced by host-stays-until-offline-or-chip (D1 Q-4, Q-5, Q-15).
@@ -115,7 +121,8 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 
 ## Open items (nothing below is decided)
 
-1. **Helper transcripts**, **which smaller pieces always travel**, **phone wake**: asked in round 6.
+1. **Helper transcripts** and **what travels with a chat**: round 6 answers asked for a fuller explanation; given in chat 2026-11-11 with a new proposal, awaiting his answer.
+1a. **Round 7** (catch-up, 1 GB limit, self-hosting) is served and unanswered.
 2. **The design document** `design.md` in this folder is a draft written from the answers; it needs Destin's read.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)

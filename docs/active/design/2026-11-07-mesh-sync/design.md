@@ -76,6 +76,10 @@ A keeper is something always on that holds locked lines it cannot read.
 **Staying awake.** A computer holds itself awake while a reply it is running is unfinished,
 and lets go when it ends. Closing a laptop lid still sleeps it. [D4 Q-5]
 
+**A phone as host.** The phone stays awake for each reply with the screen off. A setting,
+off by default, exempts the app from Android's battery limits for users who host from the
+phone; it explains the battery cost. [D6 Q-3]
+
 **Closing the host.** [D4 Q-6; D5 S-1]
 - The normal close menu appears. You set flags or mark chats complete.
 - A chat marked complete closes on every device.
@@ -162,9 +166,11 @@ conflict copies from November 5 are left alone. [D1 Q-16, Q-17; D2 S-4]
 
 ## 12. Still open
 
-1. Helper transcripts: when they reach other devices. (Round 6, Q-1)
-2. Which smaller pieces always travel with a chat. (Round 6, Q-2)
-3. How a phone-hosted chat behaves with the screen off. (Round 6, Q-3)
+1. Helper transcripts: when they reach other devices. (Round 6 Q-1 not decided; Destin's
+   concern is lost work when a chat moves without them.)
+2. What travels with a chat besides its lines. (Round 6 Q-2 not decided; he is fine dropping
+   images.)
+3. Round 7: catch-up, the 1 GB limit, self-hosting. Unanswered.
 4. Never asked: what happens to the chats and GitHub sync storage users have today when the
    new system arrives.
 5. Never asked: how the 30 days of replaced file versions are shown to the user.
