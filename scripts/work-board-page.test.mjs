@@ -34,3 +34,15 @@ test('no stale typed-in dates remain in the board', () => {
   assert.ok(!/'Facts as of Oct 12'|>Facts as of Oct 12</.test(fs.readFileSync(path.join(dir, 'build.py'), 'utf8')));
   assert.ok(!/BUGS\s*=/.test(fs.readFileSync(path.join(dir, 'build.py'), 'utf8')));
 });
+
+test('the board starts itself up when put into an already-loaded page, as YouCoded does', () => {
+  // WHY (Destin, 2026-11-11: "still visual issues on the board, like this spacing"): the app's shell (pages/work-board/page.html)
+  // announces DOMContentLoaded on `document`, which never reaches a listener on `window`. The board listened on `window`, so inside
+  // the app its setup never ran: the search row stayed in the scrolling body, flush against the first card. Measured in a copy of
+  // the shell: gap 0px before, 28px after.
+  const page = buildPage(root, { pageMode: true, tidy: { deps: [], idle: [] }, release });
+  const bare = [...page.matchAll(/(^|[^.\w])addEventListener\('DOMContentLoaded'/gm)];
+  assert.equal(bare.length, 0, 'a window-level DOMContentLoaded listener is back: it never fires inside YouCoded');
+  assert.ok(page.includes("document.addEventListener('DOMContentLoaded',boot)"), 'setup listens on document');
+  assert.ok(page.includes("if(document.readyState!=='loading')setTimeout(boot,0)"), 'setup also runs when the page had already loaded');
+});

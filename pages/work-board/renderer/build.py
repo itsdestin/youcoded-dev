@@ -364,9 +364,16 @@ function fadeX(el){{el.dataset.fadeLeft=el.scrollLeft>1;el.dataset.fadeRight=el.
 function fadesX(){{$$('.tabs,.fchips').forEach(el=>{{if(!el.dataset.fx){{el.dataset.fx=1;el.addEventListener('scroll',()=>fadeX(el),{{passive:true}})}}fadeX(el)}})}}
 function fades(){{requestAnimationFrame(()=>{{fade($('#scroller'));fade($('#pbody'));fadesX()}})}}
 {TIP_JS}
-addEventListener('DOMContentLoaded',()=>{{['#scroller','#pbody'].forEach(s=>$(s).addEventListener('scroll',e=>fade(e.target),{{passive:true}}));addEventListener('resize',fades);
+// WHY a once-guarded boot on `document` plus a timer (Destin, 2026-11-11: the search row sat flush against the
+// first card): inside YouCoded the board is put into an already-loaded page, whose shell re-announces
+// DOMContentLoaded on `document` — an event that does not travel up to `window`, where this used to listen. So
+// the setup never ran there: the search/filter row stayed in the scrolling body with no gap, and the edge fades
+// were never wired. The timer covers a shell that announces nothing; the guard stops a double run.
+let booted=false;function boot(){{if(booted)return;booted=true;
+  ['#scroller','#pbody'].forEach(s=>$(s).addEventListener('scroll',e=>fade(e.target),{{passive:true}}));addEventListener('resize',fades);
   // WHY: the Screens control row lives in the fixed head (like Projects' tab row), not in the scroll body
-  $$('.view .lensbar').forEach(l=>{{l.dataset.view=l.closest('.view').id;l.hidden=!l.closest('.view').classList.contains('on');$('#panehead').appendChild(l)}});fades()}});
+  $$('.view .lensbar').forEach(l=>{{l.dataset.view=l.closest('.view').id;l.hidden=!l.closest('.view').classList.contains('on');$('#panehead').appendChild(l)}});fades()}}
+document.addEventListener('DOMContentLoaded',boot);if(document.readyState!=='loading')setTimeout(boot,0);
 let tt; function toast(m){{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3200)}}
 // WHY the toast reads the hint (2026-10-13): what a button says it will do on hover and what it says after a click can never disagree
 const lc=s=>s.charAt(0).toLowerCase()+s.slice(1);
