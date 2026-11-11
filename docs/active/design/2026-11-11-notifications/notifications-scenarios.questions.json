@@ -1,0 +1,595 @@
+{
+  "title": "Notifications: the ground rules",
+  "key": "notifications-scenarios-questions",
+  "out": "notifications-scenarios.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Status lights",
+      "path": "The dot beside each conversation in the session list",
+      "headline": "Each colour means one thing, and the app (not the assistant) is in charge of the colours.",
+      "changed": "Red: the work has stopped until you act. Blue: something new is waiting for you to read. Green: working, nothing for you yet. Gray: nothing new. Amber: the app is unsure whether it needs you. The app sets these from what it can see for itself. The assistant can only ADD a short label or raise an extra flag; it can never switch a light off.",
+      "notice": "If the assistant forgets, misbehaves or is a small model, you still get every red and blue you get today. The assistant's part only makes them more specific.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Status lights",
+      "path": "The blue dot and the words Response ready",
+      "headline": "When, during one piece of work, should a conversation turn blue?",
+      "today": "You send one message. The assistant may write ten separate pieces of text with work in between before it stops. The dot stays green through all of that and turns blue once it stops. It also turns blue (and chimes) each time the assistant pauses to wait for its own background work, then goes green again by itself.",
+      "problem": "You want blue to mean 'come back and look', not 'a piece of text appeared'. The pauses for background work are the main source of blue lights that mean nothing.",
+      "proposal": "Blue appears at the hand-back: the moment the assistant has stopped AND has nothing of its own still running. That is once per message you send, however many pieces it wrote. The only other blue is a checkpoint the assistant deliberately raises (asked about on page 3).",
+      "options": [
+        {
+          "id": "hand-back",
+          "label": "Once, at the hand-back",
+          "pros": [
+            "One blue per message you send, never one per piece of text.",
+            "Pauses for background work stop producing blue and chimes.",
+            "Works the same for every assistant, including small ones, because the app does it."
+          ],
+          "cons": [
+            "If the assistant writes something worth reading before a long background wait, you only hear about it if it raises a checkpoint."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "assistant-only",
+          "label": "Only when the assistant says so",
+          "pros": [
+            "In theory the fewest lights: only what the assistant judges worth your time."
+          ],
+          "cons": [
+            "This is the design you rejected in October: a reply the assistant judged 'short' would never notify you.",
+            "A forgetful assistant means a finished reply sits unnoticed."
+          ]
+        },
+        {
+          "id": "every-stop",
+          "label": "Every time it stops",
+          "summary": "What happens today.",
+          "pros": [
+            "You never miss an interim message."
+          ],
+          "cons": [
+            "Blue and a chime for every background pause, which is the noise you described."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Status lights",
+      "path": "How a blue dot goes away",
+      "headline": "What should count as you having seen a reply?",
+      "today": "A conversation counts as seen only at the moment you switch to it. A reply that arrives while you are already in it is never recorded as seen, so it turns blue when you click away. A minimized window still counts as looking.",
+      "problem": "Blue comes back for things you already read, and can be missing for things you never saw because the window was behind something else.",
+      "proposal": "Seen means: that conversation is the one showing, the window is in front, and the end of the reply is on screen. Then blue clears and stays cleared.",
+      "options": [
+        {
+          "id": "on-screen",
+          "label": "Open, in front, reply on screen",
+          "pros": [
+            "Blue never returns for something you watched arrive.",
+            "A minimized or covered window correctly stays blue until you come back.",
+            "A long reply whose end you have not scrolled to stays blue until you reach it."
+          ],
+          "cons": [
+            "If you read only the top of a long reply and leave, it stays blue. That may feel fussy."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "open-front",
+          "label": "Open and in front is enough",
+          "pros": [
+            "Simpler: opening the conversation always clears it."
+          ],
+          "cons": [
+            "A long reply counts as seen even if the part that matters is off screen."
+          ]
+        },
+        {
+          "id": "interact",
+          "label": "Only when you click or type in it",
+          "pros": [
+            "Never clears by accident."
+          ],
+          "cons": [
+            "Reading without touching leaves it blue, which is the kind of stuck light you are complaining about."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "How a reply ends",
+      "intro": "The assistant has stopped and handed the conversation back. These are the different ways that can look, and who handles each."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Session list",
+      "path": "Scenario: the assistant finishes the work and ends with a summary",
+      "headline": "The work is done and the reply ends with a summary. What should you get?",
+      "today": "Blue dot, the words Response ready, and a chime. The chime plays even if you watched it finish.",
+      "problem": "Response ready says nothing about what is ready, and every finished conversation looks the same in the list.",
+      "proposal": "The app turns it blue and chimes only if you were not watching. On top of that, the assistant may add a two or three word label of its own, such as 'Draft ready' or 'Tests passing', which replaces Response ready. If it adds none, you see Response ready as now.",
+      "options": [
+        {
+          "id": "app-plus-label",
+          "label": "App's blue, assistant's label on top",
+          "pros": [
+            "You can tell conversations apart in the list without opening them.",
+            "Nothing is lost when the assistant adds no label."
+          ],
+          "cons": [
+            "Label quality depends on the assistant; some will be vague."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "app-only",
+          "label": "App's blue only, no labels",
+          "pros": [
+            "Completely predictable wording."
+          ],
+          "cons": [
+            "Every finished conversation still reads Response ready."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Session list",
+      "path": "Scenario: the reply ends with a question it needs answered to continue",
+      "headline": "The assistant stops and asks you something in plain text that it needs before it can go on. What should you get?",
+      "today": "Exactly the same as a finished reply: blue, Response ready. The app cannot tell 'done' from 'stuck waiting on your answer', because the question is ordinary text rather than a question card.",
+      "problem": "A conversation that is blocked on you looks identical to one that is finished, so blocked work can sit for hours.",
+      "proposal": "Only the assistant knows it is waiting on an answer, so this is where it gets involved: when it ends a reply with a question it needs answered, it flags the reply as 'needs your answer'. In October you said red should stay the app's own, so this is your call.",
+      "options": [
+        {
+          "id": "red-label",
+          "label": "Red, labelled Needs your answer",
+          "pros": [
+            "Blocked work looks blocked, the same as a question card does.",
+            "Allowed only when the assistant has stopped, so it cannot turn red while still working."
+          ],
+          "cons": [
+            "An over-eager assistant could mark casual questions ('want me to also…?') as red, and red would start to mean less.",
+            "If the assistant forgets, you get plain blue, as today."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "blue-label",
+          "label": "Blue, labelled Needs your answer",
+          "pros": [
+            "Red stays reserved for things the app itself is sure about.",
+            "You can still tell it apart by the words."
+          ],
+          "cons": [
+            "At a glance the dot looks the same as a finished reply; you have to read the label."
+          ]
+        },
+        {
+          "id": "nudge-card",
+          "label": "Tell the assistant to use a question card instead",
+          "summary": "Question cards already turn red by themselves. The assistant would be told to ask blocking questions as a card rather than as text.",
+          "pros": [
+            "No new kind of flag; reuses something that already works and that you can answer from the phone."
+          ],
+          "cons": [
+            "Cards suit short multiple-choice questions; an open-ended question reads badly as a card.",
+            "Assistants often ask in plain text anyway, and those would stay blue."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Session list",
+      "path": "Scenario: the assistant says everything is finished and the conversation can be closed",
+      "headline": "The assistant says the whole job is complete and ready to close out. Should that look different from an ordinary finished reply?",
+      "today": "Blue, Response ready, the same as any other reply.",
+      "problem": "With many conversations open you cannot see which are truly finished and can be closed, and which just stopped at a step.",
+      "proposal": "Treat it as an ordinary blue reply whose label the assistant sets to something like 'All done'. No new colour or state.",
+      "options": [
+        {
+          "id": "label-only",
+          "label": "Blue with an All done label",
+          "pros": [
+            "No new colour to learn.",
+            "Still visible in the list which conversations are finished."
+          ],
+          "cons": [
+            "Depends on the assistant writing a clear label.",
+            "Once you look at it, it goes gray like everything else, so 'finished' is not remembered."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "done-mark",
+          "label": "A lasting finished mark",
+          "summary": "A check mark that stays on the conversation after you have seen it, until you send another message.",
+          "pros": [
+            "You can sweep the list and close everything marked finished."
+          ],
+          "cons": [
+            "A sixth state in the list; more to learn.",
+            "The assistant deciding 'finished' can be wrong, and a wrong check mark hides unfinished work."
+          ]
+        },
+        {
+          "id": "same",
+          "label": "No difference at all",
+          "pros": [
+            "Simplest."
+          ],
+          "cons": [
+            "Finished and paused conversations stay indistinguishable."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Chat",
+      "path": "Scenario: a reply arrives while you are sitting in that conversation",
+      "headline": "You are watching the conversation when the reply finishes. What should happen?",
+      "today": "No blue while you stay, but the chime plays, and the dot turns blue as soon as you click to another conversation.",
+      "problem": "You are told about something you just watched, and then told again when you leave.",
+      "proposal": "Nothing: no blue, no glow on the reply, and it is recorded as seen. This applies to quick answers and long ones alike. The only open point is the sound.",
+      "options": [
+        {
+          "id": "silent",
+          "label": "Fully silent",
+          "pros": [
+            "No notification for something already in front of you."
+          ],
+          "cons": [
+            "If the window is in front but you are looking at another screen, you lose the 'done' sound."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "soft-chime",
+          "label": "No lights, but keep the chime",
+          "pros": [
+            "A finished reply is always audible, wherever your eyes are."
+          ],
+          "cons": [
+            "A sound for every reply during back-and-forth chat."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Session list",
+      "path": "Scenario: a quick answer to a short question, and you have switched away",
+      "headline": "A short reply you did not see turns blue exactly like a long one.",
+      "changed": "Length never matters. If a reply finished and you were not looking at it, the app turns it blue and chimes once. The assistant is not asked whether the reply was important enough.",
+      "notice": "This is the fix for your October objection: asking a short question and switching tabs can no longer leave you un-notified.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "P-3",
+      "page": "While the work is still going",
+      "intro": "The assistant has not handed back yet. These are the moments in the middle of a job."
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Session list",
+      "path": "Scenario: a long job with many messages along the way",
+      "headline": "Messages written in the middle of a job never turn the light blue or make a sound.",
+      "changed": "While the assistant is working the dot stays green, however many pieces of text it writes between steps. The same holds while it is only waiting for its own helpers or background commands: the list shows it as still working, and it wakes itself up when they finish.",
+      "notice": "One message from you produces at most one automatic blue, at the very end. The repeated blue-then-green flicker during background work goes away.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Session list and chat",
+      "path": "Scenario: something worth looking at is ready, but the assistant is still working",
+      "headline": "Midway through a job, a draft or first result is ready while work continues. Should the assistant be able to flag it?",
+      "today": "Not possible. The dot stays green until everything is finished, so you find out about the draft only at the end.",
+      "problem": "On long jobs you could have reviewed the first part an hour earlier, and caught a wrong direction before the rest was built on it.",
+      "proposal": "The assistant can raise a checkpoint: the dot shows blue with its label (for example 'Draft ready') even though work continues, and that reply gets the outline and Jump to notification button you approved in October. It goes back to green once you have looked.",
+      "options": [
+        {
+          "id": "allow",
+          "label": "Yes, when the assistant judges it useful",
+          "pros": [
+            "You can review early results without waiting for the whole job.",
+            "This is the one case the app cannot detect by itself."
+          ],
+          "cons": [
+            "The main route for noise: an eager assistant may flag every small step. Page 4 asks how to limit that."
+          ]
+        },
+        {
+          "id": "asked",
+          "label": "Only when you asked to be told",
+          "summary": "The assistant raises a checkpoint only if your message asked for one ('tell me when the first draft is done').",
+          "pros": [
+            "Almost no noise: every checkpoint is one you requested.",
+            "Still covers the long-job case when you want it."
+          ],
+          "cons": [
+            "You have to remember to ask; an assistant will not volunteer a useful early look."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "never",
+          "label": "No checkpoints",
+          "pros": [
+            "Zero mid-job notifications; blue always means the assistant has stopped."
+          ],
+          "cons": [
+            "Long jobs stay all-or-nothing."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-4",
+      "words": true,
+      "surface": "Session list",
+      "path": "Scenario: a card is waiting for you (permission, question, plan approval, password, browser step, a helper's request)",
+      "headline": "Any card that stops the work turns the conversation red and plays the alert sound, with no help from the assistant.",
+      "changed": "Handled entirely by the app. Already true for permission, question, plan, password and helper cards. Added: the assistant's browser asking before a purchase, send or sign-in; Claude Code's own notices such as 'Usage limit reached'; and an assistant that failed to start. Browser cards also become answerable from the phone.",
+      "notice": "Red always means a card you can act on is waiting in that conversation, on the computer and on the phone. The alert sound plays once per card, including when you are in the conversation, because the work is stopped.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Session list",
+      "path": "Scenario: something is on Claude Code's screen that the app cannot read",
+      "headline": "Claude Code shows a prompt the app does not recognise. What should the light do?",
+      "today": "Usually amber at most. The app cannot tell a prompt that is blocking the work from a menu you opened yourself.",
+      "problem": "Showing red for a menu you opened is a false alarm; showing nothing for a real block leaves work stuck.",
+      "proposal": "Amber with the words 'May need you', and no sound unless it stays that way for a while.",
+      "options": [
+        {
+          "id": "amber",
+          "label": "Amber, May need you",
+          "pros": [
+            "Honest: the app does not claim to know.",
+            "No false red for menus you opened."
+          ],
+          "cons": [
+            "A real block is quieter than a red would be."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "red",
+          "label": "Red, always",
+          "pros": [
+            "A real block is never missed."
+          ],
+          "cons": [
+            "Red and an alert sound whenever you open a menu in the terminal yourself."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Noise, sound and several devices",
+      "intro": "How to keep the notifications few, and how they behave across windows, the phone and time away."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Assistant's flags",
+      "path": "Labels, checkpoints and Needs your answer",
+      "headline": "How tightly should the app limit what the assistant can flag?",
+      "today": "The assistant cannot flag anything.",
+      "problem": "Give an assistant a way to get your attention and some will use it constantly. Ten flags in one job is worse than none.",
+      "proposal": "Limits the app enforces whatever the assistant does: one label per hand-back; a newer flag replaces the older one instead of stacking; no sound or glow for a flag raised while you are watching; helpers cannot flag at all; small local models are not offered flags (the automatic blue covers them).",
+      "options": [
+        {
+          "id": "strict",
+          "label": "Those limits, plus one checkpoint per job",
+          "pros": [
+            "At most two notifications per message you send: one checkpoint and the hand-back.",
+            "Bad behaviour by one assistant cannot flood the list."
+          ],
+          "cons": [
+            "A long job with three real milestones can only tell you about one."
+          ]
+        },
+        {
+          "id": "spaced",
+          "label": "Those limits, plus checkpoints spaced apart",
+          "summary": "Checkpoints allowed, but no more than one every ten minutes.",
+          "pros": [
+            "Long jobs can report several milestones.",
+            "Short jobs cannot produce a burst."
+          ],
+          "cons": [
+            "An hour-long job could still produce six."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "loose",
+          "label": "Those limits only",
+          "pros": [
+            "The assistant has full freedom to report progress."
+          ],
+          "cons": [
+            "Nothing stops a flag after every step."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Windows and phone",
+      "path": "Scenario: you read a reply on one device or window",
+      "headline": "You read a reply on the phone. Should it stop being blue on the computer too?",
+      "today": "No. Each window and the phone keep their own idea of what you have seen, and each forgets it on restart, when every conversation with history turns blue again.",
+      "problem": "The same reply nags you on every screen, and a restart lights up everything.",
+      "proposal": "The computer keeps one record per conversation of what you have seen, shared by every window, the floating buddy and the phone, and remembered across restarts.",
+      "options": [
+        {
+          "id": "shared",
+          "label": "Seen anywhere is seen everywhere",
+          "pros": [
+            "One blue to clear, once.",
+            "Restarting no longer turns old conversations blue."
+          ],
+          "cons": [
+            "A two-second glance on the phone clears the reminder on the computer, where you may have meant to deal with it properly."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "per-device",
+          "label": "Each device keeps its own",
+          "pros": [
+            "A glance on the phone never hides anything on the computer."
+          ],
+          "cons": [
+            "You clear the same blue two or three times.",
+            "Screens disagree about the same conversation."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Status lights",
+      "path": "Scenario: the conversation is open and in front, but you have walked away",
+      "headline": "The reply lands in the conversation showing on screen while you are away from the desk. Seen or not?",
+      "today": "Counts as seen; you get a chime to an empty room and no blue when you return.",
+      "problem": "You come back with no sign that anything arrived.",
+      "proposal": "If there has been no mouse or keyboard activity for a few minutes, treat a reply as unseen even when its conversation is showing. It clears when you next move the mouse or type with it on screen.",
+      "options": [
+        {
+          "id": "idle-rule",
+          "label": "Unseen if you have been idle",
+          "pros": [
+            "Coming back to the desk, you can see what landed while you were gone."
+          ],
+          "cons": [
+            "If you were sitting still reading for several minutes, a reply you watched can show blue until you move the mouse."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always-seen",
+          "label": "Showing on screen always counts",
+          "pros": [
+            "Simple and predictable."
+          ],
+          "cons": [
+            "Replies that land while you are away leave no trace."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Sound",
+      "path": "The ready chime and the alert sound",
+      "headline": "When several conversations finish close together, how many sounds?",
+      "today": "One chime per conversation on the computer, so five finishing together chime five times. The phone already plays one.",
+      "problem": "A burst of chimes tells you no more than one would.",
+      "proposal": "One chime for a burst, on every device. Sounds only for things you are not looking at (except red cards, which always sound). Pop-up notifications from the system, on the computer and the phone, are a later piece of work that will follow these same rules.",
+      "options": [
+        {
+          "id": "one",
+          "label": "One sound per burst",
+          "pros": [
+            "Quieter, and the lights still show how many are waiting."
+          ],
+          "cons": [
+            "You cannot count finished conversations by ear."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "each",
+          "label": "One sound each",
+          "pros": [
+            "You can hear how many finished."
+          ],
+          "cons": [
+            "Noisy with several conversations running."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Build order",
+      "path": "How this gets built",
+      "headline": "In what order should this be built?",
+      "today": "An older attempt exists with the approved look and the red fixes, but it is built on the rejected design and is about 190 changes behind the current app. Work card 232 says to continue it; the hand-off note says to start again.",
+      "problem": "Continuing the old attempt keeps the faulty 'seen' logic underneath it. Starting again risks redoing finished work.",
+      "proposal": "Start from the current app and copy the good pieces across, in three parts you can each try separately.",
+      "options": [
+        {
+          "id": "three-steps",
+          "label": "Fresh start, three parts",
+          "summary": "1: the shared 'seen' record, the hand-back rule and the sound rules (fixes today's jank, no new visuals). 2: the red fixes. 3: the assistant's labels and flags with the approved look.",
+          "pros": [
+            "The jank is fixed first and can ship without waiting for the rest.",
+            "Each part is small enough to check properly."
+          ],
+          "cons": [
+            "The assistant's labels arrive last."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "old-branch",
+          "label": "Continue the old attempt",
+          "pros": [
+            "The approved look is already built there."
+          ],
+          "cons": [
+            "It has to absorb 190 changes and have its rejected core removed before anything can ship.",
+            "The jank fix arrives last instead of first."
+          ]
+        },
+        {
+          "id": "all-at-once",
+          "label": "Fresh start, everything together",
+          "pros": [
+            "One review at the end."
+          ],
+          "cons": [
+            "Nothing improves until all of it is finished, and a problem in one part holds up the rest."
+          ]
+        }
+      ]
+    }
+  ]
+}
