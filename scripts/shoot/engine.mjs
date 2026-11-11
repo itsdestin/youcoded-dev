@@ -244,7 +244,8 @@ async function connect(port) {
   ws.onmessage = (e) => {
     const m = JSON.parse(e.data);
     if (m.id && pending.has(m.id)) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.rej(new Error(m.error.message)) : p.res(m.result); return; }
-    if (m.sessionId) sessions.get(m.sessionId)?.(m);
+    // WHY the typeof check (code scanning, 2026-11-11): the id comes off the wire; only a handler this file registered is ever called.
+    if (m.sessionId) { const handler = sessions.get(m.sessionId); if (typeof handler === 'function') handler(m); }
     else if (m.method) for (const f of browserEvents) f(m);
   };
   // WHY every command has a time limit: without one a single stuck page hung a whole
