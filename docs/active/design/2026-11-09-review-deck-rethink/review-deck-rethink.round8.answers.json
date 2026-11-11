@@ -1,0 +1,43 @@
+{
+ "deck": "review-deck-rethink-round8",
+ "started": "2026-11-11T21:37:53.953Z",
+ "submitted": null,
+ "cur": 1,
+ "answers": {
+  "N-1": {
+   "t": 1794433517316,
+   "marks": [
+    {
+     "pic": "row badges",
+     "x": 2.4,
+     "y": 0.7,
+     "w": 95.2,
+     "h": 79.9,
+     "text": "it's literally completely impossible to read any of this text or see what i'm reviewing. far too small and zoomed out, and also just generally a really poor use of space on this page. 90% of this popup page is unused dead space\n"
+    }
+   ],
+   "v": "other",
+   "changes": {
+    "fold": "this is still genuinely terrible. what even is the point of this? visually, no normal person looking at this \"details\" dropdown would understand why it exists or what any of the content means. like seriously just look at this image. what am i supposed to learn from this? how am i supposed to use that information? what does it relate to? it just feels like poorly styled text dropped into a dropdown with no visual heirarchy",
+    "left": "what? this row is so confusing. is this a question? why is it the only row in this card that has the unclear/etc dropdown chip? unsure what its suggesting or askign"
+   },
+   "attach": {
+    "change:fold": [
+     {
+      "kind": "image",
+      "name": "image.png",
+      "path": "/home/destin/youcoded-dev/worktrees/sessions/review-deck-rethink/docs/active/design/2026-11-09-review-deck-rethink/review-deck-rethink.round8.attachments/20261111-144133-0c60d81c.png",
+      "url": "/review-deck-rethink.round8.attachments/20261111-144133-0c60d81c.png"
+     }
+    ]
+   },
+   "seconds": 443,
+   "theme": "midnight"
+  }
+ },
+ "built": {
+  "at": "2026-11-10T23:58:52Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "c313436f7"
+ }
+}
