@@ -14,8 +14,8 @@ platform: Desktop only
 vision: chat.files.office, chat.files.drawer
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: 2026-11-11, branch session/files-reliability-batch (app fb01783a5, not merged): 'Save a copy' after a restore now gets the right pictures, including ones added after the restore; leftover hidden copies of a document (over an hour old) are also cleaned when the file is opened, copied, exported or restored. Checked the same day: reload leaving Office documents open was already fixed on 2026-10-19.
+Next: Destin's choices: unsaved draft in a second window; Office autosave writing over an outside change; queued comment changes dropped after 10 minutes or on quit; how long comment backups are kept; the stale 'open in another app' warning; closing a second window ending its chats while the window stays open.
 Blocked: nothing recorded.
 
 Chats
