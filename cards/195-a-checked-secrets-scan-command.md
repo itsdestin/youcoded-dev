@@ -1,7 +1,7 @@
 ---
 id: 195
 title: A checked secrets-scan command to run before every push
-stage: explore
+stage: merged
 priority: P2
 tags: dev-workspace
 branch: 195-a-checked-secrets-scan-command
