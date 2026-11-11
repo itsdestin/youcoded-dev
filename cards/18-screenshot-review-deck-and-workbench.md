@@ -11,7 +11,7 @@ area: Workspace
 vision: together.workflow.decks, together.added.shoot
 ---
 Progress
-Done: Checked all ten against master (2026-11-10). Fixed already: b (viewers stuck loading), c (shared Office editor), e (duplicate keys; test added), h's 1.5x scale. On branch session/workspace-tools-batch (not merged): f - the drag sweep no longer keeps every frame in memory (frames saved only for failing drags); i - the boot check now starts all 8 window kinds (19 routes boot) and a guard fails if a new one is not covered.
+Done: Checked all ten against master (2026-11-10). Fixed already: b (viewers stuck loading), c (shared Office editor), e (duplicate keys; test added), h's 1.5x scale. Landed on master 2026-11-10 (workspace PR #356): f - the drag sweep no longer keeps every frame in memory (frames saved only for failing drags); i - the boot check now starts all 8 window kinds (19 routes boot) and a guard fails if a new one is not covered.
 Next: Leave to session/review-deck-rethink: d (clipped cards), g (before/after diff card). Leave to the shoot sessions: touch emulation. a is stale (that rig was retired) - close it. j (terminal wraps at two-thirds width) needs a test window to check. 17 workbench switches are named by no screen; adding them waits for session/test-suite-rethink to land.
 Blocked: nothing.
 

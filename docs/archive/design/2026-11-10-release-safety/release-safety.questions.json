@@ -1,0 +1,226 @@
+{
+  "title": "Release safety batch — what the overnight run needs from you",
+  "key": "release-safety-questions",
+  "out": "release-safety.questions.html",
+  "themes": ["midnight", "light"],
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat on YouCoded's own engine",
+      "path": "The strip of queued messages above the message box",
+      "headline": "Should the broken Edit on a queued message with a file be fixed in this batch?",
+      "today": "While the assistant is still replying you can send another message; it waits in a small strip above the message box. Each waiting message has an Edit button that puts it back in the box. In a test copy of the app, on YouCoded's own engine, pressing Edit on a waiting message that had a file attached put the file's long folder path into the box as plain text, and the file chip was gone. This happens however the file was attached (paperclip, drag or paste). In Claude Code chats the same button works.",
+      "problem": "If you edit a waiting message that has a file, you get a box full of path text and have to attach the file again. The card for this said it looked fixed; the retest shows it was only fixed for Claude Code chats.",
+      "proposal": "The fix is small and contained: Edit would bring back your words and the file chips, as it does in Claude Code chats. The batch instructions said to retest only, so nothing was built.",
+      "options": [
+        {
+          "id": "fix-now",
+          "label": "Fix it now",
+          "pros": [
+            "The fault is gone before the next release.",
+            "It lands on the same branch you are already reviewing, so there is one thing to merge.",
+            "The cause is already known, so the work is short."
+          ],
+          "cons": [
+            "The branch grows by one more change to check.",
+            "A phone viewing the waiting messages would now receive the computer's file paths in order to draw the chips. Claude Code chats already do this; I would check the phone does not try to open them."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "batch-2",
+          "label": "Leave for Batch 2",
+          "pros": [
+            "This branch stays exactly as tested overnight.",
+            "It gets fixed alongside the other small faults on the same card, which touch the same code."
+          ],
+          "cons": [
+            "The fault ships in the next release if that release goes out before Batch 2.",
+            "Anyone editing a waiting message with a file keeps hitting it until then."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Custom AI models",
+      "path": "Settings, where you add your own model provider",
+      "headline": "When a hosted custom model does not say how big it is, what size should the app assume?",
+      "today": "You can add your own AI model provider. Every model can only hold so much conversation; when a chat nears that limit the app summarises the older part so it can continue. If a hosted custom model does not report its size, the app assumes 250k and starts summarising at about 231k. You cannot type a size yourself, and the app never learns it from a failure. Models running on this computer already assume a much smaller size (32k).",
+      "problem": "Many hosted models are smaller than 250k. On those, a long chat fails with a 'too long' error before the app ever summarises. The 'Summarise and continue' button only appears if the provider words its error in the standard way; otherwise you just see an error.",
+      "proposal": "Either keep the number or lower it. Lowering it changes every custom model of unknown size, including ones you already added, from its next chat. Nothing has been changed yet.",
+      "options": [
+        {
+          "id": "keep-250k",
+          "label": "Keep 250k",
+          "pros": [
+            "Nothing changes for anyone.",
+            "Chats on very large models keep their full detail for as long as possible."
+          ],
+          "cons": [
+            "Long chats keep failing on any model of 200k or smaller, which is most of them.",
+            "On some providers the failure shows no way to continue the chat."
+          ]
+        },
+        {
+          "id": "lower-128k",
+          "label": "Lower to 128k",
+          "pros": [
+            "Long chats stop failing on the most common hosted size (128k) and anything bigger.",
+            "A summary that comes early is a small cost; a chat that fails is a dead end."
+          ],
+          "cons": [
+            "Models that are really 200k to 1 million get summarised earlier than they need, so older detail is condensed sooner and you wait for summaries more often.",
+            "Models of 64k or 32k still fail on long chats.",
+            "Custom models you already use will start summarising sooner without you having changed anything."
+          ],
+          "measured": "Summaries would start near 111k instead of 231k",
+          "recommended": true
+        },
+        {
+          "id": "ask-size",
+          "label": "Design a real fix",
+          "summary": "Let you type the size when adding a model, or have the app learn it from the first 'too long' error. This fixes the cause for every size, but it is a new piece of the settings screen and needs its own design round, so it would become its own card rather than part of this batch.",
+          "pros": [
+            "Works for small and huge models alike."
+          ],
+          "cons": [
+            "Not quick: it needs a design you approve first, and the failures continue until it ships unless the number is also lowered meanwhile."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "App updates on Mac",
+      "path": "The Mac tester whose app stayed on version 1.3.1",
+      "headline": "Will you send the Mac tester this list of facts and files?",
+      "today": "One Mac that tested the beta versions ended up on 1.3.1 after 1.3.3 was out and has stayed there. Reading the app's code cannot explain it: the code says that Mac should have been offered 1.3.3. The app's updater keeps no log file, so only facts from that Mac can settle it. The request is written on card 238. It asks for six facts (the version shown in Settings, the macOS version and chip, which folder the app sits in, how it was installed and how it got to 1.3.1, whether an update message ever appeared, which betas were installed) and three things to send: a screenshot and three tiny files from the app's update folder, a screenshot of the update part of one settings file, and screenshots of the Applications and Downloads folders.",
+      "problem": "Without those answers the cause stays a guess, and other Macs could be stuck the same way without anyone knowing. The request deliberately does not ask for the app's main log or any chat folders, because those can contain file paths and text from chats.",
+      "proposal": "Yes: you forward the request from card 238 as written, and I read the answers when they come back. No: tell me in the note what to change (shorter, different wording, fewer files). Don't know: I leave it on the card.",
+      "yes": "I'll send it",
+      "no": "Change it first"
+    },
+    {
+      "id": "P-2",
+      "page": "Tidying up",
+      "intro": "Four smaller calls. None of them affects what is on the branch."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Your saved Claude Code chats",
+      "path": "The Resume list of past chats",
+      "headline": "Should I delete the throwaway test chats the first test round left in your real chat history?",
+      "today": "The retests ran in a separate test copy of the app, never your installed one. But a test copy shares your real Claude Code sign-in and chat history by design. The first tester therefore created a handful of tiny real chats, named like 'T1-…', 'T5-s…' and 'Sleep Command Retest', all filed under one scratch folder, and answered 'Yes, I trust this folder' for that scratch folder. The second test round used a throwaway home and left nothing.",
+      "problem": "Those test chats may show up in your Resume list and in chat search as clutter. The trust answer is harmless (the scratch folder is temporary) but it is an entry you did not make.",
+      "proposal": "Deleting removes that one scratch folder of test chats from your history. The trust entry lives in a settings file your running app keeps open, which I must not edit while it runs, so it would stay either way unless you want it cleared after the app is next closed.",
+      "options": [
+        {
+          "id": "delete-chats",
+          "label": "Delete the test chats",
+          "pros": [
+            "Your Resume list and chat search stay free of test clutter.",
+            "Only the one scratch folder is removed; none of your own chats are touched."
+          ],
+          "cons": [
+            "Deleting cannot be undone, though nothing in them is worth keeping."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "delete-and-trust",
+          "label": "Delete, and clear the trust entry later",
+          "pros": [
+            "Everything the test left behind is gone.",
+            "The settings file is only touched after you next close the app, so the running app is never disturbed."
+          ],
+          "cons": [
+            "Schedules a small change to a settings file for when the app closes, for an entry that does no harm."
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Leave everything",
+          "pros": [
+            "Nothing is deleted."
+          ],
+          "cons": [
+            "The test chats stay in your history."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "YouCoded's own engine",
+      "path": "Commands the assistant runs in the background",
+      "headline": "Should the paid assistant evaluation be run on the background-command change?",
+      "today": "One fix on the branch changes what the assistant is told when it asks about a background command from before an app restart: it used to hear 'No background command', and now hears the saved outcome. The change is covered by automatic tests and one live check with a scripted stand-in model. The workspace also has an evaluator that runs real models through set tasks and grades them; it costs real money per run and needs a key file from you.",
+      "problem": "Automatic tests use a scripted model, so they cannot show whether a real model reads the new sentences sensibly. Past paid rounds have found faults that thousands of passing tests missed. Against that, this change only alters a few reply sentences in a rare situation (after a restart).",
+      "proposal": "Yes: I prepare a free dry run first to show you the estimated cost, then you supply a key file and a spending cap before anything is spent. No: the change goes ahead on the tests it has. Don't know: I do the free dry run only and bring you the estimate.",
+      "yes": "Yes, estimate first",
+      "no": "No, skip it"
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Workspace",
+      "path": "Old work folders on this computer",
+      "headline": "What should happen to five work folders that have sat untouched for over two weeks?",
+      "today": "Starting this session flagged five work folders nobody has touched since October and whose work was never merged: Google files (paused design and code, card 155), faster automatic checks (card 29), the specialists and workflow-builder spec (card 74), speed counters (card 93) and a README wording change. Everything in them is committed. All of it is also backed up online except one piece: two commits of the faster-checks work exist only on this computer.",
+      "problem": "They take disk space and keep being flagged at the start of every session. The one piece that is not backed up would be lost if this computer's disk failed.",
+      "proposal": "Removing a folder never deletes its work: the branch stays online and can be reopened later. Whether any of that work should be finished or dropped is a separate question for its own card.",
+      "options": [
+        {
+          "id": "backup-keep",
+          "label": "Back up, keep folders",
+          "pros": [
+            "The one piece that only exists here gets backed up online.",
+            "Nothing else changes; every folder is ready to resume."
+          ],
+          "cons": [
+            "Every new session keeps flagging them."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "backup-remove",
+          "label": "Back up, remove folders",
+          "pros": [
+            "Frees the disk space and stops the flag.",
+            "All the work stays online and can be reopened."
+          ],
+          "cons": [
+            "Resuming any of them later takes a few minutes to set the folder up again."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing is touched."
+          ],
+          "cons": [
+            "Two commits of the faster-checks work stay without an online backup."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Website",
+      "path": "The footer of youcoded.ai",
+      "headline": "Should youcoded.ai link to the Reddit community?",
+      "today": "The app already links to the Reddit community in Settings, under Help and feedback, as 'Community on Reddit'. The website has no such link. This choice is the only thing keeping card 88 open: its other half, a stray warning in the developer log, was retested overnight with 13 and 15 chats arriving at once and did not appear.",
+      "problem": "Someone who finds the website but has not installed the app has no way to discover the community. The original note held this back until the subreddit had a few posts, so an empty-looking community would not be the first impression.",
+      "proposal": "Yes: a 'Community' link is added to the website footer as a small separate change you would see before it goes live, and card 88 closes when it lands. No: the website stays as it is and card 88 closes now. Don't know: the card stays open."
+    }
+  ]
+}

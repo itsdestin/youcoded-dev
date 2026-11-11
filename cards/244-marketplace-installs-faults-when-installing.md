@@ -11,7 +11,7 @@ area: Marketplace & library
 work: session/security-server-batch
 ---
 Progress
-Done: Landed 2026-11-10: the Google Messages tool server registers on Windows only (Messaging plugin 1.0.1, wecoded-marketplace#122). The theme Update check is in app PR youcoded#724. Already on master, not yet released: the unsafe-plugin warning (youcoded#718).
+Done: Landed 2026-11-10: Google Messages tool server registers on Windows only (Messaging 1.0.1, wecoded-marketplace#122); theme Update check for files changed without a version bump (youcoded#724, unreleased). Already on master, unreleased: the unsafe-plugin warning (youcoded#718).
 Next: Destin chooses on the four open items below. The theme registry still needs a rebuild with file fingerprints before the theme Update check can work.
 Blocked: nothing.
 

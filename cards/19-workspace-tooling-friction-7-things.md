@@ -11,7 +11,7 @@ area: Workspace
 work: chore/conversation-triage-script
 ---
 Progress
-Done: On branch session/workspace-tools-batch (not merged): g - a commit holding merge-conflict markers is refused, in session folders too, with a CI backstop; test-launcher fixes moved under #17. Already finished: h (fresh install for far-behind packages), c (triage script branch is gone), docs items a, c, e, f, i (the old roadmap is retired).
+Done: Landed on master 2026-11-10 (workspace PR #356): g - a commit holding merge-conflict markers is refused, in session folders too, with a CI backstop; test-launcher fixes moved under #17. Already finished: h (fresh install for far-behind packages), c (triage script branch is gone), docs items a, c, e, f, i (the old roadmap is retired).
 Next: The conflict-marker check reaches existing copies only after setup.sh is re-run (not run overnight). Still open, each a decision not a defect: one-off Fallow/React Doctor scans; the app log keeps only 500 lines in Claude Code's folder; no CI gate for the evaluator; the ten parked ideas. Suggest closing this card and filing only the ones Destin wants.
 Blocked: nothing.
 

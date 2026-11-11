@@ -1,7 +1,7 @@
 ---
 id: 146
 title: Reload returns to the wrong chat
-stage: planning
+stage: merged
 priority: P3
 tags: user-interface, bug
 report: docs/archive/investigations/2026-10-04-performance-gap-review.md

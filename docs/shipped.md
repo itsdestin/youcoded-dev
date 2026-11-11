@@ -901,3 +901,7 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-10 #212 Worker worktrees start without working dependencies (youcoded-dev#352)
 - [x] 2026-11-10 #43 Games: a cheater can fake a win when you go offline (wecoded-marketplace#122)
 - [x] 2026-11-10 #223 Google Messages connector: rebuild its Windows program with the patched security library (wecoded-marketplace#122)
+- [x] 2026-11-10 #246 Long pasted message is typed into Claude Code but never sent; shows Unconfirmed (itsdestin/youcoded#725 (36d973f))
+- [x] 2026-11-11 #146 Reload returns to the wrong chat (youcoded PR #726 (ef02dd10f), youcoded-dev PR #357)
+- [x] 2026-11-11 #195 A checked secrets-scan command to run before every push (youcoded-dev PR #356)
+- [x] 2026-11-11 #178 Made-up demo chats show "Jul 29, 2025" under every message (youcoded PR #727)
