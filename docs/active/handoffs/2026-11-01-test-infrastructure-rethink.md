@@ -19,7 +19,7 @@ very likely can't either. Five more show-stoppers turned up in about an hour of 
 - A new user's first Claude Code chat is stuck behind a hidden setup screen.
 - The phone app runs as "browser", so the phone gets computer screens.
 
-Full findings and screenshots: `docs/active/investigations/2026-11-01-android-ux-test/report.md`.
+Full findings and screenshots: `docs/archive/investigations/2026-11-01-android-ux-test/report.md`.
 
 In Destin's words: *"a lot of our test infrastructure is kinda broken and tests for very narrow/specific things
 that don't really matter while leaving out real test of actual functionality and user experience. it seems
