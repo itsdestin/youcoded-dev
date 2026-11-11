@@ -12,7 +12,7 @@ side: behind
 ---
 Progress
 Done: Landed on master 2026-11-10 (workspace PR #356): the test-copy launcher now runs the session's own code (a fault introduced and caught the same night), checks its port offset early, and lists running test copies. Nothing about sharing was changed.
-Next: Destin decides what a test copy may share with his real app. Today it shares themes, providers and keys, engine settings, new-session defaults, favourites, saved folders, pinned pages, all of ~/YouCoded, sync, and chat history. A) Share nothing by default: a test copy can never change your real app, but starts signed out with no keys every time. B) Private by default plus an opt-in 'borrow my sign-ins' (RECOMMENDED): quick tests work signed in, nothing is written back; cost: your keys exist in a second place and a test could spend real money, so it needs a clear 'test copy' banner. C) Keep today's sharing and guard only the worst files (defaults, engine settings, pinned pages): least work, but leaks remain and each new file needs its own guard.
+Next: DECIDED by Destin 2026-11-11 (his words, condensed): the test-app launch script should let the model configure what is kept. ALWAYS: test conversations go to a private throwaway folder; neither the folder nor the conversations may show up in his real live app; his real conversations are never changed. DEFAULT: his sign-ins (Claude Code, ChatGPT and such) are kept because they are useful for tests, but each one can be switched off per launch by the model. No prompt to Destin is wanted.
 Blocked: Destin's choice of A, B or C.
 
 See also #127: 127's item (d), a dev copy of the app syncing the same Personal folder as the real app, is one of the dev-instance-touches-the-real-app faults listed in 17.

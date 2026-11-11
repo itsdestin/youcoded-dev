@@ -14,8 +14,8 @@ platform: Desktop only
 vision: projects.folder.bigsearch
 ---
 Progress
-Done: Release audit confirmed the remaining limitation; Destin explicitly deferred this item from 1.3.1. No implementation was shipped or marked fixed.
-Next: Remain open for future scoped work; not a gate for the current 1.3.1 candidate.
+Done: Release audit confirmed the remaining limitation; Destin explicitly deferred this item from 1.3.1. No implementation was shipped or marked fixed. 2026-11-11 check: nothing built. Text search shows at most 60 rows (the label reads '60+', not '200+') and stops looking at 200 matches or 5 seconds; file-name search stops at 2,000 files, 6 levels or 1.5 seconds. Removing the limits alone makes every search slower and still shows 60.
+Next: Destin answers the spec's open questions 2-4 and how results past 60 are shown; then build the background file list.
 Blocked: Not blocking 1.3.1 by explicit decision. Future product/design choices remain separate.
 
 Chats

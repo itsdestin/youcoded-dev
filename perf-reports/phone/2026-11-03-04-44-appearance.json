@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "date": "2026-11-03T04:44:36.602Z",
+    "label": "appearance",
+    "device": "SM-F766U1",
+    "android": "17",
+    "webview": "Chrome/156.0.8078.47",
+    "refreshHz": 120,
+    "frameMs": 8.3,
+    "screen": {
+      "w": 1080,
+      "h": 2520
+    },
+    "repeat": 3,
+    "trace": true,
+    "experiment": null
+  },
+  "results": [
+    {
+      "step": "appearance-open",
+      "what": "In Settings, tap Appearance; its popup opens",
+      "slowFrames": null,
+      "droppedFrames": null,
+      "worstFrameMs": null,
+      "p95FrameMs": null,
+      "longFrames": null,
+      "longFramesMs": null,
+      "tapResponseMs": null,
+      "shownMs": null,
+      "pageBusyMs": null,
+      "graphicsBusyMs": null,
+      "compositorBusyMs": null,
+      "cpuAppPct": null,
+      "cpuAssistantPct": null,
+      "memoryMb": null,
+      "screenJanky": null,
+      "screenFrames": null,
+      "screenP99": null,
+      "failed": 3,
+      "first": {},
+      "runs": [
+        {
+          "worked": false,
+          "error": "nothing to tap:  Appearance[\\s\\S]*"
+        },
+        {
+          "worked": false,
+          "error": "nothing to tap:  Open menu"
+        },
+        {
+          "worked": false,
+          "error": "nothing to tap:  Open menu"
+        }
+      ]
+    }
+  ]
+}

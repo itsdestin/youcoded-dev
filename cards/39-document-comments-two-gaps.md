@@ -12,8 +12,8 @@ side: screens
 vision: chat.files.comments
 ---
 Progress
-Done: The comment popup looks right now (frosted hover card, reliable Add comment button), and the thin side marker strip is gone. Shipped in the app update from October 21 (v1.3.2).
-Next: (a) Hovering a comment should show its exact time, not just "5h ago". (b) On a phone, check whether an open comments list refreshes by itself when a comment changes on the computer; the code looks like it already does this, so test on a phone first before building anything.
+Done: The comment popup looks right now (frosted hover card, reliable Add comment button), and the thin side marker strip is gone. Shipped in the app update from October 21 (v1.3.2). 2026-11-11, branch session/files-reliability-batch (app fb01783a5, not merged): hovering (or press-and-hold on touch) a comment's '5h ago' shows the full date and time, in the comments list and the hover card.
+Next: Phone: the code already refreshes an open comments list (test doc-comments-remote-relay); confirm on a real phone, including that press-and-hold on the time does not get in the way of tapping a comment.
 Blocked: none.
 
 Chats

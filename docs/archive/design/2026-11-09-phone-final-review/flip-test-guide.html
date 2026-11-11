@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flip test guide</title>
+<style>
+  :root { --bg:#f6f7f5; --ink:#1d2622; --soft:#5b6862; --line:#d5dbd6; --card:#fff; --warn:#a4541a; --warnbg:#fdf1e4; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#151a18; --ink:#e7ece9; --soft:#9aa8a1; --line:#2c3531; --card:#1d2421; --warn:#f0b27a; --warnbg:#3a2a1a; } }
+  body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.5 system-ui, sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:20px 16px 72px; }
+  h1 { font-size:24px; margin:0 0 4px; } h2 { font-size:19px; margin:34px 0 6px; padding-top:10px; border-top:1px solid var(--line); }
+  p { margin:6px 0; } .soft { color:var(--soft); }
+  ol, ul { padding-left:22px; margin:6px 0; } li { margin:7px 0; }
+  .box { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin:10px 0; }
+  .warn { background:var(--warnbg); border-color:var(--warn); }
+  label { display:block; padding:6px 0; } input[type=checkbox] { width:20px; height:20px; vertical-align:-4px; margin-right:8px; }
+  .good { color:var(--soft); font-size:15px; display:block; margin-left:32px; }
+</style>
+<main>
+  <h1>Testing the Dev copy on your Flip</h1>
+  <p class="soft">Branch <code>session/android-ux-test</code>, built 10 Nov 2026. About 25 minutes. Ticks are not saved; tell me what failed in your own words.</p>
+
+  <div class="box warn">
+    <p><b>Only the copy named "YouCoded Dev".</b> It installs beside your real YouCoded and keeps its own data. Your real app is not touched.</p>
+  </div>
+
+  <h2>1. Everyday use (existing Dev copy, updated in place)</h2>
+  <label><input type="checkbox">Open the app.<span class="good">Good: branded loading screen, a little longer than usual this once, then your sessions.</span></label>
+  <label><input type="checkbox">Chat: tap the message box, type, close the keyboard. Repeat a few times.<span class="good">Good: box, newest messages and frame edge glide together. No jump, no overshoot above the keyboard.</span></label>
+  <label><input type="checkbox">Open the skills drawer and tap its search field.<span class="good">Good: the chat behind it stays still.</span></label>
+  <label><input type="checkbox">Scroll a long chat. Tap an older message.<span class="good">Good: no scroll bar; its time appears on tap.</span></label>
+  <label><input type="checkbox">Start a new session and look at the mode badge straight away.<span class="good">Good: it says AUTO from the first second (BYPASS if Skip permissions is on) and does not flip.</span></label>
+
+  <h2>2. Terminal view</h2>
+  <label><input type="checkbox">In a new session, switch to terminal view.<span class="good">Good: banner and first reply appear once, not twice.</span></label>
+  <label><input type="checkbox">Tap the message box so the keyboard opens, then close it.<span class="good">Good: the terminal slides up and down. Nothing is reprinted.</span></label>
+  <label><input type="checkbox">Type two lines in the message box.<span class="good">Good: the terminal slides, no doubled lines.</span></label>
+  <label><input type="checkbox">Look at the right edge.<span class="good">Good: one green scroll bar inside the frame. No grey sliver.</span></label>
+  <label><input type="checkbox">Swipe to scroll; try the arrow buttons and the key row (Esc, Tab, Enter).<span class="good">Good: all respond.</span></label>
+  <label><input type="checkbox">Rotate the phone, then fold and unfold.<span class="good">Good: no doubled lines afterwards.</span></label>
+  <label><input type="checkbox">Open Files or Games while in terminal view.<span class="good">Good: the panel shows, not a black screen.</span></label>
+
+  <h2>3. Alerts and attachments</h2>
+  <label><input type="checkbox">Ask Claude to run a command that needs your approval, then lock the phone.<span class="good">Good: the lock screen says only "A session needs you". The detail shows after unlocking.</span></label>
+  <label><input type="checkbox">Attach a file with the paperclip.<span class="good">Good: it keeps its real name.</span></label>
+
+  <h2>4. Fresh install</h2>
+  <p>Remove <b>YouCoded Dev</b> (not your real app), install it again, and go through setup.</p>
+  <label><input type="checkbox">First start.<span class="good">Good: no crash. Claude's questions (theme, sign-in choice, security notes, trust this folder) appear as cards with buttons.</span></label>
+  <label><input type="checkbox">If the loading screen says "Claude Code is asking something".<span class="good">Tell me which screen. Tap "Answer in terminal view" to get past it.</span></label>
+  <label><input type="checkbox">Sign in to Claude.<span class="good">Good: after finishing in the browser, YouCoded comes back by itself. If Android refuses, a "Back to YouCoded" alert appears; tap it.</span></label>
+  <label><input type="checkbox">Sign in to your YouCoded account (Settings).<span class="good">Good: same return. The app may show "signing in" for a moment first.</span></label>
+  <label><input type="checkbox">If you use them: OpenRouter, ChatGPT, GitHub connect.<span class="good">Good: each returns to the app when done.</span></label>
+
+  <h2>5. Phone to computer</h2>
+  <label><input type="checkbox">Pair the Dev copy to your computer and open a session there.<span class="good">Good: chat and terminal behave as in sections 1 and 2.</span></label>
+
+  <h2>6. Known gaps, not worth reporting</h2>
+  <ul>
+    <li>Two-player games stay broken until the server change is merged.</li>
+    <li>The arrow buttons still cover the end of Claude Code's input line.</li>
+    <li>Typing <code>/login</code> inside a running session does not return to the app.</li>
+  </ul>
+
+  <h2>7. On the computer, when you have a minute</h2>
+  <p>This build is phone only. The computer changes are listed in <code>branch-summary.html</code> in this folder, section 3. The one to try yourself is a new session starting in AUTO.</p>
+</main>
