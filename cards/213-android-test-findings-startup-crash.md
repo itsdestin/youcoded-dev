@@ -15,5 +15,6 @@ Next: Destin's merge decision (server first, then app, then his retest of two-pl
 Blocked: nothing
 
 Chats
+- 2026-11-11 session/android-ux-test: chat started
 - 2026-11-10 session/android-ux-test: chat started
 - 2026-11-02 session/android-ux-test: Fixing all Android test findings from the 2026-11-01 deck
