@@ -123,6 +123,10 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - Reaching a home super-host from outside, NOT decided. — D7 Q-6: "i think i'm a bit confused as to where this begins to overlap or replace our existing remote access system? and the pros/cons of alternative options for how this superhost thing would work? i think the premise of the super-host offering is that it should allow self hosting and also reduce load/strain on our servers/relay when possible."
 - Self-hosted relay, NOT decided. — D7 Q-7: "i'm extremely confused".
 
+### Chat, 2026-11-11
+- Reaching a home super-host from outside: offer both, through our relay as the default and the user's own front door. — "i think this is generally fine? though, when we get to it, i will want to better understand the different methods like tailscale vs tunnels". Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
+- Devices on the same wifi talking directly, NOT decided. — "is that safe though? i'm pretty sure there were reasons we moved remote access away from wifi to a tailscale-only function...". The recorded reason (`youcoded/desktop/src/shared/cleartext-hosts.ts`, 2026-10-30 security audit A1): the phone sent its pairing password and conversations in plain text to whatever address was saved, including a café's wifi.
+
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
 1. "Default runner = the device he's typing on" → replaced by host-stays-until-offline-or-chip (D1 Q-4, Q-5, Q-15).
