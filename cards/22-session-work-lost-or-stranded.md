@@ -11,7 +11,7 @@ area: Workspace
 vision: together.added.closeout
 ---
 Progress
-Done: Checkpoint backups merged earlier (PR #290). Built on branch session/workspace-tools-batch (not merged): (e) close-out no longer says 'the work landed' or suggests deleting a folder that holds unsaved or untracked work; (a) cleanup removes a finished session's record, and stale records are cleared at session start; (c) a session can be resumed after cleanup removed its folder, only when all its work is already in master; (f) session start names any idle folder whose work exists only on this computer after 1 day. Each has a test that fails without the fix.
+Done: Checkpoint backups merged earlier (PR #290). Landed on master 2026-11-10 (workspace PR #356): (e) close-out no longer says 'the work landed' or suggests deleting a folder that holds unsaved or untracked work; (a) cleanup removes a finished session's record, and stale records are cleared at session start; (c) a session can be resumed after cleanup removed its folder, only when all its work is already in master; (f) session start names any idle folder whose work exists only on this computer after 1 day. Each has a test that fails without the fix.
 Next: Destin: merge the branch. (b) folder vanished mid-session and (d) fresh folder missing a package: no cause provable, no recurrence since the 2026-09/10 fixes; close with those two recorded as 'no cause found', or keep open as a watch item.
 Blocked: nothing.
 
