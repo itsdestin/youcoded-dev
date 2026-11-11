@@ -1,0 +1,104 @@
+[
+  {
+    "name": "welcome/new-session",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-07-phone-polish/runs3/b/before/welcome/new-session/dark.png",
+    "ms": 544,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 230,
+      "y": 187,
+      "w": 384,
+      "h": 202
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome/new-session",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-07-phone-polish/runs3/b/before/welcome/new-session/midnight.png",
+    "ms": 544,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 230,
+      "y": 187,
+      "w": 384,
+      "h": 202
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome/new-session",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-07-phone-polish/runs3/b/before/welcome/new-session/light.png",
+    "ms": 550,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 230,
+      "y": 187,
+      "w": 384,
+      "h": 202
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome/new-session",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-07-phone-polish/runs3/b/before/welcome/new-session/creme.png",
+    "ms": 560,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 230,
+      "y": 187,
+      "w": 384,
+      "h": 202
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome/new-session",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-07-phone-polish/runs3/b/before/welcome/new-session/halftone-dimension.png",
+    "ms": 945,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 230,
+      "y": 187,
+      "w": 384,
+      "h": 202
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome/new-session",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-07-phone-polish/runs3/b/before/welcome/new-session/meadow-mist.png",
+    "ms": 1145,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 230,
+      "y": 187,
+      "w": 384,
+      "h": 202
+    },
+    "parts": []
+  }
+]

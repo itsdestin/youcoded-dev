@@ -1,0 +1,24 @@
+{
+ "deck": "terminal-keys-looks",
+ "started": "2026-11-05T08:19:54.410Z",
+ "submitted": "2026-11-05T08:21:11Z",
+ "cur": 1,
+ "answers": {
+  "L-1": {
+   "note": "something between a and c?",
+   "t": 1793866831594,
+   "v": "other",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "L-2": {
+   "v": "other",
+   "t": 1793866869056,
+   "note": "nah. ",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

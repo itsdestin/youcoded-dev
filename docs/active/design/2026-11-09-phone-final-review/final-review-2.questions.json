@@ -1,0 +1,328 @@
+{
+  "title": "Android phone fixes (card #213): the seven points you wanted thought through",
+  "key": "phone-final-review-2",
+  "out": "final-review-2.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "1. Where things stand after your answers",
+      "intro": "What is now settled, what I have already done on the branches, and one check that the biggest job you picked is what you meant. Nothing is on master."
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Card #213",
+      "path": "Your answers to the first deck",
+      "headline": "Eleven of your answers are clear and I will build them as picked.",
+      "changed": "Settled: catch up with master then retest. Hidden files hidden everywhere, with the tick remembered. Computer changes shown to you as pictures, then you try them. Everyday chips for new installs only. Every sign-in returns to the app. Bundled-program updates arrive as automatic proposals. The startup failure screen says what a bug report includes. Attachments get a size limit and clean-up. Four small jobs (old game host name, the unreliable Pages check, deck back-up, daily watch hardening). Server part first, then the app. You retest fresh install, sign-ins and phone-to-computer.",
+      "notice": "Noted from your comments: ChatGPT sign-in already worked for you, so it stays on the retest list only as a quick re-check with the security work in place. The separate session making the phone layout more mobile friendly will be rebased onto this work after it merges; I am keeping out of the files it owns wherever I can.",
+      "yes": "That is right",
+      "no": "Something is off"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Card #213",
+      "path": "The three branches, updated today",
+      "headline": "Done so far: all three branches are caught up with master, and the clash is fixed.",
+      "changed": "The app branch now contains the whole security overhaul. The \"phone shows computer screens again\" clash is fixed, and a new automated check uses the phone's new page address, so it fails if the bug ever returns (I confirmed it fails with the old code). The server branch is caught up too, keeping both the game rooms and the hourly attack alarm; its 489 checks pass. The 460 deck files from earlier rounds are backed up online.",
+      "notice": "The full computer and phone check suites are running on the combined app as you read this. I will report their result in chat. The Dev copy for your phone has not been rebuilt yet; that comes after the decisions below.",
+      "yes": "Good",
+      "no": "I have a concern"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "The code itself",
+      "path": "Your pick on code tidying: all of it now",
+      "headline": "You picked the full tidy now. This is what that includes and what it costs.",
+      "changed": "It includes: splitting the keyboard code into smaller parts, shortening the diary-style notes, removing leftover debugging lines, a guard so the keyboard height can never stick, real checks around terminal sizing, and one single place that answers the four device questions (page 3). Roughly 60 small edits across the app.",
+      "notice": "Cost: about two more days before the phone build is ready, and your retest must then include the keyboard and terminal view again, because those are the parts being reorganised. Behaviour should be identical; I will photograph every phone screen before and after to prove it.",
+      "yes": "Yes, all of it",
+      "no": "Scale it back"
+    },
+
+    {
+      "id": "P-2",
+      "page": "2. Safety nets: tests, first-run screens, game rooms",
+      "intro": "Three points where you asked what already exists. I went and read the other sessions and the server. Each question starts with what I found."
+    },
+    {
+      "id": "F-1",
+      "words": true,
+      "surface": "Phone startup",
+      "path": "The \"assistant can't start\" crash, and the separate test-rethink session",
+      "headline": "The test-rethink session already built a real phone-startup check. Should this card fix only the two traps?",
+      "today": "You were right. The session called test-suite-rethink has built a nightly check that takes the finished phone app, runs its own bundled programs on a free rented machine, and starts the real assistant. It reproduced both the startup crash and the sync failure against released 1.3.3. It is built but not merged, and it stays red until this card merges, because this card holds the fixes. That session also owns the wider plan, so my question 20 about filing a card is withdrawn.",
+      "problem": "That check would catch the crash coming back, so I should not build a second one. But it reports the failure the next morning. The two silent traps I found are still open: a build that leaves the language-data file out still succeeds, and an update that changes the file's version leaves two copies, which brings the crash back on updated phones.",
+      "proposal": "Choose what this card does about startup.",
+      "options": [
+        {
+          "id": "fix-traps-here",
+          "label": "Fix the two traps here",
+          "summary": "This card makes the build stop if the file is missing and stops updated phones keeping two copies. The nightly check stays with the other session; I leave it a note about the one thing its script does not look at.",
+          "pros": ["Closes both known ways the crash returns.", "No duplicate work with the other session.", "About two hours."],
+          "cons": ["Until the other session merges, nothing automated starts the phone's assistant."],
+          "recommended": true
+        },
+        {
+          "id": "leave-all",
+          "label": "Leave it all to them",
+          "pros": ["Nothing more on this card."],
+          "cons": ["The two-copies trap would only show up after it has already broken updated phones."]
+        }
+      ]
+    },
+    {
+      "id": "F-2",
+      "words": true,
+      "surface": "First Claude Code chat",
+      "path": "Claude Code's three first-run screens: text style, security notes, Trust this folder",
+      "headline": "First-run screens: use the daily watch, and switch to terminal view automatically when a screen is not recognised?",
+      "today": "You remembered correctly. Two jobs run every morning: they install the newest Claude Code, open its screens, and compare them with saved recordings. They cover the trust screen and about 100 pop-ups. Two gaps: they deliberately skip the first-run screens (they pretend setup is already done), so the text-style and security-notes screens are never watched; and a failure only sends GitHub's ordinary failed-run email, not a phone alert. In the app, an unrecognised screen can already show an \"Answer in terminal view\" button, but only for screens with a certain footer line, which the security-notes screen lacks. Nothing switches views by itself.",
+      "problem": "So today a reworded first-run screen would be noticed by nobody, and the new person would sit on \"Initializing session…\" with no button.",
+      "proposal": "Your own idea, auto-switching to terminal view, is the sturdiest fix because it needs no wording at all. On a normal day people still get the three chat cards. On the day Claude Code changes a screen, the chat waits about three seconds, switches itself to terminal view with one line saying \"Claude Code needs an answer here\", and the person answers with the on-screen keys. I checked the phone's key row has Enter and arrows, which is enough.",
+      "options": [
+        {
+          "id": "all-three",
+          "label": "Switch, watch and alert",
+          "summary": "The automatic switch, plus the first-run screens added to the daily watch using real recordings, plus watch failures sent to your phone like the security alarms.",
+          "pros": ["Nobody is ever stuck, whatever Claude Code changes.", "You hear about a change the same morning, on your phone.", "Reuses the watch you already have and recordings the test session already made."],
+          "cons": ["About a day of work.", "A very slow start could switch to terminal view when nothing was wrong; the timing needs care."],
+          "recommended": true
+        },
+        {
+          "id": "switch-only",
+          "label": "Automatic switch only",
+          "pros": ["Nobody is stuck.", "About half a day."],
+          "cons": ["We would learn of a changed screen only when someone mentions seeing the terminal."]
+        },
+        {
+          "id": "watch-only",
+          "label": "Watch and alert only",
+          "pros": ["We hear the same morning."],
+          "cons": ["New people are stuck until a fixed version is released."]
+        }
+      ]
+    },
+    {
+      "id": "F-3",
+      "words": true,
+      "surface": "Online games",
+      "path": "Games, then Connect 4 or Chess against a friend",
+      "headline": "Game rooms: how much protection, now that you can see what exists and what each step costs?",
+      "today": "What exists: to see friends and send a challenge you must be signed in, and the challenge travels over a connection the server does check. The app invents a six-character room code and both players go there. The room itself checks nothing: anyone who has or guesses a code can walk in under any name, and anyone can open as many rooms as they like. The old host was exactly as open. The difference is that the rooms now run on our account, so we pay.",
+      "problem": "An empty room costs nothing. A room with someone connected costs a little for as long as it stays open. A stranger holding thousands open is the expensive case; my rough estimate is hundreds of dollars an hour at the extreme, though that takes real effort on their side. None of the server's existing limits or phone alarms cover the rooms. A stranger who guesses a code could also take a seat before the real opponent.",
+      "proposal": "Nobody uses these rooms yet, because every released app still points at the dead old host. That makes this the one moment a sign-in requirement breaks nobody. Efforts are estimates.",
+      "options": [
+        {
+          "id": "limit-life-signin",
+          "label": "Limits plus sign-in",
+          "summary": "A limit on how fast one connection can open rooms, a maximum room lifetime of a few hours, and the room only admits signed-in players.",
+          "pros": ["Closes the door: every room belongs to an account.", "Stops strangers taking a seat or a name.", "Free of compatibility problems only now, before anyone uses the rooms."],
+          "cons": ["About two days in total, in both the server and the app.", "A game left open longer than the lifetime is ended."],
+          "recommended": true
+        },
+        {
+          "id": "limit-life",
+          "label": "Limits only",
+          "summary": "The opening limit and the maximum lifetime, server only.",
+          "pros": ["About half a day.", "Caps the worst-case bill.", "Players notice nothing."],
+          "cons": ["Strangers can still open rooms slowly and walk into a guessed room.", "Adding sign-in later means deciding what happens to app versions already out."]
+        },
+        {
+          "id": "alarm-only",
+          "label": "Alarm only",
+          "summary": "No limits; a phone alarm if room numbers jump.",
+          "pros": ["About half a day.", "You would know if it happened."],
+          "cons": ["Tells you about the bill; does not stop it."]
+        }
+      ]
+    },
+
+    {
+      "id": "P-3",
+      "page": "3. Phone, touch, narrow: one consistent rule",
+      "intro": "You asked to see how the app already tells devices apart, so the fixes are consistent. This page is that, then the two terminal questions from the first deck asked more plainly."
+    },
+    {
+      "id": "S-4",
+      "words": true,
+      "surface": "The whole app",
+      "path": "How the app decides what kind of device it is on",
+      "headline": "Proposed rule: four plain facts about the device, and each feature follows exactly one of them.",
+      "changed": "Today the app asks about the device in roughly fifteen different ways. The written rules already agree on two things: one width, 640, means \"narrow\", and hover-only features should follow touch. The mobile-layout session decided the same: width decides layout, so a narrow computer window gets the phone layout. The proposal keeps all that and names four facts. Phone app: this is the Android app. Narrow window: under 640 wide, on any device. Touch: the person is using a finger, not a mouse. Assistant on this device: the assistant runs here, not on a computer elsewhere.",
+      "notice": "Rule of thumb. Spacing and layout follow narrow. Hover labels, keyboard popping up, \"tap\" wording, bigger buttons and the terminal's floating message box follow touch. File picker, notifications, hiding local models and \"this phone\" wording follow phone app or assistant on this device. A guard would stop new code asking any other way. This is the single place you asked for in the tidy.",
+      "yes": "Use this rule",
+      "no": "Not this rule"
+    },
+    {
+      "id": "F-4",
+      "words": true,
+      "surface": "Chat, on touch screens",
+      "path": "The chat scrollbar and message times",
+      "headline": "Which devices should hide the chat scrollbar and most message times?",
+      "today": "You chose that a narrow computer window keeps its scrollbar and message times. On the branch these two are switched by width alone. Under the rule above they need a different switch, and there are two reasonable ones. They differ only for a wide touch screen, such as your Z13 used by finger or a tablet.",
+      "problem": "If they follow touch alone, a full-width Z13 window loses its scrollbar and times the moment you use a finger. If they need touch and a narrow window together, it keeps them.",
+      "proposal": "Phones, and phone browsers on remote access, look exactly as you approved under both options. A narrow computer window with a mouse keeps scrollbar and times under both.",
+      "options": [
+        {
+          "id": "touch-and-narrow",
+          "label": "Touch and narrow",
+          "pros": ["Only phone-sized touch screens get the phone treatment.", "A Z13 or tablet at full width keeps the roomier computer look."],
+          "cons": ["A tablet held upright and narrow gets the phone look, wide gets the computer look; it changes as you rotate."],
+          "recommended": true
+        },
+        {
+          "id": "touch-only",
+          "label": "Touch alone",
+          "pros": ["Simplest rule: finger means no scrollbar."],
+          "cons": ["A wide Z13 window loses its scrollbar and times whenever touch is the main input."]
+        }
+      ]
+    },
+    {
+      "id": "F-5",
+      "words": true,
+      "surface": "Terminal view, on a laptop using remote access",
+      "path": "A laptop's web browser connected to your computer, terminal view",
+      "headline": "Should a laptop's browser on remote access get the phone's terminal layout?",
+      "today": "On the phone, the message box floats over the bottom of the terminal, and when the box grows the terminal slides up instead of re-fitting. You approved that on the phone; it is what stopped Claude Code printing lines twice. The branch switches this on for everything except the computer app itself. A laptop's web browser on remote access is \"not the computer app\", so it gets the phone layout too, even with a mouse and a big screen.",
+      "problem": "On a laptop nothing needs to float: there is no on-screen keyboard. The terminal there just stops re-fitting itself, for no benefit.",
+      "proposal": "Under the rule above this follows touch. Yes means only touch screens get the floating layout and laptops on remote access go back to how they were. No means leave it as built.",
+      "options": [
+        {
+          "id": "touch-screens-only",
+          "label": "Touch screens only",
+          "pros": ["Laptops on remote access behave as they did before this work.", "Phones and phone browsers keep exactly what you approved."],
+          "cons": ["One more thing for the phone retest, since the switch behind it changes."],
+          "recommended": true
+        },
+        {
+          "id": "as-built",
+          "label": "Leave as built",
+          "pros": ["Nothing to retest."],
+          "cons": ["Laptop users on remote access get a thumb layout with a mouse."]
+        }
+      ]
+    },
+    {
+      "id": "F-6",
+      "words": true,
+      "surface": "Terminal view, on the computer app",
+      "path": "Several chats open, one on screen, then the window is resized",
+      "headline": "On the computer, should chats you are not looking at resize their terminal straight away?",
+      "today": "Each Claude Code chat has a hidden terminal with a size. On master, when you resize the window, only the chat on screen resizes; the others catch up when you next open them, and Claude Code redraws at that moment. On the branch, the others resize straight away in the background, so they are already right when you open them. It was built so a new phone chat starts at the right size, and it applies to the computer too.",
+      "problem": "It is probably better: no redraw when you switch chats. But each resize makes Claude Code redraw, which is how doubled lines appear in terminal view, and nobody has watched this on a computer with several chats open while dragging a window edge.",
+      "proposal": "Choose whether the computer keeps it.",
+      "options": [
+        {
+          "id": "keep-and-check",
+          "label": "Keep it, I check first",
+          "summary": "I test it on a computer with several chats open before merge and show you the result in the computer review deck.",
+          "pros": ["Chats are already the right size when you switch to them.", "If the test shows doubled lines, I come back to you before anything merges."],
+          "cons": ["A change to the computer app that began as a phone fix."],
+          "recommended": true
+        },
+        {
+          "id": "phone-only-resize",
+          "label": "Phone only",
+          "pros": ["The computer app behaves exactly as on master."],
+          "cons": ["Loses the likely improvement on computers."]
+        }
+      ]
+    },
+
+    {
+      "id": "P-4",
+      "page": "4. Two settings questions, asked more plainly, and who tests what",
+      "intro": "The mode badge and fullscreen mode again, with what I found, then one gap in the testing plan."
+    },
+    {
+      "id": "F-7",
+      "words": true,
+      "surface": "Mode badge",
+      "path": "The NORMAL / AUTO badge on a new Claude Code chat",
+      "headline": "Should YouCoded tell Claude Code which mode to start in, so the badge is right from the first second?",
+      "today": "I traced it. YouCoded never tells Claude Code which mode to start in. Claude Code decides by itself, and YouCoded guesses NORMAL until Claude Code draws its footer a second or two later. On your setup Claude Code starts in AUTO, so you saw NORMAL flip to AUTO. The only thing YouCoded does pass is your Skip permissions switch. The built-in assistant is different, because its mode is known the moment the chat starts.",
+      "problem": "A guess is wrong whenever Claude Code's own choice differs. The branch hides the badge for up to six seconds instead of knowing. You wrote that it should always start in AUTO unless you turn on Skip permissions.",
+      "proposal": "If YouCoded states the mode when it starts Claude Code, the badge can be right at once and the six-second gap goes. I still need to confirm the installed Claude Code accepts that instruction; if it does not, I come back to you.",
+      "options": [
+        {
+          "id": "always-auto",
+          "label": "Always start in AUTO",
+          "summary": "Every new Claude Code chat starts in AUTO for everyone, or in bypass when Skip permissions is on.",
+          "pros": ["What you described.", "Badge correct from the first second, the same on every device."],
+          "cons": ["Someone whose own Claude Code is set to ask before every step would now start in AUTO inside YouCoded."],
+          "recommended": true
+        },
+        {
+          "id": "follow-claude",
+          "label": "Follow Claude Code",
+          "summary": "Leave the choice to Claude Code and keep the short blank badge until it reports.",
+          "pros": ["Respects whatever each person set in Claude Code itself."],
+          "cons": ["The blank moment stays, on phone and computer."]
+        }
+      ]
+    },
+    {
+      "id": "F-8",
+      "words": true,
+      "surface": "Fullscreen display mode",
+      "path": "Claude Code in terminal view on the phone",
+      "headline": "Fullscreen mode on the phone: leave it as the quiet default, or add a switch to turn it off?",
+      "today": "Claude Code can draw itself two ways. Classic: it prints down the screen like a transcript. Fullscreen: it takes over the screen like an app and redraws in place. Classic is what printed lines twice on the phone whenever the screen changed size. On 2026-11-08 you chose fullscreen for the phone, and on 2026-11-09 you said it looks good. The phone sets it only for people who have never chosen a mode themselves. Your open question was how someone changes it: they type /tui default in a chat, and I tested that this works and that the phone then respects it for good.",
+      "problem": "Nothing in YouCoded mentions any of this. The only reason to switch back is preferring classic, and classic on a phone brings back the doubled lines.",
+      "proposal": "Choose whether it deserves a visible setting.",
+      "options": [
+        {
+          "id": "no-switch",
+          "label": "No switch",
+          "summary": "Leave it as built. I add one line to the phone's help text saying terminal view uses fullscreen mode and how to change it.",
+          "pros": ["No setting that leads people back to the doubled-lines problem.", "Your question is answered: it can be changed, and the change sticks."],
+          "cons": ["Changing it means typing a command."],
+          "recommended": true
+        },
+        {
+          "id": "add-switch",
+          "label": "A switch in Settings",
+          "pros": ["Visible and changeable without a command."],
+          "cons": ["One more phone setting, offering a mode known to misbehave there.", "A design step first: it would come to you as a picture."]
+        }
+      ]
+    },
+    {
+      "id": "F-9",
+      "words": true,
+      "surface": "Testing",
+      "path": "A two-player game and two-device sync",
+      "headline": "You left the two-player game and two-device sync off your phone list. Should I test them instead?",
+      "today": "You picked fresh install, sign-ins and phone-to-computer for your retest. Neither a real two-player game on the new rooms nor sync between two devices has ever been run, by a person or by a check. You also chose \"server first, then test\" for release order, which assumed one real game gets played before the app depends on the rooms.",
+      "problem": "If nobody runs them, the first real game and the first real sync happen after release.",
+      "proposal": "I can run both without your phone: two separate Dev copies on this computer, signed in as two test accounts, playing a game through the live server and syncing a chat between them.",
+      "options": [
+        {
+          "id": "claude-tests",
+          "label": "Claude tests both",
+          "pros": ["Both get a real end-to-end run before release.", "None of your time."],
+          "cons": ["Runs between two computer copies, so it proves the server and sync, not the phone's own screens for them."],
+          "recommended": true
+        },
+        {
+          "id": "destin-tests",
+          "label": "Add them to my list",
+          "pros": ["Proven on the real phone."],
+          "cons": ["About fifteen more minutes of your retest."]
+        },
+        {
+          "id": "skip-both",
+          "label": "Skip both",
+          "pros": ["No time spent."],
+          "cons": ["First real use happens in the hands of other people."]
+        }
+      ]
+    }
+  ]
+}

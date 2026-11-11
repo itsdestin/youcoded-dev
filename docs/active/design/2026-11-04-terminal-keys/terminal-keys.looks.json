@@ -1,0 +1,74 @@
+{
+  "title": "Phone terminal keys — three looks",
+  "key": "terminal-keys-looks",
+  "out": "terminal-keys.looks.html",
+  "images": "images/terminal-keys.looks",
+  "runs": {
+    "today": "runs-looks/today"
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Terminal view on a phone",
+      "path": "The row of keys above the message box, and the up/down arrows on the right",
+      "headline": "Which look should the terminal keys use?",
+      "notice": "In all three: the ← → keys are gone, the five keys share the row edge to edge with no gap at the end, the up and down arrows are two separate keys with no line between them, lined up above the send button, and Ctrl now works (tap it, then type a letter).",
+      "risk": "All three use the app's shared buttons, so corners and colours follow your theme whichever you pick.",
+      "variants": [
+        {
+          "id": "raised",
+          "label": "Raised keys",
+          "crop": "chat/terminal#keys-raised@390x300+0+544",
+          "summary": "Each key is a filled card with a border, like a physical key. Clearest to tap; the busiest of the three."
+        },
+        {
+          "id": "outlined",
+          "label": "Outlined keys",
+          "crop": "chat/terminal#keys-outlined@390x300+0+544",
+          "summary": "Each key is an outline with no fill, like the app's secondary buttons. Quieter; on busy wallpapers the outline does all the work."
+        },
+        {
+          "id": "strip",
+          "label": "One strip",
+          "crop": "chat/terminal#keys-strip@390x300+0+544",
+          "summary": "One soft track holds the five keys as plain labels, no boxes around each one. The calmest; individual keys show only when pressed."
+        }
+      ]
+    },
+    {
+      "id": "L-2",
+      "words": true,
+      "pick": "several",
+      "surface": "Terminal view on a phone",
+      "path": "The row of keys above the message box",
+      "headline": "Should either of these two Claude Code keys join the row?",
+      "today": "The row has Ctrl, Esc, Tab, Enter and Space. You ruled out Shift+Tab (the status bar already switches modes) and Ctrl+C (Stop and Esc already cover it). These two were the other suggestions.",
+      "problem": "Neither has a single tap on a phone now, so both are slow to reach.",
+      "proposal": "Pick any that should get a key; pick neither (Other: none) and the row stays at five keys.",
+      "options": [
+        {
+          "id": "redraw",
+          "label": "Redraw",
+          "pros": [
+            "One tap repaints the terminal if lines ever look doubled or garbled again"
+          ],
+          "cons": [
+            "Rarely needed once the doubled-line fix holds",
+            "A sixth key makes each key narrower"
+          ]
+        },
+        {
+          "id": "rewind",
+          "label": "Rewind",
+          "pros": [
+            "Opens Claude Code's list of earlier messages so you can go back to one (Esc twice)"
+          ],
+          "cons": [
+            "Chat view may be the easier place to go back",
+            "A sixth key makes each key narrower"
+          ]
+        }
+      ]
+    }
+  ]
+}

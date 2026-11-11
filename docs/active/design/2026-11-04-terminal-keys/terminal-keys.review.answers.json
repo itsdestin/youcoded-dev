@@ -1,0 +1,47 @@
+{
+ "deck": "terminal-keys-review",
+ "started": "2026-11-05T07:21:51.296Z",
+ "submitted": "2026-11-05T07:24:44Z",
+ "cur": 4,
+ "answers": {
+  "TK-1": {
+   "v": "other",
+   "t": 1793863380351,
+   "note": "these are odd. and the youcoded design guide should be clear that i don't like horizontal lines that bisect a container or the full screen. the line between the arrows is grodi. i also don't like the extra space/gap on the right side of the left/right arrows",
+   "seconds": 69,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "TK-2": {
+   "v": "other",
+   "t": 1793863401739,
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "TK-3": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1,
+   "t": 1793863403348
+  },
+  "TK-5": {
+   "v": "yes",
+   "t": 1793863441042,
+   "note": "",
+   "seconds": 38,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "TK-4": {
+   "v": "pick",
+   "pick": "work",
+   "t": 1793863483657,
+   "note": "we should add any other useful terminal/claude code quality of life buttons here to to fill out the space a bit. what are the left/right arrows actually useful for in terminal/cc? ",
+   "seconds": 43,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

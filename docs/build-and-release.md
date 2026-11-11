@@ -34,7 +34,7 @@ The release procedure is `youcoded-admin/skills/release/SKILL.md`: review the ap
 2. Review one app CHANGELOG entry and check the candidate on desktop and Android. The **tag**, not locally edited version files, sets the shipped version: desktop CI patches `package.json`; Android CI stamps `versionName` and a monotonic `versionCode`. Local Gradle values are not Play release values.
 3. After candidate review, explicit release go/no-go, and the authorized merge/push, tag `vX.Y.Z` on the verified app commit on remote master. Its two workflows must both pass: desktop waits for every OS before upload; Android uploads APK/AAB. They contribute to one GitHub Release, but the tag push alone does not prove the release finished.
 4. Check the actual release assets, including `youcoded-release.json` and `youcoded-release.json.sig` — without both the in-app Update button refuses the release even if installers uploaded. **Verify contents, not just names:** download all release installers and the manifest/signature into an empty temporary directory, confirm the manifest version and every installer's SHA-256/byte size match the downloaded files, and verify the signature against `desktop/src/main/update-signing-key.ts` (helpers exported by `desktop/scripts/generate-release-manifest.mjs`). If `Sign release manifest` warned, diagnose it and get approval for manual signing: use a NEW EMPTY folder containing ONLY installers downloaded from that exact release, then from `youcoded/` run `node desktop/scripts/generate-release-manifest.mjs --dir <folder> --version vX.Y.Z --key ~/system/youcoded-release-signing/update-signing-key.private.pem --verify-with desktop/src/main/update-signing-key.ts`. Inspect the newly generated manifest before upload. If the release already has either manifest file, check what is there first; use `gh release upload vX.Y.Z <folder>/youcoded-release.json <folder>/youcoded-release.json.sig --clobber` only after confirming an intentional replacement of the pair. Never mix installers from another release into the signing folder.
-5. PartyKit deploys on a master push touching `desktop/partykit/**` (or explicit dispatch), not because a later release tag was pushed. Verify the actual relevant deployment run if game-server changes are part of the release.
+5. The Connect 4 / Chess game rooms are Durable Objects inside the marketplace Worker (hosted PartyKit shut down 2026-10-23), so they ship with the Worker's CI deploy on marketplace master, not with a release tag. Verify that Worker deploy run if game-server changes are part of the release.
 6. Arch Linux: `youcoded/packaging/aur/PKGBUILD` (AUR package `youcoded-bin`) hard-codes `pkgver` and checksums of the release's `.pacman` file. After a release, bump `pkgver`, run `updpkgsums`, regenerate `.SRCINFO` and publish it (never done by the tag workflows).
 
 ### Bug-fix releases (hotfixes)
@@ -200,8 +200,8 @@ until [ "$(gh api repos/itsdestin/youcoded/actions/runs/<id>/artifacts \
   --jq '.artifacts|length')" = 3 ]; do sleep 45; done
 ```
 
-**Android needs its own dispatch.** `android-test-build.yml` produces debug-signed APKs with a
-`.releasetest` package suffix — wrong for a public download. Dispatch `android-release.yml`
+**Android needs its own dispatch.** `android-test-build.yml` produces a debug-signed APK (the
+`.dev` test copy) — wrong for a public download. Dispatch `android-release.yml`
 instead: it builds a properly signed release APK, and its "Create GitHub Release" step is
 guarded by `if: startsWith(github.ref, 'refs/tags/')`, so a manual dispatch publishes nothing.
 Leave `base` blank to select the next feature release automatically; an explicit prefix must match
@@ -213,7 +213,7 @@ named after the version.
 not.** Its APKs used to inherit the hand-set `versionName` in `app/build.gradle.kts` (`1.2.4`, the
 May release), so every dogfood build reported itself to analytics as a 1.2.4 build — a 1.3 beta
 landing in your own version breakdown as last spring's release. It now takes the same `base` input
-and uses the shared release-scoped beta resolver; the build type adds `-dev` / `-releasetest`
+and uses the shared release-scoped beta resolver; the test build adds `-dev`
 on top, e.g. `1.4.0-beta.1-dev` after official release 1.3.1. **`versionCode` is deliberately left alone**: these install as separate
 apps, so Play never sees the number, and raising it would block installing a LOCAL build (still the
 hand-set `20`) over a CI one, because Android refuses a lower `versionCode`.
@@ -228,7 +228,7 @@ that second hash is added separately.
 and `productName: YouCoded`, so NSIS upgrades over the existing install rather than sitting beside
 it. `AppData/Roaming/youcoded` (window bounds, localStorage) carries over, and `~/.claude/` +
 `~/.youcoded/` are shared as always — which is what makes it usable as a daily driver, and also
-what makes rollback lossy. There is no side-by-side desktop equivalent of Android's `.releasetest`
+what makes rollback lossy. There is no side-by-side desktop equivalent of Android's `.dev`
 suffix; if you want isolation, use a VM.
 
 **On Linux "in place" depends on the format.** The AppImage is a loose file, so a beta lands *beside*
@@ -515,15 +515,12 @@ cd youcoded && ./scripts/build-web-ui.sh
 
 ## Verify behavior under R8 minification (dev/release parity)
 
-Debug builds skip R8 minification, which means a class of bug — string-based reflection, annotation introspection, anything that depends on stable symbol names — works fine in dev and silently dies in release. The 2026-04-30 PluginInstaller reflection footgun (commit `912f5ca7`) shipped this way: every dev test passed, every release user couldn't install plugins. See `docs/PITFALLS.md → Build-Type Parity (Android)`.
+**One copy to test (Destin, 2026-11-10: "a single way to test the app").** There are two Android build types: `debug` (the one test copy, "YouCoded Dev", `com.youcoded.app.dev`) and `release`. The Dev copy is shrunk by R8 with the release's own rules, and `android-test-build.yml` hands over only that file plus `mapping.txt` (to decode a shrunk build's crash report). It stays debuggable so the page can be inspected, which means R8 keeps debug information and skips some optimisations: close to the release, not byte-identical. The CI test build and a build made on this computer are signed with different debug keys; `bash scripts/android-install-test-copy.sh <run-id> | --build <branch> [--launch]` does the whole install: it refuses any file that is not `com.youcoded.app.dev`, re-signs with `~/.android/debug.keystore` when the phone's copy needs it (so its data is kept), and never uninstalls.
 
-The `releaseTest` build type is the parity check. Same R8 / shrinker / proguard config as the production release flavor, signed with the debug keystore, installs side-by-side via `applicationIdSuffix = ".releasetest"`:
+Plain debug builds used to skip R8, which hid a class of bug (string-based reflection, annotation introspection, anything that depends on stable symbol names): it works in dev and silently dies in release. The 2026-04-30 PluginInstaller reflection footgun (commit `912f5ca7`) shipped this way: every dev test passed, every release user couldn't install plugins. See `docs/PITFALLS.md -> Build-Type Parity (Android)`. Because the Dev copy is now shrunk too, building it is the parity check:
 
 ```bash
-cd youcoded && ./gradlew :app:assembleReleaseTest
-adb install -r app/build/outputs/apk/releaseTest/*.apk
-# Installs as "YouCoded ReleaseTest" (bridge port 9961) alongside production.
-# Same data isolation as the regular debug app — no risk to your real install.
+cd youcoded && ./gradlew :app:assembleDebug
 ```
 
-Use this before tagging if you've touched code that involves reflection, annotation processing, or other R8-sensitive patterns. `android-ci.yml` is a reusable workflow called from `desktop-ci.yml` (the PR/master/nightly entry point); it builds `assembleReleaseTest` for every non-docs-only PR and master push (a diff entirely under `docs/` skips it), so most regressions get caught at PR time. (`android-test-build.yml` is `workflow_dispatch` only — a manual beta build, not a push trigger.) Both youcoded CI workflows moved from a branch-name allowlist to `pull_request` on 2026-07-23; see `docs/archive/specs/2026-07-23-dependabot-design.md` §4.1 for why.
+Build it before tagging if you've touched code that involves reflection, annotation processing, or other R8-sensitive patterns. `android-ci.yml` is a reusable workflow called from `desktop-ci.yml` (the PR/master/nightly entry point); it builds `assembleDebug` (the R8-shrunk Dev copy) for every non-docs-only PR and master push (a diff entirely under `docs/` skips it), so most regressions get caught at PR time. (`android-test-build.yml` is `workflow_dispatch` only — a manual beta build, not a push trigger.) Both youcoded CI workflows moved from a branch-name allowlist to `pull_request` on 2026-07-23; see `docs/archive/specs/2026-07-23-dependabot-design.md` §4.1 for why.

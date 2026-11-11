@@ -1,0 +1,104 @@
+[
+  {
+    "name": "chat#phone",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-01-android-findings/runs-density-2/after/chat#phone/halftone-dimension.png",
+    "ms": 1985,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-01-android-findings/runs-density-2/after/chat#phone/meadow-mist.png",
+    "ms": 2544,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-01-android-findings/runs-density-2/after/settings/sync/halftone-dimension.png",
+    "ms": 3370,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 206,
+      "w": 374,
+      "h": 433
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-01-android-findings/runs-density-2/after/settings/sync/meadow-mist.png",
+    "ms": 4534,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 214,
+      "w": 374,
+      "h": 417
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#phone-additional-open",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-01-android-findings/runs-density-2/after/settings/sync#phone-additional-open/halftone-dimension.png",
+    "ms": 5095,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 107,
+      "w": 374,
+      "h": 631
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#phone-additional-open",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-01-android-findings/runs-density-2/after/settings/sync#phone-additional-open/meadow-mist.png",
+    "ms": 7135,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 123,
+      "w": 374,
+      "h": 598
+    },
+    "parts": []
+  }
+]

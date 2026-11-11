@@ -1,0 +1,233 @@
+{
+ "deck": "android-findings-2026-11-01",
+ "started": "2026-11-02T02:58:19.661Z",
+ "submitted": "2026-11-02T03:13:54Z",
+ "cur": 3,
+ "answers": {
+  "plan": {
+   "v": "pick",
+   "pick": "next-release",
+   "t": 1793588363662,
+   "note": "we should fix everything, but i will release separately. we have a few other parallel workstreams going alongside this and i'd like to finish everything first and release together.",
+   "seconds": 32,
+   "theme": "morning-rounds"
+  },
+  "cards": {
+   "v": "other",
+   "t": 1793588363662,
+   "note": "we can just have this all as a single card. we're going to work through all of this today in this session.",
+   "seconds": 32,
+   "theme": "morning-rounds"
+  },
+  "s1-start": {
+   "v": "pick",
+   "pick": "ship-data",
+   "t": 1793588607419,
+   "seconds": 27,
+   "theme": "morning-rounds"
+  },
+  "s1-lock": {
+   "v": "yes",
+   "t": 1793588607419,
+   "note": "but we'd also need to automate the process of upgrading all of these to latest/best on each release if we dont already.",
+   "seconds": 27,
+   "theme": "morning-rounds"
+  },
+  "s2-setup": {
+   "v": "other",
+   "t": 1793588607419,
+   "note": "this is also a desktop problem. i think we should show these as cards with as close to the original claude code screen wording as we can. ",
+   "seconds": 27,
+   "theme": "morning-rounds"
+  },
+  "s3-sync": {
+   "v": "yes",
+   "t": 1793588607419,
+   "seconds": 27,
+   "theme": "morning-rounds"
+  },
+  "s3-badge": {
+   "v": "no",
+   "t": 1793588607419,
+   "note": "",
+   "seconds": 27,
+   "theme": "morning-rounds"
+  },
+  "s4-games": {
+   "v": "other",
+   "t": 1793588607419,
+   "note": "my desktop app says im online rn? i think you are misunderstanding something",
+   "seconds": 27,
+   "theme": "morning-rounds"
+  },
+  "s4-watch": {
+   "v": "yes",
+   "t": 1793588607419,
+   "seconds": 27,
+   "theme": "morning-rounds"
+  },
+  "s5-attach": {
+   "v": "pick",
+   "pick": "wire",
+   "t": 1793588607419,
+   "seconds": 27,
+   "theme": "morning-rounds"
+  },
+  "s6-platform": {
+   "v": "other",
+   "t": 1793588607419,
+   "note": "we should think this through carefully, but we should definitely fix and show phone-specific menus. i think the best way to do this would be a single unified settings element that renders differently on phone/desktop/remote browser, but idk. we should also take a bit of time to look at how various menus/pages/submenus/popups appear/render on mobile to ensure they fit the screen well visually.",
+   "seconds": 27,
+   "theme": "morning-rounds"
+  },
+  "f-return": {
+   "v": "yes",
+   "t": 1793588697343,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "f-chatgpt": {
+   "v": "yes",
+   "t": 1793588697343,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "f-layout": {
+   "v": "yes",
+   "t": 1793588697343,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "f-wording": {
+   "v": "yes",
+   "t": 1793588697343,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "f-local": {
+   "v": "pick",
+   "pick": "hide",
+   "t": 1793588697343,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "f-tour": {
+   "v": "yes",
+   "t": 1793588697343,
+   "note": "i think this may be slightly broken/janky on desktop also. we should do any minor/easy fixes, with a card added to rebuild and improve the tour down the line",
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "f-notify": {
+   "v": "pick",
+   "pick": "keep",
+   "t": 1793588697343,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "f-error": {
+   "v": "yes",
+   "t": 1793588697343,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  },
+  "d-market": {
+   "v": "pick",
+   "pick": "bottom",
+   "t": 1793589233277,
+   "note": "move to end with note that they cant run. i also think we should rethink how to condense the ui a bit (maybe more folded cards with scrollable lists or \"view all\" buttons or something, to make the marketplace better fit the phone screen like a google play store or apple app store would)",
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "d-chips": {
+   "v": "yes",
+   "t": 1793589233277,
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "d-paths": {
+   "v": "yes",
+   "t": 1793589233277,
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "d-copy": {
+   "v": "yes",
+   "t": 1793589233277,
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "d-mode": {
+   "v": "yes",
+   "t": 1793589233277,
+   "note": "i think this is because our renderer starts with normal always, but updates to the real claude code permissions setting after claude sends a message. claude code always starts on auto mode, so it always starts with normal then updates to auto. we should fix.",
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "d-tick": {
+   "v": "yes",
+   "t": 1793589233277,
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "d-dupe": {
+   "v": "yes",
+   "t": 1793589233277,
+   "note": "just fix if needed",
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "d-2048": {
+   "v": "yes",
+   "seconds": 36,
+   "theme": "morning-rounds",
+   "t": 1793589233277
+  },
+  "d-back": {
+   "v": "yes",
+   "seconds": 36,
+   "theme": "morning-rounds",
+   "t": 1793589233277,
+   "note": "should work like esc on desktop"
+  },
+  "d-done": {
+   "v": "other",
+   "seconds": 36,
+   "theme": "morning-rounds",
+   "t": 1793589233277,
+   "note": "i think \"needs you\" should be a real notification. i think we should have a live status/notification thing that's always on when assistant is open in the background. this should always show number of sessions working/waiting/done"
+  },
+  "d-pages": {
+   "v": "yes",
+   "seconds": 36,
+   "theme": "morning-rounds",
+   "t": 1793589233277,
+   "note": "yeah i think, on phone, the button should just toggle between the scrollable list and the selected page. it should still appear to slide left/right. clicking a new page in the scrollable list should auto collapse it and show the page selected"
+  },
+  "d-answer": {
+   "v": "no",
+   "seconds": 36,
+   "theme": "morning-rounds",
+   "t": 1793589233277
+  },
+  "d-approve": {
+   "v": "no",
+   "seconds": 36,
+   "theme": "morning-rounds",
+   "t": 1793589233277
+  },
+  "d-hover": {
+   "v": "yes",
+   "seconds": 36,
+   "theme": "morning-rounds",
+   "t": 1793589233277,
+   "note": "this also happens on my touchscreen z13."
+  },
+  "d-keyboard": {
+   "v": "yes",
+   "seconds": 36,
+   "theme": "morning-rounds",
+   "t": 1793589233277
+  }
+ }
+}

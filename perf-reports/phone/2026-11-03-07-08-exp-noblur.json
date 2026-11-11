@@ -1,0 +1,157 @@
+{
+  "meta": {
+    "date": "2026-11-03T07:08:40.934Z",
+    "label": "exp-noblur",
+    "device": "SM-F766U1",
+    "android": "17",
+    "webview": "Chrome/156.0.8078.47",
+    "refreshHz": 120,
+    "frameMs": 8.3,
+    "screen": {
+      "w": 1080,
+      "h": 2520
+    },
+    "repeat": 3,
+    "trace": true,
+    "experiment": "(()=>{const s=document.createElement('style');s.textContent='*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}';document.head.appendChild(s);return document.documentElement.dataset.theme+' wp='+document.documentElement.hasAttribute('data-wallpaper')})()"
+  },
+  "results": [
+    {
+      "step": "appearance-open",
+      "what": "In Settings, tap Appearance; its popup opens",
+      "slowFrames": 2,
+      "droppedFrames": 5,
+      "worstFrameMs": 33,
+      "p95FrameMs": 8,
+      "longFrames": 0,
+      "longFramesMs": 0,
+      "tapResponseMs": 48,
+      "shownMs": 44,
+      "pageBusyMs": 208,
+      "graphicsBusyMs": 70,
+      "compositorBusyMs": 51,
+      "pageKinds": {
+        "Style (re-checking styles)": 37,
+        "Layout": 4,
+        "Paint": 31,
+        "Prepare layers": 13,
+        "Script": 42,
+        "Garbage collection": 3
+      },
+      "cpuAppPct": 37,
+      "cpuAssistantPct": 0,
+      "memoryMb": 378,
+      "screenJanky": 6,
+      "screenFrames": 14,
+      "screenP99": 46,
+      "failed": 0,
+      "first": {
+        "shownMs": 44,
+        "slowFrames": 2,
+        "worstFrameMs": 34,
+        "longFramesMs": 0
+      },
+      "runs": [
+        {
+          "frames": 114,
+          "slowFrames": 2,
+          "droppedFrames": 6,
+          "worstFrameMs": 34,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 48,
+          "shownMs": 44,
+          "cpuAppPct": 40,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 200,
+            "graphics": 110,
+            "compositor": 51,
+            "pageKinds": {
+              "Style (re-checking styles)": 37,
+              "Layout": 4,
+              "Paint": 31,
+              "Prepare layers": 13,
+              "Script": 42,
+              "Garbage collection": 3
+            }
+          },
+          "memoryMb": 378,
+          "worked": true,
+          "screenFrames": 16,
+          "screenJanky": 6,
+          "screenP90": 42,
+          "screenP99": 46
+        },
+        {
+          "frames": 117,
+          "slowFrames": 2,
+          "droppedFrames": 5,
+          "worstFrameMs": 33,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 56,
+          "shownMs": 48,
+          "cpuAppPct": 33,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 208,
+            "graphics": 67,
+            "compositor": 45,
+            "pageKinds": {
+              "Style (re-checking styles)": 32,
+              "Layout": 3,
+              "Paint": 28,
+              "Prepare layers": 10,
+              "Script": 46,
+              "Garbage collection": 0
+            }
+          },
+          "memoryMb": 378,
+          "worked": true,
+          "screenFrames": 12,
+          "screenJanky": 6,
+          "screenP90": 38,
+          "screenP99": 46
+        },
+        {
+          "frames": 117,
+          "slowFrames": 3,
+          "droppedFrames": 4,
+          "worstFrameMs": 25,
+          "p95FrameMs": 9,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 48,
+          "shownMs": 38,
+          "cpuAppPct": 37,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 214,
+            "graphics": 70,
+            "compositor": 51,
+            "pageKinds": {
+              "Style (re-checking styles)": 31,
+              "Layout": 3,
+              "Paint": 27,
+              "Prepare layers": 9,
+              "Script": 40,
+              "Garbage collection": 0
+            }
+          },
+          "memoryMb": 378,
+          "worked": true,
+          "screenFrames": 14,
+          "screenJanky": 7,
+          "screenP90": 22,
+          "screenP99": 31
+        }
+      ]
+    }
+  ]
+}
