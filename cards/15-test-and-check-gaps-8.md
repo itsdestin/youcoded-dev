@@ -11,7 +11,7 @@ summary: Some features, like the Office editor and Claude Code's startup menus, 
 area: Workspace
 ---
 Progress
-Done: On branch session/workspace-tools-batch (not merged): (a) the Office editor's early script now has 20 tests that it changes only what it should; (b) the quick check now picks tests for changes outside the desktop folder (Android manifest, workflows); (d) a damaged verdicts file is tested; (e) review-tool tests no longer print ~80 warnings; (h) the daily Claude Code pop-up check had failed 3 days because Claude Code renamed a tab ('Recently denied' to 'Recently blocked') - check updated to accept both. (f) is moot (test exists).
+Done: Landed on master 2026-11-10 (workspace PR #356): (a) the Office editor's early script now has 20 tests that it changes only what it should; (b) the quick check now picks tests for changes outside the desktop folder (Android manifest, workflows); (d) a damaged verdicts file is tested; (e) review-tool tests no longer print ~80 warnings; (h) the daily Claude Code pop-up check had failed 3 days because Claude Code renamed a tab ('Recently denied' to 'Recently blocked') - check updated to accept both. (f) is moot (test exists).
 Next: Destin 2026-11-10: voice-install guard WIDENED (workspace PR #358: also catches execSync, fork, require()/import() and the node: spelling; real source still clean). Mac timing item (c) DROPPED until a Mac user reports it. Optional and still open: refresh the saved Claude Code pop-up recordings to the current version.
 Blocked: 
 
