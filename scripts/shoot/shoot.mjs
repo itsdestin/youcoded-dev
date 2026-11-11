@@ -371,7 +371,13 @@ function fullSizeAlike(a, b) {
 
 function lookalikes(results, screens) {
   const same = new Map(screens.filter((s) => s.sameAs).map((s) => [s.name, s.sameAs.name]));
-  const expected = (a, b) => same.get(a) === b || same.get(b) === a;
+  // WHY follow the chain: `sameAs` names one other screen, but three screens can be the same
+  // picture (chat, chat#queue-idle-after -> chat, dev/toast#none -> chat#queue-idle-after). Judged
+  // pair by pair, the two ends of that chain were reported as an unexplained LOOK-ALIKE and
+  // --check failed on every branch (2026-11-11). Two screens are expected to match when their
+  // chains end at the same screen. The `seen` set stops a loop of sameAs from spinning.
+  const root = (n) => { const seen = new Set(); while (same.has(n) && !seen.has(n)) { seen.add(n); n = same.get(n); } return n; };
+  const expected = (a, b) => root(a) === root(b);
   const out = [];
   for (const theme of themes) {
     const got = results.filter((r) => r.ok && r.theme === theme && r.thumb);
