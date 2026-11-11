@@ -1,0 +1,144 @@
+{
+  "title": "Work board: a real release view, and a cleanup",
+  "key": "work-board-cleanup-review",
+  "out": "work-board-cleanup.review.html",
+  "images": "images/work-board-cleanup.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Work board · Today",
+      "path": "Today, bottom section: Since the last release",
+      "crop": "work-board/today-release@1280x640+0+250",
+      "headline": "Since the last release now shows what would really go out if you released today, worked out fresh each time the board opens.",
+      "changed": "It was a typed list for v1.3.0 (Sept 20, 67 changes). It now finds the newest official release by itself (v1.3.3, Oct 23), counts every change merged after it (30), and sorts them into New and improved, Fixes and Behind the scenes. Item numbers open that work item. 'Show all 30 changes' now works. The dead 'Start a test release' button is gone.",
+      "measured": "30 changes since v1.3.3, checked with GitHub when the board was drawn",
+      "notice": "A line says when it was checked. Offline it says it is using the last saved copy and when that was, never old numbers. The moment a new release is published, this resets to zero on its own.",
+      "risk": "Groups are sorted from the words in each change's title, so now and then one lands in the wrong group. The wording is the change's own title, which is sometimes technical.",
+      "highlight": {
+        "box": [
+          7.5,
+          1,
+          85,
+          92
+        ]
+      },
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "id": "S-2",
+      "surface": "Work board · Today",
+      "path": "Today, Since the last release, on a narrow window in the dark theme",
+      "crop": "work-board/today-release-dark-narrow",
+      "headline": "On a narrow window the release groups stack and each change stays readable, with the item numbers wrapping beside the words.",
+      "changed": "Same section, narrow window, dark theme. Each group is a box, the item numbers are small outlined buttons, and the 'Show all' button sits at the bottom.",
+      "notice": "Nothing runs off the edge of the window.",
+      "highlight": {
+        "box": [
+          3,
+          18,
+          94,
+          76
+        ]
+      },
+      "themes": [
+        "dark"
+      ]
+    },
+    {
+      "id": "S-3",
+      "surface": "Work board · Today",
+      "path": "Today, Merged and Tidy up",
+      "crop": "work-board/today-tidy",
+      "headline": "Tidy up now shows today's leftovers, and the Merged heading no longer claims everything in it is waiting for the next release.",
+      "changed": "In a plain browser Tidy up used to show a typed list from Oct 12; it now reads the same live facts as inside YouCoded. 'Merged' now says some of its items already went out. A single leftover now reads '1 copy', not '1 copies'.",
+      "notice": "Tidy up shows 2 rows today (it showed 3 from the old snapshot).",
+      "highlight": {
+        "box": [
+          7.5,
+          3,
+          85,
+          94
+        ]
+      },
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "id": "S-4",
+      "surface": "Work board · Big picture",
+      "path": "Big picture, top card",
+      "crop": "work-board/bigpicture",
+      "headline": "What's blocked, Built twice and Shipped are now proper buttons, and 'last month' really means the last 30 days.",
+      "changed": "The three underlined words are filter buttons like the ones on Screens. 'Became real in the last month' used a date typed in on Sept 12; it now counts back 30 days from today and, when nothing is recorded in that window, says so and gives the date of the newest record.",
+      "notice": "The right-hand card is now a short honest note, because the newest record in the vision list is Oct 8.",
+      "risk": "It looks emptier than before, but the old list was months out of date.",
+      "highlight": {
+        "box": [
+          7.5,
+          35,
+          85,
+          43
+        ]
+      },
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "id": "S-5",
+      "surface": "Work board · Big picture",
+      "path": "Big picture, 'Shipped in the last 30 days' button",
+      "crop": "work-board/bigpicture-lens",
+      "headline": "The Shipped list uses a rolling 30 days, and says plainly when nothing is recorded instead of showing a blank box.",
+      "changed": "It was fixed to 'since Oct 1'. The empty state now explains that dates here are written in by hand and names the newest one.",
+      "notice": "The pressed button is filled so you can see which list you are in; pressing it again goes back.",
+      "highlight": {
+        "box": [
+          7.5,
+          42,
+          85,
+          22
+        ]
+      },
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "id": "S-6",
+      "surface": "Work board · Screens",
+      "path": "Screens tab, top",
+      "crop": "work-board/screens",
+      "headline": "Screens no longer shows a 'Changing now' button or 'being changed' badges, because they came from a typed list that stopped at Oct 12.",
+      "changed": "Removed the stale button and the badges on the pictures. Also in this cleanup: every clickable thing now has a keyboard focus ring, and the few that lacked a hover (the small screen strip, the combine dialog's rows) now light up.",
+      "notice": "Fewer badges on the picture tiles. Hover and focus on those controls now behave like the rest of the board.",
+      "risk": "'Which screens is this item changing?' has no answer on the board until items record their screens (listed as a proposal).",
+      "highlight": {
+        "box": [
+          7.5,
+          9,
+          85,
+          36
+        ]
+      },
+      "themes": [
+        "light"
+      ]
+    }
+  ]
+}
