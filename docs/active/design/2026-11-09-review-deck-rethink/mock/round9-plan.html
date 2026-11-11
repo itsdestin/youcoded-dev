@@ -1,0 +1,223 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Round 9 plan drawings</title>
+<!-- Drawings for the round-9 plan deck. Open with #e1 #e2 #e3 #k1 #v1 #v2 #f1 to show one.
+     WHY not boxes this time (Destin, round 8: "you need to give me something better"): the round-6
+     drawings were schematic boxes, so what he approved and what got built differed. These use the
+     deck's own colours, type and sizes, and this feature's REAL content, so a drawing is a promise. -->
+<style>
+ :root{--canvas:#0D1117;--panel:#161B22;--inset:#21262D;--well:#0D1117;--accent:#B1BAC4;--on-accent:#0D1117;--fg:#C9D1D9;--fg-2:#A0AAB4;--mut:#858D97;--faint:#4E555E;--edge:#343A41;--link:#58A6FF;--yes:#2E9B57;--no:#E5484D;--other:#C99700}
+ *{box-sizing:border-box} html{background:var(--canvas)}
+ body{margin:0;background:var(--canvas);color:var(--fg);font:15px/1.5 'Cascadia Mono','Cascadia Code','Fira Code',monospace;padding:18px}
+ section{display:none} section:target{display:block}
+ p{margin:0} .mut{color:var(--mut)} .f2{color:var(--fg-2)} .sm{font-size:13px} .b{font-weight:600}
+ .top{display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--panel);border:1px solid var(--edge);border-radius:12px 12px 0 0}
+ .body{border:1px solid var(--edge);border-top:0;border-radius:0 0 12px 12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+ .title{font-weight:600}
+ .stages{display:flex;gap:6px;margin-left:auto}
+ .stage{display:inline-flex;align-items:center;height:30px;padding:0 12px;border:1px solid var(--edge);border-radius:999px;font-size:13px;color:var(--mut);white-space:nowrap}
+ .stage.done{color:var(--fg-2)} .stage.done::before{content:"✓ ";color:var(--yes)}
+ .stage.now{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}
+ .card{border:1px solid var(--edge);border-radius:12px;background:var(--panel);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+ .card h3{margin:0;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+ .lbl{font-size:12px;font-weight:600;color:var(--mut)}
+ .pill{margin-left:auto;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--edge);color:var(--fg-2);white-space:nowrap}
+ .pill.open{border-color:var(--other);color:var(--other)} .pill.ok{border-color:var(--yes);color:var(--yes)} .pill.bad{border-color:var(--no);color:var(--no)}
+ .thread{display:flex;flex-direction:column;gap:6px;border-left:2px solid var(--edge);margin-left:4px;padding-left:14px}
+ .turn{display:flex;gap:10px;font-size:13px;line-height:1.5} .turn .who{flex:none;width:128px;white-space:nowrap;color:var(--mut)}
+ .turn .you{color:var(--fg)} .turn .me{color:var(--fg-2)}
+ .now{border:1px solid var(--edge);border-radius:8px;background:var(--inset);padding:10px 12px}
+ .input{border:1px solid var(--edge);border-radius:8px;background:var(--well);padding:9px 12px;color:var(--mut);font-size:13px;display:flex;align-items:center}
+ .input::after{content:"";margin-left:auto;flex:none;width:9px;height:14px;border:1.5px solid var(--mut);border-radius:5px}
+ .btns{display:flex;gap:8px} .btn{padding:6px 14px;border:1px solid var(--edge);border-radius:8px;font-size:13px;color:var(--fg)}
+ .btn.fill{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}
+ .line{display:flex;align-items:center;gap:10px;padding:9px 14px;border:1px solid var(--edge);border-radius:12px;background:var(--panel);font-size:13px;color:var(--fg-2)}
+ .line .chev{margin-left:8px;color:var(--mut)} .line .pill{margin-left:auto}
+ .row{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border:1px solid var(--edge);border-radius:8px;background:var(--inset)}
+ .row .txt{flex:1;min-width:0} .row .why{color:var(--mut);font-size:13px}
+ .pen{flex:none;width:28px;height:28px;border:1px solid var(--edge);border-radius:8px;display:grid;place-items:center;color:var(--fg-2);font-size:13px}
+ .chip{flex:none;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid currentColor}
+ .chip.pass{color:var(--yes)} .chip.fail{color:var(--no)} .chip.unc{color:var(--other)}
+ .tile{flex:none;width:120px;border:1px solid var(--edge);border-radius:8px;background:var(--well);overflow:hidden;font-size:11px;color:var(--mut)}
+ .tile i{display:block;height:54px;background:linear-gradient(135deg,#243049,#1a2233)} .tile span{display:block;padding:3px 7px}
+ .cols{display:flex;gap:14px} .cols>*{flex:1;min-width:0}
+ .rail{flex:0 0 250px;display:flex;flex-direction:column;gap:4px}
+ .rail p{padding:7px 10px;border-radius:8px;font-size:13px;color:var(--fg-2);display:flex;gap:8px;align-items:center}
+ .rail p.on{background:var(--inset);color:var(--fg);font-weight:600} .rail .lbl{padding:8px 10px 2px}
+ .dot{flex:none;width:8px;height:8px;border-radius:4px;background:var(--faint)} .dot.o{background:var(--other)} .dot.g{background:var(--yes)}
+ .note{font-size:13px;color:var(--mut)}
+ /* picture popup */
+ .pop{border:1px solid var(--edge);border-radius:12px;overflow:hidden;background:var(--panel)}
+ .pophead{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--edge);font-size:13px}
+ .x{margin-left:auto;width:28px;height:28px;border:1px solid var(--edge);border-radius:8px;display:grid;place-items:center;color:var(--fg-2)}
+ .shot{position:relative;background:#0a0d13;border:1px solid var(--edge);border-radius:8px;overflow:hidden}
+ .shot img{display:block;width:1400px;max-width:none;margin:-150px 0 0 -120px}
+ .shot{max-height:540px}
+ .area{position:absolute;border:2px solid var(--link);background:rgba(88,166,255,.14);border-radius:4px}
+ .area b{position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:10px;background:var(--link);color:#fff;font-size:12px;display:grid;place-items:center}
+ .cm{border:1px solid var(--edge);border-radius:8px;background:var(--inset);padding:8px 10px;font-size:13px;display:flex;gap:8px}
+ .cm b{flex:none;width:20px;height:20px;border-radius:10px;background:var(--link);color:#fff;font-size:12px;display:grid;place-items:center}
+ /* flow */
+ .step{display:flex;gap:12px;align-items:flex-start}
+ .num{flex:none;width:26px;height:26px;border-radius:13px;border:1px solid var(--edge);display:grid;place-items:center;font-size:12px;color:var(--fg-2);margin-top:2px}
+ .step .card{flex:1;padding:10px 14px;gap:6px}
+ .tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid currentColor;margin-right:6px}
+ .tag.has{color:var(--yes)} .tag.lost{color:var(--no)} .tag.ask{color:var(--other)}
+ .chk{font-size:13px;color:var(--fg-2);display:flex;gap:8px;align-items:baseline}
+</style>
+
+<!-- ───────── E1: stages across the top, each topic keeps its place ───────── -->
+<section id="e1">
+ <div class="top"><span class="title">Review decks, rethought</span>
+  <span class="stages"><span class="stage done">Understanding</span><span class="stage now">Design · 3 open</span><span class="stage">Before build</span><span class="stage">After build</span></span></div>
+ <div class="body">
+  <div class="card">
+   <h3>How a deck shows what came before <span class="pill open">Needs your answer</span></h3>
+   <div class="thread">
+    <div class="turn"><span class="who">Round 1 · you</span><span class="you">“a single deck that kind of ‘evolves’ in response to my questions and keeps my earlier responses”</span></div>
+    <div class="turn"><span class="who">Round 4 · built</span><span class="me">A History button listing every earlier round.</span></div>
+    <div class="turn"><span class="who">Round 5 · you</span><span class="you">Failed. “i was expecting something that integrated a bit better and more clearly showed how the feature evolved”</span></div>
+    <div class="turn"><span class="who">Round 7 · built</span><span class="me">A story per row, hidden in a fold.</span></div>
+    <div class="turn"><span class="who">Round 8 · you</span><span class="you">“it just feels like you tacked on a sticky note”</span></div>
+   </div>
+   <div class="now"><p class="lbl">Now proposed</p><p>One link for the whole feature. Every topic stays in this spot from first question to finished build, with its story above, as here.</p></div>
+   <div class="btns"><span class="btn">Yes, this</span><span class="btn">No</span><span class="btn">Other</span></div>
+   <div class="input">Say or type what to change…</div>
+  </div>
+  <div class="card">
+   <h3>What a row looks like <span class="pill open">Needs your answer</span></h3>
+   <div class="thread"><div class="turn"><span class="who">Round 8 · you</span><span class="you">“some rows in the same card don't have those chips… i don't know how we're organizing information”</span></div></div>
+   <div class="now"><p class="lbl">Now proposed</p><p>Three kinds of card, never mixed: for your information, yours to change, results.</p></div>
+  </div>
+  <p class="lbl">Settled · 9</p>
+  <div class="line">Voice input in every text box <span class="pill ok">Settled in round 4</span><span class="chev">⌄</span></div>
+  <div class="line">One text box per answer; “Other” replaces extra buttons <span class="pill ok">Settled in round 2</span><span class="chev">⌄</span></div>
+  <div class="line">Drag a rectangle on a picture to comment <span class="pill ok">Settled in round 2</span><span class="chev">⌄</span></div>
+  <p class="note">Open topics first. A settled topic is one line; opening it shows its whole story and lets you reopen it.</p>
+ </div>
+</section>
+
+<!-- ───────── E2: one long document, newest chapter on top ───────── -->
+<section id="e2">
+ <div class="top"><span class="title">Review decks, rethought</span><span class="mut sm" style="margin-left:auto">9 rounds · started Nov 9</span></div>
+ <div class="body">
+  <div class="card">
+   <h3>Round 9 · today <span class="pill open">3 to answer</span></h3>
+   <div class="row"><div class="txt"><p>How should a deck show what came before?</p><p class="why">You said in round 8: “tacked on a sticky note”.</p></div><span class="btn">Answer</span></div>
+   <div class="row"><div class="txt"><p>What should a row look like?</p><p class="why">You said in round 8: “i don't know how we're organizing information”.</p></div><span class="btn">Answer</span></div>
+   <div class="row"><div class="txt"><p>How large should a picture open?</p><p class="why">You said in round 8: “90% of this popup page is unused dead space”.</p></div><span class="btn">Answer</span></div>
+  </div>
+  <p class="lbl">Earlier rounds, newest first</p>
+  <div class="line"><span class="b">Round 8 · Nov 11</span> The restyle. You commented on 3 rows and stopped at page 1. <span class="chev" style="margin-left:auto">⌄</span></div>
+  <div class="card" style="background:var(--well)">
+   <h3>Round 7 · Nov 10 <span class="pill">Open</span></h3>
+   <div class="row"><div class="txt"><p>Built since round 6: attachments, row stories, “since last round”.</p><p class="why">You: “this has suddently become VERYY busy and confusing… barely any of this looks like youcoded native ui elements”</p></div></div>
+   <p class="note">An opened round shows its pages as you left them, with your answers in place. Read-only.</p>
+  </div>
+  <div class="line"><span class="b">Round 6 · Nov 10</span> Pictures in lists, history, the flow, the checks menu. 8 answered. <span class="chev" style="margin-left:auto">⌄</span></div>
+  <div class="line"><span class="b">Round 5 · Nov 10</span> The picture viewer, the 784-deck study, the contract dropped. 9 answered. <span class="chev" style="margin-left:auto">⌄</span></div>
+  <div class="line"><span class="b">Rounds 1–4 · Nov 9–10</span> <span class="chev" style="margin-left:auto">⌄</span></div>
+  <p class="note">Organised by time. To follow one topic across rounds you open each round it appeared in.</p>
+ </div>
+</section>
+
+<!-- ───────── E3: outline at the left, one topic at a time ───────── -->
+<section id="e3">
+ <div class="top"><span class="title">Review decks, rethought</span>
+  <span class="stages"><span class="stage done">Understanding</span><span class="stage now">Design</span><span class="stage">Before build</span><span class="stage">After build</span></span></div>
+ <div class="body"><div class="cols">
+  <div class="rail">
+   <p class="lbl">Needs you · 3</p>
+   <p class="on"><span class="dot o"></span>What came before</p>
+   <p><span class="dot o"></span>What a row looks like</p>
+   <p><span class="dot o"></span>How large a picture opens</p>
+   <p class="lbl">Settled · 9</p>
+   <p><span class="dot g"></span>Voice input</p>
+   <p><span class="dot g"></span>One text box</p>
+   <p><span class="dot g"></span>Comment on part of a picture</p>
+   <p><span class="dot g"></span>Wording on real screens</p>
+   <p><span class="dot g"></span>No contract deck</p>
+   <p class="mut">4 more…</p>
+  </div>
+  <div class="card">
+   <h3>How a deck shows what came before <span class="pill open">Needs your answer</span></h3>
+   <div class="thread">
+    <div class="turn"><span class="who">Round 1 · you</span><span class="you">“a single deck that kind of ‘evolves’… and keeps my earlier responses”</span></div>
+    <div class="turn"><span class="who">Round 4 · built</span><span class="me">A History button.</span></div>
+    <div class="turn"><span class="who">Round 5 · you</span><span class="you">Failed. “expecting something that integrated a bit better”</span></div>
+    <div class="turn"><span class="who">Round 8 · you</span><span class="you">“tacked on a sticky note”</span></div>
+   </div>
+   <div class="now"><p class="lbl">Now proposed</p><p>One link for the whole feature; each topic keeps its story.</p></div>
+   <div class="btns"><span class="btn">Yes, this</span><span class="btn">No</span><span class="btn">Other</span></div>
+   <div class="input">Say or type what to change…</div>
+   <div class="btns" style="justify-content:flex-end"><span class="btn fill">Next topic ›</span></div>
+  </div>
+ </div>
+ <p class="note">One topic fills the page. The list at the left is the whole feature at a glance; on a phone it becomes a menu.</p></div>
+</section>
+
+<!-- ───────── K1: three kinds of card, never mixed ───────── -->
+<section id="k1">
+ <div class="body" style="border-top:1px solid var(--edge);border-radius:12px">
+  <div class="card">
+   <h3>For your information <span class="pill">Nothing to do</span></h3>
+   <p class="note">Plain lines. No pencils, no chips. A correction goes in the page's comment box.</p>
+   <p>· The deck tool lives beside the app, not inside it.</p>
+   <p>· 784 of your answered decks were studied in round 5.</p>
+  </div>
+  <div class="card">
+   <h3>Yours to change <span class="pill">Stands unless you change it</span></h3>
+   <p class="note">Every row has a pencil and nothing else. A small (i) says which app parts it reuses.</p>
+   <div class="row"><div class="txt"><p>A settled topic shrinks to one line. <span class="mut">ⓘ</span></p><p class="why">Opening it shows its whole story.</p></div><span class="pen">✎</span></div>
+   <div class="row"><div class="txt"><p>Open topics come first on every page.</p><p class="why">You picked “newest first” in round 2.</p></div><span class="pen">✎</span></div>
+  </div>
+  <div class="card">
+   <h3>Results <span class="pill">Change any result you disagree with</span></h3>
+   <p class="note">Every row has a result and its proof. Only after a build, only on the Checks page.</p>
+   <div class="row"><div class="txt"><p>A comment survives closing and reopening the deck.</p><p class="why">Typed, closed the tab, reopened.</p></div><span class="tile"><i></i><span>Proof</span></span><span class="chip pass">Passed ⌄</span><span class="pen">✎</span></div>
+   <div class="row"><div class="txt"><p>Commenting on a picture with a finger.</p><p class="why">Not tried on a real phone.</p></div><span class="tile"><i></i><span>Proof</span></span><span class="chip unc">Unclear ⌄</span><span class="pen">✎</span></div>
+  </div>
+  <p class="note">A question I need answered is never a row. It is its own card with answer buttons.</p>
+ </div>
+</section>
+
+<!-- ───────── V1: picture fills the window, comments in a side strip ───────── -->
+<section id="v1">
+ <div class="pop">
+  <div class="pophead"><span class="b">Row badges</span><span class="mut">· After</span><span class="btn" style="margin-left:14px">Before</span><span class="btn fill">After</span><span class="x">×</span></div>
+  <div class="cols" style="padding:12px;gap:12px">
+   <div class="shot" style="flex:3"><img src="../pictures/r8-open-after.png"><span class="area" style="left:5%;top:38%;width:78%;height:30%"><b>1</b></span></div>
+   <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:210px">
+    <p class="lbl">Comments · 1</p>
+    <div class="cm"><b>1</b><span>this fold is unclear</span></div>
+    <div class="input">Drag on the picture, or type here…</div>
+    <p class="note">The picture takes three quarters of the window at its true size, so its words are readable. Scroll to see the rest.</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ───────── V2: picture full width, comments underneath ───────── -->
+<section id="v2">
+ <div class="pop">
+  <div class="pophead"><span class="b">Row badges</span><span class="mut">· After</span><span class="btn" style="margin-left:14px">Before</span><span class="btn fill">After</span><span class="x">×</span></div>
+  <div style="padding:12px;display:flex;flex-direction:column;gap:10px">
+   <div class="shot"><img src="../pictures/r8-open-after.png"><span class="area" style="left:5%;top:38%;width:78%;height:30%"><b>1</b></span></div>
+   <div class="cols" style="gap:8px"><div class="cm"><b>1</b><span>this fold is unclear</span></div><div class="input">Drag on the picture, or type here…</div></div>
+   <p class="note">The picture uses the whole width. Comments sit in a bar under it, so on a tall picture you scroll to reach them.</p>
+  </div>
+ </div>
+</section>
+
+<!-- ───────── F1: a feature from start to finish, with the safety net ───────── -->
+<section id="f1">
+ <div class="body" style="border-top:1px solid var(--edge);border-radius:12px;gap:8px">
+  <p class="sm"><span class="tag has">In place</span><span class="tag lost">Was in the old system, gone now</span><span class="tag ask">Your call</span></p>
+  <div class="step"><span class="num">1</span><div class="card"><p class="b">Understanding</p><p class="chk"><span class="tag has">In place</span>I explore what exists, then you mark each statement Holds or Fails.</p></div></div>
+  <div class="step"><span class="num">2</span><div class="card"><p class="b">Design</p><p class="chk"><span class="tag has">In place</span>Two to four drawings per screen; you pick or combine.</p><p class="chk"><span class="tag ask">Your call</span>A fresh-eyes tester tries the drawings before you see them.</p></div></div>
+  <div class="step"><span class="num">3</span><div class="card"><p class="b">Before build</p><p class="chk"><span class="tag has">In place</span>The whole plan as rows, and the checks menu with a switch per check.</p><p class="chk"><span class="tag lost">Gone</span>Each row is traced to one of your answers, so nothing is invented.</p></div></div>
+  <div class="step"><span class="num">4</span><div class="card"><p class="b">Build</p><p class="chk"><span class="tag ask">Your call</span>Code review: always on, or only when you switch it on.</p><p class="chk"><span class="tag has">In place</span>Fresh-eyes tester on the finished screens, if switched on.</p><p class="chk"><span class="tag lost">Gone</span>A fresh grader checks every request was really built.</p></div></div>
+  <div class="step"><span class="num">5</span><div class="card"><p class="b">After build</p><p class="chk"><span class="tag has">In place</span>The same pages again, with pictures and results.</p><p class="chk"><span class="tag lost">Gone</span>What a reviewer found and I accepted appears as rows marked “found in review”.</p></div></div>
+  <div class="step"><span class="num">6</span><div class="card"><p class="b">Wording, then finished</p><p class="chk"><span class="tag has">In place</span>You retype words on the real screens.</p><p class="chk"><span class="tag lost">Gone</span>One automatic check that refuses to close unfinished work.</p></div></div>
+ </div>
+</section>

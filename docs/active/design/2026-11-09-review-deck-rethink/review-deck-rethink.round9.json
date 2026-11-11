@@ -1,0 +1,708 @@
+{
+ "title": "Review decks: the plan",
+ "key": "review-deck-rethink-round9",
+ "out": "review-deck-rethink.round9.html",
+ "earlier": [
+  "review-deck-rethink.round8.json",
+  "review-deck-rethink.round7.json",
+  "review-deck-rethink.round6.json",
+  "review-deck-rethink.round5.json",
+  "review-deck-rethink.round4.json",
+  "review-deck-rethink.round3.json",
+  "review-deck-rethink.round2.json",
+  "review-deck-rethink.questions.json"
+ ],
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "How I understand what you want",
+   "intro": "Judge here: is this what you want from review decks? I re-read all six of your chat messages and every answer on all eight decks. Mark each statement Holds or Fails; say what I got wrong."
+  },
+  {
+   "id": "U-1",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "A deck is where you steer. I decide only what no user could notice.",
+   "changed": "You decide layout, the path between screens and how parts affect each other. I decide code matters inside those decisions.",
+   "notice": "A deck never asks you about code, and never settles a design question without you.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "U-2",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "One feature has one deck, on one link, that grows with the work.",
+   "changed": "It starts as \"here is how I understand this\", becomes the design, then the plan before building, then the results after. It is never replaced by a new deck each round.",
+   "notice": "You keep one link per feature. Opening it always shows where the feature stands now.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "U-3",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "What you said earlier stays visible where it belongs, not behind a History button.",
+   "changed": "Each topic shows its own story in place: your words, what was built, what you said next. Settled topics shrink.",
+   "notice": "No History button, no \"Details\" fold, no New or Changed badges.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "U-4",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "Every page is named for what you are deciding, never for my work.",
+   "changed": "Pages like \"What the reviewers found\" or \"What slipped between rounds\" describe my process. Pages should be the stages and topics of the feature.",
+   "notice": "You can tell from a page's name what it wants from you.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "U-5",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "A card holds one kind of thing: facts, things you can change, or results.",
+   "changed": "Round 8 mixed plain rows, changeable rows and rows with a Passed or Unclear chip in one card.",
+   "notice": "Chips appear only on a results page, on every row of it. A question is always its own card with buttons.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "U-6",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "A deck should look like part of YouCoded, with pictures large enough to read.",
+   "changed": "Only parts the app already has. You have asked for larger pictures in rounds 4, 5 and 8.",
+   "notice": "A picture opens at a size where its words can be read without zooming.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "U-7",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "There is no contract or sign-off deck. The safety checks that came with it should not vanish silently.",
+   "changed": "Finished means: every request is a row before building, and you change nothing after. The old automatic checks need a home; the \"safety net\" page asks where.",
+   "notice": "Fewer decks to sign, without losing what the old checks caught.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "P-2",
+   "page": "Where the build stands",
+   "intro": "Judge here: is anything in the wrong list? Three lists: done and approved by you, built but wrong or unseen, and not built. Use a row's pencil to move or correct it."
+  },
+  {
+   "id": "B-1",
+   "surface": "Review decks",
+   "words": true,
+   "path": "Any deck link I send you",
+   "headline": "Built, and you approved it",
+   "calls": [
+    {
+     "id": "voice",
+     "call": "Voice input in every text box, with your words appearing as you speak.",
+     "why": "Approved in round 4."
+    },
+    {
+     "id": "onebox",
+     "call": "One text box per answer. \"Other\" replaces the extra buttons and \"Don't know\".",
+     "why": "Asked in rounds 1 and 2."
+    },
+    {
+     "id": "areas",
+     "call": "Drag a rectangle on a picture to comment on that part.",
+     "why": "Approved in round 2."
+    },
+    {
+     "id": "pencil",
+     "call": "One pencil per row; a comment box at the foot of every page.",
+     "why": "Asked in rounds 3 and 4."
+    },
+    {
+     "id": "pills",
+     "call": "Pasted pictures and file paths become small pills under a comment box.",
+     "why": "Asked in round 5."
+    },
+    {
+     "id": "wording",
+     "call": "Wording is retyped on a copy of the real screen, after the build.",
+     "why": "Round 5: \"a great first draft\"."
+    },
+    {
+     "id": "contract",
+     "call": "The contract deck is dropped for new work.",
+     "why": "Your first message, and round 5."
+    },
+    {
+     "id": "flow",
+     "call": "The order of a feature is written into the rules every chat reads: explore, understanding, drawn designs, plan, build, results, wording.",
+     "why": "Approved in round 6."
+    },
+    {
+     "id": "study",
+     "call": "The rules for what is asked, drawn or listed come from a study of 784 of your answered decks.",
+     "why": "Asked in round 4; you corrected it in round 5."
+    }
+   ]
+  },
+  {
+   "id": "B-2",
+   "surface": "Review decks",
+   "words": true,
+   "path": "Any deck link I send you",
+   "headline": "Built, but wrong or not yet seen by you",
+   "calls": [
+    {
+     "id": "history",
+     "call": "History: a button, plus a story hidden in each row's fold.",
+     "why": "Wrong. Replaced by what you pick on the next page."
+    },
+    {
+     "id": "details",
+     "call": "The \"Details\" fold and its \"Built from\" notes.",
+     "why": "Wrong. To be removed; reuse notes go back behind a small (i), as you said in round 6."
+    },
+    {
+     "id": "groups",
+     "call": "New / Changed / Already settled headings, and the \"Since last round\" sentence.",
+     "why": "Replaced by the growing deck."
+    },
+    {
+     "id": "popup",
+     "call": "The picture popup.",
+     "why": "Wrong: the picture is small in an empty window. See \"Rows and pictures\"."
+    },
+    {
+     "id": "tiles",
+     "call": "Attachments as tiles, like Deliverables in a chat.",
+     "why": "Built in round 8. You have not said whether the tiles themselves are right."
+    },
+    {
+     "id": "mixed",
+     "call": "Lists that mix plain rows with rows carrying a result chip.",
+     "why": "Wrong. See \"Rows and pictures\"."
+    },
+    {
+     "id": "checksmenu",
+     "call": "The checks menu: each check says what it does, what comes back and why it is suggested.",
+     "why": "Built after your round-6 comments. Not seen by you yet."
+    },
+    {
+     "id": "useit",
+     "call": "On a wording page, a \"Use it / Edit words\" switch so dropdowns can be opened before editing.",
+     "why": "Built in round 7. Not seen by you, and not tried by a real hand."
+    },
+    {
+     "id": "fixes",
+     "call": "Eleven fixes from a code review and a fresh-eyes tester: lost comments, a finish screen that named things differently from the page, a phone finger that could not draw.",
+     "why": "Built in round 7. Not seen by you."
+    },
+    {
+     "id": "theme",
+     "call": "The deck opens in Midnight colours, not your current theme.",
+     "why": "Your current theme has no colours in the deck tool."
+    }
+   ]
+  },
+  {
+   "id": "B-3",
+   "surface": "Review decks",
+   "words": true,
+   "path": "Any deck link I send you",
+   "headline": "Not built",
+   "calls": [
+    {
+     "id": "grow",
+     "call": "One deck that grows, on one link.",
+     "why": "Asked in rounds 1, 2, 5 and 6. The core of what is left."
+    },
+    {
+     "id": "looks",
+     "call": "Starting points for the different kinds of question about looks: before and after, a fan of alternatives.",
+     "why": "Asked in round 2. Only a short table exists."
+    },
+    {
+     "id": "allscreens",
+     "call": "A page showing every changed screen together, like the work board's comparison view.",
+     "why": "Asked in round 3. A basic version exists."
+    },
+    {
+     "id": "real",
+     "call": "A try with a real mouse, a real phone, a real microphone, and the light themes.",
+     "why": "Everything so far was checked by my own tools in Midnight."
+    },
+    {
+     "id": "cards",
+     "call": "Two idea cards: a screen sketcher inside a deck, and the app hosting deck links.",
+     "why": "Waiting for your yes on the last page."
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "One deck that grows",
+   "intro": "Judge here: which shape should a growing deck take? Three drawings, each filled with this feature's real story. Press a picture to open it large. Pick one, and say what to borrow from another."
+  },
+  {
+   "id": "E-1",
+   "surface": "Review decks",
+   "words": true,
+   "path": "Any deck, from its first round to the finished build",
+   "headline": "How should one deck grow with a feature?",
+   "today": "Each round is a new deck on a new link. Earlier rounds sit behind a History button, and a row's story hides in a \"Details\" fold.",
+   "checked": "Counted the nine decks of this work today and opened round 8.",
+   "problem": "You called it a sticky note. Nothing shows a feature moving from first idea to finished build, and you cannot tell what a page is for.",
+   "proposal": "Pick the shape. In all three there is one link, your earlier words stay visible, and each round's answers are still saved separately behind the scenes.",
+   "options": [
+    {
+     "id": "stages",
+     "label": "A. Stages across the top, topics stay in place",
+     "picture": "pictures/r9-e1.png",
+     "recommended": true,
+     "pros": [
+      "The top shows where the feature is: Understanding, Design, Before build, After build.",
+      "Each topic carries its whole story where you answer it.",
+      "Settled topics shrink to one line, so the page shows what needs you."
+     ],
+     "cons": [
+      "A topic argued over many rounds gets a long story above its answer.",
+      "I must keep topics matched across rounds; a renamed topic could lose its story."
+     ]
+    },
+    {
+     "id": "chapters",
+     "label": "B. One long document, newest round on top",
+     "picture": "pictures/r9-e2.png",
+     "pros": [
+      "Simple to follow in time order.",
+      "An old round opens exactly as you left it."
+     ],
+     "cons": [
+      "To follow one topic you open every round it appeared in.",
+      "Close to today's History, moved onto the page."
+     ]
+    },
+    {
+     "id": "outline",
+     "label": "C. A list of topics at the left, one topic at a time",
+     "picture": "pictures/r9-e3.png",
+     "pros": [
+      "The whole feature at a glance, with what needs you at the top.",
+      "One topic fills the page, so nothing else competes."
+     ],
+     "cons": [
+      "More clicking: one topic per view.",
+      "On a phone the list becomes a menu you must open."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Rows and pictures",
+   "intro": "Judge here: are these the right three kinds of card, and how large should a picture open? Drawings, not built."
+  },
+  {
+   "id": "K-1",
+   "surface": "Review decks",
+   "words": true,
+   "path": "Any list in a deck",
+   "headline": "Should a card hold only one kind of row?",
+   "today": "One card can mix plain rows, rows you can change and rows with a Passed or Unclear chip. Extra notes sit in a \"Details\" fold.",
+   "checked": "Read your three round-8 comments and the picture you attached today.",
+   "problem": "You could not tell which rows were facts, which were questions and which were results, or what \"Details\" was for.",
+   "proposal": "Yes builds the three kinds in the picture: for your information, yours to change, results. \"Details\" goes; reuse notes sit behind a small (i). No keeps mixed cards.",
+   "picture": "pictures/r9-k1.png",
+   "yes": "Yes, three kinds",
+   "no": "No, keep mixed"
+  },
+  {
+   "id": "V-1",
+   "surface": "Review decks",
+   "words": true,
+   "path": "A picture, opened large",
+   "headline": "How should a picture open?",
+   "today": "A picture opens in a full window, shrunk to fit, with comments at the right.",
+   "checked": "Your round-8 comment today: \"90% of this popup page is unused dead space\".",
+   "problem": "A tall screenshot shrinks until its words cannot be read, and most of the window is empty.",
+   "proposal": "Pick where comments sit. In both the picture opens at its true size and you scroll it. Both also need me to take pictures narrower and closer.",
+   "options": [
+    {
+     "id": "side",
+     "label": "A. Comments in a strip at the right",
+     "picture": "pictures/r9-v1.png",
+     "recommended": true,
+     "pros": [
+      "Comments stay in view while you scroll the picture.",
+      "Matches how the app shows a file with its comments."
+     ],
+     "cons": [
+      "The picture gets three quarters of the width, not all of it."
+     ]
+    },
+    {
+     "id": "below",
+     "label": "B. Comments in a bar underneath",
+     "picture": "pictures/r9-v2.png",
+     "pros": [
+      "The picture uses the whole width.",
+      "Works the same on a phone."
+     ],
+     "cons": [
+      "On a tall picture the comments are below the fold."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-5",
+   "page": "The safety net",
+   "intro": "Judge here: which checks from the old system come back, and where? The picture on the first question shows a feature from start to finish, with what is in place, what went away with the contract, and what is your call."
+  },
+  {
+   "id": "S-1",
+   "surface": "How a feature is built",
+   "words": true,
+   "path": "After a build",
+   "headline": "Which of the old automatic checks should come back?",
+   "today": "Dropping the contract also dropped four things: tracing each plan row to your answer, a fresh grader checking every request was built, reviewer findings shown as rows, and a check that refuses to close unfinished work.",
+   "checked": "Compared the old rule files with this branch's, line by line, today.",
+   "problem": "You approved dropping the contract deck, not these. In round 5 you said the grader would be \"replaced or modified\", not removed.",
+   "proposal": "Pick how much returns. None of it brings back a deck for you to sign; results appear as rows on the after-build page.",
+   "picture": "pictures/r9-f1.png",
+   "options": [
+    {
+     "id": "all",
+     "label": "All four, as checks that are on unless you switch them off",
+     "recommended": true,
+     "pros": [
+      "A missed request is caught by a fresh pair of eyes, not by you.",
+      "Unfinished work cannot be closed by mistake."
+     ],
+     "cons": [
+      "Each build takes a little longer.",
+      "More rows on the after-build page."
+     ]
+    },
+    {
+     "id": "grader",
+     "label": "Only the \"was every request built?\" check",
+     "pros": [
+      "The one that catches the costliest mistake.",
+      "Least added waiting."
+     ],
+     "cons": [
+      "Reviewer findings stay summed up in one status row.",
+      "Nothing stops unfinished work being closed."
+     ]
+    },
+    {
+     "id": "none",
+     "label": "Leave them out",
+     "pros": [
+      "Fastest builds."
+     ],
+     "cons": [
+      "You are the only check that a request was built."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-2",
+   "surface": "How a feature is built",
+   "words": true,
+   "path": "The Design stage",
+   "headline": "Should a fresh-eyes tester try the drawings before you see them?",
+   "today": "The tester can run on the finished screens if you switch it on. It no longer tries early designs.",
+   "checked": "Read the live rule file today.",
+   "problem": "The old system ran it on every design before your first deck. It caught confusing designs early, but added waiting to every round.",
+   "proposal": "Pick when it runs on drawings.",
+   "options": [
+    {
+     "id": "offer",
+     "label": "Offered on each design deck, off unless you ask",
+     "recommended": true,
+     "pros": [
+      "No waiting unless you want it.",
+      "There when a design is large or new."
+     ],
+     "cons": [
+      "You must remember to ask."
+     ]
+    },
+    {
+     "id": "always",
+     "label": "Always, before you see a design",
+     "pros": [
+      "Confusing designs are caught before they reach you."
+     ],
+     "cons": [
+      "Every design round takes longer."
+     ]
+    },
+    {
+     "id": "never",
+     "label": "Never on drawings",
+     "pros": [
+      "Simplest."
+     ],
+     "cons": [
+      "You are the first to meet a confusing design."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-3",
+   "surface": "How a feature is built",
+   "words": true,
+   "path": "The checks menu, before a build",
+   "headline": "Should the code review be on for every build?",
+   "today": "The code review is suggested on only for builds touching security, your data, background work or several devices. You can switch it either way.",
+   "checked": "Read the live rule file today.",
+   "problem": "In rounds 4 and 5 you said automatic code reviews are useful and not to lose them without thought. It has the strongest record of real finds.",
+   "proposal": "Pick its starting position on the checks menu.",
+   "options": [
+    {
+     "id": "on",
+     "label": "On for every build; you can switch it off",
+     "recommended": true,
+     "pros": [
+      "Mistakes are caught without you asking."
+     ],
+     "cons": [
+      "Small builds wait a few minutes more."
+     ]
+    },
+    {
+     "id": "risky",
+     "label": "On only for risky builds, as today",
+     "pros": [
+      "Small builds stay quick."
+     ],
+     "cons": [
+      "I judge what counts as risky."
+     ]
+    },
+    {
+     "id": "ask",
+     "label": "Off unless you switch it on",
+     "pros": [
+      "Nothing runs unasked."
+     ],
+     "cons": [
+      "Easy to forget on the build that needed it."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-6",
+   "page": "What I build next, and what I need",
+   "intro": "Judge here: is this the right order, and four decisions I am waiting on. Nothing below is built until you have answered this deck."
+  },
+  {
+   "id": "O-1",
+   "surface": "Review decks",
+   "words": true,
+   "path": "This work",
+   "headline": "What I would build next, in this order",
+   "numbered": true,
+   "calls": [
+    {
+     "id": "o1",
+     "call": "The growing deck, in the shape you pick.",
+     "why": "Everything else sits inside it."
+    },
+    {
+     "id": "o2",
+     "call": "The three kinds of card; \"Details\" removed.",
+     "why": "If you say yes on \"Rows and pictures\"."
+    },
+    {
+     "id": "o3",
+     "call": "The picture popup, and closer, narrower pictures.",
+     "why": "Raised in rounds 4, 5 and 8."
+    },
+    {
+     "id": "o4",
+     "call": "The safety checks you choose.",
+     "why": "Written into the rules and the checks menu."
+    },
+    {
+     "id": "o5",
+     "call": "This whole feature moved into one growing deck, as the first real example.",
+     "why": "You then review the round-7 work there, once, in the new look."
+    },
+    {
+     "id": "o6",
+     "call": "A try on a real phone and in the light themes, with you.",
+     "why": "Last, when the look has stopped moving."
+    }
+   ]
+  },
+  {
+   "id": "Q-1",
+   "surface": "This work",
+   "path": "Backing up to GitHub",
+   "words": true,
+   "headline": "May I tell the safety scanner to ignore five made-up ids?",
+   "today": "18 saved steps of this work exist only on this computer. The scanner that guards every backup refuses to send them.",
+   "problem": "One old step holds five practice-app ids that look like passwords to the scanner. They are not secrets, and I am not allowed to rewrite saved history.",
+   "proposal": "Yes adds those five exact lines to the scanner's ignore list and backs everything up. Nothing else is loosened. No leaves the work on this computer only.",
+   "yes": "Yes, ignore those five",
+   "no": "No, keep it local"
+  },
+  {
+   "id": "Q-3",
+   "surface": "Review decks",
+   "path": "A deck link opened again after Submit",
+   "words": true,
+   "headline": "What should reopening an answered deck do?",
+   "today": "The link dies on Submit. If I serve the deck again, it opens empty and your earlier answers are filed beside it.",
+   "problem": "The tester read the empty deck as lost answers, and could have answered twice.",
+   "proposal": "Pick what a reopened deck shows.",
+   "options": [
+    {
+     "id": "resume",
+     "label": "Your answers, still editable, with a line saying when you sent them",
+     "pros": [
+      "Nothing looks lost.",
+      "You can correct one answer and send again."
+     ],
+     "cons": [
+      "A second Submit replaces the first; the first is kept in a dated file."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "locked",
+     "label": "Your answers, locked",
+     "pros": [
+      "A clear record."
+     ],
+     "cons": [
+      "In August a locked deck read to you as \"I can't click through\"."
+     ]
+    },
+    {
+     "id": "fresh",
+     "label": "Leave it: empty",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "Looks like lost answers."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "surface": "Review decks",
+   "path": "A picture, on a phone",
+   "words": true,
+   "headline": "On a phone, how should commenting on part of a picture start?",
+   "today": "Since this round's fixes a finger dragged across a picture draws a comment area. Before, a finger could not draw at all.",
+   "problem": "A swipe that starts on a picture now draws instead of scrolling the page. Not tried on a real phone.",
+   "proposal": "Pick how drawing starts on a touch screen. A mouse is unaffected.",
+   "options": [
+    {
+     "id": "button",
+     "label": "Tap a \"Comment on an area\" button, then drag",
+     "pros": [
+      "Scrolling always works.",
+      "No accidental areas."
+     ],
+     "cons": [
+      "One extra tap per comment."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "drag",
+     "label": "Leave it: any drag draws",
+     "pros": [
+      "Same as with a mouse."
+     ],
+     "cons": [
+      "On a page of large pictures, scrolling means aiming for the gaps."
+     ]
+    },
+    {
+     "id": "off",
+     "label": "No drawing on phones",
+     "pros": [
+      "Simplest."
+     ],
+     "cons": [
+      "On a phone you describe the spot in words again."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "surface": "Idea cards",
+   "path": "The work board",
+   "words": true,
+   "headline": "Should I file two idea cards from earlier rounds?",
+   "today": "Two ideas came up and were never filed: a simple screen sketcher inside a deck whose sketch is handed to the chat, and the app hosting deck links itself.",
+   "problem": "Unfiled, they exist only in these decks.",
+   "proposal": "Pick which to file. Filing only records the idea; nothing is built.",
+   "options": [
+    {
+     "id": "bothcards",
+     "label": "File both",
+     "pros": [
+      "Neither is lost."
+     ],
+     "cons": [
+      "Two more cards on the board."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "sketch",
+     "label": "Only the screen sketcher",
+     "pros": [
+      "The one closest to your layout complaints."
+     ],
+     "cons": [
+      "The hosting idea stays unrecorded."
+     ]
+    },
+    {
+     "id": "host",
+     "label": "Only app-hosted decks",
+     "pros": [
+      "Would fix dead links at the root."
+     ],
+     "cons": [
+      "The sketcher stays unrecorded."
+     ]
+    },
+    {
+     "id": "nocards",
+     "label": "Neither",
+     "pros": [
+      "A shorter board."
+     ],
+     "cons": [
+      "Both ideas fade."
+     ]
+    }
+   ]
+  }
+ ]
+}
