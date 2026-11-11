@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-11-08
 topic: Should the phone run Claude Code in "fullscreen" display mode?
 ---

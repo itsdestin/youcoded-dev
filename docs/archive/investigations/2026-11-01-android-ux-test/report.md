@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-11-01
 updated: 2026-11-09
 ---
@@ -18,8 +18,8 @@ together with other workstreams:
   and Chess rooms on the Worker. **It must merge, and the Worker must deploy, before or with the app.** The app's
   game rooms point at `api.youcoded.ai` (commit 5ae5a5ca6).
 
-**Decisions:** `docs/active/design/2026-11-01-android-findings/findings.questions.answers.json` (34 questions) and
-`docs/active/design/2026-11-08-phone-leftovers/leftovers.questions.answers.json` (3 questions).
+**Decisions:** `docs/archive/design/2026-11-01-android-findings/findings.questions.answers.json` (34 questions) and
+`docs/archive/design/2026-11-08-phone-leftovers/leftovers.questions.answers.json` (3 questions).
 
 ### Original findings: outcome
 | Finding | Outcome |
@@ -37,7 +37,7 @@ together with other workstreams:
 
 ### Added during retesting (all on the branch, all checked by Destin on the Flip7)
 - **Phone layout and polish:** popups fit, first-launch screens, trust card, density rounds 1–2, phone polish rounds
-  1–4. Decks are in `docs/active/design/2026-11-01-android-findings/` and `2026-11-07-phone-polish/`.
+  1–4. Decks are in `docs/archive/design/2026-11-01-android-findings/` and `2026-11-07-phone-polish/`.
 - **Keyboard:** the page glides with the keyboard instead of resizing, and Samsung's height overshoot is corrected.
   The terminal slides up rather than shrinking.
 - **Terminal view:** doubled lines fixed (no resize from the keyboard or message box; a hidden terminal starts at
@@ -216,7 +216,7 @@ The emulator on the computer can't run the app's bundled programs; it shows "und
 ## Final review round (2026-11-09 to 2026-11-10)
 
 What the finished branch changes, per device, with pictures, the independent review's findings (fixed and left) and
-the open decisions: `docs/active/design/2026-11-09-phone-final-review/branch-summary.html`. Terminal view per device
+the open decisions: `docs/archive/design/2026-11-09-phone-final-review/branch-summary.html`. Terminal view per device
 and how it got that way: `terminal-by-device.html` in the same folder.
 
 Notes for the test-infrastructure work running in parallel:
