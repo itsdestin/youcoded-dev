@@ -1,0 +1,129 @@
+{
+ "deck": "notifications-scenarios-questions",
+ "started": "2026-11-11T22:10:49.500Z",
+ "submitted": "2026-11-11T22:33:55Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794435429589,
+   "note": "i do still think we're missing some broader scenarios situations. like what if a main session is not actively working/generating tokens, but has a bunch of subagents/commands still running in the background and doesn't really need my input yet?",
+   "seconds": 126,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "other",
+   "t": 1794435429589,
+   "note": "i feel like blue should *primarily* be determined by the assistant when working with cloud models and *solely* determined by the app when working with local models. i think when working with a cloud model, the model should primarily be the one to decide \"does anything i've done or anything in this response require feedback from the user, or am i providing an update to the user that they might want/need to see so they can steer as i continue working or see a checkpoint for what i've completed\". we'd need to refine this a bit. i think the app should ONLY send a blue notification at the point where the primary assistant stops working AND there are no active background agents/commands tied to that session AND the assistant didn't send a notification itself.",
+   "seconds": 126,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "t": 1794435429589,
+   "pick": "open-front",
+   "note": "",
+   "seconds": 126,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "other",
+   "seconds": 124,
+   "theme": "midnight",
+   "t": 1794436433456,
+   "note": "see my previous responses, i think they cover this. should primarily just be the assistant notification with its chosen wording EXCEPT for in the case where assistant fails to submit a notification, no notification is pending, and the turn fully ends with no background work ongoing"
+  },
+  "Q-4": {
+   "v": "pick",
+   "seconds": 124,
+   "theme": "midnight",
+   "t": 1794436433456,
+   "pick": "red-label",
+   "note": "we'd need to tune the wording so this is used only rarely, in cases where the assistant genuinely cannot proceed or accomplish other work in the meantime. if the assistant can keep working while waiting on the user, the light should be blue. red is solely reserved for \"this session is entirely halted until you provide feedback\""
+  },
+  "Q-5": {
+   "v": "other",
+   "seconds": 124,
+   "theme": "midnight",
+   "t": 1794436433456,
+   "note": "just let the assistant decide how to denote depending on session goal and ocntext."
+  },
+  "Q-6": {
+   "v": "pick",
+   "seconds": 124,
+   "theme": "midnight",
+   "t": 1794436433456,
+   "pick": "silent"
+  },
+  "S-2": {
+   "v": "other",
+   "seconds": 124,
+   "theme": "midnight",
+   "t": 1794436433456,
+   "note": "if its the last message and there's no background work, i should always get a notification. however, a short response doesnt necessarily need to give me a notification IF there's still ongoing background work and the assistant doesn't deem anything to be useful/actionable for me if that makes sense"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1794436104096,
+   "note": "unless the assistant chooses to notify for one of these messages",
+   "seconds": 40,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "allow",
+   "t": 1794436104096,
+   "seconds": 40,
+   "theme": "midnight"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794436104096,
+   "seconds": 40,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "amber",
+   "t": 1794436104096,
+   "seconds": 40,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "loose",
+   "t": 1794436329276,
+   "note": "at least to start. we can tune the specifics later depending on model behavior",
+   "seconds": 45,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "shared",
+   "t": 1794436329276,
+   "seconds": 45,
+   "theme": "midnight"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "idle-rule",
+   "t": 1794436329276,
+   "seconds": 45,
+   "theme": "midnight"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "one",
+   "t": 1794436329276,
+   "seconds": 45,
+   "theme": "midnight"
+  },
+  "Q-13": {
+   "v": "pick",
+   "pick": "three-steps",
+   "t": 1794436329276,
+   "seconds": 45,
+   "theme": "midnight"
+  }
+ }
+}
