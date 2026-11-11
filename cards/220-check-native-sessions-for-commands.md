@@ -9,7 +9,7 @@ why: Destin, 2026-11-04: "commands keep getting stuck showing as running indefin
 ---
 Progress
 Done: 2026-11-10 (release-safety session), checked on YouCoded's own engine. What the screen shows is correct in both cases: a command from before a restart shows its saved outcome, 'Stopped when the app quit', or 'May be running' (left as is, on purpose); a never-ending command shows Running, is stopped when its chat closes or the app quits, and none was left behind in a live test. ONE FAULT FOUND AND FIXED on branch session/release-safety (app repo, not merged): the assistant itself was told 'No background command' about a command from before a restart; it now gets the saved outcome and can stop one that is provably still this app's. Nothing on screen changes. Tested live in a dev copy: reload keeps Running and Stop works; after a forced kill the assistant answered truthfully; a normal quit left no command running.
-Next: Destin: merge decision for session/release-safety. Not staged live: a command that survives a crash and is re-attached as Running (in the test the forced kill took the command down too); covered by unit tests only. Small leftovers, not built: (1) commands from before a restart do not count toward the limit on running commands; (2) for a moment right after reopening a chat the assistant could ask about an old command before the saved list has loaded.
-Blocked: Waiting for Destin's word to merge.
+Next: The fix landed on 2026-11-10 (youcoded PR #726). Left open for three small things, none built: (1) check live a command that survives a crash and is re-attached as Running (in the test the forced kill took the command down too; unit tests cover it); (2) commands from before a restart do not count toward the limit on running commands; (3) for a moment right after reopening a chat the assistant could ask about an old command before the saved list has loaded.
+Blocked: nothing.
 
 Chats
