@@ -905,3 +905,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-11 #146 Reload returns to the wrong chat (youcoded PR #726 (ef02dd10f), youcoded-dev PR #357)
 - [x] 2026-11-11 #195 A checked secrets-scan command to run before every push (youcoded-dev PR #356)
 - [x] 2026-11-11 #178 Made-up demo chats show "Jul 29, 2025" under every message (youcoded PR #727)
+- [x] 2026-11-11 #213 Android test findings: startup crash, sync, attach, phone screens and polish (itsdestin/youcoded#730, itsdestin/wecoded-marketplace#123, itsdestin/youcoded-dev#361)
