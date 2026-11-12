@@ -1,0 +1,116 @@
+{
+ "deck": "test-rethink-questions-3",
+ "started": "2026-11-12T08:41:28.021Z",
+ "submitted": "2026-11-12T08:55:52Z",
+ "cur": 4,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794472928788,
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "full-sort",
+   "t": 1794473091107,
+   "note": "you should think a bit more about how to get the most value/utilitty out of these helpers. how to improve the questions they ask or how they report, etc, as this will be a big task and important not to mess up significantly",
+   "seconds": 54,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794473091107,
+   "seconds": 54,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794473091107,
+   "note": "where is the code for my personal pages stored? wouldnt it make sense to keep alongside them and run on changes to that code like youcoded but separate?",
+   "seconds": 54,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "nightly",
+   "t": 1794473596929,
+   "note": "depending on estimated cost, may increase to like once a week or every few days",
+   "seconds": 101,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "picks",
+   "picks": [
+    "sync"
+   ],
+   "t": 1794473596929,
+   "note": "i think we may be actively  rebuilding sync tho, so this may not be worth spending much time on right this second. could probably just instruct the sync/mesh rebuild sesssion how to test properly with the new infrastructure after we've fully built/merged this",
+   "seconds": 101,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "trial-then-flip",
+   "t": 1794473596929,
+   "seconds": 101,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "note": "uh i dont think we should force security evals to fit the walk-through shape just for the sake of it. walkthrough can be used for security tests where it makes sense, but we should also continue to test features with code and otherwise where it makes sense. i want our security system to be robust and consistent with open-source and corporate best practices. ",
+   "t": 1794473596929,
+   "v": "other",
+   "seconds": 101,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "t": 1794473596929,
+   "note": "android repairs should be merged. we should build the work board thing, then also inteagrate into our ntfy system that we set up for some other issues/security patches and such",
+   "pick": "green-first",
+   "seconds": 101,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "restore-blocking",
+   "t": 1794473727018,
+   "seconds": 43,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "other",
+   "t": 1794473727018,
+   "note": "youcoded and halftone",
+   "seconds": 43,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "t": 1794473727018,
+   "note": "",
+   "pick": "you-look-first",
+   "seconds": 43,
+   "theme": "midnight"
+  },
+  "Q-11": {
+   "v": "other",
+   "t": 1794473752131,
+   "note": "i think android stuff is already merged",
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "Q-12": {
+   "v": "yes",
+   "t": 1794473752131,
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "Q-13": {
+   "v": "yes",
+   "t": 1794473752131,
+   "seconds": 8,
+   "theme": "midnight"
+  }
+ }
+}
