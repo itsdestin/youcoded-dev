@@ -1,0 +1,184 @@
+{
+ "deck": "review-deck-rethink-round10",
+ "started": "2026-11-12T10:14:55.747Z",
+ "submitted": "2026-11-12T10:36:32Z",
+ "cur": 3,
+ "answers": {
+  "A-1": {
+   "v": "other",
+   "t": 1794478834690,
+   "note": "these ideas aren't I kinda feel like a bunch of these ideas aren't mutually exclusive. Um like the idea of for the answer for side of cards for and down the bottom. Um but I also kind of like the You know history that shows. Um on option A and in the version of cards. Like I think the history is interesting, but I think we've also seen several things at the bottom. Um I can about how options and different.",
+   "seconds": 170,
+   "theme": "ivory-schematic"
+  },
+  "A-2": {
+   "v": "pick",
+   "pick": "line",
+   "t": 1794478834690,
+   "seconds": 170,
+   "theme": "ivory-schematic"
+  },
+  "R-1": {
+   "v": "pick",
+   "pick": "tick",
+   "t": 1794478938052,
+   "note": "i definitely dont like the weird new blue change asked/fine/not looked at indicator things you added. ",
+   "seconds": 52,
+   "theme": "ivory-schematic"
+  },
+  "R-2": {
+   "v": "pick",
+   "pick": "warn",
+   "t": 1794478938052,
+   "seconds": 52,
+   "theme": "ivory-schematic"
+  },
+  "L-1": {
+   "marks": [
+    {
+     "pic": "the picture",
+     "x": 2.5,
+     "y": 9.2,
+     "w": 27.8,
+     "h": 9.7,
+     "text": "still a lot of visual design failures. \"2 topics need your answer\" and \"needs your answer 2\" separated by a single line is a waste of text."
+    },
+    {
+     "pic": "the picture",
+     "x": 4.3,
+     "y": 21,
+     "w": 9,
+     "h": 7.5,
+     "text": "this gap feels far too large"
+    },
+    {
+     "pic": "the picture",
+     "x": 82.9,
+     "y": 1.2,
+     "w": 15.7,
+     "h": 7.5,
+     "text": "?? this isn't a youcoded page. you should utilize youcoded design principles, but keep the review deck elements that are intentionally unique, like the yellow header"
+    },
+    {
+     "pic": "the picture",
+     "x": 2.5,
+     "y": 91.6,
+     "w": 48.2,
+     "h": 4.8,
+     "text": "tf is this"
+    }
+   ],
+   "v": "other",
+   "t": 1794479296458,
+   "seconds": 119,
+   "theme": "ivory-schematic"
+  },
+  "L-2": {
+   "marks": [
+    {
+     "pic": "the picture",
+     "x": 3.6,
+     "y": 12.6,
+     "w": 7.1,
+     "h": 19.6,
+     "text": "fingernail"
+    },
+    {
+     "pic": "the picture",
+     "x": 4.8,
+     "y": 58.4,
+     "w": 3.4,
+     "h": 5.2,
+     "text": "fingernail"
+    },
+    {
+     "pic": "the picture",
+     "x": 4.1,
+     "y": 40,
+     "w": 91.8,
+     "h": 8.4,
+     "text": "tf is this. holy dead space and unstyled buttons"
+    },
+    {
+     "pic": "the picture",
+     "x": 60.2,
+     "y": 54.4,
+     "w": 35.1,
+     "h": 19.7,
+     "text": "this last card says it needs my answer, but has no options or input area"
+    }
+   ],
+   "v": "other",
+   "t": 1794479296458,
+   "seconds": 119,
+   "theme": "ivory-schematic"
+  },
+  "L-3": {
+   "v": "yes",
+   "t": 1794479296458,
+   "seconds": 119,
+   "theme": "ivory-schematic"
+  },
+  "N-1": {
+   "marks": [
+    {
+     "pic": "row popup",
+     "x": 0.8,
+     "y": 1.4,
+     "w": 75.6,
+     "h": 5.3,
+     "text": "what is this? a title? desctption? what is it attached to? if its a title, should be shorter. if description, should be in its own spot under the image or something"
+    },
+    {
+     "pic": "row popup",
+     "x": 18.3,
+     "y": 49.5,
+     "w": 4.5,
+     "h": 5.6,
+     "text": "fingernail"
+    },
+    {
+     "pic": "row kinds",
+     "x": 7.4,
+     "y": 6.5,
+     "w": 82,
+     "h": 10.6,
+     "text": "this doesnt look like something i'm supposed to pay attention to. bare text with no card gets ignored easily as ai clutter. "
+    },
+    {
+     "pic": "row kinds",
+     "x": 9.2,
+     "y": 25.4,
+     "w": 42.2,
+     "h": 8,
+     "text": "what? this is confusing and can certainly be more clear/concise"
+    },
+    {
+     "pic": "row kinds",
+     "x": 11.4,
+     "y": 40.4,
+     "w": 3.4,
+     "h": 6.5,
+     "text": "fingernail"
+    },
+    {
+     "pic": "row kinds",
+     "x": 11.2,
+     "y": 35.2,
+     "w": 15.9,
+     "h": 11.1,
+     "text": "bunch of different text styles bundled against eachother with no clear styling/bold/color/inset/font heirarchy guidelines being followed. what am i supposed to read first? we need youcoded's design guide to state something like \"With menu text, especially headers and subheaders, less is always more. A user should be able to tell, without reading anything at all, what a pages sections, subsection, and options are with clear visual heirarchy. the way in which a pay is organized should tell the user how to navigate, not duplicative text re-explaining each menu, submenu, and button."
+    }
+   ],
+   "v": "other",
+   "t": 1794479792083,
+   "seconds": 496,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-12T09:49:16Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "b96e1b487"
+ }
+}
