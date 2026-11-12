@@ -9,9 +9,9 @@ why: Destin 2026-11-10: wants a way to directly download and navigate/take scree
 work: session/252-rival-app-viewer
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Claude desktop verified against Anthropic's signed list, installed, signed in and driven on a hidden screen (Xvfb + xdotool); three pictures taken; handoff written
+Next: Destin picks: full tour of Claude first, or the saved reusable tool first
+Blocked: nothing
 
 Chats
 - 2026-11-12 session/252-rival-app-viewer: chat started
