@@ -87,7 +87,8 @@
 .foldrow > .t-xs,.foldrow > span > .t-xs{font-weight:500}
 .foldrow.big .gh{display:block}
 .fold[open] > .foldrow .chev{transform:rotate(90deg)}
-.foldrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* WHY on the box (2026-11-12): a ring on the header row alone cuts across what an open fold shows */
+.foldrow:focus-visible{outline:none} .fold:has(> summary:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
 .foldrow.big .fbody{display:flex;flex-direction:column}
 .foldrow.big .fbody .t-xs{font-size:12px;font-weight:400;color:var(--fg-muted);margin-top:2px} /* WHY (U14): title is .gh (16px medium) like the section heads; hint matches .gdesc */
 .foldbody,.fold > .two,.fold > .row,.fold > ul{margin:0 12px 8px}

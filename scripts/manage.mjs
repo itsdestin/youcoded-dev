@@ -44,7 +44,10 @@ export function buildPage(root, { pageMode = false, tidy = null, release } = {})
   // page is drawn, so a new release tag or a newly merged change can never hide behind a cached page. `release` is passed
   // in by the tests; otherwise it is read from the app folder (a tiny GitHub check, then git).
   release ??= releaseFacts(path.join(workspaceOf(root), 'youcoded'), loadCards(root));
-  const key = 'rel|' + JSON.stringify(release) + '|' + (pageMode ? 'page|' : '') + 'tidy|' + JSON.stringify(tidy) + '|' + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
+  // WHY the drawing code is in the key too (Destin, 2026-11-12: "how can i judge your work if i cant see it"): a long-running
+  // copy of the board kept serving the page it drew before a style fix, so a refresh showed nothing new.
+  const code = fs.readdirSync(PAGE_DIR).filter(f => /\.(py|css|json)$/.test(f)).map(f => f + fs.statSync(path.join(PAGE_DIR, f)).mtimeMs).join('|');
+  const key = 'code|' + code + '|rel|' + JSON.stringify(release) + '|' + (pageMode ? 'page|' : '') + 'tidy|' + JSON.stringify(tidy) + '|' + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
   if (key === cache.key && cache.html) return cache.html;
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'manage-page-'));
   try {

@@ -171,19 +171,28 @@ CSS = '''
 .lgroup{margin:0 0 16px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow);transition:background-color 120ms steps(4)}
 .lgroup > summary{list-style:none} .lgroup > summary::-webkit-details-marker{display:none}
 .lghead{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-radius:var(--radius-xl)}
-@media (hover:hover){.lgroup:not([open]):has(> summary:hover){background:var(--inset)} .lgroup[open] > .lghead:hover{background:color-mix(in srgb,var(--inset) 60%,transparent)}}
+/* WHY the whole box, open or closed (Destin, 2026-11-12: "the hover/click effects on front page card are just visually
+   odd"; guide: "Pointing at a folded box lights the whole box ... never a strip across its header"): an open section
+   used to tint only its header, a rounded blob that stopped above the first item. Open takes a lighter step than
+   closed so the item cards inside (which sit on --inset) still read as cards. Press goes one step further. */
+@media (hover:hover){.lgroup:not([open]):has(> summary:hover){background:var(--inset)} .lgroup[open]:has(> summary:hover){background:color-mix(in srgb,var(--inset) 45%,var(--panel))}}
+.lgroup:not([open]):has(> summary:active):not(:has(.lgtools :active)){background:var(--edge)} .lgroup[open]:has(> summary:active):not(:has(.lgtools :active)){background:color-mix(in srgb,var(--inset) 80%,var(--panel))}
 .lghead .gtext{flex:1;min-width:0;display:flex;flex-direction:column}
 .lghead .gh{font-size:16px;font-weight:500;color:var(--fg)} .lghead .gh .cnt{margin-left:6px}
 .lghead .gdesc{font-size:12px;color:var(--fg-muted);margin-top:2px}
 .lgtools{display:flex;align-items:center;gap:8px;flex:none}
 .lgroup[open] > .lghead .chev{transform:rotate(90deg)}
-.lghead:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* WHY the ring goes round the whole section, not its header row (Destin's screenshot, 2026-11-12): on the header alone
+   it stuck out past the box and cut across the first item card. */
+.lghead:focus-visible{outline:none} .lgroup:has(> summary:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
 .lgbody{padding:0 12px 12px}
 .lgroup .crow{background:var(--inset);border:1px solid var(--edge-card);border-radius:var(--radius-lg);box-shadow:none;margin-bottom:8px}
 .lgroup .crow:last-child{margin-bottom:0}
 /* an item card opens its details when clicked anywhere that is not one of its own controls */
 .lrow{cursor:pointer;transition:background-color 120ms steps(4)}
 @media (hover:hover){.lgroup .lrow:hover{background:color-mix(in srgb,var(--inset) 88%,var(--fg))}}
+/* WHY: press is one step past hover (guide §2.4); not while one of the card's own buttons or its tick box is the thing pressed */
+.lgroup .lrow:active:not(:has(button:active,input:active,a:active,select:active)){background:color-mix(in srgb,var(--inset) 78%,var(--fg))}
 /* live Today (live_today.py): the approved rows plus a tick box, and the bulk bar */
 .ltools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .field{font:inherit;font-size:12px;line-height:16px;padding:6px 12px;border-radius:var(--radius-lg);border:1px solid var(--edge-card);background:var(--inset);color:var(--fg);width:240px}
