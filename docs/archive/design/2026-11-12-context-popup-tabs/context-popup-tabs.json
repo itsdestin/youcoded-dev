@@ -1,0 +1,130 @@
+{
+  "title": "\"What the assistant was given\" — three tabs",
+  "key": "context-popup-tabs",
+  "out": "context-popup-tabs.review.html",
+  "images": "images/context-popup-tabs",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "steps": [
+    {
+      "id": "T-1",
+      "surface": "What the assistant was given",
+      "path": "Chat → the line above the conversation → Overview, in a chat on YouCoded's own engine",
+      "crop": "chat/session-context#native",
+      "highlight": "panel",
+      "headline": "Five tabs become three, and Overview gains an Engine group naming who runs the chat.",
+      "changed": "Tabs are now Overview, Global and Project. The old \"This chat\" group is renamed Engine and starts with a new row saying which engine runs the chat. The single \"Given\" row became two rows, Global and Project, each with its own counts and each opening its tab.",
+      "measured": "5 tabs down to 3",
+      "notice": "You can see at a glance whether Claude Code or YouCoded is running the chat, and a count is now also the way to the thing it counts.",
+      "risk": "Overview is two rows taller, so on a chat with warnings the Global and Project rows sit below the fold until you scroll."
+    },
+    {
+      "id": "T-2",
+      "surface": "What the assistant was given",
+      "path": "Overview, in a Claude Code chat",
+      "crop": "chat/session-context",
+      "highlight": "panel",
+      "headline": "In a Claude Code chat, Overview says once what Claude Code keeps to itself.",
+      "changed": "The Engine group shows Claude Code as the engine and adds a \"Not shown here\" row: its system instructions and tools are not shared with YouCoded. Before, you only learned that by opening the System and Tools tabs.",
+      "notice": "The limits of what this pop-up can tell you about a Claude Code chat are stated up front, in one place.",
+      "risk": "The green box at the top and the \"Not shown here\" row partly say the same thing."
+    },
+    {
+      "id": "T-3",
+      "surface": "What the assistant was given",
+      "path": "Global tab, top half, in a chat on YouCoded's own engine",
+      "crop": "chat/session-context#global",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Global starts with what is yours: your every-project rules, then the skills installed everywhere.",
+      "changed": "A new tab. It holds everything that is the same in every project. Your own things come first: your every-project rules file and your installed skills. A list longer than six shows five rows and a \"Show all\" button.",
+      "notice": "Your skills no longer have their own tab; they sit here, with a count beside the label. A skill kept in one project's folder is not here — it is on Project.",
+      "risk": "Answering \"does it have skill X?\" can now mean checking two tabs, and a long skill list needs one extra click to see in full."
+    },
+    {
+      "id": "T-4",
+      "surface": "What the assistant was given",
+      "path": "Global tab, scrolled down, in a chat on YouCoded's own engine",
+      "crop": "chat/session-context#global-engine",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Below your things, Global lists what the engine supplies: system instructions, built-in tools and add-ons.",
+      "changed": "The old System and Tools tabs moved here. Each group's grey line names who it comes from. Tools from a connected add-on are now one row per add-on with a tool count, instead of one row per tool.",
+      "measured": "3 calendar tools shown as 1 row",
+      "notice": "Built-in tools and add-on tools are told apart for the first time, and an add-on with twenty tools no longer fills the list.",
+      "risk": "These groups sit below the fold, so someone looking for Tools must open Global and scroll. Nothing but the grey line under each label separates \"yours\" from \"the engine's\" — question Q-1 is about that."
+    },
+    {
+      "id": "T-5",
+      "surface": "What the assistant was given",
+      "path": "Global tab, in a Claude Code chat",
+      "crop": "chat/session-context#claude-code-global",
+      "runs": ["after"],
+      "new": true,
+      "headline": "In a Claude Code chat, Global shows your rules and skills, and says plainly what Claude Code does not share.",
+      "changed": "Your every-project CLAUDE.md moved here from the Project tab, where it sat beside the project's own file. System instructions and tools, further down, each carry one sentence saying Claude Code does not share them.",
+      "notice": "The file that applies everywhere is finally on the tab named for that.",
+      "risk": "If you were used to finding both rules files together on Project, one of them has moved."
+    },
+    {
+      "id": "T-6",
+      "surface": "What the assistant was given",
+      "path": "Project tab",
+      "crop": "chat/session-context#project",
+      "highlight": "panel",
+      "headline": "Project now holds only what this folder adds: its rules files and its own skills.",
+      "changed": "The heading \"Rules it was given\" became \"Project rules\" with a count. A new group below, Project skills, lists skills kept in this project's own folder. Your every-project file no longer appears here.",
+      "notice": "A project with nothing of its own says so in words (\"There is no rules file for this project\", \"This project has no skills of its own\") instead of showing a blank tab.",
+      "risk": "Project commands, rules folders and helpers are still not listed anywhere; the app does not collect them yet."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "What the assistant was given",
+      "path": "Global tab",
+      "headline": "Should Global split \"yours\" from \"the engine's\" more strongly than a grey line under each label?",
+      "today": "As built on this branch, Global is one scrolling list of five groups: Your rules, Your skills, System instructions, Built-in tools, Add-ons. The first two are yours to change; the last three come from the engine. Only the group names and the grey line under each say which is which.",
+      "problem": "The app's design rules allow one size of small heading inside a pop-up, so there is no bigger \"From you\" / \"From the engine\" heading to put above the groups. Someone skimming may not notice where their own things stop and the engine's begin.",
+      "proposal": "Either keep the single list, or add a second small switch inside Global with two sides, Yours and The engine's.",
+      "options": [
+        {
+          "id": "one-list",
+          "label": "One list",
+          "recommended": true,
+          "pros": ["Everything global is visible by scrolling, with no extra click", "Looks like every other tab in the pop-up"],
+          "cons": ["The split between yours and the engine's is only in the wording", "The engine's groups start below the fold"]
+        },
+        {
+          "id": "two-sides",
+          "label": "Yours / The engine's switch",
+          "pros": ["The split is unmistakable", "Each side is short, so little scrolling"],
+          "cons": ["Two rows of switches stacked at the top of the pop-up", "Half of Global is always hidden behind a click, including the tools list"]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "YouCoded's own engine",
+      "path": "Every chat on YouCoded's engine",
+      "headline": "Should YouCoded's own engine start reading your every-project rules file, the way Claude Code does?",
+      "today": "Claude Code reads your every-project rules file (the CLAUDE.md in your home folder's .claude folder) in every chat. YouCoded's own engine does not: it only reads rules files from the project's folder and the folders above it. The new Global tab says so in a chat on YouCoded's engine.",
+      "problem": "The same project behaves differently depending on the engine. Rules you wrote for every project — how to talk to you, what to always ask first — silently do not apply in chats on YouCoded's engine. Until this tab, nothing on screen said so.",
+      "proposal": "Either leave the engine as it is and keep the sentence that explains it, or file separate work to make YouCoded's engine read the file too. That would change how the assistant behaves in every chat on YouCoded's engine, so it is not part of this branch either way.",
+      "options": [
+        {
+          "id": "read-it",
+          "label": "File work to read it",
+          "recommended": true,
+          "pros": ["Your every-project rules apply whichever engine you pick", "Switching engines stops changing how the assistant treats you"],
+          "cons": ["Chats on YouCoded's engine start behaving differently once it lands", "On a small local model the file uses up room, and may be shortened"]
+        },
+        {
+          "id": "leave-it",
+          "label": "Leave it, keep the note",
+          "pros": ["Nothing about today's chats changes", "Small local models keep all their room"],
+          "cons": ["Your every-project rules keep being ignored on YouCoded's engine", "The Global tab keeps showing a gap instead of your file"]
+        }
+      ]
+    }
+  ]
+}
