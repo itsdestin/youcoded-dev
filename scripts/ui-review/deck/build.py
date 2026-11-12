@@ -26,6 +26,11 @@ def theme_tokens(themes):
         builtin = json.load(f)
     # Community themes live in the wecoded-themes checkout at the WORKSPACE root — a worktree has none.
     theme_dirs = [os.path.join(workspace_root(), 'wecoded-themes', 'themes')]
+    # WHY the installed themes too (Destin, 2026-11-11: every deck of this rethink opened in Midnight while
+    # his app was on Ivory Schematic — "barely any of this looks like youcoded"). A theme he made or
+    # installed himself lives only in the app's own theme folder, not in the registry checkout. It is
+    # only READ here, never written.
+    theme_dirs.append(os.path.join(os.path.expanduser('~'), '.claude', 'wecoded-themes'))
     # WHY the app's own built-in theme files too (2026-10-04): YouCoded and YouCoded Night are
     # built-ins that live as JSON in the app (themes/builtin/<slug>.json, the same tokens/dark
     # shape as a community manifest), not in globals.css or wecoded-themes — so a deck shot in
