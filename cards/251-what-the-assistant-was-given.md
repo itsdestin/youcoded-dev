@@ -1,7 +1,7 @@
 ---
 id: 251
 title: "What the assistant was given" pop-up: three tabs (Overview, Global, Project)
-stage: planning
+stage: merged
 tags: user-interface, desktop, native-harness, claude-code-integration, feature
 vision: chat.steer.given
 branch: 251-what-the-assistant-was-given
