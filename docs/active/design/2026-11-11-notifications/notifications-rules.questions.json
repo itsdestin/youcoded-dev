@@ -1,0 +1,129 @@
+{
+  "title": "Notifications: the rules, for your sign-off",
+  "key": "notifications-rules-questions",
+  "out": "notifications-rules.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "R-1",
+      "words": true,
+      "surface": "Blue light",
+      "path": "Conversations on a cloud model (Claude Code, or a cloud model in the app's own sessions)",
+      "headline": "With a cloud model, the assistant decides when to notify you and what the label says.",
+      "changed": "The assistant asks itself: does anything here need your feedback, or is this an update or checkpoint you would want to see or steer? If yes, it notifies: the dot turns blue with its own two or three word label. It may do this for any message, including in the middle of a job while it keeps working, and it chooses the wording itself, including how to say that everything is finished.",
+      "notice": "Blue labels read like 'Draft ready', 'Tests passing' or 'All done' instead of Response ready. Messages the assistant judges not worth your attention stay quiet while work is still going on.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "R-2",
+      "words": true,
+      "surface": "Blue light",
+      "path": "The app's safety net",
+      "headline": "The app turns a conversation blue itself only when the assistant stopped, nothing is holding, and the assistant did not notify.",
+      "changed": "All three must be true: the main assistant has stopped; none of its own background work is holding the light (next rule); and it raised no notification of its own for this reply. Then the app shows the plain blue with Response ready. Reply length never matters.",
+      "notice": "A final reply can never go unannounced, even if the assistant forgets. This is the difference from the October version you rejected.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "R-3",
+      "words": true,
+      "surface": "Blue light",
+      "path": "Background work that holds the light",
+      "headline": "Helpers always hold the app's blue back; background commands hold it back only if started during the current reply.",
+      "changed": "While held, the conversation shows green with wording that says the work is in the background, and makes no sound. A command left running from an earlier reply (a preview server, a watcher) does not hold anything. In the app's own sessions, a command also stops holding once the assistant has had its existing five-minute 'still running' reminder. The cloud assistant is told to notify when it finishes while leaving something running.",
+      "notice": "Pauses to wait for helpers or a build no longer flash blue. Known gap, accepted: in a Claude Code session, if the assistant starts a server in the same reply it finishes in AND forgets to notify, that reply stays un-blue until the server stops.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "R-4",
+      "words": true,
+      "surface": "Blue light",
+      "path": "Conversations on a local model",
+      "headline": "With a local model, the app alone decides blue, using the same safety-net rule.",
+      "changed": "Local models are not given the ability to notify. Every hand-back with nothing holding turns blue with Response ready. The split is simply cloud versus local, with no list of capable models to maintain.",
+      "notice": "Local conversations behave like today, minus the blue-again bug and the background flicker. They never show custom labels or mid-job checkpoints.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "R-5",
+      "words": true,
+      "surface": "Red light",
+      "path": "When the whole conversation is halted",
+      "headline": "Red means only one thing: this conversation is entirely halted until you act.",
+      "changed": "The app turns it red for every card that stops the work: permission, question, plan approval, password, a helper's request, the assistant's browser asking before a purchase, send or sign-in, Claude Code's own notices such as a usage limit, and an assistant that failed to start. A cloud assistant may also flag red, but only when it has stopped and cannot proceed or do any other work until you answer. If it can keep working while it waits for you, it must use blue. The wording it is given will be tuned so this is rare.",
+      "notice": "Red always plays the alert sound, even when you are in that conversation. Browser cards become answerable from the phone. A casual 'want me to also…?' at the end of a reply is blue, not red.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "R-6",
+      "words": true,
+      "surface": "Amber light",
+      "path": "Something on Claude Code's screen the app cannot read",
+      "headline": "A prompt the app cannot read shows amber with May need you, and no sound.",
+      "changed": "The app does not claim to know whether an unrecognised prompt is blocking the work or is a menu you opened yourself.",
+      "notice": "No false red when you open a menu in the terminal. A real block of this kind is quieter than a card would be.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "R-7",
+      "words": true,
+      "surface": "Seen",
+      "path": "How blue goes away, on every screen",
+      "headline": "A reply is seen when its conversation is open in a window that is in front; seen once is seen everywhere.",
+      "changed": "The computer keeps one record per conversation, shared by every window, the floating buddy and the phone, and remembered across restarts. A reply that arrives while you are in the conversation is recorded as seen at once. Exception: if there has been no mouse or keyboard activity for about three minutes, a reply that lands counts as unseen until you next move or type with it showing.",
+      "notice": "Blue no longer comes back when you click away, a restart no longer lights up old conversations, and reading on the phone clears the computer. A minimized or covered window stays blue until you return to it.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "R-8",
+      "words": true,
+      "surface": "Sound",
+      "path": "The ready chime and the alert sound",
+      "headline": "The ready chime plays only for things you are not looking at, once per burst.",
+      "changed": "No chime for a reply or notification that arrives in the conversation you are watching. Several conversations finishing together make one chime, on the computer as on the phone. The alert sound for red is separate and always plays.",
+      "notice": "Back-and-forth chat is silent. Five conversations finishing at once sound once; the lights show how many are waiting.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "R-9",
+      "words": true,
+      "surface": "Assistant's notifications",
+      "path": "Limits on what the assistant can flag",
+      "headline": "The assistant's notifications start with light limits, to be tightened later if real behaviour needs it.",
+      "changed": "From the start: a newer notification replaces the older one in the list instead of stacking; helpers cannot notify, only the main assistant; nothing glows or sounds for a notification raised while you are watching. There is no cap on checkpoints per job for now.",
+      "notice": "An over-eager assistant could notify often during a long job. If that happens, a cap is the next change, decided from what the assistants really do.",
+      "yes": "Agreed",
+      "no": "Not right"
+    },
+    {
+      "id": "R-10",
+      "words": true,
+      "surface": "Look",
+      "path": "Session list and chat",
+      "headline": "The assistant's notifications use the look you approved in October, unchanged.",
+      "changed": "In the session list: the blue dot with the assistant's label, cut at 24 characters. In the chat: an outline around the whole reply with the label and message in a one-line tab on its top edge (a separate small card at the top if the text would wrap), glowing until you send a message, rest the mouse on it or click it, and a Jump to notification button at the top when that reply is scrolled out of view. A mid-job notification shows blue even while work continues.",
+      "notice": "Nothing new to review visually unless you want to reopen it.",
+      "yes": "Agreed",
+      "no": "Reopen the look"
+    },
+    {
+      "id": "R-11",
+      "words": true,
+      "surface": "Build order",
+      "path": "How this gets built",
+      "headline": "Built fresh from the current app in three parts, each one you can try before the next starts.",
+      "changed": "Part 1: the shared seen record, the safety-net and holding rules, and the sound rules. No new visuals; it fixes today's jank. Part 2: the red and amber rules. Part 3: the assistant's notifications with the approved look. Good pieces are copied from the October attempt; that attempt itself is not continued.",
+      "notice": "After part 1 the lights already behave correctly for every conversation, with Response ready as the only blue wording until part 3 arrives.",
+      "yes": "Agreed",
+      "no": "Not right"
+    }
+  ]
+}
