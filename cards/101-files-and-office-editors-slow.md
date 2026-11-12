@@ -13,8 +13,8 @@ platform: Desktop only
 vision: chat.files.office
 ---
 Progress
-Done: Overnight 2026-11-12: tried to re-measure with the speed lab, but the computer never got quiet (load 40-128 from other sessions), so no numbers and no changes.
-Next: Re-run the lab on an idle machine (startup, history, workload, terminal, artifacts, scrollback phases). See speed REPORT notes.
+Done: Re-measured: large Markdown opens in ~70 ms (was 939 ms), code typing p95 ~32 ms, HTML swap 55-83 ms, no app freeze; 47-case ladder run once. Slow: 8x512 HTML 1.7 s, path list of 10,000+ 0.7-1.5 s freeze, 1000-row Word table 0.55 s.
+Next: Decide whether those rare cases deserve work; 20 MB sheet save and Office version restore not measured.
 Blocked: Windows and Mac are not measured. Each remaining case needs a real run to confirm.
 
 Chats
