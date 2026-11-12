@@ -38,7 +38,9 @@ better"). He may ask for another order on any build.
 2. **First deck.** Page 1, "Here is how I understand this": statements about what exists and
    what he wants, each marked Holds / Fails. Then scope and hard-rule questions, and one
    large skippable box for how he pictures the screens and the path.
-3. **Design decks.** Two to four drawn designs per screen; he picks or combines. Repeat.
+3. **Design.** Two to four drawn designs per screen; he picks or combines. Repeat. Steps 2-7 are ONE growing deck
+   per feature (`"grows": true`) that moves through the stages Understanding → Design → Before build →
+   After build, keeping his earlier answers; never a new deck per step.
 4. **Walkthrough before the build**, ending in the checks menu.
 5. **Build**; the checks he switched on run. Then the grader, then a list "What changed while
    building": each row built as planned, or adjusted and why (his: "what did you have to adjust").

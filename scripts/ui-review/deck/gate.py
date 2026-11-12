@@ -25,6 +25,7 @@ import json
 import os
 import re
 
+from .grows import settled_ids
 from .spec import strip_comments, unlooked_rows, tickable
 
 # Checks he can switch (before the build) carry one of these; after the build the row carries a
@@ -113,7 +114,7 @@ def changes_requested(answers):
     return out
 
 
-def unlooked_in(spec, answers):
+def unlooked_in(spec, answers, skip=()):
     """Rows of a "Yours to change" list in `spec` that he neither ticked nor changed, as
     'step/row ("words")'. WHY (round 10, R-2): in the after-build walkthrough a row he never looked
     at means he has not gone through it, so the deck is not finished. A list answered under the old
@@ -121,7 +122,7 @@ def unlooked_in(spec, answers):
     out = []
     mine = (answers or {}).get('answers') or {}
     for st in spec.get('steps') or []:
-        if isinstance(st, dict) and tickable(st):
+        if isinstance(st, dict) and tickable(st) and st.get('id') not in skip:
             for c in unlooked_rows(st, mine.get(st.get('id'))):
                 out.append(f'{st.get("id")}/{c.get("id")} ("{(c.get("call") or "")[:70]}")')
     return out
@@ -202,7 +203,11 @@ def check_gate(before_path, after=None):
     else:
         for line in changes_requested(a_ans):
             problems.append(f'after-build walkthrough, not finished: {line}')
-        for line in unlooked_in(aft, a_ans):
+        # WHY (Destin, round 10): on a deck that grows, a list he settled in an earlier round is not asked
+        # again, so its rows have no ticks in THIS round's file; they are not "not looked at".
+        settled = settled_ids({**aft, '_base': os.path.dirname(os.path.abspath(after)),
+                               '_stem': os.path.basename(os.path.splitext(after)[0])}, a_ans)
+        for line in unlooked_in(aft, a_ans, settled):
             problems.append(f'after-build walkthrough, not finished: row {line} was not looked at - he neither ticked it nor asked for a change')
     for k, t in also_check(before, b_ans).items():
         notes.append(f'also check ({k}): {t}')

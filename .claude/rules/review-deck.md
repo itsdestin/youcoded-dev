@@ -36,7 +36,10 @@ verify:
 | see a whole piece of work, before and after building | **Walkthrough** |
 | retype on-screen wording AFTER the build | a **screen** step |
 
-Contract and Acceptance decks are retired (`feature-flow.md`). Several designs of one thing are ONE Choice slide. A trade-off is a Question even when the thing works.
+Contract and Acceptance decks are retired (`feature-flow.md`). Several designs of one thing are ONE Choice slide.
+
+## One growing deck per feature
+**Invariant:** `"grows": true` (`templates/growing.json`): edit and re-build the same spec each round; answered topics sink with their round, no History button, a change he asked for needs `reopened` or `resolved`. **Why:** "evolving documents… not a sticky note" (rounds 1, 8, 10). **Guard:** `test_grows.py`.
 
 ## Lists: one kind of row per card
 **Invariant:** a words step with `calls` is a list of ONE kind, named at its head: facts
@@ -44,11 +47,9 @@ Contract and Acceptance decks are retired (`feature-flow.md`). Several designs o
 no status words; a row he neither ticked nor changed is "not looked at", never approved), or results (every row a `result`; run/skip checks carry
 `more`). Mixed lists are refused. No "Details" fold: a row's `trail` is plain lines above its
 words, `more` labelled lines below, `reuse` behind an (i). `picture`/`before` are tiles in an
-Attachments card; a tile opens the popup: true size, scrolling, comments at the right,
-Before/After switch; on touch "Comment on an area" comes before a drag. `state` is a group
-heading, never a badge. No underlined links. A pencil pressed again keeps the comment; the bin
-removes it. Comment boxes take pasted pictures and paths as pills; question decks end each page
-with a comment box. A re-served deck of the same build reopens with his answers, editable.
+Attachments card that open the popup (true size, comments at the right). `state` is a group
+heading, never a badge. A pencil pressed again keeps the comment; the bin removes it. Question
+decks end each page with a comment box. A re-served deck of the same build reopens with his answers.
 **Why:** "why is it the only row in this card that has the… chip?" (round 8); round 9, K-1, V-1,
 Q-3, Q-4. **Guard:** `test_rethink.py`, `test_serve.py`, `deck-render.test.mjs`.
 
@@ -63,18 +64,15 @@ were "terrible" (2026-11-10). **Guard:** `deck-render.test.mjs`, `freeze.test.mj
 one ask across decks. **Guard:** `test_spec.py`, `test_words.py`.
 
 ## Question decks are pages; a question has four fields
-**Invariant:** questions share one page until a marker (`{"id", "page", "intro"}`); a contract
-deck is never paged. Each carries `today`, `problem`, `proposal`, `options[]` with `pros`, `cons`,
+**Invariant:** questions share one page until a marker (`{"id", "page", "intro"}`). Each carries `today`, `problem`, `proposal`, `options[]` with `pros`, `cons`,
 at most one `recommended: true`; inline "Today: …" is refused. Every Today says, behind its (i),
 how and when it was checked (`checked`). **Why:** stale Todays were the worst fault. **Guard:** `test_words.py`.
 
 ## Look at it before he does
-**Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve` (re-serve
-answered decks with `--no-build`); paste the printed `[deck] http://…` as the last line of the
-turn and stop. An edit under `deck/` ships only after `selfie` has shown him before and after.
-**Why:** four defective decks in a day. **Guard:** `test_cli.py`.
+**Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve` (answered
+decks: `--no-build`); paste the printed `[deck] http://…` as the turn's last line. An edit under
+`deck/` ships only after `selfie` has shown him before and after. **Why:** four bad decks in a day. **Guard:** `test_cli.py`.
 
 ## Themes and pictures
 **Invariant:** never hand-order `themes` (the deck opens on his app's theme; `--theme` overrides,
-`"theme": "fixed"` pins). A picture step shows ONE full-window shot, live page as an extra, never
-instead. **Guard:** `test_spec.py`.
+`"theme": "fixed"` pins). A picture step shows ONE full-window shot. **Guard:** `test_spec.py`.

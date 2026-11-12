@@ -18,6 +18,14 @@
   const pageSteps = i => (PAGES[i] ? PAGES[i].steps.map(stepById).filter(Boolean) : []);
   const curStep = () => (PAGES ? {} : DECK.steps[cur]) || {};
   const state = { deck: DECK.key, started: new Date().toISOString(), submitted: null, cur: 0, answers: {} };
+  // ── A DECK THAT GROWS (spec "grows": true; deck/grows.py) ──────────────────────────────
+  // WHY (Destin, rounds 1, 8, 10: "a single deck that kind of 'evolves'… keeps my earlier responses"; "I don't like
+  // the history button"): one deck per feature. A topic he already answered in an earlier round is SETTLED: it sinks
+  // to an "Answered" list at the foot of its page, and is never counted, summed or asked again unless he presses
+  // Reopen (kept in state.reopened so it survives a reload). Decks without DECK.grows never touch any of this.
+  const GROWS = DECK.grows || null;
+  const settled = st => !!(GROWS && st.grow && st.grow.answered && !(state.reopened || {})[st.id]);
+  const askedNow = () => asked.filter(st => !settled(st));
   const ICON = {
     change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -845,6 +853,9 @@
   // WHY (Destin, 2026-11-09, rethink Q-6): which version of the work a deck was built from,
   // and when, proves its value on every deck — stale decks were his top complaint. It sits
   // quietly in the chip, and rides into the answers file so the record says what he was shown.
+  if (GROWS) {
+    const r = document.createElement('span'); r.className = 'roundtag'; r.textContent = 'Round ' + GROWS.round; $('.chip').append(r);
+  }
   if (DECK.built) {
     const b = DECK.built, when = new Date(b.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
     const el = document.createElement('span'); el.className = 'built'; el.textContent = 'built ' + when + (b.commit ? ' · ' + b.commit : '');
@@ -896,6 +907,7 @@
       for (const [k, v] of Object.entries(extra.pageNotes || {})) { const w = longer(pn[k], v); if (w) pn[k] = w; }
       if (Object.keys(pn).length) out.pageNotes = pn;
       const gn = longer(base.notes, extra.notes); if (gn) out.notes = gn;
+      if (base.reopened || extra.reopened) out.reopened = { ...(base.reopened || {}), ...(extra.reopened || {}) };   // a topic he reopened stays reopened
       const pa = { ...(base.pageAttach || {}) };
       for (const [k, v] of Object.entries(extra.pageAttach || {})) { const u = unionPills(pa[k], v); if (u.length) pa[k] = u; }
       if (Object.keys(pa).length) out.pageAttach = pa;
@@ -1025,7 +1037,9 @@
   }
   // ── the question page: every question of one set, on one scrolling reading column ──────────
   function renderPage() {
-    const pg = PAGES[cur], steps = pageSteps(cur);
+    const pg = PAGES[cur], all = pageSteps(cur);
+    // On a deck that grows, topics answered in an earlier round sink to an "Answered" list below the open ones.
+    const steps = all.filter(st => !settled(st)), sunk = all.filter(settled);
     document.documentElement.dataset.theme = theme;
     // The header describes what is on screen, and on a page that is the page — its title and
     // its one line of intro, not a step's surface and path.
@@ -1051,13 +1065,18 @@
         // A calls list asks nothing, so it is not called a "Question" (rethink round 2).
         + `<p class="qnum"><span class="n">${st.kind === 'calls' ? `<span class="kindline">${listKind(st)}</span>` : listy(st) ? '' : 'Question ' + (steps.filter(x => !listy(x)).indexOf(st) + 1) + ' of ' + steps.filter(x => !listy(x)).length}</span></span></p><span class="qstate" aria-live="polite"></span>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
-        + (listy(st) ? '' : storyLines(st) + moreLines(st) + (st.reuse ? `<div class="builtfrom">Built from the app's own parts${reuseTip(st)}</div>` : ''))
+        // WHY (Destin, round 10: "one summary line of its past, the full story opens on request"): on a deck that
+        // grows the story is ONE fold line under the title, never always-visible lines.
+        + growPast(st)
+        + (listy(st) ? '' : (GROWS ? '' : storyLines(st)) + moreLines(st) + (st.reuse ? `<div class="builtfrom">Built from the app's own parts${reuseTip(st)}</div>` : ''))
         + `<div class="qbody">${cardsFor(st)}</div>`
+        + leaveButton(st)
         + (listy(st) ? '' : `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
         // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A
         // question answered by typing already has its box, so it gets no second note box.
         + (st.answer === 'words' ? '' : `<textarea class="note" rows="1" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></textarea>`) + `</div>`)
         + `</article>`).join('')
+      + answeredList(sunk)
       // WHY (Destin, round 4, on the header Notes button: "nah i wanted like an extra more
       // visible input region at the bottom of each page"): a thought about the page as a whole
       // gets a box he cannot miss, where he ends up after reading it — one per page, saved as
@@ -1070,6 +1089,68 @@
     if (state.submitted) $$('#cards .ans,#cards .note,#cards .ans-write').forEach(e => e.disabled = true);   // WHY .ans-write too (review 2026-11-10): the typed-answer box stayed live after Submit and looked saved
     layout(); paintState(); addMics(); wireMarks();
   }
+  // ── growing decks: a topic's past, the Answered list, Reopen ───────────────────────────────
+  const noteLines = (label, answer, notes) => `<dl class="story">`
+    + [answer ? [label, answer] : null, ...(notes || []).map(n => [answer ? '' : label, quoted(n)])].filter(Boolean).map((r, i, a) => `<div class="sline you"><dt>${i === 0 ? esc(r[0]) : ''}</dt><dd>${esc(r[1])}</dd></div>`).join('') + `</dl>`;
+  // An open topic with a past: ONE line as a fold row; opened, the story (trail) and his earlier answers, oldest first.
+  function growPast(st) {
+    if (!GROWS || !st.grow) return '';
+    const g = st.grow, mine = !!(state.reopened || {})[st.id];
+    const line = g.line || (mine && g.round ? 'Answered in ' + g.round : '');
+    if (!line) return '';
+    const body = storyLines(st) + (g.story || []).map(x => noteLines(x.round + ' · you', x.answer, x.notes)).join('');
+    const open = isOpen('past', st.id);
+    return `<div class="fold pastfold${open ? ' open' : ''}"><button type="button" class="foldhead" data-kind="past" data-sid="${esc(st.id)}" data-call="" aria-expanded="${open}"><span class="foldtitle">${esc(line)}</span><span class="foldfill"></span>${CHEV}</button><div class="foldbody"${open ? '' : ' hidden'}>${body}</div></div>`;
+  }
+  const touchedStep = st => { const a = state.answers[st.id] || {}; return !!(isAnswered(st) || (a.note || '').trim() || openRows(a) || (a.marks || []).length || Object.keys(a.ok || {}).length); };
+  // The small button on a topic he reopened and has not yet answered: put it back.
+  function leaveButton(st) {
+    if (!GROWS || !(state.reopened || {})[st.id] || state.submitted) return '';
+    return touchedStep(st) ? '' : `<div class="growact"><button type="button" class="btn sm ghost leavebtn" data-sid="${esc(st.id)}">Leave as answered</button></div>`;
+  }
+  // The "Answered" group: one heading with the count, then one fold row per topic (headline left; round and chevron right).
+  function answeredList(list) {
+    if (!list.length) return '';
+    return `<div class="grp answeredgrp"><h4 class="grph">Answered<span class="grpn">${list.length}</span></h4>` + list.map(st => {
+      const g = st.grow, open = isOpen('ans', st.id);
+      const what = st.kind === 'calls' ? `<ul class="plainrows">${st.calls.map(c => `<li>${esc(c.call)}</li>`).join('')}</ul>` : st.proposal ? `<p>${esc(st.proposal)}</p>` : '';
+      return `<div class="fold ansfold${open ? ' open' : ''}" data-id="${esc(st.id)}"><button type="button" class="foldhead" data-kind="ans" data-sid="${esc(st.id)}" data-call="" aria-expanded="${open}"><span class="foldtitle">${esc(st.headline)}</span><span class="foldfill"></span><span class="foldround">${esc(g.round || '')}</span>${CHEV}</button>`
+        + `<div class="foldbody"${open ? '' : ' hidden'}>${what}<div class="youans"><span class="youlabel">You answered</span>${g.answer ? `<span>${esc(g.answer)}</span>` : ''}</div>`
+        + (g.notes || []).map(n => `<p class="decided">${esc(quoted(n))}</p>`).join('')
+        + (g.resolved ? `<p class="resolvedline">${esc(g.resolved)}</p>` : '')
+        + `<div class="growact"><button type="button" class="btn sm reopenbtn" data-sid="${esc(st.id)}"${state.submitted ? ' disabled' : ''}>Reopen</button></div></div></div>`;
+    }).join('') + `</div>`;
+  }
+  $('#cards').addEventListener('click', e => {
+    const ro = e.target.closest('.reopenbtn'), lv = e.target.closest('.leavebtn');
+    if (!(ro || lv) || state.submitted) return;
+    const id = (ro || lv).dataset.sid, t = $('.content') || document.scrollingElement, y = t ? t.scrollTop : 0;
+    state.reopened = { ...(state.reopened || {}) };
+    if (ro) state.reopened[id] = true; else delete state.reopened[id];
+    if (!Object.keys(state.reopened).length) delete state.reopened;
+    save(); renderPage(); if (t) t.scrollTop = y;
+  });
+  // The stages of the feature as ONE segmented control in the header (Understanding, Design, Before build, After build).
+  // The bare number after a stage is the ONLY place the count of topics still needing his answer is stated.
+  const STAGE_KEYS = ['understanding', 'design', 'before', 'after'];
+  const needsAnswer = st => !st.context && !settled(st) && !isAnswered(st);
+  function paintStages() {
+    if (!GROWS || !PAGES) return;
+    const box = $('#stages'); box.hidden = false;
+    if (!box.children.length) box.innerHTML = STAGE_KEYS.map(k => `<button type="button" class="segb" data-stage="${k}">${esc((GROWS.stages || {})[k] || k)}<span class="stn"></span></button>`).join('');
+    const here = (PAGES[cur] || {}).stage;
+    [...box.children].forEach(b => {
+      const k = b.dataset.stage, idx = PAGES.map((p, i) => p.stage === k ? i : -1).filter(i => i >= 0);
+      const n = idx.reduce((t, i) => t + pageSteps(i).filter(needsAnswer).length, 0);
+      b.disabled = !idx.length; b.classList.toggle('on', k === here); b.setAttribute('aria-pressed', k === here ? 'true' : 'false');
+      b.querySelector('.stn').textContent = n ? String(n) : '';
+    });
+  }
+  $('#stages').addEventListener('click', e => {
+    const b = e.target.closest('.segb[data-stage]'); if (!b || b.disabled) return;
+    const idx = PAGES.map((p, i) => p.stage === b.dataset.stage ? i : -1).filter(i => i >= 0);
+    go(idx.find(i => pageSteps(i).some(needsAnswer)) ?? idx[0]);
+  });
   // Delegated, and bound once: renderPage() replaces the whole column on every page change.
   $('#cards').addEventListener('click', e => {
     if (!PAGES) return;
@@ -1200,7 +1281,7 @@
     pageSteps(cur).forEach(st => {
       // WHY not a background-only list (review 2026-11-10): `context: true` rows ask nothing, so
       // leaving the page must never count as answering them.
-      if (!listy(st) || st.context) return;
+      if (!listy(st) || st.context || settled(st)) return;   // a settled topic is not his to answer this round
       // WHY not a "Yours to change" list (round 10, R-2): moving on no longer means "fine"; only a tick does.
       if (tickable(st)) return;
       const a = state.answers[st.id] || {};
@@ -1261,6 +1342,8 @@
       if (w && document.activeElement !== w) w.value = a.text || '';
       // An answered question takes the same green edge the mock-up used for `done`.
       art.classList.toggle('done', !!(a.v && a.v !== 'skip'));
+      // Once he answers a topic he reopened, "Leave as answered" has nothing left to undo: it goes away at once.
+      { const lv = art.querySelector(':scope > .growact'); if (lv) lv.hidden = touchedStep(stepById(art.dataset.id) || {}); }
       // WHY the time (Destin, 2026-11-09, rethink Q-6): when each question was answered is
       // worth more than cover-page copy. It is already in the answers file; this shows it.
       // WHY a pill (Destin, round 4: "answered status could be a top-right status pill instead
@@ -1286,11 +1369,12 @@
     });
     // A segment is a PAGE: solid once every question on it is answered, half-lit while some are.
     $$('#steps span').forEach((seg, i) => {
-      const on = pageSteps(i).filter(st => !st.context), n = on.filter(isAnswered).length;
-      seg.className = (on.length && n === on.length ? 'done' : n ? 'part' : '') + (i === cur ? ' on' : '');
+      const on = pageSteps(i).filter(st => !st.context && !settled(st)), n = on.filter(isAnswered).length;
+      // A page whose topics are all answered already (nothing asked) shows as complete.
+      seg.className = ((on.length && n === on.length) || (!on.length && pageSteps(i).length) ? 'done' : n ? 'part' : '') + (i === cur ? ' on' : '');
     });
-    const done = asked.filter(isAnswered).length;
-    $('#count').textContent = 'page ' + (cur + 1) + ' of ' + PAGES.length + ' · ' + done + ' of ' + NA + ' answered' + (state.submitted ? ' · submitted, read-only' : '');
+    const done = askedNow().filter(isAnswered).length;
+    $('#count').textContent = 'page ' + (cur + 1) + ' of ' + PAGES.length + ' · ' + done + ' of ' + askedNow().length + ' answered' + (state.submitted ? ' · submitted, read-only' : '');
     // On a page the forward button is navigation, not "save this answer" — it is never disabled
     // for an unanswered question, because there are several of them on screen.
     $('#save').disabled = !!state.submitted; $('#save').textContent = cur === LAST ? 'Done' : 'Next page ›';
@@ -1325,7 +1409,7 @@
   const paintNotes = () => $('#notesbtn').classList.toggle('has', !!(state.notes || '').trim());
   function paintState() {
     paintNotes();
-    if (PAGES) { paintPage(); paintCalls(); paintScreens(); paintPills(); return; }
+    if (PAGES) { paintPage(); paintStages(); paintCalls(); paintScreens(); paintPills(); return; }
     const a = state.answers[DECK.steps[cur].id] || {};
     $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick) && (b.dataset.dk !== '1' || !!a.dk)));
     $$('.card.variant').forEach(c => c.classList.toggle('on', chosen(a, c.dataset.pick)));
@@ -1433,6 +1517,7 @@
       // moment that belongs to one of them — so the elapsed seconds are split evenly across them.
       const on = pageSteps(cur), each = on.length ? Math.round(secs / on.length) : 0;
       on.forEach(st => {
+        if (settled(st)) return;   // no answer is written for a topic that is already answered
         const a = state.answers[st.id] || {};
         if (!a.v) a.v = 'skip';
         a.seconds = (a.seconds || 0) + each; a.theme = theme;
@@ -1478,8 +1563,10 @@
   // exposed as window.__deckSummaryOf so a test can feed the SAME state to both and compare.
   function summaryOf(S) {
     const counts = { yes: 0, no: 0, other: 0, pick: 0, picks: 0, wrote: 0, skip: 0 }; const lines = [];
+    const reopenedIn = S.reopened || {};
     for (const st of DECK.steps) {
       if (st.context) continue;   // a background-only list asks nothing: no answer, no line
+      if (GROWS && st.grow && st.grow.answered && !reopenedIn[st.id]) continue;   // answered in an earlier round: nothing is asked, so nothing is summed
       const a = (S.answers || {})[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
       const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && st.variants ? 'none' : (v === 'other' && a.dk ? "don't know" : v));
       lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a) + tickWords(st, a));
@@ -1531,8 +1618,8 @@
     stepStart = Date.now(); paintState();
     // Context lists are never "missing"; each missing one is named the way the page names it.
     // A "Yours to change" list is not a missing STEP; its unticked rows are named in their own warning below (round 10, R-2).
-    const missing = asked.filter(st => { if (tickable(st)) return false; const v = (state.answers[st.id] || {}).v; return !v || v === 'skip'; });
-    const lists = asked.filter(st => unlooked(st).length), nU = lists.reduce((n, st) => n + unlooked(st).length, 0);
+    const missing = askedNow().filter(st => { if (tickable(st)) return false; const v = (state.answers[st.id] || {}).v; return !v || v === 'skip'; });
+    const lists = askedNow().filter(st => unlooked(st).length), nU = lists.reduce((n, st) => n + unlooked(st).length, 0);
     { const box = $('#unlooked'); box.style.display = nU ? 'flex' : 'none';
       // WHY plain names and the row's own words (round 10, R-2: "warn, list them, let me send anyway"): grouped by the page and list the screen shows; he can still send.
       const pt = st => PAGES ? ((PAGES.find(p => p.steps.includes(st.id)) || {}).title || '') : '';
@@ -1610,7 +1697,7 @@
   };
   function renderResponses() {
     const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
-    const rows = asked.map((st, i) => {
+    const rows = askedNow().map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
       const note = [(a.note || '').trim()].concat(Object.entries(a.changes || {}).map(([k, t]) => k + ': ' + String(t || '').trim()), (a.asks || []).map(k => 'More context: ' + k), Object.entries(a.edits || {}).map(([k, t]) => t && typeof t === 'object' ? '“' + t.from + '” → “' + t.to + '”' + (t.state ? ' (seen with: ' + t.state + ')' : '') : k + ' reworded: ' + String(t || '').trim()),
         (a.marks || []).map((m, j) => 'Area ' + (j + 1) + ' on ' + m.pic + ': ' + String(m.text || '').trim()),
@@ -1630,7 +1717,7 @@
     const parts = [counts.yes + ' yes', counts.no + ' no', counts.other + ' other'];
     if (counts.pick) parts.splice(2, 0, counts.pick + ' picked');
     if (counts.skip) parts.push(counts.skip + ' with no answer');
-    $('#fin-meta').textContent = NA + (NA === 1 ? ' step' : ' steps') + ' · ' + parts.join(' · ') + (when ? ' · submitted ' + when : '');
+    const NA = askedNow().length; $('#fin-meta').textContent = NA + (NA === 1 ? ' step' : ' steps') + ' · ' + parts.join(' · ') + (when ? ' · submitted ' + when : '');
   }
   function showFinished() {
     renderResponses(); $('#step').hidden = true; $('#finished').hidden = false; document.body.dataset.screen = 'finished';
@@ -1638,7 +1725,7 @@
     // be labelling a step nobody is looking at. The progress strip stays: it is the summary at
     // a glance, and clicking a segment is still the way back into that step (a one-page deck hides the strip; `‹ Back to the deck` is its way back).
     $('#wtitle').textContent = DECK.title; $('#wsub').textContent = 'review complete';
-    $('#count').textContent = 'all ' + NA + ' steps · read-only';
+    $('#count').textContent = 'all ' + askedNow().length + ' steps · read-only';
     $('#prev').disabled = false; $('#next').disabled = true;   // Prev goes back into the deck; nothing follows the end
   }
   function hideFinished() { $('#finished').hidden = true; $('#step').hidden = false; document.body.dataset.screen = 'deck'; }
@@ -2240,6 +2327,8 @@
     // An answers file written before this deck had pages can carry a `cur` past the last page;
     // clamping to LAST lands on the last page instead of rendering nothing.
     cur = q.get('step') ? Math.max(0, Math.min(LAST, +q.get('step') - 1)) : Math.max(0, Math.min(LAST, state.cur || 0));
+    // A deck that grows opens on the first page with a topic still open, not on page 1 (answered pages are behind him).
+    if (GROWS && !q.get('step') && !state.cur) { const i = PAGES.findIndex((p, k) => pageSteps(k).some(needsAnswer)); if (i > 0) cur = i; }
     if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
     stepStart = Date.now(); stamp(); lastSig = JSON.stringify(state); loaded = true; render();   // WHY lastSig now: a page that has changed nothing must not rewrite the browser backup when it closes
     if (state.submitted) { lockSubmitted(); showFinished(); }   // an archived deck re-opened after its submit lands on the finish screen — its answers, read back — instead of a step full of dead buttons

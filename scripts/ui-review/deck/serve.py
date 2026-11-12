@@ -23,6 +23,7 @@ import sys
 import threading
 import time
 
+from .grows import settled_ids
 from .live import has_live
 from .spec import UI_REVIEW, SpecError, is_page, pages as spec_pages, row_states, tickable, workspace_root
 
@@ -222,9 +223,14 @@ def summary(spec, state):
     """One line per step, ledger id first, in spec order (spec §4.5)."""
     counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'picks': 0, 'wrote': 0, 'skip': 0}
     lines = []
+    # WHY (Destin, round 10: answered topics sink and are not asked again): on a growing deck a topic
+    # answered in an earlier round and not reopened by him asks nothing now, so it is never counted or listed.
+    settled = settled_ids(spec, state)
     for st in spec['steps']:
         if is_page(st):
             continue   # a page marker asks nothing — no answer, so no line
+        if st.get('id') in settled:
+            continue
         if st.get('context'):
             continue   # a background-only list asks nothing either (review 2026-11-10): never counted, never a line
         a = (state.get('answers') or {}).get(st['id']) or {}

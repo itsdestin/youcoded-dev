@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -1682,4 +1682,96 @@ print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())),
     assert.equal(await ev("document.querySelector('.ans-write').disabled"), true, 'the typed-answer box locks on Submit');
     assert.deepEqual(c.errors, []);
   } finally { c.close(); srv.kill(); }
+});
+
+// ── a deck that grows (round 10) ───────────────────────────────────────────────────────────
+// WHY pinned (Destin, rounds 1, 8, 10: "a single deck that… keeps my earlier responses"; open topics on top,
+// answered ones sink to a list with their round, one summary line of a topic's past): real files end to end.
+// Round 1 is built, answered (a submitted answers file), then the SAME spec is edited and rebuilt, and `serve`
+// moves the answers aside, exactly as the author's routine does.
+test('a deck that grows: answered topics sink, reopen works, counts and stages leave answered topics out', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-grows-'));
+  const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); q1, q2 = raw['steps'][0], raw['steps'][1]
+def q(i, h, **kw): return {**q1, 'id': i, 'headline': h, **kw}
+raw['grows'] = True
+raw['steps'] = [{'id': 'P-1', 'page': 'Understanding page', 'intro': 'What we understood.', 'stage': 'understanding'}, q('Q-1', 'First topic?'), q('Q-2', 'Second topic?'),
+  {'id': 'P-2', 'page': 'Design page', 'intro': 'The drawings.', 'stage': 'design'}, q('Q-3', 'Third topic?')]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  const out = join(dirname(spec), 'questions.html');
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  // round 1 as he answered it: Q-1 plain, Q-2 with a note, Q-3 with a note; submitted, with the build stamp he saw
+  const at = /"built":\s*\{[^}]*"at":\s*"([^"]+)"/.exec(readFileSync(out, 'utf8'))[1];
+  writeFileSync(join(dirname(spec), 'questions.answers.json'), JSON.stringify({ deck: 'questions-fixture', submitted: '2026-11-01T10:00:00Z', built: { at }, answers: {
+    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: 'only if it stays quiet' }, 'Q-3': { v: 'other', note: 'make it bigger please' } } }));
+  // round 2: the same spec, edited
+  const edit = `import json; p = ${JSON.stringify(spec)}; raw = json.load(open(p))
+for s in raw['steps']:
+    if s['id'] == 'Q-2': s['resolved'] = 'Made quiet in round 2.'
+    if s['id'] == 'Q-3': s['reopened'] = 'You asked for it bigger.'; s['trail'] = [{'round': 'Round 1', 'built': 'A small one.'}]
+raw['steps'] += [dict(raw['steps'][1], id='Q-4', headline='Fourth topic?', resolved=None)]; raw['steps'][-1].pop('resolved')
+raw['steps'].append({'id': 'P-3', 'page': 'Before page', 'intro': 'Before the build.', 'stage': 'before'})
+raw['steps'].append({'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'calls': [{'id': 'r1', 'call': 'A row.', 'why': 'Because.'}]})
+json.dump(raw, open(p, 'w'))`;
+  await sleep(1200);   // the build stamp has one-second precision: round 2 must be a different build from round 1, as it always is in practice
+  { const r = spawnSync('python3', ['-c', edit], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }   // a grows deck is rebuilt after he answered
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  try {
+    await sleep(900);
+    assert.ok(readdirSync(dirname(spec)).some(f => /^questions\.answers\.\d+\.json$/.test(f)), 'serve moved his round-1 answers aside as a dated file');
+    const c = await cdp(await freePort(), 1200, 1000);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c);
+      const q = e => c.evaluate(e);
+      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Design page', 'lands on the first page that has an open topic, not page 1');
+      assert.match(await q("document.querySelector('.chip .roundtag').textContent"), /Round 2/);
+      assert.equal(await q("document.querySelector('#histbtn').hidden"), true, 'no History button');
+      assert.equal(await q("document.querySelectorAll('.since, .grph').length"), 0, 'no since-last-round sentence or group headings here');
+      // open topics on this page: the reopened one and the new one
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-3', 'Q-4']);
+      assert.equal(await q("document.querySelector('.pastfold .foldtitle').textContent"), 'You asked for it bigger.');
+      assert.equal(await q("document.querySelector('.pastfold .foldbody').hidden"), true, 'the story opens on request');
+      await q("document.querySelector('.pastfold .foldhead').click()"); await sleep(100);
+      const story = await q("document.querySelector('.pastfold .foldbody').innerText");
+      assert.match(story, /Round 1 · built/); assert.match(story, /Round 1 · you/); assert.match(story, /make it bigger please/);
+      // the stage control: the current stage selected; the open number is the only count; a stage with no pages is off
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#stages .segb')].map(b => [b.dataset.stage, b.classList.contains('on'), b.disabled, b.querySelector('.stn').textContent]))")),
+        [['understanding', false, false, ''], ['design', true, false, '2'], ['before', false, false, '1'], ['after', false, true, '']]);
+      assert.match(await q("document.querySelector('#count').textContent"), /0 of 3 answered/, 'answered topics are not counted');
+      // page 1: nothing open, an Answered list with its count, rows showing the round
+      await q("document.querySelector('#stages .segb[data-stage=understanding]').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Understanding page');
+      assert.equal(await q("document.querySelectorAll('article.q').length"), 0);
+      assert.equal(await q("document.querySelector('.answeredgrp .grph').textContent"), 'Answered2');
+      assert.match(await q("document.querySelector('.ansfold .foldhead').textContent"), /First topic\?.*Round 1/);
+      assert.equal(await q("document.querySelectorAll('.ansfold .fchip, .ansfold .qstate').length"), 0, 'no pills or dots on an answered row');
+      assert.equal(await q("document.querySelector('#steps span').className.includes('done')"), true, 'a page whose topics are all answered reads as complete');
+      await q("document.querySelectorAll('.ansfold .foldhead')[1].click()"); await sleep(100);
+      assert.match(await q("document.querySelectorAll('.ansfold')[1].innerText"), /only if it stays quiet/);
+      assert.match(await q("document.querySelectorAll('.ansfold')[1].querySelector('.decided').textContent"), /only if it stays quiet/);
+      assert.equal(await q("document.querySelector('.resolvedline').textContent"), 'Made quiet in round 2.');
+      assert.equal(await q("[...document.querySelectorAll('#cards *')].filter(e => parseFloat(getComputedStyle(e).borderLeftWidth) > 1.5 && getComputedStyle(e).borderRightWidth !== getComputedStyle(e).borderLeftWidth).length"), 0, 'no coloured bar at the left edge of anything');
+      // Reopen: the topic moves up among the open ones, is answerable, and counts again
+      await q("document.querySelectorAll('.reopenbtn')[1].click()"); await sleep(300);
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-2']);
+      assert.equal(await q("document.querySelectorAll('.ansfold').length"), 1);
+      assert.ok(await q("document.querySelectorAll('article.q[data-id=Q-2] .ans').length > 0"), 'a reopened topic can be answered');
+      assert.match(await q("document.querySelector('#count').textContent"), /0 of 4 answered/);
+      assert.equal(await q("JSON.parse(localStorage.getItem('deck:' + DECK.key)).reopened['Q-2']"), true, 'kept in the saved state');
+      assert.equal(await q("[...document.querySelectorAll('.leavebtn')].filter(b => b.offsetParent).length"), 1, 'a reopened topic he has not answered can be put back');
+      await q("document.querySelector('.leavebtn').click()"); await sleep(300);
+      assert.equal(await q("document.querySelectorAll('article.q').length"), 0, 'Leave as answered puts it back in the Answered list');
+      await q("document.querySelector('.reopenbtn[data-sid=Q-2]').click()"); await sleep(300);
+      await q("document.querySelector('article.q[data-id=Q-2] .ans').click()"); await sleep(300);
+      assert.match(await q("document.querySelector('#count').textContent"), /1 of 4 answered/);
+      assert.equal(await q("[...document.querySelectorAll('.leavebtn')].filter(b => b.offsetParent).length"), 0, 'an answered reopened topic is not put back by a stray button');
+      assert.deepEqual(c.errors, []);
+    } finally { c.close(); }
+  } finally { srv.kill(); }
 });

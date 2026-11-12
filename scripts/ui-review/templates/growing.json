@@ -1,0 +1,78 @@
+{
+  "_comment": [
+    "A DECK THAT GROWS — ONE deck for a whole feature. You edit THIS file and re-build it each round; you never start a new spec for the same feature. His submitted answers are kept beside it as dated files and become the earlier rounds.",
+    "A topic he answered in an earlier round sinks to an 'Answered' list at the foot of its page and is never asked again unless he presses Reopen. Open topics stay on top. The header shows Round N and the four stages (Understanding, Design, Before build, After build) with the number of topics still open in each.",
+    "Each round: (1) read his answers, (2) for every topic where he asked for a change, add \"reopened\" (one line of its past; the topic is open again, with your revised proposal) or \"resolved\" (what you did about it; it stays answered), (3) add new topics, (4) rebuild with the same file name. The builder refuses to rebuild if one of his changes would vanish silently."
+  ],
+  "title": "Saved searches",
+  "_comment_title": "title: the feature, in his words. The same title and file name every round.",
+  "key": "saved-searches",
+  "_comment_key": "key: a short name; his answers are saved under it. Keep it the same every round.",
+  "out": "saved-searches.html",
+  "grows": true,
+  "_comment_grows": "grows: true switches all of this on. A deck without it behaves exactly as before.",
+  "rounds_before": 0,
+  "_comment_rounds_before": "rounds_before (optional): how many separate decks this feature already had. Round numbers then start after them. Leave it out (or 0) for a feature with no earlier decks.",
+  "themes": ["midnight", "light"],
+  "retired": {},
+  "_comment_retired": "retired: {\"<step id>\": \"why it went\"}. A topic he answered earlier cannot just disappear from the deck; list it here when you remove it on purpose.",
+  "steps": [
+    {
+      "_comment": "A page marker. On a deck that grows every page names its STAGE (understanding, design, before, after), and the stages go in that order.",
+      "id": "P-1",
+      "page": "What we understood",
+      "intro": "Mark what holds and what does not.",
+      "stage": "understanding"
+    },
+    {
+      "_comment": "A topic he answered in an earlier round, settled in an older separate deck. 'answered' puts it in the Answered list with his words; it asks nothing now.",
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat search",
+      "path": "The search box at the top of the session list",
+      "headline": "Should a search you run often be saveable?",
+      "today": "Searching your past sessions means typing the words again every time.",
+      "problem": "A search you run every Monday costs the same typing every Monday.",
+      "proposal": "A search could be kept by name and re-run in one press.",
+      "answered": { "round": "Round 1", "answer": "Yes", "notes": ["i run the same search every monday"] }
+    },
+    {
+      "_comment": "A topic he asked to change last round: 'reopened' is the ONE line of its past under the title; opened, it shows the trail and his earlier answers. The proposal here is the revised one.",
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat search",
+      "path": "The saved-search list",
+      "headline": "Where should saved searches live?",
+      "today": "Saved searches sit in a list under the search box.",
+      "problem": "The list pushes your sessions down the screen.",
+      "proposal": "Move the list into a menu beside the search box.",
+      "reopened": "You asked for them to stay out of the way; the first design did not.",
+      "trail": [{ "round": "Round 1", "built": "A list under the search box.", "said": "it pushes everything down" }],
+      "options": [
+        { "id": "menu", "label": "A menu beside the box", "recommended": true, "summary": "One button opens them.", "pros": ["Nothing moves."], "cons": ["One press more."] },
+        { "id": "list", "label": "Keep the list", "summary": "As built.", "pros": ["Always visible."], "cons": ["Pushes sessions down."] }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "How it looks",
+      "intro": "Pick between the drawings.",
+      "stage": "design"
+    },
+    {
+      "_comment": "A new topic: nothing in its past, so it just sits on top until he answers it.",
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chat search",
+      "path": "The saved-search button",
+      "headline": "Should the saved-search button show a count?",
+      "today": "The button is a plain star.",
+      "problem": "You cannot tell how many searches you have kept.",
+      "proposal": "Show the number beside the star.",
+      "options": [
+        { "id": "yes", "label": "Show it", "summary": "A small number.", "pros": ["At a glance."], "cons": ["Busier."] },
+        { "id": "no", "label": "Leave the star", "summary": "As today.", "pros": ["Quiet."], "cons": ["No count."] }
+      ]
+    }
+  ]
+}

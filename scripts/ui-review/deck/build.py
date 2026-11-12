@@ -11,6 +11,7 @@ import subprocess
 
 from .crops import image_name, is_focus_crop
 from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
+from .grows import STAGE_NAMES, answer_view, is_grows, round_number, step_data
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_calls, is_choice, is_clip, is_contract,
                     is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
                     workspace_root)
@@ -360,7 +361,6 @@ def _history(spec):
     questions and HIS saved answers into the page, so one link shows the new round first and
     everything he said before behind one button. Read-only: an earlier round is a record."""
     base = spec.get('_base', '')
-    names = {'yes': 'Yes', 'no': 'No', 'other': 'Something else', 'skip': 'Not answered'}
     rounds = []
     for name in spec.get('earlier') or []:
         path = os.path.join(base, name)
@@ -388,29 +388,8 @@ def _history(spec):
                 if note:
                     items.append({'page': page, 'headline': 'About this page', 'answer': '', 'notes': [note]})
                 continue
-            a = answers.get(st.get('id')) or {}
-            v = a.get('v') or 'skip'
-            rows = {c.get('id'): c.get('call', '') for c in st.get('calls') or [] if isinstance(c, dict)}
-            opts = {o.get('id'): o.get('label', '') for o in st.get('options') or [] if isinstance(o, dict)}
-            if v == 'pick':
-                answer = opts.get(a.get('pick')) or str(a.get('pick') or '')
-            elif v == 'picks':
-                answer = ', '.join(opts.get(p) or str(p) for p in a.get('picks') or [])
-            elif v == 'wrote':
-                answer = ''
-            elif st.get('calls') and v == 'yes':
-                answer = 'Accepted as listed'
-            elif st.get('calls') and v == 'other':
-                answer = 'Changed'
-            else:
-                answer = names.get(v, v)
-            notes = [t for t in [(a.get('text') or '').strip(), (a.get('note') or '').strip()] if t]
-            notes += [f'{rows.get(k) or k} — {(t or "").strip()}' for k, t in (a.get('changes') or {}).items() if (t or '').strip()]
-            notes += [f'On a picture — {(m.get("text") or "").strip()}' for m in a.get('marks') or [] if (m.get('text') or '').strip()]
-            # `state` (round 7b): what was open on the screen when the words were changed.
-            notes += [f'Reword “{t.get("from", "")}” to “{t.get("to", "")}”' + (f' (seen with: {t["state"]})' if t.get('state') else '')
-                      if isinstance(t, dict) else f'{rows.get(k) or k} reworded — {t}'
-                      for k, t in (a.get('edits') or {}).items()]
+            # WHY shared with growing decks (grows.answer_view): one reading of an answer everywhere.
+            answer, notes = answer_view(st, answers.get(st.get('id')) or {})
             items.append({'page': page, 'headline': st.get('headline', st.get('id', '')), 'answer': answer, 'notes': notes})
         general = (saved.get('notes') or '').strip()
         if general:
@@ -467,8 +446,18 @@ def deck_data(spec, boxes):
     # picture, which keeps one step per screen — `steps` itself never carries the markers.
     pg = pages(spec)
     paged = {'pages': [{'id': p['id'], 'title': p['title'], 'intro': p['intro'],
-                        'steps': [st['id'] for st in p['steps']]} for p in pg]} if pg else {}
-    return {**live, **paged, **_built(spec), **_history(spec), 'title': spec['title'], 'key': spec['key'], 'runs': runs,
+                        'steps': [st['id'] for st in p['steps']],
+                        # `stage` only on a growing deck: the header's four-part control reads it.
+                        **({'stage': p['stage']} if p.get('stage') else {})} for p in pg]} if pg else {}
+    # WHY (Destin, round 10): a growing deck has no History button; its earlier rounds live ON each topic.
+    grown = {}
+    if is_grows(spec):
+        gd = step_data(spec)
+        for st in steps:
+            if st['id'] in gd:
+                st['grow'] = gd[st['id']]
+        grown = {'grows': {'round': round_number(spec), 'stages': STAGE_NAMES}}
+    return {**live, **paged, **grown, **_built(spec), **({} if is_grows(spec) else _history(spec)), 'title': spec['title'], 'key': spec['key'], 'runs': runs,
             # Any other run name (`round3`) shows as written unless `labels` names it.
             'runLabels': {**{r: r for r in spec['runs']}, 'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},

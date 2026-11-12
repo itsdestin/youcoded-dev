@@ -216,7 +216,9 @@ def main(argv):
         # approved — the only record of what he said yes to. The rule already said "re-serve an
         # answered deck with --no-build"; this makes it execute instead of asking.
         rebuilds = a.cmd in ('build', 'preview') or (a.cmd == 'serve' and not a.no_build)
-        if rebuilds and not a.rebuild_answered and answered(spec):
+        # WHY a deck that grows is exempt (Destin, round 10): its routine IS to rebuild the same file each round
+        # after he answers. It has no pictures to rewrite, and his submitted answers are kept as the earlier round.
+        if rebuilds and not a.rebuild_answered and answered(spec) and spec.get('grows') is not True:
             print(f'[deck] {os.path.basename(a.spec)} is already answered — rebuilding would rewrite the pictures '
                   'Destin approved. Use `serve --no-build` to show it again, shoot new pictures into a run folder '
                   'to compare against it, or pass --rebuild-answered if a rebuild is truly intended.', file=sys.stderr)

@@ -806,3 +806,67 @@ this contradicts a section above, this wins.
   and the problem names the row.
 - **Old answers keep their meaning** (`row_states`): `accepted: true`, or a list with `changes` and no
   `ok`, reads as "untouched rows were fine". Reopened, the first press writes those rows as real ticks.
+
+## A deck that grows (round 10)
+
+Source: Destin, rounds 1, 8 and 10 ("a single deck that kind of 'evolves' in response to my questions and
+keeps my earlier responses"; of the History button, "feels like you tacked on a sticky note"). Where this
+contradicts a section above, this wins. Template: `templates/growing.json`. Code: `deck/grows.py`.
+
+**One deck per feature.** Add `"grows": true` to the spec. You edit the SAME spec file every round and
+re-build it; you never start a new spec for the same feature, and `serve` prints the same file name each
+time. The deck moves through four stages (Understanding, Design, Before build, After build) by page. A
+deck without `"grows"` behaves exactly as it always did.
+
+**What he sees in round 2 and later.** The deck opens on the first page that still has an open topic. Open
+topics are on top, as before. Under them is one small heading, "Answered" with a count, and one fold row per
+topic he already settled: its headline, the round ("Round 4") and a chevron. Opened, it shows the proposal
+(or the list's rows), what he answered with his words quoted, what you did about it (`resolved`), and a
+**Reopen** button that moves it back up among the open topics (a reopened topic that he has not answered yet
+has a small **Leave as answered**). An open topic with a past shows ONE line under its title; opened, it shows
+the story (`trail`) and his own earlier answers, oldest first. The header shows "Round N" in the yellow chip and
+the four stages as one segmented control, each with a bare number when topics are still open there (the only
+place that count is stated); a stage with no pages is dimmed. There is no History button, no "Since last round"
+sentence and no New / Changed / Settled headings. Answered topics are never counted in "x of y answered", the
+page segments, the finish dialog or either summary, unless he reopened them.
+
+**How rounds are found.** Each time he submits, `serve` moves the answers aside as
+`<stem>.answers.<stamp>.json` once a rebuilt deck is served. Those dated files, in time order, are the earlier
+rounds. A submitted answers file that has not been moved aside yet counts too, so rebuilding right after he
+answers already builds the next round. Copies carrying the same build stamp are one round (a same-build
+re-serve keeps a dated copy). Round number = `rounds_before` (default 0) + earlier rounds + 1. Use
+`"rounds_before": N` for a feature that already had N separate decks. `build` of an answered `grows` deck is
+allowed (it has no pictures to rewrite); other decks still refuse without `--rebuild-answered`.
+
+**What counts as answered.** A step (a question or a list, never a page marker) is answered when EITHER the spec
+says so by hand, `"answered": {"round": "Round 4", "answer": "Yes", "notes": ["his words"]}` (for a topic
+settled in an older, separate deck), OR an earlier round of this deck holds a real answer for the same step id and
+the step has no `"reopened"`.
+
+**The routine, every round.**
+1. Read his answers. 2. Edit the same spec. For each topic where he asked for something other than a plain
+yes or pick (he said no or other, wrote a note, marked a picture, changed a row, or left a row not looked at),
+write ONE of: `"reopened": "<one line of its past, up to 30 words>"` (the topic is open again, normally with a
+revised proposal) or `"resolved": "<what was done about it, up to 40 words>"` (it stays answered and shows that
+line). 3. For an open topic with a history but no reopening, `"past": "<one line>"` gives it the same fold. Its
+`trail` (round / asked / built / said) opens inside that fold and is never shown otherwise on a growing deck.
+4. Put every page under a stage: a page marker is `{"id", "page", "intro", "stage"}` with stage one of
+`understanding`, `design`, `before`, `after`, and the stages appear in that order. 5. Add new topics. 6. Rebuild,
+`preview`, read the contact sheet, `serve`.
+
+**What the tool refuses** (each message names the step and quotes him):
+- his latest earlier answer on a step was not a plain acceptance and the step has neither `reopened` nor
+  `resolved` ("his round 1 answer on "…" asked for a change; say what happened");
+- a step he answered earlier is gone from the spec and not listed in `"retired": {"<id>": "why, one line"}`;
+- a `trail` with no `reopened`, `past` or `answered` line to open from;
+- `state` on a step or row (answered topics sink by themselves);
+- `answered` with `reopened` (or `past`), or `reopened` with `resolved` or `past`; a line over its word limit;
+  `answered` without text `round` and `answer`;
+- any of the new fields on a deck without `"grows": true`; a page marker with no stage, an unknown stage or
+  stages out of order; a growing deck with pictures or a contract.
+`earlier` and `related` are ignored on a growing deck (not refused). A row's own `trail` inside a list keeps
+drawing as lines above the row.
+
+**The gate and summaries.** `serve.py`'s summary and `gate.py` skip topics settled in an earlier round, so the
+after-build gate does not call a list he already ticked "not looked at". Saved shape: `state.reopened =
+{"<step id>": true}` beside the answers.

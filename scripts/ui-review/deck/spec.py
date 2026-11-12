@@ -595,7 +595,8 @@ def is_question(step):
     return is_words(step) and not is_contract(step) and 'today' in step
 
 
-PAGE_FIELDS = ('id', 'page', 'intro')
+# `stage` (growing decks): which of Understanding / Design / Before build / After build this page belongs to.
+PAGE_FIELDS = ('id', 'page', 'intro', 'stage')
 
 
 def is_page(step):
@@ -666,7 +667,8 @@ def pages(spec):
     out = []
     for st in spec['steps']:
         if is_page(st):
-            out.append({'id': st['id'], 'title': st.get('page') or '', 'intro': st.get('intro') or '', 'steps': []})
+            out.append({'id': st['id'], 'title': st.get('page') or '', 'intro': st.get('intro') or '', 'steps': [],
+                        **({'stage': st['stage']} if st.get('stage') else {})})
             continue
         if not out:
             # No marker before the first question: the implicit first page, the deck's own title.
@@ -924,6 +926,15 @@ def validate(spec):
             warnings.append(f'{sid}: measured has no number in it')
     _images_folder_warning(spec, warnings)
     _stage_checklist(spec, errors)
+    # WHY (Destin, rounds 1, 8 and 10: one deck that grows each round and keeps what he said): a spec
+    # with "grows": true gets the extra checks in grows.py, including the refusal to lose an answer silently.
+    from . import grows
+    grows.validate_fields(spec, errors)
+    if grows.is_grows(spec):
+        if not words_only(spec) or has_contract(spec):
+            errors.append('grows: a deck that grows is a question deck (pages of questions and lists, no pictures, no contract)')
+        else:
+            errors.extend(grows.problems(spec))
     return errors, warnings
 
 
