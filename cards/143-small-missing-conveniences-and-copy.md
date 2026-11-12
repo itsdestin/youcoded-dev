@@ -13,7 +13,7 @@ side: screens
 ---
 Progress
 Done: nothing recorded. 2026-11-11 chat-engine batch: checked against code, nothing built. All still happen. (b) is outdated: a folder dropdown exists (saved folders); only a recently-used order is missing.
-Next: Destin yes/no on each: (a) right-click menu on images (new feature); (b) recent folders in the dropdown (new feature); (c) Replace or Append when a quick chip is tapped over typed text (today it silently replaces what was typed); the git-branch popup (new feature). (d) sizes: every size in the app is 1024-based today; going 1000-based changes numbers in about 20 places (model sizes, download progress, memory and disk warnings, file sizes, the 1 MB / 10 MB / 25 MB / 100 MB limit wording); already decided in principle, but it is a visible change across many screens, so confirm before building.
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): YES to designing all three: right-click menu on pictures, recently used folders first, Replace or Add when a quick chip is tapped over typed text; each comes back to him as a small design first. Sizes: GO AHEAD with 1000-based sizes (about 20 places). The git-branch popup was not asked; still open.
 Blocked: nothing recorded.
 
 Chats
