@@ -13,8 +13,8 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: 2026-11-12: (b) settings retry at launch LANDED (app PR #736).
-Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): YES, show a one-time notice when a damaged Claude Code settings file is replaced (proposed: Claude Code settings file could not be read, so YouCoded started a fresh one; say where the old copy is if one is kept). Review page before landing.
+Done: 2026-11-12 overnight: one-time toast 'YouCoded couldn't read your Claude Code settings file...' with Show old copy, desktop window only; commit ed0318aea on session/chat-followups.
+Next: Destin decides whether phones/Android also get it (needs opening one phone channel).
 Blocked: Nothing blocks the shipped part. Needs a real Android, Windows and Mac run to confirm the rest.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
