@@ -432,19 +432,15 @@
   // or "Already settled" — not by a badge. Rows keep the order they were written in inside a group. With
   // `fold_settled` the settled group is one fold row (the same fold as Details), shut by default
   // (Destin, round 6, "new first, settled folded below"). A list where no row has a state has no headings.
+  // Round 10: the kind is ONE quiet label above the list's title; the controls on the rows say the rest.
+  const listKind = st => st.context ? 'For your information' : st.calls.some(c => c.result === 'run' || c.result === 'skip') ? 'Checks' : st.calls.some(c => c.result) ? 'Results' : 'Yours to change';
   const groupHead = (label, n) => `<h4 class="grph">${label}<span class="grpn">${n}</span></h4>`;
   const callsCard = st => {
     const ul = rows => `<ul>${rows.map(c => callLi(st, c)).join('')}</ul>`;
     const cls = `card calls${st.context ? ' context' : ''}${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}`;
     // WHY a kind line (round 9, K-1): every list says which of the three kinds it is and what, if anything, it
     // wants from him — facts, rows that are his to change, or results (and, before a build, checks to switch).
-    const results = st.calls.some(c => c.result), checks = st.calls.some(c => c.result === 'run' || c.result === 'skip');
-    const kind = st.context ? ['For your information', 'Nothing to do here. A correction goes in the box at the foot of the page.']
-      : checks ? ['Checks', 'Switch any on or off. A comment on a check tells it what else to look at.']
-      : results ? ['Results', 'Change any result you disagree with.']
-      : ['Yours to change', 'Each row stands unless you change it with its pencil.'];
-    const kindLine = `<p class="kindline" data-kind="${st.context ? 'info' : checks ? 'checks' : results ? 'results' : 'change'}"><b>${kind[0]}</b><span>${kind[1]}</span></p>`;
-    if (!st.calls.some(c => c.state)) return `<section class="${cls}">${kindLine}${ul(st.calls)}</section>`;
+    if (!st.calls.some(c => c.state)) return `<section class="${cls}">${ul(st.calls)}</section>`;
     const by = k => st.calls.filter(c => c.state === k);
     const plain = st.calls.filter(c => !STATE_GROUPS.some(([k]) => k === c.state));
     const blocks = [];
@@ -456,7 +452,7 @@
       } else blocks.push(`<div class="grp">${groupHead(label, rows.length)}${ul(rows)}</div>`);
     });
     // Rows with no state while others have one come first, under no heading: nothing happened to them.
-    return `<section class="${cls}">${kindLine}${plain.length ? `<div class="grp">${ul(plain)}</div>` : ''}${blocks.join('')}</section>`;
+    return `<section class="${cls}">${plain.length ? `<div class="grp">${ul(plain)}</div>` : ''}${blocks.join('')}</section>`;
   };
 
   // ── Edit the words on the real screen (round 4) ─────────────────────────────────────────
@@ -1039,7 +1035,7 @@
         // them apart". A page of questions had nothing between one and the next but a 14px gap,
         // so on a tall question you cannot see where you are. Each one now names itself.
         // A calls list asks nothing, so it is not called a "Question" (rethink round 2).
-        + `<p class="qnum"><span class="n">${listy(st) ? '' : 'Question ' + (steps.filter(x => !listy(x)).indexOf(st) + 1) + ' of ' + steps.filter(x => !listy(x)).length}</span></span></p><span class="qstate" aria-live="polite"></span>`
+        + `<p class="qnum"><span class="n">${st.kind === 'calls' ? `<span class="kindline">${listKind(st)}</span>` : listy(st) ? '' : 'Question ' + (steps.filter(x => !listy(x)).indexOf(st) + 1) + ' of ' + steps.filter(x => !listy(x)).length}</span></span></p><span class="qstate" aria-live="polite"></span>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
         + (listy(st) ? '' : storyLines(st) + moreLines(st) + (st.reuse ? `<div class="builtfrom">Built from the app's own parts${reuseTip(st)}</div>` : ''))
         + `<div class="qbody">${cardsFor(st)}</div>`
@@ -1826,7 +1822,7 @@
         + `<span class="vzoom seg"><button type="button" class="segb on" data-zoom="true">True size</button><button type="button" class="segb" data-zoom="fit">Fit</button></span>`
         + `<button type="button" class="iconbtn vclose" title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>`
         + `<div class="vmain"><div class="vstage"><div class="lbbox"></div></div>`
-        + `<aside class="vside"><h3>Comments on this picture</h3><button type="button" class="btn sm varm" hidden>Comment on an area</button><div class="vcomments"></div></aside></div>`;
+        + `<aside class="vside"><p class="vabout"></p><h3>Comments on this picture</h3><button type="button" class="btn sm varm" hidden>Comment on an area</button><div class="vcomments"></div></aside></div>`;
       document.body.appendChild(v);
     }
     paintViewer(); drawMarks();
@@ -1840,7 +1836,11 @@
       box.innerHTML = a.video ? `<video src="${esc(a.src)}" controls preload="metadata" playsinline></video>` : `<img src="${esc(a.src)}" alt="">`;
     }
     box.classList.toggle('markable', a.markable); box.dataset.sid = a.sid; box.dataset.pk = a.pk;
-    v.querySelector('.vtitle').textContent = a.what + (a.cap ? ' · ' + a.cap : '');
+    // WHY (round 10, on the popup's top line: "what is this? a title? desctption?… if its a title, should be
+    // shorter. if description, should be in its own spot"): the title is the picture's short name; the row or
+    // question it belongs to is said once, in its own box at the head of the comments strip.
+    v.querySelector('.vtitle').textContent = a.cap || 'Picture';
+    v.querySelector('.vabout').textContent = a.what;
     // The row's other picture (Before beside After) is one press away, in the same popup.
     const sibs = viewA.classList.contains('atttile') ? [...viewA.parentElement.querySelectorAll('.atttile')] : [];
     const pair = v.querySelector('.vpair'); pair.hidden = sibs.length < 2;

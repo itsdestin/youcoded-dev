@@ -86,6 +86,13 @@ A job none of these does needs a new shared piece and Destin's look for it — n
 3. **Quiet by default.** Small grey labels in sentence case. Show what the user needs to act on; drop
    details nobody asked for, and options or information that would confuse someone who has never seen
    the app or used its features. Headers are one line.
+   **The layout explains the screen, not the words** (Destin, 2026-11-12): "With menu text,
+   especially headers and subheaders, less is always more. A user should be able to tell, without
+   reading anything at all, what a page's sections, subsections and options are, from clear visual
+   hierarchy. The way a page is organised should tell the user how to navigate, not duplicative text
+   re-explaining each menu, submenu and button." So: no sentence under a heading that restates it,
+   no footnote explaining how the screen works, no count said twice, and never text styles stacked
+   with no clear order of what to read first. Text meant to be read sits in a card, never bare.
 4. **Three heading levels, no more.** If a screen seems to need a fourth, it needs fewer sections.
 5. **Cards for things, rows for lists, styled by level.** Something you open or install (a plugin, a
    Page, a file) is a raised card. A list you read or pick from (settings, a menu) is rows. Inside a
@@ -918,6 +925,7 @@ recipe and ask.
 - [ ] Every retry button reads "Try again"; machine words only under Details.
 - [ ] No hard-coded colour, pill or corner size; theme colours and shape only; no status colour in text.
 - [ ] Sentence case; no spaced-out capitals; headings from the three levels.
+- [ ] Cover every word that explains the screen: can he still tell its sections and options apart? Then delete those words.
 - [ ] Actions on the right; one filled button (one per row in a list of actions); nothing filled alone
       at the bottom-left.
 - [ ] Spacing from the scale; cards styled by level; a label first; no loose text; no full-width lines.

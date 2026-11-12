@@ -391,7 +391,7 @@ body[data-served="1"] .opendev{display:inline-flex}
 .card.dev{grid-column:1/-1}
 /* The command on a TRY-IT slide. Monospace and selectable, on the marked edge, because it is
    the one thing on the card that has to be copied exactly rather than read. */
-.card.dev .cmd{margin:8px 0 0;padding:9px 11px;border:1px solid var(--edge);border-left:3px solid var(--mark);border-radius:var(--radius-md);background:var(--well);overflow-x:auto}
+.card.dev .cmd{margin:8px 0 0;padding:9px 11px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);overflow-x:auto}
 .card.dev .cmd code{font:inherit;font-size:12px;color:var(--fg);white-space:pre;user-select:all}
 .card.dev .cmd{margin-top:10px}
 .card.dev .src{margin-top:8px}
@@ -505,7 +505,10 @@ body[data-served] .callt,body[data-served] .markt{padding-right:44px}
 .chip .built{color:inherit;opacity:.7;border-left-color:currentColor}
 .responses td.when{white-space:nowrap}
 /* round 2: rows that carry a picture, a source quote and a check result */
-.decided{margin:6px 0 0;padding-left:10px;border-left:2px solid var(--mark);font-size:12px;font-style:italic;color:var(--fg-2)}
+/* WHY no bar (Destin, 2026-11-12, round 10: he marked every short coloured bar at the left edge of a quote or a
+   story and wrote "fingernail"; round 9: "i hateeee the fingernail styling"). His words are set apart by being
+   quoted and italic, nothing else. No element on a deck carries a coloured left-edge bar. */
+.decided{margin:6px 0 0;font-size:12px;font-style:italic;color:var(--fg-2)}
 /* A row's status: a small tinted pill (design guide: a status is a Pill, sentence case). As a
    button it opens the four statuses — he can set any of them (round 4). */
 .result{display:inline-block;padding:2px 9px;border-radius:999px;font:600 11px/1.5 var(--font);border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent);white-space:nowrap}
@@ -850,7 +853,7 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
 /* ROUND 9: what the "Details" fold used to hide, in the open.
    The story sits above a row's words as plain lines: a narrow label column (round · who), then the words; his
    own words in the normal text colour, what was built a step quieter. No box, no fold. */
-.story{margin:0 0 8px;padding:0 0 0 12px;border-left:2px solid var(--edge);display:flex;flex-direction:column;gap:4px}
+.story{margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:4px}
 .sline{display:grid;grid-template-columns:118px 1fr;gap:12px;font-size:12.5px;line-height:1.5}
 .sline dt{color:var(--fg-muted)} .sline dd{margin:0;color:var(--fg-2)} .sline.you dd{color:var(--fg)}
 .morelines{margin:8px 0 0;display:flex;flex-direction:column;gap:4px}
@@ -861,7 +864,19 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
 .callhead .callwhat{display:inline}
 .builtfrom{margin:8px 0 0;font-size:12px;color:var(--fg-muted)}
 /* The kind line at the head of every list: which of the three kinds of card this is, and what it wants from him. */
-.card p.kindline{margin:0 0 10px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-size:12.5px;color:var(--fg-muted)}
-.kindline b{font-size:13px;font-weight:600;color:var(--fg)}
+/* WHY one quiet label and no sentence (round 10: "this is confusing and can certainly be more clear/concise";
+   "less is always more… not duplicative text re-explaining each menu"). The kind is the small label above the
+   list's title, in the same spot a question shows "Question 1 of 7". */
+.pages article.q .qnum .kindline{font:inherit;color:inherit}
+/* A row's words lead; its reason is one step quieter. Two levels, no more. */
+.callwhat{font-weight:600}
+/* WHY a card (round 10: "bare text with no card gets ignored easily as ai clutter"): the page's opening line —
+   what he is judging here — sits in the same kind of box as everything else he is meant to read. */
+.pages .page-head{padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--panel)}
+.pages .page-head .intro{color:var(--fg)}
+/* The popup: the picture's short name is the title; the row it belongs to is described once, at the head of the strip. */
+.vabout{margin:0;padding:10px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);font-size:13px;line-height:1.45;color:var(--fg-2)} .vabout:empty{display:none}
 /* The line on a reopened deck saying when its answers were sent (round 9, Q-3). */
 .sentline{margin:0 0 12px;padding:8px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--panel);font-size:13px;color:var(--fg-2)}
+/* Design guide: sentence case, no spaced-out capitals. The small label above a card's title follows it. */
+.pages article.q .qnum{text-transform:none;letter-spacing:0;font-size:12px}

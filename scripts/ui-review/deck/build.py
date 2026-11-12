@@ -6,6 +6,7 @@ import datetime
 import html
 import json
 import os
+import re
 import subprocess
 
 from .crops import image_name, is_focus_crop
@@ -56,6 +57,17 @@ def theme_tokens(themes):
                     if k in (m.get('shape') or {}):
                         tok[k] = m['shape'][k]
                 tok['_dark'] = bool(m.get('dark', True))
+                # WHY the theme's typeface (Destin, 2026-11-12, round 10, L-3: yes, "match the app"): a deck
+                # in his colours but the deck's own typewriter face still read as a different product.
+                # The family goes in as --font; a Google Fonts address (the only kind accepted) is loaded
+                # when the deck opens, as the app does. Anything odd in either is ignored, not trusted.
+                font = m.get('font') or {}
+                fam = font.get('family') if isinstance(font, dict) else None
+                if isinstance(fam, str) and fam.strip() and not re.search(r'[;{}<>\\]', fam):
+                    tok['font'] = fam.strip() + ", system-ui, sans-serif"
+                    url = font.get('google-font-url')
+                    if isinstance(url, str) and url.startswith('https://fonts.googleapis.com/') and not re.search(r'[\s"\'()<>\\]', url):
+                        tok['_fonturl'] = url
                 out[t] = tok
                 break
         else:
@@ -64,7 +76,8 @@ def theme_tokens(themes):
 
 
 def tokens_css(tokens):
-    lines = []
+    # A stylesheet's @import lines must come before anything else in it.
+    lines = sorted({f'@import url("{tok["_fonturl"]}");' for tok in tokens.values() if tok.get('_fonturl')})
     for t, tok in tokens.items():
         decl = ';'.join(f'--{k}:{v}' for k, v in tok.items() if not k.startswith('_'))
         # Fix: page.css's defaults live on a bare `:root{...}` (specificity 0,1,0) and match <html> too,

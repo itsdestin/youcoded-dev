@@ -759,3 +759,22 @@ wins.
   answers file); a second Submit replaces the first (round 9, Q-3). Until he submits again the live
   answers file has no `submitted`; the dated copy is the record. A deck REBUILT since he answered
   still starts empty, so keep using `serve --no-build` for an answered deck.
+
+## Changed after round 10 (2026-11-12)
+
+Source: the areas Destin marked on round 10's pictures. Where this contradicts a section above, this wins.
+
+- **No coloured bar at the left edge of anything.** He calls it "fingernail styling" and marked every
+  one: beside a quote of his words, beside a row's story, on an "unread" row. His words are quoted and
+  italic, nothing more. Drawings for him follow the same rule. A test fails the page if any element has one.
+- **A list's kind is one small label above its title** ("Yours to change", "Results", "Checks", "For
+  your information"), with no sentence after it. Never restate in words what the layout shows (design
+  guide, principle 3).
+- **A page's opening line sits in a card.** ("bare text with no card gets ignored easily as ai clutter".)
+- **The popup's title is the picture's short name**; the row or question it belongs to is said once, in a
+  box at the head of the comments strip.
+- **The theme's typeface.** A theme whose manifest names a font family is drawn in it; a Google Fonts
+  address in the manifest is loaded when the deck opens (round 10, L-3).
+- **In drawings for him:** keep what is the deck's own (the yellow header chip); do not dress a deck as an
+  app screen ("Esc · Back to chat" is not a deck part); no status words beside the controls that already
+  show the status ("i definitely dont like the weird new… change asked/fine/not looked at indicator things").

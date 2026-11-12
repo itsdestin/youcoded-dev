@@ -277,7 +277,7 @@ class RethinkTests(unittest.TestCase):
         css = open(os.path.join(DECK, 'page.css')).read()
         # Round 8 (Destin, round 7: "VERYY busy… badges don't really make much sense… we don't use the
         # bare > dropdowns anywhere, nor the linked underline text"): groups, one fold, tiles.
-        for needle in ('class="grph"', 'storyLines', 'moreLines', 'class="kindline"', 'class="since"', 'class="reltop"', 'reuseTip', 'class="atttile"', 'isVideo', 'STATE_GROUPS'):
+        for needle in ('class="grph"', 'storyLines', 'moreLines', 'class="kindline"', 'vabout', 'class="since"', 'class="reltop"', 'reuseTip', 'class="atttile"', 'isVideo', 'STATE_GROUPS'):
             self.assertIn(needle, js, needle)
         # Round 9 (K-1): the Details fold is gone.
         for gone in ('stpill', 'metatog', 'sincepart', 'settledhead', 'attmarks', 'detailsFold', 'fold details'):

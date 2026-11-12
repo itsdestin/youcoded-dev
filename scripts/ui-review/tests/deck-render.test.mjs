@@ -1181,7 +1181,7 @@ print(p)`;
       await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
       for (let i = 0; i < 40 && !(await c.evaluate("!!window.__deckReady && !!document.querySelector('.markable img') && document.querySelector('.markable img').complete").catch(() => false)); i++) await sleep(250);
       assert.equal(await c.evaluate("document.querySelectorAll('.how .tip').length"), 1, 'Today carries its how-it-was-checked note');
-      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .n').textContent"), '', 'a list carries no "Question n of m" label');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .n').textContent"), 'Results', 'a list carries its kind, never a "Question n of m" label');
       assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .note').length"), 0, 'a calls list has no shared note box');
       await c.evaluate(`(()=>{const img=document.querySelector('.markable img'),r=img.getBoundingClientRect();
         img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+40,clientY:r.top+30}));
@@ -1221,12 +1221,13 @@ print(p)`;
       assert.equal(await c.evaluate("document.querySelectorAll('.attcard .markable').length"), 0, 'nothing is drawn on inside the card');
       await c.evaluate("document.querySelector('.attcard .atttile').click()"); await sleep(300);
       assert.equal(await c.evaluate("document.querySelectorAll('.viewer .lbbox.markable img').length"), 1, 'a tile opens the picture window');
-      assert.match(await c.evaluate("document.querySelector('.viewer .vtitle').textContent"), / · Before$/, 'titled with the row\'s words and the tile\'s name');
+      assert.equal(await c.evaluate("document.querySelector('.viewer .vtitle').textContent"), 'Before', 'the title is the picture\'s short name');
+      assert.ok((await c.evaluate("document.querySelector('.viewer .vabout').textContent")).length > 5, 'the row it belongs to is described once, in the strip');
       // Round 9, V-1: the picture is at its true size (never shrunk to the window), and Before/After is a switch in the header.
       assert.ok(await c.evaluate("(()=>{const i=document.querySelector('.viewer .lbbox img');return i.naturalWidth>0&&Math.abs(i.getBoundingClientRect().width-2-i.naturalWidth)<2})()"), 'true size');
       assert.equal(await c.evaluate("[...document.querySelectorAll('.viewer .vpair .segb')].map(b=>b.textContent+(b.classList.contains('on')?'*':'')).join()"), 'Before*,After');
       await c.evaluate("document.querySelectorAll('.viewer .vpair .segb')[1].click()"); await sleep(150);
-      assert.match(await c.evaluate("document.querySelector('.viewer .vtitle').textContent"), / · After$/, 'the switch shows the other picture in the same popup');
+      assert.equal(await c.evaluate("document.querySelector('.viewer .vtitle').textContent"), 'After', 'the switch shows the other picture in the same popup');
       await c.evaluate("document.querySelectorAll('.viewer .vpair .segb')[0].click()"); await sleep(150);
       assert.equal(await c.evaluate("document.querySelector('.viewer .varm').hidden"), true, 'with a mouse there is no extra button: any drag draws');
       // An area dragged on the picture in the window: its comment box sits beside the picture.
@@ -1448,7 +1449,8 @@ print(p)`;
       assert.ok(await q("(()=>{const s=document.querySelector('li[data-call=chg] .story').getBoundingClientRect(),w=document.querySelector('li[data-call=chg] .callwhat').getBoundingClientRect();return s.height>0&&s.bottom<=w.top+1})()"), 'the story is visible, above the row\'s words');
       assert.match(await q("document.querySelector('li[data-call=chg] .callhead .how .tip').textContent"), /Reused from the app.*The pencil button.*New in this design.*The star/);
       // every list says which of the three kinds of card it is
-      assert.equal(await q("document.querySelector('.card.calls .kindline b').textContent"), 'Yours to change');
+      assert.equal(await q("document.querySelector('article.q .qnum .kindline').textContent"), 'Yours to change');
+      assert.equal(await q("[...document.querySelectorAll('#cards *')].filter(e => parseFloat(getComputedStyle(e).borderLeftWidth) > 1.5 && getComputedStyle(e).borderRightWidth !== getComputedStyle(e).borderLeftWidth).length"), 0, 'no coloured bar at the left edge of anything ("fingernail")');
       // a video is a tile like any picture; its window plays it with controls and cannot be dragged on
       await q("document.querySelector('li[data-call=new] .atthead').click()");
       await q("document.querySelector('li[data-call=new] .atttile[data-video=\"1\"]').click()"); await sleep(200);
@@ -1463,7 +1465,7 @@ print(p)`;
       assert.equal(await q("document.querySelector('.topnotes') === null"), true, 'the summary is only on the first page');
       assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.morelines .mline dt')].map(d => d.textContent))")), ['What it does', 'What comes back', 'Why, for this build']);
       assert.ok(await q("document.querySelector('.morelines').getBoundingClientRect().height > 0"));
-      assert.equal(await q("document.querySelector('.card.calls .kindline b').textContent"), 'Checks');
+      assert.equal(await q("document.querySelector('article.q .qnum .kindline').textContent"), 'Checks');
       // nothing on the page is an underlined link or a bare disclosure triangle
       assert.equal(await q("[...document.querySelectorAll('#cards a, #cards button')].filter(e => getComputedStyle(e).textDecorationLine.includes('underline')).length"), 0);
       assert.deepEqual(c.errors, []);
