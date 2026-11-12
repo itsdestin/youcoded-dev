@@ -12,7 +12,7 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.converse.native, chat.converse.queue
-work: session/fix-anthropic-many-image-brick
+work: session/fix-anthropic-many-image-brick, session/chat-followups
 ---
 Progress
 Done: 2026-11-12: fault (c) on YouCoded own engine LANDED (app PR #736), with the unnamed-chat crash fix.
@@ -20,6 +20,7 @@ Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-1
 Blocked: nothing recorded.
 
 Chats
+- 2026-11-12 session/chat-followups: chat started
 - 2026-10-21 session/fix-anthropic-many-image-brick: Stuck conversations after provider errors, cut-off replies, the new error card
 
 From the old roadmap (native-harness › sessions, status confirmed, seen on desktop, last checked 2026-08-10)
