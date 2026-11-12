@@ -73,6 +73,15 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
 - **Everything is locked end to end.** Only your devices can read it. [D2 Q-2]
 - **A new device joins by pairing with one you already have.** No account is needed for sync;
   our relay may ask for a sign-in to stop abuse. [D4 Q-4]
+- **When both devices already hold chats and projects,** pairing first shows what each
+  holds (for example "This device: 212 chats, 4 projects. Desktop: 630 chats, 9 projects")
+  and offers two choices: combine everything, or cancel. Pairing never deletes anything.
+  Chats cannot clash; each has its own identity. His caution: "need to be weary of
+  potential data loss or duplication". [D11 Q-1]
+- **A project with the same name on both devices** is asked about, one clash at a time: "Is
+  this the same project?" Same: combined into one, and a file that differs keeps both
+  copies. Different, or not sure: both kept, one renamed, for example "Website (from
+  Laptop)". No file is overwritten. [D11 Q-2]
 - **Devices on the same wifi talk directly,** with the same locking as every other path, so
   home use needs no relay. Others on a shared wifi can see that a YouCoded device is there,
   nothing more. This path needs its own security review before release. [chat 2026-11-11:
@@ -140,7 +149,7 @@ and lets go when it ends, with a hard limit so it can never stick. Closing a lap
 sleeps it. [D4 Q-5; D1 Q-10: no permanent keep-awake]
 
 **Going to sleep.** Nothing special happens, because every line was already sent as it was
-written. One exception: a file change from the last 15 seconds may not have gone; it sends
+written. One exception: a file change from the last couple of seconds may not have gone; it sends
 when the device wakes. [D9 S-7, replacing D1 Q-10's upload-on-sleep]
 
 **A phone as host.** The phone stays awake for each reply with the screen off. A setting,
@@ -238,8 +247,10 @@ so is added at the end of the chat; nothing earlier is cut or edited. [D4 Q-11; 
 - Carried over from today's system (read in `youcoded/docs/sync-spaces.md`, and told to him
   in the chat proposal he approved): huge and generated folders are skipped; secrets never
   leave the device; a file changed on two devices keeps both copies.
-- File changes go out about 15 seconds after the last edit or every 2 minutes, as today, not
-  word by word. At takeover the notice may say files are still arriving.
+- File changes go out about 2 seconds after the last edit, with the exact figure tuned
+  during the build; a burst of edits is still bundled into one send. (Today it is 15
+  seconds, sized for GitHub, where one send takes 10 to 30 seconds.) [D11 Q-4] At takeover
+  the notice may say files are still arriving.
 - Known weaknesses carried over: the history grows without limit on every device, and has
   been damaged by power loss before (a repair exists).
 - Chats do not use this history; they move to the line-by-line system in section 3.
@@ -302,30 +313,33 @@ Decided:
   their backup without doing anything. [D10 S-2]
 - GitHub chat sync is not stopped until this exists. [D9 Q-5]
 
-Open (asked on round 11):
-- How often a backup runs: "as frequent as plausible without financial/performance/other
-  costs", and not changed from daily without knowing why daily was chosen. [D10 Q-6]
-- Making backups work on every device: "be a bit more creative in designing ways to get
-  backups to work more consistently across all devices". [D10 S-3]
-- Pairing two devices that each already hold their own chats and projects: "offer
-  confirmations and prefernces ... cancel, merge all data from both devices in a 2-way
-  sync, delete some data". [D10 S-1 note]
-- Why file changes wait 15 seconds. [D10 Q-2 note]
+- **How often:** a backup sends only what changed since last time, as often as each cloud
+  allows without slowing the device, and at least daily. Exact timing is set per service
+  during the build and shown truthfully ("Backed up 20 minutes ago"). On a phone it waits
+  for wifi and charging unless you tap "Back up now". Dated restore points stay as today:
+  daily for a week, then weekly, then monthly. [D11 S-1; his wording D10 Q-6]
+- **Which device backs up:** any one of your devices that can reach your cloud backs up for
+  all of them, so there is one backup, not one per device. The screen says which device
+  last backed up and when. A device that is your only device must have at least one cloud
+  that works on it. [D11 Q-3]
+- **Turning on an unlocked backup asks for confirmation.** Example wording he approved:
+  "This backup is not locked. Anyone who gets into your Google account can read your chats
+  and files. Lock it with a passphrase instead?" Buttons: "Lock it" and "Back up without a
+  lock". The line stays visible beside the backup in settings. [D11 S-2]
 
 For later, his words: explore "backups hosted by youcoded at some point in the future"
 [D10 S-3]; "how to optimize/compress storage or deal with long-term chat accrual or improve
-backup/restoration flows ... somewhat tangential" [D10 Q-4].
+backup/restoration flows ... somewhat tangential" [D10 Q-4]. Filed as cards on his word
+[D11 Q-5].
 
 ## 12b. Still open
 
-1. The four items marked Open in section 12.
 2. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
    door" setup.
 3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
 4. Not designed, left to the build unless he says otherwise (asked D9 Q-6; he answered
    "don't know"): how the pairing screen looks; how the relay limits abuse when no account
    is needed; a later plan for the November 5 conflict copies.
-5. The three backup faults in section 14 are not filed as cards; he did not say yes.
 
 ## 13. What has to be true in the code (for the building session, not for Destin)
 

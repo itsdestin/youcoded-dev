@@ -1,0 +1,62 @@
+{
+ "deck": "mesh-sync-questions-11",
+ "started": "2026-11-12T10:41:40.062Z",
+ "submitted": "2026-11-12T10:46:26Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "combine-or-cancel",
+   "t": 1794480246607,
+   "note": "need to be weary of potential data loss or duplication",
+   "seconds": 69,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "t": 1794480246607,
+   "note": "",
+   "pick": "ask",
+   "seconds": 69,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "midnight",
+   "t": 1794480285991
+  },
+  "Q-3": {
+   "v": "pick",
+   "seconds": 16,
+   "theme": "midnight",
+   "t": 1794480285991,
+   "pick": "any-device"
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "midnight",
+   "t": 1794480285991
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "short",
+   "t": 1794480384894,
+   "seconds": 50,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "picks",
+   "picks": [
+    "faults",
+    "hosted",
+    "storage"
+   ],
+   "t": 1794480384894,
+   "note": "some of these may already exist or have related items. please group related features together on cards if it makes most sense to build things at the same time",
+   "seconds": 50,
+   "theme": "midnight"
+  }
+ }
+}

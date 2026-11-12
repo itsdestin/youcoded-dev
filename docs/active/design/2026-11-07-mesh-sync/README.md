@@ -29,7 +29,7 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-8.json` + `.answers.json` | Deck round 8, submitted 2026-11-11: what travels with a chat, setup sync, remote access, self-run relay. |
 | `mesh-sync.questions-9.json` + `.answers.json` | Deck round 9, submitted 2026-11-12: what the 2026-11-11 checkpoint review found. Every item answered. |
 | `mesh-sync.questions-10.json` + `.answers.json` | Deck round 10, submitted 2026-11-12: relay time limit, the files-changed note, and the cloud backup outline. |
-| `mesh-sync.questions-11.json` | Deck round 11: pairing devices that both hold data, backup frequency and which device backs up, the 15-second wait, cards. Not yet answered. |
+| `mesh-sync.questions-11.json` + `.answers.json` | Deck round 11, submitted 2026-11-12: pairing devices that both hold data, backup frequency and which device backs up, the 15-second wait, cards. |
 | `design.md` | DRAFT of the full design, each rule tagged with its source. Destin read an early version on 2026-11-10 and commented; it has been rewritten since. Lines marked "Open" are not decided. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
@@ -193,12 +193,22 @@ Follow-ups he asked for, answered in chat but not recorded before now: how other
 - "A device only offers the choices that work on it", and filing the three faults as cards: NOT approved. — D10 S-3: "we should probably be a bit more creative in designing ways to get backups to work more consistently across all devices, and also investigate/explore backups hosted by youcoded at some point in the future"
 - Checked in code 2026-11-12: the daily backup is a whole dated copy per day (`sync-service.ts`, `sync-spaces/daily-backup.ts`); an earlier 15-minute overwrite loop was deleted. The 15-second pause (`sync-spaces/engine.ts`) has no recorded reason; it bundles a burst of edits into one send, and a GitHub send takes 10 to 30 seconds.
 
+## Round 11 (answered 2026-11-12)
+
+- Pairing two devices that both hold data: show what each holds; combine everything, or cancel; nothing deleted. — D11 Q-1: picked "combine-or-cancel", note: "need to be weary of potential data loss or duplication".
+- Same-named project on both: ask "Is this the same project?" per clash. — D11 Q-2: picked "ask".
+- Backup sends only what changed, as often as each cloud allows, at least daily. — D11 S-1: yes.
+- Any one device that can reach the cloud backs up for all. — D11 Q-3: picked "any-device".
+- Unlocked backup: confirmation with the example warning. — D11 S-2: yes.
+- File changes wait about 2 seconds, not 15. — D11 Q-4: picked "short".
+- File as cards: the three backup faults, YouCoded-hosted backups, backup storage and long-term growth. — D11 Q-5: all three, note: "some of these may already exist or have related items. please group related features together on cards if it makes most sense to build things at the same time".
+
 ## Open items (nothing below is decided)
 
-1. Backup frequency; backups working on every device; pairing two devices that both hold data; the 15-second pause. All on round 11.
-2. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
-3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
-4. Possible cards, not filed: the three backup faults; YouCoded-hosted backups; backup storage and long-term chat growth.
+1. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
+2. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
+3. Raised 2026-11-12 from a closed session's plan (`docs/active/plans/2026-11-02-slim-synced-chats.md`, card 98): whether chats travel and are backed up in slimmed form (pictures and duplicate file text left out). Not asked yet. His sync repository was 4.15 GB on 2026-11-12, about three weeks from GitHub's 5 GB soft limit.
+4. Destin's read of the finished `design.md`; build order only after he agrees the design is complete.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)
 
