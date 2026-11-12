@@ -22,11 +22,16 @@ verify:
   - test: scripts/ui-review/tests/test_words.py
   - path: scripts/ui-review/templates/walkthrough.json
   - test: scripts/ui-review/tests/test_rethink.py
+  - path: scripts/ui-review/deck/gate.py
+    contains: "def check_gate"
+  - test: scripts/ui-review/tests/test_gate.py
 ---
 # Feature flow — the deck is the one surface
 
 From Destin's answers, rounds 1–6, `docs/active/design/2026-11-09-review-deck-rethink/`.
-No contract or acceptance deck. He may ask for another order on any build.
+No signed contract or acceptance deck: the before-build walkthrough plays the old contract's
+role, the after-build one the old sign-off's (his words: "superseding it with something
+better"). He may ask for another order on any build.
 
 ## The order
 1. **Explore first:** the screens, their code, his earlier decisions on the subject.
@@ -35,10 +40,12 @@ No contract or acceptance deck. He may ask for another order on any build.
    large skippable box for how he pictures the screens and the path.
 3. **Design decks.** Two to four drawn designs per screen; he picks or combines. Repeat.
 4. **Walkthrough before the build**, ending in the checks menu.
-5. **Build**; the checks he switched on run.
-6. **Walkthrough after the build** — the main steering round. Finished when every request he
-   made is a row in the before-walkthrough AND he goes through the after one changing nothing
-   (rounds 1–2, R-9). Nothing merges without his word.
+5. **Build**; the checks he switched on run. Then the grader, then a list "What changed while
+   building": each row built as planned, or adjusted and why (his: "what did you have to adjust").
+6. **Walkthrough after the build** — the main steering round. Finished when
+   `review-cards.py walkthrough-check <before.json>` passes: every request is a row (after rows
+   carry `"from": "<step>/<row>"`, or `"dropped": "<why>"`), every check left on has a result,
+   and he goes through the after deck changing nothing (rounds 1–2, R-9). No merge without his word.
 7. **Wording pass** on the real screens (`screen` steps), last.
 
 Small work with clear direction may start at step 6; ask first.
@@ -55,8 +62,8 @@ Small work with clear direction may start at step 6; ask first.
   states, sizes, order, speed.
 - **Wording:** never before the build.
 - **Unsure which group → list it** (round 2, R-5); never decide silently.
-- **Never shown:** code organisation, libraries, a reviewer's raw report (one status row
-  instead). Tests added or removed ARE shown, in plain words.
+- **Never shown:** code organisation, libraries, a reviewer's raw report (each finding is its
+  own "found in review" row instead). Tests added or removed ARE shown, in plain words.
 
 **Why:** 784 answered decks analysed (round 5, F-1). **Guard:** none — candidate.
 
@@ -80,10 +87,14 @@ changed; a background-only list is `context: true`.
 **Invariant:** before the build the Checks page lists every suggested check and reviewer
 (`scripts/ui-review/{code-reviewer,ux-tester}.md`) with a Will run / Skip switch; each row
 says what it does, what comes back, and why it is or is not suggested for THIS build.
-Preparation (reading the design guide) is not a check. Suggest the code reviewer on for
-security, his data, background work or several devices. After the build each chosen check
-is a row with its status — his to change — and proof. Never report a check not run.
-**Why:** round 6, Q-1; the code reviewer has the strong record. **Guard:** none — candidate.
+Preparation (reading the design guide) is not a check. **On unless he switches them
+off** (round 9, S-1 "all", S-3 "on"): the code review, tracing each row to the answer it came
+from, the fresh grader (`grader.md`: was every request built?), the done gate. The UX tester is
+offered on design decks, off unless asked (S-2). A comment on any check row is passed to that
+checker as "also check this" and its result says what it found ("steer/comment specific things").
+After the build each chosen check is a row with status and proof; each review finding its own
+"found in review" row. Never report a check not run.
+**Why:** round 6, Q-1; round 9. **Guard:** `test_gate.py`.
 
 ## Records
 **Invariant:** `docs/**/*.answers.json` are tracked; a contradiction with something approved
@@ -99,4 +110,4 @@ answered before-walkthrough.
 ## Older work with a contract
 **Invariant:** a feature with a signed `<feature>.contract.json` finishes under it
 (`review-cards.py contract-check`, `close-out.sh`). Write no new contract.
-**Guard:** `test_contract.py`, `close-out-contract.test.sh`.
+**Guard:** `test_contract.py`, `close-out-contract.test.sh` (which also covers the walkthrough gate).

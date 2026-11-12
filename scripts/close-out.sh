@@ -276,8 +276,16 @@ echo "Contract"
 # honestly as "escaped for regex use", not "happens to work".
 BRANCH_RE=$(printf '%s' "$BRANCH" | sed 's/[.[\*^$]/\\&/g')
 CONTRACTS=$(rg -l --glob '*.contract.json' -e "\"branch\"[[:space:]]*:[[:space:]]*\"$BRANCH_RE\"" "$DOCS_DIR" 2>/dev/null || true)
-if [[ -z "$CONTRACTS" ]]; then
-  note "no contract names this branch — the feature flow was not used, or the contract has no \"branch\""
+# Walkthrough flow (rethink round 9): a feature with a `<feature>.walkthrough.json` naming this
+# branch and NO contract beside it is gated by `walkthrough-check` instead (found here, run below).
+# A folder that still has a signed contract keeps the old path above, untouched.
+WALKTHROUGHS=""
+for w in $(rg -l --glob '*.walkthrough.json' -e "\"branch\"[[:space:]]*:[[:space:]]*\"$BRANCH_RE\"" "$DOCS_DIR" 2>/dev/null || true); do
+  ls "$(dirname "$w")"/*.contract.json >/dev/null 2>&1 || WALKTHROUGHS+="$w"$'\n'
+done
+WALKTHROUGHS="${WALKTHROUGHS%$'\n'}"
+if [[ -z "$CONTRACTS" && -z "$WALKTHROUGHS" ]]; then
+  note "no contract or walkthrough names this branch — the feature flow was not used, or the spec has no \"branch\""
 else
   while IFS= read -r c; do
     REL="${c#"$WORKSPACE"/}"
@@ -298,6 +306,23 @@ else
     fi
   done <<<"$CONTRACTS"
 fi
+# The walkthrough gate: exit 1 + reasons on stderr when unfinished; `ok:` / `note:` lines when done.
+# WHY `fail` (a TODO) and not an exit: close-out only reports, like every other check here.
+while IFS= read -r w; do
+  [[ -z "$w" ]] && continue
+  REL="${w#"$WORKSPACE"/}"
+  if OUT=$(python3 "$WORKSPACE/scripts/ui-review/review-cards.py" walkthrough-check "$w" 2>&1); then
+    while IFS= read -r line; do
+      case "$line" in
+        ok:\ *) pass "${line#ok: } — $REL" ;;
+        *)      note "${line#note: }" ;;
+      esac
+    done <<<"$OUT"
+  else
+    fail "walkthrough not finished — $REL:"
+    echo "$OUT" | sed 's/^/       /'
+  fi
+done <<<"$WALKTHROUGHS"
 
 echo
 echo "Docs"

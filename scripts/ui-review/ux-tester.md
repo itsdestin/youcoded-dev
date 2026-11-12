@@ -20,14 +20,16 @@ is plenty for one feature) and the path of the review file it writes. Testers sh
 built branch, after the code reviewer, **before the grader**. The review files are numbered by
 run — `docs/active/reviews/<date>-<feature>-ux-review-1.md` and `…-ux-review-2.md` — so the
 two never overwrite each other and the first run's triage counts survive. Only the second
-run's accepted findings become contract rows.
+run's accepted findings become rows on the after-build walkthrough ("found in review").
+**Offered, not automatic:** on a design deck it is on the checks menu, off unless Destin asks
+(round 9, S-2). If he commented on its row, add his words to the briefing as "also check
+this:" and have the review file say what was found on each.
 
 **After it reports:** mark every finding `accepted`, `rejected` or `already handled` on its
 line in the review file (`- U3 accepted — …`); a wording proposal is applied only after
 checking it against the design guide's Text and numbers rules (sentence case, say what happens, plain words), and one that changes *meaning*
 rather than length goes on the review deck for Destin instead. Accepted findings from the
-second run become contract rows with `source: review:<file>#U<n>` (see
-`contract-agent.md`). The triage counts are the data that decide whether this reviewer earns
+second run become one "found in review" row each, citing `<file>#U<n>`. The triage counts are the data that decide whether this reviewer earns
 its cost (design §8e).
 
 ---
