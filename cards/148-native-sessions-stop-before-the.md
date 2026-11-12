@@ -13,8 +13,8 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Reviewed history: the offline lab found the cause (finished-helper reports arriving late or lost at turn end) and built a tested fix on session/148-harness-performance-lab; it is NOT on master (785 commits behind). Test plan written (A-cards-69-148 file, branch session/overnight-research)
-Next: Destin decides: bring the tested fix onto current master in its own commits, then a small live check (est. under 1 USD, cap 3 USD)
+Done: Early-stop fix ported onto current master on session/engine-followups: 22 delivery tests, 19 fail on master without it and all pass with it; checks pass. Not merged; a real-model check is still unproven.
+Next: Destin decides on landing and on a small live check
 Blocked: Spending ledger numbers disagree (5.20 of 15 USD vs 0.27 headroom under 10 USD); recheck before any paid run
 
 Chats
