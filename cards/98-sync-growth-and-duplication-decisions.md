@@ -19,6 +19,7 @@ Next: piece 1 — leave pictures and duplicate file copies out of the synced cop
 Blocked: Destin's go-ahead on piece 1. Left out of the files batch on 2026-11-11: sync is being redesigned (cards #64, #241, #243; design stage, nothing built yet), so this waits for that.
 
 Chats
+- 2026-11-12 session/mesh-sync-design: Destin, mesh deck 10 Q-4 (2026-11-12), on backups: 'how to optimize/compress storage or deal with long-term chat accrual or improve backup/restoration flows'. Grouped here with sync growth. The mesh design (card 64, design.md section 12) decides backup's shape; slimming chats is an open question there.
 - 2026-11-09 session/sync-slim-history: Slim synced chats (pictures out of sync copies), plan in docs/active/plans/2026-11-02-slim-synced-chats.md
 
 From the old roadmap (perf, status needs-verify, seen on all, last checked 2026-09-16)
