@@ -28,7 +28,7 @@ What stays here is everything built ON those pictures and on the running rendere
 | `review-cards.py` + `deck/` + `crops.json` | **the review surface** — the one page Destin answers on, in nine step kinds (approve, brief, choice, decide, clip, live, question, contract, acceptance) and eight commands (`build`, `preview`, `serve`, `wait`, `record`, `selfie`, `contract-check`, `acceptance`). `serve` builds, serves on 127.0.0.1, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background; it opens no browser, so put its printed `[deck] http://…` line in chat as the last line of your turn. Live panes come from the deck's own server (`/app/`, the photo-only build). **Which kind to pick: `.claude/rules/review-deck.md`. Every field, command and refusal: `deck/AUTHORING.md`. One worked template per kind: `templates/`.** |
 | `record.mjs` + `scenes/*.json` | a scripted scene filmed as a WebM loop + WebP poster (below). |
 | `record-pair.sh` + `montage-ab.sh` | before/after clips and sheets for a deck's CLIP steps. |
-| `site-assets.sh` | regenerates the landing page's loops, ideas-wall pictures (`site-idea-stills.sh`, via `shoot`) and embed. |
+| `site-assets.sh` | regenerates the landing page's loops and embed. The four ideas-wall pictures are not part of it: `site-idea-stills.sh` makes them by hand, only when Destin asks. |
 | `shot.mjs` | the old self-verifying plan driver, kept for `site-gallery.json`; on the engine (free ports). New pictures: `shoot`. |
 | `contrast-report.mjs` | painted-pixel contrast (fg vs *actual* bg) from a `shoot --contrast` run (`contrast.md`), or an old sweep's manifests. Over-reports on glass themes; read it, don't paste it. |
 | `coverage.mjs` | covered / MISSED per surface for an old sweep's run folders (decks still read them). |
@@ -198,9 +198,10 @@ Things worth knowing before you author one:
 
 Spec: `docs/archive/specs/2026-08-31-live-review-panes-design.md`.
 
-Rebuild every landing-page asset at once (loops, the four ideas-wall pictures, live embed):
-`bash scripts/ui-review/site-assets.sh <worktree> [--out <dir>]` — refuses to overwrite the ideas-wall pictures
-when any shot failed verification, and leaves them alone unless `SITE_IDEA_STILLS=1` (not yet approved); `--out` writes everything to a scratch folder instead.
+Rebuild the landing page's generated assets at once (loops, live embed):
+`bash scripts/ui-review/site-assets.sh <worktree> [--out <dir>]`; `--out` writes everything to a scratch folder instead.
+It never touches the four ideas-wall pictures (`docs/gallery/idea-*.webp`): those pages are mostly one-off examples
+Destin made, so they are replaced by hand only when he asks (`site-idea-stills.sh <app-checkout> <gallery-dir>`; Destin, 2026-11-11).
 
 **`"zoom": 1.25`** (scene field, default 1) films the page zoomed in the way Ctrl+= does in the
 app: the layout runs at width/zoom × height/zoom CSS px and Chrome paints it at `zoom` device
