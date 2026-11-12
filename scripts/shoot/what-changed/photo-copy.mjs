@@ -19,8 +19,10 @@ import { dirname, join, normalize, relative } from 'node:path';
 
 const EXT = ['', '.ts', '.tsx', '.js', '.mjs', '.json', '.css', '/index.ts', '/index.tsx'];
 /** Relative imports of the photo-only files (dev/**, shoot-mode, index.tsx) that point at nothing in this copy. */
-function missingImports(rendererDir) {
-  const files = [];
+function missingImports(rendererDir, borrowed = []) {
+  // WHY borrowed files are read too (2026-11-12: today's device.ts was borrowed and itself imports utils/touch-input,
+  // which 1.3.3 lacks, so the copy stopped building): a piece borrowed from today can need another piece from today.
+  const files = borrowed.map((f) => join(rendererDir, f)).filter((f) => /\.tsx?$/.test(f) && existsSync(f));
   const walk = (d) => { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) walk(p); else if (/\.tsx?$/.test(f)) files.push(p); } };
   walk(join(rendererDir, 'dev')); files.push(join(rendererDir, 'shoot-mode.tsx'), join(rendererDir, 'index.tsx'));
   const out = new Map();
@@ -80,7 +82,7 @@ export function preparePhotoCopy({ releaseDir, afterCheckout, root }) {
   // show such a piece are new since the release (newIn: 'after'), so the release side skips them anyway.
   const borrowed = [];
   for (let round = 0; round < 5; round++) {
-    const missing = missingImports(join(dest, R)).filter((m) => existsSync(join(afterCheckout, R, m.file)));
+    const missing = missingImports(join(dest, R), borrowed).filter((m) => existsSync(join(afterCheckout, R, m.file)));
     if (!missing.length) break;
     for (const m of missing) { mkdirSync(dirname(join(dest, R, m.file)), { recursive: true }); writeFileSync(join(dest, R, m.file), readFileSync(join(afterCheckout, R, m.file))); borrowed.push(m.file); }
   }
