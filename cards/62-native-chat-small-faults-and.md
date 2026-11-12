@@ -15,8 +15,8 @@ vision: chat.converse.native, chat.converse.queue
 work: session/fix-anthropic-many-image-brick, session/chat-followups
 ---
 Progress
-Done: 2026-11-12: fault (c) on YouCoded own engine LANDED (app PR #736), with the unnamed-chat crash fix.
-Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): the queued strip shows a file-name chip, not the full path; show him a review page before it lands. Other open faults (a)(b)(d)(f)(g)(h) unchanged.
+Done: 2026-11-12 overnight: queued strip now shows file-name chips (max 3, then +N more) for a waiting message with files; branch session/chat-followups commit b4ce7911a; before/after pictures made.
+Next: Destin reviews the picture, then merge.
 Blocked: nothing recorded.
 
 Chats
