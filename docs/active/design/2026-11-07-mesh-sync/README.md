@@ -208,6 +208,8 @@ Follow-ups he asked for, answered in chat but not recorded before now: how other
 1. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
 2. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
 3. Raised 2026-11-12 from a closed session's plan (`docs/active/plans/2026-11-02-slim-synced-chats.md`, card 98): whether chats travel and are backed up in slimmed form (pictures and duplicate file text left out). Not asked yet. His sync repository was 4.15 GB on 2026-11-12, about three weeks from GitHub's 5 GB soft limit.
+   Resume test run 2026-11-12 on his word ("yeah lits test this out"): a slimmed throwaway chat resumed in Claude Code 2.1.323 and edited a previously read file without re-reading; the assistant then said it had never seen the picture and withdrew its earlier description of it. Test files: session scratch folder, not kept.
+   GitHub fresh start (card 98, approved 2026-11-12: "yes. just manage this yourself wiht a subagent or something"): researched read-only, NOT carried out. Each device would merge the replaced history with its own (`git-transport.ts:896`, `--allow-unrelated-histories`) and push the old history back, so it cannot be done safely without either a manual step on all four devices or a small app change. GitHub reported 4.28 GB the same day; its documentation describes no automatic block at 5 GB, only that Support may get in touch.
 4. Destin's read of the finished `design.md`; build order only after he agrees the design is complete.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)

@@ -339,6 +339,12 @@ backup/restoration flows ... somewhat tangential" [D10 Q-4]. Filed as cards on h
    pictures stored twice; the conversation text is about 0.5 GB of 8.9 GB). The original on
    the device that made the chat would never change. Unknown, needs a test in a dev copy:
    whether Claude Code can resume a slimmed chat and still edit files it read earlier.
+   **Tested 2026-11-12** (one small throwaway chat, Claude Code 2.1.323, isolated profile):
+   the slimmed chat resumed, and the assistant edited a file it had read earlier without
+   reading it again. Side effect seen: asked about the picture, it said it never saw it
+   ("the tool returned [Image not synced to this device]") and withdrew its earlier
+   description as a guess. So a slimmed chat keeps working, but the assistant loses, and
+   may disown, what it knew only from pictures. One test; a long real chat is untested.
    Source: `docs/active/plans/2026-11-02-slim-synced-chats.md` on master (card 98; its
    piece 1 was shelved 2026-11-12 because it reworks code this design replaces). Not asked
    yet.
