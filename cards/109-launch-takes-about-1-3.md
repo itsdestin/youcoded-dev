@@ -14,8 +14,8 @@ platform: Desktop only
 vision: everywhere.platforms.desktop
 ---
 Progress
-Done: Start-up freezes were cut in the April-to-September launch work (youcoded #573, 2026-09-26). A KDE keychain wait that froze launch was moved off the main thread (youcoded #695, 2026-10-24). On phones, the rarely used screens (Settings, Marketplace, Library, games, Projects, Pages, past-conversation list) now load only when opened (youcoded #688, merged 2026-10-23; the computer still loads them right after start).
-Next: measure launch again on the computer with the current build before deciding anything else. Then decide whether to split the remaining startup code (QR code and chess code still load at start) and whether to remove the sign-in check from the first draw.
+Done: Overnight 2026-11-12: tried to re-measure with the speed lab, but the computer never got quiet (load 40-128 from other sessions), so no numbers and no changes.
+Next: Re-run the lab on an idle machine (startup, history, workload, terminal, artifacts, scrollback phases). See speed REPORT notes.
 Blocked: the current launch time is not measured yet, so the 1.3 s figure is old.
 
 Chats
