@@ -1,6 +1,9 @@
 # WHY: these lines are frozen copies of app screens kept for the review-deck rethink. The
-# scanner mistakes the practice chat's message ids (data-entry-key="msg-rk4zfo-20") for
-# access keys. Destin approved ignoring exactly these on 2026-11-11 (round-9 deck, Q-1).
+# scanner mistakes the practice chat's message ids for access keys. Destin approved ignoring
+# exactly these on 2026-11-11 (round-9 deck, Q-1).
 15605e858efb8f222f9d3b61e6d248b706d9fa38:docs/active/design/2026-11-09-review-deck-rethink/screens/message-menu.html:generic-api-key:2911
 15605e858efb8f222f9d3b61e6d248b706d9fa38:docs/active/design/2026-11-09-review-deck-rethink/screens/about.html:generic-api-key:2908
 15605e858efb8f222f9d3b61e6d248b706d9fa38:docs/active/design/2026-11-09-review-deck-rethink/screens/about.html:generic-api-key:2911
+# WHY: the first version of this very file quoted one of those practice ids as an example in
+# its comment, so the scanner flagged the comment too. Same harmless id; the quote is gone.
+b35acfc46e3dd59ffe1863a39e359e6c2b46dbbd:.gitleaksignore:generic-api-key:2
