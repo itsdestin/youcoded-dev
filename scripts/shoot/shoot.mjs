@@ -371,7 +371,13 @@ function fullSizeAlike(a, b) {
 
 function lookalikes(results, screens) {
   const same = new Map(screens.filter((s) => s.sameAs).map((s) => [s.name, s.sameAs.name]));
-  const expected = (a, b) => same.get(a) === b || same.get(b) === a;
+  // WHY the chain is followed to its end (2026-11-12, found by #251's verify run): `dev/toast#none`
+  // is declared the same as `chat#queue-idle-after`, which is declared the same as `chat` — three
+  // names, one picture. Checking only direct pairs flagged `chat = dev/toast#none` on any run
+  // where those two happened to land pixel-identical, so `shoot --check` failed about one run in
+  // two with nothing wrong. Two screens whose chains end at the same name are expected twins.
+  const root = (n) => { const seen = new Set(); while (same.has(n) && !seen.has(n)) { seen.add(n); n = same.get(n); } return n; };
+  const expected = (a, b) => root(a) === root(b);
   const out = [];
   for (const theme of themes) {
     const got = results.filter((r) => r.ok && r.theme === theme && r.thumb);
