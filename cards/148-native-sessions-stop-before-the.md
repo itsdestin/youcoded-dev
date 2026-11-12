@@ -13,8 +13,8 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Nothing is recorded as fixed for the main problem (an assistant turn that stops early while saying work is still running). Separately, a fix landed on 2026-11-05 so background commands no longer show as Running forever (youcoded #716). Earlier fixes covered helper status (#570, #681).
-Next: Re-test with a real native-engine chat that uses helpers or background jobs, to see whether a turn still stops early and still says work is running. Check the saved chat log for that case. Decide whether the separate spend-limit test continues or moves to its own card.
+Done: Nothing is recorded as fixed for the main problem (an assistant turn that stops early while saying work is still running). Separately, a fix landed on 2026-11-05 so background commands no longer show as Running forever (youcoded #716). Earlier fixes covered helper status (#570, #681). 2026-11-11 chat-engine batch: checked only, skipped (needs a paid run). The lab's unsaved work WAS backed up on 2026-11-09 (both checkouts clean and pushed). PR #716 fixed Claude Code background tasks, not native ones. Nothing since 2026-10-16 changes when a native turn ends.
+Next: Unchanged: needs Destin's OK on spending for a real native-engine run.
 Blocked: The spending-limit test is paused at about 0.27 USD left of a 10 USD cap (per the card and the 2026-11-08 inventory; ledger not checked here). Its unsaved work (about 67 changed files across two checkouts) exists only on this computer and is not backed up. Needs Destin's decision on spending and a backup push.
 
 Chats
