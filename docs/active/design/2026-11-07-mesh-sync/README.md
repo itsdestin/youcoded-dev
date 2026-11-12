@@ -134,6 +134,10 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - The new system replaces today's remote access inside the apps; the open-in-a-browser view stays (still Tailscale). — D8 Q-3: "replace-keep-browser".
 - No self-run relay. Self-hosting means running a super-host. — D8 Q-4: "drop".
 
+### Chat, 2026-11-11 (later)
+- When the new system arrives, chat sync through GitHub stops and the new system takes over; the existing GitHub copy is left untouched, with a one-time message. Existing chats need no moving. — "fine to stop github sync and swap."
+- Browsing replaced file versions, NOT decided. — "confused."
+
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
 1. "Default runner = the device he's typing on" → replaced by host-stays-until-offline-or-chip (D1 Q-4, Q-5, Q-15).
@@ -143,7 +147,6 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 
 ## Open items (nothing below is decided)
 
-1. Never asked: what happens to the chats and GitHub sync storage users have today when the new system arrives.
 2. Never asked: how the 30 days of replaced file versions are shown.
 3. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
 4. `design.md` needs Destin's read once the above are settled.

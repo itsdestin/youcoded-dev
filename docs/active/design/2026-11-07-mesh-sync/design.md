@@ -194,6 +194,10 @@ Today's remote access is replaced inside the apps: no Connect screen and no Tail
 chats. The open-in-a-browser view stays, still through Tailscale; it is also how a super-host
 is looked at. [D8 Q-3]
 
+Chat sync through GitHub stops when the new system arrives. Existing chats need no moving,
+because each device already holds its copies. The GitHub copy is left untouched, and a
+one-time message says what changed. [chat 2026-11-11]
+
 There is no self-run relay. Self-hosting means running a super-host. [D8 Q-4]
 
 The current handoff and takeover code (about 1,600 lines) is replaced, not patched. The
@@ -201,8 +205,6 @@ conflict copies from November 5 are left alone. [D1 Q-16, Q-17; D2 S-4]
 
 ## 12. Still open
 
-1. Never asked: what happens to the chats and GitHub sync storage users have today when the
-   new system arrives.
 2. Never asked: how the 30 days of replaced file versions are shown to the user.
 3. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
    door" setup.
