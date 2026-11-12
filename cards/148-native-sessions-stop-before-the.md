@@ -13,9 +13,9 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Nothing is recorded as fixed for the main problem (an assistant turn that stops early while saying work is still running). Separately, a fix landed on 2026-11-05 so background commands no longer show as Running forever (youcoded #716). Earlier fixes covered helper status (#570, #681). 2026-11-11 chat-engine batch: checked only, skipped (needs a paid run). The lab's unsaved work WAS backed up on 2026-11-09 (both checkouts clean and pushed). PR #716 fixed Claude Code background tasks, not native ones. Nothing since 2026-10-16 changes when a native turn ends.
-Next: Unchanged: needs Destin's OK on spending for a real native-engine run.
-Blocked: Needs Destin's decision on spending (the lab's spending-limit test is paused near its 10 USD cap; ledger not re-checked). The lab's work is backed up as of 2026-11-09.
+Done: Early-stop fix ported onto current master on session/engine-followups: 22 delivery tests, 19 fail on master without it and all pass with it; checks pass. Not merged; a real-model check is still unproven.
+Next: Destin decides on landing and on a small live check
+Blocked: Spending ledger numbers disagree (5.20 of 15 USD vs 0.27 headroom under 10 USD); recheck before any paid run
 
 Chats
 - 2026-10-21 session/148-harness-performance-lab: chat started

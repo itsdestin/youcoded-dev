@@ -1,7 +1,7 @@
 ---
 id: 247
 title: Fedora installer fails its check on GitHub's new Linux build machines; release build still uses them
-stage: planning
+stage: merged
 tags: release, ci, linux, bug
 branch: 247-fedora-installer-fails-its-check
 finish: Linux installers build, unpack and install when built on the new system, and neither the checks nor the release build are pinned to the old one.

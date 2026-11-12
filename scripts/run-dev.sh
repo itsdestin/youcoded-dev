@@ -17,6 +17,14 @@
 #   bash scripts/run-dev.sh device-identity --offset 100 --profile dev2   # run a SECOND instance
 #   bash scripts/run-dev.sh <wt> --dry-run      # print what would launch, don't launch
 #   bash scripts/run-dev.sh --stop [--offset N]  # stop the instance on that offset's ports (Electron AND its Vite)
+#   bash scripts/run-dev.sh <wt> --without chatgpt,api-keys   # this launch: no ChatGPT sign-in, no saved API keys
+#
+# PRIVATE HOME (always): the test copy runs in its own home folder, ~/.cache/youcoded-test-copies/<profile>/home.
+# Its chats, settings, themes and provider list live there — never in the real app, which cannot see that folder.
+# It starts like a fresh install (default theme, no installed plugins), reused by the next launch of that profile.
+# SIGN-INS (kept by default, each can be switched off per launch): claude-code, chatgpt, api-keys. They are LENT:
+# a pass that works for hours or days, never the renewal key, so nothing the test copy does can sign the real app out.
+# GitHub is the exception — OFF unless asked for, because with it a test copy can publish as Destin.
 #
 # OPTIONS
 #   --path <dir>      Launch an explicit checkout dir (contains desktop/). Overrides <worktree>.
@@ -29,6 +37,9 @@
 #                     Two concurrent instances MUST use different profiles or they share state.
 #   --phone-build     Build the app once and serve THAT to a phone's browser: it loads like the
 #                     installed app, but renderer edits reach the phone only after another build.
+#   --without <list>  Switch sign-ins OFF for this launch: comma list of claude-code, chatgpt, api-keys, or all.
+#   --with github     Lend the real GitHub login too (the test copy can then publish and open pull requests as Destin).
+#   --fresh           Delete this profile's private home first, so the test copy starts from nothing.
 #   --list            List running dev instances, then registered worktrees (path + branch), and exit.
 #   --dry-run         Resolve + print target/branch/ports/profile, but don't launch.
 #   -h, --help        This help.
@@ -63,6 +74,9 @@ PROFILE="${YOUCODED_PROFILE:-dev}"
 LABEL=""            # window-title descriptor; defaults to the branch name below
 DRY_RUN=0
 STOP=0
+WITHOUT=""          # sign-ins switched off for this launch (--without)
+WITH_GITHUB=0       # --with github
+FRESH=0             # --fresh: delete the profile's private home first
 
 die() { echo "run-dev: $*" >&2; exit 1; }
 
@@ -189,7 +203,7 @@ list_worktrees() {
 # --- arg parsing ---
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -h|--help)  sed -n '2,39p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help)  sed -n '2,51p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     --list)     list_running_instances; echo ""; list_worktrees; exit 0 ;;
     --dry-run)  DRY_RUN=1; shift ;;
     --stop)     STOP=1; shift ;;
@@ -198,6 +212,9 @@ while [[ $# -gt 0 ]]; do
     --offset)   [[ -n "${2:-}" ]] || die "--offset needs a number"; validate_offset "$2"; shift 2 ;;
     --no-devtools) DEVTOOLS=0; shift ;;
     --profile)  PROFILE="${2:-}"; [[ -n "$PROFILE" ]] || die "--profile needs a name"; shift 2 ;;
+    --without)  [[ -n "${2:-}" ]] || die "--without needs a list (claude-code, chatgpt, api-keys, all)"; WITHOUT="${WITHOUT:+$WITHOUT,}$2"; shift 2 ;;
+    --with)     [[ "${2:-}" == "github" ]] || die "--with takes only: github"; WITH_GITHUB=1; shift 2 ;;
+    --fresh)    FRESH=1; shift ;;
     --label)    LABEL="${2:-}"; [[ -n "$LABEL" ]] || die "--label needs a descriptor"; shift 2 ;;
     -*)         die "unknown option: $1 (try --help)" ;;
     *)          [[ -z "$WORKTREE" ]] || die "unexpected extra argument: $1"; WORKTREE="$1"; shift ;;
@@ -254,12 +271,40 @@ export YOUCODED_PORT_OFFSET="$OFFSET"
 # localStorage, window bounds, and cache don't clobber the built app's.
 export YOUCODED_PROFILE="$PROFILE"
 
+# --- the private home, and which sign-ins this launch keeps (card #17) ---
+# WHY: --profile only separates the app's own data folder. Chats (~/.claude), providers and native chats (~/.youcoded) and
+# the synced folder (~/YouCoded) are all found through HOME — 86 source files ask for the home folder — so the only
+# way to keep a test copy out of the real app's chats and settings is to give it a different HOME.
+REAL_HOME="$(_dev_real_home)"
+PRIVATE_HOME=""
+if [[ -n "$REAL_HOME" && "$(_dev_resolve "$HOME")" == "$(_dev_resolve "$REAL_HOME")" ]]; then
+  # WHY the name check: the profile becomes a folder name, and --fresh deletes that folder.
+  [[ "$PROFILE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || die "--profile may only use letters, digits, dot, dash and underscore (got '$PROFILE')"
+  PRIVATE_ROOT="$REAL_HOME/.cache/youcoded-test-copies"
+  PRIVATE_HOME="$PRIVATE_ROOT/$PROFILE/home"
+fi
+# else: the caller already set HOME to a throwaway of their own (a smoke, a lab rig). That stays as it was: nothing is
+# lent and GitHub is hidden behind a private bus (dev_isolate_accounts below).
+
+KEEP=""
+for s in claude-code chatgpt api-keys; do
+  case ",$WITHOUT," in *",all,"*|*",$s,"*) ;; *) KEEP="${KEEP:+$KEEP,}$s" ;; esac
+done
+IFS=',' read -ra _without <<< "$WITHOUT"
+for s in "${_without[@]}"; do
+  case "$s" in ""|claude-code|chatgpt|api-keys|all) ;; github) die "GitHub is already off by default (switch it ON with --with github)" ;; *) die "--without: unknown sign-in '$s' (known: claude-code, chatgpt, api-keys, all)" ;; esac
+done
+if [[ -z "$PRIVATE_HOME" && ( -n "$WITHOUT" || "$WITH_GITHUB" == "1" || "$FRESH" == "1" ) ]]; then
+  die "--without / --with / --fresh only apply when run-dev.sh makes the private home itself; HOME is already set to $HOME"
+fi
+
 # The first-run wizard's setup state lives under HOME, NOT under Electron's
 # userData, so --profile alone does not isolate it: a dev instance that runs the
 # wizard writes over the state file Destin's INSTALLED app reads, and leaving it
 # mid-flow makes his real app open on the setup wizard at its next launch.
 # (Found by the T5 review of the ChatGPT sign-in build, 2026-09-05.)
-export YOUCODED_TOOLKIT_STATE_DIR="$HOME/.claude/toolkit-state-$PROFILE"
+# With a private home it sits inside that home (prepare-home.mjs marks setup as done there).
+export YOUCODED_TOOLKIT_STATE_DIR="${PRIVATE_HOME:-$HOME}/.claude/toolkit-state-$PROFILE"
 
 # Chromium's remote-debugging port, ON BY DEFAULT for dev instances (2026-08-28).
 #
@@ -305,6 +350,12 @@ echo "  Checkout:      $CHECKOUT"
 echo "  Branch:        $BRANCH"
 echo "  Window title:  YouCoded - $YOUCODED_DEV_LABEL"
 echo "  Profile:       $PROFILE  (userData → %APPDATA%/youcoded-$PROFILE/)"
+if [[ -n "$PRIVATE_HOME" ]]; then
+  echo "  Private home:  $PRIVATE_HOME$([[ "$FRESH" == "1" ]] && echo '  (--fresh: emptied first)')"
+  echo "                 (chats and settings stay here; the real app never sees them)"
+else
+  echo "  Private home:  none made here — HOME is already $HOME (nothing is lent to it)"
+fi
 echo "  Vite:          http://localhost:$((5173 + YOUCODED_PORT_OFFSET))"
 echo "  Remote server: port $((9900 + YOUCODED_PORT_OFFSET)) (if enabled in dev)"
 if [[ "$PHONE_BUILD" == "1" ]]; then
@@ -320,6 +371,9 @@ fi
 echo ""
 
 if [[ "$DRY_RUN" == "1" ]]; then
+  if [[ -n "$PRIVATE_HOME" ]]; then
+    echo "  Sign-ins:      would keep: ${KEEP:-none}; GitHub: $([[ "$WITH_GITHUB" == "1" ]] && echo kept || echo OFF)"
+  fi
   echo "(--dry-run: not launching)"
   exit 0
 fi
@@ -329,13 +383,30 @@ preflight_ports
 # WHY (2026-10-01 one-core R6-3): a throwaway HOME alone does NOT isolate GitHub — `gh` keeps its login in the OS keyring, and a
 # smoke's theme publish opened a real pull request. When HOME is not the real home, point every XDG dir and GH_CONFIG_DIR inside
 # it, drop the token variables, and run under an empty D-Bus session. Details: scripts/dev-isolation.sh.
-dev_isolate_accounts "$(bus_state_file "$OFFSET")"
+if [[ -n "$PRIVATE_HOME" ]]; then
+  if [[ "$FRESH" == "1" ]]; then
+    # Deletes only <real home>/.cache/youcoded-test-copies/<profile> — the profile name was checked above, so this path
+    # cannot climb out of that folder.
+    rm -rf -- "${PRIVATE_ROOT:?}/${PROFILE:?}"
+  fi
+  # Runs with the REAL home still in place: it reads the real sign-ins (never writes them) and fills the private home.
+  node "$ROOT/scripts/dev-signins/prepare-home.mjs" --home "$PRIVATE_HOME" --real-home "$REAL_HOME" --profile "$PROFILE" \
+    --desktop "$DESKTOP" --keep "$KEEP" || die "could not prepare the private home — not launching (a test copy never falls back to the real home)"
+  dev_private_home_env "$PRIVATE_HOME" "$([[ "$WITH_GITHUB" == "1" ]] && echo keep || echo off)"
+  case "$DEV_GITHUB_STATE" in
+    kept)        echo "  GitHub:        kept (--with github: this test copy can publish and open pull requests as you)" ;;
+    unavailable) echo "  GitHub:        NOT AVAILABLE (--with github, but gh has no login to lend)" ;;
+    *)           echo "  GitHub:        OFF (default; --with github lends it)" ;;
+  esac
+else
+  dev_isolate_accounts "$(bus_state_file "$OFFSET")"
+fi
 # WHY after the port preflight: a launch that dies on a busy offset must not overwrite the state file of the instance already running there.
 # WHY a trap right away: the private bus must end with this launch even when a later step (the port preflight, a failed build) dies, and
 # the dev-instance marker below is removed by the same trap.
 cleanup_all() { [[ -n "${MARKER:-}" ]] && rm -f "$MARKER"; dev_isolation_cleanup "$(bus_state_file "$OFFSET")"; return 0; }
 trap cleanup_all EXIT
-if [[ -n "${DEV_ISOLATION_MODE:-}" ]]; then echo "  Accounts:      isolated (throwaway HOME: GitHub login blocked, $DEV_ISOLATION_MODE)"; fi
+if [[ -n "${DEV_ISOLATION_MODE:-}" && "$DEV_ISOLATION_MODE" != "private-home" ]]; then echo "  Accounts:      isolated (throwaway HOME: GitHub login blocked, $DEV_ISOLATION_MODE)"; fi
 
 # The marker `explore --dev` attaches through (scripts/shoot/explore.mjs → devMarker).
 # WHY: a window title or a port number proves nothing about whose app answers there; this
@@ -345,8 +416,8 @@ if [[ -n "${DEV_ISOLATION_MODE:-}" ]]; then echo "  Accounts:      isolated (thr
 if [[ "$DEVTOOLS" == "1" ]]; then
   MARKER="$DESKTOP/.dev-instances/$OFFSET.json"
   mkdir -p "$DESKTOP/.dev-instances"
-  printf '{"pid":%d,"devtoolsPort":%d,"vitePort":%d,"offset":%d,"profile":"%s"}\n' \
-    "$$" "$((9222 + OFFSET))" "$((5173 + OFFSET))" "$OFFSET" "${PROFILE//[\"\\]/}" > "$MARKER"
+  printf '{"pid":%d,"devtoolsPort":%d,"vitePort":%d,"offset":%d,"profile":"%s","home":"%s"}\n' \
+    "$$" "$((9222 + OFFSET))" "$((5173 + OFFSET))" "$OFFSET" "${PROFILE//[\"\\]/}" "${HOME//[\"\\]/}" > "$MARKER"
 fi
 
 cd "$DESKTOP"

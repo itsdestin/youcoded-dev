@@ -1,0 +1,266 @@
+[
+  {
+    "name": "chat/session-context",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context/light.png",
+    "ms": 2636,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context/midnight.png",
+    "ms": 2903,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context#native/light.png",
+    "ms": 3043,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context#native/midnight.png",
+    "ms": 3100,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context#native/dark.png",
+    "ms": 3196,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context/creme.png",
+    "ms": 3434,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context/dark.png",
+    "ms": 3620,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context#native/halftone-dimension.png",
+    "ms": 5381,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context#native/creme.png",
+    "ms": 7006,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "light",
+    "ok": false,
+    "reason": "open step click tab \"Project context\" failed: tab \"Project context\" is not on screen. On screen: button \"Close What the assistant was given\", tab \"Overview\", tab \"System\", tab \"Project\", tab \"Skills\", tab \"Tools\", button \"Not everything fit\", button \"This project’s rules Shortened · CLAUDE.md\", button \"Your skills The assistant wasn’t told about 4 skills — you can still s\", button \"docs-index add-on Not attached — its tools can’t be used in this chat\"",
+    "file": null,
+    "ms": 7610,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "dark",
+    "ok": false,
+    "reason": "open step click tab \"Project context\" failed: tab \"Project context\" is not on screen. On screen: button \"Close What the assistant was given\", tab \"Overview\", tab \"System\", tab \"Project\", tab \"Skills\", tab \"Tools\", button \"Not everything fit\", button \"This project’s rules Shortened · CLAUDE.md\", button \"Your skills The assistant wasn’t told about 4 skills — you can still s\", button \"docs-index add-on Not attached — its tools can’t be used in this chat\"",
+    "file": null,
+    "ms": 8004,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "halftone-dimension",
+    "ok": false,
+    "reason": "open step click tab \"Project context\" failed: tab \"Project context\" is not on screen. On screen: button \"Close What the assistant was given\", tab \"Overview\", tab \"System\", tab \"Project\", tab \"Skills\", tab \"Tools\", button \"Not everything fit\", button \"This project’s rules Shortened · CLAUDE.md\", button \"Your skills The assistant wasn’t told about 4 skills — you can still s\", button \"docs-index add-on Not attached — its tools can’t be used in this chat\"",
+    "file": null,
+    "ms": 8471,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "midnight",
+    "ok": false,
+    "reason": "open step click tab \"Project context\" failed: tab \"Project context\" is not on screen. On screen: button \"Close What the assistant was given\", tab \"Overview\", tab \"System\", tab \"Project\", tab \"Skills\", tab \"Tools\", button \"Not everything fit\", button \"This project’s rules Shortened · CLAUDE.md\", button \"Your skills The assistant wasn’t told about 4 skills — you can still s\", button \"docs-index add-on Not attached — its tools can’t be used in this chat\"",
+    "file": null,
+    "ms": 6560,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "creme",
+    "ok": false,
+    "reason": "open step click tab \"Project context\" failed: tab \"Project context\" is not on screen. On screen: button \"Close What the assistant was given\", tab \"Overview\", tab \"System\", tab \"Project\", tab \"Skills\", tab \"Tools\", button \"Not everything fit\", button \"This project’s rules Shortened · CLAUDE.md\", button \"Your skills The assistant wasn’t told about 4 skills — you can still s\", button \"docs-index add-on Not attached — its tools can’t be used in this chat\"",
+    "file": null,
+    "ms": 10946,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context/meadow-mist.png",
+    "ms": 11016,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "meadow-mist",
+    "ok": false,
+    "reason": "open step click tab \"Project context\" failed: tab \"Project context\" is not on screen. On screen: button \"Close What the assistant was given\", tab \"Overview\", tab \"System\", tab \"Project\", tab \"Skills\", tab \"Tools\", button \"Not everything fit\", button \"This project’s rules Shortened · CLAUDE.md\", button \"Your skills The assistant wasn’t told about 4 skills — you can still s\", button \"docs-index add-on Not attached — its tools can’t be used in this chat\"",
+    "file": null,
+    "ms": 8481,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context/halftone-dimension.png",
+    "ms": 12539,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs-2/before/chat/session-context#native/meadow-mist.png",
+    "ms": 12755,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  }
+]

@@ -12,14 +12,15 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.converse.native, chat.converse.queue
-work: session/fix-anthropic-many-image-brick
+work: session/fix-anthropic-many-image-brick, session/chat-followups
 ---
 Progress
-Done: The 'Try again' button on a failed reply shipped on 2026-10-21 (app PR #670, dev PR #293), along with stuck-conversation fixes, per-provider length caps and recovery for cut-off replies. RETESTED 2026-11-10 in a dev copy (release-safety session): (c) queued-message editing is fixed for Claude Code chats only. On YouCoded's own engine it STILL FAILS, for every way of attaching (paperclip, drag, paste): pressing Edit on a queued message that has a file puts the raw file path plus the words in the box and the file chip is gone. The docked queue strip does survive a reload (passed). 2026-11-11 (chat-engine batch, app branch session/chat-engine-batch, not merged): fault (c) FIXED on YouCoded's own engine and confirmed in a dev copy (paperclip, paste, two files, files-only, words-only, phone view; re-send carries the file). Also fixed: a chat created with no name crashed the window, now shows New Session.
-Next: Destin to decide: the queued strip still shows the full raw file path in front of the words (could show the file name as a chip; visible change, not built). Still open and not in any batch: (a) ChatGPT card refresh after a plan upgrade; (b) thinking bubble flicker on slow streams; (d) Replace/Append choice; (f) cut-off summary wording; (g) exact request kept for resume; (h) pasted paths eaten as commands.
+Done: 2026-11-12 overnight: queued strip now shows file-name chips (max 3, then +N more) for a waiting message with files; branch session/chat-followups commit b4ce7911a; before/after pictures made.
+Next: Destin reviews the picture, then merge.
 Blocked: nothing recorded.
 
 Chats
+- 2026-11-12 session/chat-followups: chat started
 - 2026-10-21 session/fix-anthropic-many-image-brick: Stuck conversations after provider errors, cut-off replies, the new error card
 
 From the old roadmap (native-harness › sessions, status confirmed, seen on desktop, last checked 2026-08-10)

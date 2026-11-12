@@ -14,8 +14,8 @@ side: screens
 vision: chat.converse.local
 ---
 Progress
-Done: Downloads for the app's own models now stop safely if the disk fills up (shipped in 1.3.x, youcoded PR #497 and commit 40a01e22b). The shared download code is not yet merged: models, the engine and voice each still download in their own way. 2026-11-11 chat-engine batch: checked against code, nothing built. No licence or terms text exists on any model download screen. Gemma 4 E4B, 12B and 26B-A4B are offered in Settings, Local models; first-run setup can also pick Gemma 4 E4B by itself on computers with 12 to 16 GB of memory, so a notice is needed there too. Three downloaders and four checksum helpers: still accurate.
-Next: Destin to approve the Gemma notice wording and where it shows (Local models screen, first-run setup, Add from Hugging Face). Merging the downloaders stays on hold.
+Done: 2026-11-12 overnight: Cancel/Download popup built (commit 1254b83fe). Checked sources: Gemma 4 builds are Apache 2.0 per Hugging Face and Google's licence page, so no use-limit terms apply; other Gemma builds' terms unchecked and worded so.
+Next: Destin decides whether to keep the popup for a plain Apache licence.
 Blocked: Nothing recorded as blocking. Refactor is on hold by Destin's choice since 2026-09-18.
 
 Chats

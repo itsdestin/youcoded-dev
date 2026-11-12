@@ -1,7 +1,7 @@
 ---
 id: 17
 title: Test copies of the app can change the real one
-stage: planning
+stage: merged
 priority: P2
 tags: dev-workspace, rigs, housekeeping, bug
 branch: 17-dev-instance-11-faults-where

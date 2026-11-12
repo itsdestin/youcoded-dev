@@ -13,8 +13,8 @@ area: Settings
 side: both
 ---
 Progress
-Done: Batch 1 (17 messages that said something false, such as a backup 'Uploaded!' after it failed) is merged on master (youcoded 72bd4093, 2026-09-11) and reached the 1.3.1 beta line. Error boxes now draw one shared look with the action inside, retry buttons all read 'Try again', and the crash screen offers Report bug and Details (b92a6b7ec, 38efb4786, c8662714a).
-Next: batches 2 onward — silent failures where a screen shows 'none' after a failed load (16 places still do this), empty catch blocks that swallow button errors (about 73 in the desktop renderer, count not exact), the phone's error paths, and the remaining report-a-bug gaps.
+Done: Batch 2 (part): failed loads that looked like 'none' now say so with Try again in 6 places: new-session model list, Default model row, Local models list, Sync log, Blocked users, Web search options. Branch session/look-wording-batch.
+Next: Remaining empty-as-none rows (Library update badges, vote counts, project/file lists, friends, games), the ~73 silent catches, phone error paths.
 Blocked: nothing recorded.
 
 Chats

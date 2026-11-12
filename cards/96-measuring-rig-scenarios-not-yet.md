@@ -15,8 +15,8 @@ vision: together.workflow.perf
 work: session/android-ux-test
 ---
 Progress
-Done: The app fix that stops file previews, file comparisons and file indexing from freezing the app shipped in version 1.3.2 (app change #665, merged 21 Oct 2026). The speed-testing toolkit work was merged to the workspace master as PR #318 on 24 Oct 2026.
-Next: check speed on a real graphics card, typing while lots of output streams in, and Windows, Mac and phone checks. The phone speed lab is in progress on the Android branch and is not merged yet.
+Done: Overnight 2026-11-12: tried to re-measure with the speed lab, but the computer never got quiet (load 40-128 from other sessions), so no numbers and no changes.
+Next: Re-run the lab on an idle machine (startup, history, workload, terminal, artifacts, scrollback phases). See speed REPORT notes.
 Blocked: nothing recorded.
 
 Chats
