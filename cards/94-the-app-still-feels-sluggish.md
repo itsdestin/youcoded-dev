@@ -14,8 +14,8 @@ work: backup/performance-stream-attribution-wip, session/93-batcher-counters
 vision: chat.converse.multi
 ---
 Progress
-Done: Overnight 2026-11-12: tried to re-measure with the speed lab, but the computer never got quiet (load 40-128 from other sessions), so no numbers and no changes.
-Next: Re-run the lab on an idle machine (startup, history, workload, terminal, artifacts, scrollback phases). See speed REPORT notes.
+Done: Re-measured on a quiet machine (2026-11-12, packaged build, software drawing): chat switch shows in 25-35 ms, no dropped frames, typing right after a switch waits under 1 ms; six-session workload switch p95 59-61 ms. Nothing slow found to fix.
+Next: Hand check on the real screen; terminal-view switch is ~520 ms (software drawing, unproven on a real card).
 Blocked: Destin's decision on the animation look (docs/active/... rule .claude/rules/session-strip-motion.md forbids changing it otherwise). The paused experiments on backup/performance-stream-attribution-wip must not be applied over master.
 
 See also #102: 94's chat-switch pauses (item c) are the same slow session-switch clicks that 102 measures in detail.
