@@ -1163,7 +1163,7 @@ raw['steps'] = [{'id': 'Q-9', 'words': True, 'surface': 'Games', 'path': 'Questi
     'checked': 'Opened the games screen today.', 'picture': 'pic.png', 'caption': 'The board today.'},
   {'id': 'K-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Calls I made for you',
     'calls': [{'id': 'size', 'call': 'The board is five rows tall.', 'why': 'It matches the other games.', 'result': 'unclear'},
-              {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.', 'picture': 'pic.png', 'before': 'pic.png'}]},
+              {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.', 'result': 'pass', 'picture': 'pic.png', 'before': 'pic.png'}]},
   {'id': 'S-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'The words on the games menu', 'screen': 'menu.html'}]
 # A still copy of a screen, as \`shoot --page\` saves one: the size it was laid out at, where its panel sits.
 open(os.path.join(os.path.dirname(p), 'menu.html'), 'w').write('<!doctype html><html data-frozen-panel="10,10,200,120" data-frozen="400x300"><head><meta charset="utf-8"></head><body><h1>Pick a game</h1><button>Start</button><input placeholder="Search games"></body></html>')
@@ -1222,6 +1222,13 @@ print(p)`;
       await c.evaluate("document.querySelector('.attcard .atttile').click()"); await sleep(300);
       assert.equal(await c.evaluate("document.querySelectorAll('.viewer .lbbox.markable img').length"), 1, 'a tile opens the picture window');
       assert.match(await c.evaluate("document.querySelector('.viewer .vtitle').textContent"), / · Before$/, 'titled with the row\'s words and the tile\'s name');
+      // Round 9, V-1: the picture is at its true size (never shrunk to the window), and Before/After is a switch in the header.
+      assert.ok(await c.evaluate("(()=>{const i=document.querySelector('.viewer .lbbox img');return i.naturalWidth>0&&Math.abs(i.getBoundingClientRect().width-2-i.naturalWidth)<2})()"), 'true size');
+      assert.equal(await c.evaluate("[...document.querySelectorAll('.viewer .vpair .segb')].map(b=>b.textContent+(b.classList.contains('on')?'*':'')).join()"), 'Before*,After');
+      await c.evaluate("document.querySelectorAll('.viewer .vpair .segb')[1].click()"); await sleep(150);
+      assert.match(await c.evaluate("document.querySelector('.viewer .vtitle').textContent"), / · After$/, 'the switch shows the other picture in the same popup');
+      await c.evaluate("document.querySelectorAll('.viewer .vpair .segb')[0].click()"); await sleep(150);
+      assert.equal(await c.evaluate("document.querySelector('.viewer .varm').hidden"), true, 'with a mouse there is no extra button: any drag draws');
       // An area dragged on the picture in the window: its comment box sits beside the picture.
       await c.evaluate(`(()=>{const img=document.querySelector('.viewer .lbbox img'),r=img.getBoundingClientRect();
         img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+r.width*0.2,clientY:r.top+r.height*0.2}));
@@ -1391,7 +1398,7 @@ print(p)`;
 
 // Round 7, second half (2026-11-10): history woven into the deck (state pill, trail, Settled fold,
 // "Since last round" line, related decks with a line each), a row's More, "Built from", and video proof.
-test('round 8: rows grouped by state with no badges, one Details fold per row, a plain since-last-round sentence, and a video tile that cannot be dragged on', async () => {
+test('rounds 8-9: rows grouped by state with no badges, no Details fold (story and explanation in the open), a plain since-last-round sentence, and a video tile that cannot be dragged on', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-r7b-'));
   const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)});
 from fixture import words_spec
@@ -1433,17 +1440,15 @@ print(p)`;
       assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.card.calls > .grp > ul > li.call')].map(l => l.dataset.call))")), ['new', 'chg']);
       assert.match(await q("document.querySelector('.settledfold .foldhead').textContent"), /^Already settled\s*1$/);
       assert.equal(await q("document.querySelector('.settledfold > .foldbody').hidden"), true);
-      // ONE Details fold per row, closed until asked for: the rounds, then Now, then Built from.
-      assert.equal(await q("document.querySelectorAll('li[data-call=chg] .fold.details').length"), 1);
-      assert.equal(await q("document.querySelector('li[data-call=chg] .fold.details .foldbody').hidden"), true);
-      assert.ok(await q("(()=>{const h=document.querySelector('li[data-call=chg] .foldhead').getBoundingClientRect(),c=document.querySelector('li[data-call=chg] .foldhead .chev').getBoundingClientRect();return c.left>h.left+h.width*0.9})()"), 'the chevron sits at the right, as in the app');
-      await q("document.querySelector('li[data-call=chg] .fold.details .foldhead').click()");
-      assert.equal(await q("document.querySelector('li[data-call=chg] .fold.details .foldbody').hidden"), false);
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('li[data-call=chg] .roundname')].map(p => p.textContent))")), ['Round 3', 'Round 4']);
-      assert.match(await q("document.querySelector('li[data-call=chg] .tnow').textContent"), /^Now/);
-      assert.equal(await q("document.querySelector('li[data-call=chg] .tline dd.decided').textContent"), '“there is no notes button”', 'his words are quoted');
-      assert.equal(await q("getComputedStyle(document.querySelector('li[data-call=chg] .tnow')).fontSize"), '12px');
-      assert.match(await q("document.querySelector('li[data-call=chg] .dpart.reuse').textContent"), /Reused from the app.*The pencil button.*New in this design.*The star/);
+      // Round 9 (Destin, on the Details fold: "what even is the point of this?"; K-1 yes): no fold. The story is
+      // plain lines above the row's words, in the open; what a design reuses is behind a small (i).
+      assert.equal(await q("document.querySelectorAll('.fold.details').length"), 0, 'no Details fold anywhere');
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('li[data-call=chg] .story .sline dt')].map(p => p.textContent))")), ['Round 3 · you', 'Round 3 · built', 'Round 3 · you', 'Round 4 · built']);
+      assert.equal(await q("document.querySelector('li[data-call=chg] .story .sline.you dd').textContent"), '“there is no notes button”', 'his words are quoted');
+      assert.ok(await q("(()=>{const s=document.querySelector('li[data-call=chg] .story').getBoundingClientRect(),w=document.querySelector('li[data-call=chg] .callwhat').getBoundingClientRect();return s.height>0&&s.bottom<=w.top+1})()"), 'the story is visible, above the row\'s words');
+      assert.match(await q("document.querySelector('li[data-call=chg] .callhead .how .tip').textContent"), /Reused from the app.*The pencil button.*New in this design.*The star/);
+      // every list says which of the three kinds of card it is
+      assert.equal(await q("document.querySelector('.card.calls .kindline b').textContent"), 'Yours to change');
       // a video is a tile like any picture; its window plays it with controls and cannot be dragged on
       await q("document.querySelector('li[data-call=new] .atthead').click()");
       await q("document.querySelector('li[data-call=new] .atttile[data-video=\"1\"]').click()"); await sleep(200);
@@ -1453,12 +1458,12 @@ print(p)`;
       // the settled group opens like any fold
       await q("document.querySelector('.settledfold .foldhead').click()"); await sleep(100);
       assert.equal(await q("document.querySelector('.settledfold > .foldbody').hidden"), false);
-      // the second page: a run/skip row's fuller explanation is inside its Details
+      // the second page: a run/skip row's fuller explanation is labelled lines under its words, in the open
       await q("document.querySelector('#save').click()"); await sleep(400);
       assert.equal(await q("document.querySelector('.topnotes') === null"), true, 'the summary is only on the first page');
-      assert.equal(await q("document.querySelector('.fold.details .foldbody').hidden"), true);
-      await q("document.querySelector('.fold.details .foldhead').click()");
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.fold.details .dpart.more .dh')].map(d => d.textContent))")), ['What it does', 'What comes back', 'Why, for this build']);
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.morelines .mline dt')].map(d => d.textContent))")), ['What it does', 'What comes back', 'Why, for this build']);
+      assert.ok(await q("document.querySelector('.morelines').getBoundingClientRect().height > 0"));
+      assert.equal(await q("document.querySelector('.card.calls .kindline b').textContent"), 'Checks');
       // nothing on the page is an underlined link or a bare disclosure triangle
       assert.equal(await q("[...document.querySelectorAll('#cards a, #cards button')].filter(e => getComputedStyle(e).textDecorationLine.includes('underline')).length"), 0);
       assert.deepEqual(c.errors, []);
@@ -1561,7 +1566,7 @@ png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 30
 open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
 def lst(i, h, calls, **kw): return {'id': i, 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': h, 'calls': calls, **kw}
 raw['steps'] = [{'id': 'P-1', 'page': 'Rows', 'intro': 'Judge the rows.'},
-  lst('G-1', 'Screens', [{'id': 'g', 'call': 'Board moved.', 'why': 'Matches.', 'picture': 'pic.png'}, {'id': 'h', 'call': 'Second.', 'why': 'Ok.', 'result': 'run', 'more': {'does': 'Runs it.', 'returns': 'A list.', 'why': 'Cheap.'}}]),
+  lst('G-1', 'Screens', [{'id': 'g', 'call': 'Board moved.', 'why': 'Matches.', 'result': 'run', 'more': {'does': 'Looks at it.', 'returns': 'A picture.', 'why': 'Cheap.'}, 'picture': 'pic.png'}, {'id': 'h', 'call': 'Second.', 'why': 'Ok.', 'result': 'run', 'more': {'does': 'Runs it.', 'returns': 'A list.', 'why': 'Cheap.'}}]),
   lst('G-2', 'Untouched', [{'id': 'u', 'call': 'Left alone.', 'why': 'Fine.'}]),
   lst('C-1', 'What exists today', [{'id': 'x', 'call': 'Fact one.', 'why': 'Read.'}], context=True),
   {'id': 'P-2', 'page': 'Questions', 'intro': 'Answer.'},

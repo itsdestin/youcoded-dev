@@ -277,13 +277,24 @@ class RethinkTests(unittest.TestCase):
         css = open(os.path.join(DECK, 'page.css')).read()
         # Round 8 (Destin, round 7: "VERYY busy… badges don't really make much sense… we don't use the
         # bare > dropdowns anywhere, nor the linked underline text"): groups, one fold, tiles.
-        for needle in ('class="grph"', 'detailsFold', 'class="since"', 'class="reltop"', 'reuseBody', 'class="atttile"', 'isVideo', 'STATE_GROUPS'):
+        for needle in ('class="grph"', 'storyLines', 'moreLines', 'class="kindline"', 'class="since"', 'class="reltop"', 'reuseTip', 'class="atttile"', 'isVideo', 'STATE_GROUPS'):
             self.assertIn(needle, js, needle)
-        for gone in ('stpill', 'metatog', 'sincepart', 'settledhead', 'attmarks'):
+        # Round 9 (K-1): the Details fold is gone.
+        for gone in ('stpill', 'metatog', 'sincepart', 'settledhead', 'attmarks', 'detailsFold', 'fold details'):
             self.assertNotIn(gone, js, gone)
             self.assertNotIn(gone, css, gone)
         self.assertRegex(css, r'\.atttile\{[^}]*width:224px')
         self.assertNotRegex(css, r'text-decoration:underline')
+
+    def test_a_card_holds_one_kind_of_row(self):
+        # Destin, round 8: "why is it the only row in this card that has the unclear/etc dropdown chip?"; round 9, K-1.
+        row = lambda i, **kw: {'id': i, 'call': 'A thing.', 'why': 'A reason.', **kw}
+        lst = lambda calls, **kw: {'id': 'L-9', 'words': True, 'surface': 'Decks', 'path': 'Rows', 'headline': 'A list', 'calls': calls, **kw}
+        errs = lambda step: self.errs(lambda r: r['steps'].append(step))
+        self.assertTrue(any('one kind of row' in x and 'b' in x for x in errs(lst([row('a', result='pass'), row('b')]))))
+        self.assertTrue(any('for your information' in x for x in errs(lst([row('a', result='pass')], context=True))))
+        self.assertFalse(any('one kind' in x for x in errs(lst([row('a', result='pass'), row('b', result='skip', more='Not needed here.')]))))
+        self.assertFalse(any('one kind' in x for x in errs(lst([row('a'), row('b')]))))
 
     # ── the running screen behind a frozen one (round 7b) ───────────────────────────────────
     def test_live_screen_field_is_validated_in_plain_words(self):

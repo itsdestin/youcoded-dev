@@ -343,43 +343,24 @@
   const okey = (kind, sid, cid) => kind + '|' + sid + '|' + (cid || '');
   const isOpen = (kind, sid, cid) => !!openMap[okey(kind, sid, cid)];
   const quoted = t => /^["“]/.test(t.trim()) ? t.trim() : '“' + t.trim() + '”';
-  // The trail: one small block per round — what you asked, what was built, what you said — ending in
-  // "Now". His own words are quoted exactly like a row's `decided` line.
-  const trailBody = x => {
-    if (!(x.trail || []).length) return '';
-    const rounds = x.trail.map(t => `<div class="round">${t.round ? `<p class="roundname">${esc(t.round)}</p>` : ''}<dl class="tlines">`
-      + (t.asked ? `<div class="tline"><dt>You asked</dt><dd class="decided">${esc(quoted(t.asked))}</dd></div>` : '')
-      + (t.built ? `<div class="tline"><dt>Built</dt><dd>${esc(t.built)}</dd></div>` : '')
-      + (t.said ? `<div class="tline"><dt>You said</dt><dd class="decided">${esc(quoted(t.said))}</dd></div>` : '')
-      + `</dl></div>`).join('');
-    const now = x.state === 'new' ? 'New this round, nothing before it.' : x.state === 'changed' ? 'Changed to follow your last comment, as written above.' : x.state === 'settled' ? 'Settled: you changed nothing since.' : 'As written above.';
-    return `<section class="dpart trail"><h4 class="dh">How this changed</h4>${rounds}<p class="tnow"><b>Now</b>${esc(now)}</p></section>`;
-  };
-  // More: the fuller explanation of a check — what it does, what comes back, why it is or is not
-  // suggested for THIS build (Destin, round 7: "more elaborate/expandable descriptiosn of what they
-  // actually entail and why they are/aren't recommended for the specific build").
   const MORE_LABELS = { does: 'What it does', returns: 'What comes back', why: 'Why, for this build' };
-  const moreBody = c => {
+  // ── ROUND 9: no "Details" fold ────────────────────────────────────────────────────────────
+  // WHY (Destin, 2026-11-11, round 8, on the fold: "this is still genuinely terrible. what even is the point of
+  // this?… poorly styled text dropped into a dropdown with no visual heirarchy"; round 9, K-1: yes to removing
+  // it). Each of the three things it hid now sits where it is used, in the open:
+  //   - the story (what he asked, what was built, what he said) is a few plain lines ABOVE the row's words;
+  //   - a check's fuller explanation is labelled lines UNDER the row's words;
+  //   - which app parts a design reuses is behind a small (i) beside the words (his round-6 answer).
+  const storyLines = x => !(x.trail || []).length ? '' : `<dl class="story">` + x.trail.map(t => {
+    const r = t.round || '';
+    return (t.asked ? `<div class="sline you"><dt>${esc(r)} · you</dt><dd>${esc(quoted(t.asked))}</dd></div>` : '')
+      + (t.built ? `<div class="sline"><dt>${esc(r)} · built</dt><dd>${esc(t.built)}</dd></div>` : '')
+      + (t.said ? `<div class="sline you"><dt>${esc(r)} · you</dt><dd>${esc(quoted(t.said))}</dd></div>` : '');
+  }).join('') + `</dl>`;
+  const moreLines = c => {
     if (!c.more) return '';
     const parts = typeof c.more === 'string' ? { does: c.more } : c.more;
-    return ['does', 'returns', 'why'].filter(k => parts[k]).map(k => `<section class="dpart more"><h4 class="dh">${MORE_LABELS[k]}</h4><p>${esc(parts[k])}</p></section>`).join('');
-  };
-  // "Built from": what a design took from the app and what it made new (Destin, 2026-11-10: "the model
-  // needs to understand these for itself and possibly record them in the deck… behind an (i) or
-  // something"). Round 8 puts it inside the row's Details fold instead of its own (i) chip.
-  const reuseBody = x => {
-    const r = x && x.reuse; if (!r) return '';
-    const list = (h, a) => a && a.length ? `<p class="dsub">${h}</p><ul class="dlist">${a.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '';
-    return `<section class="dpart reuse"><h4 class="dh">Built from</h4>${list('Reused from the app', r.from)}${list('New in this design', r.new)}${r.note ? `<p class="dnote">${esc(r.note)}</p>` : ''}</section>`;
-  };
-  // The one fold. `x` is a row (call), or a whole question/step; it draws nothing when there is nothing to fold.
-  const detailsFold = (sid, x, cid) => {
-    const trail = trailBody(x), more = moreBody(x), reuse = reuseBody(x);
-    if (!trail && !more && !reuse) return '';
-    const n = (x.trail || []).length, open = isOpen('details', sid, cid);
-    const chips = [n ? `${n} ${n === 1 ? 'round' : 'rounds'}` : '', more ? 'What it does' : '', reuse ? 'Built from' : ''].filter(Boolean)
-      .map(t => `<span class="fchip">${esc(t)}</span>`).join('');
-    return `<div class="fold details${open ? ' open' : ''}"><button type="button" class="foldhead" data-kind="details" data-sid="${esc(sid)}" data-call="${esc(cid || '')}" aria-expanded="${open}"><span class="foldtitle">Details</span><span class="foldchips">${chips}</span><span class="foldfill"></span>${CHEV}</button><div class="foldbody"${open ? '' : ' hidden'}>${trail}${more}${reuse}</div></div>`;
+    return `<dl class="morelines">` + ['does', 'returns', 'why'].filter(k => parts[k]).map(k => `<div class="mline"><dt>${MORE_LABELS[k]}</dt><dd>${esc(parts[k])}</dd></div>`).join('') + `</dl>`;
   };
   // The (i) explainer (the app's AnchorTip: a small round (i), the words open beside it on hover or focus). Used where a
   // fold would fight a click: an option card (the whole card picks) and a design's headline.
@@ -444,8 +425,8 @@
   // a list of facts for him to read looked exactly like a list of choices to change. A context
   // list says so and carries no pencils; a correction goes in the page's comment box.
   const callLi = (st, c) => {
-    // A row is: its words, its status pill and pencil, then at most one Details fold and one Attachments card.
-    return `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"><div class="callrow"><div class="calltext"><p class="callwhat">${esc(c.call)}</p><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}</div><div class="callflags">${resultPill(st, c)}</div><button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea><button type="button" class="markx callx" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Take this comment away" aria-label="Take this comment away">${BIN}</button></div>${detailsFold(st.id, c, c.id)}${attCard(st, c)}</li>`;
+    // A row is: its story (if it has one), its words, its status pill and pencil, then at most one Attachments card.
+    return `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}">${storyLines(c)}<div class="callrow"><div class="calltext"><div class="callhead"><p class="callwhat">${esc(c.call)}</p>${reuseTip(c)}</div><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}${moreLines(c)}</div><div class="callflags">${resultPill(st, c)}</div><button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea><button type="button" class="markx callx" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Take this comment away" aria-label="Take this comment away">${BIN}</button></div>${attCard(st, c)}</li>`;
   };
   // WHY groups (round 8): a row's state is shown by WHERE it sits — under a small heading "New", "Changed"
   // or "Already settled" — not by a badge. Rows keep the order they were written in inside a group. With
@@ -455,7 +436,15 @@
   const callsCard = st => {
     const ul = rows => `<ul>${rows.map(c => callLi(st, c)).join('')}</ul>`;
     const cls = `card calls${st.context ? ' context' : ''}${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}`;
-    if (!st.calls.some(c => c.state)) return `<section class="${cls}">${ul(st.calls)}</section>`;
+    // WHY a kind line (round 9, K-1): every list says which of the three kinds it is and what, if anything, it
+    // wants from him — facts, rows that are his to change, or results (and, before a build, checks to switch).
+    const results = st.calls.some(c => c.result), checks = st.calls.some(c => c.result === 'run' || c.result === 'skip');
+    const kind = st.context ? ['For your information', 'Nothing to do here. A correction goes in the box at the foot of the page.']
+      : checks ? ['Checks', 'Switch any on or off. A comment on a check tells it what else to look at.']
+      : results ? ['Results', 'Change any result you disagree with.']
+      : ['Yours to change', 'Each row stands unless you change it with its pencil.'];
+    const kindLine = `<p class="kindline" data-kind="${st.context ? 'info' : checks ? 'checks' : results ? 'results' : 'change'}"><b>${kind[0]}</b><span>${kind[1]}</span></p>`;
+    if (!st.calls.some(c => c.state)) return `<section class="${cls}">${kindLine}${ul(st.calls)}</section>`;
     const by = k => st.calls.filter(c => c.state === k);
     const plain = st.calls.filter(c => !STATE_GROUPS.some(([k]) => k === c.state));
     const blocks = [];
@@ -467,7 +456,7 @@
       } else blocks.push(`<div class="grp">${groupHead(label, rows.length)}${ul(rows)}</div>`);
     });
     // Rows with no state while others have one come first, under no heading: nothing happened to them.
-    return `<section class="${cls}">${plain.length ? `<div class="grp">${ul(plain)}</div>` : ''}${blocks.join('')}</section>`;
+    return `<section class="${cls}">${kindLine}${plain.length ? `<div class="grp">${ul(plain)}</div>` : ''}${blocks.join('')}</section>`;
   };
 
   // ── Edit the words on the real screen (round 4) ─────────────────────────────────────────
@@ -1001,7 +990,7 @@
     $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
     $('#headline').textContent = st.headline;
     if (st.reuse) $('#headline').insertAdjacentHTML('beforeend', reuseTip(st));   // round 7: what this design reuses
-    $('#cards').innerHTML = (st.trail ? detailsFold(st.id, st, '') : '') + cardsFor(st);
+    $('#cards').innerHTML = storyLines(st) + cardsFor(st);
     // Fix: this ran BEFORE #cards was filled in, so it bound handlers to the PREVIOUS step's
     // cards and the current step's got none — a lettered card looked clickable (pointer
     // cursor, "Pick B" tooltip) and did nothing, on every pick-one step. It matters more on a
@@ -1052,7 +1041,7 @@
         // A calls list asks nothing, so it is not called a "Question" (rethink round 2).
         + `<p class="qnum"><span class="n">${listy(st) ? '' : 'Question ' + (steps.filter(x => !listy(x)).indexOf(st) + 1) + ' of ' + steps.filter(x => !listy(x)).length}</span></span></p><span class="qstate" aria-live="polite"></span>`
         + `<h2 class="qh">${esc(st.headline)}</h2>`
-        + (listy(st) ? '' : detailsFold(st.id, st, ''))
+        + (listy(st) ? '' : storyLines(st) + moreLines(st) + (st.reuse ? `<div class="builtfrom">Built from the app's own parts${reuseTip(st)}</div>` : ''))
         + `<div class="qbody">${cardsFor(st)}</div>`
         + (listy(st) ? '' : `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
         // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A
@@ -1806,7 +1795,9 @@
   // that row's Attachments card, large, so this window only enlarges ONE picture of a written
   // question — with the question's own words as its title and its comments beside it — and
   // never walks on to another question's picture.
-  let viewA = null;
+  let viewA = null, armed = false;
+  // A finger (or a pen on a tablet), as opposed to a mouse. `?touch=1` lets a test or a desktop preview act as one.
+  const COARSE = /[?&]touch=1/.test(location.search) || (window.matchMedia && matchMedia('(pointer:coarse)').matches);
   const picTitle = a => {
     const cap = a.parentElement.querySelector('figcaption'), art = a.closest('article.q');
     return { what: art ? art.querySelector('.qh').textContent : '', cap: cap ? cap.textContent : '' };
@@ -1825,9 +1816,17 @@
     let v = $('.viewer');
     if (!v) {
       v = document.createElement('div'); v.className = 'viewer';
-      v.innerHTML = `<div class="vbar"><span class="vtitle"></span><button type="button" class="btn sm vclose">Close</button></div>`
+      // WHY true size (Destin, 2026-11-11, round 8: "it's literally completely impossible to read any of this
+      // text… far too small and zoomed out… 90% of this popup page is unused dead space"; round 9, V-1: he
+      // picked "comments in a strip at the right"). The picture used to be shrunk until all of it fitted the
+      // window, so a tall screenshot became a thin unreadable column. It now opens at its real size and the
+      // picture area scrolls; "Fit" squeezes it back to the window's width for an overview. Before/After is a
+      // switch in the header instead of two separate popups, and the close is the app's ×.
+      v.innerHTML = `<div class="vbar"><span class="vtitle"></span><span class="vpair seg" hidden></span>`
+        + `<span class="vzoom seg"><button type="button" class="segb on" data-zoom="true">True size</button><button type="button" class="segb" data-zoom="fit">Fit</button></span>`
+        + `<button type="button" class="iconbtn vclose" title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>`
         + `<div class="vmain"><div class="vstage"><div class="lbbox"></div></div>`
-        + `<aside class="vside"><h3>Comments on this picture</h3><div class="vcomments"></div></aside></div>`;
+        + `<aside class="vside"><h3>Comments on this picture</h3><button type="button" class="btn sm varm" hidden>Comment on an area</button><div class="vcomments"></div></aside></div>`;
       document.body.appendChild(v);
     }
     paintViewer(); drawMarks();
@@ -1842,6 +1841,15 @@
     }
     box.classList.toggle('markable', a.markable); box.dataset.sid = a.sid; box.dataset.pk = a.pk;
     v.querySelector('.vtitle').textContent = a.what + (a.cap ? ' · ' + a.cap : '');
+    // The row's other picture (Before beside After) is one press away, in the same popup.
+    const sibs = viewA.classList.contains('atttile') ? [...viewA.parentElement.querySelectorAll('.atttile')] : [];
+    const pair = v.querySelector('.vpair'); pair.hidden = sibs.length < 2;
+    pair.innerHTML = sibs.length < 2 ? '' : sibs.map((t, i) => `<button type="button" class="segb${t === viewA ? ' on' : ''}" data-sib="${i}">${esc(t.dataset.name)}</button>`).join('');
+    // WHY a button on touch screens (Destin, round 9, Q-4: "Tap a 'Comment on an area' button, then drag"):
+    // with a finger, any drag on a picture drew an area, so scrolling a large picture meant aiming for the gaps.
+    const arm = v.querySelector('.varm'); arm.hidden = !(COARSE && a.markable && !state.submitted);
+    arm.classList.toggle('on', armed); arm.textContent = armed ? 'Now drag on the picture' : 'Comment on an area';
+    box.classList.toggle('armed', armed);
     v.querySelector('.vside h3').textContent = a.video ? 'Comments on this clip' : 'Comments on this picture';
     const marks = (state.answers[a.sid] || {}).marks || [];
     // Only this picture's areas, under the numbers they carry on the picture.
@@ -1850,15 +1858,19 @@
     // Never rebuilt under his caret: typing in a comment repaints the page, and would lose his place.
     if (!(act && act.closest && act.closest('.vcomments') && side.querySelectorAll('.markrow').length === mine.length))
       side.innerHTML = mine.map(([m, i]) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="2" data-sid="${esc(a.sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(a.sid)}" data-i="${i}" title="Take this comment away" aria-label="Take this comment away"${state.submitted ? ' disabled' : ''}>${BIN}</button></div>`).join('')
-        + `<p class="markhint">${a.video ? 'To comment on a clip, use the pencil on its row.' : !a.markable || state.submitted ? '' : mine.length ? 'Drag across another part to add a comment.' : 'Drag across any part of the picture to comment on it.'}</p>`;
+        + `<p class="markhint">${a.video ? 'To comment on a clip, use the pencil on its row.' : !a.markable || state.submitted ? '' : mine.length ? (COARSE ? 'Tap the button, then drag, to add another.' : 'Drag across another part to add a comment.') : (COARSE ? 'Tap the button above, then drag across a part of the picture.' : 'Drag across any part of the picture to comment on it.')}</p>`;
   }
-  function closeBig() { const v = $('.viewer'); if (v) v.remove(); viewA = null; }
+  function closeBig() { const v = $('.viewer'); if (v) v.remove(); viewA = null; armed = false; }
   document.addEventListener('click', e => {
     if (!e.target.closest) return;
     const v = e.target.closest('.viewer');
     if (v) {
       const x = e.target.closest('.markx');
+      const sib = e.target.closest('.vpair .segb'), zm = e.target.closest('.vzoom .segb');
       if (e.target.closest('.vclose')) { closeBig(); drawMarks(); }
+      else if (sib) { viewA = [...viewA.parentElement.querySelectorAll('.atttile')][+sib.dataset.sib] || viewA; paintViewer(); drawMarks(); v.querySelector('.vstage').scrollTo(0, 0); }
+      else if (zm) { v.classList.toggle('fit', zm.dataset.zoom === 'fit'); v.querySelectorAll('.vzoom .segb').forEach(b => b.classList.toggle('on', b === zm)); }
+      else if (e.target.closest('.varm')) { armed = !armed; paintViewer(); }
       else if (x && !x.disabled) { removeMark(x.dataset.sid, +x.dataset.i); }   // WHY no early clearing (review 2026-11-10): removeMark repaints the list; clearing first emptied the view even when the removal was refused after Submit
       return;
     }
@@ -1878,6 +1890,8 @@
   document.addEventListener('pointerdown', e => {
     if (state.submitted || e.button !== 0 || !e.target.closest) return;
     const img = e.target.closest('.markable img'); if (!img) return;
+    // On a touch screen a drag scrolls, unless he tapped "Comment on an area" first (round 9, Q-4).
+    if (COARSE && !armed) return;
     drag = { box: img.closest('.markable'), r: img.getBoundingClientRect(), x0: e.clientX, y0: e.clientY, el: null, id: e.pointerId };
     e.preventDefault();   // otherwise the browser starts dragging the image itself
   });
@@ -1899,6 +1913,7 @@
   document.addEventListener('pointercancel', () => { const d = drag; drag = null; if (d && d.el) d.el.remove(); });
   document.addEventListener('pointerup', () => {
     const d = drag; drag = null; if (!d || !d.el) return;
+    armed = false;   // one tap of the button buys one area
     d.el.remove(); swallowClick = true; setTimeout(() => { swallowClick = false; }, 0);
     // WHY 3% (UX review 2026-11-10): a 1% x 2% slip left a barely visible dot that counted as an answer.
     if (!d.rect || d.rect.w < 3 || d.rect.h < 3) return;
@@ -2136,6 +2151,14 @@
   });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
   load().then(() => {
+    // WHY (Destin, round 9, Q-3): a deck he already sent reopens with his answers, still editable. One plain
+    // line above the page says when he sent them, so nothing looks lost and nothing looks locked.
+    if (state.sent_before && !state.submitted) {
+      const when = new Date(state.sent_before).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      const p = document.createElement('p'); p.className = 'sentline';
+      p.textContent = 'You sent these answers on ' + when + '. Change anything and send again; the earlier copy is kept.';
+      const cards = $('#cards'); cards.parentElement.insertBefore(p, cards.parentElement.firstChild);
+    }
     const q = new URLSearchParams(location.search);
     // An answers file written before this deck had pages can carry a `cur` past the last page;
     // clamping to LAST lands on the last page instead of rendering nothing.

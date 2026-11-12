@@ -163,6 +163,20 @@ class ServeTests(unittest.TestCase):
         out = []; dest = rotate_submitted(self.spec, log=out.append)
         self.assertEqual(os.path.basename(dest), 'deck.answers.202608271010.json'); self.assertTrue(os.path.exists(dest))
         self.assertFalse(os.path.exists(answers_path(self.spec))); self.assertTrue(any('starting a fresh one' in l for l in out))
+        # Round 9, Q-3: the SAME build reopened keeps his answers, unlocked, and says when they were sent; the dated copy is still kept.
+        with open(os.path.join(self.spec['_base'], self.spec['out']), 'w') as f:
+            f.write('<script>const DECK = {"key": "deck", "built": {"at": "2026-11-11T22:25:05Z", "commit": "abc"}};</script>')
+        sent = {'submitted': '2026-11-12T03:33:59Z', 'built': {'at': '2026-11-11T22:25:05Z'}, 'answers': {'S-1': {'v': 'yes'}}}
+        write_atomic(answers_path(self.spec), sent)
+        out = []; dest = rotate_submitted(self.spec, log=out.append, resume=True)
+        self.assertEqual(json.load(open(dest))['submitted'], '2026-11-12T03:33:59Z')
+        again = json.load(open(answers_path(self.spec)))
+        self.assertNotIn('submitted', again); self.assertEqual(again['sent_before'], '2026-11-12T03:33:59Z'); self.assertEqual(again['answers'], sent['answers'])
+        self.assertTrue(any('still editable' in l for l in out))
+        # a deck rebuilt since he answered starts empty: its questions may have changed
+        write_atomic(answers_path(self.spec), {**sent, 'built': {'at': '2026-11-01T00:00:00Z'}})
+        rotate_submitted(self.spec, log=lambda *a: None, resume=True)
+        self.assertFalse(os.path.exists(answers_path(self.spec)))
         # and serve() does it before it starts (the lock check in test_second_serve_of_same_spec_refuses runs first)
         write_atomic(answers_path(self.spec), {'submitted': '2026-08-27T11:00:00Z', 'answers': {}})
         result = {}

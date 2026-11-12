@@ -621,9 +621,18 @@ body:not([data-layout="pages"]) #back{display:none}
 .vbar{flex:none;display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--edge)}
 .vtitle{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vmain{flex:1;min-height:0;display:flex;align-items:stretch}
-.vstage{flex:1;min-width:0;display:grid;place-items:center;padding:14px;overflow:auto}
-.viewer .lbbox{position:relative;line-height:0} .viewer .lbbox img{display:block;max-width:100%;max-height:calc(100vh - 210px);border:1px solid var(--edge);border-radius:var(--radius-md)}
-.vside{flex:none;width:min(360px,32vw);display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-left:1px solid var(--edge);background:var(--panel);overflow:auto}
+/* WHY true size (round 9, V-1): the picture is no longer shrunk to fit the window's height — that made a tall
+   screenshot unreadable. It is drawn at its real size inside an area that scrolls both ways; `.fit` (the header's
+   Fit switch) squeezes it to the area's width. No centring grid: a centred box that overflows cannot be scrolled
+   to its top-left corner. */
+.vstage{flex:1;min-width:0;padding:14px;overflow:auto}
+.viewer .lbbox{position:relative;line-height:0;width:max-content;max-width:none;margin:0 auto} .viewer .lbbox img{display:block;max-width:none;border:1px solid var(--edge);border-radius:var(--radius-md)}
+.viewer.fit .lbbox{width:auto;max-width:100%} .viewer.fit .lbbox img{max-width:100%}
+.seg{flex:none;display:inline-flex;border:1px solid var(--edge);border-radius:var(--radius-md);overflow:hidden} .seg[hidden]{display:none}
+.segb{padding:5px 12px;border:0;background:transparent;color:var(--fg-2);font:inherit;font-size:12px;cursor:pointer} .segb+.segb{border-left:1px solid var(--edge)}
+.segb.on{background:var(--inset);color:var(--fg);font-weight:600}
+.varm.on{border-color:var(--link);color:var(--link)}
+.vside{flex:none;width:min(340px,26vw);display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-left:1px solid var(--edge);background:var(--panel);overflow:auto}
 .vside h3{margin:0;font:600 13px/1.2 var(--font)} .vcomments{display:flex;flex-direction:column;gap:8px} .vcomments .markt{flex:1 1 auto;min-width:0;min-height:56px}
 @media (max-width:900px){.vmain{flex-direction:column} .vside{width:auto;border-left:0;border-top:1px solid var(--edge);max-height:34vh}}
 /* History (round 4): earlier rounds of the topic and related decks, over the whole window. */
@@ -732,7 +741,10 @@ body:not([data-layout="pages"]) #back{display:none}
    WHY each (reviews of the deck): a picture is drawn on with a finger, so the browser must not take
    the gesture to scroll; a status pill must read as a control; a picked option must not look like
    the Recommended tint; and the header and the state pill must not squash the title on a phone. */
-.markable img{touch-action:none}
+/* WHY (round 9, Q-4): with a mouse any drag draws, so the browser must not also pan. With a finger a drag scrolls
+   the picture unless he tapped "Comment on an area" first. */
+@media (pointer:fine){.markable img{touch-action:none}}
+.markable.armed img{touch-action:none}
 .result.pillbtn{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:4px 12px;font-size:12px}
 .result.pillbtn::after{content:"\25BE";font-size:14px;line-height:1;opacity:.9}
 .result.pillbtn:disabled::after{content:""}
@@ -819,7 +831,7 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
 @media (max-width:700px){.atttile{width:176px} .tilepv{height:64px}}
 
 /* The picture window shows a clip the same way it shows a picture. */
-.viewer .lbbox video{display:block;max-width:100%;max-height:calc(100vh - 210px);border:1px solid var(--edge);border-radius:var(--radius-md);background:#000}
+.viewer .lbbox video{display:block;max-width:100%;max-height:calc(100vh - 140px);border:1px solid var(--edge);border-radius:var(--radius-md);background:#000}
 /* A bin, not an ×, takes a comment away (design guide: × means close). */
 .markx{display:grid;place-items:center} .markx .bin{width:16px;height:16px}
 
@@ -834,3 +846,22 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
 .histbody details.fold{padding:0;margin:0 0 10px;background:var(--panel)} .histbody details.fold[open]{padding-bottom:12px}
 .histbody details.fold>.foldhead{padding:10px 14px;font-weight:400} .histbody details.fold>.foldhead .foldtitle{font-size:14px;color:var(--fg)}
 .histbody details.fold>:not(summary){margin-left:14px;margin-right:14px}
+
+/* ROUND 9: what the "Details" fold used to hide, in the open.
+   The story sits above a row's words as plain lines: a narrow label column (round · who), then the words; his
+   own words in the normal text colour, what was built a step quieter. No box, no fold. */
+.story{margin:0 0 8px;padding:0 0 0 12px;border-left:2px solid var(--edge);display:flex;flex-direction:column;gap:4px}
+.sline{display:grid;grid-template-columns:118px 1fr;gap:12px;font-size:12.5px;line-height:1.5}
+.sline dt{color:var(--fg-muted)} .sline dd{margin:0;color:var(--fg-2)} .sline.you dd{color:var(--fg)}
+.morelines{margin:8px 0 0;display:flex;flex-direction:column;gap:4px}
+.mline{display:grid;grid-template-columns:118px 1fr;gap:12px;font-size:12.5px;line-height:1.5}
+.mline dt{color:var(--fg-muted)} .mline dd{margin:0;color:var(--fg-2)}
+@media (max-width:600px){.sline,.mline{grid-template-columns:1fr;gap:0}}
+/* The (i) sits beside the row's words, not inside their paragraph (its pop-up holds lists). */
+.callhead .callwhat{display:inline}
+.builtfrom{margin:8px 0 0;font-size:12px;color:var(--fg-muted)}
+/* The kind line at the head of every list: which of the three kinds of card this is, and what it wants from him. */
+.card p.kindline{margin:0 0 10px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-size:12.5px;color:var(--fg-muted)}
+.kindline b{font-size:13px;font-weight:600;color:var(--fg)}
+/* The line on a reopened deck saying when its answers were sent (round 9, Q-3). */
+.sentline{margin:0 0 12px;padding:8px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--panel);font-size:13px;color:var(--fg-2)}

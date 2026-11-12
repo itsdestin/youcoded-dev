@@ -657,8 +657,24 @@ def already_served(spec):
     return {'pid': pid, 'url': other_url}
 
 
-def rotate_submitted(spec, log=print):
+def _built_at(spec):
+    """When the deck page on disk was built (its build stamp), or None."""
+    try:
+        with open(os.path.join(spec['_base'], spec['out'])) as f:
+            m = re.search(r'"built":\s*\{[^}]*"at":\s*"([^"]+)"', f.read())
+        return m.group(1) if m else None
+    except OSError:
+        return None
+
+
+def rotate_submitted(spec, log=print, resume=False):
     """If the answers file already carries `submitted`, move it aside and return its new name.
+    WHY `resume` (Destin, 2026-11-11, round 9, Q-3: "Your answers, still editable, with a line saying
+    when you sent them"): reopening a deck he had answered showed it empty, which looked like lost
+    answers. When the page on disk is the SAME build he answered (its build stamp matches the one saved
+    with his answers), the dated copy is still kept, and the live file keeps his answers, unlocked, with
+    `sent_before` saying when he sent them; a second Submit replaces the first. A deck REBUILT since he
+    answered still starts empty: its questions may have changed under the old answers.
     WHY: on 2026-08-27 a deck was re-served after Destin had submitted an earlier version of it;
     the page loaded the old file, saw `submitted`, and locked every control — "I can't click
     through the pages". A new `serve` is a new review: the old answers stay as history next to
@@ -683,6 +699,12 @@ def rotate_submitted(spec, log=print):
         n += 1
         dest = os.path.join(spec['_base'], f'{spec["_stem"]}.answers.{full}.json' if n == 2 else f'{spec["_stem"]}.answers.{full}-{n}.json')
     os.replace(apath, dest)
+    same_build = resume and isinstance(state.get('built'), dict) and state['built'].get('at') and state['built']['at'] == _built_at(spec)
+    if same_build:
+        again = dict(state); again.pop('submitted', None); again['sent_before'] = when
+        write_atomic(apath, again)
+        log(f'[deck] this deck was submitted {when[:16].replace("T", " ")} — that copy is kept as {os.path.basename(dest)}; reopening it with those answers, still editable')
+        return dest
     log(f'[deck] the previous review of this deck was submitted {when[:16].replace("T", " ")} — kept as {os.path.basename(dest)}; starting a fresh one')
     return dest
 
@@ -852,7 +874,7 @@ def serve(spec, port=0, timeout_min=1440, log=print, live=True):
     if other is not None:
         log(f'REFUSING: {spec["_stem"]} is already served by pid {other["pid"]} at {other["url"]}')
         return 3
-    rotate_submitted(spec, log)
+    rotate_submitted(spec, log, resume=True)
     # A page built before this deck served its own live panes still bakes the old fixed-port
     # address — fix it on disk once, so it behaves like a freshly built page from here on.
     out_path = os.path.join(spec['_base'], spec['out'])

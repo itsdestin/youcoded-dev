@@ -567,6 +567,19 @@ def _validate_calls(st, sid, errors):
                 errors.append(f'{sid}/{c["id"]}: {k} is {word_count(c[k])} words (max {CALL_WORDS_MAX}) — one line he can skim')
             for w in banned_in(c[k]):
                 errors.append(f'{sid}/{c["id"]}: {k} uses banned word "{w}"')
+    # WHY one kind of row per card (Destin, 2026-11-11, round 8: "why is it the only row in this card that
+    # has the unclear/etc dropdown chip?… i don't know how we're organizing information"; round 9, K-1:
+    # yes to three kinds, never mixed). A card is facts (`context`), rows that are his to change, or
+    # results — so he never has to work out which rows are waiting on him.
+    rows = [c for c in calls if isinstance(c, dict)]
+    with_result = [c for c in rows if c.get('result')]
+    if st.get('context') and with_result:
+        errors.append(f'{sid}: a "for your information" list (context) carries no result chips — put results in their own list')
+    elif with_result and len(with_result) != len(rows):
+        without = ', '.join(c.get('id', '?') for c in rows if not c.get('result'))
+        errors.append(f'{sid}: a card holds one kind of row — some rows have a result and some do not ({without}). Split it: results in one list, rows that are his to change in another, plain facts in a context list')
+    # Checks (run / skip) and finished results may share a list: after a build, a check he skipped sits
+    # beside the ones that ran, on the same Checks page.
     if st.get('fold_settled') is not None and not isinstance(st['fold_settled'], bool):
         errors.append(f'{sid}: fold_settled is true or false — true folds the rows marked settled into one line at the foot')
     for k in ('options', 'rows', 'today', 'answer'):

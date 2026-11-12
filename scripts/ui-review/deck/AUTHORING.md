@@ -725,3 +725,37 @@ Source: Destin's round-6 remarks. Where this contradicts a section above, this w
   long clip may be limited; keep proof clips short.)
 - **Invariants stated once, here.** Every `Today` carries `checked` (how it was confirmed), shown
   behind the (i).
+
+## Changed in round 9 (2026-11-12)
+
+Source: Destin's round-8 remarks and round-9 answers. Where this contradicts a section above, this
+wins.
+
+- **One kind of row per card.** A list is one of three kinds and says so on a line at its head:
+  **For your information** (`"context": true`; no pencils, no result chips), **Yours to change**
+  (a pencil per row, nothing else), or **Results** (every row carries `result`; before a build,
+  run / skip checks, headed **Checks**). The builder refuses a list where some rows have a `result`
+  and some do not, and a `context` list with any `result`: split it. A question he must answer is
+  never a row; it is its own card. (Destin, round 8: "why is it the only row in this card that has
+  the unclear/etc dropdown chip?"; round 9, K-1.)
+- **There is no "Details" fold.** (Round 8: "what even is the point of this?… poorly styled text
+  dropped into a dropdown".) `trail` is drawn as plain lines ABOVE the row's (or question's) words:
+  "Round 3 · you" with his words quoted, "Round 3 · built" with what was built. `more` is labelled
+  lines UNDER the row's words (*What it does*, *What comes back*, *Why, for this build*), always
+  visible. `reuse` is a small (i) beside the words, everywhere. The fields and their limits are
+  unchanged. `fold_settled` still folds the settled group.
+- **The picture popup shows the picture at its true size.** It is no longer shrunk to fit the
+  window: the picture area scrolls, comments sit in a strip at the right (round 9, V-1), the header
+  has a True size / Fit switch, a Before / After switch when the row has both, and an ×. So shoot
+  narrow and close (`--width 1000`, or cropped to the changed part): a 2560-wide picture means
+  sideways scrolling.
+- **Touch screens:** a drag on a picture scrolls. He taps **Comment on an area** in the popup, then
+  drags one area (round 9, Q-4). With a mouse any drag draws, as before. `?touch=1` on the deck's
+  address makes a desktop browser behave as touch, for checking.
+- **Pictures on questions and options use the card's full width** (no height cap).
+- **Reopening an answered deck.** `serve` on a deck he already submitted, when the page on disk is
+  the same build he answered: the submitted copy is kept as `<stem>.answers.<when>.json`, and the
+  deck opens with his answers, editable, under a line saying when he sent them (`sent_before` in the
+  answers file); a second Submit replaces the first (round 9, Q-3). Until he submits again the live
+  answers file has no `submitted`; the dated copy is the record. A deck REBUILT since he answered
+  still starts empty, so keep using `serve --no-build` for an answered deck.

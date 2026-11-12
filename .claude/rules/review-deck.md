@@ -7,7 +7,7 @@ paths:
   - "docs/active/design/**/*.json"
   - "scripts/ui-review/deck/**"
   - "scripts/ui-review/templates/**"
-last_verified: 2026-11-10
+last_verified: 2026-11-12
 verify:
   - path: scripts/ui-review/templates/questions.json
   - path: scripts/ui-review/deck/AUTHORING.md
@@ -36,21 +36,21 @@ verify:
 | see a whole piece of work, before and after building | **Walkthrough** |
 | retype on-screen wording AFTER the build | a **screen** step |
 
-Contract and Acceptance decks are retired for new work (`feature-flow.md`); they still build for
-a feature with a signed contract. Several designs of one thing are ONE Choice slide. A trade-off is a Question even when the thing works.
+Contract and Acceptance decks are retired (`feature-flow.md`). Several designs of one thing are ONE Choice slide. A trade-off is a Question even when the thing works.
 
-## Lists: rows that stand unless he changes them
-**Invariant:** a words step with `calls` is a list: one pencil per row, no answer button (a list
-left alone is accepted when he moves on), `wording` rows refused. A row's `picture` / `before`
-(image or short video) are tiles in an Attachments card (the app's Deliverables card); a tile opens the
-picture viewer. A row's `state` is its group heading, never a badge; `trail`/`more`/`reuse` share one
-Details fold. No underlined links, no bare ">" openers. A list shows a state pill only
-once it has something to say. `context: true` is never answered, counted, accepted or listed on the
-finish screen. A pencil pressed again keeps a saved comment; the small x removes it. Any comment box
-takes pasted pictures and paths as pills. Question decks end every page with a comment box; only
-picture-style decks have the header Notes button. Rows may carry `state`, `trail`, `more`, `reuse`; a
-run/skip check must carry `more`. **Why:** "simplify down to a single pencil"; "barely any of this looks like
-youcoded native ui elements" (round 7). **Guard:** `test_rethink.py`, `deck-render.test.mjs`.
+## Lists: one kind of row per card
+**Invariant:** a words step with `calls` is a list of ONE kind, named at its head: facts
+(`context: true`: no pencils, never answered or counted), his to change (a pencil per row, no
+answer button; left alone it stands), or results (every row a `result`; run/skip checks carry
+`more`). Mixed lists are refused. No "Details" fold: a row's `trail` is plain lines above its
+words, `more` labelled lines below, `reuse` behind an (i). `picture`/`before` are tiles in an
+Attachments card; a tile opens the popup: true size, scrolling, comments at the right,
+Before/After switch; on touch "Comment on an area" comes before a drag. `state` is a group
+heading, never a badge. No underlined links. A pencil pressed again keeps the comment; the bin
+removes it. Comment boxes take pasted pictures and paths as pills; question decks end each page
+with a comment box. A re-served deck of the same build reopens with his answers, editable.
+**Why:** "why is it the only row in this card that has the… chip?" (round 8); round 9, K-1, V-1,
+Q-3, Q-4. **Guard:** `test_rethink.py`, `test_serve.py`, `deck-render.test.mjs`.
 
 ## Wording is edited on the real screen, after the build
 **Invariant:** no text box per label. A `screen` step edits `shoot --page`'s still copy, scrubbed of
