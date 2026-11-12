@@ -12,9 +12,9 @@ side: behind
 work: session/17-private-test-copies
 ---
 Progress
-Done: Landed on master 2026-11-10 (workspace PR #356): the test-copy launcher now runs the session's own code (a fault introduced and caught the same night), checks its port offset early, and lists running test copies. Nothing about sharing was changed.
-Next: DECIDED by Destin 2026-11-11 (his words, condensed): the test-app launch script should let the model configure what is kept. ALWAYS: test conversations go to a private throwaway folder; neither the folder nor the conversations may show up in his real live app; his real conversations are never changed. DEFAULT: his sign-ins (Claude Code, ChatGPT and such) are kept because they are useful for tests, but each one can be switched off per launch by the model. No prompt to Destin is wanted.
-Blocked: Destin's choice of A, B or C.
+Done: Built on branch session/17-private-test-copies (not merged), 2026-11-11: run-dev.sh runs every test copy in a private home (~/.cache/youcoded-test-copies/<profile>/home); Claude Code, ChatGPT and saved API keys are lent by default and each can be switched off per launch (--without); only the short-lived pass is lent, never the renewal key. Proven with a real window: a chat answered in the test copy while the real chat list, settings, providers, themes and keychain entries stayed identical.
+Next: Destin reviews the branch. Open choices for him: GitHub is OFF by default (--with github lends it); a test copy starts like a fresh install (no real themes or plugins). Not proven: a ChatGPT message (status showed signed in), a pass running out mid-test, Windows/macOS.
+Blocked: nothing
 
 See also #127: 127's item (d), a dev copy of the app syncing the same Personal folder as the real app, is one of the dev-instance-touches-the-real-app faults listed in 17.
 
