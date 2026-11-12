@@ -15,8 +15,8 @@ platform: Desktop only
 vision: chat.harness.tokens, chat.harness.compaction
 ---
 Progress
-Done: Reviewed past chats and commits: cache work Sept 8-23 (PRs 461, 464, 553, 554) and the 2026-11-11 measurement. Memory confirmed. Wrote how a paid test would run (about 500 requests, est. 0.5-2 USD cheap models, cap 5 USD) in docs/active/investigations/2026-11-12-overnight-research/A-cards-69-148-history-and-test-plan.md
-Next: Destin decides: add free logging of which company served each OpenRouter reply and wait 1-2 weeks (recommended) before any paid run
+Done: Invisible logging prepared on session/engine-followups: each OpenRouter reply's serving company is now recorded with its usage; the free measuring script reports misses by company. Not merged; needs 1-2 weeks of normal use after release to answer the question.
+Next: After release and use, rerun the measuring script
 Blocked: Nothing recorded. The ChatGPT routing-label branch and the Reuse-chip deck need confirming before they can be tracked.
 
 Chats
