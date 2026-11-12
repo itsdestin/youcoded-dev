@@ -342,6 +342,7 @@ export function medianRun(runs) {
  * to say what it is doing while it does it.
  */
 export const PROGRESS_EVERY_PAGES = 10;
+const PROFILE_SCROLL = /^\d+-\d+$/.test(process.env.PERF_LAB_PROFILE_SCROLL ?? '') ? process.env.PERF_LAB_PROFILE_SCROLL.split('-').map(Number) : null;
 
 /**
  * @param {{cdp: {evaluate(expr: string): Promise<any>, send(m: string, p?: object): Promise<any>}, family(): number[]}} app
@@ -394,7 +395,17 @@ export async function runScrollbackScenario(app, fixture, { onProgress } = {}) {
       }
       const entriesBefore = last.entries;
       while (pages < MAX_PAGES && Date.now() - legT0 < PER_SESSION_BUDGET_MS) {
+        // WHY (2026-11-12, card #173): opt-in V8 profile of pages PROFILE_FROM..PROFILE_TO of the HUGE leg, to
+        // say where the per-page time that grows with history length actually goes (reducer, React, layout).
+        // PERF_LAB_PROFILE_SCROLL=<from>-<to>; a profiled run is a diagnostic, never a baseline.
+        if (PROFILE_SCROLL && size === 'huge' && pages === PROFILE_SCROLL[0]) { await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await cdp.send('Profiler.start'); }
         const r = await cdp.evaluate(`window.__perfScroll.turnPage(${PAGE_TIMEOUT_MS})`);
+        if (PROFILE_SCROLL && size === 'huge' && pages === PROFILE_SCROLL[1]) {
+          const { profile } = await cdp.send('Profiler.stop');
+          const { writeFileSync, mkdirSync } = await import('node:fs');
+          mkdirSync('scratch/perf-lab/profiles', { recursive: true });
+          writeFileSync(`scratch/perf-lab/profiles/scrollback-${process.env.PERF_LAB_PROFILE_TAG ?? 'x'}-${Date.now()}.cpuprofile`, JSON.stringify(profile));
+        }
         if (!r.ok) {
           timedOut = !!r.timedOut;
           warnings.push(`scrollback: ${size}: ${r.reason} after ${pages} pages (${r.entries} entries on screen). Its share of the ceiling is a FLOOR.`);
