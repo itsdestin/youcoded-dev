@@ -1,0 +1,142 @@
+[
+  {
+    "name": "automations/details#add-menu",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4d/before/automations/details#add-menu/meadow-mist.png",
+    "ms": 4661,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": [
+      "notice buttons: parts differ in height — \"Allow\" 25.8px, \"Don’t allow\" 27.2px"
+    ]
+  },
+  {
+    "name": "automations/details#lower",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4d/before/automations/details#lower/meadow-mist.png",
+    "ms": 4792,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "automations/details",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4d/before/automations/details/meadow-mist.png",
+    "ms": 4802,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": [
+      "notice buttons: parts differ in height — \"Allow\" 25.8px, \"Don’t allow\" 27.2px"
+    ]
+  },
+  {
+    "name": "automations/details#lower-open",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4d/before/automations/details#lower-open/meadow-mist.png",
+    "ms": 5301,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "automations/details#lower",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4d/before/automations/details#lower/halftone-dimension.png",
+    "ms": 5702,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "automations/details#add-menu",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4d/before/automations/details#add-menu/halftone-dimension.png",
+    "ms": 6168,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "automations/details#lower-open",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4d/before/automations/details#lower-open/halftone-dimension.png",
+    "ms": 6188,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "automations/details",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4d/before/automations/details/halftone-dimension.png",
+    "ms": 6204,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  }
+]

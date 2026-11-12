@@ -1,0 +1,257 @@
+{
+ "title": "Automations: adding permissions, Delete, and a tidier lower half",
+ "key": "pages-finish-step4d-review",
+ "out": "pages-finish-step4d.review.html",
+ "stage": "design",
+ "images": "images/pages-finish-step4d.review",
+ "runs": {
+  "before": "runs-step4d/before",
+  "after": "runs-step4d/after"
+ },
+ "steps": [
+  {
+   "id": "D-fromnow",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card",
+   "crop": "automations/details",
+   "headline": "A waiting run gets a third answer: Allow from now on.",
+   "changed": "Next to Don't allow and Allow there is now Allow from now on. It lets this step through and switches that one permission to Always allowed for this automation.",
+   "notice": "The same step never stops a later run of this automation. Other automations and your chats are not affected.",
+   "risk": "One press makes a permission permanent. You can switch it back to Asks first in the Permissions list."
+  },
+  {
+   "id": "D-addmenu",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission",
+   "crop": "automations/details#add-menu",
+   "headline": "The Add menu lists kinds only: this page, a folder, a command, a website, or Describe it.",
+   "changed": "Gmail and Send you a notification are gone from the menu. Gmail comes with sign-ins (step 5) and notifications are being built together later, as you decided.",
+   "notice": "Three entries end in … and open a small form instead of adding a vague line.",
+   "risk": "The practice Email sorter still shows Gmail permissions, as an example of what step 5 brings."
+  },
+  {
+   "id": "D-folder",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission → A folder…",
+   "crop": "automations/details#add-folder",
+   "new": true,
+   "runs": [
+    "after"
+   ],
+   "headline": "Adding a folder: type the folder, pick See files or See and change files.",
+   "changed": "New. The form opens where the Add button was. The new line starts as Asks first.",
+   "notice": "A website works the same way with one box for its address.",
+   "risk": "You type the folder for now. A Choose button that opens your file picker can be added when this is built."
+  },
+  {
+   "id": "D-command",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission → A command…",
+   "crop": "automations/details#add-command",
+   "new": true,
+   "runs": [
+    "after"
+   ],
+   "headline": "Adding a command: a name in your words, and the command it covers.",
+   "changed": "New. This is the one kind of command permission we agreed on. It is as narrow or as wide as you write it; a * covers any part that changes.",
+   "notice": "The list shows your name on top and the command small underneath. Edit is in each line's menu.",
+   "risk": "An allowed script can do whatever is written inside it. The app asks again when that script's contents change."
+  },
+  {
+   "id": "D-describe",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission → Describe it…",
+   "crop": "automations/details#describe",
+   "new": true,
+   "runs": [
+    "after"
+   ],
+   "headline": "Describe it: say what it should be allowed to do, in your own words.",
+   "changed": "New. Write it sends your words to the assistant, which writes one permission.",
+   "notice": "Nothing is added at this step."
+  },
+  {
+   "id": "D-described",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission → Describe it… → Write it",
+   "crop": "automations/details#describe-result",
+   "new": true,
+   "runs": [
+    "after"
+   ],
+   "headline": "The assistant shows the permission it wrote before anything is added.",
+   "changed": "New. You see the name and the exact command, then choose Add, Edit or Cancel.",
+   "notice": "Edit opens the command form with it filled in.",
+   "risk": "In this practice version the answer is always the same sample."
+  },
+  {
+   "id": "D-cap",
+   "surface": "Automations",
+   "path": "Automations → Shopping list",
+   "crop": "automations/details#cap",
+   "new": true,
+   "runs": [
+    "after"
+   ],
+   "headline": "A job started by a button or an event gets Most runs in a day.",
+   "changed": "New row in the Schedule box, shown only for Button and Event. A job on a timed schedule never shows it, as you asked.",
+   "measured": "Starts at 20 runs a day; empty means any number",
+   "notice": "Once the number is reached, further presses that day do not start a run.",
+   "risk": "What the button says when the limit is reached is not drawn yet."
+  },
+  {
+   "id": "D-lower",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → scroll down",
+   "crop": "automations/details#lower",
+   "headline": "Advanced settings: a short subject on the left, the current answer on the right.",
+   "changed": "Each closed card used to be one long sentence. Now it reads Needs your OK, No answer, Missed run, Still running, with the current choice beside it. Advanced settings moved below Runs on, to the end.",
+   "notice": "You can read all four settings without opening any.",
+   "risk": "Your last comment on this half was \"too busy and unclear with poor visual hierarchy\". This is a second attempt at that."
+  },
+  {
+   "id": "D-loweropen",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Advanced settings → open one",
+   "crop": "automations/details#lower-open",
+   "headline": "An opened setting: each choice in its own box, the good and the cost on separate lines.",
+   "changed": "The good and the cost used to run together on one grey line. Each choice is now its own box.",
+   "notice": "The follow-up setting (Wait up to) sits under the choices, as before."
+  },
+  {
+   "id": "D-delete",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → bottom → Delete automation",
+   "crop": "automations/details#delete",
+   "new": true,
+   "runs": [
+    "after"
+   ],
+   "headline": "Delete automation sits at the bottom and asks first, in red.",
+   "changed": "New. The button is at the end of the settings. Pressing it shows this question in its place.",
+   "notice": "Deleting removes the automation's settings and its saved runs.",
+   "risk": "It cannot be undone."
+  },
+  {
+   "id": "Q-deletepage",
+   "words": true,
+   "surface": "Pages",
+   "path": "Page settings",
+   "headline": "Should Page settings get a Delete page button?",
+   "today": "The app has no button that deletes a page. A page is deleted by asking the assistant in chat, which removes its folder.",
+   "problem": "You decided that deleting a page also removes its earlier versions and chats behind a clear danger warning, and asks about each linked automation. A deletion done in chat has nowhere to show that warning.",
+   "proposal": "Add Delete page at the bottom of Page settings. It opens a red warning that lists what goes (the page, its versions, its chats) and, for each linked automation, Keep or Delete. The assistant sends you to that button instead of deleting the folder itself.",
+   "options": [
+    {
+     "id": "button",
+     "label": "Add the button",
+     "recommended": true,
+     "pros": [
+      "One place where the warning always shows.",
+      "Versions and chats are cleaned up reliably."
+     ],
+     "cons": [
+      "One more button in Page settings.",
+      "Asking the assistant to delete a page takes one extra press from you."
+     ]
+    },
+    {
+     "id": "chat-only",
+     "label": "Keep chat only",
+     "pros": [
+      "Nothing new on screen."
+     ],
+     "cons": [
+      "The warning would be a chat message, easy to miss.",
+      "Old versions and chats can be left behind."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-devices",
+   "words": true,
+   "surface": "Automations",
+   "path": "Automations, on your other devices",
+   "headline": "Should your other devices show your automations before syncing is built?",
+   "today": "An automation shows only on the device where you made it. You earlier asked that automations at least appear on your other devices.",
+   "problem": "The plan waits for the separate syncing work, so until then your phone shows an empty Automations page.",
+   "proposal": "Either wait for syncing, or show a read-only list when your phone is connected to your computer.",
+   "options": [
+    {
+     "id": "wait",
+     "label": "Wait for syncing",
+     "recommended": true,
+     "pros": [
+      "No throwaway work.",
+      "One list everywhere once syncing lands."
+     ],
+     "cons": [
+      "Your other devices show nothing until then."
+     ]
+    },
+    {
+     "id": "remote",
+     "label": "Show while connected",
+     "pros": [
+      "A phone connected to your computer shows and answers waiting runs now."
+     ],
+     "cons": [
+      "Works only while connected to that computer.",
+      "Extra work that syncing later replaces."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-rundiff",
+   "words": true,
+   "surface": "Automations",
+   "path": "Advanced settings → Missed run",
+   "headline": "Is Run with other instructions enough for a missed run that should produce something different?",
+   "today": "A missed run can run once on wake, run at another time, run with other instructions, or be skipped.",
+   "problem": "You asked that a late run could also change what it produces. Today that is only possible by writing it into the other instructions.",
+   "proposal": "Keep it as is: other instructions can say anything, including a different result. Yes keeps it; No means you want a separate setting for the late run's result."
+  },
+  {
+   "id": "Q-pagelimit",
+   "words": true,
+   "surface": "Pages",
+   "path": "Page settings",
+   "headline": "Do you still want a spending limit on a page, as well as on each automation?",
+   "today": "Each automation on a paid model has its own monthly limit, starting at $5. A page has no limit of its own, and the page's chat has none either.",
+   "problem": "You first asked for a limit as a page setting. A page with five automations can spend five limits, and its chat is not counted at all.",
+   "proposal": "Pick whether a page gets its own monthly limit that covers its chat and every automation linked to it.",
+   "options": [
+    {
+     "id": "job-only",
+     "label": "Per automation only",
+     "recommended": true,
+     "pros": [
+      "One number per automation, already drawn.",
+      "An automation linked to two pages has no double counting."
+     ],
+     "cons": [
+      "No single cap for everything a page does.",
+      "The page's chat stays uncounted."
+     ]
+    },
+    {
+     "id": "page-too",
+     "label": "Add a page limit",
+     "pros": [
+      "One cap for a whole page, chat included."
+     ],
+     "cons": [
+      "Two limits can stop a run, so it is less clear which one did.",
+      "An automation linked to several pages counts against each."
+     ]
+    }
+   ]
+  }
+ ],
+ "themes": [
+  "meadow-mist",
+  "halftone-dimension"
+ ]
+}
