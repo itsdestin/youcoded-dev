@@ -137,6 +137,7 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 ### Chat, 2026-11-11 (later)
 - When the new system arrives, chat sync through GitHub stops and the new system takes over; the existing GitHub copy is left untouched, with a one-time message. Existing chats need no moving. — "fine to stop github sync and swap."
 - Browsing replaced file versions, NOT decided. — "confused."
+- On keeping replaced file versions for 30 days, Destin challenged the premise: "i thought basically everything was backed by git? doesnt that offer the version history already basically? seems like we're potentially overengineering or recreating systems that already exist within the app, and also introducing some additional fragiility, but i could be mistaken?" Checked: he is right. Every synced project already has a hidden version history on each device (`<project>/.youcoded/sync.git`, `youcoded/docs/sync-spaces.md`), not only on GitHub. Proposal put to him in chat: keep that history as the file version store and conflict handler, and change only the carrier from GitHub to the locked device-to-device system. Awaiting his answer; design.md section 8 still shows the 30-day wording until then.
 
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
