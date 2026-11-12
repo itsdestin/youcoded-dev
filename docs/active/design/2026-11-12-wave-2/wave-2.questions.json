@@ -1,0 +1,666 @@
+{
+ "title": "Wave 2 came back: what to land, and 12 choices the sessions left for you",
+ "key": "wave-2-results-2026-11-12",
+ "out": "wave-2.questions.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Landing the four wave 2 sessions",
+   "intro": "Each session is finished on one saved branch per repo. Nothing is landed. I checked that they combine cleanly with today's app and with each other. Two of them repaired the same screenshot tool in different ways; I sort that out when landing."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Chat and engine fixes",
+   "path": "Chat window, terminal view, the assistant's Edit tool",
+   "headline": "Land the Chat and engine fixes?",
+   "today": "Seven faults are fixed on a branch. Pressing Edit on a waiting message now brings back its words and its file chips, not a raw file path. A short chat's first line no longer hides under the title card on Welcome back. With more than 16 Claude Code chats open, terminals stop losing their graphics. The assistant's Edit tool no longer fails on files with curly quotes or long dashes. A chat made without a name shows \"New Session\" and no longer crashes the window.",
+   "problem": "Five of the seven were tried in a test copy of the app. Two were checked by automatic tests only (the Edit tool fix, and re-shrinking a too-big picture after a model switch). The phone app was not built or run.",
+   "proposal": "Landing puts all seven in the next release. Three things are worth a look on a real build afterwards: the tray icon leaving when Minimize to tray is off, terminals with 20 or more chats open, and a short chat in a window barely taller than the chat.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Seven real faults go away.",
+      "The full desktop check passes.",
+      "Two independent reviews ran; the one bug and one phone problem they found are fixed."
+     ],
+     "cons": [
+      "Two fixes are proven by tests only.",
+      "Not tried on a phone.",
+      "Past 16 open chats, switching to a long-untouched terminal may take a blink longer (estimated 30 to 50 thousandths of a second)."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes until you have tried the branch yourself."
+     ],
+     "cons": [
+      "The faults stay in the app.",
+      "The branch falls behind as other work lands."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Files reliability",
+   "path": "Word previews, document comments, Office saving",
+   "headline": "Land the Files reliability fixes?",
+   "today": "Six fixes are on a branch. A Word file that cannot finish opening now stops after 60 seconds with \"This document took too long to open\"; before, it could load forever or freeze the window. Resting the mouse on a comment's \"5h ago\" shows the full date and time. \"Save a copy\" after restoring an older version gets the right pictures. Hidden leftover copies from a crash are cleaned up. One disguised web address that could reach your own computer is refused. Raw converter errors no longer go into bug-report logs.",
+   "problem": "All desktop checks pass and a normal Word document with comments still opens in a test copy. Not seen in a running window: the comment hover hint and the 60-second cut-off (both covered by tests). Not run at all: the real Office converter, Windows, Mac, a phone.",
+   "proposal": "Landing puts these in the next release. You would rarely notice them.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "A crafted or broken Word file can no longer hang the app.",
+      "Two ways pictures or copies could go wrong after a restore are closed."
+     ],
+     "cons": [
+      "A genuine Word file needing over 60 seconds to preview would now fail. An 800-page file took half a second, so this is unlikely.",
+      "Bug-report logs carry less detail about a failed Office save."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes until you have tried it."
+     ],
+     "cons": [
+      "The Word preview hang stays possible."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Test copies of the app",
+   "path": "The script sessions use to open a test copy of YouCoded",
+   "headline": "Land the private test copies change?",
+   "today": "Built to your decision of 11 November. Every test copy now runs in its own private folder, so its chats and settings never reach your real app. Your sign-ins (Claude Code, ChatGPT, saved keys) are lent by default and a session can switch each off. Proven with a real test chat: your 6,915 real chats, settings, themes and sign-ins were identical before and after.",
+   "problem": "Two side effects. Test copies now start like a fresh install: no plugins, skills, themes or past chats, so a session testing one of those must install it in the test copy first. And GitHub is not lent unless a session asks, because a test copy once published as you without being asked. Unproven: Windows, Mac, and a borrowed sign-in running out mid-test.",
+   "proposal": "Landing makes every session's test copies private from then on. Nothing changes in the app itself.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Stray test chats and changed settings can no longer appear in your real app.",
+      "No questions to you."
+     ],
+     "cons": [
+      "Tests that depend on your plugins or themes need an extra setup step.",
+      "Linux only so far."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Sessions keep testing against your real setup, plugins included."
+     ],
+     "cons": [
+      "Test leftovers in your real chat list can happen again."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Linux installers and the website",
+   "path": "The release build, and the ideas section of the website",
+   "headline": "Land the Linux build change and the new paint picture?",
+   "today": "You already decided both: releases build on GitHub's new Linux machine, and the website gets the new paint picture once, with no automatic remaking. Both are on one branch.",
+   "problem": "Installers built on the new machine installed on seven Linux systems. Not proven: that the app opens after installing on Fedora, and a full release build. The new paint picture has no page list down its left side, unlike the trip picture beside it; you approved it as shown.",
+   "proposal": "Landing changes the website picture at the next site update and makes the next release build on the new machine.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Matches what you decided.",
+      "Nothing breaks when GitHub retires its old machine."
+     ],
+     "cons": [
+      "Opening the app on Fedora after installing is still unchecked; it joins the by-hand release checks."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "More time to check Fedora first."
+     ],
+     "cons": [
+      "The checks and the release build stay on different machines."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Files and Office: ways work can still be lost",
+   "intro": "The files session found these need a choice from you. Three smaller ones I am handling myself: the Excel preview gets the same 60-second limit as Word; comment backups and the stale 'open in another app' warning stay as they are."
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Text files",
+   "path": "A text file open for editing in a second YouCoded window",
+   "headline": "What should happen to unsaved typing when you close a second window?",
+   "today": "You can have more than one YouCoded window. If you are typing in a text file in a window that is not the last one open, and close that window with its X, the unsaved typing is thrown away without a question.",
+   "problem": "You lose the work and nothing tells you. It only happens with two or more windows open.",
+   "proposal": "Either the window asks before closing, or the typing is quietly kept and offered back when you next open that file.",
+   "options": [
+    {
+     "id": "ask",
+     "label": "Ask before closing",
+     "pros": [
+      "Nothing is lost without your say.",
+      "Works like every other editor."
+     ],
+     "cons": [
+      "One more question when closing a window with unsaved typing."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep the typing quietly",
+     "pros": [
+      "No question; the window closes at once.",
+      "The typing is offered back next time you open the file."
+     ],
+     "cons": [
+      "You may not know the typing was kept until you reopen that file.",
+      "More to build and more that can go wrong."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "Unsaved typing in a second window keeps vanishing."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Office editor",
+   "path": "A Word, Excel or PowerPoint file open in the Office editor",
+   "headline": "What should happen when Office's autosave would overwrite a change made outside it?",
+   "today": "While a document is open in the Office editor, the assistant (or another program) can change the same file. The editor does not notice. Its next autosave writes its own copy over that change.",
+   "problem": "The assistant's edit silently disappears. You may only find out later that a change you asked for is not in the file.",
+   "proposal": "The app can keep the overwritten version in the file's Versions list every time, with no question. Or it can stop and ask which copy to keep.",
+   "options": [
+    {
+     "id": "versions",
+     "label": "Always keep the overwritten version in Versions",
+     "pros": [
+      "Nothing is ever lost; you can get it back from Versions.",
+      "No interruption while you work."
+     ],
+     "cons": [
+      "You are not told it happened, so you would have to think to look in Versions.",
+      "The file on disk still ends up as the editor's copy."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "ask",
+     "label": "Stop and ask which to keep",
+     "pros": [
+      "You know at once that two changes collided."
+     ],
+     "cons": [
+      "Interrupts your editing.",
+      "Needs a new dialog, so it comes back to you as a design first."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "Outside changes keep being overwritten with no trace."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "Document comments",
+   "path": "The assistant adding, editing or deleting a comment in a Word or Excel file",
+   "headline": "What should happen to comment changes the assistant made while the file was not ready?",
+   "today": "When the assistant changes a comment and the Office editor is not ready, the change waits in a line. The assistant is told the change \"will be made\". After 10 minutes, or when the app quits, waiting changes are thrown away with no message.",
+   "problem": "The assistant tells you a comment was added or resolved, and it never happens.",
+   "proposal": "Either the assistant is told the truth when a change is dropped, so it can tell you or try again; or waiting changes are kept until the file is next opened, however long that takes.",
+   "options": [
+    {
+     "id": "truth",
+     "label": "Tell the assistant when a change is dropped",
+     "pros": [
+      "The assistant stops claiming things that did not happen.",
+      "Small change."
+     ],
+     "cons": [
+      "The change is still not made; the assistant has to retry or tell you."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "persist",
+     "label": "Keep waiting changes until the file is next opened",
+     "pros": [
+      "The change does get made eventually, even after a restart."
+     ],
+     "cons": [
+      "A comment could appear days later, when you no longer expect it.",
+      "More to build."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "The assistant can keep reporting comment changes that were silently dropped."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "Chat: choices the chat session left for you",
+   "intro": "None of these is built. Items needing a full design stay on their cards; these are the ones a short answer can settle."
+  },
+  {
+   "id": "Q-8",
+   "words": true,
+   "surface": "Attachments",
+   "path": "The cards for attached files above the message box",
+   "headline": "Should attached pictures show a preview on phones and in test copies?",
+   "today": "When you attach a picture, its card shows a small preview in the installed desktop app. On the Android app, on a phone browser and in test copies, the card shows no preview. The cause is that pasted and uploaded pictures sit in temporary folders the app does not let other devices read.",
+   "problem": "On a phone you cannot see which picture you attached before sending.",
+   "proposal": "Full previews mean letting your signed-in phones read those temporary folders. That is a security change and would get its own review, with limits on size and on which folders. A smaller step: a phone browser can preview from the picture it already holds, with nothing read from the computer; the Android app would still show none.",
+   "options": [
+    {
+     "id": "full",
+     "label": "Full previews, with a security review",
+     "pros": [
+      "Previews everywhere, including the Android app."
+     ],
+     "cons": [
+      "Opens a new, reviewed way for a signed-in phone to read files from the computer.",
+      "More work."
+     ]
+    },
+    {
+     "id": "browser",
+     "label": "Phone browser only, nothing read from the computer",
+     "pros": [
+      "No new access to the computer.",
+      "Small."
+     ],
+     "cons": [
+      "The Android app still shows no preview."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "No previews on any phone."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-9",
+   "words": true,
+   "surface": "Waiting messages",
+   "path": "The strip above the message box showing a message that is waiting to send",
+   "headline": "Should a waiting message show its file as a name chip, not a full file path?",
+   "today": "When a message with a file is waiting, the strip shows the file's whole path (for example /home/destin/Documents/report.docx) in front of your words.",
+   "problem": "The path is long and pushes your own words out of view.",
+   "proposal": "Show a small chip with just the file name, as the message box itself does.",
+   "options": [
+    {
+     "id": "chip",
+     "label": "Show a file-name chip",
+     "pros": [
+      "Your words stay readable.",
+      "Matches the message box."
+     ],
+     "cons": [
+      "A small visible change to the strip; you would see it on a review page before it lands."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "Long paths keep crowding the strip."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-10",
+   "words": true,
+   "surface": "Small conveniences",
+   "path": "Chat pictures, the folder dropdown, quick chips",
+   "headline": "Which of these small conveniences do you want designed?",
+   "today": "Three small things the app does not do. Right-clicking a picture in chat offers nothing. The folder dropdown lists your saved folders but not in recently-used order. Tapping a quick chip while you have typed something silently replaces what you typed.",
+   "problem": "Each is a small daily friction. The third can lose a sentence you were writing.",
+   "proposal": "Pick any you want. Each picked one comes back to you as a small design before it is built. Unpicked ones are dropped from the card.",
+   "options": [
+    {
+     "id": "rightclick",
+     "label": "Right-click menu on pictures",
+     "pros": [
+      "Copy or save a picture straight from chat."
+     ],
+     "cons": [
+      "A new menu to design."
+     ]
+    },
+    {
+     "id": "recent",
+     "label": "Recently used folders first",
+     "pros": [
+      "The folder you used last is at the top."
+     ],
+     "cons": [
+      "The order of the list changes as you work."
+     ]
+    },
+    {
+     "id": "replace",
+     "label": "Ask Replace or Add when a chip is tapped over typed text",
+     "pros": [
+      "Typed words are no longer lost to a chip tap."
+     ],
+     "cons": [
+      "One more choice in that moment."
+     ]
+    }
+   ],
+   "pick": "several"
+  },
+  {
+   "id": "Q-11",
+   "words": true,
+   "surface": "Sizes shown in the app",
+   "path": "Model sizes, download progress, disk and memory warnings, file size limits",
+   "headline": "Go ahead with showing sizes the way shops and websites do?",
+   "today": "The app counts sizes the technical way, where 1 GB is 1,024 MB. Download pages and hardware boxes count 1 GB as 1,000 MB. So a model a website lists as 4.3 GB shows as 4.0 GB in the app.",
+   "problem": "The app's numbers do not match what you see where you download from. You agreed to the change in principle earlier.",
+   "proposal": "Switching changes the numbers in about 20 places at once, including the wording of the 1, 10, 25 and 100 MB limits. Nothing about the files changes, only the number shown.",
+   "options": [
+    {
+     "id": "go",
+     "label": "Go ahead",
+     "pros": [
+      "Sizes match websites and hardware labels."
+     ],
+     "cons": [
+      "Every size in the app shifts a little on the same day; a 4.0 GB model becomes 4.3 GB."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep today's numbers",
+     "pros": [
+      "Nothing shifts."
+     ],
+     "cons": [
+      "The mismatch with websites stays."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-12",
+   "words": true,
+   "surface": "Permissions",
+   "path": "Chats on local models and on OpenRouter",
+   "headline": "Do you want a Skip Permissions option for chats on local and OpenRouter models?",
+   "today": "In these chats the assistant asks before it runs commands or changes files, and \"Always allow\" covers one kind of action at a time. There is no way to let it work without asking at all.",
+   "problem": "Long jobs stop and wait for you at every new kind of action.",
+   "proposal": "Yes starts a design: where the option lives, how it warns, and what it can never skip. It would not be built before you approve that design. No drops it.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, design it",
+     "pros": [
+      "Long jobs can run unattended."
+     ],
+     "cons": [
+      "The assistant could delete or change things without asking; the design has to make that risk plain."
+     ]
+    },
+    {
+     "id": "no",
+     "label": "No",
+     "pros": [
+      "The assistant always asks first on these models."
+     ],
+     "cons": [
+      "Long jobs keep pausing for approval."
+     ],
+     "recommended": true
+    }
+   ]
+  },
+  {
+   "id": "Q-13",
+   "words": true,
+   "surface": "Gemma models",
+   "path": "Settings, Local models; first-run setup; Add from Hugging Face",
+   "headline": "Show Google's terms when someone downloads a Gemma model?",
+   "today": "The app offers three Gemma models from Google, and first-run setup can pick one by itself on mid-sized computers. No download screen mentions Google's terms for Gemma.",
+   "problem": "Google publishes terms of use for Gemma. Showing them may be required, and is the honest thing to do. The session has not yet confirmed which terms apply to these exact models; it would confirm before building.",
+   "proposal": "Proposed line beside the Download button and in first-run setup: \"Gemma is made by Google and comes with Google's terms of use. Read the terms.\" The last three words are a link.",
+   "options": [
+    {
+     "id": "approve",
+     "label": "Approve this line in all three places",
+     "pros": [
+      "People see the terms before downloading.",
+      "Covers the case where setup picks Gemma by itself."
+     ],
+     "cons": [
+      "One more line on three screens."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "settings",
+     "label": "Settings only, not first-run setup",
+     "pros": [
+      "First-run setup stays shorter."
+     ],
+     "cons": [
+      "Someone given Gemma by setup never sees the terms."
+     ]
+    },
+    {
+     "id": "hold",
+     "label": "Hold",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "The app keeps offering Gemma with no mention of its terms."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-14",
+   "words": true,
+   "surface": "Claude Code settings",
+   "path": "App start-up, when Claude Code's settings file is damaged",
+   "headline": "Tell people when the app replaces a damaged Claude Code settings file?",
+   "today": "At start-up YouCoded adds a few entries to Claude Code's settings file. If that file is damaged and cannot be read, the app replaces it with a fresh one and says nothing.",
+   "problem": "Settings you made in Claude Code vanish and nothing explains why.",
+   "proposal": "Show a one-time notice: \"Claude Code's settings file couldn't be read, so YouCoded started a fresh one.\" If a copy of the old file is kept, the notice says where. You would see it on a review page before it lands.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, show the notice",
+     "pros": [
+      "A vanished setting has an explanation."
+     ],
+     "cons": [
+      "One more notice, though only in a rare case."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no",
+     "label": "No",
+     "pros": [
+      "No new notice."
+     ],
+     "cons": [
+      "Settings can disappear with no explanation."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-15",
+   "words": true,
+   "surface": "Paid test runs",
+   "path": "Two investigations that need real paid model use",
+   "headline": "Approve spending on either of these two investigations?",
+   "today": "Two faults cannot be investigated for free. First: on OpenRouter, about 1 in 5 quick follow-up messages re-reads the whole chat at full price, where ChatGPT and Anthropic almost never do. Second: on YouCoded's own engine, the assistant sometimes stops before the job is done while saying work is still going (card #148).",
+   "problem": "The first costs money on every long OpenRouter chat. The second leaves jobs half done. Neither cause is known.",
+   "proposal": "Each run would have a hard cap of 5 dollars. The OpenRouter run is about 500 small requests. I report what each found and what it cost.",
+   "options": [
+    {
+     "id": "both",
+     "label": "Both, up to 10 dollars in total",
+     "pros": [
+      "Both causes get looked for."
+     ],
+     "cons": [
+      "Up to 10 dollars."
+     ]
+    },
+    {
+     "id": "openrouter",
+     "label": "Only the OpenRouter cost run, up to 5 dollars",
+     "pros": [
+      "Could cut the cost of every long OpenRouter chat."
+     ],
+     "cons": [
+      "The early-stop fault stays uninvestigated."
+     ]
+    },
+    {
+     "id": "early",
+     "label": "Only the early-stop run, up to 5 dollars",
+     "pros": [
+      "Goes after the fault that leaves jobs half done."
+     ],
+     "cons": [
+      "OpenRouter keeps overcharging on some follow-ups."
+     ]
+    },
+    {
+     "id": "none",
+     "label": "Neither",
+     "pros": [
+      "No spending."
+     ],
+     "cons": [
+      "Both faults stay unexplained."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-16",
+   "words": true,
+   "surface": "Crash recovery",
+   "path": "What the assistant is told after the app crashes mid-job",
+   "headline": "What should happen to the unfinished crash-recovery change found on this computer?",
+   "today": "The big crash-recovery work landed in October. During the inventory I found one more unfinished change beside it and backed it up. It alters what the assistant is told about steps that were interrupted by a crash. Nothing on screen changes.",
+   "problem": "Nobody knows whether it was meant to land. It still combines cleanly with the app and its 84 tests pass, but it has only had a light look.",
+   "proposal": "A proper review would say what it improves and whether it is safe, then bring you a recommendation.",
+   "options": [
+    {
+     "id": "review",
+     "label": "Review it properly, then bring me a recommendation",
+     "pros": [
+      "You decide with real facts."
+     ],
+     "cons": [
+      "A little session time."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "drop",
+     "label": "Drop it",
+     "pros": [
+      "One loose end gone. The backup stays on GitHub."
+     ],
+     "cons": [
+      "If it fixed something real, that is lost."
+     ]
+    },
+    {
+     "id": "land",
+     "label": "Land it as it is",
+     "pros": [
+      "No more waiting."
+     ],
+     "cons": [
+      "Changes what the assistant believes after a crash, on a light review only."
+     ]
+    }
+   ]
+  }
+ ]
+}
