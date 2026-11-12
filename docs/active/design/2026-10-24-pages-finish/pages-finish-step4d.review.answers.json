@@ -1,0 +1,115 @@
+{
+ "deck": "pages-finish-step4d-review",
+ "started": "2026-11-12T10:55:15.964Z",
+ "submitted": "2026-11-12T11:03:54Z",
+ "cur": 13,
+ "answers": {
+  "D-fromnow": {
+   "v": "yes",
+   "t": 1794480930817,
+   "seconds": 15,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-addmenu": {
+   "note": "why did this popup/dropdown get narrower?",
+   "t": 1794480980701,
+   "v": "yes",
+   "seconds": 50,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-folder": {
+   "note": "i really dont like this folder picker ui/ux. i think we can improve this, re-use existing elements, and make it better match youcoded design/style principles",
+   "t": 1794481062426,
+   "v": "other",
+   "seconds": 82,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-command": {
+   "note": "also dont love this menu",
+   "t": 1794481074824,
+   "v": "other",
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-describe": {
+   "note": "kinda okay? but not good. feel like write it could be inside the text box with an x in the top right in-line with what it may do or something.",
+   "t": 1794481164028,
+   "v": "other",
+   "seconds": 89,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-described": {
+   "v": "other",
+   "t": 1794481183019,
+   "note": "i think we can improve this",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-cap": {
+   "note": "this looks like a sub-element of \"button text\". you see why that's confusing? i think the number should be like a dropdown that also allows a custom entry, there should be a precedent for this in our settings menus for youcoded somehwere",
+   "t": 1794481286745,
+   "v": "other",
+   "seconds": 104,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-lower": {
+   "v": "yes",
+   "t": 1794481309585,
+   "seconds": 23,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-loweropen": {
+   "v": "yes",
+   "t": 1794481315850,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-delete": {
+   "v": "yes",
+   "t": 1794481326732,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-deletepage": {
+   "v": "pick",
+   "pick": "button",
+   "t": 1794481333928,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-devices": {
+   "v": "pick",
+   "pick": "wait",
+   "t": 1794481358016,
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-rundiff": {
+   "v": "yes",
+   "seconds": 69,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "t": 1794481419621
+  },
+  "Q-pagelimit": {
+   "v": "pick",
+   "pick": "job-only",
+   "t": 1794481433702,
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
