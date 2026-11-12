@@ -11,8 +11,8 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery, session/163-crash-resume-repair
 ---
 Progress
-Done: Reviewed e4d98a84f: not on master, merges clean, 1708 harness tests pass with it, 13 new tests fail without it. Recommendation: land after rebase, verify.sh and two small tests (B file)
-Next: Destin's yes to land
+Done: Crash-resume repair prepared on app branch session/engine-followups (cherry-picked onto current master, proper message, 2 missing tests added, checks pass). Not merged.
+Next: Destin says merge when ready
 Blocked: None for this shipped recovery work. No release/tag, installed-app modification, device-runtime or Windows/macOS execution claim.
 
 Chats
