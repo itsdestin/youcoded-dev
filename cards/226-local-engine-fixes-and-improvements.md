@@ -13,8 +13,8 @@ priority: P3
 work: session/local-model-hardening
 ---
 Progress
-Done: 2026-11-12: Destin answered the review deck. Branch brought up to date with the main app. Built and tested: helper agents no longer take a chat's kept place; default context raised 32k to 64k. Tested on a separate engine copy: at 32k a third open chat makes every chat re-read everything, at 64k three chats keep their places.
-Next: Destin answers the follow-up deck (long results, cloud vs local, chat always continues, faster-writing safety net, desktop testing). Then build: read again on return, the decided items, final independent code review, ship.
+Done: 2026-11-12: both review decks answered and everything decided is built and pushed (64k default, helper slots, come-back re-read, long results keep both ends + saved whole, app-written note when a full chat cannot be summarised, faster-writing safety net). Branch updated to master twice; full verify passes. Desktop test: 64k fits the 12 GB card (8.2 GB), replies 54-65 tokens/s.
+Next: Independent code review findings, then Destin's word to ship. Remove ~/yc-test-226 from the desktop once it accepts logins again. File the follow-up card for wide real-world testing after his OK.
 Blocked: Nothing. Backed up to GitHub 2026-11-10 (app and workspace branches session/local-model-hardening) after Destin allowed the secrets-scan exception for a model settings name in a test. Waits for his review and testing before landing.
 
 Chats
