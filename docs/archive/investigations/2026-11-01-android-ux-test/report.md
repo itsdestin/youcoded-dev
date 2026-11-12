@@ -5,7 +5,23 @@ updated: 2026-11-09
 ---
 # Android app: hands-on test of latest master
 
-## Where this stands (2026-11-09): read this first
+## Where this stands (2026-11-11): merged
+
+**Everything below this section is history.** Card #213 is closed. All three branches merged on 2026-11-11:
+the Worker (itsdestin/wecoded-marketplace#123, deployed; game rooms and `/games/ticket` answer live), the app
+(itsdestin/youcoded#730) and the workspace (#361). Destin tested the Dev copy on his Flip on 2026-11-10 and five
+more fixes came from that (Tailscale warning, can't-connect message, fullscreen tip removed, arrow buttons, one
+Android test build with `releaseTest` removed).
+
+**Not done when this was archived:**
+- The build on master (after merging master's bundled-musl change and a git 2.54.1 lock refresh) has not been
+  started on a phone.
+- A real two-player game through the live rooms and sync between two devices have never been run.
+- Phone to computer needs a computer app newer than 1.3.3 (older ones refuse the phone app's page address).
+- Bundled Claude Code is 2.1.300 (2.1.322 available). "Open Tailscale" does nothing on a phone with neither the
+  Tailscale app nor a store. One medium code-scanning warning remains on `scripts/shoot/engine.mjs` (old line).
+
+## Where this stood on 2026-11-09 (kept as written)
 
 This file is the single status record for card #213. The findings below the line are the **original 2026-11-01
 test**. They describe master `573fab4c6`, not the branch. Every finding has since been answered or fixed.
