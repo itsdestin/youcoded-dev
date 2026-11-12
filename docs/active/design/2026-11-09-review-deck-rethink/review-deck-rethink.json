@@ -1,0 +1,610 @@
+{
+ "title": "Review decks, rethought",
+ "key": "review-deck-rethink",
+ "out": "review-deck-rethink.html",
+ "grows": true,
+ "rounds_before": 10,
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "What you want from review decks",
+   "intro": "Seven statements you marked in round 9. Reopen any that no longer hold.",
+   "stage": "understanding"
+  },
+  {
+   "id": "U-1",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "A deck is where you steer. I decide only what no user could notice.",
+   "changed": "You decide layout, the path between screens and how parts affect each other. I decide code matters inside those decisions.",
+   "notice": "A deck never asks you about code, and never settles a design question without you.",
+   "yes": "Holds",
+   "no": "Fails",
+   "answered": {
+    "round": "Round 9",
+    "answer": "Holds",
+    "notes": []
+   }
+  },
+  {
+   "id": "U-2",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "One feature has one deck, on one link, that grows with the work.",
+   "changed": "It starts as \"here is how I understand this\", becomes the design, then the plan before building, then the results after. It is never replaced by a new deck each round.",
+   "notice": "You keep one link per feature. Opening it always shows where the feature stands now.",
+   "yes": "Holds",
+   "no": "Fails",
+   "answered": {
+    "round": "Round 9",
+    "answer": "Holds",
+    "notes": []
+   }
+  },
+  {
+   "id": "U-3",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "What you said earlier stays visible where it belongs, not behind a History button.",
+   "changed": "Each topic shows its own story in place: your words, what was built, what you said next. Settled topics shrink.",
+   "notice": "No History button, no \"Details\" fold, no New or Changed badges.",
+   "yes": "Holds",
+   "no": "Fails",
+   "answered": {
+    "round": "Round 9",
+    "answer": "Other",
+    "notes": [
+     "I still haven't completely decided what I want this UI to look like. Um I'm open to it maybe being somewhat hidden or just being kind of sorted to the bottom or uh again, I don't really know. I I I think I want to think through a couple of real use cases first before we decide exactly what this like history or like evolution kind of concept is. Um'cause I could see a world where like I respond to…"
+    ]
+   },
+   "resolved": "Built the way you picked in round 10: answered topics sink, one line of the past, the rest on request. It is this deck."
+  },
+  {
+   "id": "U-4",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "Every page is named for what you are deciding, never for my work.",
+   "changed": "Pages like \"What the reviewers found\" or \"What slipped between rounds\" describe my process. Pages should be the stages and topics of the feature.",
+   "notice": "You can tell from a page's name what it wants from you.",
+   "yes": "Holds",
+   "no": "Fails",
+   "answered": {
+    "round": "Round 9",
+    "answer": "Holds",
+    "notes": []
+   }
+  },
+  {
+   "id": "U-5",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "A card holds one kind of thing: facts, things you can change, or results.",
+   "changed": "Round 8 mixed plain rows, changeable rows and rows with a Passed or Unclear chip in one card.",
+   "notice": "Chips appear only on a results page, on every row of it. A question is always its own card with buttons.",
+   "yes": "Holds",
+   "no": "Fails",
+   "answered": {
+    "round": "Round 9",
+    "answer": "Holds",
+    "notes": []
+   }
+  },
+  {
+   "id": "U-6",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "A deck should look like part of YouCoded, with pictures large enough to read.",
+   "changed": "Only parts the app already has. You have asked for larger pictures in rounds 4, 5 and 8.",
+   "notice": "A picture opens at a size where its words can be read without zooming.",
+   "yes": "Holds",
+   "no": "Fails",
+   "answered": {
+    "round": "Round 9",
+    "answer": "Holds",
+    "notes": []
+   }
+  },
+  {
+   "id": "U-7",
+   "surface": "Review decks",
+   "words": true,
+   "path": "What I think you want",
+   "headline": "There is no contract or sign-off deck. The safety checks that came with it should not vanish silently.",
+   "changed": "Finished means: every request is a row before building, and you change nothing after. The old automatic checks need a home; the \"safety net\" page asks where.",
+   "notice": "Fewer decks to sign, without losing what the old checks caught.",
+   "yes": "Holds",
+   "no": "Fails",
+   "answered": {
+    "round": "Round 9",
+    "answer": "Other",
+    "notes": [
+     "I think the the the the the way you phrase this might be a little broad. There is no longer a contract or sign off deck in the old form with the old process. We're obsoleting that and superseding it with something better. Um I do think our pre-build deck is effectively going to serve a similar purpose to the contract deck. the post build deck will serve a similar purpose to the sign off deck. Um…"
+    ]
+   },
+   "resolved": "Reworded in the rules: the deck before a build takes the old contract's place, the deck after it the old sign-off's, and it says what changed while building."
+  },
+  {
+   "id": "P-2",
+   "page": "A deck that grows",
+   "intro": "This deck is the design, built. Judge it by using it.",
+   "stage": "design"
+  },
+  {
+   "id": "G-1",
+   "path": "Any deck link I send you",
+   "headline": "One deck per feature, growing each round",
+   "calls": [
+    {
+     "id": "one",
+     "call": "A feature has one deck. Each round I rebuild the same deck; I never send a new one.",
+     "why": "This is round 11 of this feature. The ten earlier decks stay on disk as the record."
+    },
+    {
+     "id": "sink",
+     "call": "Topics you answered sink to an \"Answered\" list at the foot of their page, with their round.",
+     "why": "Opening one shows what was asked and your answer in your own words."
+    },
+    {
+     "id": "reopen",
+     "call": "Any answered topic has a Reopen button.",
+     "why": "It moves back up and you can answer it again. \"Leave as answered\" puts it back."
+    },
+    {
+     "id": "past",
+     "call": "An open topic with a past shows one line of it under its title. Pressing the line shows the full story.",
+     "why": "The line above this list is one. You picked \"one summary line\" in round 10."
+    },
+    {
+     "id": "stages",
+     "call": "The four stages sit across the top. A number beside a stage is how many topics there still need you.",
+     "why": "It is the only place that count appears. A stage with nothing in it yet is dimmed."
+    },
+    {
+     "id": "lands",
+     "call": "The deck opens on the first page that still needs you.",
+     "why": "Pages where everything is answered show as complete."
+    },
+    {
+     "id": "nohistory",
+     "call": "The History button is gone.",
+     "why": "So are the \"Since last round\" sentence and the New / Changed / Settled headings."
+    },
+    {
+     "id": "refuse",
+     "call": "If you asked for a change, I cannot build the next round without saying what I did about it.",
+     "why": "The tool refuses, quoting your words, until the topic is reopened or marked with what was done."
+    },
+    {
+     "id": "versions",
+     "call": "Not built: stepping back through earlier versions of a question inside its card.",
+     "why": "You found it interesting in round 10 but did not ask for it. Say if you want it."
+    }
+   ],
+   "surface": "Review decks",
+   "words": true,
+   "reopened": "Open since round 1. A History button (round 4) and a story folded under each row (round 7) were both rejected.",
+   "trail": [
+    {
+     "round": "Round 1",
+     "asked": "a single deck that kind of 'evolves' in response to my questions and keeps my earlier responses"
+    },
+    {
+     "round": "Round 4",
+     "built": "A History button listing every earlier round.",
+     "said": "i was expecting something that integrated a bit better and more clearly showed how the feature evolved"
+    },
+    {
+     "round": "Round 7",
+     "built": "A story per row, hidden in a \"Details\" fold.",
+     "said": "it just feels like you tacked on a fucking sticky note"
+    },
+    {
+     "round": "Round 10",
+     "asked": "I kinda feel like a bunch of these ideas aren't mutually exclusive",
+     "built": "Answered topics sink; open ones show one line of their past."
+    }
+   ]
+  },
+  {
+   "id": "A-2",
+   "path": "Any deck link I send you",
+   "headline": "How much of a topic's past should show without pressing anything?",
+   "today": "One line shows; the rest opens when pressed.",
+   "checked": "Read the deck code and your answers on 2026-11-12.",
+   "problem": "A hidden History button and a busy page were both disliked.",
+   "proposal": "One summary line, the rest on request.",
+   "surface": "Review decks",
+   "words": true,
+   "answered": {
+    "round": "Round 10",
+    "answer": "One summary line, the rest opens on request",
+    "notes": []
+   }
+  },
+  {
+   "id": "P-3",
+   "page": "Rows",
+   "intro": "How a list works now.",
+   "stage": "design"
+  },
+  {
+   "id": "R-1",
+   "path": "Any deck link I send you",
+   "headline": "Tick or change",
+   "calls": [
+    {
+     "id": "tick",
+     "call": "Each row here has a tick and a pencil. Tick means fine; the pencil opens a comment.",
+     "why": "The pressed one is outlined. There are no \"Fine / Change asked / Not looked at\" labels."
+    },
+    {
+     "id": "excl",
+     "call": "Writing a comment takes the tick off. A row with a comment cannot be ticked until the comment is binned.",
+     "why": "So a row never says both."
+    },
+    {
+     "id": "leave",
+     "call": "Leaving a page approves nothing.",
+     "why": "Before, a list you left alone counted as accepted."
+    },
+    {
+     "id": "done",
+     "call": "At Done, rows you neither ticked nor changed are listed. You can still send.",
+     "why": "They reach me as \"not looked at\", never as approved. You picked \"warn\" in round 10."
+    },
+    {
+     "id": "after",
+     "call": "After a build, a row you have not looked at keeps the work marked unfinished.",
+     "why": "Part of the done / not-done check."
+    },
+    {
+     "id": "dot",
+     "call": "The label at a list's top right (\"3 of 5 looked at\") still has the deck's usual small dot.",
+     "why": "Change this row if the dot should go."
+    }
+   ],
+   "surface": "Review decks",
+   "words": true,
+   "reopened": "You asked for one pencil in round 3, then for a way no unread row is ever taken as approved.",
+   "trail": [
+    {
+     "round": "Round 3",
+     "asked": "simplify down to a single pencil/edit icon on each of these rows",
+     "built": "One pencil per row."
+    },
+    {
+     "round": "Round 9",
+     "said": "i want to eliminate the scenario where a row gets accidentally taken as approved just because i didnt read or see it"
+    },
+    {
+     "round": "Round 10",
+     "asked": "Tick or change",
+     "said": "i definitely dont like the weird new blue change asked/fine/not looked at indicator things you added",
+     "built": "A tick and a pencil, with no labels."
+    }
+   ]
+  },
+  {
+   "id": "K-1",
+   "path": "Any deck link I send you",
+   "headline": "Should a card hold only one kind of row?",
+   "today": "One card can mix plain rows, rows you can change and rows with a Passed or Unclear chip. Extra notes sit in a \"Details\" fold.",
+   "checked": "Read the deck code and your answers on 2026-11-12.",
+   "problem": "You could not tell which rows were facts, which were questions and which were results, or what \"Details\" was for.",
+   "proposal": "Yes builds the three kinds in the picture: for your information, yours to change, results. \"Details\" goes; reuse notes sit behind a small (i). No keeps mixed cards.",
+   "surface": "Review decks",
+   "words": true,
+   "answered": {
+    "round": "Round 9",
+    "answer": "Yes",
+    "notes": []
+   },
+   "resolved": "Built. After your round-10 marks the kind is one small label above a list's title, with no sentence."
+  },
+  {
+   "id": "R-2",
+   "path": "Any deck link I send you",
+   "headline": "Should rows you have not looked at stop you sending the deck?",
+   "today": "They are listed at Done and you can still send.",
+   "checked": "Read the deck code and your answers on 2026-11-12.",
+   "problem": "A warning can be ignored; a block can be annoying.",
+   "proposal": "Warn, list them, let you send anyway.",
+   "surface": "Review decks",
+   "words": true,
+   "answered": {
+    "round": "Round 10",
+    "answer": "Warn, list them, let me send anyway",
+    "notes": []
+   }
+  },
+  {
+   "id": "P-4",
+   "page": "The look",
+   "intro": "What changed after the areas you marked in round 10.",
+   "stage": "design"
+  },
+  {
+   "id": "L-1",
+   "path": "Any deck link I send you",
+   "headline": "After your marks on round 10",
+   "calls": [
+    {
+     "id": "bars",
+     "call": "No coloured bar at the left edge of anything.",
+     "why": "You marked four and wrote \"fingernail\". A test now fails any deck that has one."
+    },
+    {
+     "id": "face",
+     "call": "Decks use your theme's colours and its typeface.",
+     "why": "The typeface is fetched from Google when a deck opens, as in the app. You said yes in round 10."
+    },
+    {
+     "id": "label",
+     "call": "A list has one small label above its title and no sentence after it.",
+     "why": "\"this is confusing and can certainly be more clear/concise\""
+    },
+    {
+     "id": "intro",
+     "call": "A page's opening line sits in a box.",
+     "why": "\"bare text with no card gets ignored easily as ai clutter\""
+    },
+    {
+     "id": "levels",
+     "call": "A row has two levels of text: its words in bold, its reason quieter.",
+     "why": "Your own words, where quoted, are in italics."
+    },
+    {
+     "id": "title",
+     "call": "The picture popup's title is the picture's short name. The row it belongs to is described once, at the top of the comments strip.",
+     "why": "\"what is this? a title? desctption?\""
+    },
+    {
+     "id": "guide",
+     "call": "The design guide now carries your rule, quoted: the layout explains the screen, not the words.",
+     "why": "It applies to the whole app, not only decks."
+    },
+    {
+     "id": "own",
+     "call": "A deck keeps what is its own, such as the yellow header, and is not dressed as an app screen.",
+     "why": "\"you should utilize youcoded design principles, but keep the review deck elements that are intentionally unique\""
+    }
+   ],
+   "surface": "Review decks",
+   "words": true,
+   "reopened": "Round 9: \"ugly/poorly deesigned\". Round 10: \"still a lot of visual design failures\"."
+  },
+  {
+   "id": "L-2",
+   "path": "Any deck link I send you",
+   "headline": "Is the look right now?",
+   "today": "This deck is drawn with every change listed above.",
+   "checked": "Read the deck code and your answers on 2026-11-12.",
+   "problem": "You have called the look wrong in rounds 7, 8, 9 and 10. I would rather hear it again than guess.",
+   "proposal": "Yes if it is good enough to stop changing. Otherwise say what is still off; a screenshot pasted into the box helps.",
+   "surface": "Review decks",
+   "words": true,
+   "yes": "Yes, good enough",
+   "no": "No"
+  },
+  {
+   "id": "V-1",
+   "path": "Any deck link I send you",
+   "headline": "How should a picture open?",
+   "today": "A picture opens in a full window, shrunk to fit, with comments at the right.",
+   "checked": "Read the deck code and your answers on 2026-11-12.",
+   "problem": "A tall screenshot shrinks until its words cannot be read, and most of the window is empty.",
+   "proposal": "Comments in a strip at the right; the picture at its true size.",
+   "surface": "Review decks",
+   "words": true,
+   "answered": {
+    "round": "Round 9",
+    "answer": "Comments in a strip at the right",
+    "notes": []
+   }
+  },
+  {
+   "id": "L-3",
+   "path": "Any deck link I send you",
+   "headline": "Should decks use your theme's typeface too?",
+   "today": "They do now.",
+   "checked": "Read the deck code and your answers on 2026-11-12.",
+   "problem": "A deck in your colours but its own lettering read as a different product.",
+   "proposal": "Match the app.",
+   "surface": "Review decks",
+   "words": true,
+   "answered": {
+    "round": "Round 10",
+    "answer": "Yes, match the app",
+    "notes": []
+   }
+  },
+  {
+   "id": "P-5",
+   "page": "Still to build",
+   "intro": "What is left. Change the order or drop a row.",
+   "stage": "before"
+  },
+  {
+   "id": "T-1",
+   "path": "Any deck link I send you",
+   "headline": "What I build next, in this order",
+   "calls": [
+    {
+     "id": "phone",
+     "call": "A try on a real phone, with you.",
+     "why": "Nothing here has been used with a finger: the popup, \"Comment on an area\", the stage strip at phone width."
+    },
+    {
+     "id": "themes",
+     "call": "A check in your other themes, light and dark.",
+     "why": "Only Ivory Schematic and Midnight have been looked at."
+    },
+    {
+     "id": "rules",
+     "call": "The rule for models trimmed to its word limit.",
+     "why": "It is about 20 words over. No effect on what you see."
+    },
+    {
+     "id": "whatchanged",
+     "call": "The after-build page that lists what changed while building is described in the rules but not enforced by the tool.",
+     "why": "I would make the tool require it."
+    }
+   ],
+   "surface": "Review decks",
+   "words": true,
+   "numbered": true
+  },
+  {
+   "id": "S-1",
+   "path": "Every feature build",
+   "headline": "Which of the old automatic checks should come back?",
+   "today": "Dropping the contract also dropped four things: tracing each plan row to your answer, a fresh grader checking every request was built, reviewer findings shown as rows, and a check that refuses to close unfinished work.",
+   "checked": "Read the deck code and your answers on 2026-11-12.",
+   "problem": "You approved dropping the contract deck, not these. In round 5 you said the grader would be \"replaced or modified\", not removed.",
+   "proposal": "All four, on unless you switch them off.",
+   "surface": "Review decks",
+   "words": true,
+   "answered": {
+    "round": "Round 9",
+    "answer": "All four, as checks that are on unless you switch them off",
+    "notes": []
+   }
+  },
+  {
+   "id": "S-2",
+   "path": "Every feature build",
+   "headline": "Should a fresh-eyes tester try the drawings before you see them?",
+   "today": "The tester can run on the finished screens if you switch it on. It no longer tries early designs.",
+   "checked": "Read the deck code and your answers on 2026-11-12.",
+   "problem": "The old system ran it on every design before your first deck. It caught confusing designs early, but added waiting to every round.",
+   "proposal": "Offered on each design deck, off unless you ask.",
+   "surface": "Review decks",
+   "words": true,
+   "answered": {
+    "round": "Round 9",
+    "answer": "Offered on each design deck, off unless you ask",
+    "notes": [
+     "i should also be able to kinda steeer/comment specific things that i want checked"
+    ]
+   },
+   "resolved": "A comment on any check's row is passed to that check as \"also look at this\", and its result says what it found."
+  },
+  {
+   "id": "S-3",
+   "path": "Every feature build",
+   "headline": "Should the code review be on for every build?",
+   "today": "The code review is suggested on only for builds touching security, your data, background work or several devices. You can switch it either way.",
+   "checked": "Read the deck code and your answers on 2026-11-12.",
+   "problem": "In rounds 4 and 5 you said automatic code reviews are useful and not to lose them without thought. It has the strongest record of real finds.",
+   "proposal": "On for every build; you can switch it off.",
+   "surface": "Review decks",
+   "words": true,
+   "answered": {
+    "round": "Round 9",
+    "answer": "On for every build; you can switch it off",
+    "notes": []
+   }
+  },
+  {
+   "id": "P-6",
+   "page": "Built, not yet reviewed by you",
+   "intro": "Each of these is built. Tick what is right; use the pencil on what is not.",
+   "stage": "after"
+  },
+  {
+   "id": "B-1",
+   "path": "Any deck link I send you",
+   "headline": "From your round-9 answers",
+   "calls": [
+    {
+     "id": "popup",
+     "call": "A picture opens at its real size and scrolls, with comments in a strip at the right.",
+     "why": "The top bar has Before / After, a Fit switch and an ×.",
+     "picture": "pictures/r10-popup.png"
+    },
+    {
+     "id": "details",
+     "call": "The \"Details\" fold is gone.",
+     "why": "A check's explanation sits under its row; reuse notes are behind a small (i)."
+    },
+    {
+     "id": "touch",
+     "call": "On a phone, a drag scrolls a picture. You tap \"Comment on an area\" first, then drag.",
+     "why": "Not tried with a real finger."
+    },
+    {
+     "id": "resume",
+     "call": "A deck you already sent reopens with your answers, still editable, and says when you sent them.",
+     "why": "Not yet seen in a real browser."
+    },
+    {
+     "id": "gate",
+     "call": "Work cannot be called finished while a request is unaccounted for or a check has no result.",
+     "why": "Any note you leave on the after-build page also counts as not finished. Change this row if that is too strict."
+    }
+   ],
+   "surface": "Review decks",
+   "words": true
+  },
+  {
+   "id": "B-2",
+   "path": "Any deck link I send you",
+   "headline": "From rounds 6 and 7, never shown to you in a look you accepted",
+   "calls": [
+    {
+     "id": "checksmenu",
+     "call": "The checks menu: each check says what it does, what comes back and why it is suggested for this build.",
+     "why": "Built after your round-6 comments."
+    },
+    {
+     "id": "useit",
+     "call": "On a wording page, a \"Use it / Edit words\" switch, so dropdowns can be opened before you edit the words.",
+     "why": "Built in round 7. Not tried by a real hand."
+    },
+    {
+     "id": "tiles",
+     "call": "A row's pictures are tiles in an Attachments card, like Deliverables in a chat.",
+     "why": "Built in round 8. The first list on this page has one."
+    },
+    {
+     "id": "pills",
+     "call": "A picture or file path pasted into any comment box becomes a pill.",
+     "why": "Built in round 7."
+    },
+    {
+     "id": "fixes",
+     "call": "Eleven fixes from a code review and a fresh-eyes tester.",
+     "why": "For example: a second press of a pencil no longer deletes your comment."
+    }
+   ],
+   "surface": "Review decks",
+   "words": true
+  },
+  {
+   "id": "B-3",
+   "path": "Any deck link I send you",
+   "headline": "Done outside the deck",
+   "calls": [
+    {
+     "id": "backup",
+     "call": "Everything is backed up. The scanner ignores four lines of made-up ids, not the three I first counted.",
+     "why": "My own note in the ignore file quoted one of the same harmless ids."
+    },
+    {
+     "id": "cards",
+     "call": "Two ideas are filed: a screen sketcher inside a deck (#249), and the app hosting deck links itself (#250).",
+     "why": "Filed only; nothing is built."
+    }
+   ],
+   "surface": "Review decks",
+   "words": true,
+   "context": true
+  }
+ ]
+}
