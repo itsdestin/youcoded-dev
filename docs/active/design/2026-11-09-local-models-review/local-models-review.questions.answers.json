@@ -1,0 +1,107 @@
+{
+ "deck": "local-models-review-questions",
+ "started": "2026-11-12T08:34:23.987Z",
+ "submitted": "2026-11-12T08:41:12Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794472493084,
+   "seconds": 15,
+   "theme": "halftone-dimension"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794472493084,
+   "seconds": 15,
+   "theme": "halftone-dimension"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "always",
+   "t": 1794472707591,
+   "seconds": 43,
+   "theme": "halftone-dimension"
+  },
+  "Q-2": {
+   "note": "we should increase default starting context to 64k for local models. but i want a more comprehensive follow up to engage in real world testing of local models of various sizes, on different hardware, with various configurations, to pressure-test and bug hunt",
+   "t": 1794472707591,
+   "v": "other",
+   "seconds": 43,
+   "theme": "halftone-dimension"
+  },
+  "Q-3": {
+   "v": "yes",
+   "t": 1794472707591,
+   "seconds": 43,
+   "theme": "halftone-dimension"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1794472707591,
+   "note": "we can also ssh into my nvidia desktop and test this? desktop can dual boot windows and linux",
+   "seconds": 43,
+   "theme": "halftone-dimension"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1794472707591,
+   "note": "how do other harnesses, especially others w local support, handle this?",
+   "seconds": 43,
+   "theme": "halftone-dimension"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "reread-on-return",
+   "t": 1794472794591,
+   "seconds": 22,
+   "theme": "halftone-dimension"
+  },
+  "Q-7": {
+   "v": "yes",
+   "t": 1794472794591,
+   "seconds": 22,
+   "theme": "halftone-dimension"
+  },
+  "Q-8": {
+   "v": "yes",
+   "t": 1794472794591,
+   "seconds": 22,
+   "theme": "halftone-dimension"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "keep-25",
+   "t": 1794472794591,
+   "seconds": 22,
+   "theme": "halftone-dimension"
+  },
+  "Q-10": {
+   "v": "other",
+   "t": 1794472871269,
+   "note": "how do we currently handle this, and how do other harnesses (claude code, opencode, hermes, pi, etc) handle this?",
+   "seconds": 19,
+   "theme": "halftone-dimension"
+  },
+  "Q-11": {
+   "v": "yes",
+   "t": 1794472871269,
+   "seconds": 19,
+   "theme": "halftone-dimension"
+  },
+  "Q-12": {
+   "v": "other",
+   "t": 1794472871269,
+   "note": "we should finish everything outstanding and test, conduct an independent final code review, then ship",
+   "seconds": 19,
+   "theme": "halftone-dimension"
+  },
+  "Q-13": {
+   "v": "other",
+   "dk": true,
+   "t": 1794472871269,
+   "seconds": 19,
+   "theme": "halftone-dimension"
+  }
+ }
+}
