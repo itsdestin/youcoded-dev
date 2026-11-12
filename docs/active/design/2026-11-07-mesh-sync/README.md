@@ -1,15 +1,15 @@
 ---
 status: active
-date: 2026-11-09
+date: 2026-11-11
 topic: Chats on every device (YouCoded Mesh) — where the design stands, with every decision traced to Destin's words
-related-cards: 64, 98, 119, 121, 125, 127
+related-cards: 64, 98, 119, 121, 125, 127, 241, 242, 243, 248
 branch: session/mesh-sync-design (youcoded-dev); no app code changed
 ---
 
 # Chats on every device — START HERE
 
 This folder is the record of a design interview between Destin and a Claude session, held
-2026-11-06 to 2026-11-09. **No application code was changed.** Everything below is either a
+2026-11-06 to 2026-11-11. **No application code was changed.** Everything below is either a
 decision Destin made in his own words (traced to a deck step or a dated chat message) or a
 research fact checked against the code. Nothing else is approved.
 
@@ -24,17 +24,18 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-3.json` + `.answers.json` | Deck round 3 (7 statements + 9 questions). **Not submitted.** Saved progress: all seven statements marked Holds; Q-1 to Q-4 skipped; Q-5 onward unanswered. Treat the statements as provisional until submitted. |
 | `mesh-sync.questions-4.json` + `.answers.json` | Deck round 4 (2 statements + 17 questions), submitted 2026-11-09. A second session's whole-design review: one copying system, keepers, pairing, closing the host, retired devices, viewer gaps. Supersedes round 3's Q-1 to Q-4 and Q-8. |
 | `mesh-sync.questions-5.json` + `.answers.json` | Deck round 5 (16 statements + 7 questions), submitted 2026-11-10. Restated his round-4 rules; decided relay first, files on the same system, offline behaviour; reviewed ten Continue-here states. |
-| `mesh-sync.questions-6.json` | Deck round 6: the three questions held over from round 3 (helper transcripts, smaller pieces, phone awake). |
-| `mesh-sync.questions-8.json` | Deck round 8: what travels with a chat, setup sync, remote access, self-run relay. |
-| `mesh-sync.questions-7.json` | Deck round 7: catch-up, what happens at the 1 GB limit, the super-host, self-hosting the relay, who pays. Written in answer to Destin's two comments on `design.md`. |
-| `design.md` | DRAFT of the full design, written from the answers, each rule tagged with its source. Not yet read by Destin. |
+| `mesh-sync.questions-6.json` + `.answers.json` | Deck round 6, submitted 2026-11-11: helper transcripts, smaller pieces, phone awake. Only phone awake was decided. |
+| `mesh-sync.questions-7.json` + `.answers.json` | Deck round 7, submitted 2026-11-11: catch-up, the 1 GB limit, the super-host, self-hosting, who pays. Written in answer to Destin's two comments on `design.md`. |
+| `mesh-sync.questions-8.json` + `.answers.json` | Deck round 8, submitted 2026-11-11: what travels with a chat, setup sync, remote access, self-run relay. |
+| `mesh-sync.questions-9.json` | Deck round 9: what the 2026-11-11 checkpoint review found. |
+| `design.md` | DRAFT of the full design, each rule tagged with its source. Destin read an early version on 2026-11-10 and commented; it has been rewritten since. Lines marked "Awaiting round 9" are not decided. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
 Serve a deck for Destin with `python3 scripts/ui-review/review-cards.py serve <spec.json> --no-build --timeout 1440` from the workspace root; put the printed link in chat as the last line. Never rebuild an answered deck.
 
 ## Decisions, each traced to Destin's words
 
-Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim from the answers files.
+Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are from the answers files; the D1 Q-5 note is garbled at both ends in the file and is tidied here. Round 3 was never submitted, so "D3 … (provisional)" is supporting colour only, never the sole source.
 
 ### Who this is for, and how to work
 - The design is for every user's devices, any mix of Windows, Mac, Linux and Android; Destin's machines are only the test case. — D1 Q-2: "this is an app intended for a much broader audience … it needs to work for everyone"; D2 S-1 Holds.
@@ -72,7 +73,7 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - The goal: it feels like claude.ai, but the user's own devices are the server, and nothing in the middle is required or trusted. — D4 S-1 Holds.
 - "Mesh" means four properties, not a networking technology: devices pair with each other; keys live only on devices; any device can catch another up; whatever sits in the middle is blind and replaceable. — D4 S-2 Holds.
 - One copying system: the host sends each new line; a device catches up by asking for everything after the last line it has. The separate slow GitHub copy stops being how devices stay current. — D4 Q-1 pick one-system.
-- Keepers (something always on that holds sealed lines): build to offer both the user's own always-on device and an optional YouCoded relay. Which is built first is undecided; he asked for architecture, cost and speed of each. — D4 Q-2: "we should build to offer either a or c … if users cont have a device or just prefer, they can use youcoded relay".
+- Keepers (something always on that holds sealed lines): build to offer both the user's own always-on device and an optional YouCoded relay. Which is built first was undecided here (decided in round 5: relay first); he asked for architecture, cost and speed of each. — D4 Q-2: "we should build to offer either a or c … if users cont have a device or just prefer, they can use youcoded relay".
 - The new sync is end-to-end encrypted. Sealing cloud backups is a follow-up after the new system exists; the user separately chooses whether chats are backed up to a cloud at all, and whether backups are sealed with a passphrase. — D4 Q-3: "this should be a later follow up … a user should separately be able to decide both 1) whether chats are backed up to cloud at all, or just stored on their own devices, and 2) whether backed up chats are encrypted with a passphrase".
 - A new device joins by pairing with an existing device; no account is needed for sync (the relay may ask for sign-in against abuse). — D4 Q-4 pick pair-only.
 - A computer stays awake while a reply it is running is unfinished. — D4 Q-5 yes.
@@ -109,8 +110,8 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 
 ### Round 6 (answered 2026-11-11)
 - Phone-hosted chat, screen off: the phone stays awake for each reply, plus an opt-in setting to exempt the app from battery limits. — D6 Q-3: picked "lock-plus-toggle".
-- Helper transcripts, NOT decided. — D6 Q-1: "idek what option A means or how that would work? the primary issue with helpers is that active sessions may rely on them and their transcripts to copmlete work, so syncing a conversation without its help transcripts would directly lead to significant lost work/effort."
-- Smaller pieces that travel, NOT decided. — D6 Q-2: "i think we're underthinkging/undersonsidering this. with option a, what would that actually look like for a typical session? how would we determine what consistutes a syncable plan vs any other normal document? i'm fine to drop images and such. just want to understand what a session/chat actually needs to continue working on a range of project types across devices"
+- Helper transcripts, not decided in this round (decided in round 8 Q-1). — D6 Q-1: "idek what option A means or how that would work? the primary issue with helpers is that active sessions may rely on them and their transcripts to copmlete work, so syncing a conversation without its help transcripts would directly lead to significant lost work/effort."
+- Smaller pieces that travel, not decided in this round (decided in round 8 Q-1). — D6 Q-2: "i think we're underthinkging/undersonsidering this. with option a, what would that actually look like for a typical session? how would we determine what consistutes a syncable plan vs any other normal document? i'm fine to drop images and such. just want to understand what a session/chat actually needs to continue working on a range of project types across devices"
 - Measured 2026-11-11 on this session's own chat (Claude Code, desktop): the main chat file holds each helper's task and, once it finishes, its final report; the helper's own working file (1 to 2 MB each here) is needed only to see its steps or to send that helper a follow-up. Plans sit in Claude Code's own `~/.claude/plans/` folder, outside any project. Memory, skills and settings are backup-only today (`youcoded/docs/sync-spaces.md`), not synced between devices.
 
 ### Round 7 (answered 2026-11-11)
@@ -121,8 +122,8 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - Super-host: a complete YouCoded with no window, pairs like any device, holds everything with no limit, hosts chats, catches devices up, passes live words, openable in a browser; it holds keys. — D7 S-1: yes.
 - A super-host lives on a device at home. A rented server was NOT picked. — D7 Q-5: picked "home" only.
 - Payment: no decision; free for everyone at the fixed limits for now. — D7 Q-8: "decide-later", note: "i think i'd definitely be leaning toward option a, with some support from donations, but idk. i think for the time being it's just going to be free for everyone at our current fixed limits, and we may reopen the cost/payment conversation after i begin actually encountering issues"
-- Reaching a home super-host from outside, NOT decided. — D7 Q-6: "i think i'm a bit confused as to where this begins to overlap or replace our existing remote access system? and the pros/cons of alternative options for how this superhost thing would work? i think the premise of the super-host offering is that it should allow self hosting and also reduce load/strain on our servers/relay when possible."
-- Self-hosted relay, NOT decided. — D7 Q-7: "i'm extremely confused".
+- Reaching a home super-host from outside, not decided in this round (decided in chat 2026-11-11). — D7 Q-6: "i think i'm a bit confused as to where this begins to overlap or replace our existing remote access system? and the pros/cons of alternative options for how this superhost thing would work? i think the premise of the super-host offering is that it should allow self hosting and also reduce load/strain on our servers/relay when possible."
+- Self-hosted relay, not decided in this round (dropped in round 8 Q-4). — D7 Q-7: "i'm extremely confused".
 
 ### Chat, 2026-11-11
 - Reaching a home super-host from outside: offer both, through our relay as the default and the user's own front door. — "i think this is generally fine? though, when we get to it, i will want to better understand the different methods like tailscale vs tunnels". Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
@@ -136,7 +137,7 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 
 ### Chat, 2026-11-11 (later)
 - When the new system arrives, chat sync through GitHub stops and the new system takes over; the existing GitHub copy is left untouched, with a one-time message. Existing chats need no moving. — "fine to stop github sync and swap."
-- Browsing replaced file versions, NOT decided. — "confused."
+- Browsing replaced file versions: he answered "confused."; closed by the next entry.
 - On keeping replaced file versions for 30 days, Destin challenged the premise: "i thought basically everything was backed by git? doesnt that offer the version history already basically? seems like we're potentially overengineering or recreating systems that already exist within the app, and also introducing some additional fragiility, but i could be mistaken?" Checked: he is right. Every synced project already has a hidden version history on each device (`<project>/.youcoded/sync.git`, `youcoded/docs/sync-spaces.md`), not only on GitHub. Proposal put to him in chat: keep that history as the file version store and conflict handler, and change only the carrier from GitHub to the locked device-to-device system. Approved: "okay, that sounds good". This replaces the round 5 wording "each device keeps replaced versions for 30 days", and closes the question about browsing replaced versions (nothing new is built for it).
 
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
@@ -146,10 +147,26 @@ The proposal's section 1 lists four "decisions so far". Three no longer hold:
 3. "Rejected deliberately switch the host; handoff must be automatic" → reversed: switches happen only on explicit approval (D1 Q-15); automatic switching is rejected.
 The reviewing session's own suggestion to limit the phone to folder-less chats was likewise rejected (D1 Q-11).
 
+## Checkpoint review, 2026-11-11 (Destin asked for it)
+
+A fresh reviewer checked `design.md` against every answers file. Fixed in the documents: stale statuses, missing rows and rules, overstated sources. Found and NOT decidable without Destin, all asked on round 9:
+- Word by word is not true for Claude Code chats today (D1 Q-14 was answered before this was known).
+- How much each device stores: round 7's page text said a full copy everywhere; D1 Q-13 picked "list-then-open" with "should work exactly the same as pc".
+- Projects: D2 Q-8 picked "everything everywhere"; D5 N-5's note implies turning sync on per project per device.
+- Closing the host: his words require replies on "the other devices"; the draft had added "or a keeper". Unsent file changes at quit were never covered.
+- The 1 GB / 48 hours were agreed for chat lines only; helper files and project files were added later.
+- After GitHub chat sync stops, chats have no off-device copy until card 241. The assistant's chat remark that the relay would serve was wrong: the relay holds lines for 48 hours and is not a backup.
+- Lost or stolen devices; two devices taking over at once; whether "new version" is a fork or a split; notices stacking and his round 1 "may be best to wait" line; whether upload-on-sleep (D1 Q-10) is replaced by line-by-line sending.
+- Card 242 was filed beside card 232 although D5 S-6 approved widening 232 (232 was mid-build).
+
+Follow-ups he asked for, answered in chat but not recorded before now: how other services handle holding messages (WhatsApp 30 days undelivered, by policy; iMessage 30 days, per a blog only; Signal unconfirmed); cost of an own-device keeper (a Raspberry Pi about $60 to $100 once, or nothing for a computer already owned; a rented server about $2 to $6 a month, not picked).
+
 ## Open items (nothing below is decided)
 
-3. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
-4. `design.md` needs Destin's read once the above are settled.
+1. Everything on round 9.
+2. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
+3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
+4. Not designed: how pairing looks on screen; how the relay limits abuse with no account; a later plan for the November 5 conflict copies.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)
 

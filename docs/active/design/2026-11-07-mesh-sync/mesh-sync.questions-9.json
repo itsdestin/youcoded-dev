@@ -1,0 +1,314 @@
+{
+ "title": "Your chats on every device — round 9: what the checkpoint found",
+ "key": "mesh-sync-questions-9",
+ "out": "mesh-sync.questions-9.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Where the design and your answers disagree",
+   "intro": "A fresh reviewer checked the design against every answer you gave. These three are places where the design said one thing and you had said another, or where a fact came to light after you answered."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "The chat list on each device",
+   "headline": "How much of your chat history should each device store?",
+   "today": "Every device downloads every chat. In round 1 you picked 'the list, then what you open' and wrote 'should work exactly the same as pc'. Then in round 7 my explanation of catching up said every device keeps a full copy of every chat. Those two disagree, and I did not point it out.",
+   "problem": "Full copies make every device a backup and let any device catch any other up, but put gigabytes on a phone. Downloading on opening keeps devices small, but a chat opened on only one device exists only there, and is gone if that device dies.",
+   "proposal": "Under every option, every chat is listed on every device, and a chat used in the last 48 hours is complete everywhere, as you decided in round 8.",
+   "options": [
+    {
+     "id": "per-device-default",
+     "label": "One setting per device: keep everything, or keep recent chats and fetch the rest on opening",
+     "recommended": true,
+     "pros": [
+      "Works the same on every device, as you asked; only the starting choice differs. Computers and a super-host start on 'keep everything', phones on 'recent'.",
+      "Your computers act as backups of each other, so a dead device loses nothing.",
+      "A phone stays small."
+     ],
+     "cons": [
+      "One more setting to understand.",
+      "On a device set to 'recent', an older chat cannot be read offline until it has been opened there once."
+     ]
+    },
+    {
+     "id": "list-then-open",
+     "label": "Every device: the list, then what you open (your round 1 pick)",
+     "pros": [
+      "Smallest and fastest to set up on every device.",
+      "No setting."
+     ],
+     "cons": [
+      "A chat you only ever used on one device lives only there. If that device is lost, so is the chat.",
+      "Older chats cannot be read offline until opened once."
+     ]
+    },
+    {
+     "id": "full-everywhere",
+     "label": "Every device keeps every chat in full (what round 7 described)",
+     "pros": [
+      "Every chat readable offline everywhere; every device is a full backup."
+     ],
+     "cons": [
+      "Gigabytes on phones and a slow first setup, the problem you were solving in round 1."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Projects across devices",
+   "path": "The project list on each device",
+   "headline": "Should every project download to every device by itself, or only when you turn it on there?",
+   "today": "Every device downloads every synced project in full, with no way to opt out. In round 2 you picked 'everything everywhere, as today'. In round 5 you wrote that a missing folder should be framed as 'enable sync for this project and fetch the folder first', which only makes sense if projects are not all downloaded already.",
+   "problem": "The design carried my guess at what you meant, marked as a guess. It needs your word.",
+   "proposal": "Under both options every project is listed on every device, and a chat can be opened talk-only without its folder.",
+   "options": [
+    {
+     "id": "turn-on-per-device",
+     "label": "Listed everywhere; downloaded when you turn sync on for it on that device",
+     "recommended": true,
+     "pros": [
+      "Matches your round 5 wording. A phone does not fill up with a 5 GB project it never uses.",
+      "Turning it on happens once, from the Continue here notice or the project list, and it stays in sync from then on."
+     ],
+     "cons": [
+      "The first time you host a project chat on a device, you wait for the download.",
+      "If the only device holding the project is off, it cannot be fetched until that device is on."
+     ]
+    },
+    {
+     "id": "everything-everywhere",
+     "label": "Every project downloads to every device automatically (your round 2 pick)",
+     "pros": [
+      "Any device can host any project chat at once.",
+      "Every device is a backup of every project."
+     ],
+     "cons": [
+      "Phones fill up, and a big project slows a new device's first setup.",
+      "The 'folder missing' notice would almost never appear, so your round 5 framing would have nothing to apply to."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-1",
+   "words": true,
+   "new": true,
+   "surface": "An open chat",
+   "path": "Watching a chat hosted on another device",
+   "headline": "A watching device shows a chat exactly as its host does: for Claude Code chats, a block at a time, not word by word.",
+   "changed": "You chose word-by-word in round 1. That holds for YouCoded's own chats. Claude Code chats appear a block at a time today, even on the device running them, so a watcher sees the same blocks at the same moments.",
+   "notice": "Making Claude Code chats appear word by word everywhere is separate work on the app itself, not part of syncing. No means you want it added to this design.",
+   "yes": "Yes, same as host",
+   "no": "No"
+  },
+  {
+   "id": "P-2",
+   "page": "Things that were never asked",
+   "intro": "The reviewer found these gaps. Each is something the design assumed or skipped."
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Closing the app",
+   "path": "Quitting the host while no other device of yours is on",
+   "headline": "When you quit the host and none of your other devices is on, what counts as safely sent?",
+   "today": "You said the app may quit at once only when every finished reply is 'present on the other devices'. I had widened that in the design to 'your other devices or the relay' without asking.",
+   "problem": "If your phone is asleep and your other computer is off, nothing can reach them right now. Either the relay or a super-host holding the locked lines counts, or the app can never say 'all sent' in that situation.",
+   "proposal": "Pick one.",
+   "options": [
+    {
+     "id": "keeper-counts",
+     "label": "Reaching the relay or your super-host counts",
+     "recommended": true,
+     "pros": [
+      "Quitting is instant in the normal case. Your other devices collect the lines when they wake.",
+      "This is what the relay is for."
+     ],
+     "cons": [
+      "For up to 48 hours those lines exist only on the device you just quit and on the relay, in locked form."
+     ]
+    },
+    {
+     "id": "devices-only",
+     "label": "Only your own devices count",
+     "pros": [
+      "Your exact words. A reply is never called safe until another of your devices holds it."
+     ],
+     "cons": [
+      "With no other device on, quitting always shows 'some chats may not have synced', even when the relay has everything."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Closing the app",
+   "path": "Quitting the host with project file changes not yet sent",
+   "headline": "Should quitting wait for unsent project file changes?",
+   "today": "File changes go out about 15 seconds after the last edit, and quitting can drop a pending send. Your quit rule covered replies; files were never mentioned.",
+   "problem": "You quit right after the assistant edits a file. The chat on your phone says the file was changed, but the phone's copy of the file is still the old one until the computer is next opened.",
+   "proposal": "Pick one.",
+   "options": [
+    {
+     "id": "brief-wait",
+     "label": "Send them first, for a few seconds at most, then quit and say so if anything is left",
+     "recommended": true,
+     "pros": [
+      "Chat and files nearly always match on your other devices.",
+      "Never hangs: after the short limit it quits and shows the same 'some chats may not have synced' line."
+     ],
+     "cons": [
+      "Quitting can take a few seconds longer after a file edit."
+     ]
+    },
+    {
+     "id": "quit-at-once",
+     "label": "Quit at once; files send next time the app opens",
+     "pros": [
+      "Quitting is always instant."
+     ],
+     "cons": [
+      "Another device can continue the chat with older files than the chat describes. The Continue here notice would warn that files may be behind."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Backup",
+   "path": "The moment the new system replaces GitHub chat sync",
+   "headline": "When GitHub chat sync stops, chats have no copy outside your own devices. Is that acceptable until cloud backup is built?",
+   "today": "GitHub holds a copy of every chat. You approved stopping that when the new system arrives. I told you the relay would cover the gap; that was wrong. The relay holds lines for 48 hours and is not a backup.",
+   "problem": "Someone with a single device, or whose devices are all lost together, would lose every chat made after the switch. Cloud backup choices are card 241, planned for later.",
+   "proposal": "Pick one.",
+   "options": [
+    {
+     "id": "backup-first",
+     "label": "Do not stop GitHub chat sync until the cloud backup choices exist",
+     "recommended": true,
+     "pros": [
+      "No user is ever without an off-device copy. You named 'never lose a message' as a top requirement.",
+      "Users choose their backup at the moment of the switch, with the passphrase option you wanted."
+     ],
+     "cons": [
+      "Card 241 becomes part of this work's path, not a follow-up, so the switch comes later."
+     ]
+    },
+    {
+     "id": "switch-and-tell",
+     "label": "Switch anyway, and tell users plainly",
+     "pros": [
+      "The new system arrives sooner.",
+      "Users with two or more computers are already covered by each other."
+     ],
+     "cons": [
+      "Single-device users have no backup of new chats until card 241 ships. The one-time message must say so."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "new": true,
+   "surface": "Devices in settings",
+   "path": "Losing devices",
+   "headline": "If every device is lost at once, chats without a cloud backup are gone for good, and a stolen device keeps what it already had.",
+   "changed": "This follows from two rules you set: keys live only on your devices, and no account is needed. Nobody, including us, can recover chats that were only on lost devices. Removing a stolen device stops it receiving anything new and stops it hosting, but cannot erase what is already on it.",
+   "notice": "Yes accepts this as the cost of those two rules. No means you want a recovery method designed, such as a recovery code you write down and keep.",
+   "yes": "Yes, accept this",
+   "no": "No, design recovery"
+  },
+  {
+   "id": "S-3",
+   "words": true,
+   "new": true,
+   "surface": "The optional YouCoded relay",
+   "path": "What the 1 GB and 48 hours apply to",
+   "headline": "The relay's 1 GB and 48 hours cover everything waiting on it: chat lines, helper files and project file changes.",
+   "changed": "You agreed those limits when the relay held only chat lines. Since then helper files and project files were added to what travels. When two devices are on at the same time, data passes straight through the relay and is not stored, so it does not count. Only what is waiting for a sleeping device counts.",
+   "notice": "What you would experience: a large project, or a chat with very large helper files, reaches a new device only while a device that has it is switched on. It would not sit waiting on the relay.",
+   "yes": "Yes, one limit",
+   "no": "No"
+  },
+  {
+   "id": "S-4",
+   "words": true,
+   "new": true,
+   "surface": "Continuing a chat on another device",
+   "path": "Two devices tap Continue here at the same moment",
+   "headline": "If two devices take over the same chat at once, the first to be heard becomes the host and the second is told.",
+   "changed": "Whichever takeover reaches the relay, the super-host or the other device first wins. The second device shows 'Phone just took over this chat' and stays a watcher. If neither device can reach anything, this is the two-versions case you already decided.",
+   "notice": "Nothing typed is lost: a message typed on the second device is sent to the new host.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-5",
+   "words": true,
+   "new": true,
+   "surface": "Continuing a chat on another device",
+   "path": "Continue from here as a new version",
+   "headline": "A version you start knowingly with 'Continue from here as a new version' is treated as a fork you made on purpose.",
+   "changed": "You decided forks made on purpose are equals, while splits caused by a network gap offer to archive the older one. Round 7 did not say which kind this is. As a fork on purpose: both versions stay, grouped together in the resume browser, with no archive prompt.",
+   "notice": "No means it should be treated as a split, with the offer to archive the older version when the other device returns.",
+   "yes": "Yes, a fork",
+   "no": "No, a split"
+  },
+  {
+   "id": "S-6",
+   "words": true,
+   "new": true,
+   "surface": "Continuing a chat on another device",
+   "path": "The Continue here notice",
+   "headline": "When several warnings apply, they appear together in one notice, and the notice includes your round 1 line about waiting.",
+   "changed": "For example, host offline mid-reply plus folder missing shows both in one box, not two boxes in a row. Your round 1 wording had dropped out of the design and is restored: 'If this chat needs hardware or files that exist only on Desktop, it may be best to wait.'",
+   "notice": "The line about waiting shows only when something this device lacks is really in use by the chat.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-7",
+   "words": true,
+   "new": true,
+   "surface": "A device going to sleep",
+   "path": "Closing a laptop lid",
+   "headline": "Nothing special happens when a device goes to sleep, because every line was already sent as it was written.",
+   "changed": "In round 1 you wanted unsent messages uploaded when a device sleeps, without any permanent keep-awake. Under the new system lines leave the device as they are written, so at sleep there is nothing left waiting, and no keep-awake is needed for it.",
+   "notice": "One exception remains: a file change from the last 15 seconds may not have gone yet. It sends when the device wakes. No means you want sleep to send those first, as in the quit question.",
+   "yes": "Yes, replaces round 1",
+   "no": "No"
+  },
+  {
+   "id": "S-8",
+   "words": true,
+   "new": true,
+   "surface": "An open chat",
+   "path": "What travels with a chat",
+   "headline": "A chat travels as its messages plus the extra files the app saved for that one chat.",
+   "changed": "The extras are each helper's step-by-step record, long results saved for rereading, and the chat's plan and to-do list. This is the round 8 choice you picked while asking what 'folder' meant. It is hidden storage the app keeps per chat, never a folder you see. A chat used in the last 48 hours has all of it on every device; an older chat fetches the extras when opened. Pasted images and undo history do not travel.",
+   "notice": "Yes confirms the pick now that the word is explained.",
+   "yes": "Yes, confirmed",
+   "no": "No"
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "Everything above",
+   "headline": "Anything else you think was missed or never properly considered?",
+   "today": "The reviewer also listed things not designed yet that I think belong to the build, not to you: how pairing looks on screen, how the relay limits abuse without accounts, and a later plan for the November 5 conflict copies.",
+   "problem": "If any of those, or anything else, should be decided by you before the design is called complete, it needs saying now.",
+   "proposal": "Write anything, or leave it empty.",
+   "answer": "words",
+   "prompt": "e.g. I want to see how pairing looks before agreeing"
+  }
+ ]
+}
