@@ -332,6 +332,11 @@ For later, his words: explore "backups hosted by youcoded at some point in the f
 backup/restoration flows ... somewhat tangential" [D10 Q-4]. Filed as cards on his word
 [D11 Q-5].
 
+**Order, in his words** [chat 2026-11-12]: "finish everything else in the mesh build first,
+then follow-up with the backup rebuild including any needed github changes". The GitHub
+history fresh start waits for that. Not yet designed: how the mesh and GitHub chat sync
+coexist in the period between the two.
+
 ## 12b. Still open
 
 0. **Slimmed chats.** Whether chats travel and are backed up without the pictures and

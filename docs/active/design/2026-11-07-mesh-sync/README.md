@@ -203,6 +203,11 @@ Follow-ups he asked for, answered in chat but not recorded before now: how other
 - File changes wait about 2 seconds, not 15. — D11 Q-4: picked "short".
 - File as cards: the three backup faults, YouCoded-hosted backups, backup storage and long-term growth. — D11 Q-5: all three, note: "some of these may already exist or have related items. please group related features together on cards if it makes most sense to build things at the same time".
 
+## Chat, 2026-11-12
+
+- GitHub size: wait; no fresh start now. Build order, first statement of it: the mesh is built first, the backup rebuild follows and carries any GitHub changes. — "okay we can wait on github. we should finish everything else in the mesh build first, then follow-up with the backup rebuild including any needed github changes"
+- Consequence to settle when phasing: GitHub chat sync is not stopped until the backup rebuild exists (D9 Q-5), so for a while the mesh and GitHub chat sync would both be running. How they coexist without duplicate copies is not designed.
+
 ## Open items (nothing below is decided)
 
 1. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
