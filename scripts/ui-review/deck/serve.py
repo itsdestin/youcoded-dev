@@ -24,7 +24,7 @@ import threading
 import time
 
 from .live import has_live
-from .spec import UI_REVIEW, SpecError, is_page, pages as spec_pages, workspace_root
+from .spec import UI_REVIEW, SpecError, is_page, pages as spec_pages, row_states, tickable, workspace_root
 
 # WHY not workspace_root() (2026-09-26): that is where the SUB-REPO checkouts are cloned once
 # (youcoded/, wecoded-themes/) and shared across every worktree — it is NOT where this deck
@@ -202,6 +202,22 @@ def extras(a):
     return ''.join(out)
 
 
+def tick_lines(st, a):
+    """For a "Yours to change" list: how many rows he ticked as fine, and each row he did NOT look
+    at, by its own words. WHY (Destin, round 10, R-2 "Warn, list them, let me send anyway"): a row he
+    never ticked or changed must reach the session as "not looked at", never as approved. page.js
+    tickWords() is the twin; a test feeds one state to both."""
+    if not tickable(st):
+        return ''
+    states = row_states(st, a)
+    n = sum(1 for v in states.values() if v == 'ok')
+    out = [f'\n    ticked as fine — {n} {"row" if n == 1 else "rows"}'] if n else []
+    for c in st['calls']:
+        if states.get(c.get('id')) == 'unlooked':
+            out.append(f'\n    not looked at — "{c.get("call", "")}"')
+    return ''.join(out)
+
+
 def summary(spec, state):
     """One line per step, ledger id first, in spec order (spec §4.5)."""
     counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'picks': 0, 'wrote': 0, 'skip': 0}
@@ -229,7 +245,7 @@ def summary(spec, state):
         # Fix: a note is a note (Destin, 2026-09-04) — no tag to print. An older answers
         # file may still carry a leftover per-note category alongside it; it is simply
         # never read here, so it has no effect on the summary.
-        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else '') + extras(a))
+        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else '') + extras(a) + tick_lines(st, a))
     when = (state.get('submitted') or '')[:16].replace('T', ' ')
     head = (f'{spec["key"]} · {"submitted " + when if when else "not submitted"} · '
             f'{counts["yes"]} yes · {counts["no"]} no · {counts["other"]} other · '

@@ -40,8 +40,8 @@ Contract and Acceptance decks are retired (`feature-flow.md`). Several designs o
 
 ## Lists: one kind of row per card
 **Invariant:** a words step with `calls` is a list of ONE kind, named at its head: facts
-(`context: true`: no pencils, never answered or counted), his to change (a pencil per row, no
-answer button; left alone it stands), or results (every row a `result`; run/skip checks carry
+(`context: true`: no pencils, never answered or counted), his to change (a tick and a pencil per row,
+no status words; a row he neither ticked nor changed is "not looked at", never approved), or results (every row a `result`; run/skip checks carry
 `more`). Mixed lists are refused. No "Details" fold: a row's `trail` is plain lines above its
 words, `more` labelled lines below, `reuse` behind an (i). `picture`/`before` are tiles in an
 Attachments card; a tile opens the popup: true size, scrolling, comments at the right,

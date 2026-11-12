@@ -25,7 +25,7 @@ import json
 import os
 import re
 
-from .spec import strip_comments
+from .spec import strip_comments, unlooked_rows, tickable
 
 # Checks he can switch (before the build) carry one of these; after the build the row carries a
 # real outcome. `todo` is "left for him to try", which is not a check result.
@@ -113,6 +113,20 @@ def changes_requested(answers):
     return out
 
 
+def unlooked_in(spec, answers):
+    """Rows of a "Yours to change" list in `spec` that he neither ticked nor changed, as
+    'step/row ("words")'. WHY (round 10, R-2): in the after-build walkthrough a row he never looked
+    at means he has not gone through it, so the deck is not finished. A list answered under the old
+    shape (accepted, no ticks) still reads as accepted - see spec.row_states."""
+    out = []
+    mine = (answers or {}).get('answers') or {}
+    for st in spec.get('steps') or []:
+        if isinstance(st, dict) and tickable(st):
+            for c in unlooked_rows(st, mine.get(st.get('id'))):
+                out.append(f'{st.get("id")}/{c.get("id")} ("{(c.get("call") or "")[:70]}")')
+    return out
+
+
 def request_rows(before, answers):
     """Before-walkthrough rows the build must answer for: those quoting him, and any he commented on."""
     comments = row_comments(answers)
@@ -188,6 +202,8 @@ def check_gate(before_path, after=None):
     else:
         for line in changes_requested(a_ans):
             problems.append(f'after-build walkthrough, not finished: {line}')
+        for line in unlooked_in(aft, a_ans):
+            problems.append(f'after-build walkthrough, not finished: row {line} was not looked at - he neither ticked it nor asked for a change')
     for k, t in also_check(before, b_ans).items():
         notes.append(f'also check ({k}): {t}')
     if not problems:

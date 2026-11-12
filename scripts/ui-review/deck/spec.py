@@ -605,6 +605,37 @@ def is_page(step):
     return 'page' in step
 
 
+def tickable(step):
+    """A "Yours to change" list: calls that are not background (`context`) and carry no `result`.
+    WHY (Destin, round 9, then round 10 R-1 "Tick or change"): "i want to eliminate the scenario where
+    a row gets accidentally taken as approved just because i didnt read or see it." Only this kind of
+    list has a tick on each row; background and results lists behave as they always did."""
+    return is_calls(step) and not step.get('context') and isinstance(step.get('calls'), list) \
+        and bool(step['calls']) and not any(c.get('result') for c in step['calls'])
+
+
+def row_states(step, a):
+    """{row id: 'changed' | 'ok' | 'unlooked'} for a tickable list, from its saved answer `a`.
+    WHY the legacy branch: a deck answered before round 10 carried `accepted: true` (or a list
+    with changes and no `ok` at all) and meant "the rows I did not touch are fine". Those files must
+    keep reading that way; only an answer written by the new page (it always writes `ok`, even
+    empty) can say a row was not looked at."""
+    a = a or {}
+    ch, ok = a.get('changes') or {}, a.get('ok') or {}
+    legacy = bool(a.get('accepted')) or ('ok' not in a and a.get('v') == 'other')
+    out = {}
+    for c in step.get('calls') or []:
+        r = c.get('id')
+        out[r] = 'changed' if r in ch else 'ok' if (ok.get(r) or legacy) else 'unlooked'
+    return out
+
+
+def unlooked_rows(step, a):
+    """The rows of a tickable list he neither ticked nor changed, as spec row dicts."""
+    st = row_states(step, a)
+    return [c for c in step.get('calls') or [] if st.get(c.get('id')) == 'unlooked']
+
+
 def words_only(spec):
     """Every step is a question, a statement or a contract: no picture, no live pane. This is
     the deck that renders as PAGES; anything else keeps one step per screen."""

@@ -424,9 +424,23 @@
   // WHY `context` (round 5, E-1: "was this supposed to be context or questions? it has edit arrows"):
   // a list of facts for him to read looked exactly like a list of choices to change. A context
   // list says so and carries no pencils; a correction goes in the page's comment box.
+  // WHY a tick beside the pencil (Destin, round 10, R-1 "Tick or change"; round 9: "i want to eliminate
+  // the scenario where a row gets accidentally taken as approved just because i didnt read or see it"):
+  // on a "Yours to change" list nothing counts as fine until he presses the tick. Python twin: spec.tickable.
+  const tickable = st => st.kind === 'calls' && !st.context && !!st.calls.length && !st.calls.some(c => c.result);
+  const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  // 'changed' | 'ok' | 'unlooked'. Twin of spec.row_states, including its reading of decks answered before
+  // round 10 (accepted, or changes with no `ok` at all: the untouched rows were fine).
+  const rowState = (a, cid) => {
+    a = a || {}; const legacy = !!a.accepted || (!('ok' in a) && a.v === 'other');
+    return cid in (a.changes || {}) ? 'changed' : ((a.ok || {})[cid] || legacy) ? 'ok' : 'unlooked';
+  };
+  const unlooked = st => tickable(st) ? st.calls.filter(c => rowState(state.answers[st.id], c.id) === 'unlooked') : [];
+  // Answered, for the counts: a "Yours to change" list only when EVERY row is ticked or changed.
+  const isAnswered = st => { const y = state.answers[st.id]; return tickable(st) ? !!y && !unlooked(st).length : !!(y && y.v && y.v !== 'skip'); };
   const callLi = (st, c) => {
     // A row is: its story (if it has one), its words, its status pill and pencil, then at most one Attachments card.
-    return `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}">${storyLines(c)}<div class="callrow"><div class="calltext"><div class="callhead"><p class="callwhat">${esc(c.call)}</p>${reuseTip(c)}</div><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}${moreLines(c)}</div><div class="callflags">${resultPill(st, c)}</div><button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea><button type="button" class="markx callx" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Take this comment away" aria-label="Take this comment away">${BIN}</button></div>${attCard(st, c)}</li>`;
+    return `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}">${storyLines(c)}<div class="callrow"><div class="calltext"><div class="callhead"><p class="callwhat">${esc(c.call)}</p>${reuseTip(c)}</div><p class="src">${esc(c.why)}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}${moreLines(c)}</div><div class="callflags">${resultPill(st, c)}</div>${tickable(st) ? `<button type="button" class="iconbtn calltick" aria-pressed="false" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="This is fine" aria-label="This is fine">${CHECK}</button>` : ''}<button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''}${tickable(st) ? ' aria-pressed="false"' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea><button type="button" class="markx callx" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Take this comment away" aria-label="Take this comment away">${BIN}</button></div>${attCard(st, c)}</li>`;
   };
   // WHY groups (round 8): a row's state is shown by WHERE it sits — under a small heading "New", "Changed"
   // or "Already settled" — not by a badge. Rows keep the order they were written in inside a group. With
@@ -437,7 +451,7 @@
   const groupHead = (label, n) => `<h4 class="grph">${label}<span class="grpn">${n}</span></h4>`;
   const callsCard = st => {
     const ul = rows => `<ul>${rows.map(c => callLi(st, c)).join('')}</ul>`;
-    const cls = `card calls${st.context ? ' context' : ''}${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}`;
+    const cls = `card calls${st.context ? ' context' : ''}${tickable(st) ? ' tickable' : ''}${st.numbered ? ' numbered' : ''}${st.gallery ? ' gallery' : ''}`;
     // WHY a kind line (round 9, K-1): every list says which of the three kinds it is and what, if anything, it
     // wants from him — facts, rows that are his to change, or results (and, before a build, checks to switch).
     if (!st.calls.some(c => c.state)) return `<section class="${cls}">${ul(st.calls)}</section>`;
@@ -1068,6 +1082,7 @@
     const open = e.target.closest('.opendev');
     if (open) { openDev(open); return; }
     const cx = e.target.closest('.callx'); if (cx) { toggleCall(cx.dataset.sid, cx.dataset.call, true); return; }
+    const tk = e.target.closest('.calltick'); if (tk) { toggleTick(tk.dataset.sid, tk.dataset.call); return; }
     const chg = e.target.closest('.calledit');
     if (chg) { toggleCall(chg.dataset.sid, chg.dataset.call); return; }
     const mx = e.target.closest('.markx:not(.callx)');
@@ -1125,6 +1140,7 @@
   function toggleCall(sid, cid, remove) {
     if (state.submitted) return;
     const a = { ...(state.answers[sid] || {}) }; const ch = { ...(a.changes || {}) };
+    { const st0 = stepById(sid); if (st0 && tickable(st0)) legacyToTicks(st0, a); }
     // WHY (UX review 2026-11-10): a second press of the pencil on a row with a saved comment used to
     // delete it with no warning. Now it only goes back to the box; taking a comment away is the
     // small x beside it. An EMPTY box may still be closed by the pencil.
@@ -1137,13 +1153,43 @@
       // WHY: pictures and paths pasted into that change's box belong to it; leaving them would
       // print "attached to change x" for a change he took back.
       if (a.attach) { a.attach = { ...a.attach }; delete a.attach['change:' + cid]; if (!Object.keys(a.attach).length) delete a.attach; }
-    } else ch[cid] = '';
+    } else { ch[cid] = ''; if (a.ok && cid in a.ok) { a.ok = { ...a.ok }; delete a.ok[cid]; } }   // WHY: a row cannot be both fine and changed — writing a comment takes the tick off (round 10)
     // Any line marked for change makes the answer "something else"; none left, and an answer
     // that only existed because of a change is withdrawn rather than left as a bare Other.
     if (Object.keys(ch).length) { a.changes = ch; a.v = 'other'; delete a.dk; }
     else { delete a.changes; if (a.v === 'other' && !openRows(a) && !(a.marks || []).length) delete a.v; }
+    { const st = stepById(sid); if (st && tickable(st)) { a.ok = a.ok || {}; settleList(st, a); } }
     state.answers[sid] = a; paintState(); save();
     const box = $(`.callt[data-sid="${CSS.escape(sid)}"][data-call="${CSS.escape(cid)}"]`); if (box && cid in ch) box.focus();
+  }
+  // The tick. WHY a tick on a commented row does nothing (round 10): the comment is his words and must not
+  // vanish from a stray press; the bin beside the comment is how a comment is taken away. Pressing a
+  // lit tick again takes it off.
+  // A deck answered before round 10 meant "rows I did not touch are fine" (accepted). Reopened, the
+  // first press on it writes those rows as real ticks, so editing one row never turns the others into "not looked at".
+  function legacyToTicks(st, a) {
+    if (!(a.accepted || (!('ok' in a) && a.v === 'other'))) return;
+    a.ok = {}; st.calls.forEach(c => { if (!(c.id in (a.changes || {}))) a.ok[c.id] = true; });
+  }
+  function toggleTick(sid, cid) {
+    if (state.submitted) return;
+    const st = stepById(sid); if (!st || !tickable(st)) return;
+    const a = { ...(state.answers[sid] || {}) };
+    if (cid in (a.changes || {})) return;
+    legacyToTicks(st, a);
+    const ok = { ...(a.ok || {}) };
+    if (ok[cid]) delete ok[cid]; else ok[cid] = true;
+    a.ok = ok; settleList(st, a);
+    state.answers[sid] = a; paintState(); save();
+  }
+  // What `v` says for a "Yours to change" list: other if any row has a change; yes only when every row is
+  // ticked and none changed; otherwise no answer, so a half-read list is never taken as approved.
+  function settleList(st, a) {
+    const ch = Object.keys(a.changes || {}).length, ok = Object.keys(a.ok || {}).length;
+    delete a.accepted; delete a.dk;
+    if (ch) a.v = 'other';
+    else if (ok && ok === st.calls.length) a.v = 'yes';
+    else if (a.v === 'other' || a.v === 'yes') delete a.v;
   }
   // `asks` is read for answers saved before the pencil replaced "More context" (round 2 decks).
   const openRows = a => Object.keys((a || {}).changes || {}).length + ((a || {}).asks || []).length + Object.keys((a || {}).edits || {}).length;
@@ -1155,6 +1201,8 @@
       // WHY not a background-only list (review 2026-11-10): `context: true` rows ask nothing, so
       // leaving the page must never count as answering them.
       if (!listy(st) || st.context) return;
+      // WHY not a "Yours to change" list (round 10, R-2): moving on no longer means "fine"; only a tick does.
+      if (tickable(st)) return;
       const a = state.answers[st.id] || {};
       // `accepted` marks a list that stands because he moved on — the only thing that lets its pill
       // say "Accepted" (review 2026-11-10: the pill showed on a group he had not left or touched).
@@ -1183,6 +1231,13 @@
         const ch = (state.answers[btn.dataset.sid] || {}).changes || {}; const on = btn.dataset.call in ch;
         li.classList.toggle('chg', on); wrap.hidden = !on; btn.classList.toggle('on', on); btn.disabled = !!state.submitted; box.disabled = !!state.submitted;
         btn.title = on ? 'Go to your comment' : 'Comment on this, or say what to change';
+        // The two controls show the row's state themselves (round 10): no words, no dots, no edge bar.
+        btn.setAttribute('aria-pressed', on);
+        { const tk = li.querySelector('.calltick'); if (tk) {
+          const ticked = rowState(state.answers[btn.dataset.sid], btn.dataset.call) === 'ok';
+          tk.classList.toggle('on', ticked); tk.setAttribute('aria-pressed', ticked); tk.disabled = !!state.submitted;
+          tk.title = on ? 'Take your comment away first' : ticked ? 'Undo: this is fine' : 'This is fine';
+        } }
         { const x = li.querySelector('.callx'); if (x) x.disabled = !!state.submitted; }
         if (document.activeElement !== box) { box.value = on ? ch[btn.dataset.call] : ''; grow(box); }
       }
@@ -1221,18 +1276,20 @@
         // he has written something, or "Accepted" after he moves on. A background-only (`context`) list
         // never has a pill: there is nothing on it to accept or change. A QUESTION still says
         // "Not answered" / "Answered 12:47", because it does ask for something.
-        const quiet = listy(st) && (!!st.context || (!n && !(a.accepted && a.v === 'yes')));
+        // Round 10: a "Yours to change" list says nothing until he has ticked or changed a row, then "3 of 5 looked at" / "All looked at".
+        const tk10 = tickable(st), seen10 = tk10 ? st.calls.length - unlooked(st).length : 0;
+        const quiet = tk10 ? !seen10 : listy(st) && (!!st.context || (!n && !(a.accepted && a.v === 'yes')));
         tk.hidden = quiet; art.classList.toggle('nostate', quiet);
-        tk.className = 'qstate ' + (!on && !n ? 'none' : listy(st) && n ? 'chg' : 'ok');
-        tk.textContent = quiet ? '' : !on && !n ? 'Not answered' : listy(st) ? (n ? n + (n === 1 ? ' change' : ' changes') : 'Accepted') : 'Answered' + (a.t ? ' ' + clock(a.t) : '');
+        tk.className = 'qstate ' + (tk10 ? (seen10 === st.calls.length ? 'ok' : 'none') : !on && !n ? 'none' : listy(st) && n ? 'chg' : 'ok');
+        tk.textContent = quiet ? '' : tk10 ? (seen10 === st.calls.length ? 'All looked at' : seen10 + ' of ' + st.calls.length + ' looked at') : !on && !n ? 'Not answered' : listy(st) ? (n ? n + (n === 1 ? ' change' : ' changes') : 'Accepted') : 'Answered' + (a.t ? ' ' + clock(a.t) : '');
       }
     });
     // A segment is a PAGE: solid once every question on it is answered, half-lit while some are.
     $$('#steps span').forEach((seg, i) => {
-      const on = pageSteps(i).filter(st => !st.context), n = on.filter(st => { const x = state.answers[st.id]; return x && x.v && x.v !== 'skip'; }).length;
+      const on = pageSteps(i).filter(st => !st.context), n = on.filter(isAnswered).length;
       seg.className = (on.length && n === on.length ? 'done' : n ? 'part' : '') + (i === cur ? ' on' : '');
     });
-    const done = asked.filter(x => { const y = state.answers[x.id]; return y && y.v && y.v !== 'skip'; }).length;
+    const done = asked.filter(isAnswered).length;
     $('#count').textContent = 'page ' + (cur + 1) + ' of ' + PAGES.length + ' · ' + done + ' of ' + NA + ' answered' + (state.submitted ? ' · submitted, read-only' : '');
     // On a page the forward button is navigation, not "save this answer" — it is never disabled
     // for an unanswered question, because there are several of them on screen.
@@ -1277,7 +1334,7 @@
     // Never while he is typing in it: assigning `value` would put the caret back at the end.
     const w = $('#answers .ans-write'); if (w && document.activeElement !== w) w.value = a.text || '';
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
-    const done = asked.filter(x => { const y = state.answers[x.id]; return y && y.v && y.v !== 'skip'; }).length;
+    const done = asked.filter(isAnswered).length;
     $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
     // browsing a submitted deck must never re-arm Save & Next
     $('#save').disabled = !!state.submitted || !(a.v && a.v !== 'skip');
@@ -1425,7 +1482,7 @@
       if (st.context) continue;   // a background-only list asks nothing: no answer, no line
       const a = (S.answers || {})[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
       const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && st.variants ? 'none' : (v === 'other' && a.dk ? "don't know" : v));
-      lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a));
+      lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a) + tickWords(st, a));
     }
     const when = (S.submitted || '').slice(0, 16).replace('T', ' ');
     const head = DECK.key + ' · ' + (when ? 'submitted ' + when : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · '
@@ -1444,6 +1501,14 @@
   const pillWords = p => p.kind === 'image' ? 'picture "' + p.name + '" saved at ' + p.path : 'file ' + p.path;
   const attachLabel = k => k === 'note' ? 'his note' : k === 'text' ? 'his typed answer' : k.startsWith('change:') ? 'change ' + k.slice(7) : k;
   // Mirrors serve.py's extras(): lines he marked for change, and areas he marked on a picture.
+  // Twin of serve.py tick_lines(): rows ticked as fine, and each row NOT looked at, by its own words.
+  // WHY (round 10, R-2): a row he never ticked or changed is reported as "not looked at", never as approved.
+  function tickWords(st, a) {
+    if (!tickable(st)) return '';
+    const n = st.calls.filter(c => rowState(a, c.id) === 'ok').length;
+    return (n ? '\n    ticked as fine — ' + n + (n === 1 ? ' row' : ' rows') : '')
+      + st.calls.filter(c => rowState(a, c.id) === 'unlooked').map(c => '\n    not looked at — "' + c.call + '"').join('');
+  }
   function extras(a) {
     const out = [];
     for (const [k, v] of Object.entries(a.results || {})) out.push('\n    status ' + k + ' — he set it to ' + (RESULT[v] || v));
@@ -1465,13 +1530,21 @@
     // paintState() repaints so a step that record() just marked "skip" turns grey immediately.
     stepStart = Date.now(); paintState();
     // Context lists are never "missing"; each missing one is named the way the page names it.
-    const missing = asked.filter(st => { const v = (state.answers[st.id] || {}).v; return !v || v === 'skip'; });
+    // A "Yours to change" list is not a missing STEP; its unticked rows are named in their own warning below (round 10, R-2).
+    const missing = asked.filter(st => { if (tickable(st)) return false; const v = (state.answers[st.id] || {}).v; return !v || v === 'skip'; });
+    const lists = asked.filter(st => unlooked(st).length), nU = lists.reduce((n, st) => n + unlooked(st).length, 0);
+    { const box = $('#unlooked'); box.style.display = nU ? 'flex' : 'none';
+      // WHY plain names and the row's own words (round 10, R-2: "warn, list them, let me send anyway"): grouped by the page and list the screen shows; he can still send.
+      const pt = st => PAGES ? ((PAGES.find(p => p.steps.includes(st.id)) || {}).title || '') : '';
+      $('#unlookedn').textContent = nU + (nU === 1 ? ' row' : ' rows') + ' not looked at. They are sent as "not looked at", never as approved.';
+      $('#unlookedl').innerHTML = lists.map(st => `<li><b>${esc(pt(st) ? pt(st) + ' · ' + st.headline : st.headline)}</b><ul>${unlooked(st).map(c => `<li>${esc(c.call)}</li>`).join('')}</ul></li>`).join(''); }
     $('#skipped').style.display = missing.length ? 'flex' : 'none';
     $('#skipn').textContent = missing.length + (missing.length === 1 ? ' step has' : ' steps have') + ' no answer (' + missing.map(whereOf).join('; ') + ').';
     // The list names steps ("2 steps have no answer") because a question is what he answers;
     // going there means opening the PAGE that question sits on.
     const pageOf = st => PAGES ? Math.max(0, PAGES.findIndex(p => p.steps.includes(st.id))) : DECK.steps.indexOf(st);
-    $('#first').style.display = missing.length ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(pageOf(missing[0])); };
+    const firstTo = missing.concat(lists).sort((x, y) => pageOf(x) - pageOf(y))[0];
+    $('#first').style.display = firstTo ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(pageOf(firstTo)); };
     $('#dlg-text').innerHTML = server
       ? 'Your answers have been saving to a file next to this deck as you went. Submitting tells Claude you\'re finished — it picks them up in the session and replies there. <b>Nothing to copy or paste</b>: close this tab and go back to the conversation.'
       : 'This deck is not being served, so Claude is not watching it. Copy the feedback below and paste it into the chat.';
@@ -1509,6 +1582,10 @@
   // definitive end of the deck, and the read-back of what was sent.
   const ANS_LABEL = (st, a) => {
     const v = a.v || 'skip';
+    if (tickable(st)) {
+      const ch = openRows(a), un = st.calls.filter(c => rowState(a, c.id) === 'unlooked').length;
+      return (ch ? ch + (ch === 1 ? ' change' : ' changes') : 'No changes') + (un ? ' · ' + un + ' not looked at' : '');
+    }
     if (v === 'skip') return 'No answer';
     // Fix: a words QUESTION offers `options`, not the `variants`/`panes` pickList knows about, so
     // its answers read back on the finish screen as a bare id ("all-five-plus-new"). Look in both.

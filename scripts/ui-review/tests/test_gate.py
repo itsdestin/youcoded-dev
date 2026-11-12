@@ -150,5 +150,47 @@ class Cli(unittest.TestCase):
         self.assertTrue(out.getvalue().startswith('ok: '))
 
 
+class TickGate(unittest.TestCase):
+    """Round 10, "Tick or change": a row of a "Yours to change" list he neither ticked nor changed means he
+    has not gone through the after-build deck, so the gate says NOT finished."""
+    LIST = {'id': 'W-9', 'words': True, 'calls': [
+        {'id': 'r1', 'call': 'First row words.', 'why': 'x'}, {'id': 'r2', 'call': 'Second row words.', 'why': 'x'}]}
+
+    def probs(self, ans):
+        from deck.gate import unlooked_in
+        return unlooked_in({'steps': [self.LIST]}, {'answers': {'W-9': ans} if ans is not None else {}})
+
+    def test_untouched_list_names_both_rows(self):
+        out = self.probs(None)
+        self.assertEqual(len(out), 2); self.assertIn('First row words.', out[0])
+
+    def test_ticked_and_changed_rows_are_fine(self):
+        self.assertEqual(self.probs({'v': 'other', 'ok': {'r1': True}, 'changes': {'r2': 'no'}}), [])
+
+    def test_one_row_left_is_named(self):
+        out = self.probs({'ok': {'r1': True}})
+        self.assertEqual(len(out), 1); self.assertIn('W-9/r2', out[0])
+
+    def test_old_shape_accepted_still_reads_as_accepted(self):
+        self.assertEqual(self.probs({'v': 'yes', 'accepted': True}), [])
+        self.assertEqual(self.probs({'v': 'other', 'changes': {'r1': 'x'}}), [])
+
+    def test_a_results_list_or_context_list_is_never_asked_to_be_ticked(self):
+        from deck.gate import unlooked_in
+        for extra in ({'context': True}, {}):
+            st = dict(self.LIST, **extra)
+            if not extra: st['calls'] = [dict(c, result='pass') for c in st['calls']]
+            self.assertEqual(unlooked_in({'steps': [st]}, {'answers': {}}), [])
+
+    def test_the_whole_gate_refuses_an_unlooked_row(self):
+        tmp = tempfile.mkdtemp(); b = os.path.join(tmp, 'x.walkthrough.json'); a = os.path.join(tmp, 'x.walkthrough.after.json')
+        w(b, {'title': 't', 'key': 'k', 'out': 'k.html', 'steps': [{'id': 'W-1', 'calls': [{'id': 'save', 'call': 'S', 'why': 'x', 'decided': 'q'}]}]})
+        w(a, {'title': 't', 'key': 'k2', 'out': 'k2.html', 'steps': [dict(self.LIST, calls=[dict(self.LIST['calls'][0], **{'from': 'W-1/save'}), self.LIST['calls'][1]])]})
+        w(os.path.join(tmp, 'x.walkthrough.answers.json'), SUB)
+        w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), {'submitted': 'x', 'answers': {'W-9': {'ok': {'r1': True}}}})
+        problems = check_gate(b)[0]
+        self.assertTrue(any('Second row words.' in p and 'not looked at' in p for p in problems), problems)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -778,3 +778,31 @@ Source: the areas Destin marked on round 10's pictures. Where this contradicts a
 - **In drawings for him:** keep what is the deck's own (the yellow header chip); do not dress a deck as an
   app screen ("Esc · Back to chat" is not a deck part); no status words beside the controls that already
   show the status ("i definitely dont like the weird new… change asked/fine/not looked at indicator things").
+
+## Tick or change (round 10)
+
+Source: Destin's round-10 answers, R-1 "Tick or change" and R-2 "Warn, list them, let me send anyway". Where
+this contradicts a section above, this wins.
+
+- **A "Yours to change" list** (`calls`, not `context`, no row with a `result`; `tickable` in spec.py and
+  page.js) gives each row two buttons at its right: a tick ("This is fine") and the pencil. The buttons
+  are real `<button>`s with `aria-pressed`, at least 32px; a lit one wears the answer buttons' accent
+  outline. No status words, dots or edge bars beside a row. Nothing counts as fine until he ticks it.
+- **One state per row.** Writing a comment takes that row's tick off. Pressing the tick on a row that has
+  a comment does nothing (the bin beside the comment is how a comment goes). A lit tick pressed again
+  takes it off.
+- **Moving on accepts nothing** for these lists (`acceptLists` skips them). Lists of facts, results,
+  checks and screens behave as before.
+- **The card's pill** is silent until he acts, then "3 of 5 looked at", then "All looked at". The header
+  count and the page segments count such a list as answered only when every row is ticked or changed.
+- **At Done**, a warning counts the rows he neither ticked nor changed and names them under their page and
+  list; he can still send. The finish table says "No changes · 2 not looked at".
+- **Saved shape:** `answers[step].ok = { "<row id>": true }` beside `changes`. The page always writes `ok`
+  (empty when nothing is ticked) once he touches a list, and never writes `accepted` for these lists.
+  `v` is `other` if any row changed, `yes` only when every row is ticked and none changed, otherwise unset.
+- **Both summaries** (`summaryOf` in page.js, `tick_lines` in serve.py) print `ticked as fine — N rows`
+  and, per row, `not looked at — "<the row's words>"`.
+- **The done gate** (`gate.py`): in the after-build walkthrough a row not looked at means NOT finished,
+  and the problem names the row.
+- **Old answers keep their meaning** (`row_states`): `accepted: true`, or a list with `changes` and no
+  `ok`, reads as "untouched rows were fine". Reopened, the first press writes those rows as real ticks.

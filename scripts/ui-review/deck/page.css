@@ -880,3 +880,15 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
 .sentline{margin:0 0 12px;padding:8px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--panel);font-size:13px;color:var(--fg-2)}
 /* Design guide: sentence case, no spaced-out capitals. The small label above a card's title follows it. */
 .pages article.q .qnum{text-transform:none;letter-spacing:0;font-size:12px}
+
+/* ── Tick or change (round 10) ──────────────────────────────────────────────────────────────
+   WHY (Destin, round 10, R-1, on the drawing: "i definitely dont like the weird new blue change
+   asked/fine/not looked at indicator things you added"): a "Yours to change" row shows its state ONLY in
+   its two buttons — no words, no dots, no edge bar. A lit button wears the same accent outline the answer
+   buttons (.ans.on) wear. An untouched row has neither lit. */
+.card.tickable .callrow{align-items:flex-start}
+.card.tickable .iconbtn{width:32px;height:32px;min-width:32px;min-height:32px;border:1px solid var(--edge);background:transparent}
+.card.tickable .iconbtn.on,.card.tickable .iconbtn[aria-pressed="true"]{color:var(--fg);background:color-mix(in srgb,var(--accent) 14%,transparent);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.card.tickable .calltick:disabled,.card.tickable .calledit:disabled{opacity:.6}
+.dlg .warn ul{margin:6px 0 0;padding-left:18px} .dlg .warn ul ul{margin:2px 0 6px;padding-left:16px}
+.dlg #unlooked{max-height:30vh;overflow:auto}

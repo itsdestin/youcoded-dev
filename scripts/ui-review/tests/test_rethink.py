@@ -78,6 +78,25 @@ class RethinkTests(unittest.TestCase):
         self.assertIn('change sound — "play the win chime"', out)
         self.assertIn('area 1 on the picture (left 10%, top 20%, 30% wide, 5% tall) — "too cramped"', out)
 
+    def test_summary_lists_ticks_and_rows_not_looked_at_never_as_approved(self):
+        # Round 10, R-2: a row he neither ticked nor changed is reported as "not looked at".
+        s = spec_with(self.tmp, lambda r: r['steps'].append(dict(CALLS)))
+        out = summary(s, {'answers': {'K-1': {'ok': {'size': True}}}})
+        self.assertIn('ticked as fine — 1 row', out)
+        self.assertIn('not looked at — "A win plays no sound."', out)
+        self.assertNotIn('not looked at — "The board', out)
+        everything = summary(s, {'answers': {'K-1': {'v': 'yes', 'ok': {'size': True, 'sound': True}}}})
+        self.assertIn('ticked as fine — 2 rows', everything); self.assertNotIn('not looked at', everything)
+        untouched = summary(s, {'answers': {}})
+        self.assertEqual(untouched.count('not looked at'), 2)
+
+    def test_a_deck_answered_the_old_way_still_prints_without_inventing_unlooked_rows(self):
+        s = spec_with(self.tmp, lambda r: r['steps'].append(dict(CALLS)))
+        old = summary(s, {'answers': {'K-1': {'v': 'yes', 'accepted': True}}})
+        self.assertNotIn('not looked at', old)
+        old2 = summary(s, {'answers': {'K-1': {'v': 'other', 'changes': {'sound': 'x'}}}})
+        self.assertNotIn('not looked at', old2); self.assertIn('change sound', old2)
+
     def test_page_source_keeps_the_two_fixes_destin_named(self):
         # He named two faults (2026-11-09): a green circle on an answered question, and two
         # text boxes on a typed answer. Both were one-line causes; these keep them from returning.

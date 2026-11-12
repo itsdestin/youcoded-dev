@@ -1338,7 +1338,7 @@ print(p)`;
       // typing a comment gives the list a pill that says how much it holds
       await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .calledit').click()"); await sleep(60);
       await c.evaluate("(()=>{const b=document.querySelector('article.q[data-id=\"L-2\"] .callt');b.value='add a chime';b.dispatchEvent(new Event('input',{bubbles:true}))})()");
-      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .qstate').textContent"), '1 change');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .qstate').textContent"), '1 of 2 looked at', 'round 10: a "Yours to change" list says how many rows he has looked at, in one short phrase');
       assert.equal(await c.evaluate("(()=>{const s=getComputedStyle(document.querySelector('article.q[data-id=\"L-2\"] .qstate'));return s.pointerEvents+' '+s.borderTopWidth})()"), 'none 0px', 'the pill cannot be pressed and is not drawn as a bordered control');
       // ── pictures and paths pasted into boxes become pills, saved under their box ──
       await c.evaluate(paste('article.q[data-id="L-2"] .callt', 'image')); await sleep(900);
@@ -1348,6 +1348,35 @@ print(p)`;
       assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .attpill.file').title"), '/home/destin/youcoded-dev/docs/MAP.md', 'the full path is the tooltip');
       assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .callt').value"), 'add a chime', 'the pasted path did not also land as raw text');
       assert.equal(await c.evaluate("(()=>{const i=document.querySelector('article.q[data-id=\"L-2\"] .attpill.img img');return i.complete&&i.naturalWidth>0})()"), true, 'the thumbnail loads from the deck server');
+      // ── round 10, "Tick or change": a tick and a pencil on every row of a "Yours to change" list ──
+      {
+        const L = 'article.q[data-id="L-2"]', row = id => `${L} .call[data-call="${id}"]`;
+        const q = js => c.evaluate(js);
+        const pressed = (id, kind) => q(`document.querySelector('${row(id)} .${kind}').getAttribute('aria-pressed')`);
+        const saved = async () => JSON.parse(await q("localStorage.getItem('deck:' + DECK.key)")).answers['L-2'];
+        assert.equal(await q(`document.querySelectorAll('${L} .calltick').length`), 2, 'a tick on each row');
+        assert.equal(await q(`[...document.querySelectorAll('${L} .calltick, ${L} .calledit')].every(b => b.tagName === 'BUTTON' && b.getBoundingClientRect().height >= 32 && b.getAttribute('aria-label'))`), true, 'real buttons, at least 32px, with names');
+        assert.equal(await q(`document.querySelectorAll('article.q[data-id="C-1"] .calltick').length`), 0, 'a background list has no ticks');
+        assert.equal(await pressed('a', 'calledit'), 'true', 'the pencil of a commented row looks selected'); assert.equal(await pressed('a', 'calltick'), 'false');
+        // a tick on a commented row keeps the comment and does not tick
+        await q(`document.querySelector('${row('a')} .calltick').click()`); await sleep(100);
+        assert.equal(await pressed('a', 'calltick'), 'false'); assert.equal(await q(`document.querySelector('${row('a')} .callt').value`), 'add a chime');
+        // ticking the other row: pressed, saved, and the pill counts it
+        await q(`document.querySelector('${row('b')} .calltick').click()`); await sleep(100);
+        assert.equal(await pressed('b', 'calltick'), 'true'); assert.deepEqual((await saved()).ok, { b: true }); assert.equal((await saved()).accepted, undefined, 'moving on no longer writes accepted');
+        assert.equal(await q(`document.querySelector('${L} .qstate').textContent`), 'All looked at');
+        // no status words, dots or coloured edge beside a row
+        assert.equal(await q(`/Not looked at|Change asked|\\bFine\\b/.test(document.querySelector('${L}').innerText)`), false, 'the controls are the only status');
+        // pressing a lit tick takes it off
+        await q(`document.querySelector('${row('b')} .calltick').click()`); await sleep(100);
+        assert.equal(await pressed('b', 'calltick'), 'false'); assert.deepEqual((await saved()).ok, {});
+        // writing a comment on a ticked row clears the tick
+        await q(`document.querySelector('${row('b')} .calltick').click()`); await sleep(60);
+        await q(`document.querySelector('${row('b')} .calledit').click()`); await sleep(60);
+        assert.equal(await pressed('b', 'calltick'), 'false', 'a comment takes the tick off'); assert.equal(await pressed('b', 'calledit'), 'true');
+        await q(`document.querySelector('${row('b')} .callx').click()`); await sleep(100);
+        assert.equal(await pressed('b', 'calledit'), 'false');
+      }
       // leave the page and come back: the open card and the pills are still there
       await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
       // ── buttons follow the design guide ──
@@ -1625,7 +1654,7 @@ print(p)`;
     // One summary: the page and the server agree on the same state.
     const st = { deck: 'x', submitted: '2026-11-10T10:00:00Z', notes: 'general words', notesAttach: [{ kind: 'path', name: 'a.txt', path: '/tmp/a.txt' }],
       pageNotes: { 'P-2': 'about questions', 'P-1': 'about rows' }, pageAttach: { 'P-1': [{ kind: 'image', name: 'p.png', path: '/tmp/p.png' }] },
-      answers: { 'G-1': { v: 'other', results: { h: 'weird' }, changes: { g: 'x' }, marks: [{ pic: 'row g', x: 1, y: 2, w: 3, h: 4, text: 'm' }] }, 'Q-1': { v: 'pick', pick: 'lead', note: 'n' }, 'Q-3': { v: 'wrote', text: 'hello' }, 'C-1': { v: 'yes' } } };
+      answers: { 'G-1': { v: 'other', results: { h: 'weird' }, changes: { g: 'x' }, marks: [{ pic: 'row g', x: 1, y: 2, w: 3, h: 4, text: 'm' }] }, 'L-2': { ok: { b: true } }, 'Q-1': { v: 'pick', pick: 'lead', note: 'n' }, 'Q-3': { v: 'wrote', text: 'hello' }, 'C-1': { v: 'yes' } } };
     const mine = await ev(`window.__deckSummaryOf(${JSON.stringify(st)})`);
     const theirs = spawnSync('python3', ['-c', `import sys, json; sys.path.insert(0, ${JSON.stringify(join(HERE, '..'))});
 from deck.spec import load_spec; from deck.serve import summary
@@ -1637,11 +1666,17 @@ print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())),
     await ev("document.querySelector('#save').click()"); await sleep(300);
     await ev("document.querySelector('.card.variant[data-pick=\"lead\"]').click()"); await sleep(100);
     await ev("document.querySelector('#done').click()"); await sleep(200);
+    // Round 10, R-2: rows he never ticked or changed are counted and named at Done; he can still send.
+    assert.equal(await ev("getComputedStyle(document.querySelector('#unlooked')).display"), 'flex');
+    assert.match(await ev("document.querySelector('#unlookedn').textContent"), /not looked at/);
+    assert.match(await ev("document.querySelector('#unlookedl').innerText"), /Left alone\./);
+    assert.equal(await ev("document.querySelector('#submit').disabled"), false, 'he can still send');
+    assert.match(await ev("document.querySelector('#feedback').value + ' ' + window.__deckSummaryOf(JSON.parse(localStorage.getItem('deck:' + DECK.key)))"), /not looked at — "Left alone\."/);
     const warn = await ev("document.querySelector('#skipn').textContent");
     assert.match(warn, /Page 2, Question 2 of 2/, warn); assert.ok(!/step 4|step \d/.test(warn), warn);
     await ev("document.querySelector('#submit').click()"); await sleep(1200);
     const rows = await ev("[...document.querySelectorAll('#responses tbody tr')].map(r => r.innerText.replace(/\\s+/g, ' '))");
-    assert.ok(rows.some(t => /Untouched.*Left as listed/.test(t)), 'a list he moved past untouched is worded as left as listed: ' + rows.join(' // '));
+    assert.ok(rows.some(t => /Untouched.*No changes · 1 not looked at/.test(t)), 'a "Yours to change" list he moved past untouched is NOT accepted: it reads "not looked at": ' + rows.join(' // '));
     assert.ok(rows.some(t => /First option/.test(t)) && !rows.some(t => /\blead\b/.test(t)), 'the option label, never its internal id: ' + rows.join(' // '));
     assert.ok(!rows.some(t => /What exists today/.test(t)), 'a background list is not in the finish table');
     assert.equal(await ev("document.querySelector('.ans-write').disabled"), true, 'the typed-answer box locks on Submit');
