@@ -22,7 +22,8 @@ ERA_MID = ms('2026-09-11T18:56:28-07:00')   # beta.80 installed (#461, #464)
 ERA_POST = ms('2026-09-25T14:06:19-07:00')  # beta.89 installed (#553, #554, #559)
 TODAY = ms('2026-09-30T00:00:00-07:00')     # "today" window: last ~6 weeks
 JOURNAL_FROM = ms('2026-10-20T04:35:02-07:00')
-launches = sorted(ms(l.strip()) for l in open(os.path.join(OUT, 'app-launches.txt')) if l.strip())
+_lf = os.path.join(OUT, 'app-launches.txt')
+launches = sorted(ms(l.strip()) for l in open(_lf) if l.strip()) if os.path.exists(_lf) else []
 
 def provider_of(model, hdr_provider):
     m = model or ''
@@ -65,7 +66,7 @@ for f in glob.glob(os.path.join(SESS, '*', '*.jsonl')):
             ctx = u.get('contextUsedTokens')
             prov = provider_of(d.get('model'), hp)
             r = dict(chat=chat, child=is_child, idx=ti, ts=ts, era=era(ts), today=ts >= TODAY, provider=prov,
-                     model=d.get('model'), I=I, R=R, W=W, ctx=ctx, rebuild=bool(u.get('expectedRebuild')),
+                     model=d.get('model'), servedBy=','.join(u.get('servedBy') or []) or None, servedChanged=None, I=I, R=R, W=W, ctx=ctx, rebuild=bool(u.get('expectedRebuild')),
                      prevCtx=None, gap_s=None, switch=False, compact=pending['compact'] or pending['clear'],
                      interrupt=pending['interrupt'], task=pending['task'], resumed=None, excess=None, miss=None)
             if prev is not None:
@@ -73,6 +74,8 @@ for f in glob.glob(os.path.join(SESS, '*', '*.jsonl')):
                 start = pending['start'] or ts
                 r['gap_s'] = max(0, (start - prev['ts']) / 1000)
                 r['switch'] = d.get('model') != prev['model']
+                # Card #69: only turns recorded after the serving-company logging shipped carry this.
+                if r['servedBy'] and prev['servedBy']: r['servedChanged'] = r['servedBy'] != prev['servedBy']
                 if prev['ts'] >= JOURNAL_FROM:
                     r['resumed'] = any(prev['ts'] < L < start for L in launches)
                 pc = prev['ctx']
@@ -186,5 +189,26 @@ out(f"\nSpecialist child sessions: {len({r['chat'] for r in ch})} sessions, {len
 for p in ['chatgpt', 'openrouter', 'local', 'anthropic']:
     c0 = [r for r in ch if r['idx'] == 0 and r['provider'] == p and r['era'] == 'post']
     if c0: out(f"  {p} specialist first turns (post): {len(c0)}, input from cache {round(100*sum(r['R'] for r in c0)/max(1,sum(r['I'] for r in c0)))}%")
+# Card #69 (2026-11-12): misses by serving company. Empty until the app has run a while with
+# the servedBy logging (turn-complete usage.servedBy, OpenRouter only).
+out()
+out('## OpenRouter follow-ups by serving company (only turns that recorded one)')
+sv = [r for r in fu if r['provider'] == 'openrouter' and r['servedBy']]
+if not sv:
+    out('No turns carry a serving company yet.')
+else:
+    out('| serving company | follow-ups | full-miss | miss% | input from cache % |')
+    out('|---|---|---|---|---|')
+    byc = collections.defaultdict(list)
+    for r in sv: byc[r['servedBy']].append(r)
+    for c, rs in sorted(byc.items(), key=lambda kv: -len(kv[1])):
+        m = [r for r in rs if r['miss'] is not None]; I = sum(r['I'] for r in rs); R = sum(r['R'] for r in rs)
+        out(f"| {c} | {len(rs)} | {sum(r['miss'] for r in m)}/{len(m)} | {round(100*sum(r['miss'] for r in m)/len(m)) if m else '-'} | {round(100*R/I) if I else '-'} |")
+    out()
+    out('| company changed since previous turn? | follow-ups | full-miss | miss% |')
+    out('|---|---|---|---|')
+    for lab, val in [('yes', True), ('no', False)]:
+        rs = [r for r in sv if r['servedChanged'] is val and r['miss'] is not None]
+        if rs: out(f"| {lab} | {len(rs)} | {sum(r['miss'] for r in rs)}/{len(rs)} | {round(100*sum(r['miss'] for r in rs)/len(rs))} |")
 exec(open(os.path.join(OUT, 'extra.py')).read())
 open(os.path.join(OUT, 'tables.md'), 'w').write('\n'.join(lines) + '\n')
