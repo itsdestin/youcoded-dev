@@ -909,3 +909,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-12 #17 Test copies of the app can change the real one (youcoded-dev PR #368)
 - [x] 2026-11-12 #247 Fedora installer fails its check on GitHub's new Linux build machines; release build still uses them (youcoded PR #738)
 - [x] 2026-11-12 #190 Resume and Welcome back preview: the pinned title card covers the first line of a short chat (youcoded PR #736)
+- [x] 2026-11-12 #175 Make the website's idea pictures refresh themselves on each release (youcoded PR #738, youcoded-dev PR #367)

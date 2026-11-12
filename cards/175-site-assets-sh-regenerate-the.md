@@ -1,7 +1,7 @@
 ---
 id: 175
 title: Make the website's idea pictures refresh themselves on each release
-stage: planning
+stage: merged
 priority: P3
 tags: dev-workspace, website
 branch: 175-site-assets-sh-regenerate-the
