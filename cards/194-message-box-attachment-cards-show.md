@@ -9,7 +9,7 @@ why: Destin, 2026-10-22: 'why are images not showing previews?' AttachmentChip l
 ---
 Progress
 Done: nothing yet. 2026-11-11 chat-engine batch: checked against code, nothing built. Cause confirmed and wider than first thought: attachment cards load pictures by file address, which only the installed desktop app can follow. Pasted pictures (temp folder claude-desktop-attachments), phone uploads (claude-desktop-uploads) and Android picks (files/tmp/attachments, added by app PR #730) are all outside the folders the app allows to be read, so switching to the thumbnail method alone would still fail.
-Next: Destin to decide before building: previews for phones and Android mean letting remote devices read the temp attachment folders, a security-relevant change that needs a review (real-path check, no-read list, size cap). A phone browser can preview from the file it already holds, with no read from the computer. Also from #730: text previews of Android-attached files will be refused for the same reason. About 60 to 120 lines plus tests.
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): phone-browser-only previews (preview from the picture the browser already holds; nothing read from the computer). His note: leave a card to come back to full previews (Android app, test copies), which need the security-reviewed read of the temp attachment folders.
 Blocked: nothing.
 
 Chats
