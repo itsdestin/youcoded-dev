@@ -175,7 +175,8 @@ CSS = '''
    odd"; guide: "Pointing at a folded box lights the whole box ... never a strip across its header"): an open section
    used to tint only its header, a rounded blob that stopped above the first item. Open takes a lighter step than
    closed so the item cards inside (which sit on --inset) still read as cards. Press goes one step further. */
-@media (hover:hover){.lgroup:not([open]):has(> summary:hover){background:var(--inset)} .lgroup[open]:has(> summary:hover){background:color-mix(in srgb,var(--inset) 45%,var(--panel))}}
+/* WHY the :not(...): one highlight at a time (guide) — pointing at "Tick all" lights that button, not the section as well */
+@media (hover:hover){.lgroup:not([open]):has(> summary:hover):not(:has(.lgtools :hover)){background:var(--inset)} .lgroup[open]:has(> summary:hover):not(:has(.lgtools :hover)){background:color-mix(in srgb,var(--inset) 45%,var(--panel))}}
 .lgroup:not([open]):has(> summary:active):not(:has(.lgtools :active)){background:var(--edge)} .lgroup[open]:has(> summary:active):not(:has(.lgtools :active)){background:color-mix(in srgb,var(--inset) 80%,var(--panel))}
 .lghead .gtext{flex:1;min-width:0;display:flex;flex-direction:column}
 .lghead .gh{font-size:16px;font-weight:500;color:var(--fg)} .lghead .gh .cnt{margin-left:6px}
@@ -190,7 +191,8 @@ CSS = '''
 .lgroup .crow:last-child{margin-bottom:0}
 /* an item card opens its details when clicked anywhere that is not one of its own controls */
 .lrow{cursor:pointer;transition:background-color 120ms steps(4)}
-@media (hover:hover){.lgroup .lrow:hover{background:color-mix(in srgb,var(--inset) 88%,var(--fg))}}
+/* WHY the :not(...): one highlight at a time (guide) — pointing at one of the card's own buttons, its tick box or its open menu lights that, not the card too */
+@media (hover:hover){.lgroup .lrow:hover:not(:has(button:hover,input:hover,a:hover,select:hover,.menu:hover)){background:color-mix(in srgb,var(--inset) 88%,var(--fg))}}
 /* WHY: press is one step past hover (guide §2.4); not while one of the card's own buttons or its tick box is the thing pressed */
 .lgroup .lrow:active:not(:has(button:active,input:active,a:active,select:active)){background:color-mix(in srgb,var(--inset) 78%,var(--fg))}
 /* live Today (live_today.py): the approved rows plus a tick box, and the bulk bar */

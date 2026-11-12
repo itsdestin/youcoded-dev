@@ -381,7 +381,8 @@ CSS = '''
 /* the ⋯ menu: the app's shared Menu, hanging under its button */
 .mwrap{position:relative;display:inline-flex}
 .mhint{font-size:11px;color:var(--fg-muted);line-height:1.35}
-.menu{position:absolute;right:auto;left:0;top:calc(100% + 4px);z-index:20;min-width:140px;padding:4px;display:flex;flex-direction:column;border-radius:var(--radius-lg)}
+/* WHY right-aligned (2026-11-12): the "…" button sits at the right end of its card, so a menu hung from its left edge ran past the card and the section box */
+.menu{position:absolute;left:auto;right:0;top:calc(100% + 4px);z-index:20;min-width:140px;padding:4px;display:flex;flex-direction:column;border-radius:var(--radius-lg)}
 .menu[hidden]{display:none}
 .menu{min-width:280px;max-width:320px}
 .mitem{display:flex;flex-direction:column;gap:2px;font:inherit;font-size:12px;text-align:left;padding:6px 10px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg);cursor:pointer}
