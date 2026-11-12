@@ -1,0 +1,75 @@
+{
+ "title": "Automations: the five screens you sent back, redone",
+ "key": "pages-finish-step4e-review",
+ "out": "pages-finish-step4e.review.html",
+ "images": "images/pages-finish-step4e.review",
+ "runs": {
+  "before": "runs-step4d/after",
+  "after": "runs-step4e/after"
+ },
+ "themes": [
+  "meadow-mist",
+  "halftone-dimension"
+ ],
+ "steps": [
+  {
+   "id": "E-addmenu",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission",
+   "crop": "automations/details#add-menu",
+   "headline": "The Add menu is as wide as its button again.",
+   "changed": "You asked why it got narrower: its width followed its longest row, and the rows had got shorter. It now always matches the button. The folder rows say what they do: See the files in a folder… and Change the files in a folder….",
+   "notice": "Nothing else about the menu changed."
+  },
+  {
+   "id": "E-folder",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission → See the files in a folder…",
+   "crop": "automations/details#add-folder",
+   "headline": "A folder is chosen with the same folder chooser Page settings uses.",
+   "changed": "The typed box and the See / See and change switch are gone. This is the Choose folder… box from Page settings → Files. Choosing a folder in your computer's own window adds the permission at once. The × on the label line cancels.",
+   "notice": "No typing a folder path, and no separate Add button.",
+   "risk": "On a phone the folder window cannot open, so the box says to choose it on your computer, as Page settings does."
+  },
+  {
+   "id": "E-command",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission → Run a command…",
+   "crop": "automations/details#add-command",
+   "headline": "A command is one box with Add inside it.",
+   "changed": "Two fields, a hint and two buttons became one field. Add sits inside the box, the way other text fields with one action do in the app, and × on the label line cancels. A website looks the same, with its address in the box.",
+   "notice": "A command you type yourself is listed as Run a command with the command under it. Only permissions the assistant writes get a name in plain words.",
+   "risk": "The note that * covers any part that changes is gone from the screen. It would live in the (i) by the page title."
+  },
+  {
+   "id": "E-describe",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission → Describe it…",
+   "crop": "automations/details#describe",
+   "headline": "Describe it: Write it sits inside the box, × on the label line.",
+   "changed": "As you suggested: the Write it button is inside the text box and the × is at the top right, in line with What it may do. Cancel is gone as a separate button.",
+   "notice": "Enter also presses Write it.",
+   "risk": "The box is one line now, so a long description scrolls sideways."
+  },
+  {
+   "id": "E-described",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card → Add a permission → Describe it… → Write it",
+   "crop": "automations/details#describe-result",
+   "headline": "What the assistant wrote looks like the permission line it will become.",
+   "changed": "The box-inside-a-box and three buttons became one line drawn like every other permission: the name, the command under it, and Edit and Add where a line's Always allowed pill sits. × cancels.",
+   "notice": "Add turns it into a normal line set to Asks first.",
+   "risk": "In this practice version the answer is always the same sample."
+  },
+  {
+   "id": "E-cap",
+   "surface": "Automations",
+   "path": "Automations → Shopping list",
+   "crop": "automations/details#cap",
+   "headline": "Runs per day is its own box, with the dropdown you can also type in.",
+   "changed": "It moved out of the Schedule box, where it read as part of Button text, into its own labelled box under it. The control is the one Assistant settings → Step guard uses: pick No limit, 5, 10, 20, 50 or 100, or type your own number.",
+   "notice": "Still shown only for jobs started by a button or an event.",
+   "risk": "The closed box shows just the number (20)."
+  }
+ ]
+}
