@@ -173,11 +173,14 @@ CSS = '''
 .lghead{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-radius:var(--radius-xl)}
 /* WHY the whole box, open or closed (Destin, 2026-11-12: "the hover/click effects on front page card are just visually
    odd"; guide: "Pointing at a folded box lights the whole box ... never a strip across its header"): an open section
-   used to tint only its header, a rounded blob that stopped above the first item. Open takes a lighter step than
-   closed so the item cards inside (which sit on --inset) still read as cards. Press goes one step further. */
-/* WHY the :not(...): one highlight at a time (guide) — pointing at "Tick all" lights that button, not the section as well */
-@media (hover:hover){.lgroup:not([open]):has(> summary:hover):not(:has(.lgtools :hover)){background:var(--inset)} .lgroup[open]:has(> summary:hover):not(:has(.lgtools :hover)){background:color-mix(in srgb,var(--inset) 45%,var(--panel))}}
-.lgroup:not([open]):has(> summary:active):not(:has(.lgtools :active)){background:var(--edge)} .lgroup[open]:has(> summary:active):not(:has(.lgtools :active)){background:color-mix(in srgb,var(--inset) 80%,var(--panel))}
+   used to tint only its header, a rounded blob that stopped above the first item.
+   WHY ONE fill for both states and no press step (Destin, 2026-11-12: "the whole cards still seem to flicker when i
+   expand them"): measured frame by frame on a real click, a section went 234 -> 215 (hover) -> 204 (press) -> 215 ->
+   225 (open) in half a second, across a box that had just grown to thousands of pixels. Now the fill is the same
+   before and after the click, so opening changes the size and nothing else. It is a lighter step than --inset so the
+   item cards inside (which sit on --inset) still read as cards.
+   WHY it stays lit while the pointer is on "Tick all": un-lighting the box on the way to its own button is one more flash. */
+@media (hover:hover){.lgroup:has(> summary:hover){background:color-mix(in srgb,var(--inset) 60%,var(--panel))}}
 .lghead .gtext{flex:1;min-width:0;display:flex;flex-direction:column}
 .lghead .gh{font-size:16px;font-weight:500;color:var(--fg)} .lghead .gh .cnt{margin-left:6px}
 .lghead .gdesc{font-size:12px;color:var(--fg-muted);margin-top:2px}
@@ -191,8 +194,9 @@ CSS = '''
 .lgroup .crow:last-child{margin-bottom:0}
 /* an item card opens its details when clicked anywhere that is not one of its own controls */
 .lrow{cursor:pointer;transition:background-color 120ms steps(4)}
-/* WHY the :not(...): one highlight at a time (guide) — pointing at one of the card's own buttons, its tick box or its open menu lights that, not the card too */
-@media (hover:hover){.lgroup .lrow:hover:not(:has(button:hover,input:hover,a:hover,select:hover,.menu:hover)){background:color-mix(in srgb,var(--inset) 88%,var(--fg))}}
+/* WHY the card stays lit while the pointer is on its own buttons (Destin, 2026-11-12: "the whole cards still seem to
+   flicker when i expand them"): un-lighting it on the way to "View chats" made the card flash just before it grew. */
+@media (hover:hover){.lgroup .lrow:hover{background:color-mix(in srgb,var(--inset) 88%,var(--fg))}}
 /* WHY: press is one step past hover (guide §2.4); not while one of the card's own buttons or its tick box is the thing pressed */
 .lgroup .lrow:active:not(:has(button:active,input:active,a:active,select:active)){background:color-mix(in srgb,var(--inset) 78%,var(--fg))}
 /* live Today (live_today.py): the approved rows plus a tick box, and the bulk bar */

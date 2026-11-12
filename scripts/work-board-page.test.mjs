@@ -55,5 +55,9 @@ test('a folding section lights and rings as one whole box, never just its header
   assert.ok(page.includes('.lgroup:has(> summary:focus-visible){outline:2px solid var(--accent)'), 'ring is on the section box');
   assert.ok(page.includes('.fold:has(> summary:focus-visible){outline:2px solid var(--accent)'), 'ring is on the fold box');
   assert.ok(!/\.lgroup\[open\] > \.lghead:hover\{background/.test(page), 'the header-only hover strip is back');
-  assert.ok(/\.lgroup\[open\]:has\(> summary:hover\)[^{]*\{background/.test(page), 'an open section lights as a whole');
+  assert.ok(page.includes('.lgroup:has(> summary:hover){background'), 'a section lights as a whole, open or closed');
+  // WHY (Destin, 2026-11-12: "the whole cards still seem to flicker when i expand them"): measured on a real click, the fill
+  // changed four times in half a second because closed, pressed and open each had their own. One fill, no press step.
+  assert.ok(!/\.lgroup(\[open\]|:not\(\[open\]\))[^{}]*summary:(hover|active)/.test(page), 'open and closed sections have different fills again: opening one flickers');
+  assert.ok(!/\.lgroup[^{}]*summary:active/.test(page), 'a press fill on sections is back: opening one flickers');
 });
