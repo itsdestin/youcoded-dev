@@ -164,15 +164,20 @@ so is added at the end of the chat; nothing earlier is cut or edited. [D4 Q-11; 
 
 ## 8. Project files
 
-- **Files travel on the same system as chats,** locked, through the same keepers. GitHub
+- **Files travel on the same locked system as chats,** through the same keepers. GitHub
   becomes an optional backup. [D5 Q-6]
-- At takeover the files and the chat arrive together.
-- Each device keeps replaced versions for 30 days. The same file changed on two devices shows
-  as two versions to pick from, never a silent overwrite. [D5 Q-6, as described in the option
-  chosen]
-- Huge and generated folders are skipped, as today.
-- This is the biggest and riskiest piece: a mistake here could damage project files, so it
-  needs the most testing.
+- **The existing hidden version history stays.** Every synced project already keeps a full
+  history on each device. It remains the version store and the handler for a file changed on
+  two devices (both copies kept, never a silent overwrite). Only the carrier changes: device
+  to device, locked, in place of GitHub. [chat 2026-11-11: "okay, that sounds good"]
+- This replaces the earlier idea of keeping replaced versions for 30 days. Nothing new is
+  built for browsing old versions.
+- Huge and generated folders are skipped, and secrets never leave the device, as today.
+- File changes arrive within seconds, as today, not word by word. At takeover the notice may
+  say files are still arriving.
+- Known weaknesses carried over: the history grows without limit on every device, and has
+  been damaged by power loss before (a repair exists).
+- Chats do not use this history; they move to the line-by-line system in section 3.
 - **My reading:** sync is turned on per project per device (from D5 N-5), while every project
   is still listed on every device (D2 Q-8).
 
@@ -205,7 +210,6 @@ conflict copies from November 5 are left alone. [D1 Q-16, Q-17; D2 S-4]
 
 ## 12. Still open
 
-2. Never asked: how the 30 days of replaced file versions are shown to the user.
 3. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
    door" setup.
 4. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
