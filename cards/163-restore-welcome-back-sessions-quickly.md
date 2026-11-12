@@ -11,8 +11,8 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery, session/163-crash-resume-repair
 ---
 Progress
-Done: Merged/pushed app PR #662 as a6c47f79ae4120aea48e0e5c514a420ce81d5de7 and archive/workspace PR #287 as b5237db37185db1cd60856be186bd49e8df28257. Both CI gates passed. Source merged tree matches verified candidate; archived records match checked candidate, with one unrelated concurrent #93 bookkeeping entry preserved. Evidence is privately retained outside disposable worktrees.
-Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): the leftover change e4d98a84f on session/163-crash-resume-repair gets a proper review, then a recommendation to him. Not landed.
+Done: Reviewed e4d98a84f: not on master, merges clean, 1708 harness tests pass with it, 13 new tests fail without it. Recommendation: land after rebase, verify.sh and two small tests (B file)
+Next: Destin's yes to land
 Blocked: None for this shipped recovery work. No release/tag, installed-app modification, device-runtime or Windows/macOS execution claim.
 
 Chats
