@@ -14,9 +14,9 @@ platform: Desktop only
 vision: chat.files.office
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: The document converter is now sealed inside its own job folder, and on Linux it has no network access (shipped in version 1.3.1, commit 3ce5f0b6d). Picture downloads from web addresses check every address they resolve to and every redirect before fetching (office-pictures.ts). 2026-11-10: the error log no longer copies the editor's text (which could hold words from the document); it records only the length, the kind of error and the position in the editor's own code. Built and reviewed on branch session/release-safety (app repo), NOT merged yet. Cost: the editor's own wording of a fault is no longer in the log. 2026-11-11, branch session/files-reliability-batch (app fb01783a5, not merged): Teredo tunnel addresses are refused for picture downloads; the converter's raw error text no longer goes to the log (exit code, length and fixed markers only).
+Next: Needs Windows/Mac: block converter downloads there (product choice); owner-only save folders on Windows. Judgement call: pin picture downloads to the checked address (changes the network path used). Cosmetic faults: Recent list, empty 'In project' and early 'Saved' are still possible; print page breaks, Export entry, stacked pictures and empty style tiles live in the editor add-on and need the running editor.
+Blocked: needs a Windows and a Mac machine to test; the seven cosmetic faults need the running app to re-check.
 
 Chats
 

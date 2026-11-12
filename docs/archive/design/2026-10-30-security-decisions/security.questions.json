@@ -1,0 +1,321 @@
+{
+  "title": "Security fixes — the decisions that change what users experience",
+  "key": "security-decisions-questions",
+  "out": "security.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The assistant",
+      "path": "Any chat, when the assistant looks something up online",
+      "headline": "Should the assistant ask before visiting a website for the first time?",
+      "today": "The assistant can open any web page to read it without asking, in every permission mode, including Ask first.",
+      "problem": "A tricked assistant (for example by hidden text on a web page it read) could quietly send your private information out by visiting an address with that information written into it.",
+      "proposal": "In Ask first mode, the assistant asks the first time it wants to visit each new website, with Allow once and Always allow buttons. Auto-edit and Full Auto behave as today.",
+      "options": [
+        {
+          "id": "ask-new-sites",
+          "label": "Ask per new site",
+          "recommended": true,
+          "pros": [
+            "Closes the quietest way to leak your data, in the mode people pick for safety.",
+            "One click per website, and Always allow means you only see it once per site."
+          ],
+          "cons": [
+            "Research tasks that visit many sites will ask several times in Ask first mode."
+          ]
+        },
+        {
+          "id": "ask-all-modes",
+          "label": "Ask in every mode",
+          "pros": ["Strongest protection, even in Full Auto."],
+          "cons": ["Full Auto stops being hands-off for any task that uses the web."]
+        },
+        {
+          "id": "keep",
+          "label": "Keep as today",
+          "pros": ["No new prompts."],
+          "cons": ["The leak stays open in every mode."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "The assistant",
+      "path": "Any chat, when the assistant reads a file",
+      "headline": "Should the assistant ask before reading files outside the project folder?",
+      "today": "The assistant can read any file on your computer without asking, except a short list of password and key files.",
+      "problem": "Combined with the web leak above, a tricked assistant could read private documents anywhere on your computer and send them out.",
+      "proposal": "In Ask first mode, reading a file outside the chat's project folder asks first, with Always allow for that folder. Inside the project nothing changes.",
+      "options": [
+        {
+          "id": "ask-outside",
+          "label": "Ask outside project",
+          "recommended": true,
+          "pros": [
+            "Your private files stay private unless you say so.",
+            "Normal project work is unchanged."
+          ],
+          "cons": [
+            "A chat with no project folder (your home folder) would ask more often."
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Keep as today",
+          "pros": ["No new prompts."],
+          "cons": ["Any file not on the short secret list can be read silently."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Permission modes",
+      "path": "The mode chip under the message box, when switching to Full Auto",
+      "headline": "Should turning on Full Auto show a short, honest warning the first time?",
+      "today": "Full Auto runs commands without asking and stops only on a list of obviously dangerous ones, like deleting your home folder.",
+      "problem": "That list can't catch every harmful command. Users may believe Full Auto is safe because it has safety stops, when the stops are a speed bump, not a guarantee.",
+      "proposal": "Yes shows a one-time note: 'Full Auto runs commands without asking. It stops on the most dangerous ones, but it can't catch everything. Use it in projects you have backed up.' No keeps today's behaviour."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Permission prompts",
+      "path": "The Always allow choices on a command prompt",
+      "headline": "Should the one-click Always allow choices be narrower than they are today?",
+      "today": "Some Always allow choices cover more than their label suggests. Allowing curl also allows uploading files; allowing npm install also allows running a package's own setup scripts.",
+      "problem": "You might allow something harmless-sounding and unknowingly allow something riskier forever.",
+      "proposal": "Yes splits these into safer, exact choices (for example 'download with curl' separately from 'send data with curl'). You may see a few more prompts at first. No keeps today's choices."
+    },
+    {
+      "id": "P-2",
+      "page": "Remote access and the phone",
+      "intro": "Using YouCoded from your phone. Only devices on your private Tailscale network can reach it today."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Remote access",
+      "path": "Settings → Remote access → Password",
+      "headline": "How long must a remote access password be?",
+      "today": "Any password is accepted, even a very short one. Guessing is now also limited by a lockout we just added.",
+      "problem": "A short password can still be guessed by someone already on your Tailscale network, and that password controls your whole computer.",
+      "proposal": "Require a minimum length for new passwords. Existing passwords keep working, with a gentle reminder to change a short one.",
+      "options": [
+        {
+          "id": "min-12",
+          "label": "At least 12",
+          "recommended": true,
+          "measured": "12 characters",
+          "pros": ["Long enough that guessing is hopeless, even with the lockout off."],
+          "cons": ["Slightly more typing the first time you pair a phone."]
+        },
+        {
+          "id": "min-8",
+          "label": "At least 8",
+          "measured": "8 characters",
+          "pros": ["Familiar length from other sites."],
+          "cons": ["Relies on the lockout to stop guessing."]
+        },
+        {
+          "id": "keep",
+          "label": "No minimum",
+          "pros": ["No change."],
+          "cons": ["A 4-letter password would still be allowed to control the computer."]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Remote access",
+      "path": "Settings → Remote access → Paired devices",
+      "headline": "Should a paired phone stop working after a long time unused?",
+      "today": "Once a phone is paired, it keeps full control of the computer forever, until you unpair it by hand.",
+      "problem": "A lost, sold or forgotten phone stays able to control your computer.",
+      "proposal": "A phone not used for a while is unpaired automatically and has to enter the password again. Phones you use stay paired.",
+      "options": [
+        {
+          "id": "90-days",
+          "label": "After 90 days",
+          "recommended": true,
+          "measured": "90 days unused",
+          "pros": ["Old devices clean themselves up.", "Phones you use regularly never notice."],
+          "cons": ["A phone you only use on long trips may need the password again."]
+        },
+        {
+          "id": "30-days",
+          "label": "After 30 days",
+          "measured": "30 days unused",
+          "pros": ["Tighter."],
+          "cons": ["More frequent re-pairing for occasional users."]
+        },
+        {
+          "id": "never",
+          "label": "Never",
+          "pros": ["No change."],
+          "cons": ["Forgotten devices stay in control."]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Android app",
+      "path": "Pairing the phone to a computer",
+      "headline": "Should the phone warn when it connects to your computer without encryption?",
+      "today": "The Android app allows unencrypted connections so it can pair over home Wi-Fi without Tailscale.",
+      "problem": "On shared Wi-Fi (a café, a dorm), someone nearby could read the pairing password as it travels.",
+      "proposal": "Choose how strict the phone is about connections that aren't encrypted.",
+      "options": [
+        {
+          "id": "warn",
+          "label": "Warn, then allow",
+          "recommended": true,
+          "pros": ["Home Wi-Fi pairing keeps working.", "Users on shared Wi-Fi are told to use Tailscale."],
+          "cons": ["One extra notice for people pairing over plain Wi-Fi."]
+        },
+        {
+          "id": "tailscale-only",
+          "label": "Tailscale only",
+          "pros": ["No password ever travels unencrypted."],
+          "cons": ["Everyone must set up Tailscale before using the phone app."]
+        },
+        {
+          "id": "keep",
+          "label": "Keep as today",
+          "pros": ["No change."],
+          "cons": ["Silent risk on shared Wi-Fi."]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Updates, plugins and the assistant's browser",
+      "intro": "How new code reaches users' computers, and how the assistant behaves on websites."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Built-in plugins",
+      "path": "Theme Builder, Marketplace Publisher, Conversation Search, Page Builder",
+      "headline": "When should YouCoded's own built-in plugins update on users' computers?",
+      "today": "Each time the app starts, the built-in plugins update themselves to whatever is newest on GitHub, with no check that it is really yours.",
+      "problem": "If someone ever got into your GitHub account, every user would get their changes on the next app start, without an app update.",
+      "proposal": "Choose between fast fixes and a stronger guarantee.",
+      "options": [
+        {
+          "id": "with-app",
+          "label": "With app updates",
+          "recommended": true,
+          "pros": [
+            "Plugins ride along with the signed, checked app update, so they get the same protection.",
+            "Every user on one version has exactly the same plugins."
+          ],
+          "cons": ["A plugin fix waits for the next app release."]
+        },
+        {
+          "id": "signed-list",
+          "label": "Fast, but signed",
+          "pros": ["Plugin fixes still arrive quickly.", "Only versions you approved and signed are installed."],
+          "cons": ["More work to build, and one more release step for you."]
+        },
+        {
+          "id": "keep",
+          "label": "Keep as today",
+          "pros": ["Fastest fixes, no change."],
+          "cons": ["A GitHub break-in reaches every user without an app update."]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "The assistant's browser",
+      "path": "When the assistant clicks buttons on a website",
+      "headline": "Should the assistant ask before submitting any form on a website it hasn't used before?",
+      "today": "The assistant asks before buying, sending, deleting or signing in, but it spots these by English button words like 'Buy' or 'Delete'.",
+      "problem": "A button labelled 'Continue', or one in another language, can buy or send without the question appearing.",
+      "proposal": "Yes adds: the first time the assistant submits a form on each website, it asks you, whatever the button says. The word check stays too. No keeps the word check only."
+    },
+    {
+      "id": "P-4",
+      "page": "Privacy, accounts and the next big step",
+      "intro": "What users are told, where their reports go, and one larger follow-up project."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Privacy policy",
+      "path": "youcoded.ai/privacy and PRIVACY.md",
+      "headline": "Should I draft an accurate rewrite of the privacy policy for your approval?",
+      "today": "The privacy policy leaves out what the cross-device sync service receives (computer name, project names, a device ID) and the friends 'online' feature, and two sentences in it are inaccurate.",
+      "problem": "A privacy policy that doesn't match the app is a trust and legal risk, and gets worse as more people use YouCoded.",
+      "proposal": "Yes: I write a corrected version in plain words and show it to you before anything is published. No: it stays as it is."
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Report a bug",
+      "path": "Settings → Help & feedback → Report a bug",
+      "headline": "Where should users' bug reports go?",
+      "today": "A bug report becomes a public GitHub issue. The user sees and can edit it first, and keys are now scrubbed out much more thoroughly.",
+      "problem": "Reports can still include bits of conversations, file names or project names that the user didn't mean to publish.",
+      "proposal": "Choose who can read a report.",
+      "options": [
+        {
+          "id": "private",
+          "label": "Private to you",
+          "recommended": true,
+          "pros": ["Nothing a user sends is ever public.", "You can still make one public by hand when useful."],
+          "cons": ["Others can't see whether a bug is already reported.", "Needs a small server change."]
+        },
+        {
+          "id": "ask-each",
+          "label": "User chooses",
+          "pros": ["Users decide each time."],
+          "cons": ["One more choice in the report form; some will pick public without thinking."]
+        },
+        {
+          "id": "keep",
+          "label": "Public, as today",
+          "pros": ["Open-source norm; no change."],
+          "cons": ["Accidental exposure stays possible."]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Account",
+      "path": "Settings → Account",
+      "headline": "Should Settings get a 'Sign out of all devices' button?",
+      "today": "Signing out only signs out the device you are on. The server can now sign an account out everywhere, but there is no button for it.",
+      "problem": "Someone who thinks their account was used on another device has no way to cut it off.",
+      "proposal": "Yes adds one button under Account with a confirm step. No leaves it server-only."
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Android app",
+      "path": "The whole Android app",
+      "headline": "Should the Android app's pages move to a safer internal address, even though settings reset once?",
+      "today": "The Android app loads its screens in a way that lets them read other files inside the app, which is broader than they need.",
+      "problem": "If someone ever got their own code running in the app's screens, they could read more than they should. No way to do that is known today.",
+      "proposal": "Yes moves the screens to a locked-down address. Phone users' saved look settings (theme and similar) would need copying across, and I'd attempt that automatically. No leaves it as today."
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "surface": "The whole desktop app",
+      "path": "File previews and YouCoded Pages",
+      "headline": "Should the next project move file previews and Pages to their own walled-off address?",
+      "today": "We just added a 'only run our own code' lock to the app window, but it has to stay loose on scripts because file previews and Pages share the window's address.",
+      "problem": "Until they move, the lock can't fully stop outside code if it ever got in.",
+      "proposal": "Yes makes it the next security project after this release, with its own design review. No leaves the loose lock in place."
+    }
+  ]
+}

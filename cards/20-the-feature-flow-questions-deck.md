@@ -1,7 +1,7 @@
 ---
 id: 20
 title: Try the full new-feature process on a real feature
-stage: planning
+stage: merged
 priority: P3
 tags: dev-workspace, rigs, housekeeping
 report: docs/archive/plans/2026-09-01-feature-flow-plan.md

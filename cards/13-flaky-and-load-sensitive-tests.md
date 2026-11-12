@@ -2,6 +2,7 @@
 id: 13
 title: Unreliable tests and test cleanup
 stage: planning
+work: session/test-suite-rethink
 priority: P3
 tags: dev-workspace, tests, regression, bug
 branch: 13-flaky-and-load-sensitive-tests
@@ -11,9 +12,9 @@ summary: Nine automatic checks fail at random or under load, and eight test left
 area: Workspace
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Checked every item against master and 34 failed CI runs (2026-11-10). Flaky items b, d, e, f, g, h, i are already fixed on master (40 of 40 repeat runs clean); a and c could not be reproduced. Landed on master 2026-11-10 (app PR #727): one real flake not on the card fixed (background-command 'nothing new' test), two fixed waits replaced by real signals, and the Windows sign-in port failure fixed in the app (retries when Windows refuses a port). Test type-check exclusions: done (0 files).
+Next: Destin, 2026-11-10: do NOT require the test runs on master yet. 3 of the last 8 runs failed; revisit once the unreliable tests are fixed. Still open: split what is left into its own cards or drop (~605 unreviewed blocking-call entries, lint gaps, bundle-size budget and nightly coverage, duplicated listeners).
+Blocked: nothing.
 
 Chats
 

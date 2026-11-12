@@ -1,0 +1,22 @@
+{
+ "deck": "notify-user-r4-review",
+ "started": "2026-10-26T09:34:51.300Z",
+ "submitted": "2026-10-26T09:35:04Z",
+ "cur": 1,
+ "answers": {
+  "R4-1": {
+   "v": "yes",
+   "t": 1793007296813,
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R4-2": {
+   "v": "yes",
+   "t": 1793007303328,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

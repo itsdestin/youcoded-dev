@@ -6,7 +6,6 @@ priority: P3
 tags: perf, performance, feature
 report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 104-hitch-recorder-owner-decisions-a
-roadmap: perf: Hitch recorder, owner decisions: (a) the recorder is always
 created: 2026-10-15
 summary: Decide whether people can turn the built-in slowdown recorder off, and whether its summary may go with bug reports.
 area: Settings
@@ -14,9 +13,9 @@ side: both
 vision: together.workflow.perf, together.contribute.bugs
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: The recorder shipped 2026-10-08 (youcoded#616) and runs in every build; it writes a 'packaged' flag (installed vs developer build) from 2026-10-07 (youcoded commit 5a21dea1c).
+Next: Destin decides (a) whether people get a Settings on/off switch (only the YOUCODED_HITCH_LOG=0 environment variable exists today) and (b) whether a redacted summary may go with bug reports (not done).
+Blocked: Destin's decisions; phones and remote browsers have no recorder by design.
 
 See also #107: Both note the hitch recorder does not exist on phones and remote browsers and was checked on Linux only.
 

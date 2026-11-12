@@ -1,0 +1,114 @@
+{
+  "title": "Phone polish — four fixes and two questions",
+  "key": "phone-polish-review",
+  "out": "phone-polish.review.html",
+  "images": "images/phone-polish.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "steps": [
+    {
+      "id": "PP-1",
+      "surface": "Welcome screen, when you have past conversations",
+      "path": "Open the app with no session open",
+      "crop": "welcome#returning@390x200+0+470",
+      "headline": "The Resume session button is now easy to read on Meadow Mist.",
+      "changed": "It was only an outline with grey text, which disappeared on Meadow Mist's pale sky. It now has a solid panel colour and border, the same as the app's other raised buttons.",
+      "notice": "On every theme the button is now a filled box under the New session button.",
+      "risk": "On themes with a background picture, this button no longer lets the picture show through it."
+    },
+    {
+      "id": "PP-2",
+      "surface": "Skills drawer",
+      "path": "Type / in the message box, or tap the skills button",
+      "crop": "chat/skills@390x440+0+420",
+      "headline": "Long skill names no longer run under the store and star icons.",
+      "changed": "Names now stop before the two small icons in the tile's corner and wrap onto a second line instead. While fixing it, I also found tiles showing a cut-off third line of description, and fixed that: descriptions stop at two lines.",
+      "notice": "Executing Plans now wraps onto two lines; on the left, its last word sat under the store icon.",
+      "risk": "A very long name can now take three lines, making its row of tiles taller."
+    },
+    {
+      "id": "PP-3",
+      "surface": "Settings → Backup & sync",
+      "path": "Settings, Backup & sync, scroll down (only shown once you have removed a synced project)",
+      "crop": "settings/sync#removed",
+      "headline": "Removed projects is now one closed row, like Sync log.",
+      "changed": "It used to be a whole open box, which pushed the sync log far down on a phone. It is now one row saying how many projects are inside; tapping it opens the same list, links and backup note in place.",
+      "notice": "The row reads \"Removed projects, 2 projects, with their GitHub backups\".",
+      "risk": "Someone looking for a removed project's GitHub link now needs one extra tap."
+    },
+    {
+      "id": "PP-4",
+      "surface": "New session form, phone turned sideways",
+      "path": "Turn the phone sideways on the welcome screen with the form open",
+      "crop": "welcome/new-session",
+      "headline": "With the phone sideways, the new-session form can now be scrolled to its Start button.",
+      "changed": "The screen was centred and could not scroll, so when it was taller than the screen the bottom (Start session) was cut off and unreachable. It now stays centred when it fits and scrolls when it does not.",
+      "notice": "On the right the form shows its Skip permissions row and scrolls down to Start session.",
+      "risk": "When the form doesn't fit, the screen opens at its top, so the top of the mascot is hidden under the header until you scroll."
+    },
+    {
+      "id": "PP-5",
+      "words": true,
+      "surface": "Status bar and Settings, for someone who never turned sync on",
+      "path": "A fresh install, before setting up Backup & sync",
+      "headline": "Should \"never set up sync\" still look like an alarm?",
+      "today": "Someone who has never turned on sync sees a red \"Sync off\" chip in the status bar, a red dot on the Settings button and a red notice in Backup & sync saying nothing is backed up.",
+      "problem": "Red is the app's colour for something broken. Nothing is broken here; the person just hasn't set it up yet, so a brand-new user is greeted with an alarm.",
+      "proposal": "Pick how loud it should be.",
+      "options": [
+        {
+          "id": "grey-dot",
+          "label": "Grey, keep the dot",
+          "recommended": true,
+          "pros": ["Still noticeable: the Settings dot stays, just grey", "Doesn't look like an error"],
+          "cons": ["Some people will ignore a grey dot and never set up backup"]
+        },
+        {
+          "id": "grey-quiet",
+          "label": "Grey, no dot",
+          "pros": ["Calmest; nothing on Settings until something is really wrong"],
+          "cons": ["Easy to never notice that nothing is backed up"]
+        },
+        {
+          "id": "red",
+          "label": "Keep it red",
+          "pros": ["Pushes new users hardest to set up backup"],
+          "cons": ["New users see an alarm on day one for something that isn't broken"]
+        }
+      ]
+    },
+    {
+      "id": "PP-6",
+      "words": true,
+      "surface": "A project's Files tab, on the phone and the computer",
+      "path": "Projects → a project → Files",
+      "headline": "Should hidden system files show in a project's files?",
+      "today": "A project's Files list shows every file, including hidden system files whose names start with a dot, like .claude.json or .gitignore. On the phone the test project showed several of the app's own settings files this way.",
+      "problem": "These files are settings for programs, not your work. They clutter the list, and opening or deleting one can break things.",
+      "proposal": "Pick whether they show.",
+      "options": [
+        {
+          "id": "hide-switch",
+          "label": "Hide them, with a \"Show hidden files\" switch",
+          "recommended": true,
+          "pros": ["A clean list by default, like your computer's own file browser", "Still reachable when you need one"],
+          "cons": ["One more option in the files filter menu"]
+        },
+        {
+          "id": "hide",
+          "label": "Always hide them",
+          "pros": ["Simplest; nothing to set"],
+          "cons": ["No way to see or open one from the app"]
+        },
+        {
+          "id": "show",
+          "label": "Keep showing them",
+          "pros": ["Nothing changes"],
+          "cons": ["The list stays cluttered with files people shouldn't touch"]
+        }
+      ]
+    }
+  ]
+}

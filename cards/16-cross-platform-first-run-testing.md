@@ -5,7 +5,6 @@ stage: planning
 priority: P3
 tags: dev-workspace, tests, housekeeping
 branch: 16-cross-platform-first-run-testing
-roadmap: dev-workspace: Cross-platform first-run testing: 5 open pieces.
 created: 2026-10-15
 summary: First-run setup and sign-in haven't been fully tested on Linux installers or some Windows PCs, and the Mac test machine is slow.
 area: Getting started
@@ -13,9 +12,9 @@ side: behind
 vision: everywhere.firstrun.setup
 ---
 Progress
-Done: Fedora44 KDE is now available as a reusable disk-only test guest at ~/vms/fedora-44-kde, alongside Windows/Ubuntu/macOS. Real boot, dedicated SSH/sudo, Spectacle screenshot, clean session reset, HTTP native RPM delivery/origin metadata and trim passed; idle watcher integration installed and reviewed. Workspace helper/docs merged and pushed in youcoded-dev PR #270 (ae99dd33), with the canonical shared helper and automatic VM safety CI checks. Private machine references are integrated into system-brain main (a36ce4b). Availability does not certify YouCoded first-run/setup/sign-in flows or resolve the historical roadmap items.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Landed on master 2026-11-10 (workspace PR #356): the Mac test machine's installer loader no longer deletes files, handles file names with spaces, and refuses instead of guessing when two installers match (tested with stand-ins only; real proof needs a Mac test-machine start).
+Next: Needs test machines started, not done overnight: first-run checks of the .deb and .rpm on the Ubuntu and Fedora test computers (scriptable); a saved ready state for the Mac. Needs Destin: taskbar icon check, first push from a computer without GitHub's tool, the Linux app catalog reply (#8053). No Arch test computer exists.
+Blocked: nothing for the scripted part; Destin's hands for the rest.
 
 Chats
 

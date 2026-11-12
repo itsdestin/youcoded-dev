@@ -13,50 +13,13 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Gemini text transport retry passed within original USD10 cap using refreshed endpoint-specific pricing and USD0.47 reservation; no old hold reclaimed. Actual native Qwen two-turn client check failed upstream before any tool/verifier result, retained USD0.50. Fixed gateway budget denials to non-retryable402 and now retain upstream HTTP status. 21 focused tests pass. All five text canaries validated; actual OpenRouter usage USD0.000041446.
-Next: Obtain sufficient approved reservation headroom, then diagnose native tool/continuity request failure with improved diagnostics and validate Pi/OpenCode conversations before full suite.
-Blocked: Conservative ledger USD9.734296196, remaining USD0.265703804 under unchanged USD10 cap; this is not actual spending. Unknown failure holds retained. Gateway/container network stopped. Comprehensive readiness false; no full evaluation.
+Done: Nothing is recorded as fixed for the main problem (an assistant turn that stops early while saying work is still running). Separately, a fix landed on 2026-11-05 so background commands no longer show as Running forever (youcoded #716). Earlier fixes covered helper status (#570, #681). 2026-11-11 chat-engine batch: checked only, skipped (needs a paid run). The lab's unsaved work WAS backed up on 2026-11-09 (both checkouts clean and pushed). PR #716 fixed Claude Code background tasks, not native ones. Nothing since 2026-10-16 changes when a native turn ends.
+Next: Unchanged: needs Destin's OK on spending for a real native-engine run.
+Blocked: Needs Destin's decision on spending (the lab's spending-limit test is paused near its 10 USD cap; ledger not re-checked). The lab's work is backed up as of 2026-11-09.
 
 Chats
 - 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
-- 2026-10-21 session/148-harness-performance-lab: chat started
 - 2026-10-20 session/148-harness-performance-lab: chat started
-- 2026-10-20 session/148-harness-performance-lab: chat started
-- 2026-10-20 session/148-harness-performance-lab: chat started
-- 2026-10-20 session/148-harness-performance-lab: chat started
-- 2026-10-20 session/148-harness-performance-lab: chat started
-- 2026-10-20 session/148-harness-performance-lab: chat started
-- 2026-10-20 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
-- 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started
 
 From the old roadmap (moved 2026-10-16)

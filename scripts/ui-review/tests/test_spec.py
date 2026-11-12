@@ -5,6 +5,20 @@ sys.path.insert(0, HERE)
 from deck.spec import load_spec, validate, run_names, step_runs, word_count, banned_in, workspace_root, SpecError
 from fixture import shoot_run
 
+# WHY: bare open() in json.load/json.dump/read() left the file handle for the garbage collector to close,
+# which printed a ResourceWarning per call and buried real failures in the output (card #15 e).
+def _jload(p):
+    with open(p) as f:
+        return json.load(f)
+
+def _jdump(o, p):
+    with open(p, 'w') as f:
+        json.dump(o, f)
+
+def _read(p, **kw):
+    with open(p, **kw) as f:
+        return f.read()
+
 def write_spec(d, **over):
     # images/deck names the spec stem ('deck.json'), which is what validate() wants — see
     # test_images_folder_must_name_the_deck for the warning when it does not.
@@ -13,7 +27,7 @@ def write_spec(d, **over):
             "steps": [{"id": "S-1", "surface": "Home", "path": "Chat", "crop": "c",
                        "headline": "Short headline.", "changed": "What changed.", "notice": "You will notice."}]}
     spec.update(over)
-    p = os.path.join(d, 'deck.json'); json.dump(spec, open(p, 'w')); return p
+    p = os.path.join(d, 'deck.json'); _jdump(spec, p); return p
 
 class SpecTests(unittest.TestCase):
     def setUp(self): self.d = tempfile.mkdtemp()
@@ -29,7 +43,7 @@ class SpecTests(unittest.TestCase):
         self.assertTrue(os.path.isdir(os.path.join(root, 'wecoded-themes', 'themes')), root)
         self.assertTrue(os.path.isfile(os.path.join(root, 'youcoded', 'desktop', 'src', 'renderer', 'styles', 'globals.css')), root)
     def _without(self, key):
-        p = write_spec(self.d); s = json.load(open(p)); del s[key]; json.dump(s, open(p, 'w')); return p
+        p = write_spec(self.d); s = _jload(p); del s[key]; _jdump(s, p); return p
     def test_any_short_lowercase_run_names_are_accepted(self):
         # Proposal 9b (2026-10-05): a slide may compare against an older round by its own name.
         load_spec(write_spec(self.d, runs={"a": "/a", "b": "/b", "round3": "/c"}))
@@ -270,10 +284,10 @@ class LiveThemeTests(unittest.TestCase):
                                    "notice": "Nothing yet."}])
         over.setdefault('themes', ['midnight', 'light'])
         p = write_spec(self.d, **over)
-        s = json.load(open(p))
+        s = _jload(p)
         for k in ('images', 'runs'):
             s.pop(k, None)
-        json.dump(s, open(p, 'w'))
+        _jdump(s, p)
         return load_spec(p)
 
     def pictures(self, **over):

@@ -6,7 +6,8 @@ message: >-
   height: cap the menu to the space below its trigger (height: undefined +
   maxHeight: min(680px, <space below>)), publish that same cap as
   --session-menu-available-height for the New Session form's own scroll
-  region, keep --vvp-offset in the cap so a mobile browser's virtual
+  region, keep the keyboard height (--kb-offset since card #213, 2026-11-02: any keyboard, not only
+  the chat's; --vvp-offset before) in the cap so a mobile browser's virtual
   viewport doesn't hide the bottom, and give the session list itself
   (twice — the local list and the other-windows list) the scrolling
   .scroll-mask + flex-1 treatment so it flexes and scrolls before the New
@@ -73,9 +74,9 @@ rule:
           stopBy: end
           any:
             - kind: string_fragment
-              regex: "var\\(--vvp-offset, 0px\\)"
+              regex: "var\\(--(vvp|kb)-offset, 0px\\)"
             - kind: template_string
-              regex: "var\\(--vvp-offset, 0px\\)"
+              regex: "var\\(--(vvp|kb)-offset, 0px\\)"
     - not:
         has:
           stopBy: end

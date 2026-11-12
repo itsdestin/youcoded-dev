@@ -1,0 +1,308 @@
+[
+  {
+    "name": "chat/terminal#keys-chips",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-chips/midnight.png",
+    "ms": 2065,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-tray",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-tray/light.png",
+    "ms": 2068,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-tray",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-tray/midnight.png",
+    "ms": 2111,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat#phone/dark.png",
+    "ms": 2111,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-chips",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-chips/dark.png",
+    "ms": 2163,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat#phone/light.png",
+    "ms": 2164,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-chips",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-chips/light.png",
+    "ms": 2187,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-tray",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-tray/dark.png",
+    "ms": 2189,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-chips",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-chips/creme.png",
+    "ms": 2311,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-tray",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-tray/creme.png",
+    "ms": 2532,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat#phone/halftone-dimension.png",
+    "ms": 2855,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-chips",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-chips/halftone-dimension.png",
+    "ms": 3187,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat#phone/creme.png",
+    "ms": 3456,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat#phone/midnight.png",
+    "ms": 1746,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-tray",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-tray/meadow-mist.png",
+    "ms": 4059,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-tray",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-tray/halftone-dimension.png",
+    "ms": 4205,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/terminal#keys-chips",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat/terminal#keys-chips/meadow-mist.png",
+    "ms": 4333,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/active/design/2026-11-04-terminal-keys/runs-looks4/today/chat#phone/meadow-mist.png",
+    "ms": 2874,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  }
+]

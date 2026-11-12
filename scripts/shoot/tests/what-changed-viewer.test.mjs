@@ -140,7 +140,7 @@ test('areas split at the first slash or hash, and the rest is the row label', ()
   assert.equal(areaOf('chat#admin-approval'), 'chat');
   assert.equal(areaOf('settings/assistant/cloud#x'), 'settings');
   assert.equal(rowLabel('settings/assistant/cloud#x'), 'assistant/cloud#x');
-  assert.equal(rowLabel('dev/overlay#trust'), 'overlay#trust');
+  assert.equal(rowLabel('dev/overlay#compacting'), 'overlay#compacting');
   assert.equal(rowLabel('lonely'), 'lonely');
 });
 

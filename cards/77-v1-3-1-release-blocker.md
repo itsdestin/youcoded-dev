@@ -5,7 +5,6 @@ stage: planning
 priority: P1
 tags: native-harness, skills-mcp, feature
 branch: 77-v1-3-1-release-blocker
-roadmap: native-harness: **v1.3.1 release blocker — native-only users need a YouCoded
 created: 2026-10-15
 summary: Native personal and project skills still use Claude-named folders; a YouCoded-owned skills home remains future work.
 area: Agents & automations
@@ -13,9 +12,9 @@ side: behind
 vision: chat.steer.skillshome
 ---
 Progress
-Done: Release audit confirmed the remaining limitation; Destin explicitly deferred this item from 1.3.1. No implementation was shipped or marked fixed.
-Next: Remain open for future scoped work; not a gate for the current 1.3.1 candidate.
-Blocked: Not blocking 1.3.1 by explicit decision. Future product/design choices remain separate.
+Done: Nothing built yet. The app still finds skills only in Claude Code's folders (the personal one and each project's). Destin moved this out of the 1.3.1 release, which already shipped in October 2026.
+Next: Plan it together with card 75 (per-project skills): decide where YouCoded-owned skills should live for people who do not use Claude Code, and whether they can be copied to or from Claude Code's folders.
+Blocked: Not blocking anything. Waiting on Destin's design choices.
 
 See also #75: Both decide where a project's skills live and which ones the assistant uses; Destin wants them done together.
 

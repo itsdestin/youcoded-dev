@@ -132,7 +132,12 @@ report policy used automatically by startup, not a second repair implementation.
 
 Cleanup stays deliberate and follows the existing merged-branch rules. Remove nested component
 worktrees before their containing workspace. Never force-remove unfinished work. The manifest
-remains an ownership record; a cleaned-up session key is retired, not reused.
+is an ownership record, and cleanup (`prune-worktrees.mjs`, including the start-of-session sweep) deletes a session's
+manifest together with its worktrees. If a recorded folder is gone but every copy of its session branch is already in the repo's
+default branch (nothing could be lost), resuming the key forgets the stale entry and recreates that worktree fresh
+(`status: recreated`); if the branch holds commits the default branch lacks, startup still refuses with "Missing recorded
+worktree". The sweep also names any idle (1+ day) folder whose work exists only on this computer: uncommitted files, or commits no
+remote has.
 
 ## Limits
 

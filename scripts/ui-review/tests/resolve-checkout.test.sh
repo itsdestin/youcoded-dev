@@ -33,6 +33,13 @@ check "session name, from inside that worktree" \
   my-feature "$WS/worktrees/sessions/my-feature" "$WS/worktrees/sessions/my-feature/youcoded"
 check "no target still means the main checkout" \
   "" "$WS" "$WS/youcoded"
+# The regression: a bare launch from inside a session must get THAT session's youcoded,
+# not the shared checkout (run-dev, run-workbench and shoot all call it this way).
+check "no target, from inside a session worktree, means that session's own checkout" \
+  "" "$WS/worktrees/sessions/my-feature" "$WS/worktrees/sessions/my-feature/youcoded"
+mkdir -p "$WS/worktrees/sessions/bare"
+check "no target, session without its own youcoded/, falls back to the shared one" \
+  "" "$WS/worktrees/sessions/bare" "$WS/youcoded"
 check "an unknown name still fails" \
   no-such-thing "$WS" "<unresolved>"
 

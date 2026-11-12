@@ -1,0 +1,40 @@
+{
+ "deck": "master-plan-map-shape",
+ "started": "2026-10-08T12:42:44.444Z",
+ "submitted": "2026-10-08T12:52:56Z",
+ "cur": 3,
+ "answers": {
+  "B-1": {
+   "note": "this looks really really bad if i'm being totally fr... :( sorry, but this is just not visually attractive or intuitive. a normie should be able to glance at this and go \"ahh, gotcha\". also should adopt some youcoded styling.",
+   "t": 1791463544808,
+   "v": "other",
+   "seconds": 180,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "other",
+   "t": 1791463810649,
+   "note": "this is interesting, but still has a lot of room for improvement. still kinda hard to tell ui work from backend work, and some of these tags aren't completely clear. should probably have hover tooltips that elaborate",
+   "seconds": 266,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "other",
+   "t": 1791463900575,
+   "note": "confused. dont really understand all of these or way they actually provide utility",
+   "seconds": 90,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "other",
+   "t": 1791463975058,
+   "note": "idk cuz the marketplace is probably the more prominent app feature, and may github may become more important to the marketplace if we start wrapping git repos more overtly. why can we not tag as relevant to both?",
+   "seconds": 74,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

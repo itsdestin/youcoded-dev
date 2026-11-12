@@ -1,0 +1,97 @@
+{
+ "deck": "dev-tools-questions",
+ "started": "2026-10-04T11:17:48.618Z",
+ "submitted": "2026-10-04T11:24:36Z",
+ "cur": 2,
+ "answers": {
+  "Q-order": {
+   "v": "pick",
+   "pick": "xray-first",
+   "t": 1791112742326,
+   "seconds": 37,
+   "theme": "golden-sunbreak"
+  },
+  "Q-route": {
+   "note": "dont use autonomous ui/ux testers. i will do reviews manually. i want to be smart/token efficient and not overcomplicated this work.",
+   "t": 1791112742326,
+   "v": "other",
+   "seconds": 37,
+   "theme": "golden-sunbreak"
+  },
+  "Q-xray-hidden": {
+   "v": "yes",
+   "t": 1791112947380,
+   "seconds": 34,
+   "theme": "golden-sunbreak"
+  },
+  "Q-xray-source": {
+   "v": "pick",
+   "pick": "both-marked",
+   "t": 1791112947380,
+   "seconds": 34,
+   "theme": "golden-sunbreak"
+  },
+  "Q-xray-switch": {
+   "v": "pick",
+   "pick": "unlock-then-button",
+   "t": 1791112947380,
+   "seconds": 34,
+   "theme": "golden-sunbreak"
+  },
+  "Q-xray-tools": {
+   "v": "picks",
+   "picks": [
+    "filter"
+   ],
+   "t": 1791112947380,
+   "note": "kinda confused about the utility of some of the options and what they'd do. trust your judgement for how to make this surface the most useful.",
+   "seconds": 34,
+   "theme": "golden-sunbreak"
+  },
+  "Q-xray-type": {
+   "v": "yes",
+   "t": 1791112947380,
+   "seconds": 34,
+   "theme": "golden-sunbreak"
+  },
+  "Q-xray-where": {
+   "v": "pick",
+   "pick": "desktop",
+   "t": 1791112947380,
+   "seconds": 34,
+   "theme": "golden-sunbreak"
+  },
+  "Q-mon-rule": {
+   "v": "yes",
+   "t": 1791113071842,
+   "seconds": 31,
+   "theme": "golden-sunbreak"
+  },
+  "Q-mon-shape": {
+   "v": "pick",
+   "pick": "recorder",
+   "t": 1791113071842,
+   "seconds": 31,
+   "theme": "golden-sunbreak"
+  },
+  "Q-mon-what": {
+   "v": "picks",
+   "picks": [
+    "freezes",
+    "errors",
+    "stuck",
+    "memory"
+   ],
+   "t": 1791113071842,
+   "seconds": 31,
+   "theme": "golden-sunbreak"
+  },
+  "Q-mon-signal": {
+   "v": "yes",
+   "t": 1791113071842,
+   "note": "status bar chip",
+   "seconds": 31,
+   "theme": "golden-sunbreak"
+  }
+ }
+}

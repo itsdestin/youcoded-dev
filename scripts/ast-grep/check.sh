@@ -419,7 +419,9 @@ fi
 #   411 + 1 = 412.
 # Merge of master (2026-10-13): the branch's +1 above on master's 412. 412 + 1 = 413.
 # 2026-10-22 phone speed: +2 — codemirror-only-in-lazy-editor and its -tsx twin (each fixture fires once). 413 + 2 = 415.
-EXPECTED_VIOLATIONS=415
+# 2026-11-10 (card #15(g), Destin approved): +9 — voice-assets-runs-no-other-program widened to
+#   execSync, fork, require()/import() and the node: spelling (its fixture gains nine lines). 415 + 9 = 424.
+EXPECTED_VIOLATIONS=424
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

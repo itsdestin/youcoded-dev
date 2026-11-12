@@ -1,0 +1,159 @@
+{
+  "title": "Usage statistics — contract",
+  "key": "usage-stats-contract",
+  "out": "usage-stats.contract.html",
+  "themes": [
+    "midnight"
+  ],
+  "branch": "session/usage-visibility-20260929",
+  "sources": {
+    "usage-stats-questions": "usage-stats.questions.json",
+    "usage-stats-review": "usage-stats.review.json",
+    "usage-stats-review-2": "usage-stats.review-2.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Usage",
+      "path": "The Usage window and Settings → Assistant settings → Cloud providers",
+      "headline": "This is what done means for usage statistics.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Clicking a usage or cost chip opens the Usage window instead of a website.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review-2#B-1"
+        },
+        {
+          "id": "R2",
+          "statement": "The Usage window shows one account at a time, with tabs to pick the account.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review-2#B-1"
+        },
+        {
+          "id": "R3",
+          "statement": "Under an account's limit bars, one timeline shows how full the 7-day limit was and tokens used per day.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review-2#B-1"
+        },
+        {
+          "id": "R4",
+          "statement": "Each model's share of usage is listed under the charts.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review-2#B-1"
+        },
+        {
+          "id": "R5",
+          "statement": "The 24 hours range pairs tokens per hour with the 5-hour limit; 2 weeks and 3 months use the 7-day limit.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review-2#B-2"
+        },
+        {
+          "id": "R6",
+          "statement": "ChatGPT's tab adds its per-model limit and extra credits under the plan bars, only when ChatGPT reports them.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review-2#B-3"
+        },
+        {
+          "id": "R7",
+          "statement": "OpenRouter's tab shows credit left, dollars spent per day and each model's cost, with no limit line.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review-2#B-4"
+        },
+        {
+          "id": "R8",
+          "statement": "The same Usage view sits at the bottom of Cloud providers and matches the window's numbers.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review-2#B-5"
+        },
+        {
+          "id": "R9",
+          "statement": "Usage lives both in the chip window and inside Cloud providers in Settings.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "usage-stats-questions#Q-1",
+          "note": "i think it should both be integrated in the cloud providers page somehow but then also shown when a user clicks the usage/cost chips in the status bar. currently these link out directly to provider pages, but that should now be an action in this popup/menu."
+        },
+        {
+          "id": "R10",
+          "statement": "Usage can be seen by day.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "usage-stats-questions#Q-2"
+        },
+        {
+          "id": "R11",
+          "statement": "Usage can be seen by provider.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "usage-stats-questions#Q-2"
+        },
+        {
+          "id": "R12",
+          "statement": "Usage can be seen by model.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "usage-stats-questions#Q-2"
+        },
+        {
+          "id": "R13",
+          "statement": "Usage is shown as both tokens and percentage of plan or cost.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "usage-stats-questions#Q-2",
+          "note": "both tokens and percentage of plan/cost."
+        },
+        {
+          "id": "R14",
+          "statement": "Claude Code sessions are counted in the same view as their own provider.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "usage-stats-questions#Q-3"
+        },
+        {
+          "id": "R15",
+          "statement": "Plan usage shows limit bars plus shares, and also a dollar equivalent labelled as an estimate.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "usage-stats-questions#Q-4"
+        },
+        {
+          "id": "R16",
+          "statement": "The OpenRouter card shows credit left once the key works, refreshed every few minutes and after each reply.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review#A-2"
+        },
+        {
+          "id": "R17",
+          "statement": "The ChatGPT card shows per-model limit and extra credits under the plan bars, only when reported.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review#A-1"
+        },
+        {
+          "id": "R18",
+          "statement": "The existing chip colours are the only low-limit warning; no new gear dot or notice appears.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "usage-stats-review#Q-1"
+        },
+        {
+          "id": "R19",
+          "statement": "Daily usage totals are kept for 90 days on your computer.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "usage-stats-questions#Q-8"
+        }
+      ]
+    }
+  ]
+}

@@ -12,16 +12,16 @@ summary: Speed testing misses some situations, some of its tools can mislead, an
 area: Developer tools
 side: behind
 vision: together.workflow.perf
-work: session/93-file-viewer-freezes, session/96-merged-evaluation
+work: session/android-ux-test
 ---
 Progress
-Done: App-only viewer/comparison/indexing repairs merged in youcoded#665 (254ff9983aa3657a937dfd65011beb3c6e6508c9); this does not complete measurement-rig coverage or cross-platform runtime criteria. No evaluation code was included in that merge or its app closeout.
-Next: Continue separate performance-lab/evaluation work in preserved session/93-file-viewer-freezes. Retain coverage gaps and Windows/macOS/phone runtime checks; keep this card open.
-Blocked: No new evaluation blocker established by app closeout. Original workspace and nested app worktree contain uncommitted work and must be preserved.
+Done: The app fix that stops file previews, file comparisons and file indexing from freezing the app shipped in version 1.3.2 (app change #665, merged 21 Oct 2026). The speed-testing toolkit work was merged to the workspace master as PR #318 on 24 Oct 2026.
+Next: check speed on a real graphics card, typing while lots of output streams in, and Windows, Mac and phone checks. The phone speed lab is in progress on the Android branch and is not merged yet.
+Blocked: nothing recorded.
 
 Chats
+- 2026-11-03 session/android-ux-test: Building the phone speed lab (Destin, 2026-11-02: measure frame drops, lag, CPU/GPU on Android when opening the keyboard, managing files, navigating menus)
 - 2026-10-21 session/96-merged-evaluation: chat started
-- 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-18 session/93-file-viewer-freezes: Investigate hardware/document/HTML/path-list/watcher stall impact and extend the performance lab with representative workloads, independent thread signals, bounded execution and fail-closed results.
 

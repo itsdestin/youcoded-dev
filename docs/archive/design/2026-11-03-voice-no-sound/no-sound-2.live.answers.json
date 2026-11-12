@@ -1,0 +1,16 @@
+{
+ "deck": "voice-no-sound-live-2",
+ "started": "2026-11-03T22:53:54.818Z",
+ "submitted": "2026-11-03T22:54:00Z",
+ "cur": 0,
+ "answers": {
+  "N-1b": {
+   "v": "pick",
+   "pick": "after",
+   "t": 1793746439572,
+   "seconds": 5,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}

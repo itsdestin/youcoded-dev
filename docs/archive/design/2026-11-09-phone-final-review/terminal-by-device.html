@@ -1,0 +1,81 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terminal view by device</title>
+<style>
+  :root { --bg:#f6f7f5; --ink:#1d2622; --soft:#5b6862; --line:#d5dbd6; --card:#fff; --warn:#a4541a; --warnbg:#fdf1e4; --ok:#2f6b4a; --okbg:#e8f3ec; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#151a18; --ink:#e7ece9; --soft:#9aa8a1; --line:#2c3531; --card:#1d2421; --warn:#f0b27a; --warnbg:#3a2a1a; --ok:#8fd0aa; --okbg:#1c3327; } }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, sans-serif; }
+  main { max-width:1200px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:26px; margin:0 0 4px; } h2 { font-size:20px; margin:40px 0 8px; }
+  p { margin:6px 0; max-width:75ch; } .soft { color:var(--soft); }
+  .row { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-top:16px; align-items:start; }
+  figure { margin:0; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  figure img { width:100%; height:300px; object-fit:contain; border-radius:6px; background:var(--bg); display:block; }
+  figcaption b { display:block; margin-top:10px; } figcaption span { color:var(--soft); font-size:14px; display:block; }
+  .tag { display:inline-block; font-size:12px; font-weight:600; padding:2px 8px; border-radius:99px; margin-top:8px; }
+  .ok { color:var(--ok); background:var(--okbg); } .warn { color:var(--warn); background:var(--warnbg); }
+  .big { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; margin-top:16px; }
+  .big img { width:100%; border-radius:6px; display:block; }
+  ol.time { list-style:none; padding:0; margin:12px 0; border-left:3px solid var(--line); }
+  ol.time li { padding:6px 0 6px 16px; } ol.time b { display:inline-block; min-width:5.5em; }
+  ul { padding-left:20px; max-width:80ch; } li { margin:4px 0; }
+</style>
+<main>
+  <h1>Terminal view on each kind of device</h1>
+  <p class="soft">Pictures from the practice app on this branch, 9 Nov 2026. Same session, same theme.</p>
+
+  <h2>1. What each device shows today</h2>
+  <div class="row">
+    <figure><img src="terminal-by-device/computer-app.png" alt="">
+      <figcaption><b>Computer app</b><span>Terminal fills the window. You type straight into it. No message box.</span><span class="tag ok">As intended</span></figcaption></figure>
+    <figure><img src="terminal-by-device/computer-app-narrow.png" alt="">
+      <figcaption><b>Computer app, narrow window</b><span>Same as above, just narrower.</span><span class="tag ok">As intended</span></figcaption></figure>
+    <figure><img src="terminal-by-device/phone-app.png" alt="">
+      <figcaption><b>Phone app</b><span>Terminal is for looking. You type in the message box; a key row and scroll arrows sit above it.</span><span class="tag ok">As intended</span></figcaption></figure>
+    <figure><img src="terminal-by-device/phone-browser.png" alt="">
+      <figcaption><b>Phone's web browser (remote access)</b><span>Identical to the phone app.</span><span class="tag ok">As intended</span></figcaption></figure>
+  </div>
+  <h2>Laptop's web browser with a mouse (remote access): changed 10 Nov</h2>
+  <p>You chose the computer terminal. Before and after:</p>
+  <div class="big">
+    <img src="terminal-by-device/laptop-browser-before.png" alt="">
+    <p><b>Before</b> <span class="tag warn">Released app today</span></p>
+    <p>The phone's message box, key row and scroll arrows stretched across a big screen, and you could also type straight into the terminal. Two ways to type. The released app has done this since April.</p>
+  </div>
+  <div class="big">
+    <img src="terminal-by-device/laptop-browser-after.png" alt="">
+    <p><b>After</b> <span class="tag ok">This branch</span></p>
+    <p>Same as the computer app: the terminal fills the window and you type straight into it. Phones and touch tablets are unchanged.</p>
+  </div>
+  <p><b>Scroll bar fixed 10 Nov</b> (pictures above retaken): the terminal showed a second grey bar under the green one on the computer, and on the phone only the edge of the grey one. Now every device shows one green bar. Earlier pictures are kept in <code>terminal-by-device/before-scrollbar-fix/</code>.</p>
+  <p><b>Bottom strip fixed 10 Nov</b> (laptop picture retaken): on remote access the strip under the terminal's last row was a different colour from the rows. It now matches. Colours are otherwise unchanged. Earlier picture: <code>terminal-by-device/before-strip-fix/</code>.</p>
+  <p class="soft">Also visible in the phone pictures: the scroll arrows sit on top of the right end of Claude Code's own input line.</p>
+
+  <h2>2. How it got this way</h2>
+  <ol class="time">
+    <li><b>Apr 2026</b> The computer app is built first. Terminal fills the window; you type into it. A terminal you are not looking at is shrunk to nothing and left alone, because sizing it while shrunk once squashed all its text into one column.</li>
+    <li><b>Apr 2026</b> The same screens start running on phones. A phone keyboard cannot drive a terminal, so one rule is added: "anything that is not the computer app gets a message box and key row instead of typing in the terminal." Laptops on remote access were swept in by that wording. Nobody chose it.</li>
+    <li><b>Apr 2026</b> Windows printed the banner twice whenever the terminal was resized, so resizes were made rare: skipped when nothing changed, and sent once after a window drag settles.</li>
+    <li><b>Jul to Oct</b> Fixes on top: the terminal keeps the same size when you flip between chat and terminal; hidden terminals stop drawing; Enter and Space keys added so first-run menus can be answered on a phone.</li>
+    <li><b>Oct 2026</b> The phone app is rebuilt to run the same engine as the computer. From here a phone and a computer differ only in these screen rules.</li>
+    <li><b>Nov 2026</b> (this branch, not released) Your phone test: banner and first reply printed twice, and the screen jumped with the keyboard. Cause: on a phone the session started at a default size, then was resized when you first opened terminal view and again on every keyboard open. Fixes: size the session correctly while the terminal is still hidden, and stop resizing when the keyboard moves (slide the picture up instead).</li>
+  </ol>
+  <p><b>Where the tangle came from:</b> every one of those steps asked "is this a phone?" in its own words. By November there were about fifteen versions, and they disagree for laptops on remote access and for the computer app.</p>
+
+  <h2>3. What I am changing, and what I am protecting</h2>
+  <ul>
+    <li><b>Done today:</b> the November "size it while hidden" fix had reached the computer app by accident. It is now phone-layout only, so the computer app behaves exactly as the released app does.</li>
+    <li><b>Done today:</b> the "phone layout or computer layout?" rule for the terminal now lives in one place, with a test that fails if a second copy appears.</li>
+    <li><b>Next:</b> move the remaining "is this a phone?" checks to that one place, then split the keyboard code into single-purpose parts, writing a test for each old fix before touching it.</li>
+  </ul>
+  <p><b>Old bugs I am guarding against while doing it</b> (each gets a test first if it has none):</p>
+  <ul>
+    <li>Text squashed into one column when a hidden terminal is sized (Apr).</li>
+    <li>Banner printed twice on Windows after a resize (Apr).</li>
+    <li>Pasting in chat also pasting into a hidden terminal (Apr).</li>
+    <li>Terminal changing size when flipping between chat and terminal (Jul).</li>
+    <li>First-run menus that cannot be answered on a phone (Sep).</li>
+    <li>Banner and first reply printed twice on a phone; screen jumping with the keyboard (Nov, your Flip test).</li>
+  </ul>
+</main>

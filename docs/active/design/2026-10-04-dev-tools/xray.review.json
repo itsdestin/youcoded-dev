@@ -1,0 +1,102 @@
+{
+  "title": "X-ray view — the first look",
+  "key": "xray-review-1",
+  "out": "xray.review.html",
+  "stage": "review",
+  "images": "images/xray.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "crops": {
+    "xray-open": ["xray", "open-line", "1440x900+0+0"]
+  },
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Chat",
+      "path": "Settings → Development → Developer tools on, then the X-ray button in the top bar",
+      "crop": "chat/xray",
+      "runs": ["after"],
+      "labels": { "after": "X-ray" },
+      "headline": "X-ray replaces the messages with every saved line of the session, in order, tagged with what normal chat did.",
+      "changed": "Each row is one line of the session's saved file: its number, time, what kind of line it is, a one-line summary, and on the right whether chat shows it, hides it or trims it. Hidden lines carry a coloured edge on the left. The message box and Stop button below still work.",
+      "measured": "37 saved lines here; normal chat hides 9 and trims 1",
+      "notice": "The sample session is stuck re-running a failing test. 'Repeat ×2, ×3, ×4' marks each identical call, the '3 repeated calls — next' button jumps between them, and a line marks the 4-minute stall. The reminders and hook messages chat never showed sit in place, in order.",
+      "risk": "Built against made-up sample data so far. The part that reads a real session's file comes after you approve this look."
+    },
+    {
+      "id": "A-2",
+      "surface": "Chat",
+      "path": "Click any row in X-ray",
+      "crop": "xray-open",
+      "runs": ["after"],
+      "labels": { "after": "One line opened" },
+      "themes": ["meadow-mist"],
+      "highlight": { "box": [1, 51, 98, 37] },
+      "headline": "Clicking a row opens the line exactly as saved, with Copy line and a jump between a tool call and its result.",
+      "changed": "The open row shows the full saved text, laid out so it's readable, plus its size. A tool call offers 'Go to result', a result offers 'Go to call'. Copy line copies the exact saved text, to paste into a bug report or a fixing session.",
+      "measured": "337 B for this line",
+      "notice": "This replaces opening the raw file by hand to see what the model actually sent.",
+      "risk": "Copied lines can contain private content from the conversation."
+    },
+    {
+      "id": "A-3",
+      "surface": "Settings",
+      "path": "Settings → Development",
+      "crop": "settings/development",
+      "headline": "A 'Developer tools' switch at the bottom of Development turns the X-ray button on.",
+      "changed": "One new row under 'Get beta builds'. Off by default; while it's off, nobody sees an X-ray button anywhere. Turning it off returns every session to normal chat.",
+      "notice": "Desktop only for now: the row doesn't appear on the phone or in remote web.",
+      "risk": "The setting is per computer, so turning it on here doesn't turn it on elsewhere."
+    },
+    {
+      "id": "Q-filters",
+      "words": true,
+      "surface": "Chat",
+      "path": "The row of chips at the top of X-ray",
+      "headline": "Are these the right filters to start with?",
+      "today": "X-ray has four kind filters — Messages, Tools, Behind the scenes, Bookkeeping — plus 'Only hidden in chat' and a search box. With none lit, everything shows.",
+      "problem": "Too few filters and a long session is slow to narrow down; too many and the row becomes its own thing to learn.",
+      "proposal": "Keep these five and the search box. Yes keeps them; No or Other — tell me which to add or drop.",
+      "yes": "Keep these",
+      "no": "Change them"
+    },
+    {
+      "id": "Q-native-extra",
+      "words": true,
+      "surface": "Chat",
+      "path": "X-ray on a session that uses the app's own assistant",
+      "headline": "For the app's own sessions, should X-ray also show what the app sends the model that isn't in the saved file?",
+      "today": "Claude Code sessions save almost everything the model sees, including hidden reminders. The app's own sessions (other models, local models) save only the conversation itself — the instructions and tool list sent with every request are rebuilt each time and never written down.",
+      "problem": "When one of the app's own sessions misbehaves, the cause can be in those unsaved instructions, and X-ray would have nothing to show for them.",
+      "proposal": "Two ways to handle it.",
+      "options": [
+        {
+          "id": "later",
+          "label": "Saved file only, for now",
+          "pros": [
+            "X-ray arrives sooner.",
+            "The 'What the assistant was given' panel above the conversation already lists the instruction files."
+          ],
+          "cons": [
+            "The tool list and the exact text sent each turn stay invisible in X-ray."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "now",
+          "label": "Record and show it too",
+          "pros": [
+            "The complete picture of every request, in one place."
+          ],
+          "cons": [
+            "The app would save a copy of the instructions with every turn, which takes disk space.",
+            "More work before X-ray is usable."
+          ]
+        }
+      ]
+    }
+  ]
+}

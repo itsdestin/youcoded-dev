@@ -1,0 +1,16 @@
+{
+ "deck": "phone-polish-4-review",
+ "started": "2026-11-08T02:13:34.892Z",
+ "submitted": "2026-11-08T02:14:20Z",
+ "cur": 0,
+ "answers": {
+  "P4-1": {
+   "v": "yes",
+   "t": 1794104059599,
+   "note": "if i start scrolling the page behind while the menu is open, it should just close automatically.",
+   "seconds": 45,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

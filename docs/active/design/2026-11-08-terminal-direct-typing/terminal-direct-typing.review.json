@@ -1,0 +1,42 @@
+{
+  "title": "Phone terminal view — typing straight into Claude Code",
+  "key": "terminal-direct-typing-review",
+  "out": "terminal-direct-typing.review.html",
+  "images": "images/terminal-direct-typing-review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "T-1",
+      "surface": "Terminal view (phone app)",
+      "path": "Any session, switched to terminal view",
+      "crop": "chat/terminal#phone",
+      "headline": "The message box is gone: tap the terminal and your phone's keyboard types straight into Claude Code.",
+      "changed": "The key row keeps Ctrl, Esc, Tab and Space. Enter and the left/right arrows moved to the D-pad, and Attach (paperclip) and Paste took their places. The message box underneath is hidden in terminal view.",
+      "measured": "1 row of 6 keys instead of 7 keys plus the message box; the terminal gains about 64 px of height",
+      "notice": "Tapping the terminal opens the keyboard; swiping still scrolls. Tapping a key doesn't close the keyboard. When the keyboard opens, Claude Code's window slides up with it. Paste puts your copied text into the terminal; Attach puts the picked file's location in, which Claude Code reads as that file.",
+      "risk": "Terminal view loses the message box's Stop button (Esc stops Claude instead), voice typing and the model switcher; chat view keeps all three. Android may show a small 'YouCoded pasted from your clipboard' notice when you tap Paste. Typing and the keyboard slide can only be judged on the phone, not in these pictures. A phone browser connected to your computer is unchanged."
+    },
+    {
+      "id": "T-2",
+      "surface": "Terminal view (phone app)",
+      "path": "Any session, terminal view, floating style",
+      "crop": "chat/terminal#phone-floating",
+      "headline": "The up/down arrows became a D-pad: Send in the middle, left and right on its sides.",
+      "changed": "Where the up/down pair floated, there is now a plus-shaped pad: Up, Down, Left, Right, and the Send button (your theme's accent colour) in the centre. Send is Enter: it sends what you typed and confirms a menu choice.",
+      "measured": "4 arrow keys and Send, 40 px each; the pad covers a 128 px square in the bottom-right corner",
+      "notice": "One thumb reaches every menu control. The key row is shorter because Enter and the arrows live on the pad now.",
+      "risk": "The pad covers more of the terminal's bottom-right corner than the old pair, so the end of a long line can sit behind it. Send's arrow looks like the Right arrow beside it; only its colour tells them apart."
+    },
+    {
+      "id": "T-3",
+      "surface": "Terminal view (phone app)",
+      "path": "Any session, terminal view, float style",
+      "crop": "chat/terminal#phone-float",
+      "headline": "The same layout in the float style.",
+      "changed": "The same key row and D-pad as the other two styles.",
+      "notice": "Nothing specific to this style changes.",
+      "risk": ""
+    }
+  ]
+}

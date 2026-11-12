@@ -1,0 +1,73 @@
+{
+ "deck": "work-inventory-designs-2026-11-09",
+ "started": "2026-11-10T00:15:50.037Z",
+ "submitted": "2026-11-10T00:19:33Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "card",
+   "t": 1794269972548,
+   "seconds": 25,
+   "theme": "halftone-dimension"
+  },
+  "Q-2": {
+   "note": "this conversation is actively in progress right now, and i intend to continue working on the current branch/geature",
+   "t": 1794269972548,
+   "v": "other",
+   "seconds": 25,
+   "theme": "halftone-dimension"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1794269972548,
+   "note": "also currently in progress i think",
+   "seconds": 25,
+   "theme": "halftone-dimension"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1794269972548,
+   "note": "the way this got implemented truly sucked, which is why i kinda dropped it. i think this could still be useful in the future as a card, but it would need a full rebuild and discussion",
+   "seconds": 25,
+   "theme": "halftone-dimension"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "merge-into",
+   "t": 1794269972548,
+   "seconds": 25,
+   "theme": "halftone-dimension"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "card",
+   "t": 1794269972548,
+   "seconds": 25,
+   "theme": "halftone-dimension"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "merge-into",
+   "t": 1794269972548,
+   "seconds": 25,
+   "theme": "halftone-dimension"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "drop",
+   "t": 1794269972548,
+   "note": "we kinda did build or at least supersed this with my youcoded-dev work board page thing?",
+   "seconds": 25,
+   "theme": "halftone-dimension"
+  },
+  "Q-9": {
+   "v": "pick",
+   "t": 1794269972548,
+   "pick": "card",
+   "note": "this is still kinda just a research/exploration item. i'd want to be able to come back to the existing files/conversations/etc later when i pick this up.",
+   "seconds": 25,
+   "theme": "halftone-dimension"
+  }
+ }
+}

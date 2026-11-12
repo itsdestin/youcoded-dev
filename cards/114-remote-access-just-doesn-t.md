@@ -5,7 +5,6 @@ stage: planning
 priority: P2
 tags: remote-access, standalone, remote, bug
 branch: 114-remote-access-just-doesn-t
-roadmap: remote-access: Remote access "just doesn't work sometimes" and the phone gi
 created: 2026-10-15
 summary: When remote access fails the phone shows a blank error instead of what's wrong, and the remote setup screen has four unclear spots.
 area: Devices & sync
@@ -14,9 +13,9 @@ platform: Phone and web
 vision: sync.follow.remote
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: On the phone app, a 'cannot reach' message now says to update the computer if it is an older version (commit a71a0a92d, Nov 1).
+Next: (1) phone browser: when a later connection fails, show YouCoded's own message that says whether the phone is offline or the computer cannot be reached (needs a first visit; no service worker exists yet). (2) Setup screen: password confirm box and show/hide, a 'removed' message with undo when a phone is removed, a Keep awake explanation and time-left display, and a step count for setup.
+Blocked: needs Destin's decision on the Keep awake design (his 2026-09-24 request).
 
 Chats
 

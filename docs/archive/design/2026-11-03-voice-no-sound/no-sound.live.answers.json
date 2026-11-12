@@ -1,0 +1,37 @@
+{
+ "deck": "voice-no-sound-live",
+ "started": "2026-11-03T22:22:54.634Z",
+ "submitted": "2026-11-03T22:24:03Z",
+ "cur": 3,
+ "answers": {
+  "N-1": {
+   "v": "other",
+   "t": 1793744609982,
+   "note": "we should simplify a bit. just a single line with \"No sound detected - device may be muted\" is fine",
+   "seconds": 35,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "N-2": {
+   "v": "yes",
+   "t": 1793744624724,
+   "seconds": 15,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "N-3": {
+   "v": "yes",
+   "t": 1793744631028,
+   "seconds": 6,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "N-4": {
+   "v": "yes",
+   "t": 1793744642657,
+   "seconds": 12,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}

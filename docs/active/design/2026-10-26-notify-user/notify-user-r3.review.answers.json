@@ -1,0 +1,24 @@
+{
+ "deck": "notify-user-r3-review",
+ "started": "2026-10-26T09:22:45.182Z",
+ "submitted": "2026-10-26T09:24:35Z",
+ "cur": 1,
+ "answers": {
+  "R3-1": {
+   "note": "no this is worse single line",
+   "t": 1793006603980,
+   "v": "other",
+   "seconds": 18,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R3-2": {
+   "note": "eh this is bad. maybe keep it as a separate nested card at the top if it reaches the point of needing to wrap. we should also instruct the assistant that the notification is displayed alongside the message and shouldnt just duplicate content.",
+   "t": 1793006675131,
+   "v": "other",
+   "seconds": 92,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

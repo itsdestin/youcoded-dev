@@ -1,0 +1,673 @@
+{
+ "title": "Android test findings — what to fix and how",
+ "key": "android-findings-2026-11-01",
+ "out": "findings.questions.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "steps": [
+  {
+   "id": "plan",
+   "words": true,
+   "surface": "Android app",
+   "path": "Every Android install of 1.3.1 to 1.3.3",
+   "headline": "How fast should the startup crash reach people who already installed the Android app?",
+   "today": "The released Android app (1.3.3) almost certainly shows \"YouCoded couldn't start its assistant\" on every phone. I ran its own built-in programs on your phone and they fail the same way. I could not install the full 1.3.3 app without replacing your real one.",
+   "problem": "Anyone who downloaded the Android app since mid-October likely cannot use it at all, and nothing tells them why.",
+   "proposal": "First, about 20 minutes to rebuild 1.3.3 as a side-by-side test copy and prove the crash for certain. Then choose how the fix ships.",
+   "options": [
+    {
+     "id": "hotfix-crash",
+     "label": "Quick fix release",
+     "pros": [
+      "The crash fix reaches phones within a day or two, as 1.3.4.",
+      "A tiny change, so little risk of breaking something else.",
+      "The other five show-stoppers follow in the next normal release."
+     ],
+     "cons": [
+      "Sync, attach file and the stuck first chat stay broken a bit longer."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hotfix-all",
+     "label": "Fix all six first",
+     "pros": [
+      "One release where the phone app finally works end to end."
+     ],
+     "cons": [
+      "Phones stay unusable for days or weeks longer.",
+      "A bigger change has more room for new mistakes."
+     ]
+    },
+    {
+     "id": "next-release",
+     "label": "Wait for next release",
+     "pros": [
+      "No extra release work."
+     ],
+     "cons": [
+      "Phones stay unusable until whenever that is."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cards",
+   "words": true,
+   "surface": "Work list",
+   "path": "The work cards list",
+   "headline": "How should the fixes you say yes to be filed as work?",
+   "today": "None of these problems has a work card yet, apart from some loosely related older ones (one settings screen for desktop and phone; phone-width polish; local models page on Android).",
+   "problem": "Without cards, these findings live only in a report and get forgotten.",
+   "proposal": "After you answer this deck, I file the yeses as cards and link the related old ones.",
+   "options": [
+    {
+     "id": "grouped",
+     "label": "Grouped cards",
+     "pros": [
+      "One card per show-stopper, plus one \"phone polish\" bundle for the small items.",
+      "A short list you can scan; small fixes travel together."
+     ],
+     "cons": [
+      "One small item can't be prioritised separately from its bundle."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "each",
+     "label": "One card per issue",
+     "pros": [
+      "Every item can be ranked on its own."
+     ],
+     "cons": [
+      "About 30 new cards crowd the list."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-stop",
+   "page": "The six show-stoppers",
+   "intro": "Each of these stops a normal person from using a main feature. Pictures are in the report linked at the end."
+  },
+  {
+   "id": "s1-start",
+   "words": true,
+   "surface": "Android app start",
+   "path": "Opening the app",
+   "headline": "The assistant can't start on phones. Which fix?",
+   "today": "On opening, the phone shows \"YouCoded couldn't start its assistant\", some code, and a Try again button that never helps.",
+   "problem": "The phone's built-in copy of Node (the program that runs the assistant) is missing its language data. One line writes a number as \"10,000\", that needs the missing data, and the whole assistant crashes before it starts.",
+   "proposal": "I already proved the first fix on your phone: everything else in this test ran with it.",
+   "options": [
+    {
+     "id": "ship-data",
+     "label": "Ship the missing data",
+     "pros": [
+      "Proven on your phone.",
+      "Fixes every place that formats numbers, dates or currencies, not just this one line.",
+      "Adds about 3 MB to the app."
+     ],
+     "cons": [
+      "Slightly bigger download."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "remove-line",
+     "label": "Just change that line",
+     "pros": [
+      "Smallest possible change."
+     ],
+     "cons": [
+      "The next number or date written anywhere crashes the app again.",
+      "Dates and money would still look wrong on phones."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s1-lock",
+   "words": true,
+   "surface": "Android app start",
+   "path": "The app's built-in programs",
+   "headline": "Should the phone's built-in programs be locked to exact versions so they can't change silently?",
+   "today": "We choose which Alpine Linux release the phone's built-in programs come from, but not their exact versions. Node quietly moved from 24.18 to 24.22 between 1.3.3 and today, with no change on our side.",
+   "problem": "A build made next week can behave differently from one made today, and nothing would notice.",
+   "proposal": "Yes records the exact versions and only changes them on purpose, each time with a test on a real phone. No keeps taking whatever is newest."
+  },
+  {
+   "id": "s2-setup",
+   "words": true,
+   "surface": "First chat",
+   "path": "A new user's first Claude chat",
+   "headline": "A new user's first Claude chat gets stuck on hidden setup screens. How should the app handle them?",
+   "today": "After signing in with Claude, the first chat says \"Initializing session… Something may be wrong\". Behind it, Claude Code is waiting on three of its own setup screens (text colours, safety notes, \"trust this folder\") that only show in the terminal view.",
+   "problem": "A new user would think the app is broken. I only got past it by opening the terminal view and pressing Enter twice.",
+   "proposal": "Three ways to stop new users hitting it.",
+   "options": [
+    {
+     "id": "auto",
+     "label": "App answers them",
+     "pros": [
+      "Answers the colour and safety-notes screens for Claude Code once, at sign-in; asks \"trust this folder\" with the app's own approval card, which already exists.",
+      "The first chat just works."
+     ],
+     "cons": [
+      "Must be checked again whenever Claude Code changes its setup screens."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "cards",
+     "label": "Show them as cards",
+     "pros": [
+      "The user sees and answers each screen in the chat."
+     ],
+     "cons": [
+      "Three extra steps before a first message, which feels clunky."
+     ]
+    },
+    {
+     "id": "switch",
+     "label": "Jump to terminal",
+     "pros": [
+      "Simplest change."
+     ],
+     "cons": [
+      "Drops a new user into a scary text screen."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s3-sync",
+   "words": true,
+   "surface": "Backup & sync",
+   "path": "Settings, Backup & sync",
+   "headline": "Sync never works on Android. Fix it?",
+   "today": "On a phone, every chat shows a red \"Sync failing\" badge, and Backup & sync says \"Couldn't sync, unexpected problem\".",
+   "problem": "The phone's built-in Git makes its backup folder without one sub-folder that the app later writes into, and the app never creates it. Nothing syncs from a phone, ever.",
+   "proposal": "A one-line fix: create the folder first. Yes fixes it; your computer's sync is unaffected either way."
+  },
+  {
+   "id": "s3-badge",
+   "words": true,
+   "surface": "Backup & sync",
+   "path": "The badges under the message box",
+   "headline": "Should \"Sync failing\" show on a brand-new install where the person never turned sync on?",
+   "today": "The fresh test copy showed a red \"Sync failing\" badge right after first sign-in, before I touched sync.",
+   "problem": "A new user's first impression is a red error about something they never set up.",
+   "proposal": "Yes hides the badge until sync has been set up at least once. No keeps showing it."
+  },
+  {
+   "id": "s4-games",
+   "words": true,
+   "surface": "Games",
+   "path": "Menu, Games",
+   "headline": "The online games server has disappeared, on every platform. What should happen?",
+   "today": "Friends, Connect 4 and Chess sit on \"Connecting…\" forever, on desktop too. The server's web address (on PartyKit, now owned by Cloudflare) no longer exists anywhere on the internet.",
+   "problem": "Online play and friends are completely gone, and the app gives no sign anything is wrong. Flappy and 2048 are unaffected because they're single-player.",
+   "proposal": "First step for any option: find out what happened to the PartyKit account (an expired project, or a shut-down service).",
+   "options": [
+    {
+     "id": "restore",
+     "label": "Bring the server back",
+     "pros": [
+      "Online games work again as before.",
+      "If it's just an expired project, possibly a quick redeploy."
+     ],
+     "cons": [
+      "If PartyKit's hosting shut down, it means moving to Cloudflare, which is real work."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hide",
+     "label": "Hide online games for now",
+     "pros": [
+      "No more endless \"Connecting…\".",
+      "Quick."
+     ],
+     "cons": [
+      "A marketed feature disappears until restored."
+     ]
+    },
+    {
+     "id": "message",
+     "label": "Say it's unavailable",
+     "pros": [
+      "Honest; the cards stay visible."
+     ],
+     "cons": [
+      "Still a broken feature on show."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4-watch",
+   "words": true,
+   "surface": "Games and other online services",
+   "path": "Things the app relies on that we run or rent",
+   "headline": "Should something check every day that our online services still exist, and tell us when one vanishes?",
+   "today": "Nobody noticed the games server was gone. The app also relies on the marketplace, the theme list, and the sign-in services.",
+   "problem": "When one of them disappears, we hear about it from users, if at all.",
+   "proposal": "Yes adds a daily automatic check that opens a work card or alerts you. This overlaps the test-rethink handoff, so it can be folded into that work."
+  },
+  {
+   "id": "s5-attach",
+   "words": true,
+   "surface": "Message box",
+   "path": "The paperclip next to the message box",
+   "headline": "Attach file does nothing on phones. What should happen?",
+   "today": "Tapping the paperclip on the phone does nothing at all.",
+   "problem": "You can't send a photo, screenshot or document to the assistant from your phone. The phone part of the app is told \"cancelled\" every time without ever showing a picker.",
+   "proposal": "The phone already has its own file picker inside the app; it just isn't connected to this button.",
+   "options": [
+    {
+     "id": "wire",
+     "label": "Connect the phone picker",
+     "pros": [
+      "Opens Android's normal file and photo picker, as people expect."
+     ],
+     "cons": [
+      "A small amount of new phone code."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hide",
+     "label": "Hide the paperclip",
+     "pros": [
+      "No dead button."
+     ],
+     "cons": [
+      "Can't attach anything on phones."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s6-platform",
+   "words": true,
+   "surface": "Whole phone app",
+   "path": "Every screen on the phone",
+   "headline": "The phone app thinks it's a web browser, so it shows computer screens. How should we fix that?",
+   "today": "The app has phone versions of several screens (its own settings, \"Connect to your computer\", phone wording). On a real phone today it shows the computer versions, because a step during startup labels the phone \"browser\".",
+   "problem": "This causes many smaller problems on the next pages: \"computer\" wording, computer-only settings like Keyboard shortcuts and Install Tailscale, \"Launch in new window\", the squeezed two-column Pages screen, and the hidden \"Connect to your computer\" screen. Our screenshot tools force the phone label on, which is why reviews never saw it.",
+   "proposal": "Fixing the label is small. The catch: the phone screens it switches back on haven't been seen by anyone since the October rebuild, so some may be stale.",
+   "options": [
+    {
+     "id": "fix-review",
+     "label": "Fix it, then review",
+     "pros": [
+      "Fix the label, then show you every phone screen on a review deck before it ships.",
+      "Most of the small \"computer\" problems disappear at once."
+     ],
+     "cons": [
+      "Needs a review round, and may turn up stale phone screens to fix."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "wait-133",
+     "label": "Fold into one settings screen",
+     "pros": [
+      "There's already a top-priority card to merge desktop and phone settings into one screen, so we'd do this once."
+     ],
+     "cons": [
+      "The phone keeps showing computer screens until that work lands."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-first",
+   "page": "First launch and sign-in",
+   "intro": "What a brand-new phone user meets in their first five minutes. Several of these may disappear once the phone-label fix lands."
+  },
+  {
+   "id": "f-return",
+   "words": true,
+   "surface": "Sign-in",
+   "path": "First launch, Log in with Claude",
+   "headline": "After signing in, should the app bring you straight back instead of leaving you in Chrome?",
+   "today": "After the Claude sign-in finishes, Chrome shows \"You can close this window\" and stays open.",
+   "problem": "People don't know they need to switch back to YouCoded themselves. You noticed this.",
+   "proposal": "Yes makes the app come back to the front as soon as sign-in completes (for ChatGPT too). No leaves it as is."
+  },
+  {
+   "id": "f-chatgpt",
+   "words": true,
+   "surface": "Sign-in",
+   "path": "Settings, Assistant settings, Cloud providers",
+   "headline": "Should ChatGPT stop saying \"Waiting for the browser…\" once you leave its sign-in?",
+   "today": "If you start the ChatGPT sign-in and back out, its row keeps a spinner and \"Waiting for the browser…\" indefinitely, even after you pick another way to sign in.",
+   "problem": "It looks stuck and suggests something is still in progress. You noticed this.",
+   "proposal": "Yes resets it when you come back to the app without finishing, with a clear \"Sign in\" button again. No leaves it."
+  },
+  {
+   "id": "f-layout",
+   "words": true,
+   "surface": "First launch",
+   "path": "The welcome card after sign-in",
+   "headline": "Should the first-launch screens get a proper phone layout?",
+   "today": "The \"Start your first session\" card is wider than the phone screen: the heading reads \"Start your first ses\", and labels lose their first letters (\"roject folder\", \"odel\", \"kip permissions\").",
+   "problem": "The very first screen a new user sees looks broken. You asked for this.",
+   "proposal": "Yes means I design a phone layout and show it to you on a before/after deck before building. No leaves it."
+  },
+  {
+   "id": "f-wording",
+   "words": true,
+   "surface": "Whole phone app",
+   "path": "First launch, Cloud providers, the tour",
+   "headline": "On phones, should the app say \"phone\" instead of \"computer\"?",
+   "today": "The phone shows \"Free, on this computer\", \"Run a model on this computer\", \"Checking this computer…\" and \"on your own computer\".",
+   "problem": "It reads as if the app wasn't made for phones. You asked for this. Much of it comes back automatically with the phone-label fix.",
+   "proposal": "Yes fixes the phone-label problem first, then sweeps any \"computer\" wording that's left. No leaves it."
+  },
+  {
+   "id": "f-local",
+   "words": true,
+   "surface": "First launch",
+   "path": "First launch, Free, on this computer",
+   "headline": "What should the \"run a model on this device\" choice do on phones?",
+   "today": "Picking \"Free, on this computer\" on the phone shows \"Checking this computer…\" with a spinner that never ends.",
+   "problem": "Running a model on the phone isn't supported, so a new user picks an option that can never work and gets stuck.",
+   "proposal": "Two ways to handle it.",
+   "options": [
+    {
+     "id": "hide",
+     "label": "Hide it on phones",
+     "pros": [
+      "Nobody gets stuck; two clear choices are left."
+     ],
+     "cons": [
+      "Phone users don't learn that free local models exist on computers."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "explain",
+     "label": "Explain it's computer-only",
+     "pros": [
+      "Tells people the option exists on a computer."
+     ],
+     "cons": [
+      "A choice they can't use, taking up space on the first screen."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "f-tour",
+   "words": true,
+   "surface": "First-run tour",
+   "path": "The buddy's 9-step tour",
+   "headline": "Should the tour be fixed for phones?",
+   "today": "The tour says \"press Create\" but the button says \"Start session\". Its bubble covers the Start session button. It shows long folder paths like /data/data/com.youcoded… and lists app setup files such as providers.json as your \"Project files\".",
+   "problem": "New users get wrong directions and see confusing system files.",
+   "proposal": "Yes fixes the wording, keeps the bubble off the buttons, and hides system paths and files. No leaves it."
+  },
+  {
+   "id": "f-notify",
+   "words": true,
+   "surface": "First launch",
+   "path": "The very first thing the phone shows",
+   "headline": "When should the app ask for permission to send notifications?",
+   "today": "The first thing a new user sees is a bare black screen asking \"Allow YouCoded to send you notifications?\", before the app has shown anything.",
+   "problem": "People tend to say no when they don't know why, and then miss \"your task is done\" alerts.",
+   "proposal": "Two choices.",
+   "options": [
+    {
+     "id": "later",
+     "label": "Ask when it's needed",
+     "pros": [
+      "Ask the first time a chat runs while you leave the app, with a line explaining why.",
+      "People who understand the reason say yes more often."
+     ],
+     "cons": [
+      "A tiny bit more work."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep asking first",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "Unexplained, and on a blank screen."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "f-error",
+   "words": true,
+   "surface": "Android app start",
+   "path": "The \"couldn't start its assistant\" screen",
+   "headline": "Should the phone's startup-failure screen use the app's normal error box?",
+   "today": "When the assistant fails to start, the phone shows white technical text and a Try again button. There's no way to report it.",
+   "problem": "A user can't tell what happened or tell us. Had it offered Report bug, the startup crash might have reached us weeks ago.",
+   "proposal": "Yes uses the app's standard error box: plain wording, Try again, and Report bug with the details attached. No leaves it."
+  },
+  {
+   "id": "P-daily",
+   "page": "Everyday use",
+   "intro": "Things you'd hit while using the app day to day. Most are small."
+  },
+  {
+   "id": "d-2048",
+   "words": true,
+   "surface": "Games",
+   "path": "Menu, Games, 2048",
+   "headline": "Should 2048 respond to swipes on phones?",
+   "today": "2048 only listens to the arrow keys and W A S D, and its hint says so. Swiping on the board does nothing.",
+   "problem": "On a phone, the game can't be played at all.",
+   "proposal": "Yes adds swiping (and changes the hint on phones to \"Swipe to slide\"). No leaves it."
+  },
+  {
+   "id": "d-back",
+   "words": true,
+   "surface": "Navigation",
+   "path": "The menu button at top left",
+   "headline": "Should the phone's Back button close the menu instead of closing the app?",
+   "today": "With the menu open, pressing the phone's Back button leaves YouCoded entirely. Popups such as Resume close properly.",
+   "problem": "People lose their place and have to reopen the app.",
+   "proposal": "Yes makes Back close the menu first. No leaves it."
+  },
+  {
+   "id": "d-done",
+   "words": true,
+   "surface": "Notifications",
+   "path": "Any chat, when you leave the app",
+   "headline": "Should the phone tell you when a task finishes while you're in another app?",
+   "today": "Long tasks keep running when you switch apps, which works well. But the only notification is the permanent \"Your assistant is running\"; nothing says it finished or that it needs your approval.",
+   "problem": "You have to keep checking back.",
+   "proposal": "Three choices.",
+   "options": [
+    {
+     "id": "both",
+     "label": "Done and needs-you",
+     "pros": [
+      "One alert when a task finishes, and one when it's waiting for your approval.",
+      "You can leave the app and trust it to call you back."
+     ],
+     "cons": [
+      "More notifications."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "needs",
+     "label": "Only when it needs you",
+     "pros": [
+      "Fewest interruptions."
+     ],
+     "cons": [
+      "You won't know when something finished."
+     ]
+    },
+    {
+     "id": "none",
+     "label": "Leave as is",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "Keep checking back."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "d-pages",
+   "words": true,
+   "surface": "Pages",
+   "path": "Menu, Pages",
+   "headline": "Should Pages use one column on phones?",
+   "today": "Pages shows the list on the left and a thin strip on the right saying \"No page selected\", the computer's side-by-side layout squeezed onto a phone.",
+   "problem": "It looks broken and wastes half the screen. It probably comes back right with the phone-label fix.",
+   "proposal": "Yes makes sure Pages shows the list full-width, then the page full-width. No leaves it."
+  },
+  {
+   "id": "d-answer",
+   "words": true,
+   "surface": "Chat",
+   "path": "A chat after a long task",
+   "headline": "After a long task, should the assistant's final answer appear below its list of steps?",
+   "today": "When the assistant finishes a long job, such as building a Page, its \"done, here's what I made\" message sits above about 20 step rows. You land at the bottom and see only the steps.",
+   "problem": "It looks like the assistant stopped without saying anything; I thought so at first.",
+   "proposal": "Yes puts the final answer below the steps, or collapses the steps once the work is done. No leaves it."
+  },
+  {
+   "id": "d-approve",
+   "words": true,
+   "surface": "Chat",
+   "path": "Approval cards in Ask mode",
+   "headline": "Should approval cards show what you're approving without opening them?",
+   "today": "The assistant asks \"Running a command · \"L…\" with Yes, Always allow and No. The description is cut off on a phone.",
+   "problem": "You're approving something you can't read.",
+   "proposal": "Yes lets the card wrap its description onto two lines on narrow screens. No leaves it."
+  },
+  {
+   "id": "d-hover",
+   "words": true,
+   "surface": "Header",
+   "path": "The buttons along the top",
+   "headline": "Should hover labels stop getting stuck on phones?",
+   "today": "After tapping the menu button, a little \"Menu\" label stays on screen and floats over other things, even dialogs. \"Switch to terminal\" does the same.",
+   "problem": "Leftover labels cover buttons and look like a glitch.",
+   "proposal": "Yes hides hover labels on touch screens. No leaves it."
+  },
+  {
+   "id": "d-keyboard",
+   "words": true,
+   "surface": "Skills and Resume",
+   "path": "The compass icon, and Resume",
+   "headline": "Should the keyboard stay down when you open the skills list or Resume?",
+   "today": "Opening either one pops the keyboard up at once, covering half the list.",
+   "problem": "You came to look through the list, not to type, and you have to dismiss the keyboard first.",
+   "proposal": "Yes stops the keyboard opening by itself on phones; tapping the search box still opens it. No leaves it."
+  },
+  {
+   "id": "d-market",
+   "words": true,
+   "surface": "Marketplace",
+   "path": "The Marketplace",
+   "headline": "How should the Marketplace handle items that don't work on your device?",
+   "today": "On Android the first item is \"Apple Services — macOS only\", and several more Mac/Windows-only items follow. Themes are hidden inside Filters, and \"Browse marketplace\" from Appearance doesn't open themes.",
+   "problem": "Phone users see things they can't use first, and can't easily find themes.",
+   "proposal": "Choose how to treat items that don't work here; the theme fixes come with either.",
+   "options": [
+    {
+     "id": "hide",
+     "label": "Hide what can't run",
+     "pros": [
+      "Everything you see works on your device.",
+      "Browse marketplace from Appearance opens Themes directly."
+     ],
+     "cons": [
+      "Phone users won't learn what the computer version can do."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "bottom",
+     "label": "Move them to the end",
+     "pros": [
+      "Still visible, but out of the way."
+     ],
+     "cons": [
+      "Still clutter on a small screen."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "d-chips",
+   "words": true,
+   "surface": "Message box",
+   "path": "The shortcut buttons above the message box",
+   "headline": "Should the default shortcut buttons suit everyday users rather than programmers?",
+   "today": "A new install shows Journal, Inbox, Git Status, Review PR, Fix Tests, Briefing and Draft Text above the message box.",
+   "problem": "\"Git Status\", \"Review PR\" and \"Fix Tests\" mean nothing to most people and make the app look like a coding tool.",
+   "proposal": "Yes swaps those three for everyday ones (I'd propose the set on a small deck). No leaves them."
+  },
+  {
+   "id": "d-paths",
+   "words": true,
+   "surface": "Chat",
+   "path": "The rows listing what the assistant did",
+   "headline": "Should chat steps show file names instead of long system paths?",
+   "today": "Steps read \"Created a file · /data/user/0/com.youcoded.app.dev/files/home/plants.md\".",
+   "problem": "It's unreadable, and it shows system internals.",
+   "proposal": "Yes shows just \"plants.md\" (full location on tap). No leaves it."
+  },
+  {
+   "id": "d-copy",
+   "words": true,
+   "surface": "Games and terminal",
+   "path": "Flappy, and the terminal hint",
+   "headline": "Should instructions on phones talk about tapping instead of keys and clicks?",
+   "today": "Flappy says \"Space or Enter to flap… or press Space\"; the terminal hint says \"Click here\".",
+   "problem": "Small, but it reads as if the phone was forgotten.",
+   "proposal": "Yes says \"Tap\" on touch screens. No leaves it."
+  },
+  {
+   "id": "d-mode",
+   "words": true,
+   "surface": "Chat",
+   "path": "The NORMAL / AUTO badge under the message box",
+   "headline": "Should I find out why the permission mode changed from NORMAL to AUTO by itself?",
+   "today": "On the fresh install, the badge changed from NORMAL to AUTO after the first Claude message, without me touching it. The assistant then saved a file without asking.",
+   "problem": "If that's unintended, a new user's assistant is acting more freely than the badge first said.",
+   "proposal": "Yes means I investigate and report back before changing anything. No drops it."
+  },
+  {
+   "id": "d-tick",
+   "words": true,
+   "surface": "Files",
+   "path": "Opening a list the assistant saved",
+   "headline": "Should checkboxes in a saved list be tickable in the file viewer?",
+   "today": "The taco shopping list came with checkboxes, but tapping them in the file viewer does nothing.",
+   "problem": "A shopping list you can't tick off is less useful on a phone in a shop.",
+   "proposal": "Yes makes ticking save the change to the file. No keeps the viewer read-only."
+  },
+  {
+   "id": "d-dupe",
+   "words": true,
+   "surface": "Chat",
+   "path": "Page building",
+   "headline": "Should I check why the page builder lists the same question twice?",
+   "today": "Its step list showed \"Save location\" and \"Location\", both asking \"Where should I create the Water Tracker page?\". Only one card appeared and I answered once.",
+   "problem": "Possibly harmless, possibly a duplicate question on some screens.",
+   "proposal": "Yes means I investigate and report back. No drops it."
+  }
+ ]
+}

@@ -13,7 +13,7 @@ side: both
 vision: chat.files.office, chat.files.drawer
 ---
 Progress
-Done: nothing recorded.
+Done: nothing built yet on the four gaps. The main Office editing feature (Word, Excel, PowerPoint) shipped on 2026-10-02 in youcoded PR 598, and that is the base these gaps build on.
 Next: not decided.
 Blocked: nothing recorded.
 
