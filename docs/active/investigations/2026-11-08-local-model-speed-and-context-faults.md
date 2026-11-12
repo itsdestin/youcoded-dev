@@ -16,7 +16,54 @@ and measurements live in `youcoded/docs/engine-dependencies.md`; harness behavio
 `youcoded/docs/native-runtime.md` → "Local reliability". Do not copy numbers from here into
 code comments — those two files are the reference.
 
-## Where it stands (2026-11-09)
+## Where it stands (2026-11-12) — read this section first
+
+Destin answered two review decks (`docs/active/design/2026-11-09-local-models-review/`,
+answers files beside them). Everything he decided is built on the branch and pushed. NOT
+merged. His order (deck 1 Q-12): finish, test, **independent final code review, then ship**.
+
+**Decided and built on 2026-11-12** (app commits `dc37dd75f` … `12b89a417`):
+
+| Decision | What a user gets | Where |
+|---|---|---|
+| Read-ahead stays always on (Q-1) | No change. | — |
+| Default context 64k, was 32k (Q-2) | Three ordinary chats keep their place instead of two. Anyone who never set a size uses more memory after updating; a memory warning dismissed at 32k is asked once more. An unknown model on the default is still treated as small. | `engine-config.ts` `DEFAULT_CONTEXT_SIZE` |
+| Helper agents never take a chat's place (Q-8) | Going back to another chat no longer re-reads everything because a helper ran. | `slot-pins.ts` |
+| Read again when you return (Q-6) | Clicking back into a chat, or typing in it, after its model slept loads the model and re-reads the chat in the background. The chip works for a minute or more each time. | `hooks/use-return-warm.ts`, `models:load` + `sessionId` |
+| Long results keep both ends and are saved whole (deck 2 Q-1) | A command's error on its last lines survives a nearly full chat; a cut search/web/tool result can be opened from a saved file instead of running the tool again. | `tool-result-room.ts` |
+| The cut applies to every model (deck 2 Q-2) | No change (it already did); cloud chats only meet it when nearly full. | — |
+| A chat always continues (deck 2 Q-3, replaces deck 1 Q-7) | When a full chat's model cannot summarise, the app removes the old part and leaves its own note listing what the user asked for. The assistant forgets details from the removed part; the chat on screen is unchanged. | `compaction.ts` `standInSummary` |
+| Faster-writing safety net (deck 2 Q-4) | A model the trick stops from loading is loaded once more without it, and that is remembered. | `engine/mtp-fallback.ts` |
+| Idle shutdown stays 25 minutes (Q-9) | No change. | — |
+
+**Corrections to what Destin was told.** Deck 2 Q-1 said a cut result keeps "only the
+beginning" and the rest is "gone unless the command is run again". That was true only of
+the new room cut: commands already kept both ends and saved their full output
+(`tools/bash.ts`), and every tool's own limit keeps both ends. The real gaps were that the
+room cut could chop off a command's end, and that non-command results had no saved copy.
+
+**Tested 2026-11-12:**
+- Kept places at 32k vs 64k (small model, Z13): see `engine-dependencies.md`.
+- Desktop (RTX 4070 SUPER, separate engine copy in `~/yc-test-226`, port 9990, the app's
+  own 9B file read-only): 64k takes 8.2 GB of 12.3 GB (32k: 7.4); replies 54-65 tokens a
+  second; forcing the faster-writing trick on a model without the heads fails the load,
+  which is the failure the safety net catches.
+- **The desktop stopped accepting SSH logins during the third run** (kept places, 9B,
+  64k). It still answered pings and its own app still answered; cause unknown. A test
+  engine may still be running there. `~/yc-test-226` is still on it and must be removed
+  once it can be reached. Two read-only requests were also sent to the live app's ports
+  (9920, 9900) by mistake during the look-around; reported to Destin.
+
+**Not done:**
+- Independent final code review, then Destin's word to ship.
+- Faster-writing speed on NVIDIA: needs a dense model with the heads that fits 12 GB.
+- Windows on the desktop: not reachable (key expired); nothing measured there.
+- The come-back re-read and the safety net are unit-tested only, not yet watched in a
+  running dev app.
+- Follow-up card to file after Destin's OK: real-world testing across model sizes,
+  hardware and settings, and choosing the default context per device (his Q-2 note).
+
+## Where it stood on 2026-11-09 (history)
 
 Everything in the card's finish line is built and `bash scripts/verify.sh --full youcoded`
 passed. NOT merged; awaiting Destin's review.
