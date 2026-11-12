@@ -1,0 +1,253 @@
+{
+ "title": "Your chats on every device — round 11: pairing devices that hold data, and finishing backup",
+ "key": "mesh-sync-questions-11",
+ "out": "mesh-sync.questions-11.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Pairing two devices that both already hold data",
+   "intro": "You raised this in round 10. Today, signing a second device in to the same GitHub quietly adds both sets together. Chats never clash, because each chat has its own identity; two chats are never mistaken for one. Projects can clash, when both devices have a project with the same name."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Pairing a device",
+   "path": "Both devices already have chats and projects",
+   "headline": "What should pairing offer when both devices already hold their own chats and projects?",
+   "today": "Nothing is shown. Both sets are combined without asking.",
+   "problem": "A user pairing a work laptop with a home computer may not want everything from one on the other, and has no chance to say so or to back out.",
+   "proposal": "Under every option, pairing first shows what each device holds, for example 'This device: 212 chats, 4 projects. Desktop: 630 chats, 9 projects', and Cancel is always there. Nothing is ever deleted by pairing.",
+   "options": [
+    {
+     "id": "combine-or-cancel",
+     "label": "Combine everything, or cancel",
+     "pros": [
+      "One clear choice. After pairing, both devices list everything, as the design promises.",
+      "Because projects download only when turned on per device, combining adds list entries, not gigabytes."
+     ],
+     "cons": [
+      "No way to keep some chats on one device only. That would need a separate 'private to this device' feature."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "combine-or-fresh",
+     "label": "Combine everything, cancel, or start this device fresh",
+     "pros": [
+      "Covers the user who wants this device to become a clean copy of the other.",
+      "The device's old data is moved aside into a folder on that device, not deleted."
+     ],
+     "cons": [
+      "A third choice to explain, and a set-aside folder the user must later deal with."
+     ]
+    },
+    {
+     "id": "pick-items",
+     "label": "Choose chat by chat and project by project what joins",
+     "pros": [
+      "Full control."
+     ],
+     "cons": [
+      "A long, tiring screen for hundreds of chats.",
+      "Leaves devices with different lists, which breaks 'one list of chats on every device'."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Pairing a device",
+   "path": "Both devices have a project with the same name",
+   "headline": "What should happen when both devices have a project with the same name?",
+   "today": "Not handled on purpose; the result depends on timing.",
+   "problem": "'Website' on the laptop and 'Website' on the desktop may be the same project copied by hand, or two unrelated ones.",
+   "proposal": "Under every option no file is overwritten.",
+   "options": [
+    {
+     "id": "ask",
+     "label": "Ask for each clash: 'Is this the same project?'",
+     "pros": [
+      "Same project: combined into one; a file that differs keeps both copies, as today.",
+      "Different projects: both kept, one renamed, for example 'Website (from Laptop)'.",
+      "Only the clashes are asked about, usually none or a few."
+     ],
+     "cons": [
+      "A question during pairing that some users will not know how to answer. 'Not sure' would keep both, renamed."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "always-separate",
+     "label": "Always keep both, one renamed",
+     "pros": [
+      "No question. Nothing can be mixed up."
+     ],
+     "cons": [
+      "A project copied by hand to both devices stays as two projects that never sync with each other."
+     ]
+    },
+    {
+     "id": "always-combine",
+     "label": "Always combine into one",
+     "pros": [
+      "No question, and hand-copied projects just work."
+     ],
+     "cons": [
+      "Two unrelated projects with the same name get their files mixed into one folder."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Backup: how often, and from which device",
+   "intro": "Why backup is daily today, read in the code: each backup is a whole dated copy of everything, one per day, so it can be restored to a given day. An earlier version that overwrote one copy every 15 minutes was removed. Uploading goes to the user's own cloud, so it costs us nothing; the costs are the user's battery, data and cloud space."
+  },
+  {
+   "id": "S-1",
+   "words": true,
+   "new": true,
+   "surface": "Backup & sync in settings",
+   "path": "How fresh a backup is",
+   "headline": "A backup sends only what changed since last time, as often as each cloud allows without slowing the device, and at least daily.",
+   "changed": "Sending only changes is what makes frequent backup cheap. The exact timing is set per service during the build and shown truthfully on screen, for example 'Backed up 20 minutes ago'. On a phone it waits for wifi and charging unless you tap 'Back up now'. Dated restore points are kept as today: daily for a week, then weekly, then monthly.",
+   "notice": "This is your round 10 wording made into a rule. No means you want to see measured numbers per service before agreeing.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Backup & sync in settings",
+   "path": "Which device does the backing up",
+   "headline": "Which of your devices should send the backup to your cloud?",
+   "today": "Each device backs up only itself, and only with the clouds that work on it. iCloud does not exist on Android or Linux. The phone's Drive and GitHub backup do not work.",
+   "problem": "You asked for more creative ways to make backup work on every device. Once devices sync with each other, one device can back up for all of them.",
+   "proposal": "Under both options a device that is your only device must have at least one cloud that works on it.",
+   "options": [
+    {
+     "id": "any-device",
+     "label": "Any one of your devices that can reach your cloud backs up for all of them",
+     "pros": [
+      "An Android phone is covered by iCloud if you own a Mac: the Mac does the uploading.",
+      "One backup of everything, not one per device, so restore is simpler and uses less cloud space.",
+      "A super-host does it at all hours."
+     ],
+     "cons": [
+      "The backup is only as fresh as the last time a capable device was on. The screen must say which device last backed up and when.",
+      "A phone set to keep only recent chats cannot be the one backing up everything; a computer or super-host has to."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "each-device",
+     "label": "Each device backs up itself",
+     "pros": [
+      "A device never depends on another for its backup."
+     ],
+     "cons": [
+      "Each device needs a cloud that works on it, so phone backup depends on fixing each cloud on the phone.",
+      "Several partial backups to restore from."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "new": true,
+   "surface": "Backup & sync in settings",
+   "path": "Turning on a backup that is not locked",
+   "headline": "An unlocked backup asks for confirmation with this warning before it starts.",
+   "changed": "Example wording: 'This backup is not locked. Anyone who gets into your Google account can read your chats and files. Lock it with a passphrase instead?' Buttons: 'Lock it' and 'Back up without a lock'. The same line stays visible beside the backup in settings.",
+   "notice": "You asked for honest warnings and confirmation. No means the wording or the buttons should differ; say how in the note.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "P-3",
+   "page": "Two loose ends",
+   "intro": "Your question about the 15-second wait, and things that could be written down as cards so they are not lost."
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Project files across devices",
+   "path": "How soon a file change leaves the device",
+   "headline": "How long should a file change wait before it is sent to your other devices?",
+   "today": "15 seconds after the last edit. No reason is recorded in the code. What the wait does: the assistant often edits many files in a burst, and waiting bundles the burst into one send. Through GitHub one send takes 10 to 30 seconds, so sending more often was pointless.",
+   "problem": "Sending straight between devices is far quicker than through GitHub, so the long wait is no longer needed. Meanwhile it is the reason another device's files can be behind the chat.",
+   "proposal": "Under both options a burst of edits is still bundled into one send.",
+   "options": [
+    {
+     "id": "short",
+     "label": "About 2 seconds, with the exact figure tuned during the build",
+     "pros": [
+      "Files on your other devices almost always match what the chat says.",
+      "Quitting rarely has anything left to send."
+     ],
+     "cons": [
+      "More small sends during heavy editing; slightly more battery on a phone that is hosting."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep-15",
+     "label": "Keep 15 seconds",
+     "pros": [
+      "Fewest sends."
+     ],
+     "cons": [
+      "Files lag the chat by up to 15 seconds, which the files-changed note then has to warn about."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Work cards",
+   "path": "Things found or raised that are outside this design",
+   "headline": "Which of these should I file as cards now?",
+   "today": "None of these is written down anywhere except this design folder.",
+   "problem": "They are outside this design and would be forgotten once it is built.",
+   "proposal": "Pick any, or none. Filing a card commits to nothing; it records the idea or the fault.",
+   "options": [
+    {
+     "id": "faults",
+     "label": "The three backup faults: phone offers GitHub backup that copies nothing; phone offers Drive that cannot work; the switch says 'after changes' but runs daily",
+     "pros": [
+      "Real faults users can hit today."
+     ],
+     "cons": [
+      "If the new backup replaces these screens soon, fixing them separately may be wasted work."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hosted",
+     "label": "Explore backups hosted by YouCoded",
+     "pros": [
+      "Your idea from round 10, kept for later."
+     ],
+     "cons": [
+      "None; it is only a record."
+     ]
+    },
+    {
+     "id": "storage",
+     "label": "Backup storage: compressing, long-term chat growth, smoother restore",
+     "pros": [
+      "Your round 10 note, kept for later."
+     ],
+     "cons": [
+      "None; it is only a record."
+     ]
+    }
+   ],
+   "pick": "several"
+  }
+ ]
+}

@@ -28,7 +28,8 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-7.json` + `.answers.json` | Deck round 7, submitted 2026-11-11: catch-up, the 1 GB limit, the super-host, self-hosting, who pays. Written in answer to Destin's two comments on `design.md`. |
 | `mesh-sync.questions-8.json` + `.answers.json` | Deck round 8, submitted 2026-11-11: what travels with a chat, setup sync, remote access, self-run relay. |
 | `mesh-sync.questions-9.json` + `.answers.json` | Deck round 9, submitted 2026-11-12: what the 2026-11-11 checkpoint review found. Every item answered. |
-| `mesh-sync.questions-10.json` | Deck round 10: relay time limit, the files-changed note, and the cloud backup outline. Not yet answered. |
+| `mesh-sync.questions-10.json` + `.answers.json` | Deck round 10, submitted 2026-11-12: relay time limit, the files-changed note, and the cloud backup outline. |
+| `mesh-sync.questions-11.json` | Deck round 11: pairing devices that both hold data, backup frequency and which device backs up, the 15-second wait, cards. Not yet answered. |
 | `design.md` | DRAFT of the full design, each rule tagged with its source. Destin read an early version on 2026-11-10 and commented; it has been rewritten since. Lines marked "Open" are not decided. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
@@ -179,13 +180,25 @@ Follow-ups he asked for, answered in chat but not recorded before now: how other
 - What travels with a chat (round 8 pick) confirmed now that "folder" is explained. — D9 S-8: yes.
 - Anything else missed: "don't know", no note. — D9 Q-6. Pairing screen, relay abuse limits and the Nov 5 conflict copies stay with the build unless he says otherwise.
 
+## Round 10 (answered 2026-11-12)
+
+- The relay holds waiting data 30 days, not 48 hours; the 1 GB limit stays. — D10 Q-1: picked "thirty-days".
+- The host sends a tiny files-changed note per project; the relay keeps the latest. — D10 Q-2: picked "send-note", asking: "why is there a 15s dleay on the file changes?"
+- One backup feature: Google Drive, iCloud or GitHub, same contents and same restore. — D10 Q-3: picked "one-backup".
+- A backup holds everything, with switches. — D10 Q-4: picked "all-with-switches", note: "switches for individual/specific projects. also may want to think this through a bit more thoroughly and how to optimize/compress storage or deal with long-term chat accrual or improve backup/restoration flows. but this is somewhat tangential"
+- Not locked is preselected. — D10 Q-5: picked "unlocked-first", note: "just with honest warnings and confirmation when a user utilizes unencrypted backups"
+- Backup frequency NOT decided. — D10 Q-6: "probably depends on the service? i'd imagine there was a reason we decided on once a day initially, so i wouldnt want to change this without consideration. it should be as frequent as plausible without financial/performance/other costs"
+- A new device offers pairing or restore from backup. — D10 S-1: yes, note: "i am realizing we are also going to need to think through what we offer to users who try to pair two existing devices with their own unique histories/projects/etc. probably need to offer confirmations and prefernces and such,as we'd need to figure out if the user wants to cancel, merge all data from both devices in a 2-way sync, delete some data, etc"
+- Single-device users are asked to set up a backup at the switch. — D10 S-2: yes.
+- "A device only offers the choices that work on it", and filing the three faults as cards: NOT approved. — D10 S-3: "we should probably be a bit more creative in designing ways to get backups to work more consistently across all devices, and also investigate/explore backups hosted by youcoded at some point in the future"
+- Checked in code 2026-11-12: the daily backup is a whole dated copy per day (`sync-service.ts`, `sync-spaces/daily-backup.ts`); an earlier 15-minute overwrite loop was deleted. The 15-second pause (`sync-spaces/engine.ts`) has no recorded reason; it bundles a burst of edits into one send, and a GitHub send takes 10 to 30 seconds.
+
 ## Open items (nothing below is decided)
 
-1. A cloud backup outline inside the design, including setting up and recovering from the user's own cloud (D9 Q-5, S-2 notes).
-2. Relay time limit: 48 hours or 30 days beside the 1 GB limit (D9 S-3 note).
-3. How a device learns its files are behind the chat, and how that is put right (D9 Q-4 note).
-4. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
-5. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
+1. Backup frequency; backups working on every device; pairing two devices that both hold data; the 15-second pause. All on round 11.
+2. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
+3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
+4. Possible cards, not filed: the three backup faults; YouCoded-hosted backups; backup storage and long-term chat growth.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)
 

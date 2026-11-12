@@ -93,17 +93,15 @@ A keeper is something always on that holds locked lines it cannot read.
 - **No keeper at all is a supported way to run:** devices catch each other up whenever two
   are on together, with no service of ours. [D2 Q-1 "the dream"; D8 Q-4 as described]
 - **The relay is a waiting room, not an archive.**
-  - It holds a chat's lines until 48 hours after the last line was added to that chat. An
-    active chat stays fully held. [chat 2026-11-10]
+  - It holds waiting data until 30 days after the last line was added to that chat. An
+    active chat stays fully held. [D10 Q-1, replacing the 48 hours of chat 2026-11-10]
   - Lines are deleted sooner, once every device has them. [as described to him in chat
     2026-11-10; not his own words]
   - It holds at most 1 GB per user. [chat 2026-11-10]
-  - The 1 GB and the 48 hours cover everything waiting on the relay: chat lines, helper
+  - The 1 GB and the 30 days cover everything waiting on the relay: chat lines, helper
     files and project file changes. Data passing straight through while both devices are on
     is not stored and does not count. So a large project reaches a new device only while a
     device that has it is on. [D9 S-3]
-  - **Open:** he asked whether 48 hours is still worth having beside the 1 GB limit, or
-    whether 30 days would do. [D9 S-3 note]
   - Anything older, a device gets from your other devices when both are on.
   - It keeps, with no time limit, one small note per chat: the latest line number and which
     device has it. No words of the chat. So a device knows for certain when it is behind.
@@ -159,8 +157,12 @@ phone; it explains the battery cost. [D6 Q-3]
   sent. Your other devices collect the lines when they wake. [D9 Q-3]
 - Unsent project file changes are sent first, for a few seconds at most. Then the app quits
   and, if anything is left, shows the same "some chats may not have synced" line. [D9 Q-4]
-- **Open:** how another device learns that its files may be older than the chat describes,
-  and how that is put right. [D9 Q-4 note]
+- **The files-changed note.** The moment a project's files change, the host sends a tiny
+  note ("this project is now at change number 57", no names or contents) with the chat
+  lines. The relay keeps the latest one per project. A device then knows for certain when
+  its files are behind, and the notice says "Desktop has newer files and is offline". When
+  the other device returns, the existing hidden history combines the changes; a file changed
+  on both keeps both copies. [D10 Q-2]
 - The chat stays in the list on other devices: host disconnected, host it here?
 - Closing while offline still quits, and says: "Offline - some chats may not have synced."
   [D5 Q-5]
@@ -268,7 +270,7 @@ is looked at. [D8 Q-3]
 Chat sync through GitHub stops once the new system AND the cloud backup choices both exist,
 not before. Existing chats need no moving, because each device already holds its copies. The
 GitHub copy is left untouched, and a one-time message says what changed. [chat 2026-11-11;
-D9 Q-5] The relay is not a backup; it holds lines for a limited time.
+D9 Q-5] The relay is not a backup; it holds waiting data for a limited time.
 
 **Losing devices.** If every device is lost at once, chats without a cloud backup are gone
 for good; nobody, including us, can recover them. Removing a stolen device stops it receiving
@@ -281,21 +283,49 @@ There is no self-run relay. Self-hosting means running a super-host. [D8 Q-4]
 The current handoff and takeover code (about 1,600 lines) is replaced, not patched. The
 conflict copies from November 5 are left alone. [D1 Q-16, Q-17; D2 S-4]
 
-## 12. Still open
+## 12. Cloud backup (outline)
 
-1. **Cloud backup outline.** He wants the final design to include "at least a general
-   outline for the future plan for cloud data backup", and users must be able to set up
-   and recover from their own cloud backup. [D9 Q-5 and S-2 notes] Today's facts are in
-   section 14; the choices are on deck round 10.
-2. Relay time limit: 48 hours or 30 days beside the 1 GB limit. [D9 S-3 note; round 10]
-3. How a device learns its files may be behind the chat, and how that is put right.
-   [D9 Q-4 note; round 10]
-4. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
+Decided:
+- **One backup feature.** Sync is between your devices; backup is an optional spare copy in
+  your own cloud. Pick Google Drive, iCloud or GitHub: same contents and same restore
+  whichever you pick. Never a server of ours. [D10 Q-3]
+- **It holds everything, with switches:** chats, the assistant's setup, and each project
+  individually. [D10 Q-4: "switches for individual/specific projects"]
+- **Not locked is the starting choice;** the user can switch the passphrase lock on. An
+  unlocked backup shows an honest warning and asks for confirmation. [D10 Q-5: "just with
+  honest warnings and confirmation when a user utilizes unencrypted backups"]
+- **A new device offers two ways in:** pair with a device you have, or restore from your
+  cloud backup (sign in, passphrase if locked; chats, projects and setup come back). The
+  restored device is the first of a fresh set. [D10 S-1]
+- **At the switch,** a user with one device is asked to set up a backup or to say plainly
+  they want none; with two or more it is optional. Existing GitHub users keep GitHub as
+  their backup without doing anything. [D10 S-2]
+- GitHub chat sync is not stopped until this exists. [D9 Q-5]
+
+Open (asked on round 11):
+- How often a backup runs: "as frequent as plausible without financial/performance/other
+  costs", and not changed from daily without knowing why daily was chosen. [D10 Q-6]
+- Making backups work on every device: "be a bit more creative in designing ways to get
+  backups to work more consistently across all devices". [D10 S-3]
+- Pairing two devices that each already hold their own chats and projects: "offer
+  confirmations and prefernces ... cancel, merge all data from both devices in a 2-way
+  sync, delete some data". [D10 S-1 note]
+- Why file changes wait 15 seconds. [D10 Q-2 note]
+
+For later, his words: explore "backups hosted by youcoded at some point in the future"
+[D10 S-3]; "how to optimize/compress storage or deal with long-term chat accrual or improve
+backup/restoration flows ... somewhat tangential" [D10 Q-4].
+
+## 12b. Still open
+
+1. The four items marked Open in section 12.
+2. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
    door" setup.
-5. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
-6. Not designed, left to the build unless he says otherwise (asked D9 Q-6; he answered
-   "don't know"): how pairing looks on screen; how the relay limits abuse when no account
+3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
+4. Not designed, left to the build unless he says otherwise (asked D9 Q-6; he answered
+   "don't know"): how the pairing screen looks; how the relay limits abuse when no account
    is needed; a later plan for the November 5 conflict copies.
+5. The three backup faults in section 14 are not filed as cards; he did not say yes.
 
 ## 13. What has to be true in the code (for the building session, not for Destin)
 
