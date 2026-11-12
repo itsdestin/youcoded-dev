@@ -28,6 +28,7 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-7.json` + `.answers.json` | Deck round 7, submitted 2026-11-11: catch-up, the 1 GB limit, the super-host, self-hosting, who pays. Written in answer to Destin's two comments on `design.md`. |
 | `mesh-sync.questions-8.json` + `.answers.json` | Deck round 8, submitted 2026-11-11: what travels with a chat, setup sync, remote access, self-run relay. |
 | `mesh-sync.questions-9.json` + `.answers.json` | Deck round 9, submitted 2026-11-12: what the 2026-11-11 checkpoint review found. Every item answered. |
+| `mesh-sync.questions-10.json` | Deck round 10: relay time limit, the files-changed note, and the cloud backup outline. Not yet answered. |
 | `design.md` | DRAFT of the full design, each rule tagged with its source. Destin read an early version on 2026-11-10 and commented; it has been rewritten since. Lines marked "Open" are not decided. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 

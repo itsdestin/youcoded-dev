@@ -1,0 +1,288 @@
+{
+ "title": "Your chats on every device — round 10: cloud backup, and two loose ends",
+ "key": "mesh-sync-questions-10",
+ "out": "mesh-sync.questions-10.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Two answers you asked for",
+   "intro": "Both came from your round 9 notes. Each was explained in chat; here they are as choices."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "The optional YouCoded relay",
+   "path": "How long waiting data is held",
+   "headline": "Should the relay hold waiting data for 30 days in place of 48 hours?",
+   "today": "The relay holds a chat's locked lines until 48 hours after its last line, deletes them sooner once all your devices have them, and never holds more than 1 GB per user.",
+   "problem": "A laptop left off for a week finds nothing on the relay. It catches up only when another of your devices is on at the same time. You asked whether the 48 hours earns its place beside the 1 GB limit.",
+   "proposal": "Under both options the 1 GB limit, deleting once delivered, and releasing the least recently used chats when full all stay. The separate rule that chats used in the last 48 hours are complete on every device also stays.",
+   "options": [
+    {
+     "id": "thirty-days",
+     "label": "30 days",
+     "pros": [
+      "A device off for up to a month catches up from the relay alone.",
+      "Matches the 30-day 'remove this unseen device?' prompt, so there is one number to remember.",
+      "The most any user can cost us is unchanged: the 1 GB limit sets it, about 20 cents a month each on Cloudflare's paid plan."
+     ],
+     "cons": [
+      "Average storage per user rises somewhat for people with a rarely used device. How much is not measured.",
+      "Your locked data sits on our server longer. We still cannot read it."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "forty-eight",
+     "label": "Keep 48 hours",
+     "pros": [
+      "Least data held on our server, lowest average cost."
+     ],
+     "cons": [
+      "A device off for more than two days needs another of your devices on to catch up."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Continuing a chat on another device",
+   "path": "Project files that have not arrived yet",
+   "headline": "Should the host send a tiny 'files changed' note the moment a project's files change?",
+   "today": "File changes travel about 15 seconds after the last edit. A device has no way to know for certain that another device holds newer files, so the notice can only say 'may have newer files'.",
+   "problem": "You asked how a device would learn its files are behind, and how it is put right.",
+   "proposal": "The note says only 'this project is now at change number 57'. It holds no file names or contents. It travels at once with the chat lines, and the relay keeps the latest one per project, like the per-chat note you approved in round 7. Putting it right needs nothing new: when the other device returns, its changes arrive and the existing hidden history combines them; if both devices changed the same file, both copies are kept, as today.",
+   "options": [
+    {
+     "id": "send-note",
+     "label": "Yes, send the note",
+     "pros": [
+      "A device knows for certain when its files are behind. The notice says 'Desktop has newer files and is offline', not 'may have'.",
+      "When files are up to date, no warning shows at all."
+     ],
+     "cons": [
+      "One more small thing held on the relay, with no time limit."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no-note",
+     "label": "No, keep 'may have newer files'",
+     "pros": [
+      "Nothing extra held on the relay."
+     ],
+     "cons": [
+      "The warning shows whenever the host is offline, even when the files are in fact up to date, so it teaches you to ignore it."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Cloud backup: what exists today and what it becomes",
+   "intro": "Checked in the app's code. Today one settings screen holds two different things. 'Sync across devices' goes through your private GitHub: it works both ways, carries chats and synced projects, and is the only way a new device gets anything back. 'Additional backups' copies to Google Drive or iCloud once a day: it also carries your memory, skills and settings, but it only uploads. Nothing can be restored from Drive or iCloud; that part was removed earlier. Nothing in either is locked: whoever can open your GitHub, Drive or iCloud account can read it. On the phone, iCloud is not offered, Drive is offered but looks unable to work, and GitHub backup is offered but copies nothing. Once the new system moves chats and files between devices, GitHub is no longer needed for sync, so all three clouds can do one job: backup."
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Backup & sync in settings",
+   "path": "The shape of backup after the new system",
+   "headline": "What should cloud backup be once devices sync with each other directly?",
+   "today": "Two systems with different contents and rules: GitHub (two-way, restores) and Drive or iCloud (upload only, no restore).",
+   "problem": "A user cannot tell which one protects what. Only GitHub can bring data back, and only for part of it.",
+   "proposal": "Under every option backup is optional, goes to the user's own cloud account, and never to a server of ours.",
+   "options": [
+    {
+     "id": "one-backup",
+     "label": "One backup feature: pick Google Drive, iCloud or GitHub; same contents and same restore whichever you pick",
+     "pros": [
+      "One thing to understand: sync is between your devices, backup is a spare copy in your cloud.",
+      "Restore works from any of the three, which is the recovery method you asked for.",
+      "A user without GitHub is no longer second-class."
+     ],
+     "cons": [
+      "The largest piece of work: restore must be built for Drive and iCloud, and GitHub backup rebuilt to match.",
+      "Existing GitHub users see their setup renamed from sync to backup, with a one-time message."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "github-only-restore",
+     "label": "Keep GitHub as the one backup that restores; Drive and iCloud stay upload-only spares",
+     "pros": [
+      "Least work; GitHub restore already exists."
+     ],
+     "cons": [
+      "Recovery needs a GitHub account, which everyday users rarely have.",
+      "Drive and iCloud backups still cannot be restored by the app."
+     ]
+    },
+    {
+     "id": "drive-icloud-only",
+     "label": "Backup means Drive or iCloud only; GitHub is dropped",
+     "pros": [
+      "Simplest list for everyday users."
+     ],
+     "cons": [
+      "Takes away what current users rely on.",
+      "iCloud does not exist on Android or Linux, so those users would have Drive alone."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Backup & sync in settings",
+   "path": "What a backup holds",
+   "headline": "What should a backup contain?",
+   "today": "GitHub holds chats and synced projects. Drive and iCloud hold those plus memory, your skills, settings and plans. Plugins and themes are in neither.",
+   "problem": "You said in round 4 that a user should decide 'whether chats are backed up to cloud at all'. Projects can be large, and some users will want only part.",
+   "proposal": "Under every option secrets and rebuilt folders are skipped, as today.",
+   "options": [
+    {
+     "id": "all-with-switches",
+     "label": "Everything, with a switch for each kind: chats, projects, the assistant's setup",
+     "pros": [
+      "A full restore gives a lost user everything back.",
+      "Your round 4 wish is met: chats can be switched off.",
+      "Large projects can be left out to save cloud space."
+     ],
+     "cons": [
+      "Three switches to understand in place of none."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "all-no-switches",
+     "label": "Everything, no switches",
+     "pros": [
+      "Nothing to decide; nothing forgotten."
+     ],
+     "cons": [
+      "Does not meet your round 4 wish.",
+      "A user with little cloud space cannot leave out big projects."
+     ]
+    },
+    {
+     "id": "chats-setup-only",
+     "label": "Chats and setup only; projects are never backed up",
+     "pros": [
+      "Small and quick."
+     ],
+     "cons": [
+      "A user who loses every device loses their project files."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Backup & sync in settings",
+   "path": "Locking a backup with a passphrase",
+   "headline": "When a user sets up a backup, which choice is already selected: locked with a passphrase, or not locked?",
+   "today": "Backups are not locked. Anyone who gets into the user's cloud account can read every chat.",
+   "problem": "You said the user decides whether backups are passphrase-locked. Someone still has to choose what the screen suggests. A locked backup with a forgotten passphrase can never be opened, by anyone.",
+   "proposal": "Under both options the user can change the choice at setup, and the passphrase is never stored on any server.",
+   "options": [
+    {
+     "id": "locked-first",
+     "label": "Locked is selected; the user can switch it off",
+     "pros": [
+      "Matches the rest of the design, where nothing outside your devices can be read.",
+      "A broken-into cloud account exposes nothing."
+     ],
+     "cons": [
+      "A forgotten passphrase means the backup is gone. The screen must say so plainly and ask for it twice.",
+      "Locked files cannot be opened or browsed on the cloud's own website."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "unlocked-first",
+     "label": "Not locked is selected; the user can switch it on",
+     "pros": [
+      "Nobody loses a backup to a forgotten passphrase unless they chose the lock.",
+      "Files stay readable on the cloud's website, as today."
+     ],
+     "cons": [
+      "Most users keep whatever is selected, so most backups stay readable by whoever gets into the account."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Backup & sync in settings",
+   "path": "How fresh a backup is",
+   "headline": "How often should a backup be updated?",
+   "today": "Once a day at most. The setup screen says 'after changes', which is not true.",
+   "problem": "If every device is lost, everything since the last backup is gone. With daily backups that is up to a day of chats.",
+   "proposal": "Under both options 'Back up now' stays, and the wording on screen will say what really happens.",
+   "options": [
+    {
+     "id": "hourly",
+     "label": "Within about an hour of a change",
+     "pros": [
+      "At most about an hour of work can be lost.",
+      "Only what changed is sent, so it is light after the first time."
+     ],
+     "cons": [
+      "More activity in the background, and more battery on a phone. It would wait for charging or wifi on a phone."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "daily",
+     "label": "Once a day, as today",
+     "pros": [
+      "Least background activity."
+     ],
+     "cons": [
+      "Up to a day of chats lost in the worst case."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-1",
+   "words": true,
+   "new": true,
+   "surface": "Setting up a new device",
+   "path": "First launch",
+   "headline": "A new device offers two ways to get your data: pair with a device you have, or restore from your cloud backup.",
+   "changed": "Pairing stays the normal way. Restore is for when no other device exists: you sign in to your cloud, type the passphrase if the backup is locked, and chats, projects and setup come back. The restored device then becomes the first device of a fresh set that others pair with.",
+   "notice": "This is the recovery method you asked for in round 9. No means restore should work differently.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "new": true,
+   "surface": "Backup & sync in settings",
+   "path": "The moment GitHub chat sync stops",
+   "headline": "At the switch, a user with one device is asked to set up a backup; with two or more it is optional.",
+   "changed": "You decided the switch waits until backup choices exist. A single-device user has no other copy at all, so the one-time message asks them to choose a backup or to say plainly they do not want one. Existing GitHub users keep GitHub as their backup without doing anything.",
+   "notice": "Nobody is forced: 'No backup' is a choice, with one line saying what it risks.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-3",
+   "words": true,
+   "new": true,
+   "surface": "Backup & sync in settings",
+   "path": "Backup choices on each device",
+   "headline": "A device only offers the backup choices that work on it.",
+   "changed": "Today the phone offers GitHub backup, which copies nothing there, and Google Drive, which looks unable to work there. iCloud is not offered on Android or Linux because Apple does not provide it. In the new design every choice shown must work; making Drive and GitHub work on the phone is part of this work.",
+   "notice": "Yes also lets me file the two phone faults and the wrong 'after changes' wording as bug cards now, so they are not lost before this is built.",
+   "yes": "Yes",
+   "no": "No"
+  }
+ ]
+}

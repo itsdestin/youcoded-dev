@@ -284,13 +284,12 @@ conflict copies from November 5 are left alone. [D1 Q-16, Q-17; D2 S-4]
 ## 12. Still open
 
 1. **Cloud backup outline.** He wants the final design to include "at least a general
-   outline for the future plan for cloud data backup": what Google Drive and iCloud offer
-   today, how that differs from GitHub sync and from the new system, and how backups are
-   reorganised afterwards. Users must be able to set up and recover from their own cloud
-   backup. [D9 Q-5 and S-2 notes] Being researched.
-2. Relay time limit: 48 hours or 30 days beside the 1 GB limit. [D9 S-3 note]
+   outline for the future plan for cloud data backup", and users must be able to set up
+   and recover from their own cloud backup. [D9 Q-5 and S-2 notes] Today's facts are in
+   section 14; the choices are on deck round 10.
+2. Relay time limit: 48 hours or 30 days beside the 1 GB limit. [D9 S-3 note; round 10]
 3. How a device learns its files may be behind the chat, and how that is put right.
-   [D9 Q-4 note]
+   [D9 Q-4 note; round 10]
 4. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
    door" setup.
 5. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
@@ -318,3 +317,23 @@ Checked against youcoded `8ffa0a421`:
 - Android: no per-reply wake lock, no Doze handling; its server is loopback-only.
 - The existing "Model switched to" divider is `kind: 'model-switch'` in
   `shared/session-live-types.ts`, with a deterministic id so a replay cannot draw it twice.
+
+## 14. Cloud backup today (facts only; nothing here is a decision)
+
+Read in the code at youcoded `e73b41347`, 2026-11-12; nothing was run.
+
+| | Sync across devices (GitHub) | Additional backups (Google Drive, iCloud) |
+|---|---|---|
+| Direction | Both ways, automatic | Upload only |
+| Holds | Chats, the Personal folder, synced projects | Those, plus memory, the user's skills, settings, plans. No plugins or themes |
+| When | 15 s after a change, and every 2 minutes | Once a day at most; "Back up now" exists |
+| Restore | Yes: a new device signs in to GitHub and everything is pulled | None. Restore was removed earlier |
+| Locked | No. Private repositories, readable by whoever can open the account | No. Readable in the user's cloud |
+| Old copies | Full history kept | Thinned: daily for 7 days, weekly to 28, monthly to 90 |
+
+Faults found (reported, not fixed; application code is read-only for this work):
+- The phone offers GitHub backup, which copies nothing there.
+- The phone offers Google Drive, but the tool it needs is not shipped in the phone app
+  (inferred from code, not tried on a phone).
+- The setup switch says "Back up automatically after changes"; it runs once a day.
+- iCloud is offered only on Mac and on Windows with iCloud installed.
