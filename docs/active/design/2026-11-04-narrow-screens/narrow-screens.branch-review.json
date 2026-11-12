@@ -1,0 +1,335 @@
+{
+  "title": "Phones and narrow windows — where the branch stands",
+  "key": "narrow-screens-branch-review",
+  "out": "narrow-screens.branch-review.html",
+  "images": "images/narrow-screens.branch-review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "themes": [
+    "light",
+    "dark",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "The whole branch",
+      "path": "session/narrow-screen-proposals, in the app and the workspace",
+      "headline": "Nothing on this branch changes the app for anyone yet. Every decided design exists only in the practice app.",
+      "changed": "Four rounds of decks (4–5 Nov) chose a new phone top bar, session list and pill row. They are built as practice-app switches; outside the practice app every switch reads \"today\". Card #235 now tracks building them for real. The branch was rebased onto today's master on 11 Nov and backed up.",
+      "notice": "Merging this branch as it stands would change nothing anyone sees. It would put about 730 lines of practice-only code on master until the real build replaces them.",
+      "yes": "Understood",
+      "no": "That's not right"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "What master changed",
+      "path": "170 app changes and 372 workspace changes merged since this branch started",
+      "headline": "Master's phone work agrees with our decisions; two small things needed adjusting and are done.",
+      "changed": "Master added one rule for what kind of device a screen is: layout follows a narrow window, bigger buttons follow touch or a narrow window. Your phone review said the same as our Q-9: a narrow computer window gets the phone layout. I adjusted two things to match master: the pills are now as tall as master's taller narrow-window chips, and the phone session list keeps clear of the keyboard the way master's menus now do.",
+      "notice": "Also new from master: a grey \"Sync off\" pill, Pages and Resume showing a list first and then one item on a phone, and the terminal keys styled like the shortcut chips. None of them clash with this branch; the build must keep them.",
+      "yes": "Understood",
+      "no": "I have questions"
+    },
+    {
+      "id": "V-1",
+      "surface": "Top bar",
+      "path": "The strip across the top of a phone",
+      "crop": [
+        {
+          "crop": "chat#top-today@390x110+0+0",
+          "label": "Today"
+        },
+        {
+          "crop": "chat#top-lights@390x110+0+0",
+          "label": "Decided"
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Decided top bar: ☰ and Projects left, New session and terminal right, a plain name with status lights between.",
+      "changed": "The name pill and its \"+10\" count are replaced by the name alone with one small light per other session underneath (up to 12, idle ones faint). Pressing anywhere on the name, the arrow or the lights opens the list.",
+      "notice": "Projects and New session are one tap away instead of inside menus, and you can see at a glance which other sessions are working.",
+      "risk": "With more than 12 other sessions, the extra ones show only in the list."
+    },
+    {
+      "id": "V-2",
+      "surface": "Session list",
+      "path": "Tap the session name at the top of a phone",
+      "crop": [
+        {
+          "crop": "chat/sessions#phone-today@390x470+0+0",
+          "label": "Today"
+        },
+        {
+          "crop": "chat/sessions#phone-lights@390x470+0+0",
+          "label": "Decided"
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Decided session list: drops down full width with shorter rows and a \"Your sessions\" heading; the lights fade while it is open.",
+      "changed": "Rows are condensed: status is a coloured dot, the model name stands alone, and the folder name gets room first. The list spans the screen edge to edge.",
+      "notice": "More of each session's name is readable, and more sessions fit before you scroll.",
+      "risk": "The list's tidy rows only appear on narrow screens; a wide window keeps today's list."
+    },
+    {
+      "id": "V-3",
+      "surface": "Status pills",
+      "path": "The row of pills under the message box, on a phone browser connected to your computer",
+      "crop": [
+        {
+          "crop": "chat#phone-pills-today@390x190+0+654",
+          "label": "Today"
+        },
+        {
+          "crop": "chat#phone-pills-compact@390x190+0+654",
+          "label": "Decided"
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Decided pills: one swipeable row in the shortcut chips' shape, with Remote as a small computer icon first.",
+      "changed": "Today the pills wrap onto two lines, each in its own size and shape, and REMOTE is a word in the top bar. Decided: one row, every pill the chips' height and roundness, short labels or icons, and the pencil scrolling with them.",
+      "notice": "The bottom of the screen is one line shorter, and the pill row lines up with the shortcut chips above the message box.",
+      "measured": "Pills are now 32 px tall, matching master's narrow-window chips (they were 24 px before the rebase)",
+      "risk": "Pills past the screen edge are found by swiping, so the last ones are less obvious."
+    },
+    {
+      "id": "D-1",
+      "surface": "Top bar, narrow computer window",
+      "path": "Drag the YouCoded window on a computer narrower than about half a small laptop screen",
+      "crop": "chat#window-decided@390x110+0+0",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          45
+        ]
+      },
+      "headline": "In a narrow computer window, the New session button lands on top of the session name. How should that window's bar work?",
+      "options": [
+        {
+          "id": "name-shrinks",
+          "label": "Name shortens",
+          "summary": "Every button stays; the name cuts off with \"…\" to fit between them.",
+          "pros": [
+            "Same bar on a phone and a narrow window.",
+            "Nothing moves into a menu."
+          ],
+          "cons": [
+            "In a very narrow window the name may show only a few letters."
+          ],
+          "cost": "Small: part of the build.",
+          "recommended": true
+        },
+        {
+          "id": "new-in-list",
+          "label": "+ moves into list",
+          "summary": "In a narrow computer window only, New session lives in the session list, as today.",
+          "pros": [
+            "The name keeps more room."
+          ],
+          "cons": [
+            "Phone and narrow window differ by one button."
+          ],
+          "cost": "Small."
+        },
+        {
+          "id": "computer-today",
+          "label": "Computers keep today's bar",
+          "summary": "Narrow computer windows keep today's top bar; only touch screens get the decided bar.",
+          "pros": [
+            "No crowding with the window buttons."
+          ],
+          "cons": [
+            "Goes against \"width decides\" (your Q-9), and the phone review's rule that layout follows width."
+          ],
+          "cost": "Small, but needs one more device check."
+        }
+      ],
+      "notice": "Width decides, so a narrow computer window gets the phone bar, and its own minimize, maximize and close buttons take the room. Every option keeps the phone exactly as decided."
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Your decisions",
+      "path": "The four decks of 4–5 Nov",
+      "headline": "What you decided, and what you left open on purpose.",
+      "changed": "Decided: width decides who gets it (Q-9); the lights bar (round 3, made tidier in round 4); the full-width dropdown list (round 4); matching swipeable pills with an icon for Remote (Q-3, Q-6, rounds 3–4); the whole name area is pressable (round 4); the shortcut chips stay as they are (round 2, reversing your earlier \"behind a button\"); the ☰ menu stays as it is (round 3).",
+      "notice": "Left open on purpose: no Appearance choice for now (round 4); the \"everything panel\" and a sidebar list are a later, separate phone mode (card #222); chat reply width belongs to another session (Q-8).",
+      "yes": "That's right",
+      "no": "Something's wrong"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Touch screens",
+      "path": "Every button, on phones and touch screens",
+      "headline": "Is touch-screen sizing settled by master's new rule?",
+      "today": "In round 1 you called \"always show anything that appears on hover\" ill-considered, so sizing for touch was left open. Since then master made buttons finger-sized on any touch screen or narrow window, from your phone review.",
+      "problem": "Without an answer, the status page keeps listing touch sizing as undecided work for this branch.",
+      "proposal": "Treat it as settled by master's rule and drop it from this branch.",
+      "options": [
+        {
+          "id": "settled",
+          "label": "Settled by master",
+          "pros": [
+            "Nothing more to decide or build here.",
+            "One rule for the whole app."
+          ],
+          "cons": [
+            "Controls that only appear on hover stay hover-only on a phone until someone looks at them."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "card",
+          "label": "Card for hover-only",
+          "pros": [
+            "The hover-only controls get looked at one by one, later."
+          ],
+          "cons": [
+            "One more card in the list."
+          ]
+        },
+        {
+          "id": "here",
+          "label": "Decide it here",
+          "pros": [
+            "Finished on this branch."
+          ],
+          "cons": [
+            "Another round of questions before building."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Side-by-side screens",
+      "path": "Screens with a list on one side and details on the other",
+      "headline": "Should the rest of \"list first, then details\" stay on this branch or become its own card?",
+      "today": "You said yes in round 1: on a phone, a two-part screen shows the list, then the item on its own screen with Back. Master has since done exactly that for Pages and Resume, the two cases that prompted it.",
+      "problem": "Other two-part screens (some Settings and Marketplace screens) have not been checked one by one, and nothing on this branch designs them.",
+      "proposal": "Move it out to its own card so this branch only builds the top bar, list and pills.",
+      "options": [
+        {
+          "id": "own-card",
+          "label": "Its own card",
+          "pros": [
+            "This branch stays small and finishes sooner.",
+            "Each remaining screen gets its own pictures."
+          ],
+          "cons": [
+            "Squeezed screens, if any remain, wait longer."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "this-branch",
+          "label": "On this branch",
+          "pros": [
+            "One branch covers everything you asked for in round 1."
+          ],
+          "cons": [
+            "A design round before the build can start."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "How the build is checked",
+      "path": "The steps between now and your final yes or no",
+      "headline": "How thoroughly should the real build be checked before your final deck?",
+      "today": "The full route left: an outside tester tries the layout, a checklist deck you sign, the build, a code reviewer, a second test, a grader, then your final yes/no deck.",
+      "problem": "That is about a dozen helper runs. The design is already settled over four rounds.",
+      "proposal": "Choose the route.",
+      "options": [
+        {
+          "id": "full",
+          "label": "Full route",
+          "pros": [
+            "An outsider catches confusing bits before you see the build.",
+            "You sign a checklist of exactly what done means."
+          ],
+          "cons": [
+            "About a dozen helper runs; one more deck before building."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "short",
+          "label": "Short route",
+          "pros": [
+            "Build straight away; your next deck is the finished thing."
+          ],
+          "cons": [
+            "No outside tester or reviewer; mistakes reach you instead."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "What happens to this branch",
+      "path": "Card #235 and branch session/narrow-screen-proposals",
+      "headline": "Hand this branch to a new session to build, or merge it as it stands and build later?",
+      "today": "The branch holds the decided designs as practice switches, the three switch options you passed on, the decks and the status page. The decks and status page are already on master.",
+      "problem": "You are choosing between carrying on and closing this chapter.",
+      "proposal": "Pick one. Either way card #235 keeps the plan.",
+      "options": [
+        {
+          "id": "hand-off",
+          "label": "Hand off and build",
+          "summary": "A new session continues on this same branch: the D-1 fix, then the build. Nothing merges until your final deck.",
+          "pros": [
+            "Master never carries practice-only code.",
+            "The build starts from pieces that already work."
+          ],
+          "cons": [
+            "The branch must be brought up to date again if master moves a lot meanwhile."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "merge-now",
+          "label": "Merge as it stands",
+          "summary": "The practice switches go onto master; nobody sees a change. The build happens later on a fresh branch.",
+          "pros": [
+            "Nothing to keep up to date meanwhile.",
+            "Other phone work can see the pieces."
+          ],
+          "cons": [
+            "About 730 lines of practice-only code on master, including options you passed on, until the build deletes them."
+          ]
+        },
+        {
+          "id": "park",
+          "label": "Park it",
+          "summary": "Keep the branch as it is with no session working on it.",
+          "pros": [
+            "No cost now."
+          ],
+          "cons": [
+            "It falls further behind master the longer it waits."
+          ]
+        }
+      ]
+    }
+  ]
+}

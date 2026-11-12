@@ -1,8 +1,9 @@
 ---
 title: Phones and narrow windows — status (START HERE)
 status: active
-updated: 2026-11-09
-branches: youcoded-dev and youcoded, both `session/narrow-screen-proposals` (pushed)
+updated: 2026-11-11
+branches: youcoded-dev and youcoded, both `session/narrow-screen-proposals` (rebased onto master 2026-11-11, pushed)
+card: "#235"
 ---
 
 # Phones and narrow windows — where this work stands
@@ -44,13 +45,43 @@ the record of Destin's decisions. The answers files are the source, and this pag
   `OverflowMenu.tsx`, `StatusBar.tsx`, `SpecialistsChip.tsx` and `styles/globals.css`.
   Screens are in `dev/workbench/screens/chat.ts` (`chat#top-*`, `chat/sessions#phone-*`,
   `chat#*-pills-compact`).
-- `verify.sh` passed on `b0aaf5bfd` (types, tests, knip, lint, ast-grep, screens, journeys).
+- `verify.sh` passed on the rebased branch at `df72bffe3`, 2026-11-11 (types, tests, knip, lint, ast-grep, screens, journeys). A first run failed 8 unrelated screens under load; each opened on its own and the re-run passed.
 - **Two real fixes on the branch, not tied to the design:**
   - `BrailleBurst.tsx` cancels its clean-up timer on unmount.
   - `tests/status-bar-memo.test.tsx` counts header renders from a header-only hook.
 - The hub ("everything panel") is kept as a reference: `docs/active/prototypes/2026-11-05-phone-hub/`
   (pictures, notes, the round-3 code as a patch). It relates to card #222 (rearrange the main chat
   window).
+
+## Rebased onto master (2026-11-11)
+
+Both branches were rebased onto master (app: 170 commits behind; workspace: 372). The
+pre-rebase tips are kept locally as `backup/narrow-screen-proposals-pre-rebase-2026-11-11`.
+The app's changes came through line-for-line, apart from line budgets. What master brought
+that touches this work:
+
+- **`device.ts` (phone final review, card #213):** four device facts. Layout follows a narrow
+  window, as this work's Q-9 says. Finger-sized controls follow touch OR narrow (`fingerSized()`),
+  so the shortcut chips are `h-8` in every narrow window. **Done here:** the matching pills are
+  now 2rem tall (`globals.css`).
+- **Keyboard measure:** master split `--kb-offset` (any keyboard, for menus and popups) from
+  `--vvp-offset` (only the chat's own message box). **Done here:** `phoneMenuStyle` uses
+  `--kb-offset`, as SessionStrip's own menu now does.
+- **`onePaneLayout()`:** Pages and Resume already show list → item on a phone. That covers the
+  two cases behind questions S-2.
+- **Also on master, no clash, but the build must keep them:** the grey "Sync off" pill, the
+  version pill tooltip (#186), and the terminal key row drawn like the quick chips.
+- **Card #235** now tracks this work. The design docs and answers were already put on master
+  by `87877131f`.
+
+**Found in the branch review:** in a narrow DESKTOP window (`chat#window-decided`), the
+window's caption buttons take the room and the + New session button overlaps the session
+name. This was the open "width check" below. Destin decides the fix on the branch-review deck
+(D-1).
+
+**Branch review deck:** `narrow-screens.branch-review.json` covers today vs decided pictures,
+master's impact, the record of decisions, and the open questions (touch sizing, the rest of
+S-2, route, what happens to the branch). Its answers supersede anything below that they touch.
 
 ## Remains, in order
 
@@ -72,27 +103,28 @@ the record of Destin's decisions. The answers files are the source, and this pag
 4. **Must change in the build, not just be kept:**
    - **Pills:** the matching shape is a CSS overlay (`.status-row-uniform .border` in
      `globals.css`). Build every pill from one shared piece instead.
-   - **Android pill height:** shortcut chips are `h-8` on Android, so pills must follow the same
-     rule.
+   - **Pill height:** follow `fingerSized()` like the chips (the overlay is 2rem now because the
+     row only exists in a narrow window, where the chips are always `h-8`).
    - **Icons:** `ShieldIcon`, `PaletteIcon` and `ComputerIcon` are local to `StatusBar.tsx` and
      belong in `Icons.tsx`.
    - **Name stack:** the clickable stack is a `div` around real buttons. The arrow stays the
      keyboard's way in, so give the stack a proper button role or restructure it.
-   - **Width check:** check the lights bar in a narrow DESKTOP window. Width decides, and Windows
-     and Linux add the minimize/maximize/close buttons the phone pictures never had (they used
-     `platform=android`).
+   - **Width check: FAILED (2026-11-11).** In a narrow desktop window the + button overlaps the
+     name (`chat#window-decided`). Fix per the branch-review deck's D-1 answer.
 5. **Not designed yet, still in scope:**
    - Questions S-2: side-by-side screens become list → detail on phones.
-   - Questions S-3: touch sizing. Destin rejected "always show anything that appears on hover";
-     ask a narrower question, such as finger-sized targets only.
+   - Questions S-3: touch sizing. Destin rejected "always show anything that appears on hover".
+     Master's `fingerSized()` rule may settle it: branch-review deck Q-1.
+   - S-2 is partly done on master (Pages, Resume). Whether the rest stays here or gets its own
+     card: branch-review deck Q-2.
 6. Chat message width (questions Q-8) belongs to another session, not this work.
 
 ## Before resuming
 
-- Both branches are behind master: youcoded-dev by 54 commits and the app by 19 on 2026-11-09.
-  Update the branch before building. That is a decision for that session, not an automatic pull.
-- No work card tracks this effort. Card #139 (phone-width and touch polish) overlaps in theme but
-  not in scope. Destin was offered a card for the future phone mode. #222 now covers that idea.
+- Rebased onto master 2026-11-11 (above). If master has moved a lot by the time the build
+  starts, bring the branch up to date first.
+- Card #235 tracks this work. Card #139 (phone-width and touch polish) overlaps in theme but not
+  in scope. #222 covers the future phone mode (hub, sidebar list).
 - To see any option again: `node scripts/shoot/shoot.mjs 'chat#top-lights' 'chat/sessions#phone-lights'
   'chat#phone-pills-compact'`. To serve a deck again: `review-cards.py serve <spec> --no-build`.
 
@@ -104,4 +136,6 @@ the record of Destin's decisions. The answers files are the source, and this pag
 | `narrow-screens-2.live.*` | Round 2: top bar ×4, list shapes ×4, pills, shortcuts button, Appearance choice |
 | `narrow-screens-3.live.*` | Round 3: plain / lights name button, ☰ panel ×3, matching pills |
 | `narrow-screens-4.live.*` | Round 4: tidy lights bar, list shape, pills vs chips, Appearance choice |
+| `narrow-screens.branch-review.*` | 2026-11-11 branch review after the rebase: today vs decided, master's impact, open questions |
+| `runs/after/manifest.json`, `images/narrow-screens.branch-review/` | Its pictures (raw shots are not committed; retake with `shoot`) |
 | `preview/`, `*.serve-port` | Scratch, ignored by git |
