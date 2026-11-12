@@ -55,5 +55,5 @@ test('a folding section lights and rings as one whole box, never just its header
   assert.ok(page.includes('.lgroup:has(> summary:focus-visible){outline:2px solid var(--accent)'), 'ring is on the section box');
   assert.ok(page.includes('.fold:has(> summary:focus-visible){outline:2px solid var(--accent)'), 'ring is on the fold box');
   assert.ok(!/\.lgroup\[open\] > \.lghead:hover\{background/.test(page), 'the header-only hover strip is back');
-  assert.ok(page.includes('.lgroup[open]:has(> summary:hover){background'), 'an open section lights as a whole');
+  assert.ok(/\.lgroup\[open\]:has\(> summary:hover\)[^{]*\{background/.test(page), 'an open section lights as a whole');
 });
