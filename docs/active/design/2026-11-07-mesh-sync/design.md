@@ -2,7 +2,7 @@
 status: draft
 date: 2026-11-10
 topic: Chats on every device (YouCoded Mesh) — the design, written from Destin's answers
-related-cards: 64, 98, 119, 121, 125, 127, 241, 242, 243
+related-cards: 64, 98, 119, 121, 125, 127, 241, 242, 243, 248
 ---
 
 # Chats on every device — the design (draft for Destin's read)
@@ -45,6 +45,14 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
 - **Checked fact:** chats only ever grow. In 25 sampled Claude Code chats on Destin's desktop
   holding compactions, every earlier line was still in the file; native chats add a marker
   line when they compact. So "everything after line N" is safe for both.
+- **What travels with a chat:** its lines, plus the files saved for that one chat: each
+  helper's working file, long outputs the assistant saved, and the chat's plan and to-do
+  list. A chat active in the last 48 hours is complete on every device. An older chat fetches
+  those files when it is opened on a device; if the only device holding them is off, the
+  notice says the helpers' reports are kept but unfinished helper work cannot be continued.
+  Pasted images and undo history do not travel. [D8 Q-1]
+- **The assistant's setup does not travel** in this design (skills, plugins, connected
+  tools, global instructions). Card 248. [D8 Q-2]
 - **Everything is locked end to end.** Only your devices can read it. [D2 Q-2]
 - **A new device joins by pairing with one you already have.** No account is needed for sync;
   our relay may ask for a sign-in to stop abuse. [D4 Q-4]
@@ -182,22 +190,23 @@ notifications are card 242. [D4 Q-13; D5 S-6]
 
 ## 11. What gets replaced
 
+Today's remote access is replaced inside the apps: no Connect screen and no Tailscale for
+chats. The open-in-a-browser view stays, still through Tailscale; it is also how a super-host
+is looked at. [D8 Q-3]
+
+There is no self-run relay. Self-hosting means running a super-host. [D8 Q-4]
+
 The current handoff and takeover code (about 1,600 lines) is replaced, not patched. The
 conflict copies from November 5 are left alone. [D1 Q-16, Q-17; D2 S-4]
 
 ## 12. Still open
 
-1. Helper transcripts: when they reach other devices. (Round 6 Q-1 not decided; Destin's
-   concern is lost work when a chat moves without them.)
-2. What travels with a chat besides its lines. (Round 6 Q-2 not decided; he is fine dropping
-   images.)
-3. How a home super-host is reached from outside; how the new system relates to today's
-   remote access; whether a relay of one's own exists apart from a super-host. (Round 7 Q-6,
-   Q-7 not decided.)
-4. Never asked: what happens to the chats and GitHub sync storage users have today when the
+1. Never asked: what happens to the chats and GitHub sync storage users have today when the
    new system arrives.
-5. Never asked: how the 30 days of replaced file versions are shown to the user.
-6. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
+2. Never asked: how the 30 days of replaced file versions are shown to the user.
+3. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
+   door" setup.
+4. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
 
 ## 13. What has to be true in the code (for the building session, not for Destin)
 

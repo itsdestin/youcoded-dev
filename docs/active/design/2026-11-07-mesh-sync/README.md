@@ -25,6 +25,7 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-4.json` + `.answers.json` | Deck round 4 (2 statements + 17 questions), submitted 2026-11-09. A second session's whole-design review: one copying system, keepers, pairing, closing the host, retired devices, viewer gaps. Supersedes round 3's Q-1 to Q-4 and Q-8. |
 | `mesh-sync.questions-5.json` + `.answers.json` | Deck round 5 (16 statements + 7 questions), submitted 2026-11-10. Restated his round-4 rules; decided relay first, files on the same system, offline behaviour; reviewed ten Continue-here states. |
 | `mesh-sync.questions-6.json` | Deck round 6: the three questions held over from round 3 (helper transcripts, smaller pieces, phone awake). |
+| `mesh-sync.questions-8.json` | Deck round 8: what travels with a chat, setup sync, remote access, self-run relay. |
 | `mesh-sync.questions-7.json` | Deck round 7: catch-up, what happens at the 1 GB limit, the super-host, self-hosting the relay, who pays. Written in answer to Destin's two comments on `design.md`. |
 | `design.md` | DRAFT of the full design, written from the answers, each rule tagged with its source. Not yet read by Destin. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
@@ -127,6 +128,12 @@ Format: rule — source. "D1 Q-5" = deck round 1, step Q-5. Quotes are verbatim 
 - Reaching a home super-host from outside: offer both, through our relay as the default and the user's own front door. — "i think this is generally fine? though, when we get to it, i will want to better understand the different methods like tailscale vs tunnels". Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
 - Devices on the same wifi talk directly, locked end to end like every other path; needs its own security review before release. — "okay that's fine." on "Direct on wifi, locked (recommended)." Earlier the same day he asked: "is that safe though? i'm pretty sure there were reasons we moved remote access away from wifi to a tailscale-only function...". The recorded reason (`youcoded/desktop/src/shared/cleartext-hosts.ts`, 2026-10-30 security audit A1): the phone sent its pairing password and conversations in plain text to whatever address was saved, including a café's wifi.
 
+### Round 8 (answered 2026-11-11)
+- What travels with a chat: its lines plus the files saved for that one chat (helper working files, saved long outputs, its plan and to-do list). Chats active in the last 48 hours are complete on every device; older chats fetch those files when opened. Pasted images and undo history are dropped. — D8 Q-1: picked "recent-complete", with the note: "you keep saying \"folder\". what folder? what are you talking about? i need more context". The pick stands but the word "folder" was unclear; explained in chat, and he may revise.
+- Syncing the assistant's setup (skills, plugins, connected tools, global instructions) is a separate card, built after chats sync: card #248. — D8 Q-2: "separate-card".
+- The new system replaces today's remote access inside the apps; the open-in-a-browser view stays (still Tailscale). — D8 Q-3: "replace-keep-browser".
+- No self-run relay. Self-hosting means running a super-host. — D8 Q-4: "drop".
+
 ### Decisions from the 2026-11-06 proposal that Destin later overturned
 The proposal's section 1 lists four "decisions so far". Three no longer hold:
 1. "Default runner = the device he's typing on" → replaced by host-stays-until-offline-or-chip (D1 Q-4, Q-5, Q-15).
@@ -136,9 +143,10 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 
 ## Open items (nothing below is decided)
 
-1. **Helper transcripts** and **what travels with a chat**: round 6 answers asked for a fuller explanation; given in chat 2026-11-11 with a new proposal, awaiting his answer.
-1a. **How a home super-host is reached from outside, how it relates to today's remote access, and whether a relay of one's own exists apart from a super-host**: round 7 Q-6 and Q-7 came back confused; re-explained in chat 2026-11-11, awaiting his answer.
-2. **The design document** `design.md` in this folder is a draft written from the answers; it needs Destin's read.
+1. Never asked: what happens to the chats and GitHub sync storage users have today when the new system arrives.
+2. Never asked: how the 30 days of replaced file versions are shown.
+3. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
+4. `design.md` needs Destin's read once the above are settled.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)
 
