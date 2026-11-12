@@ -3,16 +3,17 @@ status: draft
 ---
 # Pages step 4 — automations: technical design
 
-**Status 2026-11-09: draft, not yet reviewed. Nothing here is built** — only the screens exist, in the
-workbench against `renderer/dev/workbench/automations-mock.ts`. Every decision below is answered on a
-deck except decision 3's **Commands** bullet, which waits on deck `pages-finish-step4-plan-g` (started
-2026-11-08, not submitted). Do not build from this until that deck is submitted, the screens listed
-under "Still to settle" are drawn, and one design-review round has run. An earlier version (no saved
-Claude runs, one owning page, two jobs at a time, system notifications) is superseded by this one.
+**Status 2026-11-12: draft. Nothing here is built** — only the screens exist, in the workbench
+against `renderer/dev/workbench/automations-mock.ts`. Every decision below is answered on a deck or
+in chat. Do not build until the screens under "Still to settle" are drawn and approved and one
+design-review round has run. Route (review deck `Q-route`): finish steps 4, 5 and 6, then ship once.
+The 2026-11-08 "fence" proposal (deck `plan-g`, never submitted) is DROPPED: Destin called it
+overcomplicated, and it made Claude, other models and Windows/phones behave differently, against
+his "the underlying engine for any automation should be easily interchangeable".
 
 Sources, in order (later wins): `pages-finish-step4.questions` → `step4.review` → `step4b.review` →
 `step4c.review` (screens approved) → `step4-plan.questions` → `step4-plan-b.review` →
-`step4-plan-c.review` → `step4-plan-d.review` → `step4-plan-e.review` (skipped: no before pictures) → `step4-plan-f.review` → `step4-plan-g.questions`, all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
+`step4-plan-c.review` → `step4-plan-d.review` → `step4-plan-e.review` (skipped: no before pictures) → `step4-plan-f.review` → `pages-finish-review.questions` (2026-11-10) → chat 2026-11-12 (commands, below), all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
 (`pages-finish-step4.contract.superseded.json`) is dropped (Destin, 2026-11-07: contracts don't
 help him); the decks are the record. Paths are `youcoded/desktop/src/` unless noted.
 
@@ -42,9 +43,13 @@ limit; subscription models show tokens used. No system notifications in this ste
        restart (this is why "saved" won).
      - `--restricted` ignores the user's and project's settings files: chat "Always allow" rules
        never reach a job and nothing a job is allowed reaches a chat (`plan-c#C-apart` yes).
-     - The run settings file holds the job's allow/deny rules and YouCoded's permission hook, so
-       Asks first reaches the app through the same hook relay Claude chats use; the relay routes a
-       run's session id to the runner, never to a chat card.
+     - Permission checks are NOT free reuse (code read 2026-11-10): the hook relay drops asks from
+       anything that is not a chat (`hook-relay.ts:237-255`), the relay scripts need two environment
+       values only the chat terminal sets (`pty-worker.js:556`), and `--restricted` ignores the
+       hooks in `~/.claude/settings.json`. New work: the run settings file carries a hook that
+       sends every tool call to the runner, which decides with the same rule matching as the native
+       lane. Verify at build time that `--restricted` honours hooks given through `--settings`
+       (sandbox settings given that way were honoured in the 2026-11-10 tests).
      - YouCoded's chat list, Resume, reconciler and chat search skip that work folder (one filter on
        the folder prefix, pinned by a test). Old run files go with the last-50 rule.
      - Rules (`plan-b#E-tos`, understood): the user signs in inside Claude Code; YouCoded never
@@ -72,19 +77,18 @@ limit; subscription models show tokens used. No system notifications in this ste
      run's ask adds that exact permission (`Q-fromnow`); "Describe it…" in the Add menu, the
      assistant writes one exact permission and shows it back (`Q-describe` both); a script
      permission records the file's contents and asks again after it changes (`Q-scripts`).
-   - **Practice runs** (`plan-d#Q-tryrun` yes; `plan-f#Q-practice` → copies): practice runs work on
-     copies of the job's folders and page data; emails, posts and forms are held back and shown as
-     "would send"; websites are read live; a website click that may buy or post asks during
-     practice. Each ends with a report (read / would change / would send / permissions needed, each
-     with Add). Users see: "Practice runs work on copies. Nothing real changes or gets sent."
-   - **Commands** (`plan-d#Q-changing` "case-by-case"; `plan-f#Q-width` rejected the three wording
-     widths as "contrived"): pending `plan-g`. Proposed: every command runs inside Claude Code's
-     sandbox (the "fence") limited to the job's listed folders and websites; a command permission
-     names a program, with an optional exact-only lock; reads fenced to listed folders; computers
-     without the fence ask per command. Facts and limits: `sandboxing.md` (Mac/Linux/WSL2 only;
-     Linux needs bubblewrap + socat; `failIfUnavailable`, `allowUnsandboxedCommands: false`; reads
-     open by default; docker/ssh break). The native lane has no sandbox today (`shared/bash-risky-variants.ts`
-     says its text checks are "a speed bump, not a sandbox"). Use cases:
+   - **Practice runs: after the first version** (review deck `Q-practice` → later). The earlier
+     "works on copies" design (`plan-d#Q-tryrun`, `plan-f#Q-practice`) is kept for then, not built now.
+   - **Commands** (`plan-d#Q-changing` "case-by-case"; `plan-f#Q-width` rejected three fixed widths
+     as "contrived"; fence dropped; agreed in chat 2026-11-12): one kind of command permission,
+     written per job. The assistant writes each as narrow or wide as that job needs and shows it in
+     plain words ("Run whisper on files in Recordings"); the person can edit it; each is Always
+     allowed or Asks first. Matching is the app's existing rule engine
+     (`harness/permission-engine.ts`: exact, pattern, folder), run by the app for BOTH lanes, so a
+     job behaves the same on every model and device. No fence, no width menu. A command that
+     matches nothing falls to "Other commands and files" (Never / Asks first). Known limit, told to
+     Destin: an allowed script can do whatever is written inside it; the guard is the
+     ask-again-when-the-script-changes rule (`plan-d#Q-scripts`). Use cases:
      `docs/active/design/2026-10-24-pages-finish/step4-command-use-cases.md`.
    - **Answers carry a note** (`plan-b#N-answer`): `answer(jobId, allow, note?)`; Don't allow needs
      one. The note goes back to the run as the tool result's message, so it doesn't retry.
@@ -93,7 +97,9 @@ limit; subscription models show tokens used. No system notifications in this ste
 4. **Links, not owners** (`plan#Q-pagejobs`, `plan#Q-deletepage`, `plan-b#N-links`): a job has
    `links: {kind: page|project, id, name}[]`; any linked page may run it from a button and shows its
    dot. Deleting a page asks per linked automation: Keep (link removed, it carries on) or Delete
-   (`plan-b#E-deletepage`).
+   (`plan-b#E-deletepage`). Deleting a page also removes its saved versions and its chats, behind a
+   danger confirmation that says so (review deck `Q-deletepage`). An automation has a Delete button
+   (review deck `S-delete`).
 5. **Store** — `main/automations/automation-store.ts`, `~/.youcoded/automations/`: `jobs.json`
    (atomic write, version field, stable job ids for the mesh later), `runs/<jobId>/<runId>.json`
    (summary, outcome, dollars, tokens per model/harness, seconds) and the run's conversation
@@ -106,7 +112,8 @@ limit; subscription models show tokens used. No system notifications in this ste
      jump (Android's backend has no powerMonitor). Several missed times → one run.
    - Due while still running (`plan#Q-overlap`): skip the new run / stop the old run / run both.
    - **No limit on runs at once** (`plan-b#E-parallel`).
-   - Only while YouCoded is open.
+   - Only while YouCoded is open. A run cut off by closing the app picks up where it stopped on
+     the next open (review deck `Q-closed`).
 7. **Starts:** schedule; page button (`youcoded.automations.run(id)` from the page kit, allowed for
    jobs linked to that page; the kit draws the spinner and dot, `step4.review#Q-button`); page event
    (`youcoded.automations.event(name, data)`). Service events ("an email arrives") wait for step 5.
@@ -114,6 +121,12 @@ limit; subscription models show tokens used. No system notifications in this ste
    run and month and checks the limit before the next step (finish the step, then stop — a few cents
    over is possible and shown; `questions#Q-limit-hit`). Claude lane: subscription, tokens only.
    New jobs on a paid model start at $5 (`questions#Q-limit` note).
+   - **Runs-per-day cap** (review deck `Q-cap`, with his note "only … where it makes sense. a job
+     set to only run every 12h doesnt need a runs per day cap"): offered only on jobs a page
+     button or page event can start; a schedule-only job shows no cap.
+   - **Every model** (review deck `Q-models`): any model the app can chat with can run a job.
+     `model` must be a real model binding, not a label (today's mock stores a label, and treats
+     ChatGPT as a subscription at `AutomationDetails.tsx:103`).
 9. **Advanced settings** (`plan-c#C-rules`): the lower settings are fold-out cards, all closed,
    titled with what the job does now; open, one line on what it covers and each choice with a pro
    and a con. **New automation starts pre-filled** (`plan-b#E-prefill`): Wait for me (until its next run, then
@@ -140,11 +153,14 @@ while YouCoded is closed.
 
 ## Still to settle before the build
 
-- `plan-g` deck answers (what a command may reach); then rewrite decision 3's Commands bullet.
 - Draw, with before/after pictures where a screen exists (Destin rejects after-only decks): the
-  "type which folder / website / command" step after Add a permission, the "Describe it…" flow, the
-  practice-run report, "Allow from now on" on a run's ask, and the delete-page popup.
+  "type which folder / website / command" step after Add a permission, the "Describe it…" flow,
+  "Allow from now on" on a run's ask, the delete-page danger popup, Delete on an automation, the
+  runs-per-day cap, and another attempt at the lower half of the details popup (his last word on
+  it: "too busy and unclear with poor visual hierarchy").
+- Screen fixes already decided: the Add menu drops Gmail and "Send you a notification"
+  (`AutomationDetails.tsx:273-278`).
+- Raised 2026-11-12, not yet answered by Destin: automations do not appear on other devices until
+  the mesh work; "run differently" for a missed run cannot change what the run produces; whether a
+  page-level spending limit is still wanted alongside per-job limits.
 - One design-review round against this document and the decks.
-- At build time, verify before relying on it: Claude Code's sandbox under `-p --restricted
-  --tools Bash` (not documented), and what fences the native lane's commands (none today; Anthropic's
-  sandbox-runtime package is a candidate, unverified).
