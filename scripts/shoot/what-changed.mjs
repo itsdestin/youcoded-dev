@@ -11,9 +11,10 @@
 //   --only    screen names/globs to limit the run (default: every screen); repeatable
 //   --out     run folder (default: scratch/what-changed/<since>-<timestamp>)
 //   --no-photo-copy  photograph the release with only its own, older screen list (default: the release's code with today's photo-only machinery, what-changed/photo-copy.mjs)
+//   --retake <run>   take again only the pictures that failed in an existing run, then redo its comparison
 //   --compare-only <run>   skip the shooting and redo only the comparison of an existing run (uses its before-2/ after-2/ repeat pictures if present)
 // Remove the release checkout when done:  git -C youcoded worktree remove --force scratch/release-<tag>
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,13 +27,13 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
 const die = (m) => { console.error(`what-changed: ${m}`); process.exit(2); };
 
-const opt = { since: null, after: null, themes: null, out: null, only: [], compareOnly: null, photoCopy: true };
+const opt = { since: null, after: null, themes: null, out: null, only: [], compareOnly: null, retake: null, photoCopy: true };
 const args = process.argv.slice(2);
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => args[++i] ?? die(`${a} needs a value`);
   if (a === '--since') opt.since = next(); else if (a === '--after') opt.after = next(); else if (a === '--themes') opt.themes = next();
   else if (a === '--no-photo-copy') opt.photoCopy = false;
-  else if (a === '--out') opt.out = resolve(next()); else if (a === '--only') opt.only.push(next()); else if (a === '--compare-only') opt.compareOnly = resolve(next());
+  else if (a === '--out') opt.out = resolve(next()); else if (a === '--only') opt.only.push(next()); else if (a === '--compare-only') opt.compareOnly = resolve(next()); else if (a === '--retake') opt.retake = resolve(next());
   else if (a === '-h' || a === '--help') { console.log(spawnSync('sed', ['-n', '2,16p', fileURLToPath(import.meta.url)], { encoding: 'utf8' }).stdout.replace(/^\/\/ ?/gm, '')); process.exit(0); }
   else die(`unknown option ${a}`);
 }
@@ -56,6 +57,41 @@ function repeatPass(out, result, beforeDir, afterDir) {
     if (r.status !== 0) console.error(`[what-changed] the repeat pictures (${folder}) did not finish; their flicker check is skipped`);
   }
   return compareRun(out);
+}
+// WHY --retake (2026-11-12): a full run is ~100 minutes and a busy machine times out a few dozen pictures
+// (55 of 1,394 in run10). Those were "unreviewed, not fine" with no way to take them again short of a
+// whole new run. This shoots just the failed ones per side into <run>/retake-<side>, moves the ones that
+// now succeed into the run (picture + its record), and recompares. A picture that fails again stays failed.
+if (opt.retake) {
+  const run = opt.retake;
+  const meta = JSON.parse(readFileSync(join(run, 'run.json'), 'utf8'));
+  const failed = JSON.parse(readFileSync(join(run, 'changes.json'), 'utf8')).screens.filter((s) => s.status === 'failed');
+  let fixed = 0;
+  for (const [side, dir] of [['before', meta.before.dir], ['after', meta.after.dir]]) {
+    const mine = failed.filter((s) => String(s.reason).startsWith(`${side}:`));
+    if (!mine.length) continue;
+    const tmp = join(run, `retake-${side}`);
+    spawnSync(process.execPath, [join(HERE, 'shoot.mjs'), ...new Set(mine.map((s) => s.name)), '--worktree', dir, '--themes', [...new Set(mine.map((s) => s.theme))].join(','), '--out', tmp, '--no-montage', '--freeze'], { stdio: 'inherit' });
+    let again = [];
+    try { again = JSON.parse(readFileSync(join(tmp, 'manifest.json'), 'utf8')); } catch { console.error(`[what-changed] retake of the ${side} side wrote no record; nothing merged`); continue; }
+    const want = new Set(mine.map((s) => `${s.name}|${s.theme}`));
+    const manifestFile = join(run, side, 'manifest.json');
+    const manifest = JSON.parse(readFileSync(manifestFile, 'utf8'));
+    for (const r of again) {
+      const key = `${r.name}|${r.theme}`;
+      if (!r.ok || !r.file || !want.has(key)) continue;
+      const dest = join(run, side, ...r.name.split('/'), `${r.theme}.png`);
+      mkdirSync(dirname(dest), { recursive: true });
+      copyFileSync(r.file, dest);
+      const at = manifest.findIndex((m) => `${m.name}|${m.theme}` === key);
+      const rec = { ...r, file: dest };
+      if (at >= 0) manifest[at] = rec; else manifest.push(rec);
+      fixed++;
+    }
+    writeFileSync(manifestFile, JSON.stringify(manifest, null, 1));
+  }
+  console.error(`[what-changed] retake: ${fixed} of ${failed.length} failed picture(s) now taken`);
+  opt.compareOnly = run;
 }
 if (opt.compareOnly) {
   let res = compareRun(opt.compareOnly);

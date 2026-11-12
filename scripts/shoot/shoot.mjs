@@ -307,7 +307,13 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // WHY wait for the theme itself, and refuse the picture if it never arrives (2026-11-03): see
     // themes.mjs. A screen whose theme list loads slowly shows Light first; shooting it labelled
     // meadow-mist is a wrong picture, so it fails ("unreviewed, not fine") instead.
-    if (!(await waitFor(tab, themeAppliedExpr(theme), 20_000))) {
+    // WHY first-run accepts Light (2026-11-12): FirstRunView holds the page on Light on purpose (a new
+    // user has no theme yet; the screen paints its own brand colours). With the default theme nothing
+    // overrides that hold, so all 21 first-run pictures were refused as "showing light, not youcoded"
+    // although that is exactly what a new user sees.
+    const heldOnLight = screen.name === 'first-run' || screen.name.startsWith('first-run#');
+    const themeOk = heldOnLight ? `(${themeAppliedExpr(theme)}) || (${themeAppliedExpr('light')})` : themeAppliedExpr(theme);
+    if (!(await waitFor(tab, themeOk, 20_000))) {
       const shown = await tab.evaluate(`document.documentElement.getAttribute('data-theme')`, 5000).catch(() => null);
       throw new Error(`the app is showing the "${shown}" theme, not "${theme}"`);
     }

@@ -12,7 +12,7 @@ code; this turns that run into what the tab already reads, the same way make_sho
                             change's box (CSS pixels, FORMAT.md) lands on the picture with no rescaling
   board/changes.json        per screen and theme: status and its changes, from the run's changes.json
   board/screen-defs.json    the screen list with tags, from `shoot --list` (new screens get their kind)
-Usage: python3 make_changes.py <run folder> [--tile-theme meadow-mist]
+Usage: python3 make_changes.py <run folder> [--tile-theme <theme>] (default: youcoded if the run has it, else its first theme)
 """
 import json, os, re, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
@@ -21,7 +21,14 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 WS = os.path.normpath(os.path.join(HERE, '..', '..', '..'))
 RUN = os.path.abspath(sys.argv[1])
-TILE_THEME = sys.argv[sys.argv.index('--tile-theme') + 1] if '--tile-theme' in sys.argv else 'meadow-mist'
+# WHY the run's own first theme (2026-11-12): the default was a fixed 'meadow-mist'. Destin moved the
+# pictures to YouCoded + Halftone Dimension, and a run without Meadow Mist built a board with no tiles at all.
+def _run_theme():
+    try:
+        themes = json.load(open(os.path.join(RUN, 'changes.json')))['themes']
+        return 'youcoded' if 'youcoded' in themes else themes[0]  # the app's default look, when the run has it
+    except Exception: return 'youcoded'
+TILE_THEME = sys.argv[sys.argv.index('--tile-theme') + 1] if '--tile-theme' in sys.argv else _run_theme()
 OUT = os.path.join(RUN, 'board')
 
 # WHY (Destin, 2026-11-07: "ONLY include real, built-in pages that are intended to ship with the app"): the
