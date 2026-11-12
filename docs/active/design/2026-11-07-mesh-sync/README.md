@@ -1,6 +1,6 @@
 ---
 status: active
-date: 2026-11-11
+date: 2026-11-12
 topic: Chats on every device (YouCoded Mesh) — where the design stands, with every decision traced to Destin's words
 related-cards: 64, 98, 119, 121, 125, 127, 241, 242, 243, 248
 branch: session/mesh-sync-design (youcoded-dev); no app code changed
@@ -9,7 +9,7 @@ branch: session/mesh-sync-design (youcoded-dev); no app code changed
 # Chats on every device — START HERE
 
 This folder is the record of a design interview between Destin and a Claude session, held
-2026-11-06 to 2026-11-11. **No application code was changed.** Everything below is either a
+2026-11-06 to 2026-11-12. **No application code was changed.** Everything below is either a
 decision Destin made in his own words (traced to a deck step or a dated chat message) or a
 research fact checked against the code. Nothing else is approved.
 
@@ -27,8 +27,8 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-6.json` + `.answers.json` | Deck round 6, submitted 2026-11-11: helper transcripts, smaller pieces, phone awake. Only phone awake was decided. |
 | `mesh-sync.questions-7.json` + `.answers.json` | Deck round 7, submitted 2026-11-11: catch-up, the 1 GB limit, the super-host, self-hosting, who pays. Written in answer to Destin's two comments on `design.md`. |
 | `mesh-sync.questions-8.json` + `.answers.json` | Deck round 8, submitted 2026-11-11: what travels with a chat, setup sync, remote access, self-run relay. |
-| `mesh-sync.questions-9.json` | Deck round 9: what the 2026-11-11 checkpoint review found. |
-| `design.md` | DRAFT of the full design, each rule tagged with its source. Destin read an early version on 2026-11-10 and commented; it has been rewritten since. Lines marked "Awaiting round 9" are not decided. |
+| `mesh-sync.questions-9.json` + `.answers.json` | Deck round 9, submitted 2026-11-12: what the 2026-11-11 checkpoint review found. Every item answered. |
+| `design.md` | DRAFT of the full design, each rule tagged with its source. Destin read an early version on 2026-11-10 and commented; it has been rewritten since. Lines marked "Open" are not decided. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
 Serve a deck for Destin with `python3 scripts/ui-review/review-cards.py serve <spec.json> --no-build --timeout 1440` from the workspace root; put the printed link in chat as the last line. Never rebuild an answered deck.
@@ -149,7 +149,7 @@ The reviewing session's own suggestion to limit the phone to folder-less chats w
 
 ## Checkpoint review, 2026-11-11 (Destin asked for it)
 
-A fresh reviewer checked `design.md` against every answers file. Fixed in the documents: stale statuses, missing rows and rules, overstated sources. Found and NOT decidable without Destin, all asked on round 9:
+A fresh reviewer checked `design.md` against every answers file. Fixed in the documents: stale statuses, missing rows and rules, overstated sources. Found and NOT decidable without Destin, all asked on round 9 (answers in the next section):
 - Word by word is not true for Claude Code chats today (D1 Q-14 was answered before this was known).
 - How much each device stores: round 7's page text said a full copy everywhere; D1 Q-13 picked "list-then-open" with "should work exactly the same as pc".
 - Projects: D2 Q-8 picked "everything everywhere"; D5 N-5's note implies turning sync on per project per device.
@@ -161,12 +161,30 @@ A fresh reviewer checked `design.md` against every answers file. Fixed in the do
 
 Follow-ups he asked for, answered in chat but not recorded before now: how other services handle holding messages (WhatsApp 30 days undelivered, by policy; iMessage 30 days, per a blog only; Signal unconfirmed); cost of an own-device keeper (a Raspberry Pi about $60 to $100 once, or nothing for a computer already owned; a rented server about $2 to $6 a month, not picked).
 
+## Round 9 (answered 2026-11-12)
+
+- Each device has one storage setting: keep everything, or keep recent chats and fetch the rest on opening. Computers and a super-host start on "keep everything", phones on "recent". — D9 Q-1: picked "per-device-default". Replaces D1 Q-13's pick and round 7's "full copy everywhere".
+- Projects are listed everywhere and downloaded to a device when sync is turned on for it there. — D9 Q-2: picked "turn-on-per-device". Replaces D2 Q-8's "everything".
+- A watching device shows a chat as its host does; Claude Code chats in blocks, not word by word. — D9 S-1: yes.
+- Quitting the host with no other device on: reaching the relay or super-host counts as sent. — D9 Q-3: picked "keeper-counts".
+- Quitting with unsent project file changes: send first for a few seconds at most, then quit and say so. — D9 Q-4: picked "brief-wait", with the note: "kinda confused about this flow still. how would another device learn if it may not have newer files from the host? and how would we reconcile". Answer owed.
+- GitHub chat sync is not stopped until the cloud backup choices exist. — D9 Q-5: picked "backup-first", with the note: "i think our final design should include at least a general outline for the future plan for cloud data backup. what do we currently offer as far as google/icloud go, how does that differ from the existing github/sync implementation, the new implementation we're building, and how should we consolidate/reorganize cloud backups after the relay/mesh system is built?"
+- All devices lost means chats without a cloud backup are gone; a stolen device keeps what it had. — D9 S-2: yes, with the note: "we need to ensure users have a mechanism to set up and recover from their own cloud backup tho (drive/icloud/github)".
+- The relay's 1 GB and 48 hours cover everything waiting on it; pass-through does not count. — D9 S-3: yes, with the note: "can you explain the benefit of keeping the 48h limit in place when hte 1gb limit exists? could it make more sense to do 30d 1gb? would it cost us the same roughly?" Answer owed; the time limit is open again.
+- Two devices taking over at once: first heard wins, second is told "Phone just took over this chat". — D9 S-4: yes.
+- "Continue from here as a new version" is a fork made on purpose. — D9 S-5: yes.
+- Notices stack in one box; his round 1 "may be best to wait" line is restored. — D9 S-6: yes.
+- Nothing special at sleep; replaces D1 Q-10's upload-on-sleep. — D9 S-7: yes.
+- What travels with a chat (round 8 pick) confirmed now that "folder" is explained. — D9 S-8: yes.
+- Anything else missed: "don't know", no note. — D9 Q-6. Pairing screen, relay abuse limits and the Nov 5 conflict copies stay with the build unless he says otherwise.
+
 ## Open items (nothing below is decided)
 
-1. Everything on round 9.
-2. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
-3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
-4. Not designed: how pairing looks on screen; how the relay limits abuse with no account; a later plan for the November 5 conflict copies.
+1. A cloud backup outline inside the design, including setting up and recovering from the user's own cloud (D9 Q-5, S-2 notes).
+2. Relay time limit: 48 hours or 30 days beside the 1 GB limit (D9 S-3 note).
+3. How a device learns its files are behind the chat, and how that is put right (D9 Q-4 note).
+4. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
+5. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
 
 ## Research facts (checked against code at youcoded `8ffa0a421`, worker `0aed74e`, 2026-11-07)
 
