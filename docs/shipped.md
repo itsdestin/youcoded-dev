@@ -907,3 +907,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-11 #178 Made-up demo chats show "Jul 29, 2025" under every message (youcoded PR #727)
 - [x] 2026-11-11 #213 Android test findings: startup crash, sync, attach, phone screens and polish (itsdestin/youcoded#730, itsdestin/wecoded-marketplace#123, itsdestin/youcoded-dev#361)
 - [x] 2026-11-12 #17 Test copies of the app can change the real one (youcoded-dev PR #368)
+- [x] 2026-11-12 #247 Fedora installer fails its check on GitHub's new Linux build machines; release build still uses them (youcoded PR #738)
