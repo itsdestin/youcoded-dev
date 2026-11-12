@@ -68,6 +68,9 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
   notice says the helpers' reports are kept but unfinished helper work cannot be continued.
   Pasted images and undo history do not travel. [D8 Q-1; his note asked what "folder" meant;
   explained in chat 2026-11-11; confirmed D9 S-8]
+- **Between devices a chat travels whole,** pictures and all. Only long-term backups are
+  slimmed (section 12). [chat 2026-11-12: "for syncing we should keep the full chat with
+  images and such"]
 - **The assistant's setup does not travel** in this design (skills, plugins, connected
   tools, global instructions). Card 248. [D8 Q-2]
 - **Everything is locked end to end.** Only your devices can read it. [D2 Q-2]
@@ -137,10 +140,11 @@ A keeper is something always on that holds locked lines it cannot read.
   toward free at the basic limits with bigger ones paid, plus donations. [D7 Q-8]
 - **Cost of the relay** (estimate from Cloudflare's price list and a guessed usage, not
   measured): free today and up to a few hundred heavy users; about $25 a month at 1,000.
-- **Cloud backup comes before the switch.** GitHub chat sync is not stopped until the cloud
-  backup choices exist, so no user is ever without a copy off their own devices. The user
+- **GitHub never stops being a backup.** Two-way chat sync through GitHub is switched off
+  the moment the mesh is deployed; uploading to GitHub as a backup carries on until the
+  backup rebuild, so no user is ever without a copy off their own devices. The user
   chooses whether chats are backed up to a cloud at all and whether that backup is
-  passphrase-locked. Card 241. [D4 Q-3; D9 Q-5] See section 12.
+  passphrase-locked. Card 241. [D4 Q-3; D9 Q-5 as refined in chat 2026-11-12] See section 12.
 
 ## 5. When the host goes away
 
@@ -278,10 +282,13 @@ Today's remote access is replaced inside the apps: no Connect screen and no Tail
 chats. The open-in-a-browser view stays, still through Tailscale; it is also how a super-host
 is looked at. [D8 Q-3]
 
-Chat sync through GitHub stops once the new system AND the cloud backup choices both exist,
-not before. Existing chats need no moving, because each device already holds its copies. The
-GitHub copy is left untouched, and a one-time message says what changed. [chat 2026-11-11;
-D9 Q-5] The relay is not a backup; it holds waiting data for a limited time.
+Chat sync through GitHub is switched off at the same moment the mesh is deployed. The two
+systems never sync side by side. Uploading to GitHub as a backup continues. In his words:
+"we should switch github syncing off at the same time hte mesh is deployed. we can continue
+backing up to github, but we absolutely should NOT allow both systems to continue trying to
+sync simultaneously." Existing chats need no moving, because each device already holds its
+copies, and a one-time message says what changed. [chat 2026-11-12, refining chat 2026-11-11
+and D9 Q-5] The relay is not a backup; it holds waiting data for a limited time.
 
 **Losing devices.** If every device is lost at once, chats without a cloud backup are gone
 for good; nobody, including us, can recover them. Removing a stolen device stops it receiving
@@ -311,7 +318,13 @@ Decided:
 - **At the switch,** a user with one device is asked to set up a backup or to say plainly
   they want none; with two or more it is optional. Existing GitHub users keep GitHub as
   their backup without doing anything. [D10 S-2]
-- GitHub chat sync is not stopped until this exists. [D9 Q-5]
+- **Backups are slimmed; sync is not.** Long-term backups to Drive, iCloud and GitHub leave
+  out the pictures and the duplicate file text stored inside chat lines. Chats restored
+  from a backup therefore come back without their pictures, and the assistant will not
+  remember what it knew only from them (tested 2026-11-12). [chat 2026-11-12: "the long-term
+  backups to drive/icloud/github should drop the images and duplicate content"]
+- Until this rebuild exists, GitHub keeps receiving uploads as a backup; it is no longer
+  synced from. [chat 2026-11-12]
 
 - **How often:** a backup sends only what changed since last time, as often as each cloud
   allows without slowing the device, and at least daily. Exact timing is set per service
@@ -334,25 +347,10 @@ backup/restoration flows ... somewhat tangential" [D10 Q-4]. Filed as cards on h
 
 **Order, in his words** [chat 2026-11-12]: "finish everything else in the mesh build first,
 then follow-up with the backup rebuild including any needed github changes". The GitHub
-history fresh start waits for that. Not yet designed: how the mesh and GitHub chat sync
-coexist in the period between the two.
+history fresh start waits for that rebuild.
 
 ## 12b. Still open
 
-0. **Slimmed chats.** Whether chats travel and are backed up without the pictures and
-   duplicate file text stored inside their lines (measured 2026-11-02: 56% of chat bytes are
-   pictures stored twice; the conversation text is about 0.5 GB of 8.9 GB). The original on
-   the device that made the chat would never change. Unknown, needs a test in a dev copy:
-   whether Claude Code can resume a slimmed chat and still edit files it read earlier.
-   **Tested 2026-11-12** (one small throwaway chat, Claude Code 2.1.323, isolated profile):
-   the slimmed chat resumed, and the assistant edited a file it had read earlier without
-   reading it again. Side effect seen: asked about the picture, it said it never saw it
-   ("the tool returned [Image not synced to this device]") and withdrew its earlier
-   description as a guess. So a slimmed chat keeps working, but the assistant loses, and
-   may disown, what it knew only from pictures. One test; a long real chat is untested.
-   Source: `docs/active/plans/2026-11-02-slim-synced-chats.md` on master (card 98; its
-   piece 1 was shelved 2026-11-12 because it reworks code this design replaces). Not asked
-   yet.
 2. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
    door" setup.
 3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.

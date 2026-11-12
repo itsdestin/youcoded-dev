@@ -206,13 +206,15 @@ Follow-ups he asked for, answered in chat but not recorded before now: how other
 ## Chat, 2026-11-12
 
 - GitHub size: wait; no fresh start now. Build order, first statement of it: the mesh is built first, the backup rebuild follows and carries any GitHub changes. — "okay we can wait on github. we should finish everything else in the mesh build first, then follow-up with the backup rebuild including any needed github changes"
-- Consequence to settle when phasing: GitHub chat sync is not stopped until the backup rebuild exists (D9 Q-5), so for a while the mesh and GitHub chat sync would both be running. How they coexist without duplicate copies is not designed.
+- The two systems never sync side by side: GitHub two-way chat sync is switched off when the mesh is deployed; uploading to GitHub as a backup continues. This refines D9 Q-5. — "well we should switch github syncing off at the same time hte mesh is deployed. we can continue backing up to github, but we absolutely should NOT allow both systems to continue trying to sync simultaneously. that's bound to break a bunch of htings."
+- Sync carries chats whole; long-term backups are slimmed. — "i think for syncing we should keep the full chat with images and such, but the long-term backups to drive/icloud/github should drop the images and duplicate content"
+- For phasing: in the period before the backup rebuild, the GitHub upload is still unslimmed, so that repository keeps growing; which device does the uploading in that period is not settled.
 
 ## Open items (nothing below is decided)
 
 1. Owed when that piece is designed: a plain comparison of Tailscale, tunnels and the router method.
 2. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
-3. Raised 2026-11-12 from a closed session's plan (`docs/active/plans/2026-11-02-slim-synced-chats.md`, card 98): whether chats travel and are backed up in slimmed form (pictures and duplicate file text left out). Not asked yet. His sync repository was 4.15 GB on 2026-11-12, about three weeks from GitHub's 5 GB soft limit.
+3. Slimming (from `docs/active/plans/2026-11-02-slim-synced-chats.md`, card 98): decided in chat 2026-11-12, backups only.
    Resume test run 2026-11-12 on his word ("yeah lits test this out"): a slimmed throwaway chat resumed in Claude Code 2.1.323 and edited a previously read file without re-reading; the assistant then said it had never seen the picture and withdrew its earlier description of it. Test files: session scratch folder, not kept.
    GitHub fresh start (card 98, approved 2026-11-12: "yes. just manage this yourself wiht a subagent or something"): researched read-only, NOT carried out. Each device would merge the replaced history with its own (`git-transport.ts:896`, `--allow-unrelated-histories`) and push the old history back, so it cannot be done safely without either a manual step on all four devices or a small app change. GitHub reported 4.28 GB the same day; its documentation describes no automatic block at 5 GB, only that Support may get in touch.
 4. Destin's read of the finished `design.md`; build order only after he agrees the design is complete.
