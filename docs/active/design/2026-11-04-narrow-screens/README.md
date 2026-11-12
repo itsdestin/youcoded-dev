@@ -38,13 +38,13 @@ the record of Destin's decisions. The answers files are the source, and this pag
 
 - Four rounds of decks: the questions deck, then `narrow-screens-2/3/4.live`, all answered and
   committed with their built pages.
-- **Workbench switches on the real components (app branch, 4 commits from `83f5ff67e` to
-  `b0aaf5bfd`):** `narrowTop`, `narrowList`, `narrowPills` in `desktop/src/renderer/workbench-mode.ts`.
+- **Workbench switches on the real components (app branch, 8 commits from `511443894` to
+  `df72bffe3` after the 2026-11-11 rebase):** `narrowTop`, `narrowList`, `narrowPills` in `desktop/src/renderer/workbench-mode.ts`.
   Outside the workbench every switch reads `today`. Pieces live in
   `components/header/phone-session-menu.tsx`, plus edits to `SessionStrip.tsx`, `HeaderBar.tsx`,
   `OverflowMenu.tsx`, `StatusBar.tsx`, `SpecialistsChip.tsx` and `styles/globals.css`.
   Screens are in `dev/workbench/screens/chat.ts` (`chat#top-*`, `chat/sessions#phone-*`,
-  `chat#*-pills-compact`).
+  `chat#*-pills-*`, `chat#window-*`).
 - `verify.sh` passed on the rebased branch at `df72bffe3`, 2026-11-11 (types, tests, knip, lint, ast-grep, screens, journeys). A first run failed 8 unrelated screens under load; each opened on its own and the re-run passed.
 - **Two real fixes on the branch, not tied to the design:**
   - `BrailleBurst.tsx` cancels its clean-up timer on unmount.
