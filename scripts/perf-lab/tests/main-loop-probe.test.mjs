@@ -37,3 +37,13 @@ test('a failed ownership check prevents any inspector connection', async () => {
   }), /foreign/);
   assert.equal(contacted, false);
 });
+
+test('an app that overwrote its environment block is proven private by its working directory', () => {
+  assert.ifError(loaded.loadError);
+  const clobbered = (cwd) => readers({
+    readText: p => p.endsWith('/environ') ? '/owned/build/youcoded --no-sandbox\0\0\0' : tcp,
+    link: p => p.endsWith('/exe') ? owner.binary : p.endsWith('/cwd') ? cwd : 'socket:[999]',
+  });
+  assert.equal(loaded.verifyInspectorOwner(owner, clobbered(owner.home)), true);
+  assert.throws(() => loaded.verifyInspectorOwner(owner, clobbered('/somewhere/else')), /HOME/);
+});
