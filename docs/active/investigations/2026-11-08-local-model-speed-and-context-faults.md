@@ -54,8 +54,22 @@ room cut could chop off a command's end, and that non-command results had no sav
   once it can be reached. Two read-only requests were also sent to the live app's ports
   (9920, 9900) by mistake during the look-around; reported to Destin.
 
+**Independent final review (2026-11-12, fresh reviewer, whole branch against master):** no way
+found to lose history or leave a tool call without its result. Six findings, all fixed in app
+commit `b6ec48456`: Summarise after the engine's own refusal had no fallback; the 64k default
+demoted people who chose their own size; an overlapping load could end the retry without the
+trick early; a local model was reported "loaded" before it was; a retry that could not start
+left the trick off and lost the error; a slow summary read was timed out. `verify.sh --full`
+passes after the fixes. Left as known, not fixed: every restored local chat is read ahead one
+after another at app start (chip busy for minutes with several chats); one stuck read-ahead
+holds up the others; a cut-off summary is retried once unchanged.
+
+**Engine check of the safety net (Z13, separate engine on port 9990, small model with the trick
+forced):** the load answers HTTP 500 "failed to load" in under a second; after the settings
+file is rewritten and `GET /models?reload=1`, the same load answers 200.
+
 **Not done:**
-- Independent final code review, then Destin's word to ship.
+- Destin's word to ship.
 - Faster-writing speed on NVIDIA: needs a dense model with the heads that fits 12 GB.
 - Windows on the desktop: not reachable (key expired); nothing measured there.
 - The come-back re-read and the safety net are unit-tested only, not yet watched in a
