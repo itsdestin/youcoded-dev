@@ -11,7 +11,7 @@ why: The landing page's bottom strip became an ideas wall on 2026-10-21 (card #7
 ---
 Progress
 Done: On branch session/247-linux-release-build, not merged: new idea-paint.webp on the site (app repo); idea-picture step and its SITE_IDEA_STILLS switch removed from site-assets.sh, site-idea-stills.sh kept as a hand-run tool (workspace repo). Before/after deck: docs/active/design/2026-11-11-paint-picture/.
-Next: Destin answers the deck. The 48 unused stills: still not answered.
+Next: Destin approved the new paint picture on the review deck 2026-11-11 (answer saved on session/247-linux-release-build). Landing waits for his word. The 48 unused stills: still unanswered.
 Blocked: nothing.
 
 Chats
