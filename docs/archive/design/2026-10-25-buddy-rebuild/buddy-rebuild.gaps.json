@@ -1,0 +1,36 @@
+{
+  "title": "Buddy rebuild — two things to confirm before the sign-off list",
+  "key": "buddy-rebuild-gaps",
+  "out": "buddy-rebuild.gaps.html",
+  "images": "images/buddy-rebuild.gaps",
+  "runs": {"after": "runs/gaps"},
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "G-1",
+      "new": true,
+      "runs": ["after"],
+      "surface": "Buddy chat",
+      "path": "Every message in the buddy chat",
+      "crop": "buddy/chat",
+      "highlight": "panel",
+      "headline": "Message times show only on the newest message; on any other, rest the pointer on it for half a second to see its time.",
+      "changed": "This is what round 2 showed; your note there was about text sitting close to the bubble edge, which round 3 fixed, so the times themselves were never confirmed.",
+      "notice": "Less clutter between messages; the newest still says when it arrived.",
+      "risk": "Checking an older message's time takes a short hover."
+    },
+    {
+      "id": "G-2",
+      "new": true,
+      "runs": ["after"],
+      "surface": "Buddy chat",
+      "path": "When Claude asks permission to run something",
+      "crop": "buddy/permission",
+      "highlight": "panel",
+      "headline": "A permission request in the buddy is one line saying what Claude wants to run, with Yes and No under it.",
+      "changed": "This is the main window's own permission card; it was already this small in the buddy, so it is unchanged. The decks only ever showed the question card, which is now one question at a time.",
+      "notice": "You allow or refuse without scrolling. Pressing the line opens the full command first if you want to read it.",
+      "risk": "A long command shows only its beginning until you open it."
+    }
+  ]
+}

@@ -426,6 +426,9 @@ for (const cmd of [
   'r="1 2 3"; set -- $r; echo $1',
   'for x in $LIST; do echo $x; done',
   'for spot in $SPOTS\ndo\n  echo $spot\ndone',
+  // 2026-10-29: a command kept in a variable ran as one program name and printed nothing.
+  'E="node scripts/shoot/explore.mjs"; $E start | grep picture',
+  "E='node x.mjs'; N=$($E look | rg foo)",
 ]) {
   test(`blocks: ${cmd.replace(/\n/g, '⏎')}`, () => {
     const { blocked, message } = run(cmd);
@@ -454,6 +457,9 @@ for (const cmd of [
   'echo $PIDS',
   'set -e; set -- "$@"',
   "cat <<'EOF'\nkill $PIDS is the trap\nEOF",
+  'E=node; $E x.mjs',
+  'MSG="two words"; echo $MSG',
+  'D="a b"; ls "$D"',
 ]) {
   test(`allows: ${cmd.replace(/\n/g, '⏎')}`, () => {
     assert.equal(run(cmd).blocked, false, `should have allowed: ${cmd}`);
@@ -506,4 +512,67 @@ test('guard 8 allows a fresh install that first cds to a scratch folder (card #1
 });
 test('guard 8 allows npm install in the shared checkout', () => {
   assert.equal(runIn('npm install pngjs', SHARED).blocked, false);
+});
+
+// ---------------------------------------------------------------------------
+// Guard 9 — `pgrep -f` feeding kill lists (and kills) the calling shell (2026-10-29).
+// ---------------------------------------------------------------------------
+for (const cmd of [
+  'kill $(pgrep -f review-cards)',
+  'P=$(pgrep -f "serve --no-build x" | head -5); [ -n "$P" ] && kill ${=P}',
+  'kill -9 $(pgrep -af vite | awk \'{print $1}\')',
+]) {
+  test(`blocks: ${cmd}`, () => {
+    const { blocked, message } = run(cmd);
+    assert.equal(blocked, true, `should have blocked: ${cmd}`);
+    assert.match(message, /rg -v pgrep/);
+  });
+}
+for (const cmd of [
+  'kill $(pgrep -f vite | rg -v pgrep)',
+  "kill $(pgrep -f vite | grep -v 'pgrep')",
+  'pgrep -af review-cards',
+  'kill $(pgrep node)',
+  'kill 1234',
+]) {
+  test(`allows: ${cmd}`, () => {
+    assert.equal(run(cmd).blocked, false, `should have allowed: ${cmd}`);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Wait-loop note — never a block, only context for Claude (stdout JSON, exit 0)
+// ---------------------------------------------------------------------------
+
+/** The additionalContext the hook adds for `command`, or '' when it adds none. */
+function note(command) {
+  const r = spawnSync('python3', [HOOK], {
+    input: JSON.stringify({ tool_name: 'Bash', tool_input: { command }, cwd: CWD }),
+    encoding: 'utf8', env: { ...process.env, GLOB_GUARD_PROC: NO_PROC },
+  });
+  assert.equal(r.status, 0, 'a wait loop is never blocked');
+  return r.stdout.trim() ? JSON.parse(r.stdout).hookSpecificOutput.additionalContext : '';
+}
+
+test('notes (does not block) the loop that ran 32 hours on 2026-11-03', () => {
+  assert.match(note('cd /w; until rg -q "journeys:" scratch/v2.log 2>/dev/null && rg -q "pictures" scratch/v2.log; do sleep 10; done; tail -n 15 scratch/v2.log'), /no time limit/);
+});
+
+test('notes a multi-line while … sleep wait', () => {
+  assert.notEqual(note('while ! test -f done.flag\ndo\n  sleep 2\ndone'), '');
+});
+
+test('adds no note when the loop is wrapped in timeout', () => {
+  assert.equal(note("timeout 600 bash -c 'until rg -q ok log; do sleep 5; done'"), '');
+});
+
+test('adds no note when the loop counts or checks elapsed time', () => {
+  assert.equal(note('for i in $(seq 30); do rg -q ok log && break; sleep 1; done'), '');
+  assert.equal(note('until rg -q ok log || [ $SECONDS -gt 300 ]; do sleep 5; done'), '');
+  assert.equal(note('n=0; while ! curl -s x; do n=$((n+1)); sleep 1; done'), '');
+});
+
+test('adds no note to ordinary commands or loops without sleep', () => {
+  assert.equal(note('npm test'), '');
+  assert.equal(note('while read l; do echo "$l"; done < f'), '');
 });

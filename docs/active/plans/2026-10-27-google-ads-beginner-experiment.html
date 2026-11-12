@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YouCoded — Google Ads, round 1</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d2129; --line:#2a2f3a;
+    --ink:#e8ecf3; --dim:#9aa4b5; --dimmer:#6b7484;
+    --accent:#8ab4ff; --good:#5fd6a4; --warn:#f0c674; --bad:#f08a8a;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --panel:#fff; --panel2:#f0f2f5; --line:#dde2ea;
+           --ink:#161a22; --dim:#54606f; --dimmer:#7b8697;
+           --accent:#2f6fd0; --good:#1f8a5f; --warn:#9a6b00; --bad:#b8383f; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 24px 96px}
+  h1{font-size:clamp(1.7rem,3.4vw,2.5rem);line-height:1.15;margin:0 0 10px;letter-spacing:-.02em}
+  h2{font-size:1.32rem;margin:56px 0 6px;letter-spacing:-.01em}
+  h3{font-size:1rem;margin:26px 0 8px;letter-spacing:.01em}
+  p{margin:0 0 14px;max-width:74ch}
+  .lede{color:var(--dim);font-size:1.05rem;max-width:74ch}
+  .rule{height:1px;background:var(--line);margin:26px 0}
+  small,.small{color:var(--dim);font-size:.86rem}
+  code{background:var(--panel2);border:1px solid var(--line);border-radius:5px;
+       padding:.1em .38em;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:12px;margin:20px 0 8px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px 17px}
+  .card .k{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dimmer);margin-bottom:5px}
+  .card .v{font-size:1.45rem;font-weight:640;letter-spacing:-.02em;line-height:1.15}
+  .card .n{font-size:.82rem;color:var(--dim);margin-top:3px}
+  table{width:100%;border-collapse:collapse;margin:15px 0 8px;font-size:.92rem}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:.76rem;text-transform:uppercase;letter-spacing:.055em;color:var(--dimmer);font-weight:620}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tbody tr:hover{background:var(--panel2)}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px;background:var(--panel)}
+  .pill{display:inline-block;font-size:.74rem;font-weight:600;padding:2px 8px;border-radius:999px;
+        border:1px solid transparent;white-space:nowrap}
+  .p-good{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border-color:color-mix(in srgb,var(--good) 34%,transparent)}
+  .p-warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 34%,transparent)}
+  .p-bad{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad);border-color:color-mix(in srgb,var(--bad) 32%,transparent)}
+  .p-mut{background:var(--panel2);color:var(--dim);border-color:var(--line)}
+  .note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+        border-radius:9px;padding:15px 18px;margin:18px 0}
+  .note.warn{border-left-color:var(--warn)}
+  .note.bad{border-left-color:var(--bad)}
+  .note p:last-child{margin-bottom:0}
+  ol,ul{margin:0 0 14px;padding-left:22px;max-width:74ch}
+  li{margin-bottom:7px}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:18px 0}
+  .steps li{counter-increment:s;position:relative;padding:14px 16px 14px 52px;
+            background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:9px}
+  .steps li::before{content:counter(s);position:absolute;left:16px;top:13px;width:23px;height:23px;
+            border-radius:50%;background:var(--panel2);border:1px solid var(--line);
+            color:var(--accent);font-size:.78rem;font-weight:700;display:grid;place-items:center}
+  .steps strong{display:block;margin-bottom:2px}
+  .grp{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:16px 18px;margin-bottom:12px}
+  .grp h3{margin:0 0 4px;font-size:1.02rem}
+  .grp .meta{font-size:.82rem;color:var(--dim);margin-bottom:10px}
+  .kws{display:flex;flex-wrap:wrap;gap:6px}
+  .kw{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;
+      background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
+  .neg{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.78rem;color:var(--dim)}
+  .ad{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:13px 15px;margin:9px 0}
+  .ad .h{color:var(--accent);font-weight:600;font-size:.94rem}
+  .ad .l{color:var(--good);font-size:.78rem;margin:2px 0 5px}
+  .ad .d{font-size:.9rem;color:var(--dim)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:760px){.two{grid-template-columns:1fr}
+    .cards{grid-template-columns:1fr 1fr}
+    .card{padding:12px 13px}
+    .card .v{font-size:1.2rem}
+    .card .n{font-size:.76rem}
+  }
+  .foot{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);color:var(--dimmer);font-size:.82rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Google Ads, round 1</h1>
+<p class="lede">A beginner experiment: six search categories, $10&nbsp;a&nbsp;day, 30 days, measured in your own dashboard. Nothing here is live yet.</p>
+
+<div class="cards">
+  <div class="card"><div class="k">Your cash out</div><div class="v">$300</div><div class="n">$10/day × 30 days</div></div>
+  <div class="card"><div class="k">Promo credit</div><div class="v">+$300</div><div class="n">if you spend $300 in 60 days</div></div>
+  <div class="card"><div class="k">Total ad budget</div><div class="v">$600</div><div class="n">≈ 60 days of media</div></div>
+  <div class="card"><div class="k">Expected downloads</div><div class="v">~45</div><div class="n">at ~38% click→download</div></div>
+  <div class="card"><div class="k">New active devices</div><div class="v">~10</div><div class="n">doubles your current 9/mo</div></div>
+</div>
+
+<div class="note warn">
+  <p><strong>The promo is almost certainly “spend $300, get $300,” not free money up front.</strong> You pay the first $300 yourself; the credit arrives up to 35 days <em>after</em> you hit the threshold, then expires 60 days later. It is not a discount, and it cannot cover the spend that earns it.</p>
+</div>
+
+<h2>First: it’s Google Ads, not AdSense</h2>
+<p>Easy to mix up, and they’re opposites. <strong>AdSense</strong> is for publishers — you put ads on your site and get paid. <strong>Google Ads</strong> is where you buy the ads. The free-ad-spend promo belongs to Google Ads.</p>
+<p>The catch: the offer only exists for accounts <strong>less than 14 days old</strong> when you redeem it, and it’s applied at signup when you enter billing. So the order matters — do not create the account until you’re ready to spend, or you’ll burn the eligibility window.</p>
+
+<h2>What the promo actually costs you</h2>
+<div class="tblwrap">
+<table>
+  <thead><tr><th>Step</th><th>When</th><th>What happens</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Day 0</td><td>Sign up through the offer link, add payment method. Offer attaches to the account.</td></tr>
+    <tr><td>2</td><td>Days 0–60</td><td>You spend <strong>your</strong> first $300 on ads. Credit cannot cover this.</td></tr>
+    <tr><td>3</td><td>Up to 35 days later</td><td>Eligibility check passes → $300 credit lands in Billing.</td></tr>
+    <tr><td>4</td><td>Next 60 days</td><td>Spend the credit on more ads, or lose it.</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="small">Tiers scale up (spend $500 → $500 credit, and so on). $300 is the smallest that fits a beginner test. One offer per advertiser, US billing address only. Terms change without notice — read the offer shown to you at signup, not this page.</p>
+
+<h2>The experiment design</h2>
+<p>You asked for a small budget spread across many categories. That’s the right instinct for learning and the <em>wrong</em> setup for optimization — so the design separates the two jobs.</p>
+<ul>
+  <li><strong>One campaign, six ad groups.</strong> One category each, so every category gets its own keyword list, its own ad copy, and its own tracking link.</li>
+  <li><strong>All six live from day one.</strong> ~$1.67/day each. Enough to gather a signal, not enough to waste much on a dud.</li>
+  <li><strong>One decision per week.</strong> Cut the two worst categories, push their budget to the best performer. By week three you’re concentrated on what works.</li>
+  <li><strong>Maximize Clicks bidding, no conversion tracking.</strong> You have no Google tag, so Smart Bidding can’t run. Manual-style bidding is also the correct call for a beginner — you see exactly what each click costs.</li>
+</ul>
+
+<div class="note">
+  <p><strong>Why your own dashboard is the scoreboard.</strong> YouCoded already has campaign short links (<code>youcoded.ai/?k7qm2x</code>) and already records visits, installer clicks and downloads per campaign. That means you can judge this experiment without installing a Google tag on the site — and without breaking the site’s privacy promise.</p>
+</div>
+
+<h2>The six categories</h2>
+<p>Each one is a different <em>reason</em> someone would want YouCoded, so you learn which argument actually sells. CPCs are measured from Google’s Ads API, US, monthly.</p>
+
+<div class="grp">
+  <h3>1 · Brand switchers</h3>
+  <div class="meta">111,210 searches/mo · CPC $3.68–4.04 · <span class="pill p-good">best economics</span> <span class="pill p-mut">$1.67/day</span></div>
+  <p class="small" style="margin-bottom:8px">People actively leaving a product. Highest intent, and the only category with volume to spare.</p>
+  <div class="kws">
+    <span class="kw">"chatgpt alternative"</span>
+    <span class="kw">"free chatgpt alternative"</span>
+    <span class="kw">"chatgpt alternatives"</span>
+    <span class="kw">[chatgpt alternative]</span>
+  </div>
+</div>
+
+<div class="grp">
+  <h3>2 · Open source &amp; freedom</h3>
+  <div class="meta">8,450 searches/mo · CPC $2.79–6.77 · <span class="pill p-good">on-positioning</span> <span class="pill p-mut">$1.67/day</span></div>
+  <p class="small" style="margin-bottom:8px">Your core value, in the words people actually search. This is where your positioning does the selling.</p>
+  <div class="kws">
+    <span class="kw">"open source ai"</span>
+    <span class="kw">"open source chatgpt"</span>
+    <span class="kw">"open source ai assistant"</span>
+    <span class="kw">"open source ai app"</span>
+    <span class="kw">[open source chatgpt]</span>
+  </div>
+</div>
+
+<div class="grp">
+  <h3>3 · Local &amp; private</h3>
+  <div class="meta">4,970 searches/mo · CPC $6.47–8.47 · <span class="pill p-warn">pricier clicks</span> <span class="pill p-mut">$1.67/day</span></div>
+  <p class="small" style="margin-bottom:8px">The turbo-nerd crowd. They already own the models and want a better app around them — and they understand what you built.</p>
+  <div class="kws">
+    <span class="kw">"local llm"</span>
+    <span class="kw">"local llms"</span>
+    <span class="kw">"run ai locally"</span>
+    <span class="kw">"offline ai assistant"</span>
+    <span class="kw">"local ai assistant"</span>
+  </div>
+</div>
+
+<div class="grp">
+  <h3>4 · Front-end refugees</h3>
+  <div class="meta">17,090 searches/mo · CPC $5.02–13.71 · <span class="pill p-warn">mixed intent</span> <span class="pill p-mut">$1.67/day</span></div>
+  <p class="small" style="margin-bottom:8px">People who have a model installed and dislike the app around it. Very high intent — but the big terms are navigational, so watch closely.</p>
+  <div class="kws">
+    <span class="kw">"lm studio alternative"</span>
+    <span class="kw">"open webui alternative"</span>
+    <span class="kw">"jan ai"</span>
+    <span class="kw">"anythingllm"</span>
+  </div>
+</div>
+
+<div class="grp">
+  <h3>5 · Phone</h3>
+  <div class="meta">830 searches/mo · CPC $2.61–2.95 · <span class="pill p-good">cheapest clicks</span> <span class="pill p-warn">thin supply</span></div>
+  <p class="small" style="margin-bottom:8px">Running agents on a phone is genuinely rare. Tiny volume, so it’ll spend its $1.67 and then go quiet — that’s fine, it’s the cheapest tuition in the set.</p>
+  <div class="kws">
+    <span class="kw">"ai assistant android"</span>
+    <span class="kw">"ai on android"</span>
+    <span class="kw">"ai assistant for phone"</span>
+  </div>
+</div>
+
+<div class="grp">
+  <h3>6 · Agent GUIs <span class="pill p-bad">hold this one</span></h3>
+  <div class="meta">~50,000 searches/mo (Hermes ~40k, Pi ~10k) · CPC unknown, likely cheap · <span class="pill p-mut">needs harness support first</span></div>
+  <p class="small" style="margin-bottom:8px">Autocomplete proves real demand for “hermes agent desktop”, “pi agent gui”, “pi agent web”. Nobody appears to be advertising on them. But YouCoded doesn’t run Hermes or Pi yet, so an ad here would promise something the app can’t do.</p>
+  <div class="kws">
+    <span class="kw" style="opacity:.55">"hermes agent desktop"</span>
+    <span class="kw" style="opacity:.55">"hermes agent gui"</span>
+    <span class="kw" style="opacity:.55">"pi agent gui"</span>
+    <span class="kw" style="opacity:.55">"pi agent desktop"</span>
+  </div>
+  <p class="small" style="margin:10px 0 0">Run categories 1–5 first. This is the upside once the product can back it.</p>
+</div>
+
+<h2>Ad copy</h2>
+<p>Three headlines and two descriptions per group. Google mixes them; keep each under 30 and 90 characters. No competitor trademarks in the ad text — that’s allowed as a <em>keyword</em>, not as copy.</p>
+
+<div class="two">
+  <div>
+    <h3>1 · Brand switchers</h3>
+    <div class="ad">
+      <div class="h">Free, Open Source AI Assistant</div>
+      <div class="h">Runs On Claude, ChatGPT, Local</div>
+      <div class="h">An App That Becomes Yours</div>
+      <div class="l">youcoded.ai</div>
+      <div class="d">Bring your own AI plan or run a free model offline. Windows, Mac, Linux and Android. No subscription, no lock-in — and it asks before it touches anything.</div>
+    </div>
+    <h3>2 · Open source</h3>
+    <div class="ad">
+      <div class="h">Open Source AI You Actually Own</div>
+      <div class="h">MIT Licensed, Free Forever</div>
+      <div class="h">Build Your Own Pages And Tools</div>
+      <div class="l">youcoded.ai</div>
+      <div class="d">The whole app is open source, so anyone can check or change it. Ask for a new page, a new look, a new feature — and it builds it inside the app.</div>
+    </div>
+    <h3>3 · Local &amp; private</h3>
+    <div class="ad">
+      <div class="h">Run AI On Your Own Computer</div>
+      <div class="h">Free Offline Models Built In</div>
+      <div class="h">Private By Default, No Cloud</div>
+      <div class="l">youcoded.ai</div>
+      <div class="d">Bundled local engine, no Ollama needed. Switch to Claude or ChatGPT mid-conversation when you want more muscle. Your files never leave the machine.</div>
+    </div>
+  </div>
+  <div>
+    <h3>4 · Front-end refugees</h3>
+    <div class="ad">
+      <div class="h">A Better Front End For Any Model</div>
+      <div class="h">Same Local Models, Real UI</div>
+      <div class="h">Switch Models Mid-Conversation</div>
+      <div class="l">youcoded.ai</div>
+      <div class="d">Keep your GGUF files. Get tool cards, approvals, a file panel and version history instead of terminal output. Free and open source on every platform.</div>
+    </div>
+    <h3>5 · Phone</h3>
+    <div class="ad">
+      <div class="h">An AI Agent That Runs On Android</div>
+      <div class="h">Not Just A Chat Window</div>
+      <div class="h">Free, Open Source, On Your Phone</div>
+      <div class="l">youcoded.ai</div>
+      <div class="d">Reads and edits files, runs commands, builds pages you ask for — on the phone itself. Syncs with the desktop version. No subscription required.</div>
+    </div>
+    <h3>Negative keywords (campaign level)</h3>
+    <div class="kws">
+      <span class="kw">free online</span><span class="kw">no signup</span><span class="kw">chat online</span>
+      <span class="kw">chatbot</span><span class="kw">api</span><span class="kw">github</span>
+      <span class="kw">crack</span><span class="kw">torrent</span><span class="kw">login</span>
+      <span class="kw">tutorial</span><span class="kw">reddit</span><span class="kw">review</span>
+      <span class="kw">versus</span><span class="kw">jobs</span><span class="kw">salary</span>
+      <span class="kw">pricing</span><span class="kw">course</span><span class="kw">pdf</span>
+    </div>
+    <p class="small" style="margin-top:8px"><strong>Why <code>free online</code> and <code>chatbot</code> matter most:</strong> "free ai" has 110,000 searches a month at $3.13 — but its related queries are all <code>ai chat online</code> and <code>free ai chatbot</code>. Those people want a website they can use in ten seconds. Your install flow defeats them, and paying for them teaches the algorithm the wrong lesson.</p>
+  </div>
+</div>
+
+<h2>Settings that matter</h2>
+<div class="tblwrap">
+<table>
+  <thead><tr><th>Setting</th><th>Value</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Campaign type</td><td>Search only</td><td>No Display or partners — those flood you with junk clicks.</td></tr>
+    <tr><td>Networks</td><td>Uncheck Search Partners &amp; Display</td><td>Standard beginner trap. Leave them off for round 1.</td></tr>
+    <tr><td>Bidding</td><td>Maximize Clicks, max CPC $2.50</td><td>No conversion data yet; a cap stops one auction eating the day.</td></tr>
+    <tr><td>Daily budget</td><td>$10 campaign-level</td><td>Google may spend up to 2x on a hot day and average it out.</td></tr>
+    <tr><td>Location</td><td>United States</td><td>Matches your existing users (13 of 16).</td></tr>
+    <tr><td>Language</td><td>English</td><td>—</td></tr>
+    <tr><td>Match types</td><td>Phrase + exact only</td><td>Broad match will burn the budget on week one.</td></tr>
+    <tr><td>Ad rotation</td><td>Optimize</td><td>Let Google pick the better headline mix.</td></tr>
+    <tr><td>Schedule</td><td>All day, initially</td><td>Don't narrow until you have data.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Do it in this order</h2>
+<ol class="steps">
+  <li><strong>Set up the six tracking links first.</strong> In the analytics dashboard, create one campaign per category — <code>google</code> / <code>brand</code>, <code>google</code> / <code>opensource</code>, <code>google</code> / <code>local</code>, <code>google</code> / <code>frontend</code>, <code>google</code> / <code>phone</code>. Copy each short link. Do this before spending a cent, so week one isn't invisible.</li>
+  <li><strong>Open the offer page, then sign up.</strong> Use Google's new-advertiser offer so the credit attaches. Add the payment method during signup — that's a condition of the offer.</li>
+  <li><strong>Skip the guided setup.</strong> Google will push Smart campaigns and Performance Max. Choose "Switch to Expert Mode" and build a plain Search campaign.</li>
+  <li><strong>Build the campaign</strong> with the six ad groups above — correct final URL per group from step 1, all negatives at campaign level, settings as tabled.</li>
+  <li><strong>Wait for the first 100 clicks before changing anything.</strong> Early edits restart the learning and teach you nothing.</li>
+  <li><strong>Weekly review, one decision.</strong> Cut the two worst categories by downloads-per-visit, move their budget to the best.</li>
+</ol>
+
+<h2>How you'll know it worked</h2>
+<div class="tblwrap">
+<table>
+  <thead><tr><th>Signal</th><th class="num">Good</th><th class="num">Marginal</th><th class="num">Stop</th></tr></thead>
+  <tbody>
+    <tr><td>Cost per download</td><td class="num">&lt; $15</td><td class="num">$15–30</td><td class="num">&gt; $30</td></tr>
+    <tr><td>Downloads per active device</td><td class="num">&gt; 30%</td><td class="num">10–30%</td><td class="num">&lt; 10%</td></tr>
+    <tr><td>Clicks → download</td><td class="num">&gt; 30%</td><td class="num">15–30%</td><td class="num">&lt; 15%</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="note">
+  <p><strong>Your benchmark is your own site, not an industry average.</strong> Over 43 days, search-comparison traffic converted at 33–48% while Reddit converted at 2%. If ad traffic lands near 40%, paid search behaves like search and is worth scaling. If it lands near 2%, ad clicks aren't search intent — and that's the finding, not a failure.</p>
+</div>
+
+<h2>What could go wrong</h2>
+<div class="tblwrap">
+<table>
+  <thead><tr><th>Risk</th><th>What to do</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Conversions below 30/month</strong><br><span class="small">At $300 you'll get ~45 downloads — under the volume Smart Bidding needs.</span></td><td>Stay on Maximize Clicks. Don't switch to Target CPA. Judge by cost-per-download in your dashboard.</td></tr>
+    <tr><td><strong>Ad disapproved for a trademark</strong><br><span class="small">“ChatGPT alternative” as copy, not keyword.</span></td><td>Keep the brand name in the keyword and landing page; rewrite the headline descriptively.</td></tr>
+    <tr><td><strong>Identity verification</strong><br><span class="small">Google may ask for business or personal verification.</span></td><td>Expect a short pause. Verify as a person — an MIT-licensed project has no company docs.</td></tr>
+    <tr><td><strong>Spend runs hot on day one</strong><br><span class="small">Maximize Clicks can overspend early.</span></td><td>Set the campaign daily budget to $10 and the max CPC to $2.50. Check after 24 hours.</td></tr>
+    <tr><td><strong>Promo credit never lands</strong><br><span class="small">Most common cause: account older than 14 days at redemption.</span></td><td>Sign up the same day you're ready to spend. Screenshot the offer you were shown.</td></tr>
+    <tr><td><strong>Nobody clicks a new brand</strong><br><span class="small">YouCoded has no recognition; ads may get a 1% CTR.</span></td><td>That's a real answer too. It means paid search needs a landing page that explains the product, not a new keyword list.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="foot">
+  CPCs and volumes: Google Ads API via seodata.dev, US, monthly averages. Hermes/Pi demand: Google Trends, US, 12 months, anchored to terms with known volume. Funnel rates: YouCoded site analytics, 15 Sep – 27 Oct 2026 (535 visits, 40 downloads). Promo terms: Google Ads Help and the US new-advertiser coupon terms, read 27 Oct 2026 — re-read the offer at signup, since Google changes these.
+</div>
+
+</div>
+</body>
+</html>

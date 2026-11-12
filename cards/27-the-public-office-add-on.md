@@ -11,9 +11,9 @@ summary: A personal budget memo was once in the public Office add-on's history; 
 area: Release & business
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: the Office add-on repo's current test file is a short neutral 'Test memo' file, on the main copy and on the v0.1.0 release tag (checked on GitHub 2026-11-09).
+Next: Destin decides whether to ask GitHub to remove the old copy; first find the old commit's address and test whether it still opens.
+Blocked: needs Destin's decision and a GitHub support request; agents cannot file it.
 
 Chats
 

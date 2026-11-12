@@ -1,0 +1,38 @@
+{
+  "title": "Buddy rebuild — round 5: the buttons beside him, built from the app's own parts",
+  "key": "buddy-rebuild-review5",
+  "out": "buddy-rebuild.review5.html",
+  "images": "images/buddy-rebuild.review5",
+  "runs": {"after": "runs/round5"},
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "C-5",
+      "surface": "Buddy",
+      "path": "The buttons beside the buddy",
+      "headline": "Which of these, made only from parts the app already uses, should the buttons beside him be?",
+      "notice": "No custom styling this time: the buttons are the app's shared button, the explanation is the app's shared hover hint (shown here on the second button), and the panel is the same surface the app's menus and popovers use. Each follows your theme's colours and roundness.",
+      "variants": [
+        {
+          "id": "raised",
+          "label": "Separate buttons",
+          "crop": "buddy/group#raised@420x120+110+535",
+          "summary": "Four separate round buttons in the app's \"raised\" style, the one made for buttons that sit on top of a picture or background. Pointing at one shows its hint above it."
+        },
+        {
+          "id": "panel",
+          "label": "Buttons in a panel",
+          "crop": "buddy/group#panel@420x120+110+535",
+          "summary": "The same four icons inside one panel, the surface the app's menus and popovers use. Pointing at one shows its hint above it."
+        },
+        {
+          "id": "panel-words",
+          "label": "Panel with words",
+          "crop": "buddy/group#panel-words@420x120+110+535",
+          "summary": "The panel, with a short word beside each icon (Screenshot, Bigger, Open, Hide), so no hint is needed.",
+          "risk": "About twice as wide as the other two."
+        }
+      ]
+    }
+  ]
+}

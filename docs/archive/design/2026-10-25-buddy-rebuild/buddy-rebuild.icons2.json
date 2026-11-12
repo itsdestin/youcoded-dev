@@ -1,0 +1,149 @@
+{
+  "title": "The buddy's buttons — round two for Open and Hide",
+  "key": "buddy-rebuild-icons2",
+  "out": "buddy-rebuild.icons2.html",
+  "images": "images/buddy-rebuild.icons2",
+  "runs": {
+    "today": "runs/icons2"
+  },
+  "themes": [
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "open-external": [
+      "bar",
+      "open-external",
+      "440x160+0+0"
+    ],
+    "open-window": [
+      "bar",
+      "open-window",
+      "440x160+0+0"
+    ],
+    "open-winout": [
+      "bar",
+      "open-winout",
+      "440x160+0+0"
+    ],
+    "open-wininside": [
+      "bar",
+      "open-wininside",
+      "440x160+0+0"
+    ],
+    "open-winup": [
+      "bar",
+      "open-winup",
+      "440x160+0+0"
+    ],
+    "open-extsoft": [
+      "bar",
+      "open-extsoft",
+      "440x160+0+0"
+    ],
+    "hide-sleep": [
+      "bar",
+      "hide-sleep",
+      "440x160+0+0"
+    ],
+    "hide-leave": [
+      "bar",
+      "hide-leave",
+      "440x160+0+0"
+    ],
+    "hide-minimize": [
+      "bar",
+      "hide-minimize",
+      "440x160+0+0"
+    ],
+    "hide-putaway": [
+      "bar",
+      "hide-putaway",
+      "440x160+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "I-2",
+      "surface": "Buddy",
+      "path": "The button row beside the buddy, third button",
+      "headline": "Which picture best says \"open the full YouCoded window\"?",
+      "notice": "Your two favourites from last round come first, then four new mixes of them. The first button now shows the screen-with-corners picture you chose.",
+      "variants": [
+        {
+          "id": "external",
+          "label": "Open elsewhere",
+          "crop": "open-external",
+          "summary": "Last round's B: a box with an arrow leaving it."
+        },
+        {
+          "id": "window",
+          "label": "App window",
+          "crop": "open-window",
+          "summary": "Last round's C: a plain window with a title bar."
+        },
+        {
+          "id": "winout",
+          "label": "Window, arrow out",
+          "crop": "open-winout",
+          "summary": "The app window's title bar, with the arrow leaving through its corner. B and C in one."
+        },
+        {
+          "id": "wininside",
+          "label": "Window, arrow inside",
+          "crop": "open-wininside",
+          "summary": "The app window with a small arrow inside pointing up and out.",
+          "risk": "The arrow is small at real size."
+        },
+        {
+          "id": "winup",
+          "label": "Window, arrow up",
+          "crop": "open-winup",
+          "summary": "The app window with an arrow rising inside it: \"bring the window up\"."
+        },
+        {
+          "id": "extsoft",
+          "label": "Softer open",
+          "crop": "open-extsoft",
+          "summary": "B again, with a rounder box set lower so the arrow stands clear of it."
+        }
+      ]
+    },
+    {
+      "id": "I-3",
+      "surface": "Buddy",
+      "path": "The button row beside the buddy, last button",
+      "headline": "Which picture best says \"hide the buddy until I bring him back\"?",
+      "notice": "Four new ideas; no eyes, arrows-down or crosses. Hiding puts him away until the app restarts or you switch him back on in Settings.",
+      "variants": [
+        {
+          "id": "sleep",
+          "label": "Sleep",
+          "crop": "hide-sleep",
+          "summary": "A moon with a small z: put him to sleep. Friendly, and fits a companion who comes back later."
+        },
+        {
+          "id": "leave",
+          "label": "Step out",
+          "crop": "hide-leave",
+          "summary": "An arrow leaving through a doorway: he steps out.",
+          "risk": "The same picture often means \"sign out\"."
+        },
+        {
+          "id": "minimize",
+          "label": "Minimise",
+          "crop": "hide-minimize",
+          "summary": "A box with a single line, like a window's minimise button.",
+          "risk": "Could read as \"make the chat smaller\"."
+        },
+        {
+          "id": "putaway",
+          "label": "Put in tray",
+          "crop": "hide-putaway",
+          "summary": "An arrow going down into an open tray: put him away in a drawer.",
+          "risk": "Close to the usual \"download\" or \"save\" picture."
+        }
+      ]
+    }
+  ]
+}

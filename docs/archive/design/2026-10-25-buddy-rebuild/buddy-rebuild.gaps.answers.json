@@ -1,0 +1,22 @@
+{
+ "deck": "buddy-rebuild-gaps",
+ "started": "2026-10-26T08:31:37.370Z",
+ "submitted": "2026-10-26T08:32:00Z",
+ "cur": 1,
+ "answers": {
+  "G-1": {
+   "v": "yes",
+   "t": 1793003509547,
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  },
+  "G-2": {
+   "v": "yes",
+   "t": 1793003517510,
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

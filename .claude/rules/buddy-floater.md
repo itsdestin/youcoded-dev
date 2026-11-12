@@ -18,10 +18,10 @@ paths:
   - "**/desktop/src/renderer/components/buddy/**"
   - "**/desktop/src/renderer/components/mascot/**"
   - "**/desktop/src/renderer/styles/buddy.css"
-last_verified: 2026-08-31
+last_verified: 2026-10-30
 verify:
   - path: youcoded/desktop/src/shared/buddy-geometry.ts
-    contains: "HANDS_CENTER_FRACTION"
+    contains: "BAR_TOOLTIP_ROOM"
   - path: youcoded/desktop/src/shared/buddy-geometry.ts
     contains: "computeGroupLayout"
   - path: youcoded/desktop/src/shared/buddy-geometry.ts
@@ -46,13 +46,13 @@ Geometry is pure (`shared/buddy-geometry.ts`); windows belong to `BuddyWindowMan
 ## Windows and visibility
 - **The bar window stays Electron-shown; visibility is CSS + `setIgnoreMouseEvents`.** Reveal animates via the `buddy:bar-state` push; CSS-hidden sets `setIgnoreMouseEvents(true)` so it doesn't eat clicks. Never swap to show/hide — it kills the fade.
 - **The bar opens with the chat and nothing else** (`buddy-bar-visibility.ts`) — its actions are useless without one, so the hover input went in 2026-07-16. Never re-add one without re-deriving the need.
-- **The bar window is bigger than the row it draws** — 164×60 around 148×44 (`BAR_PADDING = 8`) so hover/pop has room. **Its position is recomputed from live mascot bounds before EVERY reveal**; computing it at creation stranded the bar after a hidden drag.
+- **The bar window is bigger than the row it draws** — room for the press bounce and, above, the Tooltip (`BAR_TOOLTIP_ROOM`). **Its position is recomputed from live mascot bounds before EVERY reveal**; computing it at creation stranded the bar after a hidden drag.
 - **`buddy:dismiss` hides for the run only** — the `localStorage` preference stays `'1'`; the `dismissed` flag lives in BuddyWindowManager and every `show()` clears it. The hide button never writes the preference.
 
 ## Group layout
-- **The mascot/chat/bar move as one rigid group, and the CHAT's fit constrains the MASCOT's position** — not the reverse. `computeGroupLayout` is a fixed point: chat x is mascot x plus a constant, so keeping the chat onscreen pins the mascot's x; where neither above nor below fits, the chat pins to the work-area edge and the mascot is pushed to meet it. Stretching instead buried him under the chat (2026-07-17). **Never clamp a buddy window independently.**
+- **The mascot/chat/bar move as one rigid group, and the CHAT's fit constrains the MASCOT's position** — not the reverse. `computeGroupLayout` is a fixed point: chat x is mascot x plus a constant, so keeping the chat onscreen pins the mascot's x; where neither above nor below fits, the chat pins to the work-area edge and the mascot is pushed to meet it. **Never clamp a buddy window independently.**
 - **That can shove the mascot off his edge, so returning to `peeking` must re-flush him** — `peeking` is positioned-flush only when `moveMascot`'s drag-peek enters it; `syncEngagement` → `reconcilePeekPosition()` glides him back. Every engage/disengage path keeps it.
-- **Gaps are measured to the ARTWORK, not the window edge** — the ink sits inside 5/30 headroom above and 2/30 below, so equal gaps look lopsided. `mascotInkRect` + `MASCOT_INK_*_INSET` carry it; `HANDS_CENTER_FRACTION` (0.583) aligns the bar to his hands.
+- **Gaps are measured to the ARTWORK, not the window edge** — the ink sits inside 5/30 headroom above and 2/30 below, so equal gaps look lopsided. `mascotInkRect` + `MASCOT_INK_*_INSET` carry it; the bar's bottom is level with his feet.
 - **Mascot motion is transforms inside fixed-size windows; the ONLY window-bounds animation is the edge-snap glide.** The side-peek lean MUST live on its own inner element — CSS resolves `rotate` BEFORE `transform`, so combining them swings the body out of frame.
 
 ## Rig SVGs

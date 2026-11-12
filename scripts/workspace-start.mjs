@@ -6,7 +6,8 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { formatBriefing, syncWorkspace, verifyWorkspaceIdentity } from './workspace-sync.mjs';
-import { sweep, formatSweep } from './prune-worktrees.mjs';
+import { sweep, formatSweep, isMergedInto } from './prune-worktrees.mjs';
+import { markTeamDevice, teamDeviceFile } from './team-device.mjs';
 
 const inventory = JSON.parse(fs.readFileSync(new URL('./workspace-repos.json', import.meta.url), 'utf8'));
 function git(root, ...args) {
@@ -74,6 +75,11 @@ function save(file, state) {
  */
 const NODE_MODULES_PROVISIONS = {
   youcoded: ['desktop'],
+  // WHY (card #212, 5th hit 2026-11-09): a server worktree started with no dependencies, so
+  // tsc and vitest failed until the session rebuilt an install by hand in a scratch folder
+  // (~5 calls each on 11-01, 11-05, 11-07 twice, 11-09). Listed here, the shared copy is
+  // linked in and, when it is outdated, fillMissingPackages swaps in a fresh install.
+  'wecoded-marketplace': ['worker'],
 };
 
 function copyTree(src, dest) {
@@ -387,6 +393,24 @@ function validateWorktree(entry, source, destination, branch) {
   }
 }
 
+// WHY (card #22 c): post-merge cleanup (or a hand `git worktree remove`) deletes a session's worktree
+// and branch but left its manifest entry, so resuming the same session key died on "Missing recorded
+// worktree" even though nothing was left to protect. A missing folder is safe to forget ONLY when no
+// commit would be lost by starting that repo's session branch fresh: every copy of the branch (local
+// and on origin) is already in the repo's default branch. Anything else (unmerged or unpushed commits,
+// or no default-branch ref to compare against) keeps the old refusal, because a vanished folder with
+// unmerged work is exactly the card's item (b) and must stay loud.
+function missingWorktreeIsSafeToForget(source, name, branch) {
+  let target;
+  try { target = git(source, 'rev-parse', '--verify', '-q', `refs/remotes/origin/${inventory[name].branch}`); } catch { return false; }
+  for (const ref of [`refs/heads/${branch}`, `refs/remotes/origin/${branch}`]) {
+    let sha;
+    try { sha = git(source, 'rev-parse', '--verify', '-q', ref); } catch { continue; } // no such ref = nothing to lose
+    if (!isMergedInto(source, sha, target)) return false;
+  }
+  return true;
+}
+
 export function startWorkspace({ root, session, repos = [] }) {
   if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(session || '')) throw new Error('Session key must be 1–64 lowercase letters, digits or hyphens, starting with a letter or digit.');
   for (const name of repos) if (!Object.hasOwn(inventory, name)) throw new Error(`Unknown repository: ${name}`);
@@ -412,6 +436,22 @@ export function startWorkspace({ root, session, repos = [] }) {
         throw new Error(`Invalid session ownership in ${manifest}`);
       }
     }
+    // Entries whose folder vanished after a clean merge: forget them (see missingWorktreeIsSafeToForget),
+    // remember which, so a requested one is recreated on its old branch name instead of tripping the
+    // "branch already exists" guard that protects UNmerged work.
+    const recreate = new Set();
+    for (const [name, entry] of Object.entries(state.repositories)) {
+      if (!Object.hasOwn(inventory, name)) continue; // the check below reports it
+      const source = name === 'workspace' ? root : path.join(root, name);
+      const destination = name === 'workspace' ? workspace : path.join(workspace, name);
+      if (entry.path !== destination || exists(destination)) continue; // ownership problems and live folders go to validateWorktree
+      verifyRepo(source);
+      if (!missingWorktreeIsSafeToForget(source, name, branch)) continue;
+      delete state.repositories[name];
+      recreate.add(name);
+    }
+    // Deliberately NOT saved here: an entry nobody asked for stays recorded and is re-judged next start; a requested
+    // one is rewritten by the create path below. Saving now would orphan the old branch from `recreate` on the next call.
     const names = [...new Set(['workspace', ...Object.keys(state.repositories), ...repos])];
     // WHY: ownership and collision checks for every requested repository must finish
     // before workspace sync is allowed to move the shared checkout.
@@ -425,7 +465,7 @@ export function startWorkspace({ root, session, repos = [] }) {
       if (entry) validateWorktree(entry, source, destination, branch);
       else {
         if (exists(destination)) throw new Error(`Worktree path already exists: ${destination}. Nothing was overwritten; choose another session key.`);
-        if (git(source, 'branch', '--list', branch)) throw new Error(`Session branch already exists: ${branch} in ${source}. Nothing was overwritten; inspect it before choosing another key.`);
+        if (!recreate.has(name) && git(source, 'branch', '--list', branch)) throw new Error(`Session branch already exists: ${branch} in ${source}. Nothing was overwritten; inspect it before choosing another key.`);
       }
     }
 
@@ -474,7 +514,11 @@ export function startWorkspace({ root, session, repos = [] }) {
         // WHY: branch/ref creation during worktree add is part of the same isolated
         // startup transaction and must not run repository-owned hooks either.
         const hooks = path.join(synced.report.evidence.directory, 'disabled-hooks');
-        git(source, '-c', `core.hooksPath=${hooks}`, 'worktree', 'add', '-b', branch, destination, base);
+        // WHY -f -B for a recreated entry: git still lists the vanished folder as a registered worktree
+        // (-f overrides that) and the merged branch still exists (-B moves it to the fresh base). Both are
+        // only reachable after missingWorktreeIsSafeToForget proved no commit is lost.
+        const addArgs = recreate.has(name) ? ['-f', '-B'] : ['-b'];
+        git(source, '-c', `core.hooksPath=${hooks}`, 'worktree', 'add', ...addArgs, branch, destination, base);
         state.repositories[name] = { path: destination, branch, commonDir: commonDir(source), base };
         // Record each successful component immediately: later failures preserve work and
         // a retry resumes what succeeded. A crash before this save fails closed on collision.
@@ -482,7 +526,7 @@ export function startWorkspace({ root, session, repos = [] }) {
         // After the manifest is saved: dependency provisioning is a convenience on
         // top of a committed worktree, so its failures must not roll the worktree back.
         const provisioned = provisionNodeModules(name, source, destination);
-        result.repositories[name] = { path: destination, branch, status: 'created', ...(provisioned.length ? { provisioned } : {}), ...(refreshed ? { shared: refreshed } : {}) };
+        result.repositories[name] = { path: destination, branch, status: recreate.has(name) ? 'recreated' : 'created', ...(provisioned.length ? { provisioned } : {}), ...(refreshed ? { shared: refreshed } : {}) };
       }
       return result;
     } catch (error) {
@@ -525,6 +569,10 @@ function main(args) {
     console.log(`\nRead instructions and run scripts from ${result.workspace}.\nUse these absolute paths for file tools; this command cannot change their root or your shell's directory.\nUnfinished work is preserved. Only merged, clean, unused worktrees idle 3+ days are removed automatically. This is not a sandbox.`);
   }
   runWorktreeSweep(opts.root, result.session, json);
+  // The OWNER's computers count as team devices, not users; a contributor's never do (scripts/team-device.mjs).
+  const team = markTeamDevice(undefined, undefined, { checkedFile: path.join(opts.root, '.git', 'youcoded-team-device-checked') });
+  if (!json && team === 'created') console.log(`analytics: marked this computer as the owner's team device (${teamDeviceFile()})`);
+  else if (!json && team.startsWith('failed')) console.log(`analytics: could not mark this computer as a team device — ${team}`);
   if (opts.item) linkItem(result.workspace, opts.item, result.session, json);
 }
 

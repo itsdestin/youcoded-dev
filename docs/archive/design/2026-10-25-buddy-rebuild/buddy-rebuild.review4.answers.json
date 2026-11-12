@@ -1,0 +1,23 @@
+{
+ "deck": "buddy-rebuild-review4",
+ "started": "2026-10-26T08:17:32.176Z",
+ "submitted": "2026-10-26T08:18:08Z",
+ "cur": 1,
+ "answers": {
+  "A-2": {
+   "v": "yes",
+   "t": 1793002657966,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "C-4": {
+   "note": "no i dont like this weird layeard card styling. it should match other youcoded design standards/exlementsc",
+   "t": 1793002687235,
+   "v": "other",
+   "seconds": 29,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

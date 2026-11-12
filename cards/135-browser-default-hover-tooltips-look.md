@@ -1,10 +1,9 @@
 ---
 id: 135
 title: Shared look: app hover hints, readable contrast, screens that don't match
-stage: planning
+stage: build
 priority: P2
 tags: user-interface, bug
-release: v1.3.2
 report: docs/archive/investigations/2026-09-01-app-native-tooltips.md
 branch: 135-browser-default-hover-tooltips-look
 roadmap: user-interface: Browser-default hover tooltips look foreign to the app.
@@ -16,8 +15,8 @@ work: session/ui-consistency-audit
 vision: yours.look.finetune
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: Settings screens for Assistant and Local models were brought to the shared look (fix batches 1 and 2, Sept 2026, on master). Card levels were rolled out to Settings popups (Sept 28, on master). The app's own hover hint is used across the main chat and some other screens, and hints no longer stick after a click (Oct 2026, on master).
+Next: convert the remaining browser-default hover hints in settings, marketplace and project view, then decide the contrast items (warning colour on pale themes) and the button-alignment question Destin deferred on 2026-10-13.
 Blocked: nothing recorded.
 
 Chats

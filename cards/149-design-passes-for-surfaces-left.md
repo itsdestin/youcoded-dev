@@ -1,7 +1,8 @@
 ---
 id: 149
 title: Design passes for surfaces left out of the guide work
-stage: planning
+stage: explore
+priority: P3
 tags: user-interface, polish
 branch: 149-design-passes-for-surfaces-left
 created: 2026-10-16

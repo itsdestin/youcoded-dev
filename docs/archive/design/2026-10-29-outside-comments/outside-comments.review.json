@@ -1,0 +1,33 @@
+{
+  "title": "Comments on files outside the project: ask instead of refuse",
+  "key": "outside-comments-review",
+  "out": "outside-comments.review.html",
+  "images": "images/outside-comments.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "labels": { "before": "Today", "after": "After" },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "Any chat, when the assistant reaches for comments on a file in another folder",
+      "crop": "chat#outside-comments-cc@1000x340+0+70",
+      "headline": "Instead of refusing, the assistant asks: Allow this once, Allow for this chat, or Don't allow.",
+      "changed": "Today the comment step fails on any file outside the chat's project. Now the step pauses on a card with three choices and a one-line note on what they cover.",
+      "notice": "Allow this once covers this one step. Allow for this chat stops the question for every outside file until the chat ends or the app restarts. Don't allow tells the assistant no.",
+      "risk": "Allow for this chat covers comments on any file on the computer for that chat, not just this folder (your choice). It never lets the assistant edit those files.",
+      "alsoChanges": ["The app's own assistant (same card)", "Phone and remote browser (same card)"]
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat on a phone",
+      "path": "The same card at phone width",
+      "crop": "chat#outside-comments-phone",
+      "runs": ["after"],
+      "new": true,
+      "headline": "On a phone the three buttons stack one per line so each stays easy to tap.",
+      "changed": "The same card, drawn narrow. Nothing else moves.",
+      "notice": "You can answer from your phone while away from the computer.",
+      "risk": "The card is taller on a phone: three button rows instead of one."
+    }
+  ]
+}

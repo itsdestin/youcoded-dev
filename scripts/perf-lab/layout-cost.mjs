@@ -5,9 +5,9 @@
 // streamed token: an effect read `scrollHeight` right after every delta's commit,
 // which makes the browser lay the whole document out synchronously before the next
 // line of JavaScript runs. It was found by reading code, fixed, and then could never
-// be RE-GATED, because the rig had no way to see it. Its known twin in the buddy
-// window (`BubbleFeed.tsx`) is still unfixed for the same reason: a fix there would
-// ship with no KEEP measurement behind it.
+// be RE-GATED, because the rig had no way to see it. Its old twin in the buddy
+// window (`BubbleFeed.tsx`) is gone: since 2026-10-30 the buddy draws ChatView, so it
+// has the same fix (no scenario opens a buddy window, so none measures it there).
 //
 // The obvious instrument — time the streaming — does not work here. Timing needs a
 // native stream, and a native stream's speed is set by how fast a local model emits

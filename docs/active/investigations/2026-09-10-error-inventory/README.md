@@ -6,6 +6,8 @@ topic: Every user-visible failure in the app, re-audited against today's code â€
 
 # Error inventory, 2026-09-10 â€” start here for unit B
 
+> **Note (2026-10-30):** the buddy files named below (`BubbleFeed`, `CompactToolStrip`, `AttentionStrip`, `SessionPill`) were deleted in the buddy rebuild; the buddy chat now uses the main window's SessionStrip, ChatView, InputBar and cards (`docs/archive/specs/2026-10-25-buddy-rebuild-design.md`). Findings about them are closed by deletion.
+
 Five read-only reviewers audited today's code (`youcoded` at `a89b2cd9`), each tracing the
 screen's call into the handler behind it. This **supersedes the line numbers and verdicts**
 in `../2026-09-08-error-states-development-audit.md`: at least one of its findings (the

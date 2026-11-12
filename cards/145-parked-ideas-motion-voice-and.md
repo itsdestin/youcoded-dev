@@ -5,7 +5,6 @@ stage: explore
 priority: P3
 tags: user-interface, feature
 branch: 145-parked-ideas-motion-voice-and
-roadmap: user-interface: Parked ideas: motion, voice and chat images (5 things).
 created: 2026-10-15
 summary: Ideas for later: smoother panel animations, a smaller voice download, and letting the assistant show images in chat.
 area: Chat
@@ -15,8 +14,8 @@ paused: Destin dropped the panel animations for now
 vision: chat.converse.voice
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: 2026-09-18, the Files and Games panel glide was built (youcoded commit 271f0ab82) and then reverted the same morning (d7ceb4ec6). Nothing is in progress. Panels still open with a pop on master.
+Next: not decided. Destin would have to choose whether to re-try the panel motion. Re-trying means a fresh build; the old branch is not the starting point.
 Blocked: nothing recorded.
 
 Chats

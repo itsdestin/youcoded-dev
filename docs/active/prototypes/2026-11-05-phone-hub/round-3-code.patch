@@ -1,0 +1,834 @@
+From a0f6d501d72e820fb7ffcd8592e0b15580743e26 Mon Sep 17 00:00:00 2001
+From: Destin <destinj101@gmail.com>
+Date: Thu, 5 Nov 2026 02:35:33 -0700
+Subject: [PATCH] =?UTF-8?q?phone=20layout=20round=203:=20plain=20name=20bu?=
+ =?UTF-8?q?tton,=20status=20lights,=20=E2=98=B0=20everything=20panel,=20ma?=
+ =?UTF-8?q?tching=20pills?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Destin's round-2 answers (youcoded-dev docs/active/design/2026-11-04-narrow-screens/
+narrow-screens-2.live.answers.json). Still workbench-only switches; the app is unchanged.
+
+- Top bar: `plain` (pair's two buttons each side; dot + name + arrow as one
+  button with one highlight, no count) and `lights` (plain + a row of tiny
+  status lights for the other sessions).
+- ☰: `hub` opens one panel with New session on top, open sessions, the five
+  latest past chats with See all, and the places as a row of tiles.
+- Pills: every chip in the compact row gets one shape; Remote is icon-only.
+- Shortcuts button removed (Destin: "lets just leave the current row").
+- SessionStrip budget +8 for the temporary switches.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ desktop/line-budgets.json                     |   4 +-
+ desktop/src/renderer/components/HeaderBar.tsx |  15 ++-
+ desktop/src/renderer/components/InputBar.tsx  |   8 +-
+ .../src/renderer/components/OverflowMenu.tsx  |  32 ++++-
+ .../src/renderer/components/QuickChips.tsx    |  92 --------------
+ .../src/renderer/components/SessionStrip.tsx  |  30 +++--
+ desktop/src/renderer/components/StatusBar.tsx |   8 +-
+ .../components/header/phone-session-menu.tsx  | 112 ++++++++++++++++--
+ .../renderer/dev/workbench/screens/chat.ts    |   9 +-
+ desktop/src/renderer/styles/globals.css       |  21 ++++
+ desktop/src/renderer/workbench-mode.ts        |  16 +--
+ .../tests/quick-chips-menu-button.test.tsx    |  69 -----------
+ 12 files changed, 207 insertions(+), 209 deletions(-)
+ delete mode 100644 desktop/tests/quick-chips-menu-button.test.tsx
+
+diff --git a/desktop/line-budgets.json b/desktop/line-budgets.json
+index d564b14d6..481195cb0 100644
+--- a/desktop/line-budgets.json
++++ b/desktop/line-budgets.json
+@@ -16,7 +16,7 @@
+     "shared/types.ts": "2026-10-30: 1630 (+2, buddy rebuild): onSeenInBuddy in the buddy bridge type. | 2026-10-26: 1628 (+2, buddy rebuild): toggleChatSize/onChatSize on the buddy API, subscribe/unsubscribe removed. | 2026-10-23: 1626 (+3): Welcome back remembers whether each session ran with Skip permissions on, and reopens it that way (Destin). | 2026-10-22: 1623 (+3, model-switch divider: the shared model-switch event type, both runtimes). Before: 1620 (+66, bg-tracking-audit): the documented optional fields screens read for background status (CcBackgroundRun, ShellRunView restored/exitUnknown/maybeStillRunning/viewOnly, run facts on SpecialistRunView), each with its one-line doc.",
+     "renderer/components/ToolCard.tsx": "2026-11-02: 1782 (+6): ALREADY over its 1776 budget on the sec-integration branch before the download guard work (not touched by it); budget raised to match so the guard passes. | 2026-11-02: 1734 (+13, security rework 3): the browser's asks are drawn by this card itself (an `ask` prop swapping in their words and answer path, and a plain header line) instead of a look-alike card; the type lives in permissions/ToolCardAsk.ts. | 2026-11-01 integration merge (sec-integration): budget = sum of both sides' growth, nothing new. | 2026-11-01 integration merge (sec-integration): budget = sum of both sides' growth, nothing new. | 2026-10-30 merge of session/buddy-rebuild with master: 1702 = the sum of both sides' growth (card #207 +21, buddy rebuild +7), nothing new. | 2026-10-30: 1695 (+21, card #207): the outside-file comment ask's flag, its three keyboard answers and the call to OutsideCommentsAsk; the row itself lives in permissions/OutsideCommentsAsk.tsx. | 2026-10-26: 1681 (+7, buddy rebuild): the question card hands its state to AskQuestionCompact in the buddy's small window; the compact drawing itself lives in AskQuestionCompact.tsx. | 2026-10-22: 1674 (+32, bg-tracking-audit): management calls (check, note, resume, stop of a helper or a background command) say what they do and name their target, not \"Hiring a specialist\"; the wording itself lives in components/management-labels.ts. | 2026-10-31: 1721 (+19, Ask first websites): the Visit <site>? line and the what-each-answer-covers note on the generic permission row, plus the site prop. | 2026-10-30 merge of session/buddy-rebuild with master: 1702 = the sum of both sides' growth (card #207 +21, buddy rebuild +7), nothing new. | 2026-10-30: 1695 (+21, card #207): the outside-file comment ask's flag, its three keyboard answers and the call to OutsideCommentsAsk; the row itself lives in permissions/OutsideCommentsAsk.tsx. | 2026-10-26: 1681 (+7, buddy rebuild): the question card hands its state to AskQuestionCompact in the buddy's small window; the compact drawing itself lives in AskQuestionCompact.tsx. | 2026-10-22: 1674 (+32, bg-tracking-audit): management calls (check, note, resume, stop of a helper or a background command) say what they do and name their target, not \"Hiring a specialist\"; the wording itself lives in components/management-labels.ts. | 2026-10-30 merge of session/buddy-rebuild with master: 1702 = the sum of both sides' growth (card #207 +21, buddy rebuild +7), nothing new. | 2026-10-30: 1695 (+21, card #207): the outside-file comment ask's flag, its three keyboard answers and the call to OutsideCommentsAsk; the row itself lives in permissions/OutsideCommentsAsk.tsx. | 2026-10-26: 1681 (+7, buddy rebuild): the question card hands its state to AskQuestionCompact in the buddy's small window; the compact drawing itself lives in AskQuestionCompact.tsx. | 2026-10-22: 1674 (+32, bg-tracking-audit): management calls (check, note, resume, stop of a helper or a background command) say what they do and name their target, not \"Hiring a specialist\"; the wording itself lives in components/management-labels.ts.",
+     "main/remote-server.ts": "2026-11-01: 1475 (+5, integration review): connected phones are never expired (the sweep skips them, shutdown and an hourly tick refresh their last-used date); the rules live in remote-devices.ts. | 2026-11-01 integration merge (sec-integration): budget = sum of both sides' growth, nothing new. | 2026-11-01 integration merge (sec-integration): budget = sum of both sides' growth, nothing new. | 2026-10-30: 1467 (+30, security audit RA-1): password lockout per address and host-wide, per-address cap on unfinished sign-ins, one password check at a time (logic lives in remote-auth-throttle.ts; this file only calls it). | 2026-10-22: phone reliability — phone connection lines reach desktop.log; remote access starts by itself once Tailscale connects (retry every 20 s while installed, and on wake). Then: a device signing in again replaces its older connection (CLOSE_REPLACED), and an expired fill hold asks a capable page to refill one conversation instead of hanging up. Then +11: per-message compression to phones, with its measurement. Then +21: a large answer sent in remote:piece frames to a page that can join them (PIECE_CHARS). Then +11: one start at a time (overlapping starts bound twice; branch review F2). Then +14: phone timings logged (remote:timings, per-answer time and size; remote-timings.ts). Then +18: requests sent behind the sign-in are held and answered after it (pipelined). Then +19: a sign-in and requests carried in the opening request are taken (pickProtocol, shared/first-frames.ts), and requests arriving during the sign-in slowdown wait instead of being read as a second sign-in. | 2026-10-22: phone reliability — phone connection lines reach desktop.log; remote access starts by itself once Tailscale connects (retry every 20 s while installed, and on wake). Then: a device signing in again replaces its older connection (CLOSE_REPLACED), and an expired fill hold asks a capable page to refill one conversation instead of hanging up. Then +11: per-message compression to phones, with its measurement. Then +21: a large answer sent in remote:piece frames to a page that can join them (PIECE_CHARS). Then +11: one start at a time (overlapping starts bound twice; branch review F2). Then +14: phone timings logged (remote:timings, per-answer time and size; remote-timings.ts). Then +18: requests sent behind the sign-in are held and answered after it (pipelined). Then +19: a sign-in and requests carried in the opening request are taken (pickProtocol, shared/first-frames.ts), and requests arriving during the sign-in slowdown wait instead of being read as a second sign-in. | 2026-10-31: 1470 (+3, remote policy): a device unused for 90 days is signed out (startup sweep, its own close code, connection end counts as use); the rules live in remote-devices.ts. | 2026-10-30: 1467 (+30, security audit RA-1): password lockout per address and host-wide, per-address cap on unfinished sign-ins, one password check at a time (logic lives in remote-auth-throttle.ts; this file only calls it). | 2026-10-22: phone reliability — phone connection lines reach desktop.log; remote access starts by itself once Tailscale connects (retry every 20 s while installed, and on wake). Then: a device signing in again replaces its older connection (CLOSE_REPLACED), and an expired fill hold asks a capable page to refill one conversation instead of hanging up. Then +11: per-message compression to phones, with its measurement. Then +21: a large answer sent in remote:piece frames to a page that can join them (PIECE_CHARS). Then +11: one start at a time (overlapping starts bound twice; branch review F2). Then +14: phone timings logged (remote:timings, per-answer time and size; remote-timings.ts). Then +18: requests sent behind the sign-in are held and answered after it (pipelined). Then +19: a sign-in and requests carried in the opening request are taken (pickProtocol, shared/first-frames.ts), and requests arriving during the sign-in slowdown wait instead of being read as a second sign-in.",
+-    "renderer/components/SessionStrip.tsx": "2026-11-05: 2914 (+21, phone layout round): workbench-only switches for the phone top bars and session-list shapes (pieces in header/phone-session-menu.tsx); lower again once Destin picks and the losing options are deleted. | 2026-10-30: 2893 (+2): the session rows' close x takes no room until hovered (one shared class for both lists). | 2026-10-29: 2891 (+2, buddy rebuild try-it): in the buddy (`viewer`) the new-session form hides Launch in new window and Manage projects. | 2026-10-26: 2889 (+5, buddy rebuild): the `viewer` prop — the buddy shows the strip without drag, tear-off or move menu."
++    "renderer/components/SessionStrip.tsx": "2026-11-05: 2922 (+8, phone layout round 3): the plain one-button name and the ☰ everything-panel (hub) switches, also temporary. | 2026-11-05: 2914 (+21, phone layout round): workbench-only switches for the phone top bars and session-list shapes (pieces in header/phone-session-menu.tsx); lower again once Destin picks and the losing options are deleted. | 2026-10-30: 2893 (+2): the session rows' close x takes no room until hovered (one shared class for both lists). | 2026-10-29: 2891 (+2, buddy rebuild try-it): in the buddy (`viewer`) the new-session form hides Launch in new window and Manage projects. | 2026-10-26: 2889 (+5, buddy rebuild): the `viewer` prop — the buddy shows the strip without drag, tear-off or move menu."
+   },
+   "default": 1500,
+   "exempt": {
+@@ -35,7 +35,7 @@
+     "renderer/remote-shim.ts": 3623,
+     "renderer/state/chat-reducer.ts": 3507,
+     "renderer/styles/globals.css": 3106,
+-    "renderer/components/SessionStrip.tsx": 2914,
++    "renderer/components/SessionStrip.tsx": 2922,
+     "main/main.ts": 2099,
+     "shared/types.ts": 1632,
+     "renderer/components/SyncPanel.tsx": 1955,
+diff --git a/desktop/src/renderer/components/HeaderBar.tsx b/desktop/src/renderer/components/HeaderBar.tsx
+index f5375dde7..828c428f9 100644
+--- a/desktop/src/renderer/components/HeaderBar.tsx
++++ b/desktop/src/renderer/components/HeaderBar.tsx
+@@ -10,6 +10,7 @@ import { getCapabilities, isAndroid, isRemoteMode } from '../platform';
+ import { useArtifactSelector, useArtifactDispatch } from '../state/ArtifactContext';
+ import OverflowMenu, { DrawerMenuButton, OverflowRowList } from './OverflowMenu';
+ import { workbenchNarrowTop, workbenchNarrowPills } from '../workbench-mode';
++import { SessionLights } from './header/phone-session-menu';
+ import NarrowViewToggle from './NarrowViewToggle';
+ import WideViewToggle from './WideViewToggle';
+ import { useArtifactCount } from '../hooks/useArtifactCount';
+@@ -409,6 +410,9 @@ export default React.memo(function HeaderBar({
+   //   pair   — ☰ and Projects on the left, New session and the view switch
+   //            on the right, the name between them
+   const narrowTop = narrow ? workbenchNarrowTop() : 'today';
++  // Round 3 (Destin's L-1 note): `plain`, `lights` and `hub` keep pair's two
++  // buttons each side; only the name button and what ☰ opens differ.
++  const twoEachSide = narrowTop === 'pair' || narrowTop === 'plain' || narrowTop === 'lights' || narrowTop === 'hub';
+   // Q-3: the REMOTE label moves into the pill row under the message box
+   // (StatusBar draws it there when the compact pills are on).
+   const remoteInPills = narrow && workbenchNarrowPills() === 'compact';
+@@ -555,7 +559,7 @@ export default React.memo(function HeaderBar({
+         className={`header-controls-left ${clusterFlexClass}flex items-center gap-1 sm:gap-2`}
+         style={clusterStyle}
+       >
+-        {narrowTop === 'drawer' ? (
++        {narrowTop === 'drawer' || narrowTop === 'hub' ? (
+           /* Side-drawer top bar: ☰ opens the session drawer, which carries
+              the menu's places under the sessions — one panel, not two. */
+           <DrawerMenuButton {...overflowProps} onOpen={() => stripApi.current?.openList()} />
+@@ -587,7 +591,7 @@ export default React.memo(function HeaderBar({
+             Wide layouts only; narrow reaches Pages via ||| . */}
+         {!narrow && <PagesButton />}
+         {/* Projects button — wide layouts only; narrow reaches it via ||| . */}
+-        {(!narrow || narrowTop === 'pair') && <ProjectsButton />}
++        {(!narrow || twoEachSide) && <ProjectsButton />}
+         {!narrow && <PinnedPageButtons />}
+         {isRemoteMode() && !remoteInPills && (
+           <span className="text-3xs font-medium px-1.5 py-0.5 rounded-sm bg-blue-500/15 text-fg-2 border border-blue-500/40 shrink-0" title="Connected to another computer">
+@@ -604,7 +608,7 @@ export default React.memo(function HeaderBar({
+           flex-1 wrapper gives the strip a pre-allocated budget (~1/3 of the
+           header) so packSessions reads an available-space value rather than
+           its own current content width (chicken-and-egg fix). */}
+-      <div className="flex-1 min-w-0 flex justify-center">
++      <div className={`flex-1 min-w-0 flex justify-center ${narrowTop === 'lights' ? 'flex-col items-center' : ''}`}>
+       <SessionStrip
+         sessions={sessions}
+         activeSessionId={activeSessionId}
+@@ -621,8 +625,9 @@ export default React.memo(function HeaderBar({
+         windowDirectory={windowDirectory}
+         myWindowId={myWindowId}
+         menuApiRef={stripApi}
+-        drawerFooter={narrowTop === 'drawer' ? <OverflowRowList {...overflowProps} reverse /> : undefined}
++        drawerFooter={narrowTop === 'drawer' ? <OverflowRowList {...overflowProps} reverse /> : narrowTop === 'hub' ? <OverflowRowList {...overflowProps} reverse tiles /> : undefined}
+       />
++      {narrowTop === 'lights' && <SessionLights ids={sessions.map((s) => s.id)} activeId={activeSessionId} statuses={sessionStatuses} />}
+       </div>
+ 
+       {/* Right — view toggles. Symmetric reservation with the left cluster
+@@ -635,7 +640,7 @@ export default React.memo(function HeaderBar({
+         {/* "Two buttons each side" top bar: New session joins the view
+             switch on the right; it opens the same form as the list's own
+             New session button. */}
+-        {narrowTop === 'pair' && (
++        {twoEachSide && (
+           <Tooltip text="New session" placement="bottom">
+             <button
+               type="button"
+diff --git a/desktop/src/renderer/components/InputBar.tsx b/desktop/src/renderer/components/InputBar.tsx
+index 23eccdd8b..6af240bcc 100644
+--- a/desktop/src/renderer/components/InputBar.tsx
++++ b/desktop/src/renderer/components/InputBar.tsx
+@@ -1,7 +1,7 @@
+ import React, { useState, useRef, useCallback, useEffect, useLayoutEffect, useImperativeHandle, forwardRef, useContext } from 'react';
+ import { NARROW_VIEWPORT_QUERY } from '../hooks/use-narrow-viewport';
+ import { useChatDispatch } from '../state/chat-context';
+-import QuickChips, { QuickChip, QuickChipsMenuButton, useChipsBehindButton } from './QuickChips';
++import QuickChips, { QuickChip } from './QuickChips';
+ import { createQueueDraft } from '../state/queue-draft';
+ import { readQueueTransferDraft, saveQueueTransferDraft, updateQueueTransferDraft } from '../state/queue-transfer-storage';
+ import { pendingQueueSend } from '../state/pending-queue-send';
+@@ -1012,8 +1012,6 @@ const InputBar = forwardRef<InputBarHandle, Props>(function InputBar({ sessionId
+     }
+   };
+ 
+-  const chipsBehindButton = useChipsBehindButton(); // phone round, workbench-only (QuickChips.tsx)
+-
+   const handleChip = useCallback(
+     (chip: QuickChip) => {
+       // All chips fill the input bar for the user to review/edit/send — never auto-send.
+@@ -1110,8 +1108,7 @@ const InputBar = forwardRef<InputBarHandle, Props>(function InputBar({ sessionId
+           the same slot QuickChips occupies in chat view, so both modes share
+           the same "pill row above input bar" visual inside one container. */}
+       {minimal && <TerminalToolbar sessionId={sessionId} />}
+-      {/* Phone round (Q-7): chips behind a button in the box instead of this row. */}
+-      {!minimal && !compact && !chipsBehindButton && <QuickChips onChipTap={handleChip} />}
++      {!minimal && !compact && <QuickChips onChipTap={handleChip} />}
+ 
+       {attachments.length > 0 && (
+         <div className="scroll-mask-x flex gap-2 px-3 py-2 overflow-x-auto">
+@@ -1155,7 +1152,6 @@ const InputBar = forwardRef<InputBarHandle, Props>(function InputBar({ sessionId
+             <AttachIcon className="w-5 h-5" />
+           </BrailleBurst>
+           {extraTool}
+-          {chipsBehindButton && !minimal && !compact && <QuickChipsMenuButton onChipTap={handleChip} disabled={disabled} />}
+           {/* WHY `onOpenDrawer`: the skills drawer belongs to the main window. The buddy's compact bar has no drawer to
+               open, and drew a compass that did nothing when pressed. */}
+           {!minimal && (!compact || onOpenDrawer) && (
+diff --git a/desktop/src/renderer/components/OverflowMenu.tsx b/desktop/src/renderer/components/OverflowMenu.tsx
+index 6e7d918c1..2bb200a52 100644
+--- a/desktop/src/renderer/components/OverflowMenu.tsx
++++ b/desktop/src/renderer/components/OverflowMenu.tsx
+@@ -130,9 +130,37 @@ function RowButtons({ rows }: { rows: Row[] }) {
+ /** The ☰ menu's rows drawn in place, for the phone side drawer (2026-11-05
+  *  round): the same places, same badges, same actions, under the sessions.
+  *  `reverse` puts Settings LAST, where the Claude and ChatGPT apps keep it. */
+-export function OverflowRowList(props: Props & { reverse?: boolean }) {
++export function OverflowRowList(props: Props & { reverse?: boolean; tiles?: boolean }) {
+   const { rows } = useOverflowRows(props, (fn) => fn);
+-  return <RowButtons rows={props.reverse ? [...rows].reverse() : rows} />;
++  const ordered = props.reverse ? [...rows].reverse() : rows;
++  return props.tiles ? <RowTiles rows={ordered} /> : <RowButtons rows={ordered} />;
++}
++
++/** Round 3 hub panel (Destin: "restyled … settings/other buttons"): the same
++ *  places as square icon-over-word tiles in one strip, so they take one row of
++ *  the panel instead of five and leave the room to the sessions. Same rows,
++ *  same badges, same actions as the list form. */
++function RowTiles({ rows }: { rows: Row[] }) {
++  return (
++    <div className="flex px-1">
++      {rows.map(r => (
++        <button
++          key={r.key}
++          type="button"
++          role="menuitem"
++          onClick={r.onClick}
++          className={`relative flex-1 min-w-0 flex flex-col items-center gap-1 py-2 rounded-md text-3xs transition-colors ${
++            r.active ? 'text-accent' : 'text-fg-muted hover:text-fg'
++          } hover:bg-inset`}
++        >
++          <span className="shrink-0">{r.icon}</span>
++          {/* One word per tile; a count or "challenge!" stays on the dot. */}
++          <span className="max-w-full truncate px-0.5">{r.label.split(/ [(—]/)[0].replace('Session files', 'Files')}</span>
++          {r.dot && <span className={`absolute top-1.5 right-[calc(50%-14px)] w-1.5 h-1.5 rounded-full ${r.dot}`} />}
++        </button>
++      ))}
++    </div>
++  );
+ }
+ 
+ /** The phone side drawer's ☰ (2026-11-05 round): opens the session drawer, and
+diff --git a/desktop/src/renderer/components/QuickChips.tsx b/desktop/src/renderer/components/QuickChips.tsx
+index 11a8c3b39..4f6a1f69d 100644
+--- a/desktop/src/renderer/components/QuickChips.tsx
++++ b/desktop/src/renderer/components/QuickChips.tsx
+@@ -1,17 +1,12 @@
+ import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+ import { createPortal } from 'react-dom';
+ import { isAndroid } from '../platform';
+-import { useNarrowViewport } from '../hooks/use-narrow-viewport';
+-import { workbenchNarrowChips } from '../workbench-mode';
+ import { useSkills } from '../state/skill-context';
+ import type { ChipConfig } from '../../shared/types';
+ import { Button, CARD_LEVEL_1, Dialog, FieldError, InputGroup, SectionLabel, SettingRow, TextInput, Textarea, Toggle, Tooltip } from './ui';
+ import { useScrollFade } from '../hooks/useScrollFade';
+ import { useEscClose } from '../hooks/use-esc-close';
+ import { useScreenOpen } from '../shoot-mode';
+-import { ContextMenu } from './context-menu/ContextMenu';
+-import type { MenuEntry } from './context-menu/build-menu';
+-import BrailleBurst from './BrailleBurst';
+ import { EditPencilButton, PencilIcon } from './EditPencilButton';
+ 
+ export interface QuickChip {
+@@ -89,84 +84,6 @@ export default function QuickChips({ onChipTap }: Props) {
+   );
+ }
+ 
+-/** Line-art "shortcuts" glyph: three chips stacked, the row it stands in for. Same
+- *  stroke and round caps as AttachIcon / CompassIcon so the message box's buttons read
+- *  as one family. Not a bolt: the bolt is Fast mode's mark in the status bar. */
+-function ShortcutsIcon({ className = 'w-5 h-5' }: { className?: string }) {
+-  return (
+-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+-      <rect x="4" y="4.5" width="11" height="4" rx="2" strokeWidth="1.8" />
+-      <rect x="4" y="10" width="16" height="4" rx="2" strokeWidth="1.8" />
+-      <rect x="4" y="15.5" width="8" height="4" rx="2" strokeWidth="1.8" />
+-    </svg>
+-  );
+-}
+-
+-/**
+- * The shortcut chips behind ONE button in the message box, for phones and narrow windows
+- * (narrow-screens round, 2026-11-05 — Destin on the questions deck, Q-7: "behind a button
+- * could be good ... it can be similar to mic/paperclip in the input bar"). A workbench
+- * proposal for now: InputBar shows it only under `?narrowChips=button` at narrow width.
+- *
+- * WHY it lives in this file: it must show exactly the chips the row shows (the same
+- * store, the same "set aside" filter) and open the same editor, so nothing the row can
+- * reach is lost. Choosing a chip does what tapping it on the row does — `onChipTap`, the
+- * same handler — and the menu closes.
+- */
+-export function QuickChipsMenuButton({ onChipTap, disabled }: Props & { disabled?: boolean }) {
+-  const { chips, setChips, installed } = useSkills();
+-  // Where the menu opens: the button's top-left corner. ContextMenu flips it UP when it
+-  // would run off the bottom of the window, so it always ends just above the button.
+-  const [at, setAt] = useState<{ x: number; y: number } | null>(null);
+-  const [editorOpen, setEditorOpen] = useState(false);
+-  const wrapRef = useRef<HTMLSpanElement>(null);
+-  const openMenu = useCallback(() => {
+-    const r = wrapRef.current?.getBoundingClientRect();
+-    if (r) setAt({ x: r.left, y: r.top - 4 });
+-  }, []);
+-  // photo-only build: `shoot` opens the menu by name.
+-  useScreenOpen('chat/shortcuts-menu', openMenu);
+-  const closeMenu = useCallback(() => setAt(null), []);
+-  const handleEditorClose = useCallback(() => setEditorOpen(false), []);
+-  useEscClose(editorOpen, handleEditorClose);
+-
+-  // WHY ContextMenu and not the in-place `Menu`: a floating-chrome theme clips the
+-  // message box to its rounded edge (globals.css, `[data-chrome-style="floating"]
+-  // .input-bar-container { overflow: hidden }`), so a menu drawn inside the box was cut
+-  // off on Halftone Dimension. ContextMenu is portalled to the page and flips upward on
+-  // its own — the same menu the session pills' long-press opens.
+-  const entries: MenuEntry[] = [
+-    ...chips.filter(c => !c.hidden).map((c, i): MenuEntry => ({
+-      type: 'item', id: `chip-${i}`, label: c.label, icon: 'ask',
+-      run: () => onChipTap({ label: c.label, prompt: c.prompt }),
+-    })),
+-    { type: 'sep' },
+-    // The row's pencil, as the menu's last choice: the editor is the same popup.
+-    { type: 'item', id: 'edit', label: 'Edit shortcuts', icon: 'rename', run: () => setEditorOpen(true) },
+-  ];
+-
+-  return (
+-    <span ref={wrapRef} className="shrink-0 flex">
+-      <BrailleBurst
+-        onTrigger={() => (at ? closeMenu() : openMenu())}
+-        disabled={disabled}
+-        className="shrink-0 text-fg-dim hover:text-fg disabled:opacity-30 transition-colors"
+-        title="Shortcuts"
+-      >
+-        <ShortcutsIcon className="w-5 h-5" />
+-      </BrailleBurst>
+-      {at && <ContextMenu x={at.x} y={at.y} entries={entries} onClose={closeMenu} screen="chat/shortcuts-menu" />}
+-      <ChipEditorPopup
+-        open={editorOpen}
+-        chips={chips}
+-        setChips={setChips}
+-        installed={installed}
+-        onClose={() => setEditorOpen(false)}
+-      />
+-    </span>
+-  );
+-}
+-
+ // ── Chip Editor Popup ──────────────────────────────────────────────────────
+ //
+ // WHY this shape (pick-menus-3#PM3-1 → pick-menus-4#PM4-1, Destin 2026-10-01): the
+@@ -488,12 +405,3 @@ function useChipDrag(chips: ChipConfig[], setChips: (c: ChipConfig[]) => Promise
+   };
+   return { down, move, up, dragIdx, ghost, overShelf, suppressClick };
+ }
+-
+-/** Phone layout round (Q-7, 2026-11-05): `?narrowChips=button` on a phone puts
+- *  the chips behind a button in the message box instead of the row above it.
+- *  Workbench only; `today` (the row) everywhere else. The switch is a URL
+- *  param, so it cannot change while mounted. */
+-export function useChipsBehindButton(): boolean {
+-  const narrow = useNarrowViewport();
+-  return narrow && workbenchNarrowChips() === 'button';
+-}
+diff --git a/desktop/src/renderer/components/SessionStrip.tsx b/desktop/src/renderer/components/SessionStrip.tsx
+index 8e08511cf..f8ce9ddce 100644
+--- a/desktop/src/renderer/components/SessionStrip.tsx
++++ b/desktop/src/renderer/components/SessionStrip.tsx
+@@ -4,7 +4,7 @@ import { markPointerSwitch } from '../hooks/use-focus-composer-after-switch';
+ import { noteSwitchIntent, type SwitchCause } from '../state/switch-marks';
+ import { SessionStatusColor, STATUS_LABEL } from './StatusDot';
+ import { Button, SectionLabel, Toggle, Tooltip } from './ui';
+-import { phoneMenuStyle, usePhoneMenu, PhoneCount, PhoneMenuTop, PhoneMenuScrim, PhoneDrawerFooter } from './header/phone-session-menu';
++import { phoneMenuStyle, usePhoneMenu, PhoneCount, PhoneMenuTop, PhoneMenuScrim, PhoneDrawerFooter, PhoneRecent } from './header/phone-session-menu';
+ import { getCapabilities, isAndroid } from '../platform';
+ import FolderSwitcher from './FolderSwitcher';
+ import { SkipPermissionsInfoTooltip } from './SkipPermissionsInfoTooltip';
+@@ -418,11 +418,14 @@ export default function SessionStrip({
+   const enterTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+   const [menuOpen, setMenuOpen] = useState(false);
+   // Phone layout round: workbench-only switches, `today` in the app (header/phone-session-menu.tsx).
+-  const { narrowTop, menuShape, phoneRows } = usePhoneMenu();
++  const { narrowTop, menuShape: listShape, phoneRows, plainTitle } = usePhoneMenu();
++  // Round 3 `hub` bar: ☰ opens the list as the everything-panel, the name opens it as the plain list.
++  const [hubMode, setHubMode] = useState(false);
++  const menuShape = hubMode ? 'hub' : listShape;
+   const [shiftNavIdx, setShiftNavIdx] = useState<number>(-1);
+   const shiftNavActive = useRef(false);
+   // Photo-only build: `shoot` opens the list, or the Shift-hold switcher (the same list, Shift-navigation armed).
+-  useScreenOpen('chat/sessions', () => setMenuOpen(true));
++  useScreenOpen('chat/sessions', () => { setHubMode(narrowTop === 'hub'); setMenuOpen(true); }); // hub bar: the picture is ☰'s panel
+   useScreenOpen('chat/switcher', () => { shiftNavActive.current = true; const i = sessions.findIndex((s) => s.id === activeSessionId); setShiftNavIdx(i >= 0 ? i : 0); setMenuOpen(true); });
+   useScreenOpen('chat/rename-session', () => setRenameId(activeSessionId));
+   const [showNewForm, setShowNewForm] = useState(false);
+@@ -486,7 +489,7 @@ export default function SessionStrip({
+     // false→true edge — no manual touched reset needed here.
+     setShowNewForm(true);
+   }, [defaultProjectFolder, defaultSkipPermissions, defaultModel, defaultStartModel, applyModelChoice]);
+-  if (menuApiRef) menuApiRef.current = { openList: () => setMenuOpen(true), openNewSession: () => { openNewForm(); setMenuOpen(true); } };
++  if (menuApiRef) menuApiRef.current = { openList: () => { setHubMode(narrowTop === 'hub'); setMenuOpen(true); }, openNewSession: () => { setHubMode(false); openNewForm(); setMenuOpen(true); } };
+   // Launch the new session in its own peer window instead of this one.
+   // Hidden on platforms without multi-window support (Android / remote-shim).
+   const [launchInNewWindow, setLaunchInNewWindow] = useState(false);
+@@ -846,6 +849,7 @@ export default function SessionStrip({
+   const handleMenuToggle = useCallback(() => {
+     setMenuOpen(prev => !prev);
+     setShowNewForm(false);
++    setHubMode(false);
+   }, []);
+   // WHY: Escape left the All Sessions menu open — only the arrow closed it (UX tester, 2026-09-26).
+   useEscClose(menuOpen, useCallback(() => { setMenuOpen(false); setShowNewForm(false); }, []));
+@@ -2066,7 +2070,7 @@ export default function SessionStrip({
+         // window's; inert on every other model, where no browser drag exists.
+         onDragOver={handleDragOver}
+         onDrop={handleDrop}
+-        className={`session-strip relative flex items-center gap-0.5 ${narrowTop === 'drawer' ? '' : 'bg-inset'} rounded-full px-1.5 py-0.5 overflow-hidden min-w-0 shrink transition-shadow ${incomingDropActive ? 'ring-2 ring-accent/70' : ''}`}
++        className={`session-strip relative flex items-center gap-0.5 ${plainTitle ? 'hover:bg-inset cursor-pointer' : 'bg-inset'} rounded-full px-1.5 py-0.5 overflow-hidden min-w-0 shrink transition-shadow ${incomingDropActive ? 'ring-2 ring-accent/70' : ''}`}
+       >
+         {/* ── Session pills ──────────────────────────────── */}
+         {visibleSessions.map((s, idx) => {
+@@ -2088,7 +2092,7 @@ export default function SessionStrip({
+           const pillClass = `
+                   relative flex items-center gap-1.5 rounded-full pl-1.5 pr-0 py-px
+                   border select-none touch-none overflow-hidden
+-                  ${narrowTop === 'drawer' /* side-drawer top bar: a plain title */ ? 'border-transparent' : pillSurfaceClass(showName && (isActive || !displayPack.expanded.has(s.id)), dragging)}`;
++                  ${plainTitle /* a plain title, one hover area with the arrow */ ? 'border-transparent' : pillSurfaceClass(showName && (isActive || !displayPack.expanded.has(s.id)), dragging)}`;
+           const pillBody = (
+             <>
+                 <SessionDot color={color} isActive={isActive} />
+@@ -2122,7 +2126,8 @@ export default function SessionStrip({
+                 onPointerDown={(e) => handlePointerDown(e, s.id, true)}
+                 onPointerMove={handlePointerMove}
+                 onPointerUp={handlePointerUp}
+-                onClick={(e) => handleClick(s.id, e)}
++                // A plain-title bar's name IS the list button (round 3); the arrow beside it does the same.
++                onClick={(e) => (plainTitle ? handleMenuToggle() : handleClick(s.id, e))}
+                 onContextMenu={(e) => handlePillContextMenu(e, s.id)}
+                 // 'html-drag' only (Linux/Wayland): the browser starts a native
+                 // drag from the press. Everywhere else the pointer path owns
+@@ -2283,9 +2288,9 @@ export default function SessionStrip({
+             ref={triggerBtnRef}
+             onClick={handleMenuToggle}
+             aria-label={narrowTop !== 'today' && hiddenCount > 0 ? `All sessions (${hiddenCount} more)` : undefined}
+-            className={`flex items-center justify-center gap-0.5 h-5 ml-1 rounded-sm hover:bg-inset transition-colors text-fg-muted hover:text-fg-2 ${narrowTop !== 'today' && hiddenCount > 0 ? 'px-1' : 'w-5'}`}
++            className={`flex items-center justify-center gap-0.5 h-5 ml-1 rounded-sm ${plainTitle ? '' : 'hover:bg-inset'} transition-colors text-fg-muted hover:text-fg-2 ${narrowTop !== 'today' && !plainTitle && hiddenCount > 0 ? 'px-1' : 'w-5'}`}
+           >
+-            {narrowTop !== 'today' && narrowTop !== 'drawer' && <PhoneCount n={hiddenCount} />}
++            {narrowTop !== 'today' && !plainTitle && <PhoneCount n={hiddenCount} />}
+             <svg className={`w-3 h-3 shrink-0 transition-transform ${menuOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+             </svg>
+@@ -2338,7 +2343,7 @@ export default function SessionStrip({
+         >
+           <ScreenMark name="chat/sessions" />
+           {shiftNavActive.current && <ScreenMark name="chat/switcher" />}
+-          <PhoneMenuTop shape={menuShape} onClose={() => setMenuOpen(false)} />
++          <PhoneMenuTop shape={menuShape} onClose={() => setMenuOpen(false)} onNew={openNewForm} />
+           {/* Android only ever has one window, so the "in this window" scoping label is meaningless there */}
+           {sessions.length > 0 && (!isAndroid() || phoneRows) && menuShape !== 'full' && (
+             <>
+@@ -2348,7 +2353,7 @@ export default function SessionStrip({
+                   margin/layout (design lint no-restyle), and margin keeps
+                   this a flat sibling of the list below (SessionStrip.test.tsx
+                   finds it via `heading.nextElementSibling`). */}
+-              <SectionLabel className="mx-3 mt-1.5">{viewer ? 'All sessions' : phoneRows ? 'Your sessions' : 'Sessions in this window'}</SectionLabel>
++              <SectionLabel className="mx-3 mt-1.5">{viewer ? 'All sessions' : menuShape === 'hub' ? 'Open now' : phoneRows ? 'Your sessions' : 'Sessions in this window'}</SectionLabel>
+             </>
+           )}
+           {/* WHY: This is the menu's flexible middle. With the menu capped to
+@@ -2880,6 +2885,9 @@ export default function SessionStrip({
+                 {dangerous && runtime !== 'native' ? 'Create (dangerous)' : 'Create session'}
+               </Button>
+             </div>
++          ) : menuShape === 'hub' ? (
++            /* The hub has New session on top and Earlier + See all for Resume. */
++            <PhoneRecent shape={menuShape} openIds={new Set(sessions.flatMap((x) => [x.id, x.name]))} onSeeAll={() => { setMenuOpen(false); onOpenResumeBrowser(); }} />
+           ) : (
+             <div className="flex rounded-b-lg overflow-hidden">
+               <button
+diff --git a/desktop/src/renderer/components/StatusBar.tsx b/desktop/src/renderer/components/StatusBar.tsx
+index 482974fa3..c0aabfc2c 100644
+--- a/desktop/src/renderer/components/StatusBar.tsx
++++ b/desktop/src/renderer/components/StatusBar.tsx
+@@ -772,7 +772,7 @@ function ComputerIcon() {
+ function CompactRow({ on, children }: { on: boolean; children: ReactNode }) {
+   if (!on) return <>{children}</>;
+   return (
+-    <div className="scroll-mask-x flex-1 min-w-0 flex flex-nowrap items-center gap-x-1.5 overflow-x-auto overflow-y-hidden scrollbar-none [&>*]:shrink-0 [&_button]:whitespace-nowrap">
++    <div className="status-row-uniform scroll-mask-x flex-1 min-w-0 flex flex-nowrap items-center gap-x-1.5 overflow-x-auto overflow-y-hidden scrollbar-none [&>*]:shrink-0 [&_button]:whitespace-nowrap">
+       {children}
+     </div>
+   );
+@@ -1056,8 +1056,10 @@ export default memo(function StatusBar({ // WHY memo (2026-09-16 audit W21): App
+           status bar chip"). First and always shown, so you never lose the fact
+           that this phone is driving a computer. Not a button — nothing to do. */}
+       {compact && isRemoteMode() && (
++        // Round 3: the computer icon alone ("some of these need to be shortened, like remote");
++        // the words are in the hint and read out by screen readers.
+         <Tooltip text="This phone is connected to your computer — the assistant runs there">
+-          <span><Pill tone="info" className="gap-1"><ComputerIcon />Remote</Pill></span>
++          <span aria-label="Connected to your computer"><Pill tone="info"><ComputerIcon /></Pill></span>
+         </Tooltip>
+       )}
+       {/* Combined model + effort pill — clicking opens the full picker (same as /effort).
+@@ -1732,7 +1734,7 @@ export default memo(function StatusBar({ // WHY memo (2026-09-16 audit W21): App
+       <Tooltip text="Customize status bar">
+       <button
+         onClick={() => setPopupOpen(true)}
+-        className={`ml-auto ${compact ? 'shrink-0 ' : ''}flex items-center justify-center w-5 h-5 rounded-sm bg-panel border border-edge-dim cursor-pointer hover:bg-inset transition-colors`}
++        className={`ml-auto ${compact ? 'shrink-0 status-pencil-uniform ' : ''}flex items-center justify-center w-5 h-5 rounded-sm bg-panel border border-edge-dim cursor-pointer hover:bg-inset transition-colors`}
+       >
+         <PencilIcon />
+       </button>
+diff --git a/desktop/src/renderer/components/header/phone-session-menu.tsx b/desktop/src/renderer/components/header/phone-session-menu.tsx
+index 3144c8799..66910adc0 100644
+--- a/desktop/src/renderer/components/header/phone-session-menu.tsx
++++ b/desktop/src/renderer/components/header/phone-session-menu.tsx
+@@ -6,18 +6,25 @@
+ //   full     — its own screen with a title and a close button
+ //   drawer   — slides in from the left; the side-drawer top bar's home, with the
+ //              ☰ menu's places under the sessions
++//   hub      — round 3 (Destin: "a full second/parallel option that includes
++//              active sessions + resumable sessions with restyled new session
++//              button and settings/other buttons, in place of current 3 line
++//              menu"): the drawer's place, opened by ☰ only — New session on
++//              top, open sessions, recent past ones, the places as tiles
+ //
+ // WHY a separate file: SessionStrip.tsx is held to a line budget
+ // (tests/line-budgets.test.ts), and these are pieces the strip only places.
+ // Workbench-only until Destin picks a shape (switches in workbench-mode.ts);
+ // the losing shapes are deleted then.
+-import React from 'react';
+-import { CloseButton } from '../ui';
++import React, { useEffect, useState } from 'react';
++import { Button, CloseButton, SectionLabel, Tooltip } from '../ui';
++import { STATUS_LABEL, type SessionStatusColor } from '../StatusDot';
++import { formatRelativeTime } from '../../utils/format-time';
+ import { Scrim } from '../overlays/Overlay';
+ import { useNarrowViewport } from '../../hooks/use-narrow-viewport';
+ import { workbenchNarrowTop, workbenchNarrowList } from '../../workbench-mode';
+ 
+-export type MenuShape = 'today' | 'dropdown' | 'sheet' | 'full' | 'drawer';
++export type MenuShape = 'today' | 'dropdown' | 'sheet' | 'full' | 'drawer' | 'hub';
+ type PhoneShape = Exclude<MenuShape, 'today'>;
+ 
+ /** Which phone top bar and list shape the strip draws. Both switches are
+@@ -26,8 +33,15 @@ type PhoneShape = Exclude<MenuShape, 'today'>;
+ export function usePhoneMenu() {
+   const narrow = useNarrowViewport();
+   const narrowTop = narrow ? workbenchNarrowTop() : 'today';
+-  const menuShape: MenuShape = narrowTop === 'drawer' ? 'drawer' : narrow ? workbenchNarrowList() : 'today';
+-  return { narrowTop, menuShape, phoneRows: menuShape !== 'today' };
++  // Round 3's bars use the squeezed rows too (full width, Destin's last pick
++  // is open), so the name's list is at least the full-width dropdown there.
++  const round3 = narrowTop === 'plain' || narrowTop === 'lights' || narrowTop === 'hub';
++  const list = narrow ? workbenchNarrowList() : 'today';
++  const menuShape: MenuShape = narrowTop === 'drawer' ? 'drawer' : round3 && list === 'today' ? 'dropdown' : list;
++  // "a more simply styled name dropdown button kinda like drawer": no pill
++  // outline; the dot, the name and the arrow share ONE hover background.
++  const plainTitle = narrowTop === 'drawer' || round3;
++  return { narrowTop, menuShape, phoneRows: menuShape !== 'today', plainTitle };
+ }
+ 
+ /** Q-1 option A, "full name, small count": the "+N" chip leaves the row so the
+@@ -73,6 +87,7 @@ export function phoneMenuStyle(shape: PhoneShape, trigger: DOMRect | undefined):
+         animation: 'dropdown-in 120ms var(--ease-out) both',
+       } as React.CSSProperties;
+     case 'drawer':
++    case 'hub':
+       return {
+         top: 0, bottom: 0, left: 0, width: 'min(20rem, 86vw)',
+         borderLeftWidth: none, borderTopWidth: none, borderBottomWidth: none,
+@@ -86,13 +101,22 @@ export function phoneMenuStyle(shape: PhoneShape, trigger: DOMRect | undefined):
+ /** Shapes that cover the chat dim it; a tap on the dimmed part closes the list
+  *  (the strip's outside-click closer also sees it). */
+ export function PhoneMenuScrim({ shape, onClose }: { shape: MenuShape; onClose: () => void }) {
+-  if (shape !== 'sheet' && shape !== 'drawer') return null;
++  if (shape !== 'sheet' && shape !== 'drawer' && shape !== 'hub') return null;
+   return <Scrim layer={2} onClick={onClose} />;
+ }
+ 
+ /** The bottom panel's grab bar, so it reads as something that slid up; the full
+  *  screen's title row, since no chat is left visible to tap away on. */
+-export function PhoneMenuTop({ shape, onClose }: { shape: MenuShape; onClose: () => void }) {
++export function PhoneMenuTop({ shape, onClose, onNew }: { shape: MenuShape; onClose: () => void; onNew?: () => void }) {
++  // The hub's New session: the panel's first and biggest action, where the
++  // Claude/ChatGPT apps put theirs, instead of half of the bottom button row.
++  if (shape === 'hub') {
++    return (
++      <div className="shrink-0 px-3 pt-3 pb-1">
++        <Button variant="primary" size="md" className="w-full" onClick={onNew}>+ New session</Button>
++      </div>
++    );
++  }
+   if (shape === 'sheet') {
+     return (
+       <div className="shrink-0 flex justify-center pt-2 pb-1" aria-hidden>
+@@ -115,10 +139,80 @@ export function PhoneMenuTop({ shape, onClose }: { shape: MenuShape; onClose: ()
+  *  (the way the Claude and ChatGPT apps end their side panels). Any tap on one
+  *  closes the drawer. */
+ export function PhoneDrawerFooter({ shape, onClose, children }: { shape: MenuShape; onClose: () => void; children?: React.ReactNode }) {
+-  if (shape !== 'drawer' || !children) return null;
++  if ((shape !== 'drawer' && shape !== 'hub') || !children) return null;
+   return (
+-    <div className="border-t border-edge py-1 shrink-0" onClickCapture={onClose}>
++    // mt-auto: in the hub the places sit at the panel's bottom edge, in thumb reach.
++    <div className="mt-auto border-t border-edge py-1 shrink-0" onClickCapture={onClose}>
+       {children}
+     </div>
+   );
+ }
++
++interface PastRow { sessionId: string; name: string; projectPath: string; lastModified: number }
++
++/** The hub's "Earlier" section: the five most recent conversations not open
++ *  now, from the same list the Resume page reads (session.browse). Fetched when
++ *  the panel opens, never kept live — the Resume page owns the full list.
++ *  A tap opens the Resume page for now (see the round-3 deck's risk line); the
++ *  built version would reopen that conversation directly. */
++export function PhoneRecent({ shape, openIds, onSeeAll }: { shape: MenuShape; openIds: ReadonlySet<string>; onSeeAll: () => void }) {
++  const [rows, setRows] = useState<PastRow[] | null>(null);
++  const on = shape === 'hub';
++  useEffect(() => {
++    if (!on) return;
++    let live = true;
++    void (window as any).claude.session.browse().then((all: PastRow[]) => {
++      if (!live) return;
++      // openIds holds open sessions' ids AND names: browse() already leaves open
++      // ones out in the app, but the workbench's practice list does not, and a
++      // chat listed under both "Open now" and "Earlier" would read as a bug.
++      setRows(all.filter((r) => !openIds.has(r.sessionId) && !openIds.has(r.name)).sort((a, b) => b.lastModified - a.lastModified).slice(0, 5));
++    }).catch(() => { if (live) setRows([]); });
++    return () => { live = false; };
++    // Once per opening: openIds changing while the panel is up is not a reason to refetch.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [on]);
++  if (!on || !rows || rows.length === 0) return null;
++  return (
++    <div className="shrink-0 border-t border-edge pt-1.5">
++      <div className="flex items-center mx-3">
++        <SectionLabel className="flex-1">Earlier</SectionLabel>
++        <button type="button" onClick={onSeeAll} className="text-xs text-fg-muted hover:text-fg px-1 py-0.5 rounded-sm">See all</button>
++      </div>
++      {rows.map((r) => (
++        <button key={r.sessionId} type="button" onClick={onSeeAll} className="coarse-roomy w-full flex flex-col items-start px-3 py-1.5 text-left hover:bg-inset transition-colors">
++          <span className="w-full truncate text-sm text-fg-2">{r.name}</span>
++          <span className="w-full truncate text-3xs text-fg-muted">{r.projectPath.replace(/\\/g, '/').split('/').pop()} · {formatRelativeTime(r.lastModified)}</span>
++        </button>
++      ))}
++    </div>
++  );
++}
++
++// The status palette the strip's own dots use (SessionStrip DOT_BG) — status
++// colours are theme-independent by rule, so they are fixed here too.
++const LIGHT_BG: Record<SessionStatusColor, string> = {
++  green: 'bg-green-400', red: 'bg-red-400', amber: 'bg-amber-400', blue: 'bg-blue-400', gray: 'bg-gray-500',
++};
++
++/** Round 3, Destin: "maybe a row of indicator lights very small below the
++ *  name". One tiny light per OTHER open session, in strip order, coloured by
++ *  its status — so "another chat needs you" shows without opening the list.
++ *  Grey (idle) sessions are drawn faint so the coloured ones stand out. */
++export function SessionLights({ ids, activeId, statuses }: { ids: string[]; activeId: string | null; statuses?: Map<string, SessionStatusColor> }) {
++  const others = ids.filter((id) => id !== activeId);
++  if (others.length === 0) return null;
++  const counts = new Map<SessionStatusColor, number>();
++  for (const id of others) { const c = statuses?.get(id) ?? 'gray'; counts.set(c, (counts.get(c) ?? 0) + 1); }
++  const label = [...counts].map(([c, n]) => `${n} ${STATUS_LABEL[c].toLowerCase()}`).join(', ');
++  return (
++    <Tooltip text={`Other sessions: ${label}`}>
++      <span className="flex items-center justify-center gap-[3px] h-1.5 -mt-0.5" aria-label={`Other sessions: ${label}`}>
++        {others.slice(0, 12).map((id) => {
++          const c = statuses?.get(id) ?? 'gray';
++          return <span key={id} data-status={c} className={`w-1 h-1 rounded-full ${LIGHT_BG[c]} ${c === 'gray' ? 'opacity-40' : ''}`} />;
++        })}
++      </span>
++    </Tooltip>
++  );
++}
+diff --git a/desktop/src/renderer/dev/workbench/screens/chat.ts b/desktop/src/renderer/dev/workbench/screens/chat.ts
+index 2bc201308..1ed7d5477 100644
+--- a/desktop/src/renderer/dev/workbench/screens/chat.ts
++++ b/desktop/src/renderer/dev/workbench/screens/chat.ts
+@@ -29,6 +29,10 @@ export const CHAT: readonly ScreenEntry[] = [
+   { ...chat('chat#top-name', 'view', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { narrowTop: 'name' , platform: 'android' }, newIn: 'after' as const },
+   { ...chat('chat#top-drawer', 'view', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { narrowTop: 'drawer' , platform: 'android' }, newIn: 'after' as const },
+   { ...chat('chat#top-pair', 'view', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { narrowTop: 'pair' , platform: 'android' }, newIn: 'after' as const },
++  // Round 3 (Destin's notes on round 2): pair's buttons with a plain name button, with status lights, and the ☰ everything-panel.
++  { ...chat('chat#top-plain', 'view', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { narrowTop: 'plain', platform: 'android' }, newIn: 'after' as const },
++  { ...chat('chat#top-lights', 'view', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { narrowTop: 'lights', platform: 'android' }, newIn: 'after' as const },
++  { ...chat('chat#top-hub', 'view', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { narrowTop: 'hub', platform: 'android' }, newIn: 'after' as const, sameAs: { name: 'chat#top-plain', why: 'the two bars look the same; only what ☰ opens differs (chat/sessions#phone-hub)' } },
+   // The other connection bands (connection notices above the message box, 2026-10-22), and one on a computer-width browser.
+   { ...chat('chat#phone-catching-up', 'view', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { connection: 'remote', conversation: 'restoring' } },
+   { ...chat('chat#phone-out-of-date', 'view', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { connection: 'remote', conversation: 'incomplete' } },
+@@ -44,6 +48,8 @@ export const CHAT: readonly ScreenEntry[] = [
+   { ...chat('chat/sessions#phone-sheet', 'menu', 'narrow'), viewport: { width: 390, height: 844 }, params: { narrowTop: 'name', narrowList: 'sheet' , platform: 'android' }, newIn: 'after' as const },
+   { ...chat('chat/sessions#phone-full', 'menu', 'narrow'), viewport: { width: 390, height: 844 }, params: { narrowTop: 'name', narrowList: 'full' , platform: 'android' }, newIn: 'after' as const },
+   { ...chat('chat/sessions#phone-drawer', 'menu', 'narrow'), viewport: { width: 390, height: 844 }, params: { narrowTop: 'drawer' , platform: 'android' }, newIn: 'after' as const },
++  { ...chat('chat/sessions#phone-plain', 'menu', 'narrow'), viewport: { width: 390, height: 844 }, params: { narrowTop: 'plain', platform: 'android' }, newIn: 'after' as const },
++  { ...chat('chat/sessions#phone-hub', 'menu', 'narrow'), viewport: { width: 390, height: 844 }, params: { narrowTop: 'hub', platform: 'android' }, newIn: 'after' as const },
+   chat('chat/switcher', 'menu'),
+   chat('chat/rename-session', 'dialog'),
+   chat('chat/close-session', 'dialog'),
+@@ -87,9 +93,6 @@ export const CHAT: readonly ScreenEntry[] = [
+   // A real, unexpired announcement — statusData otherwise always sends `null`.
+   { ...chat('chat/announcement', 'dialog'), params: { announcement: '1' } },
+   chat('chat/quick-chips', 'dialog'),
+-  // Narrow-screens proposal Q-7 (2026-11-05): the shortcut chips behind a button in the message box.
+-  { ...chat('chat#narrow-chips-button', 'view', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { narrowChips: 'button' } },
+-  { ...chat('chat/shortcuts-menu', 'menu', 'narrow'), session: 'wb-1', viewport: { width: 390, height: 844 }, params: { narrowChips: 'button' } },
+   chat('chat/quick-chips/edit', 'dialog'),
+   chat('chat/quick-chips/add', 'dialog'),
+   // Remove asks first, in place (as Delete tag does), and Add pressed with both boxes empty says
+diff --git a/desktop/src/renderer/styles/globals.css b/desktop/src/renderer/styles/globals.css
+index eda721d25..b71a4be9f 100644
+--- a/desktop/src/renderer/styles/globals.css
++++ b/desktop/src/renderer/styles/globals.css
+@@ -1896,6 +1896,27 @@ pre.yc-code code {
+   to { opacity: 1; margin-left: 0; }
+ }
+ 
++/* Phone pill row, round 3 (Destin: "every single element in that bottom row
++   appears to have a unique style/size/height/roundness"). Every chip in the
++   compact row gets ONE shape: same height, corner, padding, text size. A chip
++   keeps only its colour where the colour means something (model brand,
++   permission mode, a helper that needs you). Practice-only: the class is set
++   only under ?narrowPills=compact; a pick moves this onto the chips themselves. */
++.status-row-uniform .border,
++.status-pencil-uniform {
++  height: 1.5rem;
++  min-width: 1.5rem;
++  border-radius: var(--radius-sm, 4px);
++  padding: 0 0.5rem;
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  gap: 0.25rem;
++  font-size: 11px;
++  line-height: 1;
++  box-sizing: border-box;
++}
++
+ /* Session strip dropdown — row stagger entrance.
+    Uses transform: none in `to` (not translateY(0)) so fill-mode: both
+    doesn't leave a persistent compositing layer on each row.
+diff --git a/desktop/src/renderer/workbench-mode.ts b/desktop/src/renderer/workbench-mode.ts
+index 3257a4686..43c5271a5 100644
+--- a/desktop/src/renderer/workbench-mode.ts
++++ b/desktop/src/renderer/workbench-mode.ts
+@@ -208,18 +208,21 @@ export function workbenchNetworkOffline(): boolean {
+  *  - `narrowTop`   top bar: `today` · `name` (current session's full name, a
+  *                  count on the arrow) · `drawer` (name only; sessions and the
+  *                  menu in a panel from the left) · `pair` (two buttons each
+- *                  side of the name)
++ *                  side of the name) · round 3 (Destin's L-1/L-2 notes): `plain`
++ *                  (pair's buttons; the name, its status dot and the arrow are
++ *                  ONE plain button) · `lights` (plain + a row of tiny status
++ *                  lights, one per other session, under the name) · `hub`
++ *                  (plain, and ☰ opens one panel holding open AND past
++ *                  sessions, New session and the menu's places)
+  *  - `narrowList`  how the session list opens: `today` · `sheet` (slides up
+  *                  from the bottom) · `full` (its own screen). Any value but
+  *                  `today` also uses the condensed phone rows.
+  *  - `narrowPills` the pills under the message box: `today` · `compact` (one
+  *                  row you swipe, short/icon pills, the remote chip)
+- *  - `narrowChips` the shortcut row: `today` · `button` (behind a button in
+- *                  the message box) */
+-export type NarrowTop = 'today' | 'name' | 'drawer' | 'pair';
++ *  (The shortcut-row switch was dropped in round 2: Destin kept today's row.) */
++export type NarrowTop = 'today' | 'name' | 'drawer' | 'pair' | 'plain' | 'lights' | 'hub';
+ export type NarrowList = 'today' | 'sheet' | 'full' | 'dropdown';
+ export type NarrowPills = 'today' | 'compact';
+-export type NarrowChips = 'today' | 'button';
+ 
+ function narrowSwitch<T extends string>(key: string, allowed: readonly T[]): T | 'today' {
+   if (!isWorkbenchMode()) return 'today';
+@@ -227,7 +230,6 @@ function narrowSwitch<T extends string>(key: string, allowed: readonly T[]): T |
+   return (allowed as readonly string[]).includes(raw) ? (raw as T) : 'today';
+ }
+ 
+-export const workbenchNarrowTop = (): NarrowTop => narrowSwitch<NarrowTop>('narrowTop', ['name', 'drawer', 'pair'] as NarrowTop[]);
++export const workbenchNarrowTop = (): NarrowTop => narrowSwitch<NarrowTop>('narrowTop', ['name', 'drawer', 'pair', 'plain', 'lights', 'hub'] as NarrowTop[]);
+ export const workbenchNarrowList = (): NarrowList => narrowSwitch<NarrowList>('narrowList', ['sheet', 'full', 'dropdown'] as NarrowList[]);
+ export const workbenchNarrowPills = (): NarrowPills => narrowSwitch<NarrowPills>('narrowPills', ['compact'] as NarrowPills[]);
+-export const workbenchNarrowChips = (): NarrowChips => narrowSwitch<NarrowChips>('narrowChips', ['button'] as NarrowChips[]);
+diff --git a/desktop/tests/quick-chips-menu-button.test.tsx b/desktop/tests/quick-chips-menu-button.test.tsx
+deleted file mode 100644
+index 5a8b7fc7c..000000000
+--- a/desktop/tests/quick-chips-menu-button.test.tsx
++++ /dev/null
+@@ -1,69 +0,0 @@
+-// @vitest-environment jsdom
+-// Pins the narrow-screens proposal's Shortcuts button (Q-7, 2026-11-05): the shortcut
+-// chips behind one button in the message box. The promise to Destin was "nothing is
+-// lost" — every chip the row shows is in the menu, choosing one does exactly what
+-// tapping it on the row does, and the row's editor is still one step away.
+-
+-import React from 'react';
+-import '@testing-library/jest-dom/vitest';
+-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+-import { render, cleanup, act, screen, fireEvent } from '@testing-library/react';
+-import { QuickChipsMenuButton } from '../src/renderer/components/QuickChips';
+-import { SkillProvider } from '../src/renderer/state/skill-context';
+-import type { ChipConfig } from '../src/shared/types';
+-
+-const CHIPS: ChipConfig[] = [
+-  { label: 'Journal', prompt: "let's journal" },
+-  { label: 'Git Status', prompt: 'run git status' },
+-  { label: 'Set aside', prompt: 'hidden one', hidden: true },
+-];
+-
+-beforeEach(() => {
+-  (globalThis as any).window.claude = {
+-    skills: {
+-      list: vi.fn().mockResolvedValue([]),
+-      getFavorites: vi.fn().mockResolvedValue([]),
+-      getCuratedDefaults: vi.fn().mockResolvedValue([]),
+-      getChips: vi.fn().mockResolvedValue(CHIPS),
+-      setChips: vi.fn().mockResolvedValue(undefined),
+-      setFavorite: vi.fn().mockResolvedValue(undefined),
+-      setOverride: vi.fn().mockResolvedValue(undefined),
+-      getShareLink: vi.fn().mockResolvedValue(''),
+-      publish: vi.fn().mockResolvedValue({ prUrl: '' }),
+-    },
+-  };
+-});
+-afterEach(() => { cleanup(); });
+-
+-async function mount(onChipTap = vi.fn()) {
+-  await act(async () => {
+-    render(<SkillProvider><QuickChipsMenuButton onChipTap={onChipTap} /></SkillProvider>);
+-  });
+-  return onChipTap;
+-}
+-
+-describe('QuickChipsMenuButton', () => {
+-  it('lists every shown chip, not the set-aside ones', async () => {
+-    await mount();
+-    fireEvent.click(screen.getByTitle('Shortcuts'));
+-    await screen.findByRole('menu');
+-    expect(screen.getByRole('menuitem', { name: 'Journal' })).toBeInTheDocument();
+-    expect(screen.getByRole('menuitem', { name: 'Git Status' })).toBeInTheDocument();
+-    expect(screen.queryByRole('menuitem', { name: 'Set aside' })).toBeNull();
+-  });
+-
+-  it('choosing a chip hands the row\'s handler the same chip and closes', async () => {
+-    const onChipTap = await mount();
+-    fireEvent.click(screen.getByTitle('Shortcuts'));
+-    fireEvent.click(await screen.findByRole('menuitem', { name: 'Git Status' }));
+-    expect(onChipTap).toHaveBeenCalledWith({ label: 'Git Status', prompt: 'run git status' });
+-    expect(screen.queryByRole('menu')).toBeNull();
+-  });
+-
+-  it('Edit shortcuts opens the row\'s chip editor', async () => {
+-    await mount();
+-    fireEvent.click(screen.getByTitle('Shortcuts'));
+-    fireEvent.click(await screen.findByRole('menuitem', { name: 'Edit shortcuts' }));
+-    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+-  });
+-});
+-- 
+2.56.0
+

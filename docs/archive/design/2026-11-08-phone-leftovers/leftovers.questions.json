@@ -1,0 +1,110 @@
+{
+  "title": "Phone test: the last three decisions",
+  "key": "phone-leftovers-questions",
+  "out": "leftovers.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "L-1",
+      "words": true,
+      "surface": "Starting a new session on the phone",
+      "path": "New session form, the project picker",
+      "headline": "When you start a phone session without picking a project, where should it start?",
+      "today": "The phone does have projects. You can pick a saved project, make a new one with Add a project (it lives inside the app's own storage), or use one synced from your computer. What it can't do is open folders from the phone's own storage, like Downloads. That option was hidden earlier because Android doesn't give the app permission to read them. If you skip the picker, the session starts in the app's own private top folder.",
+      "problem": "That top folder is the app's own back room. It holds the app's settings files (for example providers.json), so the Files tab shows clutter you didn't make, and the folder shows a long, odd address. The desktop solves this with a 'No folder, just chat' choice that uses a clean, empty folder. The phone doesn't have that choice.",
+      "proposal": "Pick what a phone session with no project should get. Nothing changes for sessions where you pick a project.",
+      "options": [
+        {
+          "id": "no-folder",
+          "label": "Same as desktop",
+          "summary": "The phone gets the 'No folder, just chat' row and uses it by default: a clean, empty folder the app owns.",
+          "pros": ["Phone and desktop work the same way, which is one less thing to learn.", "The Files tab is empty, not full of app settings.", "The app's own settings can't be edited by accident."],
+          "cons": ["Files Claude makes in a no-folder chat land in that hidden empty folder. To keep them, you'd make a project instead.", "It touches how the phone starts sessions, so it needs a careful test on your phone."],
+          "recommended": true
+        },
+        {
+          "id": "my-files",
+          "label": "A starter project",
+          "summary": "The phone makes one ordinary project called 'My files' and uses it when you don't pick one.",
+          "pros": ["Anything Claude makes is easy to find again in Projects.", "No hidden folders anywhere."],
+          "cons": ["It works differently from desktop.", "One extra project appears in your list that you never asked for."]
+        },
+        {
+          "id": "leave",
+          "label": "Leave it",
+          "summary": "Keep starting in the app's top folder.",
+          "pros": ["No work and no risk."],
+          "cons": ["The Files tab keeps showing the app's settings files.", "Claude can read and change those settings files in that session."]
+        }
+      ]
+    },
+    {
+      "id": "L-2",
+      "words": true,
+      "surface": "Terminal view on the phone",
+      "path": "Any session, switched to terminal view",
+      "headline": "Should Claude Code on the phone use the same 'fullscreen' display mode your desktop uses?",
+      "today": "Terminal view shows Claude Code's own screen. Claude Code has two ways to draw it: the normal way, where old lines scroll up and stay above like a long printout, and 'fullscreen', where it keeps redrawing one screen and handles scrolling itself. Your desktop uses fullscreen because you set it that way yourself. The phone uses the normal way. Earlier this session I fixed the doubled lines caused by typing and the keyboard.",
+      "problem": "One cause is left. When you turn or fold the phone, the terminal changes size. In the normal mode Claude Code then reprints what's on screen, so some lines can appear twice in terminal view. Chat view is never affected, only terminal view.",
+      "proposal": "Fullscreen mode can't double lines at all. The cost is that scrolling back through the terminal is done by Claude Code, not by swiping a long page, so it feels different.",
+      "options": [
+        {
+          "id": "fullscreen",
+          "label": "Use fullscreen",
+          "summary": "The phone's Claude Code starts in fullscreen mode, like your desktop.",
+          "pros": ["Doubled lines can't happen at all, even when you turn the phone.", "The phone behaves like your desktop."],
+          "cons": ["Swiping up in terminal view may scroll less smoothly, or need the arrow keys, because Claude Code handles scrolling itself.", "Selecting and copying old terminal text may work differently. I'd test both on your phone before you decide for good."],
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave it",
+          "summary": "Keep the normal mode.",
+          "pros": ["Scrolling back in terminal view stays a normal swipe."],
+          "cons": ["Turning or folding the phone can still double some lines in terminal view."]
+        },
+        {
+          "id": "setting",
+          "label": "Make it a setting",
+          "summary": "A switch in Settings lets each person choose.",
+          "pros": ["People who care either way can pick."],
+          "cons": ["One more setting most people won't understand.", "More work than either of the other two."]
+        }
+      ]
+    },
+    {
+      "id": "L-3",
+      "words": true,
+      "surface": "Marketplace on the phone",
+      "path": "Marketplace, any tab",
+      "headline": "Is the marketplace good enough on the phone now, or should it get its own phone redesign?",
+      "today": "On your first phone test you asked for two things here. The first is done: items that can't run on a phone now sit at the end and say 'Can't run on this device', and a row of type buttons (Skills, Themes and so on) sits under the search. The second was your note: 'rethink how to condense the ui a bit … like a google play store or apple app store would'. The store already has sideways-scrolling rows with a 'See all' link, but nobody has looked at the whole store on a phone as one design.",
+      "problem": "My earlier 'marketplace items' line was too vague. What's left is that bigger rethink, and it's a design project, not a quick fix.",
+      "proposal": "Choose whether that rethink happens, and when.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Its own card",
+          "summary": "File it as a separate piece of work, with its own question sheet and pictures, after this phone work.",
+          "pros": ["It gets a proper design round, not a rushed one.", "This phone work can finish without waiting on it."],
+          "cons": ["The store on the phone stays as it is until then."],
+          "recommended": true
+        },
+        {
+          "id": "now",
+          "label": "Do it now",
+          "summary": "Start the redesign in this session, as part of the phone work.",
+          "pros": ["It's fixed sooner."],
+          "cons": ["This phone work takes noticeably longer to finish."]
+        },
+        {
+          "id": "enough",
+          "label": "It's fine now",
+          "summary": "Drop the rethink. What's there now is enough.",
+          "pros": ["No more work."],
+          "cons": ["The store may still feel long and computer-like on a phone."]
+        }
+      ]
+    }
+  ]
+}

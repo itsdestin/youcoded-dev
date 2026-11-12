@@ -3,9 +3,8 @@ id: 66
 title: Assistant tools and permissions: faults and unclear "Always allow"
 stage: planning
 priority: P1
-tags: native-harness, tools, desktop, permissions, tool-cards, release-blocker, bug
+tags: native-harness, tools, desktop, permissions, tool-cards, bug
 branch: 66-tools-and-permissions-small-faults
-roadmap: native-harness: Tools and permissions: small faults and checks — 6 things.
 created: 2026-10-15
 summary: Small models stumble on edits, local models lack Skip Permissions, huge pictures stall, and "Always allow" doesn't say why it didn't cover a command.
 area: Chat
@@ -15,14 +14,11 @@ vision: chat.steer.permissions, chat.converse.native
 work: session/66-passwordless-admin
 ---
 Progress
-Done: Shipped scoped passwordless-admin approvals in app PR #650 (5fa56a2ee6b94b6980cbb478dc7f65ee60e526fc): exact command, saved Full Auto and session-only choices; independent review findings fixed; integrated desktop verification and Linux/Android CI passed. Records: docs/archive/design/2026-10-19-passwordless-admin/.
-Next: Other existing #66 requests remain open; this scoped admin-approval session is complete.
-Blocked: Nothing for the shipped admin-approval subtask.
+Done: Scoped passwordless admin approvals shipped (youcoded PR #650, 2026-10-19). Also shipped in the wider Always-allow rework (PR #713, 2026-11-05): per-part chained commands and edit choices. Floor-forced permission cards now say why (commit 9bf0805a5). 2026-11-11 (chat-engine batch, app branch session/chat-engine-batch, not merged): built (c) Edit tool: when old_string is not found exactly, one fallback match ignoring curly/straight quotes, long dashes, non-breaking spaces and trailing spaces, only if exactly one place matches, never for replace_all, skipped above 2 million characters. Built (f3): after a model switch an oversized picture is shrunk on the next request instead of becoming a note (first reply waits about 0.4 s per picture); not dev-tested (needs two real models). Checked against code: the rm analyzer ALREADY SHIPPED 2026-09-23 (rm-target.ts); the helper's 5-minute permission clock was REMOVED 2026-09-16.
+Next: Destin to decide: (e) Skip Permissions for local/OpenRouter chats; (f2) picture-cache cleanup (a sweep would silently remove pictures from old chats unless reopening re-prepares them first); retiring PermissionOverrides (still live for Claude Code permission requests on desktop and Android; anyone who hand-enabled a category would see cards again); (f4) a preparing state for huge pictures; a reason on the later card when a saved Always-allow did not match (#68, needs engine work); whether permission waits should match Claude Code's 2 hours; (b) rejecting relative paths. Offer: a harness evaluator run for the Edit change (dry run free, real run paid). Needs a paid or manual run: (a), (d), (f1), (f5), (f7). Small and plain, not built: (f6) host-level test. Weak value: Grep/Glob project-root default (does not help the home-folder case it was filed for). The 'v1.3.1 release blocker' label is out of date.
+Blocked: Nothing for the admin part. Other items wait on a decision about splitting the card.
 
 Chats
-- 2026-10-19 session/66-passwordless-admin: chat started
-- 2026-10-19 session/66-passwordless-admin: chat started
-- 2026-10-19 session/66-passwordless-admin: chat started
 - 2026-10-19 session/66-passwordless-admin: chat started
 
 From the old roadmap (native-harness › tools, status confirmed, seen on desktop, last checked 2026-08-12)

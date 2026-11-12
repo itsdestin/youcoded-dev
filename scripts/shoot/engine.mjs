@@ -244,7 +244,8 @@ async function connect(port) {
   ws.onmessage = (e) => {
     const m = JSON.parse(e.data);
     if (m.id && pending.has(m.id)) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.rej(new Error(m.error.message)) : p.res(m.result); return; }
-    if (m.sessionId) sessions.get(m.sessionId)?.(m);
+    // WHY the typeof check (code scanning, 2026-11-11): the id comes off the wire; only a handler this file registered is ever called.
+    if (m.sessionId) { const handler = sessions.get(m.sessionId); if (typeof handler === 'function') handler(m); }
     else if (m.method) for (const f of browserEvents) f(m);
   };
   // WHY every command has a time limit: without one a single stuck page hung a whole
@@ -280,10 +281,13 @@ async function makeTab(b, targetId) {
   let errors = []; const listeners = new Set();
   b.sessions.set(sessionId, (m) => {
     if (m.method === 'Runtime.exceptionThrown') errors.push(m.params.exceptionDetails?.exception?.description ?? m.params.exceptionDetails?.text ?? '?');
+    // WHY (2026-10-30 security audit F4): the app page now carries a Content-Security-Policy; a screen that needs something the policy
+    // refuses logs a browser message, not an exception, so it would never reach the PAGE ERROR list. Surface it there.
+    if (m.method === 'Log.entryAdded' && /Content Security Policy/i.test(m.params?.entry?.text ?? '')) errors.push(`CSP: ${m.params.entry.text}`.slice(0, 400));
     for (const f of listeners) f(m);
   });
   const send = (method, params, ms) => b.send(method, params, sessionId, ms);
-  await send('Runtime.enable'); await send('Page.enable');
+  await send('Runtime.enable'); await send('Page.enable'); await send('Log.enable').catch(() => {});
   await send('Page.addScriptToEvaluateOnNewDocument', { source: INFLIGHT });
   await send('Runtime.evaluate', { expression: INFLIGHT }).catch(() => {});
   const evaluate = async (expression, ms) => {
@@ -304,7 +308,15 @@ async function makeTab(b, targetId) {
     /** `reducedEffects`: turn on the app's own Reduce visual effects setting (its localStorage key)
      *  before the page loads — journeys only; pictures leave it alone so they keep showing the glass. */
     async prepare({ theme, width: w, height: h, reducedEffects = false }) {
+      // WHY (first-draw-stability under load): SHOOT_CPU_THROTTLE=N slows only THIS page N times, to reproduce a busy machine deterministically.
+      if (process.env.SHOOT_CPU_THROTTLE) await send('Emulation.setCPUThrottlingRate', { rate: Number(process.env.SHOOT_CPU_THROTTLE) });
       if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: SHOT_SCALE, mobile: false }); size = `${w}x${h}`; }
+      // WHY (2026-11-11): a tab is reused from screen to screen and the app remembers, per tab, which chat it was on
+      // (desktop-place.ts, card #146). A screen that opened another chat left the next screens in this tab on that
+      // chat: 9 file and project screens went "no opener registered" in the full check and passed alone. Each screen
+      // starts with that one memory emptied, once, here (not on every load: a journey may reload on purpose).
+      // Only that one key: emptying everything made two different screens draw the same picture (chat = dev/toast#none).
+      await evaluate(`try{sessionStorage.removeItem('youcoded-desktop-place')}catch{}`, 5000).catch(() => {});
       if (themeScript) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScript });
       const effects = reducedEffects ? `localStorage.setItem('youcoded-reduced-effects','1');` : '';
       themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});${effects}}catch{}` })).identifier;

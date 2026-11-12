@@ -1,0 +1,526 @@
+{
+  "title": "Phones and narrow windows",
+  "key": "narrow-screens-questions",
+  "out": "narrow-screens.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "The top bar",
+      "intro": "The strip across the top of every screen: ☰ menu, session name, chat/terminal switch."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Top bar",
+      "path": "The pill in the middle of the top bar, on a phone or a window under 640 wide",
+      "headline": "How should the top bar show which session you are in on a phone?",
+      "today": "On a phone the session pill squeezes down to the first two letters of the name (\"fi\") next to \"+10\" and an arrow. On a computer the same pill shows several session names side by side.",
+      "problem": "You cannot read which session you are in. \"+10\" means nothing to a new person, and the letters are cut off mid-word.",
+      "proposal": "Three ways to make the current session's name readable. All keep one tap to reach your other sessions.",
+      "options": [
+        {
+          "id": "name-plus-count",
+          "label": "Full name, small count",
+          "summary": "The pill shows only the current session's full name; a small number bubble on its arrow says how many others exist.",
+          "pros": [
+            "Looks and works like the computer version, just tidier, so nothing new to learn.",
+            "Smallest change; the session list still opens from the same spot."
+          ],
+          "cons": [
+            "Long names still cut off after about 18 letters.",
+            "The number bubble can be mistaken for unread messages."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "title-heading",
+          "label": "Plain title, tap to switch",
+          "summary": "The pill becomes a plain heading (\"fix chat scroll ▾\"), the way messaging apps title a chat. Tapping it opens the session list.",
+          "pros": [
+            "Most room for the name; reads like every other phone app.",
+            "Calmer top bar with one less boxed shape."
+          ],
+          "cons": [
+            "Phone and computer top bars start to look different.",
+            "Nothing hints that other sessions are running unless you tap."
+          ]
+        },
+        {
+          "id": "side-drawer",
+          "label": "Sessions in a side drawer",
+          "summary": "The top bar shows only the name. Sessions move into a panel that slides in from the left (from ☰ or a swipe), like Gmail's folders.",
+          "pros": [
+            "Room for a long, roomy list with folders and status.",
+            "Matches the phone apps most people already use."
+          ],
+          "cons": [
+            "Biggest change; the ☰ menu and the session list would have to merge.",
+            "Swiping from the left edge clashes with Android's own Back swipe on many phones."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Top bar",
+      "path": "The ☰ menu on the left and the chat/terminal button on the right",
+      "headline": "Where should the top bar's buttons go on a phone?",
+      "today": "On a phone, Settings, Projects, Pages, Session files, Browser and Games all hide behind ☰ on the left. The chat/terminal switch sits alone on the right.",
+      "problem": "Everything except chat is two taps away, and the terminal switch takes space from the session name even though most people never use the terminal.",
+      "proposal": "Three arrangements, from smallest change to biggest.",
+      "options": [
+        {
+          "id": "keep",
+          "label": "Keep, fix the details",
+          "summary": "Same buttons in the same places; fix the hover labels that get stuck on screen after a tap (seen in the 2026-11-01 Android test).",
+          "pros": [
+            "No relearning for anyone who already uses it.",
+            "Fixes the one bug people actually hit."
+          ],
+          "cons": [
+            "The session name stays squeezed between two buttons."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "terminal-in-menu",
+          "label": "Terminal into ☰",
+          "summary": "\"Switch to terminal\" becomes a row in the ☰ menu; the top bar is only ☰ and the session name.",
+          "pros": [
+            "About 40 more pixels for the session name.",
+            "Hides a developer-only control from everyday users."
+          ],
+          "cons": [
+            "People who do use the terminal on a phone need an extra tap.",
+            "Getting back to chat from the terminal needs its own visible button."
+          ]
+        },
+        {
+          "id": "bottom-tabs",
+          "label": "Bottom tab bar",
+          "summary": "A row of four tabs along the bottom: Chat, Projects, Pages, More — like Instagram or Spotify.",
+          "pros": [
+            "Your most-used places are one thumb-tap away.",
+            "Easiest for a phone user to discover."
+          ],
+          "cons": [
+            "Takes about 56 pixels of height from the chat on every screen.",
+            "Sits right below the message box and its pills, making the bottom crowded.",
+            "Largest build; desktop and phone would navigate differently."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Top bar",
+      "path": "The blue REMOTE label beside ☰ when a phone browser is connected to your computer",
+      "headline": "Should the REMOTE label stay as a word in the top bar on phones?",
+      "today": "When you open YouCoded in a phone browser connected to your computer, a blue \"REMOTE\" label sits next to ☰.",
+      "problem": "It costs space the session name needs, and \"remote\" is a technical word.",
+      "proposal": "Three ways to keep the information with less room.",
+      "options": [
+        {
+          "id": "dot",
+          "label": "Small computer icon",
+          "summary": "A small computer icon on the ☰ button; tapping ☰ shows \"Connected to Destin's computer\" at the top of the menu.",
+          "pros": [
+            "Frees the space; still visible at a glance.",
+            "Plain-language explanation one tap away."
+          ],
+          "cons": [
+            "An icon is easier to miss than a word."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "menu-only",
+          "label": "Only in the menu",
+          "pros": [
+            "Cleanest top bar."
+          ],
+          "cons": [
+            "Nothing on screen tells you the phone is driving a computer."
+          ]
+        },
+        {
+          "id": "keep-word",
+          "label": "Keep the word",
+          "pros": [
+            "Unmissable."
+          ],
+          "cons": [
+            "Keeps squeezing the session name."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "The session list",
+      "intro": "What you see after tapping the session name."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Session list",
+      "path": "Tap the session name in the top bar",
+      "headline": "How should the session list open on a phone?",
+      "today": "It drops down from the top bar as a box that leaves a margin on both sides and ends in Resume and New session buttons.",
+      "problem": "The list starts at the top of the screen, the hardest place to reach with a thumb, and the box is narrower than the phone, so names and folders get cut off.",
+      "proposal": "Three shapes for the same list.",
+      "options": [
+        {
+          "id": "bottom-sheet",
+          "label": "Slides up from the bottom",
+          "summary": "A panel rises from the bottom, full width, with New session and Resume at the bottom edge. Swipe down or tap outside to close.",
+          "pros": [
+            "Everything in thumb reach.",
+            "Full phone width, so names fit.",
+            "Familiar from Google Maps, share menus, etc."
+          ],
+          "cons": [
+            "Opens far from the name you tapped at the top.",
+            "Phone and computer lists move differently."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "wider-dropdown",
+          "label": "Same dropdown, full width",
+          "pros": [
+            "Least change; opens right under what you tapped.",
+            "Same as the computer."
+          ],
+          "cons": [
+            "Bottom rows and the New session button are a long reach."
+          ]
+        },
+        {
+          "id": "full-screen",
+          "label": "Its own full screen",
+          "summary": "A whole screen titled \"Sessions\" with a Back arrow, like a chat list in WhatsApp.",
+          "pros": [
+            "The most room, for search and filters too.",
+            "Clearest on the smallest phones."
+          ],
+          "cons": [
+            "Switching feels heavier: you leave the chat to do it.",
+            "Hides the chat you were in while you choose."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Session list",
+      "path": "Each row of the session list",
+      "headline": "What should each session row show on a phone?",
+      "today": "Each row shows name, folder, assistant and model, status (Working/Inactive), a pin and tags, crammed into two lines; model and folder names get cut off (\"w…\", \"Gemini 2.5 …\").",
+      "problem": "The row tries to say six things in a phone's width, so most of them end up unreadable.",
+      "proposal": "Three levels of detail.",
+      "options": [
+        {
+          "id": "name-folder-status",
+          "label": "Name, folder, status",
+          "summary": "Line 1: name and a colored status dot. Line 2: folder and tags. The assistant and model show only on the session you are in.",
+          "pros": [
+            "Everything shown is readable.",
+            "Keeps what you use to pick a session: its name and where it works."
+          ],
+          "cons": [
+            "You cannot see which model another session uses without switching to it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "name-status",
+          "label": "Name and status only",
+          "pros": [
+            "Simplest, one line per session, so more fit on screen."
+          ],
+          "cons": [
+            "Two sessions with similar names are hard to tell apart."
+          ]
+        },
+        {
+          "id": "all",
+          "label": "Everything, three lines",
+          "pros": [
+            "Nothing hidden."
+          ],
+          "cons": [
+            "Rows twice as tall; about 4 fit on screen instead of 7."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Session list",
+      "path": "Heading of the session list on a phone",
+      "headline": "On a phone, the list heading says \"Your sessions\" instead of \"Sessions in this window\".",
+      "changed": "A phone has no windows, so the computer's wording is swapped for plain words. The 2026-11-01 Android test flagged this.",
+      "notice": "Same list, clearer heading. Nothing changes on a computer.",
+      "yes": "Change it",
+      "no": "Keep it"
+    },
+    {
+      "id": "P-3",
+      "page": "The pills around the message box",
+      "intro": "The shortcut row above the message box and the row of pills below it."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Status pills",
+      "path": "The row under the message box: model, permissions, tags, helpers, theme, version",
+      "headline": "How should the pills under the message box fit on a phone?",
+      "today": "Model, permission mode (\"NORMAL\"), tags, helpers running, theme name and more sit in a row that wraps onto a second line on a phone, plus a pencil to choose which ones show.",
+      "problem": "Two rows of small pills eat chat space, and several (theme name, version) don't matter on a phone.",
+      "proposal": "Three ways to bring it back to one row.",
+      "options": [
+        {
+          "id": "phone-set",
+          "label": "Fewer pills on phones",
+          "summary": "Phones show only model, permissions and live activity (helpers, usage when close to a limit). The rest stay in the pencil menu, off by default on phones.",
+          "pros": [
+            "One clean row; the important pills stay one tap away.",
+            "You can still turn any pill back on."
+          ],
+          "cons": [
+            "Phone and computer show different pills by default, which can surprise someone using both."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "scroll-row",
+          "label": "One row, swipe sideways",
+          "summary": "Keep every pill but in one row you swipe left/right, with a fade at the edge to show there is more.",
+          "pros": [
+            "Nothing removed."
+          ],
+          "cons": [
+            "Pills off the edge are easy to forget exist.",
+            "Sideways swiping near the message box is easy to trigger by accident."
+          ]
+        },
+        {
+          "id": "one-pill",
+          "label": "One summary pill",
+          "summary": "A single pill (\"Sonnet · Normal ▾\") opens a panel listing everything the row shows today.",
+          "pros": [
+            "Calmest look; most chat space."
+          ],
+          "cons": [
+            "Changing the model or mode takes an extra tap.",
+            "Live warnings (usage near a limit) are hidden unless they force their way into the pill."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Quick shortcuts",
+      "path": "The row of shortcut chips just above the message box (Journal, Inbox, Git Status…)",
+      "headline": "What should happen to the shortcut chips above the message box on a phone?",
+      "today": "A row of chips you can tap to send a ready-made message. On a phone it runs off the right edge (\"Briefi…\") with nothing showing you can swipe for more.",
+      "problem": "It looks broken where it is cut off, and it costs a row of chat space all the time, even mid-conversation.",
+      "proposal": "Three treatments.",
+      "options": [
+        {
+          "id": "fade-and-hide-mid-chat",
+          "label": "Fade edge; hide while typing",
+          "summary": "Add a fade at the cut-off edge, and hide the row while the keyboard is open.",
+          "pros": [
+            "Shows there is more to swipe to.",
+            "Gives the chat its space back exactly when the keyboard steals it."
+          ],
+          "cons": [
+            "You cannot tap a shortcut while typing (you rarely would)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "behind-button",
+          "label": "Behind a button",
+          "summary": "The row goes away; a ⚡ button inside the message box opens the shortcuts as a list.",
+          "pros": [
+            "Frees a whole row permanently.",
+            "Room for longer shortcut names."
+          ],
+          "cons": [
+            "Shortcuts become less visible, so new users may never find them.",
+            "One more icon inside an already busy message box."
+          ]
+        },
+        {
+          "id": "fade-only",
+          "label": "Just add the fade",
+          "pros": [
+            "Smallest change."
+          ],
+          "cons": [
+            "Still costs a row of space at all times."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Inside the chat and other screens"
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Chat messages",
+      "path": "The assistant's replies in a chat",
+      "headline": "Should the assistant's replies use the full phone width?",
+      "today": "Replies sit in rounded bubbles with a margin on both sides; about a fifth of the screen width is empty margin. Step pills inside (\"Ran a command · git status --…\") cut off.",
+      "problem": "Long replies become tall, narrow columns, and step pills are too narrow to read.",
+      "proposal": "Three widths.",
+      "options": [
+        {
+          "id": "full-width-replies",
+          "label": "Replies edge to edge",
+          "summary": "On phones the assistant's replies drop the bubble and run nearly full width; your own messages keep their bubbles on the right. This is how the ChatGPT and Claude phone apps look.",
+          "pros": [
+            "About 25% more words per line, so long answers are much shorter to scroll.",
+            "Step pills have room to read."
+          ],
+          "cons": [
+            "Themes that style the reply bubble lose that look on phones.",
+            "Phone and computer chats look different."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "slimmer-margins",
+          "label": "Keep bubbles, slimmer margins",
+          "pros": [
+            "Themes keep working as designed.",
+            "Some extra width."
+          ],
+          "cons": [
+            "Only about 10% wider; step pills still cut off."
+          ]
+        },
+        {
+          "id": "as-is",
+          "label": "Leave as is",
+          "pros": [
+            "No change."
+          ],
+          "cons": [
+            "Problem stays."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Side-by-side screens",
+      "path": "Pages, Projects, Settings, and any screen with a list on the left and details on the right",
+      "headline": "On a phone, every side-by-side screen becomes a list first, then the details on their own screen with Back.",
+      "changed": "Today Pages keeps the computer's two halves on a phone, leaving a thin strip saying \"No page selected\" (2026-11-01 Android test). Every two-part screen would follow the phone pattern.",
+      "notice": "Tap an item, it fills the screen; Back (or the phone's Back) returns to the list. Computers unchanged.",
+      "yes": "Do it",
+      "no": "Not now"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Touch screens",
+      "path": "Every button and control, on phones and touch-screen laptops",
+      "headline": "On touch screens, buttons get finger-sized and anything that appears only on hover is always shown.",
+      "changed": "Small icon buttons grow to at least finger size, and controls you can only reach by hovering with a mouse (Remove, Magnify, the pencil next to session names) become always visible.",
+      "notice": "Fewer missed taps, nothing you cannot reach. Touch screens look slightly busier.",
+      "yes": "Do it",
+      "no": "Not now"
+    },
+    {
+      "id": "P-5",
+      "page": "Scope and order"
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Whole app",
+      "path": "A computer window dragged narrower than 640 pixels",
+      "headline": "Should a narrow computer window get the phone layout too?",
+      "today": "The app already switches a few things (the ☰ menu) when any window gets narrower than 640 pixels, phone or computer.",
+      "problem": "If phone changes only apply to phones, a narrow computer window keeps the cramped look.",
+      "proposal": "Choose what decides the layout.",
+      "options": [
+        {
+          "id": "width",
+          "label": "Width decides",
+          "pros": [
+            "A narrow side-by-side window on your computer gets the same fixes.",
+            "One layout to keep working, so fewer bugs."
+          ],
+          "cons": [
+            "Dragging a window across 640 pixels visibly reshuffles the top bar."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "device",
+          "label": "Only on phones",
+          "pros": [
+            "Computers never change, however narrow."
+          ],
+          "cons": [
+            "Narrow computer windows stay cramped.",
+            "Two sets of rules to keep in sync."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Whole app",
+      "path": "The areas on the earlier pages",
+      "headline": "Which areas should be designed and drawn first?",
+      "pick": "several",
+      "today": "Card #139 lists phone polish and the 2026-11-01 Android test (card #213) covers the welcome screen and Pages. Nothing yet covers the top bar or pills as a whole.",
+      "problem": "Drawing everything at once makes one very long review; picking the most-felt areas gets you a phone improvement sooner.",
+      "proposal": "Pick any. I would start with the top bar and session list, since you see them on every screen.",
+      "options": [
+        {
+          "id": "top-bar",
+          "label": "Top bar",
+          "pros": ["Seen on every screen."],
+          "cons": ["Touches the computer header code too, so needs careful checks."],
+          "recommended": true
+        },
+        {
+          "id": "session-list",
+          "label": "Session list",
+          "pros": ["Pairs naturally with the top bar."],
+          "cons": ["Swipe-up panel is new work."]
+        },
+        {
+          "id": "pills",
+          "label": "Pills and shortcuts",
+          "pros": ["Quick wins; mostly hiding and fading."],
+          "cons": ["Smaller payoff alone."]
+        },
+        {
+          "id": "chat-and-screens",
+          "label": "Chat width and two-part screens",
+          "pros": ["Biggest reading improvement."],
+          "cons": ["Touches every theme's look; needs checking in all of them."]
+        }
+      ]
+    }
+  ]
+}

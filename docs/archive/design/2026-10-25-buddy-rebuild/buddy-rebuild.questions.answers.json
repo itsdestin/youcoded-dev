@@ -1,0 +1,100 @@
+{
+ "deck": "buddy-rebuild-questions",
+ "started": "2026-10-26T06:36:49.491Z",
+ "submitted": "2026-10-26T06:43:53Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "wrote",
+   "text": "all of it. it just looks outdated, status dots dont work, scroll/menus/etc suck, the windows/buttons dont feel reactive enough, slow, etc.",
+   "t": 1792996730918,
+   "seconds": 30,
+   "theme": "light"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "small-main",
+   "t": 1792996730918,
+   "note": "we should make this super optimized for the small window though. however we might best do that. reduce spacing between lines and margins or somethihng? idk. maximize visible text and reduce scroll burden",
+   "seconds": 30,
+   "theme": "light"
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1792996730918,
+   "seconds": 30,
+   "theme": "light"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1792996730918,
+   "seconds": 30,
+   "theme": "light"
+  },
+  "Q-3": {
+   "v": "picks",
+   "picks": [
+    "asks",
+    "warnings",
+    "history",
+    "extras"
+   ],
+   "t": 1792997030080,
+   "note": "the skill cards and even tool cards and such could look a little differently on the small window maybe though before expanding? try to optimize space for assistant message text? but only render cards differently in the buddy window?",
+   "seconds": 60,
+   "theme": "light"
+  },
+  "Q-4": {
+   "v": "pick",
+   "seconds": 60,
+   "theme": "light",
+   "t": 1792997030080,
+   "pick": "main-menu",
+   "note": "it will almost certainly need a narrow layout and to possible drop some information to fit. this might not be completely practicaly but idk"
+  },
+  "Q-5": {
+   "v": "other",
+   "seconds": 60,
+   "theme": "light",
+   "t": 1792997030080,
+   "note": "want to see alternatives visually"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "two-sizes",
+   "t": 1792997032735,
+   "seconds": 31,
+   "theme": "light"
+  },
+  "Q-7": {
+   "v": "picks",
+   "picks": [
+    "open-close",
+    "drag",
+    "replies",
+    "reactions"
+   ],
+   "t": 1792997032735,
+   "seconds": 31,
+   "theme": "light"
+  },
+  "Q-8": {
+   "v": "picks",
+   "picks": [
+    "typing-menu",
+    "allow-questions",
+    "idle"
+   ],
+   "t": 1792997032735,
+   "seconds": 31,
+   "theme": "light"
+  },
+  "Q-9": {
+   "v": "other",
+   "seconds": 31,
+   "theme": "light",
+   "t": 1792997032735,
+   "note": "somewhere between. try to only keep 1 round of reviews and work concisely/efficiently, dont let this task get away from us. "
+  }
+ }
+}

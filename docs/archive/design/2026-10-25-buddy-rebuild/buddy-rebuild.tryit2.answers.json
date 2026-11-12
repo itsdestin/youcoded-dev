@@ -1,0 +1,34 @@
+{
+ "deck": "buddy-rebuild-tryit2",
+ "started": "2026-10-30T06:40:28.269Z",
+ "submitted": "2026-10-30T06:43:40Z",
+ "cur": 0,
+ "answers": {
+  "U-1": {
+   "note": "yeah its still a bit odd though. if i quickly press, it feels like it moves left before expanding then right before shrinking, instead of smoothly growing/shrinking in/out from the center",
+   "t": 1793342618912,
+   "v": "other",
+   "seconds": 48,
+   "theme": "morning-rounds"
+  },
+  "U-2": {
+   "v": "yes",
+   "t": 1793342618912,
+   "seconds": 48,
+   "theme": "morning-rounds"
+  },
+  "U-3": {
+   "note": "the new session/folder/etc dropdowns should all reset/collapse when buddy is closed/reopened. also the dropdowns don't seem to use session defaults?",
+   "t": 1793342618912,
+   "v": "other",
+   "seconds": 48,
+   "theme": "morning-rounds"
+  },
+  "U-4": {
+   "v": "yes",
+   "t": 1793342618912,
+   "seconds": 48,
+   "theme": "morning-rounds"
+  }
+ }
+}

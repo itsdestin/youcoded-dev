@@ -75,9 +75,34 @@ fi
 # "delete the branch" then would be actively wrong advice, so the script asks
 # whether the work landed FIRST and changes what it checks accordingly.
 MERGED=no
+
+# UNCOMMITTED WORK ON THE BRANCH'S OWN WORKTREE (card #22 item e). WHY: "the branch tip is an
+# ancestor of base" is also true when the branch never got a single commit (its tip IS the base
+# commit) while the whole implementation sits uncommitted or untracked in its worktree. The old
+# report then said "the work landed" and the wrap-up skill's next lines suggested deleting the
+# worktree and branch — it recurred four times (2026-10-06 .. 2026-10-18), each time caught only
+# because the session happened to notice. A merge verdict is about COMMITS; edits that were never
+# committed cannot have landed, so a dirty worktree always overrides the "landed" wording below.
+# --untracked-files=all so a brand-new file counts; ignored files (node_modules) do not.
+DIRTY_WT=""; DIRTY_COUNT=0
+while read -r _p; do
+  [[ -n "$_p" && "$(git -C "$_p" branch --show-current 2>/dev/null)" == "$BRANCH" ]] || continue
+  _n=$(git -C "$_p" status --porcelain --untracked-files=all 2>/dev/null | wc -l | tr -d ' ')
+  if [[ "${_n:-0}" -gt 0 ]]; then DIRTY_WT="$_p"; DIRTY_COUNT="$_n"; break; fi
+done < <(git -C "$REPO_DIR" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
+dirty_warning() {
+  _tip=$(git -C "$REPO_DIR" rev-parse --short "$SHA" 2>/dev/null)
+  if [[ "$(git -C "$REPO_DIR" rev-parse "$SHA" 2>/dev/null)" == "$(git -C "$REPO_DIR" rev-parse "$BASE" 2>/dev/null)" ]]; then
+    fail "NOTHING LANDED from the uncommitted work — the branch tip $_tip equals the base commit (a branch with no commits of its own, or one already fast-forwarded), and $DIRTY_COUNT file(s) in $DIRTY_WT are UNCOMMITTED or untracked. That work exists only in that folder. UNCOMMITTED WORK HERE: DO NOT delete this worktree or branch; commit and push it first."
+  else
+    fail "UNCOMMITTED WORK HERE — $DIRTY_COUNT file(s) in $DIRTY_WT are uncommitted or untracked, so they did not land with the branch. DO NOT delete this worktree or branch; commit and push them first."
+  fi
+}
+
 if [[ -n "$SHA" ]]; then
   if git -C "$REPO_DIR" merge-base --is-ancestor "$SHA" "$BASE" 2>/dev/null; then
-    pass "the branch tip is an ancestor of $BASE — the work landed"; MERGED=yes
+    if [[ -n "$DIRTY_WT" ]]; then dirty_warning; else pass "the branch tip is an ancestor of $BASE — the work landed"; fi
+    MERGED=yes
   else
     note "not merged into $BASE yet — PRE-MERGE close-out. Branch, worktree and"
     note "dead-name checks are SKIPPED: they would all tell you to delete things"
@@ -216,6 +241,10 @@ if [[ "$MERGED" == yes ]]; then
     pass "remote branch deleted (the work is on $BASE, so it was pushed and cleaned up)"
   fi
 
+  # WHY the DIRTY_WT branch: never print a delete command next to uncommitted work (card #22 e).
+  if [[ -n "$DIRTY_WT" ]]; then
+    note "local branch and worktree: KEEP — see the UNCOMMITTED WORK line above; deleting them would destroy the only copy"
+  else
   git -C "$REPO_DIR" show-ref --verify -q "refs/heads/$BRANCH" \
     && fail "local branch still exists — git branch -D $BRANCH  (-D, not -d: --no-ff merges leave the tip non-ancestral)" \
     || pass "local branch deleted"
@@ -228,6 +257,7 @@ if [[ "$MERGED" == yes ]]; then
     fail "worktree still registered at $WT — git worktree remove '$WT'"
   else
     pass "no worktree left on this branch"
+  fi
   fi
 
   for d in "$WORKSPACE"/worktrees/*/; do
@@ -250,6 +280,9 @@ if [[ "$MERGED" == yes ]]; then
   # worktree (this workspace's, and every component repo's), `node scripts/prune-worktrees.mjs`
   # is the dry-run tool that reports which ones are actually safe to delete.
   note "other worktrees: node scripts/prune-worktrees.mjs (dry run; --apply <key> needs Destin naming the exact ones)"
+  # GitHub deletes a merged pull request's branch on its own (delete-branch-on-merge, all repos, 2026-11-10);
+  # a branch that landed another way (cherry-pick, folded into a different branch) is the one still to delete.
+  note "remote branch: deleted automatically when its PR merged; delete by hand only if it landed another way"
 else
   if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
     pass "pushed to origin — a reviewer can see it"

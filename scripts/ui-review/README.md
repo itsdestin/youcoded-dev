@@ -28,7 +28,7 @@ What stays here is everything built ON those pictures and on the running rendere
 | `review-cards.py` + `deck/` + `crops.json` | **the review surface** — the one page Destin answers on, in nine step kinds (approve, brief, choice, decide, clip, live, question, contract, acceptance) and eight commands (`build`, `preview`, `serve`, `wait`, `record`, `selfie`, `contract-check`, `acceptance`). `serve` builds, serves on 127.0.0.1, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background; it opens no browser, so put its printed `[deck] http://…` line in chat as the last line of your turn. Live panes come from the deck's own server (`/app/`, the photo-only build). **Which kind to pick: `.claude/rules/review-deck.md`. Every field, command and refusal: `deck/AUTHORING.md`. One worked template per kind: `templates/`.** |
 | `record.mjs` + `scenes/*.json` | a scripted scene filmed as a WebM loop + WebP poster (below). |
 | `record-pair.sh` + `montage-ab.sh` | before/after clips and sheets for a deck's CLIP steps. |
-| `site-assets.sh` | regenerates the landing page's loops, gallery (`shot.mjs` + `plans/site-gallery.json`, the one plan still in use) and embed. |
+| `site-assets.sh` | regenerates the landing page's loops, ideas-wall pictures (`site-idea-stills.sh`, via `shoot`) and embed. |
 | `shot.mjs` | the old self-verifying plan driver, kept for `site-gallery.json`; on the engine (free ports). New pictures: `shoot`. |
 | `contrast-report.mjs` | painted-pixel contrast (fg vs *actual* bg) from a `shoot --contrast` run (`contrast.md`), or an old sweep's manifests. Over-reports on glass themes; read it, don't paste it. |
 | `coverage.mjs` | covered / MISSED per surface for an old sweep's run folders (decks still read them). |
@@ -198,9 +198,9 @@ Things worth knowing before you author one:
 
 Spec: `docs/archive/specs/2026-08-31-live-review-panes-design.md`.
 
-Rebuild every landing-page asset at once (loops, gallery stills, live embed):
-`bash scripts/ui-review/site-assets.sh <worktree> [--out <dir>]` — refuses to overwrite a gallery
-when any shot failed verification; `--out` writes everything to a scratch folder instead.
+Rebuild every landing-page asset at once (loops, the four ideas-wall pictures, live embed):
+`bash scripts/ui-review/site-assets.sh <worktree> [--out <dir>]` — refuses to overwrite the ideas-wall pictures
+when any shot failed verification, and leaves them alone unless `SITE_IDEA_STILLS=1` (not yet approved); `--out` writes everything to a scratch folder instead.
 
 **`"zoom": 1.25`** (scene field, default 1) films the page zoomed in the way Ctrl+= does in the
 app: the layout runs at width/zoom × height/zoom CSS px and Chrome paints it at `zoom` device
@@ -373,7 +373,9 @@ fixture, `dev/workbench/fixtures/marketplace/registry.ts`, added 2026-08-25),
 `?mpUpdate=1` (installed Civic Report and Meadow Mist are older than their listing → Update),
 `?liked=1` (a theme page opens already liked) — Marketplace detail states, added 2026-10-05,
 `?officePort=<n>` (where the Office editor listens; `shoot` sets it when 4717 is another
-worktree's), `?view=tools|compare` (tool gallery / permission-card comparison), `?latency=<ms>`.
+worktree's), `?view=tools|compare` (tool gallery / permission-card comparison), `?view=buddy-chat` (the buddy's chat
+window alone, 320×480) and `?view=buddy-group[&point=N]` (mascot, chat and action bar together; `point`
+rests a pretend pointer on bar button N so its hint shows), `?latency=<ms>`.
 
 Provider and account state — **a shot of Settings → Cloud providers that omits these gets
 a card drawn in its EMPTY state, which reads as a missing feature rather than a missing
@@ -571,5 +573,6 @@ strip packs to ONE pill while a scenario needs three. Both together —
 FUZZ_H=900`. **A `worst:` line of all dashes, with no numbered scenario rows above it, is a
 run that drove zero drags, not a clean sweep** (it printed exactly that six times on
 2026-09-07 before anyone noticed); the sweep now exits 1 rather than saying it. Frames of
-any scenario are in `drag-fuzz.json` — but the write of that file throws on a 60-drag run
-(filed as dev-workspace work), so read the scores off stdout until that is fixed.
+a scenario that FAILED are in `drag-fuzz-frames.ndjson` (one line per failing scenario; passing
+scenarios keep no frames, so a 60-drag run no longer overflows). `drag-fuzz.json` holds only the
+scores and `drag-fuzz.md` the table.

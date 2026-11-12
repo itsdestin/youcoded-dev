@@ -13,9 +13,9 @@ side: behind
 vision: sync.follow.safety
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: a project name that differs from another only by capital letters is now refused when created, and a second folder can no longer silently join an existing project's online copy (youcoded commits 844fc4999 and b26b4cc12, 2026-09-23). A folder that is too big to sync is no longer uploaded (youcoded PR #483, 2026-09-16). Crash leftovers from artifact saves are cleaned up after an hour (youcoded artifacts/cas-write.ts).
+Next: stop the resume browser from reading the old frozen index file; ignore stray temporary files during sync (decided 2026-09-02, not built); check whether any name clashes from before 2026-09-23 still exist on Destin's device; make sure a dev copy of the app cannot write to the real app's sync folder by default.
+Blocked: Left out of the files batch on 2026-11-11: sync is being redesigned (cards #64, #241, #243; design stage, nothing built yet), so this waits for that. Not verified: the 'could not complete' sync error still needs a real two-device reproduction.
 
 See also #17: 127's item (d), a dev copy of the app syncing the same Personal folder as the real app, is one of the dev-instance-touches-the-real-app faults listed in 17.
 

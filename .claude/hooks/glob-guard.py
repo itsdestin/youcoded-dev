@@ -217,6 +217,22 @@ VAR_FOR = re.compile(r"\bfor\s+\w+\s+in\s+" + _VAR + r"\s*(?:;|\n|$|\bdo\b)")
 _SPLITTING_SHELL = re.compile(r"(?:^|[|&;(]\s*|\s)(?:bash|sh|dash)\s+(?:-\S+\s+)*-l?c\s")
 
 
+# A command kept in a variable and run through it: `E="node x.mjs"; $E start`. zsh runs a
+# program literally named "node x.mjs", which fails — and a pipe after it (`| grep picture`)
+# hides even that, so the step reports nothing and looks like it ran (three wasted calls,
+# 2026-10-29). Only flagged when the SAME command assigns that name a value with a space.
+_ASSIGN_WITH_SPACE = re.compile(r"""(?:^|[;&|(]\s*|\s)([A-Za-z_]\w*)=(["'])[^"'\n]*\s[^"'\n]*\2""")
+
+
+def var_command_offender(body: str):
+    for m in _ASSIGN_WITH_SPACE.finditer(body):
+        name = m.group(1)
+        use = re.search(r"(?:^|[;&|(]\s*|\$\(\s*|\n\s*)\$(?:\{" + name + r"\}|" + name + r")(?![\w\[])", body[m.end():])
+        if use:
+            return use.group(0).strip(" ;&|(\n")
+    return None
+
+
 def unsplit_var_offender(command: str):
     """The offending text when a kill / set -- / for-in leans on zsh splitting an unquoted $VAR."""
     body = strip_heredocs(command)
@@ -226,7 +242,34 @@ def unsplit_var_offender(command: str):
         m = pat.search(body)
         if m:
             return m.group(0).strip()
-    return None
+    return var_command_offender(body)
+
+
+# ── guard 9: `pgrep -f` feeding a kill, unfiltered ───────────────────────────────────
+# The wrapper `zsh -c '<whole command>'` contains the pattern, so `pgrep -f X` lists the
+# calling shell too; `kill $(pgrep -f X)` (or a variable filled from it) kills the shell
+# running the command — exit 144, nothing reported. Hit 2026-10-29 stopping a review deck
+# server. Filtering the wrapper out (`| rg -v pgrep`, as guard 4 says) is allowed.
+_PGREP_F = r"pgrep\s+(?:[^|&;\n)]*\s)?-[a-zA-Z]*f"
+
+
+def pgrep_kill_offender(command: str):
+    body = strip_heredocs(command)
+    if not re.search(r"(?:^|[|&;(]\s*|\s)kill\s", body):
+        return False
+    for m in re.finditer(r"\$\(([^)]*" + _PGREP_F + r"[^)]*)\)", body):
+        if not re.search(r"-v\s+['\"]?pgrep", m.group(1)):
+            return True
+    return False
+
+
+PGREP_KILL_MESSAGE = (
+    "Blocked before it ran: `pgrep -f` here also lists the shell running this command (its "
+    "command line contains the pattern), so killing what it returns kills your own shell — "
+    "exit 144, nothing reported (2026-10-29).\n"
+    "Filter the wrapper out:  kill $(pgrep -f <name> | rg -v pgrep)\n"
+    "or look the pid up in one call and kill that number in the next."
+)
 
 
 UNSPLIT_VAR_MESSAGE = (
@@ -469,6 +512,45 @@ WORKTREE_INSTALL_MESSAGE = (
 )
 
 
+# ── note (not a block): a wait loop with no time limit of its own ─────────────────────
+# `until <cond>; do sleep N; done` runs forever when <cond> never comes true — and the Bash
+# tool's `timeout` stops applying once Claude Code moves a long command to the background.
+# On 2026-11-03 a helper's `until rg -q "journeys:" log …` ran 32 hours: the run it waited on
+# had failed before writing that word. Most such loops are fine (~2,400 in past transcripts),
+# so this only ADDS A NOTE for Claude and lets the command run (Destin chose warn, 2026-11-05).
+WAIT_LOOP = re.compile(r"\b(?:until|while)\b.{0,400}?\bdo\b.{0,300}?\bsleep\b", re.S)
+# Anything that can end the loop on its own: a `timeout N` wrapper, elapsed-time or counter
+# arithmetic, a numeric comparison, or a `break`.
+LOOP_BOUND = re.compile(r"\btimeout\s+-?\w*\s*\d|\$SECONDS|\(\(|\$\[|\bseq\b|-(?:ge|gt|le|lt)\b|\bbreak\b")
+
+
+def unbounded_wait_loop(command: str) -> bool:
+    body = strip_heredocs(command)
+    return bool(WAIT_LOOP.search(body)) and not LOOP_BOUND.search(body)
+
+
+WAIT_LOOP_NOTE = (
+    "Note from the workspace guard (the command was allowed to run): this waits in an "
+    "`until`/`while … sleep` loop with no time limit of its own. If what it waits for never "
+    "happens, it runs forever — once Claude Code moves a command to the background, the Bash "
+    "tool's timeout no longer applies (a helper's loop ran 32 hours on 2026-11-03). Next time put "
+    "the limit in the command text: `timeout 600 bash -c 'until …; do sleep 5; done'`, or wait on "
+    "the thing itself with run_in_background. If this one is backgrounded and no longer needed, "
+    "stop it with TaskStop."
+)
+
+
+def allow_with_notes(command: str) -> int:
+    """Exit 0 (allowed), adding the wait-loop note as context for Claude when it applies."""
+    try:
+        if unbounded_wait_loop(command):
+            print(json.dumps({"hookSpecificOutput": {
+                "hookEventName": "PreToolUse", "additionalContext": WAIT_LOOP_NOTE}}))
+    except Exception:
+        pass   # fail open
+    return 0
+
+
 def main() -> int:
     try:
         payload = json.load(sys.stdin)
@@ -536,6 +618,13 @@ def main() -> int:
         pass   # fail open, same contract as everything else in this hook
 
     try:
+        if pgrep_kill_offender(command):
+            print(PGREP_KILL_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open, same contract as everything else in this hook
+
+    try:
         frag = unsplit_var_offender(command)
         if frag:
             print(UNSPLIT_VAR_MESSAGE.format(frag=frag), file=sys.stderr)
@@ -546,10 +635,10 @@ def main() -> int:
     try:
         token = find_offender(command)
     except Exception:
-        return 0
+        return allow_with_notes(command)
 
     if not token:
-        return 0
+        return allow_with_notes(command)
 
     first = command.strip().split()[0] if command.strip().split() else "the tool"
     print(MESSAGE.format(tok=token, glob=glob_part(token), cmd=first), file=sys.stderr)

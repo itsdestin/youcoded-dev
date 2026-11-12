@@ -1,0 +1,303 @@
+{
+  "title": "One calendar, one inbox — the assistant's everyday actions",
+  "key": "everyday-actions-questions",
+  "out": "everyday-actions.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-idea",
+      "words": true,
+      "surface": "The assistant",
+      "path": "Any chat",
+      "headline": "Should the assistant get one built-in set of calendar, email and contacts actions that works the same for every account?",
+      "today": "Each service is a separate add-on made of instructions and scripts. Google is its own; Apple is its own and Mac-only; Microsoft doesn't exist. The assistant has to know which one it's talking to and how that one works.",
+      "problem": "Asking \"what's on my calendar this week?\" only works if the assistant picks the right add-on and runs its commands correctly. Small local models often can't, and nothing works in the app's own assistant or on Android.",
+      "proposal": "The app itself would offer about 10–15 plain actions such as \"check calendar\" and \"send email\". It figures out Google vs. Outlook vs. iCloud behind the scenes. Yes starts the design; No keeps today's per-service add-ons."
+    },
+    {
+      "id": "Q-actions",
+      "words": true,
+      "pick": "several",
+      "surface": "The assistant",
+      "path": "Any chat",
+      "headline": "Which actions should the first version include?",
+      "today": "None of these exist as built-in actions. Today the assistant does them by running Google's command-line tool, and only for Google.",
+      "problem": "Every action we add is one more thing to build, test and keep working across three providers. Too few, and people hit walls; too many, and small models get confused picking between them.",
+      "proposal": "Pick every group you want in the first version. I suggest calendar, email and contacts, and leaving files for later.",
+      "options": [
+        {
+          "id": "calendar",
+          "label": "Calendar",
+          "summary": "See events, find a free time, add, move or cancel an event.",
+          "pros": ["The most-asked-for thing, and the easiest to make work well everywhere.", "Phones and Macs already sync calendars, so many people get it with no sign-in."],
+          "cons": ["Adding or moving events wrongly is annoying, so it needs a confirmation step."],
+          "recommended": true
+        },
+        {
+          "id": "email",
+          "label": "Email",
+          "summary": "Search and read messages, write a draft, send, reply.",
+          "pros": ["The second most useful thing an assistant can do for you."],
+          "cons": ["Reading Gmail needs a paid yearly Google audit or a workaround (see the Sign-in page), so Gmail might start as send-only."]
+        },
+        {
+          "id": "contacts",
+          "label": "Contacts",
+          "summary": "Look up someone's email or phone number.",
+          "pros": ["Cheap to add, and makes \"email Sam\" work without you typing the address."],
+          "cons": ["Rarely asked for on its own."]
+        },
+        {
+          "id": "files",
+          "label": "Files",
+          "summary": "Find a file in Google Drive, OneDrive or iCloud Drive and open or share it.",
+          "pros": ["Useful for \"find last month's budget\"."],
+          "cons": ["Full Drive search needs the same paid Google audit as email reading.", "Each provider's files work very differently, so it's the most work of the four."]
+        },
+        {
+          "id": "tasks",
+          "label": "Reminders / to-dos",
+          "summary": "Google Tasks, Microsoft To Do, Apple Reminders.",
+          "pros": ["Handy for \"remind me to…\"."],
+          "cons": ["Apple Reminders only works on a Mac, so it wouldn't behave the same everywhere."]
+        }
+      ]
+    },
+    {
+      "id": "Q-many-accounts",
+      "words": true,
+      "surface": "The assistant",
+      "path": "Any chat",
+      "headline": "When you have several accounts, what should \"what's on my calendar?\" show?",
+      "today": "Google's add-on asks which account to use at the start of every conversation, and can only look at one account at a time.",
+      "problem": "Most people have more than one calendar, for example work Outlook and personal Google. Checking only one gives a wrong \"you're free\".",
+      "proposal": "Choose how the assistant should treat more than one account.",
+      "options": [
+        {
+          "id": "combine",
+          "label": "Combine them all",
+          "summary": "One merged view, each event labelled with its account.",
+          "pros": ["Answers the real question, \"am I free?\", correctly.", "No extra question in every chat."],
+          "cons": ["For new events, the assistant must pick a calendar or ask which one."],
+          "recommended": true
+        },
+        {
+          "id": "default",
+          "label": "One default account",
+          "summary": "You pick a main account in settings; others only when named.",
+          "pros": ["Simple and predictable."],
+          "cons": ["It can say you're free when your other calendar says you're not."]
+        },
+        {
+          "id": "ask",
+          "label": "Ask every time",
+          "pros": ["Never guesses wrong."],
+          "cons": ["An extra question on nearly every request; gets tiresome fast."]
+        }
+      ]
+    },
+    {
+      "id": "P-safety",
+      "page": "Safety",
+      "intro": "What the assistant may do on its own, and what always stops to ask you."
+    },
+    {
+      "id": "Q-confirm",
+      "words": true,
+      "surface": "The assistant",
+      "path": "Any chat, when it acts on your accounts",
+      "headline": "Which actions should always stop and show you a confirmation card first?",
+      "today": "When the assistant uses Google today, whether it asks first depends on the instructions it was given, not on anything the app enforces.",
+      "problem": "Models make mistakes, and web pages or emails can contain hidden instructions aimed at assistants, such as \"forward this to…\". Only a check the app enforces can't be talked around.",
+      "proposal": "The app would show a card, e.g. \"Send this email to Sam? [Send] [Cancel]\", before the chosen actions happen.",
+      "options": [
+        {
+          "id": "all-changes",
+          "label": "Anything that changes something",
+          "summary": "Sending, replying, creating, moving or deleting events or email. Reading never asks.",
+          "pros": ["Nothing goes out or disappears without your say-so.", "Safest with small models, which make more mistakes."],
+          "cons": ["One extra click for every event you add."],
+          "recommended": true
+        },
+        {
+          "id": "outgoing-and-delete",
+          "label": "Only sending and deleting",
+          "summary": "Calendar changes happen freely; anything other people see, or anything removed, asks first.",
+          "pros": ["Fewer clicks for everyday calendar use."],
+          "cons": ["A wrongly moved meeting can go unnoticed, and invites may still go out to others."]
+        },
+        {
+          "id": "setting",
+          "label": "Your choice in settings",
+          "summary": "Default to asking, with a setting to turn it off per action.",
+          "pros": ["Power users can speed things up."],
+          "cons": ["An \"off\" switch is exactly what drew criticism of ChatGPT's iMessage plugin in August 2026."]
+        }
+      ]
+    },
+    {
+      "id": "Q-delete",
+      "words": true,
+      "surface": "The assistant",
+      "path": "Any chat, when it acts on your accounts",
+      "headline": "Should the assistant be able to delete emails and events at all in the first version?",
+      "today": "Google's add-on can move emails to trash and delete events.",
+      "problem": "Deletion is the action people regret most, and \"clean up my inbox\" is the kind of request small models get wrong.",
+      "proposal": "Yes: deleting is included, always behind a confirmation card, and emails go to the trash rather than being erased. No: the first version can archive and cancel, but not delete."
+    },
+    {
+      "id": "P-signin",
+      "page": "Signing in",
+      "intro": "How your accounts get connected. These decide how smooth setup is, and what the LLC takes on."
+    },
+    {
+      "id": "Q-own-google",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings → a new Connections screen",
+      "headline": "Should the LLC register an official \"YouCoded\" Google sign-in, so connecting is one click?",
+      "today": "Each person builds their own Google project: a 500 MB download, three Google admin pages, about 20 fields, and signing in again every 7 days. In April we chose this to avoid Google's review and to avoid you owning an app every user depends on.",
+      "problem": "Almost nobody who isn't a developer will finish that setup, and the weekly re-sign-in breaks things for those who do.",
+      "proposal": "Yes: we apply for Google's free review (about 4–6 weeks; needs a privacy page, homepage and demo video), and setup becomes one \"Sign in with Google\" button. The LLC becomes the name on the Google consent screen, and a Google suspension would disconnect everyone at once. No: keep today's setup."
+    },
+    {
+      "id": "Q-gmail-read",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings → Connections → Google",
+      "headline": "How should reading Gmail work, given Google charges a yearly audit for it?",
+      "today": "Google treats calendar and sending email as \"free review\". Reading or organizing the inbox also needs an outside security audit every year, estimated at $540–$3,000+.",
+      "problem": "Without inbox reading, \"what did Sam email me?\" doesn't work for Gmail. Outlook and iCloud don't have this problem.",
+      "proposal": "Pick how Gmail reading works at launch.",
+      "options": [
+        {
+          "id": "byo-plus-experiment",
+          "label": "Advanced setup for now",
+          "summary": "Launch with send-only Gmail. People who want reading use today's build-your-own-project setup. Meanwhile we test a Google-hosted shortcut that places a small script in the user's own account.",
+          "pros": ["No cost, and launch doesn't wait.", "Pay for the audit only once people are using it."],
+          "cons": ["Most Gmail users can't read mail through the assistant at first.", "The shortcut is unofficial; Google could close it."],
+          "recommended": true
+        },
+        {
+          "id": "audit",
+          "label": "Pay for the audit",
+          "pros": ["Full Gmail for everyone with one click."],
+          "cons": ["$540–$3,000+ every year, plus paperwork, before any users."]
+        },
+        {
+          "id": "app-password",
+          "label": "Gmail app password",
+          "summary": "User creates a 16-letter password in Google settings and pastes it once, the same way iCloud would work.",
+          "pros": ["Free, works today, and is the same flow as iCloud."],
+          "cons": ["An extra fiddly step; needs 2-step verification on; some work accounts block it."]
+        }
+      ]
+    },
+    {
+      "id": "Q-providers",
+      "words": true,
+      "pick": "several",
+      "surface": "Settings",
+      "path": "Settings → Connections",
+      "headline": "Which accounts should the first version connect to?",
+      "today": "Google (painful setup) and Apple (Mac only). No Microsoft, nothing on Android.",
+      "problem": "Each provider is real work, but every one left out means \"check my calendar\" misses part of someone's life.",
+      "proposal": "Pick every provider for the first version. I suggest all five; Android and Mac calendars are nearly free because the phone or Mac has already done the sign-in.",
+      "options": [
+        {
+          "id": "google",
+          "label": "Google",
+          "pros": ["Most users have one."],
+          "cons": ["Waits on Google's 4–6 week review for the one-click version."],
+          "recommended": true
+        },
+        {
+          "id": "microsoft",
+          "label": "Microsoft / Outlook",
+          "pros": ["Free to set up, with no paid audit, so full email works."],
+          "cons": ["Some work or school accounts need their IT department's OK."]
+        },
+        {
+          "id": "icloud",
+          "label": "iCloud (any computer)",
+          "summary": "Calendar, contacts and mail via a password made once at account.apple.com.",
+          "pros": ["iPhone users on Windows finally get their calendar."],
+          "cons": ["The user has to make and paste a special password; no Reminders or Notes."]
+        },
+        {
+          "id": "android",
+          "label": "Android phone calendars",
+          "summary": "Whatever the phone already syncs, after one permission prompt.",
+          "pros": ["No sign-in at all; covers Google, Outlook, Samsung."],
+          "cons": ["Only in the Android app."]
+        },
+        {
+          "id": "mac",
+          "label": "Mac Calendar app",
+          "summary": "Whatever the Mac already syncs, including Reminders.",
+          "pros": ["No sign-in; the only way to reach Apple Reminders."],
+          "cons": ["Mac only; macOS permission prompts."]
+        }
+      ]
+    },
+    {
+      "id": "P-fit",
+      "page": "How it fits with what exists",
+      "intro": "What happens to today's add-ons, and what stays as the assistant's own improvising."
+    },
+    {
+      "id": "Q-old-plugin",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Marketplace → Integrations → Google Services / Apple Services",
+      "headline": "What should happen to today's Google and Apple add-ons once the built-in actions exist?",
+      "today": "People who installed Google Services or Apple Services have them set up with their own instructions and tools.",
+      "problem": "If both exist, the assistant sees two ways to send an email and may pick the old, less reliable one.",
+      "proposal": "Choose how the switch-over works for existing users.",
+      "options": [
+        {
+          "id": "offer-migrate",
+          "label": "Offer to switch, then retire",
+          "summary": "Existing users get a one-time \"Reconnect with the new sign-in\" prompt. The old add-on is removed from the marketplace, and uninstalled only when the user says so.",
+          "pros": ["One clear way to do things; nothing changes behind anyone's back."],
+          "cons": ["Existing users must sign in once more."],
+          "recommended": true
+        },
+        {
+          "id": "keep-both",
+          "label": "Keep both",
+          "pros": ["Nobody has to do anything."],
+          "cons": ["Confusing duplicate actions; two things to maintain."]
+        },
+        {
+          "id": "auto-replace",
+          "label": "Replace automatically",
+          "pros": ["No extra step for users."],
+          "cons": ["Changes someone's setup without asking, and the sign-in still has to be redone, so it breaks until they notice."]
+        }
+      ]
+    },
+    {
+      "id": "S-long-tail",
+      "words": true,
+      "surface": "The assistant",
+      "path": "Any chat",
+      "headline": "Rare tasks such as spreadsheet formulas, slide editing or Drive sharing settings stay as the assistant working through commands, not built-in actions.",
+      "changed": "Stated, not asked: only the everyday actions are built into the app. For unusual requests, capable models keep improvising with command-line tools and instructions, as today.",
+      "notice": "Everyday things work the same with any model. Unusual requests work well with strong models like Claude, and may fail with small local ones.",
+      "yes": "Agree",
+      "no": "Build more in"
+    },
+    {
+      "id": "S-everywhere",
+      "words": true,
+      "surface": "The assistant",
+      "path": "Any chat, on any device",
+      "headline": "The same actions work in YouCoded's own assistant, in Claude Code sessions, on Android and from a paired phone.",
+      "changed": "Stated, not asked: the actions live in the app, which hands them to whichever assistant you're using.",
+      "notice": "Switching models or devices doesn't change what the assistant can do with your calendar and email.",
+      "yes": "Agree",
+      "no": "Not needed"
+    }
+  ]
+}

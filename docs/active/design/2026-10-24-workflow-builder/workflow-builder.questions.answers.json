@@ -1,0 +1,100 @@
+{
+ "deck": "workflow-builder-questions",
+ "started": "2026-10-24T23:09:49.138Z",
+ "submitted": "2026-10-24T23:17:56Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "picks",
+   "picks": [
+    "build",
+    "research",
+    "files"
+   ],
+   "t": 1792883546110,
+   "seconds": 39,
+   "theme": "golden-sunbreak"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1792883546110,
+   "note": "depends on how we actually build the backend for this, but i think i should be able to edit a workflow with a custom renderer/ui in the files panel alongside documents and such, and also in a separate youcoded built-in page.",
+   "seconds": 39,
+   "theme": "golden-sunbreak"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "lanes",
+   "t": 1792883546110,
+   "seconds": 39,
+   "theme": "golden-sunbreak"
+  },
+  "Q-4": {
+   "v": "yes",
+   "t": 1792883546110,
+   "seconds": 39,
+   "theme": "golden-sunbreak"
+  },
+  "Q-5": {
+   "v": "picks",
+   "picks": [
+    "prompt",
+    "model",
+    "tools"
+   ],
+   "t": 1792883837849,
+   "note": "i think we should skip dollar limits for now (may be annoying to engineer, we already revamped the earlier version of plans because per-speciailist limits were making every plan fail. cost limits should only apply to the full end-to-end run. i'm not entirely sure about my other selections here. e/f sound potentially interesting, but may also be overcomplicated or unnecessary? idk",
+   "seconds": 73,
+   "theme": "golden-sunbreak"
+  },
+  "Q-6": {
+   "v": "picks",
+   "picks": [
+    "parallel",
+    "sequence",
+    "combine",
+    "repeat",
+    "approve"
+   ],
+   "t": 1792883837849,
+   "note": "these things should provide clear \"checkpoint\" opportunites. like after completing steps 1/2/3, come back with 3 options for me to select from before proceeding with steps 4/5/6. or ",
+   "seconds": 73,
+   "theme": "golden-sunbreak"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "own",
+   "t": 1792883837849,
+   "seconds": 73,
+   "theme": "golden-sunbreak"
+  },
+  "Q-8": {
+   "v": "other",
+   "t": 1792883837849,
+   "note": "no per-card limits",
+   "seconds": 73,
+   "theme": "golden-sunbreak"
+  },
+  "Q-9": {
+   "v": "yes",
+   "t": 1792883875926,
+   "seconds": 13,
+   "theme": "golden-sunbreak"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1792883875926,
+   "seconds": 13,
+   "theme": "golden-sunbreak"
+  },
+  "Q-11": {
+   "v": "pick",
+   "t": 1792883875926,
+   "pick": "fold-in",
+   "note": "not entirely sure about this. will need to iterate probably",
+   "seconds": 13,
+   "theme": "golden-sunbreak"
+  }
+ }
+}

@@ -47,9 +47,10 @@ Rebuilt 2026-08-28 for 1.3.0 (youcoded #360): `docs/archive/specs/2026-08-27-lan
 
 ## Assets are generated, never hand-edited
 **Invariant:** `bash scripts/ui-review/site-assets.sh <worktree>` regenerates `docs/media/`
-(loops + posters), `docs/gallery/` (48 stills) and `docs/site/` (embed), building that
+(loops + posters), `docs/gallery/idea-*.webp` (the four ideas-wall pictures; older per-theme stills are no longer made) and `docs/site/` (embed), building that
 worktree itself; `--out <dir>` writes to a scratch folder instead. It refuses to overwrite the
-gallery if any shot failed verification. It is a step in the desktop release checklist (`docs/build-and-release.md`).
+ideas-wall pictures if any shot failed verification, and leaves them untouched unless
+`SITE_IDEA_STILLS=1` is set (Destin has not approved the regenerated ones, 2026-11-10). It is a step in the desktop release checklist (`docs/build-and-release.md`).
 The last three followed on 2026-09-04: `gen-hero-mascots.py` and `gen-og-image.mjs` (bump
 `?v=` on `og:image` or a shared link keeps the old one).
 `site-assets.sh` maps each file `index.html` plays to its scene. Loop length, zoom and pace:

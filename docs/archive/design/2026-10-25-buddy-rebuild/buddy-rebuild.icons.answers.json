@@ -1,0 +1,32 @@
+{
+ "deck": "buddy-rebuild-icons",
+ "started": "2026-10-30T18:34:52.766Z",
+ "submitted": "2026-10-30T18:35:48Z",
+ "cur": 2,
+ "answers": {
+  "I-1": {
+   "v": "pick",
+   "pick": "monitor",
+   "t": 1793385308454,
+   "seconds": 16,
+   "theme": "light",
+   "zoom": 1
+  },
+  "I-2": {
+   "v": "other",
+   "t": 1793385334532,
+   "note": "either b/c. want to see a few more variants",
+   "seconds": 26,
+   "theme": "light",
+   "zoom": 1
+  },
+  "I-3": {
+   "v": "other",
+   "t": 1793385347089,
+   "note": "none of these",
+   "seconds": 13,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

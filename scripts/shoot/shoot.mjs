@@ -199,6 +199,12 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // WHY: use the renderer's explicit workbench theme route as well as the storage mirror;
     // a capture must not be labelled Dark/Halftone while actually showing Light.
     q.set('theme', theme);
+    // WHY (2026-11-10, card #146): a desktop window now remembers its chat in sessionStorage so a reload reopens it.
+    // This tab is reused for every screen, so the chat the PREVIOUS screen left selected would be restored on the next
+    // one, and that screen's opener would find its own chat (or project) not showing. A person opening a screen gets
+    // a fresh window, so each picture starts with this tab's per-window storage empty. (Cleared on the old page,
+    // same origin, before navigating; about:blank on the first screen throws, hence the catch.)
+    await tab.evaluate('try{sessionStorage.clear()}catch(e){}').catch(() => {});
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);

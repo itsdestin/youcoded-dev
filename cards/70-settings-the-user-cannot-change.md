@@ -2,6 +2,7 @@
 id: 70
 title: Settings you can't change yet, including the helper limit
 stage: planning
+work: session/74-specialists-plans, feat/specialists-plans-ui
 priority: P3
 tags: native-harness, cost, settings, specialists, tool-cards, desktop, feature
 branch: 70-settings-the-user-cannot-change
@@ -13,9 +14,9 @@ side: both
 vision: chat.converse.native, chat.steer.specialists
 ---
 Progress
-Done: nothing recorded.
-Next: Helper limits (c, #72) tracked with plans in docs/active/handoffs/2026-10-24-specialists-and-plans-START-HERE.md §4 C6; reply length and model recommendations (a, b) unchanged.
-Blocked: nothing recorded.
+Done: Nothing built yet. The reply length limit is now set per provider (own keys up to 128,000; OpenRouter 32,000; others 16,000), but a user still cannot change it. Model suggestions were partly reworked in September. The limit of 30 helpers per chat is still fixed.
+Next: Decide whether to split this card. The helper-limit part belongs with card 199 (lifting the 30-helper limit) and card 74 (specialists plans). Reply length as a user setting, and a check of how model suggestions are maintained, stay here.
+Blocked: The specialists plans are on unmerged branches, not on master, so the plan document is not reachable from master.
 
 See also #32: Both want the app's list of recommended models kept current instead of going stale (32a a scheduled check, 70b one maintained recommendation system).
 

@@ -1,0 +1,23 @@
+{
+ "deck": "file-chips-review",
+ "started": "2026-10-30T05:54:09.074Z",
+ "submitted": "2026-10-30T05:55:01Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "note": "why would we need a banner for this. remove that.",
+   "t": 1793339679194,
+   "v": "other",
+   "seconds": 30,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1793339700120,
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

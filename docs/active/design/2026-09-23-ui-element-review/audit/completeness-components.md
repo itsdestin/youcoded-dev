@@ -6,6 +6,8 @@ related: docs/archive/plans/2026-09-21-ui-ux-consistency-audit.md
 
 # Completeness audit — did the design-guide effort miss any element category?
 
+> **Note (2026-10-30):** the buddy files named below (`BubbleFeed`, `CompactToolStrip`, `AttentionStrip`, `SessionPill`) were deleted in the buddy rebuild; the buddy chat now uses the main window's SessionStrip, ChatView, InputBar and cards (`docs/archive/specs/2026-10-25-buddy-rebuild-design.md`). Findings about them are closed by deletion.
+
 Read-only census. This does not re-judge quality of the existing inventory/audit docs — it
 checks whether every renderer file's visual *category* was assigned to some doc, and whether
 `decisions.md` actually settled it. Source: full recursive listing of

@@ -1,0 +1,773 @@
+{
+ "title": "Wave 1 came back: what to land, and 15 decisions the three batches left for you",
+ "key": "wave-1-results-2026-11-10",
+ "out": "wave-1.questions.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Landing the three overnight batches",
+   "intro": "Each batch is finished on one saved branch per repo. Nothing is landed. I checked that the three do not collide with each other."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Release safety",
+   "path": "The chat window, the Office editor's log, background commands",
+   "headline": "Land the Release safety batch?",
+   "today": "After a window reload the app opens the oldest chat, so your next message can go to the wrong conversation. The Office editor's error log can copy words from your document. After a restart the assistant is told a background command does not exist.",
+   "problem": "These three are fixed on a branch, tested in a test copy of the app and reviewed twice. The phone app was not tested; no phone code changed.",
+   "proposal": "Landing puts all three fixes on master for the 1.4 release. You would notice one thing: after a reload you land on the chat you were on.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Reload stops sending messages to the wrong chat.",
+      "Document words stay out of bug reports.",
+      "The full desktop check passed on the final code."
+     ],
+     "cons": [
+      "The Office log now holds less detail for diagnosing editor faults.",
+      "Not tried on a phone."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes until you have tried it yourself."
+     ],
+     "cons": [
+      "The wrong-chat reload stays in the app.",
+      "The branch falls behind as other work lands."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Workspace tools",
+   "path": "Developer tools, plus four small app changes",
+   "headline": "Land the Workspace tools batch?",
+   "today": "Sessions can lose work in several ways, a push can skip its secrets scan, and an Arch install from the other package downloads 206 MB and then fails to update.",
+   "problem": "The batch fixes these on a branch (30 changes to the tools, 18 to the app). Its own tests pass, but GitHub's test runs have not run on it and three tools were not tried in real use.",
+   "proposal": "I would open the pull requests so GitHub runs its tests, and land only if they pass. In the app you would notice: the Arch update message, 'Docs' and 'docs' as two folders on Linux, and a Windows sign-in that retries a refused port.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land if tests pass",
+     "pros": [
+      "Pushes cannot skip the secrets scan.",
+      "Close-out stops suggesting deleting folders with unsaved work.",
+      "Arch users get a clear message instead of a failed download."
+     ],
+     "cons": [
+      "Three tools are unproven in real use (test-chat driver, Mac loader, drag test).",
+      "143 saved website pictures will differ when next regenerated."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "land-minus",
+     "label": "Land, drop Windows retry",
+     "pros": [
+      "Same as above.",
+      "Leaves out the one app change no Windows machine has tried."
+     ],
+     "cons": [
+      "Windows sign-in keeps its occasional 'Could not open a local port' failure."
+     ]
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes yet."
+     ],
+     "cons": [
+      "48 changes sit on a branch and fall behind.",
+      "The next batches would not get the safer push command."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Sync",
+   "path": "Chat locks between your devices",
+   "headline": "How should the sync impersonation fix go out?",
+   "today": "A connection signed in to your account can pose as another of your devices and take or release its chat locks.",
+   "problem": "The fix closes that while a device is connected. Its cost: after a connection drops badly (wifi switch, laptop wake), that device's locks are ignored for up to 45 seconds. In that window a chat can open about 10 seconds slower, a hand-off to it is refused, and the same chat could be opened on two devices. It goes live for every app version minutes after landing.",
+   "proposal": "A complete fix has each install prove who it is. That needs an app release.",
+   "options": [
+    {
+     "id": "both",
+     "label": "Ship now, then full fix",
+     "pros": [
+      "Protection starts today.",
+      "The 45-second window goes away with the later app release."
+     ],
+     "cons": [
+      "Until then you may see a slower chat open after a dropped connection.",
+      "Two rounds of change to the same area."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "ship",
+     "label": "Ship as built only",
+     "pros": [
+      "Protection starts today.",
+      "No further work."
+     ],
+     "cons": [
+      "The 45-second window stays for good.",
+      "Someone holding your sign-in can still claim an offline device."
+     ]
+    },
+    {
+     "id": "hold",
+     "label": "Hold for full fix",
+     "pros": [
+      "No 45-second window ever reaches users."
+     ],
+     "cons": [
+      "The gap stays open until an app release.",
+      "Nothing improves in the meantime."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Server and marketplace",
+   "path": "Games, the Google Messages add-on, theme updates",
+   "headline": "Land the rest of the Security batch now, or hold Google Messages until tried on Windows?",
+   "today": "Game result messages have no limit. The Google Messages Windows program carries an old security library. A theme whose files changed without a new version number never shows Update.",
+   "problem": "All three are fixed and tested, except that the rebuilt Google Messages program has never been run: there is no Windows computer here. It reaches Windows users within about an hour of landing.",
+   "proposal": "Holding only the Google Messages piece means splitting it off the branch first, a small extra step.",
+   "options": [
+    {
+     "id": "hold-gm",
+     "label": "Land, hold Messages",
+     "pros": [
+      "Games and theme fixes go out now.",
+      "No untested program reaches Windows users."
+     ],
+     "cons": [
+      "The old security library stays until you or a tester pairs and sends one text on Windows."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "all",
+     "label": "Land everything",
+     "pros": [
+      "The patched library reaches users today.",
+      "No splitting needed."
+     ],
+     "cons": [
+      "If the rebuilt program fails to start, texting breaks for Windows users until a fix."
+     ]
+    },
+    {
+     "id": "hold",
+     "label": "Hold everything",
+     "pros": [
+      "Nothing changes yet."
+     ],
+     "cons": [
+      "Game messages stay unlimited.",
+      "The branch falls behind."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Left over from Release safety",
+   "intro": "Found or parked by that batch."
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Message box",
+   "path": "Editing a queued message on YouCoded's own engine",
+   "headline": "Fix the queued-message edit now, or leave it for the chat fixes batch?",
+   "today": "On YouCoded's own engine, pressing Edit on a waiting message that has a file puts the raw file path in the box and drops the file chip. Claude Code chats are fine.",
+   "problem": "The retest found it still broken. The batch was told to retest only, so it did not fix it.",
+   "proposal": "The fix is small (about 25 to 40 lines). Fixing now means it can ship with 1.4.",
+   "options": [
+    {
+     "id": "now",
+     "label": "Fix it now",
+     "pros": [
+      "Editing a waiting message keeps its file.",
+      "Ships with the other release fixes."
+     ],
+     "cons": [
+      "One more small change to review before landing."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "batch2",
+     "label": "Leave for Batch 2",
+     "pros": [
+      "Nothing extra to review now."
+     ],
+     "cons": [
+      "The fault stays until the chat fixes batch runs."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Custom models",
+   "path": "Chats on a hosted model whose size the app does not know",
+   "headline": "What size should the app assume for an unknown hosted model?",
+   "today": "The app assumes such a model can hold 250k. Many hold 128k or less, so long chats fail with a 'too long' error.",
+   "problem": "A wrong guess either fails (too big) or summarises earlier than needed (too small).",
+   "proposal": "Lowering to 128k stops failures for the most common hosted size. Models that really are bigger would summarise sooner than they need to. Models of 64k or 32k would still fail.",
+   "options": [
+    {
+     "id": "128",
+     "label": "Lower to 128k",
+     "pros": [
+      "Fewer 'too long' failures on common hosted models."
+     ],
+     "cons": [
+      "Bigger models summarise earlier than necessary.",
+      "Smaller models still fail."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "250",
+     "label": "Keep 250k",
+     "pros": [
+      "Big models use their full room."
+     ],
+     "cons": [
+      "Long chats keep failing on common hosted models."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "Your real app data",
+   "path": "Three throwaway test chats and one folder-trust entry",
+   "headline": "Remove the test leftovers the first test round put in your real Claude Code data?",
+   "today": "The first tester ran the test copy against your real Claude Code data. It left a few tiny chats (named T1-\u2026, T5-s\u2026, Sleep Command Retest) under one scratch project, and a 'trust this folder' entry for that scratch folder.",
+   "problem": "Test runs are not supposed to write there. The second round used a throwaway home and wrote nothing. This is the fault card #17 describes.",
+   "proposal": "Removing them deletes only those chats and that one entry. I would do it while your app is closed, or stage it to run after you next quit.",
+   "options": [
+    {
+     "id": "remove",
+     "label": "Remove them",
+     "pros": [
+      "Your chat list has no stray test chats."
+     ],
+     "cons": [
+      "Touches your real data folder once, after the app is closed."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave",
+     "label": "Leave them",
+     "pros": [
+      "Nothing in your data is touched."
+     ],
+     "cons": [
+      "The stray chats stay in your past-conversations list."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-8",
+   "words": true,
+   "surface": "Assistant tools",
+   "path": "What two of the assistant's own tools say about a command from before a restart",
+   "headline": "Run the paid evaluation on the changed tool wording?",
+   "today": "Two of the assistant's tools now report a saved outcome for a background command from before a restart, where they used to say there was none.",
+   "problem": "A change to what a tool tells the assistant can, rarely, change how models behave. The evaluation measures that and costs money.",
+   "proposal": "The wording only appears after a restart with a background command, which is rare. A run would need a spending cap from you.",
+   "options": [
+    {
+     "id": "skip",
+     "label": "Skip it",
+     "pros": [
+      "No cost.",
+      "The change only shows in a rare case."
+     ],
+     "cons": [
+      "A behaviour change on small models would go unmeasured."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "run",
+     "label": "Run with a cap",
+     "pros": [
+      "Measures the effect before release."
+     ],
+     "cons": [
+      "Costs money; you set the cap.",
+      "Adds a wait before landing."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "Left over from Workspace tools",
+   "intro": "Decisions that batch wrote onto its cards."
+  },
+  {
+   "id": "Q-9",
+   "words": true,
+   "surface": "Test copies of the app",
+   "path": "What a test copy shares with your real app",
+   "headline": "Should test copies be private by default?",
+   "today": "A test copy shares your real sign-ins, Claude Code data and new-session defaults. That is how last night's leftovers got into your real data.",
+   "problem": "Anything a test does can show up in, or change, your real app.",
+   "proposal": "Private by default gives each test copy its own empty home. A session that needs your sign-ins (to test a real model, say) would have to ask for 'borrow my sign-ins'.",
+   "options": [
+    {
+     "id": "private",
+     "label": "Private by default",
+     "pros": [
+      "Tests cannot leave chats or settings in your real app.",
+      "Borrowing sign-ins becomes a visible choice."
+     ],
+     "cons": [
+      "Some tests need an extra step to reach a real model.",
+      "Sessions may ask you for that more often."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "shared",
+     "label": "Keep sharing",
+     "pros": [
+      "Tests reach real models with no extra step."
+     ],
+     "cons": [
+      "Test leftovers can keep landing in your real data."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-10",
+   "words": true,
+   "surface": "Release pipeline",
+   "path": "The unfinished test-speed experiments and pull request #272",
+   "headline": "Drop the test-speed experiments?",
+   "today": "Experiments from October tried to make test runs faster. They were never finished. Waits are already down to 5 to 10 minutes from other work.",
+   "problem": "They keep one old folder and one open pull request alive, and two of their changes exist only on this computer.",
+   "proposal": "Either way I back up the two unsaved changes first. Dropping closes the pull request and removes the folder.",
+   "options": [
+    {
+     "id": "drop",
+     "label": "Drop them",
+     "pros": [
+      "One less open item and old folder.",
+      "The saved copy stays on GitHub if you change your mind."
+     ],
+     "cons": [
+      "Any further speed-up would start again from the saved copy."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep them",
+     "pros": [
+      "The work stays ready to pick up."
+     ],
+     "cons": [
+      "The folder and pull request keep showing up in every inventory."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-11",
+   "words": true,
+   "surface": "GitHub",
+   "path": "What must pass before master accepts a change",
+   "headline": "Require the tests to pass before anything lands on master?",
+   "today": "Master only requires the Linux build to succeed. The tests run but do not block a landing.",
+   "problem": "A change with failing tests can land.",
+   "proposal": "Requiring the tests means every landing waits for them (about 5 to 10 minutes), and an unreliable test can block a landing until it is fixed.",
+   "options": [
+    {
+     "id": "require",
+     "label": "Require tests",
+     "pros": [
+      "A change that breaks a test cannot land.",
+      "Fits your rule that broken tests get fixed at once."
+     ],
+     "cons": [
+      "Every landing waits 5 to 10 minutes.",
+      "One unreliable test can hold up unrelated work."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave",
+     "label": "Leave as is",
+     "pros": [
+      "Landings stay quick."
+     ],
+     "cons": [
+      "Broken tests can reach master unnoticed."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-12",
+   "words": true,
+   "surface": "Analytics page",
+   "path": "Where the page's source is kept",
+   "headline": "Where should the Analytics page's source live?",
+   "today": "The page lives only in your app's Pages folder, with no change history. Sessions back it up by hand.",
+   "problem": "The workspace repo is public, and the page shows how your usage numbers are gathered.",
+   "proposal": "A private repo gives it history without publishing it.",
+   "options": [
+    {
+     "id": "private",
+     "label": "A private repo",
+     "pros": [
+      "History and backups without making it public."
+     ],
+     "cons": [
+      "One more repo to keep track of."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "public",
+     "label": "The workspace repo",
+     "pros": [
+      "Everything in one place."
+     ],
+     "cons": [
+      "The page's workings become public."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave as is",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "Hand backups continue; a bad edit is hard to undo."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-13",
+   "words": true,
+   "surface": "Small calls",
+   "path": "Three small yes-or-no items from the tools batch",
+   "headline": "Which of these three small changes do you want? Pick any.",
+   "today": "Three items wait on you: a check that guards the voice download, a Mac timing fault nobody has reproduced, and unused marketplace settings code.",
+   "problem": "Each is small but needs your word.",
+   "proposal": "I recommend all three. None changes what you see in the app.",
+   "options": [
+    {
+     "id": "voice",
+     "label": "Widen voice guard",
+     "pros": [
+      "The voice download check covers more cases."
+     ],
+     "cons": [
+      "Slightly more to maintain."
+     ]
+    },
+    {
+     "id": "mac",
+     "label": "Drop Mac timing item",
+     "pros": [
+      "Closes an item never reproduced."
+     ],
+     "cons": [
+      "If it is real, it would have to be found again."
+     ]
+    },
+    {
+     "id": "plumbing",
+     "label": "Delete unused settings code",
+     "pros": [
+      "Less dead code."
+     ],
+     "cons": [
+      "Would be rebuilt if marketplace settings are ever wanted."
+     ]
+    }
+   ],
+   "pick": "several"
+  },
+  {
+   "id": "Q-14",
+   "words": true,
+   "surface": "Website",
+   "path": "The four idea pictures on the landing page",
+   "headline": "Replace the site's idea pictures with the regenerated ones?",
+   "today": "The site shows four hand-made idea pictures. The release script can now make them itself.",
+   "problem": "The regenerated paint picture has no brush strokes; the hand-made one did. The four new pictures are in /tmp/claude-1000/-home-destin-youcoded-dev/f75a7970-4f0b-486d-8f97-1e8d03fc1a88/scratchpad/ws4/gallery/",
+   "proposal": "Your live site is untouched until you choose.",
+   "options": [
+    {
+     "id": "wait",
+     "label": "Fix paint first",
+     "pros": [
+      "The site never shows a blank-looking paint page."
+     ],
+     "cons": [
+      "Pictures stay hand-made a little longer."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "use",
+     "label": "Use them now",
+     "pros": [
+      "Pictures refresh themselves on every release."
+     ],
+     "cons": [
+      "The paint picture looks emptier than today's."
+     ]
+    },
+    {
+     "id": "keep",
+     "label": "Keep hand-made",
+     "pros": [
+      "The look you chose stays."
+     ],
+     "cons": [
+      "They go stale as the app changes."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Left over from Security and server",
+   "intro": "Decisions that batch wrote onto its cards."
+  },
+  {
+   "id": "Q-15",
+   "words": true,
+   "surface": "Games",
+   "path": "A friend's modified app claiming a forfeit win when you disconnect",
+   "headline": "Switch the forfeit message off on the server?",
+   "today": "The server accepts a 'my opponent forfeited' message. No released app sends it, but a modified app can use it to record a win against you.",
+   "problem": "It is an opening for fake wins and nothing honest uses it.",
+   "proposal": "Switching it off loses nothing today. The other way is to accept it only when the server saw the match start, which keeps forfeits possible later.",
+   "options": [
+    {
+     "id": "off",
+     "label": "Switch it off",
+     "pros": [
+      "Fake forfeit wins stop.",
+      "Nothing honest is lost."
+     ],
+     "cons": [
+      "Real forfeits would need building later if you want them."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "check",
+     "label": "Keep, with a check",
+     "pros": [
+      "Forfeits stay possible for a future app."
+     ],
+     "cons": [
+      "More to build and test now for something nobody uses."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-16",
+   "words": true,
+   "surface": "Phone access",
+   "path": "A phone signed out after 90 days unused",
+   "headline": "Should the computer tell you when a phone was signed out for being unused?",
+   "today": "After 90 days unused, a paired phone is signed out. Nothing is shown or recorded on the computer.",
+   "problem": "You find out only when the phone will not connect.",
+   "proposal": "A notice would be one quiet line in the remote access settings, not a popup.",
+   "options": [
+    {
+     "id": "notice",
+     "label": "Show a quiet notice",
+     "pros": [
+      "You can see why a phone stopped connecting."
+     ],
+     "cons": [
+      "One more line in settings."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "nothing",
+     "label": "Show nothing",
+     "pros": [
+      "Settings stay as they are."
+     ],
+     "cons": [
+      "A dead phone connection stays unexplained."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-17",
+   "words": true,
+   "surface": "Your account",
+   "path": "Being signed out when the server rejects a request",
+   "headline": "Should the app tell you when it signs you out by itself?",
+   "today": "If the server rejects your sign-in, the app signs you out without saying so.",
+   "problem": "You notice later, when something that needs your account stops working.",
+   "proposal": "A notice would say you were signed out and offer Sign in again.",
+   "options": [
+    {
+     "id": "notice",
+     "label": "Show a notice",
+     "pros": [
+      "You know at once and can sign back in."
+     ],
+     "cons": [
+      "One more message, in a rare case."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "nothing",
+     "label": "Show nothing",
+     "pros": [
+      "No new message."
+     ],
+     "cons": [
+      "Sign-outs stay silent."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-5",
+   "page": "Housekeeping",
+   "intro": "Things every session keeps asking you about."
+  },
+  {
+   "id": "Q-18",
+   "words": true,
+   "surface": "Old work folders",
+   "path": "Five folders untouched for two weeks or more",
+   "headline": "What should happen to the five old work folders every session asks about?",
+   "today": "Google files, test-speed experiments, helper plans, batcher counters and readme-models are unfinished and unmerged. All three overnight sessions asked you about them.",
+   "problem": "Four are tied to decisions you have not made yet. The question repeats in every session.",
+   "proposal": "A keep-list would stop sessions asking about folders you have chosen to keep. That is a small change to a workspace script, so it needs your word.",
+   "options": [
+    {
+     "id": "keeplist",
+     "label": "Keep all, stop asking",
+     "pros": [
+      "Nothing is lost.",
+      "Sessions stop repeating the question."
+     ],
+     "cons": [
+      "The folders stay on disk until each decision is made."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep all, keep asking",
+     "pros": [
+      "Nothing is lost, no script change."
+     ],
+     "cons": [
+      "Every session keeps asking."
+     ]
+    },
+    {
+     "id": "readme",
+     "label": "Remove readme-models only",
+     "pros": [
+      "One folder gone."
+     ],
+     "cons": [
+      "Its branch stays saved on GitHub, but the folder would need recreating to continue."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-19",
+   "words": true,
+   "surface": "Backups",
+   "path": "Work that exists only on this computer",
+   "headline": "Back up the two pieces of other sessions' work that exist only on this computer?",
+   "today": "Your approved sync-conflict deck sits on a branch that is only on this computer. The local engine fixes (#226) are also only here, because the secrets scan flags a line I checked earlier and found is not a real secret.",
+   "problem": "If this computer's disk failed, both would be gone.",
+   "proposal": "Yes backs up the deck branch and allows the one scan exception so #226 can be backed up. Neither is landed.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Back both up",
+     "pros": [
+      "Both are safe on GitHub."
+     ],
+     "cons": [
+      "Records one exception in the secrets scanner."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "deck",
+     "label": "Deck branch only",
+     "pros": [
+      "The deck is safe.",
+      "No scanner exception."
+     ],
+     "cons": [
+      "The local engine fixes stay on this computer only."
+     ]
+    },
+    {
+     "id": "no",
+     "label": "Leave both",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "Both stay at risk."
+     ]
+    }
+   ]
+  }
+ ]
+}

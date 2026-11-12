@@ -1,0 +1,60 @@
+{
+ "deck": "buddy-rebuild-tryit",
+ "started": "2026-10-30T06:06:26.574Z",
+ "submitted": "2026-10-30T06:14:44Z",
+ "cur": 0,
+ "answers": {
+  "T-1": {
+   "v": "yes",
+   "t": 1793340882940,
+   "seconds": 62,
+   "theme": "light"
+  },
+  "T-2": {
+   "v": "yes",
+   "t": 1793340882940,
+   "seconds": 62,
+   "theme": "light"
+  },
+  "T-3": {
+   "v": "no",
+   "t": 1793340882940,
+   "note": "gets bigger, then clicking again just makes it jump left/right instead of shrinking",
+   "seconds": 62,
+   "theme": "light"
+  },
+  "T-4": {
+   "v": "yes",
+   "t": 1793340882940,
+   "note": "dont love the +note button. we can just come back to that during our eventual tool card/permission prompt redesign",
+   "seconds": 62,
+   "theme": "light"
+  },
+  "T-5": {
+   "v": "yes",
+   "t": 1793340882940,
+   "seconds": 62,
+   "theme": "light"
+  },
+  "T-6": {
+   "v": "yes",
+   "t": 1793340882940,
+   "seconds": 62,
+   "theme": "light"
+  },
+  "T-7": {
+   "v": "yes",
+   "t": 1793340882940,
+   "note": "the doze off seems to break sometimes? like i cant get him back awake",
+   "seconds": 62,
+   "theme": "light"
+  },
+  "T-8": {
+   "v": "other",
+   "t": 1793340882940,
+   "note": "almost. still some small issues. the dropdown menus for example are still a bit janky, dont shrink/grow with outer window, folder folder picker overlaps the left side but not the right sometimes for some reason, and the left side of session names/folder line should line up with left side of \"All sessions\" text. ",
+   "seconds": 62,
+   "theme": "light"
+  }
+ }
+}

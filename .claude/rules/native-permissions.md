@@ -100,6 +100,14 @@ in `permissions.json`; `isCrossProjectRule` (Task + `^(read-only|read-write):fil
 which `nativeStoreSlug` never emits.
 **Guard:** `permission-store.test.ts`, `native-session-host.test.ts` (cross-project cases).
 
+## Ask first asks about each new website (2026-10-31)
+**Invariant:** WebFetch's permission subject is the site key (`shared/site-key.ts`), never
+the URL; only `rulesForMode('ask')` adds the WebFetch ask; a helper's WebFetch ask is NOT
+turned into an allow by its launch envelope (`child-permissions.ts` 5b).
+**Why:** the question is about a website, so the remembered rule, the card and the
+chat memory (`HarnessSession.approvedSites`) must all agree on what one site is.
+**Guard:** `web-visit-ask.test.ts`, `site-key.test.ts`, `specialist-child-permissions.test.ts`.
+
 ## Surfaces
 `permissions:list` / `:remove` / `:remove-project` are one table entry each (`main/ipc/permissions.ts`),
 plus `remote-shim`. NOT gated on `native.supported`
@@ -116,3 +124,5 @@ that cover the command in hand and, if wide, admit nothing in `HOSTILE_CORPUS`.
 
 Depth: `docs/archive/specs/2026-08-11-native-permissions-management-ui.md`,
 `docs/archive/specs/2026-08-13-bash-always-allow-rule-shape.md`.
+
+- **"Commands that never ask" (2026-10-31): `shared/safe-readonly-commands.ts` is an ALLOWLIST (command -> exact flag spellings; no abbreviations; whole line must lex as plain words), wired as the pattern-less rule `{tool:Bash, match:"safe-readonly"}` right after the blanket ask in Ask first/Auto edit only (never Full auto). The deny-list and remembered rules still outrank it; the Bash floors still run beneath it. File-level checks (`tools/readonly-guard.ts`: secret/device/app-settings paths, folders holding credentials, git repo settings+hooks, PATH) must pass or it asks; missing checks = ask. Settings lists it from `READONLY_COMMAND_GROUPS`. Add a command only with a hostile-corpus entry in `tests/safe-readonly-commands.test.ts`.**

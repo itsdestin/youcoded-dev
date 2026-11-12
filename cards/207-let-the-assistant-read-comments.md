@@ -1,7 +1,7 @@
 ---
 id: 207
 title: Let the assistant read comments on files outside the project
-stage: explore
+stage: merged
 tags: files, files-panel, permissions, feature
 related: 40, 66
 vision: chat.files.comments

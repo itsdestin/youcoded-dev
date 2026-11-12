@@ -1,0 +1,104 @@
+[
+ {
+  "name": "buddy/group#raised",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/archive/design/2026-10-25-buddy-rebuild/runs/round5/buddy/group#raised/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 900,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#raised",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/archive/design/2026-10-25-buddy-rebuild/runs/round5/buddy/group#raised/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 900,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#panel",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/archive/design/2026-10-25-buddy-rebuild/runs/round5/buddy/group#panel/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 900,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#panel",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/archive/design/2026-10-25-buddy-rebuild/runs/round5/buddy/group#panel/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 900,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#panel-words",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/archive/design/2026-10-25-buddy-rebuild/runs/round5/buddy/group#panel-words/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 900,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#panel-words",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/archive/design/2026-10-25-buddy-rebuild/runs/round5/buddy/group#panel-words/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 900,
+   "h": 680
+  },
+  "parts": []
+ }
+]

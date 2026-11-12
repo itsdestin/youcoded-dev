@@ -1,0 +1,47 @@
+{
+  "title": "Buddy rebuild — re-test the last two",
+  "key": "buddy-rebuild-tryit3",
+  "out": "buddy-rebuild.tryit3.html",
+  "stage": "review",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "words": true,
+      "id": "V-1",
+      "surface": "Buddy",
+      "path": "The size button in the panel beside the buddy, pressed a few times, quickly too",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "headline": "Does the chat now grow and shrink in one smooth movement from its centre, with no sideways step?",
+      "changed": "The chat fades out for a moment, the window changes size and place while it is invisible, then the chat grows back in from its centre. The window system cannot change a window's size and place in one step, which was the sideways lurch.",
+      "notice": "One quick fade-and-grow (about a third of a second) instead of a step left and then a resize.",
+      "risk": "A brief fade is part of every size change now.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "V-2",
+      "surface": "Buddy chat",
+      "path": "Open a menu or the New session form in the buddy, close the buddy's chat, then open it again",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "headline": "After closing and reopening the buddy, are the menus and forms closed, and does New session start from your saved defaults?",
+      "changed": "Every open now starts the session strip and the no-session screen afresh. The New session form in the session menu now gets your saved defaults (folder, model, skip permissions); before, the buddy never passed them along.",
+      "notice": "Nothing half-open greets you, and a new session starts in your usual folder with your usual model.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    }
+  ]
+}

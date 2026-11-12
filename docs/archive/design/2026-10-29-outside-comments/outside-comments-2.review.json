@@ -1,0 +1,33 @@
+{
+  "title": "Comments on files outside the project, round 2: same buttons as other permission cards",
+  "key": "outside-comments-review-2",
+  "out": "outside-comments-2.review.html",
+  "images": "images/outside-comments-2.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "labels": { "before": "Today", "after": "After" },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "Any chat, when the assistant reaches for comments on a file in another folder",
+      "crop": "chat#outside-comments-cc@1000x340+0+70",
+      "headline": "Instead of refusing, the assistant asks with the usual Yes / No card, where the middle button reads Allow for this chat.",
+      "changed": "Today the comment step fails on any file outside the chat's project. Now it pauses on the same card every other permission uses: green Yes, blue middle button, red No, and a short note underneath. Round 1 used the browser's wording and put the note on top; that is gone.",
+      "notice": "Yes covers this one step. Allow for this chat stops the question for every outside file until the chat ends or the app restarts. No tells the assistant no.",
+      "risk": "Allow for this chat covers comments on any file on the computer for that chat, not just this folder (your choice). It never lets the assistant edit those files.",
+      "alsoChanges": ["The app's own assistant (same card)", "Phone and remote browser (same card)"]
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat on a phone",
+      "path": "The same card at phone width",
+      "crop": "chat#outside-comments-phone",
+      "runs": ["after"],
+      "new": true,
+      "headline": "On a phone, No moves to a second line rather than squeezing the middle button onto two lines.",
+      "changed": "The same card, drawn narrow. Nothing else moves.",
+      "notice": "You can answer from your phone while away from the computer.",
+      "risk": "The card is one line taller on a phone than the normal Yes / Always allow / No card, because Allow for this chat is longer than Always allow."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+ "deck": "model-picker-tags-questions-2",
+ "started": "2026-09-11T15:36:33.779Z",
+ "submitted": "2026-09-11T15:39:02Z",
+ "cur": 1,
+ "answers": {
+  "L-1": {
+   "v": "other",
+   "note": "what are the other options? what are the big benchmarks we could pull easily? deepswe? others?",
+   "seconds": 22,
+   "theme": "midnight"
+  },
+  "F-2": {
+   "v": "pick",
+   "pick": "hover",
+   "seconds": 22,
+   "theme": "midnight"
+  },
+  "S-4": {
+   "v": "yes",
+   "seconds": 22,
+   "theme": "midnight"
+  },
+  "F-1": {
+   "v": "pick",
+   "pick": "same-level",
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "F-3": {
+   "v": "pick",
+   "pick": "price-level",
+   "seconds": 41,
+   "theme": "midnight"
+  }
+ }
+}

@@ -217,6 +217,51 @@ live-acceptance run):
    it is not a sandbox. Any other launcher: `HOME=<throwaway> bash scripts/dev-isolation.sh <command>`.
    Check with `HOME=<throwaway> bash scripts/dev-isolation.sh gh auth status`, which must say not logged in.
 
+## Driving a dev window's Claude Code chat
+
+`node scripts/shoot/dev-chat.mjs [--worktree <name>] <verb>` (card #209) runs the chat steps a
+Claude Code test needs, against a dev window `run-dev.sh` started. Each call attaches, does one
+thing and detaches:
+
+- `new <folder>`: a new Claude Code chat there; says yes to the trust-folder prompt.
+- `mode normal|auto`: clicks the permission chip until it reads that mode (auto mode never shows
+  permission cards, so switch to normal to test them).
+- `say "<text>"`: types with real key events and presses Enter once. It never presses it twice.
+- `click "<label>"`: a real click on the one visible button with that label.
+- `shot [file.png]`: a picture (default `scratch/dev-chat/`).
+
+It reaches a window only through the marker `run-dev.sh` writes (the same rule `explore --dev`
+follows), so it cannot attach to the installed app. **Unproven against a real window** (written
+without launching one). A session it makes is a real conversation in the profile's transcripts
+(see item 6 above), so launch the window against a throwaway `HOME`. The first real run must confirm:
+(1) `new` reaches a chat on screen and the trust button's label contains "trust"; (2) the chip
+is found and `mode normal` / `mode auto` both land; (3) `say` with a very long message (a long
+file path, card #7) is sent by the real Enter and the box empties; (4) `click` finds a permission
+card's button by its label; (5) one message appears once, not twice.
+
+## Trying a Page without the app
+
+`node scripts/page-standin.mjs <pageFolder> [--port N]` serves the folder's `page.html` at a
+`127.0.0.1` address with a stub `window.youcoded` (card #239). Its saved data is the folder's
+`data.json`; `youcoded.fetch` answers only from an optional `fetch.json` (exact URL to
+`{status, body}`); session, chats and program abilities exist only when `page.json` declares that
+connection. It never reaches a network or uses a token, and it is not the app's sandbox, so a page
+that works there can still be refused in the app. Full list: the script's header.
+
+## Analytics: team devices and test runs
+
+Only official release builds send the app's anonymous daily check-in (`desktop/src/main/official-build.ts`, stamped by the release workflows), so dev windows, source builds and `-releasetest`/test builds never count. Two switches cover the rest:
+
+| Situation | Use | Effect |
+|---|---|---|
+| The owner's computers, or any long-lived test machine | the **team-device file** `~/.claude/youcoded-team-device` | still checks in, marked `team`; the owner dashboard leaves it out unless **My devices** is on, and counts it under "Left out" |
+| A throwaway run (a VM you delete, an automated test, a script) | **`YOUCODED_NO_ANALYTICS=1`** in the app's environment | sends nothing at all |
+
+- **Having this workspace does NOT make a computer a team device** — anyone can use it to improve the app, and their everyday YouCoded is a real user. `workspace-start.mjs` and `setup.sh` create the file only when `gh` is signed in as the owner (`itsdestin`; `scripts/team-device.mjs`). A contributor who wants their own test machine left out creates the file by hand.
+- `scripts/vm/vm.sh <vm> load …` and `fedora.sh load` write it inside the guest, so an installer test never reads as a new user. A VM made any other way: create `~/.claude/youcoded-team-device` (Windows: `%USERPROFILE%\.claude\youcoded-team-device`) before first launching the app, or launch it with `YOUCODED_NO_ANALYTICS=1`.
+- A phone: the app identifies it by its Android ID, so add its hash to the owner's list instead — `node youcoded-admin/skills/analytics/scripts/device-hash.mjs --android <ANDROID_ID>` (see that skill's "Admin filter").
+- The vitest suite sets `YOUCODED_NO_ANALYTICS=1` for every test (`desktop/vitest.config.ts`).
+
 ## Testing on a phone
 
 A phone's browser gets the app from the dev window's remote server. By default that is **live code

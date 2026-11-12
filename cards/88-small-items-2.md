@@ -1,7 +1,7 @@
 ---
 id: 88
 title: Two small items: a warning and a community link
-stage: planning
+stage: polish
 priority: P3
 tags: other-features, misc, bug
 branch: 88-small-items-2
@@ -13,9 +13,9 @@ side: both
 vision: together.added.reddit
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: The Reddit community link is in the app's Settings, under Help and feedback, as 'Community on Reddit'. It also appears in a Help tip. Shipped September 10, 2026. RETESTED 2026-11-10 in a dev copy: the warning did not appear with 13 chats reloading on the computer, nor with 15 chats on a remote browser (reload and first sign-in); 0 warnings, 0 errors.
+Next: Only Destin's choice is left: add a community link on the website or not. Once he answers, this card can close (the warning part is confirmed gone).
+Blocked: nothing.
 
 Chats
 
