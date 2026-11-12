@@ -1,7 +1,7 @@
 ---
 id: 190
 title: Resume and Welcome back preview: the pinned title card covers the first line of a short chat
-stage: explore
+stage: merged
 tags: chat, resume-browser, bug
 branch: 190-resume-and-welcome-back-preview
 finish: In the preview pane (Welcome back, Resume screen, side drawer), the first entry of a conversation is fully visible below the pinned conversation card, even when the chat is too short to scroll.
