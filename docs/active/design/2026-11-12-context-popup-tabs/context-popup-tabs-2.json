@@ -1,0 +1,113 @@
+{
+  "title": "\"What the assistant was given\" — three tabs, round 2",
+  "key": "context-popup-tabs-2",
+  "out": "context-popup-tabs-2.review.html",
+  "images": "images/context-popup-tabs-2",
+  "runs": { "before": "runs-2/before", "after": "runs-2/after" },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "What the assistant was given",
+      "path": "Overview, in a chat on YouCoded's own engine",
+      "crop": "chat/session-context#native",
+      "highlight": "panel",
+      "headline": "The tabs now read Overview, Global context and Project context.",
+      "changed": "Your round 1 note on T-1: the two tabs and the two matching rows at the bottom of Overview are renamed Global context and Project context. \"Before\" here is still today's app, with five tabs.",
+      "measured": "5 tabs down to 3",
+      "notice": "The names are in sentence case (\"Global context\", not \"Global Context\") because the design guide asks for that everywhere.",
+      "risk": "The longer names leave less spare room in the tab strip on a narrow phone; the strip scrolls sideways if it runs out."
+    },
+    {
+      "id": "R2-2",
+      "surface": "What the assistant was given",
+      "path": "Overview, in a Claude Code chat",
+      "crop": "chat/session-context",
+      "highlight": "panel",
+      "headline": "The Claude Code box now uses your wording, and the extra \"Not shown here\" row is gone.",
+      "changed": "Your round 1 note on T-2. The box reads: \"This chat is running on Claude Code, which uses its own settings and instructions. This menu may not be 100% accurate: your assistant may have loaded tools, instructions or settings not listed here.\" I tidied two phrases for grammar only (\"utilizes\" to \"uses\", and \"may have different loaded with tools\").",
+      "notice": "The row I had added below, which said the same thing a second time, is removed.",
+      "risk": "\"May not be 100% accurate\" is a strong thing for the app to say about its own screen; it is true, but some people may trust the rest of the pop-up less."
+    },
+    {
+      "id": "R2-3",
+      "surface": "What the assistant was given",
+      "path": "Global context tab, top, in a chat on YouCoded's own engine",
+      "crop": "chat/session-context#global",
+      "runs": ["after"],
+      "new": true,
+      "headline": "No loose grey sentences: every word on the tab now sits in a card.",
+      "changed": "Your round 1 note on T-3. The grey sentence under each label is gone, and a group with nothing in it is a row like its neighbours instead of a paragraph. Each group is now a small label with its count, then cards.",
+      "measured": "4 grey sentences removed from this view",
+      "notice": "The first card appears straight under the first label.",
+      "risk": "With the sentences gone, nothing explains what a skill is to someone who has never met one; the label and each skill's own one-line description carry it."
+    },
+    {
+      "id": "R2-4",
+      "surface": "What the assistant was given",
+      "path": "Global context tab, scrolled down, in a chat on YouCoded's own engine",
+      "crop": "chat/session-context#global-engine",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Built-in tools are one row that lists every tool when opened; each add-on is one row beside it.",
+      "changed": "Your round 1 note on T-4. \"Built-in tools\" and \"Add-ons\" merged into one Tools group. The first row, Built into YouCoded, opens to show all its tools with a line on what each does. The \"Show all 7\" button is gone from tools.",
+      "measured": "10 tools shown as 2 rows",
+      "notice": "The Tools group is as many rows as there are sources of tools, however many tools each brings.",
+      "risk": "Seeing any tool name now takes one click. \"Show all\" still appears under a long skills list, because each skill row opens its own text and so cannot fold into a single row."
+    },
+    {
+      "id": "R2-5",
+      "surface": "What the assistant was given",
+      "path": "Global context tab, in a Claude Code chat",
+      "crop": "chat/session-context#claude-code-global",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Your rules card says one thing: \"Read before every chat, in every project\".",
+      "changed": "Your round 1 note on T-5. Removed \"Written by you, for every project\", \"You, in every project\" and \"YouCoded didn't shorten it\". The one line left is inside the card, under the file's name, and is a shorter form of your \"instructions injected before every chat … in every project\".",
+      "notice": "A file that was shortened to fit still says so on that same line, with an amber dot.",
+      "risk": "In a Claude Code chat the app cannot prove Claude Code read the file; the line states what Claude Code is documented to do."
+    },
+    {
+      "id": "R2-6",
+      "surface": "What the assistant was given",
+      "path": "Project context tab",
+      "crop": "chat/session-context#project",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Project context gets the same treatment: label, count, cards.",
+      "changed": "Your round 1 note on T-6. The grey sentences under Project rules and Project skills are gone. A rules file from a folder above the project is named by that folder; the project's own file reads \"Read before every chat in this project\".",
+      "notice": "A project with no rules file or no skills of its own shows a one-line row saying so.",
+      "risk": "Project commands, rules folders and helpers are still not listed; the app does not collect them yet."
+    },
+    {
+      "id": "R2-Q",
+      "words": true,
+      "surface": "YouCoded's own engine",
+      "path": "Every chat on YouCoded's engine",
+      "headline": "I rechecked: YouCoded's engine does not read your every-project rules file. Where should that be written down?",
+      "today": "I traced the code again. When a chat starts on YouCoded's own engine, it looks for a rules file in the project's folder, then each folder above it, and stops at the top of that project's repository. It never looks in your home folder's .claude folder, which is where the every-project file lives. Only Claude Code chats read that file. Two existing work items are near this but neither says it: #57 (a built-in \"Your Assistant\" project, planned as the home for global instruction files) and #248 (the same setup on every device, including global instructions).",
+      "problem": "Rules you wrote for every project do not apply in chats on YouCoded's engine, and no work item says the engine should read them. #57 plans where such a file would live, not that every chat reads it.",
+      "proposal": "Record the gap so it is not lost. Nothing about today's chats changes from this answer; it only decides where the work is tracked.",
+      "options": [
+        {
+          "id": "add-to-57",
+          "label": "Add it to #57",
+          "recommended": true,
+          "pros": ["One place decides both where global rules live and that every chat reads them", "#57 is already a release blocker, so it will not be forgotten"],
+          "cons": ["#57 is already large, so this could wait behind the rest of it"]
+        },
+        {
+          "id": "new-item",
+          "label": "Its own work item",
+          "pros": ["Small enough to build soon, on its own", "Chats on YouCoded's engine would follow your every-project rules sooner"],
+          "cons": ["Reads Claude Code's file for now, which #57 may later replace with YouCoded's own"]
+        },
+        {
+          "id": "leave",
+          "label": "Leave it for now",
+          "pros": ["Nothing new to track"],
+          "cons": ["The Global context tab keeps showing \"No every-project rules\" on YouCoded's engine", "The gap lives only in this chat and that one row"]
+        }
+      ]
+    }
+  ]
+}
