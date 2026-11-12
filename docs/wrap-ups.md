@@ -1475,5 +1475,5 @@ recurred — the repetition is the data.
 - Destin's idea (install, click through and picture other AI apps; compare menus and features) was filed nowhere → card: #252, with a handoff holding the verified install route and the working hidden-screen commands.
 - A hand-built system package is a machine fact no repo tracks → applied: `~/system/machines/z13/hardware.md` (first tried `now.md`, refused by its 600-word cap; 2 calls).
 - `glob-guard` stopped two kill commands (`pgrep -f` self-match; unquoted `$VAR` under zsh) → dropped: the guard worked as designed, 2 calls.
-- The record-only landing rule covers this entry but not the handoff in `docs/active/`, so the session needed a second `-ledger` branch for one paragraph (same as the 2026-11-09 analytics session) → dropped: two sessions is not yet a pattern worth a script; noted here so a third is visible.
+- The record-only landing rule covers this entry but not the handoff in `docs/active/`, so the session needed a second `-ledger` branch for one paragraph (the analytics day-view session did the same, PR #353) → dropped: two sessions is not yet a pattern worth a script; noted here so a third is visible.
 - deleted/merged: none found (a read-and-research session; nothing in the workspace changed besides the card and handoff).
