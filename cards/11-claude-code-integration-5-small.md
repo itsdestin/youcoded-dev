@@ -13,8 +13,8 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: The Claude direct controls and the message queue that waits for you now work in the app (app PR #657, merged 2026-10-20; tracked as card 169).
-Next: Fix or verify the open items from the original five: (a) a broken settings file is backed up and replaced with no message to you; (b) a settings change can be skipped with no message when another program is busy with the file; (e) the saved test recordings of Claude Code are old (version 2.1.281), so a newer Claude Code could break the app without tests failing. Check (c) and (d), which look already fixed. The wider direct-control follow-ups move to card 12 or a new card.
+Done: The Claude direct controls and the message queue that waits for you now work in the app (app PR #657, merged 2026-10-20; tracked as card 169). 2026-11-11 (chat-engine batch, app branch session/chat-engine-batch, not merged): checked against code: (c) ALREADY FIXED 2026-10-13 (253c34c63, shared warning box); (d) ALREADY FIXED 2026-10-14 (Android ships Claude Code 2.1.300, old lock deleted). (b) built: when another program holds settings.json at launch, one background retry 5 s later waits up to 10 s; launch is not slowed; dev-copy tested (hooks part cannot run in a dev copy).
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): YES, show a one-time notice when a damaged Claude Code settings file is replaced (proposed: Claude Code settings file could not be read, so YouCoded started a fresh one; say where the old copy is if one is kept). Review page before landing.
 Blocked: Nothing blocks the shipped part. Needs a real Android, Windows and Mac run to confirm the rest.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.

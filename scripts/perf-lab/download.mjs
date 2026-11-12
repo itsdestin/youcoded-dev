@@ -1,7 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, statSync, linkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { closeSync, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readSync, statSync, linkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { open } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { requireDiskHeadroom } from './disk-budget.mjs';
 
 export function completedAsset(dest) {
@@ -9,6 +9,26 @@ export function completedAsset(dest) {
     const receipt = JSON.parse(readFileSync(`${dest}.complete`, 'utf8'));
     return receipt.version === 1 && Number.isSafeInteger(receipt.bytes) && receipt.bytes > 0 && statSync(dest).isFile() && statSync(dest).size === receipt.bytes;
   } catch { return false; }
+}
+
+// WHY (2026-11-11): a model downloaded before the `.complete` receipt existed has no receipt, so the kit refused it
+// although the file was whole. Only a file whose SHA-256 equals the published one earns a receipt here: a cut-off or
+// corrupt file has a different hash and stays refused. Synchronous (callers are sync); hashes in 8 MiB pieces, ~1 s
+// for the 470 MB model, and only once — afterwards the receipt answers. Never downloads, never overwrites a receipt.
+export function adoptVerifiedAsset(dest, { sha256, bytes, url }) {
+  if (completedAsset(dest)) return true;
+  if (existsSync(`${dest}.complete`)) return false;              // a receipt that disagrees: leave it for a person
+  let fd;
+  try {
+    const info = lstatSync(dest);
+    if (!info.isFile() || info.size !== bytes) return false;
+    fd = openSync(dest, 'r');
+    const hash = createHash('sha256'), buf = Buffer.allocUnsafe(8 * 1024 * 1024);
+    for (let n; (n = readSync(fd, buf, 0, buf.length, null)) > 0;) hash.update(buf.subarray(0, n));
+    if (hash.digest('hex') !== sha256) return false;
+  } catch { return false; } finally { if (fd !== undefined) closeSync(fd); }
+  writeFileSync(`${dest}.complete`, JSON.stringify({ version: 1, bytes, url, sha256, adopted: 'checksum' }), { flag: 'wx' });
+  return completedAsset(dest);
 }
 
 // WHY: interrupted downloads used to leave nonempty final files which the next

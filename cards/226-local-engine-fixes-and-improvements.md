@@ -13,8 +13,8 @@ priority: P3
 work: session/local-model-hardening
 ---
 Progress
-Done: The fixes listed below are finished and saved on the work branch (not yet on the main app). Fixed: the local model no longer gets stuck showing 'busy' after loading; long chats on small context windows now size search results to the room left, refuse junk summaries, and show one clear 'too long' message with Summarize; models with the right files now use a speed boost (MTP) for dense models, roughly doubling reply speed on the 27B model; the ROCm and Speculative decoding wording now matches what was measured; cloud chats no longer wake the local engine; a too-long chat logs its token counts. Testing: the full check was reported green, and one end-to-end 9B test was clean; a second run hit an unexplained 'too long' error that was not reproduced.
-Next: Destin reviews the work; then the 7 app commits and 2 workspace doc commits are pushed to the backup copy.
+Done: 2026-11-12: Destin answered the review deck. Branch brought up to date with the main app. Built and tested: helper agents no longer take a chat's kept place; default context raised 32k to 64k. Tested on a separate engine copy: at 32k a third open chat makes every chat re-read everything, at 64k three chats keep their places.
+Next: Destin answers the follow-up deck (long results, cloud vs local, chat always continues, faster-writing safety net, desktop testing). Then build: read again on return, the decided items, final independent code review, ship.
 Blocked: Nothing. Backed up to GitHub 2026-11-10 (app and workspace branches session/local-model-hardening) after Destin allowed the secrets-scan exception for a model settings name in a test. Waits for his review and testing before landing.
 
 Chats

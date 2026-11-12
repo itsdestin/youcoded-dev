@@ -14,8 +14,8 @@ side: screens
 vision: chat.converse.local
 ---
 Progress
-Done: Downloads for the app's own models now stop safely if the disk fills up (shipped in 1.3.x, youcoded PR #497 and commit 40a01e22b). The shared download code is not yet merged: models, the engine and voice each still download in their own way.
-Next: Decide with Destin whether to split this card: (1) add Google's Gemma licence terms to the model download screen (small, user-visible, possibly required); (2) merge the three download paths into one (internal cleanup, no screen change, on hold).
+Done: Downloads for the app's own models now stop safely if the disk fills up (shipped in 1.3.x, youcoded PR #497 and commit 40a01e22b). The shared download code is not yet merged: models, the engine and voice each still download in their own way. 2026-11-11 chat-engine batch: checked against code, nothing built. No licence or terms text exists on any model download screen. Gemma 4 E4B, 12B and 26B-A4B are offered in Settings, Local models; first-run setup can also pick Gemma 4 E4B by itself on computers with 12 to 16 GB of memory, so a notice is needed there too. Three downloaders and four checksum helpers: still accurate.
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): (in his words) the Gemma terms should be a short confirmation popup after clicking download/continue, that offers cancel/download buttons. So: not a line on the screen; a small confirm dialog naming Google terms with a link, in Settings Local models, first-run setup and Add from Hugging Face. Confirm which terms apply to the exact Gemma models first; show him a review deck.
 Blocked: Nothing recorded as blocking. Refactor is on hold by Destin's choice since 2026-09-18.
 
 Chats

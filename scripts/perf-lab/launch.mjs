@@ -29,7 +29,7 @@
 //
 // Node built-ins only: the workspace root has no package.json and must not gain one.
 import { spawn, spawnSync } from 'node:child_process';
-import { closeSync, constants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs';
+import { closeSync, constants, existsSync, lstatSync, mkdirSync, mkdtempSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { LINUX_OWNER_HOME, OWNER_MARKERS } from './owner-home.mjs';
 import { isAbsolute, join, resolve } from 'node:path';
@@ -446,7 +446,9 @@ export function validateWaylandSocket(socket, { uid = process.getuid?.() } = {})
 
 // WHY: tests exercise the exact env/argv builder without launching any app.
 // Explicit native mode never inherits DISPLAY or the live session bus.
-export function launchConfiguration({ fixture, display = ':99', waylandSocket, protocolDebug = true, inherited = process.env }) {
+// `runtimeDir`: the app's private XDG_RUNTIME_DIR. launchApp passes a short one (makeShortRuntimeDir — why there);
+// the default keeps the old in-fixture folder for the other callers (supervised launch, realism).
+export function launchConfiguration({ fixture, display = ':99', waylandSocket, protocolDebug = true, inherited = process.env, runtimeDir = join(fixture.home, '.runtime') }) {
   const env = { ...inherited };
   for (const k of [
     'CLAUDECODE', 'CLAUDE_CODE_CHILD_SESSION', 'CLAUDE_CODE_SESSION_ID', 'CLAUDE_CODE_ENTRYPOINT',
@@ -455,7 +457,6 @@ export function launchConfiguration({ fixture, display = ':99', waylandSocket, p
     'YOUCODED_PROFILE', 'DBUS_SESSION_BUS_ADDRESS', 'DBUS_STARTER_ADDRESS',
     'DBUS_STARTER_BUS_TYPE', 'ELECTRON_RUN_AS_NODE', 'NODE_OPTIONS',
   ]) delete env[k];
-  const runtimeDir = join(fixture.home, '.runtime');
   Object.assign(env, {
     HOME: fixture.home,
     XDG_RUNTIME_DIR: runtimeDir,
@@ -475,6 +476,24 @@ export function launchConfiguration({ fixture, display = ':99', waylandSocket, p
     env.DISPLAY = display;
   }
   return { env, args: [waylandSocket ? '--ozone-platform=wayland' : '--ozone-platform=x11'] };
+}
+
+// WHY a short private runtime folder (2026-11-11): since 2026-10-22 the app puts its hook socket at
+// $XDG_RUNTIME_DIR/youcoded/claude-desktop-hooks-<pid>.sock (youcoded desktop/src/main/hook-relay.ts, hookPipeName).
+// With the runtime folder inside a fixture HOME under a deep worktree that path was 160 characters; Linux allows a
+// socket path of at most 107, so the socket never opened and every Claude Code chat hung on "Initializing session".
+// A fresh folder under /tmp keeps it near 60. Same safety model as the fixture: mkdtemp makes it new and owner-only
+// (0700), it is never the real home or /run/user, and launchApp removes it at teardown.
+export const UNIX_SOCKET_PATH_MAX = 107;
+export function makeShortRuntimeDir({ base = '/tmp' } = {}) {
+  const dir = mkdtempSync(join(base, 'plrt-'));
+  // Longest name the app can make here: Linux pids are at most 7 digits (pid_max 4194304).
+  const worst = join(dir, 'youcoded', `claude-desktop-hooks-${'9'.repeat(7)}.sock`);
+  if (Buffer.byteLength(worst) > UNIX_SOCKET_PATH_MAX) {
+    rmSync(dir, { recursive: true, force: true });
+    throw new Error(`perf-lab launch: runtime folder ${dir} is too long for the app's hook socket (${Buffer.byteLength(worst)} > ${UNIX_SOCKET_PATH_MAX} bytes)`);
+  }
+  return dir;
 }
 
 // Raw bytes only, no splitting or attribution: children may inherit the same pipe.
@@ -593,12 +612,6 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
   } else if (protocolLog) {
     throw new Error('perf-lab launch: protocol log requires native Wayland');
   }
-  // The private runtime is not the Wayland socket directory; a native connection
-  // uses the validated absolute socket while DBus remains deliberately dead.
-  const runtimeDir = join(fixture.home, '.runtime');
-  mkdirSync(runtimeDir, { recursive: true, mode: 0o700 });
-  const { env, args: ozoneArgs } = launchConfiguration({ fixture, display, waylandSocket, protocolDebug });
-
   // WHY: a short-cycle rig using a shared --app-dir cannot claim every process
   // under that package as its own. Refuse BEFORE the usual stale-process sweep;
   // the default keeps existing perf-lab recovery behavior unchanged.
@@ -617,6 +630,14 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
     throw new Error(`perf-lab launch: something is already serving CDP on port ${cdpPort} and it is not part of this rig (it matches none of ${familyNeedles.join(', ')}). Refusing to attach — pass a different cdpPort or close that process yourself.`);
   }
 
+  // The private runtime is not the Wayland socket directory; a native connection
+  // uses the validated absolute socket while DBus remains deliberately dead.
+  // WHY made here, after the refusals above: every exit from this point removes it
+  // (removeRuntimeDir), so a refused launch cannot leave a folder behind in /tmp.
+  const runtimeDir = makeShortRuntimeDir();
+  const removeRuntimeDir = () => { try { rmSync(runtimeDir, { recursive: true, force: true }); } catch {} };
+  const { env, args: ozoneArgs } = launchConfiguration({ fixture, display, waylandSocket, protocolDebug, runtimeDir });
+
   const out = { text: '' };
   const err = { text: '' };
   const spawnedAt = Date.now();
@@ -633,7 +654,7 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
     proc = spawn(binary, [`--remote-debugging-port=${cdpPort}`, '--no-sandbox', ...ozoneArgs, ...extraArgs], {
       env, cwd: fixture.home, stdio: ['ignore', 'pipe', 'pipe'], detached: true,
     });
-  } catch (e) { protocolSink?.close(); throw e; }
+  } catch (e) { protocolSink?.close(); removeRuntimeDir(); throw e; }
   proc.stdout.on('data', tailSink(out));
   proc.stderr.on('data', tailSink(err));
   const protocolDrain = protocolSink ? captureProtocolStderr(proc.stderr, protocolSink) : null;
@@ -667,6 +688,7 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
     // to signal something we do not own.
     try { signalAll(killableFamily(familyNeedles).pids, 'SIGKILL'); } catch {}
     try { groupKill(proc.pid, familyNeedles, 'SIGKILL'); } catch {}
+    removeRuntimeDir();
   };
   const onSignal = (sig) => { hardCleanup(); process.exit(sig === 'SIGINT' ? 130 : 143); };
   const onExit = () => hardCleanup();
@@ -734,7 +756,8 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
     if (protocolDrain) await protocolDrain.finish(protocolLog);
     // WHY: retain the emergency exit/signal handler if a process survived.
     // The caller must retain the private fixture, not silently call it cleaned.
-    if (!cleanupError) detachHandlers();
+    // (A survivor keeps the runtime folder too; the emergency handler removes it.)
+    if (!cleanupError) { detachHandlers(); removeRuntimeDir(); }
     if (cleanupError) throw new AggregateError([e, cleanupError], 'perf-lab launch: startup failed and owned-process cleanup is uncertain');
     throw e;
   }
@@ -746,7 +769,7 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
   proc.stderr.unref?.();
 
   const app = {
-    proc, spawnedAt, pid: proc.pid, cdpPort, target, cdp, familyNeedles,
+    proc, spawnedAt, pid: proc.pid, cdpPort, target, cdp, familyNeedles, runtimeDir,
     // A live getter is not a receipt: callers only receive immutable evidence
     // after kill has waited for the owned stderr pipe to drain (or timed out).
     protocolCapture: null,
@@ -765,7 +788,8 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
       cleanedUp = true;                 // the exit handler must not double-signal
       detachHandlers();
       try { cdp.close(); } catch {}
-      try { await sweep(familyNeedles, fixture.userData, { groupPid: proc.pid }); }
+      // The runtime folder goes only after the sweep proved the family gone (sweep throws on a survivor).
+      try { await sweep(familyNeedles, fixture.userData, { groupPid: proc.pid }); removeRuntimeDir(); }
       finally { if (protocolDrain) app.protocolCapture = await protocolDrain.finish(protocolLog); }
     },
   };

@@ -1,0 +1,31 @@
+{
+ "deck": "terminal-direct-typing-review",
+ "started": "2026-11-09T00:35:01.209Z",
+ "submitted": "2026-11-09T00:38:26Z",
+ "cur": 2,
+ "answers": {
+  "T-1": {
+   "v": "yes",
+   "t": 1794184615309,
+   "note": "put paperclip and paste on the lefthand side.",
+   "seconds": 114,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "T-2": {
+   "v": "other",
+   "t": 1794184696903,
+   "note": "i think we need to make this look like an enter key symbol or something. the send button in this view look odd sitting next to the right arrow. ",
+   "seconds": 82,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "T-3": {
+   "v": "yes",
+   "t": 1794184705617,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

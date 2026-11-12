@@ -12,8 +12,8 @@ area: Chat
 side: screens
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
+Done: nothing recorded. 2026-11-11 chat-engine batch: checked against code, nothing built. All still happen. (b) is outdated: a folder dropdown exists (saved folders); only a recently-used order is missing.
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): YES to designing all three: right-click menu on pictures, recently used folders first, Replace or Add when a quick chip is tapped over typed text; each comes back to him as a small design first. Sizes: GO AHEAD with 1000-based sizes (about 20 places). The git-branch popup was not asked; still open.
 Blocked: nothing recorded.
 
 Chats

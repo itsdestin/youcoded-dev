@@ -15,8 +15,8 @@ platform: Desktop only
 vision: chat.harness.tokens, chat.harness.compaction
 ---
 Progress
-Done: Cache fixes shipped in Sept 2026 (youcoded #461, #464, #553, #554). Native compaction with durable restore shipped 2026-09-24 (youcoded #559). Reuse chip counting fixed (#405). A 500k cloud context option shipped (#652). Per-provider output caps shipped (#670).
-Next: Decide whether the expected-vs-surprise cache-miss display still needs a deck. Measure OpenRouter and local cache behavior. Decide on a model-switch warning in the picker. Check whether the helper-cache item is still wanted given cards 71 and 198.
+Done: Cache fixes shipped in Sept 2026 (youcoded #461, #464, #553, #554). Native compaction with durable restore shipped 2026-09-24 (youcoded #559). Reuse chip counting fixed (#405). A 500k cloud context option shipped (#652). Per-provider output caps shipped (#670). 2026-11-11 chat-engine batch: cache reuse measured free from saved chats (docs/active/investigations/2026-11-11-cache-reuse-measured/README.md). ChatGPT unexplained misses about 4 percent since the September fixes, Anthropic 1 percent, OpenRouter 18 percent of quick follow-ups (small sample, about 11 percent of the input bill); time away costs, not reopening; a model switch always re-reads the whole chat. The ChatGPT routing-label fix SHIPPED in app PR #553 (the Blocked line was out of date).
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): no paid OpenRouter run yet. His words: i think i want to more thoroughly investigate the initial chats and commit history relating to these. i thought i had some memory of doing work on this front already. i also would want to better understand how we would actually be testing. Next: a free history review (past chats, commits) of OpenRouter cache misses and a plain write-up of how the paid test would work, then ask again.
 Blocked: Nothing recorded. The ChatGPT routing-label branch and the Reuse-chip deck need confirming before they can be tracked.
 
 Chats

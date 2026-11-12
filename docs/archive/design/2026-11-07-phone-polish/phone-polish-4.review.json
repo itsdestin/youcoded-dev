@@ -1,0 +1,23 @@
+{
+  "title": "Phone polish — the filter menu's glass, with the fade kept",
+  "key": "phone-polish-4-review",
+  "out": "phone-polish-4.review.html",
+  "images": "images/phone-polish-4.review",
+  "runs": {
+    "before": "runs4/before",
+    "after": "runs4/after"
+  },
+  "steps": [
+    {
+      "id": "P4-1",
+      "surface": "Project → Files → filter menu, on a phone",
+      "path": "Projects, a project, Files, the filter button",
+      "crop": "projects/files/filter",
+      "highlight": "panel",
+      "headline": "The filter menu is frosted glass on a phone, and the projects page keeps its scroll fade.",
+      "changed": "The fade is back exactly as it was. Instead, the filter menu is now drawn on top of the page, the way the app's other dropdowns are (the project card's own menu, the ☰ menu), so the page's fade can no longer stop its glass from blurring what's behind. If a short screen can't fit it, the menu scrolls inside itself, with the usual fade.",
+      "notice": "On Halftone or Meadow Mist, the file cards behind the menu are blurred instead of showing straight through. The menu on the session side panel is unchanged.",
+      "risk": "The menu no longer moves with the page: scroll the page while it's open and it stays put until you tap elsewhere to close it."
+    }
+  ]
+}

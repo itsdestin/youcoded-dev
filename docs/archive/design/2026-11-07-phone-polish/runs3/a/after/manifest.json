@@ -1,0 +1,104 @@
+[
+  {
+    "name": "welcome#returning",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/archive/design/2026-11-07-phone-polish/runs3/a/after/welcome#returning/midnight.png",
+    "ms": 584,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome#returning",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/archive/design/2026-11-07-phone-polish/runs3/a/after/welcome#returning/light.png",
+    "ms": 603,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome#returning",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/archive/design/2026-11-07-phone-polish/runs3/a/after/welcome#returning/dark.png",
+    "ms": 618,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome#returning",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/archive/design/2026-11-07-phone-polish/runs3/a/after/welcome#returning/creme.png",
+    "ms": 656,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome#returning",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/archive/design/2026-11-07-phone-polish/runs3/a/after/welcome#returning/meadow-mist.png",
+    "ms": 1340,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "welcome#returning",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/android-ux-test/docs/archive/design/2026-11-07-phone-polish/runs3/a/after/welcome#returning/halftone-dimension.png",
+    "ms": 1655,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "parts": []
+  }
+]

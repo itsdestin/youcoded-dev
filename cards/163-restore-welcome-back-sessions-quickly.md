@@ -12,7 +12,7 @@ work: session/welcome-back-recovery, session/163-crash-resume-repair
 ---
 Progress
 Done: Merged/pushed app PR #662 as a6c47f79ae4120aea48e0e5c514a420ce81d5de7 and archive/workspace PR #287 as b5237db37185db1cd60856be186bd49e8df28257. Both CI gates passed. Source merged tree matches verified candidate; archived records match checked candidate, with one unrelated concurrent #93 bookkeeping entry preserved. Evidence is privately retained outside disposable worktrees.
-Next: Complete. Independent stronger report-acceptance protocol boundary remains under #71, and close-out-tool false positives under #22; those cards stay open.
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): the leftover change e4d98a84f on session/163-crash-resume-repair gets a proper review, then a recommendation to him. Not landed.
 Blocked: None for this shipped recovery work. No release/tag, installed-app modification, device-runtime or Windows/macOS execution claim.
 
 Chats

@@ -14,8 +14,8 @@ vision: chat.steer.permissions, chat.converse.native
 work: session/66-passwordless-admin
 ---
 Progress
-Done: Scoped passwordless admin approvals shipped (youcoded PR #650, 2026-10-19). Also shipped in the wider Always-allow rework (PR #713, 2026-11-05): per-part chained commands and edit choices. Floor-forced permission cards now say why (commit 9bf0805a5).
-Next: Still open, per code check: (1) Local and OpenRouter sessions have no Skip Permissions option; (2) Edit tool does not normalise curly quotes or dashes; (3) the picture cache is never cleaned up; (4) the old PermissionOverrides code still exists. Several other items need a test in the running app or a research run before anyone can say whether they are still open.
+Done: Scoped passwordless admin approvals shipped (youcoded PR #650, 2026-10-19). Also shipped in the wider Always-allow rework (PR #713, 2026-11-05): per-part chained commands and edit choices. Floor-forced permission cards now say why (commit 9bf0805a5). 2026-11-11 (chat-engine batch, app branch session/chat-engine-batch, not merged): built (c) Edit tool: when old_string is not found exactly, one fallback match ignoring curly/straight quotes, long dashes, non-breaking spaces and trailing spaces, only if exactly one place matches, never for replace_all, skipped above 2 million characters. Built (f3): after a model switch an oversized picture is shrunk on the next request instead of becoming a note (first reply waits about 0.4 s per picture); not dev-tested (needs two real models). Checked against code: the rm analyzer ALREADY SHIPPED 2026-09-23 (rm-target.ts); the helper's 5-minute permission clock was REMOVED 2026-09-16.
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): NO Skip Permissions option for local/OpenRouter chats; drop item (e). Other items unchanged.
 Blocked: Nothing for the admin part. Other items wait on a decision about splitting the card.
 
 Chats

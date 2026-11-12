@@ -14,8 +14,8 @@ platform: Desktop only
 vision: chat.files.office, chat.files.drawer
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: 2026-11-11, branch session/files-reliability-batch (app fb01783a5, not merged): 'Save a copy' after a restore now gets the right pictures, including ones added after the restore; leftover hidden copies of a document (over an hour old) are also cleaned when the file is opened, copied, exported or restored. Checked the same day: reload leaving Office documents open was already fixed on 2026-10-19.
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): (a) closing a second window with unsaved text typing: ASK before closing. (b) Office autosave over an outside change: always keep the overwritten version in Versions, no prompt; his note: record this as something to come back to, to resolve it better or prevent it happening in the first place. (c) queued comment changes dropped after 10 minutes: LEAVE for now; his note: eventually come back and walk through the UX and logic flows. Decided by Claude: comment backups and the stale open-in-another-app warning stay as they are; closing a second window ending its chats while the window stays open is a plain bug to fix in the next files round.
 Blocked: nothing recorded.
 
 Chats
