@@ -1,0 +1,564 @@
+{
+  "title": "Testing rethink: what you asked for, what was built, what to decide",
+  "key": "test-rethink-questions-3",
+  "out": "test-rethink.questions-3.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Testing",
+      "path": "The whole effort",
+      "headline": "The objective has three equal parts: simplify the tests, prove the finished app works, and judge looks by eye.",
+      "changed": "From your messages on 2 November. One: \"significantly simplify and optimize our test suite\" and stop \"pinning single lines of code.\" Two: \"a better guarantee at the end that the app would actually work as intended for all users,\" covering \"app/security/ux behavior of the completed and compiled app.\" Three: \"never pin exact wording\"; wording and style are checked by a before/after picture tool on the work board.",
+      "notice": "Every question below is filed under one of these three parts. Each says what you said, what was built, and where the build falls short of what you said.",
+      "yes": "That's it",
+      "no": "Not quite"
+    },
+    {
+      "id": "P-1",
+      "page": "Part one: simplify the tests",
+      "intro": "The part with the least done. The test code shrank about 7.5%; you guessed far more could go."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The automatic tests",
+      "path": "About 1,240 test files that run on every change",
+      "headline": "How far should the simplifying go?",
+      "today": "You said: \"we shouldn't waste time testing a small element, if that small element breaking would break a bigger element we could test instead. if the test is as long as the code its testing, its probably wasteful.\" What was done: a random 150 files were sorted, then all 314 files that read the app's code as text, then the largest files were trimmed. Test files went from 1,285 to 1,243 and test code shrank about 7.5%. Files under 450 lines, which is most of them, were never looked at. Nobody went file by file asking your question.",
+      "problem": "Your rule was applied to a sample, not to the suite. The honest answer to \"how much of this is waste\" is still unknown.",
+      "proposal": "Decide how far to go. Every option keeps the safety net used so far: a recorder shows what each test exercised before and after, so a cut that loses real coverage is caught. It caught six and all were put back.",
+      "options": [
+        {
+          "id": "full-sort",
+          "label": "Sort every test file",
+          "summary": "Helpers go through all of them asking your two questions, then bring you groups to merge or drop with examples before anything is deleted.",
+          "pros": [
+            "It is what you asked for, applied to the whole suite.",
+            "You get a real number for how much is waste, and see examples before cuts happen."
+          ],
+          "cons": [
+            "The largest piece of work on this deck: many helper runs over several sessions.",
+            "The earlier estimate of a third was wrong, so the result may again be smaller than you expect."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "by-area",
+          "label": "Biggest areas only",
+          "summary": "Sort only the five or six features with the most test code.",
+          "pros": [
+            "Most of the possible saving for a fraction of the effort."
+          ],
+          "cons": [
+            "Leaves the long tail of small files unexamined."
+          ]
+        },
+        {
+          "id": "stop",
+          "label": "Stop here",
+          "pros": [
+            "No more effort. The guard against wording checks stays."
+          ],
+          "cons": [
+            "Your simplification goal stays largely unmet."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "The automatic tests",
+      "path": "Choices made for you on 3 November",
+      "headline": "Two cleanup choices were made under \"proceed as you see fit\"; confirm or reject them.",
+      "changed": "First: 22 tests check the developer tools, not the app (the build setup, the practice app's pretend backend, the paid evaluator, the screenshot tool). 5 tiny ones were dropped and the rest kept in the app's run. Second: three look areas lost their automatic check and are now judged only on pictures: terminal backgrounds, each built-in theme's colours in the first instant the app opens, and floating-window styling.",
+      "notice": "If you reject either, tell me in the note which one and what you want instead, for example moving the developer-tool tests out of the app's run the way your personal-page tests were.",
+      "yes": "Both are fine",
+      "no": "Change one"
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "The automatic tests",
+      "path": "Tests for your personal Pages",
+      "headline": "What should happen to the 44 personal-page test files that now run nowhere?",
+      "today": "You agreed that tests for your own Home Assistant and money pages should move out of the app's test run. They were moved. The deck you answered said they would \"still catch breaks there.\" In practice they only run if someone types the command; nothing runs them automatically.",
+      "problem": "A change to the app could break one of your personal Pages and no check would say so.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "nightly",
+          "label": "Run them nightly",
+          "pros": [
+            "Matches what you were told: your Pages stay protected.",
+            "No effect on everyday speed."
+          ],
+          "cons": [
+            "One more nightly result that can fail."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "manual",
+          "label": "Leave them manual",
+          "pros": [
+            "Nothing to build."
+          ],
+          "cons": [
+            "In practice they will not be run."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Part two: prove the finished app works",
+      "intro": "The walk-through, the daily checks, the phone and security. The strongest part so far, with real gaps."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Release walk-through",
+      "path": "The script that installs the app and uses it like a new user",
+      "headline": "Should the walk-through also run overnight, or stay release-only as you chose?",
+      "today": "You chose release-only and wrote: \"everyday changs should be extremely quick, dont want to introduce a multi-minute increase in the wait to make quick iterations.\" The deck then assumed the walk-through would take 30 to 60 minutes. Built and measured, it takes 3 to 4 minutes per machine, on GitHub's machines, not yours. It uses the test key you capped at $15 a month; the cost of one run has not been measured.",
+      "problem": "Run only at release, a break made weeks earlier shows up on release day, buried among hundreds of changes, and blocks the release.",
+      "proposal": "An overnight run never touches your everyday wait, so it does not go against the reason you gave. It does spend test-key money each night.",
+      "options": [
+        {
+          "id": "nightly",
+          "label": "Every night too",
+          "pros": [
+            "A break shows the next day, when one day of changes could have caused it.",
+            "Your everyday iteration speed is untouched."
+          ],
+          "cons": [
+            "Spends test-key money nightly. I would measure one run and tell you the monthly figure before switching it on."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "weekly",
+          "label": "Once a week too",
+          "pros": [
+            "About a seventh of the nightly cost."
+          ],
+          "cons": [
+            "A break can sit for a week."
+          ]
+        },
+        {
+          "id": "release-only",
+          "label": "Release only",
+          "summary": "As you chose.",
+          "pros": [
+            "Cheapest."
+          ],
+          "cons": [
+            "Breaks are found late and block the release."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Release walk-through",
+      "path": "What it covers",
+      "headline": "Which missing things should the walk-through learn to do?",
+      "today": "On the deck you picked eight areas and wrote \"nah this is fine to start.\" Seven are built: install and open, sign-in and first chat, chat tasks, files, sessions, the assistant's browser, and marketplace installs. Sync, which you picked, is not built: it needs an account to sync through that is not yours. In chat you also named games as something a real user tries, but did not pick it on the deck. Two smaller chat tasks were planned and not built: making a Page, and a long task that keeps going with the app in the background.",
+      "problem": "Each one missing is something users do that could break without the walk-through noticing. \"Sync always fails\" and \"online games are down\" were two of the six show-stoppers.",
+      "proposal": "Pick any worth building now.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "sync",
+          "label": "Sync between two copies",
+          "summary": "You already picked this. I would tell you exactly which spare test account to create, then build it.",
+          "pros": [
+            "Covers a show-stopper end to end."
+          ],
+          "cons": [
+            "You have to create one spare account."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "games",
+          "label": "Games",
+          "summary": "Play a solo game, and connect two test players online.",
+          "pros": [
+            "Online games were down for every user and no check noticed."
+          ],
+          "cons": [
+            "The daily outside-services check already notices the games address going dead; this adds the playing itself."
+          ]
+        },
+        {
+          "id": "page",
+          "label": "Build a Page",
+          "pros": [
+            "Pages are a headline feature."
+          ],
+          "cons": [
+            "Slower and costs more test-key money per run."
+          ]
+        },
+        {
+          "id": "background",
+          "label": "Long task in the background",
+          "pros": [
+            "Catches work stopping when the window is not in front."
+          ],
+          "cons": [
+            "Adds minutes to every run."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Phone testing",
+      "path": "Using the app on a phone before a release",
+      "headline": "How should the phone app's screens be tested?",
+      "today": "You asked: \"can we not just do this on the free github runners like we do with windows/mac/linux?\" Half of that worked: the phone's engine runs on a free GitHub machine with no phone, and it reproduced the startup crash and the sync bug. The other half was tried on one kind of free machine only, which cannot run a pretend phone. The ordinary kind can, but our phone app is built only for real phone chips and may not run there. That was never tried. Today nothing checks the phone's screens, so \"attach file does nothing\" and \"the phone gets computer screens\" would still ship unnoticed.",
+      "problem": "Four of the six show-stoppers were phone-only, and the phone has the least protection.",
+      "proposal": "Pick the route.",
+      "options": [
+        {
+          "id": "trial-then-flip",
+          "label": "Try a pretend phone first",
+          "summary": "A short trial on the ordinary free machines. If it works, the walk-through runs on a pretend phone for free. If not, fall back to your Flip7 checklist.",
+          "pros": [
+            "Finishes answering your own question.",
+            "If it works: phone coverage with nothing for you to do."
+          ],
+          "cons": [
+            "May not work. A pretend phone also misses the fold and the real keyboard."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "flip-checklist",
+          "label": "Flip7 checklist each release",
+          "summary": "About ten things you do by hand on your own phone before each release, roughly 10 minutes.",
+          "pros": [
+            "Free, available now, and a real phone."
+          ],
+          "cons": [
+            "Relies on you every release, and only at release."
+          ]
+        },
+        {
+          "id": "dedicated-phone",
+          "label": "Buy a test phone",
+          "summary": "About $150 to $250, left plugged in for the script to drive.",
+          "pros": [
+            "A real phone, checked without you."
+          ],
+          "cons": [
+            "Costs money, needs building and looking after."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Security",
+      "path": "Whether the finished app keeps its safety promises",
+      "headline": "Should checking security behaviour be part of this work?",
+      "today": "You named \"app/security/ux behavior\" as what matters. Nothing built here checks security. The walk-through presses Yes on the assistant's permission cards to get its tasks done; it never presses No to see that the assistant is really stopped. A separate security review ran on 30 October and its fixes are in the app, but that was a one-time review, not a repeating check.",
+      "problem": "A change could quietly stop the app asking permission, or stop honouring a No, and no check would notice.",
+      "proposal": "Pick how to handle it.",
+      "options": [
+        {
+          "id": "walkthrough-steps",
+          "label": "Add steps to the walk-through",
+          "summary": "A few steps that say No and check it sticks: the assistant is refused a command and does not run it; remote access turns away a wrong password.",
+          "pros": [
+            "Checks the promises users rely on, on the finished app, every run.",
+            "Small: it reuses the walk-through that exists."
+          ],
+          "cons": [
+            "Covers a handful of promises, not everything the security review looked at."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "own-work",
+          "label": "Its own piece of work",
+          "summary": "File it as a separate card and design it properly later.",
+          "pros": [
+            "Room to cover security more fully."
+          ],
+          "cons": [
+            "Nothing checks it in the meantime."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "Not part of this",
+          "pros": [
+            "Less to build."
+          ],
+          "cons": [
+            "The security part of your objective stays unmet."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Daily checks",
+      "path": "Engine check and outside-services check",
+      "headline": "When should a daily check be switched on, and how should it reach you?",
+      "today": "You said yes to a daily check of outside services that \"alerts you (e.g. a work board card).\" It is built, and so is an overnight check that the app's engine starts on a computer and on the phone's engine. Two departures from what you approved: the alert is only a GitHub email, and both checks are switched off until this work is on the main line. Both would also fail from day one, because they detect bugs the Android repairs (card #213) have not yet landed fixes for.",
+      "problem": "A check that fails every day for a known reason teaches you to ignore it. Until yesterday the app's own nightly tests had failed for a week with no one acting on the emails.",
+      "proposal": "Every option includes building the work board alert you approved. The choice is when a check starts running.",
+      "options": [
+        {
+          "id": "green-first",
+          "label": "Only once it passes",
+          "pros": [
+            "A failure always means something new broke."
+          ],
+          "cons": [
+            "No daily phone check until the Android repairs are in the app."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "known-list",
+          "label": "On now, known bugs excused",
+          "summary": "Each check carries a short list of known problems and only fails on something new.",
+          "pros": [
+            "Watching starts right away."
+          ],
+          "cons": [
+            "The list needs upkeep, and a bug left on it becomes invisible again."
+          ]
+        },
+        {
+          "id": "red-now",
+          "label": "On now, failing until fixed",
+          "pros": [
+            "Nothing extra to build."
+          ],
+          "cons": [
+            "Fails every morning for a known reason."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Part three: judge looks by eye",
+      "intro": "The work board's picture comparison. It does what you described, but it departs from two of your answers and you have not accepted it yet."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Work board, Screens tab",
+      "path": "\"Changed since\" the last release",
+      "headline": "Should approving each changed screen come back as a release step?",
+      "today": "You said yes to this on the first deck: \"each changed screen gets Keep / Not this, and the release waits until every one is answered.\" An early version had it. When the tool was rebuilt inside the Screens tab after your 5 November feedback, the approvals were left out, and the plan records that as a decision. I found no message where you were asked.",
+      "problem": "Without it, nothing makes sure the changed pictures are looked at before a release. Looks are now protected only by that look.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "restore-blocking",
+          "label": "Restore it, as approved",
+          "summary": "Keep / Not this on each changed screen; the release waits for all of them.",
+          "pros": [
+            "It is what you approved.",
+            "Guarantees the looks review happens, now that tests no longer check looks."
+          ],
+          "cons": [
+            "The latest run has 48 changed and 39 new situations to answer. With today's false alarms that is tedious, so the noise should be fixed first."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "restore-soft",
+          "label": "Restore it, not blocking",
+          "summary": "Keep / Not this is there and the release summary says how many are unanswered, but it does not wait.",
+          "pros": [
+            "A record of what you looked at, without holding up a release."
+          ],
+          "cons": [
+            "Easy to skip under time pressure."
+          ]
+        },
+        {
+          "id": "leave-out",
+          "label": "Leave it out",
+          "pros": [
+            "Simplest board."
+          ],
+          "cons": [
+            "Reverses your earlier answer; the review depends on remembering to look."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Work board, Screens tab",
+      "path": "Which themes the pictures are taken in",
+      "headline": "Which two themes should the comparison use?",
+      "today": "On the first deck you asked for \"youcoded/youcoded-night.\" The tool was built on the screenshot tool's usual pair, Meadow Mist and Halftone Dimension, which you set as that tool's default on 24 September. So two of your own instructions disagree, and nobody asked you which one wins.",
+      "problem": "The pictures you review are not in the themes you asked for.",
+      "proposal": "Pick one. Each theme added lengthens the run and the list to review.",
+      "options": [
+        {
+          "id": "youcoded-pair",
+          "label": "YouCoded and YouCoded Night",
+          "pros": [
+            "What you asked for on this deck's predecessor.",
+            "The app's own default themes, so it is what most new users see."
+          ],
+          "cons": [
+            "Plain themes; a problem that only shows on a patterned or glassy theme can be missed."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "current-pair",
+          "label": "Meadow Mist and Halftone Dimension",
+          "pros": [
+            "Busier themes catch more look problems.",
+            "No change needed."
+          ],
+          "cons": [
+            "Not what you asked for here."
+          ]
+        },
+        {
+          "id": "all-four",
+          "label": "All four",
+          "pros": [
+            "Covers both."
+          ],
+          "cons": [
+            "Twice the pictures to take and twice the list to review."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Work board, Screens tab",
+      "path": "The list of what changed beside each picture",
+      "headline": "How should the false alarms and repeats in the change list be handled?",
+      "today": "You asked for \"every single visual element in the app\" with \"the specific buttons on that screen, like highlighted if they change, the copy on that screen, highlighted if they change.\" That is built: each changed picture carries a list naming what was added, removed, reworded, moved or restyled. Your feedback since: it blamed a change on a blurred background, it flagged things that \"naturally change from run to run,\" and on 8 November it was \"still extremely unintuitive.\" Fixes followed each comment, and you have not seen the result. In the latest run, 25 of the 48 changed situations are described differently in the two themes, and 26 of the 96 changed pictures list ten or more items; one lists 61.",
+      "problem": "The list is what you asked for, but in its current state one real change can read as many, and the same change reads differently per theme.",
+      "proposal": "The list stays either way. Pick how to get it trustworthy.",
+      "options": [
+        {
+          "id": "you-look-first",
+          "label": "Show me first, then decide",
+          "summary": "I serve the current board from the development copy. You say what is still confusing, and fixes follow your comments, as before.",
+          "pros": [
+            "Your last verdict is three days of changes out of date; this avoids fixing things that no longer bother you.",
+            "You steer it directly."
+          ],
+          "cons": [
+            "Takes some of your time on a tool you have already reviewed several times."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "fix-first",
+          "label": "Fix the known noise first",
+          "summary": "One merged description per situation across both themes, and one change that moves many things reads as one line. Then you look.",
+          "pros": [
+            "What you see next is cleaner."
+          ],
+          "cons": [
+            "More building before you have confirmed the direction."
+          ]
+        },
+        {
+          "id": "fresh-reviewers",
+          "label": "Fresh reviewers again",
+          "summary": "As you asked on 5 November: helpers with no background review the real board and report what is unclear or wrong, and I fix that before you look.",
+          "pros": [
+            "Catches the obvious problems without using your time."
+          ],
+          "cons": [
+            "The last round of this still left it \"extremely unintuitive\" to you."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Order and housekeeping",
+      "intro": "Three smaller decisions that close this out."
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Order of work",
+      "path": "This testing work and the Android repairs (card #213)",
+      "headline": "Which should go into the app first: this testing work, or the Android repairs?",
+      "today": "Card #213 is the repair job for everything your phone test found. Another chat has been doing it and it is not in the app yet. It and this work changed eight of the same files, so whichever goes second has to reconcile them. GitHub can only run the new checks against other work once they are on the main line.",
+      "problem": "Android repairs first means phone fixes land with nothing automatic confirming them. Testing work first means the fixes wait a little longer.",
+      "proposal": "This only sets the order. Nothing merges until you say so.",
+      "options": [
+        {
+          "id": "tools-first",
+          "label": "Testing work first",
+          "summary": "With the daily checks handled as you chose on the earlier page.",
+          "pros": [
+            "The Android repairs can be proven by the walk-through and the phone engine check before they land.",
+            "The test cleanup stops drifting away from the main line."
+          ],
+          "cons": [
+            "The Android repair chat reconciles the eight shared files.",
+            "Phone fixes reach users slightly later."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "android-first",
+          "label": "Android repairs first",
+          "pros": [
+            "Users get the phone fixes soonest."
+          ],
+          "cons": [
+            "The fixes land unproven by anything automatic.",
+            "This work reconciles the eight shared files."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Leftovers",
+      "path": "Old files from building the picture comparison",
+      "headline": "May I delete the old picture-comparison leftovers?",
+      "today": "Building the comparison left eight earlier practice runs on this computer, about 12 GB, and an older stand-alone viewer that the Screens tab replaced. The latest run (run 9) and the Screens tab use none of it. If you chose to restore approvals, I would first take the Keep / Not this parts worth reusing from the old viewer.",
+      "problem": "12 GB of disk is held by files nothing reads, and the old viewer is code that will quietly stop working.",
+      "proposal": "Yes: I delete the eight old runs and the old viewer with its test, and keep run 9. No: everything stays."
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Work board",
+      "path": "Your real YouCoded app, Pages, Work board",
+      "headline": "May I install the updated work board into your real app once you accept it?",
+      "today": "The \"Changed since\" and \"New since\" views exist only in the development copy of the work board. The board in your real app is the older one.",
+      "problem": "You cannot review the comparison where you normally work until the board is updated, and that means writing to your real Pages folder, which I never do without your yes.",
+      "proposal": "Yes: once you have looked at the development copy and said it is good enough, I back up the current board, install the new one and check it opens. The board may briefly reload if you have it open. No: it stays in the development copy until you say."
+    }
+  ]
+}
