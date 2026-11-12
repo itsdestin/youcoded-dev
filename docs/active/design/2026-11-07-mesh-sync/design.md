@@ -334,6 +334,14 @@ backup/restoration flows ... somewhat tangential" [D10 Q-4]. Filed as cards on h
 
 ## 12b. Still open
 
+0. **Slimmed chats.** Whether chats travel and are backed up without the pictures and
+   duplicate file text stored inside their lines (measured 2026-11-02: 56% of chat bytes are
+   pictures stored twice; the conversation text is about 0.5 GB of 8.9 GB). The original on
+   the device that made the chat would never change. Unknown, needs a test in a dev copy:
+   whether Claude Code can resume a slimmed chat and still edit files it read earlier.
+   Source: `docs/active/plans/2026-11-02-slim-synced-chats.md` on master (card 98; its
+   piece 1 was shelved 2026-11-12 because it reworks code this design replaces). Not asked
+   yet.
 2. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
    door" setup.
 3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
