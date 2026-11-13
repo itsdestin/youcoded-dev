@@ -13,8 +13,8 @@ platform: Desktop only
 vision: chat.files.office
 ---
 Progress
-Done: Re-measured: large Markdown opens in ~70 ms (was 939 ms), code typing p95 ~32 ms, HTML swap 55-83 ms, no app freeze; 47-case ladder run once. Slow: 8x512 HTML 1.7 s, path list of 10,000+ 0.7-1.5 s freeze, 1000-row Word table 0.55 s.
-Next: Decide whether those rare cases deserve work; 20 MB sheet save and Office version restore not measured.
+Done: Destin, overnight deck 2026-11-13 C-13: leave very long path lists as they are for now.
+Next: Nothing now.
 Blocked: Windows and Mac are not measured. Each remaining case needs a real run to confirm.
 
 Chats
