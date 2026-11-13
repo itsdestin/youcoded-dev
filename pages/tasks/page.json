@@ -1,0 +1,16 @@
+{
+  "name": "Tasks",
+  "description": "A full to-do list: projects, due dates, repeats, priorities, labels and sub-tasks.",
+  "icon": "list",
+  "customIcon": {
+    "version": 1,
+    "paths": [
+      "M3 6l2 2 3.5-4",
+      "M12 6h9",
+      "M3 13l2 2 3.5-4",
+      "M12 13h9",
+      "M4 19.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0",
+      "M12 19.5h9"
+    ]
+  }
+}
