@@ -1,7 +1,7 @@
 ---
 id: 259
 title: Website: speed pass, in-between widths, FAQ and bottom-of-page polish
-stage: polish
+stage: merged
 tags: website, polish, performance
 branch: 259-website-speed-pass-in-between
 finish: Intro no longer re-styles the page each frame; demo starts on pointer; in-between widths are the desktop page scaled down with the narrow download bar; FAQ, gallery and footer polished.

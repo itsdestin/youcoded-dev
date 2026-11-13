@@ -913,3 +913,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-12 #251 "What the assistant was given" pop-up: three tabs (Overview, Global, Project) (youcoded#740 (4864a128b), youcoded-dev#369)
 - [x] 2026-11-13 #256 Website: new opening intro and a redesigned phone page (youcoded PR #744 (1ede4ea63))
 - [x] 2026-11-13 #205 Phone access: the assistant's browser asks for approvals you can't see (app PR #746 (30a75b634))
+- [x] 2026-11-13 #259 Website: speed pass, in-between widths, FAQ and bottom-of-page polish (youcoded PR #751 (ef4f10037))
