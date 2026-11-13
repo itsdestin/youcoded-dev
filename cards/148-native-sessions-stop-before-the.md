@@ -13,8 +13,8 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Destin, overnight deck 2026-11-13 L-4: land, but first "can you just explain the timing logic before we merge this. i want to understand what was wrong and how it was fixed." Fix is on app branch session/engine-followups (head d0a230589), reviewed twice; #163 and #69 split out to PR #749.
-Next: Explain in chat; land when he says so.
+Done: Destin said "okay with early stop" (2026-11-13) after the explanation; landed via app PR #750.
+Next: Watch real use for idle stalls after helpers; the cause of his original live stall is still unproven, so the card stays open until he has used a build with it.
 Blocked: Spending ledger numbers disagree (5.20 of 15 USD vs 0.27 headroom under 10 USD); recheck before any paid run
 
 Chats
