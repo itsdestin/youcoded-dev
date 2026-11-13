@@ -2,7 +2,7 @@
 status: draft
 date: 2026-11-12
 topic: Chats on every device (YouCoded Mesh) — the design, written from Destin's answers
-related-cards: 64, 98, 119, 121, 125, 127, 241, 242, 243, 248
+related-cards: 64, 98, 119, 121, 125, 127, 241, 242, 243, 248, 253, 258
 ---
 
 # Chats on every device — the design (draft for Destin's read)
@@ -14,7 +14,7 @@ struck. Lines starting **Open** are NOT decided. A checkpoint review on 2026-11-
 lines unsupported by, or in conflict with, his answers; he settled them on deck round 9
 (2026-11-12), marked "D9". Rounds 10 and 11 (same day) covered backup and pairing. A second
 review on 2026-11-13 found gaps and contradictions; the wording ones are fixed below, and
-the ones needing his decision are on deck round 12 and listed in section 12b. Nothing here
+the ones needing his decision went on deck round 12, answered the same day and marked "D12"; two remain open (section 12b). Nothing here
 is built. The only build-order statement is his own, at the end of section 12.
 
 ## 1. The goal
@@ -46,7 +46,18 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
   "word by word" of D1 Q-14] Sections 6 and 9 list the other differences for a watcher.
 - **The host never changes by itself.** It changes when you tap the chip, or when the host is
   offline and you tap Continue here. [D1 Q-5, Q-15]
-- **You can start a chat on one device that runs on another.** [D4 Q-15]
+- **You can start a chat on one device that runs on another.** [D4 Q-15] Only on a device
+  that is on: devices that are off or asleep are greyed, marked "offline". [D12 S-3]
+- **Deleting a chat deletes it everywhere,** and it stays 30 days in "Recently deleted" on
+  each device. Renaming and marking complete apply everywhere. A device returning after
+  weeks obeys a deletion it missed. [D12 Q-2]
+- **Permission requests can be approved from any of your devices.** The request shows
+  wherever the chat is open and disappears everywhere once answered. [D12 Q-3]
+- **A message sent just as the host drops** stays in the box, marked "Not sent. Desktop
+  went offline", with the Continue here offer. It is never thrown away and never delivered
+  late by surprise. [D12 Q-4]
+- **Chats continued on the phone come back one at a time,** by opening each and tapping its
+  chip, as any chat is moved. No bulk button. [D12 Q-6]
 - **The phone is a full host,** equal to a computer. Features it still lacks are named in the
   notice until they are built. [D1 Q-1, Q-11; D2 Q-7]
 
@@ -60,6 +71,10 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
   "recent". Every chat is listed everywhere either way. On "recent", an older chat cannot be
   read offline until it has been opened there once. [D9 Q-1, replacing D1 Q-13's
   "list-then-open" and round 7's "full copy everywhere"]
+- **"Recent" means used in the last 30 days.** One clock everywhere: a chat used in the
+  last 30 days is whole on every device, helper files included, and waits on the relay for
+  the same 30 days. His exception: "with exception of full 1gb relay storage obviously".
+  [D12 Q-1, replacing the 48 hours of D8 Q-1]
 - **Checked fact:** chats only ever grow. Destin's desktop holds 295 compactions in Claude
   Code chats; in the 25 chats sampled, every earlier line was still in the file. Native chats
   add a marker line when they compact (read in the code, 2026-11-09). So "everything after
@@ -68,7 +83,7 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
 - **What travels with a chat:** its lines, plus the files the app saved for that one chat in
   its own hidden storage: each helper's working file, long outputs the assistant saved, and
   the chat's plan and to-do list (the plan is kept in Claude Code's own plans store and is
-  matched to the chat that wrote it). Documents inside a project are project files. A chat active in the last 48 hours is complete on every device. An older chat fetches
+  matched to the chat that wrote it). Documents inside a project are project files. A chat used in the last 30 days is complete on every device [D12 Q-1]. An older chat fetches
   those files when it is opened on a device; if the only device holding them is off, the
   notice says the helpers' reports are kept but unfinished helper work cannot be continued.
   Undo history does not travel, and neither does the device's separate scratch copy of
@@ -105,7 +120,18 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
   user's own front door. [chat 2026-11-11: "i think this is generally fine?"; he wants the
   front-door methods compared before that piece is designed]
 - **Removing a device locks it out** and frees the chats it was hosting to be continued
-  elsewhere. [D4 Q-9]
+  elsewhere. [D4 Q-9] Any device may remove another, after passing its own unlock
+  (fingerprint, PIN or password). A removed device keeps the chats already on it and can be
+  paired again. [D12 Q-9]
+- **Pairing method:** scan a QR code, or type a short code when there is no camera. The
+  code expires after a few minutes. The device you already have shows the new device's name
+  and asks "Add this device?" before anything is shared. The look of the screen is reviewed
+  as pictures when built. [D12 Q-10]
+- **Devices on different versions of YouCoded:** the older device can read and watch, but
+  must update before hosting or continuing a chat the newer one changed. Notice: "Update
+  YouCoded on Phone to continue this chat". [D12 Q-12]
+- **On mobile data a phone syncs everything, always.** A setting to hold large items for
+  wifi is card 258. [D12 Q-8: "we shuold probably add a card for eventual configurability"]
 
 ## 4. Keepers: what holds lines while devices sleep
 
@@ -119,9 +145,8 @@ A keeper is something always on that holds locked lines it cannot read.
 - **The relay is a waiting room, not an archive.**
   - It holds waiting data until 30 days after the last line was added to that chat. An
     active chat stays fully held. [D10 Q-1, replacing the 48 hours of chat 2026-11-10]
-  - **Open (round 12):** lines are deleted sooner, once every device has them. [as
-    described to him in chat 2026-11-10; not his own words] Read together with the line
-    above: held until every device has them, or 30 days, whichever comes first.
+  - It deletes a chat's lines once every one of your devices has them, or after 30 days,
+    whichever comes first. [D12 S-1]
   - It holds at most 1 GB per user. [chat 2026-11-10]
   - The 1 GB and the 30 days cover everything waiting on the relay: chat lines, helper
     files and project file changes. Data passing straight through while both devices are on
@@ -132,9 +157,11 @@ A keeper is something always on that holds locked lines it cannot read.
     device has it. No words of the chat. So a device knows for certain when it is behind.
     [D7 Q-1]
   - At 1 GB it releases whole chats, least recently used first. The host shows: "Relay full.
-    3 older chats will reach Phone when both are on." Nothing is lost while the device
-    holding them survives. **Open (round 12):** if that device is lost first, those lines
-    are gone. [D7 Q-3]
+    3 older chats are kept only on Desktop until Phone and Desktop are on together."
+    Lines the relay has let go of exist only on the device that wrote them until another
+    device collects them; if that device is lost first, they are gone. [D7 Q-3; D12 S-2]
+  - **No sign-in at launch.** The 1 GB is counted per paired set of devices. A sign-in is
+    added only if abuse appears. [D12 Q-11]
 - **Catching up.** Whenever two of your devices are on together they compare every chat and
   the one ahead fills in the other. Any device can do this, not only the host. [D4 S-2,
   third property; mechanics as described on round 7's page text]
@@ -150,7 +177,8 @@ A keeper is something always on that holds locked lines it cannot read.
   holds your keys, so it must be hardware you trust. A rented server was offered and not
   picked. [D7 S-1, Q-5] Its purpose, in his words: "allow self hosting and also reduce
   load/strain on our servers/relay when possible" [D7 Q-6]. With a super-host our relay stores
-  nothing for that user.
+  nothing for that user, with one exception: while the super-host cannot be reached, the
+  relay holds waiting data in its place. The user can switch that off. [D12 Q-13]
 - **Open: payment** is undecided; the relay is free for everyone at the fixed limits. He leans
   toward free at the basic limits with bigger ones paid, plus donations. [D7 Q-8]
 - **Cost of the relay** (estimate from Cloudflare's price list and a guessed usage, not
@@ -241,7 +269,12 @@ may be best to wait." [D9 S-6; the line is his from D1 Q-8]
 A continued chat otherwise keeps its exact model, provider and project settings. [D4 Q-12]
 
 **Talk-only.** A chat opened without its folder can talk but not touch files. The note saying
-so is added at the end of the chat; nothing earlier is cut or edited. [D4 Q-11; D5 S-3]
+so is added at the end of the chat; nothing earlier is cut or edited. [D4 Q-11; D5 S-3] When
+it later moves to a device that has the project, a note tells you and the assistant that
+files can be used again. [D12 S-4]
+
+**Secrets and skipped folders.** When the project has them, the notice names them: "These
+stay on Desktop: .env, node_modules, …". [D12 S-5]
 
 ## 7. Duplicates and forks
 
@@ -275,6 +308,11 @@ so is added at the end of the chat; nothing earlier is cut or edited. [D4 Q-11; 
   the notice may say files are still arriving.
 - Known weaknesses carried over: the history grows without limit on every device, and has
   been damaged by power loss before (a repair exists).
+- **Two devices may host chats in the same project at the same time,** with no notice.
+  [D12 Q-5] The hidden history combines changes to different files, or different parts of
+  one file, by itself. Only when both changed the same lines does it keep both: the
+  incoming version keeps the name and this device's version becomes "name (from Device,
+  date)" beside it.
 - Chats do not use this history; they move to the line-by-line system in section 3.
 - **Every project is listed on every device, and downloaded to a device when sync is turned
   on for it there,** once, from the Continue here notice or the project list. It stays in
@@ -306,7 +344,12 @@ systems never sync side by side. Uploading to GitHub as a backup continues. In h
 "we should switch github syncing off at the same time hte mesh is deployed. we can continue
 backing up to github, but we absolutely should NOT allow both systems to continue trying to
 sync simultaneously." Existing chats need no moving, because each device already holds its
-copies, and a one-time message says what changed. [chat 2026-11-12, refining chat 2026-11-11
+copies, and a one-time message says what changed. GitHub's one-time "restore to a new
+device" keeps working until the backup rebuild, so nobody holds a backup they cannot use;
+it is a single pull onto an empty device, not ongoing sync. [D12 Q-14] On day one, devices
+that already share chats through GitHub are combined quietly where one copy is simply
+longer; real differences are listed once, together. Projects already synced through GitHub
+are recognised as the same project without asking. [D12 Q-15] [chat 2026-11-12, refining chat 2026-11-11
 and D9 Q-5] The relay is not a backup; it holds waiting data for a limited time.
 
 **Losing devices.** If every device is lost at once, chats without a cloud backup are gone
@@ -370,15 +413,14 @@ history fresh start waits for that rebuild.
 
 ## 12b. Still open
 
-1. **Deck round 12** (from the 2026-11-13 review), awaiting his answers: what "recent"
-   means; relay deletion and the limit of "nothing is lost"; deleting a chat; approving
-   permission requests from a watcher; a message typed as the host drops; starting a chat
-   on a device that is off; two hosts working in one project; bringing chats back to the
-   computer; talk-only chats regaining files; secrets and skipped folders in the notice;
-   the quit warning with no other device; phone mobile data; who may remove a device; the
-   pairing method; relay sign-in; devices on different app versions; a fallback for
-   super-host users; restore between mesh launch and the backup rebuild; day one for
-   existing users; which device may do the backup.
+1. **Open from round 12, his notes need a rethink before he decides:**
+   - The quit warning (Q-7). His note: "it seems like this should be different dependent on
+     whether you're a 1-device no-sync user or a user who does have multiple devices? and
+     what marks are you talking about?"
+   - Which device backs up (S-6). His note: "this seems a bit janky ... would my 'only
+     device' even have a sync setting like recent if i'm not using sync on other devices
+     does it matter if older data exists on a specific device after the first sync or two?
+     wouldnt we just be sending minor updates/additions?"
 2. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
    door" setup, including locking the browser view.
 3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.

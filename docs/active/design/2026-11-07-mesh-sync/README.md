@@ -259,3 +259,33 @@ this record or the code). Its points were checked against the design and hold.
   catch-up, fingerprint in the per-chat note, one judge for simultaneous takeover.
 - Everything needing his decision is on deck round 12 (`mesh-sync.questions-12.json`),
   15 questions and 6 statements. Not yet answered.
+
+## 2026-11-13: round 12 answered
+
+Answers file: `mesh-sync.questions-12.answers.json`. Picks, with his notes verbatim:
+
+- Q-1 one clock, 30 days everywhere. Note: "with exception of full 1gb relay storage obviously"
+- S-1 yes (relay deletes once every device has the lines, or at 30 days). S-2 yes (honest
+  limit of "nothing is lost").
+- Q-2 deleted everywhere, 30 days in Recently deleted. Q-3 approve permissions from any
+  device. Q-4 unsent message stays in the box. S-3 yes (start only on a device that is on).
+- Q-5 allow two hosts in one project with no notice. Note: "shouldn't git resolve any
+  encountered duplication or nah? how will users notice duplicate file versions?" (answered
+  in chat; behaviour read in `youcoded/docs/sync-spaces.md`).
+- Q-6 one at a time, as now. Note: "this is confusing. why would this be tedious? it should
+  be any more difficult than resuming a normal conversation?"
+- S-4 yes, S-5 yes.
+- Q-7 other, undecided. Note: "what? this is confusing? it seems like this should be
+  different dependent on whether you're a 1-device no-sync user or a user who does have
+  multiple devices? and what marks are you talking about?"
+- Q-8 everything, always. Note: "we shuold probably add a card for eventual
+  configurability" → card 258.
+- Q-9 any device after its own unlock. Q-10 QR, or typed code. Q-11 no sign-in at launch.
+  Q-12 older device reads and watches, must update to continue. Q-13 relay as fallback for
+  super-host users.
+- Q-14 keep GitHub one-time restore through the gap. Q-15 settle obvious cases quietly.
+- S-6 other, undecided. Note: "this seems a bit janky. i think we need to think through the
+  really data/logic flow a bit more here. would my \"only device\" even have a sync setting
+  like recent if i'm not using sync on other devices\" does it matter if older data exists
+  on a specific device after the first sync or two? wouldnt we just be sending minor
+  updates/additions?"
