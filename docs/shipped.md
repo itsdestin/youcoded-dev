@@ -911,3 +911,5 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-12 #190 Resume and Welcome back preview: the pinned title card covers the first line of a short chat (youcoded PR #736)
 - [x] 2026-11-12 #175 Make the website's idea pictures refresh themselves on each release (youcoded PR #738, youcoded-dev PR #367)
 - [x] 2026-11-12 #251 "What the assistant was given" pop-up: three tabs (Overview, Global, Project) (youcoded#740 (4864a128b), youcoded-dev#369)
+- [x] 2026-11-13 #256 Website: new opening intro and a redesigned phone page (youcoded PR #744 (1ede4ea63))
+- [x] 2026-11-13 #205 Phone access: the assistant's browser asks for approvals you can't see (app PR #746 (30a75b634))

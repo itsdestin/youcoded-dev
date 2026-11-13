@@ -1,7 +1,7 @@
 ---
 id: 205
 title: Phone access: the assistant's browser asks for approvals you can't see
-stage: explore
+stage: merged
 work: session/user-notify
 tags: remote-access, remote, bug
 related: 87, 112
