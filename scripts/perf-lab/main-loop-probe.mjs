@@ -22,8 +22,17 @@ export function verifyInspectorOwner({ pid, binary, home, port }, deps = {}) {
   const privateHome = real(home), realHome = real(homedir());
   if (privateHome === realHome || realHome.startsWith(privateHome.endsWith(sep) ? privateHome : privateHome + sep)) throw new Error('Inspector HOME is not private.');
   if (link(`/proc/${pid}/exe`) !== real(binary)) throw new Error('Inspector process executable does not match the owned build.');
-  const actualHome = readText(`/proc/${pid}/environ`).split('\0').find(s => s.startsWith('HOME='))?.slice(5);
-  if (!actualHome || real(actualHome) !== privateHome) throw new Error('Inspector process HOME does not match the private fixture.');
+  const environ = readText(`/proc/${pid}/environ`).split('\0');
+  const actualHome = environ.find(s => s.startsWith('HOME='))?.slice(5);
+  // WHY (2026-11-12, card #96): the current Electron build rewrites its process title over the start of its own
+  // environment block, so /proc/<pid>/environ holds argv text and NO `HOME=` line at all. Every inspector boot
+  // (terminal, artifacts, projects, native phases) then aborted here. When HOME is absent we prove privacy the other
+  // way: launch.mjs starts the app with cwd = the fixture home, and a foreign app would not be sitting there.
+  // A HOME that is PRESENT but wrong still fails closed.
+  if (actualHome === undefined) {
+    let cwd; try { cwd = real(link(`/proc/${pid}/cwd`)); } catch { cwd = undefined; }
+    if (cwd !== privateHome) throw new Error('Inspector process HOME does not match the private fixture.');
+  } else if (real(actualHome) !== privateHome) throw new Error('Inspector process HOME does not match the private fixture.');
   const inodes = new Set();
   for (const table of ['/proc/net/tcp', '/proc/net/tcp6']) {
     try { for (const inode of listeningInodes(readText(table), port)) inodes.add(inode); } catch { /* one family may be unavailable */ }
