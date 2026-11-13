@@ -12,7 +12,10 @@ deck round 4, question 6; "chat" means a dated chat message. `README.md` in this
 the quotes. Where I had to fill a gap myself, the line starts with **My reading** so it can be
 struck. Lines starting **Open** are NOT decided. A checkpoint review on 2026-11-11 found
 lines unsupported by, or in conflict with, his answers; he settled them on deck round 9
-(2026-11-12), marked "D9". Nothing here is built. Build order is not part of this document.
+(2026-11-12), marked "D9". Rounds 10 and 11 (same day) covered backup and pairing. A second
+review on 2026-11-13 found gaps and contradictions; the wording ones are fixed below, and
+the ones needing his decision are on deck round 12 and listed in section 12b. Nothing here
+is built. The only build-order statement is his own, at the end of section 12.
 
 ## 1. The goal
 
@@ -30,9 +33,11 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
 
 ## 2. What you see
 
-- **One list of chats on every device.** Every project appears everywhere. [D2 Q-8]
+- **One list of chats on every device.** Every project is listed everywhere, and downloaded
+  to a device only where sync is switched on for it (section 8). [D2 Q-8; D9 Q-2]
 - **One device hosts each chat.** Every other device shows it live, word by word, and you type
-  into it as if it ran there. The only difference is a chip in the status bar naming the host.
+  into it as if it ran there. A chip in the status bar names the host. A watching device also
+  has the limits in section 9 (for example no image paste), on a computer as well as a phone.
   [D1 Q-4, Q-14; D2 S-2]
 - **A watching device shows a chat exactly as its host does.** YouCoded's own chats appear
   word by word. Claude Code chats appear a block at a time today, even on the host, so a
@@ -66,14 +71,21 @@ It is for every user's devices, any mix of Windows, Mac, Linux and Android. [D1 
   matched to the chat that wrote it). Documents inside a project are project files. A chat active in the last 48 hours is complete on every device. An older chat fetches
   those files when it is opened on a device; if the only device holding them is off, the
   notice says the helpers' reports are kept but unfinished helper work cannot be continued.
-  Pasted images and undo history do not travel. [D8 Q-1; his note asked what "folder" meant;
+  Undo history does not travel, and neither does the device's separate scratch copy of
+  pasted images. [D8 Q-1; his note asked what "folder" meant;
   explained in chat 2026-11-11; confirmed D9 S-8]
-- **Between devices a chat travels whole,** pictures and all. Only long-term backups are
-  slimmed (section 12). [chat 2026-11-12: "for syncing we should keep the full chat with
+- **Between devices a chat travels whole,** pictures and all: a picture you sent is stored
+  inside the chat's lines, so it shows on your other devices and the assistant still knows
+  it. (**My reading** of how the two rules fit: only the scratch copy above is left behind.)
+  Only long-term backups are slimmed (section 12). [chat 2026-11-12: "for syncing we should keep the full chat with
   images and such"]
 - **The assistant's setup does not travel** in this design (skills, plugins, connected
   tools, global instructions). Card 248. [D8 Q-2]
-- **Everything is locked end to end.** Only your devices can read it. [D2 Q-2]
+- **Everything that syncs is locked end to end.** Only your devices can read it. [D2 Q-2]
+  This does not cover a cloud backup, which is locked only if the user switches the lock on
+  (section 12), and until the backup rebuild the GitHub backup stays unlocked as today.
+  **My reading:** whatever sits in the middle cannot read contents, but it can see how many
+  devices and chats there are, their sizes, and when they are active.
 - **A new device joins by pairing with one you already have.** No account is needed for sync;
   our relay may ask for a sign-in to stop abuse. [D4 Q-4]
 - **When both devices already hold chats and projects,** pairing first shows what each
@@ -107,8 +119,9 @@ A keeper is something always on that holds locked lines it cannot read.
 - **The relay is a waiting room, not an archive.**
   - It holds waiting data until 30 days after the last line was added to that chat. An
     active chat stays fully held. [D10 Q-1, replacing the 48 hours of chat 2026-11-10]
-  - Lines are deleted sooner, once every device has them. [as described to him in chat
-    2026-11-10; not his own words]
+  - **Open (round 12):** lines are deleted sooner, once every device has them. [as
+    described to him in chat 2026-11-10; not his own words] Read together with the line
+    above: held until every device has them, or 30 days, whichever comes first.
   - It holds at most 1 GB per user. [chat 2026-11-10]
   - The 1 GB and the 30 days cover everything waiting on the relay: chat lines, helper
     files and project file changes. Data passing straight through while both devices are on
@@ -119,7 +132,9 @@ A keeper is something always on that holds locked lines it cannot read.
     device has it. No words of the chat. So a device knows for certain when it is behind.
     [D7 Q-1]
   - At 1 GB it releases whole chats, least recently used first. The host shows: "Relay full.
-    3 older chats will reach Phone when both are on." Nothing is lost. [D7 Q-3]
+    3 older chats will reach Phone when both are on." Nothing is lost while the device
+    holding them survives. **Open (round 12):** if that device is lost first, those lines
+    are gone. [D7 Q-3]
 - **Catching up.** Whenever two of your devices are on together they compare every chat and
   the one ahead fills in the other. Any device can do this, not only the host. [D4 S-2,
   third property; mechanics as described on round 7's page text]
@@ -136,7 +151,7 @@ A keeper is something always on that holds locked lines it cannot read.
   picked. [D7 S-1, Q-5] Its purpose, in his words: "allow self hosting and also reduce
   load/strain on our servers/relay when possible" [D7 Q-6]. With a super-host our relay stores
   nothing for that user.
-- **Payment** is undecided; the relay is free for everyone at the fixed limits. He leans
+- **Open: payment** is undecided; the relay is free for everyone at the fixed limits. He leans
   toward free at the basic limits with bigger ones paid, plus donations. [D7 Q-8]
 - **Cost of the relay** (estimate from Cloudflare's price list and a guessed usage, not
   measured): free today and up to a few hundred heavy users; about $25 a month at 1,000.
@@ -189,7 +204,10 @@ phone; it explains the battery cost. [D6 Q-3]
   discards its unfinished half.
 - A host waking from sleep checks for that divider before letting a reply carry on.
 - Files an unfinished reply had already changed stay changed; the notice says so.
-- YouCoded keeps the divider beside Claude Code's own chat file, never inside it. (Round 5
+- YouCoded keeps the divider beside Claude Code's own chat file, never inside it. **My
+  reading** of how that works: the divider lives in a small companion record that travels
+  with the chat like its lines do. The app draws the divider from it, devices learn the
+  host from it, and the assistant is told at the start of the next message. (Round 5
   asked about "no separate record"; this caution came from the review he requested and was
   put to him in chat 2026-11-10 before he said yes.)
 - If two devices tap Continue here at the same moment, the first to be heard (by the relay,
@@ -280,7 +298,8 @@ already being built, 242 was filed beside it and linked instead.
 
 Today's remote access is replaced inside the apps: no Connect screen and no Tailscale for
 chats. The open-in-a-browser view stays, still through Tailscale; it is also how a super-host
-is looked at. [D8 Q-3]
+is looked at. [D8 Q-3] **Open:** that view is not locked today beyond Tailscale itself; it is
+settled with the front-door comparison in section 12b.
 
 Chat sync through GitHub is switched off at the same moment the mesh is deployed. The two
 systems never sync side by side. Uploading to GitHub as a backup continues. In his words:
@@ -351,12 +370,21 @@ history fresh start waits for that rebuild.
 
 ## 12b. Still open
 
+1. **Deck round 12** (from the 2026-11-13 review), awaiting his answers: what "recent"
+   means; relay deletion and the limit of "nothing is lost"; deleting a chat; approving
+   permission requests from a watcher; a message typed as the host drops; starting a chat
+   on a device that is off; two hosts working in one project; bringing chats back to the
+   computer; talk-only chats regaining files; secrets and skipped folders in the notice;
+   the quit warning with no other device; phone mobile data; who may remove a device; the
+   pairing method; relay sign-in; devices on different app versions; a fallback for
+   super-host users; restore between mesh launch and the backup rebuild; day one for
+   existing users; which device may do the backup.
 2. Owed: a plain comparison of Tailscale, tunnels and the router method, for the "own front
-   door" setup.
+   door" setup, including locking the browser view.
 3. Never measured: real relay usage per user; whether YouCoded runs on a Raspberry Pi.
-4. Not designed, left to the build unless he says otherwise (asked D9 Q-6; he answered
-   "don't know"): how the pairing screen looks; how the relay limits abuse when no account
-   is needed; a later plan for the November 5 conflict copies.
+4. Left to the build unless he says otherwise (asked D9 Q-6; he answered "don't know"): a
+   later plan for the November 5 conflict copies. The look of the pairing screen goes
+   through the normal picture review when it is built.
 
 ## 13. What has to be true in the code (for the building session, not for Destin)
 
@@ -376,6 +404,13 @@ Checked against youcoded `8ffa0a421`:
 - No sleep blocker tied to replies; `window-all-closed` quits; no windowless desktop mode
   (exists for Android under `main/headless/`).
 - Android: no per-reply wake lock, no Doze handling; its server is loopback-only.
+- Fragile points named by the 2026-11-13 review, to be designed in, not assumed:
+  - "Chats only grow" is checked on every catch-up (hash of the shared prefix). On a
+    mismatch the whole chat is recopied, never patched.
+  - The per-chat note carries a fingerprint of the last line as well as its number, so two
+    devices at the same line number with different content are detected.
+  - Simultaneous takeover needs one judge per chat: the keeper when one is reachable,
+    otherwise the lower device id; a later-heard conflicting claim loses.
 - The existing "Model switched to" divider is `kind: 'model-switch'` in
   `shared/session-live-types.ts`, with a deterministic id so a replay cannot draw it twice.
 

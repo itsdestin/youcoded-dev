@@ -1,0 +1,719 @@
+{
+ "title": "Your chats on every device — round 12: gaps found by a fresh read",
+ "key": "mesh-sync-questions-12",
+ "out": "mesh-sync.questions-12.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Loose definitions",
+   "intro": "Another session read the finished design cold and listed what was unclear, contradictory or missing. I checked each point against the design; they hold. Wording problems are already fixed in the document. Everything on this deck needs your decision. The first option in each question is the one I recommend."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Storage setting on each device",
+   "path": "What 'recent' means",
+   "headline": "How long does a chat count as 'recent'?",
+   "today": "The design has three clocks. A phone keeps 'recent chats' with no figure given. A chat used in the last 48 hours is complete everywhere, helper files included. The relay holds waiting data for 30 days.",
+   "problem": "Three time rules are hard to remember, and one has no number. A user cannot predict which chats open offline on the phone.",
+   "proposal": "Under every option a computer or super-host set to 'keep everything' holds every chat whole, and an older chat on a 'recent' device is fetched when you open it.",
+   "options": [
+    {
+     "id": "thirty",
+     "label": "One clock: 30 days everywhere",
+     "pros": [
+      "One rule to remember: a chat used in the last 30 days is whole on every device and waits on the relay.",
+      "A month of chats opens offline on the phone."
+     ],
+     "cons": [
+      "A phone stores a month of helper files, not two days. The size is not measured yet; the storage setting would show it."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "two-clocks",
+     "label": "Two clocks: whole for 48 hours, lines only for 30 days",
+     "pros": [
+      "Smallest phone storage."
+     ],
+     "cons": [
+      "Two rules. A chat from last week opens on the phone but its helper work must be fetched, which fails if the computer is off."
+     ]
+    },
+    {
+     "id": "seven",
+     "label": "One clock: 7 days everywhere",
+     "pros": [
+      "Small phone storage and one rule."
+     ],
+     "cons": [
+      "The relay would drop waiting data after 7 days, undoing your round 10 choice of 30 days."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-1",
+   "words": true,
+   "new": true,
+   "surface": "The relay",
+   "path": "When the relay deletes lines",
+   "headline": "The relay deletes a chat's lines once every one of your devices has them, or after 30 days, whichever comes first.",
+   "changed": "This joins two lines in the design that read as a contradiction: 'an active chat stays fully held' and 'lines are deleted sooner once every device has them'. The second was my wording, never yours. It keeps the relay small and means less of your data sits on our server.",
+   "notice": "No means the relay should keep lines the full 30 days even after every device has them.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "new": true,
+   "surface": "The relay",
+   "path": "What 'nothing is lost' really covers",
+   "headline": "The design says plainly: lines the relay has let go of exist only on the device that wrote them, until another device collects them.",
+   "changed": "The relay lets lines go at 30 days or when it is full. If the device that wrote them is then lost or broken before another device was on at the same time, those lines are gone. The 'Relay full' message would say 'kept only on Desktop until Phone and Desktop are on together' in place of 'nothing is lost'.",
+   "notice": "This changes no behaviour; it replaces a promise that was not always true. No means you want the behaviour itself changed; say how in the note.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "P-2",
+   "page": "Things the design never mentions",
+   "intro": "Each of these happens in ordinary use and the design is silent on it."
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Chat list",
+   "path": "Deleting a chat",
+   "headline": "What should deleting a chat do on your other devices?",
+   "today": "The design does not say. Renaming and marking complete are not covered either.",
+   "problem": "A device that was off for weeks still holds the chat. When it returns, catching up could bring the deleted chat back on every device.",
+   "proposal": "Under every option, renaming a chat and marking it complete apply on every device, and a returning device obeys a deletion it missed.",
+   "options": [
+    {
+     "id": "bin",
+     "label": "Deleted everywhere, kept 30 days in 'Recently deleted' on each device",
+     "pros": [
+      "A mistaken delete can be undone from any device for a month.",
+      "Matches what phones and cloud drives already teach people."
+     ],
+     "cons": [
+      "Deleting does not free storage for 30 days.",
+      "One more screen."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "now",
+     "label": "Deleted everywhere at once",
+     "pros": [
+      "Simple, and storage is freed at once."
+     ],
+     "cons": [
+      "One wrong tap on the phone removes the chat from every device with no way back, unless a backup has it."
+     ]
+    },
+    {
+     "id": "local",
+     "label": "Removed from this device only",
+     "pros": [
+      "Nothing on another device can be lost by a tap here."
+     ],
+     "cons": [
+      "The chat stays in the list on other devices and comes back here if opened. Lists differ between devices."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "A chat you are watching",
+   "path": "The assistant asks permission to do something",
+   "headline": "Can you approve the assistant's permission requests from a device that is only watching?",
+   "today": "With today's remote access, the phone can approve requests for a chat running on the computer.",
+   "problem": "The design does not say. If only the host can approve, a chat on the desktop stalls until you walk back to it.",
+   "proposal": "Under both options the request shows on every device where the chat is open, and disappears everywhere once answered.",
+   "options": [
+    {
+     "id": "any",
+     "label": "Yes, from any of your devices",
+     "pros": [
+      "Work carries on while you are away from the host, which is the point of watching.",
+      "Same as today."
+     ],
+     "cons": [
+      "Someone holding your unlocked phone could approve an action on your computer. They could already type into the chat."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "host",
+     "label": "Only on the host",
+     "pros": [
+      "Approvals happen only at the device that will carry them out."
+     ],
+     "cons": [
+      "A chat waits, sometimes for hours, for a tap you could have given from your pocket."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "A chat you are watching",
+   "path": "You press send just as the host goes offline",
+   "headline": "What happens to a message typed on a watching device when the host drops before receiving it?",
+   "today": "The design does not say.",
+   "problem": "The message could vanish, or be delivered hours later when the host wakes, long after it made sense.",
+   "proposal": "Under both options the message is never thrown away.",
+   "options": [
+    {
+     "id": "hold",
+     "label": "It stays in the box, marked 'Not sent. Desktop went offline', with the Continue here offer",
+     "pros": [
+      "You see at once that it did not go, and decide: wait, or continue here and send it.",
+      "Nothing arrives late by surprise."
+     ],
+     "cons": [
+      "One more decision at an awkward moment."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "queue",
+     "label": "It waits and is delivered when the host returns",
+     "pros": [
+      "No decision needed."
+     ],
+     "cons": [
+      "A message can land hours later and start the assistant working when you no longer want it."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-3",
+   "words": true,
+   "new": true,
+   "surface": "Starting a chat",
+   "path": "Choosing a device that is off",
+   "headline": "A new chat can be started only on a device that is on. Devices that are off or asleep are shown greyed, with 'offline'.",
+   "changed": "You decided a chat can be started on one device to run on another. Nothing in the design can wake a sleeping device, so the picker would list every device and grey out the ones that cannot be reached. A super-host is always available.",
+   "notice": "No means you want something else, for example queuing the chat to start when that device wakes; say so in the note.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Projects",
+   "path": "Two chats, on two devices, working in the same project",
+   "headline": "Should two different devices be allowed to host chats in the same project at the same time?",
+   "today": "One device can already run two chats in one project. Across devices it has never been possible.",
+   "problem": "Two assistants would edit the same files from different devices, with changes crossing every couple of seconds. When both change the same file, both copies are kept, which leaves clutter to tidy.",
+   "proposal": "Under every option, one device running several chats in a project is unchanged.",
+   "options": [
+    {
+     "id": "warn",
+     "label": "Allow it, with a notice: 'Phone is also working in this project'",
+     "pros": [
+      "Nothing is blocked; you decide.",
+      "The notice explains any 'both copies kept' files that appear."
+     ],
+     "cons": [
+      "Clutter is still possible if you ignore the notice."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "block",
+     "label": "One hosting device per project at a time",
+     "pros": [
+      "No crossed edits, ever."
+     ],
+     "cons": [
+      "To use a project on the phone you must first move its other chats there or wait.",
+      "Blocks harmless cases, such as two chats touching different files."
+     ]
+    },
+    {
+     "id": "silent",
+     "label": "Allow it with no notice",
+     "pros": [
+      "Simplest."
+     ],
+     "cons": [
+      "Duplicate files appear with no explanation."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "The everyday case: leaving home and coming back",
+   "intro": "The reviewer called this the weak spot. You leave, the computer sleeps, and every chat on the phone shows its host as offline. You continue some on the phone. Back home, those chats are hosted on the phone. You decided the host never changes by itself, and that a project can be fetched only while a device holding it is on. A super-host removes most of this; these questions are about users without one."
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Chat list on the computer",
+   "path": "Coming home with chats now hosted on the phone",
+   "headline": "How should chats you continued on the phone get back to the computer?",
+   "today": "By the current rule you open each chat and tap its chip, one at a time. Each move leaves a divider in the chat.",
+   "problem": "After a day out that can be five or ten chats, each needing its own taps.",
+   "proposal": "Under every option nothing moves without your tap, except the third.",
+   "options": [
+    {
+     "id": "bulk",
+     "label": "One button: 'Bring 4 chats back to this computer'",
+     "pros": [
+      "One tap for all of them, and still your decision, so the rule you set holds.",
+      "Chats you want to leave on the phone can be left."
+     ],
+     "cons": [
+      "One more button in the chat list."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "each",
+     "label": "One at a time, as now",
+     "pros": [
+      "Nothing new to build or learn."
+     ],
+     "cons": [
+      "Tedious, so chats pile up on the phone, where files and features are fewer."
+     ]
+    },
+    {
+     "id": "auto",
+     "label": "Return to the computer by themselves when it wakes",
+     "pros": [
+      "No taps at all."
+     ],
+     "cons": [
+      "Breaks your rule that the host never changes by itself. A chat could move while you are typing in it on the phone."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-4",
+   "words": true,
+   "new": true,
+   "surface": "A talk-only chat",
+   "path": "Returning to a device that has the project",
+   "headline": "When a talk-only chat moves to a device that has its project, a note says files can be used again.",
+   "changed": "The note is read by you and by the assistant. Today's design adds a note when a chat becomes talk-only but says nothing about the way back. Without one the assistant may go on believing it cannot touch files.",
+   "notice": "No means you want it handled differently; say how in the note.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-5",
+   "words": true,
+   "new": true,
+   "surface": "The Continue here notice",
+   "path": "Secrets and skipped folders",
+   "headline": "When the project has secret files or skipped folders, the notice names them: 'These stay on Desktop: .env, node_modules, …'",
+   "changed": "Secrets never leave a device and huge folders are skipped, as you approved. So a chat continued on another device can fail because a password file or an installed folder is missing, and the present notice does not explain why.",
+   "notice": "No means the general 'this chat will not have' line is enough.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "Closing the app",
+   "path": "Quitting when no other device and no relay can be reached",
+   "headline": "How often should 'some chats may not have synced' appear when you quit?",
+   "today": "The design shows it on every quit where something has not reached another device.",
+   "problem": "A person with one device, or who uses no relay and no super-host, would see it every single time, and learn to ignore it.",
+   "proposal": "Under every option the chat list still marks chats that have not reached another device.",
+   "options": [
+    {
+     "id": "once",
+     "label": "Explain once, then only the marks in the chat list",
+     "pros": [
+      "No daily nagging. The warning keeps its meaning for people who do have other devices."
+     ],
+     "cons": [
+      "Someone may forget that their chats live on one device only."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "always",
+     "label": "Every time",
+     "pros": [
+      "Impossible to miss."
+     ],
+     "cons": [
+      "Becomes noise, and trains people to dismiss warnings."
+     ]
+    },
+    {
+     "id": "never",
+     "label": "Never; marks only",
+     "pros": [
+      "Quietest."
+     ],
+     "cons": [
+      "A first-time user never learns what the marks mean."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-8",
+   "words": true,
+   "surface": "Phone",
+   "path": "Syncing on mobile data",
+   "headline": "What should a phone sync while it is on mobile data?",
+   "today": "The design has a wifi rule for backup only. Sync sends everything at all times, pictures included, for every active chat, even ones you are not looking at.",
+   "problem": "That can use a lot of mobile data and battery without the user knowing.",
+   "proposal": "Under every option a setting lets the user change it, and the chat you have open always loads fully.",
+   "options": [
+    {
+     "id": "light",
+     "label": "Words always; pictures, helper files and project files wait for wifi unless that chat is open",
+     "pros": [
+      "Every chat stays readable and current anywhere.",
+      "Large items do not eat a data plan in the background."
+     ],
+     "cons": [
+      "A chat you have not opened may be missing its pictures or files until wifi."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "all",
+     "label": "Everything, always",
+     "pros": [
+      "Every chat is whole everywhere."
+     ],
+     "cons": [
+      "Unpredictable data use; a surprise bill for some users."
+     ]
+    },
+    {
+     "id": "wifi",
+     "label": "Nothing in the background on mobile data; only the chat you have open",
+     "pros": [
+      "Lowest data use."
+     ],
+     "cons": [
+      "The chat list goes stale as soon as you leave wifi."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Devices and safety",
+   "intro": "Pairing is the first thing every user does, and it is what keeps strangers out."
+  },
+  {
+   "id": "Q-9",
+   "words": true,
+   "surface": "Devices in settings",
+   "path": "Removing a device",
+   "headline": "Who may remove a device from your set?",
+   "today": "The design says removing a device locks it out. It does not say which device may do the removing.",
+   "problem": "If any device can remove any other with one tap, a thief holding your unlocked phone can remove your computer.",
+   "proposal": "Under every option a removed device keeps the chats already on it and can be paired again.",
+   "options": [
+    {
+     "id": "unlock",
+     "label": "Any device, after that device's own unlock (fingerprint, PIN or password)",
+     "pros": [
+      "You can always remove a stolen device from whichever device you still have.",
+      "A thief with an already-unlocked phone still has to pass the fingerprint or PIN."
+     ],
+     "cons": [
+      "A thief who knows your PIN can still do it."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "main",
+     "label": "Only one device you name as the main one",
+     "pros": [
+      "A stolen phone can never remove the computer."
+     ],
+     "cons": [
+      "If the main device is the one lost or broken, you cannot remove anything without a recovery step that must be designed."
+     ]
+    },
+    {
+     "id": "free",
+     "label": "Any device, one tap",
+     "pros": [
+      "Simplest."
+     ],
+     "cons": [
+      "The thief case above."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-10",
+   "words": true,
+   "surface": "Pairing a device",
+   "path": "How two devices are paired",
+   "headline": "How should a new device be paired with one you already have?",
+   "today": "The design says a device joins by pairing but not how. You answered 'don't know' when asked whether to leave it to the build. How the screen looks will still come to you as pictures when it is built; this is only the method.",
+   "problem": "The method decides how hard it is for a stranger to join your set, and how easy it is for you.",
+   "proposal": "Under every option the device you already have shows the new device's name and asks 'Add this device?' before anything is shared.",
+   "options": [
+    {
+     "id": "qr",
+     "label": "Scan a QR code, or type a short code when there is no camera",
+     "pros": [
+      "Phone to computer is one scan.",
+      "Two computers still work by typing the code.",
+      "The code expires after a few minutes."
+     ],
+     "cons": [
+      "Two paths to build and explain."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "code",
+     "label": "Short typed code only",
+     "pros": [
+      "One path, works on everything."
+     ],
+     "cons": [
+      "Typing on a phone is slower and easier to get wrong."
+     ]
+    },
+    {
+     "id": "link",
+     "label": "A link you send yourself",
+     "pros": [
+      "Works when the devices are far apart."
+     ],
+     "cons": [
+      "Whoever reads that message, for example in your email, could try to join. Weakest."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-11",
+   "words": true,
+   "surface": "The YouCoded relay",
+   "path": "Signing in",
+   "headline": "Should the relay need a sign-in?",
+   "today": "You decided no account is needed for sync, and that our relay may ask for a sign-in to stop abuse. The 1 GB limit is 'per user'.",
+   "problem": "Without a sign-in the relay cannot tell who a user is. It can only count per paired set of devices, and anyone could create many sets to store junk on us for free.",
+   "proposal": "Under both options the relay still cannot read contents.",
+   "options": [
+    {
+     "id": "none",
+     "label": "No sign-in at launch; 1 GB per paired set; sign-in added only if abuse appears",
+     "pros": [
+      "Nothing stands between a new user and syncing.",
+      "Keeps the promise that no account is needed."
+     ],
+     "cons": [
+      "Abuse is possible until we step in. Adding a sign-in later is a change existing users will notice."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "signin",
+     "label": "A free sign-in to use the relay",
+     "pros": [
+      "The 1 GB is truly per person, and abuse is easy to stop.",
+      "A paid tier later has something to attach to."
+     ],
+     "cons": [
+      "One more step for first-time users.",
+      "We then hold a list of who uses the relay, though not what they store."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-12",
+   "words": true,
+   "surface": "App updates",
+   "path": "Devices on different versions of YouCoded",
+   "headline": "What should happen when your devices run different versions?",
+   "today": "The design has no rule. Phones usually update later than computers.",
+   "problem": "A newer version may write chats in a way an older one does not understand, which could damage a chat.",
+   "proposal": "Under every option, most updates change nothing here and devices work together as usual.",
+   "options": [
+    {
+     "id": "read",
+     "label": "The older device can read and watch, but must update before hosting or continuing a chat the newer one changed",
+     "pros": [
+      "Nothing breaks and nothing is blocked for reading.",
+      "The notice is exact: 'Update YouCoded on Phone to continue this chat'."
+     ],
+     "cons": [
+      "Now and then a device cannot continue a chat until it is updated."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "block",
+     "label": "Sync pauses on the older device until it is updated",
+     "pros": [
+      "Safest and simplest."
+     ],
+     "cons": [
+      "The phone shows a stale list until you update, even for chats nothing touched."
+     ]
+    },
+    {
+     "id": "norule",
+     "label": "No rule; handle problems as they are found",
+     "pros": [
+      "Nothing to build now."
+     ],
+     "cons": [
+      "A damaged chat is the way we would find out."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-13",
+   "words": true,
+   "surface": "Super-host",
+   "path": "When the super-host itself is unreachable",
+   "headline": "Should our relay stand in when a user's super-host is down?",
+   "today": "With a super-host, our relay stores nothing for that user. You gave its purpose as self-hosting and reducing load on our relay.",
+   "problem": "A power cut or internet outage at home leaves that user with no waiting room: devices away from home cannot catch each other up unless both are on.",
+   "proposal": "Under both options the user can turn the relay off entirely.",
+   "options": [
+    {
+     "id": "fallback",
+     "label": "Yes: the relay holds waiting data only while the super-host cannot be reached",
+     "pros": [
+      "An outage at home does not stop sync.",
+      "Load on our relay stays near zero in normal times."
+     ],
+     "cons": [
+      "Locked data from a self-hosting user sits on our server during outages, which some chose a super-host to avoid. It would be a switch they can turn off."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no",
+     "label": "No: a super-host user relies on the super-host alone",
+     "pros": [
+      "Clean promise: with a super-host, nothing of yours touches our servers."
+     ],
+     "cons": [
+      "Sync stops for the length of any home outage."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-5",
+   "page": "The day the mesh is switched on",
+   "intro": "You decided GitHub chat sync goes off the moment the mesh is deployed, GitHub keeps receiving backups, and the new backup feature is built afterwards."
+  },
+  {
+   "id": "Q-14",
+   "words": true,
+   "surface": "Backup & sync",
+   "path": "Losing your only device before the new backup exists",
+   "headline": "Between the mesh launch and the backup rebuild, how does someone restore after losing their only device?",
+   "today": "Today a new device signs in to GitHub and pulls everything down. Drive and iCloud have no restore. The design says GitHub is 'no longer synced from' after launch.",
+   "problem": "Read strictly, a one-device user who loses that device in the gap has a copy on GitHub and no way to get it back.",
+   "proposal": "Under every option the two systems never sync side by side, as you required.",
+   "options": [
+    {
+     "id": "once",
+     "label": "Keep GitHub's one-time 'restore to a new device' working through the gap",
+     "pros": [
+      "Nobody is left with a backup they cannot use.",
+      "It is a single pull on an empty device, not ongoing sync, so it cannot fight the mesh."
+     ],
+     "cons": [
+      "A little of the old system stays alive until the rebuild."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "together",
+     "label": "Hold the mesh launch until the new backup is ready",
+     "pros": [
+      "No gap at all."
+     ],
+     "cons": [
+      "Delays the mesh, against the order you gave."
+     ]
+    },
+    {
+     "id": "accept",
+     "label": "Accept the gap and say so in the one-time message",
+     "pros": [
+      "Least work."
+     ],
+     "cons": [
+      "A real person could lose everything while holding a backup."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-15",
+   "words": true,
+   "surface": "First pairing",
+   "path": "Existing users whose devices already share chats through GitHub",
+   "headline": "On day one, how should devices that hold slightly different copies of the same chats be combined?",
+   "today": "Your four devices already share chats through GitHub, and copies can differ a little. Round 11 settled pairing for devices with separate data: show what each holds, combine or cancel, ask about same-named projects.",
+   "problem": "Applied as written, the first pairing could raise a 'two versions' notice for many chats and a 'same project?' question for every project.",
+   "proposal": "Under both options nothing is deleted, and projects already synced through GitHub are recognised as the same project without asking, because they share one history.",
+   "options": [
+    {
+     "id": "quiet",
+     "label": "Settle the obvious cases quietly; list only real differences, once",
+     "pros": [
+      "Where one copy is simply longer, the longer one is used with no question.",
+      "Real splits appear together in one list, not one notice per chat."
+     ],
+     "cons": [
+      "You are not shown each quiet decision, only a count."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "ask",
+     "label": "Ask about every chat that differs",
+     "pros": [
+      "Nothing happens without your eyes on it."
+     ],
+     "cons": [
+      "Possibly dozens of notices on the first day, for differences that are only one copy being behind."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-6",
+   "words": true,
+   "new": true,
+   "surface": "Backup & sync",
+   "path": "Which device does the backing up",
+   "headline": "Only a device set to 'keep everything' backs up for the others; a phone on 'recent' does so only as your sole device.",
+   "changed": "You chose 'any one device that can reach the cloud backs up for all'. A phone keeping only recent chats does not hold the older ones, so a backup made from it would be incomplete without saying so. When a phone on 'recent' is your only device, the screen says what its backup leaves out.",
+   "notice": "No means any device may back up, with the gap shown on screen.",
+   "yes": "Yes",
+   "no": "No"
+  }
+ ]
+}

@@ -241,3 +241,21 @@ Follow-ups he asked for, answered in chat but not recorded before now: how other
 - Never touch his live, built YouCoded app (`.claude/rules/live-app-safety.md`).
 - Destin is not a developer: plain words, no jargon, pros and cons with a recommendation, what users will experience. Four or more questions go on a questions deck. Files are handed over as plain paths.
 - Never suggest merging.
+
+## 2026-11-13: second review of design.md, and round 12
+
+Destin pasted a review from another session that read `design.md` cold (not checked against
+this record or the code). Its points were checked against the design and hold.
+
+- Fixed in `design.md` without a new decision, because his earlier answers already settle
+  them: the stale intro; "every project appears everywhere" (now D9 Q-2's wording); "the
+  only difference is a chip" (section 9's limits named); pictures (pictures inside chat
+  lines travel, only the scratch copy of pasted images does not; marked My reading); the
+  lock promise scoped to sync, with the unlocked backup named; what the middle can see
+  (sizes, counts, times; marked My reading); how the divider is kept beside the chat file
+  (marked My reading); payment and the relay-deletion line marked Open; section 12b
+  renumbered.
+- Technical guards added to section 13 (my calls, not user-facing): prefix check on every
+  catch-up, fingerprint in the per-chat note, one judge for simultaneous takeover.
+- Everything needing his decision is on deck round 12 (`mesh-sync.questions-12.json`),
+  15 questions and 6 statements. Not yet answered.
