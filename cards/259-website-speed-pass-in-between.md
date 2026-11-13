@@ -10,8 +10,8 @@ why: Destin: FAQ cards 'i can literally almost count the frames'; the site 'stil
 work: session/faq-open-smoothness
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Merged as youcoded PR #751. Measured with the processor slowed 4x: desktop intro stalls over 30ms 32 -> 7, stalls after the intro 9 -> 0; desktop (1440) and phone (390) layouts unchanged apart from intended changes.
+Next: Open questions for Destin: (1) is the 'stale theme' demo he saw the drawn 'Personalize and control your desktop' card, which starts light and turns dark on scroll-in? (2) should search/share descriptions gain 'free' like the new subheader? (3) keep the gallery arrow buttons? (4) add Halftone's drifting particles? Not checked: real phones/tablets, reduced-motion, slow real connections. If phones still stutter, next suspect is the frosted blur on glass panels. Features section is still single-column under 1000px.
 Blocked: nothing.
 
 Chats
