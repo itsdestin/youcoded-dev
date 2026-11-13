@@ -15,8 +15,8 @@ platform: Desktop only
 vision: chat.harness.tokens, chat.harness.compaction
 ---
 Progress
-Done: Invisible logging prepared on session/engine-followups: each OpenRouter reply's serving company is now recorded with its usage; the free measuring script reports misses by company. Not merged; needs 1-2 weeks of normal use after release to answer the question.
-Next: After release and use, rerun the measuring script
+Done: OpenRouter served-by record landed via app PR #750 (2026-11-13).
+Next: About two weeks after the release that carries it, re-run the measuring script to see whether cache misses line up with a change of serving company.
 Blocked: Nothing recorded. The ChatGPT routing-label branch and the Reuse-chip deck need confirming before they can be tracked.
 
 Chats
