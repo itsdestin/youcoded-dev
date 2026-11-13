@@ -1,0 +1,284 @@
+{
+  "title": "Marketplace — where today's plan differs from what you said before",
+  "key": "marketplace-vision-check",
+  "out": "marketplace-vision-check.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "The list of things you can install",
+      "headline": "What should happen to the 77 listings nobody can install yet?",
+      "today": "77 of the 369 listings are tools that run inside Docker, a separate program. The app has no way to install them, so each one shows a note and an 'Open source' button instead of Install.",
+      "problem": "This morning you chose to hide them. On 1 November you turned down 'Hide what can't run' for the phone and asked for those to sit at the end with a note, like an app store. The two answers pull in different directions.",
+      "proposal": "Pick one rule. Whichever you pick, a card is filed to make them installable for real.",
+      "options": [
+        {
+          "id": "search-only",
+          "label": "Out of browsing, found by search",
+          "pros": [
+            "Browsing shows only things that work, so nobody taps into a dead end.",
+            "Someone looking for a tool by name still finds it, marked 'Not installable yet'.",
+            "The marketplace still knows about everything, which fits 'comprehensive'."
+          ],
+          "cons": [
+            "Two rules to remember: what you browse and what you can search are different lists."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "hide",
+          "label": "Hide completely",
+          "summary": "This morning's answer.",
+          "pros": [
+            "Simplest. Everything you can see, you can install."
+          ],
+          "cons": [
+            "A person searching for one of them is told nothing exists.",
+            "The marketplace looks smaller than it is: 292 instead of 369."
+          ]
+        },
+        {
+          "id": "end",
+          "label": "Show at the end with a note",
+          "summary": "Your 1 November answer for the phone, applied here too.",
+          "pros": [
+            "One rule everywhere: things that can't run sit last and say why.",
+            "Nothing is hidden."
+          ],
+          "cons": [
+            "One listing in five is a dead end, and stays one until Docker installs are built."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "The safety badge on each listing",
+      "headline": "Should the 'Likely safe' badge be reworded now, or kept until the checks are stronger?",
+      "today": "Each listing carries a badge such as 'Likely safe'. It comes from an automatic check of the files every hour. No person and no AI reads the plugin.",
+      "problem": "On 23 September you said to keep 'Likely safe' and make the check earn it, perhaps by having an AI review each plugin. This morning you chose to reword the badge now and add a 'What we checked' section. The AI review is still its own later piece of work.",
+      "proposal": "Pick which comes first.",
+      "options": [
+        {
+          "id": "reword-now",
+          "label": "Reword now, AI review later",
+          "summary": "This morning's answer.",
+          "pros": [
+            "The badge stops promising more than the check delivers, starting with this release.",
+            "'What we checked' shows people exactly what was looked at.",
+            "When the AI review arrives, the stronger wording can come back honestly."
+          ],
+          "cons": [
+            "Listings look a little less reassuring until the AI review exists."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep 'Likely safe' until the AI review",
+          "pros": [
+            "No change to how listings look today.",
+            "One wording change instead of two."
+          ],
+          "cons": [
+            "The badge keeps overstating the check for as long as the AI review takes."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Marketplace and Library",
+      "path": "The Remove button",
+      "headline": "Remove asks 'are you sure' on a working plugin, but not on one we turned off for safety.",
+      "changed": "This morning's plan adds a confirm step to Remove. On 5 November you approved that a plugin turned off for safety is removed with no extra confirm. Both stand: the confirm applies only to plugins that still work.",
+      "notice": "Removing a working plugin takes two presses. Removing a turned-off one takes one, as it does today.",
+      "yes": "Both stand",
+      "no": "Change this"
+    },
+    {
+      "id": "P-2",
+      "page": "How far this run reaches",
+      "intro": "The plan is built so each of these can be added later without a rewrite. These decide what is built now."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Plugins",
+      "path": "A plugin used without Claude Code",
+      "headline": "How much of a plugin should work when you are not using Claude Code?",
+      "today": "With YouCoded's own engine, a plugin's skills work. Its tool connections, its specialists and its automatic scripts (which run by themselves on certain events) do not.",
+      "problem": "You have said plugins should work everywhere. A plugin that depends on those missing parts looks installed but quietly does less.",
+      "proposal": "Pick how much is wired up in this run.",
+      "options": [
+        {
+          "id": "most-now",
+          "label": "Skills, tools, specialists now",
+          "summary": "Automatic scripts get their own card.",
+          "pros": [
+            "Most plugins then work fully without Claude Code.",
+            "The update fixes are not delayed.",
+            "A plugin that needs automatic scripts says so plainly on its page."
+          ],
+          "cons": [
+            "A few plugins still need Claude Code for part of what they do."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "all-now",
+          "label": "Everything now",
+          "pros": [
+            "Every plugin works the same on both engines."
+          ],
+          "cons": [
+            "A large separate build. The update fixes wait weeks for it."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No extra work in this run."
+          ],
+          "cons": [
+            "Plugins stay half-working for anyone not on Claude Code."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Connections",
+      "path": "Todoist and others that need a personal key",
+      "headline": "Should the screen for entering a personal key be built in this run?",
+      "today": "Todoist needs a personal key from your Todoist account. The app has nowhere to type one and nowhere safe to keep it, so the Todoist listing cannot work.",
+      "problem": "On 17 April you said Todoist should be 'a todoist mcp install and auth flow which we can save for later'. It has been later for seven months, and every future connection that needs a key hits the same wall.",
+      "proposal": "Pick when it is built.",
+      "options": [
+        {
+          "id": "now",
+          "label": "Build it in this run",
+          "pros": [
+            "Todoist works, and so does any later connection that needs a key.",
+            "Keys are kept in the computer's own secure store, never in a plain file."
+          ],
+          "cons": [
+            "About a week added.",
+            "Where keys are kept safely on a phone is not settled yet, so the phone may come second."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "'Coming soon' for now",
+          "pros": [
+            "This run stays shorter."
+          ],
+          "cons": [
+            "Todoist stays a listing that cannot be used."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Plugins",
+      "path": "Other assistants on the same computer",
+      "headline": "Should installed plugins also be made available to other coding assistants such as Codex in this run?",
+      "today": "What you install is made available to Claude Code and to YouCoded's own engine. Nothing else on the computer sees it.",
+      "problem": "On 31 August you said 'i'd want everything to be cross-compatible', and on 9 July that you would rather follow the common standards than Claude's own.",
+      "proposal": "The new plan treats each assistant as a separate outlet fed from one list, so adding one is a small addition. Pick when.",
+      "options": [
+        {
+          "id": "later",
+          "label": "Leave room, add later",
+          "pros": [
+            "This run stays about making installs and updates reliable.",
+            "Adding it later needs no rewrite."
+          ],
+          "cons": [
+            "Codex users wait."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "now",
+          "label": "Add Codex in this run",
+          "pros": [
+            "Cross-compatible from the start."
+          ],
+          "cons": [
+            "More to build and test before the update fixes reach you.",
+            "Codex reads plugins differently, so some would only half work there at first."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "The assistant",
+      "path": "When it needs an ability it does not have",
+      "headline": "Should the assistant learn to search the marketplace before building its own workaround, in this run?",
+      "today": "When the assistant lacks an ability, it builds something new or looks outside. It cannot look in the marketplace.",
+      "problem": "On 5 September you asked for this and called it a blocker; on 5 October you marked it 'next'. It is not in this plan.",
+      "proposal": "Pick whether it joins this run.",
+      "options": [
+        {
+          "id": "after",
+          "label": "Right after this run",
+          "pros": [
+            "It is built on the repaired install engine, so what it suggests actually installs.",
+            "This run stays focused."
+          ],
+          "cons": [
+            "It waits a little longer."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "now",
+          "label": "In this run",
+          "pros": [
+            "The assistant starts suggesting marketplace plugins sooner."
+          ],
+          "cons": [
+            "A new assistant ability needs its own testing, which lengthens the run.",
+            "It may suggest things while installs are still being rebuilt underneath it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Publishing",
+      "path": "What makes an update reach people",
+      "headline": "Any change a plugin's author publishes reaches users as an update once it passes our checks.",
+      "changed": "Until now the rule told authors that an update reaches people only when they raise the version number. This morning's answer (updates follow the author's newest checked files) replaces that. The publishing guide and its automatic check change to match.",
+      "notice": "Updates stop getting stuck when an author forgets the number. The cost: a tiny change, such as a typo fix, also shows as an update. The version number is still shown, with a link to what changed.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Marketplace and Library",
+      "path": "Built-in plugins and things you made yourself",
+      "headline": "Built-ins update with the app and can't be removed; things you built are never called 'missing from the marketplace'.",
+      "changed": "Three things you said before that the plan now states outright. Built-in plugins update only with app releases (30 October) and show in Marketplace and Library with a note on why they can't be removed (21 April, 22 October). A theme or plugin you made yourself keeps its 'local only' badge (24 April).",
+      "notice": "No Remove button on built-ins. No false 'No longer in the marketplace' warning on your own creations.",
+      "yes": "Holds",
+      "no": "Change this"
+    }
+  ]
+}

@@ -114,6 +114,64 @@ Tests: crash injection at every transaction step; reconciler convergence from ar
 disk/record states; migration fixtures shaped like real homes; Claude Code load check under a
 throwaway HOME; existing pins in `desktop/tests/` updated, not deleted.
 
+## Amendments from the prior-decisions check (2026-11-13)
+
+Four sweeps (cards, 766 answered decks + workspace docs, 11,819 of Destin's past chat messages,
+the three repos) compared this draft with what he has already said. Core confirmed: ADR 008
+(`docs/decisions/008-conventions-inversion-native-home.md`, 2026-07-09) already made
+`~/.youcoded/` the truth and Claude Code an export. Gaps found, now part of the design:
+
+- **The reconciler touches only what it wrote.** Every exported entry carries an ownership mark.
+  Hand-added tool servers (#59's `upsert()` fault) and plugins a user installed through Claude
+  Code itself (`skill-provider.ts:465-469`) are never repaired, moved or removed.
+- **Origin is recorded.** `origin: catalog | builtin | local`. A `local` item (a theme the user
+  built, his own unpublished plugin) is never called "No longer in the marketplace" and keeps its
+  "local only" badge (Destin, 2026-04-24/25). A `builtin` cannot be removed and says why
+  (2026-04-21) and is shown in Marketplace and Library (2026-10-22).
+- **Kinds and exports are open lists.** Kinds now: plugin, theme, connection. Named later kinds:
+  page (#90, #202), personality/knowledge pack (#52, #63), specialist, prompt snippet, one item
+  out of a bundle. Exports now: Claude Code, native engine. Named later export: other agents'
+  folders such as Codex / AGENTS.md conventions (Destin 2026-07-09, 2026-08-31; strategy Layer E).
+- **Per-project choices are an export filter, not a second install state.** `installed.json`
+  says what is on the device; which projects load it stays with #75, whose UI he has not signed
+  off. "Turned off" in this design means off everywhere.
+- **The off-switch (shipped 2026-11-05) moves into the engine.** `held/` replaces
+  `~/.claude/youcoded-turned-off-plugins/` (migrated). Its approved behaviour is kept: red
+  "Turned off" tag, Remove with no extra confirm, settings kept, one-time chat message. Rule:
+  an action that RESTRICTS (turn off) may use the last list seen while offline; a claim that
+  INFORMS or loosens (Caution, delisted, update available) needs a live answer.
+- **Install reports are an export.** Ratings need an install on record
+  (`worker/src/ratings/routes.ts:24-52`); the engine reports install/remove and the full list at
+  sign-in as today.
+- **`requirements` includes a minimum app version** (commits `cde0d2f`, `2242804`, `c4795ab`).
+- **Phone and remote callers.** Every engine operation is callable under the 2026-10-01 phone
+  rules (install, remove, update, rate, comment, report); Update all and journal recovery get
+  explicit access rules.
+- **Tool servers and the synced file.** `~/.youcoded/mcp.json` is synced between devices
+  (`mcp-registry.ts:2`). Plugin tool servers are therefore derived from `installed.json` at load
+  or kept in a per-device file, never written into the synced one; keys never enter the record or
+  `mcp.json` (#124).
+
+To settle in review round 1 (technical):
+
+- Our own plugins have no `sourceCommit` in the catalog (`scripts/catalog/sources/wecoded.mjs:250`);
+  the `registry` adapter needs one.
+- The catalog keeps one scan verdict per listing, for the current commit only. Comparing the
+  status of an *installed older* commit needs per-commit verdicts kept by the Worker.
+- Four skill/command files hard-code the old folder in their text (apple-services ×2,
+  chatsearch, theme-builder), beyond hook commands.
+- Themes live at `~/.claude/wecoded-themes/`, named by the live-app safety exception and
+  hard-coded in theme-builder: move with the plugins, or leave and record why.
+- Rule 3 supersedes the 2026-08-27 decision that "newer" means the `plugin.json` version.
+  Publisher docs (marketplace `README.md:52-54`, `CONTRIBUTING.md:26-35`), the CI version-bump
+  check and `registries.md:32` change with it; `TERMS.md:78` and the publisher's
+  `inventory.js:54` need the same pass.
+
+Marketplace wishes on record that stay their own cards (structure leaves room, not built here):
+assistant searches the marketplace first (#52), AI review behind the badge (#245), phone-shaped
+layout and can't-run items last (#225), connected-services screen (#59), connection health and
+several accounts (#155–#159), tip jar and public registry (#52), previews (#51, #130).
+
 ## Open
 
 - Android: where keys are stored (the desktop backend runs headless there).
