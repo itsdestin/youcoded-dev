@@ -1,0 +1,99 @@
+{
+ "deck": "marketplace-overhaul-questions",
+ "started": "2026-11-13T11:41:04.864Z",
+ "submitted": "2026-11-13T11:49:13Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "t": 1794570216323,
+   "note": "i had only intended to use anthropic initially as a catalogue to see our marketplace. i don't really want to tie our marketplace features/limiations too closely to anthropic.",
+   "pick": "newest",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "ours-auto",
+   "t": 1794570216323,
+   "note": "only built in. we will also have youcoded-originated optional stuff, and that should probably ask before updating. but built in theme-builer, office, etc should update automatically",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "count",
+   "t": 1794570216323,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1794570216323,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794570216323,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "hide-dead",
+   "t": 1794570388682,
+   "note": "probably with a card to eventually make them installable along with more external services. i want our marketplace to be a fucking COMPREHENSIVE surface for single-click downloads and ratings of anything your ai personal assistant OR coding agent might use",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1794570388682,
+   "note": "think i need you to explain this further.",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "windows-only",
+   "t": 1794570388682,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "reword-now",
+   "t": 1794570388682,
+   "note": "we should probably include a bit more transparency into the kind of checks and such we offer. maybe a section on each plugin page.",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1794570388682,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "t": 1794570552706,
+   "note": "i think, generally, i want you to be thinking about the best, most correct, most perfect version of hte long-term marketplace we're trying to build here. i'm tired of us implementing one-off patches that we'll just need to rewrite later. i want this bitch to work properly given all of my intentions for it",
+   "pick": "move",
+   "seconds": 82,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "picks",
+   "picks": [
+    "featured",
+    "comments"
+   ],
+   "t": 1794570552706,
+   "note": "i think we already fixed the theme previews. i also want you to do a quick check to see if any other currently active/parallel work will impact what we;re doing here",
+   "seconds": 82,
+   "theme": "midnight"
+  }
+ }
+}
