@@ -39,6 +39,10 @@ var ICONS = {
 };
 function icon(name, cls) { return '<svg class="t-icon' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true"><path d="' + ICONS[name] + '"/></svg>'; }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+// Escaped text with web addresses turned into links. The app, not the page, opens them.
+function linked(s) {
+  return esc(s).replace(/\bhttps?:\/\/[^\s<]+[^\s<.,;:!?)\]'"]/g, function (u) { return '<a href="' + u + '" rel="noopener">' + u + '</a>'; });
+}
 function now() { var d = new Date(); return { day: C.ymd(d), time: C.pad(d.getHours()) + ':' + C.pad(d.getMinutes()), iso: d.toISOString(), ms: +d }; }
 function dot(color) { return '<span class="t-dot" style="--dot:' + (C.COLORS[color] || C.COLORS.grey) + '"></span>'; }
 function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
@@ -275,8 +279,8 @@ function taskRow(t, ctx) {
   var cls = 't-task' + (t.done ? ' is-done' : '') + (ctx.sub ? ' is-sub' : '') + (ui.detailId === t.id ? ' is-open' : '');
   var h = '<div class="' + cls + '" data-act="open" data-id="' + t.id + '" role="button" tabindex="0"' + (ui.selecting ? '' : ' draggable="true"') + '>';
   if (ui.selecting) h += '<input type="checkbox" class="t-pick" data-act="pick" data-id="' + t.id + '"' + (ui.picked[t.id] ? ' checked' : '') + ' aria-label="Select ' + esc(t.title) + '">';
-  h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__title">' + esc(t.title) + '</div>';
-  if (t.notes && !ctx.card) h += '<div class="t-task__notes">' + esc(t.notes.split('\n')[0]) + '</div>';
+  h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__title">' + linked(t.title) + '</div>';
+  if (t.notes && !ctx.card) h += '<div class="t-task__notes">' + linked(t.notes.split('\n')[0]) + '</div>';
   h += '<div class="t-task__meta">' + metaHtml(t, ctx) + '</div></div>';
   if (kids.length) h += '<button class="t-iconbtn t-twisty" data-act="twisty" data-id="' + t.id + '" aria-expanded="' + (ui.collapsed[t.id] ? 'false' : 'true') + '" aria-label="Show or hide sub-tasks">' + icon('chev') + '</button>';
   h += '<div class="t-task__actions">' +
@@ -371,12 +375,12 @@ function renderMain() {
       var where = !(v.kind === 'inbox' || v.kind === 'project');
       var any = groups.some(function (g) { return g.tasks.length; });
       var inner = groups.map(function (g) { return groupHtml(g, where); }).join('');
-      if (!any && v.kind !== 'upcoming') inner = '<div class="yc-empty">' + esc(emptyText(v)) + '</div>' + inner;
+      if (!any && v.kind !== 'upcoming') inner = '<div class="yc-empty">' + esc(emptyText(v)) + (state.tasks.length ? '' : '<div class="yc-small" style="margin-top:8px">Tip: type <span class="yc-kbd">Pay rent tomorrow 5pm p1</span> and the day, time and priority are filled in for you.</div>') + '</div>' + inner;
       if (p) inner += '<button class="t-add" data-act="section-add">' + icon('plus') + 'Add section</button>';
       body += '<div class="t-list" id="list"><div class="t-list__inner">' + inner + '</div></div>';
     }
   }
-  body += '<button class="yc-button yc-button--primary t-fab" data-act="quick-add" aria-label="Add task">' + icon('plus') + '</button>';
+  body += '<div id="bulk"></div><button class="yc-button yc-button--primary t-fab" data-act="quick-add" aria-label="Add task">' + icon('plus') + '</button>';
   var list = $('list'), top = list ? list.scrollTop : 0, left = list ? list.scrollLeft : 0, sameView = $('main').getAttribute('data-view') === viewKey(v);
   $('main').innerHTML = body;
   $('main').setAttribute('data-view', viewKey(v));
@@ -400,6 +404,11 @@ function labelsScreen() {
     (state.labels.length ? '<div class="yc-list">' + state.labels.slice().sort(function (a, b) { return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1; }).map(function (l) {
       return row({ kind: 'label', id: l.name }, dot(l.color), l.name, c.labels[l.name] || 0, 'label-more', l.name);
     }).join('') + '</div>' : '<div class="yc-empty">Labels cut across projects: @errands, @5-minutes, @waiting. Type @name while adding a task to make one.</div>') + '</section>';
+  var gone = state.projects.filter(function (p) { return p.archived; });
+  if (gone.length) h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Archived projects</span></div><div class="yc-list">' + gone.map(function (p) {
+    return '<div class="yc-list-row"><button class="t-navitem" style="flex:1;min-width:0" data-act="go" data-view="' + esc(JSON.stringify({ kind: 'project', id: p.id })) + '">' + dot(p.color) + '<span class="t-grow t-clip">' + esc(p.name) + '</span></button>' +
+      '<button class="yc-button yc-button--sm" data-act="project-unarchive" data-id="' + p.id + '">Bring back</button></div>';
+  }).join('') + '</div></section>';
   return h + '</div></div>';
 }
 function completedScreen() {
@@ -490,7 +499,7 @@ function renderDetail() {
   }
   h += '<div class="yc-stack" style="gap:6px"><div class="yc-eyebrow">Comments</div>' +
     t.comments.map(function (c) {
-      return '<div class="yc-box t-comment"><div class="t-comment__meta"><span>' + esc(stamp(c.at)) + '</span><button class="t-iconbtn" data-act="d-comment-del" data-id="' + c.id + '" aria-label="Delete comment">' + icon('x') + '</button></div>' + esc(c.text) + '</div>';
+      return '<div class="yc-box t-comment"><div class="t-comment__meta"><span>' + esc(stamp(c.at)) + '</span><button class="t-iconbtn" data-act="d-comment-del" data-id="' + c.id + '" aria-label="Delete comment">' + icon('x') + '</button></div>' + linked(c.text) + '</div>';
     }).join('') +
     '<div class="yc-row" style="align-items:flex-end"><textarea class="yc-textarea" id="d-comment" data-keep rows="1" style="min-height:34px;font-size:13px" placeholder="Write a comment" aria-label="Write a comment"></textarea>' +
     '<button class="yc-button" data-act="d-comment-add">Post</button></div></div>';
@@ -508,7 +517,7 @@ function render() {
   var a = document.activeElement, keep = a && a.id && a.hasAttribute && a.hasAttribute('data-keep') ? { id: a.id, value: a.value, s: a.selectionStart, e: a.selectionEnd } : null;
   if (ui.editor && $('ed-title')) { ui.editor.text = $('ed-title').value; ui.editor.notes = $('ed-notes').value; }
   var edFocus = a && (a.id === 'ed-title' || a.id === 'ed-notes') ? a.id : null;
-  renderNav(); renderMain(); renderDetail();
+  renderNav(); renderMain(); renderDetail(); checkReminders();
   if (ui.modal && ui.modal.editor) renderModal();
   if (keep && $(keep.id)) { var el = $(keep.id); el.value = keep.value; el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch (e) {} if (keep.id === 'd-title') growTitle(); }
   if (edFocus && $(edFocus)) { $(edFocus).focus(); var len = $(edFocus).value.length; try { $(edFocus).setSelectionRange(len, len); } catch (e) {} }

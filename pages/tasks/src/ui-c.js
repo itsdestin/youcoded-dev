@@ -345,6 +345,8 @@ document.addEventListener('click', function (e) {
   if (!t.closest) return;
   // A click anywhere else puts a floating menu away and does nothing more.
   if (ui.pop && !t.closest('#pop') && !t.closest('.yc-menu')) { closePop(); e.preventDefault(); return; }
+  // A link inside a task is the app's to open; it must not also open the task.
+  if (t.closest('a[href]')) return;
   var el = t.closest('[data-act]');
   if (!el || el.disabled) return;
   var fn = ACT[el.getAttribute('data-act')];

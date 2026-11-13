@@ -45,7 +45,7 @@ html, body { overflow: hidden; }
 .t-scrim { display: none; }
 
 /* ── middle: the list ────────────────────────────────────────────────────────────────── */
-.t-main { flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--canvas); }
+.t-main { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--canvas); }
 :root[data-yc-see-through] .t-main { background: transparent; }
 /* The heading lines up with the list under it; a board uses the full width instead. */
 .t-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px 20px 8px; width: 100%; max-width: 860px; margin: 0 auto; }
@@ -213,7 +213,7 @@ button.t-group__title { cursor: pointer; }
 .t-keys { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 12px; color: var(--fg-2); margin: 0 12px 8px; }
 
 .t-toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 32px); padding: 8px 8px 8px 14px; background: var(--panel); border: 1px solid var(--yc-edge-strong); border-radius: var(--radius-lg, 12px); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); font-size: 13px; }
-.t-bulk { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 30; display: flex; align-items: center; gap: 6px; max-width: calc(100vw - 16px); overflow-x: auto; padding: 8px 10px; background: var(--panel); border: 1px solid var(--yc-edge-strong); border-radius: var(--radius-lg, 12px); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); font-size: 12px; white-space: nowrap; }
+.t-bulk { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 12; display: flex; align-items: center; gap: 6px; max-width: calc(100% - 16px); overflow-x: auto; padding: 8px 10px; background: var(--panel); border: 1px solid var(--yc-edge-strong); border-radius: var(--radius-lg, 12px); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); font-size: 12px; white-space: nowrap; }
 .t-alerts { position: fixed; right: 12px; top: 12px; z-index: 55; display: flex; flex-direction: column; gap: 8px; width: min(340px, calc(100vw - 24px)); }
 .t-alerts .yc-notice { background: var(--panel); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); }
 .t-fab { display: none; }
@@ -254,7 +254,6 @@ button.t-group__title { cursor: pointer; }
       <aside class="t-detail" id="detail" aria-label="Task details" hidden></aside>
     </div>
   </div>
-  <div id="bulk"></div>
   <div id="modal"></div>
   <div id="pop"></div>
   <div id="toast"></div>
@@ -834,6 +833,10 @@ var ICONS = {
 };
 function icon(name, cls) { return '<svg class="t-icon' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true"><path d="' + ICONS[name] + '"/></svg>'; }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+// Escaped text with web addresses turned into links. The app, not the page, opens them.
+function linked(s) {
+  return esc(s).replace(/\bhttps?:\/\/[^\s<]+[^\s<.,;:!?)\]'"]/g, function (u) { return '<a href="' + u + '" rel="noopener">' + u + '</a>'; });
+}
 function now() { var d = new Date(); return { day: C.ymd(d), time: C.pad(d.getHours()) + ':' + C.pad(d.getMinutes()), iso: d.toISOString(), ms: +d }; }
 function dot(color) { return '<span class="t-dot" style="--dot:' + (C.COLORS[color] || C.COLORS.grey) + '"></span>'; }
 function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
@@ -1070,8 +1073,8 @@ function taskRow(t, ctx) {
   var cls = 't-task' + (t.done ? ' is-done' : '') + (ctx.sub ? ' is-sub' : '') + (ui.detailId === t.id ? ' is-open' : '');
   var h = '<div class="' + cls + '" data-act="open" data-id="' + t.id + '" role="button" tabindex="0"' + (ui.selecting ? '' : ' draggable="true"') + '>';
   if (ui.selecting) h += '<input type="checkbox" class="t-pick" data-act="pick" data-id="' + t.id + '"' + (ui.picked[t.id] ? ' checked' : '') + ' aria-label="Select ' + esc(t.title) + '">';
-  h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__title">' + esc(t.title) + '</div>';
-  if (t.notes && !ctx.card) h += '<div class="t-task__notes">' + esc(t.notes.split('\n')[0]) + '</div>';
+  h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__title">' + linked(t.title) + '</div>';
+  if (t.notes && !ctx.card) h += '<div class="t-task__notes">' + linked(t.notes.split('\n')[0]) + '</div>';
   h += '<div class="t-task__meta">' + metaHtml(t, ctx) + '</div></div>';
   if (kids.length) h += '<button class="t-iconbtn t-twisty" data-act="twisty" data-id="' + t.id + '" aria-expanded="' + (ui.collapsed[t.id] ? 'false' : 'true') + '" aria-label="Show or hide sub-tasks">' + icon('chev') + '</button>';
   h += '<div class="t-task__actions">' +
@@ -1166,12 +1169,12 @@ function renderMain() {
       var where = !(v.kind === 'inbox' || v.kind === 'project');
       var any = groups.some(function (g) { return g.tasks.length; });
       var inner = groups.map(function (g) { return groupHtml(g, where); }).join('');
-      if (!any && v.kind !== 'upcoming') inner = '<div class="yc-empty">' + esc(emptyText(v)) + '</div>' + inner;
+      if (!any && v.kind !== 'upcoming') inner = '<div class="yc-empty">' + esc(emptyText(v)) + (state.tasks.length ? '' : '<div class="yc-small" style="margin-top:8px">Tip: type <span class="yc-kbd">Pay rent tomorrow 5pm p1</span> and the day, time and priority are filled in for you.</div>') + '</div>' + inner;
       if (p) inner += '<button class="t-add" data-act="section-add">' + icon('plus') + 'Add section</button>';
       body += '<div class="t-list" id="list"><div class="t-list__inner">' + inner + '</div></div>';
     }
   }
-  body += '<button class="yc-button yc-button--primary t-fab" data-act="quick-add" aria-label="Add task">' + icon('plus') + '</button>';
+  body += '<div id="bulk"></div><button class="yc-button yc-button--primary t-fab" data-act="quick-add" aria-label="Add task">' + icon('plus') + '</button>';
   var list = $('list'), top = list ? list.scrollTop : 0, left = list ? list.scrollLeft : 0, sameView = $('main').getAttribute('data-view') === viewKey(v);
   $('main').innerHTML = body;
   $('main').setAttribute('data-view', viewKey(v));
@@ -1195,6 +1198,11 @@ function labelsScreen() {
     (state.labels.length ? '<div class="yc-list">' + state.labels.slice().sort(function (a, b) { return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1; }).map(function (l) {
       return row({ kind: 'label', id: l.name }, dot(l.color), l.name, c.labels[l.name] || 0, 'label-more', l.name);
     }).join('') + '</div>' : '<div class="yc-empty">Labels cut across projects: @errands, @5-minutes, @waiting. Type @name while adding a task to make one.</div>') + '</section>';
+  var gone = state.projects.filter(function (p) { return p.archived; });
+  if (gone.length) h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Archived projects</span></div><div class="yc-list">' + gone.map(function (p) {
+    return '<div class="yc-list-row"><button class="t-navitem" style="flex:1;min-width:0" data-act="go" data-view="' + esc(JSON.stringify({ kind: 'project', id: p.id })) + '">' + dot(p.color) + '<span class="t-grow t-clip">' + esc(p.name) + '</span></button>' +
+      '<button class="yc-button yc-button--sm" data-act="project-unarchive" data-id="' + p.id + '">Bring back</button></div>';
+  }).join('') + '</div></section>';
   return h + '</div></div>';
 }
 function completedScreen() {
@@ -1285,7 +1293,7 @@ function renderDetail() {
   }
   h += '<div class="yc-stack" style="gap:6px"><div class="yc-eyebrow">Comments</div>' +
     t.comments.map(function (c) {
-      return '<div class="yc-box t-comment"><div class="t-comment__meta"><span>' + esc(stamp(c.at)) + '</span><button class="t-iconbtn" data-act="d-comment-del" data-id="' + c.id + '" aria-label="Delete comment">' + icon('x') + '</button></div>' + esc(c.text) + '</div>';
+      return '<div class="yc-box t-comment"><div class="t-comment__meta"><span>' + esc(stamp(c.at)) + '</span><button class="t-iconbtn" data-act="d-comment-del" data-id="' + c.id + '" aria-label="Delete comment">' + icon('x') + '</button></div>' + linked(c.text) + '</div>';
     }).join('') +
     '<div class="yc-row" style="align-items:flex-end"><textarea class="yc-textarea" id="d-comment" data-keep rows="1" style="min-height:34px;font-size:13px" placeholder="Write a comment" aria-label="Write a comment"></textarea>' +
     '<button class="yc-button" data-act="d-comment-add">Post</button></div></div>';
@@ -1303,7 +1311,7 @@ function render() {
   var a = document.activeElement, keep = a && a.id && a.hasAttribute && a.hasAttribute('data-keep') ? { id: a.id, value: a.value, s: a.selectionStart, e: a.selectionEnd } : null;
   if (ui.editor && $('ed-title')) { ui.editor.text = $('ed-title').value; ui.editor.notes = $('ed-notes').value; }
   var edFocus = a && (a.id === 'ed-title' || a.id === 'ed-notes') ? a.id : null;
-  renderNav(); renderMain(); renderDetail();
+  renderNav(); renderMain(); renderDetail(); checkReminders();
   if (ui.modal && ui.modal.editor) renderModal();
   if (keep && $(keep.id)) { var el = $(keep.id); el.value = keep.value; el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch (e) {} if (keep.id === 'd-title') growTitle(); }
   if (edFocus && $(edFocus)) { $(edFocus).focus(); var len = $(edFocus).value.length; try { $(edFocus).setSelectionRange(len, len); } catch (e) {} }
@@ -1404,7 +1412,7 @@ function renderPop() {
   if (!p) return closePop();
   var a = document.activeElement, focusId = a && a.id && $('pop').contains(a) ? a.id : null;
   var html = p.type === 'menu' ? menuHtml(p) : p.type === 'date' ? dateHtml(p) : labelsHtml(p);
-  $('pop').innerHTML = '<div class="t-pop' + (p.type === 'date' ? ' t-date' : '') + '" id="pop-box" role="dialog" aria-label="' + esc(p.title || 'Menu') + '">' + html + '</div>';
+  $('pop').innerHTML = '<div class="t-pop yc-no-fade' + (p.type === 'date' ? ' t-date' : '') + '" id="pop-box" role="dialog" aria-label="' + esc(p.title || 'Menu') + '">' + html + '</div>';
   var box = $('pop-box'), w = box.offsetWidth, h = box.offsetHeight;
   var left = Math.max(8, Math.min(p.rect.l, window.innerWidth - w - 8));
   var top = p.rect.b + 4;
@@ -1539,7 +1547,7 @@ function closeModal() { ui.modal = null; if (ui.editor && ui.editor.slot === 'mo
 function renderModal() {
   var m = ui.modal;
   if (!m) return;
-  $('modal').innerHTML = '<div class="t-modal" data-act="modal-scrim"><div class="yc-card t-modal__box' + (m.wide ? ' t-modal__box--wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(m.title) + '">' +
+  $('modal').innerHTML = '<div class="t-modal yc-no-fade" data-act="modal-scrim"><div class="yc-card t-modal__box' + (m.wide ? ' t-modal__box--wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(m.title) + '">' +
     '<h2><span>' + esc(m.title) + '</span><button class="t-iconbtn" data-act="modal-cancel" aria-label="Close">' + icon('x') + '</button></h2>' +
     (m.editor ? editorHtml() : m.body) +
     (m.hideFoot || m.editor ? '' : '<div class="t-modal__foot"><button class="yc-button yc-button--ghost" data-act="modal-cancel">' + (m.cancelText || 'Cancel') + '</button>' +
@@ -2049,6 +2057,8 @@ document.addEventListener('click', function (e) {
   if (!t.closest) return;
   // A click anywhere else puts a floating menu away and does nothing more.
   if (ui.pop && !t.closest('#pop') && !t.closest('.yc-menu')) { closePop(); e.preventDefault(); return; }
+  // A link inside a task is the app's to open; it must not also open the task.
+  if (t.closest('a[href]')) return;
   var el = t.closest('[data-act]');
   if (!el || el.disabled) return;
   var fn = ACT[el.getAttribute('data-act')];

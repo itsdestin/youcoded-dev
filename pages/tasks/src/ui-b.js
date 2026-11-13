@@ -93,7 +93,7 @@ function renderPop() {
   if (!p) return closePop();
   var a = document.activeElement, focusId = a && a.id && $('pop').contains(a) ? a.id : null;
   var html = p.type === 'menu' ? menuHtml(p) : p.type === 'date' ? dateHtml(p) : labelsHtml(p);
-  $('pop').innerHTML = '<div class="t-pop' + (p.type === 'date' ? ' t-date' : '') + '" id="pop-box" role="dialog" aria-label="' + esc(p.title || 'Menu') + '">' + html + '</div>';
+  $('pop').innerHTML = '<div class="t-pop yc-no-fade' + (p.type === 'date' ? ' t-date' : '') + '" id="pop-box" role="dialog" aria-label="' + esc(p.title || 'Menu') + '">' + html + '</div>';
   var box = $('pop-box'), w = box.offsetWidth, h = box.offsetHeight;
   var left = Math.max(8, Math.min(p.rect.l, window.innerWidth - w - 8));
   var top = p.rect.b + 4;
@@ -228,7 +228,7 @@ function closeModal() { ui.modal = null; if (ui.editor && ui.editor.slot === 'mo
 function renderModal() {
   var m = ui.modal;
   if (!m) return;
-  $('modal').innerHTML = '<div class="t-modal" data-act="modal-scrim"><div class="yc-card t-modal__box' + (m.wide ? ' t-modal__box--wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(m.title) + '">' +
+  $('modal').innerHTML = '<div class="t-modal yc-no-fade" data-act="modal-scrim"><div class="yc-card t-modal__box' + (m.wide ? ' t-modal__box--wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(m.title) + '">' +
     '<h2><span>' + esc(m.title) + '</span><button class="t-iconbtn" data-act="modal-cancel" aria-label="Close">' + icon('x') + '</button></h2>' +
     (m.editor ? editorHtml() : m.body) +
     (m.hideFoot || m.editor ? '' : '<div class="t-modal__foot"><button class="yc-button yc-button--ghost" data-act="modal-cancel">' + (m.cancelText || 'Cancel') + '</button>' +

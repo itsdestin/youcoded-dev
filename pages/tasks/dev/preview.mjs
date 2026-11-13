@@ -80,7 +80,10 @@ const fake = `window.__saved = ${json(data)}; window.__saves = 0; window.__subs 
 window.youcoded = { data: window.__saved, save: function (v) { window.__saved = JSON.parse(JSON.stringify(v)); window.__saves++; },
   onData: function (cb) { window.__subs.push(cb); }, onRefresh: function () {} };
 window.__push = function (v) { window.__saved = v; window.__subs.forEach(function (cb) { cb(v); }); };`;
-const ours = `<style id="youcoded-theme">${themeCss}</style><style id="youcoded-kit">${PAGE_KIT_CSS}</style><script>${fake}</script><script id="youcoded-kit-js">${PAGE_KIT_JS}</script>`;
+// The app's policy for a page with no connections (page-theme.ts pageCsp), so anything the app
+// would block is blocked here too and shows up as a page error in the smoke test.
+const csp = "default-src 'none'; connect-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; form-action 'none'; base-uri 'none'; frame-src 'none'";
+const ours = `<meta http-equiv="Content-Security-Policy" content="${csp}"><style id="youcoded-theme">${themeCss}</style><style id="youcoded-kit">${PAGE_KIT_CSS}</style><script>${fake}</script><script id="youcoded-kit-js">${PAGE_KIT_JS}</script>`;
 const page = readFileSync(join(here, '..', 'page.html'), 'utf8').replace('<head>', () => '<head>' + ours);
 const out = resolve(arg('out', join(here, 'preview.html')));
 writeFileSync(out, page);
