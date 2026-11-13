@@ -12,8 +12,8 @@ side: both
 vision: yours.look.reduced, yours.look.themes
 ---
 Progress
-Done: Read the code: particles and mascot are already capped at 30 fps and stop when hidden; Reduced Effects stops theme animation. Not measured: real-card GPU cost (needs the supervised GPU tool).
-Next: Destin: default effects on weaker computers. Card-grid blur cost still needs a real-GPU run.
+Done: Destin, overnight deck 2026-11-13 C-12: keep particle and glass effects on by default.
+Next: Nothing; real-graphics-card cost still unmeasured.
 Blocked: the high-refresh smoothness check needs Destin's eyes on the real screen.
 
 Chats
