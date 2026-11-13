@@ -1,0 +1,533 @@
+{
+  "title": "Marketplace overhaul — the choices before anything is built",
+  "key": "marketplace-overhaul-questions",
+  "out": "marketplace-overhaul.questions.html",
+  "stage": "ask",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Updates: finding them and getting them",
+      "intro": "Three reviews on 2026-11-13 confirmed updates are broken in several ways. These decide how updates should behave once they are fixed."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Any plugin made by someone outside YouCoded, such as Superpowers",
+      "headline": "When you update an outside author's plugin, which version should you get?",
+      "today": "Install and Update fetch whatever the author published most recently, as long as it passed our hourly automatic check. Anthropic keeps its own list of the same plugins and marks one reviewed version of each, which is often a little older. For Superpowers right now, the author's newest is 7.0.2, Anthropic's reviewed one is 7.0.0, and you have 6.1.1.",
+      "problem": "An author's newest files have been looked at only by our automatic check, which looks for leaked keys and broken files, not for bad behaviour. If an author's account were taken over, the bad version could reach anyone who pressed Update within the hour.",
+      "proposal": "Pick which version Install and Update should deliver for plugins that come from Anthropic's list. Plugins from elsewhere have no reviewed version, so they keep following the author either way.",
+      "options": [
+        {
+          "id": "reviewed",
+          "label": "Anthropic's reviewed version",
+          "pros": [
+            "A person at Anthropic has chosen that exact version, so a hijacked author account cannot reach you straight away.",
+            "The safer default for everyday users who cannot judge a plugin themselves."
+          ],
+          "cons": [
+            "You get new versions later, sometimes weeks later (7.0.0 instead of 7.0.2 today).",
+            "A fix the author just shipped is not available until Anthropic moves its marker."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "newest",
+          "label": "The author's newest",
+          "pros": [
+            "Always the latest features and fixes.",
+            "Matches what the app does today, so nothing changes."
+          ],
+          "cons": [
+            "Only our automatic check stands between the author and your computer.",
+            "A bad or broken release reaches users within about an hour."
+          ]
+        },
+        {
+          "id": "reviewed-with-choice",
+          "label": "Reviewed, with a newest option",
+          "summary": "Update gives the reviewed version; the plugin's page also offers \"Get the author's newest\" with a short warning.",
+          "pros": [
+            "Safe by default, and people who know the author can still jump ahead."
+          ],
+          "cons": [
+            "One more control and one more warning to explain on the plugin page."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Marketplace and Your library",
+      "path": "Every installed plugin and theme",
+      "headline": "Should plugins and themes update themselves?",
+      "today": "Nothing updates by itself. Each plugin or theme must be opened and updated by hand, one at a time. The four plugins built into the app are the exception: they change with each app release.",
+      "problem": "Most people never open Your library to look, so they stay on old versions for months and miss fixes. Your own Superpowers copy is four months old.",
+      "proposal": "Choose how much the app does without being asked. Automatic updates would be applied when the app starts, never in the middle of a conversation.",
+      "options": [
+        {
+          "id": "ours-auto",
+          "label": "Ours automatic, others ask",
+          "pros": [
+            "Plugins and themes made by YouCoded stay current with no effort, like the app itself.",
+            "Anything from an outside author still waits for you to press Update, so nobody else's changes arrive unannounced."
+          ],
+          "cons": [
+            "A YouCoded plugin could behave differently after a restart without you having chosen it; a short \"Updated\" note would say so.",
+            "Two behaviours to explain instead of one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "all-manual",
+          "label": "Everything asks first",
+          "pros": [
+            "Nothing ever changes unless you pressed a button.",
+            "Simplest to explain."
+          ],
+          "cons": [
+            "People who never look stay out of date, which is today's problem with a better notice."
+          ]
+        },
+        {
+          "id": "all-auto",
+          "label": "Everything automatic",
+          "pros": [
+            "Works like a phone's app store; nobody falls behind."
+          ],
+          "cons": [
+            "An outside author's change, good or bad, lands without anyone agreeing to it.",
+            "A plugin you rely on can change how the assistant behaves overnight."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "The whole app",
+      "path": "Wherever you would notice that an update is waiting",
+      "headline": "Where should the app tell you that updates are waiting?",
+      "today": "An Updates tab appears inside Your library only when something needs updating, and a plugin's card shows an Update button. Nothing outside the Marketplace mentions updates. The app looks for updates only when the Marketplace is first opened, never again while it stays open.",
+      "problem": "You learn about an update only if you happen to open Your library. There is no \"update all\", no sign of which version you have or would get, and no way to check on demand.",
+      "proposal": "In every option the app would also check by itself about once an hour, show \"you have 6.1.1, new is 7.0.2\" with a link to what changed, add Update all, and say \"Updated\" when it finishes. The choice is only how loudly it tells you.",
+      "options": [
+        {
+          "id": "count",
+          "label": "A count on the button",
+          "summary": "The button that opens the Marketplace shows a small number when updates wait; Your library always has an Updates tab.",
+          "pros": [
+            "Visible from the chat screen without interrupting anything.",
+            "Same idea as the red dot the app already uses on Settings."
+          ],
+          "cons": [
+            "One more small badge on a toolbar that already has one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "library-only",
+          "label": "Inside Your library only",
+          "pros": [
+            "The chat screen stays exactly as it is."
+          ],
+          "cons": [
+            "People who never open Your library still never find out."
+          ]
+        },
+        {
+          "id": "notice",
+          "label": "A count plus a start-up note",
+          "summary": "The count, and a one-line note when the app opens: \"3 updates are ready\".",
+          "pros": [
+            "Hard to miss."
+          ],
+          "cons": [
+            "Another message at start-up, on top of app-update and other notices.",
+            "Can feel like nagging if you choose not to update something."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Your library",
+      "path": "The first time the fixed app opens",
+      "headline": "The first time, every plugin that is truly behind shows Update at once.",
+      "changed": "Stated, not asked: the app will compare the exact files you have with the exact files on offer, instead of two version numbers that were never on the same scale. Plugins installed before August 30 are included; today they are skipped on purpose.",
+      "notice": "People with older installs may see several Update buttons appear together after the fix. Each one is real. On your computer that is Superpowers only. After that first catch-up it settles down.",
+      "yes": "Fine, show them",
+      "no": "Don't do that"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Marketplace and Your library",
+      "path": "Install, Update and Remove",
+      "headline": "Eleven reliability repairs go in together, with five small things you would see.",
+      "changed": "Stated, not asked. Unseen repairs: Update on YouCoded's own plugins (Encyclopedia, Civic Report, Inbox) stops reporting success while copying old files; Remove stops saying \"Removed\" when files were left behind; an update or install interrupted by quitting can no longer lose or half-install a plugin; two updates at once cannot collide; a theme update deletes files the new version dropped; the app notices a plugin whose files have gone missing.",
+      "notice": "What you would see: (1) removing a plugin asks \"Remove this?\" in the app's own style, as themes should too; (2) a failed update gets Try again and Details, like a failed install; (3) a plugin taken out of the marketplace is labelled \"No longer in the marketplace\"; (4) a plugin that cannot run on your device says so instead of offering Install; (5) \"Can't verify this plugin right now\" becomes two accurate messages. Each of these comes back to you as a picture before it is built.",
+      "yes": "Go ahead",
+      "no": "Talk first"
+    },
+    {
+      "id": "P-2",
+      "page": "Listings that promise more than they deliver",
+      "intro": "Five places where the Marketplace shows something that does not work or claims more than is true. Four have been waiting for your choice since November 10."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Connections that are packaged for Docker",
+      "headline": "What should happen to the 293 tool listings that cannot be installed?",
+      "today": "293 listings can be browsed but not installed, because they need a separate program called Docker. Their page shows \"Open source\" instead of an install button. For 77 of them even that button is greyed out, because the listing names no web page.",
+      "problem": "Someone browsing finds a tool they want, opens it, and hits a dead end. On 77 of them there is nothing to press at all.",
+      "proposal": "Pick how far to go. Making them installable is a large project of its own: the user must install Docker first and a screen for entering keys is needed.",
+      "options": [
+        {
+          "id": "hide-dead",
+          "label": "Hide the 77 dead ones",
+          "pros": [
+            "No listing ends in a button that does nothing.",
+            "The other 216 stay, with a working link to their page."
+          ],
+          "cons": [
+            "77 tools vanish from browsing and search.",
+            "216 listings still cannot be installed from the app."
+          ],
+          "measured": "77 hidden, 216 kept",
+          "recommended": true
+        },
+        {
+          "id": "hide-all",
+          "label": "Hide all 293",
+          "pros": [
+            "Everything shown in the Marketplace can be installed or connected."
+          ],
+          "cons": [
+            "The Marketplace looks smaller, and people lose a way to discover those tools."
+          ],
+          "measured": "293 hidden"
+        },
+        {
+          "id": "leave",
+          "label": "Leave them",
+          "pros": [
+            "No work."
+          ],
+          "cons": [
+            "77 dead ends remain."
+          ]
+        },
+        {
+          "id": "build",
+          "label": "Make them installable",
+          "pros": [
+            "A working install for all 293."
+          ],
+          "cons": [
+            "Large build; only helps people willing to install Docker, which most everyday users are not.",
+            "Delays everything else on this deck."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Connections, then Todoist",
+      "headline": "Todoist's Install button always fails. What should it do instead?",
+      "today": "Todoist shows an Install button. Pressing it always answers \"This integration's setup method isn't supported in this version\", and Try again fails the same way.",
+      "problem": "A featured connection that can never work makes the whole Marketplace look broken.",
+      "proposal": "Either say honestly that it is not ready, or build the missing piece: a screen where you paste a Todoist key, kept safely on your device.",
+      "options": [
+        {
+          "id": "coming-soon",
+          "label": "Mark it \"Coming soon\"",
+          "pros": [
+            "Honest today, and quick.",
+            "The key-entry screen can be designed properly later, for every connection that needs a key."
+          ],
+          "cons": [
+            "Todoist still does not work."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "build-key",
+          "label": "Build key entry now",
+          "pros": [
+            "Todoist works, and the same screen unlocks other key-based connections."
+          ],
+          "cons": [
+            "A new screen and safe storage to design and review; adds roughly a week to this run."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "The Messaging listing",
+      "headline": "Messaging says \"SMS/iMessage\" but only works with Google Messages on Windows. How should it be shown?",
+      "today": "The Messaging listing says \"SMS/iMessage\" and offers Install on every computer. It contains only a Windows program for Google Messages. There is no iMessage part.",
+      "problem": "A Mac or Linux user installs it and gets nothing, with no explanation.",
+      "proposal": "Correct the wording, and decide whether people who cannot use it should still see it.",
+      "options": [
+        {
+          "id": "windows-only",
+          "label": "Fix wording, mark Windows only",
+          "summary": "Everyone still sees it, labelled \"Windows only\"; Install is offered on Windows alone.",
+          "pros": [
+            "Accurate, and nobody installs something that does nothing.",
+            "Mac and Linux users can see it exists."
+          ],
+          "cons": [
+            "Mac and Linux users see a listing they cannot use."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "hide-elsewhere",
+          "label": "Fix wording, hide elsewhere",
+          "pros": [
+            "Nobody sees something they cannot use."
+          ],
+          "cons": [
+            "It disappears for Mac and Linux users, who may wonder where it went."
+          ]
+        },
+        {
+          "id": "wording",
+          "label": "Fix the wording only",
+          "pros": [
+            "Smallest change."
+          ],
+          "cons": [
+            "Mac and Linux users can still install a plugin that does nothing for them."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "The \"Likely safe\" badge on every card",
+      "headline": "The \"Likely safe\" badge claims more than is checked. What should it say?",
+      "today": "Nearly every card shows \"Likely safe\". The check behind it only looks for leaked keys and correctly shaped files. It does not look at what a plugin does. On September 23 you asked for an AI review to make the badge earn its name, and on October 5 you postponed it.",
+      "problem": "People read \"Likely safe\" as \"someone checked this is safe to run\". Nobody has. On a phone the explanation is not reachable at all, because it only appears when a mouse hovers.",
+      "proposal": "Either make the words match the check now, or build the AI review in this run. In every option the explanation becomes tappable on a phone.",
+      "options": [
+        {
+          "id": "reword-now",
+          "label": "Reword now, AI review later",
+          "summary": "The badge says what was checked, for example \"No leaked keys found\". \"Likely safe\" returns when an AI review exists.",
+          "pros": [
+            "Honest from the next release, at almost no cost.",
+            "Keeps your AI-review plan, without holding up the fixes."
+          ],
+          "cons": [
+            "Cards look less reassuring in the meantime."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ai-now",
+          "label": "Build the AI review now",
+          "pros": [
+            "The badge earns its name."
+          ],
+          "cons": [
+            "A real build with a running cost for every plugin checked, and the AI can be wrong both ways.",
+            "Adds weeks, and needs its own decisions about what counts as unsafe."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No work."
+          ],
+          "cons": [
+            "The badge keeps promising a check that does not happen."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Your library",
+      "path": "A plugin you installed that is later flagged",
+      "headline": "Should Your library warn you when an installed plugin is later marked \"Caution\"?",
+      "today": "The Marketplace re-checks every plugin hourly and can change a listing to \"Caution\". Your library never shows that for something you already installed. The only warning is the off switch shipped November 5, which acts only on a list we edit by hand.",
+      "problem": "A plugin you installed months ago can be flagged and you would never know unless you looked it up in the Marketplace again.",
+      "proposal": "Yes: an installed plugin whose listing turns to \"Caution\" shows that on its Library card and counts toward the updates number, with the reason one tap away. It is a warning only; nothing is switched off automatically. No: Your library stays as it is.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Yes, warn in the library",
+          "pros": [
+            "You hear about a problem with something you actually run.",
+            "Small to build; it reuses the Caution badge that already exists."
+          ],
+          "cons": [
+            "The automatic check can raise a Caution that turns out to be harmless, which may worry people."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no",
+          "label": "No, leave it",
+          "pros": [
+            "No false alarms in the library."
+          ],
+          "cons": [
+            "Real warnings stay hidden from the people they matter to."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Keeping plugins from vanishing, and how much else to take on",
+      "intro": "One choice about where installed plugins are kept, then which larger marketplace pieces join this run."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Installed plugins",
+      "path": "Where the app keeps what you install",
+      "headline": "Installed plugins sit in a folder Claude Code can wipe. How far should the protection go?",
+      "today": "The app puts installed plugins in a folder that belongs to Claude Code. If Claude Code re-downloads that folder, plugins vanish; the four built-in ones return at the next start, the rest stay gone until reinstalled by hand. A check on November 10 found no sign of it happening since July.",
+      "problem": "If it happens, the app still says \"Installed\" for plugins that no longer exist, and the assistant quietly loses skills.",
+      "proposal": "This run already adds a start-up check that notices missing plugin files. The choice is whether that check also puts them back, or whether plugins move to a folder the app owns.",
+      "options": [
+        {
+          "id": "repair",
+          "label": "Put them back at start-up",
+          "pros": [
+            "Vanished plugins return by themselves the next time the app opens.",
+            "Small, and built on the check already planned."
+          ],
+          "cons": [
+            "Until the next start the plugin is missing.",
+            "Does not remove the cause."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "move",
+          "label": "Move to the app's own folder",
+          "pros": [
+            "The permanent fix: nothing else can wipe them."
+          ],
+          "cons": [
+            "Large: every installed plugin on every user's device has to be moved once, safely.",
+            "Belongs with the planned work on a home for skills outside Claude Code (cards 75 and 77); doing it here means doing it twice."
+          ]
+        },
+        {
+          "id": "nothing",
+          "label": "Only notice, don't repair",
+          "pros": [
+            "Least new behaviour."
+          ],
+          "cons": [
+            "The plugin shows as missing and you reinstall it by hand."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Larger pieces already on the board",
+      "headline": "Which larger marketplace pieces should join this run, after the fixes above?",
+      "today": "Six bigger marketplace items are waiting on cards. None is started. The fixes on the first two pages are about two to three weeks of work on their own.",
+      "problem": "Each addition pushes back the day the update fixes reach users, and the bigger ones need their own design rounds with you.",
+      "proposal": "Pick any number. Anything not picked stays on its card for a later run. The first is the one small enough to add without slowing the rest; the others are honest about their size.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "featured",
+          "label": "Refresh the featured list",
+          "summary": "Small. The front slot is Civic Report, which suits only US users and needs a key; Google, Spotify and chat search are not featured. You approve the new list on a deck.",
+          "pros": [
+            "The first thing every visitor sees gets better for little work."
+          ],
+          "cons": [
+            "Needs your eye on each pick."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "comments",
+          "label": "Delete and report comments",
+          "summary": "Medium. Delete your own comment; report someone else's, with a queue for you to act on reports.",
+          "pros": [
+            "Closes an abuse gap before the Marketplace has many commenters."
+          ],
+          "cons": [
+            "About a week, and a new admin chore for you."
+          ]
+        },
+        {
+          "id": "previews",
+          "label": "Reliable theme previews",
+          "summary": "Medium. Theme preview pictures are sometimes missing or blank; fix the whole class, as you asked on September 2.",
+          "pros": [
+            "Themes are judged by their picture; a blank one loses the install."
+          ],
+          "cons": [
+            "The cause is not yet known, so the size is a guess."
+          ]
+        },
+        {
+          "id": "assistant-search",
+          "label": "Assistant searches the marketplace",
+          "summary": "Medium to large. The assistant can look for a plugin that already does the job before writing its own script. You called this a release blocker on September 5.",
+          "pros": [
+            "Turns the Marketplace from a place you visit into something the assistant uses for you."
+          ],
+          "cons": [
+            "Its own feature with its own design round; better started once installs and updates are trustworthy."
+          ]
+        },
+        {
+          "id": "phone",
+          "label": "Phone-sized marketplace",
+          "summary": "Large. A store layout for phones, with folded sections and \"view all\", as you asked on November 1.",
+          "pros": [
+            "The Marketplace finally fits a phone."
+          ],
+          "cons": [
+            "A full design project; several rounds of pictures with you."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "None; fixes only",
+          "pros": [
+            "The update and listing fixes reach users soonest."
+          ],
+          "cons": [
+            "The six items keep waiting."
+          ]
+        }
+      ]
+    }
+  ]
+}
