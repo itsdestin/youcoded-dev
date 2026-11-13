@@ -59,8 +59,8 @@ var ui = {
 };
 
 // ── saving and undo ─────────────────────────────────────────────────────────────────────
-var undoStack = [], saveTimer = null, renderTimer = null;
-function flush() { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; if (api && api.save) api.save(state); } }
+var undoStack = [], saveTimer = null, renderTimer = null, lastSaved = '';
+function flush() { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; lastSaved = JSON.stringify(state); if (api && api.save) api.save(state); } }
 function save() { clearTimeout(saveTimer); saveTimer = setTimeout(flush, 150); }
 // Every change to tasks goes through here: one step back is kept for Undo, the data is saved,
 // and the screen is redrawn. WHY the redraw waits a tick: a change often comes from leaving a
@@ -495,13 +495,13 @@ function renderDetail() {
         var ki = C.dueInfo(k.due, now(), state.settings.h12);
         return '<div class="t-sub' + (k.done ? ' is-done' : '') + '" data-act="open" data-id="' + k.id + '" role="button" tabindex="0">' + checkHtml(k) + '<span class="t-grow">' + esc(k.title) + '</span>' + (ki ? '<span class="t-meta t-meta--' + ki.tone + '">' + icon('calendar') + esc(ki.text) + '</span>' : '') + '</div>';
       }).join('') +
-      '<input class="yc-input" id="d-sub" data-keep placeholder="Add a sub-task, then press Enter" aria-label="Add a sub-task" style="margin-top:4px;font-size:13px"></div>';
+      '<input class="yc-input" id="d-sub" data-keep data-draft placeholder="Add a sub-task, then press Enter" aria-label="Add a sub-task" style="margin-top:4px;font-size:13px"></div>';
   }
   h += '<div class="yc-stack" style="gap:6px"><div class="yc-eyebrow">Comments</div>' +
     t.comments.map(function (c) {
       return '<div class="yc-box t-comment"><div class="t-comment__meta"><span>' + esc(stamp(c.at)) + '</span><button class="t-iconbtn" data-act="d-comment-del" data-id="' + c.id + '" aria-label="Delete comment">' + icon('x') + '</button></div>' + linked(c.text) + '</div>';
     }).join('') +
-    '<div class="yc-row" style="align-items:flex-end"><textarea class="yc-textarea" id="d-comment" data-keep rows="1" style="min-height:34px;font-size:13px" placeholder="Write a comment" aria-label="Write a comment"></textarea>' +
+    '<div class="yc-row" style="align-items:flex-end"><textarea class="yc-textarea" id="d-comment" data-keep data-draft rows="1" style="min-height:34px;font-size:13px" placeholder="Write a comment" aria-label="Write a comment"></textarea>' +
     '<button class="yc-button" data-act="d-comment-add">Post</button></div></div>';
   h += '</div><div class="t-detail__foot"><span class="t-grow">Added ' + esc(stamp(t.createdAt)) + (t.done && t.doneAt ? ' · Done ' + esc(stamp(t.doneAt)) : '') + '</span>' +
     '<button class="yc-button yc-button--sm yc-button--danger" data-act="d-delete">' + icon('trash') + 'Delete</button></div>';
@@ -517,7 +517,12 @@ function render() {
   var a = document.activeElement, keep = a && a.id && a.hasAttribute && a.hasAttribute('data-keep') ? { id: a.id, value: a.value, s: a.selectionStart, e: a.selectionEnd } : null;
   if (ui.editor && $('ed-title')) { ui.editor.text = $('ed-title').value; ui.editor.notes = $('ed-notes').value; }
   var edFocus = a && (a.id === 'ed-title' || a.id === 'ed-notes') ? a.id : null;
+  // WHY drafts are kept separately: a comment or sub-task being typed is not in `state` yet, and
+  // any redraw (ticking another task, the minute timer) would otherwise wipe it — even unfocused.
+  var drafts = {}, draftsFor = ui.detailId;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-draft]'), function (el) { if (el.id && el.value) drafts[el.id] = el.value; });
   renderNav(); renderMain(); renderDetail(); checkReminders();
+  if (draftsFor === ui.detailId) Object.keys(drafts).forEach(function (id) { if ($(id)) $(id).value = drafts[id]; });
   if (ui.modal && ui.modal.editor) renderModal();
   if (keep && $(keep.id)) { var el = $(keep.id); el.value = keep.value; el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch (e) {} if (keep.id === 'd-title') growTitle(); }
   if (edFocus && $(edFocus)) { $(edFocus).focus(); var len = $(edFocus).value.length; try { $(edFocus).setSelectionRange(len, len); } catch (e) {} }

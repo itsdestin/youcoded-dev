@@ -174,10 +174,11 @@ var TasksCore = (function () {
 
     // 2. the day
     function setDate(d) { if (date) return false; date = d; }
-    scan('date', '\\b(today|tod|tonight|tomorrow|tmrw|tmr|tom)\\b', function (m) {
+    // WHY no "tod"/"tom": they are people's names far more often than days.
+    scan('date', '\\b(today|tonight|tomorrow|tmrw|tmr)\\b(?![\'’])', function (m) {
       var w = m[1].toLowerCase();
       if (date) return false;
-      date = /^to(d|day|night)$/.test(w) ? today : addDays(today, 1);
+      date = /^to(day|night)$/.test(w) ? today : addDays(today, 1);
       if (w === 'tonight' && !time) time = '20:00';
     });
     scan('date', '\\bnext\\s+(week|month|weekend)\\b', function (m) {
@@ -202,11 +203,19 @@ var TasksCore = (function () {
     }
     scan('date', '\\b(' + MONTH_RE + ')\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:,?\\s+(\\d{4}))?\\b', function (m) { return monthDay(monthIndex(m[1]), +m[2], m[3] ? +m[3] : 0); });
     scan('date', '\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(?:of\\s+)?(' + MONTH_RE + ')(?:,?\\s+(\\d{4}))?\\b', function (m) { return monthDay(monthIndex(m[2]), +m[1], m[3] ? +m[3] : 0); });
-    scan('date', '(?:^|\\s)(\\d{1,2})/(\\d{1,2})(?:/(\\d{2}|\\d{4}))?(?=\\s|$)', function (m) {
+    // "2/3 cup" is a fraction: without a year, 12/25 is a date only at the end of the text or
+    // just before another shortcut (a time, p1, #project, @label).
+    scan('date', '(?:^|\\s)(\\d{1,2})/(\\d{1,2})(?:/(\\d{2}|\\d{4})(?=\\s|$)|(?=\\s*$|\\s+(?:at\\b|\\d|noon\\b|p[1-4]\\b|[#@])))', function (m) {
       var y = m[3] ? +m[3] : 0; if (y && y < 100) y += 2000;
       return monthDay(+m[1] - 1, +m[2], y);
     });
-    scan('date', '\\b(?:(?:next|this|on)\\s+)?(' + DAY_RE + ')\\b', function (m) { return setDate(nextWeekday(today, dayIndex(m[1]), false)); });
+    // A full day name counts anywhere. A short one ("sun", "sat", "wed") is also an ordinary word,
+    // so it counts only after next/this/on, at the end of the text, or just before a time.
+    scan('date', '\\b(?:(next|this|on)\\s+)?(' + DAY_RE + ')\\b(?![\'’])', function (m) {
+      var full = /day$/i.test(m[2]), after = src.slice(m.index + m[0].length);
+      if (!full && !m[1] && !/^\s*$|^\s+(?:at\b|\d|noon\b|midnight\b)/i.test(after)) return false;
+      return setDate(nextWeekday(today, dayIndex(m[2]), false));
+    });
 
     // 3. the time
     scan('time', '(?:\\bat\\s+|@\\s?)?\\b(\\d{1,2})(?::([0-5]\\d))?\\s?(am|pm|a\\.m\\.|p\\.m\\.)(?![a-z])', function (m) {
@@ -292,7 +301,9 @@ var TasksCore = (function () {
     var s = emptyState();
     if (!raw || typeof raw !== 'object') return s;
     var ids = {};
-    function freshId(v) { var id = typeof v === 'string' && v && !ids[v] ? v : uid(); ids[id] = 1; return id; }
+    // WHY the pattern: ids are written into the page's markup; an id with a quote or a space
+    // (hand-written data) would break its row, so anything unusual gets a fresh id.
+    function freshId(v) { var id = typeof v === 'string' && /^[\w.:-]{1,64}$/.test(v) && !ids[v] ? v : uid(); ids[id] = 1; return id; }
     var set = raw.settings && typeof raw.settings === 'object' ? raw.settings : {};
     s.settings.weekStart = set.weekStart === 1 ? 1 : 0;
     s.settings.h12 = set.h12 !== false;
@@ -462,8 +473,10 @@ var TasksCore = (function () {
   function moveTask(state, id, where, beforeId) {
     var t = byId(state.tasks, id);
     if (!t) return;
-    var parentId = where.parentId !== undefined ? where.parentId : null;
-    t.projectId = where.projectId || null; t.sectionId = where.sectionId || null; t.parentId = parentId;
+    // WHY only when asked: a caller that says nothing about the parent (moving several picked
+    // tasks) must not turn a sub-task into a task of its own.
+    if (where.parentId !== undefined) t.parentId = where.parentId;
+    t.projectId = where.projectId || null; t.sectionId = where.sectionId || null;
     children(state, id).forEach(function (c) { c.projectId = t.projectId; c.sectionId = t.sectionId; });
     var sibs = state.tasks.filter(function (x) {
       return x !== t && x.projectId === t.projectId && x.sectionId === t.sectionId && x.parentId === t.parentId;

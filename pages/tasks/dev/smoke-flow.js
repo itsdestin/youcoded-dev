@@ -63,6 +63,12 @@
     await type('#d-comment', 'Booked!'); await click('[data-act="d-comment-add"]');
     ok('comment posted', (await T('Book the flights')).comments.length === 2);
 
+    step = 'drafts'; await type('#d-comment', 'half typed'); await change('#d-priority', '3');
+    ok('a half-typed comment survives a redraw', q('#d-comment').value === 'half typed', q('#d-comment').value);
+    q('#d-comment').value = ''; q('#d-title').focus(); q('#d-title').value = 'Book all the flights'; await key('#d-title', 'Escape');
+    ok('Escape closes the panel and keeps the renamed title', q('#detail').hidden && !!(await T('Book all the flights')));
+    await change('[data-change="sort"]', 'manual'); await click(row('f')); await change('#d-title', 'Book the flights');
+
     step = 'date picker'; await click('[data-act="d-date"]');
     ok('date picker opens', !!q('.t-date'));
     await click(`.t-day[data-day="${day(5)}"]`);

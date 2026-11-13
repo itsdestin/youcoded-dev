@@ -18,6 +18,10 @@ function editorValue() {
   var due = p.due || e.due, labels = e.labels.slice();
   p.labels.forEach(function (l) { if (labels.map(function (x) { return x.toLowerCase(); }).indexOf(l.toLowerCase()) < 0) labels.push(l); });
   var typedProject = p.projectId !== undefined && !e.parentId;
+  // The project (or section, or parent task) the box was opened in may have been deleted since.
+  if (e.projectId && !project(e.projectId)) { e.projectId = null; e.sectionId = null; }
+  if (e.sectionId && !sectionOf(e.sectionId)) e.sectionId = null;
+  if (e.parentId && !task(e.parentId)) e.parentId = null;
   return {
     title: p.title, notes: e.notes, due: due, repeat: due ? p.repeat || e.repeat : null,
     remind: due && due.time ? (e.remind != null ? e.remind : 0) : null,

@@ -201,3 +201,27 @@ test('filters, search and streak', () => {
   s.stats.days = { '2026-11-13': 1, '2026-11-12': 2, '2026-11-11': 5, '2026-11-09': 9 };
   assert.equal(C.streak(s, TODAY), 2, 'today is not over yet, so it does not break the run');
 });
+
+test('ordinary words are not mistaken for shortcuts (review findings)', () => {
+  for (const s of ['Buy 2/3 cup measure', 'Buy 1/2 gallon milk', "tom's birthday", 'Take sun cream', 'Sat with Tom', 'call tod', 'March for science', 'May I call Sam', 'wed the couple']) {
+    const r = parse(s);
+    assert.equal(r.due, null, s);
+    assert.equal(r.title, s, s);
+  }
+  assert.equal(parse('dentist wed').due.date, '2026-11-18');
+  assert.equal(parse('dentist wed 3pm').due.time, '15:00');
+  assert.equal(parse('gym on sat with Tom').due.date, '2026-11-14');
+  assert.equal(parse('party 12/25 6pm').due.date, '2026-12-25');
+  assert.equal(parse('Sunday roast recipe').due.date, '2026-11-15', 'a full day name still counts; its chip can be clicked away');
+});
+
+test('moving several tasks never un-nests a sub-task; odd ids are replaced', () => {
+  const s = C.emptyState();
+  const p = C.addTask(s, { title: 'P' }, 'x'), k = C.addTask(s, { title: 'K', parentId: p.id }, 'x');
+  C.moveTask(s, p.id, { projectId: 'px' });
+  assert.equal(k.parentId, p.id);
+  assert.equal(k.projectId, 'px');
+  const n = C.normalize({ tasks: [{ id: 'a"><i id=pwn>', title: 'T' }, { id: 'ok-1', title: 'U' }] });
+  assert.match(n.tasks[0].id, /^[\w.:-]+$/);
+  assert.equal(n.tasks[1].id, 'ok-1');
+});

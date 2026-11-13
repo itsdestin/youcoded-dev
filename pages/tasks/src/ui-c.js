@@ -2,7 +2,13 @@
 // Every clickable thing carries data-act="name"; ACT[name] is what it does. One listener on the
 // document serves them all, so redrawing a list never has to re-attach anything.
 
+// A name or notes edit is saved when its box loses focus. Closing the panel (Escape, the X,
+// another list, another task) removes the box without that happening, so save it first.
+function keepDetailEdits() {
+  ['d-title', 'd-notes'].forEach(function (id) { if ($(id)) CHANGE[id]($(id)); });
+}
 function go(view) {
+  keepDetailEdits();
   ui.view = view;
   if (ui.editor && ui.editor.slot !== 'modal') ui.editor = null;
   ui.selecting = false; ui.picked = {};
@@ -113,6 +119,7 @@ var ACT = {
   open: function (el) {
     var id = el.getAttribute('data-id');
     if (ui.selecting) { ui.picked[id] = !ui.picked[id]; renderMain(); return; }
+    keepDetailEdits();
     ui.detailId = id; render();
   },
   pick: function (el) { ui.picked[el.getAttribute('data-id')] = el.checked; renderBulk(); },
@@ -140,7 +147,8 @@ var ACT = {
   'bulk-move': function (el) {
     openPop(el, { type: 'menu', title: 'Move to', items: [{ title: 'Move to' }].concat(destItems(function (pid, sid) {
       var ids = pickedIds();
-      commit(function () { ids.forEach(function (id) { C.moveTask(state, id, { projectId: pid, sectionId: sid }); }); endSelecting(); }, plural(ids.length, 'task') + ' moved');
+      // A sub-task goes wherever its parent goes, so only tasks of their own are moved.
+      commit(function () { ids.forEach(function (id) { if (!task(id).parentId) C.moveTask(state, id, { projectId: pid, sectionId: sid }); }); endSelecting(); }, plural(ids.length, 'task') + ' moved');
     })) });
   },
   'bulk-labels': function (el) {
@@ -164,7 +172,7 @@ var ACT = {
   },
 
   // the open task
-  'detail-close': function () { ui.detailId = null; render(); },
+  'detail-close': function () { keepDetailEdits(); ui.detailId = null; render(); },
   'd-date': function (el) { openPop(el, taskDateTarget(ui.detailId)); },
   'd-labels': function (el) { openPop(el, labelsTarget(ui.detailId)); },
   'd-delete': function () { removeTask(ui.detailId); },
@@ -377,7 +385,7 @@ document.addEventListener('keydown', function (e) {
     else if (ui.editor) closeEditor();
     else if ($('app').classList.contains('is-nav-open')) $('app').classList.remove('is-nav-open');
     else if (ui.selecting) { endSelecting(); renderMain(); }
-    else if (ui.detailId) { ui.detailId = null; render(); }
+    else if (ui.detailId) { keepDetailEdits(); ui.detailId = null; render(); }
     else if (ui.view.kind === 'search') go({ kind: state.settings.startView });
     else used = false;
     // WHY preventDefault: the app treats an unused Escape as "leave this page".
@@ -480,9 +488,13 @@ document.addEventListener('dragend', function () { ui.drag = null; clearDropMark
 if (api && api.onData) api.onData(function (data) {
   // The saved data changed outside this page (the assistant added a task, or another device
   // synced). Take it, unless it is just this page's own last save coming back.
+  // A change made here and not yet saved is newer than whatever just arrived; it is saved next.
+  if (saveTimer || JSON.stringify(data) === lastSaved) return;
   var next = C.normalize(data);
   if (JSON.stringify(next) === JSON.stringify(state)) return;
   state = next; undoStack = [];
+  // Anything open was pointing at the old copy of the data.
+  closePop(); if (ui.modal) closeModal();
   render();
 });
 window.addEventListener('pagehide', flush);
