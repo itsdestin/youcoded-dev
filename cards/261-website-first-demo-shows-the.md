@@ -11,9 +11,9 @@ why: Destin: 'i see the theme a demo for just a split split second as i scroll d
 work: session/landing-theme-flicker
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Flicker: the 'yours' clip ends in another theme on purpose and its still was its last frame; the four stills are now the frame before the swap (recorder gained posterBefore). Hitch, traced at 4x slowdown: removed a body-wide '*' rule, moved click-blocking off the hidden sections to a click guard, and the intro's words now colour only the top bar and headline. Desktop last-word stall 66->30ms, reveal 77->44ms; phone intro stalls over 30ms 5->0. Colours of every visible element at each word unchanged at 1440/900/390.
+Next: Destin to check the preview and say merge. Left: ~8ms real of first-time drawing at the reveal.
+Blocked: nothing
 
 Chats
 - 2026-11-13 session/landing-theme-flicker: Built both fixes; pushed, not merged
