@@ -10,8 +10,8 @@ why: Destin: the opening sat frozen on 'Make Your Technology ___'; then the phon
 work: session/landing-intro-entrance
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Merged as youcoded PR #744. Desktop positions unchanged (measured at 1440/900/761); phones checked at 320-430 wide in all four looks.
+Next: Not yet checked: a real phone, and the reduced-motion setting in a browser. Open question for Destin: should desktop also say 'Make Technology' (phones dropped 'Your')? Known and left alone: at window widths ~1030-1100 the desktop headline flips between one and two lines as words change.
 Blocked: nothing.
 
 Chats
