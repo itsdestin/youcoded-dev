@@ -13,8 +13,8 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Early-stop fix ported onto current master on session/engine-followups: 22 delivery tests, 19 fail on master without it and all pass with it; checks pass. Not merged; a real-model check is still unproven.
-Next: Destin decides on landing and on a small live check
+Done: Destin, overnight deck 2026-11-13 L-4: land, but first "can you just explain the timing logic before we merge this. i want to understand what was wrong and how it was fixed." Fix is on app branch session/engine-followups (head d0a230589), reviewed twice; #163 and #69 split out to PR #749.
+Next: Explain in chat; land when he says so.
 Blocked: Spending ledger numbers disagree (5.20 of 15 USD vs 0.27 headroom under 10 USD); recheck before any paid run
 
 Chats
