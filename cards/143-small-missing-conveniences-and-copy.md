@@ -12,8 +12,8 @@ area: Chat
 side: screens
 ---
 Progress
-Done: 2026-11-12 overnight: sizes now 1000-based in 17 places via one helper plus a guard test (commit 5ce12e6e4). Designs for right-click on pictures, recent folders, Replace/Add chips written up in the overnight report.
-Next: Destin picks among the design options.
+Done: Destin, overnight deck 2026-11-13: C-2 picture right-click menu = Copy image, Save image as, Copy image address (web pictures only), Ask about this. C-3 recent folders = reorder the one list by last use (not a Recent group). C-4 quick chip with text already typed: he wrote "i want to see this. idk if i love strip above box styling". Sizes landed via app PR #747 when merged.
+Next: Build C-2 and C-3 and show pictures; mock two or three stylings for C-4 (not only the strip above the box) and show him.
 Blocked: nothing recorded.
 
 Chats
