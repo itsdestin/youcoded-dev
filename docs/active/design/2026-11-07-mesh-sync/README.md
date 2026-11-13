@@ -30,7 +30,8 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-9.json` + `.answers.json` | Deck round 9, submitted 2026-11-12: what the 2026-11-11 checkpoint review found. Every item answered. |
 | `mesh-sync.questions-10.json` + `.answers.json` | Deck round 10, submitted 2026-11-12: relay time limit, the files-changed note, and the cloud backup outline. |
 | `mesh-sync.questions-11.json` + `.answers.json` | Deck round 11, submitted 2026-11-12: pairing devices that both hold data, backup frequency and which device backs up, the 15-second wait, cards. |
-| `design.md` | DRAFT of the full design, each rule tagged with its source. Destin read an early version on 2026-11-10 and commented; it has been rewritten since. Lines marked "Open" are not decided. |
+| `design.md` | **The full design document** (rewritten 2026-11-13): decided behaviour, today's code, architecture, contracts, tests before building, build order, validation after, and everything not decided. Written for a builder with no prior context. |
+| `decision-outline.md` | The earlier outline `design.md` replaced. History only. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
 Serve a deck for Destin with `python3 scripts/ui-review/review-cards.py serve <spec.json> --no-build --timeout 1440` from the workspace root; put the printed link in chat as the last line. Never rebuild an answered deck.
@@ -289,3 +290,33 @@ Answers file: `mesh-sync.questions-12.answers.json`. Picks, with his notes verba
   like recent if i'm not using sync on other devices\" does it matter if older data exists
   on a specific device after the first sync or two? wouldnt we just be sending minor
   updates/additions?"
+
+## 2026-11-13: the full design document, three review rounds, round 13
+
+Destin, in chat: "i would like you to conduct a few rounds of review/refinement to help turn
+this current design (which reads as more of a rough outline/decision history) into a
+slightly more focused and comprehensive design document. more detail on how the various
+systems/subsystems interrelate and interact, where the seams are, what needs
+testing/evaluation before build, possible performance/ux considersations that will need
+validation after the build is complete, etc. the \"build order\" discussion you mentioned can
+be folded into this. i want a single document that a new agent with absolutely no prior
+context could follow end-to-end and get the feature/functionality we've described and
+decided on in our various rounds of decks"
+
+- Three read-only researchers mapped today's code (youcoded `e73b41347`, worker `830ff8e`).
+  Findings that affect his decisions: no upload-only GitHub mode exists and chats ride the
+  two-way Personal repository; no chat can be deleted today; no "listed but not downloaded"
+  project state exists.
+- `design.md` rewritten as the full document; the old outline is `decision-outline.md`.
+- Review round 1 (cold builder; fidelity and code facts), round 2 (cold builder; failure
+  modes and security), round 3 (verification). Each round's findings were applied. None
+  changed a decision of his. They changed engineering: tails set aside and settled by the
+  old host's `released` entry; a control log ordered by what entries have seen; host
+  reservations; removal cut-offs; relay release notices and "a keeper's acknowledgement
+  never lets a device clear its only copy"; a fixed file-clash rule so equal devices
+  converge; per-device GitHub backup branches for the interim.
+- Tags corrected after the fidelity review: D10 S-2 (one-device backup prompt) is now Open
+  because its premise changed; "relay stores nothing with a super-host" is the question's
+  description, not his pick; the picture rule is marked My reading; D10 S-3 is listed Open.
+- Decisions the reviews surfaced are on deck round 13 (`mesh-sync.questions-13.json`): 7
+  questions and 12 statements. Not yet answered.

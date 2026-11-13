@@ -1,0 +1,473 @@
+{
+ "title": "Your chats on every device — round 13: what three rounds of review found",
+ "key": "mesh-sync-questions-13",
+ "out": "mesh-sync.questions-13.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Two answers from round 12, reworked",
+   "intro": "You marked these two 'other' in round 12 and I reworked them from your notes in chat. You have not yet said yes or no. The full design document now exists and has been through three rounds of review by fresh readers; everything on this deck is something those reviews found that only you can decide. The first option in each question is the one I recommend."
+  },
+  {
+   "id": "S-1",
+   "words": true,
+   "new": true,
+   "surface": "Closing the app",
+   "path": "The 'some chats may not have synced' line",
+   "headline": "The quit warning depends on how many devices you have.",
+   "changed": "One device: never shown. Two or more devices: shown only when something has not left this device, which is rare with the relay or a super-host. Two or more devices with no relay, no super-host and the others off, where it would show on every quit: explained once, and after that the chat list's 'waiting' label carries it. 'Waiting' is the label already agreed in round 7 for a chat that has not reached your other devices.",
+   "notice": "No means you want it shown every time in that last case, or something else; say which in the note.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "new": true,
+   "surface": "Backup & sync",
+   "path": "Which device backs up; the storage setting",
+   "headline": "Any device may back up, and a one-device user has no 'recent' storage setting.",
+   "changed": "Backup sends only what is new, so a device does not need to hold old chats to keep the backup current. The one gap is a chat that has never been on any device that backs up; the backup screen names it: '212 chats are not backed up yet. They are on Desktop.' The 'keep everything or recent' setting appears only once a second device is paired, because with one device there is nowhere to fetch the rest from.",
+   "notice": "This replaces my round 12 rule that only a 'keep everything' device backs up. No means you want that stricter rule.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "P-2",
+   "page": "The day the mesh is switched on",
+   "intro": "The reviews walked through a user whose devices update at different times, and a user with one device."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Updating to the mesh version",
+   "path": "When a device stops syncing chats through GitHub",
+   "headline": "Should a device leave GitHub chat sync when it is updated, or when it is paired with another device?",
+   "today": "You decided GitHub chat sync is switched off the moment the mesh is deployed, and that the two systems must never sync side by side.",
+   "problem": "Devices update at different times, and the mesh does nothing until devices are paired. If a device leaves GitHub sync the moment it updates, an updated computer and a not-yet-updated phone stop seeing each other's new chats until both are updated and paired. A chat continued on both in that time ends up as two versions.",
+   "proposal": "Under both options no single device ever runs both systems, each device does one last ordinary GitHub sync before it stops, and a one-time message explains what to do.",
+   "options": [
+    {
+     "id": "at-pairing",
+     "label": "When it is paired",
+     "pros": [
+      "Nothing changes for you until you pair two devices, which you do with both in hand.",
+      "The gap shrinks to the minutes pairing takes.",
+      "A person with one device keeps today's GitHub sync until they add a second."
+     ],
+     "cons": [
+      "For a while one person's unpaired devices are still on the old system while paired ones are on the new. It is a weaker reading of 'switch it off when the mesh is deployed'."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "at-update",
+     "label": "When it is updated",
+     "pros": [
+      "Matches your words exactly: updated means switched."
+     ],
+     "cons": [
+      "Devices you have not yet updated or paired go quiet toward the updated ones, possibly for days.",
+      "More chats end up as two versions."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Updating to the mesh version",
+   "path": "A person with one device",
+   "headline": "What should a one-device user be offered about backup when their device switches?",
+   "today": "In round 10 you approved: a one-device user is asked to set up a backup or to say plainly they want none. That was when the switch was going to wait for the new backup feature. You later put the mesh first and the backup rebuild after.",
+   "problem": "At the switch the new backup does not exist. What exists is GitHub (which can restore), and daily Drive or iCloud copies (which cannot restore yet).",
+   "proposal": "Under every option nothing is taken away from someone already backing up.",
+   "options": [
+    {
+     "id": "github-now",
+     "label": "Ask now, offering what exists: connect GitHub, or say 'no backup'",
+     "pros": [
+      "Nobody is left on one device with no copy anywhere without having chosen that.",
+      "GitHub is the one choice that can already bring everything back."
+     ],
+     "cons": [
+      "GitHub needs a GitHub account, which many everyday users do not have.",
+      "They are asked again when the new backup arrives."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "wait",
+     "label": "Do not ask until the new backup exists",
+     "pros": [
+      "One clear question later, with every choice working."
+     ],
+     "cons": [
+      "Until then a one-device user may have no copy off their device and not know it."
+     ]
+    },
+    {
+     "id": "all-today",
+     "label": "Ask now, offering GitHub, Drive and iCloud as they are today",
+     "pros": [
+      "More people have a Google or Apple account than a GitHub one."
+     ],
+     "cons": [
+      "Drive and iCloud copies cannot be restored yet. Offering them as a backup overstates what they do."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Pairing a device",
+   "path": "Whether the relay is on",
+   "headline": "When someone pairs their first two devices, is the YouCoded relay on?",
+   "today": "You decided the relay is optional, and that using no keeper at all is supported. Whether it starts on or off was never asked.",
+   "problem": "With the relay off, two devices only catch each other up when both are on the same wifi at the same time. Most people would not understand why their phone is behind.",
+   "proposal": "Under both options a switch in settings turns it on or off at any time, and pairing shows one plain line saying which it is.",
+   "options": [
+    {
+     "id": "on",
+     "label": "On, with a line saying so and a switch to turn it off",
+     "pros": [
+      "Chats reach your other devices anywhere, which is what most people expect.",
+      "The relay cannot read anything it holds."
+     ],
+     "cons": [
+      "Locked data sits on our server by default. Someone who wants none of ours must turn it off."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "ask",
+     "label": "Ask during pairing: 'Use the YouCoded relay?'",
+     "pros": [
+      "Nobody uses our server without having said yes."
+     ],
+     "cons": [
+      "A question most people cannot judge, at the first moment of setup."
+     ]
+    },
+    {
+     "id": "off",
+     "label": "Off until switched on",
+     "pros": [
+      "Nothing of ours is used unless chosen."
+     ],
+     "cons": [
+      "Sync appears broken away from home for anyone who never finds the switch."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "The YouCoded relay",
+   "path": "A set of devices nobody uses any more",
+   "headline": "When should the relay erase what it holds for devices that have stopped connecting?",
+   "today": "Not decided. The relay drops waiting lines after 30 days anyway. What remains after that is small: the list of your devices' public keys and one wordless marker per chat.",
+   "problem": "Without a rule, the relay keeps those small records for abandoned sets for ever.",
+   "proposal": "Under every option nothing on your devices is touched, and devices that come back later simply register again and catch each other up directly.",
+   "options": [
+    {
+     "id": "ninety",
+     "label": "After 90 days with no device connecting",
+     "pros": [
+      "Keeps the relay tidy and holds less about people who have left."
+     ],
+     "cons": [
+      "Someone away for more than three months finds their devices have to re-register with the relay, which happens by itself."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "year",
+     "label": "After a year",
+     "pros": [
+      "Almost nobody would ever notice."
+     ],
+     "cons": [
+      "Abandoned records sit on our server for a year."
+     ]
+    },
+    {
+     "id": "never",
+     "label": "Never",
+     "pros": [
+      "Nothing to explain."
+     ],
+     "cons": [
+      "Records build up for ever, including for people who stopped using YouCoded."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "Devices and trust",
+   "intro": "The security reviewer's main point: every paired device is fully trusted. Any one of them can add a device, remove the others, and type into chats on the others, where the assistant can run commands. That is what the feature is; these questions are about the guard rails."
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Devices in settings",
+   "path": "Adding a device",
+   "headline": "Should adding a device need the same unlock as removing one?",
+   "today": "You decided removing a device needs that device's fingerprint, PIN or password. Adding one was not asked.",
+   "problem": "Someone holding your unlocked phone for a minute could pair their own device and then read every chat from then on.",
+   "proposal": "Under every option the device you already have still shows the new device's name and asks 'Add this device?'.",
+   "options": [
+    {
+     "id": "unlock-notice",
+     "label": "Unlock to add, and your other devices show 'Laptop was added by Phone'",
+     "pros": [
+      "Adding and removing are guarded the same way.",
+      "You find out on your other devices if a device you did not expect was added."
+     ],
+     "cons": [
+      "One more step when pairing.",
+      "One more notice to dismiss."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "notice-only",
+     "label": "No unlock, but your other devices are told",
+     "pros": [
+      "Pairing stays quick."
+     ],
+     "cons": [
+      "You find out afterwards, not before."
+     ]
+    },
+    {
+     "id": "neither",
+     "label": "Neither",
+     "pros": [
+      "Simplest."
+     ],
+     "cons": [
+      "The borrowed-phone case above, with no sign it happened."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-3",
+   "words": true,
+   "new": true,
+   "surface": "Pairing a device",
+   "path": "A device that already belongs to another set",
+   "headline": "A device already paired with others must leave that set before it can join a different one.",
+   "changed": "Pairing a single device into a set is the normal case, and it covers a device that has its own chats and a device restored from backup. Joining two sets that each already have several devices would mean every device of one set silently changing sets, including ones that are switched off. The app would say: 'This device is already paired with Desktop and Phone. Leave them first?'",
+   "notice": "No means you want two multi-device sets to be joinable in one step; it is possible, but it is extra work and the riskiest part of pairing.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-4",
+   "words": true,
+   "new": true,
+   "surface": "Devices in settings",
+   "path": "Removing a device that had unsent work",
+   "headline": "When a device is removed, anything it wrote and had not yet sent is not recoverable unless that device is paired again.",
+   "changed": "You decided removal locks a device out and frees its chats to be continued elsewhere. The chats continue from the last line your other devices received. Lines that existed only on the removed device stay on it.",
+   "notice": "This is a consequence, not a choice; the screen for removing a device would say so. No means you want something different attempted; say what in the note.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "How YouCoded describes this",
+   "path": "The words 'end-to-end encrypted'",
+   "headline": "When may YouCoded use the phrase 'end-to-end encrypted' for this?",
+   "today": "The design locks everything that syncs so that only your devices can read it. It will be reviewed by fresh AI reviewers and tested. No outside security person has looked at it.",
+   "problem": "That phrase has a strict meaning and gets checked. Zoom was penalised in 2020 for using it loosely. A flaw found after claiming it would cost trust.",
+   "proposal": "Under every option the design and code stay open for anyone to inspect.",
+   "options": [
+    {
+     "id": "after-review",
+     "label": "Only after a person from outside reviews it; until then say 'locked so only your devices can read it'",
+     "pros": [
+      "The strong claim is made once it has been independently checked.",
+      "The plainer wording is true from day one."
+     ],
+     "cons": [
+      "An outside review costs money and time to arrange; I can find out how much when we get there."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "at-launch",
+     "label": "From launch, on our own review and tests",
+     "pros": [
+      "The recognised phrase from the start."
+     ],
+     "cons": [
+      "If a flaw is found later, the claim was wrong while it was being made."
+     ]
+    },
+    {
+     "id": "never",
+     "label": "Never use the phrase; keep the plain wording",
+     "pros": [
+      "No risk of overclaiming."
+     ],
+     "cons": [
+      "People who look for that phrase will not find it."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Things you would notice",
+   "intro": "Each of these follows from how the system has to work. None was asked before. Yes means build it this way."
+  },
+  {
+   "id": "S-5",
+   "words": true,
+   "new": true,
+   "surface": "A chat whose host went offline",
+   "path": "When the notice appears",
+   "headline": "The 'host is offline, continue here?' notice appears when you open or type in that chat, not the moment the host drops.",
+   "changed": "A computer going to sleep would otherwise raise a notice on your phone for every chat it hosts. The chat list still shows which chats' hosts are offline.",
+   "notice": "No means you want to be told the moment it happens.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-6",
+   "words": true,
+   "new": true,
+   "surface": "Your devices",
+   "path": "A phone that is not in use",
+   "headline": "A phone in your pocket shows as offline to your other devices, and catches up when you open the app.",
+   "changed": "Android cuts a background app's connection after a while, and this design has no way to wake a phone from outside. So you cannot start a chat on a pocketed phone from your computer, and chats it hosts show 'host offline' on other devices. The exceptions: while the phone is running a reply, and if you turn on the battery-exemption setting you already approved. I will measure how long a phone stays reachable and report.",
+   "notice": "No means you want a way to wake the phone designed, which needs a notification service and is a larger piece of work.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-7",
+   "words": true,
+   "new": true,
+   "surface": "Chat list",
+   "path": "Deleting a chat that is busy",
+   "headline": "Deleting a chat stops a reply that is running in it, on whichever device hosts it.",
+   "changed": "You decided a deleted chat is deleted everywhere and can be brought back for 30 days. Today no chat can be deleted at all, so this is new. Whether to ask 'this chat is still working, delete anyway?' will be on the picture review for that screen.",
+   "notice": "No means the reply should be left to finish first.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-8",
+   "words": true,
+   "new": true,
+   "surface": "App updates",
+   "path": "A device on an older version watching a chat",
+   "headline": "A device too old to watch a chat live still shows it, updating as each block is saved, but cannot type into it until updated.",
+   "changed": "You decided an older device can read and watch but must update to host or continue. Live watching sometimes changes between versions. When it has, the older device falls back to showing the saved chat as it grows, with 'Update YouCoded on Phone to continue this chat'.",
+   "notice": "No means an older device should not show the chat at all until updated.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-9",
+   "words": true,
+   "new": true,
+   "surface": "Storage setting on a phone",
+   "path": "Chats the phone hosts",
+   "headline": "A chat hosted on a phone is never cleared from that phone by the 'recent' setting, however old.",
+   "changed": "The 'recent' setting clears chats not used for 30 days. A chat the phone hosts is the working copy, so clearing it would break it. It is cleared only after you move the chat to another device. Separately, the phone never clears anything until another of your devices has it; the relay having it is not enough.",
+   "notice": "No means you want old hosted chats moved off the phone by themselves, which conflicts with 'the host never changes by itself'.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "A computer running a reply",
+   "path": "How long it holds itself awake",
+   "headline": "What is the longest a computer should hold itself awake for one reply?",
+   "today": "You decided a computer stays awake while a reply it is running is unfinished, with a hard limit so it can never stick. The limit was not set. The phone already has one: 4 hours.",
+   "problem": "Too short and a long task is cut off when the computer sleeps. Too long and a stuck reply keeps a laptop awake and drains it.",
+   "proposal": "Under every option closing a laptop lid still sleeps it, and the limit starts again with each reply.",
+   "options": [
+    {
+     "id": "four",
+     "label": "4 hours, the same as the phone",
+     "pros": [
+      "One figure on every device.",
+      "Long enough for nearly every real task."
+     ],
+     "cons": [
+      "A stuck reply could keep a laptop awake for up to 4 hours."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "two",
+     "label": "2 hours",
+     "pros": [
+      "Less battery risk."
+     ],
+     "cons": [
+      "Very long tasks are cut off."
+     ]
+    },
+    {
+     "id": "eight",
+     "label": "8 hours",
+     "pros": [
+      "Overnight tasks finish."
+     ],
+     "cons": [
+      "A stuck reply can drain a laptop overnight."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-10",
+   "words": true,
+   "new": true,
+   "surface": "Project files",
+   "path": "When two devices changed the same file",
+   "headline": "Which copy keeps the file's name follows one fixed rule on every device, and an edit beats a deletion.",
+   "changed": "Today the copy arriving from GitHub keeps the name and this device's becomes 'name (from Device, date)'. Without GitHub in the middle, each device would see the other as the arriving one and they would never agree. So a fixed rule picks the same winner everywhere. You still get both copies. One real change: if one device edited a file and another deleted it, the edited file is kept; today the deletion wins.",
+   "notice": "No means you want deletions to keep winning, or something else; say which in the note.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-11",
+   "words": true,
+   "new": true,
+   "surface": "Project files",
+   "path": "Two folders that turn out to be unrelated",
+   "headline": "If two devices' copies of a project share no history, the project shows 'These copies have diverged' and is not combined automatically.",
+   "changed": "At pairing you are already asked 'Is this the same project?' for same-named folders. This covers the rare case afterwards where a device receives project history that does not connect to its own, for example after a folder was replaced by hand. Mixing two unrelated folders together silently is the worse outcome.",
+   "notice": "The exact wording and what the user can do next would come to you as a picture when that screen is built. No means combine them anyway.",
+   "yes": "Yes",
+   "no": "No"
+  },
+  {
+   "id": "S-12",
+   "words": true,
+   "new": true,
+   "surface": "The Continue here notice",
+   "path": "Two situations that had no wording",
+   "headline": "These two lines are approved as example wording.",
+   "changed": "'Phone was removed from your devices. Continue this chat here?' for a chat whose host you removed. 'This chat is stored on Desktop, which is offline. It will open when Desktop is on.' for an older chat on a 'recent' device when no device that holds it is on.",
+   "notice": "No means the wording should differ; say how in the note.",
+   "yes": "Yes",
+   "no": "No"
+  }
+ ]
+}
