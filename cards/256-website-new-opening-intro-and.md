@@ -1,7 +1,7 @@
 ---
 id: 256
 title: Website: new opening intro and a redesigned phone page
-stage: polish
+stage: merged
 tags: website, polish
 branch: 256-website-new-opening-intro-and
 finish: Intro starts purple and runs three words on one beat; phones get the poster headline, robot bar and bottom download bar with Demo.
