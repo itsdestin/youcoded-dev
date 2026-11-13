@@ -61,3 +61,13 @@ test('a folding section lights and rings as one whole box, never just its header
   assert.ok(!/\.lgroup(\[open\]|:not\(\[open\]\))[^{}]*summary:(hover|active)/.test(page), 'open and closed sections have different fills again: opening one flickers');
   assert.ok(!/\.lgroup[^{}]*summary:active/.test(page), 'a press fill on sections is back: opening one flickers');
 });
+
+test('at phone width an item card keeps its tick box beside the name and its buttons last', () => {
+  // WHY (2026-11-13, seen at 390px in the ivory theme): the old phone rule stacked the card's top row in a column,
+  // which stranded the tick box on its own line, put the buttons above the labels, and cut the labels off.
+  const css = fs.readFileSync(path.join(HERE, '..', 'pages', 'work-board', 'renderer', 'today_tab.py'), 'utf8');
+  assert.ok(!/\.ctop\{flex-direction:column\}/.test(css), 'the column stack is back: the tick box sits alone above the name on a phone');
+  assert.match(css, /\.crow > \.ctop\{display:contents\}/);
+  assert.match(css, /\.crow \.acts\{order:3/);
+  assert.match(css, /\.cchips\{flex-wrap:wrap;overflow:visible\}/);
+});
