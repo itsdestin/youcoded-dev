@@ -15,8 +15,8 @@ work: session/ui-consistency-audit
 vision: yours.look.finetune
 ---
 Progress
-Done: Every plain browser hover hint in settings, marketplace, project view and elsewhere (about 90 places) now uses the app's own hover hint; Button, Toggle and Chip pass theirs through too. Pinned by a test. Branch session/look-wording-batch, not landed.
-Next: Destin approves or rejects the conversion; contrast colours and button alignment are still his deferred decisions.
+Done: Destin, overnight deck 2026-11-13 C-8: provider brand colours on light themes = adjust each brand colour to the theme it sits on. Hover hints land via app PR #748.
+Next: Build the per-theme brand colour adjustment and show before/after on the five failing themes.
 Blocked: nothing recorded.
 
 Chats
