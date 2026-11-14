@@ -1,7 +1,7 @@
 ---
 id: 261
 title: Website: first demo shows the old look for a moment; end of intro hitches
-stage: polish
+stage: merged
 tags: website, polish, performance
 related: 259
 branch: 261-website-first-demo-shows-the
