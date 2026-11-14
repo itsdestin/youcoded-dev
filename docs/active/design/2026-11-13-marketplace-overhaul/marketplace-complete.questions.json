@@ -1,0 +1,445 @@
+{
+  "title": "The complete marketplace — what things are",
+  "key": "marketplace-complete",
+  "out": "marketplace-complete.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Everything you can get from it",
+      "headline": "Everything in the marketplace is one of three things: a listing, a part, or a collection.",
+      "changed": "A listing is one thing an author publishes: you install, update, remove, rate, comment on and report a listing, and it carries one safety result. A part is one usable piece inside it (a skill, a command, a specialist, a tool connection, a page, a theme). A collection is a named list of listings.",
+      "notice": "A skill still gets its own card with 'Part of Superpowers', as you decided in April. But its card never has its own rating or its own Install: it says 'Get Superpowers'. Ratings stop being split between a plugin and the pieces inside it.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "A plugin with many pieces inside",
+      "headline": "When you want just one piece of a big plugin, what should happen?",
+      "today": "Wanting one skill out of a plugin with 23 installs all 23, and all 23 show up in your skills list. There is no way to switch any of them off.",
+      "problem": "Your list fills with things you never asked for. Installing one piece alone was put off in August and never built.",
+      "proposal": "Pick how one piece is handled.",
+      "options": [
+        {
+          "id": "choose-parts",
+          "label": "Install it all, switch pieces on",
+          "summary": "The whole plugin arrives; you tick which pieces you want to see and use.",
+          "pros": [
+            "Your lists show only what you chose.",
+            "What is on your computer always matches a version we checked, so the safety result stays true.",
+            "Turning another piece on later is instant, with no download."
+          ],
+          "cons": [
+            "The unused pieces still take a little disk space."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "single",
+          "label": "Download only that piece",
+          "pros": [
+            "Nothing extra on your computer."
+          ],
+          "cons": [
+            "Pieces often rely on each other, so a lone one can quietly not work.",
+            "A half-plugin matches no version we checked, so its safety result means less.",
+            "Updates get complicated: which half are you on?"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Themes, Pages, connections, specialists, prompts",
+      "headline": "Every kind of thing lives in one marketplace with one set of rules, including Pages.",
+      "changed": "Today plugins, themes and sign-in connections are three separate lists built three different ways, and Pages were headed for a fourth. They become one. A Page, a theme, a specialist or a prompt is a listing like any other: it has a version, an author, a safety result, votes, comments and updates.",
+      "notice": "Themes get comments and 'what changed'. Pages get everything plugins have. One search covers all of it. The Themes view and the Connections row stay; they become filters over the same list.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Pages, themes, prompts, specialists",
+      "path": "Things you change after installing",
+      "headline": "You changed a Page you installed, then its author updates it. What should happen?",
+      "today": "Nothing handles this. A theme you edited is overwritten or left stale depending on luck, and shared Pages do not exist yet.",
+      "problem": "People will tweak Pages and themes; that is the point of them. An update that wipes their changes, or never arrives, breaks trust either way.",
+      "proposal": "The app notices your copy differs and marks it 'Your version'. Pick what the update offers.",
+      "options": [
+        {
+          "id": "three-way",
+          "label": "Offer three choices",
+          "summary": "Update and keep my changes · Replace with the new one · Keep mine.",
+          "pros": [
+            "You decide each time, with your old copy always kept in history.",
+            "'Keep my changes' blends the two when it safely can."
+          ],
+          "cons": [
+            "One more decision to make on an update.",
+            "Blending will sometimes be impossible; it then falls back to the other two."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-mine",
+          "label": "Always keep mine",
+          "summary": "Once changed, it is yours; you are only told a new one exists.",
+          "pros": [
+            "Your changes can never be lost."
+          ],
+          "cons": [
+            "You stop getting fixes unless you start over."
+          ]
+        },
+        {
+          "id": "replace",
+          "label": "Always replace, keep a backup",
+          "pros": [
+            "Simple. Everyone is on the newest."
+          ],
+          "cons": [
+            "Your changes vanish from view until you dig the backup out."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Finding things",
+      "intro": "The live marketplace holds about 4,000 listings, shown in alphabetical order. These decide how the good ones are found."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Filtering by what something is for",
+      "headline": "How should listings be sorted into topics?",
+      "today": "There are three topic systems. One is never shown. One is filled in on 9 listings. The 'Vibe' menu covers 10 listings, so picking a vibe shows almost nothing.",
+      "problem": "With 4,000 listings nobody can tag them by hand, so the filters are empty and browsing by interest does not work.",
+      "proposal": "One list of about twelve plain topics (Writing, School, Work, Money, Home, Health, Fun, Research, Design, Coding, Data, Automation). Pick who fills it in.",
+      "options": [
+        {
+          "id": "ai",
+          "label": "AI sorts, you can correct",
+          "pros": [
+            "Every listing has a topic from day one, including new ones.",
+            "A wrong one is fixed by hand and stays fixed."
+          ],
+          "cons": [
+            "Some will be sorted wrongly until someone notices.",
+            "A small running cost each time a listing changes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "author",
+          "label": "Authors choose",
+          "pros": [
+            "The person who knows the plugin best decides."
+          ],
+          "cons": [
+            "Most listings are imported from outside lists whose authors will never choose, so most stay empty."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "What you see when it opens",
+      "headline": "Most listings are tools for programmers. What should a new person see first?",
+      "today": "Everything is mixed together. Most of the 4,000 are developer tools imported from other lists; the everyday ones (journaling, Google, Spotify, themes) are a small share.",
+      "problem": "The app is for students and everyday users as much as programmers. A wall of database and deployment tools tells them it is not for them.",
+      "proposal": "Each listing is marked Everyday or Coding. Pick how the split is used.",
+      "options": [
+        {
+          "id": "everyday-first",
+          "label": "Everyday first, Coding one tap away",
+          "pros": [
+            "A new person sees things they can use straight away.",
+            "Programmers reach their section in one tap, and the app remembers."
+          ],
+          "cons": [
+            "Programmers take one extra tap the first time."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ask",
+          "label": "Ask once on first open",
+          "pros": [
+            "Everyone starts in the right place."
+          ],
+          "cons": [
+            "A question before they have seen anything."
+          ]
+        },
+        {
+          "id": "mixed",
+          "label": "Keep it mixed",
+          "pros": [
+            "Nothing is tucked away."
+          ],
+          "cons": [
+            "Everyday listings stay outnumbered on every screen."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Listings that are thin, unchecked or cannot be installed",
+      "headline": "Should browsing show only listings that meet a quality bar?",
+      "today": "Every listing is shown equally: ones with no description, ones never safety-checked, and 77 that cannot be installed at all.",
+      "problem": "You want the marketplace comprehensive, but thousands of thin listings bury the good ones. On 1 November you said things that cannot run should sit last with a note, not be hidden.",
+      "proposal": "A bar: safety-checked, described, has a preview, can be installed, and either picked by you or liked by real users. Pick how the bar is used.",
+      "options": [
+        {
+          "id": "showcase",
+          "label": "Browse the best, search everything",
+          "pros": [
+            "What you scroll through is all worth installing.",
+            "Nothing is removed: search, filters and 'Show everything' reach every listing.",
+            "A listing earns its way in automatically as people use and like it."
+          ],
+          "cons": [
+            "A good new listing with no users yet is only found by search until it is picked or earns votes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ranked",
+          "label": "Show all, best first",
+          "pros": [
+            "Everything is in the list; weak ones just sink to the bottom."
+          ],
+          "cons": [
+            "Scrolling eventually reaches thousands of thin listings."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "The top of the screen: the big banner and the rows under it",
+      "headline": "Who should choose what appears in the top spots?",
+      "today": "You choose all of it by hand in one file, last changed in April. The first banner slot is wrong and nine featured items show 'Not checked'. There is no 'popular' or 'new' row because nothing is ranked.",
+      "problem": "On 28 August you asked how this could maintain itself. A hand list goes stale the week you get busy.",
+      "proposal": "Pick the mix.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Automatic rows plus your picks",
+          "summary": "Popular this week, New and rising, Top in each topic and 'Because you have X' fill themselves. Your picks sit beside them and each expires after a set time.",
+          "pros": [
+            "The screen stays fresh without you touching it.",
+            "Your taste still leads the top of the page.",
+            "An old or broken pick drops out and is flagged to you rather than sitting there wrong."
+          ],
+          "cons": [
+            "Automatic rows can surface something you would not have chosen.",
+            "Your picks need refreshing now and then, or that row empties."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "hand",
+          "label": "Your picks only",
+          "pros": [
+            "Full control of every slot."
+          ],
+          "cons": [
+            "Goes stale exactly as it has since April."
+          ]
+        },
+        {
+          "id": "auto",
+          "label": "Automatic only",
+          "pros": [
+            "No upkeep at all."
+          ],
+          "cons": [
+            "No personal voice; a new gem with few users never gets a push."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "How people feel, and how safe it is",
+      "intro": "What the marketplace knows about each listing, and what it tells people."
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Privacy",
+      "path": "What the app reports about installed listings",
+      "headline": "How much should the app count, so that 'popular' and 'working' mean something?",
+      "today": "The only number is how many signed-in people ever installed something. Removals are not counted, nor whether an update failed, nor whether anyone still uses it. Without sign-in the app reports nothing, and the privacy page promises that.",
+      "problem": "A ranking built on that is thin and easy to fake, and nobody finds out when an update breaks a plugin for everyone.",
+      "proposal": "The new counts are per listing only: installed, removed, update failed, used this week. Never what you typed or made. Pick who is counted.",
+      "options": [
+        {
+          "id": "anon",
+          "label": "Everyone, without names",
+          "summary": "Each app sends plain counts tied to no account, with a switch in Settings to turn it off.",
+          "pros": [
+            "Numbers are large enough to trust and hard to fake.",
+            "A broken update is caught within hours and paused."
+          ],
+          "cons": [
+            "The privacy page changes: the app would report something without sign-in.",
+            "Some people will dislike any reporting, even nameless and switchable."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "signed-in",
+          "label": "Signed-in people only",
+          "summary": "Today's promise stays word for word.",
+          "pros": [
+            "No change to the privacy promise."
+          ],
+          "cons": [
+            "Small numbers: rankings wobble and broken updates are caught slowly."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "No new counting",
+          "pros": [
+            "Nothing new leaves anyone's computer."
+          ],
+          "cons": [
+            "No 'popular', no health warnings, no automatic pause on a bad update."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Updates",
+      "path": "An update that can do more than the version you approved",
+      "headline": "If an update gives a plugin a new ability, should it ask you first?",
+      "today": "A listing's page lists what it can do, such as 'Runs commands on your computer'. An update can add to that list and nothing tells you.",
+      "problem": "A harmless plugin can become one that runs programs or reaches your accounts, in an update you pressed without looking.",
+      "proposal": "Yes: the Update button names the new ability and asks before applying it. 'Update all' skips those and lists them for you. No: updates stay one press and the new ability only shows on the page.",
+      "yes": "Ask first",
+      "no": "Don't ask"
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "The safety badge on each listing",
+      "headline": "Should the safety badge become a ladder that says exactly how far each listing was checked?",
+      "today": "The badge says 'Likely safe', 'Caution' or 'Not checked'. 'Likely safe' means an automatic scan found none of four known danger signs. No AI or person reads the plugin.",
+      "problem": "On 23 September you wanted to keep 'Likely safe' and make the check earn it. This morning you chose to reword it now. A ladder does both: each word means one exact thing, and the stronger words arrive as stronger checks are built.",
+      "proposal": "Four steps: Not checked · Checked (automatic scan) · Reviewed (an AI read this version) · Verified by YouCoded (a person did, or we made it). Caution overrides all of them.",
+      "options": [
+        {
+          "id": "ladder",
+          "label": "Use the ladder",
+          "pros": [
+            "Nobody is promised more than was done.",
+            "The AI review you asked for has an obvious place to show up.",
+            "Tapping the badge opens 'What we checked'."
+          ],
+          "cons": [
+            "'Checked' sounds less reassuring than 'Likely safe' until the AI review exists."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep 'Likely safe'",
+          "pros": [
+            "No change to how listings look."
+          ],
+          "cons": [
+            "The badge keeps overstating what the scan does."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Publishing",
+      "path": "What makes an update reach people",
+      "headline": "Any change an author publishes reaches users as an update once it passes our checks.",
+      "changed": "The publishing guide tells authors an update reaches people only when they raise the version number. This morning's answer (updates follow the author's newest checked files) replaces that; the guide changes to match.",
+      "notice": "Updates stop getting stuck when an author forgets the number. The cost: a tiny change, such as a typo fix, also shows as an update.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "P-4",
+      "page": "What gets built first",
+      "intro": "The design covers all of it. This only sets the order."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "The whole marketplace",
+      "path": "Order of work",
+      "headline": "After updates and installs are made reliable, what should come first?",
+      "today": "The first block is fixed: reliable installs and updates, then one shared list for every kind of thing. Everything else is built on those two.",
+      "problem": "The rest is several months of work. Its order decides what you and users feel soonest.",
+      "proposal": "Pick what leads.",
+      "options": [
+        {
+          "id": "finding",
+          "label": "Finding and top spots",
+          "summary": "Topics, Everyday/Coding, ranked search, automatic rows. Then safety, then Pages and new kinds.",
+          "pros": [
+            "The marketplace looks and feels different soonest.",
+            "Needs no new reporting to start; the ranking sharpens later when counts arrive."
+          ],
+          "cons": [
+            "Sharing Pages waits longest."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "safety",
+          "label": "Safety and reporting",
+          "summary": "The ladder, asking on new abilities, reports, the review queue, the AI review.",
+          "pros": [
+            "The store is trustworthy before more people and more kinds arrive."
+          ],
+          "cons": [
+            "Mostly invisible until something goes wrong."
+          ]
+        },
+        {
+          "id": "kinds",
+          "label": "Pages and new kinds",
+          "summary": "Sharing Pages, publishing from the app, specialists, prompts, connected accounts.",
+          "pros": [
+            "The newest, most distinctive part of the vision arrives first."
+          ],
+          "cons": [
+            "More kinds pour into a store that still cannot rank or review them well.",
+            "Depends on the unfinished Pages work landing first."
+          ]
+        }
+      ]
+    }
+  ]
+}
