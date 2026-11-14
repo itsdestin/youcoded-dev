@@ -1,0 +1,22 @@
+{
+ "deck": "pages-finish-step4f-review",
+ "started": "2026-11-14T02:42:12.785Z",
+ "submitted": "2026-11-14T02:42:41Z",
+ "cur": 1,
+ "answers": {
+  "F-button": {
+   "v": "yes",
+   "t": 1794624148049,
+   "seconds": 15,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-warning": {
+   "v": "yes",
+   "t": 1794624160263,
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
