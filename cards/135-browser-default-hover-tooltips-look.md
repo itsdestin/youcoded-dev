@@ -15,8 +15,8 @@ work: session/ui-consistency-audit
 vision: yours.look.finetune
 ---
 Progress
-Done: Destin, overnight deck 2026-11-13 C-8: provider brand colours on light themes = adjust each brand colour to the theme it sits on. Hover hints land via app PR #748.
-Next: Build the per-theme brand colour adjustment and show before/after on the five failing themes.
+Done: Landed 2026-11-13 (PR #748, 48be9bca3): about 90 browser hover hints replaced by the app hover hint.
+Next: Per-theme brand colours for the 27 contrast failures on five light themes, shown before/after (C-8). Theme list rebuild on wecoded-themes branch session/look-wording-batch is NOT published: publish with the release that contains #724 (C-10).
 Blocked: nothing recorded.
 
 Chats
