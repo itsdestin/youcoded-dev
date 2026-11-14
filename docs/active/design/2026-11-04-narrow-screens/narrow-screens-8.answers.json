@@ -1,0 +1,23 @@
+{
+ "deck": "narrow-screens-8",
+ "started": "2026-11-14T10:48:53.894Z",
+ "submitted": "2026-11-14T10:49:49Z",
+ "cur": 1,
+ "answers": {
+  "B-1": {
+   "v": "yes",
+   "t": 1794653355848,
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "yes",
+   "t": 1794653387020,
+   "seconds": 43,
+   "theme": "light",
+   "zoom": 1,
+   "note": "i'm thinking the whole name/status lights section can sit just a smidge higher? it currently feels like its a bit low of center for some reason"
+  }
+ }
+}

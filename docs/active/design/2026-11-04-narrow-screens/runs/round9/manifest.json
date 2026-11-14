@@ -1,0 +1,104 @@
+[
+  {
+    "name": "chat#window-decided",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round9/chat#window-decided/dark.png",
+    "ms": 1502,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-today",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round9/chat#window-today/light.png",
+    "ms": 1518,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-today",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round9/chat#window-today/dark.png",
+    "ms": 1537,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-decided",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round9/chat#window-decided/light.png",
+    "ms": 1554,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-today",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round9/chat#window-today/halftone-dimension.png",
+    "ms": 2228,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-decided",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round9/chat#window-decided/halftone-dimension.png",
+    "ms": 2241,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  }
+]

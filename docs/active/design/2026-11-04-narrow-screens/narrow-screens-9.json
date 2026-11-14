@@ -1,0 +1,30 @@
+{
+  "title": "Phones and narrow windows — round 9",
+  "key": "narrow-screens-9",
+  "out": "narrow-screens-9.html",
+  "images": "images/narrow-screens-9",
+  "runs": {
+    "round9": "runs/round9"
+  },
+  "themes": [
+    "light",
+    "dark",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Top bar in a narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "crop": [
+        {"crop": "chat#window-today@390x60+0+0", "label": "Today"},
+        {"crop": "chat#window-decided@390x60+0+0", "label": "Round 9"}
+      ],
+      "runs": ["round9"],
+      "new": true,
+      "headline": "Narrow window: the name and its lights sit 2 pixels higher, together.",
+      "changed": "Your note: \"the whole name/status lights section can sit just a smidge higher? it currently feels like its a bit low of center\". Both moved up 2 pixels; the gap between them is unchanged.",
+      "notice": "Only the narrow computer window changed. You approved the phone bar as it was in round 8; say so in the note if it should rise too."
+    }
+  ]
+}
