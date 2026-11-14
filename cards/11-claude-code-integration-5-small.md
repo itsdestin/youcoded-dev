@@ -13,8 +13,8 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: Landed 2026-11-13 (PR #747): desktop notice when YouCoded repairs the Claude Code settings file.
-Next: Show the same notice on phones and Android (Destin, deck C-1: yes). The notice overlaps the quick-chip row in its picture — fix while there.
+Done: Phone and Android now get the settings-repair notice (Destin: yes). The notice no longer covers the quick chips or the message box, and is full width on a phone. Branch session/round3-chat.
+Next: Check on a real Android and phone; the Show old copy button is hidden there on purpose.
 Blocked: Nothing blocks the shipped part. Needs a real Android, Windows and Mac run to confirm the rest.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
