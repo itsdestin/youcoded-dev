@@ -1,0 +1,556 @@
+{
+  "title": "Your chats on every device — what you want, before anything is built",
+  "key": "mesh-sync-questions",
+  "out": "mesh-sync.questions.html",
+  "themes": ["midnight", "light"],
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Any chat, on your laptop, desktop or phone",
+      "headline": "Which of these must be true before you would call this done?",
+      "today": "Each device keeps its own copy of every chat. A backup folder carries copies between them, after a reply finishes and with a short delay.",
+      "problem": "The draft design promises six different things at once. Building all six is months of work; building the two you care about is weeks.",
+      "proposal": "Pick everything that must be true. Anything unpicked can come later or never.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "never-lose",
+          "label": "Never lose a message",
+          "pros": ["Every message you send or receive ends up on every device, no matter which one you quit or when."],
+          "cons": ["On its own it changes nothing you see; it only stops things going missing."],
+          "recommended": true
+        },
+        {
+          "id": "pick-up-anywhere",
+          "label": "Pick up on any device",
+          "pros": ["Sit down at any device and your next message simply works, with no warnings or buttons."],
+          "cons": ["Needs a rule for who is in charge of a chat, which is where today's warnings come from."]
+        },
+        {
+          "id": "watch-live",
+          "label": "Watch a reply live elsewhere",
+          "pros": ["Your phone shows the desktop's reply appearing word by word."],
+          "cons": ["Both devices must be on and reachable at the same moment; it does nothing for a device that was off."]
+        },
+        {
+          "id": "phone-alone",
+          "label": "Phone works when computers are off",
+          "pros": ["Chats keep going from anywhere, with no computer awake at home."],
+          "cons": ["The phone has none of your project files, so project chats would behave differently there."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Backup & Sync in settings",
+      "headline": "Which devices should this cover?",
+      "today": "Your backup space has copies from this laptop, the desktop PC, an older Windows laptop and the phone.",
+      "problem": "Every extra kind of device adds cases to design for. A device you no longer use still shows up in warnings and copies.",
+      "proposal": "Pick every device that should take part. The rest can read chats but never run them.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "this-laptop",
+          "label": "This laptop",
+          "summary": "The Linux laptop you are reading this on."
+        },
+        {
+          "id": "desktop-pc",
+          "label": "The desktop PC",
+          "summary": "The Linux desktop that held the lost messages on Nov 5."
+        },
+        {
+          "id": "phone",
+          "label": "The phone",
+          "summary": "The Android app."
+        },
+        {
+          "id": "windows-laptop",
+          "label": "The Windows laptop",
+          "summary": "The Galaxy Book; its last copies are from July."
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "A chat with a project folder attached",
+      "headline": "When a chat moves to another device, what else must move with it?",
+      "today": "A chat is a list of messages. Behind it sit the project folder's files, any programs the assistant left running, and the undo history of its edits.",
+      "problem": "Messages alone can move easily. Files, running programs and undo history live on one machine and cannot simply follow.",
+      "proposal": "Pick what must travel. Anything unpicked stays on the device it was made on, and the assistant is told so.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "messages",
+          "label": "The messages",
+          "pros": ["Cheap to carry; this is what sync does today."],
+          "cons": ["None."],
+          "recommended": true
+        },
+        {
+          "id": "project-files",
+          "label": "Edited project files",
+          "pros": ["The other device sees the same code and documents the assistant changed."],
+          "cons": ["Needs the project folder on both devices, kept in step by its own sync. Big folders are slow."]
+        },
+        {
+          "id": "running-programs",
+          "label": "Programs still running",
+          "pros": ["A long build or test keeps going."],
+          "cons": ["Not possible to move; the best you can get is a note saying where it is running."]
+        },
+        {
+          "id": "undo-history",
+          "label": "Undo history",
+          "pros": ["Undo works on the new device for edits made on the old one."],
+          "cons": ["Only meaningful if the edited files also moved."]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Being on two devices at once",
+      "intro": "The first page said what matters. These decide what you see when two devices look at the same chat."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "An open chat",
+      "path": "The chat window on a second device",
+      "headline": "A reply is running on your desktop. You open the same chat on your laptop. What should you see?",
+      "today": "The laptop shows its last copy, which may be a few minutes old, and a warning that the desktop may have newer messages.",
+      "problem": "You cannot tell whether the desktop is still working, and typing on the laptop creates a second, separate version of the chat.",
+      "proposal": "Pick what the laptop should show while the desktop is mid-reply.",
+      "options": [
+        {
+          "id": "watch-and-queue",
+          "label": "Watch, and type ahead",
+          "pros": ["You see the reply appear live and your typed message is sent as soon as the reply ends.", "Nothing is ever lost or duplicated."],
+          "cons": ["Live watching only works while both devices are on and reachable; otherwise you see a notice instead."],
+          "recommended": true
+        },
+        {
+          "id": "watch-only",
+          "label": "Watch only",
+          "pros": ["Simplest to understand: the chat is read-only until the desktop finishes."],
+          "cons": ["You have to wait and remember to come back before you can type."]
+        },
+        {
+          "id": "notice-only",
+          "label": "A notice, no live view",
+          "pros": ["Nothing new to build for watching; a line says Desktop is replying."],
+          "cons": ["You cannot see what the desktop is doing or whether it is stuck."]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "An open chat",
+      "path": "Any chat open on two devices",
+      "headline": "Should the reply stay on the device it started on, or follow you as you move?",
+      "today": "Nothing moves. Each device runs its own copy, and the copies collide later.",
+      "problem": "Moving a reply mid-thought stops it, restarts it elsewhere, and makes the assistant re-read the whole chat. Not moving it means your laptop sends messages to the desktop to run.",
+      "proposal": "Pick where the thinking should happen when you switch devices.",
+      "options": [
+        {
+          "id": "stays-until-quiet",
+          "label": "Stays put until a quiet moment",
+          "pros": ["Replies never stop halfway.", "Your message from the laptop is run by the desktop and the answer appears on both."],
+          "cons": ["If the desktop is slow or busy, your laptop waits on it."],
+          "recommended": true
+        },
+        {
+          "id": "follows-you",
+          "label": "Follows you at once",
+          "pros": ["The device you are typing on always does the work."],
+          "cons": ["The running reply is cut off and restarted.", "Every switch re-reads the whole chat: a slower first reply and more of your plan allowance used."]
+        },
+        {
+          "id": "you-choose",
+          "label": "You choose each time",
+          "pros": ["Full control."],
+          "cons": ["A question to answer every time you change seats."]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat whose copies disagree",
+      "headline": "Both devices added messages to the same chat without knowing. What should happen to the two versions?",
+      "today": "The bigger file wins and the smaller becomes a conflict copy in the folder, which the app never shows you. That is how the Nov 5 messages vanished.",
+      "problem": "Your own folder shows this is rare: of 26 leftover copies, 23 held nothing unique. Only 3 were real splits, but those 3 held lost messages.",
+      "proposal": "Pick what the app should do with a real split.",
+      "options": [
+        {
+          "id": "two-chats",
+          "label": "Keep both as separate chats",
+          "pros": ["Nothing is lost and nothing is invented.", "Each version reads exactly as it happened."],
+          "cons": ["Two entries in your chat list named the same, with a note saying which device made which."],
+          "recommended": true
+        },
+        {
+          "id": "stitch",
+          "label": "Stitch into one chat",
+          "pros": ["One entry in the list, all messages in time order."],
+          "cons": ["The assistant would see messages it never answered, and undo history can break.", "Nobody has proven Claude Code reads a stitched file correctly."]
+        },
+        {
+          "id": "ask-me",
+          "label": "Ask me each time",
+          "pros": ["You decide."],
+          "cons": ["A dialog about files you did not know existed, at a moment you were trying to work."]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat whose other device has not uploaded yet",
+      "headline": "A device quit before uploading its last messages. What should the other device say when you open that chat?",
+      "today": "Nothing. The chat opens looking complete, and your next message starts a split.",
+      "problem": "Upload at quit gets 6 seconds; your long chat took about 35. The lost Nov 5 messages were exactly this.",
+      "proposal": "The quitting device could send a tiny note, in under a second, saying it holds unsent messages. Pick what the other device does with that note.",
+      "options": [
+        {
+          "id": "warn-and-type",
+          "label": "Warn, but let me type",
+          "pros": ["You know the chat is behind and can wake the other device, or carry on anyway."],
+          "cons": ["Carrying on makes a split, kept as two chats per the question above."],
+          "recommended": true
+        },
+        {
+          "id": "warn-and-wait",
+          "label": "Warn and lock typing",
+          "pros": ["No split can happen."],
+          "cons": ["A chat you cannot type into until a device that may be in a bag at the office comes online."]
+        },
+        {
+          "id": "silent",
+          "label": "Say nothing",
+          "pros": ["No new notice to read."],
+          "cons": ["Today's behaviour, with its lost messages."]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "When a device vanishes",
+      "intro": "A lid shuts, wifi drops, a battery dies. These decide what happens to a reply that was running there."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat whose reply was running on a device that went offline",
+      "headline": "The desktop goes offline mid-reply. What should the other devices do?",
+      "today": "Nothing. The reply is simply cut off on the desktop and no other device knows it was running.",
+      "problem": "A device that looks dead may only be on bad wifi and still working. Two devices doing the same job can send messages, edit files or run commands twice.",
+      "proposal": "Pick what the other devices should do, about a minute and a half after the desktop stops answering.",
+      "options": [
+        {
+          "id": "continue-button",
+          "label": "Show a Continue here button",
+          "pros": ["You see the cut-off reply marked Desktop went offline and carry on with one tap, or wait for the desktop."],
+          "cons": ["A long unattended job stalls until you notice."],
+          "recommended": true
+        },
+        {
+          "id": "auto-continue",
+          "label": "Continue automatically elsewhere",
+          "pros": ["Long jobs carry on by themselves."],
+          "cons": ["If the desktop was only on bad wifi, two devices now do the same work and duplicates cannot be undone.", "The whole chat is re-read on the new device."]
+        },
+        {
+          "id": "wait-for-desktop",
+          "label": "Wait for the desktop",
+          "pros": ["Never a duplicate."],
+          "cons": ["Your chat is stuck until that device returns, even if it is dead for good."]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat whose reply was cut off",
+      "headline": "When a cut-off reply continues on another device, should it finish the old reply or start fresh from your last message?",
+      "today": "Not possible today.",
+      "problem": "Half a reply may have already edited files or run commands on the old device. The new device does not have those results.",
+      "proposal": "Pick what the new device does with the half-finished work.",
+      "options": [
+        {
+          "id": "fresh-with-note",
+          "label": "Start fresh, with a note",
+          "pros": ["The assistant is told the previous attempt was cut off on another device and what it had said so far, and decides how to proceed."],
+          "cons": ["It may redo steps the old device completed."],
+          "recommended": true
+        },
+        {
+          "id": "resume-exactly",
+          "label": "Resume exactly where it stopped",
+          "pros": ["No repeated work."],
+          "cons": ["Not safely possible: the new device cannot see what the old one's half-done commands did."]
+        },
+        {
+          "id": "drop-it",
+          "label": "Drop the half reply",
+          "pros": ["Clean slate; you ask again."],
+          "cons": ["Whatever the old device said before the cut is hidden from you."]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Backup & Sync in settings",
+      "headline": "Should a device upload its unsent messages when it goes to sleep, not only when you quit?",
+      "today": "Closing the lid does nothing. Messages wait until the next finished reply or until you quit, and quit allows only 6 seconds.",
+      "problem": "A laptop that sleeps in a bag holds messages no other device can see, sometimes for days.",
+      "proposal": "Yes means closing the lid triggers an upload first, so the laptop may stay awake a few extra seconds. No leaves sleep as it is. Don't know parks it."
+    },
+    {
+      "id": "P-4",
+      "page": "The phone",
+      "intro": "The phone has no project folder and Android can freeze the app at any time. These decide what it is for."
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "The phone app",
+      "path": "Any chat on the phone",
+      "headline": "What should the phone be able to do with your chats?",
+      "today": "The phone runs the same engine as the desktop. It can run any chat on its own, or connect to one computer and show that computer's chats instead.",
+      "problem": "Running on the phone uses its battery and data, Android may freeze the app mid-reply, and project files are not there.",
+      "proposal": "Pick everything the phone should do. Anything unpicked, the phone simply does not offer.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "read",
+          "label": "Read every chat",
+          "pros": ["Catch up anywhere."],
+          "cons": ["None."],
+          "recommended": true
+        },
+        {
+          "id": "send-to-computer",
+          "label": "Send a message a computer runs",
+          "pros": ["Your desktop does the work with all its files; the phone shows the answer."],
+          "cons": ["Needs a computer awake; otherwise the message waits."]
+        },
+        {
+          "id": "watch",
+          "label": "Watch a computer's reply live",
+          "pros": ["See progress on a long job from the sofa."],
+          "cons": ["Needs both on and reachable at that moment."]
+        },
+        {
+          "id": "run-general",
+          "label": "Run chats with no project folder",
+          "pros": ["General chats keep working with every computer off."],
+          "cons": ["Battery, data, and Android freezing the app mid-reply."]
+        },
+        {
+          "id": "run-project",
+          "label": "Run project chats too",
+          "pros": ["Never blocked."],
+          "cons": ["The assistant cannot see or edit the project's files, so it may answer wrongly or claim edits that did not happen."]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "The phone app",
+      "path": "A project chat on the phone, with every computer off",
+      "headline": "With both computers off, you send a message to a project chat from the phone. What should happen?",
+      "today": "The phone runs it itself, without the project's files.",
+      "problem": "The assistant may answer as if the files were there, or try to edit files that do not exist on the phone.",
+      "proposal": "Pick what the phone should do with that message.",
+      "options": [
+        {
+          "id": "queue",
+          "label": "Queue it for a computer",
+          "pros": ["It runs properly the moment a computer wakes, and the phone shows Will run when Desktop wakes."],
+          "cons": ["No answer until then."],
+          "recommended": true
+        },
+        {
+          "id": "run-with-warning",
+          "label": "Run it, with a warning",
+          "pros": ["You get an answer now."],
+          "cons": ["The warning is easy to miss, and a wrong answer about files you cannot see is worse than waiting."]
+        },
+        {
+          "id": "ask-each-time",
+          "label": "Ask me each time",
+          "pros": ["You decide per message."],
+          "cons": ["One more tap on every message sent from the phone."]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "The phone app",
+      "path": "Backup & Sync on the phone",
+      "headline": "Should the phone download every chat, or only the list plus what you open?",
+      "today": "The phone downloads the whole backup space the same way a computer does. Yours is about 9 GB of chats plus 10 GB of history, and 25 chats are too big to sync at all.",
+      "problem": "A full download on a phone is slow, uses data, and gets worse every month.",
+      "proposal": "Pick how much the phone should hold.",
+      "options": [
+        {
+          "id": "list-then-open",
+          "label": "The list, then what you open",
+          "pros": ["The list appears in seconds; a chat downloads when you tap it.", "Fixes the 25 chats that never sync today."],
+          "cons": ["A chat is unreadable offline until you have opened it once.", "Bigger change: the backup needs a separate small list alongside the chat files."],
+          "recommended": true
+        },
+        {
+          "id": "everything",
+          "label": "Everything, as today",
+          "pros": ["Every chat readable offline."],
+          "cons": ["Gigabytes on the phone, slow first setup, 25 chats still missing."]
+        },
+        {
+          "id": "recent-only",
+          "label": "The last 30 days",
+          "pros": ["Small and fast; recent chats offline."],
+          "cons": ["Older chats are simply absent on the phone."],
+          "measured": "30 days"
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "Speed, cost and order",
+      "intro": "How fast live has to be, what a switch costs, and what gets built first."
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat watched from a second device",
+      "headline": "How live does live need to be?",
+      "today": "Other devices see a reply only after it finishes and the backup carries it, usually within a minute.",
+      "problem": "Word by word needs a direct connection between the two devices at that moment, over your private network. Every few seconds through the backup folder would bloat it badly.",
+      "proposal": "Pick the speed you would notice and want.",
+      "options": [
+        {
+          "id": "word-by-word",
+          "label": "Word by word when connected",
+          "pros": ["Feels like one chat on two screens.", "The connection piece already exists for the phone."],
+          "cons": ["Works only when both devices are on your private network at once; otherwise falls back to when it finishes."],
+          "recommended": true
+        },
+        {
+          "id": "when-finished",
+          "label": "When the reply finishes",
+          "pros": ["Nothing new to connect; works through the backup folder from anywhere."],
+          "cons": ["A long reply is invisible elsewhere until it ends."]
+        }
+      ]
+    },
+    {
+      "id": "Q-15",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Any chat you continue on a different device",
+      "headline": "Switching devices makes the assistant re-read the whole chat. How should the app treat that cost?",
+      "today": "Every device re-reads from scratch anyway, because each runs its own copy.",
+      "problem": "The assistant's saved reading of a chat lives on the device that made it and lasts about an hour on your plan. A switch within that hour means a slower first reply and more of your allowance spent, about a dollar's worth on a very long chat.",
+      "proposal": "Pick how the app should behave about it.",
+      "options": [
+        {
+          "id": "prefer-old-device",
+          "label": "Prefer the device that was last replying",
+          "pros": ["While that device is reachable, it keeps doing the work and nothing is re-read; you just type from wherever you are."],
+          "cons": ["Depends on that device staying awake and online."],
+          "recommended": true
+        },
+        {
+          "id": "switch-silently",
+          "label": "Switch freely, say nothing",
+          "pros": ["Simplest rule: the device you type on does the work."],
+          "cons": ["Slower first reply after each switch, and the extra cost is invisible to you."]
+        },
+        {
+          "id": "switch-with-note",
+          "label": "Switch freely, show a small note",
+          "pros": ["You see Re-reading this chat when it happens."],
+          "cons": ["One more line of status to read; the cost is the same."]
+        }
+      ]
+    },
+    {
+      "id": "Q-16",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Backup & Sync in settings",
+      "headline": "Which piece should be built and shown to you first?",
+      "today": "The draft design lists five steps in one order: stop losing messages, one list everywhere, device handoff, live view, phone fallback.",
+      "problem": "Each step is weeks of work and each changes what you see. The order decides what improves first.",
+      "proposal": "Pick the first piece. The rest get their own decks later, in the order you set then.",
+      "options": [
+        {
+          "id": "first-never-lose",
+          "label": "Stop losing messages",
+          "pros": ["Fixes the Nov 5 problem and the false warnings; everything else builds on it.", "Smallest piece, and your own folder shows it would have settled 23 of 26 conflicts."],
+          "cons": ["Nothing new to see beyond fewer warnings."],
+          "recommended": true
+        },
+        {
+          "id": "first-live",
+          "label": "Live view",
+          "pros": ["The most visible change."],
+          "cons": ["Built on today's copying, it would still lose messages underneath."]
+        },
+        {
+          "id": "first-handoff",
+          "label": "Automatic handoff",
+          "pros": ["Sitting down anywhere just works."],
+          "cons": ["Needs the who-is-online piece first, which does not exist yet."]
+        },
+        {
+          "id": "first-phone",
+          "label": "Phone without computers",
+          "pros": ["Chats from anywhere."],
+          "cons": ["Only safe once the handoff rules exist."]
+        }
+      ]
+    },
+    {
+      "id": "Q-17",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Your backup folder's leftover conflict copies",
+      "headline": "Should the two lost Nov 5 exchanges be put back into their chat now, before any of this is built?",
+      "today": "They sit in two conflict copies in your backup folder, which the app never shows. One holds lets switch. sure its safe? and the other holds okay i think we're good? with its reply.",
+      "problem": "They stay invisible until the new system exists, which is weeks away.",
+      "proposal": "Yes means a one-off repair, shown to you for approval before anything is written, that adds each as a separate chat named after its device. No leaves them where they are. Don't know parks it."
+    },
+    {
+      "id": "Q-18",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Everything above",
+      "headline": "Is there anything this system must never do, or anything you pictured that no question above covered?",
+      "today": "The questions above cover what I understood from the draft design and your folder.",
+      "problem": "A rule you hold in your head and never said is the one most likely to be broken.",
+      "proposal": "Write it in a line or two. It becomes a rule the design is checked against.",
+      "answer": "words",
+      "prompt": "e.g. never move a reply without telling me"
+    }
+  ]
+}

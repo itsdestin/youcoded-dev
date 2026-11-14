@@ -1,0 +1,462 @@
+{
+ "title": "Your chats on every device — round 5: what round 4 left open",
+ "key": "mesh-sync-questions-5",
+ "out": "mesh-sync.questions-5.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "What you wrote last round, said back to you",
+   "intro": "Several of your round 4 answers were rules in your own words. Each is restated here so the record is exact. Mark Fails on any I bent. The last two are the follow-up cards you asked to have recorded; nothing is filed until you say Yes."
+  },
+  {
+   "id": "S-1",
+   "words": true,
+   "surface": "A computer hosting a chat",
+   "path": "Closing the app window",
+   "headline": "Closing the host: the normal close menu, then quit at once, as long as every finished reply has already reached your other devices.",
+   "changed": "Closing shows today's close menu, where you set flags or mark chats complete. A chat you mark complete closes on every device. A chat you do not mark stays in the list on your other devices with a notice that its host disconnected and an offer to host it there.",
+   "notice": "The app does not wait for a reply that is still running. That half-finished reply is dropped, and whichever device hosts the chat next carries on from the last finished reply.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "surface": "Continuing a chat on another device",
+   "path": "The Continue here notice",
+   "headline": "A continued chat keeps its exact model, provider and project settings. It only stops to ask when that sign-in is truly missing on this device.",
+   "changed": "Your words gave two ways to handle a missing sign-in. My reading of when each applies: a Claude Code chat cannot switch to another kind of model, so it waits until you sign in to Claude on this device. A YouCoded-native chat can, so it shows the model picker before it continues.",
+   "notice": "The split between the two cases is my reading, not your words. Mark Fails if you want one behaviour for both.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-3",
+   "words": true,
+   "surface": "Continuing a chat on another device",
+   "path": "A chat whose project folder is not on this device",
+   "headline": "A chat without its folder is talk-only. The note saying so is added at the end; nothing earlier is cut or changed.",
+   "changed": "When the chat lands on a device that lacks the folder, one note goes in after everything already there, telling the assistant the folder is not on this device. Every earlier line, including what the old device said about its files, stays exactly as written.",
+   "notice": "The assistant may still mention files from earlier in the chat. The note is what tells it they are out of reach here.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-4",
+   "words": true,
+   "surface": "Watching a chat hosted elsewhere",
+   "path": "Features that only work on the host",
+   "headline": "A device watching a chat has the same limits a phone has today, kept in one list, each with a plain message.",
+   "changed": "One central list records everything a watching device cannot do (today: the assistant's browser, Office documents, pasting images, dragging files in). Every one of them shows the same kind of message, in your wording: \"X is not currently supported from a remote client.\"",
+   "notice": "Closing those gaps is separate work. This only promises they are listed in one place and never fail silently.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-5",
+   "words": true,
+   "new": true,
+   "surface": "Work cards",
+   "path": "A follow-up card, after the new sync exists",
+   "headline": "File a card: you choose whether chats are backed up to a cloud at all, and whether that backup is locked with a passphrase.",
+   "changed": "The card would cover: backup on or off (off means chats live only on your devices); passphrase locking for backups on GitHub, Google Drive or iCloud; the same offer for Personal sync files; and a pointer to your encrypted vault idea as possibly related.",
+   "notice": "It would be marked as waiting on the new sync being built first. Yes files it; No leaves it unrecorded.",
+   "yes": "Yes, file it",
+   "no": "No"
+  },
+  {
+   "id": "S-6",
+   "words": true,
+   "new": true,
+   "surface": "Work cards",
+   "path": "Card 232, The assistant tells you when it needs you",
+   "headline": "Record alerts as one card: widen existing card 232 to cover alerts across all your devices and notifications you can customise for automations.",
+   "changed": "Card 232 already plans the assistant telling you when it needs you. Rather than a second card, it would grow to include: an alert reaching whichever device you are on, and your own settings for what notifies you, including automations.",
+   "notice": "Today's in-app notifications stay as they are for the sync work, as you said. Yes widens card 232; No leaves it as it is.",
+   "yes": "Yes, widen it",
+   "no": "No"
+  },
+  {
+   "id": "P-2",
+   "page": "Keepers: your own device, and our relay",
+   "intro": "You said to offer both, and asked what each looks like before choosing which to build first. One fact shapes the answer: a device inside a home cannot be dialled from outside. Your phone on mobile data cannot reach a Raspberry Pi at home unless something in the middle passes the traffic along. So a home keeper still needs a middle whenever you are away, and the relay is that middle."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "Backup & Sync in settings",
+   "headline": "Which keeper gets built first?",
+   "today": "Neither exists. Our server today only passes small signals between your devices and stores no chat lines. YouCoded can run without a window only inside the phone app, not on a computer.",
+   "problem": "Both are wanted. They differ in who they serve on day one and how much has to be built.",
+   "proposal": "Both use the same locked lines, so adding the second later needs no redesign. Whichever goes first, the middle can never read anything.",
+   "options": [
+   {
+    "id": "relay-first",
+    "label": "Our relay first",
+    "recommended": true,
+    "pros": [
+     "How it works: every device connects outward to our server, which holds locked lines and passes live words along. Works on any wifi or mobile data with no setup.",
+     "Speed: live words arrive a fraction of a second behind the host. A typical chat (about 1 MB) catches up in a second or two.",
+     "Cost: nothing to the user. Nothing to us until a few hundred heavy users, then about $5 a month plus about 2 cents per heavy user.",
+     "Serves every user on day one, and is the piece a home keeper needs anyway to be reached from outside."
+    ],
+    "cons": [
+     "Until the home keeper exists, a service of ours sits in the middle for everyone, though it is blind and anyone can run their own copy.",
+     "A server we must keep running."
+    ]
+   },
+   {
+    "id": "own-device-first",
+    "label": "Your own always-on device first",
+    "pros": [
+     "How it works: YouCoded runs with no window on a Raspberry Pi, Mac mini or desktop left on. It holds full copies of every chat and can also host chats itself.",
+     "Speed: instant on the same wifi.",
+     "Cost: nothing to us. To the user, the device (a Pi is roughly $60 to $100) and a little electricity.",
+     "Closest to your dream: no service of ours involved while you are at home."
+    ],
+    "cons": [
+     "Away from home it cannot be reached without a middle, so on its own it only works on your home wifi.",
+     "More to build: running with no window on computers, starting when the computer starts, and installing on a Pi, which nobody has tried yet.",
+     "Serves only users who own a spare device."
+    ]
+   },
+   {
+    "id": "together",
+    "label": "Both in one go",
+    "pros": [
+     "The full picture arrives at once."
+    ],
+    "cons": [
+     "Longest wait before anything works, and two new things to debug at the same time."
+    ]
+   }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Chats across devices",
+   "path": "The optional YouCoded relay",
+   "headline": "How long should our relay hold a chat's locked lines?",
+   "today": "Our server stores no chat lines. Your chats on your desktop total 9.2 GB.",
+   "problem": "If the relay kept everything forever it would become a full copy of every user's chats on our server, and storage is the one cost that grows with every user (about 20 cents per GB each month past the first 10 GB).",
+   "proposal": "The relay is a waiting room, not an archive. Your devices hold the full chats and catch each other up through the relay when both are on.",
+   "options": [
+   {
+    "id": "until-delivered",
+    "label": "Until every device has them, 30 days at most",
+    "recommended": true,
+    "pros": [
+     "Lines are deleted once all your paired devices have fetched them.",
+     "A device off for longer than 30 days still catches up, from another of your devices, the next time both are on.",
+     "Our server never holds a full copy of anyone's chats."
+    ],
+    "cons": [
+     "If your only up-to-date device is lost within those limits, lines past 30 days old that reached no other device are gone."
+    ]
+   },
+   {
+    "id": "forever",
+    "label": "Keep everything, as a locked backup",
+    "pros": [
+     "A new or long-absent device always catches up, even if no other device is on."
+    ],
+    "cons": [
+     "We store every user's whole history, locked but ours to pay for and protect.",
+     "Works against your goal of nothing central being needed."
+    ]
+   },
+   {
+    "id": "live-only",
+    "label": "Hold nothing; pass live words only",
+    "pros": [
+     "Cheapest and simplest; the server keeps no chat data at all."
+    ],
+    "cons": [
+     "If the host sleeps before another device was on, that device cannot continue the chat. This is the common case: leave the desk, pick up the phone later."
+    ]
+   }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "Two devices, one chat: a simpler way to stop duplicates",
+   "intro": "You said the hand-over counter felt odd and error-prone, and that there should be a smarter way. I agree; it was a second record kept beside the chat that could drift from it. Here is the simpler idea, and two edge cases it exposes."
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Continuing a chat on another device",
+   "path": "What happens underneath Continue here",
+   "headline": "Should a takeover simply be written into the chat itself, as one more line?",
+   "today": "Each device keeps its own copy and nothing says which one is the host. Of 26 conflict copies on your desktop, 13 were identical, 10 were partial and 3 were real splits.",
+   "problem": "After a takeover, the old host may wake up still believing it is the host and keep writing. Something has to tell every device, with no doubt, who the host is now.",
+   "proposal": "When you tap Continue here, the new host adds a line to the chat: this device hosts from here on. Every device already receives every line, so every device learns it the same way it learns everything else. A returning old host reads that line, sees it is no longer the host, and throws away its unfinished half. No counter, no separate record."
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Continuing a chat on another device",
+   "path": "Continue here with no connection to anything",
+   "headline": "Your device cannot reach the host, a keeper, or the internet. Should Continue here still work?",
+   "today": "Any device can resume its own copy of a chat at any time, which is how the three real splits happened.",
+   "problem": "With no connection, this device cannot know whether another device already took the chat over, or whether it is missing the newest lines. No design can know that without contact; it is the one case where a split cannot be prevented, only caught afterwards.",
+   "proposal": "This is the accidental split you already ruled on: when the devices next meet, warn and offer to archive the older one.",
+   "options": [
+   {
+    "id": "allow-warn",
+    "label": "Allow it, with a clear warning",
+    "recommended": true,
+    "pros": [
+     "You can always keep working, on a plane or in a dead zone.",
+     "The notice says when this device last heard from the host, and that a second version may result.",
+     "If a split does happen it is caught and shown when the devices meet, never hidden."
+    ],
+    "cons": [
+     "Rare splits remain possible."
+    ]
+   },
+   {
+    "id": "block",
+    "label": "Block until something is reachable",
+    "pros": [
+     "A split can never happen."
+    ],
+    "cons": [
+     "With no connection you cannot continue a chat at all, even one you are sure about.",
+     "Goes against your rule that Continue here is offered when the host is gone."
+    ]
+   }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "A computer hosting a chat",
+   "path": "Closing the app with no connection",
+   "headline": "You close the host while it is offline, so its finished replies cannot reach your other devices. What should happen?",
+   "today": "The app quits within 6 seconds whether or not anything was sent.",
+   "problem": "Your rule is quit at once if every finished reply is on the other devices. With no connection that condition cannot be met, however long the app waits.",
+   "proposal": "The replies are safe on this computer either way. The question is only whether you are told.",
+   "options": [
+   {
+    "id": "quit-and-tell",
+    "label": "Quit, and say so in the close menu",
+    "recommended": true,
+    "pros": [
+     "The close menu shows one line: 2 replies have not reached your other devices; they will go out when this computer is next on.",
+     "You are never stuck unable to close."
+    ],
+    "cons": [
+     "Until this computer is next on, other devices show the chat without those replies, and say so."
+    ]
+   },
+   {
+    "id": "wait-briefly",
+    "label": "Wait up to 10 seconds for a connection, then the same",
+    "pros": [
+     "Catches a brief wifi drop."
+    ],
+    "cons": [
+     "Closing feels slow whenever you are offline."
+    ]
+   },
+   {
+    "id": "quit-silently",
+    "label": "Quit and say nothing",
+    "pros": [
+     "Simplest close."
+    ],
+    "cons": [
+     "You find out on the phone later, with no warning."
+    ]
+   }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Project files: the hard part",
+   "intro": "You asked for the real risks and whether something simpler and more unified exists. Chats are easy to copy: one device writes, and lines are only ever added. Project files are hard: you, the assistant and any other program can change, rename or delete any file on any device at any time. Every file-syncing product struggles with exactly this."
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Projects across devices",
+   "path": "Backup & Sync in settings",
+   "headline": "Should project files travel the same way chats will, or stay on GitHub?",
+   "today": "Only folders under YouCoded/Projects sync, each through its own private GitHub storage, which GitHub can read. Changes leave about 15 seconds after the last edit or every 2 minutes, and quitting can drop a pending send.",
+   "problem": "If chats move to the new system and files stay on GitHub, there are still two systems, GitHub stays required, and at takeover the chat can be ahead of the files. Round 4 proposed sending files with each reply; you asked whether that is the right shape at all.",
+   "proposal": "Real risks of either choice, in plain terms: the same file edited on two devices while apart (one must not silently win); huge or generated folders (must be skipped, as today); a deleted file coming back; and losing the older versions GitHub keeps today. This picks the design; the build order is decided later.",
+   "options": [
+   {
+    "id": "same-system",
+    "label": "One system: files travel like chats",
+    "recommended": true,
+    "pros": [
+     "One thing to understand: chats and files move together between your devices, locked, through the same keepers.",
+     "GitHub becomes an optional backup, matching your wish that cloud backup is the user's choice.",
+     "At takeover the files and the chat arrive together, so the assistant never sees older files than the chat describes.",
+     "Each device keeps replaced versions for 30 days, and two edits of one file show as two versions for you to pick, never a silent overwrite."
+    ],
+    "cons": [
+     "The biggest and riskiest piece of the whole design; file syncing is where mature products still have bugs.",
+     "A bug here could damage project files, not just chat history, so it needs the most testing.",
+     "Long version history beyond 30 days only exists if you turn on a backup."
+    ]
+   },
+   {
+    "id": "github-tightened",
+    "label": "Files stay on GitHub, sent sooner",
+    "pros": [
+     "Proven and already built; GitHub keeps full version history.",
+     "Much less to build: send at the end of each reply and before quitting."
+    ],
+    "cons": [
+     "GitHub stays required and can read your project files, against the goal you confirmed.",
+     "Two systems remain, and the takeover notice must warn whenever files are behind the chat.",
+     "Stays as slow as today: several seconds per send."
+    ]
+   },
+   {
+    "id": "github-now-same-later",
+    "label": "Design for one system, but name GitHub as the stopgap",
+    "pros": [
+     "Says plainly that one system is the destination while accepting files may be last to move."
+    ],
+    "cons": [
+     "This is a build-order choice, which you asked to leave until the design is agreed."
+    ]
+   }
+   ]
+  },
+  {
+   "id": "P-5",
+   "page": "Every Continue here state, with its message",
+   "intro": "You asked to see every warning state, its cause and its words. These are all the ones I can find. Wording is a draft in your style from round 1. Mark Fails on any state that should not exist or reads wrong, and use the note to fix the words. More than one can show at once; they would stack in one notice."
+  },
+  {
+   "id": "N-1",
+   "words": true,
+   "surface": "The Continue here notice",
+   "path": "You tap the chip while the host is on",
+   "headline": "Switching on purpose, host is on, this device has everything: no warning, one confirmation.",
+   "changed": "Message: \"Host this chat on this device instead of Desktop?\" If a reply is running, the switch happens when that reply ends, so nothing is dropped.",
+   "notice": "Cause: you chose to switch. Nothing is missing, so nothing is warned about.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "N-2",
+   "words": true,
+   "surface": "The Continue here notice",
+   "path": "The host is off and this device has every line",
+   "headline": "Host is off, nothing is missing: one short line and a button.",
+   "changed": "Message: \"This chat was hosted on Desktop, which is offline. Continue here?\"",
+   "notice": "Cause: the host slept, quit or lost its connection after everything it wrote had already arrived here.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "N-3",
+   "words": true,
+   "surface": "The Continue here notice",
+   "path": "The host went off in the middle of a reply",
+   "headline": "Host went off mid-reply: says the unfinished reply will be dropped.",
+   "changed": "Message: \"Desktop went offline partway through a reply. If you continue here, that unfinished reply is dropped and the chat carries on from the last finished one.\"",
+   "notice": "Cause: the host slept or quit while the assistant was still answering.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "N-4",
+   "words": true,
+   "surface": "The Continue here notice",
+   "path": "This device may not have the newest lines",
+   "headline": "Newest lines may be missing: says when this device last heard from the host.",
+   "changed": "Message: \"This device last heard from Desktop at 3:14 pm. Anything Desktop did after that is not here yet. Continuing now may create a second version of this chat.\"",
+   "notice": "Cause: no keeper was reachable, or the host never got its last lines out before going off.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "N-5",
+   "words": true,
+   "surface": "The Continue here notice",
+   "path": "The project folder is not on this device",
+   "headline": "Folder missing: offers talk-only now, or fetch the folder first.",
+   "changed": "Message: \"The project folder for this chat is not on this device. Continue in talk-only mode, or fetch the folder first (about 240 MB).\"",
+   "notice": "Cause: this device never downloaded that project. Fetching shows what is missing, why, and the storage needed, as you decided in round 2.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "N-6",
+   "words": true,
+   "surface": "The Continue here notice",
+   "path": "The project folder here is older than the host's",
+   "headline": "Files here are behind: says by how much.",
+   "changed": "Message: \"The files on this device are from 2 hours before Desktop's last change. The assistant will see the older files until they catch up.\"",
+   "notice": "Cause: the host changed files that had not arrived here before it went off.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "N-7",
+   "words": true,
+   "surface": "The Continue here notice",
+   "path": "The sign-in this chat uses is missing here",
+   "headline": "Sign-in missing: asks you to sign in, or to pick a model, before continuing.",
+   "changed": "Messages: \"This chat uses Claude. Sign in to Claude on this device to continue.\" or \"This chat's model is not set up on this device. Pick a model to continue.\"",
+   "notice": "Cause: accounts and keys are set up per device and never copied between them.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "N-8",
+   "words": true,
+   "surface": "The Continue here notice",
+   "path": "This device lacks features the chat has been using",
+   "headline": "Missing features: names each one, in your round 1 wording.",
+   "changed": "Message: \"You may continue here, but this chat will not have: the assistant's browser, Office documents, local models.\" Only the features this device really lacks are listed.",
+   "notice": "Cause: the phone and the computer do not yet have the same features. The list shrinks as those gaps close.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "N-9",
+   "words": true,
+   "surface": "A chat on its old host",
+   "path": "The old host comes back after a takeover",
+   "headline": "On the old host when it returns: says where the chat went.",
+   "changed": "Message: \"This chat continued on Phone while this computer was offline. Its unfinished reply here was discarded.\" The chip now names Phone as the host.",
+   "notice": "Cause: you tapped Continue here on another device. The second sentence shows only if a reply was cut off.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "N-10",
+   "words": true,
+   "surface": "The resume browser and the chat",
+   "path": "Two devices continued the same chat without contact",
+   "headline": "A split was found: warns, and offers to archive the older version.",
+   "changed": "Message: \"This chat was continued on both Desktop and Phone while they could not reach each other. There are now two versions. Keep both, or archive the older one (Desktop, last used Tuesday)?\" The two are grouped together in the resume browser.",
+   "notice": "Cause: the no-connection case from the page before. This is your round 2 rule for accidental splits.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "The Continue here notice",
+   "path": "All states above",
+   "headline": "Is any state missing, or anything else on your mind?",
+   "today": "Ten states are listed above.",
+   "problem": "A state I did not think of would ship with no message at all.",
+   "proposal": "Write anything, or leave it empty. Still waiting for a later round, unchanged: helper transcripts, the smaller pieces that travel with a chat, and the phone staying awake.",
+   "answer": "words",
+   "prompt": "e.g. what if the host is on but busy with another chat"
+  }
+ ]
+}

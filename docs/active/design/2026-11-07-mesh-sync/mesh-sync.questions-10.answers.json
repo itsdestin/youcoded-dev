@@ -1,0 +1,73 @@
+{
+ "deck": "mesh-sync-questions-10",
+ "started": "2026-11-12T09:22:57.155Z",
+ "submitted": "2026-11-12T09:31:33Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "thirty-days",
+   "t": 1794475437015,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "send-note",
+   "t": 1794475437015,
+   "note": "why is there a 15s dleay on the file changes?",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "one-backup",
+   "t": 1794475891502,
+   "seconds": 65,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "all-with-switches",
+   "t": 1794475891502,
+   "note": "switches for individual/specific projects. also may want to think this through a bit more thoroughly and how to optimize/compress storage or deal with long-term chat accrual or improve backup/restoration flows. but this is somewhat tangential",
+   "seconds": 65,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "unlocked-first",
+   "t": 1794475891502,
+   "note": "just with honest warnings and confirmation when a user utilizes unencrypted backups",
+   "seconds": 65,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "other",
+   "t": 1794475891502,
+   "note": "probably depends on the service? i'd imagine there was a reason we decided on once a day initially, so i wouldnt want to change this without consideration. it should be as frequent as plausible without financial/performance/other costs",
+   "seconds": 65,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1794475891502,
+   "note": "i am realizing we are also going to need to think through what we offer to users who try to pair two existing devices with their own unique histories/projects/etc. probably need to offer confirmations and prefernces and such,as we'd need to figure out if the user wants to cancel, merge all data from both devices in a 2-way sync, delete some data, etc",
+   "seconds": 65,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794475891502,
+   "seconds": 65,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "other",
+   "t": 1794475891502,
+   "note": "we should probably be a bit more creative in designing ways to get backups to work more consistently across all devices, and also investigate/explore backups hosted by youcoded at some point in the future",
+   "seconds": 65,
+   "theme": "midnight"
+  }
+ }
+}

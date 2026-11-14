@@ -1,0 +1,125 @@
+{
+ "deck": "mesh-sync-questions-2",
+ "started": "2026-11-08T02:15:45.485Z",
+ "submitted": "2026-11-08T02:31:02Z",
+ "cur": 4,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794104175784,
+   "seconds": 8,
+   "theme": "morning-rounds"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794104175784,
+   "seconds": 8,
+   "theme": "morning-rounds"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1794104175784,
+   "seconds": 8,
+   "theme": "morning-rounds"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794104175784,
+   "seconds": 8,
+   "theme": "morning-rounds"
+  },
+  "Q-1": {
+   "v": "other",
+   "t": 1794104353430,
+   "note": "i want to understand what this would look like built on tailscale vs a hosted server in more detail. i think the dream would be for this to be able to function entirely without a central server or host service, as users might want to fork the app or build their own, and full self-hosting is more in the spirit of opensource, but i want to understand costs/benefits/tradeoffs etc better.",
+   "seconds": 59,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "end-to-end",
+   "t": 1794104353430,
+   "seconds": 59,
+   "theme": "morning-rounds"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1794104353430,
+   "note": "i would need to better understand real costs under various proposals, who we'd be paying, how we might charge or collect from users directly, etc. if we go through tailscale i'd imagine this becomes a non-issue?",
+   "seconds": 59,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "host-stays-plus-sync",
+   "t": 1794104643673,
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1794104643673,
+   "note": "i think i'd need to understand the pros/cons of each of these a bit better, along with how they might actually impact real session in real use and any storage/performance/latency/etc costs",
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "discard-tail",
+   "t": 1794104643673,
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "assume-parity",
+   "t": 1794104878433,
+   "seconds": 76,
+   "theme": "morning-rounds"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "everything",
+   "t": 1794104878433,
+   "note": "i think we also need to figure out a mechanism to resume conversations on a device even if that device doesn't have the correct project folder. that currently just lreaves a chat unresumable on the other device, but i think we should have a way around this as there may be some circumstances where i just need the context/feedback of a chat and dont entirely care if the folder is on this device.",
+   "seconds": 76,
+   "theme": "morning-rounds"
+  },
+  "Q-9": {
+   "v": "other",
+   "t": 1794104878433,
+   "seconds": 76,
+   "theme": "morning-rounds",
+   "note": "we'll need to think this through a bit further"
+  },
+  "Q-10": {
+   "v": "other",
+   "seconds": 47,
+   "theme": "morning-rounds",
+   "t": 1794105061625,
+   "note": "why would it take far longer? that doesn't entirely make sense to me. if we're actively uploading/syncing new messages as they come in, there should never be more than 1-2 new messages to sync? right? that can't be more than a few kilobytes of data, which should sync easily in 2-5s?"
+  },
+  "Q-11": {
+   "v": "pick",
+   "seconds": 47,
+   "theme": "morning-rounds",
+   "t": 1794105061625,
+   "pick": "fetch-then-switch",
+   "note": "but we should have an additional confirmation menu/popup explaining what's missing, why it's needed, and estimated storage needed/used for the project."
+  },
+  "Q-12": {
+   "v": "other",
+   "seconds": 47,
+   "theme": "morning-rounds",
+   "t": 1794105061625,
+   "note": "both should be treated as equals IFF forked manually/intentionally. for sessions that are forked/split for other reasons like network issues/transfer between devices, it should warn with the archive offer on the old version"
+  },
+  "Q-13": {
+   "v": "other",
+   "seconds": 47,
+   "theme": "morning-rounds",
+   "t": 1794105061625,
+   "dk": true
+  }
+ }
+}

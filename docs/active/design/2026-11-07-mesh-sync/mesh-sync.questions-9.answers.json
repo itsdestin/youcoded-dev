@@ -1,0 +1,103 @@
+{
+ "deck": "mesh-sync-questions-9",
+ "started": "2026-11-12T07:45:16.050Z",
+ "submitted": "2026-11-12T08:13:31Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "per-device-default",
+   "t": 1794469729435,
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "turn-on-per-device",
+   "t": 1794469729435,
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1794469729435,
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "keeper-counts",
+   "t": 1794471211045,
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "brief-wait",
+   "t": 1794471211045,
+   "note": "kinda confused about this flow still. how would another device learn if it may not have newer files from the host? and how would we reconcile",
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "t": 1794471211045,
+   "pick": "backup-first",
+   "note": "i think our final design should include at least a general outline for the future plan for cloud data backup. what do we currently offer as far as google/icloud go, how does that differ from the existing github/sync implementation, the new implementation we're building, and how should we consolidate/reorganize cloud backups after the relay/mesh system is built?",
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794471211045,
+   "note": "we need to ensure users have a mechanism to set up and recover from their own cloud backup tho (drive/icloud/github)",
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1794471211045,
+   "note": "can you explain the benefit of keeping the 48h limit in place when hte 1gb limit exists? could it make more sense to do 30d 1gb? would it cost us the same roughly?",
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794471211045,
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "S-5": {
+   "v": "yes",
+   "t": 1794471211045,
+   "note": "",
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "S-6": {
+   "v": "yes",
+   "t": 1794471211045,
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "S-7": {
+   "v": "yes",
+   "t": 1794471211045,
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "S-8": {
+   "v": "yes",
+   "t": 1794471211045,
+   "seconds": 135,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "other",
+   "dk": true,
+   "t": 1794471211045,
+   "seconds": 135,
+   "theme": "midnight"
+  }
+ }
+}

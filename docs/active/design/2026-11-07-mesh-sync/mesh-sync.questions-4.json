@@ -1,0 +1,598 @@
+{
+  "title": "Your chats on every device — round 4: a second look at the whole design",
+  "key": "mesh-sync-questions-4",
+  "out": "mesh-sync.questions-4.html",
+  "themes": ["midnight", "light"],
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "What I think you are aiming for",
+      "intro": "A fresh session reread all three rounds and checked the app's code. These two statements are my reading of your intent. Mark either Fails if I misread you; everything after rests on them."
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "The whole design",
+      "headline": "The goal: it feels like claude.ai, but your own devices are the server, and nothing in the middle is required or trusted.",
+      "changed": "Stated from your answers taken together: one chat everywhere, no thinking about which device runs it, your hardware does the work, and any outside service is an optional convenience that cannot read anything.",
+      "notice": "Every later choice is judged against this sentence. A choice that makes an outside service required, or able to read chats, counts as a failure of the design.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "The whole design",
+      "headline": "By mesh you mean four things about how devices relate, not one particular networking technology.",
+      "changed": "My reading of your Nov 8 comments. One: devices pair with each other. Two: keys exist only on devices. Three: any of your devices can catch another one up. Four: anything in the middle cannot read chats and can be swapped for another.",
+      "notice": "If this holds, the mesh does not depend on the risky two-week networking experiment the last round said had to come first. Devices connecting straight to each other becomes a later speed-up you would not see.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-2",
+      "page": "How chats travel between devices",
+      "intro": "The last round compared three pipes for live words and left today's slow GitHub copy running underneath. I think that framing was the mistake. These four questions replace it."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Backup & Sync in settings",
+      "headline": "Should live viewing and catching up be one copying system instead of two?",
+      "today": "After each reply the whole chat file is uploaded again to your private GitHub storage and other devices download it. The code confirms that when two copies differ the bigger file simply wins. The last round added a second, separate live stream on top and left this untouched.",
+      "problem": "Two systems that each think they know what a chat contains can disagree, which is exactly how messages go missing today. The old one also stops syncing chats over 50 MB and keeps every old version forever.",
+      "proposal": "One system: the host sends each new line of a chat to every device it can reach. A device that was away asks for everything after the last line it has. Pick one.",
+      "options": [
+        {
+          "id": "one-system",
+          "label": "One copying system",
+          "pros": [
+            "A chat is the same on every device because there is only one way it gets there.",
+            "Only new lines travel, so long chats stop being a problem and nothing is uploaded twice.",
+            "Catching up after sleep takes seconds, not a full upload and download."
+          ],
+          "cons": [
+            "Today's GitHub copying of chats is replaced, not reused; existing chats need a one-time move into the new form.",
+            "More to build than adding a live stream on top."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "two-systems",
+          "label": "Live stream on top of today's copy",
+          "pros": [
+            "Less to build first; today's backup keeps working as it is."
+          ],
+          "cons": [
+            "Keeps the 50 MB limit, the ever-growing history and the bigger-file-wins rule underneath.",
+            "The live view and the saved copy can disagree, and you would see a chat change after the fact."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Backup & Sync in settings",
+      "headline": "When none of your other devices is awake, what should hold a chat's newest lines for them?",
+      "today": "Only GitHub does, slowly and readable by GitHub. The last round offered three separate things: a mailbox on our server, the GitHub backup, and a relay. Each was treated as its own decision.",
+      "problem": "Checked in code: nothing keeps a computer awake during a reply, and closing the window quits the app. So the usual moment is: you leave your desk, pick up the phone later, and the host is asleep. The phone can only carry on if something awake kept the newest lines.",
+      "proposal": "Treat all three as one idea, a keeper: something always on that stores sealed chat lines it cannot read, and hands them to your devices when they wake. Pick every kind of keeper the design should allow.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "own-device",
+          "label": "Your own always-on device",
+          "pros": [
+            "Fully yours: a desktop left on, or a small home computer, running YouCoded with no window.",
+            "It can also run chats, so it is a keeper and a host at once."
+          ],
+          "cons": [
+            "Most users have no always-on device.",
+            "Running with no window on a computer is new work; it exists only inside the phone app today."
+          ]
+        },
+        {
+          "id": "own-storage",
+          "label": "Storage you already own",
+          "pros": [
+            "GitHub today, Google Drive or iCloud later; no service of ours involved.",
+            "Doubles as the permanent backup."
+          ],
+          "cons": [
+            "Slower than a relay: seconds per write, not instant.",
+            "Sealing what goes there needs the recovery phrase in the next question."
+          ]
+        },
+        {
+          "id": "our-relay",
+          "label": "A YouCoded relay, optional",
+          "pros": [
+            "Nothing to set up; fastest; also passes live words between devices on different networks.",
+            "Free on our side until a few hundred heavy users, then about $5 a month plus pennies each.",
+            "It stores and forwards sealed lines only, and the app could point at anyone else's copy."
+          ],
+          "cons": [
+            "Most users would rely on ours by default, so in practice a service of ours sits in the middle for them.",
+            "A server we must keep running."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Backup & Sync in settings",
+      "headline": "Should the copy kept on GitHub be sealed too, at the price of a recovery phrase?",
+      "today": "Every chat sits readable in your private GitHub storage. GitHub, or anyone who gets into that GitHub account, can read all of them. Nothing in the app is sealed today.",
+      "problem": "You ruled that a key never goes to GitHub or a server. If keys live only on devices and the stored copy is sealed, then losing every device means nothing can open the backup, unless you wrote down a recovery phrase.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "seal-with-phrase",
+          "label": "Seal it; phrase required",
+          "pros": [
+            "Nobody but your devices can read a chat anywhere it rests. This closes the largest privacy gap in the app.",
+            "One honest sentence for users: only your devices can read your chats."
+          ],
+          "cons": [
+            "Setup shows a recovery phrase to write down. Lose every device and the phrase, and the chats are gone for good; we cannot help.",
+            "You can no longer read a chat by browsing the GitHub website."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "seal-optional",
+          "label": "Sealing is a setting",
+          "pros": [
+            "Cautious users seal; others keep today's easy recovery by signing in to GitHub."
+          ],
+          "cons": [
+            "Two kinds of backup to build, test and explain.",
+            "The app cannot promise privacy plainly, because it depends on a setting."
+          ]
+        },
+        {
+          "id": "leave-readable",
+          "label": "Leave it readable",
+          "pros": [
+            "Sign in to GitHub on a new device and everything comes back; no phrase to lose."
+          ],
+          "cons": [
+            "Live words are sealed while the same words sit readable on GitHub minutes later.",
+            "A stolen GitHub login exposes every chat."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Adding a new device",
+      "headline": "How should a new device join your others?",
+      "today": "Sync needs two sign-ins: GitHub for storage and a YouCoded account for the instant change notices. Removing a device from the list takes away none of its access; the code shows it is only a deleted list entry.",
+      "problem": "An account makes a company the gatekeeper of which devices are yours. A lost phone today stays able to read everything, and under this design it could also send messages that run on your computer.",
+      "proposal": "Pick one. In each, removing a device from any other device locks it out for good.",
+      "options": [
+        {
+          "id": "pair-only",
+          "label": "Pair by code; relay may ask sign-in",
+          "pros": [
+            "A new device shows a code; a device you already have scans it. No account is needed for your devices to trust each other.",
+            "Our relay can still ask for a sign-in to stop strangers using it for free. That is a rule of our relay, not of the system; someone else's relay need not."
+          ],
+          "cons": [
+            "Needs one of your existing devices in hand and awake, or the recovery phrase.",
+            "Sign-in to our relay is still a step for most users."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "account",
+          "label": "Sign in, as today",
+          "pros": [
+            "Familiar: sign in on a new device and it joins."
+          ],
+          "cons": [
+            "Whoever controls the account decides what counts as your device, which breaks your rule that keys never depend on a server."
+          ]
+        },
+        {
+          "id": "pair-open-relay",
+          "label": "Pair by code; relay open to all",
+          "pros": [
+            "No account anywhere, ever."
+          ],
+          "cons": [
+            "Anyone on the internet could push traffic through our relay at our cost, with no way to cut off abuse."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "When the host is away",
+      "intro": "The earlier rounds designed live viewing carefully. In real use the host will often be asleep, so taking over is the main road, not the exception. These decide how good that road is."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "A computer hosting a chat",
+      "path": "Any chat while a reply is running",
+      "headline": "Should a computer stay awake until the reply it is running has finished?",
+      "today": "Nothing keeps a computer awake for a reply. The only keep-awake in the app is a timed setting under Remote Access (1 to 24 hours), unrelated to whether anything is running.",
+      "problem": "A long reply dies when the screen-saver timer puts the computer to sleep. From your other devices that looks like a vanished host and a dropped reply.",
+      "proposal": "Yes means the computer holds itself awake only while a reply is running and lets go the moment it ends, with a hard limit so it can never stick. Closing a laptop lid still sleeps it; no app can prevent that. No leaves it as today."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "A computer hosting a chat",
+      "path": "Closing the app's window",
+      "headline": "What should closing the window do on a computer that is hosting chats?",
+      "today": "Closing the last window quits the app and stops any running reply within six seconds. The app does not start by itself when the computer turns on.",
+      "problem": "A habit as small as closing a window makes that computer disappear as a host for every other device.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "finish-then-quit",
+          "label": "Finish the reply, then quit",
+          "pros": [
+            "Closing still means closing; nothing lingers once the work is done.",
+            "An opt-in setting, Keep this computer available, adds running in the background and starting with the computer for people who want an always-ready host."
+          ],
+          "cons": [
+            "Without the setting, a closed app is an offline host and other devices see Continue here."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always-background",
+          "label": "Always keep running",
+          "pros": [
+            "Your computer is reachable from your other devices whenever it is on."
+          ],
+          "cons": [
+            "An app that keeps running after you close it surprises people and uses memory; quitting needs a separate menu item."
+          ]
+        },
+        {
+          "id": "quit-as-today",
+          "label": "Quit at once, as today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "A running reply is cut off by closing a window, and viewers see it vanish."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat whose host is offline",
+      "headline": "Should the Continue here notice be the same every time, or match what is actually at risk?",
+      "today": "Not built. You asked for a notice that explains the tradeoff of waiting for the host against continuing here.",
+      "problem": "Every chat's host is simply the device it last ran on. Open a month-old chat whose host is switched off and you would get the full warning, although nothing is running there and every line is already here. Seen daily, a full warning stops being read.",
+      "proposal": "Pick one. In all three, nothing moves until you tap.",
+      "options": [
+        {
+          "id": "scaled",
+          "label": "Match the risk",
+          "pros": [
+            "Full warning, in your wording, only when the host was mid-reply, may hold lines or files that never reached this device, or has something this device lacks.",
+            "Otherwise one quiet line: Last ran on Desktop. Continue here."
+          ],
+          "cons": [
+            "Two looks for one action; the quiet one could be tapped without reading."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always-full",
+          "label": "Always the full warning",
+          "pros": [
+            "One consistent notice; never under-warns."
+          ],
+          "cons": [
+            "Shown on most old chats, so it becomes noise within a week."
+          ]
+        },
+        {
+          "id": "silent-when-safe",
+          "label": "No notice when nothing is at risk",
+          "pros": [
+            "Old chats just open and work."
+          ],
+          "cons": [
+            "The host changes without your tap, which goes against your rule that switches need your direct approval."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "A chat whose old host comes back",
+      "headline": "Should every chat carry a count of how many times it has changed hosts?",
+      "today": "You ruled that accidental duplicates must be nearly impossible and that leftovers are cleaned up without you. No way of doing that was ever agreed; today the app guesses by file size.",
+      "problem": "A device that returns after a takeover cannot tell which of its lines the others never saw, so it either loses them silently or creates a second copy of the chat.",
+      "proposal": "Yes means each change of host raises a number stored with the chat. A returning device sees a higher number, knows exactly which of its lines came after the change, and applies your rules by itself: a half reply is dropped; finished exchanges nobody else saw become a grouped split with the archive offer. No means I look for another way and bring it back to you."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Your devices",
+      "path": "The device list in Backup & Sync",
+      "headline": "What should happen to chats whose host is a device you no longer use?",
+      "today": "Old devices stay in the list for ever. Your own list still holds a Windows laptop last seen in July.",
+      "problem": "Every chat last run on a retired device would name it as host and show Continue here on first open, one chat at a time.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "remove-frees",
+          "label": "Removing a device frees its chats",
+          "pros": [
+            "One action: the device is locked out and its chats belong to whichever device opens them next, with no notice.",
+            "Nothing happens unless you do it."
+          ],
+          "cons": [
+            "You have to remember to remove old devices."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "auto-retire",
+          "label": "Also retire after 30 days unseen",
+          "pros": [
+            "Forgotten devices stop cluttering chats by themselves."
+          ],
+          "cons": [
+            "A laptop back from a long trip finds its chats were taken over; any lines only it held become splits.",
+            "A host change without your tap."
+          ],
+          "measured": "30 days unseen"
+        },
+        {
+          "id": "leave",
+          "label": "Leave as it is",
+          "pros": [
+            "Nothing to build."
+          ],
+          "cons": [
+            "Continue here on every old chat, indefinitely."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Things nobody asked you yet",
+      "intro": "Gaps I found by checking the code against the promise that a chat is identical everywhere except the chip."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Project files",
+      "path": "A project chat taken over by another device",
+      "headline": "When should the files the assistant edited leave the host?",
+      "today": "Chat lines upload when a reply ends. The assistant's file edits upload separately: 15 seconds after the last change, or at a two-minute check, and not at all when the app quits or the computer sleeps.",
+      "problem": "Take over a chat soon after a reply and the new device works on older files. When the old host returns, the same file exists in two versions and one becomes a copy with the device's name on it. The chat no longer splits, but the project does.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "with-reply",
+          "label": "With every finished reply",
+          "pros": [
+            "Files and chat lines leave together, so another device is rarely behind.",
+            "Continue here can name any files it knows are still only on the host."
+          ],
+          "cons": [
+            "A host cut off mid-reply still holds its last edits; the notice says so, and they arrive as copies when it returns."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "as-today",
+          "label": "As today",
+          "pros": [
+            "Nothing to build."
+          ],
+          "cons": [
+            "Takeover within a couple of minutes of a reply regularly lands on old files, with no warning."
+          ]
+        },
+        {
+          "id": "block",
+          "label": "No takeover until files arrive",
+          "pros": [
+            "Never two versions of a file."
+          ],
+          "cons": [
+            "A host that is asleep cannot send them, so the chat is stuck until it wakes; the outcome you ruled out."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat whose folder is not on this device",
+      "headline": "How should a chat open on a device that does not have its folder?",
+      "today": "Only folders inside YouCoded Projects sync. A chat about any other folder, such as one elsewhere in your home folder, can be read on another device but not continued. This replaces round 3's unanswered question, which missed that some folders can never be fetched.",
+      "problem": "You said you sometimes want only a chat's context and feedback and do not care whether the folder is here. Fetch the project first cannot work for a folder that never syncs.",
+      "proposal": "Pick one. Where the folder is a synced project, each also offers to fetch it, with the storage confirmation you asked for.",
+      "options": [
+        {
+          "id": "talk-only",
+          "label": "Talk here; files stay there",
+          "pros": [
+            "The assistant has the whole chat and can answer, explain and plan, and is told plainly that the files are on another device.",
+            "A banner names that device. If it is online, the chat can simply run there and you type from here."
+          ],
+          "cons": [
+            "It cannot read or change that folder's files from here, and says so when asked."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "scratch",
+          "label": "Open in a temporary folder",
+          "pros": [
+            "The assistant can also write new files while away from the real folder."
+          ],
+          "cons": [
+            "Those files need a home later, and it may act as though the real files are there."
+          ]
+        },
+        {
+          "id": "refuse",
+          "label": "Read only, as today",
+          "pros": [
+            "Nothing can go wrong."
+          ],
+          "cons": [
+            "The chat cannot be continued anywhere but its own device."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "An open chat",
+      "path": "Continuing a chat on a different device",
+      "headline": "Should the Continue here notice say when a different account or model will answer?",
+      "today": "Sign-ins, model keys and local models belong to each device and never sync, on purpose. A chat continued elsewhere is answered by whatever that device is signed in to.",
+      "problem": "A chat begun on a Claude subscription on the desktop could continue on a phone that uses a different login, or a paid key, or lacks that local model, and nothing says so.",
+      "proposal": "Yes means the notice adds one line when the account or model differs, and the model picker opens if the chat's model is not on this device. No means it continues silently with whatever this device has."
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "The phone app",
+      "path": "A long reply running on another device",
+      "headline": "How should you find out that a reply finished, or needs your approval, when the app is not open?",
+      "today": "No alerts exist anywhere: not on a computer, not on the phone. The only signal is a sound inside an open window.",
+      "problem": "A sleeping phone can only be woken through the phone maker's alert service, and that needs something always on to send the alert. Devices alone cannot wake each other.",
+      "proposal": "Pick one. An alert would carry no chat text, only that something needs you.",
+      "options": [
+        {
+          "id": "optional-service",
+          "label": "An optional alert service",
+          "pros": [
+            "Phone and computer tell you when a reply is done or waiting on you, even with the app closed.",
+            "Part of the optional relay; people running everything themselves can leave it off."
+          ],
+          "cons": [
+            "On Android the alert passes through Google, which learns that you got one and when.",
+            "Without the relay there are no alerts on a sleeping phone."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "awake-only",
+          "label": "Only on devices that are awake",
+          "pros": [
+            "No service of any kind; a computer that is on shows an alert."
+          ],
+          "cons": [
+            "A phone in your pocket stays silent until you open the app."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "No alerts",
+          "pros": [
+            "Nothing to build."
+          ],
+          "cons": [
+            "You find out by checking."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "surface": "An open chat",
+      "path": "A chat viewed from a device that is not its host",
+      "headline": "Some parts of a chat cannot yet be used from a viewing device. How should the design treat that?",
+      "today": "Checked in code: from a viewing device the assistant's browser panel and Office documents are refused, and pasting or dragging in an image does nothing. Claude Code chats show a reply block by block, not word by word, even on the device running them; only YouCoded's own engine shows words as they come.",
+      "problem": "You asked for a chat that is identical except the chip. Today it would not be.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "same-as-phone",
+          "label": "Same rule as the phone gaps",
+          "pros": [
+            "The design assumes a viewer can do everything; each gap is its own piece of work, as you ruled for the phone.",
+            "Until each lands, that panel says in one line that it opens on the host."
+          ],
+          "cons": [
+            "At first, some chats look different on a viewer, against the promise."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "close-first",
+          "label": "Close the gaps first",
+          "pros": [
+            "Identical from the first day."
+          ],
+          "cons": [
+            "Everything else waits on the browser and Office work, which is large."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-15",
+      "words": true,
+      "surface": "New chat",
+      "path": "Starting a chat from one device to run on another",
+      "headline": "Should you be able to start a new chat on your phone that runs on your computer?",
+      "today": "A new chat always runs on the device you start it on.",
+      "problem": "On the phone, wanting the assistant to work on a project whose tools and speed are on the desktop means opening an existing chat hosted there, or going to the desktop.",
+      "proposal": "Yes means the new-chat screen gains a Runs on choice listing your online devices, set to this device unless you change it. No means a chat always starts where you are and you move it with the chip."
+    },
+    {
+      "id": "P-5",
+      "page": "Before the design is written down",
+      "intro": "One test, and anything I missed. Left for a later round, unchanged from round 3: helper transcripts, the smaller pieces that travel with a chat, and the phone staying awake."
+    },
+    {
+      "id": "Q-16",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "A test outside the app",
+      "headline": "May I run one small test, outside your app, to settle a fact the records disagree on?",
+      "today": "Our notes disagree on whether Claude Code's compact command rewrites a saved chat or only adds to it. The last session recorded that it never shrinks; the app's own documentation says it rewrites.",
+      "problem": "Sending only new lines is simple if saved chats only ever grow. If a command can rewrite one, the copying needs an extra check, and I would rather know than assume.",
+      "proposal": "Yes means I run a throwaway Claude Code chat in a temporary folder, compact it, and compare the saved file before and after. It uses a little of your plan allowance and touches neither your app nor your real chats. No means I design for the worse case."
+    },
+    {
+      "id": "Q-17",
+      "words": true,
+      "surface": "Chats across devices",
+      "path": "Everything above",
+      "headline": "Anything here that read wrong, or that you picture differently?",
+      "today": "This deck carries my reading of your intent and every gap I found.",
+      "problem": "A wrong reading in the first two statements would bend every answer after them.",
+      "proposal": "Write anything, or leave it empty.",
+      "answer": "words",
+      "prompt": "e.g. a keeper should never be on by default"
+    }
+  ]
+}

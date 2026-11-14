@@ -1,0 +1,74 @@
+{
+ "deck": "mesh-sync-questions-3",
+ "started": "2026-11-08T09:20:16.762Z",
+ "submitted": null,
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794129742098,
+   "seconds": 18,
+   "theme": "halftone-dimension"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794129742098,
+   "seconds": 18,
+   "theme": "halftone-dimension"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1794129742098,
+   "seconds": 18,
+   "theme": "halftone-dimension"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794129742098,
+   "seconds": 18,
+   "theme": "halftone-dimension"
+  },
+  "S-5": {
+   "v": "yes",
+   "t": 1794129742098,
+   "seconds": 18,
+   "theme": "halftone-dimension"
+  },
+  "S-6": {
+   "v": "yes",
+   "t": 1794129742098,
+   "seconds": 18,
+   "theme": "halftone-dimension"
+  },
+  "S-7": {
+   "v": "yes",
+   "t": 1794129742098,
+   "seconds": 18,
+   "theme": "halftone-dimension"
+  },
+  "Q-1": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "t": 1794131164453
+  },
+  "Q-2": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "t": 1794131164453
+  },
+  "Q-3": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "t": 1794131164453
+  },
+  "Q-4": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "t": 1794131164453
+  }
+ }
+}

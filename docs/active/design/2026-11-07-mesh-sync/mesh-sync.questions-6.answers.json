@@ -1,0 +1,36 @@
+{
+ "deck": "mesh-sync-questions-6",
+ "started": "2026-11-11T00:33:04.624Z",
+ "submitted": "2026-11-11T23:14:54Z",
+ "cur": 0,
+ "answers": {
+  "Q-3": {
+   "v": "pick",
+   "t": 1794438893733,
+   "pick": "lock-plus-toggle",
+   "seconds": 67,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "other",
+   "t": 1794438893733,
+   "note": "idek what option A means or how that would work? the primary issue with helpers is that active sessions may rely on them and their transcripts to copmlete work, so syncing a conversation without its help transcripts would directly lead to significant lost work/effort.",
+   "seconds": 67,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794438893733,
+   "note": "i think we're underthinkging/undersonsidering this. with option a, what would that actually look like for a typical session? how would we determine what consistutes a syncable plan vs any other normal document? i'm fine to drop images and such. just want to understand what a session/chat actually needs to continue working on a range of project types across devices",
+   "seconds": 67,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "other",
+   "dk": true,
+   "t": 1794438893733,
+   "seconds": 67,
+   "theme": "midnight"
+  }
+ }
+}

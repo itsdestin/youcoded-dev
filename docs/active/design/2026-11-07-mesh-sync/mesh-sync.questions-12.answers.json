@@ -1,0 +1,155 @@
+{
+ "deck": "mesh-sync-questions-12",
+ "started": "2026-11-13T11:59:49.817Z",
+ "submitted": "2026-11-13T12:12:05Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "thirty",
+   "t": 1794571245783,
+   "note": "with exception of full 1gb relay storage obviously",
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1794571245783,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794571245783,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "bin",
+   "t": 1794571404278,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "any",
+   "t": 1794571404278,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "hold",
+   "t": 1794571404278,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1794571404278,
+   "note": "",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "silent",
+   "t": 1794571404278,
+   "note": "shouldn't git resolve any encountered duplication or nah? how will users notice duplicate file versions?",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "each",
+   "t": 1794571659162,
+   "note": "this is confusing. why would this be tedious? it should be any more difficult than resuming a normal conversation?",
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794571659162,
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "S-5": {
+   "v": "yes",
+   "t": 1794571659162,
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "other",
+   "t": 1794571659162,
+   "note": "what? this is confusing? it seems like this should be different dependent on whether you're a 1-device no-sync user or a user who does have multiple devices? and what marks are you talking about?",
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "all",
+   "t": 1794571659162,
+   "note": "we shuold probably add a card for eventual configurability ",
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "unlock",
+   "t": 1794571761996,
+   "seconds": 21,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "qr",
+   "t": 1794571761996,
+   "seconds": 21,
+   "theme": "midnight"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "none",
+   "t": 1794571761996,
+   "seconds": 21,
+   "theme": "midnight"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "read",
+   "t": 1794571761996,
+   "seconds": 21,
+   "theme": "midnight"
+  },
+  "Q-13": {
+   "v": "pick",
+   "pick": "fallback",
+   "t": 1794571761996,
+   "seconds": 21,
+   "theme": "midnight"
+  },
+  "Q-14": {
+   "v": "pick",
+   "pick": "once",
+   "t": 1794571923576,
+   "seconds": 54,
+   "theme": "midnight"
+  },
+  "Q-15": {
+   "v": "pick",
+   "pick": "quiet",
+   "t": 1794571923576,
+   "seconds": 54,
+   "theme": "midnight"
+  },
+  "S-6": {
+   "v": "other",
+   "t": 1794571923576,
+   "note": "this seems a bit janky. i think we need to think through the really data/logic flow a bit more here. would my \"only device\" even have a sync setting like recent if i'm not using sync on other devices\" does it matter if older data exists on a specific device after the first sync or two? wouldnt we just be sending minor updates/additions?",
+   "seconds": 54,
+   "theme": "midnight"
+  }
+ }
+}

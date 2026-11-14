@@ -1,0 +1,78 @@
+{
+ "deck": "mesh-sync-questions-7",
+ "started": "2026-11-11T23:14:58.622Z",
+ "submitted": "2026-11-11T23:27:48Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "yes",
+   "t": 1794438940959,
+   "seconds": 11,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "fork-knowingly",
+   "t": 1794438940959,
+   "seconds": 11,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "release-oldest-chat",
+   "t": 1794438940959,
+   "seconds": 11,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "yes",
+   "t": 1794438940959,
+   "seconds": 11,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1794439667460,
+   "seconds": 121,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "picks",
+   "picks": [
+    "home"
+   ],
+   "t": 1794439667460,
+   "seconds": 121,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "t": 1794439667460,
+   "v": "other",
+   "note": "i think i'm a bit confused as to where this begins to overlap or replace our existing remote access system? and the pros/cons of alternative options for how this superhost thing would work? i think the premise of the super-host offering is that it should allow self hosting and also reduce load/strain on our servers/relay when possible.",
+   "seconds": 121,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "other",
+   "t": 1794439667460,
+   "note": "i'm extremely confused",
+   "seconds": 121,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "decide-later",
+   "t": 1794439667460,
+   "note": "i think i'd definitely be leaning toward option a, with some support from donations, but idk. i think for the time being it's just going to be free for everyone at our current fixed limits, and we may reopen the cost/payment conversation after i begin actually encountering issues",
+   "seconds": 121,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "other",
+   "dk": true,
+   "t": 1794439667460,
+   "seconds": 121,
+   "theme": "midnight"
+  }
+ }
+}

@@ -1,0 +1,37 @@
+{
+ "deck": "mesh-sync-questions-8",
+ "started": "2026-11-11T23:53:47.321Z",
+ "submitted": "2026-11-12T00:01:20Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "recent-complete",
+   "t": 1794441353464,
+   "note": "you keep saying \"folder\". what folder? what are you talking about? i need more context",
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "separate-card",
+   "t": 1794441353464,
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "replace-keep-browser",
+   "t": 1794441678722,
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "drop",
+   "t": 1794441678722,
+   "seconds": 8,
+   "theme": "midnight"
+  }
+ }
+}
