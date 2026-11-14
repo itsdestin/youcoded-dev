@@ -446,3 +446,24 @@ restated the design as 21 statements and asked 7 questions. Notes verbatim:
   tests run on the desktop, not this laptop; needs ssh and wake-over-network set up there first.
 - Q-7 wrote: "we can do this z13 on cachyos, my desktop on linux, and my phone in theory". No
   Windows or Mac is available: everything specific to those two stays unproven and must be said so.
+
+## 2026-11-14: Phase 0 findings written into design.md (the building session's design editor)
+
+Phase 0 investigations finished (reports in `docs/active/investigations/2026-11-14-mesh-phase0/`).
+Their engineering findings were written into `design.md` sections 3 to 13 and a new section 14,
+each amendment tagged "(Phase 0: <report> <item>)". **Section 2 is byte-identical** (checked by a
+hash of the section before and after). Nothing was decided for Destin: every point where a
+finding contradicts section 2, and every "Needs Destin" in the reports, is in
+`round-15-choices.md` (35 choices on five pages: pairing and security; chats and versions;
+project files; relay and cost; testing). Two things are marked PENDING because other agents are
+settling them: whether segments exist (T2 against T21), and the replacement `decide` rules (T12 /
+T13: the rules as written fail). Recorded from round 14: Phase 8 (super-host) now comes before the
+one release; audits include basic white-hat penetration testing (can messages be intercepted, can
+malicious instructions be injected, other theft or harm); every settings menu and (i) popup must
+explain risks; Drive and iCloud daily backups keep carrying chats (engineering added in 7.3, the
+user-visible part needs a deck); only Linux devices are available for testing, so Windows, macOS
+and (for now) the phone stay UNPROVEN and are labelled so. O14 is not needed (T4 passes with four
+changes; T3 and T10 passed on Linux); O16 is recorded as answered (talk-only-plus-offer); O4 and
+O15 are narrowed and re-asked plainly. One housekeeping note for the lead: the workspace
+`.gitignore` line 37 (`*-phase*/`) ignores both Phase 0 folders, so they will not be committed
+until force-added or renamed.
