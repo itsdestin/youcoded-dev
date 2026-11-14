@@ -1,287 +1,239 @@
 ---
 status: draft
 date: 2026-11-14
-topic: Chats on every device (YouCoded Mesh) — the full design, for a builder with no prior context
+topic: Chats on every device (YouCoded Mesh) — the design, for a builder with no prior context
 related-cards: 64, 98, 119, 121, 125, 127, 241, 242, 243, 248, 253, 258
-code-read-at: youcoded e73b41347, wecoded-marketplace 830ff8e (2026-11-13)
+code-read-at: youcoded e73b41347, wecoded-marketplace 830ff8e
 ---
 
-# Chats on every device (YouCoded Mesh) — full design
+# Chats on every device (YouCoded Mesh)
 
 ## 0. How to use this document
 
-**Who it is for.** An agent or developer who has never seen this work. Followed end to end, it
-produces the feature Destin Moss (product owner, not a developer) decided over thirteen rounds
-of questions. No application code has been changed yet.
+This is what to build, how the parts fit, and in what order. No application code has been
+changed yet.
 
-**What is in the folder.**
+- **Section 2 is decided by Destin Moss, the product owner.** Do not change anything in it
+  without asking him. Where each rule came from is in `decided-sources.md`; his exact words
+  are in `README.md`.
+- **Sections 4 to 12 are engineering.** A builder may change them when a test or the code
+  says so, provided nothing in section 2 changes. Record why.
+- **Section 13 is what is still open.** Do not build an open item on a guess; ask.
 
-| File | Role |
-|---|---|
-| `design.md` (this file) | The single source for what to build, how the parts fit, and in what order. |
-| `README.md` | The decision record: every rule below traced to Destin's own words. Read a tag like `[D9 Q-2]` as "deck round 9, question 2"; `[chat 2026-11-12]` is a dated chat message. Look the quote up there. |
-| `decision-outline.md` | The earlier, shorter outline this file replaces. History only. |
-| `connection-options.md` | Earlier research: prices, other products, security failure stories. Background only. |
-| `mesh-sync.questions*.json` + `.answers.json` | The decks and his answers. Never rebuild an answered deck. |
+Reading path: sections 1, 2, 4, 10 for the whole picture. To build a part: its subsection of
+5, its contract in 6, its rows in 7, 9 and 10. Section 3 is reference.
 
-**Reading path.** For the whole picture: sections 1, 2, 4, then 10. To build a part: its
-subsection of 5, its seam and shapes in 6, its rows in 7, 9 and 10. Section 3 is reference:
-what the code does today. Section 13 is everything still waiting on Destin.
+**Rules that bind the builder.**
 
-**Four kinds of statement in this file.** Keep them apart when building.
-
-- **Decided.** Carries a tag such as `[D12 Q-9]`. It is Destin's decision. Do not change it
-  without asking him on a questions deck.
-- **Engineering.** Carries no tag, or says "engineering call". It is the designing session's
-  technical choice for delivering a decided behaviour. A builder may change it when a
-  measurement or the code says so, provided no decided behaviour changes. Record why.
-- **Proposed** or **Open.** Not decided. Section 13 lists every one. Do not build an Open item
-  on a guess; ask.
-- **My reading** (also "engineering reading"). The designing session's way of fitting two of
-  his answers together, or of turning his words into a concrete step. He has not confirmed
-  it. Treat as Proposed. Section 13 lists them.
-
-**Rules that bind the builder** (from the workspace `CLAUDE.md` and Destin's standing words):
-
-1. Anything a user can experience (new screens, wording, changed flows) is approved by Destin
-   before it ships. Screens go through the workspace's review-deck flow
-   (`.claude/rules/feature-flow.md`), pictures first.
-2. Never experiment on Destin's running, built app (`.claude/rules/live-app-safety.md`). Use
-   `bash scripts/run-dev.sh` with its own `--profile`, `--offset` and `--label`.
-   **Hard rule for this work: every instance that has the mesh switched on runs with its own
-   home folder.** Dev instances normally share his real `~/.claude` chat folder, and this
-   feature rewrites and replaces chat files. A profile alone is not enough. Building the
-   separate-home rig is T1 and comes before any other code.
-3. **A key is never synced to GitHub or stored on any server.** [chat 2026-11-08]
-4. The two sync systems never run side by side. [chat 2026-11-12]
-5. Destin is spoken to in plain words, with pros, cons and a recommendation. Four or more
-   questions go on a deck. Never suggest merging.
+1. Anything a user can experience (screens, wording, flows) is approved by Destin before it
+   ships, pictures first, through the review-deck flow in `.claude/rules/feature-flow.md`.
+2. Never experiment on Destin's running app (`.claude/rules/live-app-safety.md`). **Every
+   instance with the mesh switched on runs with its own home folder.** Dev instances share
+   his real `~/.claude` chat folder, and this feature rewrites chat files. Building that
+   rig is test T1 and comes before any other code.
+3. A key is never synced to GitHub or stored on any server.
+4. The old and new sync systems never run side by side on a device.
+5. Destin is not a developer. Speak to him in plain words, with pros, cons and a
+   recommendation. Four or more questions go on a questions deck. Never suggest merging.
 
 ---
 
-## 1. Goal, in one page
+## 1. Goal and words
 
-It feels like claude.ai, but the user's own devices are the server, and nothing in the middle
-is required or trusted. [D4 S-1]
+It feels like claude.ai, but the user's own devices are the server, and nothing in the
+middle is required or trusted. It is for any mix of Windows, Mac, Linux and Android.
 
-"Mesh" is four properties, not a networking technology [D4 S-2]:
+"Mesh" means four properties, not a networking technology:
 
 1. Devices pair with each other.
 2. Keys live only on the user's devices.
 3. Any device can catch another one up.
 4. Whatever sits in the middle cannot read contents and can be swapped for another.
 
-It is for every user's devices, any mix of Windows, Mac, Linux and Android. Destin's four
-machines are only the test case. [D1 Q-2]
-
-**Vocabulary used throughout.**
-
 | Word | Meaning |
 |---|---|
 | Device set | The devices one user has paired together. |
-| Host | The one device where a given chat's assistant actually runs. |
+| Host | The one device where a chat's assistant actually runs. |
 | Watcher | Any other device showing that chat live and typing into it. |
-| Keeper | Something always on that holds locked data while devices sleep: the YouCoded relay, or the user's own super-host. |
+| Keeper | Something always on that holds locked data while devices sleep: the relay or a super-host. |
 | Relay | The keeper YouCoded runs. It cannot read contents. |
-| Super-host | The user's own always-on device running a complete YouCoded with no window. It can read contents, because it is the user's. |
+| Super-host | The user's own always-on device running a complete YouCoded with no window. It is a device, and can read contents. |
 | Line | One line of a chat's transcript file. |
 | Extras | Files saved for one chat outside its lines: helper working files, saved long outputs, the plan, the to-do list. |
-| Control log | A small record that travels with each chat: who hosts it, takeovers, deletion, forks. New in this design. |
-| Note | The tiny, wordless marker a keeper holds per chat or project so a device knows for certain whether it is behind. |
-| Talk-only | A chat continued on a device that lacks its project folder: it can talk but not touch files. |
-| Version | One of two or more continuations of the same chat that share an earlier part. |
-| Used | A chat was "used" when its last line was added. The "recent" setting and the relay's 30 days count from then. |
+| Used | A chat was "used" when its last line was added. |
+| Talk-only | A chat continued where its project folder is absent: it can talk but not touch files. |
+| Chat version | One of two or more continuations of a chat that share an earlier part. |
+| Control log | A small signed record per chat: who hosts it, takeovers, deletion, versions. |
+| Head | Where a copy of a chat version ends: segment, line count, chain hash. |
+| Segment | An append-only run of lines. A new one starts only if the runtime rewrote its file. |
+| Reply end | A line at which a reply finished. Takeovers always happen at one. |
+| Host entry | The `claim` or `takeover` entry that currently makes a device the host. |
+| Tail | Lines a previous host wrote beyond a takeover point. |
+| Set aside | Kept on disk, hidden, not part of the chat, until its fate is known. |
+| Parked | Received but not yet usable (a hole before it, or a signer not yet known). |
+| Void | A control entry that `decide` ignores. |
+| Fenced | A host that has agreed to hand a chat over and refuses new messages for it. |
+| Register | A small value a keeper holds per chat or project, changed by compare-and-swap. |
+| Generation | A numbered edition of the set's secret. A removal makes a new one. |
+| Sealed | Encrypted so only devices of the set can read it. |
 
 ---
 
-## 2. What the user experiences (the product contract)
+## 2. What the user experiences (decided)
 
-Everything in this section is decided unless marked. Wording in quotes is approved example
-wording; final wording is confirmed on the review decks when each screen is built.
+Wording in quotes is approved example wording; final wording is confirmed when each screen
+is reviewed.
 
 ### 2.1 One list, one host per chat
 
-- One list of chats on every device. Every project is listed on every device. [D2 Q-8; D9 Q-2]
-- One device hosts each chat. Every other device shows it live and you type into it as if it
-  ran there. A chip in the status bar names the host. [D1 Q-4, Q-14; D2 S-2]
-- A watcher shows the chat exactly as its host does. YouCoded's own ("native") chats appear
-  word by word. Claude Code chats appear a block at a time, as they do on the host today.
-  Making Claude Code chats word by word is separate work. [D9 S-1]
+- One list of chats on every device. Every project is listed on every device.
+- One device hosts each chat. Every other device shows it live and you type into it as if
+  it ran there. A chip in the status bar names the host.
+- A watcher shows the chat as its host does: YouCoded's own ("native") chats word by word,
+  Claude Code chats a block at a time.
 - The host never changes by itself. It changes when you tap the chip, or when the host is
-  offline and you tap Continue here. [D1 Q-5, Q-15]
-- You can start a chat on one device that runs on another, but only on a device that is on.
-  Devices that are off or asleep are greyed and marked "offline". [D4 Q-15; D12 S-3]
+  offline and you tap Continue here.
+- You can start a chat on one device that runs on another, if that device is on. Devices
+  that are off or asleep are greyed and marked "offline".
+- A phone that is not in use shows as offline to your other devices and catches up when
+  the app is opened.
 - The phone is a full host, equal to a computer. Features it still lacks are named in the
-  notice until they are built. Opening a chat on the phone works exactly as on a computer.
-  [D1 Q-1, Q-11, Q-13; D2 Q-7]
+  notice.
 - Permission requests can be approved from any device. The request shows wherever the chat
-  is open and disappears everywhere once answered. [D12 Q-3]
+  is open and disappears everywhere once answered.
 - A message sent just as the host drops stays in the box, marked "Not sent. Desktop went
-  offline", with the Continue here offer. Never thrown away, never delivered late. [D12 Q-4]
-- A watcher has the limits a phone has today (no assistant browser, no Office documents, no
-  image paste, no dragging files in), on a computer as well as a phone. The limits live in
-  one central list and each shows: "X is not currently supported from a remote client."
-  [D4 Q-14; D5 S-4]
-- Deleting a chat deletes it everywhere, and it stays 30 days in "Recently deleted" on each
-  device. Renaming and marking complete apply everywhere. A device returning after weeks
-  obeys a deletion it missed. [D12 Q-2]
-- A chat marked complete closes on every device. [D4 Q-6]
-- Deleting a chat stops a reply running in it, on whichever device hosts it. [D13 S-7]
-- The "host is offline, continue here?" notice appears when you open or type in that chat,
-  not the moment the host drops. [D13 S-5]
-- A phone that is not in use shows as offline to your other devices and catches up when the
-  app is opened. [D13 S-6]
+  offline", with the Continue here offer. Never thrown away, never delivered late.
+- A watcher has the limits a phone has today (no assistant browser, no Office documents,
+  no image paste, no dragging files in), on a computer too. The limits live in one list
+  and each shows: "X is not currently supported from a remote client."
+- Renaming and marking complete apply everywhere. A chat marked complete closes on every
+  device.
+- Deleting a chat deletes it everywhere and stops a reply running in it. It stays 30 days
+  in "Recently deleted" on each device. A device returning after weeks obeys a deletion it
+  missed.
 
 ### 2.2 How much each device holds
 
-- One setting per device: **keep everything**, or **keep recent chats and fetch the rest on
-  opening**. Computers and a super-host start on "keep everything", phones on "recent".
-  Every chat is listed either way. [D9 Q-1]
-- "Recent" means used in the last 30 days. A chat used in the last 30 days is whole on every
-  device, extras included. One clock everywhere. His exception: "with exception of full 1gb
-  relay storage obviously", meaning a chat the full relay has let go of reaches a device only
-  when it meets a device that has it. [D12 Q-1]
-- On "recent", an older chat cannot be read offline until it has been opened there once. If
-  the only device holding its extras is off, the notice says the helpers' reports are kept
-  but unfinished helper work cannot be continued. [D9 Q-1; D8 Q-1]
-- A user with only one device has no such setting; it appears once a second device is
-  paired. [D13 S-2]
-- A chat hosted on a phone is never cleared from that phone by "recent". [D13 S-9]
+- One setting per device: **keep everything**, or **keep recent chats and fetch the rest
+  on opening**. Computers and a super-host start on "keep everything", phones on "recent".
+  Every chat is listed either way. A user with one device has no such setting.
+- "Recent" means used in the last 30 days. Such a chat is whole on every device, extras
+  included, unless the relay was full and let it go; then it arrives when the device meets
+  one that has it.
+- On "recent", an older chat cannot be read offline until it has been opened there once.
+  If the only device holding its extras is off, the notice says the helpers' reports are
+  kept but unfinished helper work cannot be continued.
+- A chat hosted on a phone is never cleared from that phone by "recent".
 
 ### 2.3 What travels
 
-- A chat's lines, whole, pictures included. [chat 2026-11-12: "for syncing we should keep
-  the full chat with images and such"]
-- The chat's extras: each helper's working file, long outputs the assistant saved, the plan
-  and the to-do list. [D8 Q-1; D9 S-8]
-- Not carried: undo history. [D8 Q-1]
-- **My reading:** D8 Q-1 also dropped "pasted images"; his later words keep images in sync.
-  The two fit if a picture sent in a chat travels (it is stored inside the chat's lines, so
-  it shows on other devices and the assistant still knows it) and only the device's separate
-  scratch copy of pasted images is left behind.
-- Not carried in this design: the assistant's setup (skills, plugins, connected tools, global
-  instructions). Card 248. [D8 Q-2]
-- Project files, on the same locked system (section 2.8). [D5 Q-6]
-- On mobile data a phone syncs everything, always. A setting to hold large items for wifi is
-  card 258. [D12 Q-8]
+- A chat's lines, whole, pictures included, and its extras.
+- Project files, on the same locked system (2.8).
+- On mobile data a phone syncs everything, always.
+- Not carried: undo history; the device's scratch copy of pasted images; the assistant's
+  setup (skills, plugins, connected tools, global instructions; card 248).
 
 ### 2.4 Pairing, devices and security
 
-- Everything that syncs is locked end to end. Only the user's devices can read it. [D2 Q-2]
-  **My reading:** a keeper in the middle can still see how many devices and chats there are,
-  their sizes and when they are active; the product must not claim otherwise.
-- A new device joins only by pairing with a device already in the set. No account is needed.
-  [D4 Q-4]
-- Pairing method: scan a QR code, or type a short code when there is no camera. The code
-  expires after a few minutes. The device already in the set shows the new device's name and
-  asks "Add this device?" before anything is shared. [D12 Q-10]
+- Everything that syncs is locked so only the user's devices can read it. A keeper can
+  still see how many devices and chats there are, their sizes and when they are active;
+  the product must not claim otherwise.
+- A device joins only by pairing with a device already in the set. No account is needed.
+- Pairing: scan a QR code, or type a short code when there is no camera. The code expires
+  after a few minutes. The device already in the set shows the new device's name and asks
+  "Add this device?" before anything is shared.
+- Adding and removing a device both need the acting device's own unlock (fingerprint, PIN
+  or password). Other devices show "Laptop was added by Phone".
 - When both devices already hold chats and projects, pairing first shows what each holds
-  ("This device: 212 chats, 4 projects. Desktop: 630 chats, 9 projects") and offers: combine
-  everything, or cancel. Pairing never deletes anything. [D11 Q-1]
-- A project with the same name on both is asked about, one clash at a time: "Is this the same
-  project?" Same: combined, and a file that differs keeps both copies. Different or not sure:
-  both kept, one renamed, for example "Website (from Laptop)". [D11 Q-2]
-- Any device may remove another, after passing its own unlock (fingerprint, PIN or
-  password). Removing a device locks it out of everything new and frees the chats it was
-  hosting. It keeps what it already holds and can be paired again. [D4 Q-9; D12 Q-9]
-- A device not seen for 30 days triggers a one-time prompt on the others offering to remove
-  it. Nothing is removed without a yes. [D7 Q-4]
-- If every device is lost at once, chats without a cloud backup are gone for good; nobody,
-  including YouCoded, can recover them. [D9 S-2]
-- A device restored from a cloud backup is the first of a fresh device set. [D10 S-1]
-- Devices on different versions of YouCoded: the older device can read and watch, but must
-  update before hosting or continuing a chat the newer one changed. "Update YouCoded on Phone
-  to continue this chat". [D12 Q-12] A device too old to watch live still shows the chat,
-  updating as each block is saved, but cannot type into it. [D13 S-8]
-- Adding a device needs the acting device's unlock, like removing one, and the other
-  devices show "Laptop was added by Phone". [D13 Q-5]
-- Anything a removed device wrote and had not sent is not recoverable unless it is paired
-  again. [D13 S-4]
+  ("This device: 212 chats, 4 projects. Desktop: 630 chats, 9 projects") and offers:
+  combine everything, or cancel. Pairing never deletes anything.
+- A project with the same name on both is asked about, one at a time: "Is this the same
+  project?" Same: combined, and a file that differs keeps both copies. Different or not
+  sure: both kept, one renamed, for example "Website (from Laptop)".
+- Pairing a device that is already paired with others joins the two sets into one. The
+  screen names every device that will end up together.
+- Removing a device locks it out of everything new and frees the chats it was hosting. It
+  keeps what it already holds and can be paired again. Anything it wrote and had not sent
+  is lost unless it is paired again.
+- A device not seen for 30 days triggers a one-time offer on the others to remove it.
+- If every device is lost at once, chats without a cloud backup are gone for good.
+- A device restored from a cloud backup is the first of a fresh device set.
+- Different app versions: an older device can read and watch, but must update before
+  hosting or continuing a chat a newer one changed ("Update YouCoded on Phone to continue
+  this chat"). A device too old to watch live still shows the chat as each block is saved,
+  but cannot type into it.
+- A device is identified by the id the app already gives each machine.
 
 ### 2.5 Keepers
 
-- Both kinds are offered: the optional YouCoded relay, and the user's own super-host. The
-  relay is built first. No keeper at all is also supported: devices catch each other up
-  whenever two are on together. [D4 Q-2; D5 Q-1; D2 Q-1]
-- The relay is a waiting room, not an archive:
-  - It holds a chat's waiting lines until every device has them, or until 30 days after the
-    last line was added to that chat, whichever comes first. [D10 Q-1; D12 S-1]
-  - At most 1 GB per device set, covering everything waiting: chat lines, extras and project
-    file changes. Data passing straight through between two devices that are both on is not
-    stored and does not count. [chat 2026-11-10; D9 S-3; D12 Q-11]
-  - At 1 GB it lets go of whole chats, least recently used first, and the host says: "Relay
-    full. 3 older chats are kept only on Desktop until Phone and Desktop are on together."
-    [D7 Q-3; D12 S-2]
-  - Lines the relay has let go of exist only on the device that wrote them until another
-    device collects them. If that device is lost first, they are gone. [D12 S-2]
-  - With no time limit it keeps one note per chat (latest line number and which device has
-    it) and one per project (latest change). No words. [D7 Q-1; D10 Q-2]
-  - No sign-in at launch. A sign-in is added only if abuse appears. [D12 Q-11]
-- Devices on the same wifi talk directly, with the same locking, so home use needs no relay.
-  Others on that wifi can see that a YouCoded device is there, nothing more. This path needs
-  its own security review before release. [chat 2026-11-11: "okay that's fine." to the
-  option as described, both cautions included]
-- A super-host is a complete YouCoded with no window, on a device at home (a desktop left on,
-  a Mac mini, a Raspberry Pi). It pairs like any device, holds every chat and project with no
-  limit, hosts chats, catches devices up, passes live words, and opens in a browser. It holds
-  keys, so it must be hardware the user trusts. A rented server was offered and not picked.
-  [D7 S-1, Q-5]
-- While a super-host cannot be reached, the relay holds waiting data in its place; the user
-  can switch that off. [D12 Q-13] Otherwise the relay stores nothing for a super-host user
-  (as the question described it to him; its purpose in his words: "allow self hosting and
-  also reduce load/strain on our servers/relay when possible", D7 Q-6 note).
+- Both are offered: the YouCoded relay, and the user's own super-host. No keeper at all is
+  also supported: devices catch each other up whenever two are on together.
 - The relay is on from the first pairing, with a line saying so and a switch to turn it
-  off. [D13 Q-3]
-- The relay erases what it holds for a device set after 90 days with no device connecting.
-  Nothing on the devices is touched; they register again by themselves. [D13 Q-4]
-- A super-host's syncing with the user's devices away from home goes through the relay by
-  default, or through the user's own front door. (Its browser view is a separate thing and
-  stays on Tailscale, 2.9.) Destin wants Tailscale, tunnels and the router method compared
-  before that piece is designed. [chat 2026-11-11] **Open.**
-- Payment: **Open.** The relay is free for everyone at the fixed limits. [D7 Q-8]
+  off. No sign-in; one is added only if abuse appears. It is free at the limits below
+  (payment is open, O2).
+- The relay is a waiting room, not an archive:
+  - It holds a chat's waiting lines until every device has them, or until 30 days after
+    that chat's last line, whichever comes first.
+  - At most 1 GB per device set, covering everything waiting: lines, extras and project
+    file changes. Data passing straight between two devices that are both on is not stored
+    and does not count.
+  - At 1 GB it lets go of whole chats, least recently used first, and the host says:
+    "Relay full. 3 older chats are kept only on Desktop until Phone and Desktop are on
+    together."
+  - Lines the relay has let go of exist only on the device that wrote them until another
+    device collects them. If that device is lost first, they are gone.
+  - With no time limit it keeps one wordless note per chat (latest line number and which
+    device has it) and one per project (latest change).
+  - It erases what it holds for a set after 90 days with no device connecting. Nothing on
+    the devices is touched; they register again by themselves.
+- Devices on the same wifi talk directly, with the same locking. Others on that wifi can
+  see that a YouCoded device is there, nothing more. This path needs its own security
+  review before release.
+- A super-host is a complete YouCoded with no window, on a device at home (a desktop left
+  on, a Mac mini, a Raspberry Pi). It pairs like any device, holds every chat and project
+  with no limit, hosts chats, catches devices up, and opens in a browser. It holds keys.
+- With a super-host the relay stores nothing for that user, except while the super-host
+  cannot be reached; the user can switch that fallback off.
+- Away from home, a super-host syncs through the relay by default, or through the user's
+  own front door (open, O1).
 
 ### 2.6 When the host goes away
 
 - **Awake.** A computer holds itself awake while a reply it is running is unfinished, for
-  at most 2 hours per reply [D13 Q-7]. Closing a laptop lid still sleeps it. No permanent keep-awake.
-  [D4 Q-5; D1 Q-10]
-- **Sleep.** Nothing special is sent at sleep, because every line was sent as it was
-  written. A file change from the last couple of seconds may not have gone; it sends on
-  waking. [D9 S-7] On waking, the host checks it is still the host before a reply does
-  anything further (2.7; mechanism in 5.9).
+  at most 2 hours per reply. Closing a laptop lid still sleeps it.
 - **Phone as host.** The phone stays awake for each reply with the screen off. A setting
   the user opts into exempts the app from Android's battery limits and explains the cost.
-  [D6 Q-3]
-- **Quitting the host.** [D4 Q-6; D5 S-1, Q-5; D9 Q-3, Q-4]
+- **Sleep.** Nothing special is sent, because every line was sent as it was written. On
+  waking, the host checks it is still the host before a reply does anything further.
+- **Quitting the host.**
   - The normal close menu appears (flags, mark complete).
   - The app quits at once provided every finished reply has reached another device, the
     relay or the super-host. It never waits for a running reply; that half is dropped.
   - Unsent project file changes are sent first, for a few seconds at most.
-  - If anything is left, or the device is offline, it quits anyway and says: "Offline - some
-    chats may not have synced."
+  - If anything is left, or the device is offline, it quits anyway and says: "Offline -
+    some chats may not have synced."
+  - A one-device user never sees that line. With no relay, no super-host and the other
+    devices off, where it would show on every quit, it is explained once and afterwards
+    the chat list's "waiting" label carries it.
   - On other devices the chat stays listed: host disconnected, host it here?
-- A one-device user never sees that line. With two or more devices it appears only when something has not left the device. In
-  the one case where it would appear on every quit (no relay, no super-host, other devices
-  off), it is explained once and afterwards the chat list's "waiting" label carries it.
-  [D13 S-1]
 
 ### 2.7 Taking over, and the notice
 
-- Tapping Continue here adds a visible divider to the chat, like today's "Model switched to"
-  divider, and the assistant can read it. (Example wording: "Now hosted on Phone".)
-  [chat 2026-11-10]
-- The unfinished reply is dropped; the chat carries on from the last finished one. Files that
-  reply already changed stay changed, and the notice says so. [D1 Q-9; D2 Q-6]
-- When the old host returns it learns it is no longer the host and discards its half. A host
-  waking from sleep checks this before letting a reply carry on. [chat 2026-11-10]
+- The "host is offline, continue here?" notice appears when you open or type in that chat,
+  not the moment the host drops.
+- Tapping Continue here adds a visible divider to the chat, like today's "Model switched
+  to" divider, and the assistant can read it. (Example: "Now hosted on Phone".)
+- The unfinished reply is dropped; the chat carries on from the last finished one. Files
+  that reply already changed stay changed, and the notice says so.
+- When the old host returns it learns it is no longer the host and discards its half.
 - If two devices tap Continue here at once, the first to be heard becomes host; the second
-  shows "Phone just took over this chat" and stays a watcher. [D9 S-4]
-- With no connection at all, Continue here still works, with a warning. [D5 Q-4]
-- A continued chat keeps its exact model, provider and project settings. [D4 Q-12]
-- Chats continued on the phone come back to the computer one at a time, by opening each and
-  tapping its chip. [D12 Q-6]
+  shows "Phone just took over this chat" and stays a watcher.
+- With no connection at all, Continue here still works, with a warning.
+- A continued chat keeps its exact model, provider and project settings.
+- Chats continued on the phone come back one at a time, by opening each and tapping its
+  chip.
 
-**The notice.** When several situations apply they appear together in one box. [D9 S-6]
+**The notice.** When several situations apply they appear together in one box.
 
 | Situation | What it says |
 |---|---|
@@ -289,115 +241,80 @@ wording; final wording is confirmed on the review decks when each screen is buil
 | Host off, nothing missing | "This chat was hosted on Desktop, which is offline. Continue here?" |
 | Host went off mid-reply | "Desktop went offline partway through a reply. If you continue here, that unfinished reply is dropped and the chat carries on from the last finished one." Plus: files it already changed stay changed. |
 | This device may be behind | "Desktop is offline and may have newer messages or files than this device. Continuing here could create a second version." |
-| This device is known to be behind | "Desktop has 120 newer lines and is offline." Button: "Continue from here as a new version". [D7 Q-1, Q-2] |
-| Files known to be behind | "Desktop has newer files and is offline." [D10 Q-2] |
-| Project folder not here | Stops to ask: turn on sync for this project and fetch it first (what is missing, why, storage needed), or continue talk-only. [D2 Q-11; D5 N-5] |
-| Secrets or skipped folders | "These stay on Desktop: .env, node_modules, …" [D12 S-5] |
-| Sign-in missing here | Stops to ask. A Claude Code chat waits for sign-in to Claude. A native chat shows the model picker. [D4 Q-12; D5 S-2] |
-| Features this device lacks | "You may continue here, but this chat will not have: …" naming only what is really missing. Adds, when the chat is really using it: "If this chat needs hardware or files that exist only on Desktop, it may be best to wait." [D1 Q-8; D9 S-6] |
-| On the old host, when it returns | "This chat continued on Phone while this computer was offline. Its unfinished reply here was discarded." [D5 N-9] |
-| Two versions found | "This chat was continued on both Desktop and Phone while they could not reach each other. There are now two versions. Keep both, or archive the older one?" [D5 N-10] |
-| Host was removed | "Phone was removed from your devices. Continue this chat here?" [D13 S-12] |
-| Chat's body is not on any device that is on | "This chat is stored on Desktop, which is offline. It will open when Desktop is on." [D13 S-12] |
-| Older app version | "Update YouCoded on Phone to continue this chat." [D12 Q-12] |
+| This device is known to be behind | "Desktop has 120 newer lines and is offline." Button: "Continue from here as a new version". |
+| Files known to be behind | "Desktop has newer files and is offline." |
+| Project folder not here | Stops to ask: turn on sync for this project and fetch it first (what is missing, why, storage needed), or continue talk-only. |
+| Secrets or skipped folders | "These stay on Desktop: .env, node_modules, …" |
+| Sign-in missing here | Stops to ask. A Claude Code chat waits for sign-in to Claude. A native chat shows the model picker. |
+| Features this device lacks | "You may continue here, but this chat will not have: …" naming only what is really missing. Adds, when the chat is really using it: "If this chat needs hardware or files that exist only on Desktop, it may be best to wait." |
+| On the old host, when it returns | "This chat continued on Phone while this computer was offline. Its unfinished reply here was discarded." |
+| Two versions found | "This chat was continued on both Desktop and Phone while they could not reach each other. There are now two versions. Keep both, or archive the older one?" |
+| Host was removed | "Phone was removed from your devices. Continue this chat here?" |
+| Chat's body is on no device that is on | "This chat is stored on Desktop, which is offline. It will open when Desktop is on." |
+| Older app version | "Update YouCoded on Phone to continue this chat." |
 
-**Talk-only.** A chat opened without its folder can talk but not touch files. A note saying
-so is added at the end; nothing earlier is edited. When it later moves to a device that has
-the project, a note tells the user and the assistant that files can be used again.
-[D4 Q-11; D5 S-3; D12 S-4]
+**Talk-only.** A note saying the chat cannot touch files is added at the end; nothing
+earlier is edited. When the chat later moves to a device that has the project, a note tells
+the user and the assistant that files can be used again.
 
-**Versions.** Accidental duplicates are prevented by the control log. The one unavoidable
-case is two devices continuing the same chat while neither can reach the other or a keeper;
-it is caught when they meet and the older one is offered for archiving. Deliberate forks are
-equals, grouped in the resume browser. "Continue from here as a new version" is a deliberate
-fork: both stay, no archive prompt, including when the old host later turns out to hold
-finished replies (the user already chose to make a new version). A better versions screen is card 243.
-[D1 Q-6, Q-7; D2 Q-12; D5 Q-4; D9 S-5]
+**Versions.** Accidental duplicates are prevented. The one unavoidable case is two devices
+continuing the same chat while neither can reach the other or a keeper; it is caught when
+they meet and the older one is offered for archiving. Deliberate forks are equals, grouped
+in the resume browser. "Continue from here as a new version" is a deliberate fork: both
+stay, with no archive prompt.
 
 ### 2.8 Project files
 
-- Files travel on the same locked system as chats, through the same keepers. [D5 Q-6]
-- The hidden version history each synced project already keeps (`<project>/.youcoded/sync.git`)
-  stays as the version store and as the handler for a file changed on two devices. Only the
-  carrier changes: device to device, in place of GitHub. Nothing new is built for browsing
-  old versions. [chat 2026-11-11]
-- A project is listed on every device and downloaded to a device when sync is turned on for
-  it there, once, from the notice or the project list. If the only device holding it is off,
-  it cannot be fetched until that device is on. [D9 Q-2]
-- Changes go out about 2 seconds after the last edit (15 today), tuned during the build; a
-  burst is one send. [D11 Q-4]
-- The moment a project's files change, the host sends its note; the keeper keeps the latest
-  per project. [D10 Q-2]
-- Two devices may host chats in the same project at once, with no notice. [D12 Q-5]
-  As today, changes to different files, or different parts of one file, combine by
-  themselves, and when both changed the same lines both are kept, one under the file's name
-  and the other as "name (from Device, date)". He asked "how will users notice duplicate
-  file versions?"; the honest answer is only by seeing that extra file. He has not asked
-  for more.
-- When two devices changed the same lines, which copy keeps the file's name follows one
-  fixed rule on every device; when one edited a file and another deleted it, the edit is
-  kept. [D13 S-10]
+- Files travel on the same locked system as chats, through the same keepers.
+- The hidden version history each synced project already keeps
+  (`<project>/.youcoded/sync.git`) stays as the version store. Only the carrier changes:
+  device to device, in place of GitHub.
+- A project is listed everywhere and downloaded to a device when sync is turned on for it
+  there. If the only device holding it is off, it cannot be fetched until that device is on.
+- Changes go out about 2 seconds after the last edit (15 today); a burst is one send.
+- The moment a project's files change, the host sends its note.
+- Two devices may host chats in the same project at once, with no notice. Changes to
+  different files, or different parts of one file, combine by themselves. When both changed
+  the same lines, both are kept: one under the file's name, the other as
+  "name (from Device, date)". Which keeps the name follows one fixed rule on every device.
+  When one device edited a file and another deleted it, the edit is kept.
 - If two devices' copies of a project share no history, the project shows "These copies
-  have diverged" and is not combined automatically. [D13 S-11]
-- Carried over unchanged, as he was told when approving the carrier change: huge and
-  generated folders are skipped; secrets never leave the device. [chat 2026-11-11]
+  have diverged" and is not combined automatically.
+- As today: huge and generated folders are skipped; secrets never leave the device.
 
 ### 2.9 What is replaced, and the switch-over
 
 - Today's remote access is replaced inside the apps: no Connect screen, no Tailscale for
-  chats. The open-in-a-browser view stays, still through Tailscale, and is how a super-host is
-  looked at. [D8 Q-3]
-- There is no self-run relay. Self-hosting means a super-host. [D8 Q-4]
+  chats. The open-in-a-browser view stays, through Tailscale, and is how a super-host is
+  looked at.
+- There is no self-run relay. Self-hosting means a super-host.
 - The current handoff and takeover code is replaced, not patched. The conflict copies from
-  2026-11-05 are left alone. [D1 Q-16, Q-17; D2 S-4]
-- GitHub two-way chat sync is switched off the moment the mesh is deployed (on each device,
-  when it updates; see below). Uploading to
-  GitHub as a backup continues until the backup rebuild. Existing chats need no moving. A
-  one-time message says what changed. [chat 2026-11-12]
+  2026-11-05 are left alone.
+- **One release, not staged.** There are about 5 to 10 users.
+- **A device switches when it is updated,** paired or not. From then GitHub two-way sync
+  is off on that device and every user's backup, whichever service, is one-way. All
+  syncing between devices goes through the new system. A one-time message says what
+  changed.
 - GitHub's one-time "restore to a new device" keeps working until the backup rebuild.
-  [D12 Q-14]
-- On day one, devices that already share chats through GitHub are combined quietly where one
-  copy is simply longer; real differences are listed once, together. Projects already synced
-  through GitHub are recognised as the same project without asking. [D12 Q-15]
-- **A device switches when it is updated,** whether or not it is paired with anything.
-  From then it uses GitHub only as a one-way backup. In his words: "it should switch to
-  github 1-way backup. whether a second device is paired has no bearing on the fact that we
-  should stop offering github 2-way sync". [D13 Q-1]
-- **At the switch every user moves to one-way backup, whichever service they use.** His
-  words: "ALL USERS will move to 1-way backup that doesnt give a damn whether you utilize
-  github, icloud, or google drive. all cross-device live syncing happens through the new
-  system." [D13 Q-2] A user with one device is asked to set up a backup or to say plainly
-  they want none [D10 S-2], with all three services offered. A fact to show honestly until
-  the backup rebuild: only a GitHub backup can be restored; Drive and iCloud copies gain
-  restore with the rebuild (section 3.6).
-- Alerts: today's in-app notices are enough. Alerts across devices are card 242. [D4 Q-13]
+- When devices that already share chats through GitHub are paired, they are combined
+  quietly where one copy is simply longer; real differences are listed once, together.
+  Projects already synced through GitHub are recognised as the same project without asking.
+- A user with one device is asked to set up a backup or to say plainly they want none.
+  Until the backup rebuild only a GitHub backup can be restored; the app says so.
+- Alerts across devices are not part of this work (card 242).
 
-### 2.10 Cloud backup (built after the mesh)
+### 2.10 Cloud backup (built after the mesh, with its own design)
 
-Order, in his words: "finish everything else in the mesh build first, then follow-up with the
-backup rebuild including any needed github changes". [chat 2026-11-12] Decided so far:
-
-- One backup feature: Google Drive, iCloud or GitHub, same contents and same restore. Never a
-  YouCoded server. [D10 Q-3]
-- It holds everything, with switches: chats, the assistant's setup, each project. [D10 Q-4]
-- Not locked is the starting choice; a passphrase lock can be switched on. Turning on an
-  unlocked backup asks: "This backup is not locked. Anyone who gets into your Google account
-  can read your chats and files. Lock it with a passphrase instead?" Buttons "Lock it" and
-  "Back up without a lock". [D10 Q-5; D11 S-2]
-- A new device offers two ways in: pair, or restore from the cloud backup. [D10 S-1]
-- It sends only what changed, as often as each cloud allows, at least daily; a phone waits
-  for wifi and charging unless "Back up now" is tapped; dated restore points as today.
-  [D11 S-1]
-- Any one device that can reach the cloud backs up for all. [D11 Q-3]
-- Backups are slimmed: no pictures and no duplicate file text. A chat restored from backup
-  lacks its pictures, and the assistant no longer knows what it knew only from them (tested
-  2026-11-12). Sync is never slimmed. [chat 2026-11-12]
-- Any device may back up what is new; the backup screen names chats that have never been on a backing-up device ("212 chats
-  are not backed up yet. They are on Desktop."). [D13 S-2]
-- **Open (O10).** He did not approve "a device only offers the choices that work on it".
-  His words: "be a bit more creative in designing ways to get backups to work more
-  consistently across all devices". [D10 S-3] The backup rebuild's own design must answer it.
-- For later: backups hosted by YouCoded (card 253); storage growth (card 98).
+Decided so far: one backup feature (Google Drive, iCloud or GitHub; same contents, same
+restore; never a YouCoded server). It holds everything, with switches for chats, the
+assistant's setup and each project. Unlocked by default, with a passphrase lock available
+and this confirmation: "This backup is not locked. Anyone who gets into your Google account
+can read your chats and files. Lock it with a passphrase instead?" ("Lock it" / "Back up
+without a lock"). A new device offers pairing or restoring. It sends only what changed, as
+often as each cloud allows and at least daily; a phone waits for wifi and charging. Any
+device may back up; the screen names chats never yet backed up ("212 chats are not backed
+up yet. They are on Desktop."). Backups leave out pictures and duplicate file text; sync
+never does. Open: making every backup choice work on every device (O10).
 
 ---
 
@@ -547,187 +464,122 @@ stores no chat data, has no list of which devices are on, and relays no bytes. R
  │  Host control ◄─► Control logs      Notices    │                    │
  │       │                                        │                    │
  │  Chat store ◄─► Replicator ────────────────────┤                    │
- │  (lines, extras, chains, summaries)            │                    │
  │  Project carrier (git over mesh) ──────────────┤                    │
  │                                                ▼                    │
  │  Device set & keys ─────────►  Link layer (one interface)           │
  └───────────────────────────────┬───────────┬───────────┬────────────┘
-                                 │           │           │
                           same-wifi direct   relay    super-host
-                                          (blind)   (a full device)
 ```
 
-| Part | Job | New or existing |
+| Part | Job | Replaces |
 |---|---|---|
-| Device set & keys | Device identity, pairing, the set's secret, removing a device | New (`main/mesh/identity/`) |
-| Link layer | One interface for "send this sealed frame to that device or to the keeper", over whichever path works; presence | New (`main/mesh/link/`) |
-| Relay | Blind waiting room, registers, presence, pass-through, pairing meeting point | New Durable Object beside `SyncGroupRoom` |
-| Chat store | This device's canonical record of each chat: lines, hash chain, extras, control log, summary | New |
-| Replicator | "Everything after line N" between any two devices or a keeper | New; replaces `transcript-mirror` and the Personal-space chat lane |
-| Control log | Host, takeovers, delete, versions, names, flags, per chat | New; replaces leases, `ConversationRecord`, `ConversationNames/` |
-| Host control | Who hosts, takeover, the set-aside half reply | New; replaces `takeover.ts`, `handoff-*`, `lease-client.ts`, `resume-admission.ts` |
-| Session router + proxy | Makes a chat hosted elsewhere look local to the renderer | New; reuses the channel table |
-| Project carrier | Moves git history between devices in place of GitHub | New, around the existing `GitTransport` |
-| Notices | One pure function from facts to the rows of the notice in 2.7 | New |
-| Storage policy | Keep everything / recent 30 days; Recently deleted | New |
-| Lifecycle | Awake per reply, quit rule, launch and wake checks | Extends `main.ts`, `headless-boot.ts`, `BackendService.kt` |
-| Super-host | The headless boot, on a desktop OS | Extends `main/headless/` |
-| Interim backup lane | Upload-only GitHub copy and one-time restore | New, temporary (7.3) |
+| Device set & keys | Device identity, pairing, the set's secret, removal | — |
+| Link layer | "Send this sealed frame to that device or the keeper" over whichever path works; presence | — |
+| Relay | Blind waiting room, registers, presence, pass-through, pairing meeting point | A new Durable Object beside `SyncGroupRoom` |
+| Chat store | This device's durable copy of each chat: lines, hash chain, extras, control log, summary | `transcript-mirror`, `ConversationRecord` |
+| Replicator | "Everything after line N" between any two devices or a keeper | The Personal-space chat lane |
+| Control log + host control | Who hosts, takeovers, delete, versions, names, flags | Leases, `takeover.ts`, `handoff-*`, `resume-admission.ts`, `ConversationNames/` |
+| Session router + proxy | Makes a chat hosted elsewhere look local to the renderer | The remote shim, for app use |
+| Project carrier | Moves git history between devices | GitHub as the remote |
+| Notices | One pure function from facts to the rows in 2.7 | — |
+| Storage policy | Keep everything / recent; Recently deleted | — |
+| Lifecycle | Awake per reply, quit rule, launch and wake checks | — |
+| Super-host | The headless boot, on a desktop OS | — |
+| Interim backup lane | Upload-only GitHub copy and one-time restore, until the backup rebuild | — |
 
-### 4.2 Engineering words
+### 4.2 Five ideas the rest depends on
 
-| Word | Meaning |
-|---|---|
-| Chat version | One continuation of a chat. Not the same as an app version or a file version. |
-| Head | Where a copy of a chat version ends: segment, line count, chain hash. |
-| Segment | An append-only run of lines. A new one starts only if the runtime rewrote its file. |
-| Reply end | A line at which a reply finished. Takeovers always happen at one. |
-| Host entry | The `claim` or `takeover` entry that currently makes a device the host. |
-| Tail | Lines a previous host wrote beyond a takeover point. |
-| Set aside | Kept on disk, hidden, not part of the chat, until its fate is known. |
-| Parked | Received but not yet usable (a hole before it, or a signer not yet known). |
-| Void | A control entry that `decide` ignores. |
-| Fenced | A host that has agreed to hand a chat over and refuses new messages for it. |
-| Register | A small value a keeper holds per chat or project, changed by compare-and-swap. |
-| Generation | A numbered edition of the set secret. A removal makes a new one. |
-| Sealed | Encrypted so only devices of the set can read it. |
+1. **Two lanes.** The **durable lane** carries lines, extras, control entries, roster
+   entries and project history: stored, signed, verified by hash, retried until
+   acknowledged, held by keepers, and safe to receive twice or out of order. The **live
+   lane** carries token-by-token words, "reply running" and open permission prompts: sent
+   only to devices with the chat open, never stored by a keeper, rebuilt from a fresh
+   snapshot after a gap. Every live event names the line it belongs to, so a device knows
+   how far behind its durable copy is.
+2. **The chat store is the truth; runtime files are working copies.** Claude Code and the
+   native runtime keep writing their own files as today. On the host an adapter copies each
+   new line into the store. The store always holds its own bytes, on every device,
+   because Claude Code deletes old transcript files (`cleanupPeriodDays`). On other devices
+   no working file is read. A device that becomes host writes a fresh working file from
+   the store. A device that stops being host never touches a working file a process might
+   still be writing; it is replaced the next time that device becomes host.
+3. **Nothing is deleted or merged on a guess.** Hash chains decide whether one copy
+   extends another. One pure function over the control log and roster decides who hosts.
+   Lines that might be an abandoned half reply are set aside until the device that wrote
+   them says what they were. When no single answer exists the result is "two versions",
+   shown to the user.
+4. **A split in the record is not a split in the chat.** Two devices may both write "I am
+   the host". That is two versions only if their lines differ. If one copy is a longer or
+   equal copy of the other, it is one chat.
+5. **A keeper is never the only copy and never the authority.** A device does not clear
+   its copy of anything until another device has it (a super-host is a device). What a
+   keeper says is checked against device signatures, and no outcome depends on what
+   reached a keeper first.
 
-### 4.3 Five ideas the rest depends on
-
-**1. Two lanes.**
-
-- **Durable lane.** Chat lines, extras, control entries, roster entries, project history.
-  Stored, signed, verified by hash, retried until acknowledged, held by keepers. Handling is
-  idempotent: receiving the same frame twice, or out of order across two paths, is harmless.
-- **Live lane.** Token-by-token words, "reply running", open permission prompts. Sent only
-  to devices that have the chat open, never stored by a keeper, rebuilt from a fresh
-  snapshot after any gap.
-
-A watcher's screen is the live lane while connected. Its offline reading and its ability to
-take over come from the durable lane. The live lane may be ahead of the durable lane; every
-live event names the line number it belongs to, so a device always knows how far behind its
-durable copy is.
-
-**2. The chat store is the truth; runtime files are working copies.** Claude Code and the
-native runtime keep writing their own files exactly as today. On the host, an adapter copies
-each new line of that working file into the chat store. The store always holds its own
-bytes, on every device including the host. (Claude Code deletes its transcript files after
-`cleanupPeriodDays`; today's `transcript-mirror.ts` keeps a durable second copy for exactly
-that reason, and the store takes over that job.) On every other device no working file is
-read. A device that becomes host writes a fresh working file from the store. A device that
-stops being host does not touch the working file while any process might still be writing
-it; it is replaced, with the old one kept aside, the next time this device becomes host.
-
-**3. Nothing is deleted or merged on a guess.** Whether one copy extends another is decided
-by hash chains. Who hosts is decided by one pure function over the control log and the
-roster. Lines that might be an abandoned half reply are **set aside**, never deleted, until
-the device that wrote them says what they were. When no single answer exists, the result is
-"two versions", shown to the user.
-
-**4. A split in the record is not a split in the chat.** Two devices may both write
-"I am now the host". That becomes two versions only if their lines actually differ. If one
-copy is simply a longer or equal copy of the other, it is one chat and one of them hosts.
-
-**5. A keeper's word is never the only copy and never the authority.** A device does not
-clear its own copy of anything until another *device* has it (a super-host is a device).
-Anything a keeper says is checked against signatures from devices, and no rule's outcome
-depends on what reached a keeper first.
-
-### 4.4 How the parts act together: six walk-throughs
+### 4.3 Walk-throughs
 
 **A. First device, then pairing a phone.**
-1. First run: the device creates its keys and a device set of one. It contacts no relay.
-   Every existing chat on disk is indexed (the same transcripts today's reconciler scans)
-   and gets a `claim` entry naming this device as host, stating the head it holds and
-   whether the chat was last run on this device. No chip is shown while the set has one
-   device.
-2. Devices → Add device → this device's unlock. It opens a meeting point and shows the
-   QR and code.
-3. The phone scans. The key exchange runs. The computer shows "Add this device?".
-4. On yes: the roster entry is signed and exchanged; the set secret is sent sealed. The
-   phone takes the computer's signed table of chat heads directly, before trusting any
-   keeper.
-5. If the phone holds chats or projects of its own, the combine-or-cancel step runs on
-   counts first. On combine, a chat both hold has two `claim` entries. The device with the
-   longer copy checks whether the other's head lies on its own chain and records the answer
-   (a `relation` entry). One is a prefix of the other: the longer one stands and its holder
-   hosts, with no notice. Identical copies: the device that last ran the chat hosts, so a
-   chat made on the desktop does not show up as "hosted on Phone". They differ: listed once
-   as two versions. [D12 Q-15] This is the same rule `decide` uses everywhere (5.4), so day
-   one needs no special code. It depends on copies that should be identical really being
-   byte-for-byte identical, which T21 checks on real data first.
-6. Both connect to the relay, which is on from the first pairing unless switched off [D13 Q-3].
-7. Catch-up: control logs and summaries of every chat first (the list fills within
-   seconds); then lines of chats used in the last 30 days, newest first; then their extras.
-   A "keep everything" device continues with older chats. No project is downloaded to the
-   phone until sync is turned on for it there.
+1. First run: the device creates its keys and a set of one, and contacts no relay. Every
+   chat on disk is indexed and gets a `claim` naming this device as host, the head it
+   holds, and whether the chat was last run here. No chip while the set has one device.
+2. Devices → Add device → unlock. It opens a meeting point and shows the QR and code.
+3. The phone scans; the key exchange runs; the computer shows "Add this device?".
+4. On yes: roster entry exchanged; set secret sent sealed. The phone takes the computer's
+   signed table of chat heads directly, before trusting any keeper.
+5. If both hold data, combine-or-cancel runs on counts first. A chat both hold has two
+   `claim` entries, and `decide` (5.4) settles it: a longer copy stands and its holder
+   hosts; identical copies, the device that last ran the chat hosts; different copies are
+   listed once as two versions.
+6. Both connect to the relay unless it is switched off.
+7. Catch-up: control logs and summaries first (the list fills in seconds); then lines of
+   chats used in the last 30 days, newest first; then extras. No project is downloaded to
+   the phone until sync is turned on for it there.
 
-**B. The phone watches a chat on the desktop; the desktop loses power mid-reply; the phone
-continues; the desktop returns.**
-1. Watching: the session proxy holds a live subscription. Lines arrive on the durable lane
-   as they are written.
-2. Power loss: heartbeats stop. After the offline rule (5.2) presence says the desktop is
-   gone. Nothing is shown until the user opens or types in that chat.
-3. The phone works out the notice facts: host offline; whether its last durable line is the
-   end of a reply; and how far behind it is (from the highest line number the live lane
-   mentioned, and from the keeper's register if one is reachable). The rows that apply are
-   shown together: "went offline partway through a reply", and either "may have newer
-   messages" (unknown) or "Desktop has N newer lines" (known), in which case the button
-   reads "Continue from here as a new version".
-4. On yes the phone reserves the host role with the keeper if one is reachable (5.4),
-   appends a takeover entry naming the last finished reply it holds, writes the working
-   file from the store up to that point, and resumes. The chip changes everywhere.
-5. The desktop starts again. Before any chat continues or resumes, at launch and on wake,
-   it fetches control logs from whatever it can reach. For this chat it is no longer host.
-   It stops the chat's process if the app owns one, appends a `released` entry stating
-   exactly what it had beyond the takeover point, and marks its working file as stale.
-   - Only an unfinished reply beyond the point: set aside (to the user, dropped);
-     "continued on Phone" row.
-   - Finished replies the phone never received: they become a second version; "two
-     versions" row on both devices. If the phone's user had chosen "Continue from here as a
-     new version", it is a deliberate fork instead and no archive prompt is shown.
-6. If the desktop can reach nothing when it wakes, it carries on as host. That is the
-   decided offline behaviour, and it too can end in a second version.
+**B. The phone watches a chat; the desktop loses power mid-reply; the phone continues; the
+desktop returns.**
+1. Heartbeats stop; presence says the desktop is gone. Nothing shows until the user opens
+   or types in the chat.
+2. The phone works out the notice facts: host offline; whether its last durable line is a
+   reply end; how far behind it is (from the live lane's highest line, and the keeper's
+   register if reachable). The rows that apply are shown together.
+3. On yes the phone reserves the host role (5.4), appends a `takeover` naming the last
+   reply end it holds, writes the working file from the store, and resumes.
+4. The desktop starts. Before any chat continues, it fetches control logs from whatever it
+   can reach. It is no longer host: it stops the chat's process if the app owns it and
+   appends `released`, stating what it had beyond the takeover point.
+   - Only an unfinished reply: set aside (to the user, dropped); "continued on Phone" row.
+   - Finished replies the phone never had: a second version; "two versions" row on both.
+     If the phone's user chose "Continue from here as a new version", it is a deliberate
+     fork and no archive prompt shows.
+5. If the desktop can reach nothing, it carries on as host. That too can end in a second
+   version.
 
-**C. The same, for a chat whose project is not on the phone.**
-1. The notice adds the "project folder not here" row and stops to ask.
-2. "Turn on sync and fetch" needs a device holding the project to be on. The desktop is
-   off, so that choice is shown as unavailable, with the reason.
-3. "Continue talk-only": the phone runs the chat in a scratch folder with file and command
-   tools switched off (5.4) and adds the talk-only note.
-4. When the chat later moves to a device that has the project, it resumes in the real
-   folder and the "files can be used again" note is added.
+If the chat's project is not on the phone, the notice stops to ask. Fetching needs a
+device holding the project to be on; otherwise the choice is shown as unavailable and the
+user may continue talk-only (5.4).
 
-**D. Two devices tap Continue here at once.**
-- **A keeper is reachable:** each tries to reserve the host role in the keeper's register.
-  One succeeds and publishes its takeover. The other never publishes one; it shows "Phone
-  just took over this chat" and stays a watcher. [D9 S-4]
-- **No keeper, but the two can reach each other:** the same reservation is made with the
-  online device that has the lowest id acting as arbiter.
-- **Neither can reach anything:** both publish. When they meet, `decide` (5.4) settles it.
-  One device's copy is a continuation of the other's: the device with the longer copy
-  hosts and the other becomes a watcher. Both wrote different lines: two versions.
+**C. Two devices tap Continue here at once.**
+- A keeper is reachable: each tries to reserve the host role in the keeper's register. One
+  succeeds and publishes its takeover. The other publishes nothing, shows "Phone just took
+  over this chat", and stays a watcher.
+- No keeper, but they reach each other: the same, with the lowest-id online device as
+  arbiter.
+- Neither reaches anything: both publish. When they meet, `decide` settles it.
 
-**E. Removing a stolen phone that was hosting three chats.**
-1. On the computer: Devices → Remove → the computer's unlock.
-2. The removal entry lists, for every chat, the last control entry and the last line from
-   the phone that the computer had seen. Anything the phone signs or sends beyond that is
-   void on every device.
-3. The computer creates the next key generation and sends it sealed to each remaining
+**D. Removing a stolen phone that hosted three chats.**
+1. Devices → Remove → unlock. The removal lists, per chat, the last entry and line from the
+   phone the computer had seen. Each remaining device then adds what it already held. What
+   the phone signs or sends beyond the furthest of these is void everywhere.
+2. The computer creates the next key generation and sends it sealed to each remaining
    device, directly and through the keeper's per-device mailbox. The keeper refuses the
-   phone at once. Other devices refuse it as soon as they hold the removal; devices compare
-   roster heads before serving each other anything.
-4. Those three chats now have no host. Opening one shows the "host was removed" row.
-5. Lines the phone wrote and never sent are not recoverable unless the phone is paired
-   again [D13 S-4].
-6. If another device holds a tail from the phone, the removing device appends `released` on
-   the phone's behalf, naming the longest tail any reachable device holds, so every device
-   treats that tail the same way.
+   phone at once; devices compare roster heads before serving each other.
+3. The three chats have no host. Opening one shows the "host was removed" row.
+4. If a device holds a tail from the phone, the removing device appends `released` on the
+   phone's behalf, naming the longest tail any reachable device holds.
 
-**F. An older chat on a "recent" device.** The phone opens a chat last used 60 days ago. Its
-list row is there; its lines are not; the relay let go of them at 30 days. The replicator
-asks every online peer. If one has it, lines stream in. If none is on: "stored on Desktop,
-which is offline".
+**E. An older chat on a "recent" device.** The list row is there; the lines are not; the
+relay let them go at 30 days. The replicator asks every online peer. If none has it:
+"stored on Desktop, which is offline".
 
 ---
 
@@ -735,624 +587,401 @@ which is offline".
 
 ### 5.1 Device set, keys and pairing
 
-**Keys (engineering call).**
+- **Identity.** The existing per-machine id (`getMachineIdentity`, `main/device-identity.ts`).
+  The roster and relay see a one-way hash of it, so a device set cannot be tied to an
+  analytics record. That id is empty where the built app never ran, so the test rig (T1)
+  assigns its own.
+- **Keys.** Each device creates a signing key pair and a key-agreement key pair on first
+  run, stored with `safeStorage` (desktop) or the Keystore-backed shim (Android).
+- **Set secret.** 32 random bytes made by the first device. Frames are sealed with keys
+  derived from it. It reaches a new device only during pairing, sealed to that device.
+- **Generations.** A removal creates the next generation, sealed separately to each
+  remaining device. Frames name their generation; devices keep old ones to read old
+  frames, and a newly paired device is given every generation still in use. Secrecy from a
+  removed device begins with the first frame sealed under the next generation.
+- **Signing.** Every durable frame, forwarded call and device-to-device acknowledgement is
+  signed by its sender.
+- **Roster.** A signed append-only log of `add`, `remove`, `rename`. Entries name the
+  entries they have seen, so order never depends on clocks. The relay holds only hashed
+  ids and public keys; names are sealed.
+  - Devices exchange roster heads first and bring each other up to date before serving
+    anything.
+  - An entry from a signer not yet known is parked, never refused.
+  - A removal voids what the removed device signs or sends beyond the cut-off, including
+    roster entries, so it cannot add or remove devices afterwards. The cut-off is the
+    furthest point any remaining device held when it learned of the removal (each signs a
+    `witness`), so work another device already built on stays valid.
+  - Two devices removing each other: the one in the set longer stands.
+  - Two generations made at once: the remaining device with the lowest id makes one more.
+  - A removed device paired again gets a fresh `add`, which stands.
+- **Reinstalling.** If the app's data survives, the machine keeps its id and keys and
+  nothing changes. If the data was wiped (always, after an Android uninstall) it is a new
+  device; the old entry goes by removal or the 30-day offer.
+- **Unseen for 30 days.** Each device notes when it last heard each other device; at 30
+  days the others show the one-time offer.
+- **Unlock** for adding and removing: Android `BiometricPrompt`; macOS Touch ID or
+  password; Windows Hello; a polkit prompt on Linux. A desktop with none is O4.
+- **Library.** An audited one; no home-made cipher. Node's `crypto` covers X25519, Ed25519,
+  HKDF and ChaCha20-Poly1305. The typed code needs a password-authenticated key exchange,
+  which Node lacks (T5).
+- **Duplicates** are recognised by `(sender, session, counter)`; `session` is random per
+  start and saved with the counter.
+- **No frame body is ever logged.**
 
-- **A device is identified by the id the app already gives each machine**
-  (`getMachineIdentity` in `main/device-identity.ts`, the same id the device list and
-  analytics use). No new identity scheme. [chat 2026-11-13: "it should be pretty simple to
-  identify devices? we already identify unique devices with a device id"]
-  - What goes on the roster and to the relay is a one-way hash of that id, so the relay
-    cannot tie a device set to an analytics record.
-  - That id belongs to the built app; dev copies borrow it and it is empty where the built
-    app never ran. The test rig (T1) therefore gives each of its devices an id of its own.
-  - A removed device that is paired again gets a fresh `add` entry, which stands; its
-    earlier removal still voids what it did before.
-- Each device creates a signing key pair and a key-agreement key pair on first run. Private
-  halves are stored with `safeStorage` (desktop) or the Keystore-backed shim (Android).
-- **Reinstalling.** If the machine id survives (the app's data folder was kept), pairing
-  again from that machine replaces the old entry for the same id, with no extra question;
-  chats it hosted stay hosted by it. If the data folder was wiped (always the case after an
-  Android uninstall), it is simply a new device; the old entry is removed by the user or by
-  the 30-day prompt, and its chats can be continued elsewhere once it is removed.
-- The set has a **set secret** (32 random bytes) made by the first device. Frames are sealed
-  with keys derived from it. It reaches a new device only during pairing, sealed to that
-  device.
-- The set secret has **generations**. A removal creates the next one, sealed separately to
-  each remaining device. Frames name their generation; devices keep old generations to read
-  old frames. A removed device can still read what was sealed under generations it holds;
-  secrecy from it begins with the first frame sealed under the next generation.
-- Every durable frame, every forwarded call and every acknowledgement between devices is
-  **signed by the sending device**.
-- The **roster** is a signed append-only log: `add` (signed by a member), `remove` (signed by
-  a member; carries the cut-off described in walk-through E), `rename`. Entries name the
-  entries they have seen, so order does not depend on clocks. Removals from two devices at
-  once both stand; if both remove the same device, the smaller cut-off applies per chat.
-  Two generations created at once: the remaining device with the lowest id creates one more
-  for the merged roster. A void entry loses its own effect only; entries that had seen it
-  remain valid.
-- **A device not seen for 30 days** [D7 Q-4]: each device notes when it last heard each
-  other device on any path; at 30 days the others show the one-time offer to remove it.
-- A removal's cut-off also covers the roster itself: any `add`, `remove` or `rename` signed
-  by the removed device that the remover had not seen is void. So a removed device cannot
-  add a device or remove others afterwards by claiming it happened at the same moment.
-- **Two devices removing each other.** The device that has been in the set longer stands,
-  whichever removal reached a keeper first. Honest limit: a thief holding the oldest
-  device, unlocked or with its unlock known, and acting before the owner, wins.
-- **Removal never cancels work another device already holds.** The remover's cut-off is
-  only what the remover had seen. Each remaining device, when it first learns of the
-  removal, signs a short `witness` saying what it already held from the removed device.
-  The effective cut-off for each chat is the furthest of these. Lines and entries a third
-  device had received and built on therefore stay valid.
-- The relay holds only device ids and public keys. Device names are sealed.
-- An entry signed by a device not yet known is **parked** until the roster catches up,
-  never refused.
-- A newly paired device is given every generation still needed to read what devices and
-  the relay currently hold.
-- Devices exchange roster heads in their first message and bring each other up to date
-  before anything else is served.
-- An audited library; no home-made cipher. Node's `crypto` covers X25519, Ed25519, HKDF and
-  ChaCha20-Poly1305. The typed-code path needs a password-authenticated key exchange (T5).
-- Duplicate frames are recognised by `(sender, session, counter)`. `session` is a random
-  value made at each start and saved with the counter, so a restart never looks like a
-  replay and a replay never looks new.
-- No frame body is ever logged.
-
-**Pairing.** As walk-through A. Details:
+**Pairing.**
 
 - The QR carries the meeting point, the existing device's key fingerprint and a one-time
-  secret that dies on first use. The typed code carries the meeting point and a short
-  secret used in the password-authenticated exchange. [D12 Q-10]
-- Failed attempts are counted **on the existing device**, not by the relay; the code is
-  burned after three. The relay is only a pipe here and is assumed hostile.
-- "Add this device?" is shown only after an exchange that the secret has authenticated, so
-  the name on screen belongs to whoever holds the code.
-- The meeting point is on the relay, or on the local network once same-wifi exists. Using
-  the relay as a meeting point stores nothing and is separate from using it as a keeper.
-- **Pairing a device that is already paired with others joins the two sets into one.** His
-  words: "there is no additional difficulty from pairing two 'sets' of devices as opposed
-  to just pairing a singular new device into an existing 'set' … it seems like that would
-  honestly be the simpler and less convoluted behavior, since the device being paired would
-  already have the downloaded data from the other sync network". [chat 2026-11-14]
-  - The pairing screen names every device that will end up together ("This joins Laptop
-    and Tablet with Desktop and Phone") before the usual combine-or-cancel step.
-  - Mechanism: the pairing device joins the other set in the ordinary way. It then signs an
-    `add` in the new roster for each of its former companions (it already holds their
-    public keys) and leaves each of them a sealed message, in the old set's mailbox and
-    directly when they next meet: "we have joined this set; here is its secret and roster".
-    A companion that was off moves over when it next comes on. This relies on nothing new:
-    every paired device is already fully trusted (section 8).
-  - Data is combined by the same rules as any pairing (walk-through A step 5). The old
-    set's relay room empties as its devices move and is erased by the 90-day rule.
-- **Leaving.** A device can remove itself. When the roster is empty the relay erases the
-  set after a delay. A set no device has connected to for 90 days is erased [D13 Q-4].
-
-**Removing and adding a device** both require the acting device's own unlock: Android
-`BiometricPrompt`; macOS Touch ID or password; Windows Hello; a polkit prompt on Linux.
-Both decided [D12 Q-9; D13 Q-5]. A desktop with no such prompt
-is O4 (T11).
+  secret. The typed code carries the meeting point and a short secret for the
+  password-authenticated exchange.
+- Failed attempts are counted on the existing device, not by the relay; the code burns
+  after three. The relay is only a pipe here and is assumed hostile.
+- The meeting point is on the relay, or on the local network once same-wifi exists. It
+  stores nothing and is separate from using the relay as a keeper.
+- **Joining two sets.** The pairing device joins the other set in the ordinary way. It
+  then signs an `add` for each of its former companions (it holds their public keys) and
+  leaves each a sealed message, in the old set's mailbox and directly when they meet: "we
+  have joined this set; here is its secret and roster". A companion that was off moves
+  over when it next comes on. Data combines by the usual rules.
+- **Leaving.** A device can remove itself. An empty roster is erased by the relay after a
+  delay.
 
 ### 5.2 Link layer and presence
 
-One interface, three paths, tried in this order for a given peer:
+Three paths, tried in this order: same-wifi direct; super-host; relay. A frame is
+byte-identical on all three. One connection per path per device.
 
-1. **Same-wifi direct.** Devices announce themselves on the local network and connect
-   straight to each other. The announcement reveals only that a YouCoded device is present.
-   A peer is checked against the roster before any frame is accepted or served. Its own
-   security review before release. [chat 2026-11-11] No local discovery exists in the app
-   today; Android needs a multicast lock (T6).
-2. **Super-host**, when the set has one and it is reachable.
-3. **Relay**, when the user has it on.
+- **Same-wifi direct.** Devices announce themselves on the local network and connect
+  straight to each other. The announcement reveals only presence. A peer is checked
+  against the roster before any frame is accepted or served. No local discovery exists in
+  the app today; Android needs a multicast lock (T6).
+- **Presence.** A device is "on" for another when a heartbeat arrived recently on any path.
+  Offline means 30 seconds with no heartbeat and a failed reconnect on every path. If the
+  host reappears before the user answers a notice, the notice is withdrawn.
+- **A phone is "on" only while the app is in front, or it is hosting a running reply, or
+  the battery exemption is enabled.** Android cuts a backgrounded app's network and there
+  is no push channel (T18).
+- **Clocks.** The relay's clock times its 30-day rule. Control entries are ordered by what
+  they have seen. Correctness never depends on comparing two devices' clocks; only two
+  display matters do (which version is "older", and whether a chat is "recent").
 
-- A frame is byte-identical on all three paths.
-- One connection per path per device; every chat is multiplexed over it.
-- With no keeper and no shared wifi, two devices cannot reach each other until they next
-  share a network. That is the decided "no keeper" behaviour.
-
-**Presence.** A device is "on" for another when a heartbeat arrived recently on any path.
-
-- Offline rule (engineering call; V3 tunes it): offline after 30 seconds with no heartbeat
-  **and** a failed reconnect on every path. A notice is worked out only when the user opens
-  or types in a chat [D13 S-5]. If the host reappears before the user answers, the notice is
-  withdrawn.
-- **A phone is "on" only while the app is in front, or it is hosting a running reply, or the
-  battery exemption is enabled** [D13 S-6]. Android cuts a backgrounded app's network after a
-  while and this design has no push channel. T18 measures it.
-- Clocks: the relay's clock times its 30-day rule. Control entries are ordered by what they
-  have seen, never by clocks. Correctness never depends on comparing two devices' clocks.
-  Two display-level things do read timestamps written by another device, and tolerate them
-  being off: which of two versions is called "older", and whether a chat counts as used in
-  the last 30 days.
-
-### 5.3 Chat store and the copying system
+### 5.3 Chat store and copying
 
 **Which chats.** Every transcript the app tracks today: Claude Code files under
 `~/.claude/projects` (including ones started in a terminal) and native files under
-`~/.youcoded/sessions`. A chat enters the store when its first line exists.
+`~/.youcoded/sessions`.
 
-**Chats the app does not run.** A Claude Code chat started in a terminal is listed and
-copied like any other, but the app cannot stop its process. Such a chat can be taken over
-only when its host is offline, never by a chip switch. If its process is still running when
-the old host learns of the takeover, the app cannot stop it; whatever it finishes becomes a
-second version by the ordinary rule.
-
-If such a chat is reopened from a terminal on a device that no longer hosts it, Claude Code
-writes to the stale working file. The app's hooks run for terminal sessions too, so the
-session is told "this chat is now hosted on Phone"; anything it goes on to finish becomes a
-second version.
-
-**Chats that ran in a folder that is not a synced project** (a dev worktree, any ordinary
-folder). On another device there is nothing to fetch, so they can only be continued
-talk-only there. What the notice should say and offer in that case is O16.
+- **A chat the app does not run** (started in a terminal) is listed and copied, but the app
+  cannot stop its process. It can be taken over only when its host is offline. Whatever
+  its process finishes after a takeover becomes a second version. If it is reopened from a
+  terminal on a device that no longer hosts it, the app's hooks tell that session "this
+  chat is now hosted on Phone".
+- **A chat that ran in a folder that is not a synced project** can only be talk-only
+  elsewhere (O16).
 
 **Identity.**
 
 - `chat id = provider + ":" + the runtime's session id`. `--resume` keeps the id and file.
-  `/clear` in Claude Code starts a new id: a new chat, as today.
-- A chat has one or more **versions**. The main version's id is the chat id. Any other
-  version's id is `SHA-256(chat id ‖ winning host entry id ‖ losing host entry id)` for an
-  accidental split (one per losing entry, so a three-way split gives two), `SHA-256(chat id
-  ‖ takeover id ‖ "tail")` for finished replies found in a tail, or `SHA-256(chat id ‖ the
-  fork entry's id)` for a deliberate fork. Every device computes the same id. A version stores only its own lines from the split point; reading
-  earlier lines falls through to the version it came from.
+  `/clear` in Claude Code starts a new id: a new chat.
+- A chat has one or more versions. The main version's id is the chat id. Other ids are
+  computed the same on every device: `SHA-256(chat id ‖ winning host entry ‖ losing host
+  entry)` for an accidental split; `SHA-256(chat id ‖ takeover id ‖ "tail")` for finished
+  replies found in a tail; `SHA-256(chat id ‖ fork entry id)` for a deliberate fork.
+- A version stores its own lines from the split point and reads earlier ones from its
+  parent, unless Claude Code's fork rewrote them (T3), in which case it stores them all.
 - When a non-main version is first hosted, the runtime gives it a session id of its own
-  (Claude Code's fork-on-resume; T3). A `bound` entry records that id.
-- Each version is its own row in the list, grouped with its relatives. Deleting one version
-  does not delete another.
+  (Claude Code's fork-on-resume); a `bound` entry records it.
+- Each version is its own list row, grouped with its relatives.
 
-**The store** (under the app's data folder, never inside a synced space). Per version:
+**The store** lives under the app's data folder, never in a synced space. Per version:
 
-- Lines in **segments**. A segment is an append-only run. A new segment starts only when
-  the host's adapter reports that the runtime rewrote or shrank its file. The new segment
-  is the whole chat again from its first line; the old segment is kept on the host for 30
-  days and not copied anywhere. This has not been observed in Destin's chats; T2 checks it.
-- A **hash chain** per segment: `h[0] = SHA-256(version id ‖ segment)`,
-  `h[n] = SHA-256(h[n-1] ‖ raw bytes of line n)`. The chain value of every line is kept even
-  when the line's bytes have been evicted (32 bytes a line), so a "recent" device can still
-  answer "what was your hash at line N".
-- An index of **reply ends**: the line numbers where a reply finished. Each adapter decides
-  this from its runtime's own end-of-reply marker (the event the app treats as
-  `turn-complete` today). The takeover point is always a reply end.
-- The **head**: `{version, segment, line count, chain hash}`.
-- The control log, the latest summary, and a manifest of extras by content hash.
+- Lines in segments. A new segment starts only when the host's adapter reports the runtime
+  rewrote or shrank its file; it is the whole chat again from line one. The old segment is
+  kept on the host for 30 days.
+- A hash chain per segment: `h[0] = SHA-256(version id ‖ segment)`,
+  `h[n] = SHA-256(h[n-1] ‖ raw bytes of line n)`. Chain values are kept even when a line's
+  bytes are evicted.
+- An index of reply ends, from each runtime's own end-of-reply marker (the event the app
+  treats as `turn-complete`).
+- The head, the control log, the latest summary, and a manifest of extras.
 
-**Copying.** One system for live sending and catching up [D4 Q-1]:
+**Copying.**
 
-- The host sends each new line as written, to every online device and to the keeper.
-- Devices exchange control logs **before** lines, always. Lines for a chat whose log says
-  "deleted" are not requested and not accepted.
-- A device asks any peer or the keeper: "version V, segment S: I have N lines ending in hash
-  H". Answers: the lines after N; `gap` (I do not have the lines just after N); `moved`
-  (there is a newer segment; here is its entry); `not-a-prefix` with the answerer's hash at
-  N.
-- Lines are added to the chain only when they connect to it. Lines that arrive with a hole
-  before them are parked and added when the hole is filled.
-- A device acknowledges only "everything through line N, without holes".
-- Any device can answer, not only the host. [D4 S-2]
+- The host sends each new line as written, to every online device and the keeper.
+- Control logs are exchanged before lines, always. Lines for a deleted chat are neither
+  requested nor accepted.
+- A device asks any peer or the keeper: "version V, segment S: I have N lines ending in
+  hash H". Answers: the lines after N; `gap`; `moved` (a newer segment exists); or
+  `not-a-prefix`. Any device can answer.
+- Lines join the chain only when they connect to it; lines with a hole before them are
+  parked. A device acknowledges only "everything through line N, without holes".
 - When two devices meet they exchange a table of heads for every chat.
-- **`not-a-prefix` is never settled by guessing.** The device first re-hashes its own
-  stored bytes; if they no longer match its own chain, its copy is damaged: the bytes are
-  set aside and recopied. Otherwise the control log decides (5.4): the lines are an old
-  host's tail (set aside until its `released` entry arrives) or a second version. If the
-  control log explains nothing (a bug), a device that is not the host sets its copy aside,
-  recopies from the host, and records a diagnostic.
-- Order of catch-up: control logs and summaries; then lines, most recently used first; then
-  extras. Lines never wait behind extras.
-- Extras that are finished files (saved outputs, the plan) move by content hash. Helper
-  working files grow while a helper works; they are copied the way lines are, by "everything
-  after byte N", and are sent when a reply ends, so a growing file is never resent whole.
-  Extras that belong only to a set-aside tail are set aside with it.
-- **Kept small.** Only the latest `summary` entry of a version is kept; older ones are
-  dropped. Registers for a deleted version are removed when its 30 days are up.
-- A second version made by Claude Code's own fork may be a whole new file with earlier
-  lines rewritten. If so that version stores its full lines, not just the new ones (T3).
+- **`not-a-prefix` is never settled by guessing.** The device re-hashes its own bytes; if
+  they no longer match its chain, the copy is damaged: set aside and recopied. Otherwise
+  the control log decides: an old host's tail, or a second version. If the log explains
+  nothing, a non-host sets its copy aside, recopies from the host, and records a
+  diagnostic.
+- Order: control logs and summaries; lines, most recently used first; extras last.
+- Finished extras (saved outputs, the plan) move by content hash. Helper working files
+  grow, so they are copied like lines ("everything after byte N") and sent when a reply
+  ends.
 
 **Extras, by location** (confirm in T3):
 
 | Extra | Claude Code chat | Native chat |
 |---|---|---|
 | Helper working files | `<slugdir>/<sessionId>/subagents/` | Child session files with `parentSessionId` |
-| Saved long outputs | `<slugdir>/<sessionId>/tool-results/` | `specialist-reports/`; Bash overflow goes to the temp folder today and must move somewhere durable to travel |
+| Saved long outputs | `<slugdir>/<sessionId>/tool-results/` | `specialist-reports/`; Bash overflow is in the temp folder today and must move somewhere durable |
 | Plan | The file in `~/.claude/plans/` named in the chat's lines | In the chat's lines |
-| To-do list | `~/.claude/todos/` entries for the session | In memory only today; nothing to carry until saved |
+| To-do list | `~/.claude/todos/` entries for the session | In memory only today |
 
 ### 5.4 Control log and host control
 
-The control log is a short, append-only set of signed entries per chat (shapes in 6.2).
-Each entry lists the entries its author had seen. That makes the log a small history graph
-whose meaning does not depend on arrival order or clocks.
+The control log is a set of signed entries per chat (shapes in 6.2). Each entry lists the
+entries its author had seen, so the log's meaning never depends on arrival order or clocks.
 
-**`decide(entries, roster)`** (seam S5). Pure. Same answer for the same set of entries in
-any order. It answers per chat version.
+**`decide(entries, roster)`**: pure; the same answer for the same entries in any order;
+answers per version.
 
-- **Ordering two entries.** If one had seen the other, it is later. If neither had seen the
-  other they are concurrent.
-- **Void entries.** Entries signed by a removed device beyond the removal's cut-off. (An
-  entry by a signer not yet known is parked and is not part of the input yet.)
-- **Host.** Follow `claim` and `takeover` entries (the **host entries**) from the start.
-  Each states the head its author held. The latest in order hosts. If that device is
-  removed, the version has no host and any device may take over at once.
-- **Concurrent host entries.** For each concurrent pair, `decide` needs to know whether one
-  stated head lies on the other's chain. Entries alone cannot say, so a device that holds
-  the longer copy checks and appends a `relation` entry. Until one exists the answer for
-  that version is `pending`: devices keep showing what they have and raise no notice.
-  - **One copy is a prefix of, or equal to, the other:** one chat. The author of the longer
-    copy hosts. Equal copies: a `claim` marked as last run on its device beats one that is
-    not; otherwise the lower entry id hosts. The other entry is void and its author is a
-    watcher.
-  - **While the answer is `pending`** the chat behaves as it did before: it shows the last
-    known host, and a message typed there goes to that host if it is reachable.
-  - **The copies differ:** two versions. The lower entry id keeps the chat id; the other
-    gets the deterministic version id from 5.3.
-- **Segment:** the latest `segment` entry by the host.
-- **Name, flags, talk-only, minimum app version:** the latest entry of that kind in order;
+- **Order.** An entry that had seen another is later. Otherwise they are concurrent.
+- **Void.** Entries from a removed device beyond the cut-off.
+- **Host.** Follow the host entries (`claim`, `takeover`); the latest hosts. If that
+  device is removed, the version has no host and any device may take over.
+- **Concurrent host entries.** A device holding the longer copy checks whether the other's
+  stated head lies on its chain and appends a `relation` entry. Until then the answer is
+  `pending`: the chat shows its last known host and behaves as before.
+  - One copy is a prefix of the other: one chat; the author of the longer copy hosts.
+  - Identical copies: a `claim` marked as last run on its device hosts; otherwise the
+    lower entry id.
+  - The copies differ: two versions; the lower entry id keeps the chat id.
+- **Name, flags, talk-only, minimum app version, segment:** the latest entry of that kind;
   concurrent ones, the lower entry id.
-- **Deleted** (per version). A `restored` entry names the `deleted` entry it undoes. A
-  delete and a restore that are concurrent resolve to deleted.
+- **Deleted** is per version. `restored` names the `deleted` it undoes; a concurrent
+  delete and restore resolve to deleted.
 
-"First to be heard wins" [D9 S-4] is delivered by the reservation below, which normally
-stops a second host entry from ever being published. `decide`'s own tie-breaks only matter
-when devices could reach nothing, which is the decided two-versions case.
+**Reserving the host role.** Each version has a host register on the keeper holding the
+latest host entry. A device taking over checks the register holds the parent it knows and
+swaps in its own entry. Success: it publishes. Failure: it publishes nothing and shows "…
+just took over this chat". If the register is behind (an earlier takeover happened
+offline), the device first puts in the missing entries. With no keeper but peers in reach,
+the lowest-id online device plays the register. With nothing in reach the device publishes
+directly. This is what delivers "first to be heard wins"; `decide` gives the same answer
+whatever a register said.
 
-**Reserving the host role, so races are settled before anything is published.**
+**Takeover reasons.** `chip`; `host-offline`; `host-removed`; `no-connection`. A takeover
+made with "Continue from here as a new version" carries `knowing: true`, and any second
+version it leads to is a deliberate fork.
 
-- Each chat version has a host register on the keeper holding the latest host entry (the
-  signed entry itself, sealed). A device taking over reads the register, checks it holds the
-  parent it knows, and swaps in its own intended entry. Success: it publishes the entry.
-  Failure: someone else got there; it publishes nothing and shows "… just took over this
-  chat".
-- If the register is older than the parent the device knows (an earlier takeover happened
-  offline), the device first puts the missing host entries in, in order (it holds them;
-  they are signed by their authors), then makes its own swap.
-- With no keeper but peers in reach, the online device with the lowest id plays the
-  register. With nothing in reach, the device publishes directly; `decide` sorts it out
-  later.
-- A register is an optimisation and a courtesy. `decide` gives the same answer on every
-  device whatever a register said.
+**The takeover point and the tail.** A takeover names the segment, line count and chain
+hash of the last reply end in the taking device's store. First it fetches durable lines up
+to the highest line its live lane mentioned, if anything has them. Lines the previous host
+wrote beyond the point are its tail, set aside on every device under the takeover's id
+until the previous host appends `released {tail line count, tail hash, last reply end in
+the tail}`.
 
-**Takeover reasons.** `chip` (the user tapped the chip while the host was on);
-`host-offline` (Continue here with the host unreachable but something else reachable);
-`host-removed`; `no-connection` (Continue here with nothing reachable). A takeover made
-with the "Continue from here as a new version" button also carries `knowing: true`; any
-second version it later produces is a deliberate fork with no archive prompt.
-
-**The takeover point and the tail.** A takeover names `{segment, line count, chain hash}` of
-the last reply end in the taking device's store. Before choosing it, the device fetches durable
-lines up to the highest line its live lane has mentioned, if any peer or keeper has them.
-
-Lines the previous host wrote beyond that point are its **tail**, stored under the takeover
-entry's id. On every device the tail is set aside (kept on disk, hidden, not counted as
-part of the chat) and nothing more is done until the previous host speaks. To the user this
-is the decided "the unfinished reply is dropped"; setting aside is the safety net behind it.
-
-- When the previous host learns of the takeover it stops the chat's process, then appends
-  `released {tail line count, tail hash, last reply end within the tail}`.
-- If the tail contains a finished reply, the lines up to that reply end become a second
-  version (deterministic id), and "two versions" is shown. Anything after it is an
-  unfinished reply and stays set aside.
-- If the tail contains no finished reply, it is the dropped half reply. It stays set aside
-  for 30 days and is then removed.
-- A device holding fewer tail lines than `released` names fetches the rest and checks the
-  hash. A device holding more, or different, lines treats its tail as damaged and refetches.
-- If the previous host is removed from the roster without ever speaking, the removing
-  device appends `released` on its behalf (walk-through E step 6), and the same two rules
-  apply. A tail with a finished reply is never thrown away.
-- A previous host that never comes back and is never removed leaves its tail set aside.
-  The 30-day unseen-device prompt is what ends that.
-
-So every device reaches the same result, because one entry says what the tail was.
-
-| The previous host's tail holds | Result on every device | The user sees |
+| The tail holds | Result on every device | The user sees |
 |---|---|---|
-| Nothing (chip switch; host was fenced) | No tail | The divider |
+| Nothing (chip switch) | No tail | The divider |
 | Only an unfinished reply | Set aside 30 days, then removed | "…unfinished reply … was discarded" on the old host |
 | One or more finished replies | They become a second version | "Two versions" on both |
-| Unknown yet (old host has not spoken) | Set aside, waiting | Nothing |
+| Unknown (old host has not spoken) | Set aside, waiting | Nothing |
 
-**Becoming host** (`becomeHost`, seam S7):
+A device holding fewer tail lines than `released` names fetches the rest; one holding more
+or different lines refetches. If the previous host is removed without speaking, the
+remover appends `released` on its behalf.
 
-1. Make sure the lines up to the takeover point and the extras are in the store.
-2. Replace the working file from the store, keeping any old one aside: for Claude Code,
-   `~/.claude/projects/<ccProjectSlug(local folder)>/<runtime id>.jsonl` plus `subagents/`
-   and the other extras; for native, its session folder. `resolve-local-project.ts` maps
-   the chat to a local folder.
-3. Resume. The adapter continues from the store's head.
-4. A crash anywhere in 1 to 3 is safe: on next launch the log still says this device hosts,
-   and the steps run again.
+**Becoming host** (`becomeHost`): make sure lines to the takeover point and the extras are
+in the store; replace the working file from the store, keeping any old one aside (for
+Claude Code, `~/.claude/projects/<ccProjectSlug(local folder)>/<runtime id>.jsonl` plus
+its extras; `resolve-local-project.ts` maps the chat to a local folder); resume. A crash
+at any step is safe: the log still says this device hosts, and the steps run again.
 
-**Chip switch while the host is on.** The new host calls `stopForSwitch` on the old host.
-The old host waits for a running reply to end (decided; the tapping device shows it is
-waiting and can cancel), then **fences** the chat: from that instant it refuses forwarded
-messages for it, answering "handed over". The fence is written to disk, so it survives a restart
-of the old host. It replies with its last reply end. The takeover names
-that point, so there is no tail.
+**Chip switch while the host is on.** The old host waits for a running reply to end (the
+tapping device shows it is waiting and can cancel), then fences the chat, on disk: it
+refuses forwarded messages with "handed over". It replies with its last reply end; the
+takeover names that point, so there is no tail.
 
-**Talk-only.** The chat runs in a scratch folder under the app's data folder, with
-file-writing and command tools switched off for that run (Claude Code's tool restrictions;
-the native runtime's binding). A `talk-only on` entry is appended and the note is given to
-the assistant. Returning to a device with the project: `becomeHost` in the real folder,
-`talk-only off`, and the "files can be used again" note. T3 and T10 must show Claude Code
-resumes a chat in a different folder from the one it was written in.
+**Talk-only.** The chat runs in a scratch folder under the app's data folder with
+file-writing and command tools switched off (Claude Code's tool restrictions; the native
+runtime's binding). A `talk-only` entry is appended. Back on a device with the project it
+resumes in the real folder.
 
-**Showing the divider and telling the assistant.**
+**The divider and the notes to the assistant.** The renderer draws the divider from the
+takeover entry, reusing the model-switch marker (`MODEL_SWITCH_MARKER`,
+`renderer/state/transcript-event-actions.ts:361`) with the takeover's id. The assistant is
+told at the next message: native chats get a transcript event; Claude Code chats get the
+note as hook context on the next prompt, so nothing is written into Claude Code's file.
 
-- The renderer draws the divider from the takeover entry at its line, reusing the system
-  marker of the model-switch divider (`MODEL_SWITCH_MARKER`,
-  `renderer/state/transcript-event-actions.ts:361`). Its id is the takeover entry's id, so
-  it can never be drawn twice.
-- The assistant is told at the next message. Native: append a transcript event. Claude
-  Code: add the note as hook context on the next prompt, through the app's hook scripts, so
-  nothing is written into Claude Code's file (T3).
+**Summary.** The host appends a `summary` at creation and at most once per finished reply;
+only the latest is kept. The chat list is drawn from summaries and `decide`.
 
-**Summary.** The host appends a `summary` entry when a chat is created and at most once per
-finished reply: title, project, last line time, line count, line count at the last reply
-end, model label. The chat list is drawn from summaries and `decide`.
+**Names and flags.** `renamed` (the user's choice) beats the summary's title and replaces
+`Personal/ConversationNames/`. Existing names and flags are converted at the switch. Tags
+stay where they are. A `complete` flag reaching the host closes the chat there.
 
-**Names.** A `renamed` entry (the user's choice) beats the summary's automatic title.
-`renamed` replaces `Personal/ConversationNames/`; existing names, and existing "complete"
-and "priority" flags, are converted at the switch. Tags stay where they are.
-
-**Deleting.**
-
-- A `deleted` entry, per version. The keeper also keeps a never-expiring `del:<version>`
-  register holding that entry, so a device returning after any length of time learns of it
-  before sending anything.
-- When the entry reaches the host, the host stops any running reply, as if the chat were
-  closed [D13 S-7]. Tails of a deleted version are removed with it.
-- The deleting device tells the relay to drop that version's waiting lines at once.
-- Honest limit until the backup rebuild: a deleted chat stays in the GitHub backup's
-  history. "Deleted everywhere" means every device and the relay, not past backups.
-- **Marking complete** is a `flag` entry. When it reaches the host the chat is closed there
-  the way the close menu closes it today. [D4 Q-6]
-- Each device removes the body 30 days after the later of the entry's time and the moment
-  that device first saw it, and keeps the entry for good. So a device that was away, or
-  whose clock is wrong, still gives its user 30 days in Recently deleted.
-- A device that returns holding unsent lines for a deleted chat keeps them in its own
-  Recently deleted and sends nothing.
+**Deleting.** A `deleted` entry, also held in a never-expiring `del:` register on the
+keeper. The host stops any running reply. The deleting device tells the relay to drop the
+version's waiting lines. Each device removes the body 30 days after the later of the
+entry's time and the moment it first saw it, and keeps the entry. A device returning with
+unsent lines for a deleted chat keeps them in its own Recently deleted and sends nothing.
+Until the backup rebuild, a deleted chat stays in the GitHub backup's history.
 
 ### 5.5 Watching: session router and proxy
 
-Goal: the renderer does not know whether a chat runs here or elsewhere, apart from the chip
-and the capability limits.
-
-- Today the remote client is a renderer-side shim that replaces the whole backend. That
-  cannot give per-chat hosts and cannot run inside Electron.
-- New, in the main process: a **session router** inspects each session-scoped call. A local
-  chat goes to `SessionManager` or the native host as now. A chat hosted elsewhere goes to a
-  **session proxy**, which forwards the call to the host and republishes the host's events
-  for that chat on the same local channels.
-- **On the host** forwarded calls are served by `serveRemoteChannel` with a peer context,
-  not by a literal third door (a third `door` value would touch 29 handler sites). The
-  context stays `door: 'remote'`, gains `peer: deviceId`, and each paired device gets an
-  audience id in a new range, so the existing "send to this audience" logic works. One new
-  flag on channel entries, `peerAllowed`, says whether a paired device may call it.
-- Opening a watched chat uses the existing fill path (`session:open`): a snapshot, then live
-  events numbered in order. A gap triggers a fresh snapshot.
+- In the main process a **session router** inspects each session-scoped call. A local chat
+  goes to `SessionManager` or the native host. A chat hosted elsewhere goes to a **session
+  proxy**, which forwards the call to the host and republishes the host's events for that
+  chat on the same local channels. The renderer is unchanged apart from the chip and the
+  capability limits.
+- **On the host** forwarded calls are served by `serveRemoteChannel` with `door: 'remote'`
+  and a new `peer` field. Each paired device gets an audience id in a new range. One new
+  flag on channel entries, `peerAllowed`, says whether a paired device may call it. (A
+  literal third door would touch 29 handler sites.)
+- Opening a watched chat uses the existing fill path (`session:open`): a snapshot, then
+  numbered live events. A gap triggers a fresh snapshot.
 - **Capabilities become per chat.** A watched chat gets the remote-screen set
-  (`shared/capabilities.ts`). The refused-feature list stays in
-  `renderer/remote-unsupported.ts`, extended to the limits in 2.1.
-- **Permission prompts.** Each has a unique id. Every device with the chat open shows it.
-  The host accepts the first answer for that id and tells any later answerer it is already
-  settled. An answer can never apply to a different prompt.
+  (`shared/capabilities.ts`); refused features stay listed in
+  `renderer/remote-unsupported.ts`.
+- **Permission prompts** have unique ids. The host accepts the first answer for an id and
+  tells later answerers it is settled.
 - **A message typed on a watcher** is a signed call carrying a call id, the host entry it
-  was aimed at, and the number of the last heartbeat the watcher received from the host.
-  The host refuses a call aimed at a host entry that is no longer current, or naming a
-  heartbeat more than a few beats old by the host's own count, so a message can never
-  arrive late and no two clocks are compared. The host remembers call ids on disk for
-  longer than that window, so a retry after a restart cannot send twice. Live events name
-  the host entry they come from; a watcher ignores events from a superseded host. The
-  watcher shows the message as sent when the host confirms the line; otherwise the box
-  keeps the text with "Not sent. Desktop went offline". [D12 Q-4]
+  was aimed at, and the number of the last heartbeat received from the host. The host
+  refuses a call aimed at a superseded host entry, or naming a heartbeat more than a few
+  beats old by its own count. It remembers call ids on disk for longer than that window.
+  The watcher shows "sent" when the host confirms the line; otherwise the box keeps the
+  text. Live events name their host entry; a watcher ignores a superseded host's.
 - **Starting a chat on another device** is a forwarded `session:create` naming a project
   that device has downloaded.
-- **Version mismatch.** Devices exchange app versions at connect. A watcher too old for the
-  host's live protocol falls back to the durable lane: the chat appears as its lines
-  arrive, it cannot be typed into, and the update notice shows [D13 S-8].
+- **Version mismatch.** A watcher too old for the host's live protocol shows the chat from
+  the durable lane as lines arrive and cannot type into it.
 
 ### 5.6 The relay
 
-A new Durable Object class beside `SyncGroupRoom`. One object per device set, named by a
-hash of the first device's public key.
+One Durable Object per device set, named by a hash of the first device's public key.
+Operations are in 6.4.
 
-It does five things, all blind:
-
-1. **Authenticate** a device by a signed challenge against the public roster. The room comes
-   from the authenticated key, never from an id the client sends.
-2. **Pass through** frames between connected devices. Not stored, not counted.
-3. **Hold** durable frames in groups: one per chat version (lines and extras), one per
-   project (bundles), one mailbox per device (key generations, roster entries).
-   - Each device tells the relay how far it has received each group (an unsealed "through
-     sequence N" the relay can read; this only lets the relay drop frames). It is separate
-     from the sealed, signed acknowledgement one device gives another for holding lines,
-     which is the only kind that lets a device evict (5.8). A frame is dropped once every
-     roster device has told the relay it received it. A "recent" device acknowledges a chat it does not want. For a project, only devices that
-     have it downloaded count.
-   - A chat's group is dropped 30 days after its last line, by the relay's clock.
-   - Bytes held count toward 1 GB per set. At the limit it releases whole groups, least
-     recently used first, never the group being written while another remains.
-   - **Every release is announced** to the devices and also kept as a lasting "released
-     through sequence N" mark on the group, so a device that was off still learns of it.
-     The device that wrote those lines then treats them as not yet delivered again, and
-     shows the decided "Relay full" message.
-   - New lines for a released chat are accepted again; a device asking for the missing
-     stretch gets `gap`.
-   - A project's first full download is never held. Nor is any single group larger than
-     the limit (a chat over 1 GB): it travels device to device only, and the host says so
-     with the "Relay full" wording.
-   - A signed "drop this group" from any roster device empties it at once (used on delete).
-4. **Registers**, kept with no time limit, each an opaque value changed by compare-and-swap:
-   per chat version a head register, a host register and a deleted register; per project a
-   tip register. One
-   call returns all of a set's registers, which is how a device fills the "behind" marks in
-   its chat list. Register contents are sealed and signed by the device that wrote them and
-   include the hash of the value they replaced.
+1. **Authenticate** by a signed challenge against the public roster. The room comes from
+   the authenticated key, never from an id the client sends.
+2. **Pass through** frames between connected devices: not stored, not counted.
+3. **Hold** durable frames in groups: one per chat version, one per project, one mailbox
+   per device.
+   - Each device tells the relay how far it has received each group; a frame is dropped
+     once every roster device has. A "recent" device says so for a chat it does not want.
+     For a project only devices that have it downloaded count. This is separate from the
+     signed acknowledgement between devices, which is the only kind that permits eviction.
+   - A chat's group is dropped 30 days after its last line.
+   - At 1 GB it releases whole groups, least recently used first, never the group being
+     written while another remains. Every release is announced and kept as a mark on the
+     group, so the writer treats those lines as undelivered again.
+   - Never held: a project's first full download, or any group larger than the limit.
+   - A signed "drop this group" from a roster device empties it at once.
+4. **Registers**, with no time limit, changed by compare-and-swap: per version `head`,
+   `host`, `del`; per project `tip`. Values are sealed and signed by the device that wrote
+   them. One call returns all of a set's registers.
 5. **Presence.**
 
-Also: pairing meeting points; roster updates; delayed erase on empty roster.
+Also: pairing meeting points; roster updates; erase after 90 idle days or an empty roster.
 
-**With a super-host.** Devices send durable frames to the super-host and do not ask the
-relay to hold them. Only while the super-host is unreachable, and only if the user has left
-the fallback on, do they use `hold`. Registers and presence are used either way.
-
-**If the relay misbehaves.** It can delay, withhold, or replay an old register. It cannot
-read, forge or alter anything. A device never accepts a head older than one it has seen,
-and takes its first heads from a paired device, not from the relay. The worst outcomes are
-a device wrongly believing it is up to date, or two devices both told they reserved the
-host role. Both are caught when devices exchange control logs.
-
-**Limits with no account** [D12 Q-11]: new sets rate-limited per network address; 1 GB and
-a frame rate per set. During the build only an allow-list of test sets is accepted.
-
-**Cost** (`connection-options.md`): free plan today. Live words batched about every quarter
-second. Storage is the cost that grows; large frames may belong in Cloudflare's object
-storage with the Durable Object as index (T7).
+- **With a super-host** devices send durable frames to it and use the relay's `hold` only
+  while it is unreachable and the fallback is on.
+- **If the relay misbehaves** it can delay, withhold or replay an old register. It cannot
+  read, forge or alter anything. A device never accepts a head older than one it has seen.
+  The worst outcomes, a device wrongly thinking it is up to date or two devices both told
+  they reserved the host role, are caught when devices exchange control logs.
+- **Limits with no account:** new sets rate-limited per network address; 1 GB and a frame
+  rate per set. During the build only an allow-list of test sets is accepted.
+- **Cost:** free plan today. Live words are batched about every quarter second. Large
+  frames may belong in Cloudflare's object storage with the Durable Object as index (T7).
 
 ### 5.7 Project files over the mesh
 
-Keep `GitTransport`'s staging, guards and repair. Change two things: where history comes
-from and goes to, and how a clash is settled.
+Keep `GitTransport`'s staging, guards and repair. Change where history travels and how a
+clash is settled.
 
-**The carrier.** Each synced folder gets a second hidden repository beside the first
-(`.youcoded/mesh-remote.git`), used as the "remote". `GitTransport` already works against a
-local path; its contract tests use one. Incoming history is unpacked into that repository;
-outgoing history is read from it and sent to peers and the keeper as incremental git
-bundles in durable frames. `GitTransport` fetches from and pushes to it as it does with
-GitHub today.
-
-**Making merges the same on every device.** Today the incoming version keeps the file's
-name and this device's becomes the copy, which settles only because GitHub orders
-everyone's pushes. Between equal devices that rule would give each device a different
-result. So (engineering call; T4 must prove it):
-
-- A clash is settled by a rule that depends only on the two sides, not on who is merging
-  [D13 S-10]:
-  - both edited the same lines: the side whose file has the lower git blob id keeps the
-    name; the other becomes `name (from <its device>, <date>)`. The device and date in
-    that name are read from the commit that made the losing version (its recorded author
-    device, its date in UTC), never from the device doing the merge, so every device
-    writes the identical name;
-  - one edited, one deleted: the edit is kept (today a deletion from the other side wins);
-  - both renamed the same file differently: both names are kept.
-- Merge commits are built with fixed author, fixed message, the later of the two parents'
-  dates, and parents in a fixed order. Two devices merging the same two histories then
-  produce the identical commit. With three or more histories, devices may pass through
-  different merge commits but end on the same tree, and on the same commit once nothing new
-  is being written.
-- A tip that shares no history with the local one raises a "diverged" state for that
-  project [D13 S-11] and is not merged.
-- This changes `GitTransport`'s conflict code and its "remote-wins" contract test.
-
-**Sequencer, as a traffic rule only.** To cut down on merges, devices send to one place
-first when they can: the keeper's tip register if reachable, else the online device with
-the lowest id. Correctness does not depend on it; devices that disagree about the
-sequencer still converge.
-
-**Safety rules.**
-
-- Upload the bundle first, then change the tip register.
-- A device adopts a tip only after checking it descends from, or can be merged with, what it
-  has. A tip with no shared history is never merged in automatically; it raises a "these
-  have diverged" state for that project. (The two exceptions, both at pairing: the user's
-  explicit "yes, the same project", and the Personal space, which is always combined.)
-- Bundles are cut from the oldest tip any roster device has acknowledged. If a needed
-  earlier bundle was released by the relay, fall back to fetching straight from a device
-  that has the project.
-- Sends are bundled and retried with a random back-off, so two hosts editing every two
-  seconds cannot chase each other.
-- **If T4 fails:** one fixed sequencer per project, files moving only while it is on.
-
-**Other points.**
-
-- **The note** is the tip register plus a counter: the number of commits in the tip's
-  history, which every device computes identically. It is what the notice quotes.
-  [D10 Q-2]
-- **Project id** is an id minted when the project is created and stored in its registry
-  record (existing projects get one at the switch). Two folders are recognised as the same
-  project by a shared root commit; when the user says two unrelated folders are the same
-  project, the lower id is kept and the other is recorded as an alias.
-- **The Personal space is always combined at pairing.** Two fresh devices' Personal spaces
-  share no history, and it holds the project list, tags and Pages. Pairing is the user's
-  explicit act, so it is the one place unrelated histories are joined without a further
-  question; the registry's existing merge rules settle the records.
-- **Listed versus downloaded.** The project registry lists every project. Which are
-  downloaded here is a local per-device set, replacing download-everything in
-  `materialization-planner.ts`. Projects already on a device at the switch stay on. A newly
-  paired device starts with none.
-- **First download** comes straight from a device that has the project and is on. [D9 S-3]
-- **The wait** drops from 15 s to about 2 s for the mesh carrier only (`engine.ts:142`).
+- **Carrier.** Each synced folder gets a second hidden repository
+  (`.youcoded/mesh-remote.git`) used as the remote; `GitTransport` already works against a
+  local path. Incoming history is unpacked into it; outgoing history leaves it as
+  incremental git bundles in durable frames.
+- **The same merge on every device.** Today the incoming version keeps the file's name,
+  which settles only because GitHub orders the pushes. Between equal devices:
+  - both edited the same lines: the side with the lower git blob id keeps the name; the
+    other becomes `name (from <device>, <date>)`, with device and date read from the
+    commit that made it, never from the merging device;
+  - one edited, one deleted: the edit is kept;
+  - both renamed the same file differently: both names are kept;
+  - merge commits use a fixed author and message, the later parent's date, and parents in
+    a fixed order, so two devices merging the same histories produce the same commit.
+  This changes `GitTransport`'s conflict code and its "remote-wins" contract test.
+- **Sequencer, for traffic only.** Devices send to one place first when they can: the
+  keeper's tip register, else the lowest-id online device. Correctness does not depend on
+  it.
+- **Safety.** Upload the bundle, then change the tip. Adopt a tip only if it connects to
+  local history; otherwise the project is "diverged" and nothing is merged (except at
+  pairing, on the user's "same project", and for the Personal space, which is always
+  combined). Cut bundles from the oldest tip any device has acknowledged; if an earlier
+  bundle was released, fetch straight from a device. Retry with random back-off.
+- **If T4 fails:** one fixed sequencer per project, files moving only while it is on. That
+  changes what users experience and goes to Destin first.
+- **The note** is the tip register plus the number of commits in the tip's history.
+- **Project id** is minted at creation and stored in the registry record. Two folders are
+  the same project when their histories share a root commit; when the user says two
+  unrelated folders are the same, the lower id stays and the other becomes an alias.
+- **Listed versus downloaded.** Which projects are downloaded is a local per-device set,
+  replacing download-everything in `materialization-planner.ts`. Projects already on a
+  device at the switch stay. A newly paired device starts with none.
+- **The wait** is about 2 s for the mesh carrier (`engine.ts:142`).
 - **The Personal space** (project registry, tags, Pages) rides this carrier.
-  `Conversations/`, `ConversationNames/`, `Handoffs/` and `Devices/` stop being written and
-  are excluded.
-- **Same project or not** at pairing: the same when the two hidden histories share a root
-  commit (true for anything already synced through GitHub) [D12 Q-15]; otherwise the
-  question in 2.4.
+  `Conversations/`, `ConversationNames/`, `Handoffs/` and `Devices/` stop being written.
 
 ### 5.8 Storage policy
 
-- "Keep everything": every chat's lines and extras stay.
 - "Recent": lines and extras of chats not used for 30 days may be evicted; the summary,
   control log and chain values stay.
-- **Never evicted:** a chat hosted here [D13 S-9]; any line that no other **device** has
-  acknowledged. The relay's acknowledgement does not count for eviction (a super-host's
-  does; it is a device), though the relay's does count for the quit rule and the "waiting"
-  mark as decided [D9 Q-3].
-- "Waiting" in the chat list means: this device holds lines that neither another device nor
-  a keeper has acknowledged.
-- "Recently deleted": 30 days on each device (5.4).
+- Never evicted: a chat hosted here; any line no other device has acknowledged. The
+  relay's acknowledgement does not permit eviction, though it counts for the quit rule and
+  the "waiting" label.
+- "Waiting" means: lines here that neither another device nor a keeper has acknowledged.
 
 ### 5.9 Lifecycle
 
-All of this runs only when the switch (7.2) is on.
+All of this runs only when the switch (7.2) is on, wired in both `main.ts` and
+`headless-boot.ts`.
 
-- **Awake per reply.** `powerSaveBlocker` (desktop) or the existing `keepAwake` host call
-  (Android, capped at 4 hours) while a reply runs on this host; 2 hours per reply on desktop [D13 Q-7].
-- **Battery exemption.** A new Android setting the user opts into. [D6 Q-3]
-- **Quit.** Compare each hosted chat's head with what a keeper or any peer has
-  acknowledged. All reply ends acknowledged: quit at once. Otherwise allow a few seconds
-  for project changes, then quit and show the line in 2.6. Today's shutdown already caps
-  teardown at about 6 seconds.
-- **Launch and wake.** Before any hosted chat continues or is resumed: connect, fetch
-  control logs from whatever is reachable, run `decide`. Taken over: stop the process,
-  `released`. Nothing reachable: carry on as host. Wire it in both `main.ts` and
-  `headless-boot.ts`.
-- **The weak point is waking.** A reply that was running when the computer slept carries on
-  the instant it wakes, before the network is back, and the app cannot tell Claude Code to
-  wait. Unless something holds it, "nothing reachable, carry on" would be the normal case
-  after every wake, giving surprise second versions and file edits from a reply the user
-  thought was dropped. Two guards, the first being the one relied on:
-  1. **Hold every action until the check is done.** Claude Code already asks the app before
-     each file change or command (the blocking hook the app uses for permissions). From the
-     operating system's sleep signal until the wake check completes (or about 10 seconds
-     pass with nothing reachable), the app answers those asks with "wait". The reply may go
-     on producing words, but it cannot touch a file or run a command. This works the same
-     on every operating system. The native runtime is the app's own loop and is simply
+- **Awake per reply.** `powerSaveBlocker` on desktop, capped at 2 hours per reply; the
+  existing `keepAwake` host call on Android (already capped at 4 hours).
+- **Battery exemption.** A new Android setting the user opts into.
+- **Quit.** Compare each hosted chat's head with what a keeper or peer has acknowledged.
+  All reply ends acknowledged: quit at once. Otherwise allow a few seconds for project
+  changes, then quit and show the line in 2.6.
+- **Launch and wake.** Before any hosted chat continues: connect, fetch control logs from
+  whatever is reachable, run `decide`. Taken over: stop the process and append `released`.
+  Nothing reachable: carry on as host.
+- **Holding a reply across sleep.** A reply running when the computer slept carries on the
+  instant it wakes, before the network is back. So:
+  1. Claude Code already asks the app before each file change or command (the blocking
+     hook used for permissions). From the sleep signal until the wake check completes, or
+     about 10 seconds pass with nothing reachable, the app answers "wait". The reply may
+     produce words but cannot touch a file or run a command. The native runtime is simply
      paused.
-  2. **Pause the process too, where the operating system allows it,** at the sleep signal
-     rather than after waking, so even words are not produced.
-  T19 proves the first on every system and reports where the second is possible.
+  2. Where the operating system allows, the process is also paused at the sleep signal.
+  T19 proves the first on every system.
 
 ### 5.10 Super-host
 
 - The phone's backend already boots the whole app with no window under plain Node
-  (`headless/headless-main.ts`, `headless-boot.ts`, stand-ins in `electron-headless.ts`). A
-  super-host is that boot on Windows, Mac or Linux, started at login.
-- Phone-specific parts to generalise: the owner token and secret key arrive on stdin from
-  the Android service; secret storage is a shim keyed by that supplied key and calls itself
-  the Android keystore (a desktop super-host needs a real key source such as the OS
-  keychain); `headless-boot.ts:132-134` hard-codes the platform as Android; keep-awake has
-  no desktop stand-in.
-- It needs: start at login on each OS; pairing without a screen (it prints a code, or is
-  paired from its browser view); the existing remote server in Tailscale mode as its
-  browser view.
-- It is an ordinary roster device on "keep everything". Its acknowledgement counts as a
-  device's.
-- Outside access and locking its browser view: O1. Raspberry Pi: T8.
+  (`headless/headless-main.ts`, `headless-boot.ts`, `electron-headless.ts`). A super-host
+  is that boot on Windows, Mac or Linux, started at login.
+- To generalise: the owner token and secret key arrive on stdin from the Android service;
+  secret storage is a shim keyed by that key (a desktop super-host needs the OS keychain);
+  `headless-boot.ts:132-134` hard-codes Android; keep-awake has no desktop stand-in.
+- It needs: start at login; pairing without a screen (it prints a code, or is paired from
+  its browser view); the existing remote server in Tailscale mode as its browser view.
+- It is an ordinary roster device on "keep everything".
 
 ### 5.11 Versions
 
-- The link layer exchanges app version and mesh protocol version at connect.
-- A `format` entry names the minimum app version that may host or continue a chat. An older
-  device may read and watch. [D12 Q-12]
-- Unknown entry kinds and frame kinds are kept and passed on, never dropped.
+Devices exchange app and mesh protocol versions at connect. A `format` entry names the
+minimum app version that may host or continue a chat. Unknown entry and frame kinds are
+kept and passed on, never dropped.
 
 ---
 
@@ -1469,127 +1098,99 @@ it expects, and swaps using the token.
 
 The old system keeps working, untouched, until Phase 7.
 
-| # | Area | Add (Phases 1 to 6, behind the switch) | Remove or change (Phase 7 and after) |
-|---|---|---|---|
-| 1 | `main/mesh/` (new) | identity, link, store, replicator, control, host, proxy, policy, carrier | — |
-| 2 | `main/conversations/` | — | Delete `handoff-*.ts`, `takeover.ts`, `lease-client.ts`, `resume-admission.ts`, the handoff glue in `service.ts:887-1042`, `transcript-mirror` into the Personal space, `ConversationRecord` syncing. Keep naming logic, tags, slug repair, `resolve-local-project`. |
-| 3 | `main/ipc/` | A `mesh` channel family; `peer` context and `peerAllowed` in `channel-table.ts` | Delete `handoff.ts` and the `HANDOFF_*` channels |
-| 4 | Renderer | Host chip, the notice, Devices and pairing, storage setting, Recently deleted and delete, project "sync on this device", keeper settings. Hidden while the switch is off. All through review decks. | Delete the pending-handoff views, `resume-lease-gate.ts`, `takeover-dialog-copy.ts`, the MovedGate |
-| 5 | Remote access | — | Remove the Android "Connect to Desktop" screen and desktop "Remote access" pairing for app use. Keep `RemoteServer` in Tailscale mode for the browser view and in local mode for the Android app's own screen. |
-| 6 | `main/sync-spaces/` | The mesh carrier; per-device downloaded set; 2 s wait for the mesh carrier; the new clash rule, used only by the mesh carrier | Stop GitHub pull; exclude `Conversations/`, `ConversationNames/`, `Handoffs/`, `Devices/` |
-| 7 | `main/session-manager.ts`, native host | Seam S7; awake per reply | `stopSessionForHandoff` |
-| 8 | `main/main.ts`, `headless/headless-boot.ts` | Mesh start-up, quit rule, launch and wake checks, in both, only when the switch is on | Lease wiring (`main.ts:1014`, `headless-boot.ts:186`) |
-| 9 | `main/headless/` | Desktop super-host boot (Phase 8) | — |
-| 10 | Android (`app/`) | Battery-exemption setting; multicast lock; QR scanning exists (`QrScannerOverlay.kt`) | `PairedDeviceStore.kt` for app use |
-| 11 | Worker | New Durable Object and route, allow-listed | Lease operations in `SyncGroupRoom`, once no shipped version uses them |
-| 12 | Everything that reads chat files directly | About 26 source files reference Claude Code's chat folder (chat search, the resume browser, transcript paging, the reconciler, slug repair). List them all in Phase 0. On a device that is not the host that file does not exist, so each must read through the chat store, or be shown to need only hosted chats. | — |
-| 13 | Docs | — | `youcoded/docs/conversations.md`, `sync-spaces.md`, `native-runtime.md`: rewrite the parts that change; they are already stale in places |
+| Area | Add (Phases 1 to 6, behind the switch) | Remove or change (Phase 7 and after) |
+|---|---|---|
+| `main/mesh/` (new) | identity, link, store, replicator, control, host, proxy, policy, carrier | — |
+| `main/conversations/` | — | Delete `handoff-*.ts`, `takeover.ts`, `lease-client.ts`, `resume-admission.ts`, the handoff glue in `service.ts:887-1042`, `transcript-mirror` into the Personal space, `ConversationRecord` syncing. Keep naming logic, tags, slug repair, `resolve-local-project`. |
+| `main/ipc/` | A `mesh` channel family; `peer` context and `peerAllowed` in `channel-table.ts` | Delete `handoff.ts` and the `HANDOFF_*` channels |
+| Renderer | Host chip, the notice, Devices and pairing, storage setting, delete and Recently deleted, project "sync on this device", keeper settings, "Check sync". Hidden while the switch is off. | Delete the pending-handoff views, `resume-lease-gate.ts`, `takeover-dialog-copy.ts`, the MovedGate |
+| Remote access | — | Remove the Android "Connect to Desktop" screen and desktop "Remote access" pairing for app use. Keep `RemoteServer` in Tailscale mode for the browser view and in local mode for the Android app's own screen. |
+| `main/sync-spaces/` | The mesh carrier; per-device downloaded set; 2 s wait and the new clash rule, for the mesh carrier only | Stop GitHub pull; exclude `Conversations/`, `ConversationNames/`, `Handoffs/`, `Devices/` |
+| `main/session-manager.ts`, native host | Seam S7; awake per reply; the hold across sleep | `stopSessionForHandoff` |
+| `main/main.ts`, `headless/headless-boot.ts` | Mesh start-up, quit rule, launch and wake checks, in both | Lease wiring (`main.ts:1014`, `headless-boot.ts:186`) |
+| `main/headless/` | Desktop super-host boot (Phase 8) | — |
+| Android (`app/`) | Battery-exemption setting; multicast lock. QR scanning exists (`QrScannerOverlay.kt`). | `PairedDeviceStore.kt` for app use |
+| Worker | New Durable Object and route, allow-listed | Lease operations in `SyncGroupRoom`, once no shipped version uses them |
+| Everything that reads chat files directly | About 26 source files reference Claude Code's chat folder (chat search, the resume browser, transcript paging, the reconciler, slug repair). On a device that is not the host that file does not exist, so each must read through the chat store (T20). | — |
+| Docs | — | Rewrite the changed parts of `youcoded/docs/conversations.md`, `sync-spaces.md`, `native-runtime.md` |
 
 ### 7.2 The switch
 
-One local setting, off by default, in the app's own settings file, read by both boots. Off:
-the app behaves exactly as today; nothing in `main/mesh/` starts; no new screen, setting or
-lifecycle behaviour is visible. On (test-rig and dev instances with their own home folder
-only, until Phase 7): the mesh runs and, in that instance, the Personal-space chat lane is
-off. The Phase 7 release ships with the setting on for everyone; that update is what
-"a device switches when it is updated" (2.9) means. The old code is removed in a later release, once rollback is no longer wanted.
+One local setting, off by default, read by both boots. Off: the app behaves exactly as
+today; nothing in `main/mesh/` starts; no new screen, setting or lifecycle behaviour is
+visible. On, before Phase 7, only in test-rig and dev instances with their own home folder.
+The Phase 7 release ships with it on for everyone; that update is what "a device switches
+when it is updated" means. The old code is removed in a later release.
 
-### 7.3 The interim GitHub lane (engineering call; from Phase 7 until the backup rebuild)
+### 7.3 The interim GitHub lane (from Phase 7 until the backup rebuild)
 
-His rule: GitHub chat sync off at mesh deploy; GitHub backup continues; one-time restore
-keeps working; never both systems syncing. Today there is no upload-only mode and chats are
-part of the two-way Personal repository. So:
+Today there is no upload-only GitHub mode and chats are part of the two-way Personal
+repository. So:
 
-- **When a device switches** it runs one last ordinary sync, then never pulls again.
-- From then on it pushes its own branches, which no other device ever writes, so nothing
-  can clash: `mesh-backup/<device id>` in the Personal repository (a snapshot of the chats
-  it holds, plus the Personal space without chats) and the same branch name in each
-  project's repository. The old `main` branches are left exactly as they were.
-- Git stores identical files once, so several devices holding the same chats cost little.
-- **One-time restore**, offered on any device not yet paired with another (at first run
-  when it has no chats, and from settings otherwise): fetch the old `main` and every
-  backup branch; for each chat compare copies by hash chain; where one is a prefix of
-  another keep the longer; where they differ keep both as versions; add to the store
-  without overwriting anything already there; then
-  fetch each project once. Chats over 50 MiB were never uploaded; the restore says which
-  are missing. [D12 Q-14] To the user this is the same as today: sign in to GitHub on an
-  empty device and everything comes down.
-- Known cost: not slimmed, so the repositories keep growing (4.28 GB on 2026-11-12).
+- When a device switches it runs one last ordinary sync, then never pulls again.
+- From then on it pushes branches only it ever writes, so nothing can clash:
+  `mesh-backup/<device id>` in the Personal repository (the chats it holds, plus the
+  Personal space without chats) and the same branch name in each project's repository. The
+  old `main` branches are left as they were. Git stores identical files once.
+- **One-time restore** is offered on any device not yet paired with another: at first run
+  when it has no chats, and from settings otherwise. It fetches the old `main` and every
+  backup branch, compares copies of each chat by hash chain (a prefix: keep the longer;
+  different: keep both as versions), adds to the store without overwriting, then fetches
+  each project once. Chats over 50 MiB were never uploaded; it says which are missing.
+- Not slimmed, so the repositories keep growing (4.28 GB on 2026-11-12).
 
-**Devices that switch at different times.** A device still on the old system keeps syncing
-with GitHub and with other old devices. A switched device no longer reads GitHub. Until all
-of a user's devices have switched and are paired, the two groups do not see each other's
-new chats. Nothing is lost: when a late device switches and is paired, the combine step in
-walk-through A runs. A chat that was continued on both sides in the meantime has really
-diverged, and is listed as two versions. The one-time message must say all this plainly.
-A device switches when it is updated [D13 Q-1]. No single device ever runs both systems;
-for a while one user's devices can be split between them, until all are updated and paired.
+**Devices that update at different times.** An updated device no longer reads GitHub; one
+not yet updated still does. Until all of a user's devices are updated and paired, the two
+groups do not exchange new chats or file changes. Nothing is lost: when a late device
+updates and is paired, the ordinary combine runs, and a chat continued on both sides
+appears as two versions. A not-yet-updated device cannot show the new message, so the
+updated device reads the old device registry and names the devices that still need
+updating and pairing.
 
-Project files are affected the same way as chats: an updated device and a not-yet-updated
-one stop exchanging file changes too. A not-yet-updated device cannot show the new message,
-so the updated device does it: it reads the old device registry and names the devices that
-still need updating and pairing. One-time restore is also reachable from settings on any
-device that is not yet paired with another, and combines by the same prefix rule, so
-sending one message before restoring does not hide it.
-
-**Rollback** is for the whole release, not one device. It is costly: devices that stopped
-reading GitHub come back with conflict copies, so it is for emergencies only.
-
-**Rollback detail.** While the old code is still shipped,
-a later release can turn the switch off: on each device the store is written back into
-`Personal/Conversations/` (records rebuilt from control logs; deleted chats left out), the
-device stops using the mesh, and ordinary GitHub sync resumes with its existing
-conflict-copy behaviour. Rehearse it in Phase 7. A single device cannot go back alone; it
-would break rule 4.
+**Rollback** is for the whole release, never one device, and is for emergencies: a later
+release turns the switch off, each device writes its store back into
+`Personal/Conversations/` (records rebuilt from control logs; deleted chats left out), and
+ordinary GitHub sync resumes with its conflict-copy behaviour. Rehearse it in Phase 7.
 
 ---
 
 ## 8. Security
 
 **Promise.** Contents that sync are readable only on the user's devices. A keeper sees
-sizes, counts, timing and public keys. Cloud backup is separate and locked only if the user
-turns the lock on.
+sizes, counts, timing and public keys. Cloud backup is separate, and locked only if the
+user turns the lock on.
 
 **Must be true.**
 
-1. No private key or set secret is written to a synced folder, a backup, a log, or sent to
-   any server.
+1. No private key or set secret is written to a synced folder, a backup or a log, or sent
+   to any server.
 2. A device is accepted only if on the signed roster; a keeper's say-so is never enough.
-   Devices compare roster heads before serving each other.
 3. The relay picks the room from the authenticated key.
-4. Durable frames, calls and device-to-device acknowledgements are sealed and signed by the
-   sender. (The "received through N" a device tells the relay is unsealed and only lets the
-   relay drop frames.)
-   Duplicates are recognised and ignored; they are never treated as new.
-5. Pairing cannot be completed by someone who only controls the relay. Attempts are counted
-   on the existing device; the code burns after three and expires in minutes.
-6. From the first frame sealed under the generation created by a removal, the removed
-   device can read nothing. Anything it signs or sends beyond the removal's cut-off is void
-   on every device.
-7. Same-wifi direct accepts and serves nothing before the roster check, and announces only
-   presence.
+4. Durable frames, calls and device-to-device acknowledgements are sealed and signed.
+   Duplicates are recognised and ignored.
+5. Pairing cannot be completed by someone who only controls the relay.
+6. From the first frame sealed under the generation a removal creates, the removed device
+   can read nothing, and what it signs or sends beyond the cut-off is void everywhere.
+7. Same-wifi direct accepts and serves nothing before the roster check.
 8. No frame body in any log.
-9. A keeper that lies can cause delay or a visible "two versions", never a silent loss or a
-   forged line.
+9. A keeper that lies can cause delay or a visible "two versions", never a silent loss or
+   a forged line.
 10. No device clears its only copy of a line on a keeper's word alone.
 
-**Stated plainly: every paired device is fully trusted.** Any one of them can add a device,
-remove the others, and type into chats on the others, whose assistants can run commands on
-those machines. That is what the feature is. The protections are: adding and removing need
-the device's own unlock; every other device is told when a device is added [D13 Q-5]; the relay
-erases an emptied set only after a delay.
+**Every paired device is fully trusted.** Any one can add a device, remove the others, and
+type into chats on the others, whose assistants can run commands there. The protections
+are the unlock on adding and removing, the notice other devices show when one is added,
+and the relay's delay before erasing an emptied set.
 
-**Reviews.** A written threat model before Phase 1 is accepted. The decided review of
-same-wifi direct. "End-to-end encrypted" may be used from launch, on condition of
-extensive reviews and audits of our own, based on external best practices. His words: "we
-will need to conduct extensive reviews/audits of our own. based on external
-best-practices". [D13 Q-6] Engineering reading: before Phase 7, audit the pairing, key and
-relay code against a published external standard (for example OWASP's verification
-standards and the documented designs of Signal and WhatsApp device linking), by reviewers
-who did not write it, with findings recorded and closed.
+**Reviews.** A written threat model before Phase 1 is accepted. A dedicated review of
+same-wifi direct before it ships. "End-to-end encrypted" may be used from launch on
+condition of extensive reviews and audits of our own, based on external best practices:
+before Phase 7, the pairing, key and relay code is audited against published standards by
+reviewers who did not write it, with findings recorded and closed.
 
-**Other limits to state honestly.** A stolen device keeps what it had. The browser view is
-protected by Tailscale only.
+**Limits to state honestly.** A stolen device keeps what it had. A thief holding the
+longest-standing device, unlocked, can remove the others. The browser view is protected by
+Tailscale only.
 
 ---
 
@@ -1632,36 +1233,32 @@ of that phase's exit.
 
 ## 10. Build order
 
-Destin's order: mesh first, backup rebuild after [chat 2026-11-12]; relay before the
-own-device keeper [D5 Q-1]. The phases within that are an engineering call. Phases 1 to 6
-change nothing for users (7.2).
+The mesh first, the backup rebuild after; the relay before the super-host. Everything
+reaches users in one release, at Phase 7. Phases 1 to 6 change nothing for users (7.2).
 
-| Phase | Builds | Destin sees (review decks) | Needs decided first | Done when |
-|---|---|---|---|---|
-| 0 | T1 to T21 as investigations, the five named in section 9 first | A plain report and any decision they force | — | Each pass line met, or the design amended with his agreement where he can see the change |
-| 1. Devices | Keys, roster with cut-offs, generations, pairing (QR and code, relay meeting point), adding and removing with unlock, link layer over the relay, relay (auth, pass-through, presence, mailboxes, limits, allow-list) | Devices screen, pairing, removing, the 30-day prompt | O4 | Three rig devices and a real phone pair; T15 passes; threat model written |
-| 2. Chats copy | Chat store, adapters, chains, reply ends, control log (`claim`, `summary`, `renamed`, `flag`, `segment`), replicator, relay holding and release notices, registers, 30-day and 1 GB rules, storage setting, the chat list, relay on/off setting | Chat list on a second device (reading only), storage setting, relay setting | — | A chat written on A is readable on B in under 2 s, and after B was off a day; inventories match; T2, T14, T16 pass |
-| 3. Watching | Session router and proxy, peer context, per-chat capabilities, host chip, permission from any device, signed calls (host entries are `claim` only in this phase), start on another device, `format` and the version fallback | Watching and typing into a chat hosted elsewhere | — | A watcher drives a full reply on a remote host, desktop and phone; parity tests green; T17 passes |
-| 4. Project files | Mesh carrier, clash rule, sequencer, tip register, per-device download, 2 s wait, same-project question | Project list with "sync on this device"; combining projects at pairing | — | T4 passes; a project edited on two hosts converges |
-| 5. Host changes | `takeover`, `released`, `relation`, `version`, `bound`, `talk-only`, `deleted`, `restored`; full `decide`; combining chats at pairing; reservations; seam S7; divider and assistant note; notices; delete and Recently deleted; awake per reply; quit rule; launch and wake checks | Every notice row, the divider, quitting, deleting | — | Every row in 2.7 reproduced in the rig, with walk-throughs B to E and a kill between every step of a takeover; T12, T13, T16 pass |
-| 6. Same wifi | Discovery, direct path, local meeting point, peer arbiter | Nothing new on screen | — | Its security review passes; Phases 2 to 5 pass with the relay off; T15 passes |
-| 7. Switch-over | Interim GitHub lane, last sync, one-time restore, combine, one-time message, backup prompt, removal of in-app remote access, rollback | The one-time message and prompts | — | Rehearsed on copies of Destin's four devices, switched one at a time: the inventory tool shows every chat once on every device; rollback rehearsed. Then, on his say and with him, a trial on his real devices, because copies cannot show Android backgrounding, real sleep or Windows key storage. Then the release |
-| 8. Super-host | Desktop headless boot, start at login, pairing without a screen, relay fallback, outside access | Super-host setup | O1 | A super-host keeps two sleeping devices current with the relay off |
-| 9. Backup rebuild | Its own design pass first (cards 241, 98, 121, 253; O10): one backup, slimming, restore, locking, GitHub fresh start; deletes the interim lane | New Backup screen | O10, O2 if payment touches it | Separate acceptance |
+| Phase | Builds | Destin reviews | Done when |
+|---|---|---|---|
+| 0 | T1 to T21 as investigations, the five named in section 9 first | A plain report and any decision they force | Each pass line met, or the design amended with his agreement where he can see the change |
+| 1. Devices | Keys, roster, generations, pairing (QR and code, relay meeting point, joining two sets), adding and removing with unlock, link layer over the relay, relay (authenticate, pass-through, presence, mailboxes, limits, allow-list) | Devices screen, pairing, removing, the 30-day offer | Three rig devices and a real phone pair; T15 passes; threat model written |
+| 2. Chats copy | Chat store, adapters, chains, reply ends, control log (`claim`, `summary`, `renamed`, `flag`, `segment`), replicator, relay holding and releases, registers, storage setting, the chat list, relay on/off | Chat list on a second device (reading only), storage and relay settings | A chat written on A is readable on B in under 2 s, and after B was off a day; inventories match; T2, T14, T16 pass |
+| 3. Watching | Session router and proxy, peer context, per-chat capabilities, host chip, permission from any device, signed calls, start on another device, version fallback | Watching and typing into a chat hosted elsewhere | A watcher drives a full reply on a remote host, desktop and phone; parity tests green; T17 passes |
+| 4. Project files | Mesh carrier, clash rule, sequencer, tip register, per-device download, 2 s wait, combining projects at pairing | Project list with "sync on this device"; the same-project question | T4 passes; a project edited on two hosts converges |
+| 5. Host changes | `takeover`, `released`, `relation`, `version`, `bound`, `talk-only`, `deleted`, `restored`; full `decide`; combining chats at pairing; reservations; seam S7; divider and notes to the assistant; notices; delete; awake per reply; quit rule; launch and wake checks; the hold across sleep | Every notice row, the divider, quitting, deleting | Every row in 2.7 reproduced in the rig, with walk-throughs B to D and a kill between every step of a takeover; T12, T13, T16, T19 pass |
+| 6. Same wifi | Discovery, direct path, local meeting point, peer arbiter | Nothing new on screen | Its security review passes; Phases 2 to 5 pass with the relay off |
+| 7. Switch-over | Interim GitHub lane, last sync, one-time restore, one-time message, backup prompt, removal of in-app remote access, rollback, the security audit | The one-time message and prompts | Rehearsed on copies of Destin's four devices, updated one at a time: the inventory tool shows every chat once on every device; rollback rehearsed. Then, on his say and with him, a trial on his real devices. Then the release |
+| 8. Super-host | Desktop headless boot, start at login, pairing without a screen, relay fallback, outside access (needs O1) | Super-host setup | A super-host keeps two sleeping devices current with the relay off |
+| 9. Backup rebuild | Its own design first (cards 241, 98, 121, 253; O10); deletes the interim lane | New Backup screen | Separate acceptance |
 
-Pairing in Phase 1 joins devices; combining the data two devices already hold arrives with
-the store (chats, Phase 5) and the carrier (projects, Phase 4).
-
-Why this order: project files (4) before host changes (5) because several notice rows need
-project notes and fetching. Same wifi (6) before the switch-over (7) because "no keeper at
-all" only works once devices can talk directly. Phase 8 can move later without blocking 7.
+Project files (4) come before host changes (5) because several notice rows need project
+notes and fetching. Same wifi (6) comes before the switch-over (7) because "no keeper at
+all" only works once devices can talk directly.
 
 ---
 
-## 11. After building: what to measure and watch
+## 11. After building: what to measure
 
-V1 to V5 are thresholds; a miss is a bug. V6 to V12 produce numbers reported to Destin with
-a recommendation.
+V1 to V5 are thresholds; a miss is a bug. V6 to V12 are numbers reported to Destin with a
+recommendation.
 
 | # | Measure | Target or report |
 |---|---|---|
@@ -1670,92 +1267,73 @@ a recommendation.
 | V3 | "Host offline" | No false notice across 100 wifi blips of under 10 s; a real loss detected within 45 s |
 | V4 | Takeover, tap to ready | Under 5 s when lines are already here |
 | V5 | File change to arrival | Under 5 s; during a burst of 200 edits, at most one send per 2 s |
-| V6 | Relay storage and requests per user per day | Report from Destin's real use; restate cost per 1,000 users |
+| V6 | Relay storage and requests per user per day | Report; restate cost per 1,000 users |
 | V7 | Phone battery | Report: per hour watching, per hour hosting, per day in the background, with and without the exemption |
-| V8 | Phone mobile data per day | Report; feeds card 258 |
-| V9 | First pairing with hundreds of chats | Chat list complete in under 30 s; app usable throughout; total time reported |
-| V10 | Memory, start-up and disk added | Report against `.claude/rules/performance.md`; chain values and set-aside tails included |
+| V8 | Phone mobile data per day | Report (card 258) |
+| V9 | First pairing with hundreds of chats | Chat list complete in under 30 s; app usable throughout |
+| V10 | Memory, start-up and disk added | Report against `.claude/rules/performance.md` |
 | V11 | Hidden history growth at 2 s with two hosts | Report after a week |
-| V12 | How often "two versions" appears in real use, and why | Report; any case not caused by a real offline split is a bug |
+| V12 | How often "two versions" appears, and why | Report; any case not caused by a real offline split is a bug |
 
-**Experience** (the context-free tester in `scripts/ui-review/ux-tester.md`, then Destin):
+**Experience checks** (the context-free tester in `scripts/ui-review/ux-tester.md`, then
+Destin):
 
-- The everyday case: leave home with the computer asleep, continue two chats on the phone,
-  one with its project and one talk-only, come home, bring them back.
+- Leave home with the computer asleep, continue two chats on the phone (one with its
+  project, one talk-only), come home, bring them back.
 - A first-time user pairs two devices without instructions.
 - Each notice is understood; a four-row notice is readable.
-- Talk-only: does the assistant stay sensible about files it described earlier?
-- "Both copies kept" files after two hosts edit one project: noticed and understood?
-- A watcher on a desktop understands why image paste is refused.
-- "Relay full", "stored on Desktop, which is offline", and a phone showing as offline while
-  in a pocket: understood?
-- A user whose devices switch at different times understands the one-time message.
+- In talk-only, the assistant stays sensible about files it described earlier.
+- "Both copies kept" files are noticed and understood.
+- "Relay full", "stored on Desktop, which is offline", and a pocketed phone showing as
+  offline are understood.
+- A user whose devices update at different times understands the one-time message.
 
-**Keep watching after launch, and how.** The inventory tool ships in the app, not only in
-the test rig: Settings → Devices → "Check sync" compares this device with each reachable
-device and says in plain words whether they match. The app keeps a local count of each
-warning sign (a `rewritten` event; an inventory mismatch; a repeated file clash; a parked
-entry that never resolves; a second version) and includes the counts when a user sends a
-bug report. Nothing is sent without the user choosing to.
+**After launch.** Settings → Devices → "Check sync" compares this device with each
+reachable device (the inventory tool from T1) and says plainly whether they match. The app
+counts warning signs locally (a rewritten chat file; an inventory mismatch; a repeated file
+clash; a parked entry that never resolves; a second version) and includes the counts when a
+user chooses to send a bug report.
 
 ---
 
 ## 12. Risks, in order of concern
 
-1. **Project history between equal devices** (5.7). T4 first. The fallback (files move only
-   while one chosen device is on) would be a change users feel, and goes to Destin if T4
-   fails.
-2. **Claude Code is someone else's product.** Layout, resume, forking and hooks can change.
-   Seam S1 isolates it; T2, T3; `youcoded/docs/cc-dependencies.md`. **If T3 or T10 shows a
-   Claude Code chat cannot be resumed on another computer, "Continue here" for Claude Code
-   chats has no mechanism,** and that goes to Destin before anything is built.
-3. **The switch-over.** Real users, devices switching at different times. The last sync,
-   the rehearsal with the inventory tool, rollback.
-4. **The everyday case without a super-host** is the weakest experience, and phones look
-   offline when pocketed. A permission request can be answered from any device, but a
-   pocketed phone gets no alert (alerts across devices are card 242), so a chat can sit
-   waiting unnoticed. As decided; test it and bring results to Destin.
-5. **A waking host.** The hold in 5.9 stops file changes and commands; if T19 shows a gap
-   on some system, a reply could still act before the check. Measured by V12.
-6. **Phone as host.** Android may stop a long reply. The opt-in exemption; V7; T18.
-7. **Relay cost, abuse and filling up.** Free, on by default and no sign-in means anyone can
-   park 1 GB of unreadable data; and one rarely-opened device makes up to 30 days of chats
-   pile up, so "Relay full" could be routine for heavy users. T7 must report before the
-   1 GB and free promises are treated as fixed; V6; sign-in in reserve.
-8. **A reinstall that wipes the app's data makes a new device** and leaves the old entry
-   until it is removed (5.1). Where the data survives, the machine id does too.
-9. **Six phases ship nothing visible, then one release switches everyone.** Decided: no
-   staging [chat 2026-11-13]. There are about 5 to 10 users today, so the protection is the
-   Phase 7 rehearsal on copies of Destin's four devices, not a gradual release.
-10. **Every paired device is fully trusted** (section 8). Unlock on add and remove.
-11. **Unslimmed GitHub growth until the backup rebuild.** Keep the gap short.
-12. **Start-up wiring exists twice** (`main.ts`, `headless-boot.ts`). Every phase checks both.
-
-13. **Day one depends on identical copies being byte-for-byte identical.** T21 checks real
-   data first.
+1. **Project files between equal devices** (5.7). T4 first.
+2. **Claude Code is someone else's product.** Its file layout, resume, forking and hooks
+   can change. If T3 or T10 shows a Claude Code chat cannot be resumed on another
+   computer, "Continue here" has no mechanism for those chats.
+3. **The switch-over.** Devices update at different times, and syncing stops between them
+   until they are paired by hand. Day one also depends on copies of a chat that should be
+   identical really being byte-for-byte identical (T21).
+4. **The everyday case without a super-host.** The host is often asleep, a pocketed phone
+   looks offline, and nothing alerts a phone that a chat is waiting for a permission
+   answer.
+5. **Waking from sleep.** If T19 finds a system where the hold has a gap, a reply could
+   act before the check.
+6. **Phone as host.** Android may stop a long reply.
+7. **Relay cost, abuse and filling up.** One rarely-opened device makes up to 30 days of
+   chats pile up toward 1 GB; no sign-in lets anyone park data. T7 reports before the
+   limits are treated as fixed.
+8. **Every paired device is fully trusted** (section 8).
+9. **One release for everyone, hard to undo.** The protection is the Phase 7 rehearsal and
+   the trial on real devices.
+10. **Start-up wiring exists twice** (`main.ts`, `headless-boot.ts`).
 
 ---
 
-## 13. Not decided
-
-Round 13 and chat on 2026-11-13 and 2026-11-14 settled the reworked round 12 items and every user-visible
-consequence the reviews found. The decided ones sit in section 2 with `[D13 …]` tags.
-**One release, not staged:** "this should not be staged or phased. we should just fix this
-all at once and swap everyone in a single release. we only have like 5-10 users, so i
-don't want you to overcomplicate this". [chat 2026-11-13] The phases in section 10 are the
-order of building and testing; users get everything in one release at Phase 7.
+## 13. Open
 
 | # | Item | State |
 |---|---|---|
-| O1 | Reaching a super-host from outside (Tailscale, tunnels, router); locking its browser view | Comparison owed before Phase 8 |
-| O2 | Payment | Destin: decide later; free at fixed limits |
-| O3 | A plan for the 2026-11-05 conflict copies | Left alone by his word |
+| O1 | Reaching a super-host from outside the home (Tailscale, tunnels, router), and locking its browser view | A plain comparison is owed to Destin before Phase 8 |
+| O2 | Payment | Destin: decide later; free at the fixed limits |
 | O4 | Adding or removing a device on a desktop with no OS unlock | Needs Destin if T11 finds one |
-| O7 | Interim period: GitHub upload is unslimmed and grows | Known; follows from his order |
-| O10 | Backup choices that work on every device (D10 S-3) | For the backup rebuild's design |
-| O14 | If T4 fails: files move only while one chosen device is on. If T3 or T10 fails: no way to continue a Claude Code chat on another computer | Only arise if those tests fail |
-| O15 | The relay's 1 GB, free, no-sign-in promises are provisional until the cost test (T7) reports | Report owed after Phase 0 |
-| O16 | A chat that ran in a folder that is not a synced project: what "Continue here" says and offers on another device | Asked in chat 2026-11-14 |
-| M1 | My reading: pictures sent in a chat travel; only the scratch copy of pasted images is left behind (2.3) | Not confirmed by Destin |
-| M2 | My reading: the product must say a keeper can see counts, sizes and timing (2.4) | Not confirmed by Destin |
-| M3 | Engineering reading of "extensive reviews/audits of our own" as an audit against published standards before Phase 7 (8) | Not confirmed by Destin |
+| O10 | Backup choices that work on every device | For the backup rebuild's design |
+| O14 | If T4 fails: files move only while one chosen device is on. If T3 or T10 fails: no way to continue a Claude Code chat on another computer | Arise only if those tests fail |
+| O15 | The relay's 1 GB, free, no-sign-in terms | Provisional until T7 reports |
+| O16 | A chat that ran in a folder that is not a synced project: what "Continue here" says and offers elsewhere | Asked 2026-11-14 |
+
+Three lines in section 2 are the designing session's reading and not confirmed by Destin
+(marked in `decided-sources.md`): pictures sent in a chat travel while the scratch copy of
+pasted images does not; the product must say a keeper can see counts, sizes and timing; and
+the security audit before Phase 7 as the meaning of "extensive reviews/audits of our own".

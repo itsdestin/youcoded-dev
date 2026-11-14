@@ -32,6 +32,7 @@ research fact checked against the code. Nothing else is approved.
 | `mesh-sync.questions-11.json` + `.answers.json` | Deck round 11, submitted 2026-11-12: pairing devices that both hold data, backup frequency and which device backs up, the 15-second wait, cards. |
 | `design.md` | **The full design document** (rewritten 2026-11-13): decided behaviour, today's code, architecture, contracts, tests before building, build order, validation after, and everything not decided. Written for a builder with no prior context. |
 | `decision-outline.md` | The earlier outline `design.md` replaced. History only. |
+| `decided-sources.md` | Section 2 of the design with the source of every rule in brackets. `design.md` states the same rules without them. |
 | `preview/` | Contact sheets of the decks, for checking rendering. |
 
 Serve a deck for Destin with `python3 scripts/ui-review/review-cards.py serve <spec.json> --no-build --timeout 1440` from the workspace root; put the printed link in chat as the last line. Never rebuild an answered deck.
@@ -397,3 +398,11 @@ removal settled by seniority only; the mesh id is a hash of the machine id; dele
 the relay to drop; a chat over the relay limit travels device to device; T21 (read-only
 comparison of real chat copies) and a run-first list; a trial on his real devices before
 release, on his say. Left for him: O16 (chats in folders that are not synced projects).
+
+## 2026-11-14: design.md made shorter
+
+Destin: "can we try to make it a bit clearer/more concise. fewer extraneous references that
+aren't entirely useful to the build". The bracketed source tags, his quoted words and the
+notes about which answer replaced which were moved out of `design.md` into
+`decided-sources.md`. Repeated passages were merged (one glossary; walk-throughs cut from
+six to five; relay rules stated once). No rule was changed.
