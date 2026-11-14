@@ -102,13 +102,71 @@ engine, and later other assistants. The page says so in one line. Parity work: c
 connections and specialists under YouCoded's engine first; an automation runner after; exports
 to other assistants' folders (Codex / AGENTS.md conventions) as further adapters.
 
-## 3. Kinds people can edit: pages, themes, prompts, specialists
+## 3. Building on each other's work ("GitHub for normies")
 
-A plugin is replaced on update. A Page, a theme, a prompt or a specialist is something people
-change after installing. One rule for all four:
+Destin's words this section is built from:
+- 2026-10-06 (dictated; `docs/archive/design/2026-10-12-management-surface/destin-words.md:16`):
+  "I want it all to basically work like GitHub for norms … take a page that they download from
+  the marketplace. fork it, customize it, rearrange it, whatever, um, and have their own
+  version, and then publish their own version of the marketplace if they want. And maybe have
+  those linked somehow … show on one page like all given pages that are like a variant of it.
+  Or like the parent pages … I want people to be able to report bugs for pages and marketplace
+  plugins. And I want marketplace to host really like anything."
+- 2026-10-24 (Pages deck, Q-edits): "some sort of clear forking/reconciliation mechanism that
+  allows users to modify and customize pages while still at least being informed of
+  changes/updates to the original page with the ability to 1) trace all forks/variants of
+  different pages in the marketplace 2) rebase your page agentically on an updated upstream
+  version".
+- 2026-10-24 (Q-publish): "the entire foundation of the marketplace, as it stands now, is
+  github. if we were to consider hosting our own marketplace content, we really need to
+  consider the costs/risks".
+- 2026-10-06: "make cool free shit and share that free shit with each other and make that free
+  shit better."
+
+Git stays underneath and is never shown. Each git idea gets one plain action:
+
+| Git idea | In the app | What it does |
+|---|---|---|
+| fork | **Make it mine** → "Your version" | Any installed listing, of any kind, can be changed — by hand or by asking the assistant. The record keeps what it came from (`basedOn {id, version, contentId}`). |
+| history | **History** | Every change to an installed listing is a restorable point, "like any other typical version history menu". Works for the author's updates and your own edits alike. |
+| upstream changed | **Update and keep my changes** | You are always told when the original changes. The assistant carries your changes onto the new version, shows a preview, and can be undone. Also offered: Replace with the new one, Keep mine. |
+| publish a fork | **Publish my version** | Your version becomes its own listing, linked to its parent. Credit to every author up the chain is automatic and cannot be removed. The parent's licence must allow it; if it does not, your version stays private. |
+| network graph | **Family** | Every listing page shows Based on (its parents) and Versions by others (its variants), ranked like anything else. One page traces the whole family. |
+| pull request | **Suggest to the author** | Send your changes back to the original. The author sees a plain summary of what changed, tries it, and accepts or declines; accepted work is credited. |
+| issue | **Report a problem** | A bug report to the author, separate from a safety report to us. Open problems are counted on the page. |
+
+Rules that make this safe and honest:
+- A published version is a listing in its own right: scanned and reviewed as itself, with its
+  own votes and comments. "What we checked" adds **How it differs from the original**, written
+  by the AI reviewer from the actual difference, and flags any ability the parent did not have.
+- Ratings never transfer from parent to variant. Family size and "N people built on this" are
+  signals for the parent's ranking.
+- Variants are grouped under their original while browsing ("12 versions") unless a variant
+  outranks it; search can open the family flat.
+- A variant of a turned-off listing is reviewed before it stays up.
+
+**Where published work is stored.** GitHub remains the store. Three ways for a person without a
+GitHub account to publish, with the cost and risk he asked for:
+- *YouCoded submits it for them* (recommended): the app sends the files under the person's
+  YouCoded account; a YouCoded-owned GitHub organisation holds them. Cost: none for storage;
+  our time moderating. Risk: we become the named host of what people publish (takedown
+  requests come to us), and a wave of junk needs per-account limits and review-before-public.
+- *GitHub account required* (today's decision for Pages): no hosting duty, but it shuts out
+  exactly the people this is for.
+- *Our own storage*: full control; a real monthly cost that grows with every published item,
+  and we carry backups, abuse and availability ourselves. Not justified while GitHub is free.
+
+**"Host really like anything."** A Page or plugin that needs its own program, database or
+server declares it under `requires.programs`; the install engine's later adapters (Docker,
+local services) start it on the person's own computer. Hosting other people's servers for them
+is not designed here: it is a running cost per listing and a different business.
+
+### How updates treat a copy you changed
+
+One rule for every kind:
 
 - The record keeps the `contentId` it installed. If the files on disk no longer match, the item
-  is **Your version** (a fork: `forkedFrom {id, version, contentId}`).
+  is **Your version** (`basedOn {id, version, contentId}`, the same field the Pages plan calls `forkedFrom`).
 - When the author updates: an unchanged copy updates like anything else. A changed copy offers
   **Update and keep my changes** (three-way merge; falls back to the next two when it cannot),
   **Replace with the new one** (old copy kept in history), **Keep mine**.
@@ -253,7 +311,8 @@ One branch per repo; each phase leaves the app shippable.
    generated rails, pick expiry, Showcase bar.
 6. **Kinds** — connected accounts and key entry; Pages as listings (after the Pages branch and
    #217 land); editable-kind updates; publish from the app; specialists, prompts, setups,
-   collections.
+   collections; then Make it mine, History, Family, Suggest to the author and Report a problem
+   (section 3) for every kind.
 7. **Engines** — tool connections, commands and specialists under YouCoded's engine; the
    automation runner; other assistants' folders.
 8. **Assistant search; phone layout.**

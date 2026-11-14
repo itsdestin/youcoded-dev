@@ -3,7 +3,10 @@
   "key": "marketplace-complete",
   "out": "marketplace-complete.questions.html",
   "stage": "ask",
-  "themes": ["midnight", "light"],
+  "themes": [
+    "midnight",
+    "light"
+  ],
   "steps": [
     {
       "id": "S-1",
@@ -66,48 +69,180 @@
       "no": "Change this"
     },
     {
-      "id": "Q-2",
+      "id": "P-F",
+      "page": "Building on each other's work",
+      "intro": "Your words from 6 October: 'I want it all to basically work like GitHub for norms.' These turn that into plain actions."
+    },
+    {
+      "id": "S-F1",
       "words": true,
-      "surface": "Pages, themes, prompts, specialists",
-      "path": "Things you change after installing",
-      "headline": "You changed a Page you installed, then its author updates it. What should happen?",
-      "today": "Nothing handles this. A theme you edited is overwritten or left stale depending on luck, and shared Pages do not exist yet.",
-      "problem": "People will tweak Pages and themes; that is the point of them. An update that wipes their changes, or never arrives, breaks trust either way.",
-      "proposal": "The app notices your copy differs and marks it 'Your version'. Pick what the update offers.",
+      "surface": "Anything you installed",
+      "path": "Changing it and keeping track",
+      "headline": "Anything you install can be made yours, and every change can be undone.",
+      "changed": "Any installed thing (a Page, a theme, a plugin, a specialist, a prompt) can be changed by hand or by asking the assistant. It is then marked 'Your version' and remembers what it came from. A History list shows every change, yours and the author's, and restores any earlier point.",
+      "notice": "A 'Make it mine' action on installed things, a 'Your version' tag, and a History menu like the one in a document editor. No git words anywhere.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "S-F2",
+      "words": true,
+      "surface": "Anything you changed",
+      "path": "When the original gets an update",
+      "headline": "When the original changes, you are told, and the assistant can carry your changes onto the new version.",
+      "changed": "From your 24 October note: be 'informed of changes/updates to the original' and 'rebase your page agentically'. The update offers three choices: Update and keep my changes (the assistant blends them, shows you a preview, and it can be undone), Replace with the new one, or Keep mine.",
+      "notice": "One extra choice on updates to things you changed. Blending will sometimes fail on big changes; it then says so and leaves you the other two choices. Your old copy is always in History.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "Q-F1",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Many versions of the same thing",
+      "headline": "When ten people publish their own version of a Page, how should they appear?",
+      "today": "Nothing links one listing to another. Ten versions would be ten unrelated cards.",
+      "problem": "You said: 'show on one page like all given pages that are like a variant of it. Or like the parent pages.' Ten near-identical cards would also crowd browsing.",
+      "proposal": "Every listing page gets a Family section: what it is based on, and versions made by others. Pick how versions show while browsing.",
       "options": [
         {
-          "id": "three-way",
-          "label": "Offer three choices",
-          "summary": "Update and keep my changes · Replace with the new one · Keep mine.",
+          "id": "grouped",
+          "label": "Grouped under the original",
+          "summary": "One card that says '10 versions'. A version that becomes more popular than the original gets its own card.",
           "pros": [
-            "You decide each time, with your old copy always kept in history.",
-            "'Keep my changes' blends the two when it safely can."
+            "Browsing stays clean.",
+            "The original author keeps the credit and the traffic.",
+            "A better version still rises on its own merit."
           ],
           "cons": [
-            "One more decision to make on an update.",
-            "Blending will sometimes be impossible; it then falls back to the other two."
+            "A good version is one tap deeper until it earns its own card."
           ],
           "recommended": true
         },
         {
-          "id": "keep-mine",
-          "label": "Always keep mine",
-          "summary": "Once changed, it is yours; you are only told a new one exists.",
+          "id": "separate",
+          "label": "Every version is its own card",
           "pros": [
-            "Your changes can never be lost."
+            "Each version is seen straight away."
           ],
           "cons": [
-            "You stop getting fixes unless you start over."
+            "Lists fill with near-duplicates.",
+            "Copy-and-rename becomes a way to grab attention."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-F2",
+      "words": true,
+      "surface": "Anything you changed",
+      "path": "Sending an improvement back",
+      "headline": "Should you be able to send your improvement back to the original author?",
+      "today": "Improving someone's plugin means knowing GitHub. Ordinary users cannot do it.",
+      "problem": "You said the point is to 'make that free shit better' together. Without a way back, every improvement stays stuck in one person's copy, or becomes yet another version.",
+      "proposal": "Yes: a 'Suggest to the author' action. The author sees a plain summary of what changed, can try it, and accepts or declines; accepted work is credited to you. No: improvements travel only as separate published versions.",
+      "yes": "Yes, build it",
+      "no": "No, versions only"
+    },
+    {
+      "id": "S-F3",
+      "words": true,
+      "surface": "Every listing",
+      "path": "Telling the author something is broken",
+      "headline": "Every listing gets 'Report a problem', which goes to its author, separate from reporting it as unsafe.",
+      "changed": "You said: 'I want people to be able to report bugs for pages and marketplace plugins.' A problem report goes to the author and is counted on the listing ('3 open problems'). A safety report goes to us and can lead to the listing being turned off.",
+      "notice": "Two clearly different buttons. Listings with many unanswered problems rank lower.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "Q-F3",
+      "words": true,
+      "surface": "Publishing",
+      "path": "Someone with no GitHub account",
+      "headline": "How should a person with no GitHub account publish what they made?",
+      "today": "Publishing needs a GitHub account. On 24 October you kept that 'for now' and asked for the costs and risks of anything else before deciding.",
+      "problem": "The people this is for are the ones without GitHub accounts. Requiring one shuts them out of sharing.",
+      "proposal": "Everything is still stored on GitHub underneath. Pick who holds it.",
+      "options": [
+        {
+          "id": "bot",
+          "label": "YouCoded submits it for them",
+          "summary": "They press Publish while signed in to YouCoded. We store it in a GitHub space we own.",
+          "pros": [
+            "Anyone can publish in one press.",
+            "Storage costs nothing.",
+            "Nothing goes public until it passes the checks."
+          ],
+          "cons": [
+            "We become the named host: complaints and takedown requests come to us.",
+            "Junk and spam need limits per account and someone watching the queue."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "github",
+          "label": "Keep requiring GitHub",
+          "pros": [
+            "No hosting duty for us."
+          ],
+          "cons": [
+            "Most everyday users never publish."
           ]
         },
         {
-          "id": "replace",
-          "label": "Always replace, keep a backup",
+          "id": "own",
+          "label": "Our own storage",
           "pros": [
-            "Simple. Everyone is on the newest."
+            "Full control, no reliance on GitHub."
           ],
           "cons": [
-            "Your changes vanish from view until you dig the backup out."
+            "A monthly bill that grows with every published thing.",
+            "Backups, abuse and outages become ours.",
+            "Hard to justify while GitHub is free."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-F4",
+      "words": true,
+      "surface": "Wording",
+      "path": "The name for making your own copy",
+      "headline": "What should the app call making your own changeable copy of something?",
+      "today": "Programmers call it a fork. The app has no word for it yet.",
+      "problem": "The word appears on a button, a tag and the family list, so it has to be obvious to someone who has never heard of GitHub.",
+      "proposal": "Pick the word.",
+      "options": [
+        {
+          "id": "mine",
+          "label": "Make it mine / Your version",
+          "pros": [
+            "Says what happens with no explanation."
+          ],
+          "cons": [
+            "Two phrases rather than one word."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remix",
+          "label": "Remix",
+          "pros": [
+            "One friendly word, familiar from music and video apps."
+          ],
+          "cons": [
+            "Sounds playful for something like a budget Page."
+          ]
+        },
+        {
+          "id": "fork",
+          "label": "Fork",
+          "pros": [
+            "The word programmers already use."
+          ],
+          "cons": [
+            "Means nothing to everyone else."
           ]
         }
       ]
