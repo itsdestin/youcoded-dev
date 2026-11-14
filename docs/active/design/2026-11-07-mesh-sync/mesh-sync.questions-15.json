@@ -1,0 +1,1287 @@
+{
+ "title": "Your chats on every device — round 15: 35 choices after the first tests",
+ "key": "mesh-sync-questions-15",
+ "out": "mesh-sync.questions-15.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "G-0",
+   "page": "Where things stand since round 14",
+   "intro": "Five short lines, then the questions."
+  },
+  {
+   "id": "S-0",
+   "words": true,
+   "surface": "The whole feature",
+   "path": "Progress since round 14",
+   "headline": "Nothing has reached the app yet. Does that match what you expected?",
+   "changed": "1) All the first-round tests have run. 2) Several rules in the design lost chat data in testing, and each has a fix. 3) Nothing has reached the app. 4) The first invisible parts are being built, switched off. 5) Windows and Mac are still untested, because we have no such computer. 'The relay' below means the always-on mailbox that passes locked messages between your devices. It cannot read them.",
+   "notice": "You will see nothing different in the app after this round. The 35 questions that follow are the ones only you can answer.",
+   "yes": "Got it",
+   "no": "Unclear"
+  },
+  {
+   "id": "G-1",
+   "page": "Pairing and security",
+   "intro": "How devices join your set, and what they are allowed to do. 13 questions."
+  },
+  {
+   "id": "P-1",
+   "words": true,
+   "surface": "Pairing",
+   "path": "Typing a code to add a device",
+   "headline": "What should the code you type when pairing look like?",
+   "today": "With no camera, you can type a short code to add a device. It stops working after a few minutes. The design does not say how long it is or what characters it uses.",
+   "problem": "Short, all-number codes are easy to type but easier for a stranger on the network to guess while you pair. Letters and numbers are safer, but awkward on a phone's number pad.",
+   "proposal": "A code like K7QD-4MXW9R. The first part says where to meet. The last 6 characters are the secret, with no look-alikes such as 0 and O. It works for 5 minutes and shuts down after 3 wrong tries. You will type this on your phone every pairing.",
+   "options": [
+    {
+     "id": "letters-digits",
+     "label": "Letters and digits, 6 secret characters",
+     "pros": [
+      "A stranger guesses it about 1 time in 358 million (3 tries). That is stricter than other apps that do this.",
+      "Still short. Recommended: safest, and still short."
+     ],
+     "cons": [
+      "Letters are awkward on a number pad."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "eight-digits",
+     "label": "8 digits only",
+     "pros": [
+      "Easy on a number pad and easy to read out loud."
+     ],
+     "cons": [
+      "About 1 in 33 million: weaker.",
+      "Longer to read out."
+     ]
+    },
+    {
+     "id": "six-digits",
+     "label": "6 digits only",
+     "pros": [
+      "Shortest."
+     ],
+     "cons": [
+      "About 1 in 333,000: the weakest that meets our minimum."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "words": true,
+   "surface": "Pairing",
+   "path": "After typing a code",
+   "headline": "Should both screens show the same 4-digit number when you pair?",
+   "today": "The device you already own shows the new device's name and asks 'Add this device?'. Nothing proves the name is really yours.",
+   "problem": "Someone who read your code over your shoulder, or from a camera, could pair first and name their device 'Destin's phone'. You would tap yes.",
+   "proposal": "After pairing by typed code, both screens show the same 4-digit number. You confirm they match before you can answer 'Add this device?'. A security review asked for the same step. It is a new step you have not approved.",
+   "options": [
+    {
+     "id": "matching-number",
+     "label": "Add the matching number",
+     "pros": [
+      "A stranger's screen is not in front of you, so they cannot be added.",
+      "Recommended: pairing is rare, and the step takes seconds."
+     ],
+     "cons": [
+      "One extra step every time you pair."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no-number",
+     "label": "No matching number",
+     "pros": [
+      "One step fewer."
+     ],
+     "cons": [
+      "Your only protection is a name, and an attacker picks the name."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "words": true,
+   "surface": "Keys",
+   "path": "Linux computers",
+   "headline": "On a Linux computer with no built-in password safe, should the feature refuse to turn on, or just warn?",
+   "today": "The design says your keys are kept in the computer's built-in password safe.",
+   "problem": "Some Linux computers have none. The app could then only hide the keys behind a password built into the app, which any program on that computer can read. Those keys can read all your chats and make your assistants run commands on your other devices.",
+   "proposal": "The feature refuses to turn on and explains how to set a password safe up. It decides who can and cannot use the feature.",
+   "options": [
+    {
+     "id": "refuse",
+     "label": "Refuse and explain",
+     "pros": [
+      "No weakly protected keys ever exist.",
+      "Recommended: these keys are far more powerful than a sign-in."
+     ],
+     "cons": [
+      "A Linux user without a password safe cannot use the feature until they set one up."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "warn",
+     "label": "Turn it on and show a warning (like the GitHub sign-in today)",
+     "pros": [
+      "Works on every computer."
+     ],
+     "cons": [
+      "Less safe.",
+      "Many people ignore warnings."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "words": true,
+   "surface": "Launch wording",
+   "path": "What the app says about privacy",
+   "headline": "What may the app say about its privacy?",
+   "today": "The design allows the words 'end-to-end encrypted' at launch if the security checks pass.",
+   "problem": "There are honest limits. Someone who copies what the relay holds and later steals one of your unlocked devices could read the last few weeks that passed through it. Any program running as you on a device can use that device's keys. Backups to GitHub, Drive and iCloud are not locked by default. A wrong claim is worse than none.",
+   "proposal": "Use only this sentence: 'Your chats and project files are encrypted on your devices with keys that never leave them. YouCoded's servers and Cloudflare store only encrypted data and cannot read it.' Never say 'zero-knowledge', 'safe if your phone is stolen', 'your backups are private' or 'nobody can run commands on your computer'. This is launch wording about trust.",
+   "options": [
+    {
+     "id": "approve-sentence",
+     "label": "Approve that sentence",
+     "pros": [
+      "True and checkable."
+     ],
+     "cons": [
+      "Less punchy."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "short-claim",
+     "label": "Use just 'end-to-end encrypted'",
+     "pros": [
+      "Familiar."
+     ],
+     "cons": [
+      "Readers assume things that are not true."
+     ]
+    },
+    {
+     "id": "no-claim",
+     "label": "Say nothing until an outside audit is done",
+     "pros": [
+      "Safest."
+     ],
+     "cons": [
+      "Loses a selling point."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-5",
+   "words": true,
+   "surface": "Pairing",
+   "path": "Computers with no unlock",
+   "headline": "On a computer that has nothing to ask for an unlock, what should YouCoded do instead?",
+   "today": "Adding or removing a device is meant to need the computer's own unlock first (fingerprint, PIN or password, Windows Hello, Touch ID, Android lock). Testing showed none of these work out of the box. Some computers have nothing to ask at all: a Mac without Touch ID, a Windows PC with no sign-in, a phone with no screen lock, a Linux computer with no prompt program. Only Linux could be tested here.",
+   "problem": "The unlock stops a stranger, or a bad program, at your already-logged-in computer from quietly adding their own device. Where there is no unlock, we need a stand-in.",
+   "proposal": "Use the real unlock wherever the computer has one, and option 1 on the rest. Also needs your yes: on Linux the unlock window will use the system's generic words ('run /usr/bin/true as the super user'), not YouCoded's. It changes what you must type or confirm.",
+   "options": [
+    {
+     "id": "ask-and-warn",
+     "label": "Ask inside YouCoded, and warn your other devices",
+     "pros": [
+      "Works on every computer with no setup.",
+      "Your other devices at once show 'A device was added from X', so nothing is quiet."
+     ],
+     "cons": [
+      "Someone at your open, unlocked computer can still add a device. You only hear afterwards."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "own-password",
+     "label": "YouCoded asks you to make its own password on those computers",
+     "pros": [
+      "Stops a person at your open computer."
+     ],
+     "cons": [
+      "One more password to remember.",
+      "A reset path to build.",
+      "An extra setup screen for a rare case."
+     ]
+    },
+    {
+     "id": "refuse",
+     "label": "Refuse: on such a computer, adding or removing a device is not allowed",
+     "pros": [
+      "Simplest and strictest."
+     ],
+     "cons": [
+      "Someone who owns only such computers cannot manage devices."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-6",
+   "words": true,
+   "surface": "Permission boxes",
+   "path": "Approving from another device",
+   "headline": "Should another device be allowed to say 'Always allow' for your computer?",
+   "today": "When a box asks to run something and you tap 'Allow always' on your phone, the computer remembers it for good.",
+   "problem": "A stolen or misused phone could quietly widen what your computer is allowed to do.",
+   "proposal": "From another device you can only answer 'Allow once' or 'No'. 'Always allow' must be tapped on the computer itself. This narrows something you approved.",
+   "options": [
+    {
+     "id": "once-or-no",
+     "label": "Allow once or no, from other devices",
+     "pros": [
+      "A lost phone cannot widen permissions."
+     ],
+     "cons": [
+      "One extra trip to the computer."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "as-designed",
+     "label": "Keep as designed (anything, from anywhere)",
+     "pros": [
+      "No trip to the computer."
+     ],
+     "cons": [
+      "The quiet widening above."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-7",
+   "words": true,
+   "surface": "Chats",
+   "path": "A switch inside each chat",
+   "headline": "Should each chat get a switch: 'Let my other devices type into this chat'?",
+   "today": "Any of your devices can type into a chat running on another.",
+   "problem": "If your computer is set to skip permission boxes, every device you own becomes a remote control for a computer that never asks before running commands.",
+   "proposal": "One switch per chat. It turns itself off when that computer is set to skip permission boxes. It is a new setting and can block something you expect to work.",
+   "options": [
+    {
+     "id": "add-switch",
+     "label": "Add the switch",
+     "pros": [
+      "A computer that never asks cannot be driven from elsewhere by accident."
+     ],
+     "cons": [
+      "One more setting.",
+      "You must turn it on for those chats."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no-switch",
+     "label": "No switch",
+     "pros": [
+      "Simpler."
+     ],
+     "cons": [
+      "That accident is possible."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-8",
+   "words": true,
+   "surface": "Permission boxes",
+   "path": "Approving on a phone",
+   "headline": "Should risky approvals on a phone need an extra tap?",
+   "today": "Approving a request on a phone takes one tap.",
+   "problem": "Small screens make careless approvals easy. An assistant reading a bad web page can ask for something harmful: change files outside your project, download and run something, touch your passwords.",
+   "proposal": "For that kind of request from another device, show an extra 'This can change files outside your project. Approve?' tap, plus the phone's own unlock. It adds friction to something you approved.",
+   "options": [
+    {
+     "id": "extra-tap",
+     "label": "Add the extra tap",
+     "pros": [
+      "Slows the most dangerous mistakes."
+     ],
+     "cons": [
+      "Slower."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "one-tap",
+     "label": "Keep one tap",
+     "pros": [
+      "Fast."
+     ],
+     "cons": [
+      "An easy mistake on a small screen."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-9",
+   "words": true,
+   "surface": "Chats",
+   "path": "A private-to-this-device switch",
+   "headline": "Should a chat be able to stay on one device only?",
+   "today": "Everything that syncs goes to every device, and into any backup you turn on.",
+   "problem": "If you paste a password or key into a chat, it travels to all your devices and backups. You cannot keep one chat on one device.",
+   "proposal": "An optional switch per chat: never synced, never in a backup. It is a new feature with a real downside.",
+   "options": [
+    {
+     "id": "add-optional",
+     "label": "Add it, optional",
+     "pros": [
+      "The only way to keep a secret out of other devices and backups."
+     ],
+     "cons": [
+      "That chat is lost if the device is lost.",
+      "It cannot be continued on another device."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "skip",
+     "label": "Do not add it",
+     "pros": [
+      "Simpler."
+     ],
+     "cons": [
+      "No way to protect such a chat."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-10",
+   "words": true,
+   "surface": "Devices",
+   "path": "Two devices removing each other",
+   "headline": "If two devices remove each other at the same moment, what happens?",
+   "today": "The design says the device that has been in your set longer wins.",
+   "problem": "A thief holding your oldest unlocked device could remove your newer phone and win. There is also no reliable way to tell which device joined first. Three of the investigations disagree, so this is yours. Every option can lose a device you wanted to keep.",
+   "proposal": "Pick one of the options below.",
+   "options": [
+    {
+     "id": "both-removed",
+     "label": "Both are removed. A third device is untouched. With exactly two devices, you get two sets of one, which you can pair again (the security review's choice)",
+     "pros": [
+      "A thief cannot win the race."
+     ],
+     "cons": [
+      "A real removal tapped at the same moment as another leaves both out until you pair again."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "fixed-order",
+     "label": "A fixed order based on when each device was added (one investigation's rule)",
+     "pros": [
+      "One answer everywhere."
+     ],
+     "cons": [
+      "A device you did not mean to remove can vanish until you add it again."
+     ]
+    },
+    {
+     "id": "old-rule",
+     "label": "The design's old rule: longest in the set wins",
+     "pros": [
+      "Simple."
+     ],
+     "cons": [
+      "A thief with your oldest device wins."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-11",
+   "words": true,
+   "surface": "Devices",
+   "path": "How a device is recognised",
+   "headline": "How should YouCoded recognise each of your devices?",
+   "today": "The design says a device is recognised by the id the app already gives each machine. You approved that, so a reinstall is recognised.",
+   "problem": "That id is already sent, unscrambled, to YouCoded's existing sync service. The scrambling used for usage statistics relies on a value published in the open-source app. Anyone holding that data could tie your devices to your set. A reinstall that keeps its data is recognised either way, because it keeps its secret keys.",
+   "proposal": "Recognise a device by a number made from its own public key, and drop the machine id. This contradicts a line you approved.",
+   "options": [
+    {
+     "id": "key-number",
+     "label": "Use the key-made number",
+     "pros": [
+      "It cannot be linked to other records.",
+      "A reinstall with data intact keeps it."
+     ],
+     "cons": [
+      "It changes a line you approved."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "machine-id",
+     "label": "Keep the machine id, as written",
+     "pros": [
+      "No change to what you approved."
+     ],
+     "cons": [
+      "Your set could be linked to usage statistics.",
+      "A wiped, then reinstalled device is a new device either way."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-12",
+   "words": true,
+   "surface": "Pairing",
+   "path": "Joining two sets of devices",
+   "headline": "When you join two sets of devices, must both sides say yes?",
+   "today": "Pairing a device that already has others joins both sets into one. The screen names every device that will end up together.",
+   "problem": "If someone tricks you into scanning their code, your whole set could be merged into theirs with one tap. Everything on every listed device would then be readable by every other.",
+   "proposal": "Joining needs your unlock and an explicit yes on both sides. Each screen lists every device of both sets with name, type and a short fingerprint. A device that was off is asked at its next start and can refuse, staying in its old set. It changes a flow you approved.",
+   "options": [
+    {
+     "id": "both-confirm",
+     "label": "Both sides confirm",
+     "pros": [
+      "No one-tap merge."
+     ],
+     "cons": [
+      "More steps.",
+      "A device that was off waits for its own yes."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "one-tap",
+     "label": "As designed: one side's tap, with the device list shown",
+     "pros": [
+      "Simpler."
+     ],
+     "cons": [
+      "The trick above works."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-13",
+   "words": true,
+   "surface": "Devices",
+   "path": "Removing a device",
+   "headline": "What should happen to a removed device's unsent replies?",
+   "today": "Removing a device locks it out. The design says anything it wrote and had not sent is lost unless it is paired again. The deeper rules cannot actually bring it back.",
+   "problem": "A laptop in a drawer for 33 days holds 3 days of finished replies it never synced. You tap yes on the 30-day offer and those replies are gone, with no warning.",
+   "proposal": "Removal never deletes. The unsent replies stay hidden on the removed device, and on any device that holds them. The removal screen first says: 'Last seen 33 days ago. It may hold replies that never synced. They are kept aside and can be added back as versions if you pair it again. Remove anyway?' Pairing it again offers them back. It rewrites a sentence you approved.",
+   "options": [
+    {
+     "id": "keep-aside",
+     "label": "Keep aside and offer back, with the warning",
+     "pros": [
+      "No cliff. Nothing is lost silently."
+     ],
+     "cons": [
+      "A longer warning.",
+      "A bit more storage."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "as-designed",
+     "label": "As designed: lost unless paired again, no warning",
+     "pros": [
+      "Simpler."
+     ],
+     "cons": [
+      "Silent loss."
+     ]
+    },
+    {
+     "id": "auto-add",
+     "label": "Keep aside, but add the replies back automatically on pairing",
+     "pros": [
+      "No question to answer."
+     ],
+     "cons": [
+      "A hostile removed device could then re-add anything it forged."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "G-2",
+   "page": "Chats and versions",
+   "intro": "How chats carry across devices, and what you see when two copies differ. 14 questions. A 'version' is one device's copy of a chat."
+  },
+  {
+   "id": "C-1",
+   "words": true,
+   "surface": "Pictures",
+   "path": "Pasted pictures in a chat",
+   "headline": "Do pictures you paste into a chat travel to your other devices?",
+   "today": "A pasted picture is saved inside the chat's own record, so it is already part of the chat. YouCoded also keeps a separate temporary copy on the device where you pasted it.",
+   "problem": "Your earlier answers were read as: the picture that is part of the chat travels with it, and only the temporary copy stays behind. It decides what you see on another device, and how much data a phone uses. It trades privacy and data use against continuity.",
+   "proposal": "Pictures inside a chat travel with it. The temporary copy does not.",
+   "options": [
+    {
+     "id": "pictures-travel",
+     "label": "The chat's pictures travel, the temporary copy does not",
+     "pros": [
+      "Another device shows the picture.",
+      "The assistant there still knows what was in it."
+     ],
+     "cons": [
+      "Pictures are large, so chats take more space.",
+      "A phone on mobile data (it syncs everything) uses more.",
+      "Anyone with a device or a backup can see those pictures."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "none-travel",
+     "label": "No pictures travel",
+     "pros": [
+      "Smaller and faster.",
+      "Less private data spread around."
+     ],
+     "cons": [
+      "Other devices show a gap where the picture was.",
+      "The assistant there loses what it only knew from the picture."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-2",
+   "words": true,
+   "surface": "Continue here",
+   "path": "Chats that ended in an error",
+   "headline": "Does a chat that ended in an error count as a finished reply?",
+   "today": "When you continue a chat on another device, it carries on from the last finished reply.",
+   "problem": "In 224 of your 1,364 Claude Code chats, the last thing is an error message ('something went wrong, try again'). The app counts that as finished, but you never saw an answer.",
+   "proposal": "An error does not count. Go back to the previous finished reply. It decides what 'where I left off' means.",
+   "options": [
+    {
+     "id": "error-not-finished",
+     "label": "An error is not a finished reply",
+     "pros": [
+      "You never inherit a reply you never saw."
+     ],
+     "cons": [
+      "A retry that already happened may be dropped and redone."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "error-finished",
+     "label": "An error is a finished reply",
+     "pros": [
+      "Simple."
+     ],
+     "cons": [
+      "The new device carries on from a failure."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-3",
+   "words": true,
+   "surface": "Two versions",
+   "path": "Chats only opened and closed",
+   "headline": "If a chat was only opened and closed on a second device, is it still the same chat?",
+   "today": "If two devices' copies of a chat differ, you get a 'two versions' notice.",
+   "problem": "Just opening and closing a chat on another computer adds a few housekeeping lines (title, last prompt) with no new message. That happened to 5 of your chats. It would trigger a notice with nothing for you to choose.",
+   "proposal": "Treat it as the same chat, with no notice. When the other copy wins, the quiet copy's few housekeeping lines are dropped. It decides when you get a notice.",
+   "options": [
+    {
+     "id": "same-chat",
+     "label": "Same chat, no notice",
+     "pros": [
+      "No noise."
+     ],
+     "cons": [
+      "Those few lines are lost."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "always-show",
+     "label": "Always show 'two versions'",
+     "pros": [
+      "Loses nothing."
+     ],
+     "cons": [
+      "Noisy, with nothing to choose."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-4",
+   "words": true,
+   "surface": "Attachments",
+   "path": "The paperclip on a watching computer",
+   "headline": "What should the paperclip do on a computer that is only watching a chat?",
+   "today": "A phone uploads the file to the computer running the chat. A computer that is only watching would pick a file from its own disk, which the other computer cannot open. The wording for 'not supported here' does not exist yet. The design says a watcher has the same limits as a phone.",
+   "problem": "Either it works like the phone, or it becomes a limit you can run into.",
+   "proposal": "Upload the file to the chat's computer, like the phone does. Side note, not a choice: dragging a file into the message box may already do nothing on the desktop (not tested). If so, that is a separate bug.",
+   "options": [
+    {
+     "id": "upload-like-phone",
+     "label": "Upload like the phone",
+     "pros": [
+      "Nothing lost.",
+      "Same behaviour as the phone."
+     ],
+     "cons": [
+      "More to build."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "list-as-limit",
+     "label": "List it as a limit",
+     "pros": [
+      "Simpler."
+     ],
+     "cons": [
+      "A real feature loss on a computer."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-5",
+   "words": true,
+   "surface": "Storage",
+   "path": "'Keep recent' on a device",
+   "headline": "Should a device clear old chats only when a keep-everything device confirms it has them?",
+   "today": "On 'recent', a device may clear old chats once another device has them.",
+   "problem": "Two 'recent' devices can each clear the old chat because the other one 'has' it. If the only real copy then dies, the chat is gone. A wiped phone still counts as a holder for up to 30 days.",
+   "proposal": "A device clears an old chat only when one of your keep-everything devices, on right now, confirms it holds it. If none can be reached, nothing is cleared and you are told the disk is filling. A device with no keep-everything partner shows 'N chats exist only on this device'.",
+   "options": [
+    {
+     "id": "all-of-it",
+     "label": "All of that",
+     "pros": [
+      "No silent loss.",
+      "Honest about the risk."
+     ],
+     "cons": [
+      "One more line on screen.",
+      "A 'recent' phone may fill up if no keep-everything device is on."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "designed-rule",
+     "label": "Keep the designed rule",
+     "pros": [
+      "Phones stay tidy."
+     ],
+     "cons": [
+      "The loss described above."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-6",
+   "words": true,
+   "surface": "Deleting chats",
+   "path": "Deleting many chats at once",
+   "headline": "Should deleting many chats at once wait a day before erasing on your other devices?",
+   "today": "Deleting a chat deletes it everywhere. It is kept 30 days in 'Recently deleted'.",
+   "problem": "One mis-tap, or a bad device, could delete 212 chats. Every device would erase them 30 days later with nothing to stop it. It is the most destructive action with the weakest guard.",
+   "proposal": "If you delete more than 5 chats within 10 minutes, or any chat used in the last 7 days, your other devices hold the deletion for 24 hours and show 'Phone deleted 212 chats. Undo?' before anything is erased. It changes how delete behaves.",
+   "options": [
+    {
+     "id": "hold-24h",
+     "label": "A 24-hour hold with Undo",
+     "pros": [
+      "A mistake can be undone."
+     ],
+     "cons": [
+      "Other devices keep the chats a day longer."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "as-designed",
+     "label": "As designed",
+     "pros": [
+      "Immediate."
+     ],
+     "cons": [
+      "No safety net."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-8",
+   "words": true,
+   "surface": "Two versions",
+   "path": "Typing in a terminal",
+   "headline": "What should happen to work typed in a terminal on a device that is not hosting the chat?",
+   "today": "That work is invisible to the sync. It would be replaced when that device later hosts the chat.",
+   "problem": "The work could vanish.",
+   "proposal": "Keep it as a separate version and show 'Lines written here outside the app were kept as a separate version.' It is a new notice.",
+   "options": [
+    {
+     "id": "keep-notify",
+     "label": "Keep and notify",
+     "pros": [
+      "Nothing is lost."
+     ],
+     "cons": [
+      "One more notice, rarely."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "do-nothing",
+     "label": "Do nothing",
+     "pros": [
+      "Quiet."
+     ],
+     "cons": [
+      "That work is lost."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-9",
+   "words": true,
+   "surface": "Continue here",
+   "path": "A chat the devices cannot agree on",
+   "headline": "What should you see when your devices cannot yet agree on who hosts a chat?",
+   "today": "The chat keeps showing its last host with no notice, and you cannot tap 'Continue here'. This can last until one particular device is switched on.",
+   "problem": "You might be stuck for days.",
+   "proposal": "Show 'Checking with Desktop before this chat can move', and allow 'Continue here' after a short wait. It decides how often you see second versions.",
+   "options": [
+    {
+     "id": "leave-it",
+     "label": "Leave it",
+     "pros": [
+      "Simple."
+     ],
+     "cons": [
+      "Stuck for days."
+     ]
+    },
+    {
+     "id": "check-then-allow",
+     "label": "Show 'checking', and allow Continue here after a short wait",
+     "pros": [
+      "Keeps the promise that you can always continue."
+     ],
+     "cons": [
+      "May create a second version."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "always-allow",
+     "label": "Always allow Continue here at once",
+     "pros": [
+      "Fastest."
+     ],
+     "cons": [
+      "The most second versions."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-10",
+   "words": true,
+   "surface": "Two versions",
+   "path": "Deleting a chat with a hidden second version",
+   "headline": "If you delete a chat that secretly had a second version, should the second one be deleted too?",
+   "today": "If you delete a chat before hearing that a second version exists, only the first is deleted. The second stays in your list.",
+   "problem": "A chat you deleted can reappear.",
+   "proposal": "Leave it, and label the row so it does not look like a ghost. It decides whether unseen work is ever erased.",
+   "options": [
+    {
+     "id": "leave-labelled",
+     "label": "Leave the second version, labelled",
+     "pros": [
+      "Nothing you had not seen is deleted."
+     ],
+     "cons": [
+      "A deleted chat can reappear."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "delete-too",
+     "label": "Delete it too",
+     "pros": [
+      "No surprise."
+     ],
+     "cons": [
+      "Replies you never saw are erased."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-11",
+   "words": true,
+   "surface": "Two versions",
+   "path": "A new place the 'Two versions' row appears",
+   "headline": "Should a clash between tapping the host chip and another device taking over show a 'Two versions' row?",
+   "today": "If you tap the host chip while another device takes over from an older copy at the same moment, the other device's new reply used to be lost silently.",
+   "problem": "That reply is lost with no sign.",
+   "proposal": "It becomes a second version, shown in the existing 'Two versions' row. It adds a notice in a new situation.",
+   "options": [
+    {
+     "id": "show-row",
+     "label": "Yes, show it",
+     "pros": [
+      "Nothing is ever thrown away."
+     ],
+     "cons": [
+      "Occasionally a row you did not expect."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no-row",
+     "label": "No",
+     "pros": [
+      "Fewer rows."
+     ],
+     "cons": [
+      "That reply is silently lost."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-12",
+   "words": true,
+   "surface": "Two versions",
+   "path": "Which version is 'the original'",
+   "headline": "When there are two versions, which one is 'the original'?",
+   "today": "One version keeps the chat's name and place, chosen by an internal number you never see. The choice can switch sides when a third device reports.",
+   "problem": "The name can switch sides on you. So far it is not known to matter.",
+   "proposal": "Leave it until it is seen to matter. It decides which row you see first.",
+   "options": [
+    {
+     "id": "leave-as-is",
+     "label": "Leave as is",
+     "pros": [
+      "No new timer to build."
+     ],
+     "cons": [
+      "The name can switch sides."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "most-recent-host",
+     "label": "The version your device ran most recently is the main one",
+     "pros": [
+      "Matches intuition."
+     ],
+     "cons": [
+      "Needs a new behind-the-scenes timer.",
+      "Not simple."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-13",
+   "words": true,
+   "surface": "Devices",
+   "path": "After removing a lost device",
+   "headline": "After you remove a lost device, how should another device look while it is 'unknown'?",
+   "today": "If the device you used to remove one had not yet heard about a newer device, the newer one shows as 'unknown' until it reconnects.",
+   "problem": "You may think a device vanished, or see a row that looks broken.",
+   "proposal": "Show 'checking' for up to the 30-day window instead of hiding it. It changes what you see on the Devices screen.",
+   "options": [
+    {
+     "id": "show-checking",
+     "label": "Show 'checking'",
+     "pros": [
+      "Honest. Nothing seems gone."
+     ],
+     "cons": [
+      "A row that looks half-finished."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hide",
+     "label": "Hide it until it reconnects",
+     "pros": [
+      "Tidy."
+     ],
+     "cons": [
+      "You think a device vanished."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-14",
+   "words": true,
+   "surface": "Quitting",
+   "path": "Quitting when only the relay has your last reply",
+   "headline": "When only the relay holds your last reply, is it safe to quit?",
+   "today": "The design lets the app quit at once if every finished reply reached another device, the relay or the super-host (your keep-everything device).",
+   "problem": "The relay is a waiting room. It can let a chat go overnight when it is full. If your phone is the only other holder and you uninstall it or hand it in, believing the reply is safe, the reply may exist nowhere else.",
+   "proposal": "'Reached the relay' counts as 'waiting', not 'safe', until a keep-everything device collects it. The list says what exists where. It changes a line you approved.",
+   "options": [
+    {
+     "id": "relay-is-waiting",
+     "label": "Count the relay as waiting, and say so",
+     "pros": [
+      "Honest."
+     ],
+     "cons": [
+      "'Offline - some chats may not have synced' can show a little more often."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "as-designed",
+     "label": "As designed",
+     "pros": [
+      "Fewer messages."
+     ],
+     "cons": [
+      "False safety."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "G-3",
+   "page": "Project files",
+   "intro": "What happens to project files when devices change them. 3 questions."
+  },
+  {
+   "id": "F-1",
+   "words": true,
+   "surface": "Project files",
+   "path": "Files that can run things",
+   "headline": "Should project files that can run things be held for your review instead of replacing yours?",
+   "today": "Changes to different files combine by themselves.",
+   "problem": "A changed '.claude' setting, a connected-tools file or a page can make a computer run commands the next time it starts. One crafted file from a stolen or removed device is the most direct way to command your computer. Pages from another device are small apps that would run inside YouCoded.",
+   "proposal": "Files that can run things are never replaced automatically from another device. They are kept beside yours as 'name (from Device, date)', with a notice. Pages from another device wait for 'This page came from Laptop. Run it?'. This breaks 'files combine by themselves'. The middle option only asks for your unlock on the first arrival after pairing.",
+   "options": [
+    {
+     "id": "hold-review",
+     "label": "Hold for review",
+     "pros": [
+      "Removes the most direct route to commands on your computer."
+     ],
+     "cons": [
+      "A changed setting or hook does not reach your other computers by itself."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "unlock-first",
+     "label": "Only the first arrival after pairing asks for your unlock",
+     "pros": [
+      "Less friction."
+     ],
+     "cons": [
+      "Weaker."
+     ]
+    },
+    {
+     "id": "as-designed",
+     "label": "As designed",
+     "pros": [
+      "Seamless."
+     ],
+     "cons": [
+      "The route above stays open."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "F-2",
+   "words": true,
+   "surface": "Project files",
+   "path": "Extra copies when three devices catch up",
+   "headline": "When three devices catch up at once, how should clashing files be merged?",
+   "today": "When files clash, both versions are kept.",
+   "problem": "In a test, the safe way to merge three devices kept every version. The easy way silently lost a version in 4 of 1,000 runs. The safe way makes about half again as many copies.",
+   "proposal": "Keep it safe. It decides how many extra files you see.",
+   "options": [
+    {
+     "id": "safe",
+     "label": "Safe",
+     "pros": [
+      "No version lost."
+     ],
+     "cons": [
+      "Now and then one more copy file, named '(from Device, date)'."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "easy",
+     "label": "Easy",
+     "pros": [
+      "Fewer copies."
+     ],
+     "cons": [
+      "It can lose a version."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "F-3",
+   "words": true,
+   "surface": "Project files",
+   "path": "Rename plus edit",
+   "headline": "What should happen when one device renames a file while another edits it?",
+   "today": "Not covered by the design.",
+   "problem": "You will see two files: the old name with the edit, and the new name with the old text. Nothing is lost.",
+   "proposal": "Accept it. Joining them would need guessing at renames, which can differ between computers. It decides what you see in your files.",
+   "options": [
+    {
+     "id": "two-files",
+     "label": "Accept two files",
+     "pros": [
+      "Predictable."
+     ],
+     "cons": [
+      "You must join them yourself."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "guess-join",
+     "label": "Guess and join them",
+     "pros": [
+      "One file."
+     ],
+     "cons": [
+      "Guesses can differ between computers and go wrong."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "G-4",
+   "page": "Relay and cost",
+   "intro": "Money and limits for the always-on mailbox. 3 questions."
+  },
+  {
+   "id": "R-1",
+   "words": true,
+   "surface": "Relay",
+   "path": "Cloudflare plan",
+   "headline": "Should the relay move to the paid Cloudflare plan before it opens to everyone?",
+   "today": "The design says the relay runs free, within the free limits.",
+   "problem": "The free plan only covers roughly 5 heavy users, or 50 medium ones. When its daily allowance runs out, the relay stops for everyone until midnight UTC. Because it shares an account, YouCoded's sign-in and marketplace go down too. Showing a phone as 'offline' within 30 seconds also needs a check-in every 10 seconds, which uses a little battery.",
+   "proposal": "Move to the $5-a-month plan before the relay opens. Expect about $5 to $20 a month up to 1,000 users, more if people park lots of data. Users see no difference. You pay. Whether users pay stays open. It is your money and your risk.",
+   "options": [
+    {
+     "id": "pay-5",
+     "label": "Pay $5 a month before it opens",
+     "pros": [
+      "No surprise outage.",
+      "Real room to grow."
+     ],
+     "cons": [
+      "A monthly cost."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "stay-free",
+     "label": "Stay free, and keep a small waiting list",
+     "pros": [
+      "No cost."
+     ],
+     "cons": [
+      "A few busy users can take sign-in and the marketplace down."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-2",
+   "words": true,
+   "surface": "Relay",
+   "path": "Abuse protection",
+   "headline": "How should the relay stop people from filling it up: a small starting allowance, or a sign-in?",
+   "today": "There is no sign-in. Each set of devices may park at most 1 GB.",
+   "problem": "Anyone can create a set and park up to 1 GB. A thousand of them would cost about $199 a month, and on the free plan would fill everything.",
+   "proposal": "A new set starts with 100 MB until a second device pairs, then gets 1 GB. An overall ceiling refuses new sets. Sets are slowed per network address. A person with one device who sends more than 100 MB before pairing a second sees 'Relay full' earlier, though nobody is there to sync to yet. This touches your 'no account' rule.",
+   "options": [
+    {
+     "id": "starter-allowance",
+     "label": "A starting allowance, no sign-in",
+     "pros": [
+      "Keeps 'no account'."
+     ],
+     "cons": [
+      "The early 'Relay full' for one-device users."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "add-signin",
+     "label": "Add a sign-in now",
+     "pros": [
+      "The real fix."
+     ],
+     "cons": [
+      "You decided no sign-in unless abuse appears."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-3",
+   "words": true,
+   "surface": "Relay",
+   "path": "'Relay full' message",
+   "headline": "When the relay is full, what should the message say?",
+   "today": "At 1 GB the relay lets go of whole chats, oldest unused first. The host shows 'Relay full. 3 older chats are kept only on Desktop until Phone and Desktop are on together.'",
+   "problem": "On the free plan the real limit is about 900 MB. Also, 'waiting for all devices' can read as a problem when a rarely used device is simply off.",
+   "proposal": "Keep the wording. It appears at about 900 MB on the free plan and 1 GB on the paid plan. The message names what is waiting for what. It is wording you will read.",
+   "options": [
+    {
+     "id": "keep-truthful",
+     "label": "Keep it, and tell the truth about what is waiting",
+     "pros": [
+      "Honest."
+     ],
+     "cons": [
+      "Longer text."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hide-if-off",
+     "label": "Hide it when the cause is just a device that is off",
+     "pros": [
+      "Calmer."
+     ],
+     "cons": [
+      "You do not learn your chats are only on one device."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "G-5",
+   "page": "Testing",
+   "intro": "What we can and cannot test, and what that means for the release. 2 questions."
+  },
+  {
+   "id": "S-1",
+   "words": true,
+   "surface": "Testing",
+   "path": "Sleep tests on your desktop",
+   "headline": "Should we set up your desktop for the sleep tests?",
+   "today": "The test for 'does a reply stop working while the computer sleeps' has only been simulated on this laptop. Nothing real. You said your desktop is better, because it can be woken over the network and managed from here while this laptop stays awake.",
+   "problem": "Until it is set up, sleep and wake cannot be tested for real.",
+   "proposal": "You, or I with your yes, set up remote access and wake-over-network on the desktop. It is a system change on your computer, so it needs your permission. Separately, the tests need the spare Claude sign-in you chose last round: run the helper I made once in Konsole (not in the chat box).",
+   "options": [
+    {
+     "id": "setup-desktop",
+     "label": "Set it up and test there",
+     "pros": [
+      "Real sleep tests on Linux."
+     ],
+     "cons": [
+      "A system change on your desktop.",
+      "Some of your time."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "test-laptop",
+     "label": "Test on this laptop",
+     "pros": [
+      "No setup."
+     ],
+     "cons": [
+      "You said the desktop is better.",
+      "A laptop asleep also stops me."
+     ]
+    },
+    {
+     "id": "skip",
+     "label": "Skip for now",
+     "pros": [
+      "Nothing to do."
+     ],
+     "cons": [
+      "The main claim about sleep stays unproven."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "surface": "Release",
+   "path": "Windows and Mac",
+   "headline": "What must be true before release, given Windows and Mac are untested?",
+   "today": "Only Linux can be tested (this laptop, your desktop, and a phone 'in theory'). The unlock prompts, key storage, file names that ignore capital letters, real sleep and the phone's behaviour have never been run on Windows or Mac.",
+   "problem": "The one release goes to everyone, including Windows and Mac users. It sets who the release is for.",
+   "proposal": "Label every Windows or Mac claim 'unproven' in the design and the release notes until tested.",
+   "options": [
+    {
+     "id": "test-each-system",
+     "label": "Release only when tested somewhere real for each system",
+     "pros": [
+      "No surprise for those users."
+     ],
+     "cons": [
+      "Needs a Windows and Mac test device, or a helper."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "release-labelled",
+     "label": "Release anyway, labelled 'not yet tested on Windows or Mac'",
+     "pros": [
+      "Ships."
+     ],
+     "cons": [
+      "Those users may hit failures first."
+     ]
+    },
+    {
+     "id": "linux-android-first",
+     "label": "Make the first release Linux and Android only",
+     "pros": [
+      "Honest and small."
+     ],
+     "cons": [
+      "Changes your 'one release for everyone'."
+     ]
+    }
+   ]
+  }
+ ]
+}
