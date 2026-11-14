@@ -3,7 +3,7 @@ status: draft
 ---
 # Pages step 4 — automations: technical design
 
-**Status 2026-11-12: draft. Nothing here is built** — only the screens exist, in the workbench
+**Status 2026-11-13: draft. Nothing here is built** — only the screens exist, in the workbench
 against `renderer/dev/workbench/automations-mock.ts`. Every decision below is answered on a deck or
 in chat. Do not build until the screens under "Still to settle" are drawn and approved and one
 design-review round has run. Route (review deck `Q-route`): finish steps 4, 5 and 6, then ship once.
@@ -13,7 +13,7 @@ his "the underlying engine for any automation should be easily interchangeable".
 
 Sources, in order (later wins): `pages-finish-step4.questions` → `step4.review` → `step4b.review` →
 `step4c.review` (screens approved) → `step4-plan.questions` → `step4-plan-b.review` →
-`step4-plan-c.review` → `step4-plan-d.review` → `step4-plan-e.review` (skipped: no before pictures) → `step4-plan-f.review` → `pages-finish-review.questions` (2026-11-10) → chat 2026-11-12 (commands, below), all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
+`step4-plan-c.review` → `step4-plan-d.review` → `step4-plan-e.review` (skipped: no before pictures) → `step4-plan-f.review` → `pages-finish-review.questions` (2026-11-10) → chat 2026-11-12 (commands, below) → `step4d.review` → `step4e.review` → `step4f.review` (screens approved 2026-11-12/13), all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
 (`pages-finish-step4.contract.superseded.json`) is dropped (Destin, 2026-11-07: contracts don't
 help him); the decks are the record. Paths are `youcoded/desktop/src/` unless noted.
 
@@ -90,6 +90,14 @@ limit; subscription models show tokens used. No system notifications in this ste
      Destin: an allowed script can do whatever is written inside it; the guard is the
      ask-again-when-the-script-changes rule (`plan-d#Q-scripts`). Use cases:
      `docs/active/design/2026-10-24-pages-finish/step4-command-use-cases.md`.
+   - **Adding one by hand** (`step4d`/`step4e`, approved): the Add menu (as wide as its button) lists
+     Read / Change its information, See / Change the files in a folder…, Run a command…, Visit a
+     website…, Describe it…. Each opens ONE control in the button's place with × on its label line:
+     a folder uses Page settings' `FolderField` (choosing adds at once), a command or website is one
+     box with Add inside, Describe it… is one box with Write it inside and shows the result as a
+     permission line with Edit and Add. A hand-typed command is listed as "Run a command" with the
+     command under it; only assistant-written permissions get a plain-words name. The `*` hint goes
+     in the (i) by the title.
    - **Answers carry a note** (`plan-b#N-answer`): `answer(jobId, allow, note?)`; Don't allow needs
      one. The note goes back to the run as the tool result's message, so it doesn't retry.
    - Service permissions (Gmail etc.) need step 5's sign-ins; until then the Add menu lists this
@@ -99,7 +107,13 @@ limit; subscription models show tokens used. No system notifications in this ste
    dot. Deleting a page asks per linked automation: Keep (link removed, it carries on) or Delete
    (`plan-b#E-deletepage`). Deleting a page also removes its saved versions and its chats, behind a
    danger confirmation that says so (review deck `Q-deletepage`). An automation has a Delete button
-   (review deck `S-delete`).
+   (review deck `S-delete`; screen `step4d#D-delete`). **Delete page is a button at the foot of Page
+   settings** (`step4d#Q-deletepage`; screens `step4f#F-button`, `#F-warning`, design stage
+   `PageSettings.tsx` `DeletePage`, `pages.deletePage(id, deleteAutomations)` in `mock-only.ts`): the
+   red notice lists each linked automation with Keep / Delete — Delete by default when only this
+   page uses it, Keep when another page does. The page's assistant and the page-builder skill send
+   the person to that button instead of deleting. Main must delete page folder, versions, chat
+   records, approvals/folders/open sites and unlink or delete the automations as one step.
 5. **Store** — `main/automations/automation-store.ts`, `~/.youcoded/automations/`: `jobs.json`
    (atomic write, version field, stable job ids for the mesh later), `runs/<jobId>/<runId>.json`
    (summary, outcome, dollars, tokens per model/harness, seconds) and the run's conversation
@@ -123,7 +137,9 @@ limit; subscription models show tokens used. No system notifications in this ste
    New jobs on a paid model start at $5 (`questions#Q-limit` note).
    - **Runs-per-day cap** (review deck `Q-cap`, with his note "only … where it makes sense. a job
      set to only run every 12h doesnt need a runs per day cap"): offered only on jobs a page
-     button or page event can start; a schedule-only job shows no cap.
+     button or page event can start; a schedule-only job shows no cap. Screen (`step4e#E-cap`): its
+     own "Runs per day" group using `TypeableSelect` (No limit, 5, 10, 20, 50, 100, or typed). Per
+     automation only; no page-level limit (`step4d#Q-pagelimit`).
    - **Every model** (review deck `Q-models`): any model the app can chat with can run a job.
      `model` must be a real model binding, not a label (today's mock stores a label, and treats
      ChatGPT as a subscription at `AutomationDetails.tsx:103`).
@@ -135,7 +151,8 @@ limit; subscription models show tokens used. No system notifications in this ste
 10. **Devices** (`plan-b#Q-devices` → ride on the mesh): each job stores `devices: {id, name, runs}`
     and shows only this device until the mesh sync's "one list everywhere" step
     (`worktrees/sessions/mesh-sync-design`, spec `2026-11-06-youcoded-mesh-sync-design.md` §10)
-    carries automations; the mesh's exactly-once run claims come later. Nothing syncs in step 4.
+    carries automations; the mesh's exactly-once run claims come later. Nothing syncs in step 4
+    (`step4d#Q-devices`: wait for syncing).
 11. **No system notifications** (`plan-b#Q-notify-menu`: "all system notifications will be built
     together later … limited to the orange light"). The job keeps a `notify` field for that work;
     the details popup shows no Notifications card.
@@ -153,14 +170,10 @@ while YouCoded is closed.
 
 ## Still to settle before the build
 
-- Draw, with before/after pictures where a screen exists (Destin rejects after-only decks): the
-  "type which folder / website / command" step after Add a permission, the "Describe it…" flow,
-  "Allow from now on" on a run's ask, the delete-page danger popup, Delete on an automation, the
-  runs-per-day cap, and another attempt at the lower half of the details popup (his last word on
-  it: "too busy and unclear with poor visual hierarchy").
-- Screen fixes already decided: the Add menu drops Gmail and "Send you a notification"
-  (`AutomationDetails.tsx:273-278`).
-- Raised 2026-11-12, not yet answered by Destin: automations do not appear on other devices until
-  the mesh work; "run differently" for a missed run cannot change what the run produces; whether a
-  page-level spending limit is still wanted alongside per-job limits.
+- Draw: what a page's Run button and the popup's Run now say once the daily limit is reached.
+- Settled 2026-11-12/13 (`step4d`): "Run with other instructions" is enough for a missed run
+  (`Q-rundiff`); limits are per automation only (`Q-pagelimit`); other devices wait for syncing
+  (`Q-devices`).
+- The context-free UX tester has not run on these screens (skipped earlier at Destin's word);
+  offer it before the build.
 - One design-review round against this document and the decks.
