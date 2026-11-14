@@ -915,3 +915,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-13 #205 Phone access: the assistant's browser asks for approvals you can't see (app PR #746 (30a75b634))
 - [x] 2026-11-13 #259 Website: speed pass, in-between widths, FAQ and bottom-of-page polish (youcoded PR #751 (ef4f10037))
 - [x] 2026-11-14 #261 Website: first demo shows the old look for a moment; end of intro hitches (youcoded PR #753, youcoded-dev PR #373)
+- [x] 2026-11-14 #194 Message-box attachment cards show no image preview in the dev window, on phones and on Android (youcoded PR #747 (320b0bcaa); Android and test-copy previews continue on #254)
