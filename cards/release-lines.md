@@ -68,3 +68,6 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#754 new | Local models respond faster: each chat keeps its place, and the default context is now 64k (was 32k).
 - youcoded#754 new | A local chat that grows too long now shows one clear card with Summarise.
 - youcoded#754 new | The local engine no longer gets stuck showing as busy.
+- youcoded#756 new | Right-click a picture in chat for a menu.
+- youcoded#756 new | The folder list is now ordered by last use.
+- youcoded#756 new | Picking a quick chip over words you have typed asks Replace or Add to end.
