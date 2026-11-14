@@ -13,8 +13,8 @@ side: screens
 work: session/143-office-home-conveniences
 ---
 Progress
-Done: Round-3 decks (2026-11-14): picture menu yes; quick chip over typed words = design A strip (built, reviewed, on session/round3-chat); folder order by last use = land
-Next: Destin: unsaved synced folders stay at bottom or auto-save on first use (Q-8, he was confused; re-asked in chat)
+Done: Round 3 LANDED (youcoded PR #756, bae77364f): picture right-click menu, quick-chip strip (design A), folder list by last use incl. synced projects (stamps in youcoded-folder-usage.json)
+Next: real phone / Windows / Mac / real synced project untested
 Blocked: nothing recorded.
 
 Chats
