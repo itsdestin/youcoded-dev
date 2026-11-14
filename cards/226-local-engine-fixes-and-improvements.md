@@ -13,9 +13,9 @@ priority: P3
 work: session/local-model-hardening
 ---
 Progress
-Done: 2026-11-12: both review decks answered and everything decided is built and pushed (64k default, helper slots, come-back re-read, long results keep both ends + saved whole, app-written note when a full chat cannot be summarised, faster-writing safety net). Branch updated to master twice; full verify passes. Desktop test: 64k fits the 12 GB card (8.2 GB), replies 54-65 tokens/s.
-Next: Independent code review findings, then Destin's word to ship. Remove ~/yc-test-226 from the desktop once it accepts logins again. File the follow-up card for wide real-world testing after his OK.
-Blocked: Nothing. Backed up to GitHub 2026-11-10 (app and workspace branches session/local-model-hardening) after Destin allowed the secrets-scan exception for a model settings name in a test. Waits for his review and testing before landing.
+Done: 2026-11-13: everything decided on both review decks is built, tested and pushed on session/local-model-hardening (app head 62cc21bdb). Independent review done; its six findings fixed; full checks passed after the fixes. Strix Halo leads measured: the two ROCm settings do not fix its slowdown; save-to-disk works for ordinary models only.
+Next: Destin says whether to merge. After merge: archive the status page and decks, close this card. Follow-ups filed as #262 (wide testing), #263 (save to disk), #264 (rough edges left).
+Blocked: Desktop PC unreachable over SSH since the 2026-11-12 test; the test folder ~/yc-test-226 (and possibly a test engine) is still on it and must be removed when it is back. The fixes for the six review findings were not re-read by a second reviewer.
 
 Chats
 - 2026-11-09 session/local-model-hardening: speed work (warm-up, per-chat slots) built; context faults and MTP to fix here
