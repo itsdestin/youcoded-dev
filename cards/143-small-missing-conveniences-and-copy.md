@@ -12,8 +12,8 @@ area: Chat
 side: screens
 ---
 Progress
-Done: Review fixes on session/round3-chat: picture menu now uses the guarded public-only fetch with streamed cap, picture-only Save, no file: addresses; folder order stamps only person-started new sessions.
-Next: Destin picks a chip-choice styling.
+Done: Round-3 decks (2026-11-14): picture menu yes; quick chip over typed words = design A strip (built, reviewed, on session/round3-chat); folder order by last use = land
+Next: Destin: unsaved synced folders stay at bottom or auto-save on first use (Q-8, he was confused; re-asked in chat)
 Blocked: nothing recorded.
 
 Chats
