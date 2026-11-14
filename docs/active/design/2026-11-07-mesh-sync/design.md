@@ -724,9 +724,17 @@ which is offline".
 
 **Keys (engineering call).**
 
+- **A device is identified by the id the app already gives each machine**
+  (`getMachineIdentity` in `main/device-identity.ts`, the same id the device list and
+  analytics use). No new identity scheme. [chat 2026-11-13: "it should be pretty simple to
+  identify devices? we already identify unique devices with a device id"]
 - Each device creates a signing key pair and a key-agreement key pair on first run. Private
-  halves are stored with `safeStorage` (desktop) or the Keystore-backed shim (Android). A
-  reinstall is a new device.
+  halves are stored with `safeStorage` (desktop) or the Keystore-backed shim (Android).
+- **Reinstalling.** If the machine id survives (the app's data folder was kept), pairing
+  again from that machine replaces the old entry for the same id, with no extra question;
+  chats it hosted stay hosted by it. If the data folder was wiped (always the case after an
+  Android uninstall), it is simply a new device; the old entry is removed by the user or by
+  the 30-day prompt, and its chats can be continued elsewhere once it is removed.
 - The set has a **set secret** (32 random bytes) made by the first device. Frames are sealed
   with keys derived from it. It reaches a new device only during pairing, sealed to that
   device.
@@ -777,9 +785,11 @@ which is offline".
   the name on screen belongs to whoever holds the code.
 - The meeting point is on the relay, or on the local network once same-wifi exists. Using
   the relay as a meeting point stores nothing and is separate from using it as a keeper.
-- **A device that already belongs to a set of two or more must leave it before joining
-  another** (U9). Pairing a set of one into another set is the ordinary case and covers
-  "both devices hold data" and "a device restored from backup".
+- **Pairing a device that is already paired with others simply moves it.** It leaves its
+  old set and joins the new one as part of the same pairing, with one line saying so. Its
+  former companions stay where they were. There is no feature for joining two whole sets at
+  once and no separate "leave first" step. [chat 2026-11-13: "i feel like we're
+  overthinking/overengineering this"; **My reading** of the simplest behaviour]
 - **Leaving.** A device can remove itself. When the roster is empty the relay erases the
   set after a delay. A set no device has connected to for 90 days is erased [D13 Q-4].
 
@@ -1450,8 +1460,7 @@ device that is not yet paired with another, and combines by the same prefix rule
 sending one message before restoring does not hide it.
 
 **Rollback** is for the whole release, not one device. It is costly: devices that stopped
-reading GitHub come back with conflict copies, so it is for emergencies. A staged release
-(testers first) is the better protection; see section 13.
+reading GitHub come back with conflict copies, so it is for emergencies only.
 
 **Rollback detail.** While the old code is still shipped,
 a later release can turn the switch off: on each device the store is written back into
@@ -1551,7 +1560,7 @@ change nothing for users (7.2).
 | Phase | Builds | Destin sees (review decks) | Needs decided first | Done when |
 |---|---|---|---|---|
 | 0 | T1 to T20 as investigations | A plain report and any decision they force | — | Each pass line met, or the design amended with his agreement where he can see the change |
-| 1. Devices | Keys, roster with cut-offs, generations, pairing (QR and code, relay meeting point), adding and removing with unlock, link layer over the relay, relay (auth, pass-through, presence, mailboxes, limits, allow-list) | Devices screen, pairing, removing, the 30-day prompt | U9, O4 | Three rig devices and a real phone pair; T15 passes; threat model written |
+| 1. Devices | Keys, roster with cut-offs, generations, pairing (QR and code, relay meeting point), adding and removing with unlock, link layer over the relay, relay (auth, pass-through, presence, mailboxes, limits, allow-list) | Devices screen, pairing, removing, the 30-day prompt | O4 | Three rig devices and a real phone pair; T15 passes; threat model written |
 | 2. Chats copy | Chat store, adapters, chains, reply ends, control log (`claim`, `summary`, `renamed`, `flag`, `segment`), replicator, relay holding and release notices, registers, 30-day and 1 GB rules, storage setting, the chat list, relay on/off setting | Chat list on a second device (reading only), storage setting, relay setting | — | A chat written on A is readable on B in under 2 s, and after B was off a day; inventories match; T2, T14, T16 pass |
 | 3. Watching | Session router and proxy, peer context, per-chat capabilities, host chip, permission from any device, signed calls (host entries are `claim` only in this phase), start on another device, `format` and the version fallback | Watching and typing into a chat hosted elsewhere | — | A watcher drives a full reply on a remote host, desktop and phone; parity tests green; T17 passes |
 | 4. Project files | Mesh carrier, clash rule, sequencer, tip register, per-device download, 2 s wait, same-project question | Project list with "sync on this device"; combining projects at pairing | — | T4 passes; a project edited on two hosts converges |
@@ -1632,10 +1641,11 @@ bug report. Nothing is sent without the user choosing to.
    park 1 GB of unreadable data; and one rarely-opened device makes up to 30 days of chats
    pile up, so "Relay full" could be routine for heavy users. T7 must report before the
    1 GB and free promises are treated as fixed; V6; sign-in in reserve.
-11. **Reinstalling the app makes a new device and leaves the old identity behind** as a
-   ghost that still hosts chats until removed (section 13).
-12. **Six phases ship nothing visible, then one release switches everyone.** A staged
-   release is proposed (section 13).
+11. **A reinstall that wipes the app's data makes a new device** and leaves the old entry
+   until it is removed (5.1). Where the data survives, the machine id does too.
+12. **Six phases ship nothing visible, then one release switches everyone.** Decided: no
+   staging [chat 2026-11-13]. There are about 5 to 10 users today, so the protection is the
+   Phase 7 rehearsal on copies of Destin's four devices, not a gradual release.
 8. **Every paired device is fully trusted** (section 8). Unlock on add and remove.
 9. **Unslimmed GitHub growth until the backup rebuild.** Keep the gap short.
 10. **Start-up wiring exists twice** (`main.ts`, `headless-boot.ts`). Every phase checks both.
@@ -1644,20 +1654,20 @@ bug report. Nothing is sent without the user choosing to.
 
 ## 13. Not decided
 
-Round 13 (2026-11-13) settled the reworked round 12 items and every user-visible
-consequence the reviews found, except one. The decided ones now sit in section 2 with
-`[D13 …]` tags.
+Round 13 and chat on 2026-11-13 settled the reworked round 12 items and every user-visible
+consequence the reviews found. The decided ones sit in section 2 with `[D13 …]` tags.
+**One release, not staged:** "this should not be staged or phased. we should just fix this
+all at once and swap everyone in a single release. we only have like 5-10 users, so i
+don't want you to overcomplicate this". [chat 2026-11-13] The phases in section 10 are the
+order of building and testing; users get everything in one release at Phase 7.
 
 | # | Item | State |
 |---|---|---|
-| U9 | A device already in a set of two or more must leave it before joining another (5.1) | Asked on round 13 (S-3); he answered "what?". Needs a plainer explanation and his yes or no before Phase 1 |
 | O1 | Reaching a super-host from outside (Tailscale, tunnels, router); locking its browser view | Comparison owed before Phase 8 |
 | O2 | Payment | Destin: decide later; free at fixed limits |
 | O3 | A plan for the 2026-11-05 conflict copies | Left alone by his word |
 | O4 | Adding or removing a device on a desktop with no OS unlock | Needs Destin if T11 finds one |
 | O7 | Interim period: GitHub upload is unslimmed and grows | Known; follows from his order |
 | O10 | Backup choices that work on every device (D10 S-3) | For the backup rebuild's design |
-| O12 | Reinstall: when a new device pairs from the same computer as a device already in the set, offer "This looks like Desktop reinstalled. Replace it?" | Asked in chat 2026-11-13 |
-| O13 | Staged release: turn the switch on for people who opt in first, everyone later | Asked in chat 2026-11-13 |
 | O14 | If T4 fails: files move only while one chosen device is on. If T3 or T10 fails: no way to continue a Claude Code chat on another computer | Only arise if those tests fail |
 | O15 | The relay's 1 GB, free, no-sign-in promises are provisional until the cost test (T7) reports | Report owed after Phase 0 |

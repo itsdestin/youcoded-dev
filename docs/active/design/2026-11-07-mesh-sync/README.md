@@ -357,3 +357,17 @@ running reply on wake (T19); an audit of everything that reads chat files (T20);
 rule that mesh dev instances use a separate home folder; a "Check sync" tool in the app.
 Left for Destin: U9, a reinstall prompt (O12), a staged release (O13). Conditional on test
 results: O14, O15.
+
+## Chat, 2026-11-13 (after the fourth review)
+
+- A device already paired with others: "i'm kinda confused about why this is
+  complicated/different? i feel like we're overthinking/overengineering this?" Recorded as:
+  pairing simply moves the device to the new set; no group-joining feature, no "leave
+  first" step. (My reading of the simplest behaviour.)
+- Reinstalls: "yeah i want to do this in the smartest/simplest way possible. it should be
+  pretty simple to identify devices? we already identify unique devices with a device id
+  for our analytics." Recorded as: the mesh uses the existing per-machine id
+  (`getMachineIdentity`); the same id pairing again replaces its old entry with no question.
+- Release: "this should not be staged or phased. we should just fix this all at once and
+  swap everyone in a single release. we only have like 5-10 users, so i don't want you to
+  overcomplicate this"
