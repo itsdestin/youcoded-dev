@@ -13,8 +13,8 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: Round-3: notices above message box yes; reaches phones = land; long notices put the button under the text (his note, built). He finds the settings-repair wording and button confusing
-Next: his answer on new wording
+Done: LANDED PR #756: notices above message box, button under long notices, settings-repair notice reworded (Show file) and reaches phones
+Next: remaining faults on this card
 Blocked: Nothing blocks the shipped part. Needs a real Android, Windows and Mac run to confirm the rest.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
