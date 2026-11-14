@@ -45,6 +45,12 @@ function linked(s) {
 }
 function now() { var d = new Date(); return { day: C.ymd(d), time: C.pad(d.getHours()) + ':' + C.pad(d.getMinutes()), iso: d.toISOString(), ms: +d }; }
 function dot(color) { return '<span class="t-dot" style="--dot:' + (C.COLORS[color] || C.COLORS.grey) + '"></span>'; }
+// Priorities read as plain words. 1-3 are still what is saved and what "p1" types.
+var PRI = { 1: 'High', 2: 'Medium', 3: 'Low', 4: 'None' };
+var PRI_TONE = { 1: 'danger', 2: 'warning', 3: 'info' };
+function priName(p) { return p === 4 ? 'No priority' : PRI[p] + ' priority'; }
+// A label's mark: the app's filled tag in the label's own colour; the word stays the text colour.
+function tagIcon(color) { return '<svg class="t-tagicon" viewBox="0 0 24 24" aria-hidden="true" style="--dot:' + (C.COLORS[color] || C.COLORS.grey) + '"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/></svg>'; }
 function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
 
 // What is on screen right now. None of this is saved except through `state`.
@@ -99,7 +105,7 @@ function hiddenProject(t) { var p = project(t.projectId); return !!(p && p.archi
 function openTasks() { return state.tasks.filter(function (t) { return !t.done && !hiddenProject(t); }); }
 
 var BUILTIN_FILTERS = [
-  { id: 'b-p1', name: 'Priority 1', query: { priorities: [1] } },
+  { id: 'b-p1', name: 'High priority', query: { priorities: [1] } },
   { id: 'b-week', name: 'Due in the next 7 days', query: { due: 'week' } },
   { id: 'b-nodate', name: 'No due date', query: { due: 'none' } }
 ];
@@ -157,7 +163,7 @@ function userGroups(list, o, addBase) {
     if (!buckets[key]) { buckets[key] = Object.assign({ id: 'u-' + key, title: title, tasks: [], add: Object.assign({}, addBase, add) }, extra || {}); order.push(key); }
     if (t) buckets[key].tasks.push(t);
   }
-  if (o.group === 'priority') [1, 2, 3, 4].forEach(function (p) { put('p' + p, p === 4 ? 'No priority' : 'Priority ' + p, null, { priority: p }); });
+  if (o.group === 'priority') [1, 2, 3, 4].forEach(function (p) { put('p' + p, priName(p), null, { priority: p }); });
   if (o.group === 'due') [['late', 'Overdue'], ['today', 'Today'], ['tomorrow', 'Tomorrow'], ['week', 'Next 7 days'], ['later', 'Later'], ['none', 'No due date']].forEach(function (x) { put(x[0], x[1], null, x[0] === 'today' ? { due: { date: n.day } } : x[0] === 'tomorrow' ? { due: { date: C.addDays(n.day, 1) } } : {}); });
   list.forEach(function (t) {
     if (o.group === 'project') put(t.projectId || 'inbox', project(t.projectId) ? project(t.projectId).name : 'Inbox', t, { projectId: t.projectId });
@@ -229,16 +235,16 @@ function counts() {
 function navItem(view, ic, name, count, extra) {
   var cur = viewKey(view) === viewKey(ui.view);
   return '<button class="t-navitem" data-act="go" data-view="' + esc(JSON.stringify(view)) + '"' + (cur ? ' aria-current="true"' : '') + (extra || '') + '>' +
-    ic + '<span class="t-grow t-clip">' + esc(name) + '</span>' + (count ? '<span class="t-navitem__count' + (count.late ? ' is-late' : '') + '">' + count.n + '</span>' : '') + '</button>';
+    ic + '<span class="t-grow t-clip">' + esc(name) + '</span>' + (count ? '<span class="t-navitem__count">' + (count.late ? '<i class="t-latedot" title="Some are overdue"></i>' : '') + count.n + '</span>' : '') + '</button>';
 }
 function renderNav() {
   var c = counts(), n = now(), done = state.stats.days[n.day] || 0, goal = state.settings.dailyGoal;
   var frac = Math.min(1, done / goal), circ = 2 * Math.PI * 7;
   var projs = liveProjects(), favs = projs.filter(function (p) { return p.favorite; });
   function projItem(p) { return navItem({ kind: 'project', id: p.id }, dot(p.color), p.name, c.projects[p.id] ? { n: c.projects[p.id] } : null, ' data-drop-project="' + esc(p.id) + '"'); }
-  var h = '<h1>Tasks</h1>' +
+  var h = '<div class="t-nav__top"><h1>Tasks</h1>' +
     '<button class="yc-button yc-button--primary yc-button--full" data-act="quick-add">' + icon('plus') + 'Add task</button>' +
-    '<label class="yc-search"><input type="search" id="search" data-keep placeholder="Search tasks" aria-label="Search tasks" value="' + esc(ui.view.kind === 'search' ? ui.view.q : '') + '"></label>' +
+    '<label class="yc-search"><input type="search" id="search" data-keep placeholder="Search tasks" aria-label="Search tasks" value="' + esc(ui.view.kind === 'search' ? ui.view.q : '') + '"></label></div>' +
     '<div class="t-nav__group">' +
     navItem({ kind: 'inbox' }, icon('inbox'), 'Inbox', c.inbox ? { n: c.inbox } : null, ' data-drop-project=""') +
     navItem({ kind: 'today' }, icon('today'), 'Today', c.today ? { n: c.today, late: c.late > 0 } : null, ' data-drop-due="' + n.day + '"') +
@@ -259,20 +265,28 @@ function renderNav() {
 }
 
 // ── drawing: one task row ───────────────────────────────────────────────────────────────
+// The short facts under a task's name, each the app's small pill. Colour is only ever the
+// pill's tint (overdue, today, priority) or a label's tag mark — never the words.
+function pill(tone, inner, title) { return '<span class="yc-status' + (tone ? ' yc-status--' + tone : '') + '"' + (title ? ' title="' + esc(title) + '"' : '') + '>' + inner + '</span>'; }
+function duePill(t) {
+  var info = C.dueInfo(t.due, now(), state.settings.h12);
+  if (!info) return '';
+  return pill(info.tone === 'overdue' ? 'danger yc-status--dot' : info.tone === 'today' ? 'info' : '', (t.repeat ? icon('repeat') : '') + esc(info.text), (info.tone === 'overdue' ? 'Overdue. ' : '') + (t.repeat ? C.describeRepeat(t.repeat) : ''));
+}
 function metaHtml(t, ctx) {
-  var n = now(), m = '', info = C.dueInfo(t.due, n, state.settings.h12);
-  if (info) m += '<span class="t-meta t-meta--' + info.tone + '">' + icon(t.repeat ? 'repeat' : 'calendar') + esc(info.text) + '</span>';
+  var m = duePill(t);
+  if (t.priority < 4) m += pill(PRI_TONE[t.priority], PRI[t.priority], priName(t.priority));
   if (ctx.tree && !t.parentId) {
     var kids = C.children(state, t.id);
-    if (kids.length) m += '<span class="t-meta">' + icon('subs') + kids.filter(function (k) { return k.done; }).length + '/' + kids.length + '</span>';
+    if (kids.length) m += pill('', icon('subs') + kids.filter(function (k) { return k.done; }).length + '/' + kids.length, 'Sub-tasks done');
   }
-  if (t.comments.length) m += '<span class="t-meta">' + icon('comment') + t.comments.length + '</span>';
-  t.labels.forEach(function (l) { m += '<span class="t-meta">' + dot(labelColor(l)) + esc(l) + '</span>'; });
-  if (ctx.where) m += '<span class="t-meta t-meta--where">' + esc(whereText(t)) + (t.parentId && task(t.parentId) ? ' › ' + esc(task(t.parentId).title.slice(0, 30)) : '') + '</span>';
-  return m;
+  if (t.comments.length) m += pill('', icon('comment') + t.comments.length, 'Comments');
+  t.labels.forEach(function (l) { m += pill('', tagIcon(labelColor(l)) + esc(l)); });
+  var where = ctx.where ? '<span class="t-where t-clip">' + esc(whereText(t)) + (t.parentId && task(t.parentId) ? ' › ' + esc(task(t.parentId).title.slice(0, 30)) : '') + '</span>' : '';
+  return (m ? '<div class="yc-chips">' + m + '</div>' : where ? '<span class="t-grow"></span>' : '') + where;
 }
 function checkHtml(t) {
-  return '<button class="t-check p' + t.priority + '" data-act="toggle" data-id="' + t.id + '" aria-pressed="' + (t.done ? 'true' : 'false') + '" aria-label="' + (t.done ? 'Mark as not done: ' : 'Mark as done: ') + esc(t.title) + '"></button>';
+  return '<button class="t-check" data-act="toggle" data-id="' + t.id + '" aria-pressed="' + (t.done ? 'true' : 'false') + '" aria-label="' + (t.done ? 'Mark as not done: ' : 'Mark as done: ') + esc(t.title) + '"></button>';
 }
 function taskRow(t, ctx) {
   var kids = ctx.tree && !t.parentId ? C.children(state, t.id) : [];
@@ -281,7 +295,9 @@ function taskRow(t, ctx) {
   if (ui.selecting) h += '<input type="checkbox" class="t-pick" data-act="pick" data-id="' + t.id + '"' + (ui.picked[t.id] ? ' checked' : '') + ' aria-label="Select ' + esc(t.title) + '">';
   h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__title">' + linked(t.title) + '</div>';
   if (t.notes && !ctx.card) h += '<div class="t-task__notes">' + linked(t.notes.split('\n')[0]) + '</div>';
-  h += '<div class="t-task__meta">' + metaHtml(t, ctx) + '</div></div>';
+  var meta = metaHtml(t, ctx);
+  if (meta) h += '<div class="t-task__meta">' + meta + '</div>';
+  h += '</div>';
   if (kids.length) h += '<button class="t-iconbtn t-twisty" data-act="twisty" data-id="' + t.id + '" aria-expanded="' + (ui.collapsed[t.id] ? 'false' : 'true') + '" aria-label="Show or hide sub-tasks">' + icon('chev') + '</button>';
   h += '<div class="t-task__actions">' +
     '<button class="t-iconbtn" data-act="row-date" data-id="' + t.id + '" aria-label="Set due date">' + icon('calendar') + '</button>' +
@@ -303,13 +319,13 @@ function groupHtml(g, where) {
   var attrs = g.drop ? ' data-drop="' + esc(JSON.stringify(g.drop)) + '"' : g.dropDue ? ' data-drop-due="' + g.dropDue + '"' : '';
   var h = '<section class="t-group' + (folded ? '' : ' is-open') + '"' + attrs + '>';
   if (g.title) {
+    var words = esc(g.title) + (g.hint ? ' · ' + esc(g.hint) : '') + (n ? ' <span class="t-group__count">' + n + '</span>' : '');
     h += '<div class="t-group__head">';
-    if (g.section) h += '<button class="t-group__title" data-act="section-fold" data-id="' + g.section.id + '" aria-expanded="' + (folded ? 'false' : 'true') + '">' + icon('chev', 't-chev') + esc(g.title) + '</button>';
-    else h += '<span class="t-group__title">' + esc(g.title) + '</span>';
-    if (g.hint) h += '<span class="t-group__count">' + esc(g.hint) + '</span>';
-    if (n && !g.hint) h += '<span class="t-group__count">' + n + '</span>';
-    if (g.reschedule) h += '<button class="t-linkish" data-act="reschedule">Move all to today</button>';
-    if (g.section) h += '<button class="t-iconbtn" style="margin-left:auto" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>';
+    if (g.section) h += '<button class="t-group__title" data-act="section-fold" data-id="' + g.section.id + '" aria-expanded="' + (folded ? 'false' : 'true') + '">' + icon('chev', 't-chev') + '<span>' + words + '</span></button>';
+    else h += '<span class="t-group__title">' + words + '</span>';
+    h += '<span class="t-grow"></span>';
+    if (g.reschedule) h += '<button class="yc-button yc-button--ghost yc-button--sm" data-act="reschedule">Move all to today</button>';
+    if (g.section) h += '<button class="t-iconbtn" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>';
     h += '</div>';
   }
   if (!folded) {
@@ -318,8 +334,6 @@ function groupHtml(g, where) {
   }
   return h + '</section>';
 }
-
-// ── drawing: the middle column ──────────────────────────────────────────────────────────
 function emptyText(v) {
   if (v.kind === 'inbox') return 'Your Inbox is empty. Add anything on your mind, and sort it into projects later.';
   if (v.kind === 'today') return 'Nothing due today. Enjoy it, or add something.';
@@ -342,14 +356,14 @@ function headHtml(v, total) {
       tools += sel('group', o.group, [['none', 'No groups'], ['project', 'Group by project'], ['priority', 'Group by priority'], ['due', 'Group by due date'], ['label', 'Group by label']].filter(function (x) { return !(v.kind === 'inbox' && x[0] === 'project'); }));
     tools += sel('sort', o.sort, (tree ? [['manual', 'My order']] : []).concat([['due', 'By due date'], ['priority', 'By priority'], ['name', 'By name'], ['added', 'Newest first']]));
     if (v.kind !== 'today' && v.kind !== 'upcoming') tools += '<button class="yc-filter" data-act="toggle-done" aria-pressed="' + o.done + '">Show done</button>';
-    tools += '<button class="t-iconbtn" data-act="select-mode" aria-pressed="' + ui.selecting + '" aria-label="Select several tasks">' + icon('pick') + '</button>';
+    tools += '<button class="yc-button yc-button--ghost yc-button--icon" data-act="select-mode" aria-pressed="' + ui.selecting + '" aria-label="Select several tasks" title="Select several tasks">' + icon('pick') + '</button>';
   }
-  if (p) tools += '<button class="t-iconbtn" data-act="project-more" data-id="' + p.id + '" aria-label="Project actions">' + icon('more') + '</button>';
-  if (v.kind === 'label') tools += '<button class="t-iconbtn" data-act="label-more" data-id="' + esc(v.id) + '" aria-label="Label actions">' + icon('more') + '</button>';
-  if (v.kind === 'filter' && C.byId(state.filters, v.id)) tools += '<button class="t-iconbtn" data-act="filter-more" data-id="' + esc(v.id) + '" aria-label="Filter actions">' + icon('more') + '</button>';
+  if (p) tools += '<button class="yc-button yc-button--ghost yc-button--icon" data-act="project-more" data-id="' + p.id + '" aria-label="Project actions">' + icon('more') + '</button>';
+  if (v.kind === 'label') tools += '<button class="yc-button yc-button--ghost yc-button--icon" data-act="label-more" data-id="' + esc(v.id) + '" aria-label="Label actions">' + icon('more') + '</button>';
+  if (v.kind === 'filter' && C.byId(state.filters, v.id)) tools += '<button class="yc-button yc-button--ghost yc-button--icon" data-act="filter-more" data-id="' + esc(v.id) + '" aria-label="Filter actions">' + icon('more') + '</button>';
   return '<header class="t-head' + (p && p.layout === 'board' ? ' t-head--wide' : '') + '"><button class="t-iconbtn t-menu-btn" data-act="nav-open" aria-label="Show lists">' + icon('menu') + '</button>' +
     '<h2>' + (p ? dot(p.color) : '') + '<span class="t-clip">' + esc(viewTitle(v)) + '</span>' +
-    (lists && total != null ? '<span class="t-head__sub">' + plural(total, 'task') + '</span>' : '') + '</h2>' +
+    '</h2>' +
     '<div class="t-head__tools">' + tools + '</div></header>';
 }
 function renderMain() {
@@ -367,15 +381,18 @@ function renderMain() {
     if (p && p.layout === 'board') {
       body += '<div class="t-board" id="list">' + groups.map(function (g) {
         var n = g.tasks.filter(function (t) { return !t.done; }).length;
-        return '<section class="t-col" data-drop="' + esc(JSON.stringify(g.drop)) + '"><div class="t-group__head"><span class="t-group__title">' + esc(g.title || 'No section') + '</span><span class="t-group__count">' + n + '</span>' +
-          (g.section ? '<button class="t-iconbtn" style="margin-left:auto" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>' : '') + '</div>' +
+        return '<section class="t-col" data-drop="' + esc(JSON.stringify(g.drop)) + '"><div class="t-group__head"><span class="t-group__title">' + esc(g.title || 'No section') + ' <span class="t-group__count">' + n + '</span></span><span class="t-grow"></span>' +
+          (g.section ? '<button class="t-iconbtn" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>' : '') + '</div>' +
           g.tasks.map(function (t) { return taskRow(t, { tree: true, card: true }); }).join('') + addButton(g) + '</section>';
       }).join('') + '<section class="t-col t-col--new"><button class="t-add" data-act="section-add">' + icon('plus') + 'Add section</button></section></div>';
     } else {
       var where = !(v.kind === 'inbox' || v.kind === 'project');
       var any = groups.some(function (g) { return g.tasks.length; });
       var inner = groups.map(function (g) { return groupHtml(g, where); }).join('');
-      if (!any && v.kind !== 'upcoming') inner = '<div class="yc-empty">' + esc(emptyText(v)) + (state.tasks.length ? '' : '<div class="yc-small" style="margin-top:8px">Tip: type <span class="yc-kbd">Pay rent tomorrow 5pm p1</span> and the day, time and priority are filled in for you.</div>') + '</div>' + inner;
+      // Two jobs, two looks (the app's rule): never used -> a card with one filled button;
+      // nothing here right now -> one quiet grey line.
+      if (!state.tasks.length && !ui.editor) inner = '<div class="yc-card t-first"><div class="yc-title">Start your list</div><p class="yc-muted yc-small">Write down anything you need to do. Type it the way you would say it, such as <span class="yc-kbd">Pay rent tomorrow 5pm</span>, and the day and time are filled in for you. Sort things into projects whenever you like.</p><button class="yc-button yc-button--primary yc-button--full" data-act="add-first">Add your first task</button></div>';
+      else if (!any && v.kind !== 'upcoming') inner = '<div class="t-quiet">' + esc(emptyText(v)) + '</div>' + inner;
       if (p) inner += '<button class="t-add" data-act="section-add">' + icon('plus') + 'Add section</button>';
       body += '<div class="t-list" id="list"><div class="t-list__inner">' + inner + '</div></div>';
     }
@@ -397,13 +414,13 @@ function labelsScreen() {
   }
   function fcount(f) { return openTasks().filter(function (t) { return C.matchesFilter(t, f.query, n); }).length; }
   var h = '<div class="t-list" id="list"><div class="t-list__inner">';
-  h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Filters</span><button class="t-linkish" data-act="filter-add">Add filter</button></div><div class="yc-list">' +
+  h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Filters</span><span class="t-grow"></span><button class="yc-button yc-button--ghost yc-button--sm" data-act="filter-add">Add filter</button></div><div class="yc-list">' +
     BUILTIN_FILTERS.map(function (f) { return row({ kind: 'filter', id: f.id }, icon('filter'), f.name, fcount(f)); }).join('') +
     state.filters.map(function (f) { return row({ kind: 'filter', id: f.id }, icon('filter'), f.name, fcount(f), 'filter-more', f.id); }).join('') + '</div></section>';
-  h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Labels</span><button class="t-linkish" data-act="label-add">Add label</button></div>' +
+  h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Labels</span><span class="t-grow"></span><button class="yc-button yc-button--ghost yc-button--sm" data-act="label-add">Add label</button></div>' +
     (state.labels.length ? '<div class="yc-list">' + state.labels.slice().sort(function (a, b) { return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1; }).map(function (l) {
-      return row({ kind: 'label', id: l.name }, dot(l.color), l.name, c.labels[l.name] || 0, 'label-more', l.name);
-    }).join('') + '</div>' : '<div class="yc-empty">Labels cut across projects: @errands, @5-minutes, @waiting. Type @name while adding a task to make one.</div>') + '</section>';
+      return row({ kind: 'label', id: l.name }, tagIcon(l.color), l.name, c.labels[l.name] || 0, 'label-more', l.name);
+    }).join('') + '</div>' : '<div class="t-quiet">Labels cut across projects: @errands, @5-minutes, @waiting. Type @name while adding a task to make one.</div>') + '</section>';
   var gone = state.projects.filter(function (p) { return p.archived; });
   if (gone.length) h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Archived projects</span></div><div class="yc-list">' + gone.map(function (p) {
     return '<div class="yc-list-row"><button class="t-navitem" style="flex:1;min-width:0" data-act="go" data-view="' + esc(JSON.stringify({ kind: 'project', id: p.id })) + '">' + dot(p.color) + '<span class="t-grow t-clip">' + esc(p.name) + '</span></button>' +
@@ -417,22 +434,22 @@ function completedScreen() {
   state.log.forEach(function (l) { items.push({ id: l.id, title: l.title, at: l.at, projectId: l.projectId, repeat: true }); });
   items.sort(function (a, b) { return a.at < b.at ? 1 : -1; });
   var h = '<div class="t-list" id="list"><div class="t-list__inner">';
-  if (!items.length) return h + '<div class="yc-empty">Tasks you finish show up here, newest first.</div></div></div>';
+  if (!items.length) return h + '<div class="t-quiet">Tasks you finish show up here, newest first.</div></div></div>';
   var lastDay = null, shown = items.slice(0, 200);
   shown.forEach(function (it) {
     var d = new Date(it.at), day = C.ymd(d);
     if (day !== lastDay) {
       if (lastDay) h += '</section>';
       var names = longDay(day, n), far = C.diffDays(n.day, day) > 1;
-      h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">' + esc(far ? C.formatDay(day, n.day) : names.title) + '</span><span class="t-group__count">' + esc(far ? C.DAY_NAMES[d.getDay()] : names.hint) + '</span></div>';
+      h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">' + esc(far ? C.formatDay(day, n.day) : names.title) + ' · ' + esc(far ? C.DAY_NAMES[d.getDay()] : names.hint) + '</span></div>';
       lastDay = day;
     }
     var time = C.formatTime(C.pad(d.getHours()) + ':' + C.pad(d.getMinutes()), state.settings.h12);
     var where = project(it.projectId) ? project(it.projectId).name : 'Inbox';
     h += '<div class="t-task is-done"' + (it.task ? ' data-act="open" data-id="' + it.id + '" role="button" tabindex="0"' : ' style="cursor:default"') + '>' +
-      (it.task ? checkHtml(it.task) : '<span class="t-check p4 is-static" aria-pressed="true"></span>') +
-      '<div class="t-task__body"><div class="t-task__title">' + esc(it.title) + '</div><div class="t-task__meta"><span class="t-meta">' + esc(time) + '</span>' +
-      (it.repeat ? '<span class="t-meta">' + icon('repeat') + 'Repeats</span>' : '') + '<span class="t-meta t-meta--where">' + esc(where) + '</span></div></div></div>';
+      (it.task ? checkHtml(it.task) : '<span class="t-check is-static" aria-pressed="true"></span>') +
+      '<div class="t-task__body"><div class="t-task__title">' + esc(it.title) + '</div><div class="t-task__meta"><div class="yc-chips">' + pill('', esc(time)) +
+      (it.repeat ? pill('', icon('repeat') + 'Repeats') : '') + '</div><span class="t-where t-clip">' + esc(where) + '</span></div></div></div>';
   });
   h += '</section>';
   if (items.length > shown.length) h += '<div class="yc-caption" style="text-align:center">Showing the newest 200.</div>';
@@ -463,7 +480,7 @@ function destOptions(sel) {
   return h;
 }
 function priorityOptions(sel) {
-  return [1, 2, 3, 4].map(function (p) { return '<option value="' + p + '"' + (p === sel ? ' selected' : '') + '>' + (p === 4 ? 'No priority' : 'Priority ' + p) + '</option>'; }).join('');
+  return [1, 2, 3, 4].map(function (p) { return '<option value="' + p + '"' + (p === sel ? ' selected' : '') + '>' + priName(p) + '</option>'; }).join('');
 }
 function dueButtonText(due, repeat) {
   var info = C.dueInfo(due, now(), state.settings.h12);
@@ -476,33 +493,34 @@ function stamp(iso) {
 function renderDetail() {
   var el = $('detail'), t = ui.detailId ? task(ui.detailId) : null;
   if (!t) { ui.detailId = null; el.hidden = true; el.innerHTML = ''; return; }
-  var parent = t.parentId ? task(t.parentId) : null, kids = C.children(state, t.id), info = C.dueInfo(t.due, now(), state.settings.h12);
+  var parent = t.parentId ? task(t.parentId) : null, kids = C.children(state, t.id);
   var h = '<div class="t-detail__head"><span class="t-grow t-clip">' + esc(whereText(t)) + '</span>' +
     '<button class="t-iconbtn" data-act="row-more" data-id="' + t.id + '" aria-label="More actions">' + icon('more') + '</button>' +
     '<button class="t-iconbtn" data-act="detail-close" aria-label="Close task">' + icon('x') + '</button></div><div class="t-detail__body">';
-  if (parent) h += '<button class="t-linkish" style="align-self:flex-start;padding:0" data-act="open" data-id="' + parent.id + '">' + icon('left') + ' ' + esc(parent.title) + '</button>';
-  h += '<div class="t-detail__title">' + checkHtml(t) + '<textarea class="t-plain" id="d-title" rows="1" data-keep data-change="d-title" aria-label="Task name">' + esc(t.title) + '</textarea></div>';
-  h += '<textarea class="yc-textarea t-notes" id="d-notes" data-keep data-change="d-notes" placeholder="Notes" aria-label="Notes">' + esc(t.notes) + '</textarea>';
-  h += '<div class="t-field"><span class="t-field__name">Due</span><button class="yc-button yc-button--ghost" data-act="d-date"><span class="t-meta' + (info ? ' t-meta--' + info.tone : '') + '">' + icon(t.repeat ? 'repeat' : 'calendar') + dueButtonText(t.due, t.repeat) + '</span></button>';
-  if (t.due && t.due.time && t.remind != null) h += '<span class="t-field__name">Reminder</span><span class="t-meta">' + icon('bell') + esc(remindText(t.remind)) + '</span>';
-  h += '<label for="d-priority">Priority</label><select class="yc-select" id="d-priority" data-change="d-priority">' + priorityOptions(t.priority) + '</select>';
-  if (!parent) h += '<label for="d-project">Project</label><select class="yc-select" id="d-project" data-change="d-project">' + destOptions((t.projectId || '') + '|' + (t.sectionId || '')) + '</select>';
-  h += '<span class="t-field__name">Labels</span><div class="t-labels">' + t.labels.map(function (l) { return '<span class="yc-chip">' + dot(labelColor(l)) + esc(l) + '</span>'; }).join('') +
-    '<button class="yc-button yc-button--ghost yc-button--sm" style="width:auto" data-act="d-labels">' + (t.labels.length ? 'Change' : 'Add label') + '</button></div></div>';
+  if (parent) h += '<button class="yc-button yc-button--ghost yc-button--sm" style="align-self:flex-start" data-act="open" data-id="' + parent.id + '">' + icon('left') + '<span class="t-clip" style="max-width:240px">' + esc(parent.title) + '</span></button>';
+  // The card about the panel's own subject: the name and its notes belong together, so one box.
+  h += '<div class="yc-box t-subject"><div class="t-detail__title">' + checkHtml(t) + '<textarea class="t-plain" id="d-title" rows="1" data-keep data-change="d-title" aria-label="Task name">' + esc(t.title) + '</textarea></div>' +
+    '<textarea class="t-plain t-notes" id="d-notes" data-keep data-change="d-notes" placeholder="Add notes" aria-label="Notes" rows="3">' + esc(t.notes) + '</textarea></div>';
+  h += '<div class="t-block"><div class="yc-eyebrow">Details</div><div class="yc-box t-fields">' +
+    '<div class="t-field"><span>Due</span><button class="yc-button yc-button--ghost" data-act="d-date">' + icon(t.repeat ? 'repeat' : 'calendar') + '<span class="t-clip">' + dueButtonText(t.due, t.repeat) + '</span></button></div>';
+  if (t.due && t.due.time && t.remind != null) h += '<div class="t-field"><span>Reminder</span><span class="t-field__value">' + esc(remindText(t.remind)) + '</span></div>';
+  h += '<div class="t-field"><label for="d-priority">Priority</label><select class="yc-select" id="d-priority" data-change="d-priority">' + priorityOptions(t.priority) + '</select></div>';
+  if (!parent) h += '<div class="t-field"><label for="d-project">Project</label><select class="yc-select" id="d-project" data-change="d-project">' + destOptions((t.projectId || '') + '|' + (t.sectionId || '')) + '</select></div>';
+  h += '<div class="t-field"><span>Labels</span><div class="t-labels">' + t.labels.map(function (l) { return pill('', tagIcon(labelColor(l)) + esc(l)); }).join('') +
+    '<button class="yc-button yc-button--ghost yc-button--sm" data-act="d-labels">' + (t.labels.length ? 'Change' : 'Add label') + '</button></div></div></div></div>';
   if (!parent) {
-    h += '<div class="yc-stack" style="gap:2px"><div class="yc-eyebrow">Sub-tasks' + (kids.length ? ' · ' + kids.filter(function (k) { return k.done; }).length + '/' + kids.length : '') + '</div>' +
+    h += '<div class="t-block"><div class="yc-eyebrow">Sub-tasks' + (kids.length ? ' <span class="t-group__count">' + kids.filter(function (k) { return k.done; }).length + ' of ' + kids.length + ' done</span>' : '') + '</div><div class="yc-box t-subs">' +
       kids.map(function (k) {
-        var ki = C.dueInfo(k.due, now(), state.settings.h12);
-        return '<div class="t-sub' + (k.done ? ' is-done' : '') + '" data-act="open" data-id="' + k.id + '" role="button" tabindex="0">' + checkHtml(k) + '<span class="t-grow">' + esc(k.title) + '</span>' + (ki ? '<span class="t-meta t-meta--' + ki.tone + '">' + icon('calendar') + esc(ki.text) + '</span>' : '') + '</div>';
+        return '<div class="t-sub' + (k.done ? ' is-done' : '') + '" data-act="open" data-id="' + k.id + '" role="button" tabindex="0">' + checkHtml(k) + '<span class="t-grow">' + esc(k.title) + '</span>' + duePill(k) + '</div>';
       }).join('') +
-      '<input class="yc-input" id="d-sub" data-keep data-draft placeholder="Add a sub-task, then press Enter" aria-label="Add a sub-task" style="margin-top:4px;font-size:13px"></div>';
+      '<input class="yc-input" id="d-sub" data-keep data-draft placeholder="Add a sub-task, then press Enter" aria-label="Add a sub-task"></div></div>';
   }
-  h += '<div class="yc-stack" style="gap:6px"><div class="yc-eyebrow">Comments</div>' +
+  h += '<div class="t-block"><div class="yc-eyebrow">Comments</div><div class="yc-box t-comments">' +
     t.comments.map(function (c) {
-      return '<div class="yc-box t-comment"><div class="t-comment__meta"><span>' + esc(stamp(c.at)) + '</span><button class="t-iconbtn" data-act="d-comment-del" data-id="' + c.id + '" aria-label="Delete comment">' + icon('x') + '</button></div>' + linked(c.text) + '</div>';
+      return '<div class="t-comment"><div class="t-comment__meta"><span>' + esc(stamp(c.at)) + '</span><button class="t-iconbtn t-bin" data-act="d-comment-del" data-id="' + c.id + '" aria-label="Delete comment">' + icon('trash') + '</button></div>' + linked(c.text) + '</div>';
     }).join('') +
-    '<div class="yc-row" style="align-items:flex-end"><textarea class="yc-textarea" id="d-comment" data-keep data-draft rows="1" style="min-height:34px;font-size:13px" placeholder="Write a comment" aria-label="Write a comment"></textarea>' +
-    '<button class="yc-button" data-act="d-comment-add">Post</button></div></div>';
+    '<div class="yc-row" style="align-items:flex-end"><textarea class="yc-textarea" id="d-comment" data-keep data-draft rows="1" placeholder="Write a comment" aria-label="Write a comment"></textarea>' +
+    '<button class="yc-button" data-act="d-comment-add">Post</button></div></div></div>';
   h += '</div><div class="t-detail__foot"><span class="t-grow">Added ' + esc(stamp(t.createdAt)) + (t.done && t.doneAt ? ' · Done ' + esc(stamp(t.doneAt)) : '') + '</span>' +
     '<button class="yc-button yc-button--sm yc-button--danger" data-act="d-delete">' + icon('trash') + 'Delete</button></div>';
   el.hidden = false; el.innerHTML = h;

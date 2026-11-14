@@ -44,12 +44,12 @@ function editorHtml() {
 function editorFound() {
   var names = { date: 'calendar', time: 'calendar', repeat: 'repeat', priority: 'flag', project: 'move', label: 'tag' };
   return editorValue().found.map(function (f) {
-    return '<button class="yc-chip" data-act="ed-ignore" data-text="' + esc(f.text) + '" title="Understood as a ' + f.kind + '. Click to keep these words in the name instead.">' + icon(names[f.kind]) + esc(f.text) + ' ' + icon('x') + '</button>';
+    return '<button class="yc-status yc-status--info" data-act="ed-ignore" data-text="' + esc(f.text) + '" title="Understood as a ' + f.kind + '. Click to keep these words in the name instead.">' + icon(names[f.kind]) + esc(f.text) + ' ' + icon('x') + '</button>';
   }).join('');
 }
 function editorControls() {
   var v = editorValue(), e = ui.editor, info = C.dueInfo(v.due, now(), state.settings.h12);
-  var h = '<button class="yc-button yc-button--ghost yc-button--sm" data-act="ed-date"><span class="t-meta' + (info ? ' t-meta--' + info.tone : '') + '">' + icon(v.repeat ? 'repeat' : 'calendar') + (info ? esc(info.text) : 'Date') + '</span></button>' +
+  var h = '<button class="yc-button yc-button--ghost yc-button--sm" data-act="ed-date">' + icon(v.repeat ? 'repeat' : 'calendar') + (info ? esc(info.text) : 'Date') + '</button>' +
     '<select class="yc-select" data-change="ed-priority" aria-label="Priority">' + priorityOptions(v.priority) + '</select>';
   if (!e.parentId) h += '<select class="yc-select" data-change="ed-project" aria-label="Project">' + destOptions((v.projectId || '') + '|' + (v.sectionId || '')) + '</select>';
   h += '<button class="yc-button yc-button--ghost yc-button--sm" data-act="ed-labels">' + icon('tag') + (v.labels.length ? esc(v.labels.join(', ')) : 'Labels') + '</button>';
@@ -108,10 +108,10 @@ function renderPop() {
 // items: { label, icon, color, hint, checked, danger, fn } | { sep: true } | { title } | { flags: current, fn(p) }
 function menuHtml(p) {
   return p.items.map(function (it, i) {
-    if (it.sep) return '<hr class="yc-divider">';
+    if (it.sep) return '<div class="t-pop__gap"></div>';
     if (it.title) return '<div class="t-pop__title">' + esc(it.title) + '</div>';
-    if (it.flags) return '<div class="t-flags" role="group" aria-label="Priority">' + [1, 2, 3, 4].map(function (n) {
-      return '<button class="t-iconbtn t-flag-' + n + '" data-act="pop-flag" data-i="' + i + '" data-p="' + n + '" aria-pressed="' + (it.flags === n) + '" aria-label="' + (n === 4 ? 'No priority' : 'Priority ' + n) + '" title="' + (n === 4 ? 'No priority' : 'Priority ' + n) + '">' + icon('flag') + '</button>';
+    if (it.flags) return '<div class="t-pop__title">Priority</div><div class="t-flags" role="group" aria-label="Priority">' + [1, 2, 3, 4].map(function (n) {
+      return '<button class="yc-filter" data-act="pop-flag" data-i="' + i + '" data-p="' + n + '" aria-pressed="' + (it.flags === n) + '" aria-label="' + priName(n) + '">' + PRI[n] + '</button>';
     }).join('') + '</div>';
     return '<button class="t-pop__item' + (it.danger ? ' is-danger' : '') + '" data-act="pop-item" data-i="' + i + '">' +
       (it.color ? dot(it.color) : it.icon ? icon(it.icon) : '') + '<span>' + esc(it.label) + '</span>' +
@@ -147,7 +147,7 @@ function dateHtml(p) {
   }
   var h = quick('Today', n.day, 'today') + quick('Tomorrow', C.addDays(n.day, 1), 'calendar') +
     quick(sat === n.day ? 'Next weekend' : 'This weekend', sat === n.day ? C.addDays(sat, 7) : sat, 'calendar') + quick('Next week', mon, 'upcoming') +
-    (v.due ? quick('No date', '', 'x') : '') + '<hr class="yc-divider">';
+    (v.due ? quick('No date', '', 'x') : '') + '<div class="t-pop__gap"></div>';
   var first = C.fromYmd(p.month), busy = {};
   openTasks().forEach(function (t) { if (t.due) busy[t.due.date] = 1; });
   h += '<div class="t-cal__head"><button class="t-iconbtn" data-act="dp-month" data-step="-1" aria-label="Previous month">' + icon('left') + '</button>' +
@@ -161,7 +161,7 @@ function dateHtml(p) {
     day = C.addDays(day, 1);
     if (c >= 34 && day.slice(0, 7) !== p.month.slice(0, 7) && C.dow(day) === ws) break;
   }
-  h += '</div><hr class="yc-divider" style="margin:6px 0"><div class="t-pop__pad">';
+  h += '</div><div class="t-pop__gap"></div><div class="t-pop__pad">';
   h += '<div class="t-date__row"><label for="dp-time">Time</label><input type="time" class="yc-input" id="dp-time" data-change="dp-time" value="' + (v.due && v.due.time ? v.due.time : '') + '"></div>';
   var rk = p.custom ? 'custom' : repeatKey(v.repeat);
   h += '<div class="t-date__row"><label for="dp-repeat">Repeat</label><select class="yc-select" id="dp-repeat" data-change="dp-repeat">' +
@@ -214,7 +214,7 @@ function taskDateTarget(id) {
 function labelsHtml(p) {
   var on = p.get();
   var h = '<div class="t-pop__title">Labels</div>' + state.labels.slice().sort(function (a, b) { return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1; }).map(function (l) {
-    return '<button class="t-pop__item" data-act="lp-toggle" data-name="' + esc(l.name) + '" aria-pressed="' + (on.indexOf(l.name) >= 0) + '">' + dot(l.color) + '<span>' + esc(l.name) + '</span>' + (on.indexOf(l.name) >= 0 ? icon('tick', 't-tick') : '') + '</button>';
+    return '<button class="t-pop__item" data-act="lp-toggle" data-name="' + esc(l.name) + '" aria-pressed="' + (on.indexOf(l.name) >= 0) + '">' + tagIcon(l.color) + '<span>' + esc(l.name) + '</span>' + (on.indexOf(l.name) >= 0 ? icon('tick', 't-tick') : '') + '</button>';
   }).join('');
   return h + '<div class="t-pop__pad"><input class="yc-input" id="lp-new" placeholder="New label, then Enter" aria-label="New label" style="font-size:13px"></div>';
 }
@@ -306,7 +306,7 @@ function filterBox(f) {
     title: f ? 'Edit filter' : 'Add a filter', okText: f ? 'Save' : 'Add filter', wide: true,
     body: '<div><label class="yc-label" for="m-name">Name</label><input class="yc-input" id="m-name" data-first value="' + esc(f ? f.name : '') + '" placeholder="Quick wins"></div>' +
       '<p class="yc-caption">A filter is a saved search. It shows open tasks that match every row you set; leave a row empty to ignore it.</p>' +
-      '<div><div class="yc-label">Priority</div>' + chips('priorities', [1, 2, 3, 4].map(function (p) { return [String(p), p === 4 ? 'No priority' : 'Priority ' + p, q.priorities.indexOf(p) >= 0]; })) + '</div>' +
+      '<div><div class="yc-label">Priority</div>' + chips('priorities', [1, 2, 3, 4].map(function (p) { return [String(p), p === 4 ? 'None' : PRI[p], q.priorities.indexOf(p) >= 0]; })) + '</div>' +
       '<div><label class="yc-label" for="m-due">Due</label><select class="yc-select" id="m-due">' +
       [['any', 'Any time, or no date'], ['overdue', 'Overdue'], ['today', 'Today or overdue'], ['week', 'In the next 7 days, or overdue'], ['dated', 'Has a due date'], ['none', 'No due date']].map(function (o) { return '<option value="' + o[0] + '"' + (q.due === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
       (state.labels.length ? '<div><div class="yc-label">Has any of these labels</div>' + chips('labels', state.labels.map(function (l) { return [l.name, l.name, q.labels.indexOf(l.name) >= 0]; })) + '</div>' : '') +
@@ -353,7 +353,7 @@ function settingsBox() {
       '<details class="yc-fold"><summary>Keyboard shortcuts</summary><div class="t-keys">' +
       [['Q', 'Add a task from anywhere'], ['/', 'Search'], ['Enter', 'Save the task you are typing'], ['Esc', 'Close what is open'], ['Ctrl Z', 'Undo the last change']].map(function (k) { return '<span><span class="yc-kbd">' + k[0] + '</span></span><span>' + k[1] + '</span>'; }).join('') + '</div></details>' +
       '<details class="yc-fold"><summary>Typing shortcuts <span class="yc-fold__hint">Words the add box understands</span></summary><div class="t-keys">' +
-      [['today, tomorrow, fri, dec 5, 12/25, in 3 days', 'The due day'], ['5pm, 17:30, noon', 'The time'], ['every day, every mon and thu, every 2 weeks', 'Repeats'], ['every! 3 days', 'Repeats, counted from the day you finish it'], ['p1, p2, p3', 'Priority'], ['#Project', 'Puts it in that project'], ['@label', 'Adds a label (a new one is made if needed)']].map(function (k) { return '<span class="yc-mono yc-small">' + k[0] + '</span><span>' + k[1] + '</span>'; }).join('') + '</div></details>' +
+      [['today, tomorrow, fri, dec 5, 12/25, in 3 days', 'The due day'], ['5pm, 17:30, noon', 'The time'], ['every day, every mon and thu, every 2 weeks', 'Repeats'], ['every! 3 days', 'Repeats, counted from the day you finish it'], ['p1, p2, p3', 'High, medium or low priority'], ['#Project', 'Puts it in that project'], ['@label', 'Adds a label (a new one is made if needed)']].map(function (k) { return '<span class="yc-mono yc-small">' + k[0] + '</span><span>' + k[1] + '</span>'; }).join('') + '</div></details>' +
       '<details class="yc-fold"><summary>Back up or move your tasks <span class="yc-fold__hint">Copy everything as text, or load a copy</span></summary>' +
       '<textarea class="yc-textarea yc-mono yc-small" id="m-data" rows="6" aria-label="Your tasks as text" style="margin-top:4px">' + esc(exportText()) + '</textarea>' +
       '<div class="yc-row yc-row--end" style="margin-top:8px"><span class="yc-caption t-grow">Select all and copy to keep a backup. To restore, paste a backup here first.</span><button class="yc-button yc-button--sm yc-button--danger" data-act="import">Replace my tasks with this text</button></div></details>' +

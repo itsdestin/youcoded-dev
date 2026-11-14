@@ -84,7 +84,12 @@ window.__push = function (v) { window.__saved = v; window.__subs.forEach(functio
 // would block is blocked here too and shows up as a page error in the smoke test.
 const csp = "default-src 'none'; connect-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; form-action 'none'; base-uri 'none'; frame-src 'none'";
 const ours = `<meta http-equiv="Content-Security-Policy" content="${csp}"><style id="youcoded-theme">${themeCss}</style><style id="youcoded-kit">${PAGE_KIT_CSS}</style><script>${fake}</script><script id="youcoded-kit-js">${PAGE_KIT_JS}</script>`;
-const page = readFileSync(join(here, '..', 'page.html'), 'utf8').replace('<head>', () => '<head>' + ours);
+// --glass: what a wallpaper theme does — the app marks the page see-through and its own glass
+// pane (here a stand-in gradient) shows behind it.
+const glass = process.argv.includes('--glass');
+const page = readFileSync(join(here, '..', 'page.html'), 'utf8')
+  .replace('<html>', () => glass ? '<html data-yc-see-through style="background: linear-gradient(135deg, #3b5b8c, #b06a8f 55%, #e8b267); --panels-opacity: 0.72">' : '<html>')
+  .replace('<head>', () => '<head>' + ours);
 const out = resolve(arg('out', join(here, 'preview.html')));
 writeFileSync(out, page);
 console.log(out);

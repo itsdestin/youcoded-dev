@@ -25,7 +25,7 @@
     step = 'quick add'; await key(null, 'q');
     ok('Q opens the add box', !!q('#modal #ed-title'));
     await type('#ed-title', 'Buy stamps tomorrow 5pm p1 @errands #Home');
-    ok('five shortcuts are highlighted', qa('#ed-found .yc-chip').length === 5, qa('#ed-found .yc-chip').length);
+    ok('five shortcuts are highlighted', qa('#ed-found .yc-status').length === 5, qa('#ed-found .yc-status').length);
     await key('#ed-title', 'Enter');
     let t = await T('Buy stamps');
     ok('quick add saved the task', !!t);
@@ -85,7 +85,7 @@
 
     step = 'row menu'; await click(row('o') + ' [data-act="row-more"]'); await menu('Duplicate');
     ok('duplicate', (await save()).tasks.filter((x) => x.title === 'Find a travel adapter').length === 2);
-    await click(row('o') + ' [data-act="row-more"]'); await click('.t-flag-1');
+    await click(row('o') + ' [data-act="row-more"]'); await click('.t-flags [data-p="1"]');
     ok('priority from the menu', (await save()).tasks.find((x) => x.id === 'o').priority === 1);
     await click(row('o') + ' [data-act="row-more"]'); await menu('Move to'); await menu('Work › Doing');
     t = (await save()).tasks.find((x) => x.id === 'o'); ok('moved to Work › Doing', t.projectId === 'work' && t.sectionId === 'doing', t);

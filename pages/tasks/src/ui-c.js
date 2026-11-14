@@ -100,6 +100,7 @@ var ACT = {
   // adding
   'quick-add': function () { $('app').classList.remove('is-nav-open'); openEditor('modal', quickDefaults()); openModal({ title: 'Add a task', editor: true, wide: true }); },
   'add-here': function (el) { openEditor(el.getAttribute('data-slot'), JSON.parse(el.getAttribute('data-defaults'))); render(); if ($('ed-title')) $('ed-title').focus(); },
+  'add-first': function () { var v = ui.view; openEditor(v.kind === 'today' ? 'g:d' + now().day : v.kind === 'inbox' ? 'g:none' : 'modal', quickDefaults()); if (ui.editor.slot === 'modal') openModal({ title: 'Add a task', editor: true, wide: true }); else { render(); if ($('ed-title')) $('ed-title').focus(); } },
   'ed-submit': function () { submitEditor(); },
   'ed-cancel': function () { closeEditor(); },
   'ed-ignore': function (el) { ui.editor.ignore.push(el.getAttribute('data-text')); refreshEditor(); $('ed-title').focus(); },
@@ -142,7 +143,7 @@ var ACT = {
     openPop(el, { type: 'date', title: 'Due date', get: function () { return val; }, set: function (v) { val = v; commit(function () { pickedIds().forEach(function (id) { var t = task(id); t.due = v.due ? { date: v.due.date, time: v.due.time } : null; t.repeat = v.repeat; t.remind = v.remind; }); }); } });
   },
   'bulk-priority': function (el) {
-    openPop(el, { type: 'menu', title: 'Priority', items: [1, 2, 3, 4].map(function (p) { return { label: p === 4 ? 'No priority' : 'Priority ' + p, icon: 'flag', fn: function () { commit(function () { pickedIds().forEach(function (id) { task(id).priority = p; }); }); } }; }) });
+    openPop(el, { type: 'menu', title: 'Priority', items: [1, 2, 3, 4].map(function (p) { return { label: priName(p), icon: 'flag', fn: function () { commit(function () { pickedIds().forEach(function (id) { task(id).priority = p; }); }); } }; }) });
   },
   'bulk-move': function (el) {
     openPop(el, { type: 'menu', title: 'Move to', items: [{ title: 'Move to' }].concat(destItems(function (pid, sid) {

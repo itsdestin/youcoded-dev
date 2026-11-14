@@ -25,18 +25,26 @@ html, body { overflow: hidden; }
 [hidden] { display: none !important; }
 
 /* ── left: where to look ─────────────────────────────────────────────────────────────── */
-.t-nav { width: var(--t-nav-w); flex: none; display: flex; flex-direction: column; gap: 12px; padding: 12px; background: var(--panel); border-right: 1px solid var(--edge); overflow-y: auto; }
-.t-nav h1 { padding: 2px 6px; }
+/* WHY panel at --panels-opacity: on a wallpaper theme the app's panes are glass; a page that is
+   see-through draws its own side columns with the same recipe (the kit hands over the density). */
+.t-nav { width: var(--t-nav-w); flex: none; display: flex; flex-direction: column; gap: 16px; padding: 12px; background: var(--panel); border-right: 1px solid var(--edge); overflow-y: auto; }
+:root[data-yc-see-through] .t-nav, :root[data-yc-see-through] .t-detail { background: color-mix(in srgb, var(--panel) calc(var(--panels-opacity, 1) * 100%), transparent); }
+.t-nav h1 { padding: 2px 6px; font-size: 16px; }
+.t-nav__top { display: flex; flex-direction: column; gap: 8px; }
 .t-nav__group { display: flex; flex-direction: column; gap: 2px; }
 .t-nav__label { display: flex; align-items: center; justify-content: space-between; padding: 0 2px 2px 8px; min-height: 28px; }
+/* Plain rows, the app's switcher look: no box at rest, the inset fill for where you are. */
 .t-navitem { appearance: none; display: flex; align-items: center; gap: 8px; width: 100%; min-height: 32px; padding: 4px 8px; border: 1px solid transparent; border-radius: var(--radius-md, 8px); background: transparent; color: var(--fg-2); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
-.t-navitem:hover { background: var(--inset); color: var(--fg); }
-.t-navitem[aria-current="true"] { background: color-mix(in oklab, var(--accent) 16%, transparent); border-color: color-mix(in oklab, var(--accent) 30%, transparent); color: var(--fg); font-weight: 500; }
+.t-navitem:hover { background: color-mix(in oklab, var(--inset) 60%, transparent); color: var(--fg); }
+.t-navitem[aria-current="true"] { background: var(--inset); border-color: var(--edge-dim); color: var(--fg); font-weight: 500; }
 .t-navitem.is-drop { outline: 2px solid var(--accent); outline-offset: -2px; }
-.t-navitem:focus-visible, .t-task:focus-visible, .t-check:focus-visible, .t-linkish:focus-visible, .t-day:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.t-navitem__count { margin-left: auto; font-size: 11px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
-.t-navitem__count.is-late { color: var(--destructive-fg, var(--fg)); }
-.t-nav__foot { margin-top: auto; display: flex; align-items: center; gap: 8px; padding-top: 8px; }
+.t-navitem:focus-visible, .t-task:focus-visible, .t-check:focus-visible, .t-sub:focus-visible, .t-day:focus-visible, .t-add:focus-visible, .t-group__title:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.t-navitem__count { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+/* Overdue is a dot beside the number: status colour never goes in the number itself. */
+.t-latedot { width: 6px; height: 6px; border-radius: 50%; background: var(--yc-danger); }
+.t-tagicon { width: 12px; height: 12px; flex: none; fill: var(--dot, var(--fg-muted)); }
+.t-navitem .t-tagicon { width: 14px; height: 14px; margin: 0 1px; }
+.t-nav__foot { margin-top: auto; display: flex; align-items: center; gap: 8px; }
 .t-goal { flex: 1; min-width: 0; justify-content: flex-start; gap: 8px; }
 .t-ring { width: 18px; height: 18px; flex: none; transform: rotate(-90deg); }
 .t-ring circle { fill: none; stroke-width: 3; }
@@ -47,85 +55,91 @@ html, body { overflow: hidden; }
 /* ── middle: the list ────────────────────────────────────────────────────────────────── */
 .t-main { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--canvas); }
 :root[data-yc-see-through] .t-main { background: transparent; }
-/* The heading lines up with the list under it; a board uses the full width instead. */
+/* The heading lines up with the list under it; a board uses the full width instead.
+   WHY 16px medium: the app's Large heading — one line, its tools at the right, all one height. */
 .t-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px 20px 8px; width: 100%; max-width: 860px; margin: 0 auto; }
 .t-head--wide { max-width: none; }
-.t-head h2 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; min-width: 0; }
-.t-head__sub { font-size: 12px; color: var(--fg-muted); font-weight: 400; white-space: nowrap; }
+.t-head h2 { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 8px; min-width: 0; }
 .t-head__tools { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .t-head .yc-select { width: auto; font-size: 12px; padding: 5px 8px; height: 28px; }
 .t-head .yc-filter { height: 28px; font-size: 12px; padding: 0 10px; }
+.t-head .yc-button--icon[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .t-iconbtn.t-menu-btn { display: none; }
 .t-list { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 20px 96px; }
 .t-list__inner { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-.t-group { display: flex; flex-direction: column; gap: 2px; border-radius: var(--radius-lg, 12px); }
+.t-group { display: flex; flex-direction: column; gap: 4px; border-radius: var(--radius-lg, 12px); }
 .t-group.is-drop { outline: 2px dashed var(--accent); outline-offset: 4px; }
-.t-group__head { display: flex; align-items: center; gap: 8px; min-height: 30px; padding: 0 4px; }
-.t-group__title { font-size: 13px; font-weight: 600; color: var(--fg); display: flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0; font-family: inherit; cursor: default; }
-button.t-group__title { cursor: pointer; }
-.t-group__title .t-icon { transition: transform 150ms ease; color: var(--fg-muted); }
+.t-group__head { display: flex; align-items: center; gap: 8px; min-height: 28px; padding: 0 2px; }
+/* The app's small label: 12px medium grey, sentence case. A section's label is also its fold
+   button, so it gets a hover fill to look pressable. */
+.t-group__title { display: inline-flex; align-items: center; gap: 4px; margin: 0; padding: 2px 4px; border: 0; border-radius: var(--radius-sm, 4px); background: none; font: inherit; font-size: 12px; font-weight: 500; color: var(--fg-muted); }
+button.t-group__title { cursor: pointer; margin-left: -4px; }
+button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
+.t-group__title .t-icon { width: 14px; height: 14px; transition: transform 150ms ease; }
 .t-group.is-open > .t-group__head .t-group__title .t-chev { transform: rotate(90deg); }
-.t-group__count { font-size: 11px; color: var(--fg-muted); }
-.t-group__head .t-linkish { margin-left: auto; }
-.t-linkish { appearance: none; background: none; border: 0; padding: 2px 4px; font: inherit; font-size: 12px; color: var(--link, var(--accent)); cursor: pointer; border-radius: var(--radius-sm, 4px); }
-.t-linkish:hover { text-decoration: underline; }
+.t-group__count { font-size: 11px; font-weight: 400; color: var(--fg-faint); }
+.t-quiet { padding: 8px 2px; font-size: 12px; color: var(--fg-muted); }
+.t-first { display: flex; flex-direction: column; gap: 8px; max-width: 420px; margin: 24px auto 0; }
 
-.t-task { position: relative; display: flex; align-items: flex-start; gap: 10px; padding: 8px 8px; border-radius: var(--radius-md, 8px); border: 1px solid transparent; cursor: pointer; }
-.t-task:hover, .t-task.is-open { background: var(--panel); border-color: var(--edge-dim); }
-.t-task.is-open { border-color: color-mix(in oklab, var(--accent) 40%, var(--edge)); }
+/* A task: one boxed row, the app's list-row look (panel fill, thin outline, the theme's corner). */
+.t-task { position: relative; display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: var(--radius-md, 8px); border: 1px solid var(--edge-dim); background: var(--panel); cursor: pointer; transition: border-color 150ms ease, background-color 150ms ease; }
+.t-task:hover { border-color: var(--yc-edge-strong); }
+.t-task.is-open { border-color: var(--accent); }
 .t-task.is-sub { margin-left: 28px; }
+.t-task.is-done { background: color-mix(in oklab, var(--panel) 55%, transparent); }
 .t-task.is-dragging { opacity: .4; }
 .t-task.drop-before::before, .t-task.drop-after::after { content: ''; position: absolute; left: 4px; right: 4px; height: 2px; border-radius: 2px; background: var(--accent); }
-.t-task.drop-before::before { top: -2px; }
-.t-task.drop-after::after { bottom: -2px; }
-.t-task__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.t-task__title { font-size: 14px; color: var(--fg); overflow-wrap: anywhere; }
+.t-task.drop-before::before { top: -4px; }
+.t-task.drop-after::after { bottom: -4px; }
+.t-task__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.t-task__title { font-size: 14px; line-height: 20px; color: var(--fg); overflow-wrap: anywhere; }
 .t-task.is-done .t-task__title { color: var(--fg-muted); text-decoration: line-through; }
-.t-task__notes { font-size: 12px; color: var(--fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.t-task__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 10px; font-size: 12px; color: var(--fg-2); }
-.t-task__meta:empty { display: none; }
-.t-meta { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
-.t-meta .t-icon { width: 13px; height: 13px; color: var(--fg-muted); }
-.t-meta--overdue .t-icon { color: var(--yc-danger); }
-.t-meta--today .t-icon { color: var(--yc-ok); }
-.t-meta--tomorrow .t-icon { color: var(--yc-warning); }
-.t-meta--week .t-icon { color: var(--accent); }
-.t-meta--where { margin-left: auto; color: var(--fg-muted); }
-.t-task__actions { display: flex; gap: 2px; opacity: 0; }
+.t-task__notes { margin-top: -2px; font-size: 12px; color: var(--fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.t-task__meta { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.t-task__meta .yc-chips { flex: 1 1 auto; }
+.yc-status .t-icon { width: 11px; height: 11px; }
+.yc-status .t-tagicon { width: 10px; height: 10px; }
+.t-where { flex: 0 1 auto; max-width: 45%; font-size: 11px; color: var(--fg-muted); }
+.t-meta { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 12px; color: var(--fg-2); }
+.t-task__actions { display: flex; gap: 2px; margin: -3px -4px -3px 0; opacity: 0; }
 .t-task:hover .t-task__actions, .t-task:focus-within .t-task__actions { opacity: 1; }
 .t-iconbtn { appearance: none; width: 26px; height: 26px; flex: none; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: var(--radius-md, 8px); background: transparent; color: var(--fg-muted); cursor: pointer; padding: 0; }
 .t-iconbtn:hover { background: var(--inset); color: var(--fg); border-color: var(--edge-dim); }
 .t-iconbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.t-twisty { margin: -3px -6px -3px -4px; }
+.t-iconbtn.t-bin:hover { color: var(--destructive-fg, var(--fg)); border-color: var(--destructive, var(--edge)); }
+.t-twisty { margin: -3px -4px; }
 .t-twisty .t-icon { transition: transform 150ms ease; }
 .t-twisty[aria-expanded="true"] .t-icon { transform: rotate(90deg); }
 
-/* The round tick. Its ring is the priority colour; pointing at it previews the tick. */
-.t-check { appearance: none; position: relative; width: 18px; height: 18px; flex: none; margin: 1px 0 0; padding: 0; border-radius: 50%; border: 2px solid var(--pc, var(--t-p4)); background: color-mix(in oklab, var(--pc, var(--t-p4)) 12%, transparent); cursor: pointer; }
-.t-check.p1 { --pc: var(--t-p1); } .t-check.p2 { --pc: var(--t-p2); } .t-check.p3 { --pc: var(--t-p3); }
-.t-check.p4 { background: transparent; }
-.t-check::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid var(--pc, var(--t-p4)); border-width: 0 2px 2px 0; transform: rotate(45deg); opacity: 0; }
-.t-check:hover::after { opacity: .7; }
-.t-check[aria-pressed="true"] { background: var(--pc, var(--t-p4)); }
-.t-check[aria-pressed="true"]::after { opacity: 1; border-color: var(--canvas); }
+/* The tick box: a small square in the theme's own corner, the accent when done. Priority is NOT
+   shown here (it is a pill under the name): the box means one thing only. */
+.t-check { appearance: none; position: relative; width: 18px; height: 18px; flex: none; margin: 1px 0 0; padding: 0; border-radius: var(--radius-sm, 4px); border: 1.5px solid var(--yc-edge-strong); background: var(--inset); cursor: pointer; transition: background-color 150ms ease, border-color 150ms ease; }
+.t-check::after { content: ''; position: absolute; left: 5px; top: 1.5px; width: 4px; height: 8px; border: solid var(--fg-muted); border-width: 0 2px 2px 0; transform: rotate(45deg); opacity: 0; }
+.t-check:hover { border-color: var(--accent); }
+.t-check:hover::after { opacity: .6; }
+.t-check[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); }
+.t-check[aria-pressed="true"]::after { opacity: 1; border-color: var(--on-accent); }
 .t-check.is-static { cursor: default; }
 @media (pointer: coarse) { .t-check::before { content: ''; position: absolute; inset: -12px; } }
 .t-pick { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
 
-.t-add { appearance: none; display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border: 0; border-radius: var(--radius-md, 8px); background: transparent; color: var(--fg-muted); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
-.t-add:hover { color: var(--accent); background: color-mix(in oklab, var(--accent) 8%, transparent); }
+/* "Add task" is a row in the list it adds to: dashed, so it reads as an empty slot, and boxed,
+   so it reads as something to press. */
+.t-add { appearance: none; display: flex; align-items: center; gap: 10px; width: 100%; min-height: 36px; padding: 6px 10px; border: 1px dashed var(--yc-edge-card); border-radius: var(--radius-md, 8px); background: transparent; color: var(--fg-muted); font: inherit; font-size: 13px; text-align: left; cursor: pointer; transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease; }
+.t-add:hover { color: var(--fg); background: color-mix(in oklab, var(--inset) 60%, transparent); border-color: var(--yc-edge-strong); }
 .t-add .t-icon { width: 18px; height: 18px; }
-.t-add:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
 /* The add/edit box: a title line that understands typed shortcuts, then the same choices as buttons. */
-.t-editor { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--yc-edge-strong); border-radius: var(--radius-lg, 12px); background: var(--panel); }
+.t-editor { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--yc-edge-strong); border-radius: var(--radius-md, 8px); background: var(--panel); }
+.t-editor:focus-within { border-color: var(--accent); }
 .t-editor input.t-plain, .t-plain { appearance: none; width: 100%; border: 0; outline: 0; background: transparent; color: var(--fg); font: inherit; padding: 0; resize: none; }
 .t-editor #ed-title { font-size: 15px; font-weight: 500; }
 .t-editor #ed-notes { font-size: 12px; color: var(--fg-2); }
 .t-plain::placeholder { color: var(--fg-muted); font-weight: 400; }
 .t-found { display: flex; flex-wrap: wrap; gap: 6px; }
 .t-found:empty { display: none; }
-.t-found .yc-chip { cursor: pointer; border-color: color-mix(in oklab, var(--accent) 35%, transparent); background: color-mix(in oklab, var(--accent) 12%, transparent); }
+.t-found button.yc-status { appearance: none; font-family: inherit; cursor: pointer; }
+.t-found button.yc-status:hover { border-color: var(--accent); }
 .t-editor__row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 .t-editor__row .yc-select { width: auto; max-width: 180px; font-size: 12px; padding: 5px 8px; height: 28px; }
 .t-editor__row .yc-button { height: 28px; }
@@ -136,30 +150,39 @@ button.t-group__title { cursor: pointer; }
 .t-board { display: flex; align-items: flex-start; gap: 12px; padding: 4px 20px 96px; overflow: auto; flex: 1; min-height: 0; }
 .t-col { width: 280px; flex: none; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: var(--radius-lg, 12px); background: color-mix(in oklab, var(--inset) 60%, transparent); border: 1px solid var(--edge-dim); }
 .t-col.is-drop { outline: 2px dashed var(--accent); outline-offset: 2px; }
-.t-col .t-task { background: var(--panel); border-color: var(--edge-dim); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
 .t-col .t-task.is-sub { display: none; }
 .t-col--new { background: transparent; border-style: dashed; }
 
 /* ── right: one task ─────────────────────────────────────────────────────────────────── */
+/* The app's side-panel recipe: the panel surface, then a small label and an inner box per group. */
 .t-detail { width: var(--t-detail-w); flex: none; display: flex; flex-direction: column; background: var(--panel); border-left: 1px solid var(--edge); min-height: 0; }
-.t-detail__head { display: flex; align-items: center; gap: 6px; padding: 8px 8px 8px 14px; font-size: 12px; color: var(--fg-muted); }
-.t-detail__body { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 14px 16px; display: flex; flex-direction: column; gap: 14px; }
+.t-detail__head { display: flex; align-items: center; gap: 4px; padding: 8px 8px 4px 14px; font-size: 12px; color: var(--fg-muted); }
+.t-detail__body { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 12px 16px; display: flex; flex-direction: column; gap: 16px; }
+.t-block { display: flex; flex-direction: column; gap: 4px; }
+.t-block > .yc-eyebrow { padding: 0 2px; }
+.t-subject { display: flex; flex-direction: column; gap: 8px; }
 .t-detail__title { display: flex; gap: 10px; align-items: flex-start; }
-.t-detail__title textarea { font-size: 16px; font-weight: 600; line-height: 1.35; overflow: hidden; }
-.t-detail__title .t-check { margin-top: 3px; }
-.t-field { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 6px 8px; font-size: 12px; }
-.t-field > label, .t-field > span.t-field__name { color: var(--fg-muted); }
-.t-field .yc-select, .t-field .yc-button { font-size: 12px; padding: 5px 8px; min-height: 28px; }
-.t-field .yc-button { justify-content: flex-start; width: 100%; }
-.t-labels { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
-.t-labels .yc-chip { cursor: pointer; }
-.t-notes { min-height: 64px; font-size: 13px; }
-.t-sub { display: flex; align-items: center; gap: 10px; padding: 5px 4px; border-radius: var(--radius-md, 8px); cursor: pointer; }
-.t-sub:hover { background: var(--inset); }
-.t-sub.is-done span { color: var(--fg-muted); text-decoration: line-through; }
-.t-comment { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
-.t-comment__meta { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--fg-muted); }
-.t-detail__foot { display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 11px; color: var(--fg-muted); }
+.t-detail__title textarea { font-size: 16px; font-weight: 600; line-height: 22px; overflow: hidden; }
+.t-detail__title .t-check { margin-top: 2px; }
+.t-notes { font-size: 13px; line-height: 1.5; color: var(--fg-2); padding-left: 28px; min-height: 40px; }
+.t-fields { display: flex; flex-direction: column; gap: 8px; }
+/* A setting row: its name at the left, its control flush right. */
+.t-field { display: grid; grid-template-columns: 76px minmax(0, 1fr); align-items: center; gap: 8px; font-size: 12px; color: var(--fg-2); }
+.t-field .yc-select, .t-field > .yc-button { font-size: 12px; padding: 5px 8px; height: 28px; width: 100%; background-color: var(--panel); }
+.t-field > .yc-button { justify-content: flex-start; background: transparent; }
+.t-field__value { color: var(--fg); }
+.t-labels { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: flex-start; }
+.t-subs, .t-comments { display: flex; flex-direction: column; gap: 4px; }
+.t-subs .yc-input, .t-comments .yc-textarea { font-size: 13px; background: var(--panel); }
+.t-comments .yc-textarea { min-height: 34px; }
+.t-sub { display: flex; align-items: center; gap: 10px; padding: 5px 4px; border-radius: var(--radius-md, 8px); cursor: pointer; font-size: 13px; }
+.t-sub:hover { background: color-mix(in oklab, var(--panel) 70%, transparent); }
+.t-sub.is-done > span.t-grow { color: var(--fg-muted); text-decoration: line-through; }
+.t-comment { display: flex; flex-direction: column; padding: 2px 4px 6px; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.t-comment__meta { display: flex; align-items: center; justify-content: space-between; min-height: 26px; font-size: 11px; color: var(--fg-muted); }
+.t-comment .t-iconbtn { opacity: 0; }
+.t-comment:hover .t-iconbtn, .t-comment .t-iconbtn:focus-visible { opacity: 1; }
+.t-detail__foot { display: flex; align-items: center; gap: 6px; padding: 8px 12px; font-size: 11px; color: var(--fg-muted); }
 
 /* ── things that float: menus, the date picker, pop-ups, the undo line ───────────────── */
 .t-pop { position: fixed; z-index: 50; min-width: 200px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow-y: auto; background: var(--panel); border: 1px solid var(--edge); border-radius: var(--radius-lg, 12px); box-shadow: 0 8px 32px rgba(0, 0, 0, .15); padding: 4px; font-size: 13px; }
@@ -168,13 +191,11 @@ button.t-group__title { cursor: pointer; }
 .t-pop__item.is-danger { color: var(--destructive-fg, var(--fg)); }
 .t-pop__item .t-pop__hint { margin-left: auto; padding-left: 16px; font-size: 11px; color: var(--fg-muted); }
 .t-pop__item .t-tick { margin-left: auto; color: var(--accent); }
-.t-pop hr { margin: 4px 0; }
+.t-pop__gap { height: 8px; }
 .t-pop__title { padding: 6px 10px 2px; font-size: 11px; font-weight: 500; color: var(--fg-muted); }
 .t-pop__pad { padding: 6px; display: flex; flex-direction: column; gap: 8px; }
-.t-flags { display: flex; gap: 4px; padding: 2px 6px 6px; }
-.t-flags .t-iconbtn { width: 32px; height: 28px; border-color: var(--edge-dim); }
-.t-flags .t-iconbtn[aria-pressed="true"] { background: var(--inset); border-color: var(--yc-edge-strong); }
-.t-flag-1 { color: var(--t-p1); } .t-flag-2 { color: var(--t-p2); } .t-flag-3 { color: var(--t-p3); } .t-flag-4 { color: var(--t-p4); }
+.t-flags { display: flex; gap: 4px; padding: 2px 6px 4px; }
+.t-flags .yc-filter { flex: 1; height: 28px; padding: 0 8px; font-size: 12px; }
 
 .t-date { width: 280px; }
 .t-cal__head { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px; font-size: 12px; font-weight: 500; }
@@ -214,7 +235,8 @@ button.t-group__title { cursor: pointer; }
 
 .t-toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 32px); padding: 8px 8px 8px 14px; background: var(--panel); border: 1px solid var(--yc-edge-strong); border-radius: var(--radius-lg, 12px); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); font-size: 13px; }
 .t-bulk { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 12; display: flex; align-items: center; gap: 6px; max-width: calc(100% - 16px); overflow-x: auto; padding: 8px 10px; background: var(--panel); border: 1px solid var(--yc-edge-strong); border-radius: var(--radius-lg, 12px); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); font-size: 12px; white-space: nowrap; }
-.t-alerts { position: fixed; right: 12px; top: 12px; z-index: 55; display: flex; flex-direction: column; gap: 8px; width: min(340px, calc(100vw - 24px)); }
+/* Bottom right: a reminder must never sit on the heading's buttons or the open task's name. */
+.t-alerts { position: fixed; right: 12px; bottom: 12px; z-index: 55; display: flex; flex-direction: column; gap: 8px; width: min(340px, calc(100vw - 24px)); }
 .t-alerts .yc-notice { background: var(--panel); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); }
 .t-fab { display: none; }
 
@@ -235,8 +257,11 @@ button.t-group__title { cursor: pointer; }
   .t-detail { width: 100%; border-left: 0; }
   .t-task__actions { display: none; }
   .t-task.is-sub { margin-left: 20px; }
+  .t-where { display: none; }
+  .t-comment .t-iconbtn { opacity: 1; }
   .t-fab { display: inline-flex; position: fixed; right: 16px; bottom: 16px; z-index: 15; width: 52px; height: 52px; border-radius: 50%; box-shadow: 0 6px 20px rgb(0 0 0 / .25); }
   .t-fab .t-icon { width: 22px; height: 22px; }
+  .t-alerts { bottom: 80px; }
   .t-pop { left: 8px !important; right: 8px; top: auto !important; bottom: 8px; width: auto; max-height: 80vh; }
   .t-date { width: auto; }
   .t-modal { padding: 16px 8px; align-items: flex-end; }
@@ -852,6 +877,12 @@ function linked(s) {
 }
 function now() { var d = new Date(); return { day: C.ymd(d), time: C.pad(d.getHours()) + ':' + C.pad(d.getMinutes()), iso: d.toISOString(), ms: +d }; }
 function dot(color) { return '<span class="t-dot" style="--dot:' + (C.COLORS[color] || C.COLORS.grey) + '"></span>'; }
+// Priorities read as plain words. 1-3 are still what is saved and what "p1" types.
+var PRI = { 1: 'High', 2: 'Medium', 3: 'Low', 4: 'None' };
+var PRI_TONE = { 1: 'danger', 2: 'warning', 3: 'info' };
+function priName(p) { return p === 4 ? 'No priority' : PRI[p] + ' priority'; }
+// A label's mark: the app's filled tag in the label's own colour; the word stays the text colour.
+function tagIcon(color) { return '<svg class="t-tagicon" viewBox="0 0 24 24" aria-hidden="true" style="--dot:' + (C.COLORS[color] || C.COLORS.grey) + '"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/></svg>'; }
 function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
 
 // What is on screen right now. None of this is saved except through `state`.
@@ -906,7 +937,7 @@ function hiddenProject(t) { var p = project(t.projectId); return !!(p && p.archi
 function openTasks() { return state.tasks.filter(function (t) { return !t.done && !hiddenProject(t); }); }
 
 var BUILTIN_FILTERS = [
-  { id: 'b-p1', name: 'Priority 1', query: { priorities: [1] } },
+  { id: 'b-p1', name: 'High priority', query: { priorities: [1] } },
   { id: 'b-week', name: 'Due in the next 7 days', query: { due: 'week' } },
   { id: 'b-nodate', name: 'No due date', query: { due: 'none' } }
 ];
@@ -964,7 +995,7 @@ function userGroups(list, o, addBase) {
     if (!buckets[key]) { buckets[key] = Object.assign({ id: 'u-' + key, title: title, tasks: [], add: Object.assign({}, addBase, add) }, extra || {}); order.push(key); }
     if (t) buckets[key].tasks.push(t);
   }
-  if (o.group === 'priority') [1, 2, 3, 4].forEach(function (p) { put('p' + p, p === 4 ? 'No priority' : 'Priority ' + p, null, { priority: p }); });
+  if (o.group === 'priority') [1, 2, 3, 4].forEach(function (p) { put('p' + p, priName(p), null, { priority: p }); });
   if (o.group === 'due') [['late', 'Overdue'], ['today', 'Today'], ['tomorrow', 'Tomorrow'], ['week', 'Next 7 days'], ['later', 'Later'], ['none', 'No due date']].forEach(function (x) { put(x[0], x[1], null, x[0] === 'today' ? { due: { date: n.day } } : x[0] === 'tomorrow' ? { due: { date: C.addDays(n.day, 1) } } : {}); });
   list.forEach(function (t) {
     if (o.group === 'project') put(t.projectId || 'inbox', project(t.projectId) ? project(t.projectId).name : 'Inbox', t, { projectId: t.projectId });
@@ -1036,16 +1067,16 @@ function counts() {
 function navItem(view, ic, name, count, extra) {
   var cur = viewKey(view) === viewKey(ui.view);
   return '<button class="t-navitem" data-act="go" data-view="' + esc(JSON.stringify(view)) + '"' + (cur ? ' aria-current="true"' : '') + (extra || '') + '>' +
-    ic + '<span class="t-grow t-clip">' + esc(name) + '</span>' + (count ? '<span class="t-navitem__count' + (count.late ? ' is-late' : '') + '">' + count.n + '</span>' : '') + '</button>';
+    ic + '<span class="t-grow t-clip">' + esc(name) + '</span>' + (count ? '<span class="t-navitem__count">' + (count.late ? '<i class="t-latedot" title="Some are overdue"></i>' : '') + count.n + '</span>' : '') + '</button>';
 }
 function renderNav() {
   var c = counts(), n = now(), done = state.stats.days[n.day] || 0, goal = state.settings.dailyGoal;
   var frac = Math.min(1, done / goal), circ = 2 * Math.PI * 7;
   var projs = liveProjects(), favs = projs.filter(function (p) { return p.favorite; });
   function projItem(p) { return navItem({ kind: 'project', id: p.id }, dot(p.color), p.name, c.projects[p.id] ? { n: c.projects[p.id] } : null, ' data-drop-project="' + esc(p.id) + '"'); }
-  var h = '<h1>Tasks</h1>' +
+  var h = '<div class="t-nav__top"><h1>Tasks</h1>' +
     '<button class="yc-button yc-button--primary yc-button--full" data-act="quick-add">' + icon('plus') + 'Add task</button>' +
-    '<label class="yc-search"><input type="search" id="search" data-keep placeholder="Search tasks" aria-label="Search tasks" value="' + esc(ui.view.kind === 'search' ? ui.view.q : '') + '"></label>' +
+    '<label class="yc-search"><input type="search" id="search" data-keep placeholder="Search tasks" aria-label="Search tasks" value="' + esc(ui.view.kind === 'search' ? ui.view.q : '') + '"></label></div>' +
     '<div class="t-nav__group">' +
     navItem({ kind: 'inbox' }, icon('inbox'), 'Inbox', c.inbox ? { n: c.inbox } : null, ' data-drop-project=""') +
     navItem({ kind: 'today' }, icon('today'), 'Today', c.today ? { n: c.today, late: c.late > 0 } : null, ' data-drop-due="' + n.day + '"') +
@@ -1066,20 +1097,28 @@ function renderNav() {
 }
 
 // ── drawing: one task row ───────────────────────────────────────────────────────────────
+// The short facts under a task's name, each the app's small pill. Colour is only ever the
+// pill's tint (overdue, today, priority) or a label's tag mark — never the words.
+function pill(tone, inner, title) { return '<span class="yc-status' + (tone ? ' yc-status--' + tone : '') + '"' + (title ? ' title="' + esc(title) + '"' : '') + '>' + inner + '</span>'; }
+function duePill(t) {
+  var info = C.dueInfo(t.due, now(), state.settings.h12);
+  if (!info) return '';
+  return pill(info.tone === 'overdue' ? 'danger yc-status--dot' : info.tone === 'today' ? 'info' : '', (t.repeat ? icon('repeat') : '') + esc(info.text), (info.tone === 'overdue' ? 'Overdue. ' : '') + (t.repeat ? C.describeRepeat(t.repeat) : ''));
+}
 function metaHtml(t, ctx) {
-  var n = now(), m = '', info = C.dueInfo(t.due, n, state.settings.h12);
-  if (info) m += '<span class="t-meta t-meta--' + info.tone + '">' + icon(t.repeat ? 'repeat' : 'calendar') + esc(info.text) + '</span>';
+  var m = duePill(t);
+  if (t.priority < 4) m += pill(PRI_TONE[t.priority], PRI[t.priority], priName(t.priority));
   if (ctx.tree && !t.parentId) {
     var kids = C.children(state, t.id);
-    if (kids.length) m += '<span class="t-meta">' + icon('subs') + kids.filter(function (k) { return k.done; }).length + '/' + kids.length + '</span>';
+    if (kids.length) m += pill('', icon('subs') + kids.filter(function (k) { return k.done; }).length + '/' + kids.length, 'Sub-tasks done');
   }
-  if (t.comments.length) m += '<span class="t-meta">' + icon('comment') + t.comments.length + '</span>';
-  t.labels.forEach(function (l) { m += '<span class="t-meta">' + dot(labelColor(l)) + esc(l) + '</span>'; });
-  if (ctx.where) m += '<span class="t-meta t-meta--where">' + esc(whereText(t)) + (t.parentId && task(t.parentId) ? ' › ' + esc(task(t.parentId).title.slice(0, 30)) : '') + '</span>';
-  return m;
+  if (t.comments.length) m += pill('', icon('comment') + t.comments.length, 'Comments');
+  t.labels.forEach(function (l) { m += pill('', tagIcon(labelColor(l)) + esc(l)); });
+  var where = ctx.where ? '<span class="t-where t-clip">' + esc(whereText(t)) + (t.parentId && task(t.parentId) ? ' › ' + esc(task(t.parentId).title.slice(0, 30)) : '') + '</span>' : '';
+  return (m ? '<div class="yc-chips">' + m + '</div>' : where ? '<span class="t-grow"></span>' : '') + where;
 }
 function checkHtml(t) {
-  return '<button class="t-check p' + t.priority + '" data-act="toggle" data-id="' + t.id + '" aria-pressed="' + (t.done ? 'true' : 'false') + '" aria-label="' + (t.done ? 'Mark as not done: ' : 'Mark as done: ') + esc(t.title) + '"></button>';
+  return '<button class="t-check" data-act="toggle" data-id="' + t.id + '" aria-pressed="' + (t.done ? 'true' : 'false') + '" aria-label="' + (t.done ? 'Mark as not done: ' : 'Mark as done: ') + esc(t.title) + '"></button>';
 }
 function taskRow(t, ctx) {
   var kids = ctx.tree && !t.parentId ? C.children(state, t.id) : [];
@@ -1088,7 +1127,9 @@ function taskRow(t, ctx) {
   if (ui.selecting) h += '<input type="checkbox" class="t-pick" data-act="pick" data-id="' + t.id + '"' + (ui.picked[t.id] ? ' checked' : '') + ' aria-label="Select ' + esc(t.title) + '">';
   h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__title">' + linked(t.title) + '</div>';
   if (t.notes && !ctx.card) h += '<div class="t-task__notes">' + linked(t.notes.split('\n')[0]) + '</div>';
-  h += '<div class="t-task__meta">' + metaHtml(t, ctx) + '</div></div>';
+  var meta = metaHtml(t, ctx);
+  if (meta) h += '<div class="t-task__meta">' + meta + '</div>';
+  h += '</div>';
   if (kids.length) h += '<button class="t-iconbtn t-twisty" data-act="twisty" data-id="' + t.id + '" aria-expanded="' + (ui.collapsed[t.id] ? 'false' : 'true') + '" aria-label="Show or hide sub-tasks">' + icon('chev') + '</button>';
   h += '<div class="t-task__actions">' +
     '<button class="t-iconbtn" data-act="row-date" data-id="' + t.id + '" aria-label="Set due date">' + icon('calendar') + '</button>' +
@@ -1110,13 +1151,13 @@ function groupHtml(g, where) {
   var attrs = g.drop ? ' data-drop="' + esc(JSON.stringify(g.drop)) + '"' : g.dropDue ? ' data-drop-due="' + g.dropDue + '"' : '';
   var h = '<section class="t-group' + (folded ? '' : ' is-open') + '"' + attrs + '>';
   if (g.title) {
+    var words = esc(g.title) + (g.hint ? ' · ' + esc(g.hint) : '') + (n ? ' <span class="t-group__count">' + n + '</span>' : '');
     h += '<div class="t-group__head">';
-    if (g.section) h += '<button class="t-group__title" data-act="section-fold" data-id="' + g.section.id + '" aria-expanded="' + (folded ? 'false' : 'true') + '">' + icon('chev', 't-chev') + esc(g.title) + '</button>';
-    else h += '<span class="t-group__title">' + esc(g.title) + '</span>';
-    if (g.hint) h += '<span class="t-group__count">' + esc(g.hint) + '</span>';
-    if (n && !g.hint) h += '<span class="t-group__count">' + n + '</span>';
-    if (g.reschedule) h += '<button class="t-linkish" data-act="reschedule">Move all to today</button>';
-    if (g.section) h += '<button class="t-iconbtn" style="margin-left:auto" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>';
+    if (g.section) h += '<button class="t-group__title" data-act="section-fold" data-id="' + g.section.id + '" aria-expanded="' + (folded ? 'false' : 'true') + '">' + icon('chev', 't-chev') + '<span>' + words + '</span></button>';
+    else h += '<span class="t-group__title">' + words + '</span>';
+    h += '<span class="t-grow"></span>';
+    if (g.reschedule) h += '<button class="yc-button yc-button--ghost yc-button--sm" data-act="reschedule">Move all to today</button>';
+    if (g.section) h += '<button class="t-iconbtn" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>';
     h += '</div>';
   }
   if (!folded) {
@@ -1125,8 +1166,6 @@ function groupHtml(g, where) {
   }
   return h + '</section>';
 }
-
-// ── drawing: the middle column ──────────────────────────────────────────────────────────
 function emptyText(v) {
   if (v.kind === 'inbox') return 'Your Inbox is empty. Add anything on your mind, and sort it into projects later.';
   if (v.kind === 'today') return 'Nothing due today. Enjoy it, or add something.';
@@ -1149,14 +1188,14 @@ function headHtml(v, total) {
       tools += sel('group', o.group, [['none', 'No groups'], ['project', 'Group by project'], ['priority', 'Group by priority'], ['due', 'Group by due date'], ['label', 'Group by label']].filter(function (x) { return !(v.kind === 'inbox' && x[0] === 'project'); }));
     tools += sel('sort', o.sort, (tree ? [['manual', 'My order']] : []).concat([['due', 'By due date'], ['priority', 'By priority'], ['name', 'By name'], ['added', 'Newest first']]));
     if (v.kind !== 'today' && v.kind !== 'upcoming') tools += '<button class="yc-filter" data-act="toggle-done" aria-pressed="' + o.done + '">Show done</button>';
-    tools += '<button class="t-iconbtn" data-act="select-mode" aria-pressed="' + ui.selecting + '" aria-label="Select several tasks">' + icon('pick') + '</button>';
+    tools += '<button class="yc-button yc-button--ghost yc-button--icon" data-act="select-mode" aria-pressed="' + ui.selecting + '" aria-label="Select several tasks" title="Select several tasks">' + icon('pick') + '</button>';
   }
-  if (p) tools += '<button class="t-iconbtn" data-act="project-more" data-id="' + p.id + '" aria-label="Project actions">' + icon('more') + '</button>';
-  if (v.kind === 'label') tools += '<button class="t-iconbtn" data-act="label-more" data-id="' + esc(v.id) + '" aria-label="Label actions">' + icon('more') + '</button>';
-  if (v.kind === 'filter' && C.byId(state.filters, v.id)) tools += '<button class="t-iconbtn" data-act="filter-more" data-id="' + esc(v.id) + '" aria-label="Filter actions">' + icon('more') + '</button>';
+  if (p) tools += '<button class="yc-button yc-button--ghost yc-button--icon" data-act="project-more" data-id="' + p.id + '" aria-label="Project actions">' + icon('more') + '</button>';
+  if (v.kind === 'label') tools += '<button class="yc-button yc-button--ghost yc-button--icon" data-act="label-more" data-id="' + esc(v.id) + '" aria-label="Label actions">' + icon('more') + '</button>';
+  if (v.kind === 'filter' && C.byId(state.filters, v.id)) tools += '<button class="yc-button yc-button--ghost yc-button--icon" data-act="filter-more" data-id="' + esc(v.id) + '" aria-label="Filter actions">' + icon('more') + '</button>';
   return '<header class="t-head' + (p && p.layout === 'board' ? ' t-head--wide' : '') + '"><button class="t-iconbtn t-menu-btn" data-act="nav-open" aria-label="Show lists">' + icon('menu') + '</button>' +
     '<h2>' + (p ? dot(p.color) : '') + '<span class="t-clip">' + esc(viewTitle(v)) + '</span>' +
-    (lists && total != null ? '<span class="t-head__sub">' + plural(total, 'task') + '</span>' : '') + '</h2>' +
+    '</h2>' +
     '<div class="t-head__tools">' + tools + '</div></header>';
 }
 function renderMain() {
@@ -1174,15 +1213,18 @@ function renderMain() {
     if (p && p.layout === 'board') {
       body += '<div class="t-board" id="list">' + groups.map(function (g) {
         var n = g.tasks.filter(function (t) { return !t.done; }).length;
-        return '<section class="t-col" data-drop="' + esc(JSON.stringify(g.drop)) + '"><div class="t-group__head"><span class="t-group__title">' + esc(g.title || 'No section') + '</span><span class="t-group__count">' + n + '</span>' +
-          (g.section ? '<button class="t-iconbtn" style="margin-left:auto" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>' : '') + '</div>' +
+        return '<section class="t-col" data-drop="' + esc(JSON.stringify(g.drop)) + '"><div class="t-group__head"><span class="t-group__title">' + esc(g.title || 'No section') + ' <span class="t-group__count">' + n + '</span></span><span class="t-grow"></span>' +
+          (g.section ? '<button class="t-iconbtn" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>' : '') + '</div>' +
           g.tasks.map(function (t) { return taskRow(t, { tree: true, card: true }); }).join('') + addButton(g) + '</section>';
       }).join('') + '<section class="t-col t-col--new"><button class="t-add" data-act="section-add">' + icon('plus') + 'Add section</button></section></div>';
     } else {
       var where = !(v.kind === 'inbox' || v.kind === 'project');
       var any = groups.some(function (g) { return g.tasks.length; });
       var inner = groups.map(function (g) { return groupHtml(g, where); }).join('');
-      if (!any && v.kind !== 'upcoming') inner = '<div class="yc-empty">' + esc(emptyText(v)) + (state.tasks.length ? '' : '<div class="yc-small" style="margin-top:8px">Tip: type <span class="yc-kbd">Pay rent tomorrow 5pm p1</span> and the day, time and priority are filled in for you.</div>') + '</div>' + inner;
+      // Two jobs, two looks (the app's rule): never used -> a card with one filled button;
+      // nothing here right now -> one quiet grey line.
+      if (!state.tasks.length && !ui.editor) inner = '<div class="yc-card t-first"><div class="yc-title">Start your list</div><p class="yc-muted yc-small">Write down anything you need to do. Type it the way you would say it, such as <span class="yc-kbd">Pay rent tomorrow 5pm</span>, and the day and time are filled in for you. Sort things into projects whenever you like.</p><button class="yc-button yc-button--primary yc-button--full" data-act="add-first">Add your first task</button></div>';
+      else if (!any && v.kind !== 'upcoming') inner = '<div class="t-quiet">' + esc(emptyText(v)) + '</div>' + inner;
       if (p) inner += '<button class="t-add" data-act="section-add">' + icon('plus') + 'Add section</button>';
       body += '<div class="t-list" id="list"><div class="t-list__inner">' + inner + '</div></div>';
     }
@@ -1204,13 +1246,13 @@ function labelsScreen() {
   }
   function fcount(f) { return openTasks().filter(function (t) { return C.matchesFilter(t, f.query, n); }).length; }
   var h = '<div class="t-list" id="list"><div class="t-list__inner">';
-  h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Filters</span><button class="t-linkish" data-act="filter-add">Add filter</button></div><div class="yc-list">' +
+  h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Filters</span><span class="t-grow"></span><button class="yc-button yc-button--ghost yc-button--sm" data-act="filter-add">Add filter</button></div><div class="yc-list">' +
     BUILTIN_FILTERS.map(function (f) { return row({ kind: 'filter', id: f.id }, icon('filter'), f.name, fcount(f)); }).join('') +
     state.filters.map(function (f) { return row({ kind: 'filter', id: f.id }, icon('filter'), f.name, fcount(f), 'filter-more', f.id); }).join('') + '</div></section>';
-  h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Labels</span><button class="t-linkish" data-act="label-add">Add label</button></div>' +
+  h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Labels</span><span class="t-grow"></span><button class="yc-button yc-button--ghost yc-button--sm" data-act="label-add">Add label</button></div>' +
     (state.labels.length ? '<div class="yc-list">' + state.labels.slice().sort(function (a, b) { return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1; }).map(function (l) {
-      return row({ kind: 'label', id: l.name }, dot(l.color), l.name, c.labels[l.name] || 0, 'label-more', l.name);
-    }).join('') + '</div>' : '<div class="yc-empty">Labels cut across projects: @errands, @5-minutes, @waiting. Type @name while adding a task to make one.</div>') + '</section>';
+      return row({ kind: 'label', id: l.name }, tagIcon(l.color), l.name, c.labels[l.name] || 0, 'label-more', l.name);
+    }).join('') + '</div>' : '<div class="t-quiet">Labels cut across projects: @errands, @5-minutes, @waiting. Type @name while adding a task to make one.</div>') + '</section>';
   var gone = state.projects.filter(function (p) { return p.archived; });
   if (gone.length) h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">Archived projects</span></div><div class="yc-list">' + gone.map(function (p) {
     return '<div class="yc-list-row"><button class="t-navitem" style="flex:1;min-width:0" data-act="go" data-view="' + esc(JSON.stringify({ kind: 'project', id: p.id })) + '">' + dot(p.color) + '<span class="t-grow t-clip">' + esc(p.name) + '</span></button>' +
@@ -1224,22 +1266,22 @@ function completedScreen() {
   state.log.forEach(function (l) { items.push({ id: l.id, title: l.title, at: l.at, projectId: l.projectId, repeat: true }); });
   items.sort(function (a, b) { return a.at < b.at ? 1 : -1; });
   var h = '<div class="t-list" id="list"><div class="t-list__inner">';
-  if (!items.length) return h + '<div class="yc-empty">Tasks you finish show up here, newest first.</div></div></div>';
+  if (!items.length) return h + '<div class="t-quiet">Tasks you finish show up here, newest first.</div></div></div>';
   var lastDay = null, shown = items.slice(0, 200);
   shown.forEach(function (it) {
     var d = new Date(it.at), day = C.ymd(d);
     if (day !== lastDay) {
       if (lastDay) h += '</section>';
       var names = longDay(day, n), far = C.diffDays(n.day, day) > 1;
-      h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">' + esc(far ? C.formatDay(day, n.day) : names.title) + '</span><span class="t-group__count">' + esc(far ? C.DAY_NAMES[d.getDay()] : names.hint) + '</span></div>';
+      h += '<section class="t-group"><div class="t-group__head"><span class="t-group__title">' + esc(far ? C.formatDay(day, n.day) : names.title) + ' · ' + esc(far ? C.DAY_NAMES[d.getDay()] : names.hint) + '</span></div>';
       lastDay = day;
     }
     var time = C.formatTime(C.pad(d.getHours()) + ':' + C.pad(d.getMinutes()), state.settings.h12);
     var where = project(it.projectId) ? project(it.projectId).name : 'Inbox';
     h += '<div class="t-task is-done"' + (it.task ? ' data-act="open" data-id="' + it.id + '" role="button" tabindex="0"' : ' style="cursor:default"') + '>' +
-      (it.task ? checkHtml(it.task) : '<span class="t-check p4 is-static" aria-pressed="true"></span>') +
-      '<div class="t-task__body"><div class="t-task__title">' + esc(it.title) + '</div><div class="t-task__meta"><span class="t-meta">' + esc(time) + '</span>' +
-      (it.repeat ? '<span class="t-meta">' + icon('repeat') + 'Repeats</span>' : '') + '<span class="t-meta t-meta--where">' + esc(where) + '</span></div></div></div>';
+      (it.task ? checkHtml(it.task) : '<span class="t-check is-static" aria-pressed="true"></span>') +
+      '<div class="t-task__body"><div class="t-task__title">' + esc(it.title) + '</div><div class="t-task__meta"><div class="yc-chips">' + pill('', esc(time)) +
+      (it.repeat ? pill('', icon('repeat') + 'Repeats') : '') + '</div><span class="t-where t-clip">' + esc(where) + '</span></div></div></div>';
   });
   h += '</section>';
   if (items.length > shown.length) h += '<div class="yc-caption" style="text-align:center">Showing the newest 200.</div>';
@@ -1270,7 +1312,7 @@ function destOptions(sel) {
   return h;
 }
 function priorityOptions(sel) {
-  return [1, 2, 3, 4].map(function (p) { return '<option value="' + p + '"' + (p === sel ? ' selected' : '') + '>' + (p === 4 ? 'No priority' : 'Priority ' + p) + '</option>'; }).join('');
+  return [1, 2, 3, 4].map(function (p) { return '<option value="' + p + '"' + (p === sel ? ' selected' : '') + '>' + priName(p) + '</option>'; }).join('');
 }
 function dueButtonText(due, repeat) {
   var info = C.dueInfo(due, now(), state.settings.h12);
@@ -1283,33 +1325,34 @@ function stamp(iso) {
 function renderDetail() {
   var el = $('detail'), t = ui.detailId ? task(ui.detailId) : null;
   if (!t) { ui.detailId = null; el.hidden = true; el.innerHTML = ''; return; }
-  var parent = t.parentId ? task(t.parentId) : null, kids = C.children(state, t.id), info = C.dueInfo(t.due, now(), state.settings.h12);
+  var parent = t.parentId ? task(t.parentId) : null, kids = C.children(state, t.id);
   var h = '<div class="t-detail__head"><span class="t-grow t-clip">' + esc(whereText(t)) + '</span>' +
     '<button class="t-iconbtn" data-act="row-more" data-id="' + t.id + '" aria-label="More actions">' + icon('more') + '</button>' +
     '<button class="t-iconbtn" data-act="detail-close" aria-label="Close task">' + icon('x') + '</button></div><div class="t-detail__body">';
-  if (parent) h += '<button class="t-linkish" style="align-self:flex-start;padding:0" data-act="open" data-id="' + parent.id + '">' + icon('left') + ' ' + esc(parent.title) + '</button>';
-  h += '<div class="t-detail__title">' + checkHtml(t) + '<textarea class="t-plain" id="d-title" rows="1" data-keep data-change="d-title" aria-label="Task name">' + esc(t.title) + '</textarea></div>';
-  h += '<textarea class="yc-textarea t-notes" id="d-notes" data-keep data-change="d-notes" placeholder="Notes" aria-label="Notes">' + esc(t.notes) + '</textarea>';
-  h += '<div class="t-field"><span class="t-field__name">Due</span><button class="yc-button yc-button--ghost" data-act="d-date"><span class="t-meta' + (info ? ' t-meta--' + info.tone : '') + '">' + icon(t.repeat ? 'repeat' : 'calendar') + dueButtonText(t.due, t.repeat) + '</span></button>';
-  if (t.due && t.due.time && t.remind != null) h += '<span class="t-field__name">Reminder</span><span class="t-meta">' + icon('bell') + esc(remindText(t.remind)) + '</span>';
-  h += '<label for="d-priority">Priority</label><select class="yc-select" id="d-priority" data-change="d-priority">' + priorityOptions(t.priority) + '</select>';
-  if (!parent) h += '<label for="d-project">Project</label><select class="yc-select" id="d-project" data-change="d-project">' + destOptions((t.projectId || '') + '|' + (t.sectionId || '')) + '</select>';
-  h += '<span class="t-field__name">Labels</span><div class="t-labels">' + t.labels.map(function (l) { return '<span class="yc-chip">' + dot(labelColor(l)) + esc(l) + '</span>'; }).join('') +
-    '<button class="yc-button yc-button--ghost yc-button--sm" style="width:auto" data-act="d-labels">' + (t.labels.length ? 'Change' : 'Add label') + '</button></div></div>';
+  if (parent) h += '<button class="yc-button yc-button--ghost yc-button--sm" style="align-self:flex-start" data-act="open" data-id="' + parent.id + '">' + icon('left') + '<span class="t-clip" style="max-width:240px">' + esc(parent.title) + '</span></button>';
+  // The card about the panel's own subject: the name and its notes belong together, so one box.
+  h += '<div class="yc-box t-subject"><div class="t-detail__title">' + checkHtml(t) + '<textarea class="t-plain" id="d-title" rows="1" data-keep data-change="d-title" aria-label="Task name">' + esc(t.title) + '</textarea></div>' +
+    '<textarea class="t-plain t-notes" id="d-notes" data-keep data-change="d-notes" placeholder="Add notes" aria-label="Notes" rows="3">' + esc(t.notes) + '</textarea></div>';
+  h += '<div class="t-block"><div class="yc-eyebrow">Details</div><div class="yc-box t-fields">' +
+    '<div class="t-field"><span>Due</span><button class="yc-button yc-button--ghost" data-act="d-date">' + icon(t.repeat ? 'repeat' : 'calendar') + '<span class="t-clip">' + dueButtonText(t.due, t.repeat) + '</span></button></div>';
+  if (t.due && t.due.time && t.remind != null) h += '<div class="t-field"><span>Reminder</span><span class="t-field__value">' + esc(remindText(t.remind)) + '</span></div>';
+  h += '<div class="t-field"><label for="d-priority">Priority</label><select class="yc-select" id="d-priority" data-change="d-priority">' + priorityOptions(t.priority) + '</select></div>';
+  if (!parent) h += '<div class="t-field"><label for="d-project">Project</label><select class="yc-select" id="d-project" data-change="d-project">' + destOptions((t.projectId || '') + '|' + (t.sectionId || '')) + '</select></div>';
+  h += '<div class="t-field"><span>Labels</span><div class="t-labels">' + t.labels.map(function (l) { return pill('', tagIcon(labelColor(l)) + esc(l)); }).join('') +
+    '<button class="yc-button yc-button--ghost yc-button--sm" data-act="d-labels">' + (t.labels.length ? 'Change' : 'Add label') + '</button></div></div></div></div>';
   if (!parent) {
-    h += '<div class="yc-stack" style="gap:2px"><div class="yc-eyebrow">Sub-tasks' + (kids.length ? ' · ' + kids.filter(function (k) { return k.done; }).length + '/' + kids.length : '') + '</div>' +
+    h += '<div class="t-block"><div class="yc-eyebrow">Sub-tasks' + (kids.length ? ' <span class="t-group__count">' + kids.filter(function (k) { return k.done; }).length + ' of ' + kids.length + ' done</span>' : '') + '</div><div class="yc-box t-subs">' +
       kids.map(function (k) {
-        var ki = C.dueInfo(k.due, now(), state.settings.h12);
-        return '<div class="t-sub' + (k.done ? ' is-done' : '') + '" data-act="open" data-id="' + k.id + '" role="button" tabindex="0">' + checkHtml(k) + '<span class="t-grow">' + esc(k.title) + '</span>' + (ki ? '<span class="t-meta t-meta--' + ki.tone + '">' + icon('calendar') + esc(ki.text) + '</span>' : '') + '</div>';
+        return '<div class="t-sub' + (k.done ? ' is-done' : '') + '" data-act="open" data-id="' + k.id + '" role="button" tabindex="0">' + checkHtml(k) + '<span class="t-grow">' + esc(k.title) + '</span>' + duePill(k) + '</div>';
       }).join('') +
-      '<input class="yc-input" id="d-sub" data-keep data-draft placeholder="Add a sub-task, then press Enter" aria-label="Add a sub-task" style="margin-top:4px;font-size:13px"></div>';
+      '<input class="yc-input" id="d-sub" data-keep data-draft placeholder="Add a sub-task, then press Enter" aria-label="Add a sub-task"></div></div>';
   }
-  h += '<div class="yc-stack" style="gap:6px"><div class="yc-eyebrow">Comments</div>' +
+  h += '<div class="t-block"><div class="yc-eyebrow">Comments</div><div class="yc-box t-comments">' +
     t.comments.map(function (c) {
-      return '<div class="yc-box t-comment"><div class="t-comment__meta"><span>' + esc(stamp(c.at)) + '</span><button class="t-iconbtn" data-act="d-comment-del" data-id="' + c.id + '" aria-label="Delete comment">' + icon('x') + '</button></div>' + linked(c.text) + '</div>';
+      return '<div class="t-comment"><div class="t-comment__meta"><span>' + esc(stamp(c.at)) + '</span><button class="t-iconbtn t-bin" data-act="d-comment-del" data-id="' + c.id + '" aria-label="Delete comment">' + icon('trash') + '</button></div>' + linked(c.text) + '</div>';
     }).join('') +
-    '<div class="yc-row" style="align-items:flex-end"><textarea class="yc-textarea" id="d-comment" data-keep data-draft rows="1" style="min-height:34px;font-size:13px" placeholder="Write a comment" aria-label="Write a comment"></textarea>' +
-    '<button class="yc-button" data-act="d-comment-add">Post</button></div></div>';
+    '<div class="yc-row" style="align-items:flex-end"><textarea class="yc-textarea" id="d-comment" data-keep data-draft rows="1" placeholder="Write a comment" aria-label="Write a comment"></textarea>' +
+    '<button class="yc-button" data-act="d-comment-add">Post</button></div></div></div>';
   h += '</div><div class="t-detail__foot"><span class="t-grow">Added ' + esc(stamp(t.createdAt)) + (t.done && t.doneAt ? ' · Done ' + esc(stamp(t.doneAt)) : '') + '</span>' +
     '<button class="yc-button yc-button--sm yc-button--danger" data-act="d-delete">' + icon('trash') + 'Delete</button></div>';
   el.hidden = false; el.innerHTML = h;
@@ -1381,12 +1424,12 @@ function editorHtml() {
 function editorFound() {
   var names = { date: 'calendar', time: 'calendar', repeat: 'repeat', priority: 'flag', project: 'move', label: 'tag' };
   return editorValue().found.map(function (f) {
-    return '<button class="yc-chip" data-act="ed-ignore" data-text="' + esc(f.text) + '" title="Understood as a ' + f.kind + '. Click to keep these words in the name instead.">' + icon(names[f.kind]) + esc(f.text) + ' ' + icon('x') + '</button>';
+    return '<button class="yc-status yc-status--info" data-act="ed-ignore" data-text="' + esc(f.text) + '" title="Understood as a ' + f.kind + '. Click to keep these words in the name instead.">' + icon(names[f.kind]) + esc(f.text) + ' ' + icon('x') + '</button>';
   }).join('');
 }
 function editorControls() {
   var v = editorValue(), e = ui.editor, info = C.dueInfo(v.due, now(), state.settings.h12);
-  var h = '<button class="yc-button yc-button--ghost yc-button--sm" data-act="ed-date"><span class="t-meta' + (info ? ' t-meta--' + info.tone : '') + '">' + icon(v.repeat ? 'repeat' : 'calendar') + (info ? esc(info.text) : 'Date') + '</span></button>' +
+  var h = '<button class="yc-button yc-button--ghost yc-button--sm" data-act="ed-date">' + icon(v.repeat ? 'repeat' : 'calendar') + (info ? esc(info.text) : 'Date') + '</button>' +
     '<select class="yc-select" data-change="ed-priority" aria-label="Priority">' + priorityOptions(v.priority) + '</select>';
   if (!e.parentId) h += '<select class="yc-select" data-change="ed-project" aria-label="Project">' + destOptions((v.projectId || '') + '|' + (v.sectionId || '')) + '</select>';
   h += '<button class="yc-button yc-button--ghost yc-button--sm" data-act="ed-labels">' + icon('tag') + (v.labels.length ? esc(v.labels.join(', ')) : 'Labels') + '</button>';
@@ -1445,10 +1488,10 @@ function renderPop() {
 // items: { label, icon, color, hint, checked, danger, fn } | { sep: true } | { title } | { flags: current, fn(p) }
 function menuHtml(p) {
   return p.items.map(function (it, i) {
-    if (it.sep) return '<hr class="yc-divider">';
+    if (it.sep) return '<div class="t-pop__gap"></div>';
     if (it.title) return '<div class="t-pop__title">' + esc(it.title) + '</div>';
-    if (it.flags) return '<div class="t-flags" role="group" aria-label="Priority">' + [1, 2, 3, 4].map(function (n) {
-      return '<button class="t-iconbtn t-flag-' + n + '" data-act="pop-flag" data-i="' + i + '" data-p="' + n + '" aria-pressed="' + (it.flags === n) + '" aria-label="' + (n === 4 ? 'No priority' : 'Priority ' + n) + '" title="' + (n === 4 ? 'No priority' : 'Priority ' + n) + '">' + icon('flag') + '</button>';
+    if (it.flags) return '<div class="t-pop__title">Priority</div><div class="t-flags" role="group" aria-label="Priority">' + [1, 2, 3, 4].map(function (n) {
+      return '<button class="yc-filter" data-act="pop-flag" data-i="' + i + '" data-p="' + n + '" aria-pressed="' + (it.flags === n) + '" aria-label="' + priName(n) + '">' + PRI[n] + '</button>';
     }).join('') + '</div>';
     return '<button class="t-pop__item' + (it.danger ? ' is-danger' : '') + '" data-act="pop-item" data-i="' + i + '">' +
       (it.color ? dot(it.color) : it.icon ? icon(it.icon) : '') + '<span>' + esc(it.label) + '</span>' +
@@ -1484,7 +1527,7 @@ function dateHtml(p) {
   }
   var h = quick('Today', n.day, 'today') + quick('Tomorrow', C.addDays(n.day, 1), 'calendar') +
     quick(sat === n.day ? 'Next weekend' : 'This weekend', sat === n.day ? C.addDays(sat, 7) : sat, 'calendar') + quick('Next week', mon, 'upcoming') +
-    (v.due ? quick('No date', '', 'x') : '') + '<hr class="yc-divider">';
+    (v.due ? quick('No date', '', 'x') : '') + '<div class="t-pop__gap"></div>';
   var first = C.fromYmd(p.month), busy = {};
   openTasks().forEach(function (t) { if (t.due) busy[t.due.date] = 1; });
   h += '<div class="t-cal__head"><button class="t-iconbtn" data-act="dp-month" data-step="-1" aria-label="Previous month">' + icon('left') + '</button>' +
@@ -1498,7 +1541,7 @@ function dateHtml(p) {
     day = C.addDays(day, 1);
     if (c >= 34 && day.slice(0, 7) !== p.month.slice(0, 7) && C.dow(day) === ws) break;
   }
-  h += '</div><hr class="yc-divider" style="margin:6px 0"><div class="t-pop__pad">';
+  h += '</div><div class="t-pop__gap"></div><div class="t-pop__pad">';
   h += '<div class="t-date__row"><label for="dp-time">Time</label><input type="time" class="yc-input" id="dp-time" data-change="dp-time" value="' + (v.due && v.due.time ? v.due.time : '') + '"></div>';
   var rk = p.custom ? 'custom' : repeatKey(v.repeat);
   h += '<div class="t-date__row"><label for="dp-repeat">Repeat</label><select class="yc-select" id="dp-repeat" data-change="dp-repeat">' +
@@ -1551,7 +1594,7 @@ function taskDateTarget(id) {
 function labelsHtml(p) {
   var on = p.get();
   var h = '<div class="t-pop__title">Labels</div>' + state.labels.slice().sort(function (a, b) { return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1; }).map(function (l) {
-    return '<button class="t-pop__item" data-act="lp-toggle" data-name="' + esc(l.name) + '" aria-pressed="' + (on.indexOf(l.name) >= 0) + '">' + dot(l.color) + '<span>' + esc(l.name) + '</span>' + (on.indexOf(l.name) >= 0 ? icon('tick', 't-tick') : '') + '</button>';
+    return '<button class="t-pop__item" data-act="lp-toggle" data-name="' + esc(l.name) + '" aria-pressed="' + (on.indexOf(l.name) >= 0) + '">' + tagIcon(l.color) + '<span>' + esc(l.name) + '</span>' + (on.indexOf(l.name) >= 0 ? icon('tick', 't-tick') : '') + '</button>';
   }).join('');
   return h + '<div class="t-pop__pad"><input class="yc-input" id="lp-new" placeholder="New label, then Enter" aria-label="New label" style="font-size:13px"></div>';
 }
@@ -1643,7 +1686,7 @@ function filterBox(f) {
     title: f ? 'Edit filter' : 'Add a filter', okText: f ? 'Save' : 'Add filter', wide: true,
     body: '<div><label class="yc-label" for="m-name">Name</label><input class="yc-input" id="m-name" data-first value="' + esc(f ? f.name : '') + '" placeholder="Quick wins"></div>' +
       '<p class="yc-caption">A filter is a saved search. It shows open tasks that match every row you set; leave a row empty to ignore it.</p>' +
-      '<div><div class="yc-label">Priority</div>' + chips('priorities', [1, 2, 3, 4].map(function (p) { return [String(p), p === 4 ? 'No priority' : 'Priority ' + p, q.priorities.indexOf(p) >= 0]; })) + '</div>' +
+      '<div><div class="yc-label">Priority</div>' + chips('priorities', [1, 2, 3, 4].map(function (p) { return [String(p), p === 4 ? 'None' : PRI[p], q.priorities.indexOf(p) >= 0]; })) + '</div>' +
       '<div><label class="yc-label" for="m-due">Due</label><select class="yc-select" id="m-due">' +
       [['any', 'Any time, or no date'], ['overdue', 'Overdue'], ['today', 'Today or overdue'], ['week', 'In the next 7 days, or overdue'], ['dated', 'Has a due date'], ['none', 'No due date']].map(function (o) { return '<option value="' + o[0] + '"' + (q.due === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
       (state.labels.length ? '<div><div class="yc-label">Has any of these labels</div>' + chips('labels', state.labels.map(function (l) { return [l.name, l.name, q.labels.indexOf(l.name) >= 0]; })) + '</div>' : '') +
@@ -1690,7 +1733,7 @@ function settingsBox() {
       '<details class="yc-fold"><summary>Keyboard shortcuts</summary><div class="t-keys">' +
       [['Q', 'Add a task from anywhere'], ['/', 'Search'], ['Enter', 'Save the task you are typing'], ['Esc', 'Close what is open'], ['Ctrl Z', 'Undo the last change']].map(function (k) { return '<span><span class="yc-kbd">' + k[0] + '</span></span><span>' + k[1] + '</span>'; }).join('') + '</div></details>' +
       '<details class="yc-fold"><summary>Typing shortcuts <span class="yc-fold__hint">Words the add box understands</span></summary><div class="t-keys">' +
-      [['today, tomorrow, fri, dec 5, 12/25, in 3 days', 'The due day'], ['5pm, 17:30, noon', 'The time'], ['every day, every mon and thu, every 2 weeks', 'Repeats'], ['every! 3 days', 'Repeats, counted from the day you finish it'], ['p1, p2, p3', 'Priority'], ['#Project', 'Puts it in that project'], ['@label', 'Adds a label (a new one is made if needed)']].map(function (k) { return '<span class="yc-mono yc-small">' + k[0] + '</span><span>' + k[1] + '</span>'; }).join('') + '</div></details>' +
+      [['today, tomorrow, fri, dec 5, 12/25, in 3 days', 'The due day'], ['5pm, 17:30, noon', 'The time'], ['every day, every mon and thu, every 2 weeks', 'Repeats'], ['every! 3 days', 'Repeats, counted from the day you finish it'], ['p1, p2, p3', 'High, medium or low priority'], ['#Project', 'Puts it in that project'], ['@label', 'Adds a label (a new one is made if needed)']].map(function (k) { return '<span class="yc-mono yc-small">' + k[0] + '</span><span>' + k[1] + '</span>'; }).join('') + '</div></details>' +
       '<details class="yc-fold"><summary>Back up or move your tasks <span class="yc-fold__hint">Copy everything as text, or load a copy</span></summary>' +
       '<textarea class="yc-textarea yc-mono yc-small" id="m-data" rows="6" aria-label="Your tasks as text" style="margin-top:4px">' + esc(exportText()) + '</textarea>' +
       '<div class="yc-row yc-row--end" style="margin-top:8px"><span class="yc-caption t-grow">Select all and copy to keep a backup. To restore, paste a backup here first.</span><button class="yc-button yc-button--sm yc-button--danger" data-act="import">Replace my tasks with this text</button></div></details>' +
@@ -1834,6 +1877,7 @@ var ACT = {
   // adding
   'quick-add': function () { $('app').classList.remove('is-nav-open'); openEditor('modal', quickDefaults()); openModal({ title: 'Add a task', editor: true, wide: true }); },
   'add-here': function (el) { openEditor(el.getAttribute('data-slot'), JSON.parse(el.getAttribute('data-defaults'))); render(); if ($('ed-title')) $('ed-title').focus(); },
+  'add-first': function () { var v = ui.view; openEditor(v.kind === 'today' ? 'g:d' + now().day : v.kind === 'inbox' ? 'g:none' : 'modal', quickDefaults()); if (ui.editor.slot === 'modal') openModal({ title: 'Add a task', editor: true, wide: true }); else { render(); if ($('ed-title')) $('ed-title').focus(); } },
   'ed-submit': function () { submitEditor(); },
   'ed-cancel': function () { closeEditor(); },
   'ed-ignore': function (el) { ui.editor.ignore.push(el.getAttribute('data-text')); refreshEditor(); $('ed-title').focus(); },
@@ -1876,7 +1920,7 @@ var ACT = {
     openPop(el, { type: 'date', title: 'Due date', get: function () { return val; }, set: function (v) { val = v; commit(function () { pickedIds().forEach(function (id) { var t = task(id); t.due = v.due ? { date: v.due.date, time: v.due.time } : null; t.repeat = v.repeat; t.remind = v.remind; }); }); } });
   },
   'bulk-priority': function (el) {
-    openPop(el, { type: 'menu', title: 'Priority', items: [1, 2, 3, 4].map(function (p) { return { label: p === 4 ? 'No priority' : 'Priority ' + p, icon: 'flag', fn: function () { commit(function () { pickedIds().forEach(function (id) { task(id).priority = p; }); }); } }; }) });
+    openPop(el, { type: 'menu', title: 'Priority', items: [1, 2, 3, 4].map(function (p) { return { label: priName(p), icon: 'flag', fn: function () { commit(function () { pickedIds().forEach(function (id) { task(id).priority = p; }); }); } }; }) });
   },
   'bulk-move': function (el) {
     openPop(el, { type: 'menu', title: 'Move to', items: [{ title: 'Move to' }].concat(destItems(function (pid, sid) {
