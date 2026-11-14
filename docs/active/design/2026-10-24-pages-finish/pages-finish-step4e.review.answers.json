@@ -1,0 +1,50 @@
+{
+ "deck": "pages-finish-step4e-review",
+ "started": "2026-11-14T00:40:16.195Z",
+ "submitted": "2026-11-14T00:41:53Z",
+ "cur": 5,
+ "answers": {
+  "E-addmenu": {
+   "v": "yes",
+   "t": 1794616823259,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-folder": {
+   "v": "yes",
+   "t": 1794616844313,
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-command": {
+   "v": "yes",
+   "t": 1794616870580,
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-describe": {
+   "v": "yes",
+   "t": 1794616887438,
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-described": {
+   "v": "yes",
+   "t": 1794616897096,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-cap": {
+   "v": "yes",
+   "t": 1794616912578,
+   "seconds": 15,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
