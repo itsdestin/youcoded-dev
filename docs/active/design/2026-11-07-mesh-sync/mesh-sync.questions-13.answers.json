@@ -1,0 +1,133 @@
+{
+ "deck": "mesh-sync-questions-13",
+ "started": "2026-11-13T23:59:14.286Z",
+ "submitted": "2026-11-14T00:09:39Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794614389095,
+   "seconds": 18,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794614389095,
+   "seconds": 18,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "at-update",
+   "t": 1794614642144,
+   "note": "it should switch to github 1-way backup. whether a second device is paired has no bearing on the fact that we should stop offering github 2-way sync",
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794614642144,
+   "note": "this is confusing as fuck brother. why are you making this so complicated. i feel like the prior discussions and deck answers we've gone through should be more than sufficient for this to be clear. ALL USERS will move to 1-way backup that doesnt give a damn whether you utilize github, icloud, or google drive. all cross-device live syncing happens through the new system. the framing of this question make literally no sense. what are you asking.",
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "on",
+   "t": 1794614642144,
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "ninety",
+   "t": 1794614642144,
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "unlock-notice",
+   "t": 1794614795448,
+   "seconds": 38,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "other",
+   "t": 1794614795448,
+   "note": "what? ",
+   "seconds": 38,
+   "theme": "midnight"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794614795448,
+   "seconds": 38,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "at-launch",
+   "t": 1794614795448,
+   "note": "but we will need to conduct extensive reviews/audits of our own. based on external best-practices",
+   "seconds": 38,
+   "theme": "midnight"
+  },
+  "S-5": {
+   "v": "yes",
+   "t": 1794614978474,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "S-6": {
+   "v": "yes",
+   "t": 1794614978474,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "S-7": {
+   "v": "yes",
+   "t": 1794614978474,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "S-8": {
+   "v": "yes",
+   "t": 1794614978474,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "S-9": {
+   "v": "yes",
+   "t": 1794614978474,
+   "note": "",
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "two",
+   "t": 1794614978474,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "S-10": {
+   "v": "yes",
+   "t": 1794614978474,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "S-11": {
+   "v": "yes",
+   "t": 1794614978474,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "S-12": {
+   "v": "yes",
+   "t": 1794614978474,
+   "seconds": 20,
+   "theme": "midnight"
+  }
+ }
+}

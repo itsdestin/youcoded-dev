@@ -320,3 +320,26 @@ decided on in our various rounds of decks"
   description, not his pick; the picture rule is marked My reading; D10 S-3 is listed Open.
 - Decisions the reviews surfaced are on deck round 13 (`mesh-sync.questions-13.json`): 7
   questions and 12 statements. Not yet answered.
+
+## 2026-11-13: round 13 answered
+
+Answers file: `mesh-sync.questions-13.answers.json`. Notes verbatim:
+
+- S-1 yes (quit warning by number of devices). S-2 yes (any device backs up; no storage
+  setting for one device).
+- Q-1 a device switches when it is updated. "it should switch to github 1-way backup.
+  whether a second device is paired has no bearing on the fact that we should stop offering
+  github 2-way sync"
+- Q-2 other: "this is confusing as fuck brother. why are you making this so complicated. i
+  feel like the prior discussions and deck answers we've gone through should be more than
+  sufficient for this to be clear. ALL USERS will move to 1-way backup that doesnt give a
+  damn whether you utilize github, icloud, or google drive. all cross-device live syncing
+  happens through the new system. the framing of this question make literally no sense.
+  what are you asking." Read as: at the switch everyone's backup is one-way, whichever
+  service; no service is treated specially.
+- Q-3 relay on from first pairing. Q-4 erase an unused set after 90 days. Q-5 unlock to add
+  a device, and other devices are told.
+- S-3 other: "what?" Not decided; to be explained plainly and asked again.
+- S-4 yes. Q-6 "end-to-end encrypted" from launch: "but we will need to conduct extensive
+  reviews/audits of our own. based on external best-practices"
+- S-5 to S-9 yes. Q-7 two hours. S-10, S-11, S-12 yes.

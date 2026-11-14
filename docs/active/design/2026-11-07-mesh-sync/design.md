@@ -121,6 +121,11 @@ wording; final wording is confirmed on the review decks when each screen is buil
   device. Renaming and marking complete apply everywhere. A device returning after weeks
   obeys a deletion it missed. [D12 Q-2]
 - A chat marked complete closes on every device. [D4 Q-6]
+- Deleting a chat stops a reply running in it, on whichever device hosts it. [D13 S-7]
+- The "host is offline, continue here?" notice appears when you open or type in that chat,
+  not the moment the host drops. [D13 S-5]
+- A phone that is not in use shows as offline to your other devices and catches up when the
+  app is opened. [D13 S-6]
 
 ### 2.2 How much each device holds
 
@@ -134,8 +139,9 @@ wording; final wording is confirmed on the review decks when each screen is buil
 - On "recent", an older chat cannot be read offline until it has been opened there once. If
   the only device holding its extras is off, the notice says the helpers' reports are kept
   but unfinished helper work cannot be continued. [D9 Q-1; D8 Q-1]
-- **Proposed** (from his round 12 note, awaiting his yes): a user with only one device has no
-  such setting; it appears once a second device is paired.
+- A user with only one device has no such setting; it appears once a second device is
+  paired. [D13 S-2]
+- A chat hosted on a phone is never cleared from that phone by "recent". [D13 S-9]
 
 ### 2.3 What travels
 
@@ -180,7 +186,12 @@ wording; final wording is confirmed on the review decks when each screen is buil
 - A device restored from a cloud backup is the first of a fresh device set. [D10 S-1]
 - Devices on different versions of YouCoded: the older device can read and watch, but must
   update before hosting or continuing a chat the newer one changed. "Update YouCoded on Phone
-  to continue this chat". [D12 Q-12]
+  to continue this chat". [D12 Q-12] A device too old to watch live still shows the chat,
+  updating as each block is saved, but cannot type into it. [D13 S-8]
+- Adding a device needs the acting device's unlock, like removing one, and the other
+  devices show "Laptop was added by Phone". [D13 Q-5]
+- Anything a removed device wrote and had not sent is not recoverable unless it is paired
+  again. [D13 S-4]
 
 ### 2.5 Keepers
 
@@ -214,7 +225,10 @@ wording; final wording is confirmed on the review decks when each screen is buil
   can switch that off. [D12 Q-13] Otherwise the relay stores nothing for a super-host user
   (as the question described it to him; its purpose in his words: "allow self hosting and
   also reduce load/strain on our servers/relay when possible", D7 Q-6 note).
-- **Open:** whether the relay is on from the first pairing or must be switched on (O8).
+- The relay is on from the first pairing, with a line saying so and a switch to turn it
+  off. [D13 Q-3]
+- The relay erases what it holds for a device set after 90 days with no device connecting.
+  Nothing on the devices is touched; they register again by themselves. [D13 Q-4]
 - A super-host is reached from outside the home through the relay by default, or through the
   user's own front door. Destin wants Tailscale, tunnels and the router method compared
   before that piece is designed. [chat 2026-11-11] **Open.**
@@ -222,8 +236,8 @@ wording; final wording is confirmed on the review decks when each screen is buil
 
 ### 2.6 When the host goes away
 
-- **Awake.** A computer holds itself awake while a reply it is running is unfinished, with a
-  hard time limit. Closing a laptop lid still sleeps it. No permanent keep-awake.
+- **Awake.** A computer holds itself awake while a reply it is running is unfinished, for
+  at most 2 hours per reply [D13 Q-7]. Closing a laptop lid still sleeps it. No permanent keep-awake.
   [D4 Q-5; D1 Q-10]
 - **Sleep.** Nothing special happens, because every line was sent as it was written. A file
   change from the last couple of seconds may not have gone; it sends on waking. [D9 S-7]
@@ -238,10 +252,10 @@ wording; final wording is confirmed on the review decks when each screen is buil
   - If anything is left, or the device is offline, it quits anyway and says: "Offline - some
     chats may not have synced."
   - On other devices the chat stays listed: host disconnected, host it here?
-- **Proposed** (rework of round 12 Q-7, awaiting his yes): a one-device user never sees that
-  line. With two or more devices it appears only when something has not left the device. In
+- A one-device user never sees that line. With two or more devices it appears only when something has not left the device. In
   the one case where it would appear on every quit (no relay, no super-host, other devices
   off), it is explained once and afterwards the chat list's "waiting" label carries it.
+  [D13 S-1]
 
 ### 2.7 Taking over, and the notice
 
@@ -275,8 +289,8 @@ wording; final wording is confirmed on the review decks when each screen is buil
 | Features this device lacks | "You may continue here, but this chat will not have: …" naming only what is really missing. Adds, when the chat is really using it: "If this chat needs hardware or files that exist only on Desktop, it may be best to wait." [D1 Q-8; D9 S-6] |
 | On the old host, when it returns | "This chat continued on Phone while this computer was offline. Its unfinished reply here was discarded." [D5 N-9] |
 | Two versions found | "This chat was continued on both Desktop and Phone while they could not reach each other. There are now two versions. Keep both, or archive the older one?" [D5 N-10] |
-| Host was removed (**Proposed** wording) | "Phone was removed from your devices. Continue this chat here?" |
-| Chat's body is not on any device that is on (**Proposed** wording) | "This chat is stored on Desktop, which is offline. It will open when Desktop is on." |
+| Host was removed | "Phone was removed from your devices. Continue this chat here?" [D13 S-12] |
+| Chat's body is not on any device that is on | "This chat is stored on Desktop, which is offline. It will open when Desktop is on." [D13 S-12] |
 | Older app version | "Update YouCoded on Phone to continue this chat." [D12 Q-12] |
 
 **Talk-only.** A chat opened without its folder can talk but not touch files. A note saying
@@ -311,6 +325,11 @@ fork: both stay, no archive prompt. A better versions screen is card 243.
   both changed the same lines, both are kept, one under the file's name and the other as
   "name (from Device, date)". He asked "how will users notice duplicate file versions?";
   the honest answer is only by seeing that extra file. He has not asked for more.
+- When two devices changed the same lines, which copy keeps the file's name follows one
+  fixed rule on every device; when one edited a file and another deleted it, the edit is
+  kept. [D13 S-10]
+- If two devices' copies of a project share no history, the project shows "These copies
+  have diverged" and is not combined automatically. [D13 S-11]
 - Carried over unchanged, as he was told when approving the carrier change: huge and
   generated folders are skipped; secrets never leave the device. [chat 2026-11-11]
 
@@ -330,11 +349,17 @@ fork: both stay, no archive prompt. A better versions screen is card 243.
 - On day one, devices that already share chats through GitHub are combined quietly where one
   copy is simply longer; real differences are listed once, together. Projects already synced
   through GitHub are recognised as the same project without asking. [D12 Q-15]
-- **Open (O9).** He approved: at the switch, a user with one device is asked to set up a
-  backup or to say plainly they want none [D10 S-2]. That was approved when the switch was
-  going to wait for the new backup. He later moved the switch ahead of the backup rebuild,
-  so at the switch the only backups are today's (GitHub, and daily Drive or iCloud copies
-  with no restore). What that prompt offers must be put to him.
+- **A device switches when it is updated,** whether or not it is paired with anything.
+  From then it uses GitHub only as a one-way backup. In his words: "it should switch to
+  github 1-way backup. whether a second device is paired has no bearing on the fact that we
+  should stop offering github 2-way sync". [D13 Q-1]
+- **At the switch every user moves to one-way backup, whichever service they use.** His
+  words: "ALL USERS will move to 1-way backup that doesnt give a damn whether you utilize
+  github, icloud, or google drive. all cross-device live syncing happens through the new
+  system." [D13 Q-2] A user with one device is asked to set up a backup or to say plainly
+  they want none [D10 S-2], with all three services offered. A fact to show honestly until
+  the backup rebuild: only a GitHub backup can be restored; Drive and iCloud copies gain
+  restore with the rebuild (section 3.6).
 - Alerts: today's in-app notices are enough. Alerts across devices are card 242. [D4 Q-13]
 
 ### 2.10 Cloud backup (built after the mesh)
@@ -357,9 +382,8 @@ backup rebuild including any needed github changes". [chat 2026-11-12] Decided s
 - Backups are slimmed: no pictures and no duplicate file text. A chat restored from backup
   lacks its pictures, and the assistant no longer knows what it knew only from them (tested
   2026-11-12). Sync is never slimmed. [chat 2026-11-12]
-- **Proposed** (rework of round 12 S-6, awaiting his yes): any device may back up what is
-  new; the backup screen names chats that have never been on a backing-up device ("212 chats
-  are not backed up yet. They are on Desktop.").
+- Any device may back up what is new; the backup screen names chats that have never been on a backing-up device ("212 chats
+  are not backed up yet. They are on Desktop."). [D13 S-2]
 - **Open (O10).** He did not approve "a device only offers the choices that work on it".
   His words: "be a bit more creative in designing ways to get backups to work more
   consistently across all devices". [D10 S-3] The backup rebuild's own design must answer it.
@@ -602,7 +626,7 @@ checked against signatures from devices.
    Every existing chat on disk is indexed (the same transcripts today's reconciler scans)
    and gets a `claim` entry naming this device as host and stating the head it holds. No
    chip is shown while the set has one device.
-2. Devices → Add device → this device's unlock (U7). It opens a meeting point and shows the
+2. Devices → Add device → this device's unlock. It opens a meeting point and shows the
    QR and code.
 3. The phone scans. The key exchange runs. The computer shows "Add this device?".
 4. On yes: the roster entry is signed and exchanged; the set secret is sent sealed. The
@@ -676,7 +700,7 @@ continues; the desktop returns.**
    roster heads before serving each other anything.
 4. Those three chats now have no host. Opening one shows the "host was removed" row.
 5. Lines the phone wrote and never sent are not recoverable unless the phone is paired
-   again (U10).
+   again [D13 S-4].
 6. If another device holds a tail from the phone, the removing device appends `released` on
    the phone's behalf, naming the longest tail any reachable device holds, so every device
    treats that tail the same way.
@@ -741,11 +765,11 @@ which is offline".
   another** (U9). Pairing a set of one into another set is the ordinary case and covers
   "both devices hold data" and "a device restored from backup".
 - **Leaving.** A device can remove itself. When the roster is empty the relay erases the
-  set after a delay. Erasing a set nobody has used for a long time is O6.
+  set after a delay. A set no device has connected to for 90 days is erased [D13 Q-4].
 
 **Removing and adding a device** both require the acting device's own unlock: Android
 `BiometricPrompt`; macOS Touch ID or password; Windows Hello; a polkit prompt on Linux.
-Removal is decided [D12 Q-9]; requiring it for adding is U7. A desktop with no such prompt
+Both decided [D12 Q-9; D13 Q-5]. A desktop with no such prompt
 is O4 (T11).
 
 ### 5.2 Link layer and presence
@@ -769,10 +793,10 @@ One interface, three paths, tried in this order for a given peer:
 
 - Offline rule (engineering call; V3 tunes it): offline after 30 seconds with no heartbeat
   **and** a failed reconnect on every path. A notice is worked out only when the user opens
-  or types in a chat (U1). If the host reappears before the user answers, the notice is
+  or types in a chat [D13 S-5]. If the host reappears before the user answers, the notice is
   withdrawn.
 - **A phone is "on" only while the app is in front, or it is hosting a running reply, or the
-  battery exemption is enabled** (U2). Android cuts a backgrounded app's network after a
+  battery exemption is enabled** [D13 S-6]. Android cuts a backgrounded app's network after a
   while and this design has no push channel. T15 measures it.
 - Clocks: the relay's clock times its 30-day rule. Control entries are ordered by what they
   have seen, never by clocks. Nothing compares one device's clock with another's.
@@ -981,7 +1005,7 @@ switch. Tags stay where they are.
   register holding that entry, so a device returning after any length of time learns of it
   before sending anything.
 - When the entry reaches the host, the host stops any running reply, as if the chat were
-  closed (U3). Tails of a deleted version are removed with it.
+  closed [D13 S-7]. Tails of a deleted version are removed with it.
 - **Marking complete** is a `flag` entry. When it reaches the host the chat is closed there
   the way the close menu closes it today. [D4 Q-6]
 - Each device removes the body 30 days after the later of the entry's time and the moment
@@ -1027,7 +1051,7 @@ and the capability limits.
   that device has downloaded.
 - **Version mismatch.** Devices exchange app versions at connect. A watcher too old for the
   host's live protocol falls back to the durable lane: the chat appears as its lines
-  arrive, it cannot be typed into, and the update notice shows (U4).
+  arrive, it cannot be typed into, and the update notice shows [D13 S-8].
 
 ### 5.6 The relay
 
@@ -1101,7 +1125,7 @@ everyone's pushes. Between equal devices that rule would give each device a diff
 result. So (engineering call; T4 must prove it):
 
 - A clash is settled by a rule that depends only on the two sides, not on who is merging
-  (U5):
+  [D13 S-10]:
   - both edited the same lines: the side whose file has the lower git blob id keeps the
     name; the other becomes `name (from <its device>, <date>)`;
   - one edited, one deleted: the edit is kept (today a deletion from the other side wins);
@@ -1112,7 +1136,7 @@ result. So (engineering call; T4 must prove it):
   different merge commits but end on the same tree, and on the same commit once nothing new
   is being written.
 - A tip that shares no history with the local one raises a "diverged" state for that
-  project (U11) and is not merged.
+  project [D13 S-11] and is not merged.
 - This changes `GitTransport`'s conflict code and its "remote-wins" contract test.
 
 **Sequencer, as a traffic rule only.** To cut down on merges, devices send to one place
@@ -1158,7 +1182,7 @@ sequencer still converge.
 - "Keep everything": every chat's lines and extras stay.
 - "Recent": lines and extras of chats not used for 30 days may be evicted; the summary,
   control log and chain values stay.
-- **Never evicted:** a chat hosted here (U6); any line that no other **device** has
+- **Never evicted:** a chat hosted here [D13 S-9]; any line that no other **device** has
   acknowledged. A keeper's acknowledgement does not count for eviction, though it does
   count for the quit rule and the "waiting" mark as decided [D9 Q-3].
 - "Waiting" in the chat list means: this device holds lines that neither another device nor
@@ -1170,8 +1194,7 @@ sequencer still converge.
 All of this runs only when the switch (7.2) is on.
 
 - **Awake per reply.** `powerSaveBlocker` (desktop) or the existing `keepAwake` host call
-  (Android, capped at 4 hours) while a reply runs on this host; a hard cap on desktop too
-  (U8 sets the figure).
+  (Android, capped at 4 hours) while a reply runs on this host; 2 hours per reply on desktop [D13 Q-7].
 - **Battery exemption.** A new Android setting the user opts into. [D6 Q-3]
 - **Quit.** Compare each hosted chat's head with what a keeper or any peer has
   acknowledged. All reply ends acknowledged: quit at once. Otherwise allow a few seconds
@@ -1369,11 +1392,8 @@ of a user's devices have switched and are paired, the two groups do not see each
 new chats. Nothing is lost: when a late device switches and is paired, the combine step in
 walk-through A runs. A chat that was continued on both sides in the meantime has really
 diverged, and is listed as two versions. The one-time message must say all this plainly.
-Whether a device switches when it is updated or when it is paired is O11; the second
-shortens this window to the time the user takes to pair. Either way, no single device ever
-runs both systems, but for a while one user's devices can be split between them. That is a
-weaker reading of "never both simultaneously" than his words may intend, and it is put to
-him with O11.
+A device switches when it is updated [D13 Q-1]. No single device ever runs both systems;
+for a while one user's devices can be split between them, until all are updated and paired.
 
 **Rollback** is for the whole release, not one device. While the old code is still shipped,
 a later release can turn the switch off: on each device the store is written back into
@@ -1416,12 +1436,17 @@ turns the lock on.
 **Stated plainly: every paired device is fully trusted.** Any one of them can add a device,
 remove the others, and type into chats on the others, whose assistants can run commands on
 those machines. That is what the feature is. The protections are: adding and removing need
-the device's own unlock; every other device is told when a device is added (U7); the relay
+the device's own unlock; every other device is told when a device is added [D13 Q-5]; the relay
 erases an emptied set only after a delay.
 
 **Reviews.** A written threat model before Phase 1 is accepted. The decided review of
-same-wifi direct. **O5:** an outside review by a person before "end-to-end encrypted" is
-used as a headline; until then, "locked so only your devices can read it".
+same-wifi direct. "End-to-end encrypted" may be used from launch, on condition of
+extensive reviews and audits of our own, based on external best practices. His words: "we
+will need to conduct extensive reviews/audits of our own. based on external
+best-practices". [D13 Q-6] Engineering reading: before Phase 7, audit the pairing, key and
+relay code against a published external standard (for example OWASP's verification
+standards and the documented designs of Signal and WhatsApp device linking), by reviewers
+who did not write it, with findings recorded and closed.
 
 **Other limits to state honestly.** A stolen device keeps what it had. The browser view is
 protected by Tailscale only.
@@ -1466,13 +1491,13 @@ change nothing for users (7.2).
 | Phase | Builds | Destin sees (review decks) | Needs decided first | Done when |
 |---|---|---|---|---|
 | 0 | T1 to T18 as investigations | A plain report and any decision they force | — | Each pass line met, or the design amended with his agreement where he can see the change |
-| 1. Devices | Keys, roster with cut-offs, generations, pairing (QR and code, relay meeting point), adding and removing with unlock, link layer over the relay, relay (auth, pass-through, presence, mailboxes, limits, allow-list) | Devices screen, pairing, removing, the 30-day prompt | U2, U7, U9, U10, O4, O6 | Three rig devices and a real phone pair; T15 passes; threat model written |
-| 2. Chats copy | Chat store, adapters, chains, reply ends, control log (`claim`, `summary`, `renamed`, `flag`, `segment`), replicator, relay holding and release notices, registers, 30-day and 1 GB rules, storage setting, the chat list, relay on/off setting | Chat list on a second device (reading only), storage setting, relay setting | O8, P2, P3, U6 | A chat written on A is readable on B in under 2 s, and after B was off a day; inventories match; T2, T14, T16 pass |
-| 3. Watching | Session router and proxy, peer context, per-chat capabilities, host chip, permission from any device, signed calls (host entries are `claim` only in this phase), start on another device, `format` and the version fallback | Watching and typing into a chat hosted elsewhere | U4 | A watcher drives a full reply on a remote host, desktop and phone; parity tests green; T17 passes |
-| 4. Project files | Mesh carrier, clash rule, sequencer, tip register, per-device download, 2 s wait, same-project question | Project list with "sync on this device"; combining projects at pairing | U5, U11 | T4 passes; a project edited on two hosts converges |
-| 5. Host changes | `takeover`, `released`, `relation`, `version`, `bound`, `talk-only`, `deleted`, `restored`; full `decide`; combining chats at pairing; reservations; seam S7; divider and assistant note; notices; delete and Recently deleted; awake per reply; quit rule; launch and wake checks | Every notice row, the divider, quitting, deleting | P1, U1, U3, U8 | Every row in 2.7 reproduced in the rig, with walk-throughs B to E and a kill between every step of a takeover; T12, T13, T16 pass |
+| 1. Devices | Keys, roster with cut-offs, generations, pairing (QR and code, relay meeting point), adding and removing with unlock, link layer over the relay, relay (auth, pass-through, presence, mailboxes, limits, allow-list) | Devices screen, pairing, removing, the 30-day prompt | U9, O4 | Three rig devices and a real phone pair; T15 passes; threat model written |
+| 2. Chats copy | Chat store, adapters, chains, reply ends, control log (`claim`, `summary`, `renamed`, `flag`, `segment`), replicator, relay holding and release notices, registers, 30-day and 1 GB rules, storage setting, the chat list, relay on/off setting | Chat list on a second device (reading only), storage setting, relay setting | — | A chat written on A is readable on B in under 2 s, and after B was off a day; inventories match; T2, T14, T16 pass |
+| 3. Watching | Session router and proxy, peer context, per-chat capabilities, host chip, permission from any device, signed calls (host entries are `claim` only in this phase), start on another device, `format` and the version fallback | Watching and typing into a chat hosted elsewhere | — | A watcher drives a full reply on a remote host, desktop and phone; parity tests green; T17 passes |
+| 4. Project files | Mesh carrier, clash rule, sequencer, tip register, per-device download, 2 s wait, same-project question | Project list with "sync on this device"; combining projects at pairing | — | T4 passes; a project edited on two hosts converges |
+| 5. Host changes | `takeover`, `released`, `relation`, `version`, `bound`, `talk-only`, `deleted`, `restored`; full `decide`; combining chats at pairing; reservations; seam S7; divider and assistant note; notices; delete and Recently deleted; awake per reply; quit rule; launch and wake checks | Every notice row, the divider, quitting, deleting | — | Every row in 2.7 reproduced in the rig, with walk-throughs B to E and a kill between every step of a takeover; T12, T13, T16 pass |
 | 6. Same wifi | Discovery, direct path, local meeting point, peer arbiter | Nothing new on screen | — | Its security review passes; Phases 2 to 5 pass with the relay off; T15 passes |
-| 7. Switch-over | Interim GitHub lane, last sync, one-time restore, combine, one-time message, backup prompt, removal of in-app remote access, rollback | The one-time message and prompts | O9, O11, O5 | Rehearsed on copies of Destin's four devices, switched one at a time: the inventory tool shows every chat once on every device; rollback rehearsed; then the switch is turned on for users |
+| 7. Switch-over | Interim GitHub lane, last sync, one-time restore, combine, one-time message, backup prompt, removal of in-app remote access, rollback | The one-time message and prompts | — | Rehearsed on copies of Destin's four devices, switched one at a time: the inventory tool shows every chat once on every device; rollback rehearsed; then the switch is turned on for users |
 | 8. Super-host | Desktop headless boot, start at login, pairing without a screen, relay fallback, outside access | Super-host setup | O1 | A super-host keeps two sleeping devices current with the relay off |
 | 9. Backup rebuild | Its own design pass first (cards 241, 98, 121, 253; O10): one backup, slimming, restore, locking, GitHub fresh start; deletes the interim lane | New Backup screen | O10, O2 if payment touches it | Separate acceptance |
 
@@ -1536,7 +1561,7 @@ devices; any repeated file clash; any parked entry that never resolves.
    producing a real but surprising second version. Measured by V12.
 6. **Phone as host.** Android may stop a long reply. The opt-in exemption; V7; T18.
 7. **Relay cost and abuse with no account.** Limits; T7; V6; sign-in in reserve.
-8. **Every paired device is fully trusted** (section 8). Unlock on add and remove; U7.
+8. **Every paired device is fully trusted** (section 8). Unlock on add and remove.
 9. **Unslimmed GitHub growth until the backup rebuild.** Keep the gap short.
 10. **Start-up wiring exists twice** (`main.ts`, `headless-boot.ts`). Every phase checks both.
 
@@ -1544,43 +1569,16 @@ devices; any repeated file clash; any parked entry that never resolves.
 
 ## 13. Not decided
 
-**Proposed to Destin, awaiting his answer.**
-
-| # | Item |
-|---|---|
-| P1 | Quit warning rework (2.6) |
-| P2 | Any device backs up what is new; no storage setting for one-device users (2.2, 2.10) |
-| P3 | Wording of two new notice rows: host was removed; chat stored on a device that is off (2.7) |
-
-**Things a user would notice that follow from engineering choices.** Each needs his yes
-before its phase (the table in section 10 says which).
-
-| # | Item | Where |
-|---|---|---|
-| U1 | The "host is offline" notice appears when you open or type in a chat, not as a pop-up the moment the host drops | 5.2 |
-| U2 | A phone in a pocket shows as offline to other devices and cannot be chosen to start a chat on | 5.2 |
-| U3 | Deleting a chat stops a reply that is running in it | 5.4 |
-| U4 | A device on an older app version sees a chat update as lines arrive but cannot type into it | 5.5 |
-| U5 | When two devices changed the same lines, which copy keeps the file's name follows a fixed rule (today: the incoming one). When one device edited a file and another deleted it, the edit is kept (today: the deletion wins) | 5.7 |
-| U6 | A chat hosted on a phone is never cleared from that phone by the "recent" setting | 5.8 |
-| U7 | Adding a device needs the same unlock as removing one, and other devices are told when one is added | 5.1, 8 |
-| U8 | The longest a computer holds itself awake for one reply | 5.9 |
-| U9 | A device already in a set of two or more must leave it before joining another | 5.1 |
-| U10 | Lines a removed device wrote and never sent are lost unless it is paired again | 4.4 E |
-| U11 | A project whose copies share no history shows a "diverged" state and is not combined, outside the pairing question | 5.7 |
-
-**Open.**
+Round 13 (2026-11-13) settled the reworked round 12 items and every user-visible
+consequence the reviews found, except one. The decided ones now sit in section 2 with
+`[D13 …]` tags.
 
 | # | Item | State |
 |---|---|---|
+| U9 | A device already in a set of two or more must leave it before joining another (5.1) | Asked on round 13 (S-3); he answered "what?". Needs a plainer explanation and his yes or no before Phase 1 |
 | O1 | Reaching a super-host from outside (Tailscale, tunnels, router); locking its browser view | Comparison owed before Phase 8 |
 | O2 | Payment | Destin: decide later; free at fixed limits |
 | O3 | A plan for the 2026-11-05 conflict copies | Left alone by his word |
 | O4 | Adding or removing a device on a desktop with no OS unlock | Needs Destin if T11 finds one |
-| O5 | Outside security review before the headline claim | Needs Destin |
-| O6 | When the relay erases a device set nobody has used | Needs Destin |
 | O7 | Interim period: GitHub upload is unslimmed and grows | Known; follows from his order |
-| O8 | Is the relay on from the first pairing, or switched on by the user? | Needs Destin |
-| O9 | What the one-device backup prompt offers at the switch, before the new backup exists | Needs Destin |
 | O10 | Backup choices that work on every device (D10 S-3) | For the backup rebuild's design |
-| O11 | Does a device switch when it is updated, or when it is paired? | Needs Destin |
