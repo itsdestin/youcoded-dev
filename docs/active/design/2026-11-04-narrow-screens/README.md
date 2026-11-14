@@ -1,7 +1,7 @@
 ---
 title: Phones and narrow windows — status (START HERE)
 status: active
-updated: 2026-11-11
+updated: 2026-11-14
 branches: youcoded-dev and youcoded, both `session/narrow-screen-proposals` (rebased onto master 2026-11-11, pushed)
 card: "#235"
 ---
@@ -16,18 +16,25 @@ unchanged, and nothing is merged.**
 This file supersedes reading the decks one by one. The decks and their `*.answers.json` stay as
 the record of Destin's decisions. The answers files are the source, and this page is a summary.
 
-## Decided (final)
+## Decided (final, after rounds 5–9 on 2026-11-14)
+
+Rounds 5–9 (`narrow-screens-5` … `-9`, after the `narrow-screens-record` deck) replaced parts of
+the round 1–4 design. Short route (branch-review Q-3): no automatic reviewers; Destin iterates on decks.
 
 | Area | Decision | Source |
 |---|---|---|
-| Who gets the phone layout | Width decides (below 640px), so a narrow computer window gets it too | questions Q-9 |
-| Top bar | ☰ and Projects on the left. + New session and the chat/terminal switch on the right. In the middle, one plain name button: status dot, name and arrow with one shared highlight, no outline and no "+N" count, with a row of tiny status lights under the name (one per OTHER open session, at most 12, idle ones faint). Pressing anywhere on that area, gaps and lights included, opens or closes the list. The lights fade while the list is open | live-3 L-1 (`lights`), live-4 L-1 yes, live-4 Q-1 note |
-| ☰ menu | Stays today's small menu (Settings, Projects, Pages, Files, Games) | live-3 L-2 |
-| Session list | Tapping the name opens a full-width dropdown under the top bar, with condensed phone rows: status as a coloured dot, the model name alone, and the folder name given room first. Heading "Your sessions" | live-4 L-2, questions Q-5, S-1 |
-| Pills under the message box | One row you swipe sideways, built from short or icon pills. Every pill takes the shortcut chips' measures (height, rounder corners, padding, gap, edge distance). Remote is a small computer icon, first in the row, replacing the REMOTE word in the top bar. The pencil scrolls with the pills, so the fade sits at the screen edge as on the chip row | questions Q-3, Q-6; live-3 L-3; live-4 L-3 yes |
-| Shortcut chips | Unchanged: today's row stays | live-2 L-4 ("nevermind, lets just leave the current row") |
-| Choice in Appearance | None for now. Later, an alternative phone mode built on the "everything panel" (hub), with its own title style, may become a choice | live-4 Q-1 |
-| Side-by-side screens on phones | Become a list first, then the details on their own screen with Back | questions S-2 (yes, not yet designed) |
+| Who gets it | Width decides (below 640px), so a narrow computer window gets it too | questions Q-9 |
+| Phone top bar | ☰ and Projects left; terminal switch right; **no + New session** (it stays in the list). Middle: one plain name button (dot, name, arrow, one highlight) centred on the SCREEN, on the buttons' centre line, with status lights hung 2px under it. Whole area opens the list; lights fade while it is open | record R-1, rounds 5 N-1, 7, 8 B-1 |
+| Narrow computer window bar | Projects folds into ☰; name sits left, after ☰; each side takes only its own width; name and lights 2px higher than the phone's; window cannot be narrower than 340px (`main.ts` `minWidth`, the one real-app change) | rounds 6 M-1 note, 7, 8 B-2, 9 C-1 |
+| Mac | Same rule as the narrow window (traffic lights take the left); described, never pictured — the workbench cannot pretend to be a Mac | round 5 N-2 |
+| ☰ menu | Today's small menu | live-3 L-2 |
+| Session list (phone) | Full-width dropdown, "Your sessions" heading, today's worded Working/Inactive status (no dot), rows 12px in, lined up with the heading | record R-2, rounds 5 N-3, 6 M-2 |
+| Model in every session row | The model alone ("Sonnet", not "Claude Code · Sonnet") at EVERY width, brand mark beside it, full text on hover | record R-2, round 5 N-4 |
+| Pills under the message box | One swipeable row, 24px tall, one shape; Remote is a light computer icon with a faint green glow, first; square 24px pencil | rounds 5 N-5, 6 M-3 |
+| Shortcut chips | Same row as today, but 24px tall with a 24px pencil when the compact pills are on, matching the pills | round 6 M-3 |
+| Touch sizing | Settled by master's `fingerSized()` rule (pills and chips deliberately 24px, below its 32px) | branch-review Q-1, round 6 M-3 |
+| Choice in Appearance | None for now; the hub is a later phone mode (card #222) | live-4 Q-1 |
+| List first, then details | Set aside: master did Pages and Resume | branch-review Q-2 ("confused"), record W-5 |
 
 **Superseded answers:**
 - Questions Q-7 (shortcuts behind a button) was built, then reversed in live-2 L-4.
