@@ -1,0 +1,105 @@
+{
+  "run": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/run/2026-11-14T09-44-48-560Z",
+  "jail": true,
+  "offline": false,
+  "devices": [
+    {
+      "name": "A",
+      "id8": "43b96fb2",
+      "pid": 184445,
+      "port": 46161,
+      "readyMs": 1813,
+      "ping": {
+        "ok": true,
+        "type": "auth:ok"
+      },
+      "wrongTokenRejected": true
+    },
+    {
+      "name": "B",
+      "id8": "08dbc5b1",
+      "pid": 184449,
+      "port": 33265,
+      "readyMs": 2566,
+      "ping": {
+        "ok": true,
+        "type": "auth:ok"
+      },
+      "wrongTokenRejected": true
+    },
+    {
+      "name": "C",
+      "id8": "e7896759",
+      "pid": 184453,
+      "port": 40473,
+      "readyMs": 2865,
+      "ping": {
+        "ok": true,
+        "type": "auth:ok"
+      },
+      "wrongTokenRejected": true
+    }
+  ],
+  "ids": [
+    "43b96fb2",
+    "08dbc5b1",
+    "e7896759"
+  ],
+  "idsDistinct": true,
+  "inventoryA": [
+    {
+      "chat": "claude:227a221",
+      "lines": 4,
+      "replyEnds": 2,
+      "chain": "f2bdb54a12"
+    }
+  ],
+  "diffAB": [
+    {
+      "chat": "claude:227a221",
+      "a": 4,
+      "b": 6,
+      "verdict": "A-is-prefix-of-B",
+      "behind": 2
+    }
+  ],
+  "relayReachable": {
+    "devices": []
+  },
+  "stopped": [
+    {
+      "name": "A",
+      "exit": {
+        "code": 0,
+        "sig": null
+      },
+      "alive": false
+    },
+    {
+      "name": "B",
+      "exit": {
+        "code": 0,
+        "sig": null
+      },
+      "alive": false
+    },
+    {
+      "name": "C",
+      "exit": {
+        "code": 0,
+        "sig": null
+      },
+      "alive": false
+    }
+  ],
+  "decoyLeaks": {
+    "A": [],
+    "B": [],
+    "C": []
+  },
+  "fsAudit": {
+    "A": [],
+    "B": [],
+    "C": []
+  }
+}

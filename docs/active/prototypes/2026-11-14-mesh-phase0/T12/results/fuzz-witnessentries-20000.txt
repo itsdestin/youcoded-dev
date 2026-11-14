@@ -1,0 +1,18 @@
+coverage {"runs":20000,"withPendingMidRun":18071,"withParkedMidRun":9110,"withRemoval":10909,"withTakeover":1613,"withSplitVersions":7613,"withTailVersion":5057,"withDeleted":5545,"withConcurrentRemovals":549,"withLoserTail":13163}
+{
+ "runs": 20000,
+ "fixed": true,
+ "opts": {
+  "noRemove": false
+ },
+ "exceptions": 0,
+ "runsWithParkedEntries": 9110,
+ "failuresByProperty": {
+  "P7-id-vanished": 1510,
+  "P9-pending": 1,
+  "P3-reply-lost": 3
+ }
+}
+P7-id-vanished first seeds: [100002,100025,100029,100031,100039]
+P9-pending first seeds: [105060]
+P3-reply-lost first seeds: [105060,113098,119382]

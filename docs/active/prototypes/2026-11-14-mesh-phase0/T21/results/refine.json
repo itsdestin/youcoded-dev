@@ -1,0 +1,716 @@
+{
+ "tally": {
+  "fs": {
+   "raw:identical": 8,
+   "conv:identical": 8,
+   "nobk:identical": 8,
+   "raw:diverged": 39,
+   "conv:diverged": 17,
+   "nobk:diverged": 17,
+   "conv:prefix": 22,
+   "nobk:prefix": 22
+  },
+  "git": {
+   "raw:diverged": 35,
+   "conv:prefix": 20,
+   "nobk:prefix": 18,
+   "conv:diverged": 11,
+   "nobk:diverged": 15,
+   "conv:identical": 4,
+   "nobk:identical": 2
+  }
+ },
+ "detail": [
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "live-cc#-home-destin vs live-cc#ublic-Change",
+   "raw": "raw:identical",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "live-cc#-home-destin vs live-cc#ublic-Change",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "live-cc#-home-destin vs mirror",
+   "raw": "raw:identical",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "live-cc#-home-destin vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "live-cc#ublic-Change vs live-cc#ublic-Change",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "live-cc#ublic-Change vs mirror",
+   "raw": "raw:identical",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "live-cc#ublic-Change vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "live-cc#ublic-Change vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "live-cc#ublic-Change vs mirror",
+   "raw": "raw:identical",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "fs",
+   "id": "claude:26d919ff",
+   "label": "mirror vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:3c2f8b3c",
+   "label": "live-cc#kinOnLowHeat vs conflict:destinsZ13#2026-07-13",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:3c2f8b3c",
+   "label": "live-cc#kinOnLowHeat vs mirror",
+   "raw": "raw:identical",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "fs",
+   "id": "claude:3c2f8b3c",
+   "label": "conflict:destinsZ13#2026-07-13 vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "live-cc#youcoded-dev vs conflict:DestinsLinuxPC 2#2026-11-052",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "live-cc#youcoded-dev vs conflict:DestinsLinuxPC 3#2026-11-053",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "live-cc#youcoded-dev vs conflict:DestinsLinuxPC 4#2026-11-054",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "live-cc#youcoded-dev vs conflict:DestinsLinuxPC#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "live-cc#youcoded-dev vs conflict:DestinsLinuxPC#2026-11-08",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "live-cc#youcoded-dev vs conflict:destinsZ13#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "live-cc#youcoded-dev vs mirror",
+   "raw": "raw:identical",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 2#2026-11-052 vs conflict:DestinsLinuxPC 3#2026-11-053",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 2#2026-11-052 vs conflict:DestinsLinuxPC 4#2026-11-054",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 2#2026-11-052 vs conflict:DestinsLinuxPC#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 2#2026-11-052 vs conflict:DestinsLinuxPC#2026-11-08",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 2#2026-11-052 vs conflict:destinsZ13#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 2#2026-11-052 vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 3#2026-11-053 vs conflict:DestinsLinuxPC 4#2026-11-054",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 3#2026-11-053 vs conflict:DestinsLinuxPC#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 3#2026-11-053 vs conflict:DestinsLinuxPC#2026-11-08",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 3#2026-11-053 vs conflict:destinsZ13#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 3#2026-11-053 vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 4#2026-11-054 vs conflict:DestinsLinuxPC#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 4#2026-11-054 vs conflict:DestinsLinuxPC#2026-11-08",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 4#2026-11-054 vs conflict:destinsZ13#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC 4#2026-11-054 vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC#2026-11-05 vs conflict:DestinsLinuxPC#2026-11-08",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC#2026-11-05 vs conflict:destinsZ13#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC#2026-11-05 vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC#2026-11-08 vs conflict:destinsZ13#2026-11-05",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:DestinsLinuxPC#2026-11-08 vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:301cfe19",
+   "label": "conflict:destinsZ13#2026-11-05 vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:67ab2252",
+   "label": "live-cc#youcoded-dev vs conflict:GalaxyBook#2026-07-29",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:67ab2252",
+   "label": "live-cc#youcoded-dev vs mirror",
+   "raw": "raw:identical",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "fs",
+   "id": "claude:67ab2252",
+   "label": "conflict:GalaxyBook#2026-07-29 vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "fs",
+   "id": "claude:acb48cfc",
+   "label": "live-cc#youcoded-dev vs conflict:destinsZ13#2026-09-20",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "fs",
+   "id": "claude:acb48cfc",
+   "label": "live-cc#youcoded-dev vs mirror",
+   "raw": "raw:identical",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "fs",
+   "id": "claude:acb48cfc",
+   "label": "conflict:destinsZ13#2026-09-20 vs mirror",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:f29dc28e",
+   "label": "consecutive destinsZ13->dm-windows-PC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:f29dc28e",
+   "label": "cross-device destinsZ13->dm-windows-PC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive DestinsLinuxPC->DestinsLinuxPC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive DestinsLinuxPC->destinsZ13",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive DestinsLinuxPC->destinsZ13",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive DestinsLinuxPC->destinsZ13",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive DestinsLinuxPC->destinsZ13",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive DestinsLinuxPC->DestinsLinuxPC",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "consecutive dm-windows-PC->DestinsLinuxPC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "cross-device DestinsLinuxPC->dm-windows-PC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:301cfe19",
+   "label": "vs-current DestinsLinuxPC->current-mirror",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "native:85765071",
+   "label": "consecutive destinsZ13->destinsZ13",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:identical",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "native:e45bcfaf",
+   "label": "consecutive destinsZ13->destinsZ13",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:identical",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:3c2f8b3c",
+   "label": "consecutive GalaxyBook->destinsZ13",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "git",
+   "id": "claude:3c2f8b3c",
+   "label": "consecutive destinsZ13->destinsZ13",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:3c2f8b3c",
+   "label": "consecutive destinsZ13->destinsZ13",
+   "rawGiven": "diverged:one-contains-other-but-not-prefix(same-conversation)",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:3c2f8b3c",
+   "label": "cross-device GalaxyBook->destinsZ13",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:identical",
+   "nobk": "nobk:identical"
+  },
+  {
+   "w": "git",
+   "id": "claude:3c2f8b3c",
+   "label": "vs-current destinsZ13->current-mirror",
+   "rawGiven": "diverged:one-contains-other-but-not-prefix(same-conversation)",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:26d919ff",
+   "label": "consecutive destinsZ13->destinsZ13",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:5b7f12b0",
+   "label": "consecutive GalaxyBook->GalaxyBook",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:67ab2252",
+   "label": "consecutive destinsZ13->GalaxyBook",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:67ab2252",
+   "label": "vs-current destinsZ13->current-mirror",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:82b598c4",
+   "label": "consecutive destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:82b598c4",
+   "label": "cross-device DestinsLinuxPC->destinsZ13",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:94e763be",
+   "label": "consecutive destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:real-split",
+   "raw": "raw:diverged",
+   "conv": "conv:diverged",
+   "nobk": "nobk:diverged"
+  },
+  {
+   "w": "git",
+   "id": "claude:acb48cfc",
+   "label": "consecutive destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:acb48cfc",
+   "label": "consecutive DestinsLinuxPC->destinsZ13",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:acb48cfc",
+   "label": "cross-device destinsZ13->DestinsLinuxPC",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  },
+  {
+   "w": "git",
+   "id": "claude:acb48cfc",
+   "label": "vs-current destinsZ13->current-mirror",
+   "rawGiven": "diverged:bytes-differ-same-conversation",
+   "raw": "raw:diverged",
+   "conv": "conv:prefix",
+   "nobk": "nobk:prefix"
+  }
+ ]
+}

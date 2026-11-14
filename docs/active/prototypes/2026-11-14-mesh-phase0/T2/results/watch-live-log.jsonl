@@ -1,0 +1,52 @@
+{"t": "2026-11-14T09:33:42.489Z", "ev": "start", "minutes": 25, "pollMs": 2000, "scrubMs": 180000}
+{"t": "2026-11-14T09:33:42.559Z", "ev": "tracking", "id": "agent-a1e4a1", "rt": "cc", "sub": true, "size": 1268122}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-a2919d", "rt": "cc", "sub": true, "size": 1087697}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-a3c82f", "rt": "cc", "sub": true, "size": 919681}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-a56bcd", "rt": "cc", "sub": true, "size": 756494}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-a57723", "rt": "cc", "sub": true, "size": 1109556}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-a6bd07", "rt": "cc", "sub": true, "size": 742771}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-a7019a", "rt": "cc", "sub": true, "size": 917060}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-aa5b7a", "rt": "cc", "sub": true, "size": 1029829}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-aa98ae", "rt": "cc", "sub": true, "size": 1076555}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-ab4f4c", "rt": "cc", "sub": true, "size": 1061875}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-acd4a5", "rt": "cc", "sub": true, "size": 1282186}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "agent-adc1a8", "rt": "cc", "sub": true, "size": 874629}
+{"t": "2026-11-14T09:33:42.560Z", "ev": "tracking", "id": "1d94ee8c", "rt": "cc", "sub": false, "size": 1756979}
+{"t": "2026-11-14T09:33:42.596Z", "ev": "tracking", "id": "agent-abceed", "rt": "cc", "sub": true, "size": 18339975}
+{"t": "2026-11-14T09:33:42.596Z", "ev": "tracking", "id": "agent-acdc8a", "rt": "cc", "sub": true, "size": 16537126}
+{"t": "2026-11-14T09:33:42.601Z", "ev": "tracking", "id": "70e9539f", "rt": "cc", "sub": false, "size": 51086351}
+{"t": "2026-11-14T09:33:42.607Z", "ev": "tracking", "id": "77a53a0b", "rt": "cc", "sub": false, "size": 20927026}
+{"t": "2026-11-14T09:33:42.619Z", "ev": "tracking", "id": "88c185fd", "rt": "cc", "sub": false, "size": 10819871}
+{"t": "2026-11-14T09:33:42.642Z", "ev": "tracking", "id": "af94eb6a", "rt": "cc", "sub": false, "size": 47190398}
+{"t": "2026-11-14T09:33:42.695Z", "ev": "tracking", "id": "1648fc3b", "rt": "cc", "sub": false, "size": 1103109}
+{"t": "2026-11-14T09:33:42.695Z", "ev": "tracking", "id": "5dbc4d74", "rt": "cc", "sub": false, "size": 357824}
+{"t": "2026-11-14T09:33:58.831Z", "ev": "tracking", "id": "agent-a53da2", "rt": "cc", "sub": true, "size": 229033}
+{"t": "2026-11-14T09:33:58.831Z", "ev": "tracking", "id": "8e675251", "rt": "cc", "sub": false, "size": 349185}
+{"t": "2026-11-14T09:35:02.881Z", "ev": "tracking", "id": "bfbbb320", "rt": "cc", "sub": false, "size": 319521}
+{"t": "2026-11-14T09:35:51.128Z", "ev": "tracking", "id": "9d0f9e82", "rt": "cc", "sub": false, "size": 235167}
+{"t": "2026-11-14T09:36:07.163Z", "ev": "tracking", "id": "agent-a91b98", "rt": "cc", "sub": true, "size": 229058}
+{"t": "2026-11-14T09:36:39.800Z", "ev": "tracking", "id": "agent-a91b98", "rt": "cc", "sub": true, "size": 229058}
+{"t": "2026-11-14T09:36:39.800Z", "ev": "tracking", "id": "9d0f9e82", "rt": "cc", "sub": false, "size": 433351}
+{"t": "2026-11-14T09:36:39.894Z", "ev": "REWRITTEN", "id": "9d0f9e82", "rt": "cc", "sub": false, "reason": "missing", "oldOffset": 433351, "oldLines": 90, "newSize": null}
+{"t": "2026-11-14T09:36:39.895Z", "ev": "REWRITTEN", "id": "agent-a91b98", "rt": "cc", "sub": true, "reason": "missing", "oldOffset": 229058, "oldLines": 27, "newSize": null}
+{"t": "2026-11-14T09:37:31.484Z", "ev": "REWRITTEN", "id": "bfbbb320", "rt": "cc", "sub": false, "reason": "missing", "oldOffset": 325870, "oldLines": 64, "newSize": null}
+{"t": "2026-11-14T09:37:44.086Z", "ev": "tracking", "id": "bfbbb320", "rt": "cc", "sub": false, "size": 354115}
+{"t": "2026-11-14T09:37:59.835Z", "ev": "tracking", "id": "e5537c74", "rt": "cc", "sub": false, "size": 26358237}
+{"t": "2026-11-14T09:39:20.324Z", "ev": "tracking", "id": "80b4ae76", "rt": "cc", "sub": false, "size": 16562}
+{"t": "2026-11-14T09:42:17.260Z", "ev": "tracking", "id": "745f6a90", "rt": "cc", "sub": false, "size": 302986}
+{"t": "2026-11-14T09:43:53.317Z", "ev": "tracking", "id": "012524e9", "rt": "cc", "sub": false, "size": 1452798}
+{"t": "2026-11-14T09:45:05.589Z", "ev": "REWRITTEN", "id": "1648fc3b", "rt": "cc", "sub": false, "reason": "missing", "oldOffset": 1884015, "oldLines": 229, "newSize": null}
+{"t": "2026-11-14T09:45:05.589Z", "ev": "REWRITTEN", "id": "5dbc4d74", "rt": "cc", "sub": false, "reason": "missing", "oldOffset": 357824, "oldLines": 77, "newSize": null}
+{"t": "2026-11-14T09:45:05.589Z", "ev": "REWRITTEN", "id": "agent-a53da2", "rt": "cc", "sub": true, "reason": "missing", "oldOffset": 229033, "oldLines": 27, "newSize": null}
+{"t": "2026-11-14T09:45:05.589Z", "ev": "REWRITTEN", "id": "8e675251", "rt": "cc", "sub": false, "reason": "missing", "oldOffset": 356335, "oldLines": 57, "newSize": null}
+{"t": "2026-11-14T09:45:05.589Z", "ev": "REWRITTEN", "id": "agent-a91b98", "rt": "cc", "sub": true, "reason": "missing", "oldOffset": 244028, "oldLines": 38, "newSize": null}
+{"t": "2026-11-14T09:45:05.589Z", "ev": "REWRITTEN", "id": "9d0f9e82", "rt": "cc", "sub": false, "reason": "missing", "oldOffset": 595632, "oldLines": 150, "newSize": null}
+{"t": "2026-11-14T09:45:05.589Z", "ev": "REWRITTEN", "id": "bfbbb320", "rt": "cc", "sub": false, "reason": "missing", "oldOffset": 354115, "oldLines": 91, "newSize": null}
+{"t": "2026-11-14T09:45:05.590Z", "ev": "REWRITTEN", "id": "80b4ae76", "rt": "cc", "sub": false, "reason": "missing", "oldOffset": 16562, "oldLines": 10, "newSize": null}
+{"t": "2026-11-14T09:45:05.590Z", "ev": "REWRITTEN", "id": "745f6a90", "rt": "cc", "sub": false, "reason": "missing", "oldOffset": 365251, "oldLines": 126, "newSize": null}
+{"t": "2026-11-14T09:57:17.042Z", "ev": "tracking", "id": "c33eacaa", "rt": "cc", "sub": false, "size": 17566273}
+{"t": "2026-11-14T09:57:33.101Z", "ev": "tracking", "id": "47354ec2", "rt": "cc", "sub": false, "size": 72537190}
+{"t": "2026-11-14T09:57:33.116Z", "ev": "tracking", "id": "a571a09d", "rt": "cc", "sub": false, "size": 31021294}
+{"t": "2026-11-14T09:58:21.341Z", "ev": "tracking", "id": "9d1547ad", "rt": "cc", "sub": false, "size": 11324200}
+{"t": "2026-11-14T09:58:43.404Z", "ev": "end", "totals": {"polls": 17829, "lines": 3317, "bytesIngested": 19033284, "rewritten": 12, "scrubFail": 0, "scrubs": 181, "vanished": 12, "newFiles": 37, "replyEnds": 56}, "avgPollMs": 0.4046630785798399, "maxPollMs": 406.560328, "files": 25, "grewFiles": 19}
+{"t": "2026-11-14T09:58:43.404Z", "ev": "perFile", "perFile": [{"id": "agent-a1e4a1", "rt": "cc", "sub": true, "polls": 747, "lines": 265, "baseLines": 145, "rewrites": 0, "startSize": 1268122}, {"id": "agent-a2919d", "rt": "cc", "sub": true, "polls": 747, "lines": 212, "baseLines": 134, "rewrites": 0, "startSize": 1087697}, {"id": "agent-a3c82f", "rt": "cc", "sub": true, "polls": 747, "lines": 217, "baseLines": 116, "rewrites": 0, "startSize": 919681}, {"id": "agent-a56bcd", "rt": "cc", "sub": true, "polls": 747, "lines": 175, "baseLines": 45, "rewrites": 0, "startSize": 756494}, {"id": "agent-a57723", "rt": "cc", "sub": true, "polls": 747, "lines": 46, "baseLines": 95, "rewrites": 0, "startSize": 1109556}, {"id": "agent-a6bd07", "rt": "cc", "sub": true, "polls": 747, "lines": 268, "baseLines": 48, "rewrites": 0, "startSize": 742771}, {"id": "agent-a7019a", "rt": "cc", "sub": true, "polls": 747, "lines": 192, "baseLines": 101, "rewrites": 0, "startSize": 917060}, {"id": "agent-aa5b7a", "rt": "cc", "sub": true, "polls": 747, "lines": 161, "baseLines": 121, "rewrites": 0, "startSize": 1029829}, {"id": "agent-aa98ae", "rt": "cc", "sub": true, "polls": 747, "lines": 33, "baseLines": 153, "rewrites": 0, "startSize": 1076555}, {"id": "agent-ab4f4c", "rt": "cc", "sub": true, "polls": 747, "lines": 185, "baseLines": 100, "rewrites": 0, "startSize": 1061875}, {"id": "agent-acd4a5", "rt": "cc", "sub": true, "polls": 747, "lines": 227, "baseLines": 118, "rewrites": 0, "startSize": 1282186}, {"id": "agent-adc1a8", "rt": "cc", "sub": true, "polls": 747, "lines": 128, "baseLines": 93, "rewrites": 0, "startSize": 874629}, {"id": "1d94ee8c", "rt": "cc", "sub": false, "polls": 747, "lines": 281, "baseLines": 237, "rewrites": 0, "startSize": 1756979}, {"id": "agent-abceed", "rt": "cc", "sub": true, "polls": 747, "lines": 77, "baseLines": 1274, "rewrites": 0, "startSize": 18339975}, {"id": "agent-acdc8a", "rt": "cc", "sub": true, "polls": 747, "lines": 48, "baseLines": 1205, "rewrites": 0, "startSize": 16537126}, {"id": "70e9539f", "rt": "cc", "sub": false, "polls": 747, "lines": 31, "baseLines": 7685, "rewrites": 0, "startSize": 51086351}, {"id": "77a53a0b", "rt": "cc", "sub": false, "polls": 747, "lines": 350, "baseLines": 1233, "rewrites": 0, "startSize": 20927026}, {"id": "88c185fd", "rt": "cc", "sub": false, "polls": 747, "lines": 0, "baseLines": 1327, "rewrites": 0, "startSize": 10819871}, {"id": "af94eb6a", "rt": "cc", "sub": false, "polls": 747, "lines": 133, "baseLines": 4506, "rewrites": 0, "startSize": 47190398}, {"id": "e5537c74", "rt": "cc", "sub": false, "polls": 619, "lines": 25, "baseLines": 1878, "rewrites": 0, "startSize": 26358237}, {"id": "012524e9", "rt": "cc", "sub": false, "polls": 443, "lines": 0, "baseLines": 449, "rewrites": 0, "startSize": 1452798}, {"id": "c33eacaa", "rt": "cc", "sub": false, "polls": 43, "lines": 0, "baseLines": 1090, "rewrites": 0, "startSize": 17566273}, {"id": "47354ec2", "rt": "cc", "sub": false, "polls": 35, "lines": 0, "baseLines": 5710, "rewrites": 0, "startSize": 72537190}, {"id": "a571a09d", "rt": "cc", "sub": false, "polls": 35, "lines": 0, "baseLines": 2312, "rewrites": 0, "startSize": 31021294}, {"id": "9d1547ad", "rt": "cc", "sub": false, "polls": 11, "lines": 0, "baseLines": 2087, "rewrites": 0, "startSize": 11324200}]}

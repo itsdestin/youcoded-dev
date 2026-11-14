@@ -1,0 +1,49 @@
+# T5 pairing prototype: output of run-pairing.mjs
+
+## 1. Typed code, honest devices, a pipe that records everything
+  ok  pairing completes
+  ok  both sides derived the same 64-byte session key
+  ok  event order on E: pake1 -> confirm-ok -> prompt -> welcome-sent
+  ok  key confirmation happens BEFORE "Add this device?" is raised
+  ok  prompt shows the name only after confirmation
+  ok  set secret (generation 1) arrived, HPKE-sealed to the new device and opened
+  ok  roster delivered (genesis entry + the add for the new device), all signatures verified by N
+  ok  a first real frame sealed by E opens on N with the delivered secret
+  ok  the recording pipe saw none of: the device name, the code, the set secret
+  ok  the code is single-use: spent after one success
+  ok  the correct code replayed after use is refused
+
+## 2. QR pairing (128-bit secret + key fingerprint)
+  ok  QR pairing completes and delivers the secret
+  ok  a QR whose fingerprint does not match the answering device is refused by N
+
+## 3. A pipe that drops, replays, reorders and injects
+  ok  dropping the confirmation: no prompt on E, no result on N (it just stays unpaired)
+  ok  a confirmation held back, then delivered late and twice: accepted exactly once (no double use)
+  ok  forged welcome and random bytes injected: ignored, the real welcome still completes pairing
+  ok  replaying every recorded message to the (spent) code raises no second prompt
+  ok  replaying a recorded session at a different fresh code counts 1 failure, shows nothing
+
+## 4. A pipe-only attacker guesses; the code burns after 3 failures counted on E
+  ok  three wrong guesses all fail
+  ok  E counted 3 failures and burned the code
+  ok  afterwards even the CORRECT code is refused (burned); no prompt ever shown
+  ok  E evaluated exactly 3 confirmations in total (no 4th guess is ever checked)
+  ok  50 simultaneous connections: only 3 confirmations were ever evaluated
+  ok  MitM with guessed codes: E counted 1 failure; N is stuck waiting for E's proof and has revealed nothing; no prompt
+
+## 5. Monte Carlo of the 3-guess attack on a deliberately tiny code (checks the theory with the real protocol)
+  2-digit code, 3000 trials x 3 real protocol attempts: attacker won 111 times; theory 3/100 = 3.00% -> 90 +/- 9.3 (23.18 ms per attempt)
+  ok  measured win rate matches 3/N within 4 sigma
+
+  Probability that ONE attacker-visible code is guessed in 3 tries, by code size (3 / N):
+    6 digits                                       N=1.00e+6  P=3.00e-6  (1 in 333,333)
+    8 digits                                       N=1.00e+8  P=3.00e-8  (1 in 33,333,333)
+    10 digits                                      N=1.00e+10  P=3.00e-10  (1 in 3,333,333,333)
+    6 chars of the 32-letter alphabet (30 bits)    N=1.07e+9  P=2.79e-9  (1 in 357,913,941)
+    8 chars of the 32-letter alphabet (40 bits)    N=1.10e+12  P=2.73e-12  (1 in 366,503,875,925)
+
+## 6. Timing (this machine, node v26.10.0; both sides in one process, no network)
+  code 200 pairings: median 5.9 ms total (existing device 3.4 ms, new device 2.3 ms), worst 10.8 ms
+  qr   200 pairings: median 5.7 ms total (existing device 3.4 ms, new device 2.2 ms), worst 13.8 ms
+  creating a device identity (Ed25519 + X25519 keys): 0.16 ms each

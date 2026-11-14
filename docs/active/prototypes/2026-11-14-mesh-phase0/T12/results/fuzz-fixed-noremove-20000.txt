@@ -1,0 +1,15 @@
+coverage {"runs":20000,"withPendingMidRun":18711,"withParkedMidRun":6975,"withRemoval":0,"withTakeover":1483,"withSplitVersions":9990,"withTailVersion":6163,"withDeleted":6263,"withConcurrentRemovals":0,"withLoserTail":14936}
+{
+ "runs": 20000,
+ "fixed": true,
+ "opts": {
+  "noRemove": true,
+  "len": 40
+ },
+ "exceptions": 0,
+ "runsWithParkedEntries": 6975,
+ "failuresByProperty": {
+  "P7-id-vanished": 1110
+ }
+}
+P7-id-vanished first seeds: [100024,100029,100036,100039,100068]

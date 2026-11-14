@@ -1,0 +1,2 @@
+1-digit code: 2000 trials, attacker won 618; theory 3/10 -> 600 +/- 20.5 (0.88 sigma)
+2-digit code: 6000 trials, attacker won 191; theory 3/100 -> 180 +/- 13.2 (0.83 sigma)

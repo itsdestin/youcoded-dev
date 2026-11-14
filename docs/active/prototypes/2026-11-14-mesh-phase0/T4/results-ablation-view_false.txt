@@ -1,0 +1,83 @@
+  50/150 35s
+  100/150 162s
+  150/150 389s
+{
+ "schedules": 150,
+ "devices": 3,
+ "cfg": {
+  "view": false
+ },
+ "failed": 41,
+ "seconds": 389,
+ "avgUserCommits": 27.92,
+ "avgMerges": 21.426666666666666,
+ "maxMerges": 60,
+ "mergeWorkPerUserCommit": 0.8744030563514804,
+ "ratioMergesPerUserCommit": {
+  "median": 0.7368421052631579,
+  "p95": 1.24,
+  "max": 1.3333333333333333
+ },
+ "copiesTotal": 1102,
+ "schedulesWithClash": 148,
+ "divergedFlagsTotal": 61,
+ "fakeTipsPending": 173,
+ "settleTicks": {
+  "avg": 18.126666666666665,
+  "max": 30
+ },
+ "avgBundleBytes": 3487.6633296626287
+}
+FAIL x3: same version kept under two names: docs/e (from A N, N-N-N).txt | docs  seeds 51,56,56
+FAIL x1: same version kept under two names: d/g (from A, N-N-N).txt | d/g (from  seeds 2
+FAIL x1: same version kept under two names: b (from A, N-N-N).txt | b (from C N  seeds 127
+FAIL x1: same version kept under two names: a (from B, N-N-N).txt | a.txt  seeds 102
+FAIL x1: same version kept under two names: docs/e (from A N, N-N-N) (from A N,  seeds 30
+FAIL x1: same version kept under two names: docs/e (from A N, N-N-N) (from A, N  seeds 30
+FAIL x1: same version kept under two names: b (from A, N-N-N).txt | b (from C,   seeds 79
+FAIL x1: same version kept under two names: x/y/z (from B N, N-N-N) (from B, N-  seeds 54
+FAIL x2: same version kept under two names: docs/e (from A, N-N-N) (from A, N-N  seeds 104,118
+FAIL x2: same version kept under two names: b (from B, N-N-N) (from B, N-N-N).t  seeds 130,72
+FAIL x1: same version kept under two names: a (from A N, N-N-N) (from C, N-N-N)  seeds 56
+FAIL x1: same version kept under two names: a (from A, N-N-N).txt | a (from C,   seeds 56
+FAIL x1: same version kept under two names: notes (from B, N-N-N) | notes (from  seeds 56
+FAIL x1: same version kept under two names: b (from A N, N-N-N) (from B, N-N-N)  seeds 81
+FAIL x1: same version kept under two names: d (from A N, N-N-N) | d (from A, N-  seeds 8
+FAIL x1: same version kept under two names: notes (from A, N-N-N) (from B, N-N-  seeds 8
+FAIL x1: same version kept under two names: x/y/z (from B, N-N-N).txt | x/y/z (  seeds 82
+FAIL x1: same version kept under two names: c (from A, N-N-N).md | c (from B, N  seeds 59
+FAIL x1: same version kept under two names: c (from B N, N-N-N).md | c (from B,  seeds 59
+FAIL x1: same version kept under two names: c (from A, N-N-N) (from A, N-N-N).m  seeds 11
+FAIL x1: same version kept under two names: d/g (from C N, N-N-N) (from A, N-N-  seeds 60
+FAIL x1: same version kept under two names: d/g (from C N, N-N-N).txt | d/g (fr  seeds 60
+FAIL x1: same version kept under two names: docs/f (from B N, N-N-N).txt | docs  seeds 133
+FAIL x1: same version kept under two names: d (from B, N-N-N) (from B, N-N-N) |  seeds 14
+FAIL x4: same version kept under two names: docs/e (from A, N-N-N).txt | docs/e  seeds 39,94,49,25
+FAIL x1: same version kept under two names: b (from B N, N-N-N) (from C, N-N-N)  seeds 90
+FAIL x1: same version kept under two names: b (from B N, N-N-N).txt | b (from C  seeds 90
+FAIL x2: same version kept under two names: b (from C, N-N-N) (from B, N-N-N).t  seeds 90,115
+FAIL x2: same version kept under two names: docs/e (from B N, N-N-N).txt | docs  seeds 90,65
+FAIL x1: same version kept under two names: c (from A N, N-N-N).md | c (from A,  seeds 15
+FAIL x1: same version kept under two names: c (from B N, N-N-N) (from A, N-N-N)  seeds 15
+FAIL x1: same version kept under two names: c (from C N, N-N-N).md | c (from C,  seeds 15
+FAIL x1: same version kept under two names: c (from C, N-N-N) (from A N, N-N-N)  seeds 15
+FAIL x1: same version kept under two names: x/y/z (from B N, N-N-N).txt | x/y/z  seeds 15
+FAIL x1: same version kept under two names: b (from C N, N-N-N).txt | b (from C  seeds 41
+FAIL x1: same version kept under two names: a (from C N, N-N-N).txt | a (from C  seeds 64
+FAIL x1: same version kept under two names: docs/e (from C N, N-N-N).txt | docs  seeds 64
+FAIL x3: same version kept under two names: b (from B N, N-N-N).txt | b (from B  seeds 65,72,119
+FAIL x1: same version kept under two names: b (from A, N-N-N) (from A, N-N-N).t  seeds 92
+FAIL x1: same version kept under two names: c (from A, N-N-N).md | c (from B N,  seeds 139
+FAIL x1: same version kept under two names: b (from A N, N-N-N).txt | b (from B  seeds 44
+FAIL x1: same version kept under two names: b (from B, N-N-N).txt | b (from C N  seeds 115
+FAIL x1: same version kept under two names: notes (from A N, N-N-N) | notes (fr  seeds 18
+FAIL x1: same version kept under two names: notes (from A N, N-N-N) (from A, N-  seeds 18
+FAIL x1: same version kept under two names: a (from A, N-N-N) (from C, N-N-N) (  seeds 117
+FAIL x1: same version kept under two names: docs/f (from B, N-N-N).txt | docs/f  seeds 117
+FAIL x2: same version kept under two names: b (from B N, N-N-N) (from B, N-N-N)  seeds 72,75
+FAIL x1: same version kept under two names: docs/e (from B N, N-N-N) (from A, N  seeds 146
+FAIL x1: same version kept under two names: docs/e (from B, N-N-N) (from A, N-N  seeds 146
+FAIL x1: same version kept under two names: a (from A N, N-N-N).txt | a (from B  seeds 122
+FAIL x1: same version kept under two names: docs/f (from A, N-N-N).txt | docs/f  seeds 100
+FAIL x1: same version kept under two names: a (from A N, N-N-N).txt | a (from C  seeds 75
+FAIL x1: same version kept under two names: c (from A N, N-N-N).md | c (from C   seeds 123

@@ -1,0 +1,38 @@
+{
+ "upload": {
+  "MB": 300,
+  "seconds": 2.2
+ },
+ "stats": {
+  "rowsRead": 1496,
+  "rowsWritten": 901,
+  "messagesIn": 301,
+  "messagesOut": 301,
+  "passIn": 0,
+  "constructedAt": 1794648967421,
+  "totalBytes": 314572800,
+  "dbSize": 316018688,
+  "groups": 1
+ },
+ "download": {
+  "MB": 300,
+  "rounds": 75,
+  "seconds": 10.5,
+  "maxRoundMs": 439
+ },
+ "resumeAt100": {
+  "firstSeq": 101,
+  "frames": 4,
+  "more": true
+ },
+ "oversizeFrame": {
+  "op": "over-limit",
+  "id": 381,
+  "why": "frame"
+ },
+ "messageLimitLocal": {
+  "4MiB": "over-limit",
+  "16MiB": "over-limit",
+  "33MiB": "timeout/closed"
+ }
+}

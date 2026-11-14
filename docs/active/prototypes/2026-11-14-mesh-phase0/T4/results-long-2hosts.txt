@@ -1,0 +1,29 @@
+{
+ "schedules": 24,
+ "devices": 2,
+ "cfg": {
+  "writeTicks": "60",
+  "pOp": "1",
+  "cap": "300"
+ },
+ "failed": 0,
+ "seconds": 42,
+ "avgUserCommits": 112.75,
+ "avgMerges": 58.416666666666664,
+ "maxMerges": 81,
+ "mergeWorkPerUserCommit": 0.5258684405025869,
+ "ratioMergesPerUserCommit": {
+  "median": 0.5132743362831859,
+  "p95": 0.7053571428571429,
+  "max": 0.7232142857142857
+ },
+ "copiesTotal": 233,
+ "schedulesWithClash": 24,
+ "divergedFlagsTotal": 13,
+ "fakeTipsPending": 124,
+ "settleTicks": {
+  "avg": 14.416666666666666,
+  "max": 25
+ },
+ "avgBundleBytes": 7650.629026671285
+}

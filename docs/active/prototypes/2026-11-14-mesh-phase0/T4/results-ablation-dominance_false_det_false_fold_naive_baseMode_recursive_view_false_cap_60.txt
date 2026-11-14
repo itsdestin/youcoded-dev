@@ -1,0 +1,43 @@
+  50/150 372s
+  100/150 667s
+  150/150 900s
+{
+ "schedules": 150,
+ "devices": 3,
+ "cfg": {
+  "dominance": false,
+  "det": false,
+  "fold": "naive",
+  "baseMode": "recursive",
+  "view": false,
+  "cap": "60"
+ },
+ "failed": 87,
+ "seconds": 900,
+ "avgUserCommits": 27.9,
+ "avgMerges": 140.32,
+ "maxMerges": 312,
+ "mergeWorkPerUserCommit": 13.392831541218637,
+ "ratioMergesPerUserCommit": {
+  "median": 1.9166666666666667,
+  "p95": 2.7666666666666666,
+  "max": 3
+ },
+ "copiesTotal": 735,
+ "schedulesWithClash": 145,
+ "divergedFlagsTotal": 60,
+ "fakeTipsPending": 169,
+ "settleTicks": {
+  "avg": 19.7,
+  "max": 60
+ },
+ "avgBundleBytes": 5819.819739913304
+}
+FAIL x84: merge commits N > N x user commits N  seeds 76,51,127,101,128,29
+FAIL x1: same version kept under two names: b (from A N, N-N-N).txt | b (from B  seeds 5
+FAIL x68: never settled within cap  seeds 51,127,101,29,52,7
+FAIL x62: heads differ: H,H,H  seeds 51,127,101,29,52,7
+FAIL x2: same version kept under two names: docs/e (from A N, N-N-N).txt | docs  seeds 56,56
+FAIL x1: same version kept under two names: c (from A N, N-N-N).md | c (from A,  seeds 59
+FAIL x1: same version kept under two names: docs/e (from B N, N-N-N).txt | docs  seeds 16
+FAIL x1: same version kept under two names: notes (from A N, N-N-N) | notes (fr  seeds 18

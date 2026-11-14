@@ -1,0 +1,50 @@
+{
+ "positiveControl": {
+  "stdout": "ok",
+  "decoyLeaks": [
+   ".claude/rig-positive-control.txt"
+  ],
+  "audit": [
+   {
+    "kind": "write",
+    "op": "fs.writeFileSync",
+    "path": "/home/destin/.claude/rig-positive-control.txt"
+   },
+   {
+    "kind": "read",
+    "op": "fs.readFileSync",
+    "path": "/home/destin/.claude.json"
+   },
+   {
+    "kind": "read",
+    "op": "fs.openSync",
+    "path": "/home/destin/.claude.json"
+   }
+  ]
+ },
+ "skew": {
+  "hostNow": "2026-11-14T09:45:21.852Z",
+  "deviceLogStamp": "2026-12-14T09:45:21.547Z",
+  "daysAhead": "30.00"
+ },
+ "ready": [
+  1057,
+  1204
+ ],
+ "stopExit": [
+  {
+   "code": 0,
+   "sig": null
+  },
+  {
+   "code": 0,
+   "sig": null
+  }
+ ],
+ "leaksAfter": {
+  "A": [
+   ".claude/rig-positive-control.txt"
+  ],
+  "B": []
+ }
+}

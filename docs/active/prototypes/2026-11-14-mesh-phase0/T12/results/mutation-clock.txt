@@ -1,0 +1,18 @@
+coverage {"runs":500,"withPendingMidRun":458,"withParkedMidRun":206,"withRemoval":264,"withTakeover":43,"withSplitVersions":191,"withTailVersion":147,"withDeleted":131,"withConcurrentRemovals":24,"withLoserTail":345}
+{
+ "runs": 500,
+ "fixed": true,
+ "opts": {
+  "noRemove": false
+ },
+ "exceptions": 0,
+ "runsWithParkedEntries": 206,
+ "failuresByProperty": {
+  "P5-clock-midrun": 14,
+  "P5-clock": 37,
+  "P7-id-vanished": 33
+ }
+}
+P5-clock-midrun first seeds: [21,22,60,62,105]
+P5-clock first seeds: [21,26,30,31,36]
+P7-id-vanished first seeds: [34,36,37,45,91]

@@ -1,0 +1,62 @@
+{
+ "totalIds": 4301,
+ "byCombo": {
+  "live-cc+mirror": 1332,
+  "live-cc+live-cc+live-cc+mirror+mirror": 1,
+  "conflict+live-cc+mirror": 21,
+  "live-cc": 8,
+  "conflict+conflict+conflict+conflict+conflict+conflict+live-cc+mirror": 1,
+  "live-native": 1410,
+  "live-native+mirror": 409,
+  "conflict+live-native+mirror": 1,
+  "mirror": 1118
+ },
+ "pairs": {
+  "live-cc vs mirror": {
+   "identical": 1354,
+   "diverged:real-split": 3,
+   "prefix": 3
+  },
+  "live-cc vs live-cc": {
+   "identical": 1,
+   "diverged:real-split": 2
+  },
+  "conflict vs live-cc": {
+   "prefix": 7,
+   "diverged:one-contains-other-but-not-prefix(same-conversation)": 1,
+   "identical": 11,
+   "diverged:real-split": 3,
+   "diverged:bytes-differ-same-conversation": 5
+  },
+  "conflict vs mirror": {
+   "prefix": 8,
+   "diverged:one-contains-other-but-not-prefix(same-conversation)": 1,
+   "identical": 11,
+   "diverged:real-split": 3,
+   "diverged:bytes-differ-same-conversation": 5
+  },
+  "mirror vs mirror": {
+   "diverged:real-split": 1
+  },
+  "conflict vs conflict": {
+   "diverged:real-split": 5,
+   "diverged:bytes-differ-same-conversation": 10
+  },
+  "live-native vs mirror": {
+   "prefix": 379,
+   "identical": 31
+  },
+  "conflict vs live-native": {
+   "prefix": 1
+  }
+ },
+ "cats": {
+  "identical": 1408,
+  "prefix": 398,
+  "diverged:real-split": 17,
+  "diverged:one-contains-other-but-not-prefix(same-conversation)": 2,
+  "diverged:bytes-differ-same-conversation": 20
+ },
+ "errors": 0,
+ "multiCopyIds": 1765
+}

@@ -1,0 +1,14 @@
+{
+ "afterWriterOnly": 10000,
+ "afterWriterAndB": 10000,
+ "afterCThrough6": 4000,
+ "afterAllThrough10": 0,
+ "fetchAfterDrop": {
+  "op": "frames-end",
+  "id": 18,
+  "g": "chat:1",
+  "more": false,
+  "last": 0
+ },
+ "note": "a device that has never reported blocks the drop (roster device with nothing); 'recent'-only devices must be excluded by the client sending throughSeq=head for chats it does not want"
+}

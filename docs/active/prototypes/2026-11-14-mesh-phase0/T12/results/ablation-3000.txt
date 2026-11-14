@@ -1,0 +1,9 @@
+revert loserRelease: "failuresByProperty":{"P3-reply-lost":584,"P7-id-vanished":245}
+revert anyOnBehalf: "failuresByProperty":{"P7-id-vanished":246,"P3-reply-lost":2}
+revert restoreAll: "failuresByProperty":{"P7-id-vanished":244,"P6-restore":5,"P3-reply-lost":1}
+revert backed: "failuresByProperty":{"P7-id-vanished":205,"P9-pending":98,"P3-reply-lost":59}
+revert seenMaximal: "failuresByProperty":{"P7-id-vanished":245,"P3-reply-lost":1}
+revert literalLosers: "failuresByProperty":{"P7-id-vanished":244,"P3-reply-lost":6}
+revert noOwnerField: "failuresByProperty":{"P7-id-vanished":244,"P3-reply-lost":1}
+revert naiveCluster: "failuresByProperty":{"P8-relation-contradiction":130,"P7-id-vanished":255,"P3-reply-lost":1}
+FIXED (all on): "failuresByProperty":{"P7-id-vanished":244,"P3-reply-lost":1}

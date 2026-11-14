@@ -1,0 +1,15 @@
+# T7 throwaway relay prototype. NEVER deployed. Runs only under `wrangler dev --local`.
+name = "t7-relay-proto"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[durable_objects]
+bindings = [{ name = "RELAY", class_name = "Relay" }]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Relay"]
+
+[vars]
+# Cap in bytes for the whole set. 1 GB in the design; benchmarks override per run.
+CAP_BYTES = "1073741824"

@@ -1,0 +1,32 @@
+{
+ "ids": 1151,
+ "versionsHashed": 7275,
+ "pairs": {
+  "consecutive": {
+   "prefix": 6103,
+   "diverged:bytes-differ-same-conversation": 15,
+   "identical": 16,
+   "diverged:real-split": 10,
+   "diverged:one-contains-other-but-not-prefix(same-conversation)": 1
+  },
+  "vs-current": {
+   "identical": 1098,
+   "prefix": 30,
+   "diverged:bytes-differ-same-conversation": 2,
+   "diverged:one-contains-other-but-not-prefix(same-conversation)": 1,
+   "diverged:real-split": 1
+  },
+  "cross-device": {
+   "diverged:bytes-differ-same-conversation": 5,
+   "prefix": 22
+  }
+ },
+ "cats": {
+  "prefix": 6155,
+  "identical": 1114,
+  "diverged:bytes-differ-same-conversation": 22,
+  "diverged:real-split": 11,
+  "diverged:one-contains-other-but-not-prefix(same-conversation)": 2
+ },
+ "errors": 0
+}

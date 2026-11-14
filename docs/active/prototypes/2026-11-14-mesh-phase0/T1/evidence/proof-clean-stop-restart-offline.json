@@ -1,0 +1,28 @@
+{
+ "cleanStop": {
+  "exit": {
+   "code": 0,
+   "sig": null
+  },
+  "stoppedCleanly": true
+ },
+ "offlineBoot": {
+  "ready": true,
+  "readyMs": 1361,
+  "ping": {
+   "ok": false,
+   "why": "connect ECONNREFUSED 127.0.0.1:39287"
+  }
+ },
+ "sameIdAfterRestart": true,
+ "restartStop": {
+  "exit": {
+   "code": 0,
+   "sig": null
+  },
+  "clean": true
+ },
+ "leaks": [],
+ "audit": 0,
+ "leftoverProcesses": "0"
+}

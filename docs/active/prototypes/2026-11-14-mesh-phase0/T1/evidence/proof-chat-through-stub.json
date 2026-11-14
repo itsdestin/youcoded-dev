@@ -1,0 +1,212 @@
+{
+ "events": [],
+ "created": "{\"type\":\"session:create:response\",\"id\":\"c1\",\"payload\":{\"id\":\"306c412c-50b7-4ebf-80a3-e979634c925f\",\"name\":\"rig\",\"cwd\":\"/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/run/2026-11-14T09-45-02-109Z/A/home/proj\",\"permissionMode\":\"bypass\",",
+ "procs": [
+  "bwrap --die-with-parent --new-session",
+  "node -r skew-preload.cjs",
+  "node pty-worker.js ",
+  "node claude-stub.cjs --dangerously-skip-permissions"
+ ],
+ "inputReplies": [],
+ "types": [
+  "auth:ok",
+  "first-run:state",
+  "status:data",
+  "session:created",
+  "session:create:response",
+  "session:summary"
+ ],
+ "transcriptEvents": 0,
+ "inventory": [
+  {
+   "chat": "claude:1cc6c3a",
+   "lines": 4,
+   "replyEnds": 2,
+   "chain": "23b94185b3"
+  }
+ ],
+ "leaks": [],
+ "audit": [
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/run/2026-11-14T09-45-02-109Z/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/run/2026-11-14T09-45-02-109Z/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/run/2026-11-14T09-45-02-109Z/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/run/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/run/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/run/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/T1/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/sessions/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/worktrees/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/youcoded-dev/.git"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/AGENTS.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/CLAUDE.md"
+  },
+  {
+   "kind": "read",
+   "op": "fs.existsSync",
+   "path": "/home/destin/.git"
+  }
+ ],
+ "logTail": []
+}

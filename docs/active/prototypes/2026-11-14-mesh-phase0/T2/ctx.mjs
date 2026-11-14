@@ -1,0 +1,4 @@
+import path from 'node:path'; import os from 'node:os'; import { execSync } from 'node:child_process'; import { linesOf } from './lines.mjs';
+const p = execSync(`find ${path.join(os.homedir(), '.claude/projects')} -name '24c3d97e*.jsonl' -not -path '*/subagents/*'`).toString().trim();
+let n = 0; for await (const l of linesOf(p)) { n++; if (n < 3755 || n > 3772) continue; let o; try { o = JSON.parse(l); } catch { console.log(n, 'BAD'); continue; }
+  console.log(n, o.type + (o.subtype ? ':' + o.subtype : ''), 'uuid', (o.uuid || '-').slice(0, 8), 'parent', (o.parentUuid || '-').slice(0, 8), 'logicalParent', (o.logicalParentUuid || '-').slice(0, 8), o.timestamp || '', o.isCompactSummary ? 'SUMMARY' : '', o.compactMetadata ? 'pre ' + o.compactMetadata.preTokens + ' post ' + o.compactMetadata.postTokens + ' ' + o.compactMetadata.trigger : ''); }

@@ -1,0 +1,39 @@
+  50/500 31s
+  100/500 65s
+  150/500 99s
+  200/500 134s
+  250/500 167s
+  300/500 204s
+  350/500 318s
+  400/500 374s
+  450/500 526s
+  500/500 593s
+{
+ "schedules": 500,
+ "devices": 3,
+ "cfg": {
+  "tie": "id"
+ },
+ "failed": 3,
+ "seconds": 593,
+ "avgUserCommits": 28.292,
+ "avgMerges": 21.58,
+ "maxMerges": 66,
+ "mergeWorkPerUserCommit": 0.8848437720910505,
+ "ratioMergesPerUserCommit": {
+  "median": 0.7419354838709677,
+  "p95": 1.1538461538461537,
+  "max": 1.3636363636363635
+ },
+ "copiesTotal": 3493,
+ "schedulesWithClash": 481,
+ "divergedFlagsTotal": 200,
+ "fakeTipsPending": 638,
+ "settleTicks": {
+  "avg": 17.746,
+  "max": 35
+ },
+ "avgBundleBytes": 3610.447025830258
+}
+FAIL x3: never settled within cap  seeds 214,307,496
+FAIL x3: heads differ: H,H,H  seeds 214,307,496

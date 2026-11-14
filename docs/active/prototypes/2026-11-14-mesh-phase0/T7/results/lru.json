@@ -1,0 +1,77 @@
+{
+ "before": {
+  "rowsRead": 446,
+  "rowsWritten": 296,
+  "messagesIn": 93,
+  "messagesOut": 93,
+  "passIn": 0,
+  "constructedAt": 1794648990573,
+  "totalBytes": 94371840,
+  "dbSize": 94834688,
+  "groups": 10
+ },
+ "writes": [
+  "stored",
+  "stored",
+  "stored",
+  "stored",
+  "stored",
+  "stored",
+  "stored",
+  "stored",
+  "stored",
+  "stored",
+  "stored",
+  "stored"
+ ],
+ "releasedEventsSeenByDevB": [
+  [
+   "chat:1",
+   9
+  ]
+ ],
+ "after": {
+  "rowsRead": 105,
+  "rowsWritten": 54,
+  "messagesIn": 15,
+  "messagesOut": 17,
+  "passIn": 0,
+  "constructedAt": 1794648990573,
+  "totalBytes": 99614720,
+  "dbSize": 100106240,
+  "groups": 11
+ },
+ "fetchReleasedChat": {
+  "op": "gap",
+  "id": 109,
+  "g": "chat:1",
+  "through": 9
+ },
+ "fetchSurvivorFrames": 4,
+ "newLineOnReleasedChat": {
+  "op": "stored",
+  "id": 111,
+  "g": "chat:1",
+  "seq": 10
+ },
+ "fetchPastMark": 1,
+ "groupOverCap": [
+  100,
+  {
+   "op": "over-limit",
+   "id": 213,
+   "why": "group"
+  }
+ ],
+ "final": {
+  "rowsRead": 874,
+  "rowsWritten": 422,
+  "messagesIn": 106,
+  "messagesOut": 133,
+  "passIn": 0,
+  "constructedAt": 1794648990573,
+  "totalBytes": 104857600,
+  "dbSize": 105369600,
+  "groups": 12
+ }
+}

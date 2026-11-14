@@ -1,0 +1,26 @@
+{
+ "host": "destinsZ13",
+ "records": 1765,
+ "live_and_record": 1765,
+ "byDeviceWhenLiveHere": {
+  "destinsZ13": 1308,
+  "DestinsLinuxPC": 85,
+  "GalaxyBook": 366,
+  "Destins-iMac-Pro.local": 2,
+  "dm-windows-PC": 4
+ },
+ "liveLongerThanMirror": {
+  "destinsZ13": 382
+ },
+ "liveSameAsMirror": {
+  "destinsZ13": 926,
+  "DestinsLinuxPC": 85,
+  "GalaxyBook": 366,
+  "Destins-iMac-Pro.local": 2,
+  "dm-windows-PC": 4
+ },
+ "noLiveHere": {},
+ "emptyDeviceWithLive": 0,
+ "ownerDeviceIsHereButLiveMissing": 0,
+ "recordsWithoutLiveCopyHere": 0
+}

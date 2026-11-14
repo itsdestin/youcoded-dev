@@ -1,0 +1,51 @@
+  50/1000 32s
+  100/1000 62s
+  150/1000 95s
+  200/1000 126s
+  250/1000 162s
+  300/1000 200s
+  350/1000 233s
+  400/1000 265s
+  450/1000 303s
+  500/1000 337s
+  550/1000 375s
+  600/1000 413s
+  650/1000 449s
+  700/1000 488s
+  750/1000 527s
+  800/1000 564s
+  850/1000 593s
+  900/1000 637s
+  950/1000 677s
+  1000/1000 746s
+{
+ "schedules": 1000,
+ "devices": 3,
+ "cfg": {
+  "baseMode": "recursive"
+ },
+ "failed": 4,
+ "seconds": 746,
+ "avgUserCommits": 27.89,
+ "avgMerges": 21.786,
+ "maxMerges": 70,
+ "mergeWorkPerUserCommit": 1.6363929723915382,
+ "ratioMergesPerUserCommit": {
+  "median": 0.7608695652173914,
+  "p95": 1.1785714285714286,
+  "max": 1.4
+ },
+ "copiesTotal": 4600,
+ "schedulesWithClash": 947,
+ "divergedFlagsTotal": 427,
+ "fakeTipsPending": 1317,
+ "settleTicks": {
+  "avg": 17.908,
+  "max": 35
+ },
+ "avgBundleBytes": 3645.8134057698385
+}
+FAIL x1: lost N lines never removed by a user: CN  seeds 510
+FAIL x1: lost N lines never removed by a user: CN,CN,AN  seeds 725
+FAIL x1: lost N lines never removed by a user: BN,CN  seeds 800
+FAIL x1: lost N lines never removed by a user: BN  seeds 490

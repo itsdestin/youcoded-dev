@@ -1,0 +1,4 @@
+body        0 B: wire 250 B (overhead 243 B incl. 7 B of body framing) | seal+sign 0.377 ms | open+verify 0.521 ms
+body     1024 B: wire 1279 B (overhead 248 B incl. 7 B of body framing) | seal+sign 0.437 ms | open+verify 0.706 ms
+body    65536 B: wire 65797 B (overhead 254 B incl. 7 B of body framing) | seal+sign 2.502 ms | open+verify 1.008 ms
+body  1048576 B: wire 1048837 B (overhead 254 B incl. 7 B of body framing) | seal+sign 13.571 ms | open+verify 12.936 ms

@@ -1,0 +1,77 @@
+
+== same lines edited on 2 devices
+   settled in 17 ticks, same head everywhere: true, commits 4, merges 1, merge commits built (A,B,C): 1,1,1
+   f (from A, 2025-10-09).txt  ->  "one\nA\nthree"
+   f.txt  ->  "one\nB\nthree"
+   g.txt  ->  "g1\ng2"
+
+== same lines edited on 3 devices (3-way clash)
+   settled in 19 ticks, same head everywhere: true, commits 6, merges 2, merge commits built (A,B,C): 2,2,1
+   f (from A, 2025-10-09).txt  ->  "one\nA\nthree"
+   f (from C, 2025-10-09).txt  ->  "one\nC\nthree"
+   f.txt  ->  "one\nB\nthree"
+   g.txt  ->  "g1\ng2"
+
+== different lines of the same file
+   settled in 17 ticks, same head everywhere: true, commits 4, merges 1, merge commits built (A,B,C): 1,1,1
+   f.txt  ->  "ONE\ntwo\nTHREE"
+   g.txt  ->  "g1\ng2"
+
+== edit vs delete
+   settled in 17 ticks, same head everywhere: true, commits 4, merges 1, merge commits built (A,B,C): 1,1,1
+   f.txt  ->  "one\nA\nthree"
+   g.txt  ->  "g1\ng2"
+
+== renamed two ways
+   settled in 17 ticks, same head everywhere: true, commits 4, merges 1, merge commits built (A,B,C): 1,1,1
+   fa.txt  ->  "one\ntwo\nthree"
+   fb.txt  ->  "one\ntwo\nthree"
+   g.txt  ->  "g1\ng2"
+
+== renamed on one device, edited on another (no rename detection)
+   settled in 17 ticks, same head everywhere: true, commits 4, merges 1, merge commits built (A,B,C): 1,1,1
+   f.txt  ->  "one\nB\nthree"
+   fa.txt  ->  "one\ntwo\nthree"
+   g.txt  ->  "g1\ng2"
+
+== file here, folder there
+   settled in 17 ticks, same head everywhere: true, commits 4, merges 1, merge commits built (A,B,C): 1,1,1
+   d (from A, 2025-10-09)  ->  "a file"
+   d/x.txt  ->  "in a folder"
+   f.txt  ->  "one\ntwo\nthree"
+   g.txt  ->  "g1\ng2"
+
+== both create the same new file
+   settled in 17 ticks, same head everywhere: true, commits 4, merges 1, merge commits built (A,B,C): 1,1,1
+   f.txt  ->  "one\ntwo\nthree"
+   g.txt  ->  "g1\ng2"
+   n (from B, 2025-10-09).txt  ->  "B made it"
+   n.txt  ->  "A made it"
+
+== chain A-B-C, ends edit the same lines
+   settled in 16 ticks, same head everywhere: true, commits 4, merges 1, merge commits built (A,B,C): 1,1,0
+   f (from A, 2025-10-09).txt  ->  "one\nA\nthree"
+   f.txt  ->  "one\nC\nthree"
+   g.txt  ->  "g1\ng2"
+
+== ablation: stock-git-like merge commits + naive fold + no dominance rule (3 devices, 3 clashes)
+   settled in null ticks, same head everywhere: false, commits 405, merges 401, merge commits built (A,B,C): 137,139,133
+   f (from A 2, 2025-10-09).txt  ->  "one\nC\nthree"
+   f (from A, 2025-10-09).txt  ->  "one\nA\nthree"
+   f (from C, 2025-10-09).txt  ->  "one\nC\nthree"
+   f.txt  ->  "one\nB\nthree"
+   g.txt  ->  "g1\ng2"
+
+== ablation: deterministic merge commits but no dominance rule
+   settled in 22 ticks, same head everywhere: true, commits 11, merges 7, merge commits built (A,B,C): 4,4,3
+   f (from A, 2025-10-09).txt  ->  "one\nA\nthree"
+   f (from C, 2025-10-09).txt  ->  "one\nC\nthree"
+   f.txt  ->  "one\nB\nthree"
+   g.txt  ->  "g1\ng2"
+
+== ablation: dominance rule but ordinary (non-deterministic) merge commits
+   settled in 17 ticks, same head everywhere: true, commits 6, merges 2, merge commits built (A,B,C): 2,2,1
+   f (from A, 2025-10-09).txt  ->  "one\nA\nthree"
+   f (from C, 2025-10-09).txt  ->  "one\nC\nthree"
+   f.txt  ->  "one\nB\nthree"
+   g.txt  ->  "g1\ng2"

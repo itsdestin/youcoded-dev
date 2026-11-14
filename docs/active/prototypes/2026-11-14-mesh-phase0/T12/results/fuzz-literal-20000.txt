@@ -1,0 +1,22 @@
+coverage {"runs":20000,"withPendingMidRun":18247,"withParkedMidRun":8455,"withRemoval":10909,"withTakeover":1568,"withSplitVersions":7848,"withTailVersion":1157,"withDeleted":5550,"withConcurrentRemovals":560,"withLoserTail":12952}
+{
+ "runs": 20000,
+ "fixed": false,
+ "opts": {
+  "noRemove": false
+ },
+ "exceptions": 0,
+ "runsWithParkedEntries": 8455,
+ "failuresByProperty": {
+  "P8-relation-contradiction": 882,
+  "P3-reply-lost": 4114,
+  "P7-id-vanished": 1380,
+  "P9-pending": 781,
+  "P6-restore": 24
+ }
+}
+P8-relation-contradiction first seeds: [100001,100014,100021,100057,100111]
+P3-reply-lost first seeds: [100003,100014,100016,100017,100018]
+P7-id-vanished first seeds: [100025,100029,100031,100039,100063]
+P9-pending first seeds: [100093,100113,100161,100313,100345]
+P6-restore first seeds: [101743,102176,103214,103769,105513]

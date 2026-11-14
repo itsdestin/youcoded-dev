@@ -1,0 +1,11 @@
+add {"d":0,"n":3}                                                      | d3 sees: host d0
+sync {"a":0,"b":2,"frac":1,"lines":true,"full":true}                   | d3 sees: host d0
+part {"groups":[0,1,2,2]}                                              | d3 sees: host d0
+takeover {"d":2,"why":"off"}                                           | d3 sees: host d0
+sync {"a":2,"b":3,"frac":1,"lines":true,"full":true}                   | d3 sees: host d2
+heal {}                                                                | d3 sees: host d2
+sync {"a":1,"b":3,"frac":1,"lines":false}                              | d3 sees: PENDING(2 candidates)
+part {"groups":[0,1,2,3]}                                              | d3 sees: PENDING(2 candidates)
+takeover {"d":3,"why":"off"}                                           | d3 sees: PENDING(2 candidates)
+heal {}                                                                | d3 sees: PENDING(2 candidates)
+after settle: versions [["main","d2",""]] relation entries created: 4 takeovers: 1

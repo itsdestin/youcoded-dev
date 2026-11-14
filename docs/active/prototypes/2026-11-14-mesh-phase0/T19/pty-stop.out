@@ -1,0 +1,3 @@
+processes in the pty session/group: [('sh', 'same-group', 'sid=4162104'), ('sh', 'same-group', 'sid=4162104'), ('python3', 'pgid=4162109', 'sid=4162104'), ('sleep', 'same-group', 'sid=4162104')]
+after killpg(SIGSTOP) 1 s: {'A': 'frozen', 'B': 'advanced', 'C': 'advanced'}
+typed-while-stopped delivered after CONT: True

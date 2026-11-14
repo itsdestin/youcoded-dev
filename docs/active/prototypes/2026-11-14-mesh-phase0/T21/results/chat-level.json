@@ -1,0 +1,85 @@
+{
+ "tot": {
+  "chats": 1795,
+  "onlyIdenticalOrPrefix": 1784,
+  "hasBookkeepingTail": 5,
+  "hasRealSplit": 5,
+  "hasNativeInPlaceEdit": 2,
+  "hasTornTail": 0,
+  "hasOneContainsOther": 1
+ },
+ "interesting": [
+  {
+   "id": "claude:26d919ff",
+   "tags": [
+    "disk:real-split",
+    "history:real-split"
+   ]
+  },
+  {
+   "id": "claude:3c2f8b3c",
+   "tags": [
+    "history:bytes-differ-same-conversation"
+   ]
+  },
+  {
+   "id": "claude:301cfe19",
+   "tags": [
+    "disk:real-split",
+    "disk:bytes-differ-same-conversation",
+    "history:bytes-differ-same-conversation",
+    "history:real-split"
+   ]
+  },
+  {
+   "id": "claude:5b7f12b0",
+   "tags": [
+    "history:real-split"
+   ]
+  },
+  {
+   "id": "claude:67ab2252",
+   "tags": [
+    "disk:real-split",
+    "history:real-split"
+   ]
+  },
+  {
+   "id": "claude:82b598c4",
+   "tags": [
+    "history:bytes-differ-same-conversation"
+   ]
+  },
+  {
+   "id": "claude:94e763be",
+   "tags": [
+    "history:real-split"
+   ]
+  },
+  {
+   "id": "claude:acb48cfc",
+   "tags": [
+    "disk:bytes-differ-same-conversation",
+    "history:bytes-differ-same-conversation"
+   ]
+  },
+  {
+   "id": "claude:f29dc28e",
+   "tags": [
+    "history:bytes-differ-same-conversation"
+   ]
+  },
+  {
+   "id": "native:85765071",
+   "tags": [
+    "history:native-in-place-edit"
+   ]
+  },
+  {
+   "id": "native:e45bcfaf",
+   "tags": [
+    "history:native-in-place-edit"
+   ]
+  }
+ ]
+}

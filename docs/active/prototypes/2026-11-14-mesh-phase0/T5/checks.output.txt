@@ -1,0 +1,38 @@
+  ok  B.1.1 generator_string (170 bytes)
+  ok  B.1.1 generator g (noble Elligator2)
+  ok  B.1.1 generator g (reference Elligator2 from draft A.5)
+  ok  Elligator2: noble == reference on 2000 random inputs
+  ok  B.1.2 Ya
+  ok  B.1.3 Yb
+  ok  B.1.4 K both ways
+  ok  B.1.5 transcript_ir
+  ok  B.1.5 ISK (both parties, 64 bytes)
+  ok  A.1 prepend_len / lv_cat vectors
+  ok  B.1.10 low-order points: q0..qb exact, abort on u0-u5,u7
+  ok  a malicious low-order Y makes finish() abort
+  ok  different password gives a different ISK
+  ok  RFC 9180 A.2.1 base mode: enc, shared secret path, ct for seq 0 (deterministic ephemeral)
+  ok  HPKE random round trip + tamper / wrong AAD / wrong key rejected
+  ok  CBOR: RFC 8949 Appendix A samples (ints, bytes, text, arrays, maps)
+  ok  CBOR: decoder rejects every non-canonical form
+
+17 checks passed
+  ok  CPace: cpace-ts initiator <-> our responder: same 64-byte ISK
+  ok  CPace: our initiator <-> cpace-ts responder: same 64-byte ISK
+  ok  HPKE: ours seals -> hpke-js opens
+  ok  HPKE: hpke-js seals -> ours opens
+  ok  frame round trip, signer authenticated
+  ok  duplicate (sender, session, counter) is recognised and ignored
+  ok  keeper moves a frame to another group: AEAD associated data catches it
+  ok  keeper changes recipient / generation / counter / kind: all rejected
+  ok  same ciphertext replayed into a different set is rejected
+  ok  a member (holds S) cannot forge a frame in another device's name
+  ok  unknown signer is reported as parkable, not accepted
+  ok  bit flip anywhere in the ciphertext is rejected; junk does not poison the seen-set
+  ok  after a removal: new generation unreadable to the removed device; keygen sealed only to the remaining
+  ok  per-purpose keys are all different, per generation too
+  ok  roster entry: id covers fields, signature covers id; any edit invalidates
+  ok  relay auth: valid; replayed nonce; other room; other relay; non-member; stale
+  ok  DEMONSTRATION: why the sender must NOT persist and restore (session, counter): nonce reuse leaks plaintext
+
+13 checks passed

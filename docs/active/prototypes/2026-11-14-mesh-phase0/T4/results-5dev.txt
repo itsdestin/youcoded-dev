@@ -1,0 +1,29 @@
+  50/200 130s
+  100/200 291s
+  150/200 464s
+  200/200 858s
+{
+ "schedules": 200,
+ "devices": 5,
+ "cfg": {},
+ "failed": 0,
+ "seconds": 858,
+ "avgUserCommits": 48.405,
+ "avgMerges": 62.135,
+ "maxMerges": 233,
+ "mergeWorkPerUserCommit": 1.4783596735874394,
+ "ratioMergesPerUserCommit": {
+  "median": 1.170731707317073,
+  "p95": 2.2318840579710146,
+  "max": 2.588235294117647
+ },
+ "copiesTotal": 4235,
+ "schedulesWithClash": 200,
+ "divergedFlagsTotal": 93,
+ "fakeTipsPending": 266,
+ "settleTicks": {
+  "avg": 22.165,
+  "max": 39
+ },
+ "avgBundleBytes": 8360.617603479592
+}

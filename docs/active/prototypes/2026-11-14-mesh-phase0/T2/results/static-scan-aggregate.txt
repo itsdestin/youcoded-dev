@@ -1,0 +1,120 @@
+
+=== cc-main: files 1364, bytes 7.76 GB, lines 1482543, empty-size files 0
+line contains raw U+2028/2029                  files     4  lines 7
+bad JSON line                                  files     2  lines 20
+empty line                                     files     0  lines 0
+CR at line end                                 files     0  lines 0
+no trailing newline (partial tail)             files     0
+dup uuid                                       files    11  lines 6440
+  dup w/ same length                           files     4  lines 1958
+  dup w/ different length                      files    10  lines 4482
+  dup by type {"system":480,"user":1524,"assistant":2649,"attachment":1787}
+timestamp goes backwards                       files  1322  lines 104581
+  by >1 s                                      files   830  lines 25501
+  by >60 s                                     files   300  lines 8746
+  max backwards (ms) 697530181
+parentUuid points outside file                 files     2  lines 9
+  of which within first 50 lines               files     0  lines 0
+first line is type summary                     files     0
+any summary-type line                          files     0  lines 0
+first line sessionId != file id                files     0
+any line with other sessionId                  files     0  lines 0
+forkedFrom present                             files     0  lines 0
+sidechain lines                                files     0  lines 0
+compact_boundary                               files   196  lines 391
+isCompactSummary                               files   196  lines 391
+  boundary parent: present-before 379 absent 1 later 11 no logicalParent 0
+native context-clear                           files     0  lines 0
+native compact-summary                         files     0  lines 0
+native dropPart tombstone                      files     0  lines 0
+  ending state {"reply-end:end_turn":1268,"reply-end:stop_sequence+apiError+synthetic":17,"mid-reply:prompt":25,"mid-reply:tool-result":9,"reply-end:interrupt":13,"mid-reply:tool-use":5,"empty:":26,"reply-end:stop_sequence+synthetic":1}
+has >=1 reply end                              files  1330  lines 32059
+assistant line with no stop_reason             files    60  lines 134
+  stop_reason counts {"end_turn":31237,"stop_sequence":451,"refusal":6,"max_tokens":6}
+api-error / synthetic reply-end                files   224  lines 452
+interrupt lines                                files   227  lines 359
+  interrupt with promptId                      files   227  lines 359
+turn content after a reply end w/o new prompt  files    68  lines 802
+queue-operation lines                          files   733  lines 32299
+queued_command attachments                     files   542  lines 4288
+meta lines after last reply end                files  1328  lines 108324
+
+=== cc-sub: files 5684, bytes 9.83 GB, lines 966628, empty-size files 0
+line contains raw U+2028/2029                  files    15  lines 25
+bad JSON line                                  files     5  lines 19
+empty line                                     files     0  lines 0
+CR at line end                                 files     0  lines 0
+no trailing newline (partial tail)             files     0
+dup uuid                                       files     4  lines 1237
+  dup w/ same length                           files     3  lines 282
+  dup w/ different length                      files     2  lines 955
+  dup by type {"system":2,"attachment":486,"user":291,"assistant":458}
+timestamp goes backwards                       files  1388  lines 15000
+  by >1 s                                      files   522  lines 3639
+  by >60 s                                     files   177  lines 1680
+  max backwards (ms) 17932892
+parentUuid points outside file                 files    11  lines 22
+  of which within first 50 lines               files     7  lines 7
+first line is type summary                     files     0
+any summary-type line                          files     0  lines 0
+first line sessionId != file id                files  5640
+any line with other sessionId                  files  5676  lines 965430
+forkedFrom present                             files     0  lines 0
+sidechain lines                                files  5676  lines 900635
+compact_boundary                               files     4  lines 6
+isCompactSummary                               files     4  lines 6
+  boundary parent: present-before 6 absent 0 later 0 no logicalParent 0
+native context-clear                           files     0  lines 0
+native compact-summary                         files     0  lines 0
+native dropPart tombstone                      files     0  lines 0
+  ending state {"reply-end:end_turn":3605,"mid-reply:assistant-partial":1023,"mid-reply:tool-result":938,"mid-reply:tool-use":8,"reply-end:stop_sequence+apiError+synthetic":66,"reply-end:interrupt":35,"empty:":8,"mid-reply:prompt":1}
+has >=1 reply end                              files  3800  lines 5001
+assistant line with no stop_reason             files  4625  lines 242265
+  stop_reason counts {"end_turn":4824,"stop_sequence":131,"refusal":7,"max_tokens":1}
+api-error / synthetic reply-end                files   130  lines 131
+interrupt lines                                files    38  lines 38
+  interrupt with promptId                      files    35  lines 35
+turn content after a reply end w/o new prompt  files   405  lines 780
+queue-operation lines                          files     0  lines 0
+queued_command attachments                     files   579  lines 2889
+meta lines after last reply end                files   425  lines 1713
+
+=== native: files 1820, bytes 0.90 GB, lines 326547, empty-size files 0
+line contains raw U+2028/2029                  files     6  lines 6
+bad JSON line                                  files     0  lines 0
+empty line                                     files     0  lines 0
+CR at line end                                 files     0  lines 0
+no trailing newline (partial tail)             files     0
+dup uuid                                       files     0  lines 0
+  dup w/ same length                           files     0  lines 0
+  dup w/ different length                      files     0  lines 0
+  dup by type {}
+timestamp goes backwards                       files     1  lines 1
+  by >1 s                                      files     1  lines 1
+  by >60 s                                     files     0  lines 0
+  max backwards (ms) 1884
+parentUuid points outside file                 files     0  lines 0
+  of which within first 50 lines               files     0  lines 0
+first line is type summary                     files     0
+any summary-type line                          files     0  lines 0
+first line sessionId != file id                files     0
+any line with other sessionId                  files     0  lines 0
+forkedFrom present                             files     0  lines 0
+sidechain lines                                files     0  lines 0
+compact_boundary                               files     0  lines 0
+isCompactSummary                               files     0  lines 0
+  boundary parent: present-before 0 absent 0 later 0 no logicalParent 0
+native context-clear                           files     3  lines 4
+native compact-summary                         files    45  lines 95
+native dropPart tombstone                      files     0  lines 0
+  ending state {"reply-end:turn-complete":1572,"mid-reply:tool-use":22,"mid-reply:tool-result":52,"mid-reply:assistant-thinking":10,"reply-end:user-interrupt":39,"mid-reply:user-message":66,"mid-reply:assistant-text":18,"empty:":41}
+has >=1 reply end                              files  1686  lines 7262
+assistant line with no stop_reason             files     0  lines 0
+  stop_reason counts {}
+api-error / synthetic reply-end                files     0  lines 0
+interrupt lines                                files   141  lines 295
+  interrupt with promptId                      files     0  lines 0
+turn content after a reply end w/o new prompt  files     0  lines 0
+queue-operation lines                          files     0  lines 0
+queued_command attachments                     files     0  lines 0
+meta lines after last reply end                files     0  lines 0

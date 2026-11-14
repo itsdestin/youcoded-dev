@@ -1,0 +1,47 @@
+{
+ "frameBytes": 1048576,
+ "hold": {
+  "frames": 1024,
+  "stored": 1024,
+  "over": 0,
+  "seconds": 4.6,
+  "MBps": 221.9
+ },
+ "stats": {
+  "rowsRead": 5017,
+  "rowsWritten": 3172,
+  "messagesIn": 1025,
+  "messagesOut": 1025,
+  "passIn": 0,
+  "constructedAt": 1794648955187,
+  "totalBytes": 1073741824,
+  "dbSize": 1078571008,
+  "groups": 100
+ },
+ "perHold": {
+  "rowsWritten": 3.1
+ },
+ "overhead": {
+  "payloadBytes": 1073741824,
+  "dbSizeBytes": 1078571008,
+  "overheadPct": 0.4
+ },
+ "fetchOneGroup": {
+  "frames": 11,
+  "MB": 11,
+  "seconds": 0.29,
+  "MBps": 38.1,
+  "rounds": 3
+ },
+ "statsFetch": {
+  "rowsRead": 20,
+  "rowsWritten": 1,
+  "messagesIn": 5,
+  "messagesOut": 17,
+  "passIn": 0,
+  "constructedAt": 1794648955187,
+  "totalBytes": 1073741824,
+  "dbSize": 1078571008,
+  "groups": 100
+ }
+}

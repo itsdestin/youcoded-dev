@@ -1,0 +1,46 @@
+  50/1000 88s
+  100/1000 205s
+  150/1000 256s
+  200/1000 317s
+  250/1000 361s
+  300/1000 400s
+  350/1000 442s
+  400/1000 642s
+  450/1000 700s
+  500/1000 762s
+  550/1000 801s
+  600/1000 846s
+  650/1000 889s
+  700/1000 928s
+  750/1000 964s
+  800/1000 1004s
+  850/1000 1046s
+  900/1000 1086s
+  950/1000 1127s
+  1000/1000 1266s
+{
+ "schedules": 1000,
+ "devices": 3,
+ "cfg": {},
+ "failed": 1,
+ "seconds": 1266,
+ "avgUserCommits": 27.884,
+ "avgMerges": 21.772,
+ "maxMerges": 71,
+ "mergeWorkPerUserCommit": 0.8897934299239707,
+ "ratioMergesPerUserCommit": {
+  "median": 0.76,
+  "p95": 1.1818181818181819,
+  "max": 1.4
+ },
+ "copiesTotal": 6795,
+ "schedulesWithClash": 960,
+ "divergedFlagsTotal": 425,
+ "fakeTipsPending": 1315,
+ "settleTicks": {
+  "avg": 17.915,
+  "max": 35
+ },
+ "avgBundleBytes": 3644.989614176424
+}
+FAIL x1: lost N lines never removed by a user: AN  seeds 892

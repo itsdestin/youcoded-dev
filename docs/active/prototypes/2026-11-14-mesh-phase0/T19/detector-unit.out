@@ -1,0 +1,8 @@
+case                                         monoWall heartbeat either
+real Linux suspend 60 s (mono frozen)        true     true      true
+real suspend, clock that counts sleep        false    true      true
+SIGSTOP 60 s (both advance)                  false    true      true
+busy event loop 5 s stall                    false    true      true
+clock stepped back 10 min by NTP             false    false     false
+clock stepped forward 10 min by NTP          true     true      true
+normal tick                                  false    false     false

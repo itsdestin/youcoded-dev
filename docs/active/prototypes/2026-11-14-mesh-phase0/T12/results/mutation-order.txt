@@ -1,0 +1,18 @@
+coverage {"runs":500,"withPendingMidRun":458,"withParkedMidRun":206,"withRemoval":264,"withTakeover":43,"withSplitVersions":191,"withTailVersion":147,"withDeleted":131,"withConcurrentRemovals":24,"withLoserTail":345}
+{
+ "runs": 500,
+ "fixed": true,
+ "opts": {
+  "noRemove": false
+ },
+ "exceptions": 0,
+ "runsWithParkedEntries": 206,
+ "failuresByProperty": {
+  "P2-agree": 73,
+  "P1-permute": 62,
+  "P7-id-vanished": 33
+ }
+}
+P2-agree first seeds: [8,19,21,26,30]
+P1-permute first seeds: [8,19,21,26,36]
+P7-id-vanished first seeds: [34,36,37,45,91]

@@ -1,0 +1,31 @@
+  50/150 49s
+  100/150 96s
+  150/150 158s
+{
+ "schedules": 150,
+ "devices": 3,
+ "cfg": {
+  "dominance": false
+ },
+ "failed": 9,
+ "seconds": 158,
+ "avgUserCommits": 27.893333333333334,
+ "avgMerges": 38.08,
+ "maxMerges": 148,
+ "mergeWorkPerUserCommit": 1.4665391969407267,
+ "ratioMergesPerUserCommit": {
+  "median": 1.1333333333333333,
+  "p95": 2.526315789473684,
+  "max": 2.8125
+ },
+ "copiesTotal": 1061,
+ "schedulesWithClash": 149,
+ "divergedFlagsTotal": 59,
+ "fakeTipsPending": 172,
+ "settleTicks": {
+  "avg": 23.046666666666667,
+  "max": 57
+ },
+ "avgBundleBytes": 3593.6574242424244
+}
+FAIL x9: merge commits N > N x user commits N  seeds 101,9,136,137,66,19
