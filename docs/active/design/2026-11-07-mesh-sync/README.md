@@ -371,3 +371,14 @@ results: O14, O15.
 - Release: "this should not be staged or phased. we should just fix this all at once and
   swap everyone in a single release. we only have like 5-10 users, so i don't want you to
   overcomplicate this"
+
+## Chat, 2026-11-14
+
+- Pairing a device that is already paired with others JOINS THE TWO SETS; it does not move
+  the one device. This replaces my 2026-11-13 reading, which he rejected: "this sounds
+  worse. i feel like there is no additional difficulty from pairing two \"sets\" of devices
+  as opposed to just pairing a singular new device into an existing \"set\". why would
+  merging the two sets be hard? it seems like that would honestly be the simpler and less
+  convoluted behavior, since hte device being paired would already have the downloaded data
+  from the other sync network and try re-uploading to the new network anyway?"
+- Reinstalls by the existing machine id: "ok". One unstaged release: "ok".

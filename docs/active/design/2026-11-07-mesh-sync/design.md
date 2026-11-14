@@ -785,11 +785,21 @@ which is offline".
   the name on screen belongs to whoever holds the code.
 - The meeting point is on the relay, or on the local network once same-wifi exists. Using
   the relay as a meeting point stores nothing and is separate from using it as a keeper.
-- **Pairing a device that is already paired with others simply moves it.** It leaves its
-  old set and joins the new one as part of the same pairing, with one line saying so. Its
-  former companions stay where they were. There is no feature for joining two whole sets at
-  once and no separate "leave first" step. [chat 2026-11-13: "i feel like we're
-  overthinking/overengineering this"; **My reading** of the simplest behaviour]
+- **Pairing a device that is already paired with others joins the two sets into one.** His
+  words: "there is no additional difficulty from pairing two 'sets' of devices as opposed
+  to just pairing a singular new device into an existing 'set' … it seems like that would
+  honestly be the simpler and less convoluted behavior, since the device being paired would
+  already have the downloaded data from the other sync network". [chat 2026-11-14]
+  - The pairing screen names every device that will end up together ("This joins Laptop
+    and Tablet with Desktop and Phone") before the usual combine-or-cancel step.
+  - Mechanism: the pairing device joins the other set in the ordinary way. It then signs an
+    `add` in the new roster for each of its former companions (it already holds their
+    public keys) and leaves each of them a sealed message, in the old set's mailbox and
+    directly when they next meet: "we have joined this set; here is its secret and roster".
+    A companion that was off moves over when it next comes on. This relies on nothing new:
+    every paired device is already fully trusted (section 8).
+  - Data is combined by the same rules as any pairing (walk-through A step 5). The old
+    set's relay room empties as its devices move and is erased by the 90-day rule.
 - **Leaving.** A device can remove itself. When the roster is empty the relay erases the
   set after a delay. A set no device has connected to for 90 days is erased [D13 Q-4].
 
