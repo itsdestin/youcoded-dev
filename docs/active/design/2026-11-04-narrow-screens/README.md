@@ -90,41 +90,19 @@ name. This was the open "width check" below. Destin decides the fix on the branc
 master's impact, the record of decisions, and the open questions (touch sizing, the rest of
 S-2, route, what happens to the branch). Its answers supersede anything below that they touch.
 
-## Remains, in order
+## Remains, in order (short route, branch-review Q-3)
 
-1. **UX tester run 1** on the decided layout (`scripts/ui-review/ux-tester.md`), at phone width,
-   in a phone browser (`connection=remote`) and as Android (`platform=android`). Triage its findings
-   into `docs/active/reviews/`. This was skipped before the decks because those rounds were for
-   picking options.
-2. **Contract** (`scripts/ui-review/contract-agent.md`, a fresh agent) from the questions deck and
-   rounds 2-4. Destin signs it. He has not yet seen the last two fixes (whole-area click, pencil
-   inside the row) in a deck, and the contract deck is where he sees them.
-3. **Build:**
-   - Make `lights` + `dropdown` + `compact` the real narrow layout, gated on `useNarrowViewport()`.
-   - Delete the switches and every other value (name, drawer, pair, plain, hub, sheet, full), their
-     screens, `PhoneMenuTop`/`PhoneMenuScrim`/`PhoneDrawerFooter`/`PhoneRecent`/`RowTiles`/
-     `DrawerMenuButton` if unused, and the `phone-sheet-in`/`phone-drawer-in` keyframes.
-   - Lower the SessionStrip line budget: it was raised to 2924 for the temporary switches, and
-     `desktop/line-budgets.json` says so.
-   - Then the code reviewer, UX tester run 2, grader and acceptance deck.
-4. **Must change in the build, not just be kept:**
-   - **Pills:** the matching shape is a CSS overlay (`.status-row-uniform .border` in
-     `globals.css`). Build every pill from one shared piece instead.
-   - **Pill height:** follow `fingerSized()` like the chips (the overlay is 2rem now because the
-     row only exists in a narrow window, where the chips are always `h-8`).
-   - **Icons:** `ShieldIcon`, `PaletteIcon` and `ComputerIcon` are local to `StatusBar.tsx` and
-     belong in `Icons.tsx`.
-   - **Name stack:** the clickable stack is a `div` around real buttons. The arrow stays the
-     keyboard's way in, so give the stack a proper button role or restructure it.
-   - **Width check: FAILED (2026-11-11).** In a narrow desktop window the + button overlaps the
-     name (`chat#window-decided`). Fix per the branch-review deck's D-1 answer.
-5. **Not designed yet, still in scope:**
-   - Questions S-2: side-by-side screens become list → detail on phones.
-   - Questions S-3: touch sizing. Destin rejected "always show anything that appears on hover".
-     Master's `fingerSized()` rule may settle it: branch-review deck Q-1.
-   - S-2 is partly done on master (Pages, Resume). Whether the rest stays here or gets its own
-     card: branch-review deck Q-2.
-6. Chat message width (questions Q-8) belongs to another session, not this work.
+1. **Build it for real:** make `lights` + `dropdown` + `compact` the narrow layout, gated on
+   `useNarrowViewport()` (window-buttons variant on `getCapabilities().nativeWindows`); delete the
+   switches, every other option (name, drawer, pair, plain, hub, sheet, full), their screens,
+   `PhoneMenuTop`/`PhoneMenuScrim`/`PhoneDrawerFooter`/`PhoneRecent`/`RowTiles`/`DrawerMenuButton`/
+   `PhoneCount` if unused, the `phone-sheet-in`/`phone-drawer-in` keyframes; lower the SessionStrip and
+   globals.css line budgets.
+2. **While building:** pills from one shared piece instead of the `.status-row-uniform` CSS overlay;
+   `ShieldIcon`/`PaletteIcon`/`ComputerIcon` into `Icons.tsx`; the name stack a proper button.
+3. `verify.sh`, then a final deck of the built thing. No automatic reviewers unless Destin asks.
+4. Rebase onto master first: master moved after 2026-11-11 (hover hints #135 touched HeaderBar,
+   SessionStrip, StatusBar).
 
 ## Before resuming
 
