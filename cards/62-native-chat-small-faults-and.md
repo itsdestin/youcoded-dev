@@ -15,8 +15,8 @@ vision: chat.converse.native, chat.converse.queue
 work: session/fix-anthropic-many-image-brick, session/chat-followups
 ---
 Progress
-Done: 2026-11-13: per Destin the file chips now sit in the same line after the message text (commit 67ec8e30b); long messages truncate their words so chips stay visible; on a phone they may drop under the words.
-Next: Destin reviews the new pictures, then merge.
+Done: Landed 2026-11-13 (youcoded PR #747, 320b0bcaa): files attached to a waiting message show as chips in line after the text; on phones they drop underneath.
+Next: Remaining faults on this card are untouched.
 Blocked: nothing recorded.
 
 Chats
