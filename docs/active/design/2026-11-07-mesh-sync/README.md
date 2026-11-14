@@ -382,3 +382,18 @@ results: O14, O15.
   convoluted behavior, since hte device being paired would already have the downloaded data
   from the other sync network and try re-uploading to the new network anyway?"
 - Reinstalls by the existing machine id: "ok". One unstaged release: "ok".
+
+## 2026-11-14: end-to-end contradiction read, and a fifth review
+
+Destin asked for one clean read-through for contradictions. A fresh reader and the
+designing session each read the whole document; findings merged and applied (stale wording
+left by earlier edits: "named testers", the restore rule stated two ways, the clash rule
+called "unchanged", walk-through D against `decide`, risk numbering, test order, dates).
+He also pasted a fifth review. Applied as engineering: at identical copies the device that
+last ran a chat hosts it; a hold on every file change and command from sleep until the
+wake check; removal never cancels work another device already holds (`witness`); the
+clash copy's name is read from the commit so every device writes the same name; mutual
+removal settled by seniority only; the mesh id is a hash of the machine id; delete tells
+the relay to drop; a chat over the relay limit travels device to device; T21 (read-only
+comparison of real chat copies) and a run-first list; a trial on his real devices before
+release, on his say. Left for him: O16 (chats in folders that are not synced projects).
