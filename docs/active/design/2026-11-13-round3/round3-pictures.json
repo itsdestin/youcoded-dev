@@ -1,0 +1,325 @@
+{
+ "title": "Round 3: nine visible changes to keep, remove or choose",
+ "key": "round-three-pictures",
+ "out": "round3-pictures.review.html",
+ "images": "images/round3-pictures",
+ "runs": {
+  "before": "runs/toast-before",
+  "after": "runs/toast-after",
+  "pbefore": "runs/toastphone-before",
+  "pafter": "runs/toastphone-after",
+  "cbefore": "runs/colour/before",
+  "cafter": "runs/colour/after",
+  "lbefore": "runs/look/before",
+  "lafter": "runs/look/after",
+  "flat": "runs/flat"
+ },
+ "themes": [
+  "meadow-mist"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "unreach-a": [
+   "round3",
+   "unreach-a",
+   "390x200+0+0"
+  ],
+  "unreach-b": [
+   "round3",
+   "unreach-b",
+   "390x200+0+0"
+  ],
+  "chip-a-desk": [
+   "round3",
+   "chip-a-desk",
+   "780x265+110+10"
+  ],
+  "chip-b-desk": [
+   "round3",
+   "chip-b-desk",
+   "780x265+110+10"
+  ],
+  "chip-c-desk": [
+   "round3",
+   "chip-c-desk",
+   "780x265+110+10"
+  ],
+  "chip-a-phone": [
+   "round3",
+   "chip-a-phone",
+   "390x310+0+0"
+  ],
+  "chip-b-phone": [
+   "round3",
+   "chip-b-phone",
+   "390x310+0+0"
+  ],
+  "chip-c-phone": [
+   "round3",
+   "chip-c-phone",
+   "390x310+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "R3-1",
+   "surface": "Chat",
+   "path": "The model name chip under the message box, on five light community themes",
+   "crop": "chat@240x40+440+853",
+   "highlight": {
+    "box": [
+     10,
+     15,
+     55,
+     70
+    ]
+   },
+   "runs": [
+    "cbefore",
+    "cafter"
+   ],
+   "labels": {
+    "cbefore": "Before",
+    "cafter": "After"
+   },
+   "themes": [
+    "kuromi-dreamer",
+    "cotton-candy-sky",
+    "meadow-mist",
+    "strawberry-kitty",
+    "morning-rounds"
+   ],
+   "headline": "Provider brand colours are now darkened where needed so the model name is readable on five light themes.",
+   "changed": "The model chip uses each provider's brand colour. On Kuromi Dreamer, Cotton Candy Sky, Meadow Mist, Strawberry Kitty and Morning Rounds, the app now nudges that colour just enough to be readable on that theme. The built-in themes are skipped and do not change. Colours failing the readability mark: 27 before, 0 after.",
+   "notice": "The model name (Sonnet here) is a little darker and easier to read on these five themes. Use the theme buttons above to flip between them. Other providers' chips change the same way.",
+   "risk": "A brand colour is slightly darker on these themes than on others (Kuromi Dreamer most, Morning Rounds least). Seen on practice data, not on a real chat with every provider.",
+   "measured": "27 failing colours before, 0 after (numbers in look/colour/numbers.txt)"
+  },
+  {
+   "id": "R3-2",
+   "surface": "Games",
+   "path": "Games panel when the online scores cannot be loaded (practice failure)",
+   "crop": [
+    {
+     "crop": "chat/games#scores-failed@430x300+1005+40",
+     "label": "Games list"
+    },
+    {
+     "crop": "chat/games/flappy#scores-failed@430x300+1005+40",
+     "label": "Inside Flappy"
+    }
+   ],
+   "runs": [
+    "lbefore",
+    "lafter"
+   ],
+   "labels": {
+    "lbefore": "Before",
+    "lafter": "After"
+   },
+   "headline": "When online scores fail to load, the games panel now says so instead of showing a blank best score.",
+   "changed": "Before, a failed online read looked like you had no scores: a dash for your best and nothing else. Now the list shows a red notice with the reason and Try again, and inside a game \"Your best\" reads \"Not loaded\" with a notice beside it. Scores saved on this computer still show.",
+   "notice": "You can tell \"no score yet\" from \"couldn't load it\". The red text says Mock failure only because the practice app fakes the reason.",
+   "risk": "The notice takes some room at the top of the panel until you press Try again. Seen on practice data."
+  },
+  {
+   "id": "R3-3",
+   "surface": "Marketplace",
+   "path": "Marketplace when the install and like counts fail to load (practice failure)",
+   "crop": "marketplace/skills#counts-failed@1440x260+0+60",
+   "runs": [
+    "lbefore",
+    "lafter"
+   ],
+   "labels": {
+    "lbefore": "Before",
+    "lafter": "After"
+   },
+   "headline": "When the install and like counts fail to load, the marketplace now tells you instead of quietly hiding them.",
+   "changed": "Before, a failed counts read just left the numbers off the cards. Now a notice under the filter bar says the counts could not load, with Try again. The list itself still shows.",
+   "notice": "A thin message appears under the filter bar and pushes the cards down by one row.",
+   "risk": "The notice is a thin strip, not the larger red box used elsewhere; the word after the colon (down) is the practice app's fake reason. Seen on practice data."
+  },
+  {
+   "id": "R3-4",
+   "surface": "Projects",
+   "path": "A project's Conversations tab when its conversations cannot be loaded (practice failure)",
+   "crop": "projects/conversations#load-failed@1100x300+170+50",
+   "runs": [
+    "lbefore",
+    "lafter"
+   ],
+   "labels": {
+    "lbefore": "Before",
+    "lafter": "After"
+   },
+   "headline": "The project header now shows a dash, not \"0 conversations\", when the conversation list failed to load.",
+   "changed": "Last round the list itself started saying it could not load. The header above it still said \"0 conversations\" and \"active never\". Now the header, the tab count and the active line all show a dash.",
+   "notice": "Nothing in the header claims you have zero conversations when the truth is unknown.",
+   "risk": "Seen on practice data. The red text says Mock failure only because the practice app fakes the reason."
+  },
+  {
+   "id": "R3-5",
+   "surface": "Settings",
+   "path": "Settings, Backup & sync, pressing Back up all now when it fails (practice failure)",
+   "crop": "settings/sync#back-up-failed@panel",
+   "runs": [
+    "lbefore",
+    "lafter"
+   ],
+   "labels": {
+    "lbefore": "Before",
+    "lafter": "After"
+   },
+   "headline": "A failed backup action now shows a notice at the top of Backup and sync, with Try again.",
+   "changed": "Seven buttons in this popup used to fail silently (Back up all now, and similar). A failure now puts a red notice with the reason at the very top of the popup. This picture shows one of the seven.",
+   "notice": "After pressing a button that fails, the popup shows \"Couldn't back up everything\" with Try again. Before, nothing happened.",
+   "risk": "The notice is at the top, so on a short window it may be scrolled out of sight while the button you pressed is lower down (question 4 on the questions deck). Seen on practice data."
+  },
+  {
+   "id": "R3-6",
+   "surface": "Chat",
+   "path": "Any notice from the app (here: the damaged-settings notice), on a computer",
+   "crop": "dev/toast#settings-repaired@1150x230+150+670",
+   "runs": [
+    "before",
+    "after"
+   ],
+   "labels": {
+    "before": "Before",
+    "after": "After"
+   },
+   "headline": "Notices now sit just above the message box and quick chips, instead of covering the chips.",
+   "changed": "Every small notice the app shows (not only this one) now rests about 60 pixels higher, above the quick chips. This one also now shows on a phone connected to your computer. It is a layout change for ALL notices.",
+   "notice": "The notice no longer covers the Draft Text chip and other chips. It sits a little higher than you are used to, in one wide row.",
+   "risk": "It now covers a bit more of the chat above the message box. Every notice in the app moves, so this is a yes to all of them."
+  },
+  {
+   "id": "R3-6b",
+   "surface": "Phone",
+   "path": "The same notice, at phone width",
+   "crop": "dev/toast#settings-repaired@390x520+0+324",
+   "runs": [
+    "pbefore",
+    "pafter"
+   ],
+   "labels": {
+    "pbefore": "Before",
+    "pafter": "After"
+   },
+   "headline": "On a phone, notices now use the full width instead of a tall narrow column.",
+   "changed": "At phone width the old notice shrank to a narrow column that ran down over the chat. It now spans the screen width above the message box and chips.",
+   "notice": "The notice is three or four lines wide, not a tall strip of one word per line.",
+   "risk": "Shown in a narrow computer window, not on a real phone. The \"Show old copy\" button is hidden on phones and Android, because the old file is on the computer."
+  },
+  {
+   "id": "R3-6c",
+   "surface": "Chat",
+   "path": "The same notice while the terminal view is open",
+   "crop": "dev/toast#settings-repaired-terminal@1150x200+150+700",
+   "runs": [
+    "before",
+    "after"
+   ],
+   "labels": {
+    "before": "Before",
+    "after": "After"
+   },
+   "headline": "In the terminal view the notice keeps its old spot, because the message box there does nothing.",
+   "changed": "The terminal view has no real message box or chips, so the notice cannot sit above them. It stays near the bottom, as before, and is now the same wide row as in the chat view.",
+   "notice": "Nothing jumps or goes off screen in the terminal view. The notice is wider than before.",
+   "risk": "A view with an odd message box could still put a notice in a slightly odd spot. Only the terminal view was pictured."
+  },
+  {
+   "id": "R3-7",
+   "surface": "Chat",
+   "path": "Right-clicking a picture in a chat",
+   "crop": "chat/menu/image@460x330+0+110",
+   "runs": [
+    "after"
+   ],
+   "new": true,
+   "headline": "Right-clicking a picture now offers Copy image, Save image as, Copy image address and Ask about this.",
+   "changed": "You chose these four items. Copy and Save work only for pictures that come from a website, because the computer refuses every other kind. A picture from your own files or pasted shows only Ask about this. On a phone, Save is hidden, as for file chips.",
+   "notice": "A small menu opens at the pointer. This picture came from a web address; a local picture shows just the last row.",
+   "risk": "The real save window and the real clipboard were NOT tried on a real computer, only by tests and this picture. Windows and Mac were not tried."
+  },
+  {
+   "id": "R3-8",
+   "surface": "Phone",
+   "path": "The strip above the message box after about 20 seconds without an answer from the computer",
+   "headline": "Which wording should the phone show after 20 seconds of silence from your computer?",
+   "notice": "The strip it replaces at 20 seconds used to say your draft is kept and to press Send again. Nothing sends by itself after a drop.",
+   "risk": "Both are shown in a practice page, not on a real phone. Neither changes what happens, only what you read.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Your sentence alone",
+     "crop": "unreach-a",
+     "summary": "\"Can't reach your computer. It may be asleep or off. YouCoded will keep trying.\" Exactly as built. Short, but the old reassurance about your draft is gone."
+    },
+    {
+     "id": "b",
+     "label": "Plus the draft line",
+     "crop": "unreach-b",
+     "summary": "Your sentence, then the smaller line already used elsewhere: \"Your draft is kept. Press Send again once you're reconnected.\" Recommended: after a drop, nothing sends by itself, so you should be told what to do."
+    }
+   ]
+  },
+  {
+   "id": "R3-9",
+   "surface": "Chat",
+   "path": "Tapping a quick chip (Inbox, Journal, ...) while the message box already has words in it",
+   "headline": "What should a quick chip do when you have already typed something in the message box?",
+   "notice": "TODAY a chip silently replaces what you typed, with no way back. Each design below fixes that. With an empty box nothing changes in any of them.",
+   "risk": "Mock-ups on a practice page, not wired into the app. C changes the text before you answer, so Undo must be easy to find; B needs two taps every time; A adds one strip row above the box.",
+   "variants": [
+    {
+     "id": "strip",
+     "label": "A: strip above box",
+     "crop": [
+      {
+       "crop": "chip-a-desk",
+       "label": "Computer"
+      },
+      {
+       "crop": "chip-a-phone",
+       "label": "Phone"
+      }
+     ],
+     "summary": "A slim strip above the box asks Replace or Add to end, with a close button. Your words wait until you answer. Costs one extra tap every time; you said you are unsure about this look."
+    },
+    {
+     "id": "menu",
+     "label": "B: menu at chip",
+     "crop": [
+      {
+       "crop": "chip-b-desk",
+       "label": "Computer"
+      },
+      {
+       "crop": "chip-b-phone",
+       "label": "Phone"
+      }
+     ],
+     "summary": "A small two-row menu opens right at the chip: Replace what I typed, or Add to the end. Second choice. Same look as right-click, but still a tap every time."
+    },
+    {
+     "id": "undo",
+     "label": "C: replace + Undo",
+     "crop": [
+      {
+       "crop": "chip-c-desk",
+       "label": "Computer"
+      },
+      {
+       "crop": "chip-c-phone",
+       "label": "Phone"
+      }
+     ],
+     "summary": "The chip replaces your words at once, and a notice offers Undo or Add to it instead. Recommended: no extra tap in the common case, and today's silent replace gets a way back."
+    }
+   ]
+  }
+ ]
+}
