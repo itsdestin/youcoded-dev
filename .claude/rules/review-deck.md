@@ -39,17 +39,17 @@ verify:
 Contract and Acceptance decks are retired (`feature-flow.md`). Several designs of one thing are ONE Choice slide.
 
 ## One growing deck per feature
-**Invariant:** `"grows": true` (`templates/growing.json`): one spec per feature, re-built each round; answered topics are cards under "Answered"; a change he asked for needs `reopened` or `resolved`. The deck is AT one `"stage"`; earlier-stage pages are a read-only record, never tabs, and an open topic there is refused. **Why:** "not a sticky note" (rounds 1, 8, 10); "we're not editing prior sections" (11). **Guard:** `test_grows.py`.
+**Invariant:** `"grows": true` (`templates/growing.json`): one spec per feature, re-built each round; answered topics sit in one "Previously answered" card, each drawn as its original card, locked, with every round's answer (`answered` may be a list of `{round, given}`); a change he asked for needs `reopened` or `resolved`. The deck is AT one `"stage"`; a finished stage is opened from its name in the stage line (marked Finished, no Reopen); an open topic there is refused. A page is a heading and ONE line (max 160 characters); no question numbers or "page N of M". A title, row line or page line citing a round or step id is refused: say it plainly, put the source in `more`. **Why:** "sticky note" (8); "not editing prior sections" (11); "wouldn't know off the top of my head" (12). **Guard:** `test_grows.py`, `deck-render.test.mjs`.
 
 ## Lists: one kind of row per card
 **Invariant:** a words step with `calls` is a list of ONE kind, named at its head: facts
 (`context: true`: no pencils, never answered or counted), his to change (a tick and a pencil per row,
 no status words; a row he neither ticked nor changed is "not looked at", never approved), or results (every row a `result`; run/skip checks carry
 `more`). Mixed lists are refused. No "Details" fold: a row's `trail` is plain lines above its
-words, `more` labelled lines below, `reuse` behind an (i). `picture`/`before` are tiles in an
-Attachments card that open the popup (true size, comments at the right). `state` is a group
-heading, never a badge. A pencil pressed again keeps the comment; the bin removes it. Question
-decks end each page with a comment box. A re-served deck of the same build reopens with his answers.
+words, `more` behind a small More (growing decks) or labelled lines below, `reuse` behind an (i).
+`picture`/`before` are Attachments tiles.
+`state` is a group heading. A pencil pressed again keeps the comment; the bin removes it. Each page
+ends with a comment box. A re-served deck of the same build reopens with his answers.
 **Why:** "why is it the only row in this card that has the… chip?" (round 8); round 9, K-1, V-1,
 Q-3, Q-4. **Guard:** `test_rethink.py`, `test_serve.py`, `deck-render.test.mjs`.
 
@@ -59,19 +59,13 @@ anything that runs and framed without scripts; `liveScreen` adds Use it / Edit w
 were "terrible" (2026-11-10). **Guard:** `deck-render.test.mjs`, `freeze.test.mjs`.
 
 ## A slide decides, not the deck
-**Invariant:** `runs`/`labels`, `"pick": "several"`, `"answer": "words"` sit on the SLIDE;
-`"stage"` checks that stage's slide exists and forbids nothing. **Why:** deck-level shapes split
-one ask across decks. **Guard:** `test_spec.py`, `test_words.py`.
+**Invariant:** `runs`/`labels`, `"pick": "several"`, `"answer": "words"` sit on the SLIDE. **Why:** deck-level shapes split one ask across decks. **Guard:** `test_spec.py`, `test_words.py`.
 
 ## Question decks are pages; a question has four fields
-**Invariant:** questions share one page until a marker (`{"id", "page", "intro"}`). Each carries `today`, `problem`, `proposal`, `options[]` with `pros`, `cons`,
-at most one `recommended: true`; inline "Today: …" is refused. Every Today says, behind its (i),
-how and when it was checked (`checked`). **Why:** stale Todays were the worst fault. **Guard:** `test_words.py`.
+**Invariant:** questions share one page until a marker (`{"id", "page", "intro"}`). Each carries `today`, `problem`, `proposal`, `options[]` (`pros`, `cons`, at most one `recommended`); inline "Today: …" is refused. Every Today says behind its (i) how it was checked (`checked`). **Why:** stale Todays were the worst fault. **Guard:** `test_words.py`.
 
 ## Look at it before he does
-**Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve` (answered
-decks: `--no-build`); paste the printed `[deck] http://…` as the turn's last line. An edit under
-`deck/` ships only after `selfie` has shown him before and after. **Why:** four bad decks in a day. **Guard:** `test_cli.py`.
+**Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve` (answered decks: `--no-build`); paste the printed link as the turn's last line. An edit under `deck/` ships only after `selfie` shows him before and after. **Why:** four bad decks in a day. **Guard:** `test_cli.py`.
 
 ## Themes and pictures
 **Invariant:** never hand-order `themes` (the deck opens on his app's theme; `--theme` overrides,

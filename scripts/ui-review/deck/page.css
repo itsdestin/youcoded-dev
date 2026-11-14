@@ -904,14 +904,14 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
    the questions?"; "What section of the deck is this on?"). An answered topic is a compact, quiet card; a topic's past is one plain
    muted line with a text link; the stage is a plain progress indicator, not tabs. All on the deck's own colours and type. */
 .answeredgrp{gap:10px}
-.anscard{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well)}
+.prevtopic{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well)}
 .anshead{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
 .anstitle{margin:0;font:500 13px/1.35 var(--font);color:var(--fg)}
 .ansround{flex:none;font-size:12px;color:var(--fg-muted);white-space:nowrap}
-.ansline,.anscard p{margin:0;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
+.ansline,.prevtopic p{margin:0;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
 .youlabel{color:var(--fg-muted)} .ansval{color:var(--fg)}
-.anscard .decided{margin:0;font-size:12.5px;line-height:1.5;font-style:italic;color:var(--fg-2)}
-.anscard .plainrows{margin:0;padding-left:18px;font-size:12px;line-height:1.5;color:var(--fg-2)}
+.prevtopic .decided{margin:0;font-size:12.5px;line-height:1.5;font-style:italic;color:var(--fg-2)}
+.prevtopic .plainrows{margin:0;padding-left:18px;font-size:12px;line-height:1.5;color:var(--fg-2)}
 .ansacts{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px}
 .revealbody{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid var(--edge)} .revealbody[hidden]{display:none}
 .tlink{margin:0;padding:2px 0;border:0;background:none;font:inherit;font-size:12px;color:var(--link);font-weight:500;cursor:pointer;min-height:24px}   /* WHY no underline: round 7, "we don't use… the linked underline text" (pinned by test_rethink); the link colour and pointer say it is pressable */
@@ -921,26 +921,60 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
 .pastline .revealbody{margin-top:6px;padding:0;border:0;gap:4px} .pastline .story{margin:0}
 .growact{display:flex;justify-content:flex-end}
 .growact[hidden]{display:none}
-.recordbanner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;margin-bottom:14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--inset)}
-.recordbanner p{margin:0;font-size:13px;color:var(--fg)}
-.recpage{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
-.stagehead{display:flex;align-items:baseline;gap:10px}
-.recstage{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-muted)}
-.rectitle{margin:0;font:600 15px/1.3 var(--font);color:var(--fg)}
-.recpage .intro{margin:0;font-size:12.5px;color:var(--fg-2)}
-/* The header while the record is open: nothing to page through, count or send. */
-body.recordview #controls,body.recordview .top .nav,body.recordview .top .count,body.recordview #done,body.recordview #notesbtn,body.recordview #histbtn{display:none}
 /* The stage indicator: plain words, no box, nothing to press except the quiet link. */
 .stagerow{flex:none;padding:6px 20px;background:var(--panel);border-bottom:1px solid var(--edge)} .stagerow:has(.stagebar[hidden]){display:none}
 .stagebar{flex:1;display:flex;align-items:center;gap:12px;min-width:0} .stagebar[hidden]{display:none}
-.stagebar .recordlink{margin-left:auto}
-.stageflow{display:inline-flex;align-items:center;gap:4px;margin:0;padding:0;list-style:none;font-size:12px;white-space:nowrap}
-.stageflow li{padding:3px 9px;border-radius:999px;color:var(--fg-muted)}
-
+.stageflow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0;padding:0;list-style:none;font-size:12px}
+.stageflow li{color:var(--fg-muted);white-space:nowrap}
+.stageflow li>span,.stageflow li>.stagebtn{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px}
+/* WHY (Destin, round 11: "i should be able to just click back into understanding/earlier stages, with clearer indications that things are
+   resolved already"): a finished stage has a small check and is pressable; the stage the deck is at is bold; later ones are dimmed and dead. */
 .stageflow li.done{color:var(--fg-2)}
-.stageflow li.on{background:var(--inset);color:var(--fg);font-weight:600}
+.stageflow li.on{color:var(--fg);font-weight:600}
+.stageflow li.viewing>*{background:var(--inset);color:var(--fg)}
 .stageflow li.later{opacity:.5}
-.stagetext,.stagecompact{font-size:11px;color:var(--fg-muted);white-space:nowrap}
-.stagecompact{display:none}
-@media (max-width:900px){.stageflow,.stagetext{display:none} .stagecompact{display:inline}}
+.stagebtn{font:inherit;border:0;background:none;color:inherit;font-weight:inherit;cursor:pointer;min-height:24px}
+.stagebtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+@media (hover:hover){.stagebtn:hover{background:var(--inset);color:var(--fg)}}
+.stagetick{width:12px;height:12px;flex:none;color:var(--fg-muted)}
+@media (max-width:700px){.stagebtn{min-height:32px}}
 .chip .roundtag{margin-left:10px;padding-left:10px;border-left:1px solid currentColor;color:inherit;opacity:.7;font-size:11px;white-space:nowrap}
+
+/* ── Round 12 (Destin's round-11 answers) ───────────────────────────────────────────────────
+   Header: "the header still re-sizes/re-arranges itself when clicking between pages, i think we should drop 'page 3 of 3'". On a deck of pages the
+   page names itself below, so the header has only the bars at the left and the filled Submit button at the right; the saved note keeps its space
+   even when empty so nothing slides when it appears. */
+body[data-layout="pages"] .top .where{display:none}
+body[data-layout="pages"] .nav{justify-content:flex-start}
+body[data-grows] #count{display:none}
+body[data-grows] .saved{min-width:64px;text-align:right}
+body[data-grows] .saved[hidden]{display:inline-block;visibility:hidden}
+/* The page's own heading: a real title, then ONE plain line saying what he is deciding here. No box. */
+.pagehead{display:flex;flex-direction:column;gap:6px;margin-bottom:-10px}
+.ptitlerow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ptitle{margin:0;font:600 22px/1.25 var(--font);color:var(--fg);letter-spacing:0}
+.fintag{padding:2px 9px;border-radius:999px;font:500 11px/1.5 var(--font);color:var(--fg-2);background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.pagehead .intro{margin:0;font-size:14px;line-height:1.5;color:var(--fg-2)}
+/* Previously answered: a top-level card headed like a "Yours to change" list (small label, title, count at the right). */
+.pages .prevgrp{position:relative;display:flex;flex-direction:column;gap:12px;padding:14px 16px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg)}
+.pages .prevgrp>.qnum{margin:0 0 -4px;display:flex;font:500 12px/1 var(--font);color:var(--fg-faint)}
+.pages .prevgrp>.qh{margin:0;font-size:15px;font-weight:500;line-height:1.35}
+.prevn{position:absolute;top:12px;right:14px}
+.prevlist{display:flex;flex-direction:column;gap:10px}
+.prevtopic{gap:8px}
+.prevtopic .anshead{align-items:flex-start}
+.prevround{display:flex;flex-direction:column;gap:4px} .prevround+.prevround{padding-top:8px;border-top:1px solid var(--edge)}
+.roundlabel{font-weight:600;color:var(--fg-muted)}
+.bodynote{font-size:12px;color:var(--fg-muted)}
+/* The opened card is the live card, locked: same pieces, nothing to press or type. */
+.prevbody{gap:10px}
+.pages article.q.prev{background:none;border:0;padding:0;gap:10px}
+.prev .ans,.prev .iconbtn,.prev .card.variant,.prev .note,.prev .callt,.prev .ans-write,.prev .markx{pointer-events:none;cursor:default}
+.prev .card.variant{cursor:default}
+.prev .qrow{justify-content:flex-start}
+/* A row's extra lines, behind its More link. */
+.revealbody.rowmore{padding-top:4px;border-top:0;gap:4px}
+.rowmore p{margin:0;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
+.rowref{display:block;font-style:normal;font-size:12px;color:var(--fg-muted)}
+/* A phone: the four stage names fit one line (smaller type, tighter pills). */
+@media (max-width:700px){.stageflow{font-size:11px;gap:0} .stageflow li>span,.stageflow li>.stagebtn{padding:3px 6px;gap:3px}}

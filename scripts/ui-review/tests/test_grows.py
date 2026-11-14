@@ -246,6 +246,71 @@ class Grows(unittest.TestCase):
                   open(os.path.join(self.tmp, 'x.walkthrough.after.answers.20261102.json'), 'w'))
         self.assertEqual(check_gate(os.path.join(self.tmp, 'x.walkthrough.json'))[0], [])
 
+    # round 12 (Destin's round-11 answers): a topic answered in several rounds keeps every round; what he is asked must stand on its own
+    def rows_step(self, **kw):
+        return {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', **kw,
+                'calls': kw.get('calls') or [{'id': 'r1', 'call': 'One row.', 'why': 'Because it helps.'}, {'id': 'r2', 'call': 'Two row.', 'why': 'Because.'}]}
+
+    def test_an_answer_in_several_rounds_keeps_each_round_oldest_first_with_his_saved_answer(self):
+        st = base_spec()
+        st['steps'][1]['answered'] = [{'round': 'Round 2', 'answer': 'Something else', 'notes': ['first thoughts']},
+                                      {'round': 'Round 5', 'given': {'v': 'pick', 'pick': 'b', 'note': 'a long note ' * 30, 't': 1, 'seconds': 9}}]
+        st['steps'][2]['answered'] = {'round': 'Round 1', 'answer': 'Yes'}
+        spec = load_spec(put(self.tmp, st))
+        self.assertEqual(validate(spec)[0], [])
+        g = [s for s in deck_data(spec, {})['steps'] if s['id'] == 'Q-1'][0]['grow']
+        self.assertEqual([e['round'] for e in g['story']], ['Round 2', 'Round 5'])
+        self.assertEqual((g['round'], g['answer']), ('Round 5', 'Second'))
+        self.assertEqual(g['story'][1]['notes'], ['a long note ' * 30 and ('a long note ' * 30).strip()])   # in full, never cut
+        self.assertEqual(g['given'], {'v': 'pick', 'pick': 'b', 'note': 'a long note ' * 30})              # exactly as saved, minus the timing
+
+    def test_a_tick_or_change_list_answered_by_hand_says_how_many_rows_were_ticked(self):
+        st = base_spec(); st['steps'][1] = self.rows_step(answered=[{'round': 'Round 3', 'given': {'v': 'other', 'ok': {'r1': True}, 'changes': {'r2': 'no'}}}])
+        spec = load_spec(put(self.tmp, st))
+        self.assertEqual(validate(spec)[0], [])
+        g = [s for s in deck_data(spec, {})['steps'] if s['id'] == 'L-1'][0]['grow']
+        self.assertEqual((g['ticked'], g['rows']), (1, 2))
+        self.assertEqual(g['story'][0]['ticked'], 1)
+
+    def test_an_answered_list_needs_a_round_and_an_answer(self):
+        st = base_spec(); st['steps'][1]['answered'] = [{'round': 'Round 1'}]
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'round and answer are required text')
+        st['steps'][1]['answered'] = []
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'at least one round')
+
+    def test_a_later_answers_file_round_is_added_after_the_hand_written_ones(self):
+        answers(self.tmp, '3', {'Q-1': {'v': 'pick', 'pick': 'a'}})
+        st = base_spec(); st['steps'][1]['answered'] = [{'round': 'Round 1', 'answer': 'Yes'}]
+        g = [s for s in deck_data(load_spec(put(self.tmp, st)), {})['steps'] if s['id'] == 'Q-1'][0]['grow']
+        self.assertEqual([e['round'] for e in g['story']], ['Round 1', 'Round 1'])   # (hand round 1, then the file's first round: the author numbers them)
+
+    def test_an_open_row_may_not_point_at_a_round_or_a_step_number(self):
+        for field, bad in (('call', 'Round 7 asked for this.'), ('call', 'See rounds 6-7.'), ('why', 'Same as R-1.'), ('why', 'You said so in round 3.')):
+            st = base_spec(); st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', field: bad}])
+            errs = validate(load_spec(put(self.tmp, st)))[0]
+            self.has(errs, 'say it in plain words here and put where it came from in "more"')
+            self.has(errs, 'L-1/r1')
+
+    def test_the_title_and_the_page_intro_may_not_cite_either(self):
+        st = base_spec(); st['steps'][1]['headline'] = 'The Q-3 idea again?'
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'the title says "Q-3"')
+        st = base_spec(); st['steps'][0]['intro'] = 'What you said in round 4.'
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'the page intro says "round 4"')
+
+    def test_background_lines_and_answered_topics_may_cite_rounds(self):
+        st = base_spec()
+        st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', 'more': 'Asked in round 7 (R-1).'}], past='You asked in round 3.',
+                                        trail=[{'round': 'Round 3', 'built': 'x'}], checked='Read round 4.')
+        st['steps'][2]['headline'] = 'Round 4 said Q-9?'
+        st['steps'][2]['answered'] = {'round': 'Round 1', 'answer': 'Yes'}
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+
+    def test_a_page_intro_is_one_short_line(self):
+        st = base_spec(); st['steps'][0]['intro'] = 'x' * 161
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'the page intro is 161 characters (max 160)')
+        st['steps'][0]['intro'] = 'x' * 160
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+
 
 if __name__ == '__main__':
     unittest.main()

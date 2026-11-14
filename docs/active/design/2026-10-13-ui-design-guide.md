@@ -93,6 +93,7 @@ A job none of these does needs a new shared piece and Destin's look for it — n
    re-explaining each menu, submenu and button." So: no sentence under a heading that restates it,
    no footnote explaining how the screen works, no count said twice, and never text styles stacked
    with no clear order of what to read first. Text meant to be read sits in a card, never bare.
+   A row or question must make sense on its own to someone returning after days; background goes behind More.
 4. **Three heading levels, no more.** If a screen seems to need a fourth, it needs fewer sections.
 5. **Cards for things, rows for lists, styled by level.** Something you open or install (a plugin, a
    Page, a file) is a raised card. A list you read or pick from (settings, a menu) is rows. Inside a

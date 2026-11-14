@@ -1,8 +1,9 @@
 {
   "_comment": [
     "A DECK THAT GROWS — ONE deck for a whole feature. You edit THIS file and re-build it each round; you never start a new spec for the same feature. His submitted answers are kept beside it as dated files and become the earlier rounds.",
-    "A topic he answered in an earlier round sinks to an 'Answered' card at the foot of its page and is never asked again unless he presses Reopen. Open topics stay on top. The deck is AT one stage (\"stage\"): the header shows it as a plain progress line (earlier stages done, this one lit, later ones dimmed), and pages of earlier stages become a read-only record behind an 'Earlier stages' link. Only the current stage's pages ask him anything.",
-    "Each round: (1) read his answers, (2) for every topic where he asked for a change, add \"reopened\" (one line of its past; the topic is open again, with your revised proposal) or \"resolved\" (what you did about it; it stays answered), (3) add new topics, (4) rebuild with the same file name. The builder refuses to rebuild if one of his changes would vanish silently."
+    "A topic he answered in an earlier round sinks into the 'Previously answered' card at the foot of its page, drawn as its original card, locked, and is never asked again unless he presses Reopen. Open topics stay on top. The deck is AT one stage (\"stage\"): the stage line lets him press a finished stage's name to read its pages (marked Finished); only the current stage's pages ask him anything.",
+    "Each round: (1) read his answers, (2) for every topic where he asked for a change, add \"reopened\" (one line of its past; the topic is open again, with your revised proposal) or \"resolved\" (what you did about it; it stays answered), (3) add new topics, (4) rebuild with the same file name. The builder refuses to rebuild if one of his changes would vanish silently.",
+    "Page intros are ONE plain line (max 160 characters). A title, a row's bold or plain line, or a page intro may not name a round or a step id: say it plainly and put where it came from in \"more\" (a row's \"more\" opens behind a small More link)."
   ],
   "title": "Saved searches",
   "_comment_title": "title: the feature, in his words. The same title and file name every round.",
@@ -30,7 +31,7 @@
       "stage": "understanding"
     },
     {
-      "_comment": "A topic he answered in an earlier round, settled in an older separate deck. 'answered' puts it in the Answered list with his words; it asks nothing now.",
+      "_comment": "A topic he answered earlier. 'answered' is a list, oldest first, one entry per round: {round, given: his saved answer as the answers file holds it}. The old {round, answer, notes} shape still works.",
       "id": "Q-1",
       "words": true,
       "surface": "Chat search",
@@ -39,13 +40,15 @@
       "today": "Searching your past sessions means typing the words again every time.",
       "problem": "A search you run every Monday costs the same typing every Monday.",
       "proposal": "A search could be kept by name and re-run in one press.",
-      "answered": {
-        "round": "Round 1",
-        "answer": "Yes",
-        "notes": [
-          "i run the same search every monday"
-        ]
-      }
+      "answered": [
+        {
+          "round": "Round 1",
+          "given": {
+            "v": "yes",
+            "note": "i run the same search every monday"
+          }
+        }
+      ]
     },
     {
       "id": "P-2",

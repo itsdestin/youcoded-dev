@@ -891,3 +891,14 @@ not clear what the question was and how my response differed." Where this contra
 - **An answered topic is a compact card:** title, "Round N", "You answered" with his choice (a tick-or-change list:
   "3 of 5 rows ticked as fine"), his comments in quotes, "Done about it" (`resolved`), "Show the full question"
   (read-only), and Reopen in the current stage only.
+
+## Changed after round 12 feedback (2026-11-14)
+
+Source: Destin's round-11 answers. On the answered cards: "i want them to look similar to how the original question would've been proposed/answered. also what about my history over rounds?"; on "Earlier stages": "too similar to the 'history' button… i should be able to just click back into understanding/earlier stages"; on rows: "often significantly lacking in context… we need to figure out how to better make each row self-contained"; on the page: "the numbering of questions is odd (… 1 of 1)", drop "page 3 of 3", and "'submit feedback' … fill it in". Where this contradicts a section above, this wins.
+
+- **Previously answered** replaces "Answered": one top-level card (small label, title, count) holding each answered topic. A topic starts folded: title, round(s), "You answered", his comments in full, `resolved` ("What I did about it"), Reopen (current stage only). "Show the full card" opens the original card from the same code as a live one, locked, with his pick, note, ticks and row comments on it.
+- **History over rounds:** `answered` may be a list, oldest first: `{"round": "Round 4", "given": <his saved answer, verbatim minus timing>}` or `{"round", "answer", "notes"}`. A topic answered again later is ONE topic listing every round. The answers file of the latest round is read by the tool itself (do not copy it by hand: the round would show twice).
+- **Stage line:** finished stages carry a check and are pressed to read their pages (marked "Finished", no Reopen, never counted); the current stage is highlighted and leads back; later stages are dimmed. No "Earlier stages" link, no banner.
+- **Header** is the same on every page: bars, saved note (space kept), filled "Submit feedback". No page title, no "page N of M", no question numbers.
+- **Page** = heading + ONE plain line (`intro`, max 160 characters, refused beyond).
+- **Rows** on a deck that grows: bold line, one plain line, `more` (a string, or does/returns/why) behind a small More / Less at the end of the plain line. The build refuses a title, row line or page line naming a round or a step id (`round 7`, `R-1`); `trail`, `more`, `past`, `resolved`, `checked` and answered topics may.

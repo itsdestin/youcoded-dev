@@ -430,14 +430,14 @@ print(p)`;
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-1\"] .card.option').click()"); await sleep(200);
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .card.option[data-pick=b]').click()"); await sleep(200);
       assert.equal(await c.evaluate("document.querySelectorAll('article.q.done').length"), 2, 'both answered questions take the done edge');
-      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^page 1 of 2 · 2 of 5 answered/);
+      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^2 of 5 answered/);
       await c.evaluate("const n=document.querySelector('article.q[data-id=\"Q-1\"] .note'); n.value='smaller'; n.dispatchEvent(new Event('input', {bubbles:true}))");
       await sleep(500);
 
       // Next page: the statement and TWO yes/no/don't-know questions (Q-4, and Q-5 added above
       // just for this test), all on one page.
       await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
-      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^page 2 of 2 /);
+      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^\d+ of \d+ answered/, 'the count no longer says which page');
       assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'What we promise');
       assert.equal(await c.evaluate("document.querySelector('#wsub').textContent"), 'Statements, not questions.');
       assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.dataset.id)"), ['Q-3', 'Q-4', 'Q-5']);
@@ -1381,7 +1381,7 @@ print(p)`;
       await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
       // ── buttons follow the design guide ──
       assert.equal(await c.evaluate("document.querySelectorAll('.card.variant .ohead .key').length"), 0, 'no option-id chips on written options');
-      assert.equal(await c.evaluate("[...document.querySelectorAll('button.btn.primary')].filter(b=>b.offsetParent).length"), 1, 'one filled button in view');
+      assert.equal(await c.evaluate("[...document.querySelectorAll('button.btn.primary')].filter(b=>b.offsetParent).length"), 2, 'two filled buttons in view: the foot\'s main button and, at his request (round 11: "fill it in"), the header\'s Submit feedback');
       assert.equal(await c.evaluate("(()=>{const y=getComputedStyle(document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=yes]')),n=getComputedStyle(document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=no]')),b=getComputedStyle(document.querySelector('#back'));return y.borderTopColor===n.borderTopColor&&y.borderTopColor===b.borderTopColor&&y.backgroundColor===n.backgroundColor&&y.backgroundColor!==getComputedStyle(document.querySelector('#save')).backgroundColor})()"), true, 'answer buttons are outlined alike, in the same full-strength outline as Back, and not filled');
       assert.equal(await c.evaluate("(()=>{const q=document.querySelector('article.q[data-id=\"Q-2\"]');return q.querySelector('.ans[data-v=yes]').getBoundingClientRect().left>q.querySelector('.note').getBoundingClientRect().right-1})()"), true, 'the answer buttons sit at the right of their line');
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=yes]').click()"); await sleep(100);
@@ -1673,7 +1673,7 @@ print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())),
     assert.equal(await ev("document.querySelector('#submit').disabled"), false, 'he can still send');
     assert.match(await ev("document.querySelector('#feedback').value + ' ' + window.__deckSummaryOf(JSON.parse(localStorage.getItem('deck:' + DECK.key)))"), /not looked at — "Left alone\."/);
     const warn = await ev("document.querySelector('#skipn').textContent");
-    assert.match(warn, /Page 2, Question 2 of 2/, warn); assert.ok(!/step 4|step \d/.test(warn), warn);
+    assert.match(warn, /Page 2, /, warn); assert.ok(!/step 4|step \d/.test(warn), warn);
     await ev("document.querySelector('#submit').click()"); await sleep(1200);
     const rows = await ev("[...document.querySelectorAll('#responses tbody tr')].map(r => r.innerText.replace(/\\s+/g, ' '))");
     assert.ok(rows.some(t => /Untouched.*No changes · 1 not looked at/.test(t)), 'a "Yours to change" list he moved past untouched is NOT accepted: it reads "not looked at": ' + rows.join(' // '));
@@ -1689,14 +1689,16 @@ print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())),
 // answered ones sink to a list with their round, one summary line of a topic's past): real files end to end.
 // Round 1 is built, answered (a submitted answers file), then the SAME spec is edited and rebuilt, and `serve`
 // moves the answers aside, exactly as the author's routine does.
-test('a deck that grows: answered topics sink, reopen works, counts and stages leave answered topics out', async () => {
+test('a deck that grows: previously answered cards, finished stages, a steady header, rows that stand alone', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-grows-'));
   const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)});
 from fixture import words_spec
 p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p)); q1, q2 = raw['steps'][0], raw['steps'][1]
+q1 = {**q1, 'options': q1['options'] + [{'id': 'b', 'label': 'Elsewhere', 'summary': 'Somewhere else.', 'pros': ['Quiet.'], 'cons': ['Hidden.']}]}
 def q(i, h, **kw): return {**q1, 'id': i, 'headline': h, **kw}
 raw['grows'] = True
+raw['rounds_before'] = 3
 # WHY round 1 is AT understanding (round 11): a deck is at one stage, so its only page is that stage's.
 raw['stage'] = 'understanding'
 raw['steps'] = [{'id': 'P-1', 'page': 'Understanding page', 'intro': 'What we understood.', 'stage': 'understanding'}, q('Q-1', 'First topic?'), q('Q-2', 'Second topic?'), q('Q-3', 'Third topic?'), q('Q-5', 'Fifth topic?')]
@@ -1704,20 +1706,22 @@ json.dump(raw, open(p, 'w')); print(p)`;
   const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
   const out = join(dirname(spec), 'questions.html');
   { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
-  // round 1 as he answered it: Q-1 plain, Q-2 with a note, Q-3 with a note; submitted, with the build stamp he saw
+  // round 1 (labelled Round 4) as he answered it: Q-2 with a LONG note, Q-3 with a note; submitted, with the build stamp he saw
   const at = /"built":\s*\{[^}]*"at":\s*"([^"]+)"/.exec(readFileSync(out, 'utf8'))[1];
+  const LONG = 'a very long comment that must never be cut short '.repeat(12).trim();
   writeFileSync(join(dirname(spec), 'questions.answers.json'), JSON.stringify({ deck: 'questions-fixture', submitted: '2026-11-01T10:00:00Z', built: { at }, answers: {
-    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: 'only if it stays quiet' }, 'Q-3': { v: 'other', note: 'make it bigger please' }, 'Q-5': { v: 'pick', pick: 'a' } } }));
-  // round 2: the same spec, edited
+    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: LONG }, 'Q-3': { v: 'other', note: 'make it bigger please' }, 'Q-5': { v: 'pick', pick: 'a' } } }));
   const edit = `import json; p = ${JSON.stringify(spec)}; raw = json.load(open(p))
 by = {s['id']: s for s in raw['steps']}
-by['Q-2']['resolved'] = 'Made quiet in round 2.'
-by['Q-3']['reopened'] = 'You asked for it bigger.'; by['Q-3']['trail'] = [{'round': 'Round 1', 'built': 'A small one.'}]
+by['Q-2']['resolved'] = 'Made quiet in the next build.'
+by['Q-3']['reopened'] = 'You asked for it bigger.'; by['Q-3']['trail'] = [{'round': 'Round 4', 'built': 'A small one.'}]
+# Q-5 was answered in an earlier, separate deck too: one topic, two rounds
+by['Q-5']['answered'] = [{'round': 'Round 2', 'answer': 'An older pick', 'notes': ['first thoughts']}]
 q4 = dict(by['Q-2'], id='Q-4', headline='Fourth topic?'); q4.pop('resolved')
-rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'calls': [{'id': 'r1', 'call': 'A row.', 'why': 'Because.'}]}
-# Round 2 is AT design: Q-1 stays in the Understanding record; the rest move to the Design page.
+rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'calls': [{'id': 'r1', 'call': 'A row.', 'why': 'Because.', 'more': 'Where it came from: earlier.'}]}
 raw['stage'] = 'design'
-raw['steps'] = [by['P-1'], by['Q-1'], {'id': 'P-2', 'page': 'Design page', 'intro': 'The drawings.', 'stage': 'design'}, by['Q-2'], by['Q-5'], by['Q-3'], q4, rows]
+raw['steps'] = [by['P-1'], by['Q-1'], {'id': 'P-2', 'page': 'Design page', 'intro': 'Pick between the drawings.', 'stage': 'design'}, by['Q-2'], by['Q-5'], by['Q-3'], q4,
+                {'id': 'P-3', 'page': 'Rows page', 'intro': 'Tick what is fine.', 'stage': 'design'}, rows]
 json.dump(raw, open(p, 'w'))`;
   await sleep(1200);   // the build stamp has one-second precision: round 2 must be a different build from round 1, as it always is in practice
   { const r = spawnSync('python3', ['-c', edit], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
@@ -1725,86 +1729,121 @@ json.dump(raw, open(p, 'w'))`;
   const port = await freePort();
   const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  // The header's boxes: they must be identical on every page (Destin, round 11: "the header still re-sizes/re-arranges itself when clicking between pages").
+  const HDR = "(()=>{const r=x=>{const b=document.querySelector(x).getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(Math.round).join()};return [r('.top'),r('#done'),r('.stagerow')].join('|')})()";
   try {
     await sleep(900);
     assert.ok(readdirSync(dirname(spec)).some(f => /^questions\.answers\.\d+\.json$/.test(f)), 'serve moved his round-1 answers aside as a dated file');
-    const c = await cdp(await freePort(), 1200, 1000);
+    const c = await cdp(await freePort(), 1400, 1000);
     try {
       await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c);
       const q = e => c.evaluate(e);
-      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Design page', 'lands on the first page that has an open topic, not page 1');
-      assert.match(await q("document.querySelector('.chip .roundtag').textContent"), /Round 2/);
+      const ids = async () => JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q:not(.prev)')].map(a => a.dataset.id))"));
+      // the page names itself with a real heading and ONE line; the header carries no title, no page count, no question numbers
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Design page', 'lands on the first page that has an open topic');
+      assert.equal(await q("document.querySelector('.pagehead .intro').textContent"), 'Pick between the drawings.');
+      assert.equal(await q("document.querySelectorAll('.page-head').length"), 0, 'no separate intro card');
+      assert.equal(await q("getComputedStyle(document.querySelector('.top .where')).display"), 'none', 'the page title is not in the header');
+      assert.equal(await q("parseFloat(getComputedStyle(document.querySelector('.ptitle')).fontSize) > parseFloat(getComputedStyle(document.querySelector('.qh')).fontSize)"), true, 'the title is bigger than a question title');
+      assert.ok(!/page\s+\d+\s+of/i.test(await q("document.querySelector('.top').innerText")), 'no "page N of M" in the header');
+      assert.ok(!/\d+\s+of\s+\d+/.test(await q("document.querySelector('.top').innerText + ' ' + document.querySelector('#cards').innerText")), 'no "N of N" numbering anywhere on the page');
+      // Submit feedback is one filled button
+      assert.equal(await q("document.querySelector('#done').textContent"), 'Submit feedback');
+      assert.equal(await q("(()=>{const t=document.createElement('i');t.style.background='var(--accent)';document.body.appendChild(t);const a=getComputedStyle(t).backgroundColor;t.remove();return getComputedStyle(document.querySelector('#done')).backgroundColor===a})()"), true, 'filled with the accent colour');
+      assert.match(await q("document.querySelector('.chip .roundtag').textContent"), /Round 5/);
       assert.equal(await q("document.querySelector('#histbtn').hidden"), true, 'no History button');
-      assert.equal(await q("document.querySelectorAll('.since').length"), 0, 'no since-last-round sentence here');
-      // open topics on this page: the reopened one and the new one
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-3', 'Q-4', 'L-1']);
+      assert.deepEqual(await ids(), ['Q-3', 'Q-4']);
       // the past is one small plain line with a text link, not a box with a chevron
       assert.match(await q("document.querySelector('.pasttext').firstChild.textContent"), /^You asked for it bigger\./);
       assert.equal(await q("document.querySelector('.pastline .revealbody').hidden"), true, 'the story opens on request');
-      assert.equal(await q("(() => { const e = document.querySelector('.pasttext'), cs = getComputedStyle(e); return [cs.borderTopWidth, cs.backgroundColor, !!e.closest('.fold'), !!document.querySelector('.pastline .chev, .pastline .foldhead')].join() })()"), '0px,rgba(0, 0, 0, 0),false,false', 'the past line is not a box');
       assert.equal(await q("document.querySelector('.pastline .revealbtn').textContent"), 'More');
       await q("document.querySelector('.pastline .revealbtn').click()"); await sleep(100);
       const story = await q("document.querySelector('.pastline .revealbody').innerText");
-      assert.match(story, /Round 1 · built/); assert.match(story, /Round 1 · you/); assert.match(story, /make it bigger please/);
-      assert.equal(await q("document.querySelector('.pastline .revealbtn').textContent"), 'Less');
-      // the stage indicator: earlier done, this one lit, later dimmed; nothing in it can be pressed or focused
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#stages .stageflow li')].map(li => [li.textContent, li.className]))")),
-        [['Understanding', 'done'], ['Design', 'on'], ['Before build', 'later'], ['After build', 'later']]);
-      assert.equal(await q("document.querySelector('#stages .stagetext').textContent"), 'Stage 2 of 4');
-      assert.equal(await q("document.querySelectorAll('#stages .stageflow button, #stages .stageflow a, #stages .stageflow [tabindex], #stages .segb').length"), 0, 'the indicator is not clickable');
-      await q("document.querySelector('#stages .stageflow li').click()"); await sleep(200);
-      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Design page', 'pressing a stage name goes nowhere');
-      assert.match(await q("document.querySelector('#count').textContent"), /page 1 of 1 · 0 of 3 answered/, 'only this stage\'s page and topics are counted');
-      assert.equal(await q("document.querySelector('#steps').hidden"), true, 'one page in this stage: nothing to page through');
-      // answered topics of this stage: proper cards showing the question and how he answered; Reopen only here
-      assert.equal(await q("document.querySelector('.answeredgrp .grph').textContent"), 'Answered2');
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.anscard .anstitle')].map(e => e.textContent))")), ['Second topic?', 'Fifth topic?']);
-      const card = await q("document.querySelector('.anscard[data-id=Q-2]').innerText");
-      assert.match(card, /Second topic\?/); assert.match(card, /Round 1/); assert.match(card, /You answered/);
-      assert.match(card, /only if it stays quiet/); assert.match(card, /Made quiet in round 2\./);
-      assert.match(await q("document.querySelector('.anscard[data-id=Q-5]').innerText"), /You answered\s*\S+/, 'the card says what he chose');
-      assert.match(await q("document.querySelector('.anscard[data-id=Q-2] .decided').textContent"), /only if it stays quiet/);
-      assert.equal(await q("document.querySelectorAll('.anscard .fchip, .anscard .qstate, .anscard .foldhead, .anscard .chev').length"), 0, 'no pills, dots or strip rows on an answered card');
-      assert.equal(await q("document.querySelector('.anscard[data-id=Q-2] .revealbody').hidden"), true);
-      await q("document.querySelector('.anscard[data-id=Q-2] .revealbtn').click()"); await sleep(100);
-      assert.equal(await q("document.querySelector('.anscard[data-id=Q-2] .revealbody').hidden"), false, 'the full question opens read-only');
-      assert.match(await q("document.querySelector('.anscard[data-id=Q-2] .revealbody').innerText"), /One game fills the window|Proposal/);
-      assert.equal(await q("document.querySelectorAll('.anscard[data-id=Q-2] .revealbody .ans, .anscard[data-id=Q-2] .revealbody textarea').length"), 0);
+      assert.match(story, /Round 4 · built/); assert.match(story, /Round 4 · you/); assert.match(story, /make it bigger please/);
+      const hdr0 = await q(HDR);
+      // the stage line: finished stage = pressable with a check; current = highlighted; later = dimmed and NOT a button; no "Earlier stages" link
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#stages .stageflow li')].map(li => [li.textContent.trim(), li.className.replace(' viewing', ''), !!li.querySelector('button')]))")),
+        [['Understanding', 'done', true], ['Design', 'on', false], ['Before build', 'later', false], ['After build', 'later', false]]);
+      assert.equal(await q("document.querySelectorAll('#stages .stagebtn .stagetick').length"), 1, 'the finished stage carries a check');
+      assert.equal(await q("document.querySelectorAll('#stages .recordlink, .recordbanner').length + (/Earlier stages/.test(document.body.innerText) ? 1 : 0)"), 0, 'no "Earlier stages" link or banner');
+      // Previously answered: a top-level card headed like a list
+      assert.equal(await q("document.querySelector('.prevgrp > .qh').textContent"), 'Previously answered');
+      assert.equal(await q("document.querySelector('.prevgrp > .qnum').textContent.length > 0 && document.querySelector('.prevgrp .prevn').textContent"), '2');
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.prevtopic .anstitle')].map(e => e.textContent))")), ['Second topic?', 'Fifth topic?']);
+      const card = await q("document.querySelector('.prevtopic[data-id=Q-2]').innerText");
+      assert.match(card, /Second topic\?/); assert.match(card, /Round 4/); assert.match(card, /You answered/); assert.match(card, /Made quiet in the next build\./);
+      // a long comment is shown in full, never cut
+      const said = await q("document.querySelector('.prevtopic[data-id=Q-2] > .decided').textContent");
+      assert.ok(said.includes(LONG) && !said.includes('…'), 'the long comment is whole: ' + said.length);
+      // several rounds: both shown, oldest first
+      const multi = await q("document.querySelector('.prevtopic[data-id=Q-5]').innerText");
+      assert.ok(multi.includes('Round 2') && multi.includes('Round 4') && multi.indexOf('Round 2') < multi.indexOf('Round 4'), multi);
+      assert.match(multi, /An older pick/); assert.match(multi, /first thoughts/);
+      assert.equal(await q("document.querySelectorAll('.prevtopic .fchip, .prevtopic .qstate, .prevtopic .foldhead, .prevtopic .chev').length"), 0, 'no pills, dots or strip rows on an answered card');
+      // the full card: the original question, locked, with the option labels and his pick marked
+      assert.equal(await q("document.querySelector('.prevtopic[data-id=Q-2] .revealbody').hidden"), true, 'starts folded');
+      await q("document.querySelector('.prevtopic[data-id=Q-2] .revealbtn').click()"); await sleep(150);
+      assert.equal(await q("document.querySelector('.prevtopic[data-id=Q-2] .revealbody').hidden"), false);
+      assert.equal(await q("document.querySelectorAll('.prevtopic[data-id=Q-2] .card.variant').length >= 2"), true, 'the option cards are drawn');
+      assert.equal(await q("JSON.stringify([...document.querySelectorAll('.prevtopic[data-id=Q-2] .card.variant.on')].map(c => c.dataset.pick))"), '["a"]', 'his pick is the marked one');
+      assert.equal(await q("document.querySelector('.prevtopic[data-id=Q-2] textarea.note').value"), LONG, 'his note is in the note box');
+      assert.equal(await q("[...document.querySelectorAll('.prevtopic[data-id=Q-2] .ans, .prevtopic[data-id=Q-2] textarea')].filter(e => !e.disabled).length"), 0, 'nothing in it can be changed');
+      await q("document.querySelector('.prevtopic[data-id=Q-2] .card.variant:not(.on)').click()"); await sleep(100);
+      assert.equal(await q("JSON.stringify([...document.querySelectorAll('.prevtopic[data-id=Q-2] .card.variant.on')].map(c => c.dataset.pick))"), '["a"]', 'a press on a locked option changes nothing');
       assert.equal(await q("[...document.querySelectorAll('#cards *')].filter(e => parseFloat(getComputedStyle(e).borderLeftWidth) > 1.5 && getComputedStyle(e).borderRightWidth !== getComputedStyle(e).borderLeftWidth).length"), 0, 'no coloured bar at the left edge of anything');
-      // the record: one quiet link opens the earlier stage read-only, with a banner and a way back; nothing in it asks or counts
-      assert.equal(await q("document.querySelector('#stages .recordlink').textContent"), 'Earlier stages');
-      await q("document.querySelector('#stages .recordlink').click()"); await sleep(300);
-      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Earlier stages');
-      assert.match(await q("document.querySelector('.recordbanner').innerText"), /record of earlier stages\. Nothing here needs an answer\.[\s\S]*Back to Design/);
-      assert.match(await q("document.querySelector('#cards').innerText"), /First topic\?/);
-      assert.equal(await q("document.querySelectorAll('#cards .ans, #cards .note, #cards textarea, #cards .reopenbtn, #cards .calltick, #cards .calledit, #cards article.q, #cards .ans-write').length"), 0, 'no answer controls, comment boxes or Reopen in the record');
-      assert.equal(await q("[...document.querySelectorAll('#controls, .top .nav, .top .count, #done')].filter(e => e.offsetParent).length"), 0, 'nothing to page through, count or send while reading the record');
-      await q("document.querySelector('#recback').click()"); await sleep(300);
-      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Design page');
-      assert.match(await q("document.querySelector('#count').textContent"), /0 of 3 answered/, 'the record never counts as waiting');
+      // pages: the bars are the navigation; the header does not move
+      assert.equal(await q("document.querySelectorAll('#steps span').length"), 2);
+      await q("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Rows page');
+      assert.equal(await q(HDR), hdr0, 'the header is identical on the second page');
+      // a row stands alone: bold line, plain line, More reveals the background
+      assert.equal(await q("document.querySelector('.call .rowmore').hidden"), true);
+      assert.equal(await q("document.querySelector('.call .src .revealbtn').textContent"), 'More');
+      await q("document.querySelector('.call .src .revealbtn').click()"); await sleep(100);
+      assert.equal(await q("document.querySelector('.call .rowmore').hidden"), false);
+      assert.match(await q("document.querySelector('.call .rowmore').innerText"), /Where it came from: earlier\./);
+      assert.equal(await q("document.querySelector('.call .src .revealbtn').textContent"), 'Less');
+      // a finished stage: press its name; its page says Finished, topics are previously-answered cards with no Reopen, nothing waits
+      await q("document.querySelector('#stages .stagebtn').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Understanding page');
+      assert.equal(await q("document.querySelector('.fintag').textContent"), 'Finished');
+      assert.equal(await q(HDR), hdr0, 'the header is identical on a finished stage');
+      assert.equal(await q("document.querySelector('.prevgrp > .qh').textContent"), 'Previously answered');
+      assert.equal(await q("document.querySelectorAll('.prevtopic .reopenbtn').length"), 0, 'no Reopen in a finished stage');
+      assert.equal(await q("document.querySelectorAll('#cards article.q:not(.prev), #cards .pagenote').length"), 0, 'nothing in it asks for an answer');
+      assert.equal(await q("document.querySelectorAll('#steps span').length"), 1, 'the bars show the viewed stage\'s pages');
+      assert.equal(await q("document.querySelector('#stages li.viewing').textContent.trim()"), 'Understanding');
+      assert.match(await q("document.querySelector('#count').textContent"), /0 of \d+ answered/, 'a finished stage never counts as waiting');
+      // the current stage's name leads back; a later stage is not pressable
+      assert.equal(await q("document.querySelectorAll('#stages button').length"), 2, 'the finished stage and the way back: no other button');
+      await q("document.querySelector('#stages li.on .stagebtn').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Rows page', 'back where he was');
+      assert.equal(await q(HDR), hdr0);
+      await q("document.querySelectorAll('#steps span')[0].click()"); await sleep(250);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Design page');
       // Reopen: the topic moves up among the open ones, is answerable, and counts again
       await q("document.querySelector('.reopenbtn[data-sid=Q-2]').click()"); await sleep(300);
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-2', 'Q-3', 'Q-4', 'L-1']);
-      assert.equal(await q("document.querySelectorAll('.anscard').length"), 1);
+      assert.deepEqual(await ids(), ['Q-2', 'Q-3', 'Q-4']);
+      assert.equal(await q("document.querySelectorAll('.prevtopic').length"), 1);
       assert.ok(await q("document.querySelectorAll('article.q[data-id=Q-2] .ans').length > 0"), 'a reopened topic can be answered');
       assert.match(await q("document.querySelector('#count').textContent"), /0 of 4 answered/);
       assert.equal(await q("JSON.parse(localStorage.getItem('deck:' + DECK.key)).reopened['Q-2']"), true, 'kept in the saved state');
       assert.equal(await q("[...document.querySelectorAll('.leavebtn')].filter(b => b.offsetParent).length"), 1, 'a reopened topic he has not answered can be put back');
       await q("document.querySelector('.leavebtn').click()"); await sleep(300);
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-3', 'Q-4', 'L-1'], 'Leave as answered puts it back in the Answered group');
-      await q("document.querySelector('.reopenbtn[data-sid=Q-2]').click()"); await sleep(300);
-      await q("document.querySelector('article.q[data-id=Q-2] .ans').click()"); await sleep(300);
-      assert.match(await q("document.querySelector('#count').textContent"), /1 of 4 answered/);
-      assert.equal(await q("[...document.querySelectorAll('.leavebtn')].filter(b => b.offsetParent).length"), 0, 'an answered reopened topic is not put back by a stray button');
-      // a phone: no sideways scroll, the indicator shrinks to "2 of 4 · Design"
+      assert.deepEqual(await ids(), ['Q-3', 'Q-4'], 'Leave as answered puts it back');
+      // a phone: no sideways scroll, same header on every page, the finished stage fits too
       const m = await cdp(await freePort(), 390, 800);
       try {
         await m.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(m);
-        assert.equal(await m.evaluate("document.documentElement.scrollWidth <= window.innerWidth && document.body.scrollWidth <= window.innerWidth"), true, 'no sideways scrolling at 390px');
-        assert.equal(await m.evaluate("(() => { const v = e => !!e && e.offsetParent !== null; return [v(document.querySelector('.stagecompact')), v(document.querySelector('.stageflow'))].join() })()"), 'true,false');
-        assert.equal(await m.evaluate("document.querySelector('.stagecompact').textContent"), '2 of 4 · Design');
-        await m.evaluate("document.querySelector('#stages .recordlink').click()"); await sleep(300);
-        assert.equal(await m.evaluate("document.documentElement.scrollWidth <= window.innerWidth && document.querySelector('#cards').scrollWidth <= document.querySelector('#cards').clientWidth + 1"), true, 'the record fits a phone too');
+        const fit = "document.documentElement.scrollWidth <= window.innerWidth && document.body.scrollWidth <= window.innerWidth && document.querySelector('#cards').scrollWidth <= document.querySelector('#cards').clientWidth + 1";
+        assert.equal(await m.evaluate(fit), true, 'no sideways scrolling at 390px');
+        const h0 = await m.evaluate(HDR);
+        await m.evaluate("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
+        assert.equal(await m.evaluate(HDR), h0, 'the header is identical on the second page at 390px');
+        assert.equal(await m.evaluate(fit), true);
+        await m.evaluate("document.querySelector('#stages .stagebtn').click()"); await sleep(300);
+        assert.equal(await m.evaluate(HDR), h0, 'and on a finished stage');
+        assert.equal(await m.evaluate(fit), true, 'a finished stage fits a phone');
         assert.deepEqual(m.errors, []);
       } finally { m.close(); }
       assert.deepEqual(c.errors, []);

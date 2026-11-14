@@ -20,6 +20,7 @@ the page builder (what each step carries to the page), serve.py's summary and ga
 import glob
 import json
 import os
+import re
 
 from .spec import is_page, row_states, tickable, unlooked_rows, word_count
 
@@ -27,6 +28,11 @@ STAGES = ('understanding', 'design', 'before', 'after')
 STAGE_NAMES = {'understanding': 'Understanding', 'design': 'Design', 'before': 'Before build', 'after': 'After build'}
 PAST_WORDS_MAX = 30       # the one summary line of a topic's past (`reopened`, `past`)
 RESOLVED_WORDS_MAX = 40   # what was done about something he asked for (`resolved`)
+INTRO_CHARS_MAX = 160     # a page's one plain line under its heading
+GIVEN_DROP = ('seconds', 'theme', 't', 'zoom', 'built')   # timing noise in a saved answer; everything else is his
+# WHY (Destin, round 11: "these descriptions frequently make references to earlier rounds, external content, etc, that i wouldn't
+# know off the top of my head, especially after walking away for a day or two"): a visible line may not point at a round or a step id.
+CITES = re.compile(r'\brounds?\s*\d+|\b[A-Z]{1,3}-\d{1,2}\b', re.I)
 ANSWER_NAMES = {'yes': 'Yes', 'no': 'No', 'other': 'Something else', 'skip': 'Not answered'}
 
 
@@ -138,10 +144,18 @@ def _steps(spec):
     return [st for st in spec.get('steps') or [] if isinstance(st, dict) and not is_page(st)]
 
 
+def clean_given(a):
+    """His saved answer as the page paints it: everything he said, none of the timing."""
+    return {k: v for k, v in (a or {}).items() if k not in GIVEN_DROP}
+
+
 def step_info(spec, **kw):
     """{step id: info} for a growing deck. info: answered (bool), round, answer, notes, resolved,
-    line (the one summary line of the past, for an open topic), story (his earlier answers,
-    oldest first: [{round, answer, notes}]). `_latest` is private to this module."""
+    line (the one summary line of the past, for an open topic), story (his answers, oldest first:
+    [{round, answer, notes, ticked, rows}]), given (his latest answer exactly as saved, for drawing
+    the original card with his pick on it). `_latest` (from the answers files only) and `_last` are private.
+    WHY `answered` may be a LIST (round 12: "what about my history over rounds?"): a topic answered in
+    several rounds keeps each round's answer, oldest first; entries carry `given`, his saved answer verbatim."""
     rounds = earlier_rounds(spec, **kw)
     out = {}
     for st in _steps(spec):
@@ -154,23 +168,43 @@ def step_info(spec, **kw):
                 story.append({'round': r['label'], 'answer': ans, 'notes': notes, '_a': a})
         hand = st.get('answered')
         latest = story[-1] if story else None
-        info = {'answered': False, 'story': [{k: v for k, v in s.items() if k != '_a'} for s in story]}
+        hand_story = []
+        if isinstance(hand, list):
+            for h in hand:
+                g = h.get('given')
+                if isinstance(g, dict):
+                    ans, notes = answer_view(st, g)
+                else:
+                    ans, notes = h.get('answer', ''), list(h.get('notes') or [])
+                hand_story.append({'round': h.get('round', ''), 'answer': ans, 'notes': notes, '_a': g if isinstance(g, dict) else None})
+        info = {'answered': False}
         if isinstance(hand, dict):
             info.update(answered=True, round=hand.get('round', ''), answer=hand.get('answer', ''), notes=list(hand.get('notes') or []))
-            info['story'] = info['story'] or [{'round': info['round'], 'answer': info['answer'], 'notes': info['notes']}]
+            story = story or [{'round': info['round'], 'answer': info['answer'], 'notes': info['notes'], '_a': None}]
+        elif hand_story:
+            story = hand_story + story
+            info.update(answered=True, round=story[-1]['round'], answer=story[-1]['answer'], notes=story[-1]['notes'])
         elif latest and not st.get('reopened'):
             info.update(answered=True, round=latest['round'], answer=latest['answer'], notes=latest['notes'])
+        last = story[-1] if story else None
+        for s_ in story:
+            if s_['_a'] is not None and tickable(st):
+                s_['ticked'] = sum(1 for v in row_states(st, s_['_a']).values() if v == 'ok')
+                s_['rows'] = len(st.get('calls') or [])
+        info['story'] = [{k: v for k, v in s_.items() if k != '_a'} for s_ in story]
         # WHY (Destin, round 11: the answered card must show "how my response differed"): for a tick-or-change list
         # the card says how many rows he ticked; his comments on rows are already in `notes`.
-        if latest and info['answered'] and not isinstance(hand, dict) and tickable(st):
-            info['ticked'] = sum(1 for v in row_states(st, latest['_a']).values() if v == 'ok')
-            info['rows'] = len(st.get('calls') or [])
+        if last and info['answered'] and last['_a'] is not None:
+            info['given'] = clean_given(last['_a'])
+            if tickable(st):
+                info['ticked'], info['rows'] = last.get('ticked'), last.get('rows')
         line = st.get('reopened') or st.get('past')
         if line and not info['answered']:
             info['line'] = line
         if st.get('resolved') and info['answered']:
             info['resolved'] = st['resolved']
         info['_latest'] = latest
+        info['_last'] = last
         out[sid] = info
     return out
 
@@ -212,6 +246,26 @@ def problems(spec):
                     and not st.get('context') and not info[st.get('id')]['answered']:
                 errs.append(f'{st.get("id")}: "{st.get("headline", st.get("id"))}" is still open but sits on the {STAGE_NAMES[page["stage"]]} page, '
                             f'an earlier stage than the deck is at ({STAGE_NAMES[cur]}); answer it first, or move it to a {STAGE_NAMES[cur]} page')
+    # WHY (Destin, round 11: rows "frequently make references to earlier rounds, external content, etc, that i wouldn't know off the
+    # top of my head"): what he is asked to judge must make sense on its own. A topic that is still open may not point at a round or a
+    # step id in its title, or in a row's bold line or plain line; where it came from goes behind "more".
+    def cite(where, text, what):
+        m = CITES.search(text or '')
+        if m:
+            errs.append(f'{where}: {what} says "{m.group(0)}"; say it in plain words here and put where it came from in "more" '
+                        f'(he may come back after days and will not remember it)')
+    for st in _steps(spec):
+        if info[st.get('id')]['answered']:
+            continue
+        cite(st.get('id'), st.get('headline'), 'the title')
+        for c in st.get('calls') or []:
+            if isinstance(c, dict):
+                cite(f'{st.get("id")}/{c.get("id")}', c.get('call'), 'the bold line')
+                cite(f'{st.get("id")}/{c.get("id")}', c.get('why'), 'the plain line')
+    for p in spec.get('steps') or []:
+        if isinstance(p, dict) and is_page(p):
+            cite(p.get('id'), p.get('intro'), 'the page intro')
+            cite(p.get('id'), p.get('page'), 'the page name')
     present = {st.get('id') for st in _steps(spec)}
     retired = spec.get('retired') if isinstance(spec.get('retired'), dict) else {}
     gone = {}
@@ -254,6 +308,11 @@ def validate_fields(spec, errors):
             page_stage = st.get('stage')
             if cur_n is not None and page_stage in STAGES and STAGES.index(page_stage) > cur_n:
                 errors.append(f'{sid}: this page is the {STAGE_NAMES[page_stage]} stage, later than the deck ({STAGE_NAMES[cur]}); remove it until the deck gets there')
+            # WHY (Destin, round 11: opening lines "don't really well explain what the page is or what i'm expected to do with it"):
+            # the intro is ONE plain line under the page heading.
+            if on and isinstance(st.get('intro'), str) and len(st['intro']) > INTRO_CHARS_MAX:
+                errors.append(f'{sid}: the page intro is {len(st["intro"])} characters (max {INTRO_CHARS_MAX}): it is one plain line under the page heading saying what he decides here; '
+                              f'anything longer belongs in the rows')
             stage = st.get('stage')
             if stage is not None and not on:
                 errors.append(f'{sid}: stage belongs on a deck that grows; add "grows": true')
@@ -267,15 +326,19 @@ def validate_fields(spec, errors):
             continue
         a = st.get('answered')
         if a is not None:
-            if not isinstance(a, dict) or not isinstance(a.get('round'), str) or not a['round'].strip() \
-                    or not isinstance(a.get('answer'), str) or not a['answer'].strip():
-                errors.append(f'{sid}: answered is {{"round": "Round 4", "answer": "Yes", "notes": ["his words"]}}; round and answer are required text')
-            else:
-                if 'notes' in a and (not isinstance(a['notes'], list) or not all(isinstance(n, str) and n.strip() for n in a['notes'])):
+            # WHY a list too (round 12): one entry per round he answered it, oldest first; `given` is his saved answer verbatim.
+            for e in (a if isinstance(a, list) else [a]):
+                if not isinstance(e, dict) or not isinstance(e.get('round'), str) or not e['round'].strip() \
+                        or not (isinstance(e.get('given'), dict) or (isinstance(e.get('answer'), str) and e['answer'].strip())):
+                    errors.append(f'{sid}: answered is {{"round": "Round 4", "answer": "Yes", "notes": ["his words"]}}, or a list of {{"round", "given": his saved answer}}, oldest first; round and answer are required text')
+                    continue
+                if 'notes' in e and (not isinstance(e['notes'], list) or not all(isinstance(n, str) and n.strip() for n in e['notes'])):
                     errors.append(f'{sid}: answered.notes is a list of his words, each as text')
-                for k in a:
-                    if k not in ('round', 'answer', 'notes'):
-                        errors.append(f'{sid}: answered holds round, answer and notes, not "{k}"')
+                for k in e:
+                    if k not in ('round', 'answer', 'notes', 'given'):
+                        errors.append(f'{sid}: answered holds round, answer, notes and given, not "{k}"')
+            if isinstance(a, list) and not a:
+                errors.append(f'{sid}: answered is a list with at least one round')
         for k, cap in (('reopened', PAST_WORDS_MAX), ('past', PAST_WORDS_MAX), ('resolved', RESOLVED_WORDS_MAX)):
             v = st.get(k)
             if v is None:
