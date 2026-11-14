@@ -36,7 +36,7 @@
    "surface": "Marketplace",
    "path": "Marketplace tags, integrations, stars and uninstall",
    "headline": "Marketplace: tag, star, integration and uninstall failures are now visible.",
-   "changed": "Tags: \"Couldn't create the tag.\" / \"Couldn't save the tag.\" / \"Couldn't delete the tag.\" Stars: \"Couldn't change your favorites.\" Integrations: the detail page refreshes so the existing \"Couldn't install\" box shows; \"Couldn't install <name>.\" \"Couldn't connect <name>.\" \"Couldn't uninstall <name>.\" \"Couldn't refresh the integrations list.\" \"Couldn't open a setup session.\" A plugin whose files could not be fully removed stays in your library and shows the existing box saying so.",
+   "changed": "Tags: \"Couldn't create the tag.\" / \"Couldn't save the tag.\" / \"Couldn't delete the tag.\" Stars: \"Couldn't change your favorites.\" Integrations: the detail page refreshes so the existing \"Couldn't install\" box shows; \"Couldn't install <name>.\" \"Couldn't connect <name>.\" \"Couldn't uninstall <name>.\" \"Couldn't refresh the integrations list.\" \"Couldn't open a setup session.\" A plugin whose folder could not be deleted stays in your library; the existing box says so, gives a plain reason when one is known (such as permission denied), and Try again finishes the job.",
    "notice": "A failed uninstall no longer looks finished.",
    "yes": "Read it",
    "no": "Something is wrong"
