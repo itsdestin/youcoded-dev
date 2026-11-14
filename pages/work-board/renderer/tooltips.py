@@ -78,7 +78,7 @@ TIP = {
   'rel.draft': 'A first draft of the changelog, built from the lines above. Meant to be shortened and reworded before it is published.',
   'rel.copy': 'Copies the draft so you can paste it into a chat or a file.',
   'rel.more': 'This change is linked to more work items than fit here. Open the first ones to find the rest.',
-  'rel.groupcount': 'How many changes since the last release are in this group.',
+  'rel.groupcount': 'How many changes since the last release are in this group. "4 of 14" means only the first 4 are listed; press Show all for the rest.',
   'today.allchanges': 'Shows every change in each group, not just the first few. Press again to fold them.',
 
   # ---------------------------------------------------------------- screens: the control row

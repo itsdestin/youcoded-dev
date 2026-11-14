@@ -74,6 +74,10 @@ def body(rel, T):
     hidden = 0
     out.append('<div class="relgrid">')
     for g in rel['groups']:
+        # WHY "4 of 14" (Destin, 2026-11-14: "the numbers at the top of each section don't match the number of bullet
+        # points … unclear what the meaning of the numbers is"): the number is how many changes are in the group, but only
+        # the first few are listed until Show all is pressed, so a bare "14" sat above four bullets.
+        n = len(g['changes'])
         lis = []
         for i, c in enumerate(g['changes']):
             chips = ''.join(f'<button class="relchip" data-card-open="{it["id"]}" data-tip="{E("Opens work item #%d: %s" % (it["id"], it["title"]))}">#{it["id"]}</button>' for it in c['items'][:3])
@@ -92,7 +96,7 @@ def body(rel, T):
                 main = f'<span class="reltext">{E(c["text"])}</span>'
                 det += f'<div class="t-2xs muted reldetail"><span data-tip="{T("rel.noline")}">No line for users yet</span></div>'
             lis.append(f'<li{" class=\"relextra\" hidden" if extra else ""}>{main} {chips}{det}</li>')
-        out.append(f'<div class="card inset"><div class="eyebrow"><span data-tip="{E(g["hint"])}">{E(g["title"])}</span> <span class="cnt" data-tip="{T("rel.groupcount")}">{len(g["changes"])}</span></div><ul class="t-xs">{"".join(lis)}</ul></div>')
+        out.append(f'<div class="card inset"><div class="eyebrow"><span data-tip="{E(g["hint"])}">{E(g["title"])}</span> <span class="cnt relcnt" data-n="{n}" data-shown="{min(n, SHOW)}" data-tip="{T("rel.groupcount")}">{n if n <= SHOW else f"{SHOW} of {n}"}</span></div><ul class="t-xs">{"".join(lis)}</ul></div>')
     out.append('</div>')
     if hidden:
         out.append(f'<div class="acts right"><button class="btn sm" id="relall" data-n="{rel["count"]}" aria-expanded="false" data-tip="{T("today.allchanges")}">Show all {rel["count"]} changes</button></div>')
@@ -124,7 +128,8 @@ JS = r'''
 (function(){const b=document.getElementById('relall');if(!b)return;
 b.onclick=()=>{const open=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',open);
   document.querySelectorAll('.relextra').forEach(li=>li.hidden=!open);
-  b.textContent=open?'Show fewer':'Show all '+b.dataset.n;fades()};})();
+  document.querySelectorAll('.relcnt').forEach(c=>{const n=+c.dataset.n,sh=+c.dataset.shown;c.textContent=open||n<=sh?n:sh+' of '+n});
+  b.textContent=open?'Show fewer':'Show all '+b.dataset.n+' changes';fades()};})();
 (function(){const b=document.getElementById('relcopy');if(!b)return;
 b.onclick=async()=>{const pre=document.getElementById('reldraft');
   // WHY the fallback: a page inside YouCoded may not be allowed to write to the clipboard; selecting the text lets Ctrl+C do it

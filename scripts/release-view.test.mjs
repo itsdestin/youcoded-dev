@@ -136,3 +136,17 @@ test('wording helpers', () => {
   const direct = describeChange({ subject: 'chore: set announcement', body: '' }, []);
   assert.equal(direct.pr, null); assert.equal(direct.group, 'behind');
 });
+
+test('a group that lists only its first few changes says "4 of N", so the number matches the bullets', async () => {
+  // WHY (Destin, 2026-11-14): a bare "14" sat above four bullets and its meaning was unclear
+  const { execFileSync } = await import('node:child_process');
+  const here = path.dirname(new URL(import.meta.url).pathname);
+  const py = `import sys,json;sys.path.insert(0,${JSON.stringify(path.join(here, '..', 'pages', 'work-board', 'renderer'))});import release_tab as r
+c=lambda i:{'text':'Change %d'%i,'items':[],'key':'youcoded#%d'%i,'notice':[]}
+rel={'ok':True,'fresh':True,'asOf':'','version':'v1','count':9,'groups':[{'key':'new','title':'New','hint':'h','changes':[c(i) for i in range(6)]},{'key':'fixes','title':'Fixes','hint':'h','changes':[c(i) for i in range(3)]}]}
+print(r.body(rel,lambda k:k))`;
+  const html = execFileSync('python3', ['-c', py], { encoding: 'utf8' });
+  assert.match(html, /data-n="6" data-shown="4"[^>]*>4 of 6</);
+  assert.match(html, /data-n="3" data-shown="3"[^>]*>3</);
+  assert.equal((html.match(/<li>/g) || []).length, 7, 'four of the first group and all three of the second are listed');
+});
