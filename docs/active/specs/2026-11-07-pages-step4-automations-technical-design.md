@@ -98,7 +98,7 @@ limit; subscription models show tokens used. No system notifications in this ste
      permission line with Edit and Add. A hand-typed command is listed as "Run a command" with the
      command under it; only assistant-written permissions get a plain-words name. The `*` hint goes
      in the (i) by the title.
-   - **Answers carry a note** (`plan-b#N-answer`): `answer(jobId, allow, note?)`; Don't allow needs
+   - **Answers carry a note** (`plan-b#N-answer`): `answer(jobId, allow, note?, fromNowOn?)`; Don't allow needs
      one. The note goes back to the run as the tool result's message, so it doesn't retry.
    - Service permissions (Gmail etc.) need step 5's sign-ins; until then the Add menu lists this
      page, your computer and the internet only.
@@ -148,7 +148,9 @@ limit; subscription models show tokens used. No system notifications in this ste
      button itself.
    - **Every model** (review deck `Q-models`): any model the app can chat with can run a job.
      `model` must be a real model binding, not a label (today's mock stores a label, and treats
-     ChatGPT as a subscription at `AutomationDetails.tsx:103`).
+     ChatGPT as a subscription at `renderer/components/automations/AutomationDetails.tsx:128`).
+     Dollars or tokens is decided per model binding (billed per token → dollar limit; a
+     sign-in subscription such as ChatGPT or Claude → tokens only), never per lane.
 9. **Advanced settings** (`plan-c#C-rules`): the lower settings are fold-out cards, all closed,
    titled with what the job does now; open, one line on what it covers and each choice with a pro
    and a con. **New automation starts pre-filled** (`plan-b#E-prefill`): Wait for me (until its next run, then
@@ -162,7 +164,9 @@ limit; subscription models show tokens used. No system notifications in this ste
 11. **No system notifications** (`plan-b#Q-notify-menu`: "all system notifications will be built
     together later … limited to the orange light"). The job keeps a `notify` field for that work;
     the details popup shows no Notifications card.
-12. **Bridge:** `automations:list|runs|save|setEnabled|runNow|answer` + push `automations:changed`
+12. **Bridge:** the seven methods exactly as typed in `shared/automation-types.ts`
+    (`list`, `runs`, `save`, `setEnabled`, `runNow`, `remove`, `answer(id, allow, note?, fromNowOn?)`)
+    plus `pages.deletePage(id, deleteAutomations)` + push `automations:changed`
     in `preload.ts`, `remote-shim.ts` and the IPC table; the `MOCK_ONLY` rows go away. Android gets
     it free (the same node backend).
 13. **From a chat:** a `ProposeAutomation` tool (native, and on the app's MCP server for Claude
@@ -181,5 +185,42 @@ while YouCoded is closed.
   (`Q-rundiff`); limits are per automation only (`Q-pagelimit`); other devices wait for syncing
   (`Q-devices`).
 - The context-free UX tester has not run on these screens (skipped earlier at Destin's word);
-  offer it before the build.
-- One design-review round against this document and the decks.
+  offered 2026-11-14, awaiting his answer.
+- Design-review round ran 2026-11-14 (fresh reviewer); rulings below. No contradiction with the
+  step4d-4g answers was found. Not checked by it: Android code paths, the page kit's existing
+  `run`/`event` code, whether a page iframe can reach `automations.save` directly (check at build).
+- Awaiting Destin: what a resumed run does with the step that was half-done at close (below).
+
+## Design-review rulings (2026-11-14) — binding on the build
+
+1. **Never beats allow, for jobs.** `harness/permission-engine.ts` puts remembered allows above
+   the deny-list (last match wins). A job's layers are ordered so its Never rows and removed
+   tools sit ABOVE anything "Allow from now on" or "Describe it…" adds. Pinned by a test.
+2. **Claude lane asks: try the supported route first.** `claude --help` lists
+   `--permission-prompts host|none` and `--permission-prompt-tool`; use that to route asks to
+   the runner if it works under `--restricted`, and fall back to the `--settings` hook only if
+   not. Also from `--help`: `--restricted` drops Bash/WebFetch unless `--tools` names them and
+   confines file tools to cwd + `--add-dir`, so the job's folders must all be passed there.
+3. **Pages cannot steer a job.** `automations.run(id)` takes an id only. `event(name, data)`
+   reaches the model as quoted data marked as coming from the page, never as instructions.
+   `save`/`answer`/`remove` are not reachable from a page.
+4. **Resume, per lane** (`Q-closed`): Claude lane `--resume`; native lane replays its saved
+   `.jsonl`. Finished steps are never redone. Where resume fails, the run starts over and the
+   run list says "Started over". The half-done step: Destin's answer pending; build "ask
+   first" until he says otherwise.
+5. **Daily limit clock:** this device's local midnight; a run counts on the day it starts. A
+   missed-run catch-up counts like any run. At the limit the kit's `run(id)` returns a refusal
+   with the same words as the greyed button, and the kit greys its own button.
+6. **Edges:** an ask shows on every open window/device and the first answer wins. Deleting an
+   automation, or deleting its page with Delete, stops its run; the run list says "Stopped:
+   deleted". Page deleted with Keep: the run carries on without the page's data tools. An ask
+   that times out is recorded in the run as "Skipped: no answer" and its dot clears.
+7. **Delete page removes only that page's own approvals, folders and open sites.** Nothing
+   another page also uses is removed.
+8. **Not stored until needed:** the `notify` field waits for card #240. `devices` stays (the
+   approved Advanced screen shows "this device").
+9. **Phones:** "Android gets it free" is unverified for the Claude lane (needs the `claude`
+   program, `--restricted`, a work folder). Check at build; if absent, Claude models are not
+   offered for automations on the phone, and the model menu says why.
+10. The drift review Destin asked for on `pages-finish-review#Q-missed` was the 2026-11-12
+    pass over his past chats that dropped the fence.
