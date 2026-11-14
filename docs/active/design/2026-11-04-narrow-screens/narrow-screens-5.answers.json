@@ -1,0 +1,46 @@
+{
+ "deck": "narrow-screens-5",
+ "started": "2026-11-14T09:01:58.856Z",
+ "submitted": "2026-11-14T09:07:25Z",
+ "cur": 4,
+ "answers": {
+  "N-1": {
+   "v": "yes",
+   "t": 1794646953769,
+   "seconds": 35,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-2": {
+   "note": "there's definitely still a lot of visible overlap here. seems like projects should probably get folded into the 3-line menu and the session name become left-aligned, then the window should block itself from being made smaller to prevent overlap?",
+   "t": 1794647047464,
+   "v": "other",
+   "seconds": 94,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-3": {
+   "v": "yes",
+   "t": 1794647105542,
+   "note": "i think i want to make the left/right margin on each session row a bit more consistent, and also make it better match the \"your sessions\" line margin",
+   "seconds": 58,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-4": {
+   "v": "yes",
+   "t": 1794647116409,
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-5": {
+   "note": "reduce that green glow a LOT. the edit icon is broken, way too small on the pencil for some reason. could we possibly try shrinking quick chips in the same way on mobile? and any shot we could make them just a smidge taller so everything is still touch friendly?",
+   "t": 1794647244865,
+   "v": "other",
+   "seconds": 129,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

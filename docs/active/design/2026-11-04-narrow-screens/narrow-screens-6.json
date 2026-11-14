@@ -1,0 +1,61 @@
+{
+  "title": "Phones and narrow windows — round 6",
+  "key": "narrow-screens-6",
+  "out": "narrow-screens-6.html",
+  "images": "images/narrow-screens-6",
+  "runs": {
+    "round6": "runs/round6"
+  },
+  "themes": [
+    "light",
+    "dark",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Top bar in a narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "crop": [
+        {"crop": "chat#window-today@390x60+0+0", "label": "Today"},
+        {"crop": "chat#window-decided@390x60+0+0", "label": "Round 6"}
+      ],
+      "runs": ["round6"],
+      "new": true,
+      "headline": "Narrow computer window: Projects moves into ☰, the name sits on the left, and the window can't be made too narrow.",
+      "changed": "Your note: \"projects should probably get folded into the 3-line menu and the session name become left-aligned, then the window should block itself from being made smaller to prevent overlap\". All three are done. The window now stops shrinking at 340 pixels wide, where ☰, the name, the terminal switch and the window buttons still fit side by side.",
+      "notice": "Only windows with their own Minimize / Maximize / Close (or a Mac's three coloured buttons) change. Phones keep Projects on the bar, as you approved last round.",
+      "risk": "The window minimum can't be shown in a picture; try dragging a dev window narrow to feel it. A Mac is described, not pictured."
+    },
+    {
+      "id": "M-2",
+      "surface": "Session list on a phone",
+      "path": "Tap the session name at the top of the Android app",
+      "crop": [
+        {"crop": "chat/sessions#phone-today@390x300+0+0", "label": "Today"},
+        {"crop": "chat/sessions#phone-lights@390x300+0+0", "label": "Round 6"}
+      ],
+      "runs": ["round6"],
+      "new": true,
+      "headline": "Session rows now start and end 12 pixels in, lined up with the \"Your sessions\" heading.",
+      "changed": "Your note: \"make the left/right margin on each session row a bit more consistent, and also make it better match the 'your sessions' line margin\". Each row's name, folder, status and model now sit inside the same edges as the heading.",
+      "notice": "The left edge of every name lines up with the Y of \"Your sessions\"."
+    },
+    {
+      "id": "M-3",
+      "surface": "Pills and shortcut chips",
+      "path": "Under and above the message box, on a phone browser connected to your computer",
+      "crop": [
+        {"crop": "chat#phone-pills-today@390x200+0+644", "label": "Today"},
+        {"crop": "chat#phone-pills-compact@390x200+0+644", "label": "Round 6"}
+      ],
+      "runs": ["round6"],
+      "new": true,
+      "headline": "Pills and shortcut chips now share one 24-pixel height; the green glow is faint and the pencil is fixed.",
+      "changed": "Your notes: \"reduce that green glow a LOT\", \"the edit icon is broken, way too small\", \"could we possibly try shrinking quick chips in the same way on mobile? and … just a smidge taller so everything is still touch friendly?\" Pills went from 20 to 24 pixels; the shortcut chips from 32 to 24. Both edit pencils are 24-pixel squares.",
+      "notice": "The two rows match again, and the bottom of the screen is about one line shorter than today.",
+      "measured": "Pills and chips 24 px tall (today: chips 32 px, pills 20–24 px of mixed shapes)",
+      "risk": "24 px is still under the 32 px finger size master set for phones; taps near an edge may miss."
+    }
+  ]
+}
