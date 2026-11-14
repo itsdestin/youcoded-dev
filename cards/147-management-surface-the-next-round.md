@@ -1,7 +1,7 @@
 ---
 id: 147
 title: Management surface: the next round
-stage: planning
+stage: merged
 priority: P2
 tags: management-surface, dev-workspace, housekeeping
 branch: 147-management-surface-the-next-round
