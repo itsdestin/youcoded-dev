@@ -467,3 +467,11 @@ changes; T3 and T10 passed on Linux); O16 is recorded as answered (talk-only-plu
 O15 are narrowed and re-asked plainly. One housekeeping note for the lead: the workspace
 `.gitignore` line 37 (`*-phase*/`) ignores both Phase 0 folders, so they will not be committed
 until force-added or renamed.
+
+## 2026-11-14: T12b closed, the "who hosts a chat" rules written into design.md (design editor)
+
+Report: `docs/active/investigations/2026-11-14-mesh-phase0/T12b-decide-closed.md`. Result: PASS IN A SIMULATOR ONLY. 0 lost finished replies in 340,000 random runs and 0 in the 4,374-case grid; nothing pending at the end. The last two rule fixes came from the last two test campaigns, so another generator may still find a loss; takeovers are the thinnest-tested part; real files, signatures, timing and the 30-day rules were not modelled.
+
+Adopted as engineering (design.md 5.4 now holds 15 numbered rules, 5.3 the id scheme with permanent aliases and `h[0] = SHA-256(chat id ‖ segment)`, segment always 0, S2/S5/6.2/9/12/13 updated): tips and list `parent`; a takeover names its own device's open host entries; a member holding lines for a chat with no valid host entry writes a claim; release duties with `owner` and `role`; reversible set-aside; copy only from members; highest `format` wins. Section 2 untouched (hash unchanged). Phase 5 exit now requires re-running the fuzzer on the real implementation at the same counts plus an independent generator. New open item O27 (hidden second version on delete).
+
+Awaits Destin (round-15 deck, page "Chats and versions"): C-9 pending display and exit, C-10 delete with a hidden second version, C-11 more "Two versions" rows (reworded), C-12 which row keeps the name (reworded), C-13 "checking" and no copying from an untrusted device (reworded), new C-15 chat with a cancelled host record given to its holder, new C-16 second-version row vanishing on early removal, new C-17 higher minimum app version wins. Mutual removal stays on P-10; note the simulator only exercised the fixed-order choice, so picking "both removed" reopens the rules.

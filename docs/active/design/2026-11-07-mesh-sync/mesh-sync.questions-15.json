@@ -1,5 +1,5 @@
 {
- "title": "Your chats on every device — round 15: 35 choices after the first tests",
+ "title": "Your chats on every device — round 15: 37 choices after the first tests",
  "key": "mesh-sync-questions-15",
  "out": "mesh-sync.questions-15.html",
  "stage": "ask",
@@ -15,8 +15,8 @@
    "surface": "The whole feature",
    "path": "Progress since round 14",
    "headline": "Nothing has reached the app yet. Does that match what you expected?",
-   "changed": "1) All the first-round tests have run. 2) Several rules in the design lost chat data in testing, and each has a fix. 3) Nothing has reached the app. 4) The first invisible parts are being built, switched off. 5) Windows and Mac are still untested, because we have no such computer. 'The relay' below means the always-on mailbox that passes locked messages between your devices. It cannot read them.",
-   "notice": "You will see nothing different in the app after this round. The 35 questions that follow are the ones only you can answer.",
+   "changed": "1) All the first-round tests have run. 2) Several rules in the design lost chat data in testing, and each has a fix. The fixes are proven on throwaway models only, not yet on the real app. 3) Nothing has reached the app. 4) The first invisible parts are being built, switched off. 5) Windows and Mac are still untested, because we have no such computer. 'The relay' below means the always-on mailbox that passes locked messages between your devices. It cannot read them.",
+   "notice": "You will see nothing different in the app after this round. The 37 questions that follow are the ones only you can answer.",
    "yes": "Got it",
    "no": "Unclear"
   },
@@ -379,7 +379,8 @@
       "A thief cannot win the race."
      ],
      "cons": [
-      "A real removal tapped at the same moment as another leaves both out until you pair again."
+      "A real removal tapped at the same moment as another leaves both out until you pair again.",
+      "Not yet run through the hosting-rules test; picking it means re-running that test before building."
      ],
      "recommended": true
     },
@@ -387,7 +388,8 @@
      "id": "fixed-order",
      "label": "A fixed order based on when each device was added (one investigation's rule)",
      "pros": [
-      "One answer everywhere."
+      "One answer everywhere.",
+      "Already passed the hosting-rules test."
      ],
      "cons": [
       "A device you did not mean to remove can vanish until you add it again."
@@ -521,7 +523,7 @@
   {
    "id": "G-2",
    "page": "Chats and versions",
-   "intro": "How chats carry across devices, and what you see when two copies differ. 14 questions. A 'version' is one device's copy of a chat."
+   "intro": "How chats carry across devices, and what you see when two copies differ. 16 questions. A 'version' is one device's copy of a chat. The device running a chat right now is its 'host'."
   },
   {
    "id": "C-1",
@@ -530,7 +532,7 @@
    "path": "Pasted pictures in a chat",
    "headline": "Do pictures you paste into a chat travel to your other devices?",
    "today": "A pasted picture is saved inside the chat's own record, so it is already part of the chat. YouCoded also keeps a separate temporary copy on the device where you pasted it.",
-   "problem": "Your earlier answers were read as: the picture that is part of the chat travels with it, and only the temporary copy stays behind. It decides what you see on another device, and how much data a phone uses. It trades privacy and data use against continuity.",
+   "problem": "If pictures travel, your other devices show them and the assistant there still knows what was in them. The cost: chats get bigger, and the pictures sit on more devices. If they do not travel, other devices show a gap where the picture was.",
    "proposal": "Pictures inside a chat travel with it. The temporary copy does not.",
    "options": [
     {
@@ -767,9 +769,9 @@
    "words": true,
    "surface": "Continue here",
    "path": "A chat the devices cannot agree on",
-   "headline": "What should you see when your devices cannot yet agree on who hosts a chat?",
-   "today": "The chat keeps showing its last host with no notice, and you cannot tap 'Continue here'. This can last until one particular device is switched on.",
-   "problem": "You might be stuck for days.",
+   "headline": "What should you see while your devices have not yet agreed on which one runs a chat?",
+   "today": "Two devices can each say 'I run this chat' before they have heard of each other. Until they compare copies, the chat keeps showing the device that ran it last, with no notice. The new rules also refuse 'Continue here' on such a chat. This can last until one particular device is switched on.",
+   "problem": "You tap 'Continue here' on your phone for a chat your laptop also claimed. The laptop is asleep in a bag. The phone does nothing and says nothing, and that can go on for days. The tests did not decide what you should be able to do.",
    "proposal": "Show 'Checking with Desktop before this chat can move', and allow 'Continue here' after a short wait. It decides how often you see second versions.",
    "options": [
     {
@@ -811,8 +813,8 @@
    "surface": "Two versions",
    "path": "Deleting a chat with a hidden second version",
    "headline": "If you delete a chat that secretly had a second version, should the second one be deleted too?",
-   "today": "If you delete a chat before hearing that a second version exists, only the first is deleted. The second stays in your list.",
-   "problem": "A chat you deleted can reappear.",
+   "today": "If you delete a chat before hearing that a second version exists, only the first is deleted. The second stays in your list. The new rules keep this as it was.",
+   "problem": "You delete a chat on your phone. Your laptop, offline, had carried on that chat in a different direction. When the laptop reconnects, a row for the chat you deleted is back in your list.",
    "proposal": "Leave it, and label the row so it does not look like a ghost. It decides whether unseen work is ever erased.",
    "options": [
     {
@@ -843,10 +845,10 @@
    "words": true,
    "surface": "Two versions",
    "path": "A new place the 'Two versions' row appears",
-   "headline": "Should a clash between tapping the host chip and another device taking over show a 'Two versions' row?",
-   "today": "If you tap the host chip while another device takes over from an older copy at the same moment, the other device's new reply used to be lost silently.",
-   "problem": "That reply is lost with no sign.",
-   "proposal": "It becomes a second version, shown in the existing 'Two versions' row. It adds a notice in a new situation.",
+   "headline": "Should more clashes between devices show a 'Two versions' row, instead of dropping a reply?",
+   "today": "Two devices can act on one chat at the same moment. Before the tests, the design let one device's finished reply silently disappear in some of these clashes.",
+   "problem": "You tap the chip on your phone at the same moment your laptop takes the chat over from an older copy. Or a newer takeover covers up an earlier split between two copies. In both cases a finished reply could vanish with no sign.",
+   "proposal": "In every such clash the reply is kept as a second version, shown in the existing 'Two versions' row. You will see 'Two versions' in more situations than the design described.",
    "options": [
     {
      "id": "show-row",
@@ -877,8 +879,8 @@
    "surface": "Two versions",
    "path": "Which version is 'the original'",
    "headline": "When there are two versions, which one is 'the original'?",
-   "today": "One version keeps the chat's name and place, chosen by an internal number you never see. The choice can switch sides when a third device reports.",
-   "problem": "The name can switch sides on you. So far it is not known to matter.",
+   "today": "One version keeps the chat's name and place, chosen by an internal number you never see. The new rules give every version a lasting label, so nothing is lost or renamed in the data. Only which row carries the chat's name can still switch, when an older copy turns up late.",
+   "problem": "You open your list and 'Trip planning' is your laptop's copy. Your phone, offline for a week, reconnects, and now the name sits on the phone's copy and the laptop's copy has moved down. Nothing is lost; the name moved. So far it is not known to matter.",
    "proposal": "Leave it until it is seen to matter. It decides which row you see first.",
    "options": [
     {
@@ -911,9 +913,9 @@
    "surface": "Devices",
    "path": "After removing a lost device",
    "headline": "After you remove a lost device, how should another device look while it is 'unknown'?",
-   "today": "If the device you used to remove one had not yet heard about a newer device, the newer one shows as 'unknown' until it reconnects.",
-   "problem": "You may think a device vanished, or see a row that looks broken.",
-   "proposal": "Show 'checking' for up to the 30-day window instead of hiding it. It changes what you see on the Devices screen.",
+   "today": "If the device you used to remove one had not yet heard about a newer device, the newer one shows as 'unknown' until it reconnects. The new rules are strict about it: your other devices do not copy chats from a device they do not yet trust.",
+   "problem": "You remove your lost tablet from your laptop. Your phone was added by that tablet a minute earlier, and your laptop has not heard of it yet. The phone looks like it vanished, and its chats do not reach your laptop until the laptop hears of it or you add it again.",
+   "proposal": "Show 'checking' for up to the 30-day window instead of hiding it, and do not copy chats from it until it is trusted. It changes what you see on the Devices screen.",
    "options": [
     {
      "id": "show-checking",
@@ -922,7 +924,8 @@
       "Honest. Nothing seems gone."
      ],
      "cons": [
-      "A row that looks half-finished."
+      "A row that looks half-finished.",
+      "Chats on that device are missing for a while."
      ],
      "recommended": true
     },
@@ -967,6 +970,107 @@
      ],
      "cons": [
       "False safety."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-15",
+   "words": true,
+   "surface": "Continue here",
+   "path": "A chat nobody is allowed to continue",
+   "headline": "If a chat's only 'I run this' record was cancelled, should the device holding the newest copy quietly run it?",
+   "today": "Each chat records which device runs it. If the device that added your others is removed early, its records can be cancelled, and the chat can end up with no device allowed to continue it.",
+   "problem": "Your laptop added your phone and your tablet, then claimed 'Trip planning'. You remove the laptop from the tablet before the tablet hears of that claim. The claim is cancelled. Now no device may continue 'Trip planning', though your phone holds all of it.",
+   "proposal": "The device that holds the most recent copy quietly becomes the one that runs the chat, and the chat shows 'on that device'. You are not asked.",
+   "options": [
+    {
+     "id": "quiet-new-home",
+     "label": "Yes, quietly give it to the device holding it",
+     "pros": [
+      "The chat is never stuck.",
+      "Nothing to tap or decide."
+     ],
+     "cons": [
+      "A chat may move to a device you did not pick, with no message."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave-stuck",
+     "label": "No, leave it with nobody",
+     "pros": [
+      "Nothing moves without you."
+     ],
+     "cons": [
+      "A chat nobody can continue, with no way out."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-16",
+   "words": true,
+   "surface": "Two versions",
+   "path": "Removing a device that made a second version",
+   "headline": "Should a second-version row vanish if the only device holding it is removed early?",
+   "today": "A second version is a copy only some devices have. Its record is signed by the device that made it.",
+   "problem": "Your tablet and laptop each wrote a different reply in the same chat. You remove the tablet from your laptop before any other device received its lines. The 'Two versions' row disappears. The lines stay on the tablet, and come back only if you pair it again.",
+   "proposal": "The row goes away, and the removal screen says so: 'N chats have replies only this device holds'. It was measured in 7,291 of 200,000 stress runs.",
+   "options": [
+    {
+     "id": "warn-on-removal",
+     "label": "Let it go, and warn on the removal screen",
+     "pros": [
+      "You choose with full information.",
+      "The lines are kept on the removed device."
+     ],
+     "cons": [
+      "A row you saw can disappear."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no-warning",
+     "label": "Let it go, with no warning",
+     "pros": [
+      "One less line on the removal screen."
+     ],
+     "cons": [
+      "You find out only when the row is gone."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-17",
+   "words": true,
+   "surface": "Chats",
+   "path": "A chat that needs a newer app",
+   "headline": "When two devices set different 'needs app version' levels at once, should the higher one win?",
+   "today": "A chat can say which app version is the oldest allowed to continue it. When two devices set it at the same moment, the older setting could win about half the time.",
+   "problem": "You raise the minimum on your laptop at the same moment your phone sets a lower one. If the lower wins, your old tablet app opens the chat and may misread it.",
+   "proposal": "The higher level always wins and never goes down. An old app shows 'Update to open this chat' slightly more often.",
+   "options": [
+    {
+     "id": "highest-wins",
+     "label": "The higher level wins",
+     "pros": [
+      "An old app never misreads a chat."
+     ],
+     "cons": [
+      "An old app is blocked a little more often."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "older-may-win",
+     "label": "As before, the lower can win",
+     "pros": [
+      "Fewer 'Update' messages."
+     ],
+     "cons": [
+      "An old app may misread a chat."
      ]
     }
    ]

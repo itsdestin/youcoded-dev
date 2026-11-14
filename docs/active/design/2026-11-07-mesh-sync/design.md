@@ -663,7 +663,8 @@ desktop returns.**
      finished (5.4; Phase 0: data-loss INV-5). About 1 in 10 native chats and 3% of Claude
      Code chats end mid-reply on real data (Phase 0: T2 finding 18).
    - Finished replies the phone never had: a second version; "two versions" row on both.
-     The rules that decide this are being re-written (PENDING (T12b decide rules), 5.4).
+     The rules that decide this are the replacement rules in 5.4 (Phase 0: T12b), closed in
+     a simulator only; the product choices they touch are on the round-15 deck.
      If the phone's user chose "Continue from here as a new version", it is a deliberate
      fork and no archive prompt shows.
 5. If the desktop can reach nothing, it carries on as host. That too can end in a second
@@ -1060,23 +1061,41 @@ byte-identical on all three. One connection per path per device.
 
 - `chat id = provider + ":" + the runtime's session id`. `--resume` keeps the id and file.
   `/clear` in Claude Code starts a new id: a new chat.
-- A chat has one or more versions. The main version's id is the chat id. Other ids are
-  computed the same on every device: `SHA-256(chat id ‖ winning host entry ‖ losing host
-  entry)` for an accidental split; `SHA-256(chat id ‖ takeover id ‖ "tail")` for finished
-  replies found in a tail; `SHA-256(chat id ‖ fork entry id)` for a deliberate fork.
+- A chat has one or more versions. The main version's id is the chat id (the main version
+  is the cluster with the lowest root). Other ids are computed the same on every device
+  (Phase 0: T12b rule 8): an accidental split is `SHA-256(chat id ‖ "v" ‖ lowest root id of
+  its cluster)`, where a root is a host entry with no parent (a `claim`, or a takeover with a
+  null parent), found by following `parent` links through every known entry, valid or not
+  (an unknown parent id is itself a root; a takeover with several parents has the union of
+  their roots). Every root `r` also names its cluster for ever as the alias `SHA-256(chat id
+  ‖ "v" ‖ r)`, which `decide` returns as `aliases`. Finished replies found in a tail are
+  `SHA-256(chat id ‖ takeover id ‖ "tail")`; a deliberate fork is `SHA-256(chat id ‖ fork
+  entry id)`. An id whose defining entry is itself void or deleted disappears; that is the
+  only way an id a device has shown can stop resolving. (The first draft's `SHA-256(chat id
+  ‖ winning host entry ‖ losing host entry)` is withdrawn.)
 - A version stores its own lines from the split point and reads earlier ones from its
   parent, EXCEPT after Claude Code's fork-on-resume, which rewrites every earlier line (new
   `sessionId`, `cwd` rewritten to the current folder, new `promptId`, bookkeeping lines
   de-duplicated, 0 of 77 lines byte-identical): a forked version stores ALL its lines;
   lines keep their uuids (Phase 0: T3 F3). A chat is keyed by chat id, never by path
   (slug repair moves and replaces files; Phase 0: T2 finding 6).
-- **Version ids are not stable as first written** (Phase 0: T12 F6): ids come from the
-  winning and losing host entries, so a third concurrent entry or a takeover changes them
+- **Version ids were not stable as first written** (Phase 0: T12 F6): ids came from the
+  winning and losing host entries, so a third concurrent entry or a takeover changed them
   (1,504 of 20,000 fuzz runs even with every other fix on), and the chain's first value used
-  the version id, so every chain hash would change. Adopted for the store: the first chain
-  value never uses a version id. The rest (the store keys lines by chain, `decide` returns
-  the host entries that define each version and an alias list so an id change is a rename)
-  belongs to the decide rules and is PENDING (T12b decide rules).
+  the version id, so every chain hash would change. RESOLVED in the simulator (Phase 0:
+  T12b F3): the first chain value never uses a version id (`h[0] = SHA-256(chat id ‖ 0)`),
+  so a renamed version keeps every line hash, `claim.head` and `atHash`; the store keys
+  lines by chain and re-keys a version when `decide` says its id changed; ids come from
+  roots with permanent aliases (above). "No change after first sight" is NOT achievable
+  (two devices claim unaware of each other, then one copy turns out to contain the other),
+  so the promise is weaker: a shown id keeps meaning the same version or the one it was
+  merged into, unless its defining entry was cancelled or its chat deleted. Measured over
+  200,000 wide runs: 0 shown ids unresolvable for any other reason; 3,218 became aliases;
+  7,291 vanished because their defining entry was cancelled by a removal's cut-off or its
+  signer was not yet known; 249 tail versions went with a deleted chat; 91 tail versions
+  went back to the host when the winning takeover was cancelled. Without aliases 1,212 of
+  20,000 runs ended with a shown id resolving to nothing. One residue: the row that keeps
+  the chat's name can switch sides when an older copy arrives later (only the label moves).
 - When a non-main version is first hosted, the runtime gives it a session id of its own
   (Claude Code's fork-on-resume); a `bound` entry records it.
 - Each version is its own list row, grouped with its relatives. Deleting one version does
@@ -1105,7 +1124,7 @@ byte-identical on all three. One connection per path per device.
   chats no runtime on this device holds (Phase 0: segments-decision 5; this is what the old
   size-only sync did to 5b7f12b0).
 - **A hash chain** per segment: `h[0] = SHA-256(chat id ‖ segment)` (not the version id;
-  Phase 0: T12 F6), `h[n] = SHA-256(h[n-1] as 32 raw bytes ‖ raw bytes of line n)`,
+  Phase 0: T12 F6, T12b; the segment is always 0, see the RESOLVED segments block above), `h[n] = SHA-256(h[n-1] as 32 raw bytes ‖ raw bytes of line n)`,
   `uint32be` for the segment (the encodings of `‖` are pinned by the T1 inventory tool and
   must become the Phase 2 spec; Phase 0: T1 finding 30). Chain values are kept even when a
   line's bytes are evicted.
@@ -1146,8 +1165,9 @@ byte-identical on all three. One connection per path per device.
   a tail is "unfinished" only for a recognised mid-reply state, anything else is finished
   (Phase 0: data-loss D-4, INV-5).
 - The head (both chain values), the control log, the latest summary, and a manifest of
-  extras. T12 proposes that each line also records which host entry it arrived under; that
-  belongs to the decide rules and is PENDING (T12b decide rules) (Phase 0: T12 F5, F15).
+  extras. The store records, per line, which device wrote it and under which host entry it
+  arrived (per-line provenance; the T12b rules 10 to 12 depend on it); it keys lines by
+  chain and re-keys a version when `decide` renames it (Phase 0: T12 F5, F15; T12b F5).
 
 **Copying.**
 
@@ -1234,51 +1254,124 @@ extras by session id (T3 F6, T20).
 The control log is a set of signed entries per chat (shapes in 6.2). Each entry lists the
 entries its author had seen, so the log's meaning never depends on arrival order or clocks.
 
-**`decide(entries, roster)`**: pure; the same answer for the same entries in any order;
-answers per version.
+**`decide(entries, roster)`**: pure; the same answer for the same entries in any order and
+any duplication; no clock is read (an entry's time is display only). It sorts entries by id
+first; the permutation test is the guard. Output per chat: versions, the main version,
+aliases, tails, `pending`, parked entries.
 
-> PENDING (T12b decide rules): the rules below were executed and fuzzed in T12 / T13
-> (`decide.mjs`, 20,000 random runs, a 4,374-case grid for late lines from the old host) and
-> **fail as written**; a separate agent is settling the replacement rules, so the bullets
-> below are NOT rewritten here. Known problems, from `T12-T13-decide.md`: (F1) "later = had
-> seen" lets a later takeover erase a split (host candidates should be the lineage tips,
-> making `parent` load-bearing); (F2) "a prefix means one chat" is not transitive (882 of
-> 20,000 runs contradict themselves with three concurrent claims); (F3) a host entry that
-> stops hosting for any reason other than "was the parent of a takeover" owes a `released`
-> nobody is told to write, so its finished replies are lost (4,114 of 20,000 runs; 1,323 of
-> 4,374 grid cases): every device whose latest host entry is off the winning lineage must
-> append `released`; (F4) `released` needs an `owner` field; (F5) "set aside under the
-> takeover's id" breaks while a takeover is `pending`, when it loses, and for lines that are not
-> the previous host's; (F6) version ids are not stable; (F7) cut-off and `witness` need
-> `backed` and `seen` (see 5.1); (F8) the two removal sentences contradict (see 5.1, OPEN);
-> (F10) `pending` has no way out for the user and a takeover of a takeover while pending
-> re-opens the question (a shortcut of naming every candidate as `parent` is UNSAFE, 3 of
-> 1,000 runs lost a reply); (F11) `restored` must undo every `deleted` in its own causal
-> past; (F12) a delete concurrent with a second version the deleter never saw leaves the
-> second version live; (F13) concurrent `format` entries should take the highest value
-> (the lower-id rule lets the older minimum win half the time); (F14) a "lower id" tie depends
-> on the clock text through the id and that is fine. T21 adds: copies are compared by the
-> conversation chain, and a copy whose extra lines are all bookkeeping counts as a prefix. With
-> T12's fixes 3 of 20,000 runs still lose a reply (F9, unexplained). Visible consequences that
-> need Destin are in round-15 C-9 to C-12. Until the replacement lands, a builder must not
-> implement the bullets below as written.
+> RESOLVED IN SIMULATION ONLY (Phase 0: T12b, 2026-11-14). The rules below replace the
+> first draft's bullets, which failed as written (4,114 of 20,000 runs lost a finished reply,
+> 781 left a chat pending for ever, 882 contradicted themselves; `--literal` run). With them,
+> 0 finished replies were lost in 340,000 random runs (100,000 old generator, 200,000 wide
+> generator, 40,000 wide runs with every removed device re-added) and 0 in the 4,374-case
+> grid; nothing pending at the end; no contradictory relations. This is NOT a proof: see
+> section 12, risk 3, and the Phase 5 exit line. A builder must keep every rule, including
+> the ones that look redundant. Tags: `(Phase 0: T12b <ref>)` names the report item a rule
+> comes from (`F1` the three unexplained seeds, `F2` the wide-generator fixes, `F3` version
+> ids, `F4` the earlier holes, `F5` assumptions). Still OPEN and not decided by these rules:
+> what a user can do with a chat that is `pending` (O21), deleting a chat with a hidden
+> second version (O27), and which device goes when two remove each other (O22).
 
-- **Order.** An entry that had seen another is later. Otherwise they are concurrent.
-- **Void.** Entries from a removed device beyond the cut-off.
-- **Host.** Follow the host entries (`claim`, `takeover`); the latest hosts. If that
-  device is removed, the version has no host and any device may take over.
-- **Concurrent host entries.** A device holding the longer copy checks whether the other's
-  stated head lies on its chain and appends a `relation` entry. Until then the answer is
-  `pending`: the chat shows its last known host, a message typed there goes to that host
-  if reachable, and no notice is raised.
-  - One copy is a prefix of the other: one chat; the author of the longer copy hosts.
-  - Identical copies: a `claim` marked as last run on its device hosts; otherwise the
-    lower entry id. In both cases the other entry is void and its author is a watcher.
-  - The copies differ: two versions; the lower entry id keeps the chat id.
-- **Name, flags, talk-only, minimum app version, segment:** the latest entry of that kind;
-  concurrent ones, the lower entry id.
-- **Deleted** is per version. `restored` names the `deleted` it undoes; a concurrent
-  delete and restore resolve to deleted.
+1. **Order.** An entry that had seen another is later; otherwise concurrent. Entries whose
+   author is not yet known to the roster are parked, not dropped; a parked entry applies as
+   soon as its author is known.
+2. **Void and the roster** (Phase 0: T12 F8, F7; T12b F4, D2). Removals are replayed in the
+   order (tenure of the signer, entry id), tenure being the size of the causal past of the
+   signer's own `add`; an accepted removal is final. A removal is dead if its signer is not
+   a member at its turn, or an earlier accepted removal of its signer does not exempt it. An
+   entry signed by a removed device is void unless it lies inside the cut-off, which is the
+   causal past of the removal's `lastEntry` and of every valid `witness` of it. A witness is
+   an ordinary signed entry with `seen`, taken at the moment the device first holds the
+   removal. Void is not monotone (an unwitnessed device can become valid later); a device
+   can list such an entry as "checking". The fixed order gives one answer in every run (0
+   runs in 20,000 wide runs where both of two mutually removing devices stand); WHICH device
+   goes is the product choice still OPEN (O22).
+3. **Host candidates (tips)** (Phase 0: T12 F1; T12b F2 D5). The host entries (`claim`,
+   `takeover`) that are valid and that no valid takeover names as its `parent` are the tips.
+   `parent` is a list. A tip signed by a removed device counts only if some remaining device
+   vouches in the cut-off or a witness (`backed`) that it holds that entry's head lines;
+   otherwise it is unbacked: not a candidate, and no device sets lines aside for it.
+4. **Takeover parents** (Phase 0: T12b D4). A takeover names, as `parent`, the host entry it
+   takes over and every host entry written by its own device that is still a tip. `parent` is
+   empty only for a takeover of a chat whose host entries are all gone (rule 9).
+5. **Relations** (Phase 0: T12 F2, F10; T21). Each pair of tips not related by `parent`
+   needs a `relation` (`prefix`, `identical` or `differ`; compared by conversation chain,
+   extra bookkeeping lines count as a prefix). Until every pair has one the chat is
+   `pending`: it shows its last known host, a message typed there goes to that host if
+   reachable, no notice is raised, and a device refuses to take over a pending chat. Only the
+   author of the longer copy's entry writes a relation. What the user can do about a pending
+   chat is OPEN (T12 F10; O21).
+6. **Clusters** (Phase 0: T12 F2). A copy is absorbed only by a copy it is a prefix of, or by
+   an identical one ranked higher (a `claim` marked ran-here, then the lower id). Every copy
+   that is not a prefix of another is its own version. (A prefix is not transitive across
+   versions.)
+7. **Host.** The host of a version is the device of its winning host entry. If that device
+   is removed the version has no host and any device may take over.
+8. **Version ids** (Phase 0: T12b D8, F3). The main version (the cluster with the lowest
+   root) is the chat id. Another version's id is `SHA-256(chat id ‖ "v" ‖ lowest root id of
+   its cluster)`. A root is the host entry reached by following `parent` links through every
+   known entry, valid or not; an unknown parent id is itself a root; a takeover with several
+   parents has the union of their roots. Every root `r` names its cluster for ever as
+   `SHA-256(chat id ‖ "v" ‖ r)`; `decide` returns this as `aliases`. A tail version is
+   `SHA-256(chat id ‖ takeover id ‖ "tail")`; a deliberate fork is `SHA-256(chat id ‖ fork
+   entry id)`. An id whose defining entry is itself void disappears; that is the only way a
+   shown id can stop resolving. The chain starts at `h[0] = SHA-256(chat id ‖ segment)`
+   (segment always 0), so renaming a version changes no line hash.
+9. **A chat with no valid host entry** (Phase 0: T12b D9, F1). A member that holds lines for
+   the chat (and the chat is not `pending`) appends a `claim` (not ran-here) for the copy it
+   holds, once per distinct copy. Several members may do so; rules 5 and 6 settle them.
+10. **The tail and who owes it.** `released {takeover, role, owner, tailLines, tailHash,
+    lastReplyEndInTail}`, keyed by (takeover, owner, role); of several valid ones for one
+    key the longest tail wins, ties by lower id; a removed device's own release counts only
+    if inside its cut-off.
+    - a. (Phase 0: T12b D10a, T12 F3) For every valid takeover, winning or losing, the
+      author of each parent entry owes `role: parent` for the lines it wrote before the
+      takeover point and beyond it. Every device whose latest host entry is not on the
+      winning lineage of its version owes `role: self` for the lines it wrote under that
+      entry beyond its head.
+    - b. (Phase 0: T12) If the owner is removed, any remaining device that holds a longer
+      tail appends a release on its behalf.
+    - c. (Phase 0: T12b D10c) `role` (`self` or `parent`) tells apart the two tails one
+      device can owe for one takeover (rule 4 makes this common).
+    - d. (Phase 0: T12b D10d) The tail is the lines after the point up to and including the
+      owner's last own line (per-line provenance). For `role: parent` it is the lines
+      written before that takeover; for `role: self` the lines written under the losing
+      entry. Of several runs a device holds, the one with the most such lines is used.
+    - A tail with a finished reply becomes a second version; only an unfinished reply is set
+      aside (the retention rules below stay). Classification fails toward finished.
+11. **Setting lines aside.** Lines beyond a takeover point that belong to an older era are
+    set aside on a device only when
+    - a. the takeover is valid and the device is not its author;
+    - b. (Phase 0: T12b D11b) the takeover is on the winning lineage (the resolved host
+      entry or an ancestor of it), never while the chat is `pending`;
+    - c. (Phase 0: T12b D11c) nothing already set aside is overwritten (the longer of two
+      prefix-related runs is kept; unrelated runs are both kept);
+    - d. (Phase 0: T12b D11d) it is reversible: whenever the decision changes (the takeover
+      turns void, unbacked, unknown, pending, off-lineage, or valid again) the lines go back
+      where they belong, and the author's own lines under a void takeover stay with the
+      author's entry; lines after the point that came from elsewhere stay in the chain;
+    - e. (Phase 0: T12b D11e) the host of a version never copies another device's lines onto
+      its own chain, and every copy of lines is followed by a reconcile before the next
+      write.
+12. **Copying lines** (Phase 0: T12b D12). A device copies lines only from a peer that is a
+    member in its own view. Control entries are exchanged regardless. A freshly added device
+    whose introducer was removed before the others heard of it is "checking" and is not
+    copied from until it is trusted.
+13. **Deleted** (Phase 0: T12 F11). Per version. `restored` undoes every `deleted` in its own
+    causal past; a delete concurrent with a restore stays. Tails of a deleted version go with
+    it. Deleting a chat that has a second version the deleter never saw leaves that version
+    live: OPEN (T12 F12; O27).
+14. **Name, flags, talk-only, segment:** the latest entry of that kind; concurrent ones, the
+    lower id. **Minimum app version (`format`)** (Phase 0: T12b D14): the highest of all
+    valid values; it never goes down.
+15. **Duties are written once** (Phase 0: T12b D15). A device writes at most one release per
+    (takeover, owner, role, tail length) and one rule-9 claim per distinct copy, even when
+    other devices see its entry as void.
+
+Rules that rest on one to three simulator seeds each, with neighbouring rules overlapping,
+so a single-rule revert often shows nothing: 11c, 11e, 4, 10c (T12b F2, F5). Takeovers are
+the thinnest-tested part (only 1,976 of 20,000 wide runs end with a takeover entry; the
+4,374-case grid exists for that reason).
 
 **Reserving the host role.** Each version has a host register on the keeper holding the
 latest host entry. A device taking over checks the register holds the parent it knows and
@@ -1929,7 +2022,7 @@ roster-level `format` entry, not a peer's claim; Phase 0: threat model L-8). The
 fill-protocol refusal (close code 4005) is the precedent. A `format` entry names the minimum
 app version that may host or continue a chat; concurrent `format` entries take the HIGHEST
 value and never go down (the lower-id rule let the older minimum win in 21 of 40 trials;
-Phase 0: T12 F13, part of PENDING (T12b decide rules)). Unknown entry and frame kinds are
+Phase 0: T12 F13, adopted in T12b rule 14: 410 of 20,000 wide runs failed the old rule). Unknown entry and frame kinds are
 kept and passed on, never dropped, up to a bound per sender (maximum frame size, maximum
 unknown-kind bytes, rate limits per sender and path; threat model L-7).
 
@@ -1947,7 +2040,7 @@ Engineering proposals, precise enough to write tests from. Field names may be re
 | S2 | Chat store | `head(version)`; `hashAt(version, segment, n)`; `read(version, segment, from, to) → lines \| evicted`; `append(version, segment, fromLine, lines) → ok \| parked \| not-a-prefix`, idempotent; `setAsideTail(takeoverId, version, fromLine)`, `tail(takeoverId)`, `setAsideDamaged(version)`; `replyEnds(version)`; `controlLog(chat)`; `appendControl(entry) → ok \| parked \| duplicate`; `summary(version)`; `listVersions()`; `hasExtra / readExtra / putExtra(hash)`; `evictBody / restoreBody`. Every write is atomic, fsynced before any acknowledgement, and survives a kill at any point. The `segment` argument is always 0 (segments-decision, 5.3). The read side serves five shapes (pages by line number, list metadata, a chat's folder, search turns, helper history; Phase 0: T20 4). |
 | S3 | Replicator ↔ link layer | `sendDurable(target, frame) → Promise<Ack>` where `Ack` means the target has stored it durably; kept and retried until then; order kept per group. `sendLive(target, frame)`: best effort; dropped when more than 1 MB is queued for that target. A frame is at most 1 MiB (Phase 0: T7). `target` is a device id or `keeper`. `onFrame(handler)`. `presence()` and a change event. |
 | S4 | Link layer ↔ relay | Operations and results in 6.4. Tests: a relay built with a shim that records every byte it stores, asserting none decrypts with any key in the test; a static check that the Worker imports nothing from the app's key code; register compare-and-swap under concurrency. |
-| S5 | `decide` | `decide(entries, roster) → per version {host \| none \| pending, segment, deleted, name, flags, talkOnly, minVersion}`, plus `versions[{id, from, atLines}]`, `tails[{takeover, fate}]` and `void[]`. Inputs include `relation` and `released` entries, so no line data is needed. Property test: every permutation and duplication of the same entries gives the same output on every device (holds by construction because the function sorts by id first; Phase 5 must keep the permutation test as the guard). Its rules are PENDING (T12b decide rules): added properties "no finished reply that a remaining device holds is ever outside every version, a set-aside tail or a deleted chat" and "a version id shown at any time still exists at the end or has an alias" (Phase 0: T12 4). |
+| S5 | `decide` | `decide(entries, roster) → per version {host \| none \| pending, segment, deleted, name, flags, talkOnly, minVersion}`, plus `versions[{id, from, atLines}]`, `tails[{takeover, fate}]` and `void[]`. Inputs include `relation` and `released` entries, so no line data is needed. Property test: every permutation and duplication of the same entries gives the same output on every device (holds by construction because the function sorts by id first; Phase 5 must keep the permutation test as the guard). Its rules are the 15 numbered rules of 5.4 (Phase 0: T12b), closed in a simulator only. Also returns `aliases` and per-version `pending`. Added properties: "no finished reply that a remaining device holds is ever outside every version, a set-aside tail or a deleted chat", "a version id shown at any time still resolves at the end (as a current id or an alias) unless its defining entry was cancelled or its chat deleted" and "`format` is the highest valid value" (Phase 0: T12 4; T12b P3, P7, P10). Still OPEN: pending exit (O21), hidden second version on delete (O27), mutual removal (O22). |
 | S6 | Session router ↔ channel table | A `call` frame (6.3) is served through `serveRemoteChannel` with `{door:'remote', peer}`. Host events for the chat are forwarded as `live-event` frames with rising numbers. **Parity test, fail-closed (Phase 0: threat model S-2; T9 3.4):** the peer allow-list is an explicit list in a test file and the test fails if any channel not on it is peer-reachable; it needs a `scope: 'session'` marker on each channel entry (the table has none; 99 of 478 entries are session-scoped). `session:input` and `session:create` are served through a filter (5.5). Every `mesh` channel is `desktopOnly`, accepted only from the main window's top frame (`event.senderFrame` origin and URL), and no channel returns key or secret material (threat model M-1). |
 | S7 | Host control ↔ runtimes | `isReplyRunning(version)`; `stopForSwitch(version) → {replyEnd} \| failed(busy \| gone \| cancelled)`, after which the chat is fenced; `becomeHost(version, uptoLine, mode: normal \| talk-only) → ok \| failed(lines-missing \| extras-missing \| no-folder \| sign-in \| runtime-error)`; `releaseHost(version) → {tailLines, tailHash, lastReplyEndInTail}`, which stops the process if the app owns it and marks the working file stale; the file is never moved while a process may still be writing it. |
 | S8 | Project carrier ↔ GitTransport | `GitTransport` runs against `mesh-remote.git` as its remote. The carrier's own interface: `importBundle(bytes) → tips`, `exportBundle(since) → bytes`, `tip()`. The clash rule compares git blob ids, with the four T4 changes of 5.7 (own merge code over plumbing, conservative base, covered heads and tie-break, hidden duplicate copies). The existing contract suite (11 tests) runs against it with TWO tests rewritten (`sync-transport-contract.ts:68` and the first-sync test around 127-136), plus T4's assertions and `fuzz.mjs` schedule generator; `GitTransport.push` and `maybeGc` change to allow a forced tip (Phase 0: T4 4). |
@@ -1988,7 +2081,11 @@ Phase 0 changes to the shapes (Phase 0: T5 C5, C8; T12 4):
   and may be null only for `host-removed` with no host entry left; `restored` undoes every
   `deleted` in its causal past; the `version` entry is never written by any rule and is
   either given a role (the natural home for version aliases) or deleted. These come
-  from T12 and belong to the decide rules: PENDING (T12b decide rules). `claim` and `takeover`
+  from T12 and are now fixed by the 5.4 rules (Phase 0: T12b): `released` gains `owner` and
+  `role` (`self` or `parent`); `takeover.parent` is a list; `claim` may also be written by a
+  member for a chat with no valid host entry (rule 9); `cutoff` and `witness` gain `backed`
+  and `witness` gains `seen`; the `version` entry is the natural home for `aliases`, or is
+  deleted. `claim` and `takeover`
   carry both chain values (T21), and `claim.ranHere` is a device id, not a hostname.
 - The removal bundle is `remove` + `keygen` as one signed unit (5.1). A roster `add` for a
   re-paired device carries the removed device's chain heads for offering back as versions.
@@ -2317,7 +2414,7 @@ wherever the design claims it. Reports: `docs/active/investigations/2026-11-14-m
 | T9 | PASS (code reading only) | Of four limits, one enforced, one half, two silent; none shows the 2.1 sentence (3.3, 5.5). |
 | T10 | PASS on Linux | Resume in a new folder edits correctly; talk-only does not. Windows- and Android-written chats UNPROVEN. |
 | T11 | PARTIAL (research only) | Works out of the box on none of the four systems; O4 narrowed to three choices (5.1, 13). |
-| T12 / T13 | PARTIAL | `decide` as written fails; replacement rules PENDING (5.4). |
+| T12 / T13 | PASS IN SIMULATION ONLY (T12b) | `decide` as first written failed (4,114 of 20,000 lost a reply). The 15 replacement rules of 5.4 lose 0 finished replies in 340,000 random runs (100,000 old generator; 200,000 wide; 40,000 wide with every removed device re-added) and 0 in the 4,374-case grid; nothing pending at the end; no contradictory relations. Honest limits: a simulator written by the rule author, judged by its own checks; the last two rule fixes came from the last two campaigns, so another generator may still find a loss; takeovers are the thinnest-tested part (only 1,976 of 20,000 wide runs end with a takeover entry); several rules rest on one to three seeds; real files, signatures, timing, more than one chat, the keeper, key generations and the 30-day and 90-day rules were not modelled. Shown version ids: "0 changes" is not achievable; 0 unresolvable except cancelled or deleted. Properties added: no finished reply lost, shown ids resolve, `format` highest. OPEN: pending exit, hidden second version on delete, mutual removal. |
 | T14 to T18 | NOT RUN | Need the real relay, store and phone. |
 | T19 | PARTIAL (simulation, Linux) | Hold = sleep signal AND tick gap (5.9). No real sleep on any system. The user's desktop is the intended sleep rig, set up by ssh and wake-over-network (round-15 S-1). |
 | T20 | PASS | 29 files read chat files directly (7.1). |
@@ -2404,7 +2501,7 @@ starts (O1). Everything below that a phase says "needs O1" waits for it.
 | 2. Chats copy | Chat store, adapters, chains, reply ends, control log (`claim`, `summary`, `renamed`, `flag`, `segment`), replicator, relay holding and releases, the 30-day and 1 GB rules, registers, storage setting, the chat list, relay on/off | Chat list on a second device (reading only), storage and relay settings | A chat written on A is readable on B in under 2 s, and after B was off a day; inventories match; T2, T14, T16 pass |
 | 3. Watching | Session router and proxy, peer context, per-chat capabilities, host chip, permission from any device, signed calls (host entries are `claim` only in this phase), start on another device, version fallback | Watching and typing into a chat hosted elsewhere | A watcher drives a full reply on a remote host, desktop and phone; parity tests green; T17 passes |
 | 4. Project files | Mesh carrier, clash rule, sequencer, tip register, per-device download, 2 s wait, combining projects at pairing | Project list with "sync on this device"; the same-project question | T4 passes AGAINST `GitTransport` itself (Phase 0 passed only a prototype, with the four changes in 5.7); a project edited on two hosts converges; inbound-file checks and LT-9 pass |
-| 5. Host changes | `takeover`, `released`, `relation`, `version`, `bound`, `talk-only`, `deleted`, `restored`; full `decide`; combining chats at pairing; reservations; seam S7; divider and notes to the assistant; notices; delete; awake per reply; quit rule; launch and wake checks; the hold across sleep | Every notice row, the divider, quitting, deleting | Every row in 2.7 reproduced in the rig, with walk-throughs B to D and a kill between every step of a takeover; T12, T13 (with the replacement decide rules, PENDING), T16, T19 pass; LT-3, LT-4, LT-8, LT-14 pass; real sleep on the user's Linux desktop (Windows and macOS UNPROVEN) |
+| 5. Host changes | `takeover`, `released`, `relation`, `version`, `bound`, `talk-only`, `deleted`, `restored`; full `decide`; combining chats at pairing; reservations; seam S7; divider and notes to the assistant; notices; delete; awake per reply; quit rule; launch and wake checks; the hold across sleep | Every notice row, the divider, quitting, deleting | Every row in 2.7 reproduced in the rig, with walk-throughs B to D and a kill between every step of a takeover; T12, T13 (with the T12b decide rules of 5.4) and T16, T19 pass; **plus: the T12b fuzzer is re-run against the real `decide` implementation with at least the same run counts (100,000 old generator, 200,000 wide, 40,000 wide with re-add, the 4,374-case grid) and a new independent generator written by someone who did not write the rules also runs clean**; LT-3, LT-4, LT-8, LT-14 pass; real sleep on the user's Linux desktop (Windows and macOS UNPROVEN) |
 | 6. Same wifi | Discovery, direct path, local meeting point, peer arbiter | Nothing new on screen | Its security review passes; Phases 2 to 5 pass with the relay off; T15 passes |
 | 7. Switch-over | Interim GitHub lane, last sync, one-time restore, one-time message, backup prompt, removal of in-app remote access, rollback, the security audit (standards-based AND basic white-hat penetration testing by fresh reviewers; section 8) | The one-time message and prompts; every settings menu and (i) popup explaining the risks (U-11) | Rehearsed on copies of Destin's four devices, updated one at a time: the inventory tool shows every chat once on every device; rollback rehearsed. Then, on his say and with him, a trial on his real devices, because copies cannot show Android backgrounding, real sleep or Windows key storage. Then the release |
 | 8. Super-host | Desktop headless boot, start at login, pairing without a screen, relay fallback, outside access (needs O1) | Super-host setup | A super-host keeps two sleeping devices current with the relay off. **Runs BEFORE Phase 7 (Destin, 2026-11-14).** Needs the O1 comparison answered first; only Linux (the user's desktop, a Raspberry Pi in T8) can be tested, so a Windows or macOS super-host is UNPROVEN |
@@ -2511,6 +2608,15 @@ user chooses to send a bug report.
 13. **Windows, macOS and Android are unproven** (Phase 0, Destin round 14 Q-7): only Linux can
     be tested; the unlock prompts, key storage, case-insensitive file systems, real sleep and
     the phone's behaviour are all unrun. Every such claim carries the label.
+14. **The "who hosts a chat" rules are tested only in a simulator** (Phase 0: T12b). The
+    result (0 lost replies in 340,000 runs) is the author's own model judged by the author's
+    own checks. The last two rule fixes came from the last two test campaigns, so a
+    different generator may still find a loss. Takeovers are the thinnest-tested part;
+    several rules rest on one to three seeds. Real files, signatures, timing, more than one
+    chat, the keeper, key generations and the 30-day and 90-day rules were not modelled.
+    Protection: the Phase 5 exit condition (real-implementation re-run at the same counts
+    plus an independent generator), and the rules kept in full, including ones that look
+    redundant.
 
 ---
 
@@ -2529,11 +2635,12 @@ user chooses to send a bug report.
 | O18 | Linux with no secret store: refuse to turn the mesh on, or turn it on and warn | OPEN, goes to Destin (round-15 P-3); proposed: refuse |
 | O19 | Native sidecars `<id>.shells.json` and `<id>.delegations.json`: do they follow a chat to a new host (proposed: yes, and recorded shells read as ended) | OPEN, builder confirms in a Phase 5 test (T20 ASK 4); goes to Destin only if it changes what he sees after Continue here |
 | O20 | Segments: do they exist at all (T2 says no, T21 and the data-loss review say yes) | RESOLVED 2026-11-14: no segments; a rewrite becomes a new version (5.3) |
-| O21 | The replacement `decide` rules, version-id aliases, `pending` handling, `format` maximum, `restored` undoing all deletes | PENDING (T12b decide rules); F9 (3 of 20,000 runs still lose a reply) is unexplained |
+| O21 | The replacement `decide` rules, version-id aliases, `format` maximum, `restored` undoing all deletes | RESOLVED IN SIMULATION ONLY (Phase 0: T12b, 5.4): 0 lost replies in 340,000 runs and 4,374 grid cases; F9 explained (two mechanisms, rules 9 and 10d). Still OPEN: what a user can do with a `pending` chat (T12 F10; goes to Destin, round-15 C-*); real-implementation re-run (Phase 5 exit) |
 | O22 | Two devices removing each other: three positions (T5 G6, T12 F8, threat model R-3) | OPEN, goes to Destin (round-15 P-10) |
 | O23 | What T12 compares for "identical delete dates everywhere" when the rule uses first-seen time (data-loss K-4) | OPEN, engineering, before Phase 5 |
 | O24 | Whether a peer may send a leading `!` or a slash command through `send-text`, and whether `send-text` can reach bash mode at all | OPEN; S-1 requires a test; UNVERIFIED (threat model section 9) |
 | O25 | Padding live-lane frames to fixed sizes and a fixed cadence (threat model L-4): cost and battery | OPEN, a Phase 3 measurement |
+| O27 | Deleting a chat that has a second version the deleter never saw (T12 F12): the second version stays live as a row of its own, unless Destin decides otherwise | OPEN, goes to Destin (round-15 deck) |
 | O26 | Case-insensitive file systems, Windows Hello, Touch ID, real sleep, Android Keystore and the phone's background behaviour | UNPROVEN: no Windows, Mac or (for now) phone; Destin's testing devices are Linux only (round 14 Q-7) |
 
 **Answered on 2026-11-14 (round 14, `mesh-sync.questions-14.answers.json`):** O16 (Q-1); the
