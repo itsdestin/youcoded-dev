@@ -1,0 +1,24 @@
+{
+ "deck": "narrow-screens-7",
+ "started": "2026-11-14T10:11:31.650Z",
+ "submitted": "2026-11-14T10:13:23Z",
+ "cur": 1,
+ "answers": {
+  "A-1": {
+   "note": "why does it feel like the status indicators under the name keep moving around? they feel too low now",
+   "t": 1794651120388,
+   "v": "other",
+   "seconds": 29,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-2": {
+   "note": "need to make status dots tighter below name. also the session name/dropdown thing doesn't quite feel well centered/visually balanced for some reason. ",
+   "t": 1794651202503,
+   "v": "other",
+   "seconds": 82,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+  "title": "Phones and narrow windows — round 8, name and lights",
+  "key": "narrow-screens-8",
+  "out": "narrow-screens-8.html",
+  "images": "images/narrow-screens-8",
+  "runs": {
+    "round8": "runs/round8"
+  },
+  "themes": [
+    "light",
+    "dark",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Top bar on a phone",
+      "path": "The strip across the top of the Android app",
+      "crop": [
+        {"crop": "chat#top-today@390x60+0+0", "label": "Today"},
+        {"crop": "chat#top-lights@390x60+0+0", "label": "Round 8"}
+      ],
+      "runs": ["round8"],
+      "new": true,
+      "headline": "Phone bar: the name now sits in the exact middle of the screen, and the lights hug it closer.",
+      "changed": "Your notes: \"the session name/dropdown thing doesn't quite feel well centered\" and \"make status dots tighter below name\". The name was centred between the buttons, and with two buttons on the left and one on the right that pushed it 20 pixels right of the screen's middle. It now centres on the screen. The lights moved 2 pixels up, right under the name.",
+      "notice": "The name and lights line up with the middle of the chat below. They will stay put from here; earlier rounds moved them each time something else changed."
+    },
+    {
+      "id": "B-2",
+      "surface": "Top bar in a narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "crop": [
+        {"crop": "chat#window-today@390x60+0+0", "label": "Today"},
+        {"crop": "chat#window-decided@390x60+0+0", "label": "Round 8"}
+      ],
+      "runs": ["round8"],
+      "new": true,
+      "headline": "Narrow window: same tighter lights. The name stays on the left there, as you asked in round 6.",
+      "changed": "Your note: \"why does it feel like the status indicators under the name keep moving around? they feel too low now\". They moved because each round changed what they hang from; they now sit a fixed 2 pixels under the name on both bars.",
+      "notice": "Same distance from the name as on the phone."
+    }
+  ]
+}
