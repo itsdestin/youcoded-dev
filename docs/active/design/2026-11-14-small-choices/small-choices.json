@@ -1,0 +1,275 @@
+{
+ "title": "Small leftover choices",
+ "key": "small-leftover-choices",
+ "out": "small-choices.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "C-1",
+   "words": true,
+   "surface": "Website",
+   "path": "The footer at the bottom of the YouCoded website",
+   "headline": "Should the website link to the Reddit community?",
+   "today": "The app already links to r/youcoded: Settings, Help and feedback, \"Community on Reddit\" (shipped 10 September). The website footer links only to GitHub, Built by Destin, Changelog, Security, Privacy and Terms.",
+   "problem": "Someone who finds YouCoded through the website has no way to find the community. In 2026-09 you wanted a link there once the subreddit had a few posts. I could not check how many posts it has.",
+   "proposal": "Add a \"Community\" link to the footer. Website wording still goes through your copy review before anything is published.",
+   "options": [
+    {
+     "id": "add",
+     "label": "Add \"Community\" to the footer",
+     "pros": [
+      "Visitors can find the community.",
+      "Matches the app, which already links there."
+     ],
+     "cons": [
+      "If the subreddit is nearly empty, the link can make the project look quiet."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "wait",
+     "label": "Wait until it has more posts",
+     "pros": [
+      "The first impression is a busy community."
+     ],
+     "cons": [
+      "Needs you to remember to ask again; the card stays open."
+     ]
+    },
+    {
+     "id": "never",
+     "label": "No website link",
+     "pros": [
+      "Nothing to do."
+     ],
+     "cons": [
+      "The community stays hard to find from outside the app."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-2",
+   "words": true,
+   "surface": "Pages",
+   "path": "The private Analytics page and the test copy used to try it away from the real app",
+   "headline": "May the Analytics page's test copy read your live numbers, read-only?",
+   "today": "The Analytics page's files are now saved in the private youcoded-admin repository. A small test copy of the app lets a page be tried in a plain browser using only the page's own saved numbers. It never reaches the internet and never uses your sign-in; that was your earlier decision.",
+   "problem": "Testing the page against saved numbers cannot show how it behaves with today's real figures.",
+   "proposal": "Let the test copy also fetch the live analytics numbers using your sign-in, read-only, only when you ask it to.",
+   "options": [
+    {
+     "id": "offline",
+     "label": "Keep the test copy offline",
+     "pros": [
+      "Your sign-in is never used by a test tool.",
+      "Nothing can leak or change."
+     ],
+     "cons": [
+      "The page is only tried on saved numbers."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "live",
+     "label": "Allow read-only live numbers",
+     "pros": [
+      "The page is tried on real figures."
+     ],
+     "cons": [
+      "Your sign-in is used by a development tool.",
+      "A mistake could expose real numbers in a log or screenshot."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-3",
+   "words": true,
+   "surface": "Website",
+   "path": "The website's picture folder (docs/gallery)",
+   "headline": "What should happen to 48 website pictures that nothing uses?",
+   "today": "The website's gallery folder holds 52 pictures. Four are the \"ideas wall\" pictures you see on the page. The other 48 are old screenshots (8 screens in 6 themes each: Connect 4, Home, Marketplace, Model picker, Permissions, Projects, Tags, Themes), made 23 October. Together they weigh 1.8 MB. No page, script or app code uses them, and I searched the whole website repository to confirm.",
+   "problem": "They are clutter. The release script used to refresh them for nothing and no longer does. Anyone browsing the folder cannot tell which ones matter.",
+   "proposal": "Choose what becomes of the 48.",
+   "options": [
+    {
+     "id": "delete",
+     "label": "Delete them",
+     "pros": [
+      "A clean folder.",
+      "They stay in the repository's history, and a hand-run tool can make them again."
+     ],
+     "cons": [
+      "Not one click away if you want them back."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "archive",
+     "label": "Move them to a folder outside the project",
+     "pros": [
+      "Kept, but out of the way."
+     ],
+     "cons": [
+      "A 1.8 MB folder to remember about.",
+      "Not backed up unless you back it up."
+     ]
+    },
+    {
+     "id": "keep",
+     "label": "Keep them where they are",
+     "pros": [
+      "Nothing to do."
+     ],
+     "cons": [
+      "Clutter stays."
+     ]
+    }
+   ],
+   "risk": "Deleting reaches the live website only at the next website update. No visitor sees any difference, since nothing shows them."
+  },
+  {
+   "id": "C-4",
+   "words": true,
+   "surface": "Old work folder",
+   "path": "worktrees/sessions/155-google-files (4.6 GB)",
+   "headline": "Keep or remove the old \"Google files\" work folder?",
+   "today": "Holds the first build of connecting Google and editing Drive files (card #155), paused by you on 24 October. Last change 24 October. Nothing unsaved. Its work is saved on GitHub but is not in the app and not released. 0.9 GB of it is test screenshots that exist nowhere else. The card says not to delete current work while you decide between your own Google sign-in and rclone. \"Remove\" means deleting that folder from this computer. Everything that was saved to GitHub stays there.",
+   "problem": "It takes 4.6 GB, and it is about a thousand changes behind today's app, so reviving it later means catching it up either way.",
+   "proposal": "Decide whether the folder stays until you decide about rclone.",
+   "options": [
+    {
+     "id": "keep",
+     "label": "Keep it until you decide",
+     "pros": [
+      "Matches the card: current work is not deleted.",
+      "The test screenshots stay."
+     ],
+     "cons": [
+      "4.6 GB stays used."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "remove",
+     "label": "Remove the folder, keep GitHub's copy",
+     "pros": [
+      "Frees 4.6 GB.",
+      "All written work stays saved on GitHub."
+     ],
+     "cons": [
+      "The 0.9 GB of test screenshots is lost.",
+      "Going back means making a new folder and catching up."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-5",
+   "words": true,
+   "surface": "Old work folder",
+   "path": "worktrees/sessions/74-specialists-plans (2.5 GB)",
+   "headline": "Remove the old \"helper plans\" documents folder?",
+   "today": "Holds seven documents-only changes from 24 October about the workflow builder (card #74). Nothing unsaved. All seven are saved on GitHub. Almost everything is already on the main copy of the project: the workflow builder proposal, its review, your answers and the handoff are identical there. Only three small edits are not: a correction note and a decision row in the helpers vision document, and the move of two old handoffs into the archive. \"Remove\" means deleting that folder from this computer. Everything that was saved to GitHub stays there.",
+   "problem": "It takes 2.5 GB to hold three small edits that already have a copy on GitHub.",
+   "proposal": "Remove the folder. The three small edits stay on GitHub if you ever want them.",
+   "options": [
+    {
+     "id": "remove",
+     "label": "Remove the folder",
+     "pros": [
+      "Frees 2.5 GB.",
+      "Nothing of value is lost; it is all on the main copy or GitHub."
+     ],
+     "cons": [
+      "The three small edits are not on the main copy until someone copies them."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "2.5 GB for nearly nothing."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-6",
+   "words": true,
+   "surface": "Old work folder",
+   "path": "worktrees/sessions/93-batcher-counters (4.3 GB)",
+   "headline": "Remove the old \"batcher counters\" folder?",
+   "today": "Holds one small change from 21 October (card #93): counters that only count how often the chat redraws, switched on only for performance testing. Nothing unsaved. It is saved on GitHub but is not on the main copy of the project and is not in the app. The rest of that card's work has already landed.",
+   "problem": "It takes 4.3 GB for one small testing aid nobody has asked for since.",
+   "proposal": "Remove the folder. If the performance tests ever want the counters, they can be fetched from GitHub.",
+   "options": [
+    {
+     "id": "remove",
+     "label": "Remove the folder",
+     "pros": [
+      "Frees 4.3 GB.",
+      "The change stays on GitHub."
+     ],
+     "cons": [
+      "Using it later means fetching it again and catching it up with today's app."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep it",
+     "pros": [
+      "Counters are one step away."
+     ],
+     "cons": [
+      "4.3 GB for a testing aid nobody uses."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-7",
+   "words": true,
+   "surface": "Old work folder",
+   "path": "worktrees/sessions/readme-models (3.5 GB)",
+   "headline": "Remove the old README folder?",
+   "today": "Holds one change from 26 October: one sentence in the project's README naming Google Gemini through OpenRouter and saying YouCoded does coding work. Nothing unsaved. The README was rewritten since, and today's main copy already says both things (\"Google Gemini and hundreds more through OpenRouter\" and \"It also does coding work\"). \"Remove\" means deleting that folder from this computer. Everything that was saved to GitHub stays there.",
+   "problem": "The folder's only change has been done another way, and it takes 3.5 GB.",
+   "proposal": "Remove the folder.",
+   "options": [
+    {
+     "id": "remove",
+     "label": "Remove the folder",
+     "pros": [
+      "Frees 3.5 GB.",
+      "Nothing is lost: the sentence is already on the main copy."
+     ],
+     "cons": [
+      "None that I can find."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "3.5 GB for a sentence that is already done."
+     ]
+    }
+   ]
+  }
+ ]
+}
