@@ -381,12 +381,27 @@ CSS = '''
 /* the ⋯ menu: the app's shared Menu, hanging under its button */
 .mwrap{position:relative;display:inline-flex}
 .mhint{font-size:11px;color:var(--fg-muted);line-height:1.35}
-.menu{position:absolute;right:auto;left:0;top:calc(100% + 4px);z-index:20;min-width:140px;padding:4px;display:flex;flex-direction:column;border-radius:var(--radius-lg)}
+/* WHY right-aligned (2026-11-12): the "…" button sits at the right end of its card, so a menu hung from its left edge ran past the card and the section box */
+.menu{position:absolute;left:auto;right:0;top:calc(100% + 4px);z-index:20;min-width:140px;padding:4px;display:flex;flex-direction:column;border-radius:var(--radius-lg)}
 .menu[hidden]{display:none}
 .menu{min-width:280px;max-width:320px}
 .mitem{display:flex;flex-direction:column;gap:2px;font:inherit;font-size:12px;text-align:left;padding:6px 10px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg);cursor:pointer}
 @media (hover:hover){.mitem:hover{background:var(--inset)}} .mitem:focus-visible{outline:2px solid var(--accent)}
-@media (max-width:760px){.ctop{flex-direction:column}.crow .acts{width:100%;justify-content:flex-end}}
+/* WHY this phone layout (2026-11-13, seen at 390px in the ivory theme): stacking .ctop in a column left the
+   tick box alone on its own line, put the buttons between the name and its labels, and cut the labels off at
+   the card edge. Now: tick box beside the name, then labels and text at full width, then the buttons last.
+   .ctop becomes display:contents so its three children can be ordered alongside .cfull. */
+@media (max-width:760px){
+  .crow{display:flex;flex-wrap:wrap;column-gap:8px}
+  .crow > .ctop{display:contents}
+  .crow .ltick{order:0}
+  .crow .ctop > .ctl{order:1;flex:1 1 0;min-width:0}
+  .crow > .cfull{order:2;width:100%;padding-left:0}
+  .crow .acts{order:3;width:100%;justify-content:flex-end;margin-top:8px}
+  .crow > .cbody{order:4;width:100%}
+  .cchips{flex-wrap:wrap;overflow:visible}
+  .cchips > *{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+}
 '''
 
 JS = r'''

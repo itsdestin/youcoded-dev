@@ -24,7 +24,9 @@ import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import os from 'node:os';
-import { loadCards, neededBy, setStage, deleteCards, combineCards, STAGES, STAGE_WORD } from './cards.mjs';
+import { releaseFacts } from './release-view.mjs';
+import { loadLines } from './release-lines.mjs';
+import { loadCards, neededBy, setStage, deleteCards, combineCards, STAGES, STAGE_WORD, SHIPPED } from './cards.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // WHY the design folder (Destin, 2026-10-16: "what happened to the real full page with all of our earlier design
@@ -37,15 +39,22 @@ const TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg'
 
 /** Build the full page from the cards. Cached until a card file changes. */
 let cache = { key: '', html: '' };
-export function buildPage(root, { pageMode = false, tidy = null } = {}) {
+export function buildPage(root, { pageMode = false, tidy = null, release } = {}) {
   const dir = path.join(root, 'cards');
-  const key = (pageMode ? 'page|' + JSON.stringify(tidy) + '|' : '') + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
+  // WHY read here, before the cache check (Destin, 2026-11-11): "Since the last release" must be worked out every time the
+  // page is drawn, so a new release tag or a newly merged change can never hide behind a cached page. `release` is passed
+  // in by the tests; otherwise it is read from the app folder (a tiny GitHub check, then git).
+  release ??= releaseFacts(path.join(workspaceOf(root), 'youcoded'), loadCards(root), { lines: loadLines(root) });
+  // WHY the drawing code is in the key too (Destin, 2026-11-12: "how can i judge your work if i cant see it"): a long-running
+  // copy of the board kept serving the page it drew before a style fix, so a refresh showed nothing new.
+  const code = fs.readdirSync(PAGE_DIR).filter(f => /\.(py|css|json)$/.test(f)).map(f => f + fs.statSync(path.join(PAGE_DIR, f)).mtimeMs).join('|');
+  const key = 'code|' + code + '|rel|' + JSON.stringify(release) + '|' + (pageMode ? 'page|' : '') + 'tidy|' + JSON.stringify(tidy) + '|' + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
   if (key === cache.key && cache.html) return cache.html;
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'manage-page-'));
   try {
     // WHY no guessed "Working" in page mode (Destin, plan deck S-3): inside YouCoded the page asks the app which
     // chats are open right now, so a branch saved in the last day must not pass for a chat that is working
-    fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify({ ...cardsPayload(root, { guessWorking: !pageMode }), ...(tidy ? { tidy } : {}) }));
+    fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify({ ...cardsPayload(root, { guessWorking: !pageMode }), ...(tidy ? { tidy } : {}), release }));
     execFileSync('python3', [path.join(PAGE_DIR, 'build.py'), '--cards-json', path.join(tmp, 'cards.json'), '--out', path.join(tmp, 'page.html'), ...(pageMode ? ['--page-mode'] : [])], { cwd: PAGE_DIR, stdio: ['ignore', 'pipe', 'pipe'] });
     cache = { key, html: fs.readFileSync(path.join(tmp, 'page.html'), 'utf8') };
     return cache.html;
@@ -213,6 +222,19 @@ export function factsFor(card, f, { guessWorking = true } = {}) {
   };
 }
 
+/**
+ * Every dated line of docs/shipped.md, newest first: { date, id, title, ref }.
+ * WHY (Destin, 2026-11-14: "drop 'became real' and just use shipped … fill in automatically"): Big picture's
+ * "Shipped in the last 30 days" used dates typed by hand onto the vision list, which nobody kept up, so it sat
+ * empty in a month with 44 merged changes. `cards.mjs close` already writes one dated line here per finished item.
+ */
+export function shippedLines(root) {
+  let text = '';
+  try { text = fs.readFileSync(path.join(root, SHIPPED), 'utf8'); } catch { return []; }
+  return text.split('\n').map((l) => /^- \[x\] (\d{4}-\d{2}-\d{2}) #(\d+) (.*?)(?: \((.*)\))?$/.exec(l)).filter(Boolean)
+    .map((m) => ({ date: m[1], id: Number(m[2]), title: m[3], ref: m[4] || '' })).sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+
 export function cardsPayload(root, { live = true, guessWorking = true } = {}) {
   const cards = loadCards(root);
   const nb = neededBy(cards);
@@ -220,6 +242,7 @@ export function cardsPayload(root, { live = true, guessWorking = true } = {}) {
   const touched = lastTouched(root);
   const f = live ? liveFacts(root) : null;
   return {
+    shipped: shippedLines(root),
     stages: STAGES.map(s => ({ id: s, word: STAGE_WORD[s] })),
     cards: cards.map(c => {
       const live_ = f ? factsFor(c, f, { guessWorking }) : { chats: [], unsaved: false, working: false, prs: [], failing: false, mergeable: false, lastWork: '' };
@@ -236,14 +259,20 @@ function readBody(req) {
   return new Promise((res, rej) => { let b = ''; req.on('data', d => { b += d; if (b.length > 1e6) req.destroy(); }); req.on('end', () => { try { res(JSON.parse(b || '{}')); } catch (e) { rej(e); } }); });
 }
 
-export function makeServer(root, { useGit = true } = {}) {
+/** Tidy up facts for the browser runner, the same ones the YouCoded page's program works out. WHY (2026-11-11): without them
+ *  the browser copy showed a hand-typed Oct 12 snapshot of leftover work as if it were today's. Imported late: the program imports this file. */
+async function tidyNow(root) {
+  try { const { tidyFacts } = await import('./work-items-program.mjs'); return tidyFacts(root, loadCards(root), { cacheScan: true }); } catch { return null; }
+}
+
+export function makeServer(root, { useGit = true, tidy = false } = {}) {
   return http.createServer(async (req, res) => {
     const send = (code, obj, type = 'application/json') => { res.writeHead(code, { 'content-type': type, 'cache-control': 'no-store' }); res.end(type === 'application/json' ? JSON.stringify(obj) : obj); };
     try {
       // WHY only 127.0.0.1 and same-origin posts: this server writes files; nothing else on the network or in another tab may drive it
       const origin = req.headers.origin;
       if (req.method === 'POST' && origin && origin !== `http://${req.headers.host}`) return send(403, { error: 'Refused: request came from another page.' });
-      if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) { if (useGit) pull(root); return send(200, buildPage(root), 'text/html; charset=utf-8'); }
+      if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) { if (useGit) pull(root); return send(200, buildPage(root, { tidy: tidy ? await tidyNow(root) : null }), 'text/html; charset=utf-8'); }
       if (req.method === 'GET' && !req.url.startsWith('/api/')) {
         // WHY the containment check: only files inside the page's own folder are served, never ../ outside it
         const rel = decodeURIComponent(req.url.split('?')[0]).replace(/^\/+/, '');
@@ -274,7 +303,7 @@ function main() {
   const argv = process.argv.slice(2);
   const opt = k => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : undefined; };
   const root = opt('--root') || execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
-  const srv = makeServer(root, { useGit: !argv.includes('--no-git') });
+  const srv = makeServer(root, { useGit: !argv.includes('--no-git'), tidy: true });
   srv.listen(Number(opt('--port') || 0), '127.0.0.1', () => console.log(`[manage] http://127.0.0.1:${srv.address().port}/`));
 }
 

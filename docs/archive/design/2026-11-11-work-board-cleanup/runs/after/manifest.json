@@ -1,0 +1,92 @@
+[
+ {
+  "name": "work-board/today-release",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/147-work-board-release-view/docs/active/design/2026-11-11-work-board-cleanup/runs/after/work-board/today-release/light.png",
+  "scale": 1,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1280,
+   "h": 900
+  }
+ },
+ {
+  "name": "work-board/today-release-dark-narrow",
+  "theme": "dark",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/147-work-board-release-view/docs/active/design/2026-11-11-work-board-cleanup/runs/after/work-board/today-release-dark-narrow/dark.png",
+  "scale": 1,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 480,
+   "h": 900
+  }
+ },
+ {
+  "name": "work-board/today-tidy",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/147-work-board-release-view/docs/active/design/2026-11-11-work-board-cleanup/runs/after/work-board/today-tidy/light.png",
+  "scale": 1,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1280,
+   "h": 900
+  }
+ },
+ {
+  "name": "work-board/bigpicture",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/147-work-board-release-view/docs/active/design/2026-11-11-work-board-cleanup/runs/after/work-board/bigpicture/light.png",
+  "scale": 1,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1280,
+   "h": 900
+  }
+ },
+ {
+  "name": "work-board/bigpicture-lens",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/147-work-board-release-view/docs/active/design/2026-11-11-work-board-cleanup/runs/after/work-board/bigpicture-lens/light.png",
+  "scale": 1,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1280,
+   "h": 900
+  }
+ },
+ {
+  "name": "work-board/screens",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/147-work-board-release-view/docs/active/design/2026-11-11-work-board-cleanup/runs/after/work-board/screens/light.png",
+  "scale": 1,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1280,
+   "h": 900
+  }
+ }
+]

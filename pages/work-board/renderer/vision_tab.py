@@ -101,7 +101,7 @@ def legend():
     # WHY each entry carries its hint: "exists" and "only an idea" are the page's own words for a status
     return ''.join(f'<span class="leg" data-tip="{E(TIPS["status." + s])}">{dot(s)}{w}</span>' for s, w in (('done','exists'),('building','being built'),('planned','planned'),('vision','only an idea')))
 
-def render(here, tip, track_short, cards=None):
+def render(here, tip, track_short, cards=None, shipped=None):
     """WHY the cut (2026-10-13, Destin: "a confusing fucking disaster to navigate.... just wayyy too
     many controls"): the By area / By track switch and the four filter pills are gone. The tab opens
     on the mission, the two boxes and the ten area cards. Three plain links under the mission ask the
@@ -124,19 +124,18 @@ def render(here, tip, track_short, cards=None):
     feats = [n for n in nodes.values() if n['kind'] == 'feature']
     tot = {s: sum(1 for n in feats if n['status'] == s) for s in STATUS_WORD}
     blockers = sorted([n for n in feats if n['status'] in ('vision','planned') and n['needed_by']], key=lambda n: -len(n['needed_by']))[:6]
-    recent = sorted([n for n in feats if n['status'] == 'done' and n['since'] and n['since'] >= '2026-09-12'], key=lambda n: n['since'], reverse=True)
+    # WHY no "Became real" card any more (Destin, 2026-11-14: "drop 'became real' and just use shipped"): it read dates
+    # typed by hand onto this list, which nobody kept up. "Shipped in the last 30 days" below now lists merged work items.
     out = []
     out.append(f'''<div class="card mission"><div class="eyebrow" data-tip="{T('vis.mission')}">Your mission</div><div class="t-base mtext">{E(sk['mission'])}</div>
       <div class="t-sm dim msum">Of the {len(feats)} things you have said the app should do, <b>{tot['done']}</b> exist, <b>{tot['building']}</b> are being built, <b>{tot['planned']}</b> are planned and <b>{tot['vision']}</b> are only ideas{(' (' + str(tot['unchecked']) + ' not checked yet)') if tot['unchecked'] else ''}.</div>
       {bar(tot, len(feats))}
-      <div class="vlinks t-sm"><button class="lnk" data-lens="blocked" aria-pressed="false" data-tip="{T('vis.blocked')}">What's blocked</button><span class="muted" aria-hidden="true">·</span><button class="lnk" data-lens="twice" aria-pressed="false" data-tip="{T('vis.twice')}">Built twice</button><span class="muted" aria-hidden="true">·</span><button class="lnk" data-lens="shipped" aria-pressed="false" data-tip="{T('vis.shipped')}">Shipped this month</button></div></div>''')
+      <div class="vlinks fchips" role="group" aria-label="Show only"><button class="fchip" data-lens="blocked" aria-pressed="false" data-tip="{T('vis.blocked')}">What's blocked</button><button class="fchip" data-lens="twice" aria-pressed="false" data-tip="{T('vis.twice')}">Built twice</button><button class="fchip" data-lens="shipped" aria-pressed="false" data-tip="{T('vis.shipped')}">Shipped in the last 30 days</button></div></div>''')
     out.append('<div id="voverview">')
-    if blockers or recent:
+    if blockers:
         out.append('<div class="vinsights">')
         if blockers:
             out.append(f'<div class="card"><div class="eyebrow" data-tip="{T("vis.waitingon")}">What most things are waiting on</div>' + ''.join(f'<button class="irow" data-focus="{E(b["id"])}" data-tip="Click for details."><span class="t-sm">{E(b["title"])}</span><span class="t-2xs muted irmeta" data-tip="{E(_needtip(len(b["needed_by"]), tip))}">{len(b["needed_by"])} need it</span>{spill(b["status"])}</button>' for b in blockers) + '</div>')
-        if recent:
-            out.append(f'<div class="card"><div class="eyebrow" data-tip="{T("vis.becamereal")}">Became real in the last month</div>' + ''.join(f'<button class="irow" data-focus="{E(r["id"])}" data-tip="{T("vis.row")}"><span class="t-sm">{E(r["title"])}</span><span class="t-2xs muted irmeta" data-tip="{T("vis.since")}">{E(nice(r["since"]))}</span></button>' for r in recent[:8]) + '</div>')
         out.append('</div>')
     out.append(f'<div class="sechead"><div class="gtext"><h2 class="gh"><span data-tip="{T("vis.areas")}">Areas</span><span class="cnt" data-tip="{T("vis.areas.count")}">{len(sk["pillars"])}</span></h2></div></div><div class="pgrid">')
     for p in sk['pillars']:
@@ -178,6 +177,7 @@ def render(here, tip, track_short, cards=None):
     data = {nid: {k: n.get(k) for k in ('id','title','kind','pillar','parent','quote','status','since','why','evidence','needs','shares','needed_by','added','track','screens')} for nid, n in nodes.items()}
     data['_tracks'] = {t['id']: t['title'] for t in tracks}
     data['_short'] = track_short
+    data['_shipped'] = shipped or []  # docs/shipped.md, newest first (manage.mjs shippedLines)
     return ''.join(out), data, dict(total=len(feats), **tot)
 
 def _needtip(n, tip):
@@ -202,7 +202,8 @@ CSS = '''
 .sdot.planned{background:transparent}
 .sdot.vision{border-style:dotted;border-color:var(--fg-muted)}
 .sdot.unchecked{border-color:var(--status-warn)}
-.vinsights{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+/* WHY one column (2026-11-14): with the "Became real" card gone this row holds one card, which sat in the left half beside an empty space */
+.vinsights{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:24px}
 /* plain rows inside a card (decisions "List rows by job": pick-one lists are plain rows, hover highlights) */
 .irow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;border-radius:var(--radius-md);padding:6px 8px;margin:0 -8px;color:var(--fg);cursor:pointer;transition:background-color 120ms steps(4)}
 .vinsights .eyebrow{margin-bottom:6px}
@@ -221,11 +222,11 @@ CSS = '''
 /* an area = a raised first-level card; each capability inside = the nested level (CARD_LEVEL_2) */
 .pillar{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow);padding:16px}
 .phead{margin-bottom:12px;display:flex;flex-direction:column;gap:6px} .phead .vbar{max-width:480px}
-.ptitle{cursor:pointer} .web.detail .ptitle{font-size:18px;font-weight:500}
+/* WHY no cursor:pointer (2026-11-11): nothing handles a click on an area title, so the hand pointer lied */
+.web.detail .ptitle{font-size:18px;font-weight:500}
 .web:not(.detail) .quote{display:none}
 .caps{display:grid;gap:8px;grid-template-columns:1fr} .web.detail .caps{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
 .cap{background:var(--inset);border:1px solid var(--edge-card);border-radius:var(--radius-lg);padding:12px}
-.caphead{font-size:12px;font-weight:500;background:none;border:0;padding:0;margin:0 0 8px;color:var(--fg-muted);cursor:pointer;text-align:left} .caphead:hover{color:var(--fg)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 /* a clickable item is an action chip = Button secondary sm ('rounded-lg border-edge-strong text-fg-2 text-2xs px-2.5 py-1') */
 .chip{font-size:11px;line-height:14px;font-weight:500;text-align:left;padding:4px 10px;border-radius:var(--radius-lg);border:1px solid var(--edge-strong);background:transparent;color:var(--fg-2);cursor:pointer;max-width:100%;display:inline-flex;align-items:center;gap:6px;transition:background-color var(--dur-hover),box-shadow var(--dur-hover)}
@@ -245,9 +246,6 @@ CSS = '''
 .badge.trk{font-size:11px}
 /* the three questions under the mission: plain text links (2026-10-13 cut: they replaced a mode switch and four pills) */
 .vlinks{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
-.lnk{color:var(--fg);text-decoration:underline;text-decoration-color:var(--edge-strong);text-underline-offset:3px;cursor:pointer;background:none;border:0;padding:0;font:inherit}
-.lnk[aria-pressed="true"]{font-weight:600;text-decoration-color:var(--fg)}
-.lnk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 /* an item's track: a small quiet word after its name */
 .ctrk{font-size:10px;font-weight:400;color:var(--fg-muted);margin-left:2px;white-space:nowrap}
 .chip .ctrk::before{content:"· "}
@@ -264,7 +262,7 @@ CSS = '''
 '''
 
 JS = r'''
-const VN=%s; const SW=%s; const TRK=VN._tracks, TSH=VN._short; delete VN._tracks; delete VN._short;
+const VN=%s; const SW=%s; const TRK=VN._tracks, TSH=VN._short, SHIPPED=VN._shipped||[]; delete VN._tracks; delete VN._short; delete VN._shipped;
 // WHY one look and three questions (2026-10-13 cut): vLens is 'all' or one of the three links under the mission
 let vLens='all', vOpen=null;
 const VTONE={done:'ok',building:'info',planned:'',vision:'',unchecked:'warn'},VPW={done:'exists',building:'being built',planned:'planned',vision:'only an idea',unchecked:'not checked yet'};
@@ -285,10 +283,15 @@ const LISTS={
     meta:n=>'Waits on: '+titles(n.needs.filter(x=>OPEN.includes(VN[x.id].status)))},
   twice:{t:'Built twice',d:'Each of these shares parts with another item, so the shared part could be built once.',
     items:()=>FEATS.filter(n=>(n.shares||[]).length),meta:n=>'Shares parts with: '+titles(n.shares)},
-  shipped:{t:'Shipped this month',d:'Everything that started to exist since Oct 1, newest first.',
-    items:()=>FEATS.filter(n=>n.status==='done'&&(n.since||'')>='2026-10-01').sort((a,b)=>a.since<b.since?1:-1),meta:n=>'Since '+nice(n.since)}};
+  // WHY merged work items, not vision dates (Destin, 2026-11-14: "drop 'became real' and just use shipped … fill in
+  // automatically"): the old list read dates typed by hand and sat empty; every finished item already gets a dated line
+  // in docs/shipped.md when it is closed. The 30 days are counted when the page is looked at. A row opens its work item.
+  shipped:{t:'Shipped in the last 30 days',d:'Work items finished and merged in the last 30 days, newest first.',
+    items:()=>{const cut=new Date(Date.now()-30*864e5).toISOString().slice(0,10);return SHIPPED.filter(x=>x.date>=cut)},
+    row:x=>`<button class="row rowbtn" data-card-open="${x.id}" data-tip="Opens this work item."><span class="body"><span class="t-xs rt">${esc(x.title)}</span><span class="hint wrap">Merged ${nice(x.date)}${x.ref?' · '+esc(x.ref):''}</span></span><span class="t-2xs muted">#${x.id}</span></button>`,
+    none:()=>SHIPPED.length?'No work item was merged in the last 30 days. The newest is from '+nice(SHIPPED[0].date)+'.':'The list of merged work items could not be read here.'}};
 function vList(){const L=LISTS[vLens],xs=L.items();$('#vlt').textContent=L.t;$('#vlc').textContent=xs.length;$('#vld').textContent=L.d;
-  $('#vlrows').innerHTML=xs.map(n=>`<button class="row rowbtn" data-focus="${n.id}" data-tip="${T('vis.row')}"><span class="body"><span class="t-xs rt">${esc(n.title)}</span><span class="hint wrap">${esc(VN[n.pillar].title)} · ${esc(L.meta(n))}</span></span><span class="spill ${VTONE[n.status]}" data-tip="${T('status.'+n.status)}">${VPW[n.status]}</span></button>`).join('')||'<div class="empty">Nothing here.</div>'}
+  $('#vlrows').innerHTML=xs.map(L.row||(n=>`<button class="row rowbtn" data-focus="${n.id}" data-tip="${T('vis.row')}"><span class="body"><span class="t-xs rt">${esc(n.title)}</span><span class="hint wrap">${esc(VN[n.pillar].title)} · ${esc(L.meta(n))}</span></span><span class="spill ${VTONE[n.status]}" data-tip="${T('status.'+n.status)}">${VPW[n.status]}</span></button>`)).join('')||`<div class="empty">${esc(L.none?L.none():'Nothing here.')}</div>`}
 function vApply(){$$('.web .lines').forEach(s=>s.innerHTML='');$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));
   const list=vLens!=='all',over=!list&&!vOpen;
   $('#voverview').hidden=!over;$('#vlist').hidden=!list;$('#vdetail').hidden=list||!vOpen;
@@ -338,7 +341,8 @@ function focus(id,fromBack){const n=VN[id];if(!n)return;
     +((n.shares||[]).length?group('Shares parts with','vis.p.shares',null,n.shares.map(x=>row(x,x.because)).join('')):'')
     +(ev.length?`<details class="fold"><summary class="foldrow" data-tip="${T('vis.howknow')}"><span class="t-xs">How we know <span class="cnt" data-tip="${T('vis.howknow.count')}">${ev.length}</span></span><span class="chev">›</span></summary><ul class="ev t-xs">${ev.map(e=>`<li><span class="kind">${e.kind}</span>${e.note||''} <span class="muted">${nice(e.date||'')}</span><div class="muted t-2xs">${e.ref||''}</div></li>`).join('')}</ul></details>`:'');
   openPanel('',kind,top+(left&&right?`<div class="dcols"><div class="dcol">${left}</div><div class="dcol">${right}</div></div>`:`<div class="dcol">${left}${right}</div>`),
-  `<button class="btn" data-does data-tip="${T('vis.wrong')}">That's wrong</button><button class="btn primary" data-does data-tip="${T('vis.start')}">Start a session on this</button>`);
+  // WHY one button (Destin, 2026-11-14: "remove"): "That's wrong" was a placeholder that did nothing
+  `<button class="btn primary" data-does data-tip="${T('vis.start')}">Start a session on this</button>`);
   $('#pback').hidden=!vHist.length;
   $$('#pbody .vshot').forEach(b=>b.onclick=()=>openShot(b.dataset.shot));
 }
