@@ -14,8 +14,8 @@ vision: together.workflow.surface
 work: session/147-work-board-release-view
 ---
 Progress
-Done: The Work board page is live in Destin's Pages folder (shipped Oct 16, 2026). The priority and version tags were removed on Oct 16 and have not been brought back.
-Next: (1) Bring back priority and version tags in a way that works. (2) Make the Screens tab cover every app screen, with better picture history and sorting. (3) Run a full review of the whole page for usefulness, in a new session.
+Done: 2026-11-14 (youcoded-dev PR #378, merged): 'Since the last release' is worked out live; each merged change carries lines for users (cards.mjs notice) shown in one box with a changelog draft; Big picture's Shipped list comes from merged items and the Became real card is gone; dead buttons wired or removed; spacing, focus ring, hover flicker, menu position and phone-width cards fixed. This covered part of follow-up 3 (review of the page), not all of it. The priority and version tags are still not back.
+Next: (1) Bring back priority and version tags in a way that works. (2) Make the Screens tab cover every app screen, with better picture history and sorting. (3) Finish the page review: Screens and Big picture in the app theme, hover and press at phone width, and a look inside YouCoded itself.
 Blocked: nothing.
 
 Chats
