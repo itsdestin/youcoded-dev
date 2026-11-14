@@ -1,0 +1,161 @@
+{
+ "title": "Round 4: five kinds of failure now shown",
+ "key": "round-four-pictures",
+ "out": "round4-pictures.review.html",
+ "images": "images/round4-pictures",
+ "runs": {
+  "before": "runs/before",
+  "after": "runs/after"
+ },
+ "themes": [
+  "meadow-mist"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "r4-projects": [
+   "round4",
+   "projects",
+   "1700x260+240+60"
+  ],
+  "r4-remote": [
+   "round4",
+   "remote",
+   "2000x250+80+610"
+  ],
+  "r4-about": [
+   "round4",
+   "about",
+   "2000x250+80+860"
+  ],
+  "r4-action": [
+   "round4",
+   "action",
+   "2000x250+80+1010"
+  ],
+  "r4-git": [
+   "round4",
+   "git",
+   "1900x220+260+130"
+  ]
+ },
+ "steps": [
+  {
+   "id": "R4-1",
+   "surface": "Projects",
+   "path": "Projects, when the list of projects cannot be loaded (practice failure)",
+   "crop": "r4-projects",
+   "runs": [
+    "before",
+    "after"
+   ],
+   "labels": {
+    "before": "Before",
+    "after": "After"
+   },
+   "headline": "An area that failed to load now says so, with Try again, instead of looking empty.",
+   "changed": "Before, a failed read of your projects looked like \"Select a project to view its artifacts.\" Now a red box says \"Couldn't load your projects.\" with Try again.",
+   "notice": "You can tell \"nothing here\" from \"couldn't load it\", and you can press Try again.",
+   "risk": "The box does not give a reason. It takes a little room above the content until you press Try again. Practice failure on practice data; nothing here ran in a real app or on Android.",
+   "alsoChanges": [
+    "Older chat messages",
+    "Project list refresh",
+    "Load whole file",
+    "PDF pages",
+    "Import results"
+   ]
+  },
+  {
+   "id": "R4-2",
+   "surface": "Settings",
+   "path": "Settings, Remote access, when switching it on or off cannot be saved (practice failure)",
+   "crop": "r4-remote",
+   "runs": [
+    "before",
+    "after"
+   ],
+   "labels": {
+    "before": "Before",
+    "after": "After"
+   },
+   "headline": "A small setting that failed to save now shows a box under the control, with Try again.",
+   "changed": "Before, the Enabled switch could fail to save with no message. Now a red box under it says \"Couldn't save the remote access setting\" with Try again, and the switch goes back.",
+   "notice": "A failure is visible right where you pressed. The Android ones are short pop-ups instead of boxes; the last question on page 2 asks about that.",
+   "risk": "The box pushes the rest of the popup down. Not run on a real device. Practice failure on practice data; nothing here ran in a real app or on Android.",
+   "alsoChanges": [
+    "Keep awake",
+    "Remote access password",
+    "New-session defaults",
+    "Android plan tier (pop-up)"
+   ]
+  },
+  {
+   "id": "R4-3",
+   "surface": "Settings",
+   "path": "Settings, About, Anonymous usage stats, when the saved setting cannot be read (practice failure)",
+   "crop": "r4-about",
+   "runs": [
+    "before",
+    "after"
+   ],
+   "labels": {
+    "before": "Before",
+    "after": "After"
+   },
+   "headline": "A setting that failed to load now says so, with Try again, instead of quietly showing nothing.",
+   "changed": "Before, if the usage stats choice could not be read, the row looked normal. Now a row says \"Couldn't load the usage stats setting.\" with Try again.",
+   "notice": "You are told the stats choice was not read, so you do not assume it is off.",
+   "risk": "A thin row sits between two rows of the list until you press Try again. Practice failure on practice data; nothing here ran in a real app or on Android.",
+   "alsoChanges": [
+    "Nothing else of this kind"
+   ]
+  },
+  {
+   "id": "R4-4",
+   "surface": "Chat",
+   "path": "A button whose action failed, here Copy path (practice failure)",
+   "crop": "r4-action",
+   "runs": [
+    "before",
+    "after"
+   ],
+   "labels": {
+    "before": "Before",
+    "after": "After"
+   },
+   "headline": "A button that failed now shows a short notice, such as \"Couldn't copy the path.\"",
+   "changed": "Before, pressing Copy path on a file that could not be copied did nothing. Now a small notice says \"Couldn't copy the path.\"",
+   "notice": "Every failed button tells you, in the same plain words, and goes away on its own.",
+   "risk": "The app already had a different style for one such message (\"Couldn't copy — please try again.\"). I did not check whether the two should be unified. A pop-up can be missed. Not run in a real app.",
+   "alsoChanges": [
+    "Open file, folder, link, browser",
+    "Remove from list, reload model",
+    "Rename file, favorites, tags",
+    "Install, connect, uninstall",
+    "Chat tag, note, paste, Stop",
+    "Project rename and description"
+   ]
+  },
+  {
+   "id": "R4-5",
+   "surface": "Files",
+   "path": "A file's Review changes panel when its changes cannot be read (practice failure)",
+   "crop": "r4-git",
+   "runs": [
+    "before",
+    "after"
+   ],
+   "labels": {
+    "before": "Before",
+    "after": "After"
+   },
+   "headline": "The Review changes panel now says when it could not read a file's changes.",
+   "changed": "Before, a failed first read left an empty panel. Now it says \"Couldn't load this file's changes.\" with Try again. Two sibling cases use the same words but are not pictured (no practice screen): a thin strip over an older review, and \"Couldn't load more history.\"",
+   "notice": "An older review never silently stays on screen as if it were current.",
+   "risk": "The thin strip and Show more were checked by tests only, not by a picture. Practice failure on practice data; nothing here ran in a real app or on Android.",
+   "alsoChanges": [
+    "Older review strip (not pictured)",
+    "Show more history (not pictured)"
+   ]
+  }
+ ]
+}

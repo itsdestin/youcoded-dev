@@ -1,0 +1,301 @@
+{
+ "title": "Round 4: what changed, and six choices",
+ "key": "round-four-questions",
+ "out": "round4-questions.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "S-1",
+   "words": true,
+   "surface": "Projects and files",
+   "path": "Projects, project pages, the file viewer and Review changes",
+   "headline": "Projects and files: failures in the list, project page, import, file viewer and Review changes are now visible.",
+   "changed": "Project list: \"Couldn't load your projects.\" + Try again. \"Couldn't refresh the project list.\" after adding a project. Project page: \"Couldn't rename this project.\", \"Couldn't save the description.\", \"Couldn't stop syncing this project.\" (only when this computer's own host says no; a synced project that saved here first stays silent, see the synced-project question on page 2). Import: each file that was refused is a line in the result. File viewer: \"Couldn't load the whole file.\" and, for a PDF, \"Couldn't show page N.\" A rejected file save shows the existing \"Save failed: <reason>\" banner. Review changes: \"Couldn't load this file's changes.\" + Try again, a thin strip over an older review, and \"Couldn't load more history.\"",
+   "notice": "None of these used to say anything; most showed an empty or old screen.",
+   "yes": "Read it",
+   "no": "Something is wrong"
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "surface": "Buttons",
+   "path": "Copy, open and remove buttons in files, the file drawer, links and the model",
+   "headline": "Buttons that failed now show a short notice.",
+   "changed": "\"Couldn't copy the path.\" \"Couldn't open the file.\" \"Couldn't remove this from the list.\" \"Couldn't open the browser.\" / \"folder.\" / \"page.\" / \"link.\" \"Couldn't reload the model.\" Renaming a file in the drawer that fails keeps the name box open and says \"Couldn't rename this file.\"",
+   "notice": "Nothing happening after a press is replaced by a message.",
+   "yes": "Read it",
+   "no": "Something is wrong"
+  },
+  {
+   "id": "S-3",
+   "words": true,
+   "surface": "Marketplace",
+   "path": "Marketplace tags, integrations, stars and uninstall",
+   "headline": "Marketplace: tag, star, integration and uninstall failures are now visible.",
+   "changed": "Tags: \"Couldn't create the tag.\" / \"Couldn't save the tag.\" / \"Couldn't delete the tag.\" Stars: \"Couldn't change your favorites.\" Integrations: the detail page refreshes so the existing \"Couldn't install\" box shows; \"Couldn't install <name>.\" \"Couldn't connect <name>.\" \"Couldn't uninstall <name>.\" \"Couldn't refresh the integrations list.\" \"Couldn't open a setup session.\" A plugin whose files could not be fully removed stays in your library and shows the existing box saying so.",
+   "notice": "A failed uninstall no longer looks finished.",
+   "yes": "Read it",
+   "no": "Something is wrong"
+  },
+  {
+   "id": "S-4",
+   "words": true,
+   "surface": "Chat",
+   "path": "Tags, notes, pasting, attaching and background tasks in a chat",
+   "headline": "Chat: failed saves, pastes and Stop requests now say so.",
+   "changed": "\"Couldn't save this tag change.\" \"Couldn't save the note.\" \"Couldn't save this change.\" (the control goes back first). \"Couldn't attach the pasted image.\" \"Couldn't open the file picker.\" \"Couldn't stop this task.\" (only when the stop request was refused). Scrolling up when older messages cannot load: a thin box \"Couldn't load earlier messages.\" + Try again, after the app has tried again by itself.",
+   "notice": "A tag or note that did not save no longer looks saved.",
+   "yes": "Read it",
+   "no": "Something is wrong"
+  },
+  {
+   "id": "S-5",
+   "words": true,
+   "surface": "Settings",
+   "path": "Remote access, About, Android and new-session defaults",
+   "headline": "Settings: failed saves and reads now show a box or a notice.",
+   "changed": "Remote access: a box under Enabled or Keep awake (\"Couldn't save the remote access setting\" + Details + Try again); the password says \"Couldn't set the password.\" and keeps what you typed. About: \"Couldn't load the usage stats setting.\" + Try again. New-session defaults go back and say \"Couldn't save this setting.\" Android: \"Couldn't change the plan tier.\" as a short pop-up. Behind the scenes, renaming a device that fails now passes the real reason under Details, and an unreadable setup file is written to the log.",
+   "notice": "Your settings never look saved when they were not.",
+   "yes": "Read it",
+   "no": "Something is wrong"
+  },
+  {
+   "id": "S-6",
+   "words": true,
+   "surface": "Left out",
+   "path": "What this round deliberately did not change",
+   "headline": "Left out on purpose, and why.",
+   "changed": "Model picker Effort and Fast saves: the command has already reached Claude Code, so snapping back would lie. Synced-project rename or description rejected by other devices: saved here first (see the synced-project question on page 2). Background Stop refused by the host. A usage count that arrives empty. The integrations list at start-up. Chat tag or note when the connection drops and the app cannot tell (see the tag and note question on page 2). Automatically starring a theme after install. The Android program itself (only the shared settings screens). No picture exists for the older-messages box.",
+   "notice": "Each is either a judgement call below or too small to be worth a notice.",
+   "yes": "Fine to leave out",
+   "no": "Look again"
+  },
+  {
+   "id": "P-2",
+   "page": "Land or hold",
+   "intro": "One question for the whole round, then five small choices."
+  },
+  {
+   "id": "L-1",
+   "words": true,
+   "surface": "Whole app",
+   "path": "About 40 places that used to fail silently",
+   "headline": "Land the whole round: about 40 failures now visible?",
+   "today": "Round 4 made about 40 places that used to fail silently say so. You chose a list of changes with a picture for a sample of each kind. The list is above, five kinds are on the pictures deck. The branch passes the full desktop checks.",
+   "problem": "None of it ran in a real app or on Android. Some pieces have thin tests: the Remote access boxes, Android tier and defaults, integration messages, stars, PDF page, Load whole file, paste and attach, background Stop, import lines. The wording of the new pop-ups is in a slightly different style from one older message.",
+   "proposal": "Landing puts all of it in the next release. A part you reject on the pictures deck can come out on its own.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Failures stop looking like success in about 40 places.",
+      "Every notice uses the same plain wording and the red box you already know."
+     ],
+     "cons": [
+      "Nothing was tried in a real app or on Android; a rare mistake would show up only in real use."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes until you have tried a test copy."
+     ],
+     "cons": [
+      "Silent failures stay; the branch falls behind."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Chat",
+   "path": "The Effort and Fast chips under the message box",
+   "headline": "When the saved Effort and Fast values cannot be read, what should the chips show?",
+   "today": "If the saved value cannot be read, the chips quietly show \"Fast off, effort auto\", as if that were your choice.",
+   "problem": "You may think the chat is running on auto effort and Fast off when the app simply could not tell.",
+   "proposal": "Hide the two chips until the real values are read.",
+   "options": [
+    {
+     "id": "hide",
+     "label": "Hide the chips until read",
+     "pros": [
+      "The chip never states something untrue.",
+      "Looks normal once read."
+     ],
+     "cons": [
+      "The row has two fewer chips for a moment, or longer if the read keeps failing."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "dash",
+     "label": "Show a dash",
+     "pros": [
+      "The chips stay in place and show that something is unknown."
+     ],
+     "cons": [
+      "A dash can look like a bug.",
+      "Takes space."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "A wrong-looking \"off\" and \"auto\" can stay."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Projects",
+   "path": "Renaming a synced project or changing its description",
+   "headline": "When a synced project's rename or description saved here but failed to reach your other devices, tell you?",
+   "today": "A synced project's new name or description is saved on this computer first. If the upload to your other devices then fails, nothing says so.",
+   "problem": "Your phone or second computer keeps showing the old name, and you cannot tell why.",
+   "proposal": "Show a notice: \"Saved on this computer; couldn't update your other devices.\" The wording needs your OK.",
+   "options": [
+    {
+     "id": "notice",
+     "label": "Show that notice",
+     "pros": [
+      "You know the other devices are behind."
+     ],
+     "cons": [
+      "One more message type.",
+      "Wording is new and needs your OK."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "silent",
+     "label": "Stay silent",
+     "pros": [
+      "Nothing to add."
+     ],
+     "cons": [
+      "Other devices quietly show the old name."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Chat",
+   "path": "A chat's tags and notes, saved while a phone connection drops",
+   "headline": "When a tag or note saved over a dropped phone connection, should the app check and tell you?",
+   "today": "On a phone, saving a tag or note can end with the connection dropping, so the app cannot tell whether it was saved. It says nothing.",
+   "problem": "You may believe a tag or note saved when it did not, or the other way round.",
+   "proposal": "Check again once reconnected. If it still cannot be confirmed, say: \"Couldn't confirm this was saved.\"",
+   "options": [
+    {
+     "id": "recheck",
+     "label": "Re-check and tell you",
+     "pros": [
+      "You are not misled either way."
+     ],
+     "cons": [
+      "A small extra check after reconnecting.",
+      "A message that says \"couldn't confirm\", not yes or no."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave",
+     "label": "Leave it as it is",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "The doubt stays invisible."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Phone",
+   "path": "Pasting a picture into the message box on a phone or the Android app",
+   "headline": "Pasting a picture on a phone does nothing. Should it say so?",
+   "today": "On a phone or the Android app, pasting a picture into the message box does nothing and says nothing, because phones cannot do it.",
+   "problem": "It looks like the paste failed or the app froze.",
+   "proposal": "Show a short notice: \"Pasting pictures isn't available on this device.\"",
+   "options": [
+    {
+     "id": "say",
+     "label": "Show the notice",
+     "pros": [
+      "You know it is not a fault.",
+      "Short pop-up that goes away by itself."
+     ],
+     "cons": [
+      "A new message for something that never worked."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "silent",
+     "label": "Stay silent",
+     "pros": [
+      "Nothing to add."
+     ],
+     "cons": [
+      "The paste still looks broken."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Android",
+   "path": "How Android settings failures are shown",
+   "headline": "Android settings failures appear as short pop-ups. Should they become boxes like elsewhere?",
+   "today": "On computers, a failed settings save shows a red box next to the control. On Android these are short pop-up notices with the same information, built that way in this round.",
+   "problem": "Two styles for the same job. Pop-ups disappear after a few seconds and have no Try again button.",
+   "proposal": "Keep the pop-ups for now, or build a place for boxes on those Android screens.",
+   "options": [
+    {
+     "id": "keep",
+     "label": "Keep the pop-ups",
+     "pros": [
+      "Smaller job, same information.",
+      "Nothing new on screen."
+     ],
+     "cons": [
+      "Can be missed.",
+      "No Try again button.",
+      "Differs from the computer."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "boxes",
+     "label": "Convert to boxes",
+     "pros": [
+      "Same as the computer, with Try again."
+     ],
+     "cons": [
+      "Needs a notice area added to those screens.",
+      "A bigger job."
+     ]
+    }
+   ]
+  }
+ ]
+}
