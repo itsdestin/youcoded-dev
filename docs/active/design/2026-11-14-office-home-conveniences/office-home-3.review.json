@@ -1,0 +1,33 @@
+{
+  "title": "Office front page — round 3: the rename pencil and the faint ending",
+  "key": "office-home-conveniences-review-3",
+  "out": "office-home-3.review.html",
+  "images": "images/office-home-3.review",
+  "runs": {
+    "before": "runs2/after",
+    "after": "runs3/after"
+  },
+  "labels": { "before": "Round 2", "after": "Now" },
+  "steps": [
+    {
+      "id": "R3-1",
+      "surface": "Office",
+      "path": "Office → Home → any file",
+      "crop": "office/home#hover",
+      "headline": "Rename is now the session switcher's pencil, right after each file's name.",
+      "changed": "Your R2-4 note: the same pencil, size and place as renaming a session, always showing (muted until pointed at). The rename button left the hover group, which is now Ask about this, View in folder and More.",
+      "notice": "Clicking the pencil opens the rename popup; clicking anywhere else on the row still opens the file.",
+      "risk": "Every row now carries a small pencil at rest, as the session switcher's rows do."
+    },
+    {
+      "id": "R3-2",
+      "surface": "Office",
+      "path": "Office → Home → the pencil",
+      "crop": "office/rename",
+      "headline": "The popup shows a faint .docx right after the name you type, instead of the line under the box.",
+      "changed": "Your R2-3 note: the ending follows your text as you type, in a faint colour, and isn't part of what you can edit.",
+      "notice": "The popup is a line shorter.",
+      "risk": "A name longer than the box scrolls inside it; the faint ending then stays put rather than following the hidden end of the name."
+    }
+  ]
+}

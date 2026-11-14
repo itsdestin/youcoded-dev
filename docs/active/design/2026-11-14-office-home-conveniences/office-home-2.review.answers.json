@@ -1,0 +1,38 @@
+{
+ "deck": "office-home-conveniences-review-2",
+ "started": "2026-11-14T10:13:33.734Z",
+ "submitted": "2026-11-14T10:15:35Z",
+ "cur": 3,
+ "answers": {
+  "R2-1": {
+   "v": "yes",
+   "t": 1794651221055,
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "t": 1794651229184,
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-3": {
+   "v": "yes",
+   "t": 1794651266500,
+   "note": "we can just show a shadow .docx at the end of the name instead of the \"keeps its ending\" subheader",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-4": {
+   "v": "yes",
+   "t": 1794651334238,
+   "note": "i kinda meant i want the rename icon to mnatch the rename button/icon in the session switcher/resume browser. and sit right to the right of hte name",
+   "seconds": 68,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
