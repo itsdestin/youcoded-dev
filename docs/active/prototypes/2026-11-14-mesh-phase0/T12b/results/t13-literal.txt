@@ -1,0 +1,12 @@
+{
+ "rules": "LITERAL",
+ "cases": 4374,
+ "failuresByProperty": {
+  "P3-reply-lost": 1323,
+  "P7s-canonical-changed": 486,
+  "P7-id-vanished": 486
+ }
+}
+P3-reply-lost e.g. {"shape":0,"tailLen":0,"b":2,"c":2,"thirdActs":true,"order":"tail-first","detail":"reply d2.7 (writer d2, pos 4) not in any version; tails: [[\"waiting\",\"d2\",true]]"}
+P7s-canonical-changed e.g. {"shape":0,"tailLen":0,"b":2,"c":4,"thirdActs":true,"order":"tail-first","detail":"99c81381"}
+P7-id-vanished e.g. {"shape":0,"tailLen":0,"b":2,"c":4,"thirdActs":true,"order":"tail-first","detail":"99c81381"}

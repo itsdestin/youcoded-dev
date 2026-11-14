@@ -1,0 +1,5 @@
+{
+ "rules": "FIXED",
+ "cases": 4374,
+ "failuresByProperty": {}
+}

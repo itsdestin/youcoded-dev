@@ -1,0 +1,27 @@
+seed 113098  T12 baseline only: P3-reply-lost 
+   + only runFix: P3-reply-lost 
+   + only orphanClaim: 
+   + only oldEra: P3-reply-lost 
+   + only keepLonger: P3-reply-lost 
+   + only reversibleSetAside: P3-reply-lost 
+   + only lineageSetAside: P3-reply-lost 
+   + only selfParent: P3-reply-lost 
+   + only hostNoPull: P3-reply-lost 
+seed 119382  T12 baseline only: P3-reply-lost 
+   + only runFix: 
+   + only orphanClaim: P3-reply-lost 
+   + only oldEra: P3-reply-lost 
+   + only keepLonger: P3-reply-lost 
+   + only reversibleSetAside: P3-reply-lost 
+   + only lineageSetAside: P3-reply-lost 
+   + only selfParent: P3-reply-lost 
+   + only hostNoPull: P3-reply-lost 
+seed 119763  T12 baseline only: P3-reply-lost 
+   + only runFix: P3-reply-lost 
+   + only orphanClaim: 
+   + only oldEra: P3-reply-lost 
+   + only keepLonger: P3-reply-lost 
+   + only reversibleSetAside: P3-reply-lost 
+   + only lineageSetAside: P3-reply-lost 
+   + only selfParent: P3-reply-lost 
+   + only hostNoPull: P3-reply-lost 

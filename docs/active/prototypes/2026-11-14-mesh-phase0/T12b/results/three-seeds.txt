@@ -1,0 +1,13 @@
+== original 3 failing seeds (T12 generator, seeds 113098 119382 119763), old rules vs new rules
+seed 113098  OLD (T12 rules):
+"failuresByProperty":{"P3-reply-lost":1}
+seed 113098  NEW:
+"failuresByProperty":{}}
+seed 119382  OLD (T12 rules):
+"failuresByProperty":{"P3-reply-lost":1}
+seed 119382  NEW:
+"failuresByProperty":{}}
+seed 119763  OLD (T12 rules):
+"failuresByProperty":{"P3-reply-lost":1}
+seed 119763  NEW:
+"failuresByProperty":{}}

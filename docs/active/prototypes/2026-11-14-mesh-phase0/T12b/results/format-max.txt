@@ -1,0 +1,1 @@
+concurrent format 3 vs 1, 40 clock offsets -> winner minAppVersion counts {"1":0,"3":40}

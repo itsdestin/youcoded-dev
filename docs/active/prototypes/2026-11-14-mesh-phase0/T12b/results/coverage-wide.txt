@@ -1,0 +1,3 @@
+devices per run (count of runs): {"2":49855,"3":50030,"4":49954,"5":50161}
+events generated over 200000 runs (avg 54.5 per run): {"format":204103,"write":1426702,"delete":304917,"sync":2648351,"onbehalf":306366,"part":611386,"remove":713659,"relate":508798,"takeover:off":977290,"release":509205,"witness":306063,"restore":305197,"mutual":407127,"rename":202709,"flag":101230,"heal":406107,"takeover:chip":651202,"talk":102040,"add":199933}
+world coverage of the first 20,000: {"runs":20000,"removedDevice":17808,"concurrentRemovalsBothStand":0,"delete":13809,"deleteAndRestore":4429,"tookOver":1976,"twoPlusVersions":3312,"tailVersion":1781,"pendingMidRun":14629,"parkedMidRun":10339,"unknownDeviceAtEnd":682,"hadMutualRemoval":16868}
