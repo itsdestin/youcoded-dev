@@ -12,8 +12,8 @@ area: Chat
 side: screens
 ---
 Progress
-Done: Landed 2026-11-13 (PR #747): file sizes use 1000-based units in 17 places.
-Next: Build from deck answers: four-item right-click menu on pictures (C-2), folder list ordered by last use (C-3), two or three stylings for quick-chip Replace/Add to show Destin (C-4).
+Done: Built on session/round3-chat: right-click menu on pictures (four items), folder list ordered by last use, three stylings of the quick-chip Replace/Add choice as a workbench mock-up (not wired in).
+Next: Destin picks one chip-choice styling (A strip, B small menu, C replace with Undo); then wire it in.
 Blocked: nothing recorded.
 
 Chats
