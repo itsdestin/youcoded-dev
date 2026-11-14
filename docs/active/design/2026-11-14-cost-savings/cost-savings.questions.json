@@ -1,0 +1,623 @@
+{
+  "title": "Cost savings other AI apps have — which should YouCoded adopt?",
+  "key": "cost-savings-questions",
+  "out": "cost-savings.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Cheaper models for the right jobs",
+      "intro": "Background for every page. AI providers bill by the amount of text sent and received. Text the provider has already read, re-sent unchanged, costs about a tenth of the normal price for a while: this deck calls that the reuse discount. YouCoded already protects it for Claude, ChatGPT, OpenAI and OpenRouter, so these questions are about savings other apps have that we do not. They cover chats run by YouCoded's own engine, not Claude Code chats. A Yes builds nothing yet: it becomes a work card with its own design round. This first page is where the research found the largest savings."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Helpers",
+      "path": "Any chat on your own Claude, OpenAI or Gemini key, when the assistant sends a helper off to do a job",
+      "headline": "Should helpers get an automatic cheaper model on Claude, OpenAI and Gemini keys?",
+      "today": "A helper is a second assistant the main chat sends off to search or read, which reports back a short note. With ChatGPT sign-in or OpenRouter, YouCoded already runs helpers on a cheaper model automatically. With your own Claude, OpenAI or Gemini key there is no automatic choice, so a helper does not start until you pick a helper model in settings. Elsewhere: Claude Code and Codex run helpers on the same model as the chat unless told otherwise, and both say helper work uses more in total than working without helpers. Hermes lets you choose a model per helper. Windsurf built its own small, fast search helper.",
+      "problem": "On three providers helpers do not work until you set them up, and anyone who points them at their main model pays main-model prices for simple search-and-read work.",
+      "proposal": "Choose one reviewed cheaper model per provider, so helpers work straight away. You could still change it in settings. Pick how cheap the automatic choice should be.",
+      "options": [
+        {
+          "id": "smallest",
+          "label": "Smallest model",
+          "summary": "Claude Haiku, OpenAI's smallest, Gemini Flash.",
+          "pros": [
+            "Largest saving: these cost a small fraction of the main models.",
+            "Helpers finish faster.",
+            "Matches what YouCoded already does for ChatGPT sign-in and OpenRouter."
+          ],
+          "cons": [
+            "On a hard search a small model can miss things or report back less accurately.",
+            "You may not notice a weak helper report unless you check it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "middle",
+          "label": "Mid-priced model",
+          "summary": "For example Claude Sonnet when the chat is on a top model. This is what YouCoded already sets for Claude Code chats.",
+          "pros": [
+            "Safer quality on hard jobs.",
+            "Still cheaper than a top model."
+          ],
+          "cons": [
+            "Much smaller saving.",
+            "No saving at all when your chat is already on the mid-priced model."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "Nobody is ever moved to a model they did not choose."
+          ],
+          "cons": [
+            "Helpers stay unusable on these three providers until each person sets them up."
+          ]
+        }
+      ],
+      "risk": "The saving and quality claims come from published prices and other apps' documents, not from a test on YouCoded. A paid comparison run could settle it before release."
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any chat run by YouCoded's own engine, on any provider",
+      "headline": "Should chats get a control for how hard the model thinks before answering?",
+      "today": "Most current models can think for a short or a long time before they answer, and thinking is billed like written text. YouCoded sends no instruction about this to any provider, so every chat runs at whatever the provider's standard level is. Elsewhere: Claude Code, Codex, Gemini's tools and Cursor all offer low, medium and high levels. Anthropic's own advice is that this level is now the main way to control thinking cost on its newest models. Claude Code chats inside YouCoded already have this through the effort command.",
+      "problem": "You cannot make a simple chat cheaper and quicker, or a hard one more thorough. On ChatGPT sign-in, heavier thinking also uses up your plan allowance faster.",
+      "proposal": "Add a low / standard / high thinking control. Pick whether to add it, and what a new chat starts on.",
+      "options": [
+        {
+          "id": "add-standard",
+          "label": "Add it, start standard",
+          "pros": [
+            "Nothing changes for anyone until they choose to change it.",
+            "Low gives cheaper, faster replies for easy work; high gives more thorough ones."
+          ],
+          "cons": [
+            "One more control to understand.",
+            "Left on low by accident, answers get worse with no obvious sign why.",
+            "On some older models, changing the level mid-chat loses the reuse discount for one message."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "add-low",
+          "label": "Add it, start low",
+          "pros": [
+            "Everyone saves from day one without doing anything."
+          ],
+          "cons": [
+            "Answers on hard problems get worse by default, and people would blame the app.",
+            "A change in quality that people cannot trace to anything they did."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "Do not add it",
+          "pros": [
+            "The chat screen stays simpler."
+          ],
+          "cons": [
+            "Thinking cost stays outside the user's control."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Long chats",
+      "path": "A chat that has grown close to the model's size limit",
+      "headline": "Which model should write the summary when a long chat is shortened?",
+      "today": "When a chat nearly fills the model's limit, YouCoded replaces the older part with a written summary so the chat can continue. The chat's own model writes it. On ChatGPT and OpenAI that request gets the reuse discount. On a Claude key it mostly does not, so that one summary is billed close to full price. Elsewhere: Claude Code uses the chat's own model and keeps the discount. Hermes uses a separate, cheaper summary model. Codex can use OpenAI's built-in summarizing.",
+      "problem": "A summary request re-sends the whole old conversation, so it is one of the largest single requests in a long chat.",
+      "proposal": "My earlier report suggested a cheaper summary writer. On closer reading that can cost more: a different model has never seen the chat, so it reads all of it at its own full price, which can exceed the chat's model reading it at a tenth. Pick one.",
+      "options": [
+        {
+          "id": "same-fix-claude",
+          "label": "Same model, fix Claude",
+          "summary": "Keep the chat's own model, and close the gap so a Claude key's summary gets the discount too.",
+          "pros": [
+            "Summary quality stays the same, which matters because the rest of the chat depends on it.",
+            "Cheaper summaries on a Claude key, with nothing for you to notice or set."
+          ],
+          "cons": [
+            "No saving on providers that already get the discount."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "cheaper",
+          "label": "Cheaper summary model",
+          "pros": [
+            "Can save on providers where the discount does not apply."
+          ],
+          "cons": [
+            "A weaker summary loses details, and the assistant then forgets things you told it.",
+            "Can cost more than today where the discount would have applied."
+          ]
+        },
+        {
+          "id": "setting",
+          "label": "Let people choose",
+          "pros": [
+            "People who care can tune it."
+          ],
+          "cons": [
+            "A setting almost nobody can choose well.",
+            "Same quality and cost risks as the cheaper model."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Chat names",
+      "path": "Settings, chat naming set to the AI option",
+      "headline": "When AI chat naming is on, should it use a cheap model automatically?",
+      "today": "Chat naming is set to Basic by default, which quotes your opening words and costs nothing. If you switch it to the AI option, the chat's own model writes the name after replies 1 and 3 and then every 25, unless you choose a naming model yourself. Elsewhere: OpenCode has a dedicated small-model setting for jobs like this. Which model Claude Code uses for names could not be confirmed.",
+      "problem": "Someone chatting on a top model pays top-model prices for a five-word name.",
+      "proposal": "Yes: AI naming uses the same cheaper model as helpers on that provider, unless you picked one. Names may be slightly plainer. No: nothing changes. Don't know: I leave it out for now."
+    },
+    {
+      "id": "P-2",
+      "page": "Sending less text with every message",
+      "intro": "Every message re-sends the whole chat so far, plus the description of every tool the assistant can use. The reuse discount makes that cheap, not free. Other apps shrink what is sent. The catch on this whole page: changing the earlier part of a chat cancels the discount for one message, so shrinking only pays off if the removed text would have been re-sent many more times. Published results are modest: Cursor's whole 2026 efficiency push cut users' cost by 7%."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Connected tools and skills",
+      "path": "Any chat where you have connected extra tools (for example Google Drive or a browser) or installed skills",
+      "headline": "Should tool descriptions be loaded only when the assistant needs them?",
+      "today": "Every message carries the full written description of every built-in tool, every connected tool and a one-line list of your skills, whether or not they get used. Elsewhere: Claude Code loads connected tools on demand, and Anthropic reported its tool text shrinking by 85%. Cursor measured 46.9% less text in chats that used connected tools. OpenAI offers the same for its newer models. Pi avoids the problem by not supporting connected tools at all.",
+      "problem": "The more tools you connect, the more every single message costs, and the less room is left for the conversation itself.",
+      "proposal": "The assistant would see only a short list of tool names and look up a tool's full description when it decides to use it. Pick how far to take it.",
+      "options": [
+        {
+          "id": "connected-many",
+          "label": "Connected tools only",
+          "summary": "Only for connected tools, and only once you have enough of them to matter. Built-in tools stay as they are.",
+          "pros": [
+            "Saves the most for the people who pay the most: heavy users of connected tools.",
+            "No change at all for someone with few or none."
+          ],
+          "cons": [
+            "The assistant takes one extra step before first using a connected tool, so that reply is slightly slower.",
+            "It can occasionally fail to find a tool it would have used, more often on small or local models."
+          ],
+          "measured": "46.9% less text in Cursor chats that used connected tools",
+          "recommended": true
+        },
+        {
+          "id": "everything",
+          "label": "All tools",
+          "pros": [
+            "Largest reduction in text sent."
+          ],
+          "cons": [
+            "Everyday actions like reading a file gain an extra step.",
+            "More chances for the assistant to skip a tool it should have used."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "Leave as is",
+          "pros": [
+            "The assistant always knows every tool it has."
+          ],
+          "cons": [
+            "Cost keeps growing with every tool you connect."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Long chats",
+      "path": "A chat where the assistant has read many files or run many commands",
+      "headline": "Should old tool results be cleared out of a chat before it is full?",
+      "today": "When the assistant reads a file or runs a command, the result (up to about 30,000 characters each) stays in the chat and is re-sent with every later message until the whole chat is summarized near its limit. Elsewhere: Hermes swaps old results for short placeholders, but only as the first step of a summary. Anthropic offers automatic clearing to app makers and warns that each clearing cancels the reuse discount once. One 2026 study of 2,848 Claude Code chats reportedly found that removing 38% of tool text raised the total bill by 6.8% (second-hand, not checked against the paper).",
+      "problem": "Long, tool-heavy chats keep paying to re-send results nobody needs any more. But clearing them cancels the discount on everything after that point.",
+      "proposal": "Pick one. The evidence that this saves money is weak, and one result says it costs more.",
+      "options": [
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "The reuse discount is never broken.",
+            "The assistant keeps everything it has read, so it does not re-read files."
+          ],
+          "cons": [
+            "Very long chats stay a little more expensive per message than they could be."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "measure",
+          "label": "Measure first",
+          "summary": "Run a paid test on recorded long chats before deciding.",
+          "pros": [
+            "A real answer for our app instead of someone else's study."
+          ],
+          "cons": [
+            "Costs money and time for a likely small gain. I would ask before spending."
+          ]
+        },
+        {
+          "id": "build",
+          "label": "Clear them early",
+          "pros": [
+            "Chats reach their limit later."
+          ],
+          "cons": [
+            "The assistant may forget what a file said and read it again.",
+            "May raise cost, going by the one study."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Long chats",
+      "path": "Settings, chat length for ChatGPT sign-in and OpenRouter (Standard, Medium, Long)",
+      "headline": "Should chats be summarized earlier than they are now?",
+      "today": "YouCoded summarizes only when a chat is nearly full. For ChatGPT sign-in and OpenRouter, full means the Medium setting you approved in October: about 375,000 words of conversation. On Claude, OpenAI and Gemini keys it is the model's own limit. Elsewhere: Gemini's command-line tool and Hermes both summarize at half full.",
+      "problem": "Each message in a very long chat re-sends all of it, so later messages cost more than early ones even with the discount. OpenAI's price list also charges more for requests past roughly 200,000 words; whether that applies to a ChatGPT plan is not confirmed.",
+      "proposal": "Pick one. Earlier summaries make long chats cheaper per message, and make the assistant forget detail sooner.",
+      "options": [
+        {
+          "id": "keep",
+          "label": "Keep as is",
+          "pros": [
+            "The assistant remembers the most.",
+            "Fewest summaries, each of which costs money and can lose detail.",
+            "It is the choice you made a month ago, and nothing confirmed says it was wrong."
+          ],
+          "cons": [
+            "The longest chats cost the most per message."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "standard",
+          "label": "Default to Standard",
+          "summary": "New installs start on the smaller Standard size, about 200,000 words. People can still choose Medium or Long.",
+          "pros": [
+            "Stays under the size where OpenAI lists higher prices."
+          ],
+          "cons": [
+            "Long working chats get summarized sooner and lose detail.",
+            "Reverses a recent decision on unconfirmed evidence."
+          ]
+        },
+        {
+          "id": "half",
+          "label": "Summarize at half",
+          "pros": [
+            "Cheapest long chats."
+          ],
+          "cons": [
+            "Twice as many summaries.",
+            "The assistant forgets earlier work most often."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Keeping the discount alive between messages",
+      "intro": "The reuse discount expires if you stop typing for long enough. How long depends on the provider, and on some providers a longer-lasting discount costs extra to set up. When it expires, your next message re-sends the whole chat at full price."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Chats on a Claude key",
+      "path": "Any chat or helper running on your own Claude key",
+      "headline": "On a Claude key, should helpers use the cheaper five-minute discount?",
+      "today": "Claude offers two lengths. A discount that survives 5 minutes of silence costs 25% extra on the first send. One that survives an hour costs 100% extra. YouCoded asks for the hour everywhere, including helpers, so that a coffee break does not cost you a full-price message. Elsewhere: since March 2026 Claude Code uses the hour only for a subscriber's main chat and 5 minutes for everything else, which angered its users. Hermes chooses automatically: an hour when a person is typing, 5 minutes for helpers and scheduled jobs.",
+      "problem": "A helper works without pauses and is finished in minutes. It pays double to hold a discount for an hour that nobody comes back to use.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "split",
+          "label": "Hour for chats only",
+          "summary": "Your own chats keep the hour. Helpers use 5 minutes.",
+          "pros": [
+            "Helpers on a Claude key get cheaper to start, with no effect on your own chats."
+          ],
+          "cons": [
+            "A helper that stalls for over 5 minutes, for example waiting on your permission, pays one full-price step."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "hour",
+          "label": "Hour everywhere",
+          "pros": [
+            "Simplest, and it is today's behaviour."
+          ],
+          "cons": [
+            "Helpers keep overpaying."
+          ]
+        },
+        {
+          "id": "five",
+          "label": "Five minutes everywhere",
+          "pros": [
+            "Cheapest for quick back-and-forth."
+          ],
+          "cons": [
+            "Any pause over 5 minutes makes your next message full price. This is the change Claude Code users complained about."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Chat",
+      "path": "A chat left open while you are away from it",
+      "headline": "Should YouCoded quietly keep a chat's discount alive while you are away?",
+      "today": "YouCoded sends nothing while you are away. If you come back after the discount has expired, your next message is full price. Elsewhere: Aider can send a tiny request every 5 minutes to keep the discount alive. OpenCode has the same idea for up to 30 minutes, switched off unless you turn it on.",
+      "problem": "Coming back to a long chat after lunch can make one message cost ten times what the previous one did.",
+      "proposal": "Pick one. Keeping it alive means small charges while you are not using the app.",
+      "options": [
+        {
+          "id": "no",
+          "label": "Do not build it",
+          "pros": [
+            "The app never spends money when you are not using it.",
+            "The hour-long discount on a Claude key already covers most breaks."
+          ],
+          "cons": [
+            "The first message after a long break stays expensive."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "opt-in",
+          "label": "Setting, off by default",
+          "pros": [
+            "People with long, expensive chats can choose it."
+          ],
+          "cons": [
+            "Background spending is easy to forget you switched on.",
+            "On a subscription it uses plan allowance while you are away.",
+            "If you never come back to that chat, the money was wasted."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Helpers",
+      "path": "Any chat, when the assistant sends a helper off to do a job",
+      "headline": "Should a helper be able to start as a copy of the main chat?",
+      "today": "A YouCoded helper starts fresh. It gets a written brief and nothing else from your chat, so it pays full price for its own opening. Elsewhere: Claude Code now has helpers that start as a copy of the main chat and get its reuse discount straight away, on by default. Codex reportedly does not share the discount this way: one user measured 14% reuse in copied helpers against 98% in the main chat. Our own work card on helper cost already marks this idea as likely to be dropped.",
+      "problem": "A helper that needs to know what you and the assistant already discussed has to be told again in the brief, and details get lost.",
+      "proposal": "Pick one. A copy only gets the discount on the same model as the chat, so it cannot be combined with the cheaper helper model from the first page.",
+      "options": [
+        {
+          "id": "fresh",
+          "label": "Keep helpers fresh",
+          "pros": [
+            "Helpers stay small and can run on a cheaper model, which is the larger saving.",
+            "A helper never carries your whole conversation around."
+          ],
+          "cons": [
+            "The brief has to carry all the context, and a thin brief gives a worse result."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "add-copy",
+          "label": "Add a copy kind",
+          "summary": "Keep fresh helpers, and add a second kind that starts as a copy for jobs needing the full conversation.",
+          "pros": [
+            "Better results on jobs that depend on what was already discussed."
+          ],
+          "cons": [
+            "Runs on the expensive chat model and re-sends the whole chat at every step.",
+            "A second kind of helper to explain and maintain."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Gaps on single providers",
+      "intro": "Smaller items that each affect one provider. Two things already planned on the long-chat cost card are left out: a warning that switching models mid-chat re-sends everything at full price, and finding out why about 18% of quick OpenRouter follow-ups miss the discount."
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Chats on a Gemini key",
+      "path": "Any chat running on your own Gemini key",
+      "headline": "How far should we go on Gemini's reuse discount?",
+      "today": "Gemini gives the discount automatically, at about a tenth of the normal price, once a chat is long enough. YouCoded asks Gemini for nothing extra, and it is not confirmed that the app can read Gemini's savings, so the Reuse figure on a Gemini chat may be blank or wrong. Gemini also sells a stored memory you rent by the hour, which is not available on its newest models. Elsewhere: Google's own command-line tool relies on the automatic discount, and only for people using a key.",
+      "problem": "On Gemini you cannot tell whether you are getting the discount, and neither can we.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "check",
+          "label": "Check and show it",
+          "summary": "Confirm the discount is happening and make the Reuse figure correct on Gemini.",
+          "pros": [
+            "Honest numbers, and we find out whether there is a problem at all.",
+            "No downside for users."
+          ],
+          "cons": [
+            "Saves nothing by itself."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "stored",
+          "label": "Also add stored memory",
+          "pros": [
+            "Can pay off when one very large document is asked about many times within an hour."
+          ],
+          "cons": [
+            "Hourly rent whether or not you keep chatting.",
+            "Not available on Gemini's newest models.",
+            "Easy to lose money on."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No work."
+          ],
+          "cons": [
+            "Gemini stays the one provider where the Reuse figure cannot be trusted."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Chats on an OpenAI key",
+      "path": "Any chat running on your own OpenAI key (not ChatGPT sign-in)",
+      "headline": "On an OpenAI key, should YouCoded use the newer discount settings?",
+      "today": "OpenAI's newest models now charge 25% extra the first time text is stored for the discount, which lasts 30 minutes. They offer a 12-hour version for 150% extra, and a way to skip storing for one-off requests. YouCoded uses none of these, so everything is stored for 30 minutes, including one-off jobs like naming a chat that are never re-sent. Elsewhere: Codex has an open complaint that it cannot use these settings either. ChatGPT sign-in is not affected; that service refuses them.",
+      "problem": "One-off jobs pay the 25% storing charge for nothing. And a chat left overnight is full price the next morning.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "skip-oneoff",
+          "label": "Skip storing one-offs",
+          "pros": [
+            "A small saving with nothing for you to notice or set."
+          ],
+          "cons": [
+            "Small: one-off jobs are a minor part of the bill."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "plus-12h",
+          "label": "Also offer 12 hours",
+          "summary": "The above, plus a setting for people who leave chats open overnight.",
+          "pros": [
+            "Next-morning messages keep the discount."
+          ],
+          "cons": [
+            "Storing costs two and a half times normal. Anyone who turns it on and does not return to their chats pays more.",
+            "A setting that is hard to choose well."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No work."
+          ],
+          "cons": [
+            "Keeps paying the small storing charge on one-off jobs."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Chats on OpenRouter",
+      "path": "Any chat running through OpenRouter",
+      "headline": "Should OpenRouter chats be able to ask for the cheapest company serving a model?",
+      "today": "OpenRouter passes your chat to one of several companies that run the same model at different prices. YouCoded lets OpenRouter choose, and labels each chat so that it stays with one company for an hour, which is what keeps the reuse discount. OpenRouter warns that telling it which companies to prefer switches that hour-long stickiness off.",
+      "problem": "You may not be on the cheapest company for your model. But forcing the cheapest one can lose the discount, which is worth far more than the price gap.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "wait",
+          "label": "Not yet",
+          "summary": "Finish the planned test of why some OpenRouter follow-ups miss the discount, then decide.",
+          "pros": [
+            "Protects the discount we already get.",
+            "The test may show the real problem is somewhere else."
+          ],
+          "cons": [
+            "Some chats may sit on a pricier company in the meantime."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "setting",
+          "label": "Add a setting now",
+          "pros": [
+            "Price-sensitive people get a lower listed price per message."
+          ],
+          "cons": [
+            "Can cost more overall by losing the discount.",
+            "The cheapest company is often slower or less reliable."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "surface": "Custom and local model servers",
+      "path": "Chats on a server you added yourself, such as Ollama on your own computer or a hosted service",
+      "headline": "Should YouCoded ask Ollama-style servers to keep a model ready between messages?",
+      "today": "For a server you add yourself, YouCoded sends the chat and nothing else. Ollama unloads a model after 5 minutes of silence, so the next message waits while it loads and re-reads the whole chat. Hosted services such as xAI, Mistral and Together recommend a label on each chat so follow-ups get their discount; YouCoded does not send one to them. On your own computer this is about speed and battery, not money. Elsewhere: a Codex user reported a crash when Codex sent a setting that a custom server did not understand.",
+      "problem": "Local chats feel slow after any pause, and hosted custom services may be charging full price for follow-ups.",
+      "proposal": "Yes: YouCoded asks for a longer keep-ready time and sends the chat label, and drops both automatically if a server rejects them. Local models stay in memory longer, which uses more of your computer's memory while idle. No: nothing changes. Don't know: I leave it out for now."
+    },
+    {
+      "id": "P-5",
+      "page": "What goes first",
+      "intro": "One last question, about order."
+    },
+    {
+      "id": "Q-15",
+      "words": true,
+      "surface": "Planning",
+      "path": "The work cards for YouCoded's own engine",
+      "headline": "Of the ideas you said yes to, which should be worked on first?",
+      "today": "None of the ideas in this deck has a work card yet. The existing long-chat cost card holds the model-switch warning, the OpenRouter test and showing why a discount was missed.",
+      "problem": "These are separate pieces of work, and each one that changes what users see needs its own design round with you.",
+      "proposal": "Pick every one you want near the front of the queue. Anything you leave unpicked waits behind the others.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "helpers",
+          "label": "Cheaper helpers",
+          "summary": "Largest likely saving, and it makes helpers work out of the box on three providers."
+        },
+        {
+          "id": "thinking",
+          "label": "Thinking control",
+          "summary": "Gives users a direct cost and speed dial. Needs a design round."
+        },
+        {
+          "id": "tools",
+          "label": "Tools on demand",
+          "summary": "Best-measured saving elsewhere, for people with many connected tools. The largest piece of work here."
+        },
+        {
+          "id": "invisible",
+          "label": "The invisible fixes",
+          "summary": "Claude summary discount, helper discount length, Gemini check, OpenAI one-offs. Small, nothing for users to learn."
+        },
+        {
+          "id": "existing",
+          "label": "Finish the existing card",
+          "summary": "Model-switch warning and the OpenRouter test before anything new."
+        }
+      ]
+    }
+  ]
+}
