@@ -45,7 +45,7 @@ Three levels, each with one job. Every screen uses the same three.
 |---|---|---|
 | **Listing** | One thing an author publishes | Install, update, remove, turn off, rate, comment, report, safety verdict, version, author |
 | **Part** | One usable piece inside a listing | Shown where it is used; switched on or off (everywhere, or per project — #75) |
-| **Collection** | A named list of listings | Browse, share, "install all"; installs nothing by itself |
+| **Collection** | A named list of listings and/or single parts from any listings | Browse, share, "install all"; installs nothing by itself |
 
 **Part types** (closed list, one vocabulary in manifests, catalog and UI):
 skill · command · specialist · tool connection · automation (hook) · page · theme · style ·
@@ -61,9 +61,22 @@ also carry settings are Setups (#63 i; `HarnessManifest`).
   one author, one version, one body of files.
 - A part card always says "Part of X" and opens X (Destin, 2026-04-21). It never has its own
   Install button; it has "Get X" and, once installed, an on/off switch.
-- "Install one item out of a bundle" is answered by install-then-choose: the listing installs
-  whole, the user picks which parts are on. Files are small; a partial install would create
-  listings whose installed content matches no scanned version.
+- **A person can download only the parts they want** (Destin, deck 2026-11-14 Q-1: "users
+  should have the option to download only specific components"). The install record lists
+  which parts of which listing version are present. The safety verdict still holds, because it
+  is given to the whole version and every installed part comes from that version unchanged.
+  A part that leans on another part of the same listing says so (`part.needs`), and the
+  installer brings the needed part with it rather than leaving a piece that quietly fails.
+  Adding another part later is a small download of the same version (or an update first).
+- **One switch model with the per-project work** (same answer: "integrate with that work, or
+  fold it into this in a single consolidated branch"). The parked per-project controls
+  (#75, app PR #571, open since 2026-09-24, UI review pending) already switch plugins, skills
+  and tool servers per project. Its switches and this design's part on/off become one thing:
+  downloaded → on everywhere → on in this project. PR #571 is rebased onto the foundation's
+  install record and finished inside this workstream, not shipped beside it.
+- **A single skill can be its own listing** (deck S-1) — a listing with one part.
+- **Collections hold parts as well as listings, from any mix of listings** (deck S-1: "skills
+  only, for example"). Everyone gets a default collection, **Favorites**, and can make more.
 - Favourites, chips and per-project switches all key on part ids (`listing:part`).
 
 ## 2. One catalog for every kind
@@ -127,11 +140,11 @@ Git stays underneath and is never shown. Each git idea gets one plain action:
 
 | Git idea | In the app | What it does |
 |---|---|---|
-| fork | **Make it mine** → "Your version" | Any installed listing, of any kind, can be changed — by hand or by asking the assistant. The record keeps what it came from (`basedOn {id, version, contentId}`). |
+| fork | **Create your own** | Any installed listing, of any kind, can be the start of a new one — changed by hand or by asking the assistant. The person names it whatever they like; it is an independent listing from then on. The record keeps what it came from (`basedOn {id, version, contentId}`). No "Your version" wording anywhere (deck Q-F4). |
 | history | **History** | Every change to an installed listing is a restorable point, "like any other typical version history menu". Works for the author's updates and your own edits alike. |
 | upstream changed | **Update and keep my changes** | You are always told when the original changes. The assistant carries your changes onto the new version, shows a preview, and can be undone. Also offered: Replace with the new one, Keep mine. |
-| publish a fork | **Publish my version** | Your version becomes its own listing, linked to its parent. Credit to every author up the chain is automatic and cannot be removed. The parent's licence must allow it; if it does not, your version stays private. |
-| network graph | **Family** | Every listing page shows Based on (its parents) and Versions by others (its variants), ranked like anything else. One page traces the whole family. |
+| publish a fork | **Publish** | Your version becomes its own listing, linked to its parent. Credit to every author up the chain is automatic and cannot be removed. The parent's licence must allow it; if it does not, your version stays private. |
+| network graph | **Originally forked from: X** + **See variants** | Inside the listing's page: a line naming what it was made from, and a button that opens every related listing — parents and siblings — ranked like anything else (deck Q-F4). |
 | pull request | **Suggest to the author** | Send your changes back to the original. The author sees a plain summary of what changed, tries it, and accepts or declines; accepted work is credited. |
 | issue | **Report a problem** | A bug report to the author, separate from a safety report to us. Open problems are counted on the page. |
 
@@ -141,11 +154,25 @@ Rules that make this safe and honest:
   by the AI reviewer from the actual difference, and flags any ability the parent did not have.
 - Ratings never transfer from parent to variant. Family size and "N people built on this" are
   signals for the parent's ranking.
-- Variants are grouped under their original while browsing ("12 versions") unless a variant
-  outranks it; search can open the family flat.
+- **An original and everything made from it are equal siblings** (deck Q-F1: "they can all
+  compete against one another equally for likes and such, and can appear independently in
+  search based on likes, but can still show the relationships … grouped under each card").
+  Each appears in browsing and search on its own merits; none is tucked under another. Every
+  card carries a small "N variants" marker that opens the related ones. Consequence to watch:
+  a popular listing with many near-identical copies could fill a row, so a generated row shows
+  at most two listings from one family and offers "See variants" for the rest.
 - A variant of a turned-off listing is reviewed before it stays up.
 
-**Where published work is stored.** GitHub remains the store. Three ways for a person without a
+**Suggest to the author is approved in principle and designed separately** (deck Q-F2: "this
+will require a much more thoughtful design. some things make sense to merge upstream, but some
+niche user preference things won't … how would this interact with github?"). It is not in the
+first build of this section. Its own design must answer: how a person marks which of their
+changes are worth sending and which are personal taste; what the author sees and where (in the
+app, on GitHub, or both); what happens for authors who publish through GitHub directly and
+never open the app; and how accepted work is credited.
+
+**Where published work is stored.** Chosen (deck Q-F3): YouCoded submits it for people who
+have no GitHub account, subject to the update and ownership rules below. GitHub remains the store. Three ways for a person without a
 GitHub account to publish, with the cost and risk he asked for:
 - *YouCoded submits it for them* (recommended): the app sends the files under the person's
   YouCoded account; a YouCoded-owned GitHub organisation holds them. Cost: none for storage;
@@ -156,17 +183,50 @@ GitHub account to publish, with the cost and risk he asked for:
 - *Our own storage*: full control; a real monthly cost that grows with every published item,
   and we carry backups, abuse and availability ourselves. Not justified while GitHub is free.
 
+**Rules for work YouCoded submits on someone's behalf** (his Q-F3 questions: "how would we
+ensure the author can update their plugins … what other considerations"):
+- *Updating*: the listing belongs to the person's YouCoded account. On any device signed in to
+  that account, their own listing shows **Publish an update**; the app sends the changed files
+  and the usual checks run. Nobody else's account can update it.
+- *Losing the account* is losing the ability to update. Sign-in recovery is therefore a
+  prerequisite, and an abandoned listing stays up, marked with its last update date; anyone
+  can still Create their own from it.
+- *Taking it down*: the author can unpublish at any time. Copies already installed keep
+  working; listings made from it stay up and keep the credit line.
+- *Moving out*: an author who later gets a GitHub account can take the listing with them
+  (history, votes and variants stay attached), so publishing through us is never a trap.
+- *Limits*: a new account can publish a small number of listings a day, each held until its
+  check passes, so a wave of junk cannot reach the store.
+- *Names*: first come, first served, with look-alike names of existing listings refused.
+- *Our exposure*: complaints and takedown requests come to YouCoded, and everything sits in
+  one GitHub organisation — if GitHub suspended it, every listing published this way would go
+  dark at once. A mirrored backup of that organisation is part of the build, and `TERMS.md`
+  gains the author's promise that the work is theirs to share.
+- *Secrets*: the app scans for keys and personal files before sending, as the publisher skill
+  does today.
+
 **"Host really like anything."** A Page or plugin that needs its own program, database or
 server declares it under `requires.programs`; the install engine's later adapters (Docker,
 local services) start it on the person's own computer. Hosting other people's servers for them
 is not designed here: it is a running cost per listing and a different business.
+
+**Full open-source apps** (Destin, deck 2026-11-14 Q-3: "my eventual goal for the marketplace
+is to also have it serve as a place where people can basically port full open-source apps like
+onlyoffice, firefox, etc, into youcoded in some capacity with adapters … pages on steroids
+basically where every and any free open source app can be skinned with youcoded theming and
+pulled in for free"). This adds one part type, **app**: an outside program the listing
+installs and YouCoded shows in its own panel, with an adapter that tells the app how to start
+it, where its window goes, how the theme is applied to it, and what the assistant may do in
+it. The built-in Office (OnlyOffice) and the built-in browser are the two existing examples to
+generalise from. Not designed further here; it needs its own card and design, and it is the
+real answer to the 77 uninstallable Docker rows.
 
 ### How updates treat a copy you changed
 
 One rule for every kind:
 
 - The record keeps the `contentId` it installed. If the files on disk no longer match, the item
-  is **Your version** (`basedOn {id, version, contentId}`, the same field the Pages plan calls `forkedFrom`).
+  is a changed copy (`basedOn {id, version, contentId}`, the same field the Pages plan calls `forkedFrom`).
 - When the author updates: an unchanged copy updates like anything else. A changed copy offers
   **Update and keep my changes** (three-way merge; falls back to the next two when it cannot),
   **Replace with the new one** (old copy kept in history), **Keep mine**.
@@ -187,10 +247,16 @@ kind opens to the public. Built-in Pages (Office, Automations) are `origin: buil
 
 **Facets** (every one filled by machine for every row; hand overrides allowed):
 - **Kind** — Plugins, Skills, Specialists, Connections, Pages, Themes, Prompts, Setups.
-- **Topic** — one list of about twelve plain topics replacing category, tags and life areas
-  (for example: Writing, School, Work, Money, Home, Health, Fun, Research, Design, Coding,
-  Data, Automation). Assigned at ingest by an AI classifier reading the listing; stored with the
-  commit so it cannot drift; a hand override wins.
+- **Topic** — NOT SETTLED (deck Q-3: "i want to discuss this in more detail. i also think we
+  need to have categories for basic utilities/functions like 'Calendar' or 'Task Management'
+  or 'Document Editing' … utilize open source everything.org (our website) as a reference").
+  Proposal on the table: two lists instead of one. **What it does** — the job, in app-store
+  terms (Calendar, Tasks, Notes, Documents, Spreadsheets, Mail, Browser, Money, Music, Photos,
+  Coding tools…), which is also the vocabulary `provides` uses, so "needs a calendar" and the
+  Calendar category are the same word. **Who it's for / where** — the life area (School, Work,
+  Home, Health, Fun). Either way: assigned by an AI classifier, stored with the commit, hand
+  override wins. The category list on the Open Source Everything site is the reference to
+  align with; it was not found in this workspace and has to be read from the site.
 - **Audience** — Everyday or Coding. Most of the 4,156 imported rows are developer tools; the
   app serves students and professionals. Browsing opens on Everyday with Coding one tap away.
 - **Runs here** — on by default. Items this device cannot run sit last with the reason
@@ -228,6 +294,15 @@ rail): retained installs (still installed after 7 and 30 days) · helpful share 
 numbers correction · recent growth · health on the current version · minus early removals and
 upheld reports. Counts only install-verified, rate-limited signals.
 
+**Before there are enough users** (deck Q-6: "this would be ideal, but you have to remember
+that we don't really have enough users to get the kind of data we'd need for this"). Each
+generated rail has a minimum amount of data and does not appear until it is met. Until then
+the ranking leans on what needs no users: the safety step, a complete description and preview,
+how recently it was updated, whether it runs on this device, the AI reviewer's quality read,
+and hand picks. Usage signals are blended in as they arrive, weighted by how many there are,
+so ten votes never outrank a well-made listing with none. "Popular this week" is the last
+rail to switch on; "New", "Recently updated", "Top in each category" and picks come first.
+
 **Rails** are of two sorts:
 - **Generated**: Popular this week, New and rising, Top in each topic, Because you have X
   (from `worksWith`), Updated recently. They refill themselves.
@@ -260,8 +335,10 @@ installs and removals; active installs; early removals; install, update and setu
 whether a part was used at all in a week. Health = share of recent installs and updates on a
 version that succeeded and stayed. A version whose health collapses is held back from further
 updates automatically and raised in the admin queue.
-*How these are collected is Destin's privacy decision* — `PRIVACY.md` today promises that
-without sign-in nothing is reported.
+**Decided (deck Q-7): signed-in people only.** `PRIVACY.md`'s promise stays word for word:
+without sign-in nothing is reported. Consequences accepted: numbers stay small, so health
+warnings and the automatic hold on a bad update react slowly, and the cold-start rules in
+section 5 carry the ranking for a long time.
 
 **Safety — one ladder, one vocabulary**
 
@@ -300,7 +377,11 @@ an installed older version can be judged as itself.
 
 One branch per repo; each phase leaves the app shippable.
 
-1. **Foundation** — record, engine, app-owned home, updates that work (foundation design).
+Order confirmed by deck Q-10: after the foundation, finding and top spots lead, then trust,
+then Pages and new kinds.
+
+1. **Foundation** — record, engine, app-owned home, updates that work (foundation design);
+   includes finishing per-project switches (PR #571) on the new install record.
 2. **One catalog** — unified row, kinds and parts, `requires` / `worksWith`, platforms in one
    vocabulary, tool servers detected, real fields for sorting, part descriptions.
 3. **Finding** — facets, topics and audience classifier, ranked search, Library search and
@@ -311,8 +392,9 @@ One branch per repo; each phase leaves the app shippable.
    generated rails, pick expiry, Showcase bar.
 6. **Kinds** — connected accounts and key entry; Pages as listings (after the Pages branch and
    #217 land); editable-kind updates; publish from the app; specialists, prompts, setups,
-   collections; then Make it mine, History, Family, Suggest to the author and Report a problem
-   (section 3) for every kind.
+   collections; then Create your own, History, variants and Report a problem (section 3) for
+   every kind. Suggest to the author follows its own design. The **app** part type (full
+   open-source apps through adapters) follows its own card and design.
 7. **Engines** — tool connections, commands and specialists under YouCoded's engine; the
    automation runner; other assistants' folders.
 8. **Assistant search; phone layout.**
@@ -326,3 +408,11 @@ Not designed here: paying authors (tip jar). The publisher page is where it woul
 - Search: Worker-side index for 4,000+ rows and their parts; offline fallback.
 - Whether Pages publish into the marketplace repo or their own; either is one adapter.
 - Three-way merge for single-file Pages: quality threshold before offering it.
+
+## Deck answers, 2026-11-14 (`marketplace-complete.questions.answers.json`)
+
+Confirmed as proposed: S-1 (with the notes folded into section 1), S-2, S-F1, S-F2, S-F3,
+Q-4 Everyday first, Q-5 Showcase bar, Q-6 automatic rows plus picks, Q-8 ask on a new ability,
+Q-9 the ladder, S-3 any published change is an update, Q-10 finding first.
+Changed by his answer: Q-1 (download single parts), Q-F1 (equal siblings), Q-F4 ("Create your
+own"), Q-7 (signed-in only). Still open: Q-3 categories; Q-F2's separate design.

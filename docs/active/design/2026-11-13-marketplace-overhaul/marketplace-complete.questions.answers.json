@@ -1,0 +1,139 @@
+{
+ "deck": "marketplace-complete",
+ "started": "2026-11-14T02:02:06.336Z",
+ "submitted": "2026-11-14T07:32:49Z",
+ "cur": 4,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794622156497,
+   "note": "but to be clear, a single skill on its own could be a listing. and a collection could probably just contain parts (skills only, for example) from a wide range of listings. users should be able to make thier own collections/lists as well (default to a \"favorites\", with other custom options available)",
+   "seconds": 143,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "single",
+   "t": 1794622156497,
+   "note": "users should have the option to download only specific components. but we have work already ongoing to make specific components available/enabled in specific projects. we should look into and integrate with that work, or fold it into this in a single consolidated branch or something",
+   "seconds": 143,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794622156497,
+   "seconds": 143,
+   "theme": "midnight"
+  },
+  "S-F1": {
+   "v": "yes",
+   "t": 1794641245689,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "S-F2": {
+   "v": "yes",
+   "t": 1794641245689,
+   "note": "",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-F1": {
+   "v": "other",
+   "t": 1794641245689,
+   "note": "i think kinda both? i think an original and it's forks should all be treated as somewhat-equal siblings, if that makes sense. they can all compete against one another equally for likes and such, and can appear independently in search based on likes, but can still show the relationships to various other parent/siblings plugins grouped under each card? idk if that makes sense",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-F2": {
+   "v": "yes",
+   "t": 1794641245689,
+   "note": "i think this will require a much more thoughtful design. some things make sense to merge upstream, but some niche user preference things won't make sense to try to push upstream. also want to think through what this will actually look like in practice. like how would this interact with github? etc",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "S-F3": {
+   "v": "yes",
+   "t": 1794641245689,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-F3": {
+   "v": "pick",
+   "pick": "bot",
+   "t": 1794641245689,
+   "note": "i'm open to this, but we'd need to think through how update flows and such would work. how would we ensure the author can update their plugins and such? what other considerations might we need to htink through?",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-F4": {
+   "v": "other",
+   "t": 1794641245689,
+   "note": "\"Create your own\" should be how we frame the process of forking pages/plugins. then users can name their variant as they please, no need to use \"your version\" naming or framing. it will act as its own independent plugin thing, with a note inside the main plugin/part popup page that it was \"Originally forked from: x\" and a button that lets you see the sibling page variants",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1794641451160,
+   "note": "i want to discuss this in more detail. i also think we need to have categories for basic utilities/functions like \"Calendar\" or \"Task Management\" or \"Document Editing\" etc. we might be able to utilize open source everything.org (our website) as a reference here? that does remind me, i should note, my eventual goal for the marketplace is to also have it serve as a place where people can basically port full open-source apps like onlyoffice, firefox, etc, into youcoded in some capacity with adapters and also offer tools like that in the marketplace. pages on steroids basically where every and any free open source app can be skinned with youcoded theming and pulled in for free",
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "everyday-first",
+   "t": 1794641451160,
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "showcase",
+   "t": 1794641451160,
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1794641451160,
+   "note": "this would be ideal, but you have to remember that we don't really have enough users to get the kind of data we'd need for this.",
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "signed-in",
+   "t": 1794641543508,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "yes",
+   "t": 1794641543508,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "ladder",
+   "t": 1794641543508,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1794641543508,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "finding",
+   "t": 1794641568343,
+   "seconds": 25,
+   "theme": "midnight"
+  }
+ }
+}
