@@ -343,3 +343,17 @@ Answers file: `mesh-sync.questions-13.answers.json`. Notes verbatim:
 - S-4 yes. Q-6 "end-to-end encrypted" from launch: "but we will need to conduct extensive
   reviews/audits of our own. based on external best-practices"
 - S-5 to S-9 yes. Q-7 two hours. S-10, S-11, S-12 yes.
+
+## 2026-11-13: fourth review (pasted by Destin), engineering fixes
+
+A further session read `design.md` cold. Checked against the code and applied where it is
+engineering: the chat store always keeps its own bytes (Claude Code deletes old transcripts
+after `cleanupPeriodDays`; `youcoded/docs/conversations.md:9, 80`); working files are never
+moved while a process may write them; chats started in a terminal cannot be chip-switched;
+a removal's cut-off covers the device list too, with a rule for two devices removing each
+other; device names are sealed from the relay; the Personal space is always combined at
+pairing and a project gets an id of its own; helper files copy like lines; pausing a
+running reply on wake (T19); an audit of everything that reads chat files (T20); a hard
+rule that mesh dev instances use a separate home folder; a "Check sync" tool in the app.
+Left for Destin: U9, a reinstall prompt (O12), a staged release (O13). Conditional on test
+results: O14, O15.
