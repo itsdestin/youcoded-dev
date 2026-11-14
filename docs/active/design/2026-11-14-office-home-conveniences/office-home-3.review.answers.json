@@ -1,0 +1,22 @@
+{
+ "deck": "office-home-conveniences-review-3",
+ "started": "2026-11-14T10:45:41.625Z",
+ "submitted": "2026-11-14T10:45:52Z",
+ "cur": 1,
+ "answers": {
+  "R3-1": {
+   "v": "yes",
+   "t": 1794653147331,
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R3-2": {
+   "v": "yes",
+   "t": 1794653151391,
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
