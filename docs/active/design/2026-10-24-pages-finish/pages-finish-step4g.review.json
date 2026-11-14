@@ -1,0 +1,36 @@
+{
+ "title": "Automations: when the daily limit is reached",
+ "key": "pages-finish-step4g-review",
+ "out": "pages-finish-step4g.review.html",
+ "images": "images/pages-finish-step4g.review",
+ "runs": {
+  "after": "runs-step4g/after"
+ },
+ "themes": [
+  "meadow-mist",
+  "halftone-dimension"
+ ],
+ "steps": [
+  {
+   "id": "G-limit",
+   "surface": "Automations",
+   "path": "Pages → Automations → a card with a Runs per day limit",
+   "crop": "automations/details#limit@830x240+305+160",
+   "runs": [
+    "after"
+   ],
+   "new": true,
+   "highlight": {
+    "box": [
+     4,
+     34,
+     92,
+     28
+    ]
+   },
+   "headline": "At its daily limit, Run now greys out and says why.",
+   "changed": "Where Run now sits, the button reads Daily limit reached, with the count and that it can run again tomorrow. The same rule covers every way of starting it: the page's own button greys out too.",
+   "notice": "To run it anyway, raise the number under Runs per day in the same popup. There is no separate override, so the limit means one thing everywhere."
+  }
+ ]
+}
