@@ -10,8 +10,8 @@ created: 2026-10-22
 why: Destin: "i have serious stability/reliability/performance issues with the mobile app. it seems to disconnect frequently and i often find myself unable to refresh messages or send new ones."
 ---
 Progress
-Done: Round-3 R3-8: strip sentence alone, no draft line (as built)
-Next: lands with round3-chat
+Done: LANDED PR #756: Cannot reach your computer strip after ~20 s (sentence alone)
+Next: real phone check
 Blocked: nothing.
 
 Chats
