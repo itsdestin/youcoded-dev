@@ -185,11 +185,10 @@ while YouCoded is closed.
   (`Q-rundiff`); limits are per automation only (`Q-pagelimit`); other devices wait for syncing
   (`Q-devices`).
 - The context-free UX tester has not run on these screens (skipped earlier at Destin's word);
-  offered 2026-11-14, awaiting his answer.
+  Destin said run it (chat 2026-11-14).
 - Design-review round ran 2026-11-14 (fresh reviewer); rulings below. No contradiction with the
   step4d-4g answers was found. Not checked by it: Android code paths, the page kit's existing
   `run`/`event` code, whether a page iframe can reach `automations.save` directly (check at build).
-- Awaiting Destin: what a resumed run does with the step that was half-done at close (below).
 
 ## Design-review rulings (2026-11-14) — binding on the build
 
@@ -206,8 +205,8 @@ while YouCoded is closed.
    `save`/`answer`/`remove` are not reachable from a page.
 4. **Resume, per lane** (`Q-closed`): Claude lane `--resume`; native lane replays its saved
    `.jsonl`. Finished steps are never redone. Where resume fails, the run starts over and the
-   run list says "Started over". The half-done step: Destin's answer pending; build "ask
-   first" until he says otherwise.
+   run list says "Started over". The half-done step asks first ("This step may have already
+   run. Run it again?"; Destin, chat 2026-11-14: "okay to ask").
 5. **Daily limit clock:** this device's local midnight; a run counts on the day it starts. A
    missed-run catch-up counts like any run. At the limit the kit's `run(id)` returns a refusal
    with the same words as the greyed button, and the kit greys its own button.
