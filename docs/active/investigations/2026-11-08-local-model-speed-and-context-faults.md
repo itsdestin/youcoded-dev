@@ -22,6 +22,9 @@ Destin answered two review decks (`docs/active/design/2026-11-09-local-models-re
 answers files beside them). Everything he decided is built on the branch and pushed. NOT
 merged. His order (deck 1 Q-12): finish, test, **independent final code review, then ship**.
 
+**2026-11-13:** wrap-up done; waits only for Destin's word to merge. Open: the desktop PC is
+unreachable over SSH and still holds `~/yc-test-226` (remove when it is back).
+
 **Decided and built on 2026-11-12** (app commits `dc37dd75f` … `12b89a417`):
 
 | Decision | What a user gets | Where |
@@ -170,8 +173,11 @@ Carried in from the merged cards:
 ## Research leads not pursued (web research, 2026-11-08)
 
 Ranked by likely payoff; each needs a measurement on our build before use.
-- `ROCBLAS_USE_HIPBLASLT=1` with hipBLASLt installed, and `GGML_HIP_ROCWMMA_FATTN` builds
-  (lemonade-sdk/llamacpp-rocm, kyuz0 toolboxes) — ROCm reading at depth; also `-np 1` on ROCm.
+- ~~`ROCBLAS_USE_HIPBLASLT=1` and `GGML_HIP_ROCWMMA_FATTN`~~ — **measured 2026-11-13, neither
+  fixes ROCm's fade**; slot save-to-disk measured the same day (works on Qwen3-0.6B, silently
+  re-reads on Qwen3.8-27B). Numbers: `youcoded/docs/engine-dependencies.md` → "ROCm vs Vulkan,
+  measured". Scripts: `scripts/engine-bench/run.sh`. Follow-ups: cards #262, #263, #264.
+  Still not tried: `-np 1` on ROCm.
 - q8 K+V cache on the smaller models (measured on the 27B only).
 - `--load-mode` / no-mmap on unified-memory machines; ubatch sweeps (RADV collapsed at
   ubatch 512 at 32k depth before PR #27703).
