@@ -42,9 +42,17 @@
     await key('#ed-title', 'Escape');
     ok('Escape closes the inline box', !q('#ed-title'));
 
+    step = 'added elsewhere'; await go('Today'); await click(text('.t-add', 'Add task'));
+    await type('#ed-title', 'Shown later tomorrow'); await key('#ed-title', 'Enter');
+    ok('a task added for another day says where it went', /Shown later.*Tomorrow.*Inbox/.test(q('#toast').textContent), q('#toast').textContent);
+    await click('#toast [data-act="toast-show"]');
+    ok('Show opens that task in its list', !q('#detail').hidden && q('#d-title').value === 'Shown later', q('#d-title') && q('#d-title').value);
+    await click('[data-act="detail-close"]'); await go('Inbox');
+
     step = 'tick and undo'; await click(row('p') + ' .t-check');
     ok('ticking marks done', (await T('Call the dentist')).done === true);
     ok('done task leaves the list', !q(row('p')));
+    ok('the done message names the task', q('#toast').textContent.includes('Call the dentist'), q('#toast').textContent);
     await click('#toast [data-act="undo"]');
     ok('Undo brings it back', (await T('Call the dentist')).done === false && !!q(row('p')));
 
@@ -89,7 +97,7 @@
     ok('priority from the menu', (await save()).tasks.find((x) => x.id === 'o').priority === 1);
     await click(row('o') + ' [data-act="row-more"]'); await menu('Move to'); await menu('Work › Doing');
     t = (await save()).tasks.find((x) => x.id === 'o'); ok('moved to Work › Doing', t.projectId === 'work' && t.sectionId === 'doing', t);
-    await go('Work'); ok('Work opens as a board with 4 columns + add', qa('.t-col').length === 5, qa('.t-col').length);
+    await go('Work'); ok('Work opens as a board with its 3 sections + add (empty "No section" hidden)', qa('.t-col').length === 4, qa('.t-col').length);
     await click(row('o') + ' [data-act="row-more"]'); await menu('Delete');
     ok('deleted', !(await save()).tasks.find((x) => x.id === 'o'));
 

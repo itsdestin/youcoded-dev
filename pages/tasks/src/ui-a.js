@@ -256,10 +256,12 @@ function renderNav() {
   h += '<div class="t-nav__group"><div class="t-nav__label"><span class="yc-eyebrow">Projects</span>' +
     '<button class="t-iconbtn" data-act="project-add" aria-label="Add a project">' + icon('plus') + '</button></div>' +
     (projs.length ? projs.map(projItem).join('') : '<div class="yc-caption" style="padding:0 8px">Group related tasks in a project.</div>') + '</div>';
+  // WHY "3 done today · goal 5" and not "3 of 5 done": the 5 is the daily goal, not the number of
+  // tasks on Today, and "3 of 5" read as "2 left" beside a list of five.
   h += '<div class="t-nav__foot">' +
     '<button class="yc-button yc-button--ghost t-goal" data-act="progress" aria-label="Your progress">' +
     '<svg class="t-ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="t-ring__track" cx="9" cy="9" r="7"/><circle class="t-ring__fill" cx="9" cy="9" r="7" stroke-dasharray="' + (circ * frac).toFixed(2) + ' ' + circ.toFixed(2) + '"/></svg>' +
-    '<span class="t-clip">' + done + ' of ' + goal + ' done today</span></button>' +
+    '<span class="t-clip">' + done + ' done today \u00b7 goal ' + goal + '</span></button>' +
     '<button class="yc-button yc-button--ghost yc-button--icon" data-act="settings" aria-label="Settings">' + icon('sliders') + '</button></div>';
   $('nav').innerHTML = h;
 }
@@ -383,7 +385,11 @@ function renderMain() {
     body = headHtml(v, total);
     if (p && p.archived) body += '<div style="padding:0 20px 8px"><div class="yc-notice yc-notice--slim"><div class="yc-notice__text">This project is archived. Its tasks are hidden from Today, Upcoming and search.</div><div class="yc-notice__actions"><button class="yc-button yc-button--sm" data-act="project-unarchive" data-id="' + p.id + '">Bring it back</button></div></div></div>';
     if (p && p.layout === 'board') {
-      body += '<div class="t-board" id="list">' + groups.map(function (g) {
+      // WHY the "No section" column is dropped when empty: it sat first and, on a phone, filled
+      // the screen, so a board with tasks looked empty. It returns as soon as a task has no
+      // section; with no sections at all it stays, as the board's only column.
+      var cols = groups.filter(function (g) { return g.section || g.tasks.length || !p.sections.length; });
+      body += '<div class="t-board" id="list">' + cols.map(function (g) {
         var n = g.tasks.filter(function (t) { return !t.done; }).length;
         return '<section class="t-col" data-drop="' + esc(JSON.stringify(g.drop)) + '"><div class="t-group__head"><span class="t-group__title">' + esc(g.title || 'No section') + ' <span class="t-group__count">' + n + '</span></span><span class="t-grow"></span>' +
           (g.section ? '<button class="t-iconbtn" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>' : '') + '</div>' +
@@ -500,9 +506,10 @@ function renderDetail() {
   var el = $('detail'), t = ui.detailId ? task(ui.detailId) : null;
   if (!t) { ui.detailId = null; el.hidden = true; el.innerHTML = ''; return; }
   var parent = t.parentId ? task(t.parentId) : null, kids = C.children(state, t.id);
-  var h = '<div class="t-detail__head"><span class="t-grow t-clip">' + esc(whereText(t)) + '</span>' +
+  // The back arrow shows only where the task fills the whole screen (CSS), in place of the X.
+  var h = '<div class="t-detail__head"><button class="t-iconbtn t-back" data-act="detail-close" aria-label="Back to the list">' + icon('chev') + '</button><span class="t-grow t-clip">' + esc(whereText(t)) + '</span>' +
     '<button class="t-iconbtn" data-act="row-more" data-id="' + t.id + '" aria-label="More actions">' + icon('more') + '</button>' +
-    '<button class="t-iconbtn" data-act="detail-close" aria-label="Close task">' + icon('x') + '</button></div><div class="t-detail__body">';
+    '<button class="t-iconbtn t-x" data-act="detail-close" aria-label="Close task">' + icon('x') + '</button></div><div class="t-detail__body">';
   if (parent) h += '<button class="yc-button yc-button--ghost yc-button--sm" style="align-self:flex-start" data-act="open" data-id="' + parent.id + '">' + icon('left') + '<span class="t-clip" style="max-width:240px">' + esc(parent.title) + '</span></button>';
   // The card about the panel's own subject: the name and its notes belong together, so one box.
   h += '<div class="yc-box t-subject"><div class="t-detail__title">' + checkHtml(t) + '<textarea class="t-plain" id="d-title" rows="1" data-keep data-change="d-title" aria-label="Task name">' + esc(t.title) + '</textarea></div>' +

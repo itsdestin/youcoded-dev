@@ -60,7 +60,8 @@ html, body { overflow: hidden; }
 .t-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px 20px 8px; width: 100%; max-width: 860px; margin: 0 auto; }
 .t-head--wide { max-width: none; }
 .t-head h2 { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 8px; min-width: 0; }
-.t-head__tools { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+/* wraps: on a phone a project's five controls are wider than the screen and the last were cut off */
+.t-head__tools { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-left: auto; }
 .t-head .yc-select { width: auto; font-size: 12px; padding: 5px 8px; height: 28px; }
 .t-head .yc-filter { height: 28px; font-size: 12px; padding: 0 10px; }
 .t-head .yc-button--icon[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
@@ -165,14 +166,16 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
 
 /* ── the board (a project shown as columns) ─────────────────────────────────────────── */
 .t-board { display: flex; align-items: flex-start; gap: 12px; padding: 4px 20px 96px; overflow: auto; flex: 1; min-height: 0; }
-.t-col { width: 280px; flex: none; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: var(--radius-lg, 12px); background: color-mix(in oklab, var(--inset) 60%, transparent); border: 1px solid var(--edge-dim); }
+.t-col { flex: 1 0 220px; max-width: 300px; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: var(--radius-lg, 12px); background: color-mix(in oklab, var(--inset) 60%, transparent); border: 1px solid var(--edge-dim); }
 .t-col.is-drop { outline: 2px dashed var(--accent); outline-offset: 2px; }
 .t-col .t-task.is-sub { display: none; }
-.t-col--new { background: transparent; border-style: dashed; }
+.t-col--new { flex: 0 0 160px; background: transparent; border-style: dashed; }
 
 /* ── right: one task ─────────────────────────────────────────────────────────────────── */
 /* The app's side-panel recipe: the panel surface, then a small label and an inner box per group. */
 .t-detail { width: var(--t-detail-w); flex: none; display: flex; flex-direction: column; background: var(--panel); border-left: 1px solid var(--edge); min-height: 0; }
+.t-back { display: none; }
+.t-toast__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .t-detail__head { display: flex; align-items: center; gap: 4px; padding: 8px 8px 4px 14px; font-size: 12px; color: var(--fg-muted); }
 .t-detail__body { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 12px 16px; display: flex; flex-direction: column; gap: 16px; }
 .t-block { display: flex; flex-direction: column; gap: 4px; }
@@ -269,7 +272,11 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
   .t-head { padding: 10px 12px 6px; }
   .t-list { padding: 4px 8px 96px; }
   .t-board { padding: 4px 12px 96px; }
-  .t-col { width: 82vw; }
+  .t-col { flex: none; width: 78vw; max-width: 340px; }
+  .t-col--new { flex: none; width: 160px; }
+  .t-back { display: inline-flex; margin-left: -8px; }
+  .t-back .t-icon { transform: rotate(180deg); }
+  .t-x { display: none; }
   .t-detail { width: 100%; border-left: 0; }
   .t-task__actions { display: none; }
   .t-task:hover .t-task__body, .t-task:focus-within .t-task__body { margin-right: 0; }
@@ -1104,10 +1111,12 @@ function renderNav() {
   h += '<div class="t-nav__group"><div class="t-nav__label"><span class="yc-eyebrow">Projects</span>' +
     '<button class="t-iconbtn" data-act="project-add" aria-label="Add a project">' + icon('plus') + '</button></div>' +
     (projs.length ? projs.map(projItem).join('') : '<div class="yc-caption" style="padding:0 8px">Group related tasks in a project.</div>') + '</div>';
+  // WHY "3 done today · goal 5" and not "3 of 5 done": the 5 is the daily goal, not the number of
+  // tasks on Today, and "3 of 5" read as "2 left" beside a list of five.
   h += '<div class="t-nav__foot">' +
     '<button class="yc-button yc-button--ghost t-goal" data-act="progress" aria-label="Your progress">' +
     '<svg class="t-ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="t-ring__track" cx="9" cy="9" r="7"/><circle class="t-ring__fill" cx="9" cy="9" r="7" stroke-dasharray="' + (circ * frac).toFixed(2) + ' ' + circ.toFixed(2) + '"/></svg>' +
-    '<span class="t-clip">' + done + ' of ' + goal + ' done today</span></button>' +
+    '<span class="t-clip">' + done + ' done today \u00b7 goal ' + goal + '</span></button>' +
     '<button class="yc-button yc-button--ghost yc-button--icon" data-act="settings" aria-label="Settings">' + icon('sliders') + '</button></div>';
   $('nav').innerHTML = h;
 }
@@ -1231,7 +1240,11 @@ function renderMain() {
     body = headHtml(v, total);
     if (p && p.archived) body += '<div style="padding:0 20px 8px"><div class="yc-notice yc-notice--slim"><div class="yc-notice__text">This project is archived. Its tasks are hidden from Today, Upcoming and search.</div><div class="yc-notice__actions"><button class="yc-button yc-button--sm" data-act="project-unarchive" data-id="' + p.id + '">Bring it back</button></div></div></div>';
     if (p && p.layout === 'board') {
-      body += '<div class="t-board" id="list">' + groups.map(function (g) {
+      // WHY the "No section" column is dropped when empty: it sat first and, on a phone, filled
+      // the screen, so a board with tasks looked empty. It returns as soon as a task has no
+      // section; with no sections at all it stays, as the board's only column.
+      var cols = groups.filter(function (g) { return g.section || g.tasks.length || !p.sections.length; });
+      body += '<div class="t-board" id="list">' + cols.map(function (g) {
         var n = g.tasks.filter(function (t) { return !t.done; }).length;
         return '<section class="t-col" data-drop="' + esc(JSON.stringify(g.drop)) + '"><div class="t-group__head"><span class="t-group__title">' + esc(g.title || 'No section') + ' <span class="t-group__count">' + n + '</span></span><span class="t-grow"></span>' +
           (g.section ? '<button class="t-iconbtn" data-act="section-more" data-id="' + g.section.id + '" aria-label="Section actions">' + icon('more') + '</button>' : '') + '</div>' +
@@ -1348,9 +1361,10 @@ function renderDetail() {
   var el = $('detail'), t = ui.detailId ? task(ui.detailId) : null;
   if (!t) { ui.detailId = null; el.hidden = true; el.innerHTML = ''; return; }
   var parent = t.parentId ? task(t.parentId) : null, kids = C.children(state, t.id);
-  var h = '<div class="t-detail__head"><span class="t-grow t-clip">' + esc(whereText(t)) + '</span>' +
+  // The back arrow shows only where the task fills the whole screen (CSS), in place of the X.
+  var h = '<div class="t-detail__head"><button class="t-iconbtn t-back" data-act="detail-close" aria-label="Back to the list">' + icon('chev') + '</button><span class="t-grow t-clip">' + esc(whereText(t)) + '</span>' +
     '<button class="t-iconbtn" data-act="row-more" data-id="' + t.id + '" aria-label="More actions">' + icon('more') + '</button>' +
-    '<button class="t-iconbtn" data-act="detail-close" aria-label="Close task">' + icon('x') + '</button></div><div class="t-detail__body">';
+    '<button class="t-iconbtn t-x" data-act="detail-close" aria-label="Close task">' + icon('x') + '</button></div><div class="t-detail__body">';
   if (parent) h += '<button class="yc-button yc-button--ghost yc-button--sm" style="align-self:flex-start" data-act="open" data-id="' + parent.id + '">' + icon('left') + '<span class="t-clip" style="max-width:240px">' + esc(parent.title) + '</span></button>';
   // The card about the panel's own subject: the name and its notes belong together, so one box.
   h += '<div class="yc-box t-subject"><div class="t-detail__title">' + checkHtml(t) + '<textarea class="t-plain" id="d-title" rows="1" data-keep data-change="d-title" aria-label="Task name">' + esc(t.title) + '</textarea></div>' +
@@ -1479,11 +1493,22 @@ function submitEditor() {
   if (!v.title) { if ($('ed-title')) $('ed-title').focus(); return; }
   var made;
   commit(function () { made = C.addTask(state, v, now().iso); });
-  if (e.slot === 'modal') { ui.editor = null; closeModal(); toast('Added to ' + whereText(made)); return; }
+  if (e.slot === 'modal') { ui.editor = null; closeModal(); addedToast(made); return; }
   // The box stays open, cleared, for the next task: adding five things in a row is the common case.
   e.text = ''; e.notes = ''; e.ignore = [];
   render();
   if ($('ed-title')) { $('ed-title').value = ''; $('ed-title').focus(); refreshEditor(); }
+  // Typed into a list it does not belong in (e.g. "tomorrow" while on Today): say where it went.
+  if (!onScreen(made.id)) addedToast(made);
+}
+// WHY the message names the task, its day and its place: a task added for another day or list
+// does not appear on the current screen, and "Added to Inbox" alone left people unsure it had
+// worked (independent review, 2026-11-14). "Show" appears only when the task is not in view.
+function onScreen(id) { return !!document.querySelector('.t-task[data-id="' + id + '"]'); }
+function shortName(t) { return '\u201c' + (t.title.length > 40 ? t.title.slice(0, 39) + '\u2026' : t.title) + '\u201d'; }
+function addedToast(t) {
+  var info = C.dueInfo(t.due, now(), state.settings.h12);
+  toast(shortName(t) + ' added \u00b7 ' + (info ? info.text + ' \u00b7 ' : '') + whereText(t), false, onScreen(t.id) ? null : t.id);
 }
 
 // ── floating menus ──────────────────────────────────────────────────────────────────────
@@ -1764,10 +1789,12 @@ function settingsBox() {
 }
 
 // ── the line at the bottom, and reminders ───────────────────────────────────────────────
-function toast(text, undoable) {
+function toast(text, undoable, showId) {
   clearTimeout(ui.toastTimer);
-  $('toast').innerHTML = '<div class="t-toast" role="status"><span>' + esc(text) + '</span>' + (undoable ? '<button class="yc-button yc-button--sm" data-act="undo">Undo</button>' : '<span></span>') + '</div>';
-  ui.toastTimer = setTimeout(function () { $('toast').innerHTML = ''; }, undoable ? 7000 : 2500);
+  $('toast').innerHTML = '<div class="t-toast" role="status"><span class="t-toast__text">' + esc(text) + '</span>' +
+    (showId ? '<button class="yc-button yc-button--sm" data-act="toast-show" data-id="' + showId + '">Show</button>' : '') +
+    (undoable ? '<button class="yc-button yc-button--sm" data-act="undo">Undo</button>' : showId ? '' : '<span></span>') + '</div>';
+  ui.toastTimer = setTimeout(function () { $('toast').innerHTML = ''; }, undoable || showId ? 7000 : 2500);
 }
 // WHY only while open: a page has no way to notify when it is closed — that needs the app.
 function checkReminders() {
@@ -1819,8 +1846,11 @@ function toggleTask(id) {
   var t = task(id), res;
   if (!t) return;
   if (t.done) { commit(function () { C.reopenTask(state, id); }); return; }
+  // WHY the name is captured first and shown: a ticked task leaves the list at once, and a
+  // message that does not name it cannot tell someone who mis-tapped what Undo brings back.
+  var name = shortName(t);
   commit(function () { res = C.completeTask(state, id, now()); });
-  toast(res.repeated ? 'Done. Comes back ' + C.formatDay(res.next, now().day, true) : 'Task done', true);
+  toast(name + (res.repeated ? ' done \u00b7 comes back ' + C.formatDay(res.next, now().day, true) : ' done'), true);
 }
 function removeTask(id) {
   if (ui.detailId === id) ui.detailId = null;
@@ -1893,6 +1923,14 @@ var ACT = {
   'nav-open': function () { $('app').classList.add('is-nav-open'); },
   'nav-close': function () { $('app').classList.remove('is-nav-open'); },
   undo: function () { undo(); },
+  // "Show" on the added-task message: go to the list the task lives in and open it.
+  'toast-show': function (el) {
+    var t = task(el.getAttribute('data-id'));
+    $('toast').innerHTML = '';
+    if (!t) return;
+    go(t.projectId && project(t.projectId) ? { kind: 'project', id: t.projectId } : { kind: 'inbox' });
+    ui.detailId = t.id; render();
+  },
   progress: function () { progressBox(); },
   settings: function () { settingsBox(); },
 

@@ -50,7 +50,8 @@ html, body { overflow: hidden; }
 .t-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px 20px 8px; width: 100%; max-width: 860px; margin: 0 auto; }
 .t-head--wide { max-width: none; }
 .t-head h2 { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 8px; min-width: 0; }
-.t-head__tools { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+/* wraps: on a phone a project's five controls are wider than the screen and the last were cut off */
+.t-head__tools { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-left: auto; }
 .t-head .yc-select { width: auto; font-size: 12px; padding: 5px 8px; height: 28px; }
 .t-head .yc-filter { height: 28px; font-size: 12px; padding: 0 10px; }
 .t-head .yc-button--icon[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
@@ -155,14 +156,16 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
 
 /* ── the board (a project shown as columns) ─────────────────────────────────────────── */
 .t-board { display: flex; align-items: flex-start; gap: 12px; padding: 4px 20px 96px; overflow: auto; flex: 1; min-height: 0; }
-.t-col { width: 280px; flex: none; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: var(--radius-lg, 12px); background: color-mix(in oklab, var(--inset) 60%, transparent); border: 1px solid var(--edge-dim); }
+.t-col { flex: 1 0 220px; max-width: 300px; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: var(--radius-lg, 12px); background: color-mix(in oklab, var(--inset) 60%, transparent); border: 1px solid var(--edge-dim); }
 .t-col.is-drop { outline: 2px dashed var(--accent); outline-offset: 2px; }
 .t-col .t-task.is-sub { display: none; }
-.t-col--new { background: transparent; border-style: dashed; }
+.t-col--new { flex: 0 0 160px; background: transparent; border-style: dashed; }
 
 /* ── right: one task ─────────────────────────────────────────────────────────────────── */
 /* The app's side-panel recipe: the panel surface, then a small label and an inner box per group. */
 .t-detail { width: var(--t-detail-w); flex: none; display: flex; flex-direction: column; background: var(--panel); border-left: 1px solid var(--edge); min-height: 0; }
+.t-back { display: none; }
+.t-toast__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .t-detail__head { display: flex; align-items: center; gap: 4px; padding: 8px 8px 4px 14px; font-size: 12px; color: var(--fg-muted); }
 .t-detail__body { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 12px 16px; display: flex; flex-direction: column; gap: 16px; }
 .t-block { display: flex; flex-direction: column; gap: 4px; }
@@ -259,7 +262,11 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
   .t-head { padding: 10px 12px 6px; }
   .t-list { padding: 4px 8px 96px; }
   .t-board { padding: 4px 12px 96px; }
-  .t-col { width: 82vw; }
+  .t-col { flex: none; width: 78vw; max-width: 340px; }
+  .t-col--new { flex: none; width: 160px; }
+  .t-back { display: inline-flex; margin-left: -8px; }
+  .t-back .t-icon { transform: rotate(180deg); }
+  .t-x { display: none; }
   .t-detail { width: 100%; border-left: 0; }
   .t-task__actions { display: none; }
   .t-task:hover .t-task__body, .t-task:focus-within .t-task__body { margin-right: 0; }

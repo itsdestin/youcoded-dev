@@ -20,8 +20,11 @@ function toggleTask(id) {
   var t = task(id), res;
   if (!t) return;
   if (t.done) { commit(function () { C.reopenTask(state, id); }); return; }
+  // WHY the name is captured first and shown: a ticked task leaves the list at once, and a
+  // message that does not name it cannot tell someone who mis-tapped what Undo brings back.
+  var name = shortName(t);
   commit(function () { res = C.completeTask(state, id, now()); });
-  toast(res.repeated ? 'Done. Comes back ' + C.formatDay(res.next, now().day, true) : 'Task done', true);
+  toast(name + (res.repeated ? ' done \u00b7 comes back ' + C.formatDay(res.next, now().day, true) : ' done'), true);
 }
 function removeTask(id) {
   if (ui.detailId === id) ui.detailId = null;
@@ -94,6 +97,14 @@ var ACT = {
   'nav-open': function () { $('app').classList.add('is-nav-open'); },
   'nav-close': function () { $('app').classList.remove('is-nav-open'); },
   undo: function () { undo(); },
+  // "Show" on the added-task message: go to the list the task lives in and open it.
+  'toast-show': function (el) {
+    var t = task(el.getAttribute('data-id'));
+    $('toast').innerHTML = '';
+    if (!t) return;
+    go(t.projectId && project(t.projectId) ? { kind: 'project', id: t.projectId } : { kind: 'inbox' });
+    ui.detailId = t.id; render();
+  },
   progress: function () { progressBox(); },
   settings: function () { settingsBox(); },
 

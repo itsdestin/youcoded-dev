@@ -77,11 +77,22 @@ function submitEditor() {
   if (!v.title) { if ($('ed-title')) $('ed-title').focus(); return; }
   var made;
   commit(function () { made = C.addTask(state, v, now().iso); });
-  if (e.slot === 'modal') { ui.editor = null; closeModal(); toast('Added to ' + whereText(made)); return; }
+  if (e.slot === 'modal') { ui.editor = null; closeModal(); addedToast(made); return; }
   // The box stays open, cleared, for the next task: adding five things in a row is the common case.
   e.text = ''; e.notes = ''; e.ignore = [];
   render();
   if ($('ed-title')) { $('ed-title').value = ''; $('ed-title').focus(); refreshEditor(); }
+  // Typed into a list it does not belong in (e.g. "tomorrow" while on Today): say where it went.
+  if (!onScreen(made.id)) addedToast(made);
+}
+// WHY the message names the task, its day and its place: a task added for another day or list
+// does not appear on the current screen, and "Added to Inbox" alone left people unsure it had
+// worked (independent review, 2026-11-14). "Show" appears only when the task is not in view.
+function onScreen(id) { return !!document.querySelector('.t-task[data-id="' + id + '"]'); }
+function shortName(t) { return '\u201c' + (t.title.length > 40 ? t.title.slice(0, 39) + '\u2026' : t.title) + '\u201d'; }
+function addedToast(t) {
+  var info = C.dueInfo(t.due, now(), state.settings.h12);
+  toast(shortName(t) + ' added \u00b7 ' + (info ? info.text + ' \u00b7 ' : '') + whereText(t), false, onScreen(t.id) ? null : t.id);
 }
 
 // ── floating menus ──────────────────────────────────────────────────────────────────────
@@ -362,10 +373,12 @@ function settingsBox() {
 }
 
 // ── the line at the bottom, and reminders ───────────────────────────────────────────────
-function toast(text, undoable) {
+function toast(text, undoable, showId) {
   clearTimeout(ui.toastTimer);
-  $('toast').innerHTML = '<div class="t-toast" role="status"><span>' + esc(text) + '</span>' + (undoable ? '<button class="yc-button yc-button--sm" data-act="undo">Undo</button>' : '<span></span>') + '</div>';
-  ui.toastTimer = setTimeout(function () { $('toast').innerHTML = ''; }, undoable ? 7000 : 2500);
+  $('toast').innerHTML = '<div class="t-toast" role="status"><span class="t-toast__text">' + esc(text) + '</span>' +
+    (showId ? '<button class="yc-button yc-button--sm" data-act="toast-show" data-id="' + showId + '">Show</button>' : '') +
+    (undoable ? '<button class="yc-button yc-button--sm" data-act="undo">Undo</button>' : showId ? '' : '<span></span>') + '</div>';
+  ui.toastTimer = setTimeout(function () { $('toast').innerHTML = ''; }, undoable || showId ? 7000 : 2500);
 }
 // WHY only while open: a page has no way to notify when it is closed — that needs the app.
 function checkReminders() {
