@@ -1,0 +1,188 @@
+{
+ "deck": "mesh-sync-questions-14",
+ "started": "2026-11-14T09:37:51.651Z",
+ "submitted": "2026-11-14T10:08:32Z",
+ "cur": 4,
+ "answers": {
+  "U-1": {
+   "v": "yes",
+   "t": 1794649189575,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "U-2": {
+   "v": "yes",
+   "t": 1794649189575,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "U-3": {
+   "v": "yes",
+   "t": 1794649189575,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "U-4": {
+   "v": "yes",
+   "t": 1794649189575,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "U-5": {
+   "v": "yes",
+   "t": 1794649189575,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "U-6": {
+   "v": "yes",
+   "t": 1794649189575,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "U-7": {
+   "v": "yes",
+   "t": 1794649189575,
+   "note": "does \"straight over the same wifi\" mean we're basically getting tailscale-backed live syncing for free as an alternative option?",
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "U-8": {
+   "v": "yes",
+   "t": 1794649189575,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "U-9": {
+   "v": "yes",
+   "t": 1794649413437,
+   "seconds": 37,
+   "theme": "midnight"
+  },
+  "U-10": {
+   "v": "yes",
+   "t": 1794649413437,
+   "note": "",
+   "seconds": 37,
+   "theme": "midnight"
+  },
+  "U-11": {
+   "v": "yes",
+   "t": 1794649413437,
+   "note": "we should also ensure our explanations of hte sync system in whichever settings menus and (i) popups and such we build adequeately explain risks",
+   "seconds": 37,
+   "theme": "midnight"
+  },
+  "U-12": {
+   "v": "yes",
+   "t": 1794649413437,
+   "seconds": 37,
+   "theme": "midnight"
+  },
+  "U-13": {
+   "v": "yes",
+   "t": 1794649413437,
+   "seconds": 37,
+   "theme": "midnight"
+  },
+  "U-14": {
+   "v": "yes",
+   "t": 1794649413437,
+   "seconds": 37,
+   "theme": "midnight"
+  },
+  "U-15": {
+   "v": "other",
+   "t": 1794649611750,
+   "note": "kinda confused about the risks/benefits here? dont have enough context to understand this decision.",
+   "seconds": 50,
+   "theme": "midnight"
+  },
+  "U-16": {
+   "v": "yes",
+   "t": 1794649611750,
+   "seconds": 50,
+   "theme": "midnight"
+  },
+  "U-17": {
+   "v": "yes",
+   "t": 1794649611750,
+   "note": "check it against standards and also do basic whitehat styling pen-testing on the system. is there any way to intercept user messages? inject malicious assistant instructions into a reply? other ways a bad actor could utilize our system to do harm or steal information?",
+   "seconds": 50,
+   "theme": "midnight"
+  },
+  "U-18": {
+   "v": "yes",
+   "t": 1794649611750,
+   "seconds": 50,
+   "theme": "midnight"
+  },
+  "U-19": {
+   "v": "yes",
+   "t": 1794649645301,
+   "seconds": 11,
+   "theme": "midnight"
+  },
+  "U-20": {
+   "v": "yes",
+   "t": 1794649645301,
+   "seconds": 11,
+   "theme": "midnight"
+  },
+  "U-21": {
+   "v": "yes",
+   "t": 1794649645301,
+   "seconds": 11,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "pick",
+   "seconds": 181,
+   "theme": "midnight",
+   "t": 1794650911025,
+   "pick": "talk-only-plus-offer"
+  },
+  "Q-2": {
+   "v": "other",
+   "seconds": 181,
+   "theme": "midnight",
+   "t": 1794650911025,
+   "note": "kinda confused about what the point even is of the password thing on some devices with option a?"
+  },
+  "Q-3": {
+   "v": "pick",
+   "seconds": 181,
+   "theme": "midnight",
+   "t": 1794650911025,
+   "pick": "wait"
+  },
+  "Q-4": {
+   "v": "pick",
+   "seconds": 181,
+   "theme": "midnight",
+   "t": 1794650911025,
+   "pick": "token"
+  },
+  "Q-5": {
+   "v": "pick",
+   "seconds": 181,
+   "theme": "midnight",
+   "t": 1794650911025,
+   "pick": "yes-reviewed"
+  },
+  "Q-6": {
+   "v": "other",
+   "seconds": 181,
+   "theme": "midnight",
+   "t": 1794650911025,
+   "note": "i think it may be better to use my desktop for these kinds of tests, because we cna use wkae over lan and ssh to manage these tests while you stay awake"
+  },
+  "Q-7": {
+   "v": "wrote",
+   "seconds": 181,
+   "theme": "midnight",
+   "t": 1794650911025,
+   "text": "we can do this z13 on cachyos, my desktop on linux, and my phone in theory"
+  }
+ }
+}

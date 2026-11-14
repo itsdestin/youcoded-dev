@@ -406,3 +406,43 @@ aren't entirely useful to the build". The bracketed source tags, his quoted word
 notes about which answer replaced which were moved out of `design.md` into
 `decided-sources.md`. Repeated passages were merged (one glossary; walk-throughs cut from
 six to five; relay rules stated once). No rule was changed.
+
+## 2026-11-14: round 14 answered (the building session's understanding, and its questions)
+
+Answers file: `mesh-sync.questions-14.answers.json`. The building session (`session/64-mesh-sync-build`)
+restated the design as 21 statements and asked 7 questions. Notes verbatim:
+
+- U-1 to U-6, U-8 to U-10, U-12 to U-14, U-16, U-18 to U-21: Holds, no note. So confirmed: what a
+  keeper can see (U-16, was an unconfirmed reading); Drive and iCloud daily backups keep carrying
+  chats after the switch (U-18, a gap the builder found); nothing reaches users before the one
+  release and screens come as decks while the invisible parts are built (U-19, U-20); a failed
+  test that contradicts a decision goes back to him (U-21).
+- U-7 Holds: "does \"straight over the same wifi\" mean we're basically getting tailscale-backed
+  live syncing for free as an alternative option?" Answer owed in chat (no: it is direct on the
+  home network and does not use Tailscale).
+- U-11 Holds (every paired device is fully trusted): "we should also ensure our explanations of
+  hte sync system in whichever settings menus and (i) popups and such we build adequeately
+  explain risks". A requirement on every mesh settings screen and explainer.
+- U-15 other (pictures travel; only the scratch copy stays): "kinda confused about the
+  risks/benefits here? dont have enough context to understand this decision." Still unconfirmed;
+  to be explained plainly and asked again.
+- U-17 Holds (audits by fresh reviewers against published standards, no outside firm): "check it
+  against standards and also do basic whitehat styling pen-testing on the system. is there any
+  way to intercept user messages? inject malicious assistant instructions into a reply? other
+  ways a bad actor could utilize our system to do harm or steal information?" The pre-release
+  audit therefore includes hands-on attack testing, not only a read against standards.
+- Q-1 (O16, a chat in a folder that is not a synced project): picked "talk-only-plus-offer" —
+  talk-only elsewhere, and the device holding the folder offers to make it a project.
+- Q-2 (O4, a computer with no OS unlock) other: "kinda confused about what the point even is of
+  the password thing on some devices with option a?" Not decided; to be asked again plainly.
+- Q-3: picked "wait" — the one release waits for the super-host. Phase 8 therefore comes before
+  the release, and the comparison owed for O1 (reaching a super-host from outside) is needed
+  before then.
+- Q-4: picked "token" — a separate long-lived Claude sign-in for test devices, made by him once.
+- Q-5: picked "yes-reviewed" — a locked-down test relay may go online once a separate reviewer
+  has checked it; tell him afterwards.
+- Q-6 (sleep tests) other: "i think it may be better to use my desktop for these kinds of tests,
+  because we cna use wkae over lan and ssh to manage these tests while you stay awake". Sleep
+  tests run on the desktop, not this laptop; needs ssh and wake-over-network set up there first.
+- Q-7 wrote: "we can do this z13 on cachyos, my desktop on linux, and my phone in theory". No
+  Windows or Mac is available: everything specific to those two stays unproven and must be said so.
