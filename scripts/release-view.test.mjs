@@ -137,7 +137,7 @@ test('wording helpers', () => {
   assert.equal(direct.pr, null); assert.equal(direct.group, 'behind');
 });
 
-test('a release box is plain: one bullet per sentence, its number is its bullets, and it has its own Show all', async () => {
+test('the release list is plain: one box, one bullet per sentence, a number per group, one Show all', async () => {
   // WHY (Destin, 2026-11-14: "too busy and confusing … so many different types of text … a single clickable chip on only one
   // item … no 'see all' button"): pins the simplified shape so the extra text styles, the stray chip and the far-away button stay gone.
   const here = path.dirname(new URL(import.meta.url).pathname);
@@ -148,19 +148,22 @@ rel={'ok':True,'fresh':True,'asOf':'','version':'v1','count':6,'groups':[
  {'key':'behind','title':'Behind','hint':'h','changes':[c(4,['Website: x.']),c(5,['Nothing visible.']),c(6,['Nothing visible.'])]}]}
 print(r.body(rel,lambda k:k))`;
   const html = execFileSync('python3', ['-c', py], { encoding: 'utf8' });
-  const boxes = html.split('class="card inset relbox"').slice(1);
-  assert.equal(boxes.length, 2);
+  // WHY one box (Destin, 2026-11-14: "a single box … sections stacked vertically … a single bottom-right show all button")
+  assert.equal(html.split('class="card inset relbox"').length - 1, 1);
+  const groups = html.split('class="eyebrow relhead"').slice(1);
+  assert.equal(groups.length, 2);
   // seven bullets (six sentences + a change with no line, shown by its working title); the number says seven; five listed
-  assert.equal((boxes[0].match(/<li/g) || []).length, 7);
-  assert.match(boxes[0], /class="cnt"[^>]*>7</);
-  assert.equal((boxes[0].match(/<li class="relextra" hidden/g) || []).length, 2);
-  assert.match(boxes[0], /class="btn sm relall" data-n="7"[^>]*>Show all 7</);
+  assert.equal((groups[0].match(/<li/g) || []).length, 7);
+  assert.match(groups[0], /class="cnt"[^>]*>7</);
+  assert.equal((groups[0].match(/<li class="relextra" hidden/g) || []).length, 2);
   // the working title is a hover hint, never printed beside the sentence that replaced it
-  assert.match(boxes[0], /<li data-tip="From: Working title 1 \(pull request #701\)">A\.<\/li>/);
-  assert.ok(!boxes[0].includes('>Working title 1<'));
-  // two unseen changes fold into one sentence; a short box has no button
-  assert.equal((boxes[1].match(/<li/g) || []).length, 2);
-  assert.match(boxes[1], /2 other changes with nothing to see/);
-  assert.ok(!boxes[1].includes('relall'));
+  assert.match(groups[0], /<li data-tip="From: Working title 1 \(pull request #701\)">A\.<\/li>/);
+  assert.ok(!groups[0].includes('>Working title 1<'));
+  // two unseen changes fold into one sentence
+  assert.equal((groups[1].match(/<li/g) || []).length, 2);
+  assert.match(groups[1], /2 other changes with nothing to see/);
+  // one button for the whole list, counting every line
+  assert.equal((html.match(/class="btn sm relall"/g) || []).length, 1);
+  assert.match(html, /class="btn sm relall" data-n="9"[^>]*>Show all 9</);
   assert.ok(!/relchip|data-card-open|reldetail|No line for users yet/.test(html));
 });

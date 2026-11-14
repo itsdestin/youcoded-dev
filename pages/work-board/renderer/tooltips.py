@@ -75,8 +75,8 @@ TIP = {
   'rel.gaps': 'Each change should carry one to three plain lines saying what a user will notice, written by the assistant when the work lands. This counts the ones still missing.',
   'rel.draft': 'A first draft of the changelog, built from the lines above. Meant to be shortened and reworded before it is published.',
   'rel.copy': 'Copies the draft so you can paste it into a chat or a file.',
-  'rel.groupcount': 'How many lines are in this box. Each line is one thing a user would notice; one merged change can have up to three.',
-  'today.allchanges': 'Shows every line in this box, not just the first few. Press again to fold them.',
+  'rel.groupcount': 'How many lines are in this group. Each line is one thing a user would notice; one merged change can have up to three.',
+  'today.allchanges': 'Shows every line in every group, not just the first few. Press again to fold them.',
 
   # ---------------------------------------------------------------- screens: the control row
   'scr.search': 'Type part of a screen\'s name, where it is, or what it does.',

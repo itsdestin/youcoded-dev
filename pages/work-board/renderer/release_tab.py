@@ -78,9 +78,12 @@ def body(rel, T):
     #   - one bullet is one sentence a user would notice, in one text style; a box's number is its bullet count
     #   - the working title is no longer printed under the sentence that already says it; it is the bullet's hover hint
     #   - the "#226" work-item chip is gone: it showed only on changes linked to one item, so it looked like a stray
-    #   - each box has its own "Show all N" button at its foot (the old single button sat below all three boxes)
     #   - changes nobody will see fold into one closing sentence instead of a row of "Nothing visible."
-    out.append('<div class="relgrid">')
+    # WHY one box, groups stacked, one button (Destin, 2026-11-14: "put all of these sections into a single box and let the
+    # bulleted items run fully across horizontally with the sections stacked vertically. with a single bottom-right show all
+    # button"): three side-by-side boxes made narrow, tall columns and three buttons.
+    out.append('<div class="card inset relbox">')
+    total = shown = 0
     for g in rel['groups']:
         rows, unseen = [], 0
         for c in g['changes']:
@@ -93,9 +96,12 @@ def body(rel, T):
         if unseen:
             rows.append((f'{plural(unseen, "other change")} with nothing to see: tests and routine part updates.', 'Changes recorded as "Nothing visible" when they landed.'))
         n = len(rows)
+        total += n
+        shown += min(n, SHOW)
         lis = ''.join(f'<li{" class=\"relextra\" hidden" if i >= SHOW else ""} data-tip="{E(tip)}">{E(text)}</li>' for i, (text, tip) in enumerate(rows))
-        more = f'<div class="acts right"><button class="btn sm relall" data-n="{n}" aria-expanded="false" data-tip="{T("today.allchanges")}">Show all {n}</button></div>' if n > SHOW else ''
-        out.append(f'<div class="card inset relbox"><div class="eyebrow"><span data-tip="{E(g["hint"])}">{E(g["title"])}</span> <span class="cnt" data-tip="{T("rel.groupcount")}">{n}</span></div><ul class="t-xs">{lis}</ul>{more}</div>')
+        out.append(f'<div class="eyebrow relhead"><span data-tip="{E(g["hint"])}">{E(g["title"])}</span> <span class="cnt" data-tip="{T("rel.groupcount")}">{n}</span></div><ul class="t-xs">{lis}</ul>')
+    if total > shown:
+        out.append(f'<div class="acts right"><button class="btn sm relall" data-n="{total}" aria-expanded="false" data-tip="{T("today.allchanges")}">Show all {total}</button></div>')
     out.append('</div>')
     if rel.get('draft'):
         # WHY a draft he can copy (Destin, 2026-11-14: "a changelog draft would be cool, with the expectation of significant
@@ -109,18 +115,16 @@ def body(rel, T):
 CSS = '''
 .relfresh{margin:0 0 8px}
 .relwritten{margin-bottom:8px}
-.relgrid li[hidden]{display:none}
-.relgrid li{overflow-wrap:anywhere}
-.relgrid li{margin-bottom:6px}
-.relbox{display:flex;flex-direction:column} .relbox ul{flex:1} .relbox .acts{margin-top:8px}
+.relbox li[hidden]{display:none}
+.relbox li{overflow-wrap:anywhere;margin-bottom:4px}
+.relbox ul{margin:6px 0 0;padding-left:16px} .relbox .relhead:not(:first-child){margin-top:16px} .relbox .acts{margin-top:8px}
 .relgaps{margin:0 0 8px}
 .reldraftfold{margin-top:12px}
 .reldraft{margin:0 0 8px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;background:var(--well);border:1px solid var(--edge-card);border-radius:var(--radius-md);color:var(--fg-2);user-select:text;max-height:320px;overflow:auto}
 '''
 
 JS = r'''
-// WHY one button per box (Destin, 2026-11-14: "why is there no 'see all' button?"): the single button under all three
-// boxes was easy to miss; each box now opens and folds its own list.
+// WHY one button for the whole list (Destin, 2026-11-14: "a single bottom-right show all button")
 document.addEventListener('click',e=>{const b=e.target.closest('.relall');if(!b)return;
   const open=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',open);
   b.closest('.relbox').querySelectorAll('.relextra').forEach(li=>li.hidden=!open);

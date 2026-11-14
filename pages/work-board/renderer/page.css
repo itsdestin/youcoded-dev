@@ -74,7 +74,7 @@
 .heroacts{margin-top:12px}
 .herofolds{margin-top:12px;display:flex;flex-direction:column;gap:8px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.two ul,.relgrid ul{margin:6px 0 0;padding-left:16px} .relgrid li,.two li{margin:3px 0}
+.two ul{margin:6px 0 0;padding-left:16px} .two li{margin:3px 0}
 
 /* ---- FoldRow.tsx: one CARD_LEVEL_1 box; header = SettingRow header ('py-1', chevron right,
         rotate-90 when open) at 'px-3 py-2'; body 'px-3 pt-1 pb-2' inside the same box ---- */
@@ -94,7 +94,6 @@
 .foldbody,.fold > .two,.fold > .row,.fold > ul{margin:0 12px 8px}
 .fold > .row:last-child{margin-bottom:12px}
 .fold.sec{margin-bottom:8px}
-.relgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
 
 /* ---- Screens: the wall, tree, trail and picture popup are styled in screens_tab.py (CSS) ---- */
 .tablewrap{overflow-x:auto}
