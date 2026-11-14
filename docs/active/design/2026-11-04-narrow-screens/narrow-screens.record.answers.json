@@ -1,0 +1,76 @@
+{
+ "deck": "narrow-screens-record",
+ "started": "2026-11-14T08:45:56.775Z",
+ "submitted": "2026-11-14T08:49:02Z",
+ "cur": 8,
+ "answers": {
+  "R-1": {
+   "note": "i hate the + new session. can you review the previous session in more detail to see what hpanned and where it ended and what was still open",
+   "t": 1794645992030,
+   "v": "other",
+   "seconds": 35,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-2": {
+   "note": "no i dont like this. dont like the status light changes. i honestly thing the reduction to just showing the model (dropping claude code/youcoded coder etc) should happen on desktop too. ",
+   "t": 1794646060029,
+   "v": "other",
+   "seconds": 68,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "t": 1794646072693,
+   "note": "with aforementioned changes",
+   "seconds": 13,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-4": {
+   "v": "other",
+   "t": 1794646086874,
+   "seconds": 13,
+   "theme": "light",
+   "zoom": 1,
+   "note": "fix with previous comments"
+  },
+  "W-1": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1794646089701
+  },
+  "W-2": {
+   "v": "yes",
+   "t": 1794646092966,
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  },
+  "W-3": {
+   "v": "yes",
+   "t": 1794646103256,
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  },
+  "W-4": {
+   "v": "yes",
+   "t": 1794646109810,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "W-5": {
+   "v": "other",
+   "t": 1794646141396,
+   "note": "",
+   "seconds": 32,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

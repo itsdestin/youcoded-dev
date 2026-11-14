@@ -1,0 +1,461 @@
+[
+  {
+    "name": "chat#window-decided",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#window-decided/light.png",
+    "ms": 2139,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-pills-compact",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#phone-pills-compact/halftone-dimension.png",
+    "ms": 2239,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-pills-compact",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#phone-pills-compact/light.png",
+    "ms": 2259,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#top-lights",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#top-lights/dark.png",
+    "ms": 2261,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-pills-compact",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#phone-pills-compact/dark.png",
+    "ms": 2288,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-today",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#window-today/light.png",
+    "ms": 2359,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions#phone-today",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat/sessions#phone-today/dark.png",
+    "ms": 2360,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 34,
+      "w": 343,
+      "h": 354
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#top-lights",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#top-lights/light.png",
+    "ms": 2368,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions#phone-lights",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat/sessions#phone-lights/light.png",
+    "ms": 2459,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 29,
+      "w": 374,
+      "h": 376
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions#phone-lights",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat/sessions#phone-lights/dark.png",
+    "ms": 2498,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 29,
+      "w": 374,
+      "h": 376
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions#phone-today",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat/sessions#phone-today/light.png",
+    "ms": 2576,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 34,
+      "w": 343,
+      "h": 354
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-decided",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#window-decided/dark.png",
+    "ms": 2642,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-decided",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#window-decided/halftone-dimension.png",
+    "ms": 3004,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#top-lights",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#top-lights/halftone-dimension.png",
+    "ms": 3039,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions#phone-today",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat/sessions#phone-today/halftone-dimension.png",
+    "ms": 3304,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 40,
+      "w": 343,
+      "h": 354
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-today",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#window-today/dark.png",
+    "ms": 1285,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#top-today",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#top-today/light.png",
+    "ms": 1167,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions#phone-lights",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat/sessions#phone-lights/halftone-dimension.png",
+    "ms": 3451,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 35,
+      "w": 374,
+      "h": 376
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-pills-today",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#phone-pills-today/light.png",
+    "ms": 1128,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#top-today",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#top-today/dark.png",
+    "ms": 1305,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-pills-today",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#phone-pills-today/dark.png",
+    "ms": 1282,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-pills-today",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#phone-pills-today/halftone-dimension.png",
+    "ms": 1638,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat/sessions/dark.png",
+    "ms": 1630,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 528,
+      "y": 34,
+      "w": 384,
+      "h": 376
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat/sessions/light.png",
+    "ms": 1741,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 528,
+      "y": 34,
+      "w": 384,
+      "h": 376
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#window-today",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#window-today/halftone-dimension.png",
+    "ms": 2107,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#top-today",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat#top-today/halftone-dimension.png",
+    "ms": 2074,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/narrow-screen-proposals/docs/active/design/2026-11-04-narrow-screens/runs/round5/chat/sessions/halftone-dimension.png",
+    "ms": 3520,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 528,
+      "y": 40,
+      "w": 384,
+      "h": 376
+    },
+    "parts": []
+  }
+]

@@ -1,0 +1,89 @@
+{
+  "title": "Phones and narrow windows — round 5, your record-deck notes",
+  "key": "narrow-screens-5",
+  "out": "narrow-screens-5.html",
+  "images": "images/narrow-screens-5",
+  "runs": {
+    "round5": "runs/round5"
+  },
+  "themes": [
+    "light",
+    "dark",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "N-1",
+      "surface": "Top bar on a phone",
+      "path": "The strip across the top of the Android app",
+      "crop": [
+        {"crop": "chat#top-today@390x60+0+0", "label": "Today"},
+        {"crop": "chat#top-lights@390x60+0+0", "label": "Round 5"}
+      ],
+      "runs": ["round5"],
+      "new": true,
+      "headline": "The + New session button is gone. New session stays inside the session list, as today.",
+      "changed": "You wrote \"i hate the + new session\". The bar is now ☰ and Projects on the left, the name with its status lights in the middle, and only the terminal switch on the right.",
+      "notice": "The name has more room. Starting a session is two taps (name, then + New session), the same as today.",
+      "risk": "The bar is lopsided: two buttons left, one right. The name is centred between them, not on the screen."
+    },
+    {
+      "id": "N-2",
+      "surface": "Top bar in a narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "crop": [
+        {"crop": "chat#window-today@390x60+0+0", "label": "Today"},
+        {"crop": "chat#window-decided@390x60+0+0", "label": "Round 5"}
+      ],
+      "runs": ["round5"],
+      "new": true,
+      "headline": "Narrow computer window: nothing overlaps any more. Each side takes only the room it needs; the name gets the rest.",
+      "changed": "Your note: \"the terminal and close/minimize/maximize overlap as well\". Before, both sides were forced to the same width, which together was wider than the window. Now the left keeps ☰ and Projects, the right keeps terminal and the window buttons, and the name fills the gap and shortens with \"…\" if it must.",
+      "notice": "On a Mac the window's three coloured buttons sit at the LEFT, before ☰. The same rule applies there: the left side grows, the right shrinks, nothing overlaps.",
+      "risk": "The practice app can't pretend to be a Mac, so the Mac version is described, not pictured."
+    },
+    {
+      "id": "N-3",
+      "surface": "Session list on a phone",
+      "path": "Tap the session name at the top of the Android app",
+      "crop": [
+        {"crop": "chat/sessions#phone-today@390x420+0+0", "label": "Today"},
+        {"crop": "chat/sessions#phone-lights@390x420+0+0", "label": "Round 5"}
+      ],
+      "runs": ["round5"],
+      "new": true,
+      "headline": "Session list: Working / Inactive labels are back; rows show the model alone.",
+      "changed": "You wrote \"dont like the status light changes\", so each row keeps today's worded status. The model shows without \"Claude Code ·\" or \"YouCoded Coder ·\"; the small brand mark beside it still tells them apart, and hovering shows the full name.",
+      "notice": "Still edge to edge with the \"Your sessions\" heading. If you dislike those too, say so in the note.",
+      "risk": "Without the dot, long model names cut off sooner (\"Qwen2.5 Coder:14b\" fits; longer ones may not)."
+    },
+    {
+      "id": "N-4",
+      "surface": "Session list on a computer",
+      "path": "Click the arrow beside the session names in a wide window",
+      "crop": "chat/sessions@400x390+520+28",
+      "runs": ["round5"],
+      "new": true,
+      "headline": "On a computer too, rows now show the model alone: \"Sonnet\", not \"Claude Code · Sonnet\".",
+      "changed": "You wrote \"the reduction to just showing the model … should happen on desktop too\". This is the one change on the branch that reaches a wide window.",
+      "notice": "Model names are readable instead of cut off. The brand mark still says which assistant runs it.",
+      "risk": "Someone who uses both Claude Code and YouCoded Coder with the same model tells them apart by the small mark only."
+    },
+    {
+      "id": "N-5",
+      "surface": "Status pills",
+      "path": "The pills under the message box, on a phone browser connected to your computer",
+      "crop": [
+        {"crop": "chat#phone-pills-today@390x150+0+694", "label": "Today"},
+        {"crop": "chat#phone-pills-compact@390x150+0+694", "label": "Round 5"}
+      ],
+      "runs": ["round5"],
+      "new": true,
+      "headline": "Pills are much shorter, and the computer icon is light like the others, with a green glow.",
+      "changed": "You wrote \"it should be light like the others, maybe with a green glow behind the computer outline\" and \"making the chips vertically shorter/smaller. by a lot\". Pills went from 32 to 20 pixels tall.",
+      "notice": "The bottom of the screen is shorter by 12 pixels. The pills no longer match the shortcut chips' height above the message box.",
+      "measured": "20 px tall, down from 32 px",
+      "risk": "20 px is below the finger size master now asks for on phones, so taps may miss more often."
+    }
+  ]
+}
