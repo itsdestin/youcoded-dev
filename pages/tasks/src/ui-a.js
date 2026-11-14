@@ -290,7 +290,7 @@ function checkHtml(t) {
 }
 function taskRow(t, ctx) {
   var kids = ctx.tree && !t.parentId ? C.children(state, t.id) : [];
-  var cls = 't-task' + (t.done ? ' is-done' : '') + (ctx.sub ? ' is-sub' : '') + (ui.detailId === t.id ? ' is-open' : '');
+  var cls = 't-task' + (t.done ? ' is-done' : '') + (ctx.sub ? ' is-sub' : '') + (kids.length ? ' has-kids' : '') + (ui.detailId === t.id ? ' is-open' : '');
   var h = '<div class="' + cls + '" data-act="open" data-id="' + t.id + '" role="button" tabindex="0"' + (ui.selecting ? '' : ' draggable="true"') + '>';
   if (ui.selecting) h += '<input type="checkbox" class="t-pick" data-act="pick" data-id="' + t.id + '"' + (ui.picked[t.id] ? ' checked' : '') + ' aria-label="Select ' + esc(t.title) + '">';
   // WHY the name and the note share one inner box: on a wide screen the row is a single line —

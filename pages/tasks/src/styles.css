@@ -100,10 +100,13 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
    of the edge. Hidden buttons take no clicks, so the text under them is never a trap. */
 .t-task__actions { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); display: flex; gap: 2px; padding-left: 6px; border-radius: var(--radius-md, 8px); background: var(--panel); opacity: 0; pointer-events: none; }
 .t-task:hover .t-task__actions, .t-task:focus-within .t-task__actions { opacity: 1; pointer-events: auto; }
-/* WHY the row's right edge moves in on hover: the pills, project name and sub-task arrow slide
-   left to make room as the two buttons fade in, rather than being covered by them. */
-.t-task { transition: border-color 150ms ease, background-color 150ms ease, padding-right 150ms ease; }
-.t-task:hover, .t-task:focus-within { padding-right: 68px; }
+/* WHY the pills move on hover: they and the project name slide left to make room as the two
+   buttons fade in, rather than being covered. The sub-task arrow does NOT move — a button that
+   slides away as the pointer reaches it is hard to click — so on a row with sub-tasks the two
+   buttons appear just left of the arrow instead. */
+.t-task__body { transition: margin-right 150ms ease; }
+.t-task:hover .t-task__body, .t-task:focus-within .t-task__body { margin-right: 58px; }
+.t-task.has-kids .t-task__actions { right: 34px; }
 .t-iconbtn { appearance: none; width: 26px; height: 26px; flex: none; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: var(--radius-md, 8px); background: transparent; color: var(--fg-muted); cursor: pointer; padding: 0; }
 .t-iconbtn:hover { background: var(--inset); color: var(--fg); border-color: var(--edge-dim); }
 .t-iconbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
@@ -259,7 +262,7 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
   .t-col { width: 82vw; }
   .t-detail { width: 100%; border-left: 0; }
   .t-task__actions { display: none; }
-  .t-task:hover, .t-task:focus-within { padding-right: 10px; }
+  .t-task:hover .t-task__body, .t-task:focus-within .t-task__body { margin-right: 0; }
   .t-task.is-sub { margin-left: 20px; }
   .t-where { display: none; }
   .t-comment .t-iconbtn { opacity: 1; }
@@ -271,4 +274,4 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
   .t-modal { padding: 16px 8px; align-items: flex-end; }
   .t-head__tools .yc-select { max-width: 120px; }
 }
-@media (prefers-reduced-motion: reduce) { .t-nav, .t-icon, .t-task { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { .t-nav, .t-icon, .t-task__body { transition: none !important; } }
