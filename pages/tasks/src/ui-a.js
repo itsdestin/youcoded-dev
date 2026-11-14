@@ -256,12 +256,13 @@ function renderNav() {
   h += '<div class="t-nav__group"><div class="t-nav__label"><span class="yc-eyebrow">Projects</span>' +
     '<button class="t-iconbtn" data-act="project-add" aria-label="Add a project">' + icon('plus') + '</button></div>' +
     (projs.length ? projs.map(projItem).join('') : '<div class="yc-caption" style="padding:0 8px">Group related tasks in a project.</div>') + '</div>';
-  // WHY "3 done today · goal 5" and not "3 of 5 done": the 5 is the daily goal, not the number of
-  // tasks on Today, and "3 of 5" read as "2 left" beside a list of five.
+  // WHY "3 done · goal 5" and not "3 of 5 done": the 5 is the daily goal, not the number of
+  // tasks on Today, and "3 of 5" read as "2 left" beside a list of five. Kept this short because
+  // the app's wider fonts cut "3 done today · goal 5" off mid-word (seen in a test copy, 2026-11-14).
   h += '<div class="t-nav__foot">' +
-    '<button class="yc-button yc-button--ghost t-goal" data-act="progress" aria-label="Your progress">' +
+    '<button class="yc-button yc-button--ghost t-goal" data-act="progress" aria-label="Your progress today">' +
     '<svg class="t-ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="t-ring__track" cx="9" cy="9" r="7"/><circle class="t-ring__fill" cx="9" cy="9" r="7" stroke-dasharray="' + (circ * frac).toFixed(2) + ' ' + circ.toFixed(2) + '"/></svg>' +
-    '<span class="t-clip">' + done + ' done today \u00b7 goal ' + goal + '</span></button>' +
+    '<span class="t-clip">' + done + ' done \u00b7 goal ' + goal + '</span></button>' +
     '<button class="yc-button yc-button--ghost yc-button--icon" data-act="settings" aria-label="Settings">' + icon('sliders') + '</button></div>';
   $('nav').innerHTML = h;
 }
