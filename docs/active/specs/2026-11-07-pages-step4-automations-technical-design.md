@@ -13,7 +13,7 @@ his "the underlying engine for any automation should be easily interchangeable".
 
 Sources, in order (later wins): `pages-finish-step4.questions` → `step4.review` → `step4b.review` →
 `step4c.review` (screens approved) → `step4-plan.questions` → `step4-plan-b.review` →
-`step4-plan-c.review` → `step4-plan-d.review` → `step4-plan-e.review` (skipped: no before pictures) → `step4-plan-f.review` → `pages-finish-review.questions` (2026-11-10) → chat 2026-11-12 (commands, below) → `step4d.review` → `step4e.review` → `step4f.review` (screens approved 2026-11-12/13), all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
+`step4-plan-c.review` → `step4-plan-d.review` → `step4-plan-e.review` (skipped: no before pictures) → `step4-plan-f.review` → `pages-finish-review.questions` (2026-11-10) → chat 2026-11-12 (commands, below) → `step4d.review` → `step4e.review` → `step4f.review` → `step4g.review` (screens approved 2026-11-12/14), all in `docs/active/design/2026-10-24-pages-finish/`. The step 4 contract
 (`pages-finish-step4.contract.superseded.json`) is dropped (Destin, 2026-11-07: contracts don't
 help him); the decks are the record. Paths are `youcoded/desktop/src/` unless noted.
 
@@ -140,6 +140,12 @@ limit; subscription models show tokens used. No system notifications in this ste
      button or page event can start; a schedule-only job shows no cap. Screen (`step4e#E-cap`): its
      own "Runs per day" group using `TypeableSelect` (No limit, 5, 10, 20, 50, 100, or typed). Per
      automation only; no page-level limit (`step4d#Q-pagelimit`).
+     At the limit (`step4g#G-limit`, accepted 2026-11-14): Run now and the page's own button
+     grey out with "Daily limit reached / N of N runs today. It can run again tomorrow."; one
+     rule for every start; to run anyway, raise Runs per day. LATER, not this build (his note:
+     "we should eventually have a way to temporarily override this or change the setting ...
+     that can be a follow up"): a one-time override, or changing the limit from the greyed
+     button itself.
    - **Every model** (review deck `Q-models`): any model the app can chat with can run a job.
      `model` must be a real model binding, not a label (today's mock stores a label, and treats
      ChatGPT as a subscription at `AutomationDetails.tsx:103`).
@@ -170,7 +176,7 @@ while YouCoded is closed.
 
 ## Still to settle before the build
 
-- Draw: what a page's Run button and the popup's Run now say once the daily limit is reached.
+- Drawn and accepted 2026-11-14 (`step4g#G-limit`); every automation screen is now approved.
 - Settled 2026-11-12/13 (`step4d`): "Run with other instructions" is enough for a missed run
   (`Q-rundiff`); limits are per automation only (`Q-pagelimit`); other devices wait for syncing
   (`Q-devices`).

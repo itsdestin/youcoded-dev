@@ -1,0 +1,16 @@
+{
+ "deck": "pages-finish-step4g-review",
+ "started": "2026-11-14T07:33:07.237Z",
+ "submitted": "2026-11-14T07:34:05Z",
+ "cur": 0,
+ "answers": {
+  "G-limit": {
+   "v": "other",
+   "t": 1794641643937,
+   "note": "we should eventually have a way to temporarily override this or change the setting i think. that can be a follow up",
+   "seconds": 57,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
