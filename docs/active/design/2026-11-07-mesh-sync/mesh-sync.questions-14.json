@@ -1,0 +1,553 @@
+{
+  "title": "Your chats on every device — round 14: the builder's understanding, and what I need from you",
+  "key": "mesh-sync-questions-14",
+  "out": "mesh-sync.questions-14.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "The big picture, as I understand it",
+      "intro": "I am the session that will build this. I read the whole design and its decision record. Each line below is my understanding in my own words. Holds means I have it right. Fails means I have it wrong; a few words in the note is enough."
+    },
+    {
+      "id": "U-1",
+      "words": true,
+      "new": true,
+      "surface": "The whole feature",
+      "path": "The goal",
+      "headline": "It should feel like claude.ai, except your own devices are the server and nothing in the middle is needed or trusted.",
+      "changed": "Open any device and every chat is there, live. No account, no company server that can read anything, and it keeps working if our relay disappears or is swapped for something else.",
+      "notice": "Fails means the goal is something else; say what.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-2",
+      "words": true,
+      "new": true,
+      "surface": "Chat list and chats",
+      "path": "Host and watchers",
+      "headline": "Every device shows one shared chat list. Each chat runs on exactly one device; the others show it live and can type into it.",
+      "changed": "The device running a chat is its host, named by a chip in the status bar. On any other device the chat looks and types the same, with the limits a phone has today (no assistant browser, no Office documents, no image paste, no dragging files in).",
+      "notice": "Fails means a chat should be able to run on more than one device at once, or watchers should differ.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-3",
+      "words": true,
+      "new": true,
+      "surface": "Chats",
+      "path": "Changing the host",
+      "headline": "The host never changes by itself. Only you change it: tap the chip, or tap Continue here when the host is offline.",
+      "changed": "The app never moves a chat on its own, even when the host has been off for days. The offer to continue appears only when you open or type in that chat.",
+      "notice": "Fails means you want some automatic switching.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-4",
+      "words": true,
+      "new": true,
+      "surface": "Phone",
+      "path": "Phone as host",
+      "headline": "The phone is an equal host, not a remote control. A phone in your pocket simply looks offline to the others.",
+      "changed": "A phone can run chats exactly as a computer does. When the app is not open it shows as offline to your other devices and catches up when opened. Features the phone still lacks are named in the notice instead of blocking you.",
+      "notice": "Fails means the phone should be treated as a lesser device, or should stay reachable in your pocket.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-5",
+      "words": true,
+      "new": true,
+      "surface": "Devices",
+      "path": "Pairing",
+      "headline": "No account. A device joins only by pairing with one already in your set: scan a QR code or type a short code.",
+      "changed": "The device you already have shows the new one's name and asks 'Add this device?' before anything is shared. Adding or removing needs that device's own fingerprint, PIN or password. Pairing never deletes anything; two devices that both hold chats are combined.",
+      "notice": "Fails means joining should work some other way.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-6",
+      "words": true,
+      "new": true,
+      "surface": "Security",
+      "path": "Who can read what",
+      "headline": "Everything that syncs is locked so only your devices can read it. The keys never leave your devices: not GitHub, not our server.",
+      "changed": "Our relay passes and holds locked data it cannot open. If every device you own is lost and you have no cloud backup, nobody can recover the chats, including us.",
+      "notice": "Fails means there should be some recovery path through us, or a key stored somewhere.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-7",
+      "words": true,
+      "new": true,
+      "surface": "Keepers",
+      "path": "How data travels while devices sleep",
+      "headline": "Three paths, none required: straight over the same wifi, through your own always-on device, or through our relay.",
+      "changed": "Your own always-on device (the super-host) is a full YouCoded with no window on a computer at home; it holds everything and can read it. Our relay is on from the first pairing with a switch to turn it off. With neither, devices catch each other up whenever two are on together.",
+      "notice": "Fails means one of these is wrong or one should be required.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-8",
+      "words": true,
+      "new": true,
+      "surface": "The relay",
+      "path": "What it keeps",
+      "headline": "The relay is a waiting room, not a backup: up to 30 days and 1 GB, then it lets the oldest chats go.",
+      "changed": "It holds a chat's waiting lines until every device has them or 30 days pass. When full it lets go of whole chats, least recently used first, and the app says so. What it lets go still exists on the device that wrote it. Free, no sign-in.",
+      "notice": "Fails means the relay should be treated as storage you can rely on.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-2",
+      "page": "What must never go wrong",
+      "intro": "These are the promises I will test hardest. If one of them is not actually a promise you care about, say so; it changes how much machinery I build around it."
+    },
+    {
+      "id": "U-9",
+      "words": true,
+      "new": true,
+      "surface": "Chats",
+      "path": "Continue here",
+      "headline": "Continuing a chat elsewhere drops only the reply that was unfinished. A finished reply is never silently thrown away.",
+      "changed": "The chat carries on from the last finished reply, with a divider like 'Now hosted on Phone' that the assistant can also read. Files the dropped reply already changed stay changed, and the notice says so. If the old host turns out to hold finished replies the new one never saw, you get 'two versions' and choose.",
+      "notice": "Fails means some other outcome is acceptable, for example quietly keeping the newer side only.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-10",
+      "words": true,
+      "new": true,
+      "surface": "Chats and files",
+      "path": "When two copies disagree",
+      "headline": "The app never guesses. When two copies truly differ, both are kept and you are shown, even if that is a little annoying.",
+      "changed": "For chats that means a 'two versions' notice with an offer to archive the older one. For project files it means both copies kept side by side, one named 'name (from Device, date)'. Accidental duplicates are prevented wherever the devices can reach each other or a keeper.",
+      "notice": "Fails means you would rather the app pick a winner automatically in some cases.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-11",
+      "words": true,
+      "new": true,
+      "surface": "Devices",
+      "path": "Trust between your devices",
+      "headline": "Every paired device is fully trusted: it can type into chats on your other devices, where the assistant can run commands.",
+      "changed": "That is what the feature is. The guard rails are: the unlock before adding or removing a device, the 'Laptop was added by Phone' notice on the others, and removing a device locks it out of everything new. A removed or stolen device keeps what it already held.",
+      "notice": "Fails means you want extra limits on what one device may do to another.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-12",
+      "words": true,
+      "new": true,
+      "surface": "Deleting",
+      "path": "Delete everywhere",
+      "headline": "Deleting a chat deletes it on every device, with 30 days in Recently deleted on each. Deleting is new; it does not exist today.",
+      "changed": "A device that was off for weeks obeys the deletion when it returns and does not bring the chat back. Until the backup rebuild, a deleted chat still exists in the GitHub backup's history.",
+      "notice": "Fails means delete should behave differently.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-13",
+      "words": true,
+      "new": true,
+      "surface": "The switch-over",
+      "path": "The day everyone updates",
+      "headline": "One release for everyone. When a device updates, GitHub two-way sync stops there for good and GitHub becomes upload-only backup.",
+      "changed": "Old and new sync never run together on a device. Devices that update at different times stop exchanging new chats and file changes until all are updated and paired; nothing is lost, and a one-time message names the devices still to update. Existing chats need no moving.",
+      "notice": "Fails means the switch should happen differently.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-14",
+      "words": true,
+      "new": true,
+      "surface": "Scope",
+      "path": "What this work leaves out",
+      "headline": "Not part of this build: alerts across devices, syncing the assistant's setup, word-by-word Claude Code chats, and the backup rebuild.",
+      "changed": "Those are cards 242 and 248, separate streaming work, and the backup rebuild that follows the mesh with its own design. Undo history also does not travel.",
+      "notice": "Fails means one of these should be pulled into this build.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-3",
+      "page": "Four readings nobody has confirmed yet",
+      "intro": "The first three are marked 'unconfirmed reading' in the design: the designing session's interpretation of your answers. The fourth is a hole I found. I need a clear yes or no on each before building on them."
+    },
+    {
+      "id": "U-15",
+      "words": true,
+      "new": true,
+      "surface": "What travels",
+      "path": "Pictures",
+      "headline": "A picture you send in a chat travels with the chat. Only the device's separate scratch copy of pasted images stays behind.",
+      "changed": "You dropped 'pasted images' in one answer and kept images in sync in a later one. Read together: the picture is stored inside the chat itself, so it travels; the leftover temporary file on the device does not.",
+      "notice": "Fails means pictures should not travel, or the scratch copies should too.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-16",
+      "words": true,
+      "new": true,
+      "surface": "Security",
+      "path": "What the relay can see",
+      "headline": "The relay cannot read anything, but it can see how many devices and chats you have, their sizes, and when you are active.",
+      "changed": "The app and website must never claim the relay sees nothing at all. Hiding sizes and timing as well would be a much bigger and slower system.",
+      "notice": "Fails means you want those hidden too, or want it worded differently.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-17",
+      "words": true,
+      "new": true,
+      "surface": "Security",
+      "path": "The audits before release",
+      "headline": "'Extensive audits of our own' means fresh AI reviewers that did not write the code check it against published security standards before release.",
+      "changed": "Before the release, the pairing, key and relay code is audited against published standards by separate sessions that did not write it, with every finding written down and closed. No paid outside security firm is hired. On that basis the app may say 'end-to-end encrypted' from launch.",
+      "notice": "Fails means you intended a human or outside audit, or a different bar for using the phrase.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-18",
+      "words": true,
+      "new": true,
+      "surface": "Backup",
+      "path": "Google Drive and iCloud after the switch",
+      "headline": "After the switch, the daily Google Drive and iCloud backups must keep including your chats, not just GitHub's.",
+      "changed": "The design spells out the upload-only path for GitHub only. Chats move to a new place on disk at the switch, so unless I build it, Drive and iCloud daily backups would quietly stop containing new chats. I will make all three keep carrying them. (Restoring from Drive or iCloud still arrives with the backup rebuild, as decided.)",
+      "notice": "Fails means Drive and iCloud may stop carrying chats until the backup rebuild.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-4",
+      "page": "How I will run the build",
+      "intro": "This is the working arrangement I am assuming while you are away."
+    },
+    {
+      "id": "U-19",
+      "words": true,
+      "new": true,
+      "surface": "The build",
+      "path": "Safety while building",
+      "headline": "Nothing reaches any user until the one release. Everything is built behind an off switch and tested on pretend devices.",
+      "changed": "Test devices each get their own separate home folder, so they can never read or change your real chats, and I never touch your running app. I push my branches to GitHub as backups. I never merge or release without your word.",
+      "notice": "Fails means you expect something different, for example landing finished pieces on master as I go.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-20",
+      "words": true,
+      "new": true,
+      "surface": "The build",
+      "path": "Screens and wording",
+      "headline": "I build the invisible machinery without waiting for you. Every screen and every piece of wording comes to you as pictures before it is final.",
+      "changed": "The Devices screen, pairing, the host chip, the notice, delete, storage and relay settings, and the one-time message each arrive as a review deck, in the order the build reaches them. Until you approve one, its screen stays hidden behind the switch.",
+      "notice": "Fails means you want to see all screens before any machinery is built, or want me to decide screens myself.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-21",
+      "words": true,
+      "new": true,
+      "surface": "The build",
+      "path": "When a test contradicts the design",
+      "headline": "If a test shows something you decided cannot work, I stop that part and bring you the choice. I never quietly change what users get.",
+      "changed": "Engineering details underneath I change myself and write down why. The design names the tests most likely to force a choice: whether Claude Code can continue a chat on another computer, and whether project files settle between equal devices. Those are running now.",
+      "notice": "Fails means you want me to make those calls myself and tell you afterwards.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-5",
+      "page": "What I need from you",
+      "intro": "Seven things only you can settle. The first three are product decisions the design left open. The last four are permissions and access for testing. The first option in each is the one I recommend."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Continue here",
+      "path": "A chat whose folder is not a synced project",
+      "headline": "A chat ran in an ordinary folder that is not a synced project. What does Continue here offer on another device?",
+      "today": "Some chats run in a folder that was never set up as a synced project, for example one started in a terminal in a random folder. Its files exist only on that one device.",
+      "problem": "On another device the chat can be read, but there is no way to bring its files across, because the folder is not a project. The design left this open.",
+      "proposal": "Either way the chat is listed and readable everywhere.",
+      "options": [
+        {
+          "id": "talk-only-plus-offer",
+          "label": "Talk-only elsewhere, and the host offers to make the folder a project",
+          "pros": [
+            "You can always continue the conversation, with the usual note that it cannot touch files.",
+            "On the device that has the folder, one button turns it into a synced project so next time the files can come too."
+          ],
+          "cons": [
+            "One more small offer to design and build.",
+            "If the host is off, talk-only is the only choice until it is back."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "talk-only",
+          "label": "Talk-only elsewhere, nothing more",
+          "pros": [
+            "Simplest. Nothing new to learn."
+          ],
+          "cons": [
+            "No path to ever get that chat's files onto another device except setting up the project by hand."
+          ]
+        },
+        {
+          "id": "read-only",
+          "label": "Readable elsewhere, but cannot be continued",
+          "pros": [
+            "No risk of the assistant talking about files it cannot see."
+          ],
+          "cons": [
+            "You lose the 'I just need the context of that chat' use you asked for earlier."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Devices",
+      "path": "Adding or removing a device on a computer with no fingerprint or password prompt",
+      "headline": "Some computers cannot show a fingerprint or password prompt. What protects adding or removing a device there?",
+      "today": "You decided adding or removing a device needs that device's own unlock. Phones, Macs and most Windows computers can show one. Some Linux computers and some Windows computers without Windows Hello cannot.",
+      "problem": "On those computers the rule cannot be met as written, and the design says to ask you.",
+      "proposal": "Whichever you pick applies only where the computer truly offers no unlock. The 'Laptop was added by Phone' notice on your other devices appears in every case.",
+      "options": [
+        {
+          "id": "confirm-and-notice",
+          "label": "A clear 'Are you sure?' step, plus the notice on your other devices",
+          "pros": [
+            "Works on every computer with nothing to set up.",
+            "Your other devices still tell you a device was added or removed."
+          ],
+          "cons": [
+            "Someone sitting at that unlocked computer can add a device without knowing any password."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "app-passphrase",
+          "label": "Ask the user to create a YouCoded passphrase on that computer",
+          "pros": [
+            "A real barrier even on those computers."
+          ],
+          "cons": [
+            "One more password to invent and forget; forgetting it means that computer cannot add or remove devices."
+          ]
+        },
+        {
+          "id": "refuse",
+          "label": "That computer cannot add or remove devices; use another one",
+          "pros": [
+            "The rule holds everywhere with no exceptions."
+          ],
+          "cons": [
+            "Someone whose only devices are such computers cannot pair at all."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "The release",
+      "path": "Whether the first release includes the super-host",
+      "headline": "Does the one big release wait for the super-host, or does the super-host follow in the next release?",
+      "today": "You decided on one release for everyone. The design's build order puts the super-host after that release, yet also says both the relay and the super-host are offered.",
+      "problem": "Those two lines pull in different directions, and it changes when the release can happen.",
+      "proposal": "Everything else (pairing, chats everywhere, watching, files, continuing, same wifi, the relay) is in the first release either way.",
+      "options": [
+        {
+          "id": "follow",
+          "label": "Super-host follows in the next release",
+          "pros": [
+            "The main release is not held up by a part most of the 5 to 10 users will not set up on day one.",
+            "The super-host gets tested on top of a system already working in real use."
+          ],
+          "cons": [
+            "At launch the only always-on keeper is our relay; 'self-hosting' arrives a little later."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "wait",
+          "label": "The first release waits until the super-host is ready",
+          "pros": [
+            "The full promise, our relay or your own device, is there on day one."
+          ],
+          "cons": [
+            "A later release. The super-host also needs a decision still owed to you (how to reach it away from home)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Testing",
+      "path": "Letting pretend devices use Claude",
+      "headline": "My pretend test devices need their own way to sign in to Claude. How should they get it?",
+      "today": "Test devices run in separate home folders so they cannot touch your real chats. That also means they are not signed in to Claude. Copying your sign-in file into them is unsafe: it could sign your real app out.",
+      "problem": "The most important test is a Claude Code chat written on one device being continued on another. Without a sign-in on the second pretend device I can only test it halfway.",
+      "proposal": "The recommended option needs about one minute from you: I will give you one command to paste, it opens a browser page, and you approve.",
+      "options": [
+        {
+          "id": "token",
+          "label": "I create a separate long-lived sign-in for testing (one command, one minute)",
+          "pros": [
+            "Uses your existing Claude plan; no extra cost.",
+            "Cannot disturb your real app's sign-in.",
+            "Kept in a file outside every repository; never synced or committed."
+          ],
+          "cons": [
+            "Tests use a little of your plan's usage (small prompts on the cheapest model)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "api-key",
+          "label": "Use a paid API key with a small spending cap",
+          "pros": [
+            "Completely separate from your plan."
+          ],
+          "cons": [
+            "Costs money, and you would need to create the key and set the cap."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "Neither; test only what is possible without a second sign-in",
+          "pros": [
+            "Nothing for you to do."
+          ],
+          "cons": [
+            "The make-or-break test stays half-proven until the trial on your real devices, late in the build."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Testing",
+      "path": "A test relay on the internet",
+      "headline": "May I put a locked-down test version of the relay online when the build needs it?",
+      "today": "The relay lives on the same Cloudflare service as the marketplace. That service only updates when code lands on the main branch. Until then I test against a relay running on this computer only.",
+      "problem": "A real phone, or a device on another network, cannot reach a relay that exists only on this computer. Real-device testing needs the relay online.",
+      "proposal": "The test relay would accept only a short list of test device sets and refuse everyone else. It changes nothing any user can see. It would be checked by a separate reviewer first.",
+      "options": [
+        {
+          "id": "yes-reviewed",
+          "label": "Yes, once a separate reviewer has checked it; tell me afterwards",
+          "pros": [
+            "Real-device testing is not blocked waiting for you.",
+            "Invisible to users, and locked to test sets."
+          ],
+          "cons": [
+            "Relay code lands on the marketplace's main branch before the feature is finished."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ask-first",
+          "label": "Ask me each time before anything goes online",
+          "pros": [
+            "You see exactly what goes live and when."
+          ],
+          "cons": [
+            "Work that needs real devices pauses until you answer."
+          ]
+        },
+        {
+          "id": "not-yet",
+          "label": "Not until the whole feature is ready",
+          "pros": [
+            "Nothing new online until the end."
+          ],
+          "cons": [
+            "Problems that only show up over the real internet are found last, when they are most expensive."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Testing",
+      "path": "Sleep tests on this laptop",
+      "headline": "May I put this laptop to sleep and wake it automatically, a few times, to test what a reply does across sleep?",
+      "today": "One safety rule is that a reply running when a computer sleeps must not change files the instant it wakes, before the app has checked it is still the host. That can only be proven by really sleeping a computer.",
+      "problem": "Sleeping the laptop pauses everything on it for about a minute each time, including your running app and any other session. If the laptop failed to wake, work would stop until you opened it.",
+      "proposal": "I would only do it at a time you choose, never while you are relying on a long-running job.",
+      "options": [
+        {
+          "id": "with-me",
+          "label": "Only while I am at the laptop; ask me when ready",
+          "pros": [
+            "If it does not wake, you are there to open it.",
+            "You choose a moment when nothing else is running."
+          ],
+          "cons": [
+            "The test waits for you."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "anytime",
+          "label": "Any time, including overnight",
+          "pros": [
+            "No waiting."
+          ],
+          "cons": [
+            "A failed wake would stop every session on the laptop until you return."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "No; leave sleep testing to the trial on real devices",
+          "pros": [
+            "The laptop is never interrupted."
+          ],
+          "cons": [
+            "The sleep rule is proven late."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "answer": "words",
+      "surface": "Testing",
+      "path": "Your real devices",
+      "headline": "Which of your devices can take part in testing later, and what is each one?",
+      "today": "The design calls for a trial on your real devices before release, with you. I can see four devices in your sync records but not what each is. This laptop runs Linux; nothing else is attached to it.",
+      "problem": "Windows, Mac and Android each behave differently for sleep, key storage and the unlock prompt. What I cannot test on a real device I must say is unproven.",
+      "proposal": "List each device and its system, for example 'desktop, Windows; phone, Android; this laptop, Linux'. Say if you have any Mac, and whether a Raspberry Pi or spare computer could serve as a test super-host later.",
+      "prompt": "For example: desktop (Windows), Z13 laptop (Linux), phone (Android), no Mac"
+    }
+  ]
+}
