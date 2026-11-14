@@ -1,6 +1,6 @@
 # Tasks — a full to-do list as a YouCoded page
 
-A Todoist / Google Tasks style task manager that runs as one YouCoded page with no connections:
+A full task manager that runs as one YouCoded page with no connections:
 it only reads and writes its own saved data, so it needs no approval card and works offline.
 
 | File | What it is |
@@ -23,4 +23,4 @@ Built against the page kit on `session/90-pages-finish` (2026-11-13). It uses on
 his other devices — install there only with his yes.
 
 Known limits, by design of pages today: reminders show only while the page is open (a page cannot
-notify when closed); no sign-in sync with Todoist or Google; one level of sub-tasks.
+notify when closed); no sign-in sync with other to-do services; one level of sub-tasks.

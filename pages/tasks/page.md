@@ -1,6 +1,6 @@
 # Tasks — notes for this page's assistant
 
-A to-do list in the style of Todoist: Inbox, Today, Upcoming, projects with sections (list or
+A to-do list: Inbox, Today, Upcoming, projects with sections (list or
 board), priorities, labels, saved filters, sub-tasks, repeating tasks, comments, a finished log
 and a daily goal. It reaches nothing outside the app (no connections).
 
