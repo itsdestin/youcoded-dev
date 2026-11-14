@@ -71,3 +71,12 @@ test('at phone width an item card keeps its tick box beside the name and its but
   assert.match(css, /\.crow \.acts\{order:3/);
   assert.match(css, /\.cchips\{flex-wrap:wrap;overflow:visible\}/);
 });
+
+test('Big picture has no hand-dated "Became real" card, and Shipped lists merged work items', () => {
+  // WHY (Destin, 2026-11-14: "drop 'became real' and just use shipped … fill in automatically"): the card read dates
+  // typed by hand that nobody kept up; the Shipped list now comes from docs/shipped.md and each row opens its work item.
+  const v = fs.readFileSync(path.join(HERE, '..', 'pages', 'work-board', 'renderer', 'vision_tab.py'), 'utf8');
+  assert.ok(!/Became real in the last 30 days/.test(v), 'the hand-dated card is back');
+  assert.match(v, /shipped:\{t:'Shipped in the last 30 days'[\s\S]*?SHIPPED\.filter\(x=>x\.date>=cut\)/);
+  assert.match(v, /row:x=>`<button class="row rowbtn" data-card-open=/);
+});

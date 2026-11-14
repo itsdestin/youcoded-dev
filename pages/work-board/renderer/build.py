@@ -316,7 +316,7 @@ def check_tips(page):
         raise SystemExit('check_tips: these have no hover hint (add one to tooltips.py):\n  ' + '\n  '.join(bad[:40] + titles[:10]) + f'\n({len(bad)} missing, {len(titles)} title= attributes)')
 
 # ----------------------------------------------------------------------------- PAGE
-vision_html, vision_nodes, vision_tot = vrender(HERE, TIP, TRACK_SHORT, cards=_payload['cards'] if LIVE_CARDS else None)
+vision_html, vision_nodes, vision_tot = vrender(HERE, TIP, TRACK_SHORT, cards=_payload['cards'] if LIVE_CARDS else None, shipped=_payload.get('shipped') if LIVE_CARDS else None)
 if LIVE_CARDS:
     bptab.paint(_payload['cards'])
 # WHY (2026-10-14, round 3): the four big-picture views live here, in one look, not on a separate page

@@ -101,7 +101,7 @@ def legend():
     # WHY each entry carries its hint: "exists" and "only an idea" are the page's own words for a status
     return ''.join(f'<span class="leg" data-tip="{E(TIPS["status." + s])}">{dot(s)}{w}</span>' for s, w in (('done','exists'),('building','being built'),('planned','planned'),('vision','only an idea')))
 
-def render(here, tip, track_short, cards=None):
+def render(here, tip, track_short, cards=None, shipped=None):
     """WHY the cut (2026-10-13, Destin: "a confusing fucking disaster to navigate.... just wayyy too
     many controls"): the By area / By track switch and the four filter pills are gone. The tab opens
     on the mission, the two boxes and the ten area cards. Three plain links under the mission ask the
@@ -124,26 +124,18 @@ def render(here, tip, track_short, cards=None):
     feats = [n for n in nodes.values() if n['kind'] == 'feature']
     tot = {s: sum(1 for n in feats if n['status'] == s) for s in STATUS_WORD}
     blockers = sorted([n for n in feats if n['status'] in ('vision','planned') and n['needed_by']], key=lambda n: -len(n['needed_by']))[:6]
-    # WHY a rolling 30 days from today (2026-11-11): the cutoff used to be typed in (Sept 12), so "the last month" drifted into
-    # "since September" and never moved. If nothing is recorded in the window, the card says so and when the newest record is.
-    import datetime
-    cutoff = (datetime.date.today() - datetime.timedelta(days=30)).isoformat()
-    dated = sorted([n for n in feats if n['status'] == 'done' and n['since']], key=lambda n: n['since'], reverse=True)
-    recent = [n for n in dated if n['since'] >= cutoff]
-    newest = dated[0]['since'] if dated else None
+    # WHY no "Became real" card any more (Destin, 2026-11-14: "drop 'became real' and just use shipped"): it read dates
+    # typed by hand onto this list, which nobody kept up. "Shipped in the last 30 days" below now lists merged work items.
     out = []
     out.append(f'''<div class="card mission"><div class="eyebrow" data-tip="{T('vis.mission')}">Your mission</div><div class="t-base mtext">{E(sk['mission'])}</div>
       <div class="t-sm dim msum">Of the {len(feats)} things you have said the app should do, <b>{tot['done']}</b> exist, <b>{tot['building']}</b> are being built, <b>{tot['planned']}</b> are planned and <b>{tot['vision']}</b> are only ideas{(' (' + str(tot['unchecked']) + ' not checked yet)') if tot['unchecked'] else ''}.</div>
       {bar(tot, len(feats))}
       <div class="vlinks fchips" role="group" aria-label="Show only"><button class="fchip" data-lens="blocked" aria-pressed="false" data-tip="{T('vis.blocked')}">What's blocked</button><button class="fchip" data-lens="twice" aria-pressed="false" data-tip="{T('vis.twice')}">Built twice</button><button class="fchip" data-lens="shipped" aria-pressed="false" data-tip="{T('vis.shipped')}">Shipped in the last 30 days</button></div></div>''')
     out.append('<div id="voverview">')
-    if blockers or recent or newest:
+    if blockers:
         out.append('<div class="vinsights">')
         if blockers:
             out.append(f'<div class="card"><div class="eyebrow" data-tip="{T("vis.waitingon")}">What most things are waiting on</div>' + ''.join(f'<button class="irow" data-focus="{E(b["id"])}" data-tip="Click for details."><span class="t-sm">{E(b["title"])}</span><span class="t-2xs muted irmeta" data-tip="{E(_needtip(len(b["needed_by"]), tip))}">{len(b["needed_by"])} need it</span>{spill(b["status"])}</button>' for b in blockers) + '</div>')
-        if recent or newest:
-            none = '' if recent else f'<p class="t-xs muted" style="margin:0">Nothing is recorded as becoming real in the last 30 days. The newest record is {E(nice(newest))}; these dates are written in by hand, so recent finished work may not be counted yet.</p>'
-            out.append(f'<div class="card"><div class="eyebrow" data-tip="{T("vis.becamereal")}">Became real in the last 30 days</div>{none}' + ''.join(f'<button class="irow" data-focus="{E(r["id"])}" data-tip="{T("vis.row")}"><span class="t-sm">{E(r["title"])}</span><span class="t-2xs muted irmeta" data-tip="{T("vis.since")}">{E(nice(r["since"]))}</span></button>' for r in recent[:8]) + '</div>')
         out.append('</div>')
     out.append(f'<div class="sechead"><div class="gtext"><h2 class="gh"><span data-tip="{T("vis.areas")}">Areas</span><span class="cnt" data-tip="{T("vis.areas.count")}">{len(sk["pillars"])}</span></h2></div></div><div class="pgrid">')
     for p in sk['pillars']:
@@ -185,6 +177,7 @@ def render(here, tip, track_short, cards=None):
     data = {nid: {k: n.get(k) for k in ('id','title','kind','pillar','parent','quote','status','since','why','evidence','needs','shares','needed_by','added','track','screens')} for nid, n in nodes.items()}
     data['_tracks'] = {t['id']: t['title'] for t in tracks}
     data['_short'] = track_short
+    data['_shipped'] = shipped or []  # docs/shipped.md, newest first (manage.mjs shippedLines)
     return ''.join(out), data, dict(total=len(feats), **tot)
 
 def _needtip(n, tip):
@@ -209,7 +202,8 @@ CSS = '''
 .sdot.planned{background:transparent}
 .sdot.vision{border-style:dotted;border-color:var(--fg-muted)}
 .sdot.unchecked{border-color:var(--status-warn)}
-.vinsights{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+/* WHY one column (2026-11-14): with the "Became real" card gone this row holds one card, which sat in the left half beside an empty space */
+.vinsights{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:24px}
 /* plain rows inside a card (decisions "List rows by job": pick-one lists are plain rows, hover highlights) */
 .irow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;border-radius:var(--radius-md);padding:6px 8px;margin:0 -8px;color:var(--fg);cursor:pointer;transition:background-color 120ms steps(4)}
 .vinsights .eyebrow{margin-bottom:6px}
@@ -268,7 +262,7 @@ CSS = '''
 '''
 
 JS = r'''
-const VN=%s; const SW=%s; const TRK=VN._tracks, TSH=VN._short; delete VN._tracks; delete VN._short;
+const VN=%s; const SW=%s; const TRK=VN._tracks, TSH=VN._short, SHIPPED=VN._shipped||[]; delete VN._tracks; delete VN._short; delete VN._shipped;
 // WHY one look and three questions (2026-10-13 cut): vLens is 'all' or one of the three links under the mission
 let vLens='all', vOpen=null;
 const VTONE={done:'ok',building:'info',planned:'',vision:'',unchecked:'warn'},VPW={done:'exists',building:'being built',planned:'planned',vision:'only an idea',unchecked:'not checked yet'};
@@ -289,12 +283,15 @@ const LISTS={
     meta:n=>'Waits on: '+titles(n.needs.filter(x=>OPEN.includes(VN[x.id].status)))},
   twice:{t:'Built twice',d:'Each of these shares parts with another item, so the shared part could be built once.',
     items:()=>FEATS.filter(n=>(n.shares||[]).length),meta:n=>'Shares parts with: '+titles(n.shares)},
-  // WHY a rolling window worked out when the page is looked at (2026-11-11): the cutoff was typed in as Oct 1
-  shipped:{t:'Shipped in the last 30 days',d:'Everything recorded as starting to exist in the last 30 days, newest first.',
-    items:()=>{const cut=new Date(Date.now()-30*864e5).toISOString().slice(0,10);return FEATS.filter(n=>n.status==='done'&&(n.since||'')>=cut).sort((a,b)=>a.since<b.since?1:-1)},meta:n=>'Since '+nice(n.since),
-    none:()=>{const d=FEATS.filter(n=>n.status==='done'&&n.since).map(n=>n.since).sort().pop();return 'Nothing is recorded as becoming real in the last 30 days.'+(d?' The newest record is '+nice(d)+'; these dates are written in by hand, so recent finished work may not be counted yet.':'')}}};
+  // WHY merged work items, not vision dates (Destin, 2026-11-14: "drop 'became real' and just use shipped … fill in
+  // automatically"): the old list read dates typed by hand and sat empty; every finished item already gets a dated line
+  // in docs/shipped.md when it is closed. The 30 days are counted when the page is looked at. A row opens its work item.
+  shipped:{t:'Shipped in the last 30 days',d:'Work items finished and merged in the last 30 days, newest first.',
+    items:()=>{const cut=new Date(Date.now()-30*864e5).toISOString().slice(0,10);return SHIPPED.filter(x=>x.date>=cut)},
+    row:x=>`<button class="row rowbtn" data-card-open="${x.id}" data-tip="Opens this work item."><span class="body"><span class="t-xs rt">${esc(x.title)}</span><span class="hint wrap">Merged ${nice(x.date)}${x.ref?' · '+esc(x.ref):''}</span></span><span class="t-2xs muted">#${x.id}</span></button>`,
+    none:()=>SHIPPED.length?'No work item was merged in the last 30 days. The newest is from '+nice(SHIPPED[0].date)+'.':'The list of merged work items could not be read here.'}};
 function vList(){const L=LISTS[vLens],xs=L.items();$('#vlt').textContent=L.t;$('#vlc').textContent=xs.length;$('#vld').textContent=L.d;
-  $('#vlrows').innerHTML=xs.map(n=>`<button class="row rowbtn" data-focus="${n.id}" data-tip="${T('vis.row')}"><span class="body"><span class="t-xs rt">${esc(n.title)}</span><span class="hint wrap">${esc(VN[n.pillar].title)} · ${esc(L.meta(n))}</span></span><span class="spill ${VTONE[n.status]}" data-tip="${T('status.'+n.status)}">${VPW[n.status]}</span></button>`).join('')||`<div class="empty">${esc(L.none?L.none():'Nothing here.')}</div>`}
+  $('#vlrows').innerHTML=xs.map(L.row||(n=>`<button class="row rowbtn" data-focus="${n.id}" data-tip="${T('vis.row')}"><span class="body"><span class="t-xs rt">${esc(n.title)}</span><span class="hint wrap">${esc(VN[n.pillar].title)} · ${esc(L.meta(n))}</span></span><span class="spill ${VTONE[n.status]}" data-tip="${T('status.'+n.status)}">${VPW[n.status]}</span></button>`)).join('')||`<div class="empty">${esc(L.none?L.none():'Nothing here.')}</div>`}
 function vApply(){$$('.web .lines').forEach(s=>s.innerHTML='');$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));
   const list=vLens!=='all',over=!list&&!vOpen;
   $('#voverview').hidden=!over;$('#vlist').hidden=!list;$('#vdetail').hidden=list||!vOpen;

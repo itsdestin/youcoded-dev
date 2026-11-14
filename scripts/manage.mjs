@@ -25,7 +25,8 @@ import { execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import os from 'node:os';
 import { releaseFacts } from './release-view.mjs';
-import { loadCards, neededBy, setStage, deleteCards, combineCards, STAGES, STAGE_WORD } from './cards.mjs';
+import { loadLines, setReviewed } from './release-lines.mjs';
+import { loadCards, neededBy, setStage, deleteCards, combineCards, STAGES, STAGE_WORD, SHIPPED } from './cards.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // WHY the design folder (Destin, 2026-10-16: "what happened to the real full page with all of our earlier design
@@ -43,7 +44,7 @@ export function buildPage(root, { pageMode = false, tidy = null, release } = {})
   // WHY read here, before the cache check (Destin, 2026-11-11): "Since the last release" must be worked out every time the
   // page is drawn, so a new release tag or a newly merged change can never hide behind a cached page. `release` is passed
   // in by the tests; otherwise it is read from the app folder (a tiny GitHub check, then git).
-  release ??= releaseFacts(path.join(workspaceOf(root), 'youcoded'), loadCards(root));
+  release ??= releaseFacts(path.join(workspaceOf(root), 'youcoded'), loadCards(root), { lines: loadLines(root) });
   // WHY the drawing code is in the key too (Destin, 2026-11-12: "how can i judge your work if i cant see it"): a long-running
   // copy of the board kept serving the page it drew before a style fix, so a refresh showed nothing new.
   const code = fs.readdirSync(PAGE_DIR).filter(f => /\.(py|css|json)$/.test(f)).map(f => f + fs.statSync(path.join(PAGE_DIR, f)).mtimeMs).join('|');
@@ -221,6 +222,19 @@ export function factsFor(card, f, { guessWorking = true } = {}) {
   };
 }
 
+/**
+ * Every dated line of docs/shipped.md, newest first: { date, id, title, ref }.
+ * WHY (Destin, 2026-11-14: "drop 'became real' and just use shipped … fill in automatically"): Big picture's
+ * "Shipped in the last 30 days" used dates typed by hand onto the vision list, which nobody kept up, so it sat
+ * empty in a month with 44 merged changes. `cards.mjs close` already writes one dated line here per finished item.
+ */
+export function shippedLines(root) {
+  let text = '';
+  try { text = fs.readFileSync(path.join(root, SHIPPED), 'utf8'); } catch { return []; }
+  return text.split('\n').map((l) => /^- \[x\] (\d{4}-\d{2}-\d{2}) #(\d+) (.*?)(?: \((.*)\))?$/.exec(l)).filter(Boolean)
+    .map((m) => ({ date: m[1], id: Number(m[2]), title: m[3], ref: m[4] || '' })).sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+
 export function cardsPayload(root, { live = true, guessWorking = true } = {}) {
   const cards = loadCards(root);
   const nb = neededBy(cards);
@@ -228,6 +242,7 @@ export function cardsPayload(root, { live = true, guessWorking = true } = {}) {
   const touched = lastTouched(root);
   const f = live ? liveFacts(root) : null;
   return {
+    shipped: shippedLines(root),
     stages: STAGES.map(s => ({ id: s, word: STAGE_WORD[s] })),
     cards: cards.map(c => {
       const live_ = f ? factsFor(c, f, { guessWorking }) : { chats: [], unsaved: false, working: false, prs: [], failing: false, mergeable: false, lastWork: '' };
@@ -274,6 +289,8 @@ export function makeServer(root, { useGit = true, tidy = false } = {}) {
       if (req.url === '/api/stage') { result = setStage(root, body.ids, body.stage); msg = `cards: moved ${result.map(i => '#' + i).join(', ')} to ${STAGE_WORD[body.stage]} (management page)`; }
       else if (req.url === '/api/delete') { result = deleteCards(root, body.ids); msg = `cards: deleted ${result.map(i => '#' + i).join(', ')} (management page)`; }
       else if (req.url === '/api/combine') { result = combineCards(root, body.ids, body.keep, body.title); msg = `cards: combined ${result.merged.map(i => '#' + i).join(', ')} into #${result.kept} (management page)`; }
+      // WHY (Destin, 2026-11-14): lines for users are written by assistants; his tick on the release list is how one stops being marked unread
+      else if (req.url === '/api/noticeread') { result = setReviewed(root, body.change, true); msg = `cards: ${body.change} user line read (management page)`; }
       else return send(404, { error: 'Not found.' });
       const saved = useGit ? save(root, msg + '\n\nCo-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>') : 'Saved to the files.';
       return send(200, { ok: true, result, saved, ...cardsPayload(root) });

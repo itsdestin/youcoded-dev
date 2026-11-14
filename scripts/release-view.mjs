@@ -85,7 +85,7 @@ function linkedCards(cards, branch, title) {
 }
 
 /** A change's entry: words, group, and the work items it links to. */
-export function describeChange({ subject, body = '', date = '', sha = '' }, cards) {
+export function describeChange({ subject, body = '', date = '', sha = '' }, cards, lines = []) {
   const pr = /^Merge pull request #(\d+) from [^/\s]+\/(\S+)/.exec(subject);
   const branch = pr ? pr[2] : '';
   // WHY the body's first line: GitHub writes the pull request's title there
@@ -98,7 +98,14 @@ export function describeChange({ subject, body = '', date = '', sha = '' }, card
   // would otherwise be described as just one of them.
   const text = cleanTitle(raw);
   const detail = links.length === 1 && done.length === 1 ? shorten(done[0].summary) : '';
-  return { sha: sha.slice(0, 9), date, pr: pr ? Number(pr[1]) : null, branch, text, detail, group: groupOf(raw, branch),
+  // WHY the written lines win (Destin, 2026-11-14): a line written for users when the change landed
+  // (release-lines.mjs) says what they will notice, and its writer chose the group; the guess from the title's
+  // words is only for changes nobody has written a line for yet.
+  const key = pr ? `youcoded#${pr[1]}` : `youcoded@${sha.slice(0, 9)}`;
+  const mine = lines.filter((l) => l.change === key);
+  const notice = mine.map((l) => l.text);
+  return { sha: sha.slice(0, 9), date, pr: pr ? Number(pr[1]) : null, branch, text, detail, key, notice,
+    reviewed: mine.length > 0 && mine.every((l) => l.reviewed), group: mine.length ? mine[0].group : groupOf(raw, branch),
     items: links.map((c) => ({ id: Number(c.id), title: c.title })) };
 }
 
@@ -107,7 +114,29 @@ export function describeChange({ subject, body = '', date = '', sha = '' }, card
  * returns { ok: false, reason } and the page says so instead of showing old numbers.
  * { fetch:false } skips asking GitHub (tests). { cache } is the folder for the small fresh copy.
  */
-export function releaseFacts(dir, cards = [], { fetch = true, cache = path.join(os.homedir(), '.cache', 'youcoded-work-board'), now = Date.now() } = {}) {
+/**
+ * A first draft of the changelog entry, from the lines written for users. WHY a draft only (Destin, 2026-11-14:
+ * "with the expectation of significant refinement/simplification for the actual published changelog"): it saves
+ * the translating, not the editing. A change with no line yet shows its working title, marked, so a gap is seen
+ * rather than silently skipped; "Nothing visible." changes are left out and counted.
+ */
+export function changelogDraft(groups) {
+  const out = ['## [Unreleased]', ''];
+  let unseen = 0, missing = 0;
+  for (const [key, title] of [['new', 'New and improved'], ['fixes', 'Fixed']]) {
+    const rows = [];
+    for (const c of (groups.find((g) => g.key === key)?.changes || [])) {
+      if (c.notice.length) rows.push(...c.notice.map((t) => `- ${t}`));
+      else { missing++; rows.push(`- ${c.text} (no user line yet)`); }
+    }
+    if (rows.length) out.push(`### ${title}`, ...rows, '');
+  }
+  for (const c of (groups.find((g) => g.key === 'behind')?.changes || [])) { unseen++; if (!c.notice.length) missing++; }
+  if (unseen) out.push(`_${unseen} more change${unseen === 1 ? '' : 's'} behind the scenes (tests, docs, website, safety checks): nothing to see in the app._`, '');
+  return { text: out.join('\n').trim() + '\n', missing };
+}
+
+export function releaseFacts(dir, cards = [], { lines = [], fetch = true, cache = path.join(os.homedir(), '.cache', 'youcoded-work-board'), now = Date.now() } = {}) {
   if (!dir || !fs.existsSync(path.join(dir, '.git'))) {
     return { ok: false, reason: "The app's folder (youcoded/) is not on this computer, so the changes since the last release cannot be read." };
   }
@@ -137,12 +166,14 @@ export function releaseFacts(dir, cards = [], { fetch = true, cache = path.join(
   const raw = git(repo, ['log', '--first-parent', `--format=%H${SEP}%cs${SEP}%s${SEP}%b${END}`, `${tag}..${ref}`]);
   const changes = raw.split(END).map((r) => r.replace(/^\n/, '')).filter(Boolean).map((r) => {
     const [sha, d, subject, body] = r.split(SEP);
-    return describeChange({ sha, date: d, subject, body: body || '' }, cards);
+    return describeChange({ sha, date: d, subject, body: body || '' }, cards, lines);
   });
   let files = 0;
   try { files = git(repo, ['diff', '--name-only', `${tag}..${ref}`]).split('\n').filter(Boolean).length; } catch { /* count is optional */ }
   let written = [];
   try { written = unreleasedBullets(git(repo, ['show', `${ref}:CHANGELOG.md`])); } catch { /* no changelog */ }
   const groups = GROUPS.map(([key, title, hint]) => ({ key, title, hint, changes: changes.filter((c) => c.group === key) })).filter((g) => g.changes.length);
-  return { ok: true, version: tag, date, count: changes.length, files, written, groups, fresh, asOf: asOf ? new Date(asOf).toISOString() : '' };
+  const draft = changelogDraft(groups);
+  const unread = changes.filter((c) => c.notice.length && !c.reviewed).length;
+  return { ok: true, version: tag, date, count: changes.length, files, written, groups, draft: draft.text, missing: draft.missing, unread, fresh, asOf: asOf ? new Date(asOf).toISOString() : '' };
 }

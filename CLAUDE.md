@@ -157,7 +157,7 @@ Prefer **a pinning test > an ast-grep rule > a WHY comment > a path-scoped rule 
 | Shipped/superseded records | `docs/archive/`, with corresponding status |
 | Personal preferences | Available personal guidance/memory mechanism, last resort; never product planning |
 
-When work merges, archive its lifecycle docs and close its card with `node scripts/cards.mjs close <id> --ref "<commit or PR>"` (stage → merged, one line in `docs/shipped.md`). Close retrospectives when their findings are resolved or filed. Exclude archives from searches for current guidance.
+When work merges, archive its lifecycle docs and close its card with `node scripts/cards.mjs close <id> --ref "<commit or PR>"` (stage → merged, one line in `docs/shipped.md`). **When an app change merges, write what users will notice** (Destin, 2026-11-14): `node scripts/cards.mjs notice <PR number> --group new|fixes|behind --line "<one plain sentence>"` (up to three lines; `--nothing` when nobody will see it) — it feeds the Work board's release list and changelog draft. Close retrospectives when their findings are resolved or filed. Exclude archives from searches for current guidance.
 
 ## Subsystem References (read on demand — NOT auto-loaded)
 
