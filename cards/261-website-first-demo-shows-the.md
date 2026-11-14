@@ -11,8 +11,8 @@ why: Destin: 'i see the theme a demo for just a split split second as i scroll d
 work: session/landing-theme-flicker
 ---
 Progress
-Done: Flicker: the 'yours' clip ends in another theme on purpose and its still was its last frame; the four stills are now the frame before the swap (recorder gained posterBefore). Hitch, traced at 4x slowdown: removed a body-wide '*' rule, moved click-blocking off the hidden sections to a click guard, and the intro's words now colour only the top bar and headline. Desktop last-word stall 66->30ms, reveal 77->44ms; phone intro stalls over 30ms 5->0. Colours of every visible element at each word unchanged at 1440/900/390.
-Next: Destin to check the preview and say merge. Left: ~8ms real of first-time drawing at the reveal.
+Done: Flicker and intro hitch fixed (see earlier note). Demo page redesigned to Destin's pick: full-width themed strip with back arrow + 'youcoded' wordmark and a Demo tag, no download button or icon; wallpaper shows while the app loads; test keeps its colours equal to the landing page's.
+Next: Destin to check the preview and say merge. The landing-page rule file does not yet describe demo.html.
 Blocked: nothing
 
 Chats
