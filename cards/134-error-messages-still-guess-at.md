@@ -13,8 +13,8 @@ area: Settings
 side: both
 ---
 Progress
-Done: Overnight 2026-11-12, branch session/look-wording-batch (not landed): 10 failed-load-shown-as-empty places now show Couldn't load + Try again: new-session model lists, Local models, sync log, Blocked users, Web search keys, Library update check, vote counts, project conversations and context files, friends and friend requests.
-Next: Game best-score and leaderboard rows, marketplace card count chips, project header still says 0 conversations beside the new error, phone error paths, about 73 silent button catches.
+Done: Round-3 picks built on session/round3-look: save-failure notice inside popups (8 controls), Sync scroll-to-notice, hide New best when online best failed, marketplace refresh notice; late phone answer left; website practice pages blocked (round3-chat). Q-10: remaining ~38 silent places next round as a list with sample pictures
+Next: his pick: marketplace notice thin strip vs Details box; then land; next round the ~38
 Blocked: nothing recorded.
 
 Chats

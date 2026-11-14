@@ -1,7 +1,7 @@
 ---
 id: 226
 title: Local engine fixes and improvements
-stage: polish
+stage: merged
 tags: local-models, settings/local-models, native-harness, performance, desktop, bug
 related: 176
 vision: chat.converse.local, yours.model.localsettings

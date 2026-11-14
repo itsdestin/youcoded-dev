@@ -10,7 +10,7 @@ why: Found by the independent review of #226 (2026-11-12) and left unfixed: seve
 ---
 Progress
 Done: nothing yet.
-Next: plan it.
+Next: FIRST, when the desktop PC is reachable again (ssh destin@100.79.40.94 stopped answering during a #226 test on 2026-11-12): remove the test folder ~/yc-test-226 and any test llama-server on port 9990 there. Never touch the real app, ~/.youcoded or port 9920 on it.
 Blocked: nothing.
 
 Chats

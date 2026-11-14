@@ -12,8 +12,8 @@ side: screens
 platform: Desktop only
 ---
 Progress
-Done: Destin, overnight deck 2026-11-13 C-9: Known issues should keep Help open behind (not close it).
-Next: Build it.
+Done: Round-3 Q-1: Roadmap and Community on Reddit also leave Help open (built on session/round3-chat)
+Next: lands with round3-chat
 Blocked: nothing recorded.
 
 Chats

@@ -15,8 +15,8 @@ work: session/ui-consistency-audit
 vision: yours.look.finetune
 ---
 Progress
-Done: Destin, overnight deck 2026-11-13 C-8: provider brand colours on light themes = adjust each brand colour to the theme it sits on. Hover hints land via app PR #748.
-Next: Build the per-theme brand colour adjustment and show before/after on the five failing themes.
+Done: Brand colours now adjust per community theme at runtime (round3-look branch): the 27 unreadable name/colour pairs on five light themes are 0; Light, Creme, Dark, Midnight untouched. Before/after pictures made.
+Next: Destin to look at the pictures; then it can land. Theme list rebuild (C-10) still waits for a release.
 Blocked: nothing recorded.
 
 Chats

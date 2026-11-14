@@ -1,0 +1,337 @@
+{
+  "title": "Local models branch — what it is, and how to make it better",
+  "key": "local-models-review-questions",
+  "out": "local-models-review.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Local models",
+      "path": "Any chat that uses a model running on your own computer",
+      "headline": "This branch exists to make local models feel fast, and to fix five bugs from your desktop.",
+      "changed": "A model on your own computer first reads the whole chat, then writes its reply. Reading is the slow part: every chat starts with a long set of instructions from the app, and the first reply waited one to three minutes. The branch has two aims: make any model as fast as the hardware allows, and fix the five ways a small model ran out of room and failed confusingly on your desktop.",
+      "notice": "If this is not the purpose you had in mind, say so here, because every question after it assumes it.",
+      "yes": "That's the purpose",
+      "no": "Not quite"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Local models",
+      "path": "Any chat that uses a model running on your own computer",
+      "headline": "Today the branch does seven things, checked on one laptop with mostly one model.",
+      "changed": "1. Reads a chat's opening instructions while you type, so the first reply starts in about a second. 2. Remembers where each chat was, so going back to it skips the long re-read. 3. Writes replies nearly twice as fast on the one model measured. 4. Cuts an oversized file or result so it cannot fill the model's memory. 5. Refuses a garbage summary and asks again. 6. Applies settings changes at once instead of ten minutes later. 7. Shows one clear chat-is-too-long message with a Summarise button.",
+      "notice": "All automated checks pass. Nothing is merged. It has not been tried on your desktop's NVIDIA card, on Windows or on a Mac.",
+      "yes": "Understood",
+      "no": "I have questions"
+    },
+    {
+      "id": "P-2",
+      "page": "Choices we made that I would question",
+      "intro": "These are already built. Each one works in the best case and may hurt in an ordinary one."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Local chat",
+      "path": "Opening a new chat on a local model",
+      "headline": "When should the app read ahead for a chat you have just opened?",
+      "today": "The moment you open a local chat, the app reads the opening instructions in the background. On a laptop that works the chip hard for one to three minutes, every time, with no way to turn it off.",
+      "problem": "If you open a chat and never send anything, you still get the fan noise and the battery drain, and nothing on screen tells you why.",
+      "proposal": "Pick when reading ahead should happen.",
+      "options": [
+        {
+          "id": "on-typing",
+          "label": "When you start typing",
+          "pros": ["No wasted work for a chat you only glanced at.", "Still finished, or nearly, by the time most messages are sent."],
+          "cons": ["A very short first message may wait a little, because the reading started later."],
+          "recommended": true
+        },
+        {
+          "id": "always-with-switch",
+          "label": "Always, with an off switch",
+          "pros": ["The fastest possible first reply.", "People on battery can turn it off."],
+          "cons": ["Most people never find a switch, so the fan noise stays a mystery for them.", "One more setting on the screen."]
+        },
+        {
+          "id": "always",
+          "label": "Always, as built",
+          "pros": ["Nothing more to build."],
+          "cons": ["Fan and battery cost on every opened chat, with no way out."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Local models settings",
+      "path": "Settings, Local models, the memory size for a model",
+      "headline": "Should this branch also change how much memory a model is given by default?",
+      "today": "Every local model starts with the same fixed amount of working memory, whatever the computer. The app's own opening instructions fill about half of it before you type a word.",
+      "problem": "That small leftover space is the root cause of most of the five bugs: one big file fills it, summaries happen constantly, and chats end with too-long errors. The branch treats those symptoms and leaves the cause alone.",
+      "proposal": "Decide whether choosing the memory size from each person's hardware belongs here or in its own project.",
+      "options": [
+        {
+          "id": "own-project",
+          "label": "Its own project, next",
+          "pros": ["This branch ships sooner with its fixes.", "Sizing gets proper testing on several machines, which it needs."],
+          "cons": ["Until then, small models keep summarising often and feel cramped."],
+          "recommended": true
+        },
+        {
+          "id": "in-this-branch",
+          "label": "Do it in this branch",
+          "pros": ["Fixes the cause, not the symptoms, in one release."],
+          "cons": ["A wrong guess runs a computer out of memory and can crash it.", "Delays everything else on the branch by days."]
+        },
+        {
+          "id": "leave",
+          "label": "Leave the default alone",
+          "pros": ["No risk of a crash from a bad guess."],
+          "cons": ["People with strong hardware keep getting the cramped experience unless they find the setting."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Local chat",
+      "path": "Having two or three local chats open at once",
+      "headline": "Should we test whether remembering each chat's place works at the default memory size before shipping?",
+      "today": "Each chat keeps its place so going back to it is quick. This was measured with double the default memory. All remembered chats share that one pool of memory.",
+      "problem": "At the default size I believe only one or two chats fit. Opening a second chat may push the first one out, so your next message there waits minutes, which is slower than before this branch. This is my reasoning from our own numbers, not a test.",
+      "proposal": "Yes: I run that test on a throwaway copy of the app and bring you the result with a fix if it is real. No: ship on the measurement we have."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Local models",
+      "path": "Replies from models that include their own built-in guesser",
+      "headline": "The faster-writing trick was measured on one machine. Who should get it?",
+      "today": "Some model files include a built-in guesser that lets replies come out nearly twice as fast. The branch turns it on for every model that has one, on every computer.",
+      "problem": "It has never run on an NVIDIA card, a Mac or Windows. It needs extra memory the app does not count, so a model that only just fits may stop loading, and nothing tries again without it.",
+      "proposal": "Pick how careful to be.",
+      "options": [
+        {
+          "id": "on-with-net",
+          "label": "On, with a safety net",
+          "summary": "If a model fails to load with it, the app tries once more without it and remembers that for next time.",
+          "pros": ["Everyone who can benefit does.", "Nobody is left with a model that will not load."],
+          "cons": ["A first load that fails takes longer once.", "On untested hardware it could be slower rather than faster, and we would not know."],
+          "recommended": true
+        },
+        {
+          "id": "measured-only",
+          "label": "Only where measured",
+          "pros": ["No surprises on hardware we have not tried."],
+          "cons": ["Your own desktop, and most users, get no speed-up until someone measures each kind of chip."]
+        },
+        {
+          "id": "as-built",
+          "label": "On for all, as built",
+          "pros": ["Nothing more to build."],
+          "cons": ["A model can fail to load with no explanation and no way back short of a hidden switch."]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Local chat",
+      "path": "A reply where the model ran a command or read a long file",
+      "headline": "When a result is too long, which part should be kept?",
+      "today": "A result that is too big for the room left is cut, keeping the beginning, with a note telling the model how to ask for the rest.",
+      "problem": "For a file the beginning is fine. For a command the error is usually on the last lines, so the model can lose exactly the part it needed and then guess.",
+      "proposal": "Pick what is kept.",
+      "options": [
+        {
+          "id": "start-and-end",
+          "label": "Beginning and end for commands",
+          "pros": ["The model sees how the command started and how it ended, which is where errors are."],
+          "cons": ["The middle is dropped, which now and then holds something that mattered."],
+          "recommended": true
+        },
+        {
+          "id": "start-only",
+          "label": "Beginning only, as built",
+          "pros": ["Simple and the same for every kind of result."],
+          "cons": ["Errors at the end of command output are lost."]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Choices we never made",
+      "intro": "Nothing was decided for these, so the app does whatever falls out. Each one is an ordinary situation."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Local chat",
+      "path": "Coming back to a chat after a break of more than fifteen minutes",
+      "headline": "What should happen when you come back to a chat after a break?",
+      "today": "After fifteen idle minutes the model is unloaded to free memory. Everything it had read ahead and remembered is lost, and nothing reads it again.",
+      "problem": "Your next message waits the full one to three minutes, as if the branch did not exist. Coming back after a break is how most people use a chat, so the headline speed-up vanishes in normal use.",
+      "proposal": "Pick what the app does.",
+      "options": [
+        {
+          "id": "reread-on-return",
+          "label": "Read again when you return",
+          "summary": "When you click back into the chat or start typing, the model loads and reads in the background.",
+          "pros": ["The reply is quick again by the time you send.", "Memory is still freed while you are away."],
+          "cons": ["The chip works for a minute or more each time you come back, wanted or not."],
+          "recommended": true
+        },
+        {
+          "id": "stay-loaded-longer",
+          "label": "Keep the model loaded longer",
+          "pros": ["Nothing is lost for an hour-long break, so no re-reading at all."],
+          "cons": ["Gigabytes of memory stay taken while you do other things, which can slow games or other apps."]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": ["Nothing more to build."],
+          "cons": ["The long wait returns after every break."]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Local chat",
+      "path": "A full chat on a small model, after pressing Summarise",
+      "headline": "What should a person see when a small model cannot summarise a full chat?",
+      "today": "When a chat is full the app asks the model for a summary. A small model sometimes answers with nonsense twice; the app then keeps the chat as it was and shows the too-long message with a Summarise button.",
+      "problem": "Pressing Summarise fails the same way again. The person is stuck in a loop and nothing tells them the only way forward is a new chat.",
+      "proposal": "Yes: after a failed summary the message says plainly that this model could not summarise the chat, and offers Start a new chat beside Try again. No: leave the loop as it is."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Local chat",
+      "path": "A chat that hands part of its work to helper agents",
+      "headline": "Should helper agents stop taking the remembered places of your other chats?",
+      "today": "The app can remember three chats' places. A helper agent started by one chat counts as a chat and takes one of the three.",
+      "problem": "One chat that starts two helpers pushes your other two chats out, so going back to either of them waits minutes for no reason you can see.",
+      "proposal": "Yes: helpers share one spare place and your own chats keep theirs. Helpers then re-read more, so their work is a little slower. No: leave as built."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Local models",
+      "path": "Leaving the app idle for twenty-five minutes",
+      "headline": "A fixed bug means the local engine now switches itself off when idle. How long should it wait?",
+      "today": "The engine was always meant to switch off after twenty-five idle minutes. A bug stopped that in the current release, so it stayed on. The branch fixes the bug, so it now switches off.",
+      "problem": "It is correct, but people will meet a new starting-up wait after a long break that they never saw before, and cannot trace to anything.",
+      "proposal": "Pick the wait.",
+      "options": [
+        {
+          "id": "keep-25",
+          "label": "Twenty-five minutes, as designed",
+          "pros": ["Frees the computer fully when you have walked away."],
+          "cons": ["A new wait after long breaks, on top of the model reloading."],
+          "recommended": true
+        },
+        {
+          "id": "settable",
+          "label": "Let people set it",
+          "pros": ["Someone who wants it always ready can have that."],
+          "cons": ["Another setting, and it was already on the leftover list as separate work."]
+        },
+        {
+          "id": "never",
+          "label": "Never switch off",
+          "pros": ["Behaves as the current release does, so nothing new to notice."],
+          "cons": ["The engine holds memory for as long as the app is open."]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Loose ends, and how to proceed",
+      "intro": "Three smaller points, then the overall call."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any chat that is nearly full, including Claude and GPT chats",
+      "headline": "Should cutting oversized results apply to cloud models too, or only to local ones?",
+      "today": "The cut applies to every model. On a cloud model it only bites when the chat is already close to the point where it would be summarised.",
+      "problem": "Our own notes say cloud chats are untouched, which is not true. A person on Claude could see a cut file with no idea a local-model fix caused it.",
+      "proposal": "Pick where it applies.",
+      "options": [
+        {
+          "id": "everywhere",
+          "label": "Everywhere, and say so",
+          "pros": ["A nearly full cloud chat is protected from one huge file the same way.", "One behaviour to explain."],
+          "cons": ["Now and then a cloud model reads a file in two steps instead of one."],
+          "recommended": true
+        },
+        {
+          "id": "local-only",
+          "label": "Local models only",
+          "pros": ["Cloud chats behave exactly as they do today."],
+          "cons": ["A cloud chat near its limit can still be tipped over by one big file."]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Behind the scenes",
+      "path": "Backing the work up to GitHub",
+      "headline": "May I mark one false alarm from the safety scanner so the work can be backed up?",
+      "today": "Before any work is backed up, a scanner checks it for passwords. It flags one line in a test. That line is a technical label inside a model file, not a password.",
+      "problem": "Until it is marked as safe, the latest work exists only on this laptop. A lost or broken laptop loses it.",
+      "proposal": "Yes: I mark that one line as a known false alarm, scan again, and back the work up. Nothing is merged or released. No: the work stays on this laptop only."
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Local models",
+      "path": "The branch as a whole",
+      "headline": "How should we finish this branch?",
+      "today": "The branch makes the best case fast: a fresh chat, sent within fifteen minutes, on the one laptop tested. It does not yet protect the ordinary cases above.",
+      "problem": "Shipped as it is, some people end up slower or stuck in ways they cannot trace back to anything, which costs trust in local models.",
+      "proposal": "Pick the route. Your answers on the earlier pages decide what goes into a safety round.",
+      "options": [
+        {
+          "id": "safety-round",
+          "label": "One safety round, then ship",
+          "summary": "Build what you approved on the earlier pages, test it, then bring it to you.",
+          "pros": ["Covers the cases where people get slower or stuck.", "Small: each item is a contained change."],
+          "cons": ["Delays shipping.", "The NVIDIA check still waits for your desktop to be online."],
+          "recommended": true
+        },
+        {
+          "id": "ship-now",
+          "label": "Ship as it is",
+          "pros": ["The five bugs are fixed for everyone soonest."],
+          "cons": ["The risks on the earlier pages go out with it."]
+        },
+        {
+          "id": "go-bigger",
+          "label": "Safety round plus memory sizing",
+          "pros": ["Fixes the root cause in the same release."],
+          "cons": ["The longest route, with the one change that can crash a computer if it guesses wrong."]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Local models",
+      "path": "Anything about running models on your own computer",
+      "headline": "Is there anything about local models that bothers you and that these pages did not cover?",
+      "today": "These pages cover what I found by reading the branch. They do not cover anything you have felt while using local models that never got written down.",
+      "problem": "A review built only from the code misses what the experience is actually like for you.",
+      "proposal": "Type anything, however rough. Leave it blank if nothing comes to mind.",
+      "answer": "words",
+      "prompt": "For example: it feels slow when…, I never know whether…"
+    }
+  ]
+}

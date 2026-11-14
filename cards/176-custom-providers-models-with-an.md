@@ -9,8 +9,8 @@ created: 2026-10-21
 why: Known issue shipped in 1.3.2 (release review 2026-10-21). An unknown cloud model window is assumed 250k (harness/compaction.ts UNKNOWN_CLOUD_WINDOW); custom endpoints' model lists live in memory only, and many /models answers omit context size. A 64k/128k model then gets over-limit requests, and recovery only recognises code context_length_exceeded (providers/context-overflow.ts), so other wording shows the red card with no Summarize and continue.
 ---
 Progress
-Done: Destin, overnight deck 2026-11-13 C-7: "claude and deepseek and such definitely support higher contexts? i think 250k is good to keep, but we should ensure we handle hte potential failure cases." So: keep the 250k assumption; make the failure cases recoverable.
-Next: Recognise other providers too-long refusals so Summarise is offered; consider learning a size from the first refusal; show him anything visible.
+Done: Round-3: worded too-long refusals = land; Q-2: learning a model size from a refusal waits for the size-box design
+Next: size box design round
 Blocked: nothing; the second gap needs a real custom endpoint's error text to confirm.
 
 Chats

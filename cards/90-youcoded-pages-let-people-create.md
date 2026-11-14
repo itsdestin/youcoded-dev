@@ -16,7 +16,7 @@ vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
 Done: Steps 1, 1b, 2 and 3 are built on the unmerged branch session/90-pages-finish and Destin has tried them. Not on master, and not in any release. Step 4 (automations): screens drawn in the workbench against a fake backend (no working code yet). The build plan is settled.
-Next: Destin submits the step-4 decision deck pages-finish-step4-plan-g (started 2026-11-08, not submitted); then the remaining step-4 screens, one design review, then build. Steps 5-6 after that.
+Next: Later: a one-time override of an automation's daily run limit, or changing the limit from the greyed Run now button (Destin, step4g deck 2026-11-14)
 Blocked: step 4 build waits on that deck.
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
