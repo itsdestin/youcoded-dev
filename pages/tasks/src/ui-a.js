@@ -293,8 +293,12 @@ function taskRow(t, ctx) {
   var cls = 't-task' + (t.done ? ' is-done' : '') + (ctx.sub ? ' is-sub' : '') + (ui.detailId === t.id ? ' is-open' : '');
   var h = '<div class="' + cls + '" data-act="open" data-id="' + t.id + '" role="button" tabindex="0"' + (ui.selecting ? '' : ' draggable="true"') + '>';
   if (ui.selecting) h += '<input type="checkbox" class="t-pick" data-act="pick" data-id="' + t.id + '"' + (ui.picked[t.id] ? ' checked' : '') + ' aria-label="Select ' + esc(t.title) + '">';
-  h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__title">' + linked(t.title) + '</div>';
+  // WHY the name and the note share one inner box: on a wide screen the row is a single line —
+  // name (and the start of its note) at the left, pills and project at the right. The pills
+  // only drop to a second line when there is no room (a phone, a board card, a long name).
+  h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__main"><div class="t-task__title">' + linked(t.title) + '</div>';
   if (t.notes && !ctx.card) h += '<div class="t-task__notes">' + linked(t.notes.split('\n')[0]) + '</div>';
+  h += '</div>';
   var meta = metaHtml(t, ctx);
   if (meta) h += '<div class="t-task__meta">' + meta + '</div>';
   h += '</div>';

@@ -91,18 +91,25 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
 .t-task.drop-before::before, .t-task.drop-after::after { content: ''; position: absolute; left: 4px; right: 4px; height: 2px; border-radius: 2px; background: var(--accent); }
 .t-task.drop-before::before { top: -4px; }
 .t-task.drop-after::after { bottom: -4px; }
-.t-task__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+/* One line when there is room: name + note at the left, pills + project at the right. The right
+   half wraps under the name only when the row is too narrow for both. */
+.t-task__body { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; column-gap: 12px; row-gap: 4px; }
+.t-task__main { flex: 1 1 14em; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; }
+.t-col .t-task__main { flex-basis: 100%; }
 .t-task__title { font-size: 14px; line-height: 20px; color: var(--fg); overflow-wrap: anywhere; }
 .t-task.is-done .t-task__title { color: var(--fg-muted); text-decoration: line-through; }
-.t-task__notes { margin-top: -2px; font-size: 12px; color: var(--fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.t-task__meta { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.t-task__meta .yc-chips { flex: 1 1 auto; }
+.t-task__notes { flex: 1 1 8em; min-width: 0; font-size: 12px; color: var(--fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.t-task__meta { flex: 0 1 auto; max-width: 100%; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.t-task__meta .yc-chips { flex: 0 1 auto; }
 .yc-status .t-icon { width: 11px; height: 11px; }
 .yc-status .t-tagicon { width: 10px; height: 10px; }
-.t-where { flex: 0 1 auto; max-width: 45%; font-size: 11px; color: var(--fg-muted); }
+.t-where { flex: 0 1 auto; max-width: 16em; font-size: 11px; color: var(--fg-muted); }
 .t-meta { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 12px; color: var(--fg-2); }
-.t-task__actions { display: flex; gap: 2px; margin: -3px -4px -3px 0; opacity: 0; }
-.t-task:hover .t-task__actions, .t-task:focus-within .t-task__actions { opacity: 1; }
+/* WHY these float over the row's right end instead of holding a place in it: now that the row is
+   one line, a reserved gap for two hidden buttons left the pills and project name stranded short
+   of the edge. Hidden buttons take no clicks, so the text under them is never a trap. */
+.t-task__actions { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); display: flex; gap: 2px; padding-left: 6px; border-radius: var(--radius-md, 8px); background: var(--panel); opacity: 0; pointer-events: none; }
+.t-task:hover .t-task__actions, .t-task:focus-within .t-task__actions { opacity: 1; pointer-events: auto; }
 .t-iconbtn { appearance: none; width: 26px; height: 26px; flex: none; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: var(--radius-md, 8px); background: transparent; color: var(--fg-muted); cursor: pointer; padding: 0; }
 .t-iconbtn:hover { background: var(--inset); color: var(--fg); border-color: var(--edge-dim); }
 .t-iconbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
@@ -111,14 +118,17 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
 .t-twisty .t-icon { transition: transform 150ms ease; }
 .t-twisty[aria-expanded="true"] .t-icon { transform: rotate(90deg); }
 
-/* The tick box: a small square in the theme's own corner, the accent when done. Priority is NOT
-   shown here (it is a pill under the name): the box means one thing only. */
-.t-check { appearance: none; position: relative; width: 18px; height: 18px; flex: none; margin: 1px 0 0; padding: 0; border-radius: var(--radius-sm, 4px); border: 1.5px solid var(--yc-edge-strong); background: var(--inset); cursor: pointer; transition: background-color 150ms ease, border-color 150ms ease; }
-.t-check::after { content: ''; position: absolute; left: 5px; top: 1.5px; width: 4px; height: 8px; border: solid var(--fg-muted); border-width: 0 2px 2px 0; transform: rotate(45deg); opacity: 0; }
+/* The tick box: an empty outlined box with a soft corner (no fill, so it does not read as an
+   old-style form control); the tick itself is a round-ended stroke that previews on hover and
+   sits on the accent when done. Priority is NOT shown here: the box means one thing only. */
+.t-check { appearance: none; position: relative; width: 18px; height: 18px; flex: none; margin: 1px 0 0; padding: 0; border-radius: 6px; border: 1.5px solid color-mix(in oklab, var(--fg-muted) 55%, transparent); background: transparent; color: var(--accent); cursor: pointer; transition: background-color 150ms ease, border-color 150ms ease; }
+.t-check::after { content: ''; position: absolute; inset: -1.5px; background: currentColor; opacity: 0; transition: opacity 150ms ease;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.4l2.7 2.7L13 6.6' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.4l2.7 2.7L13 6.6' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat; }
 .t-check:hover { border-color: var(--accent); }
-.t-check:hover::after { opacity: .6; }
-.t-check[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); }
-.t-check[aria-pressed="true"]::after { opacity: 1; border-color: var(--on-accent); }
+.t-check:hover::after { opacity: .55; }
+.t-check[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.t-check[aria-pressed="true"]::after { opacity: 1; }
 .t-check.is-static { cursor: default; }
 @media (pointer: coarse) { .t-check::before { content: ''; position: absolute; inset: -12px; } }
 .t-pick { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
@@ -1123,8 +1133,12 @@ function taskRow(t, ctx) {
   var cls = 't-task' + (t.done ? ' is-done' : '') + (ctx.sub ? ' is-sub' : '') + (ui.detailId === t.id ? ' is-open' : '');
   var h = '<div class="' + cls + '" data-act="open" data-id="' + t.id + '" role="button" tabindex="0"' + (ui.selecting ? '' : ' draggable="true"') + '>';
   if (ui.selecting) h += '<input type="checkbox" class="t-pick" data-act="pick" data-id="' + t.id + '"' + (ui.picked[t.id] ? ' checked' : '') + ' aria-label="Select ' + esc(t.title) + '">';
-  h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__title">' + linked(t.title) + '</div>';
+  // WHY the name and the note share one inner box: on a wide screen the row is a single line —
+  // name (and the start of its note) at the left, pills and project at the right. The pills
+  // only drop to a second line when there is no room (a phone, a board card, a long name).
+  h += checkHtml(t) + '<div class="t-task__body"><div class="t-task__main"><div class="t-task__title">' + linked(t.title) + '</div>';
   if (t.notes && !ctx.card) h += '<div class="t-task__notes">' + linked(t.notes.split('\n')[0]) + '</div>';
+  h += '</div>';
   var meta = metaHtml(t, ctx);
   if (meta) h += '<div class="t-task__meta">' + meta + '</div>';
   h += '</div>';
