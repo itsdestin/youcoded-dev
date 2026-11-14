@@ -13,8 +13,8 @@ area: Settings
 side: both
 ---
 Progress
-Done: Round-3 picks built on session/round3-look: save-failure notice inside popups (8 controls), Sync scroll-to-notice, hide New best when online best failed, marketplace refresh notice; late phone answer left; website practice pages blocked (round3-chat). Q-10: remaining ~38 silent places next round as a list with sample pictures
-Next: his pick: marketplace notice thin strip vs Details box; then land; next round the ~38
+Done: LANDED youcoded PR #755 (714c033ba): failure notices for games, marketplace (thin strips), project header, Backup and Sync (+scroll), 8 small settings saves; New best hidden when unproven; crash notice; instant remote failure reason. PR #756: website demo no longer bundles practice pages
+Next: next round: remaining ~38 silent places as a list with sample pictures (Q-10)
 Blocked: nothing recorded.
 
 Chats
