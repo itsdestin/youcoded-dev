@@ -1,0 +1,101 @@
+{
+ "deck": "review-deck-rethink",
+ "started": "2026-11-12T11:29:08.899Z",
+ "submitted": "2026-11-14T11:07:44Z",
+ "cur": 2,
+ "answers": {
+  "G-1": {
+   "v": "other",
+   "seconds": 309,
+   "theme": "ivory-schematic",
+   "t": 1794653786452,
+   "ok": {
+    "one": true,
+    "reopen": true,
+    "past": true,
+    "lands": true,
+    "nohistory": true
+   },
+   "changes": {
+    "sink": "i think the answered cards seem to lose a bit too much information/styling still. i want them to look similar to how the original question would've been proposed/answered. also what about my history over rounds?",
+    "stages": "uh maybe? it seems like we lost some of my feedback from earlier rounds with this version of the build? and some of the granularity/detail i wanted? ",
+    "record": "this feels really strange. too similar to the \"history\" button from earlier. i think i should be able to just click back into understanding/earlier stages, with clearer indications that things are resolved already or earlier stages",
+    "refuse": "what?",
+    "versions": "confused? both about what this is, what happened in round 10,  and how this realtes to the new top line summary and more button thing you added."
+   }
+  },
+  "T-1": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "ivory-schematic",
+   "t": 1794483000156
+  },
+  "B-1": {
+   "v": "skip",
+   "seconds": 2,
+   "theme": "ivory-schematic",
+   "t": 1794649939466
+  },
+  "B-2": {
+   "v": "skip",
+   "seconds": 2,
+   "theme": "ivory-schematic",
+   "t": 1794649939466
+  },
+  "B-3": {
+   "v": "skip",
+   "seconds": 2,
+   "theme": "ivory-schematic",
+   "t": 1794649939466
+  },
+  "R-1": {
+   "v": "other",
+   "seconds": 72,
+   "theme": "ivory-schematic",
+   "t": 1794653945714,
+   "ok": {
+    "tick": true,
+    "excl": true,
+    "leave": true,
+    "done": true,
+    "dot": true
+   },
+   "changes": {
+    "after": "what?"
+   }
+  },
+  "L-1": {
+   "v": "other",
+   "seconds": 76,
+   "theme": "ivory-schematic",
+   "t": 1794654463744,
+   "ok": {
+    "bars": true,
+    "face": true,
+    "label": true,
+    "title": true,
+    "guide": true,
+    "own": true
+   },
+   "changes": {
+    "intro": "these opening lines are still typically just weird. they dont really well explain what the page is or what i'm expected to do with it, how it differs from previous pages, etc. they also still don't really draw my attention as like titles if thats what they are? and kinda conflict with the other pages titles in the top left corner?",
+    "levels": "my first impression is these are often significantly lacking in context. these descriptions frequently make references to earlier rounds, external content, etc, that i wouldn't know off the top of my head, especially after walking away for a day or two. we need to figure out how to better make each row self-contained/self-explanatory so i don't need to pull in external references when working through a deck. maybe each description/subheader should also have a \"more\" button to offer an expanded description of some sort? idk"
+   }
+  },
+  "L-2": {
+   "v": "other",
+   "seconds": 76,
+   "theme": "ivory-schematic",
+   "t": 1794654463744,
+   "note": "it's definitely much improved, but still some oddities like the things i've mentioned in responses thus far. i think the numbering of questions is odd (this question right now is calling itself 1 of 1, but htere's no way that's accurate by any possible count). the header still re-sizes/re-arranges itself when clicking between pages, i think we should drop \"page 3 of 3\" from the top (the bars at the top are self-explanatory). restyle \"done submit feedback\" as just \"submit feedback\" and fill it in. "
+  }
+ },
+ "built": {
+  "at": "2026-11-12T11:26:42Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "04249f881"
+ },
+ "pageNotes": {
+  "P-2": "i think the \"answered\" section should become \"previously answered\" with top-level styling similar to the \"yours to change\" card/section above it"
+ }
+}
