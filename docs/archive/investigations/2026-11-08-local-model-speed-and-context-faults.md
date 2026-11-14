@@ -1,6 +1,6 @@
 ---
 date: 2026-11-08
-status: active
+status: shipped
 type: investigation
 topic: card #226 — making any one local model run as fast as it can on the user's own hardware, the five faults found on the desktop with a small model, and everything still open for the local engine
 tags: [local-models, engine, performance, native-runtime, compaction]
@@ -18,11 +18,11 @@ code comments — those two files are the reference.
 
 ## Where it stands (2026-11-12) — read this section first
 
-Destin answered two review decks (`docs/active/design/2026-11-09-local-models-review/`,
+Destin answered two review decks (`docs/archive/design/2026-11-09-local-models-review/`,
 answers files beside them). Everything he decided is built on the branch and pushed. NOT
 merged. His order (deck 1 Q-12): finish, test, **independent final code review, then ship**.
 
-**2026-11-13:** wrap-up done; waits only for Destin's word to merge. Open: the desktop PC is
+**2026-11-13:** wrap-up done; merged 2026-11-13 on his word. Open: the desktop PC is
 unreachable over SSH and still holds `~/yc-test-226` (remove when it is back).
 
 **Decided and built on 2026-11-12** (app commits `dc37dd75f` … `12b89a417`):

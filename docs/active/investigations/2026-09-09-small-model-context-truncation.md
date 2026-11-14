@@ -4,7 +4,7 @@ status: active
 
 # How we cut things to fit a small model, and how the field does it
 
-> **Status 2026-11-08:** the same gap now has a real failure behind it — on the desktop a single `Read` of a 52,733-character file filled a 9B's 32k window and ended the reply (tool results are not sized to the room left; Hermes, below, scales its tool-output cap down for small models). Fault 1 in `docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md` — **fixed 2026-11-09 on `session/local-model-hardening` (not merged)**: a tool result is now cut to the room left (`harness/tool-result-room.ts`). The skill-cutting decisions below are untouched by it.
+> **Status 2026-11-08:** the same gap now has a real failure behind it — on the desktop a single `Read` of a 52,733-character file filled a 9B's 32k window and ended the reply (tool results are not sized to the room left; Hermes, below, scales its tool-output cap down for small models). Fault 1 in `docs/archive/investigations/2026-11-08-local-model-speed-and-context-faults.md` — **fixed 2026-11-09 on `session/local-model-hardening` (not merged)**: a tool result is now cut to the room left (`harness/tool-result-room.ts`). The skill-cutting decisions below are untouched by it.
 
 Investigated 2026-09-09 while building the "What the assistant was given" panel. Destin asked
 whether a truncated skill gives the model the path to the full file, or whether the model gets
