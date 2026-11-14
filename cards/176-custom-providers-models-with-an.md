@@ -9,8 +9,8 @@ created: 2026-10-21
 why: Known issue shipped in 1.3.2 (release review 2026-10-21). An unknown cloud model window is assumed 250k (harness/compaction.ts UNKNOWN_CLOUD_WINDOW); custom endpoints' model lists live in memory only, and many /models answers omit context size. A 64k/128k model then gets over-limit requests, and recovery only recognises code context_length_exceeded (providers/context-overflow.ts), so other wording shows the red card with no Summarize and continue.
 ---
 Progress
-Done: Built on session/round3-chat: 250k kept. Worded too-long refusals (DeepSeek, Mistral, OpenRouter passthrough) now offer Summarise and continue; each pinned by a test. Only the openai-compatible code was ever captured from a real reply; worded shapes are from documentation and community reports.
-Next: Learn a size from the first refusal (not built); size box on add-model screen later.
+Done: Round-3: worded too-long refusals = land; Q-2: learning a model size from a refusal waits for the size-box design
+Next: size box design round
 Blocked: nothing; the second gap needs a real custom endpoint's error text to confirm.
 
 Chats
