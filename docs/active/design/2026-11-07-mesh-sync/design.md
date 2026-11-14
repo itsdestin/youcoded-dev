@@ -638,7 +638,7 @@ checked against signatures from devices.
    (a `relation` entry). One is a prefix of the other: the longer one stands and its holder
    hosts, with no notice. They differ: listed once as two versions. [D12 Q-15] This is the
    same rule `decide` uses everywhere (5.4), so day one needs no special code.
-6. Both connect to the keeper, if one is in use (O8).
+6. Both connect to the relay, which is on from the first pairing unless switched off [D13 Q-3].
 7. Catch-up: control logs and summaries of every chat first (the list fills within
    seconds); then lines of chats used in the last 30 days, newest first; then their extras.
    A "keep everything" device continues with older chats. No project is downloaded to the
@@ -1478,7 +1478,7 @@ of that phase's exit.
 | T15 | Removal and insider | A removed device beside an unaware same-wifi peer; a device offline through two generations; forged entries after removal; forged calls and acknowledgements. Again in Phase 1 and 6. | Entries beyond the cut-off are void everywhere; the removed device reads nothing sealed after; forgeries rejected. |
 | T16 | A lying relay | Replay old registers, drop frames, tell two devices they both reserved. Again in Phase 2 and 5. | No device shows wrong content; every case ends in catch-up or a "two versions" row. |
 | T17 | Mixed versions | One device on protocol N, one on N+1. Again in Phase 3. | The older reads and watches, or falls back to lines only, and never damages a chat. |
-| T18 | Phone in the background | How long a backgrounded phone keeps its connection, with and without the exemption, screen off. | Numbers written down; 5.2's statement confirmed or corrected; U2 goes to Destin. |
+| T18 | Phone in the background | How long a backgrounded phone keeps its connection, with and without the exemption, screen off. | Numbers written down; 5.2's statement confirmed or corrected; the numbers are reported to Destin. |
 
 ---
 
