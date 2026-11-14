@@ -13,8 +13,8 @@ area: Settings
 side: both
 ---
 Progress
-Done: Landed 2026-11-13 (PR #748): ten places that showed a failed load as empty now say Couldn\x27t load … with Try again (groups B–I).
-Next: Left: game best-score and leaderboard rows, marketplace count chips, project header 0 conversations beside the new error, phone error paths, about 73 silent catches.
+Done: Round 3 (branch session/round3-look): game scores and board, marketplace count notice, project header dashes, remote-handler failure answered at once, crashed or killed chat now says it ended, seven Backup and Sync actions. All 75 silent rows sorted: 17 already fixed, 6 gone, 47 still silent and misleading (7 fixed now), 1 correctly silent, 4 need Destin.
+Next: About 40 silent places remain in the (a) list: session drawer (rename, remove, open, copy), older history, Reload model, tag/note saves, settings toggles, marketplace integrations, git review, project hero rename. Phone Kotlin rows are obsolete (files removed 2026-10-14).
 Blocked: nothing recorded.
 
 Chats
