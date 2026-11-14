@@ -81,6 +81,8 @@ const ROUTES = [
   // files). A standalone surface, so it needs its own route to be mount-checked.
   ['attachment chip mock-ups', '&child=1&view=attachments'],
   ['session status pills', '&child=1&view=session-pills'],
+  // WHY (2026-11-14): app PR #756 added this practice screen without listing it here, which failed the every-view-has-a-route guard on master
+  ['phone can\'t-reach-your-computer strip', '&child=1&view=unreachable-strip'],
   // The three buddy mock-ups (renderer/index.tsx `__view === 'buddy-*'`). WHY (card #18(i)):
   // they were added to the app's view switch without a route here, so three of the eight
   // `view=` surfaces had no boot guard. scripts/workbench-boot-check.test.mjs now fails if a
