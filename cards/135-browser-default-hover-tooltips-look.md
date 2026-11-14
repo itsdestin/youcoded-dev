@@ -15,8 +15,8 @@ work: session/ui-consistency-audit
 vision: yours.look.finetune
 ---
 Progress
-Done: Brand colours now adjust per community theme at runtime (round3-look branch): the 27 unreadable name/colour pairs on five light themes are 0; Light, Creme, Dark, Midnight untouched. Before/after pictures made.
-Next: Destin to look at the pictures; then it can land. Theme list rebuild (C-10) still waits for a release.
+Done: LANDED PR #755: brand colours adjusted app-side for five light community themes
+Next: publish theme list with the release (wecoded-themes branch session/look-wording-batch not published)
 Blocked: nothing recorded.
 
 Chats
