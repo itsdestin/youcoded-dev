@@ -1,0 +1,31 @@
+{
+ "deck": "narrow-screens-6",
+ "started": "2026-11-14T09:54:35.423Z",
+ "submitted": "2026-11-14T09:55:41Z",
+ "cur": 2,
+ "answers": {
+  "M-1": {
+   "v": "other",
+   "t": 1794650092948,
+   "note": "that looks super jank. the alignemnt is all fucked up",
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "M-2": {
+   "v": "yes",
+   "t": 1794650097374,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "M-3": {
+   "note": "",
+   "t": 1794650139116,
+   "v": "yes",
+   "seconds": 42,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+  "title": "Phones and narrow windows — round 7, top bar alignment",
+  "key": "narrow-screens-7",
+  "out": "narrow-screens-7.html",
+  "images": "images/narrow-screens-7",
+  "runs": {
+    "round7": "runs/round7"
+  },
+  "themes": [
+    "light",
+    "dark",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Top bar in a narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "crop": [
+        {"crop": "chat#window-today@390x60+0+0", "label": "Today"},
+        {"crop": "chat#window-decided@390x60+0+0", "label": "Round 7"}
+      ],
+      "runs": ["round7"],
+      "new": true,
+      "headline": "Narrow computer window, realigned: the name sits on the buttons' line, the lights centred under it, a gap before terminal.",
+      "changed": "Your note on round 6: \"that looks super jank. the alignment is all fucked up\". Three things were off: the lights started left of the name's dot, the name sat higher than every button beside it, and its arrow touched the terminal button. All three are fixed.",
+      "notice": "☰, the name, the terminal switch and the window buttons now share one centre line. Projects is still in ☰ here, and the 340-pixel window minimum stays."
+    },
+    {
+      "id": "A-2",
+      "surface": "Top bar on a phone",
+      "path": "The strip across the top of the Android app",
+      "crop": [
+        {"crop": "chat#top-today@390x60+0+0", "label": "Today"},
+        {"crop": "chat#top-lights@390x60+0+0", "label": "Round 7"}
+      ],
+      "runs": ["round7"],
+      "new": true,
+      "headline": "The phone bar gets the same fix: the name now lines up with ☰, Projects and terminal, the lights just under it.",
+      "changed": "Same change as the narrow window, since the phone used the same name-and-lights stack. Before, the lights pushed the name a few pixels above the buttons.",
+      "notice": "Nothing else on the phone bar changed since you approved it in round 5."
+    }
+  ]
+}
