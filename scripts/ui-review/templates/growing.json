@@ -1,7 +1,7 @@
 {
   "_comment": [
     "A DECK THAT GROWS — ONE deck for a whole feature. You edit THIS file and re-build it each round; you never start a new spec for the same feature. His submitted answers are kept beside it as dated files and become the earlier rounds.",
-    "A topic he answered in an earlier round sinks to an 'Answered' list at the foot of its page and is never asked again unless he presses Reopen. Open topics stay on top. The header shows Round N and the four stages (Understanding, Design, Before build, After build) with the number of topics still open in each.",
+    "A topic he answered in an earlier round sinks to an 'Answered' card at the foot of its page and is never asked again unless he presses Reopen. Open topics stay on top. The deck is AT one stage (\"stage\"): the header shows it as a plain progress line (earlier stages done, this one lit, later ones dimmed), and pages of earlier stages become a read-only record behind an 'Earlier stages' link. Only the current stage's pages ask him anything.",
     "Each round: (1) read his answers, (2) for every topic where he asked for a change, add \"reopened\" (one line of its past; the topic is open again, with your revised proposal) or \"resolved\" (what you did about it; it stays answered), (3) add new topics, (4) rebuild with the same file name. The builder refuses to rebuild if one of his changes would vanish silently."
   ],
   "title": "Saved searches",
@@ -11,9 +11,14 @@
   "out": "saved-searches.html",
   "grows": true,
   "_comment_grows": "grows: true switches all of this on. A deck without it behaves exactly as before.",
+  "_comment_stage": "stage: the stage this deck is AT now (understanding, design, before, after). Refused: a page of a LATER stage; an open topic (not answered, not a background list) on a page of an EARLIER stage; a reopened topic anywhere but the current stage; no page at the current stage. Move the deck on by changing this when a stage is done.",
+  "stage": "design",
   "rounds_before": 0,
   "_comment_rounds_before": "rounds_before (optional): how many separate decks this feature already had. Round numbers then start after them. Leave it out (or 0) for a feature with no earlier decks.",
-  "themes": ["midnight", "light"],
+  "themes": [
+    "midnight",
+    "light"
+  ],
   "retired": {},
   "_comment_retired": "retired: {\"<step id>\": \"why it went\"}. A topic he answered earlier cannot just disappear from the deck; list it here when you remove it on purpose.",
   "steps": [
@@ -34,7 +39,19 @@
       "today": "Searching your past sessions means typing the words again every time.",
       "problem": "A search you run every Monday costs the same typing every Monday.",
       "proposal": "A search could be kept by name and re-run in one press.",
-      "answered": { "round": "Round 1", "answer": "Yes", "notes": ["i run the same search every monday"] }
+      "answered": {
+        "round": "Round 1",
+        "answer": "Yes",
+        "notes": [
+          "i run the same search every monday"
+        ]
+      }
+    },
+    {
+      "id": "P-2",
+      "page": "How it looks",
+      "intro": "Pick between the drawings.",
+      "stage": "design"
     },
     {
       "_comment": "A topic he asked to change last round: 'reopened' is the ONE line of its past under the title; opened, it shows the trail and his earlier answers. The proposal here is the revised one.",
@@ -47,17 +64,38 @@
       "problem": "The list pushes your sessions down the screen.",
       "proposal": "Move the list into a menu beside the search box.",
       "reopened": "You asked for them to stay out of the way; the first design did not.",
-      "trail": [{ "round": "Round 1", "built": "A list under the search box.", "said": "it pushes everything down" }],
+      "trail": [
+        {
+          "round": "Round 1",
+          "built": "A list under the search box.",
+          "said": "it pushes everything down"
+        }
+      ],
       "options": [
-        { "id": "menu", "label": "A menu beside the box", "recommended": true, "summary": "One button opens them.", "pros": ["Nothing moves."], "cons": ["One press more."] },
-        { "id": "list", "label": "Keep the list", "summary": "As built.", "pros": ["Always visible."], "cons": ["Pushes sessions down."] }
+        {
+          "id": "menu",
+          "label": "A menu beside the box",
+          "recommended": true,
+          "summary": "One button opens them.",
+          "pros": [
+            "Nothing moves."
+          ],
+          "cons": [
+            "One press more."
+          ]
+        },
+        {
+          "id": "list",
+          "label": "Keep the list",
+          "summary": "As built.",
+          "pros": [
+            "Always visible."
+          ],
+          "cons": [
+            "Pushes sessions down."
+          ]
+        }
       ]
-    },
-    {
-      "id": "P-2",
-      "page": "How it looks",
-      "intro": "Pick between the drawings.",
-      "stage": "design"
     },
     {
       "_comment": "A new topic: nothing in its past, so it just sits on top until he answers it.",
@@ -70,8 +108,28 @@
       "problem": "You cannot tell how many searches you have kept.",
       "proposal": "Show the number beside the star.",
       "options": [
-        { "id": "yes", "label": "Show it", "summary": "A small number.", "pros": ["At a glance."], "cons": ["Busier."] },
-        { "id": "no", "label": "Leave the star", "summary": "As today.", "pros": ["Quiet."], "cons": ["No count."] }
+        {
+          "id": "yes",
+          "label": "Show it",
+          "summary": "A small number.",
+          "pros": [
+            "At a glance."
+          ],
+          "cons": [
+            "Busier."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "Leave the star",
+          "summary": "As today.",
+          "pros": [
+            "Quiet."
+          ],
+          "cons": [
+            "No count."
+          ]
+        }
       ]
     }
   ]

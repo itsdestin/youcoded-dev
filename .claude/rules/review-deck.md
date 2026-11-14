@@ -39,7 +39,7 @@ verify:
 Contract and Acceptance decks are retired (`feature-flow.md`). Several designs of one thing are ONE Choice slide.
 
 ## One growing deck per feature
-**Invariant:** `"grows": true` (`templates/growing.json`): edit and re-build the same spec each round; answered topics sink with their round, no History button, a change he asked for needs `reopened` or `resolved`. **Why:** "evolving documents… not a sticky note" (rounds 1, 8, 10). **Guard:** `test_grows.py`.
+**Invariant:** `"grows": true` (`templates/growing.json`): one spec per feature, re-built each round; answered topics are cards under "Answered"; a change he asked for needs `reopened` or `resolved`. The deck is AT one `"stage"`; earlier-stage pages are a read-only record, never tabs, and an open topic there is refused. **Why:** "not a sticky note" (rounds 1, 8, 10); "we're not editing prior sections" (11). **Guard:** `test_grows.py`.
 
 ## Lists: one kind of row per card
 **Invariant:** a words step with `calls` is a list of ONE kind, named at its head: facts

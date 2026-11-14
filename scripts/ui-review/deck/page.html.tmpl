@@ -5,10 +5,11 @@
 <div class="chip"><span class="k">Review deck</span><span class="div"></span><span class="t" id="deck-title"></span></div>
 <header class="top"><div class="wrap">
   <div class="where"><span class="id" id="wtitle"></span><span class="sep">·</span><span class="eyebrow" id="wsub"></span></div>
-  <div class="stagebar stages" id="stages" role="group" aria-label="Stage" hidden></div>
   <div class="nav"><button class="btn ghost sm" id="prev">‹ Prev</button><div class="steps" id="steps" title="Click a segment to revisit that step"></div><button class="btn ghost sm" id="next">Next ›</button></div>
   <span class="saved" id="saved" hidden></span><span class="count" id="count"></span><button class="btn ghost sm" id="histbtn" hidden title="Your answers from earlier rounds of this topic, and related decks">History</button><button class="btn ghost sm" id="notesbtn" title="Notes about anything else — not tied to one question">Notes</button><button class="btn" id="done">Done<span class="long"> — Submit Feedback</span></button>
 </div></header>
+<!-- WHY its own thin row (Destin, round 11: "What section of the deck is this on?"): the header was already full; the stage the deck is at gets a line of its own. -->
+<div class="stagerow"><div class="wrap"><div class="stagebar" id="stages" role="group" aria-label="Where this deck is" hidden></div></div></div>
 <main><div class="step on" id="step">
   <div class="thumbs" id="thumbs"></div>
   <div class="content" id="content">

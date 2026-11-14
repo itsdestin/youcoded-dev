@@ -1423,7 +1423,9 @@ STAGES = {
 def _stage_checklist(spec, errors):
     """A deck that names its stage must carry that stage's slide. Nothing is forbidden."""
     stage = spec.get('stage')
-    if stage is None:
+    # WHY (round 11): on a deck that grows, "stage" means the stage the deck is AT (understanding, design, before, after;
+    # checked in grows.py), not one of these slide checklists. Every other deck keeps the old meaning.
+    if stage is None or spec.get('grows') is True:
         return
     if stage not in STAGES:
         errors.append(f'stage "{stage}" is not one of ' + ', '.join(STAGES))

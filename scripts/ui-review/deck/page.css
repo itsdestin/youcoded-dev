@@ -900,30 +900,47 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
    the existing fold row (headline at the left; quiet text "Round 4" and the chevron at the right, no pill, no dot);
    the stage control is the picture popup's segmented control; the one number in it is the only place the count of
    open topics is said. */
-.fold.ansfold,.fold.pastfold{margin-top:0}
-.answeredgrp{gap:8px}
-.ansfold .foldtitle,.pastfold .foldtitle{font-weight:500;text-align:left;font-size:13px;color:var(--fg)}
-.pastfold .foldtitle{font-weight:400;font-size:12.5px;color:var(--fg-2)}
-.foldround{font-size:12px;color:var(--fg-muted);white-space:nowrap}
-.ansfold>.foldbody{gap:8px}
-.plainrows{margin:0;padding-left:18px;font-size:12px;line-height:1.5;color:var(--fg-2)}
-.youans{display:flex;gap:8px;align-items:baseline;font-size:12.5px;color:var(--fg)} .youlabel{color:var(--fg-muted)}
-.ansfold .decided{margin:0}
-.resolvedline{margin:0;font-size:12px;line-height:1.5;color:var(--fg-2)}
+/* Round 11 (Destin: "it doesn't look like a traditional card that I've answered"; "what is that little dropdown section at the top of
+   the questions?"; "What section of the deck is this on?"). An answered topic is a compact, quiet card; a topic's past is one plain
+   muted line with a text link; the stage is a plain progress indicator, not tabs. All on the deck's own colours and type. */
+.answeredgrp{gap:10px}
+.anscard{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well)}
+.anshead{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
+.anstitle{margin:0;font:500 13px/1.35 var(--font);color:var(--fg)}
+.ansround{flex:none;font-size:12px;color:var(--fg-muted);white-space:nowrap}
+.ansline,.anscard p{margin:0;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
+.youlabel{color:var(--fg-muted)} .ansval{color:var(--fg)}
+.anscard .decided{margin:0;font-size:12.5px;line-height:1.5;font-style:italic;color:var(--fg-2)}
+.anscard .plainrows{margin:0;padding-left:18px;font-size:12px;line-height:1.5;color:var(--fg-2)}
+.ansacts{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px}
+.revealbody{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid var(--edge)} .revealbody[hidden]{display:none}
+.tlink{margin:0;padding:2px 0;border:0;background:none;font:inherit;font-size:12px;color:var(--link);font-weight:500;cursor:pointer;min-height:24px}   /* WHY no underline: round 7, "we don't use… the linked underline text" (pinned by test_rethink); the link colour and pointer say it is pressable */
+.tlink:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.pastline{margin:0 0 8px}
+.pasttext{margin:0;font-size:12px;line-height:1.5;color:var(--fg-muted)}
+.pastline .revealbody{margin-top:6px;padding:0;border:0;gap:4px} .pastline .story{margin:0}
 .growact{display:flex;justify-content:flex-end}
-.pastfold>.foldbody .story{margin:0}
-.pastfold>.foldbody{gap:6px}
-.stages{max-width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none} .stages::-webkit-scrollbar{display:none}
-.stages .segb{white-space:nowrap;display:inline-flex;align-items:center}
-.stages .segb:disabled{opacity:.4;cursor:default}
-.stn{margin-left:6px;color:var(--fg-muted);font-variant-numeric:tabular-nums;font-weight:500} .stn:empty{display:none}
-.chip .roundtag{margin-left:10px;padding-left:10px;border-left:1px solid currentColor;color:inherit;opacity:.7;font-size:11px;white-space:nowrap}
-@media (max-width:700px){.stages{flex:1 1 100%}}
-/* A paragraph inside an answered row has no browser margin: the gaps come from the body's own even spacing. */
-.ansfold .foldbody p,.pastfold .foldbody p{margin:0}
-.ansfold .foldbody p:not(.decided):not(.resolvedline){font-size:12px;line-height:1.5;color:var(--fg-2)}
-.ansfold>.foldbody{padding-top:2px}
-.stages .segb.on .stn{color:inherit;opacity:.85}
 .growact[hidden]{display:none}
-/* The stage control wears the picture popup's segmented look (.seg / .segb) under its own class, so nothing that looks for the screen card's .seg finds it by mistake. */
-.stagebar{flex:none;display:inline-flex;border:1px solid var(--edge);border-radius:var(--radius-md)} .stagebar[hidden]{display:none}
+.recordbanner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;margin-bottom:14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--inset)}
+.recordbanner p{margin:0;font-size:13px;color:var(--fg)}
+.recpage{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.stagehead{display:flex;align-items:baseline;gap:10px}
+.recstage{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-muted)}
+.rectitle{margin:0;font:600 15px/1.3 var(--font);color:var(--fg)}
+.recpage .intro{margin:0;font-size:12.5px;color:var(--fg-2)}
+/* The header while the record is open: nothing to page through, count or send. */
+body.recordview #controls,body.recordview .top .nav,body.recordview .top .count,body.recordview #done,body.recordview #notesbtn,body.recordview #histbtn{display:none}
+/* The stage indicator: plain words, no box, nothing to press except the quiet link. */
+.stagerow{flex:none;padding:6px 20px;background:var(--panel);border-bottom:1px solid var(--edge)} .stagerow:has(.stagebar[hidden]){display:none}
+.stagebar{flex:1;display:flex;align-items:center;gap:12px;min-width:0} .stagebar[hidden]{display:none}
+.stagebar .recordlink{margin-left:auto}
+.stageflow{display:inline-flex;align-items:center;gap:4px;margin:0;padding:0;list-style:none;font-size:12px;white-space:nowrap}
+.stageflow li{padding:3px 9px;border-radius:999px;color:var(--fg-muted)}
+
+.stageflow li.done{color:var(--fg-2)}
+.stageflow li.on{background:var(--inset);color:var(--fg);font-weight:600}
+.stageflow li.later{opacity:.5}
+.stagetext,.stagecompact{font-size:11px;color:var(--fg-muted);white-space:nowrap}
+.stagecompact{display:none}
+@media (max-width:900px){.stageflow,.stagetext{display:none} .stagecompact{display:inline}}
+.chip .roundtag{margin-left:10px;padding-left:10px;border-left:1px solid currentColor;color:inherit;opacity:.7;font-size:11px;white-space:nowrap}

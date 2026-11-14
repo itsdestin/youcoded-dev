@@ -21,7 +21,7 @@ import glob
 import json
 import os
 
-from .spec import is_page, tickable, unlooked_rows, word_count
+from .spec import is_page, row_states, tickable, unlooked_rows, word_count
 
 STAGES = ('understanding', 'design', 'before', 'after')
 STAGE_NAMES = {'understanding': 'Understanding', 'design': 'Design', 'before': 'Before build', 'after': 'After build'}
@@ -160,6 +160,11 @@ def step_info(spec, **kw):
             info['story'] = info['story'] or [{'round': info['round'], 'answer': info['answer'], 'notes': info['notes']}]
         elif latest and not st.get('reopened'):
             info.update(answered=True, round=latest['round'], answer=latest['answer'], notes=latest['notes'])
+        # WHY (Destin, round 11: the answered card must show "how my response differed"): for a tick-or-change list
+        # the card says how many rows he ticked; his comments on rows are already in `notes`.
+        if latest and info['answered'] and not isinstance(hand, dict) and tickable(st):
+            info['ticked'] = sum(1 for v in row_states(st, latest['_a']).values() if v == 'ok')
+            info['rows'] = len(st.get('calls') or [])
         line = st.get('reopened') or st.get('past')
         if line and not info['answered']:
             info['line'] = line
@@ -192,6 +197,21 @@ def problems(spec):
         errs.append(f'{st["id"]}: his {latest["round"].lower()} answer on "{st.get("headline", st["id"])}" asked for a change '
                     f'({_quote(latest)}); say what happened: add "reopened" (one line of its past; the topic is open again) '
                     f'or "resolved" (what was done about it; the topic stays answered)')
+    # WHY (Destin, round 11: "we're not editing prior sections of the deck once we've gotten to post build"): a deck is AT
+    # one stage; a page of an earlier stage is a record, so nothing on it may still be waiting for an answer.
+    cur = spec.get('stage')
+    if cur in STAGES:
+        page = None
+        for st in spec.get('steps') or []:
+            if not isinstance(st, dict):
+                continue
+            if is_page(st):
+                page = st
+                continue
+            if page is not None and page.get('stage') in STAGES and STAGES.index(page['stage']) < STAGES.index(cur) \
+                    and not st.get('context') and not info[st.get('id')]['answered']:
+                errs.append(f'{st.get("id")}: "{st.get("headline", st.get("id"))}" is still open but sits on the {STAGE_NAMES[page["stage"]]} page, '
+                            f'an earlier stage than the deck is at ({STAGE_NAMES[cur]}); answer it first, or move it to a {STAGE_NAMES[cur]} page')
     present = {st.get('id') for st in _steps(spec)}
     retired = spec.get('retired') if isinstance(spec.get('retired'), dict) else {}
     gone = {}
@@ -221,9 +241,19 @@ def validate_fields(spec, errors):
         r = spec['retired']
         if not isinstance(r, dict) or not all(isinstance(k, str) and isinstance(v, str) and v.strip() for k, v in r.items()):
             errors.append('retired is {"<step id>": "<why it went, one line>"}')
+    # WHY (Destin, round 11: "What section of the deck is this on? At what phase of the process would this deck be for?"):
+    # a deck that grows says which stage it is AT now; pages of earlier stages are its record.
+    cur = spec.get('stage')
+    if on and cur not in STAGES:
+        errors.append(f'stage is required on a deck that grows: the stage it is at now, one of {", ".join(STAGES)}')
+    cur_n = STAGES.index(cur) if on and cur in STAGES else None
+    page_stage = None
     for st in steps:
         sid = st.get('id') or 'a step'
         if is_page(st):
+            page_stage = st.get('stage')
+            if cur_n is not None and page_stage in STAGES and STAGES.index(page_stage) > cur_n:
+                errors.append(f'{sid}: this page is the {STAGE_NAMES[page_stage]} stage, later than the deck ({STAGE_NAMES[cur]}); remove it until the deck gets there')
             stage = st.get('stage')
             if stage is not None and not on:
                 errors.append(f'{sid}: stage belongs on a deck that grows; add "grows": true')
@@ -254,6 +284,8 @@ def validate_fields(spec, errors):
                 errors.append(f'{sid}: {k} is one plain line')
             elif word_count(v) > cap:
                 errors.append(f'{sid}: {k} is {word_count(v)} words (max {cap}); one line, the story opens on request')
+        if cur_n is not None and st.get('reopened') is not None and page_stage in STAGES and STAGES.index(page_stage) < cur_n:
+            errors.append(f'{sid}: reopened topics live on a {STAGE_NAMES[cur]} page; this one is on an earlier (record) page')
         if st.get('answered') is not None and st.get('reopened') is not None:
             errors.append(f'{sid}: a topic is answered or reopened, not both; drop one')
         if st.get('answered') is not None and st.get('past') is not None:
@@ -278,6 +310,8 @@ def validate_fields(spec, errors):
                 if n < last:
                     errors.append(f'{st.get("id")}: stages go in order ({", ".join(STAGES)}); this page is {st["stage"]} after a later stage')
                 last = max(last, n)
+        if cur_n is not None and not any(is_page(st) and st.get('stage') == cur for st in steps):
+            errors.append(f'the deck is at {STAGE_NAMES[cur]} but has no page of the {STAGE_NAMES[cur]} stage; add one, or move the deck\'s stage')
         if steps and not is_page(steps[0]):
             errors.append(f'{steps[0].get("id")}: on a deck that grows the first question follows a page marker that names its stage')
 

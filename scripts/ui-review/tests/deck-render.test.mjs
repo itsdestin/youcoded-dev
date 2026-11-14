@@ -1697,8 +1697,9 @@ p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p)); q1, q2 = raw['steps'][0], raw['steps'][1]
 def q(i, h, **kw): return {**q1, 'id': i, 'headline': h, **kw}
 raw['grows'] = True
-raw['steps'] = [{'id': 'P-1', 'page': 'Understanding page', 'intro': 'What we understood.', 'stage': 'understanding'}, q('Q-1', 'First topic?'), q('Q-2', 'Second topic?'),
-  {'id': 'P-2', 'page': 'Design page', 'intro': 'The drawings.', 'stage': 'design'}, q('Q-3', 'Third topic?')]
+# WHY round 1 is AT understanding (round 11): a deck is at one stage, so its only page is that stage's.
+raw['stage'] = 'understanding'
+raw['steps'] = [{'id': 'P-1', 'page': 'Understanding page', 'intro': 'What we understood.', 'stage': 'understanding'}, q('Q-1', 'First topic?'), q('Q-2', 'Second topic?'), q('Q-3', 'Third topic?'), q('Q-5', 'Fifth topic?')]
 json.dump(raw, open(p, 'w')); print(p)`;
   const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
   const out = join(dirname(spec), 'questions.html');
@@ -1706,15 +1707,17 @@ json.dump(raw, open(p, 'w')); print(p)`;
   // round 1 as he answered it: Q-1 plain, Q-2 with a note, Q-3 with a note; submitted, with the build stamp he saw
   const at = /"built":\s*\{[^}]*"at":\s*"([^"]+)"/.exec(readFileSync(out, 'utf8'))[1];
   writeFileSync(join(dirname(spec), 'questions.answers.json'), JSON.stringify({ deck: 'questions-fixture', submitted: '2026-11-01T10:00:00Z', built: { at }, answers: {
-    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: 'only if it stays quiet' }, 'Q-3': { v: 'other', note: 'make it bigger please' } } }));
+    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: 'only if it stays quiet' }, 'Q-3': { v: 'other', note: 'make it bigger please' }, 'Q-5': { v: 'pick', pick: 'a' } } }));
   // round 2: the same spec, edited
   const edit = `import json; p = ${JSON.stringify(spec)}; raw = json.load(open(p))
-for s in raw['steps']:
-    if s['id'] == 'Q-2': s['resolved'] = 'Made quiet in round 2.'
-    if s['id'] == 'Q-3': s['reopened'] = 'You asked for it bigger.'; s['trail'] = [{'round': 'Round 1', 'built': 'A small one.'}]
-raw['steps'] += [dict(raw['steps'][1], id='Q-4', headline='Fourth topic?', resolved=None)]; raw['steps'][-1].pop('resolved')
-raw['steps'].append({'id': 'P-3', 'page': 'Before page', 'intro': 'Before the build.', 'stage': 'before'})
-raw['steps'].append({'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'calls': [{'id': 'r1', 'call': 'A row.', 'why': 'Because.'}]})
+by = {s['id']: s for s in raw['steps']}
+by['Q-2']['resolved'] = 'Made quiet in round 2.'
+by['Q-3']['reopened'] = 'You asked for it bigger.'; by['Q-3']['trail'] = [{'round': 'Round 1', 'built': 'A small one.'}]
+q4 = dict(by['Q-2'], id='Q-4', headline='Fourth topic?'); q4.pop('resolved')
+rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'calls': [{'id': 'r1', 'call': 'A row.', 'why': 'Because.'}]}
+# Round 2 is AT design: Q-1 stays in the Understanding record; the rest move to the Design page.
+raw['stage'] = 'design'
+raw['steps'] = [by['P-1'], by['Q-1'], {'id': 'P-2', 'page': 'Design page', 'intro': 'The drawings.', 'stage': 'design'}, by['Q-2'], by['Q-5'], by['Q-3'], q4, rows]
 json.dump(raw, open(p, 'w'))`;
   await sleep(1200);   // the build stamp has one-second precision: round 2 must be a different build from round 1, as it always is in practice
   { const r = spawnSync('python3', ['-c', edit], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
@@ -1732,45 +1735,78 @@ json.dump(raw, open(p, 'w'))`;
       assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Design page', 'lands on the first page that has an open topic, not page 1');
       assert.match(await q("document.querySelector('.chip .roundtag').textContent"), /Round 2/);
       assert.equal(await q("document.querySelector('#histbtn').hidden"), true, 'no History button');
-      assert.equal(await q("document.querySelectorAll('.since, .grph').length"), 0, 'no since-last-round sentence or group headings here');
+      assert.equal(await q("document.querySelectorAll('.since').length"), 0, 'no since-last-round sentence here');
       // open topics on this page: the reopened one and the new one
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-3', 'Q-4']);
-      assert.equal(await q("document.querySelector('.pastfold .foldtitle').textContent"), 'You asked for it bigger.');
-      assert.equal(await q("document.querySelector('.pastfold .foldbody').hidden"), true, 'the story opens on request');
-      await q("document.querySelector('.pastfold .foldhead').click()"); await sleep(100);
-      const story = await q("document.querySelector('.pastfold .foldbody').innerText");
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-3', 'Q-4', 'L-1']);
+      // the past is one small plain line with a text link, not a box with a chevron
+      assert.match(await q("document.querySelector('.pasttext').firstChild.textContent"), /^You asked for it bigger\./);
+      assert.equal(await q("document.querySelector('.pastline .revealbody').hidden"), true, 'the story opens on request');
+      assert.equal(await q("(() => { const e = document.querySelector('.pasttext'), cs = getComputedStyle(e); return [cs.borderTopWidth, cs.backgroundColor, !!e.closest('.fold'), !!document.querySelector('.pastline .chev, .pastline .foldhead')].join() })()"), '0px,rgba(0, 0, 0, 0),false,false', 'the past line is not a box');
+      assert.equal(await q("document.querySelector('.pastline .revealbtn').textContent"), 'More');
+      await q("document.querySelector('.pastline .revealbtn').click()"); await sleep(100);
+      const story = await q("document.querySelector('.pastline .revealbody').innerText");
       assert.match(story, /Round 1 · built/); assert.match(story, /Round 1 · you/); assert.match(story, /make it bigger please/);
-      // the stage control: the current stage selected; the open number is the only count; a stage with no pages is off
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#stages .segb')].map(b => [b.dataset.stage, b.classList.contains('on'), b.disabled, b.querySelector('.stn').textContent]))")),
-        [['understanding', false, false, ''], ['design', true, false, '2'], ['before', false, false, '1'], ['after', false, true, '']]);
-      assert.match(await q("document.querySelector('#count').textContent"), /0 of 3 answered/, 'answered topics are not counted');
-      // page 1: nothing open, an Answered list with its count, rows showing the round
-      await q("document.querySelector('#stages .segb[data-stage=understanding]').click()"); await sleep(300);
-      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Understanding page');
-      assert.equal(await q("document.querySelectorAll('article.q').length"), 0);
+      assert.equal(await q("document.querySelector('.pastline .revealbtn').textContent"), 'Less');
+      // the stage indicator: earlier done, this one lit, later dimmed; nothing in it can be pressed or focused
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#stages .stageflow li')].map(li => [li.textContent, li.className]))")),
+        [['Understanding', 'done'], ['Design', 'on'], ['Before build', 'later'], ['After build', 'later']]);
+      assert.equal(await q("document.querySelector('#stages .stagetext').textContent"), 'Stage 2 of 4');
+      assert.equal(await q("document.querySelectorAll('#stages .stageflow button, #stages .stageflow a, #stages .stageflow [tabindex], #stages .segb').length"), 0, 'the indicator is not clickable');
+      await q("document.querySelector('#stages .stageflow li').click()"); await sleep(200);
+      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Design page', 'pressing a stage name goes nowhere');
+      assert.match(await q("document.querySelector('#count').textContent"), /page 1 of 1 · 0 of 3 answered/, 'only this stage\'s page and topics are counted');
+      assert.equal(await q("document.querySelector('#steps').hidden"), true, 'one page in this stage: nothing to page through');
+      // answered topics of this stage: proper cards showing the question and how he answered; Reopen only here
       assert.equal(await q("document.querySelector('.answeredgrp .grph').textContent"), 'Answered2');
-      assert.match(await q("document.querySelector('.ansfold .foldhead').textContent"), /First topic\?.*Round 1/);
-      assert.equal(await q("document.querySelectorAll('.ansfold .fchip, .ansfold .qstate').length"), 0, 'no pills or dots on an answered row');
-      assert.equal(await q("document.querySelector('#steps span').className.includes('done')"), true, 'a page whose topics are all answered reads as complete');
-      await q("document.querySelectorAll('.ansfold .foldhead')[1].click()"); await sleep(100);
-      assert.match(await q("document.querySelectorAll('.ansfold')[1].innerText"), /only if it stays quiet/);
-      assert.match(await q("document.querySelectorAll('.ansfold')[1].querySelector('.decided').textContent"), /only if it stays quiet/);
-      assert.equal(await q("document.querySelector('.resolvedline').textContent"), 'Made quiet in round 2.');
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.anscard .anstitle')].map(e => e.textContent))")), ['Second topic?', 'Fifth topic?']);
+      const card = await q("document.querySelector('.anscard[data-id=Q-2]').innerText");
+      assert.match(card, /Second topic\?/); assert.match(card, /Round 1/); assert.match(card, /You answered/);
+      assert.match(card, /only if it stays quiet/); assert.match(card, /Made quiet in round 2\./);
+      assert.match(await q("document.querySelector('.anscard[data-id=Q-5]').innerText"), /You answered\s*\S+/, 'the card says what he chose');
+      assert.match(await q("document.querySelector('.anscard[data-id=Q-2] .decided').textContent"), /only if it stays quiet/);
+      assert.equal(await q("document.querySelectorAll('.anscard .fchip, .anscard .qstate, .anscard .foldhead, .anscard .chev').length"), 0, 'no pills, dots or strip rows on an answered card');
+      assert.equal(await q("document.querySelector('.anscard[data-id=Q-2] .revealbody').hidden"), true);
+      await q("document.querySelector('.anscard[data-id=Q-2] .revealbtn').click()"); await sleep(100);
+      assert.equal(await q("document.querySelector('.anscard[data-id=Q-2] .revealbody').hidden"), false, 'the full question opens read-only');
+      assert.match(await q("document.querySelector('.anscard[data-id=Q-2] .revealbody').innerText"), /One game fills the window|Proposal/);
+      assert.equal(await q("document.querySelectorAll('.anscard[data-id=Q-2] .revealbody .ans, .anscard[data-id=Q-2] .revealbody textarea').length"), 0);
       assert.equal(await q("[...document.querySelectorAll('#cards *')].filter(e => parseFloat(getComputedStyle(e).borderLeftWidth) > 1.5 && getComputedStyle(e).borderRightWidth !== getComputedStyle(e).borderLeftWidth).length"), 0, 'no coloured bar at the left edge of anything');
+      // the record: one quiet link opens the earlier stage read-only, with a banner and a way back; nothing in it asks or counts
+      assert.equal(await q("document.querySelector('#stages .recordlink').textContent"), 'Earlier stages');
+      await q("document.querySelector('#stages .recordlink').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Earlier stages');
+      assert.match(await q("document.querySelector('.recordbanner').innerText"), /record of earlier stages\. Nothing here needs an answer\.[\s\S]*Back to Design/);
+      assert.match(await q("document.querySelector('#cards').innerText"), /First topic\?/);
+      assert.equal(await q("document.querySelectorAll('#cards .ans, #cards .note, #cards textarea, #cards .reopenbtn, #cards .calltick, #cards .calledit, #cards article.q, #cards .ans-write').length"), 0, 'no answer controls, comment boxes or Reopen in the record');
+      assert.equal(await q("[...document.querySelectorAll('#controls, .top .nav, .top .count, #done')].filter(e => e.offsetParent).length"), 0, 'nothing to page through, count or send while reading the record');
+      await q("document.querySelector('#recback').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('#wtitle').textContent"), 'Design page');
+      assert.match(await q("document.querySelector('#count').textContent"), /0 of 3 answered/, 'the record never counts as waiting');
       // Reopen: the topic moves up among the open ones, is answerable, and counts again
-      await q("document.querySelectorAll('.reopenbtn')[1].click()"); await sleep(300);
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-2']);
-      assert.equal(await q("document.querySelectorAll('.ansfold').length"), 1);
+      await q("document.querySelector('.reopenbtn[data-sid=Q-2]').click()"); await sleep(300);
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-2', 'Q-3', 'Q-4', 'L-1']);
+      assert.equal(await q("document.querySelectorAll('.anscard').length"), 1);
       assert.ok(await q("document.querySelectorAll('article.q[data-id=Q-2] .ans').length > 0"), 'a reopened topic can be answered');
       assert.match(await q("document.querySelector('#count').textContent"), /0 of 4 answered/);
       assert.equal(await q("JSON.parse(localStorage.getItem('deck:' + DECK.key)).reopened['Q-2']"), true, 'kept in the saved state');
       assert.equal(await q("[...document.querySelectorAll('.leavebtn')].filter(b => b.offsetParent).length"), 1, 'a reopened topic he has not answered can be put back');
       await q("document.querySelector('.leavebtn').click()"); await sleep(300);
-      assert.equal(await q("document.querySelectorAll('article.q').length"), 0, 'Leave as answered puts it back in the Answered list');
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q')].map(a => a.dataset.id))")), ['Q-3', 'Q-4', 'L-1'], 'Leave as answered puts it back in the Answered group');
       await q("document.querySelector('.reopenbtn[data-sid=Q-2]').click()"); await sleep(300);
       await q("document.querySelector('article.q[data-id=Q-2] .ans').click()"); await sleep(300);
       assert.match(await q("document.querySelector('#count').textContent"), /1 of 4 answered/);
       assert.equal(await q("[...document.querySelectorAll('.leavebtn')].filter(b => b.offsetParent).length"), 0, 'an answered reopened topic is not put back by a stray button');
+      // a phone: no sideways scroll, the indicator shrinks to "2 of 4 · Design"
+      const m = await cdp(await freePort(), 390, 800);
+      try {
+        await m.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(m);
+        assert.equal(await m.evaluate("document.documentElement.scrollWidth <= window.innerWidth && document.body.scrollWidth <= window.innerWidth"), true, 'no sideways scrolling at 390px');
+        assert.equal(await m.evaluate("(() => { const v = e => !!e && e.offsetParent !== null; return [v(document.querySelector('.stagecompact')), v(document.querySelector('.stageflow'))].join() })()"), 'true,false');
+        assert.equal(await m.evaluate("document.querySelector('.stagecompact').textContent"), '2 of 4 · Design');
+        await m.evaluate("document.querySelector('#stages .recordlink').click()"); await sleep(300);
+        assert.equal(await m.evaluate("document.documentElement.scrollWidth <= window.innerWidth && document.querySelector('#cards').scrollWidth <= document.querySelector('#cards').clientWidth + 1"), true, 'the record fits a phone too');
+        assert.deepEqual(m.errors, []);
+      } finally { m.close(); }
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
   } finally { srv.kill(); }

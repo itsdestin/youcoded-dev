@@ -4,6 +4,7 @@
  "out": "review-deck-rethink.html",
  "grows": true,
  "rounds_before": 10,
+ "stage": "design",
  "steps": [
   {
    "id": "P-1",
@@ -132,7 +133,7 @@
   {
    "id": "P-2",
    "page": "A deck that grows",
-   "intro": "This deck is the design, built. Judge it by using it.",
+   "intro": "This round I need three things from you: whether a deck that grows works for you (this page), whether tick-or-change on rows works (next page), and whether the look is right now (last page). Everything under Answered is the record.",
    "stage": "design"
   },
   {
@@ -147,8 +148,8 @@
     },
     {
      "id": "sink",
-     "call": "Topics you answered sink to an \"Answered\" list at the foot of their page, with their round.",
-     "why": "Opening one shows what was asked and your answer in your own words."
+     "call": "Topics you answered sink to an \"Answered\" group at the foot of their page, as cards: the question, your answer in your words, what was done about it, and the round.",
+     "why": "\"Show the full question\" opens the original. Reopen moves it back up."
     },
     {
      "id": "reopen",
@@ -157,17 +158,22 @@
     },
     {
      "id": "past",
-     "call": "An open topic with a past shows one line of it under its title. Pressing the line shows the full story.",
+     "call": "An open topic with a past shows one small line of it under its title. \"More\" shows the full story.",
      "why": "The line above this list is one. You picked \"one summary line\" in round 10."
     },
     {
      "id": "stages",
-     "call": "The four stages sit across the top. A number beside a stage is how many topics there still need you.",
-     "why": "It is the only place that count appears. A stage with nothing in it yet is dimmed."
+     "call": "The top shows the one stage this deck is at (Design), with earlier stages marked done and later ones dimmed. You cannot click them.",
+     "why": "A deck is at one stage. To change something from an earlier stage, comment on it here; I carry it into this stage."
+    },
+    {
+     "id": "record",
+     "call": "An \"Earlier stages\" link opens the record: the earlier stages, read-only, with nothing to answer.",
+     "why": "A banner says so, with a button back to Design. No Reopen there."
     },
     {
      "id": "lands",
-     "call": "The deck opens on the first page that still needs you.",
+     "call": "The deck opens on the first page of this stage that still needs you.",
      "why": "Pages where everything is answered show as complete."
     },
     {
@@ -188,7 +194,7 @@
    ],
    "surface": "Review decks",
    "words": true,
-   "reopened": "Open since round 1. A History button (round 4) and a story folded under each row (round 7) were both rejected.",
+   "reopened": "Open since round 1. After round 10 you found the stage tabs and the answered strip confusing; both are replaced.",
    "trail": [
     {
      "round": "Round 1",
@@ -208,6 +214,11 @@
      "round": "Round 10",
      "asked": "I kinda feel like a bunch of these ideas aren't mutually exclusive",
      "built": "Answered topics sink; open ones show one line of their past."
+    },
+    {
+     "round": "Round 11",
+     "asked": "it's very confusing that I can click around the different sections at the top and it jumps me between the sides",
+     "built": "A plain progress line for the one stage the deck is at; earlier stages are a read-only record."
     }
    ]
   },
@@ -425,42 +436,6 @@
    }
   },
   {
-   "id": "P-5",
-   "page": "Still to build",
-   "intro": "What is left. Change the order or drop a row.",
-   "stage": "before"
-  },
-  {
-   "id": "T-1",
-   "path": "Any deck link I send you",
-   "headline": "What I build next, in this order",
-   "calls": [
-    {
-     "id": "phone",
-     "call": "A try on a real phone, with you.",
-     "why": "Nothing here has been used with a finger: the popup, \"Comment on an area\", the stage strip at phone width."
-    },
-    {
-     "id": "themes",
-     "call": "A check in your other themes, light and dark.",
-     "why": "Only Ivory Schematic and Midnight have been looked at."
-    },
-    {
-     "id": "rules",
-     "call": "The rule for models trimmed to its word limit.",
-     "why": "It is about 20 words over. No effect on what you see."
-    },
-    {
-     "id": "whatchanged",
-     "call": "The after-build page that lists what changed while building is described in the rules but not enforced by the tool.",
-     "why": "I would make the tool require it."
-    }
-   ],
-   "surface": "Review decks",
-   "words": true,
-   "numbered": true
-  },
-  {
    "id": "S-1",
    "path": "Every feature build",
    "headline": "Which of the old automatic checks should come back?",
@@ -510,101 +485,6 @@
     "answer": "On for every build; you can switch it off",
     "notes": []
    }
-  },
-  {
-   "id": "P-6",
-   "page": "Built, not yet reviewed by you",
-   "intro": "Each of these is built. Tick what is right; use the pencil on what is not.",
-   "stage": "after"
-  },
-  {
-   "id": "B-1",
-   "path": "Any deck link I send you",
-   "headline": "From your round-9 answers",
-   "calls": [
-    {
-     "id": "popup",
-     "call": "A picture opens at its real size and scrolls, with comments in a strip at the right.",
-     "why": "The top bar has Before / After, a Fit switch and an ×.",
-     "picture": "pictures/r10-popup.png"
-    },
-    {
-     "id": "details",
-     "call": "The \"Details\" fold is gone.",
-     "why": "A check's explanation sits under its row; reuse notes are behind a small (i)."
-    },
-    {
-     "id": "touch",
-     "call": "On a phone, a drag scrolls a picture. You tap \"Comment on an area\" first, then drag.",
-     "why": "Not tried with a real finger."
-    },
-    {
-     "id": "resume",
-     "call": "A deck you already sent reopens with your answers, still editable, and says when you sent them.",
-     "why": "Not yet seen in a real browser."
-    },
-    {
-     "id": "gate",
-     "call": "Work cannot be called finished while a request is unaccounted for or a check has no result.",
-     "why": "Any note you leave on the after-build page also counts as not finished. Change this row if that is too strict."
-    }
-   ],
-   "surface": "Review decks",
-   "words": true
-  },
-  {
-   "id": "B-2",
-   "path": "Any deck link I send you",
-   "headline": "From rounds 6 and 7, never shown to you in a look you accepted",
-   "calls": [
-    {
-     "id": "checksmenu",
-     "call": "The checks menu: each check says what it does, what comes back and why it is suggested for this build.",
-     "why": "Built after your round-6 comments."
-    },
-    {
-     "id": "useit",
-     "call": "On a wording page, a \"Use it / Edit words\" switch, so dropdowns can be opened before you edit the words.",
-     "why": "Built in round 7. Not tried by a real hand."
-    },
-    {
-     "id": "tiles",
-     "call": "A row's pictures are tiles in an Attachments card, like Deliverables in a chat.",
-     "why": "Built in round 8. The first list on this page has one."
-    },
-    {
-     "id": "pills",
-     "call": "A picture or file path pasted into any comment box becomes a pill.",
-     "why": "Built in round 7."
-    },
-    {
-     "id": "fixes",
-     "call": "Eleven fixes from a code review and a fresh-eyes tester.",
-     "why": "For example: a second press of a pencil no longer deletes your comment."
-    }
-   ],
-   "surface": "Review decks",
-   "words": true
-  },
-  {
-   "id": "B-3",
-   "path": "Any deck link I send you",
-   "headline": "Done outside the deck",
-   "calls": [
-    {
-     "id": "backup",
-     "call": "Everything is backed up. The scanner ignores four lines of made-up ids, not the three I first counted.",
-     "why": "My own note in the ignore file quoted one of the same harmless ids."
-    },
-    {
-     "id": "cards",
-     "call": "Two ideas are filed: a screen sketcher inside a deck (#249), and the app hosting deck links itself (#250).",
-     "why": "Filed only; nothing is built."
-    }
-   ],
-   "surface": "Review decks",
-   "words": true,
-   "context": true
   }
  ]
 }

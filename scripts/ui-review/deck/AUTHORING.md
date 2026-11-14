@@ -819,16 +819,13 @@ time. The deck moves through four stages (Understanding, Design, Before build, A
 deck without `"grows"` behaves exactly as it always did.
 
 **What he sees in round 2 and later.** The deck opens on the first page that still has an open topic. Open
-topics are on top, as before. Under them is one small heading, "Answered" with a count, and one fold row per
-topic he already settled: its headline, the round ("Round 4") and a chevron. Opened, it shows the proposal
-(or the list's rows), what he answered with his words quoted, what you did about it (`resolved`), and a
-**Reopen** button that moves it back up among the open topics (a reopened topic that he has not answered yet
-has a small **Leave as answered**). An open topic with a past shows ONE line under its title; opened, it shows
-the story (`trail`) and his own earlier answers, oldest first. The header shows "Round N" in the yellow chip and
-the four stages as one segmented control, each with a bare number when topics are still open there (the only
-place that count is stated); a stage with no pages is dimmed. There is no History button, no "Since last round"
-sentence and no New / Changed / Settled headings. Answered topics are never counted in "x of y answered", the
-page segments, the finish dialog or either summary, unless he reopened them.
+topics are on top, as before. Under them is one small heading, "Answered" with a count, and one compact card per
+topic he already settled (see "Changed after round 11" below: the question, "You answered" with his choice, his
+words in quotes, what you did about it, the round, **Reopen**). An open topic with a past shows ONE small plain line
+under its title and a "More" link that opens the story (`trail`) and his earlier answers, oldest first. The header
+shows "Round N" in the yellow chip; the stage the deck is at is a plain progress line under it. There is no
+History button, no "Since last round" sentence and no New / Changed / Settled headings. Answered topics are never
+counted in "x of y answered", the page segments, the finish dialog or either summary, unless he reopened them.
 
 **How rounds are found.** Each time he submits, `serve` moves the answers aside as
 `<stem>.answers.<stamp>.json` once a rebuilt deck is served. Those dated files, in time order, are the earlier
@@ -863,10 +860,34 @@ line). 3. For an open topic with a history but no reopening, `"past": "<one line
 - `answered` with `reopened` (or `past`), or `reopened` with `resolved` or `past`; a line over its word limit;
   `answered` without text `round` and `answer`;
 - any of the new fields on a deck without `"grows": true`; a page marker with no stage, an unknown stage or
-  stages out of order; a growing deck with pictures or a contract.
+  stages out of order; a growing deck with pictures or a contract;
+- (round 11) no top-level `"stage"` (or an unknown one); a page of a LATER stage than the deck; no page at the
+  deck's stage; an OPEN topic on a page of an EARLIER stage (answer it, or move it to the current stage); a
+  `reopened` topic outside the current stage.
 `earlier` and `related` are ignored on a growing deck (not refused). A row's own `trail` inside a list keeps
 drawing as lines above the row.
 
 **The gate and summaries.** `serve.py`'s summary and `gate.py` skip topics settled in an earlier round, so the
 after-build gate does not call a list he already ticked "not looked at". Saved shape: `state.reopened =
 {"<step id>": true}` beside the answers.
+
+## Changed after round 11 (2026-11-14)
+
+Source: Destin on opening the growing deck: "it's very confusing that I can click around the different sections
+at the top and it jumps me between the sides… we're not editing prior sections of the deck once we've gotten to
+post build"; "what is that little dropdown section at the top of the questions?"; of the Answered strip, "It's
+not clear what the question was and how my response differed." Where this contradicts a section above, this wins.
+
+- **A deck is AT one stage.** Top-level `"stage"` (`understanding`, `design`, `before`, `after`) is required on a
+  growing deck (on any other deck `stage` keeps its old meaning, the slide checklist). Change it when a stage is
+  done; the pages of the stages behind it become the record.
+- **The stage line is a picture, not tabs.** Four names in order: earlier done, current lit, later dimmed, plus
+  "Stage 2 of 4" ("2 of 4 · Design" on a phone). No counts, nothing to press. Navigation, "x of y answered" and the
+  landing page cover the current stage's pages only.
+- **Earlier stages are a record.** One quiet "Earlier stages" link opens them read-only under a banner ("Nothing
+  here needs an answer", Back to the current stage). No answer buttons, comment boxes or Reopen; never counted. To change
+  something from an earlier stage he comments in the current one and you carry it forward.
+- **A topic's past is one muted line + "More"**, not a box with a chevron.
+- **An answered topic is a compact card:** title, "Round N", "You answered" with his choice (a tick-or-change list:
+  "3 of 5 rows ticked as fine"), his comments in quotes, "Done about it" (`resolved`), "Show the full question"
+  (read-only), and Reopen in the current stage only.

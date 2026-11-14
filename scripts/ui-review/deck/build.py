@@ -11,7 +11,7 @@ import subprocess
 
 from .crops import image_name, is_focus_crop
 from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
-from .grows import STAGE_NAMES, answer_view, is_grows, round_number, step_data
+from .grows import STAGES, STAGE_NAMES, answer_view, is_grows, round_number, step_data
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_calls, is_choice, is_clip, is_contract,
                     is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
                     workspace_root)
@@ -448,7 +448,10 @@ def deck_data(spec, boxes):
     paged = {'pages': [{'id': p['id'], 'title': p['title'], 'intro': p['intro'],
                         'steps': [st['id'] for st in p['steps']],
                         # `stage` only on a growing deck: the header's four-part control reads it.
-                        **({'stage': p['stage']} if p.get('stage') else {})} for p in pg]} if pg else {}
+                        **({'stage': p['stage']} if p.get('stage') else {}),
+                        # WHY `record`: a page of an earlier stage than the deck is at is the record (read-only, never counted).
+                        **({'record': True} if is_grows(spec) and p.get('stage') in STAGES and spec.get('stage') in STAGES
+                           and STAGES.index(p['stage']) < STAGES.index(spec['stage']) else {})} for p in pg]} if pg else {}
     # WHY (Destin, round 10): a growing deck has no History button; its earlier rounds live ON each topic.
     grown = {}
     if is_grows(spec):
@@ -456,7 +459,7 @@ def deck_data(spec, boxes):
         for st in steps:
             if st['id'] in gd:
                 st['grow'] = gd[st['id']]
-        grown = {'grows': {'round': round_number(spec), 'stages': STAGE_NAMES}}
+        grown = {'grows': {'round': round_number(spec), 'stages': STAGE_NAMES, 'stage': spec.get('stage')}}
     return {**live, **paged, **grown, **_built(spec), **({} if is_grows(spec) else _history(spec)), 'title': spec['title'], 'key': spec['key'], 'runs': runs,
             # Any other run name (`round3`) shows as written unless `labels` names it.
             'runLabels': {**{r: r for r in spec['runs']}, 'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},

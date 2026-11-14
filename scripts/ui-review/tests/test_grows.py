@@ -23,8 +23,9 @@ def question(i, headline, **kw):
 
 
 def base_spec(**over):
-    spec = {'title': 'Grow', 'key': 'grow', 'out': 'grow.html', 'themes': ['midnight'], 'grows': True,
-            'steps': [{'id': 'P-1', 'page': 'Understanding', 'intro': 'Judge.', 'stage': 'understanding'},
+    # WHY both pages are Design (round 11): a deck is AT one stage; an open topic may not sit on an earlier stage's page.
+    spec = {'title': 'Grow', 'key': 'grow', 'out': 'grow.html', 'themes': ['midnight'], 'grows': True, 'stage': 'design',
+            'steps': [{'id': 'P-1', 'page': 'Understanding', 'intro': 'Judge.', 'stage': 'design'},
                       question('Q-1', 'First question?'), question('Q-2', 'Second question?'),
                       {'id': 'P-2', 'page': 'Design', 'intro': 'Pick.', 'stage': 'design'},
                       question('Q-3', 'Third question?')]}
@@ -87,7 +88,7 @@ class Grows(unittest.TestCase):
         self.assertEqual((steps['Q-1']['grow']['round'], steps['Q-1']['grow']['answer']), ('Round 1', 'Second'))
         self.assertEqual(steps['Q-2']['grow']['answered'], False)
         self.assertEqual(deck_data(spec, {})['grows']['round'], 2)
-        self.assertEqual([p['stage'] for p in deck_data(spec, {})['pages']], ['understanding', 'design'])
+        self.assertEqual([p['stage'] for p in deck_data(spec, {})['pages']], ['design', 'design'])
 
     def test_a_hand_written_answered_needs_no_earlier_file(self):
         st = base_spec()
@@ -157,6 +158,48 @@ class Grows(unittest.TestCase):
         self.has(validate(load_spec(put(self.tmp, st)))[0], 'stages go in order')
         st = base_spec(); st['steps'][0]['stage'] = 'later'
         self.has(validate(load_spec(put(self.tmp, st)))[0], 'stage is one of')
+
+    # round 11: a deck is AT one stage
+    def test_the_deck_names_the_stage_it_is_at(self):
+        st = base_spec(); del st['stage']
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'stage is required on a deck that grows')
+        st = base_spec(); st['stage'] = 'later'
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'stage is required on a deck that grows')
+
+    def test_a_deck_with_no_page_at_its_stage_is_refused(self):
+        st = base_spec(); st['stage'] = 'before'
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'no page of the Before build stage')
+
+    def test_a_page_later_than_the_deck_is_refused(self):
+        st = base_spec(); st['steps'][3]['stage'] = 'before'
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'later than the deck (Design)')
+
+    def test_an_open_topic_on_an_earlier_stage_is_refused(self):
+        st = base_spec(); st['steps'][0]['stage'] = 'understanding'
+        errs = validate(load_spec(put(self.tmp, st)))[0]
+        self.has(errs, 'Q-1: "First question?" is still open but sits on the Understanding page')
+        self.has(errs, 'answer it first, or move it to a Design page')
+        # answered by hand, it is a record and the build accepts it
+        st['steps'][1]['answered'] = {'round': 'Round 1', 'answer': 'Yes'}
+        st['steps'][2]['answered'] = {'round': 'Round 1', 'answer': 'Yes'}
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+
+    def test_a_topic_answered_in_an_earlier_round_is_a_record_too(self):
+        answers(self.tmp, '1', {'Q-1': {'v': 'pick', 'pick': 'a'}, 'Q-2': {'v': 'pick', 'pick': 'a'}})
+        st = base_spec(); st['steps'][0]['stage'] = 'understanding'
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+
+    def test_reopened_topics_live_in_the_current_stage_only(self):
+        st = base_spec(); st['steps'][0]['stage'] = 'understanding'
+        st['steps'][1]['reopened'] = 'Asked again.'; st['steps'][2]['answered'] = {'round': 'Round 1', 'answer': 'Yes'}
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'reopened topics live on a Design page')
+
+    def test_the_page_data_marks_the_record(self):
+        st = base_spec(); st['steps'][0]['stage'] = 'understanding'
+        st['steps'][1]['answered'] = {'round': 'Round 1', 'answer': 'Yes'}; st['steps'][2]['answered'] = {'round': 'Round 1', 'answer': 'Yes'}
+        d = deck_data(load_spec(put(self.tmp, st)), {})
+        self.assertEqual([bool(p.get('record')) for p in d['pages']], [True, False])
+        self.assertEqual(d['grows']['stage'], 'design')
 
     # summaries and the gate
     def test_summary_leaves_out_answered_topics_unless_reopened(self):

@@ -13,7 +13,12 @@
   // is the PAGE index, not the step index — everything that used to read DECK.steps[cur] goes
   // through curStep(), which is deliberately empty here. Picture decks: DECK.pages is absent and
   // every line below behaves exactly as it did.
-  const PAGES = DECK.pages || null, LAST = PAGES ? PAGES.length - 1 : N - 1;
+  // WHY (Destin, round 11: "we're not editing prior sections of the deck once we've gotten to post build"): a deck that grows is AT
+  // one stage. Its pages, navigation and counts are the CURRENT stage's pages only; pages of earlier stages are the record, shown on
+  // request and read-only (renderRecord). Every other deck: PAGES is simply DECK.pages, as before.
+  const ALLPAGES = DECK.pages || null;
+  const RECORD = DECK.grows && ALLPAGES ? ALLPAGES.filter(p => p.record) : [];
+  const PAGES = DECK.grows && ALLPAGES ? ALLPAGES.filter(p => !p.record) : ALLPAGES, LAST = PAGES ? PAGES.length - 1 : N - 1;
   const stepById = id => DECK.steps.find(x => x.id === id);
   const pageSteps = i => (PAGES[i] ? PAGES[i].steps.map(stepById).filter(Boolean) : []);
   const curStep = () => (PAGES ? {} : DECK.steps[cur]) || {};
@@ -969,6 +974,8 @@
 
   // ── render the current step ──
   function render() {
+    if (GROWS && viewRecord) { renderRecord(); return; }   // the record of earlier stages (read-only)
+    document.body.classList.remove('recordview');
     if (PAGES) { renderPage(); return; }   // a question deck draws a whole page, not one step
     const st = DECK.steps[cur];
     const themes = st.themes || DECK.themes;   // a real-app capture exists in one theme only — that step lists just that one
@@ -1092,7 +1099,9 @@
   // ── growing decks: a topic's past, the Answered list, Reopen ───────────────────────────────
   const noteLines = (label, answer, notes) => `<dl class="story">`
     + [answer ? [label, answer] : null, ...(notes || []).map(n => [answer ? '' : label, quoted(n)])].filter(Boolean).map((r, i, a) => `<div class="sline you"><dt>${i === 0 ? esc(r[0]) : ''}</dt><dd>${esc(r[1])}</dd></div>`).join('') + `</dl>`;
-  // An open topic with a past: ONE line as a fold row; opened, the story (trail) and his earlier answers, oldest first.
+  // An open topic with a past: ONE small plain muted line under the title, then a text link "More" that opens the story.
+  // WHY (Destin, round 11: "what is that little dropdown section at the top of the questions? It doesn't seem to be related
+  // to any specific question"): it was drawn as a full-width box with a chevron, like a row. Now it is one line of words.
   function growPast(st) {
     if (!GROWS || !st.grow) return '';
     const g = st.grow, mine = !!(state.reopened || {})[st.id];
@@ -1100,27 +1109,70 @@
     if (!line) return '';
     const body = storyLines(st) + (g.story || []).map(x => noteLines(x.round + ' · you', x.answer, x.notes)).join('');
     const open = isOpen('past', st.id);
-    return `<div class="fold pastfold${open ? ' open' : ''}"><button type="button" class="foldhead" data-kind="past" data-sid="${esc(st.id)}" data-call="" aria-expanded="${open}"><span class="foldtitle">${esc(line)}</span><span class="foldfill"></span>${CHEV}</button><div class="foldbody"${open ? '' : ' hidden'}>${body}</div></div>`;
+    return `<div class="pastline" data-reveal><p class="pasttext">${esc(line)}${body ? ` <button type="button" class="tlink revealbtn" data-kind="past" data-sid="${esc(st.id)}" data-on="More" data-off="Less" aria-expanded="${open}">${open ? 'Less' : 'More'}</button>` : ''}</p>`
+      + (body ? `<div class="revealbody"${open ? '' : ' hidden'}>${body}</div>` : '') + `</div>`;
   }
+  // "More" / "Show the full question": one handler for every small text link that opens a body beside it.
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('.revealbtn'); if (!b) return;
+    const k = okey(b.dataset.kind, b.dataset.sid), on = !openMap[k]; openMap[k] = on;
+    b.closest('[data-reveal]').querySelector(':scope > .revealbody').hidden = !on;
+    b.setAttribute('aria-expanded', on); b.textContent = on ? b.dataset.off : b.dataset.on;
+  });
   const touchedStep = st => { const a = state.answers[st.id] || {}; return !!(isAnswered(st) || (a.note || '').trim() || openRows(a) || (a.marks || []).length || Object.keys(a.ok || {}).length); };
   // The small button on a topic he reopened and has not yet answered: put it back.
   function leaveButton(st) {
     if (!GROWS || !(state.reopened || {})[st.id] || state.submitted) return '';
     return touchedStep(st) ? '' : `<div class="growact"><button type="button" class="btn sm ghost leavebtn" data-sid="${esc(st.id)}">Leave as answered</button></div>`;
   }
-  // The "Answered" group: one heading with the count, then one fold row per topic (headline left; round and chevron right).
-  function answeredList(list) {
-    if (!list.length) return '';
-    return `<div class="grp answeredgrp"><h4 class="grph">Answered<span class="grpn">${list.length}</span></h4>` + list.map(st => {
-      const g = st.grow, open = isOpen('ans', st.id);
-      const what = st.kind === 'calls' ? `<ul class="plainrows">${st.calls.map(c => `<li>${esc(c.call)}</li>`).join('')}</ul>` : st.proposal ? `<p>${esc(st.proposal)}</p>` : '';
-      return `<div class="fold ansfold${open ? ' open' : ''}" data-id="${esc(st.id)}"><button type="button" class="foldhead" data-kind="ans" data-sid="${esc(st.id)}" data-call="" aria-expanded="${open}"><span class="foldtitle">${esc(st.headline)}</span><span class="foldfill"></span><span class="foldround">${esc(g.round || '')}</span>${CHEV}</button>`
-        + `<div class="foldbody"${open ? '' : ' hidden'}>${what}<div class="youans"><span class="youlabel">You answered</span>${g.answer ? `<span>${esc(g.answer)}</span>` : ''}</div>`
-        + (g.notes || []).map(n => `<p class="decided">${esc(quoted(n))}</p>`).join('')
-        + (g.resolved ? `<p class="resolvedline">${esc(g.resolved)}</p>` : '')
-        + `<div class="growact"><button type="button" class="btn sm reopenbtn" data-sid="${esc(st.id)}"${state.submitted ? ' disabled' : ''}>Reopen</button></div></div></div>`;
-    }).join('') + `</div>`;
+  // One answered topic as a compact card: the question, what he answered, his words in full, what was done about it, its round.
+  // WHY (Destin, round 11: "It doesn't look like a traditional card that I've answered. It's not clear what the question was and
+  // how my response differed"): the old one-line strip said neither. Quieter than an open card (no accent), still readable.
+  // `record`: drawn in the record of earlier stages, where nothing can be changed, so there is no Reopen.
+  function ansCard(st, record) {
+    const g = st.grow, open = isOpen('full', st.id);
+    const list = st.kind === 'calls' ? `<ul class="plainrows">${st.calls.map(c => `<li>${esc(c.call)}</li>`).join('')}</ul>` : '';
+    const para = (k, t) => st[k] ? `<p><span class="youlabel">${t}</span> ${esc(st[k])}</p>` : '';
+    const opts = (st.options || []).length ? `<ul class="plainrows">${st.options.map(o => `<li><b>${esc(o.label || '')}</b>${o.summary ? ' — ' + esc(o.summary) : ''}</li>`).join('')}</ul>` : '';
+    const full = list + para('today', 'Today') + para('problem', 'Problem') + para('proposal', 'Proposal') + opts;
+    // A tick-or-change list: how many rows he ticked (his comments on rows are in `notes`).
+    const said = g.ticked != null ? `${g.ticked} of ${g.rows} rows ticked as fine` : g.answer;
+    return `<section class="anscard" data-id="${esc(st.id)}" data-reveal><div class="anshead"><h3 class="anstitle">${esc(st.headline)}</h3><span class="ansround">${esc(g.round || '')}</span></div>`
+      + (said ? `<p class="ansline"><span class="youlabel">You answered</span> <span class="ansval">${esc(said)}</span></p>` : '')
+      + (g.notes || []).map(n => `<p class="decided">${esc(quoted(n))}</p>`).join('')
+      + (g.resolved ? `<p class="ansline"><span class="youlabel">Done about it</span> ${esc(g.resolved)}</p>` : '')
+      // WHY nothing when empty: a record card with no full question and no Reopen has no controls, so it gets no empty row (dead space).
+      + (full || !record ? `<div class="ansacts">${full ? `<button type="button" class="tlink revealbtn" data-kind="full" data-sid="${esc(st.id)}" data-on="Show the full question" data-off="Hide the full question" aria-expanded="${open}">${open ? 'Hide the full question' : 'Show the full question'}</button>` : '<span></span>'}`
+      + (record ? '' : `<button type="button" class="btn sm reopenbtn" data-sid="${esc(st.id)}"${state.submitted ? ' disabled' : ''}>Reopen</button>`) + `</div>` : '')
+      + (full ? `<div class="revealbody"${open ? '' : ' hidden'}>${full}</div>` : '') + `</section>`;
   }
+  const answeredList = list => list.length ? `<div class="grp answeredgrp"><h4 class="grph">Answered<span class="grpn">${list.length}</span></h4>` + list.map(st => ansCard(st, false)).join('') + `</div>` : '';
+  // ── the record of earlier stages ───────────────────────────────────────────────────────────
+  // WHY (Destin, round 11: "In my mind we're not editing prior sections of the deck once we've gotten to post build"): earlier
+  // stages are history. One quiet link opens them read-only: no answer buttons, no comment boxes, no Reopen, nothing counted.
+  let viewRecord = false;
+  const stageName = k => (GROWS.stages || {})[k] || k;
+  function renderRecord() {
+    document.body.classList.add('recordview');
+    document.documentElement.dataset.theme = theme;
+    $('#wtitle').textContent = 'Earlier stages'; $('#wsub').textContent = 'The record'; $('.top .where .sep').hidden = false;
+    lastStep = null; curFrames = []; inner.innerHTML = ''; $('#thumbs').innerHTML = '';
+    $('#replay').hidden = true; $('#zoom').hidden = true; $('#livehint').hidden = true; $('#headline').hidden = true;
+    const pages = ALLPAGES.map((p, i) => [p, i]).filter(x => x[0].record);
+    $('#cards').innerHTML = `<div class="recordbanner"><p>This is the record of earlier stages. Nothing here needs an answer.</p><button type="button" class="btn sm" id="recback">Back to ${esc(stageName(GROWS.stage))}</button></div>`
+      + pages.map(([p]) => {
+        const ss = p.steps.map(stepById).filter(Boolean);
+        // A background list (facts) is drawn as plain lines; every other topic is an answered card without Reopen.
+        const body = ss.map(st => st.context ? `<section class="anscard"><div class="anshead"><h3 class="anstitle">${esc(st.headline)}</h3></div><ul class="plainrows">${(st.calls || []).map(c => `<li>${esc(c.call)}</li>`).join('')}</ul></section>` : st.grow && st.grow.answered ? ansCard(st, true) : '').join('');
+        return `<section class="recpage"><div class="stagehead"><span class="recstage">${esc(stageName(p.stage))}</span><h2 class="rectitle">${esc(p.title)}</h2></div>${p.intro ? `<p class="intro">${esc(p.intro)}</p>` : ''}${body}</section>`;
+      }).join('');
+    layout(); paintStages();
+    const t = $('.content') || document.scrollingElement; if (t) t.scrollTop = 0;
+  }
+  $('#cards').addEventListener('click', e => {
+    if (!e.target.closest('#recback')) return;
+    viewRecord = false; render(); const t = $('.content') || document.scrollingElement; if (t) t.scrollTop = 0;
+  });
   $('#cards').addEventListener('click', e => {
     const ro = e.target.closest('.reopenbtn'), lv = e.target.closest('.leavebtn');
     if (!(ro || lv) || state.submitted) return;
@@ -1130,26 +1182,26 @@
     if (!Object.keys(state.reopened).length) delete state.reopened;
     save(); renderPage(); if (t) t.scrollTop = y;
   });
-  // The stages of the feature as ONE segmented control in the header (Understanding, Design, Before build, After build).
-  // The bare number after a stage is the ONLY place the count of topics still needing his answer is stated.
+  // The stage the deck is AT, as a plain progress indicator in the header: earlier stages done, this one lit, later ones dimmed.
+  // WHY not buttons (Destin, round 11: "it's very confusing that I can click around the different sections at the top and it
+  // jumps me between the sides… What section of the deck is this on?"): a deck is at ONE stage, so the four names are a picture
+  // of where it is, not tabs. The only control is the quiet "Earlier stages" link, which opens the read-only record.
   const STAGE_KEYS = ['understanding', 'design', 'before', 'after'];
   const needsAnswer = st => !st.context && !settled(st) && !isAnswered(st);
   function paintStages() {
     if (!GROWS || !PAGES) return;
     const box = $('#stages'); box.hidden = false;
-    if (!box.children.length) box.innerHTML = STAGE_KEYS.map(k => `<button type="button" class="segb" data-stage="${k}">${esc((GROWS.stages || {})[k] || k)}<span class="stn"></span></button>`).join('');
-    const here = (PAGES[cur] || {}).stage;
-    [...box.children].forEach(b => {
-      const k = b.dataset.stage, idx = PAGES.map((p, i) => p.stage === k ? i : -1).filter(i => i >= 0);
-      const n = idx.reduce((t, i) => t + pageSteps(i).filter(needsAnswer).length, 0);
-      b.disabled = !idx.length; b.classList.toggle('on', k === here); b.setAttribute('aria-pressed', k === here ? 'true' : 'false');
-      b.querySelector('.stn').textContent = n ? String(n) : '';
-    });
+    const at = Math.max(0, STAGE_KEYS.indexOf(GROWS.stage)), name = stageName(STAGE_KEYS[at]);
+    if (!box.children.length) {
+      box.innerHTML = `<ol class="stageflow" aria-label="Stage ${at + 1} of 4: ${esc(name)}">` + STAGE_KEYS.map((k, i) => `<li class="${i < at ? 'done' : i === at ? 'on' : 'later'}"${i === at ? ' aria-current="step"' : ''}>${esc(stageName(k))}</li>`).join('') + `</ol>`
+        + `<span class="stagetext">Stage ${at + 1} of 4</span><span class="stagecompact">${at + 1} of 4 · ${esc(name)}</span>`
+        + (RECORD.length ? `<button type="button" class="tlink recordlink">Earlier stages</button>` : '');
+    }
+    const rl = box.querySelector('.recordlink'); if (rl) rl.hidden = viewRecord;
   }
   $('#stages').addEventListener('click', e => {
-    const b = e.target.closest('.segb[data-stage]'); if (!b || b.disabled) return;
-    const idx = PAGES.map((p, i) => p.stage === b.dataset.stage ? i : -1).filter(i => i >= 0);
-    go(idx.find(i => pageSteps(i).some(needsAnswer)) ?? idx[0]);
+    if (!e.target.closest('.recordlink')) return;
+    viewRecord = true; render();
   });
   // Delegated, and bound once: renderPage() replaces the whole column on every page change.
   $('#cards').addEventListener('click', e => {
@@ -1531,6 +1583,7 @@
     state.answers[id] = a;
   }
   function go(i) {
+    if (GROWS && viewRecord) { viewRecord = false; }   // any page move leaves the record
     // Fix: after Submit, arrow keys / progress segments must not keep POSTing answers — but
     // they may still MOVE. A submitted deck is a read-only record he can page back through;
     // record()/save() are what must not run, not the navigation itself.
