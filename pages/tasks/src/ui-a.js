@@ -398,12 +398,14 @@ function renderMain() {
     }
   }
   body += '<div id="bulk"></div><button class="yc-button yc-button--primary t-fab" data-act="quick-add" aria-label="Add task">' + icon('plus') + '</button>';
+  // WHY in the page's flow, above the list: a reminder that floats ends up covering a button.
+  body = body.replace('</header>', '</header><div class="t-alerts" id="alerts"></div>');
   var list = $('list'), top = list ? list.scrollTop : 0, left = list ? list.scrollLeft : 0, sameView = $('main').getAttribute('data-view') === viewKey(v);
   $('main').innerHTML = body;
   $('main').setAttribute('data-view', viewKey(v));
   // Redrawing must not jump the list back to the top while the person is working in it.
   if (sameView && $('list')) { $('list').scrollTop = top; $('list').scrollLeft = left; }
-  renderBulk();
+  renderBulk(); renderAlerts();
 }
 
 function labelsScreen() {

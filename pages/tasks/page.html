@@ -235,9 +235,8 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
 
 .t-toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 32px); padding: 8px 8px 8px 14px; background: var(--panel); border: 1px solid var(--yc-edge-strong); border-radius: var(--radius-lg, 12px); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); font-size: 13px; }
 .t-bulk { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 12; display: flex; align-items: center; gap: 6px; max-width: calc(100% - 16px); overflow-x: auto; padding: 8px 10px; background: var(--panel); border: 1px solid var(--yc-edge-strong); border-radius: var(--radius-lg, 12px); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); font-size: 12px; white-space: nowrap; }
-/* Bottom right: a reminder must never sit on the heading's buttons or the open task's name. */
-.t-alerts { position: fixed; right: 12px; bottom: 12px; z-index: 55; display: flex; flex-direction: column; gap: 8px; width: min(340px, calc(100vw - 24px)); }
-.t-alerts .yc-notice { background: var(--panel); box-shadow: 0 8px 32px rgba(0, 0, 0, .2); }
+.t-alerts { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 860px; margin: 0 auto; padding: 0 20px 8px; }
+.t-alerts:empty { display: none; }
 .t-fab { display: none; }
 
 /* ── narrower panes: the task opens over the list ────────────────────────────────────── */
@@ -261,7 +260,7 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
   .t-comment .t-iconbtn { opacity: 1; }
   .t-fab { display: inline-flex; position: fixed; right: 16px; bottom: 16px; z-index: 15; width: 52px; height: 52px; border-radius: 50%; box-shadow: 0 6px 20px rgb(0 0 0 / .25); }
   .t-fab .t-icon { width: 22px; height: 22px; }
-  .t-alerts { bottom: 80px; }
+  .t-alerts { padding: 0 8px 8px; }
   .t-pop { left: 8px !important; right: 8px; top: auto !important; bottom: 8px; width: auto; max-height: 80vh; }
   .t-date { width: auto; }
   .t-modal { padding: 16px 8px; align-items: flex-end; }
@@ -282,7 +281,6 @@ button.t-group__title:hover { background: var(--inset); color: var(--fg-2); }
   <div id="modal"></div>
   <div id="pop"></div>
   <div id="toast"></div>
-  <div class="t-alerts" id="alerts"></div>
   <script>
 // Tasks page — the rules, with no screen in them (dates, typed shortcuts, repeats, saved shape).
 // WHY separate from ui.js: everything here runs in plain Node, so tests/core.test.mjs can prove
@@ -1230,12 +1228,14 @@ function renderMain() {
     }
   }
   body += '<div id="bulk"></div><button class="yc-button yc-button--primary t-fab" data-act="quick-add" aria-label="Add task">' + icon('plus') + '</button>';
+  // WHY in the page's flow, above the list: a reminder that floats ends up covering a button.
+  body = body.replace('</header>', '</header><div class="t-alerts" id="alerts"></div>');
   var list = $('list'), top = list ? list.scrollTop : 0, left = list ? list.scrollLeft : 0, sameView = $('main').getAttribute('data-view') === viewKey(v);
   $('main').innerHTML = body;
   $('main').setAttribute('data-view', viewKey(v));
   // Redrawing must not jump the list back to the top while the person is working in it.
   if (sameView && $('list')) { $('list').scrollTop = top; $('list').scrollLeft = left; }
-  renderBulk();
+  renderBulk(); renderAlerts();
 }
 
 function labelsScreen() {
