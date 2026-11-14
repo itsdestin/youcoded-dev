@@ -218,8 +218,9 @@ pulled in for free"). This adds one part type, **app**: an outside program the l
 installs and YouCoded shows in its own panel, with an adapter that tells the app how to start
 it, where its window goes, how the theme is applied to it, and what the assistant may do in
 it. The built-in Office (OnlyOffice) and the built-in browser are the two existing examples to
-generalise from. Not designed further here; it needs its own card and design, and it is the
-real answer to the 77 uninstallable Docker rows.
+generalise from. STILL TO DESIGN in this document (adapter contract, theming, what the assistant may do
+inside it, safety step for a whole program). It is also the real answer to the 77
+uninstallable Docker rows.
 
 ### How updates treat a copy you changed
 
@@ -373,7 +374,11 @@ an installed older version can be judged as itself.
 - Every operation works from the phone under the 2026-10-01 rules. The phone layout (#225)
   uses the same facets and rails in a single column.
 
-## 8. Build order
+## 8. Build order (provisional)
+
+Destin, 2026-11-14: "i want to figure out the broader marketplace design first, as i'd said,
+then figure out how we are going to phase/card this." No cards are filed and nothing is drawn
+or built from this section until the whole design is settled; the order below is a sketch.
 
 One branch per repo; each phase leaves the app shippable.
 
@@ -394,7 +399,7 @@ then Pages and new kinds.
    #217 land); editable-kind updates; publish from the app; specialists, prompts, setups,
    collections; then Create your own, History, variants and Report a problem (section 3) for
    every kind. Suggest to the author follows its own design. The **app** part type (full
-   open-source apps through adapters) follows its own card and design.
+   open-source apps through adapters) is placed once it is designed.
 7. **Engines** — tool connections, commands and specialists under YouCoded's engine; the
    automation runner; other assistants' folders.
 8. **Assistant search; phone layout.**
