@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: Many error messages still state a guessed cause or offer no next step; six of seven fix batches remain.
 area: Settings
 side: both
+work: session/round4-silent-places
 ---
 Progress
 Done: LANDED youcoded PR #755 (714c033ba): failure notices for games, marketplace (thin strips), project header, Backup and Sync (+scroll), 8 small settings saves; New best hidden when unproven; crash notice; instant remote failure reason. PR #756: website demo no longer bundles practice pages
@@ -18,6 +19,7 @@ Next: next round: remaining ~38 silent places as a list with sample pictures (Q-
 Blocked: nothing recorded.
 
 Chats
+- 2026-11-14 session/round4-silent-places: chat started
 
 From the old roadmap (user-interface, status confirmed, seen on all, last checked 2026-09-11)
 Error messages still guess at causes in many places. The app-wide re-audit is done and batch 1 of 7 (seventeen messages that stated something false) shipped 2026-09-11. Left: Android and crash plumbing, one Report/Diagnose block, "couldn't load" shown as "none", silent action failures, look and wording, guards. Destin's rule: every error state offers an action
