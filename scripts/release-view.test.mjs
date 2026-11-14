@@ -101,13 +101,13 @@ test('the page says the facts could not be read instead of drawing a release', (
   assert.match(page, /Since the last release/); assert.match(page, /No official release/); assert.match(page, /Nothing is shown rather than guessing/);
 });
 
-test('the page shows the computed version, count, groups and chips', () => {
+test('the page shows the computed version, count and groups', () => {
   const root = tmp(); git(root, 'init', '-q'); fs.mkdirSync(path.join(root, 'cards'));
   fs.writeFileSync(path.join(root, 'cards', '1-x.md'), '---\nid: 1\ntitle: X\nstage: planning\n---\nbody\n');
   const release = { ok: true, version: 'v7.8.9', date: '2026-01-02', count: 2, files: 3, written: [], fresh: true, asOf: '2026-01-03T10:00:00Z',
     groups: [{ key: 'new', title: 'New and improved', hint: 'h', changes: [{ text: 'Shiny thing', detail: 'Plain sentence.', items: [{ id: 1, title: 'X' }] }, { text: 'Other', detail: '', items: [] }] }] };
   const page = buildPage(root, { release });
-  for (const want of ['v7.8.9 is the latest release', 'Jan 2', '2 changes would go out', 'Shiny thing', 'Plain sentence.', 'data-card-open="1"', 'New and improved', 'Checked with GitHub']) assert.ok(page.includes(want), want);
+  for (const want of ['v7.8.9 is the latest release', 'Jan 2', '2 changes would go out', 'Shiny thing', 'New and improved', 'Checked with GitHub']) assert.ok(page.includes(want), want);
   assert.ok(!page.includes('v1.3.0'));
 });
 
@@ -137,16 +137,30 @@ test('wording helpers', () => {
   assert.equal(direct.pr, null); assert.equal(direct.group, 'behind');
 });
 
-test('a group that lists only its first few changes says "4 of N", so the number matches the bullets', async () => {
-  // WHY (Destin, 2026-11-14): a bare "14" sat above four bullets and its meaning was unclear
-  const { execFileSync } = await import('node:child_process');
+test('a release box is plain: one bullet per sentence, its number is its bullets, and it has its own Show all', async () => {
+  // WHY (Destin, 2026-11-14: "too busy and confusing … so many different types of text … a single clickable chip on only one
+  // item … no 'see all' button"): pins the simplified shape so the extra text styles, the stray chip and the far-away button stay gone.
   const here = path.dirname(new URL(import.meta.url).pathname);
   const py = `import sys,json;sys.path.insert(0,${JSON.stringify(path.join(here, '..', 'pages', 'work-board', 'renderer'))});import release_tab as r
-c=lambda i:{'text':'Change %d'%i,'items':[],'key':'youcoded#%d'%i,'notice':[]}
-rel={'ok':True,'fresh':True,'asOf':'','version':'v1','count':9,'groups':[{'key':'new','title':'New','hint':'h','changes':[c(i) for i in range(6)]},{'key':'fixes','title':'Fixes','hint':'h','changes':[c(i) for i in range(3)]}]}
+c=lambda i,n:{'text':'Working title %d'%i,'pr':700+i,'items':[{'id':226,'title':'x'}],'key':'youcoded#%d'%i,'notice':n}
+rel={'ok':True,'fresh':True,'asOf':'','version':'v1','count':6,'groups':[
+ {'key':'new','title':'New','hint':'h','changes':[c(1,['A.','B.','C.']),c(2,['D.','E.','F.']),c(3,[])]},
+ {'key':'behind','title':'Behind','hint':'h','changes':[c(4,['Website: x.']),c(5,['Nothing visible.']),c(6,['Nothing visible.'])]}]}
 print(r.body(rel,lambda k:k))`;
   const html = execFileSync('python3', ['-c', py], { encoding: 'utf8' });
-  assert.match(html, /data-n="6" data-shown="4"[^>]*>4 of 6</);
-  assert.match(html, /data-n="3" data-shown="3"[^>]*>3</);
-  assert.equal((html.match(/<li>/g) || []).length, 7, 'four of the first group and all three of the second are listed');
+  const boxes = html.split('class="card inset relbox"').slice(1);
+  assert.equal(boxes.length, 2);
+  // seven bullets (six sentences + a change with no line, shown by its working title); the number says seven; five listed
+  assert.equal((boxes[0].match(/<li/g) || []).length, 7);
+  assert.match(boxes[0], /class="cnt"[^>]*>7</);
+  assert.equal((boxes[0].match(/<li class="relextra" hidden/g) || []).length, 2);
+  assert.match(boxes[0], /class="btn sm relall" data-n="7"[^>]*>Show all 7</);
+  // the working title is a hover hint, never printed beside the sentence that replaced it
+  assert.match(boxes[0], /<li data-tip="From: Working title 1 \(pull request #701\)">A\.<\/li>/);
+  assert.ok(!boxes[0].includes('>Working title 1<'));
+  // two unseen changes fold into one sentence; a short box has no button
+  assert.equal((boxes[1].match(/<li/g) || []).length, 2);
+  assert.match(boxes[1], /2 other changes with nothing to see/);
+  assert.ok(!boxes[1].includes('relall'));
+  assert.ok(!/relchip|data-card-open|reldetail|No line for users yet/.test(html));
 });

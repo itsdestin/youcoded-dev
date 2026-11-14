@@ -73,13 +73,10 @@ TIP = {
   'rel.fresh': 'When the list was last checked against GitHub, where the app\'s code lives. If GitHub cannot be reached it says so and shows the last copy this computer saved.',
   'rel.written': 'Lines someone wrote by hand in the changelog for the next release.',
   'rel.gaps': 'Each change should carry one to three plain lines saying what a user will notice, written by the assistant when the work lands. This counts the ones still missing.',
-  'rel.working': 'The working title this change was merged under.',
-  'rel.noline': 'Nobody has written what a user will notice for this change, so its working title is shown.',
   'rel.draft': 'A first draft of the changelog, built from the lines above. Meant to be shortened and reworded before it is published.',
   'rel.copy': 'Copies the draft so you can paste it into a chat or a file.',
-  'rel.more': 'This change is linked to more work items than fit here. Open the first ones to find the rest.',
-  'rel.groupcount': 'How many changes since the last release are in this group. "4 of 14" means only the first 4 are listed; press Show all for the rest.',
-  'today.allchanges': 'Shows every change in each group, not just the first few. Press again to fold them.',
+  'rel.groupcount': 'How many lines are in this box. Each line is one thing a user would notice; one merged change can have up to three.',
+  'today.allchanges': 'Shows every line in this box, not just the first few. Press again to fold them.',
 
   # ---------------------------------------------------------------- screens: the control row
   'scr.search': 'Type part of a screen\'s name, where it is, or what it does.',

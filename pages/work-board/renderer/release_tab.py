@@ -7,9 +7,11 @@ section says so instead of showing old numbers.
 import datetime
 import html
 
+NOTHING = 'Nothing visible.'  # release-lines.mjs NOTHING: a change nobody will see
+
 E = html.escape
 MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
-SHOW = 4  # changes shown per group before "Show all"
+SHOW = 5  # lines listed per group before its own "Show all" button
 
 
 def nice_day(iso):
@@ -71,35 +73,30 @@ def body(rel, T):
     if rel.get('missing'):
         m = rel['missing']
         out.append(f'<div class="t-xs muted relgaps" data-tip="{T("rel.gaps")}">{plural(m, "change")} {"has" if m == 1 else "have"} no line written for users yet and {"shows its" if m == 1 else "show their"} working title.</div>')
-    hidden = 0
+    # WHY this plain (Destin, 2026-11-14: "too busy and confusing. why so many different types of text? so much duplicative
+    # information? why is there a single clickable chip … on only one item? why is there no 'see all' button?"):
+    #   - one bullet is one sentence a user would notice, in one text style; a box's number is its bullet count
+    #   - the working title is no longer printed under the sentence that already says it; it is the bullet's hover hint
+    #   - the "#226" work-item chip is gone: it showed only on changes linked to one item, so it looked like a stray
+    #   - each box has its own "Show all N" button at its foot (the old single button sat below all three boxes)
+    #   - changes nobody will see fold into one closing sentence instead of a row of "Nothing visible."
     out.append('<div class="relgrid">')
     for g in rel['groups']:
-        # WHY "4 of 14" (Destin, 2026-11-14: "the numbers at the top of each section don't match the number of bullet
-        # points … unclear what the meaning of the numbers is"): the number is how many changes are in the group, but only
-        # the first few are listed until Show all is pressed, so a bare "14" sat above four bullets.
-        n = len(g['changes'])
-        lis = []
-        for i, c in enumerate(g['changes']):
-            chips = ''.join(f'<button class="relchip" data-card-open="{it["id"]}" data-tip="{E("Opens work item #%d: %s" % (it["id"], it["title"]))}">#{it["id"]}</button>' for it in c['items'][:3])
-            more = len(c['items']) - 3
-            if more > 0:
-                chips += f'<span class="t-2xs muted relmore1" data-tip="{T("rel.more")}">+{more} more</span>'
-            det = f'<div class="t-2xs muted reldetail">{E(c["detail"])}</div>' if c.get('detail') else ''
-            extra = i >= SHOW
-            hidden += extra
+        rows, unseen = [], 0
+        for c in g['changes']:
+            where = f'From: {c["text"]}' + (f' (pull request #{c["pr"]})' if c.get('pr') else '')
             notice = c.get('notice') or []
-            if notice:
-                # the line written for users leads; the working title drops to small print so the change can still be recognised
-                main = '<br>'.join(f'<span class="reltext">{E(n)}</span>' for n in notice)
-                det = f'<div class="t-2xs muted reldetail"><span data-tip="{T("rel.working")}">{E(c["text"])}</span></div>'
+            if notice == [NOTHING]:
+                unseen += 1
             else:
-                main = f'<span class="reltext">{E(c["text"])}</span>'
-                det += f'<div class="t-2xs muted reldetail"><span data-tip="{T("rel.noline")}">No line for users yet</span></div>'
-            lis.append(f'<li{" class=\"relextra\" hidden" if extra else ""}>{main} {chips}{det}</li>')
-        out.append(f'<div class="card inset"><div class="eyebrow"><span data-tip="{E(g["hint"])}">{E(g["title"])}</span> <span class="cnt relcnt" data-n="{n}" data-shown="{min(n, SHOW)}" data-tip="{T("rel.groupcount")}">{n if n <= SHOW else f"{SHOW} of {n}"}</span></div><ul class="t-xs">{"".join(lis)}</ul></div>')
+                rows += [(n, where) for n in (notice or [c['text']])]
+        if unseen:
+            rows.append((f'{plural(unseen, "other change")} with nothing to see: tests and routine part updates.', 'Changes recorded as "Nothing visible" when they landed.'))
+        n = len(rows)
+        lis = ''.join(f'<li{" class=\"relextra\" hidden" if i >= SHOW else ""} data-tip="{E(tip)}">{E(text)}</li>' for i, (text, tip) in enumerate(rows))
+        more = f'<div class="acts right"><button class="btn sm relall" data-n="{n}" aria-expanded="false" data-tip="{T("today.allchanges")}">Show all {n}</button></div>' if n > SHOW else ''
+        out.append(f'<div class="card inset relbox"><div class="eyebrow"><span data-tip="{E(g["hint"])}">{E(g["title"])}</span> <span class="cnt" data-tip="{T("rel.groupcount")}">{n}</span></div><ul class="t-xs">{lis}</ul>{more}</div>')
     out.append('</div>')
-    if hidden:
-        out.append(f'<div class="acts right"><button class="btn sm" id="relall" data-n="{rel["count"]}" aria-expanded="false" data-tip="{T("today.allchanges")}">Show all {rel["count"]} changes</button></div>')
     if rel.get('draft'):
         # WHY a draft he can copy (Destin, 2026-11-14: "a changelog draft would be cool, with the expectation of significant
         # refinement/simplification for the actual published changelog"): the heading says draft so it is never mistaken for the real one.
@@ -114,22 +111,20 @@ CSS = '''
 .relwritten{margin-bottom:8px}
 .relgrid li[hidden]{display:none}
 .relgrid li{overflow-wrap:anywhere}
-.relchip,.relmore1{margin:2px 4px 0 0;vertical-align:baseline}
-.reldetail{margin-top:2px}
+.relgrid li{margin-bottom:6px}
+.relbox{display:flex;flex-direction:column} .relbox ul{flex:1} .relbox .acts{margin-top:8px}
 .relgaps{margin:0 0 8px}
 .reldraftfold{margin-top:12px}
 .reldraft{margin:0 0 8px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;background:var(--well);border:1px solid var(--edge-card);border-radius:var(--radius-md);color:var(--fg-2);user-select:text;max-height:320px;overflow:auto}
-.relchip{font:inherit;font-size:11px;line-height:14px;font-weight:500;padding:1px 8px;border-radius:var(--radius-lg);border:1px solid var(--edge-strong);background:transparent;color:var(--fg-2);cursor:pointer;transition:background-color 120ms steps(4)}
-@media (hover:hover){.relchip:hover{background:var(--panel);color:var(--fg)}} .relchip:active{background:var(--edge)} .relchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 '''
 
 JS = r'''
-// WHY (Destin, 2026-11-11: "See all N changes" did nothing): it now opens the rest of every group's list in place
-(function(){const b=document.getElementById('relall');if(!b)return;
-b.onclick=()=>{const open=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',open);
-  document.querySelectorAll('.relextra').forEach(li=>li.hidden=!open);
-  document.querySelectorAll('.relcnt').forEach(c=>{const n=+c.dataset.n,sh=+c.dataset.shown;c.textContent=open||n<=sh?n:sh+' of '+n});
-  b.textContent=open?'Show fewer':'Show all '+b.dataset.n+' changes';fades()};})();
+// WHY one button per box (Destin, 2026-11-14: "why is there no 'see all' button?"): the single button under all three
+// boxes was easy to miss; each box now opens and folds its own list.
+document.addEventListener('click',e=>{const b=e.target.closest('.relall');if(!b)return;
+  const open=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',open);
+  b.closest('.relbox').querySelectorAll('.relextra').forEach(li=>li.hidden=!open);
+  b.textContent=open?'Show fewer':'Show all '+b.dataset.n;fades()});
 (function(){const b=document.getElementById('relcopy');if(!b)return;
 b.onclick=async()=>{const pre=document.getElementById('reldraft');
   // WHY the fallback: a page inside YouCoded may not be allowed to write to the clipboard; selecting the text lets Ctrl+C do it
