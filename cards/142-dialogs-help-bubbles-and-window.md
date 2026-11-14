@@ -12,8 +12,8 @@ side: screens
 platform: Desktop only
 ---
 Progress
-Done: Round-3 Q-1: Roadmap and Community on Reddit also leave Help open (built on session/round3-chat)
-Next: lands with round3-chat
+Done: LANDED PR #756: Known issues, Roadmap and Reddit rows leave Help open
+Next: remaining items on this card
 Blocked: nothing recorded.
 
 Chats
