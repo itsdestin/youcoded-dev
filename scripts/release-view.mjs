@@ -104,8 +104,7 @@ export function describeChange({ subject, body = '', date = '', sha = '' }, card
   const key = pr ? `youcoded#${pr[1]}` : `youcoded@${sha.slice(0, 9)}`;
   const mine = lines.filter((l) => l.change === key);
   const notice = mine.map((l) => l.text);
-  return { sha: sha.slice(0, 9), date, pr: pr ? Number(pr[1]) : null, branch, text, detail, key, notice,
-    reviewed: mine.length > 0 && mine.every((l) => l.reviewed), group: mine.length ? mine[0].group : groupOf(raw, branch),
+  return { sha: sha.slice(0, 9), date, pr: pr ? Number(pr[1]) : null, branch, text, detail, key, notice, group: mine.length ? mine[0].group : groupOf(raw, branch),
     items: links.map((c) => ({ id: Number(c.id), title: c.title })) };
 }
 
@@ -174,6 +173,5 @@ export function releaseFacts(dir, cards = [], { lines = [], fetch = true, cache 
   try { written = unreleasedBullets(git(repo, ['show', `${ref}:CHANGELOG.md`])); } catch { /* no changelog */ }
   const groups = GROUPS.map(([key, title, hint]) => ({ key, title, hint, changes: changes.filter((c) => c.group === key) })).filter((g) => g.changes.length);
   const draft = changelogDraft(groups);
-  const unread = changes.filter((c) => c.notice.length && !c.reviewed).length;
-  return { ok: true, version: tag, date, count: changes.length, files, written, groups, draft: draft.text, missing: draft.missing, unread, fresh, asOf: asOf ? new Date(asOf).toISOString() : '' };
+  return { ok: true, version: tag, date, count: changes.length, files, written, groups, draft: draft.text, missing: draft.missing, fresh, asOf: asOf ? new Date(asOf).toISOString() : '' };
 }

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { changeKey, parseLines, loadLines, setLines, setReviewed, LINES_FILE, NOTHING } from './release-lines.mjs';
+import { changeKey, parseLines, loadLines, setLines, LINES_FILE, NOTHING } from './release-lines.mjs';
 import { describeChange, changelogDraft } from './release-view.mjs';
 import { shippedLines } from './manage.mjs';
 
@@ -18,21 +18,20 @@ test('a change is named by its pull request or its commit, in one stored form', 
   assert.throws(() => changeKey('the paste fix'), /pull request/);
 });
 
-test('lines are saved unread, replace the change\'s earlier lines, and a tick marks them read', () => {
+test('lines are saved, replace the change\'s earlier lines, and carry no read/unread mark', () => {
   const root = tmp();
   setLines(root, '725', 'fixes', ['Long messages now send.']);
   setLines(root, '709', 'new', ['The buddy holds your main chat.', 'It comes in two sizes.']);
   setLines(root, '725', 'fixes', ['Long messages now send instead of being cut off.']);
-  let rows = loadLines(root);
+  const rows = loadLines(root);
   assert.deepEqual(rows.filter((r) => r.change === 'youcoded#725').map((r) => r.text), ['Long messages now send instead of being cut off.']);
-  assert.ok(rows.every((r) => !r.reviewed));
-  assert.equal(setReviewed(root, '709'), 2);
-  rows = loadLines(root);
-  assert.ok(rows.filter((r) => r.change === 'youcoded#709').every((r) => r.reviewed));
-  assert.ok(!rows.find((r) => r.change === 'youcoded#725').reviewed);
+  const text = fs.readFileSync(path.join(root, LINES_FILE), 'utf8');
   // WHY: the file must stay readable by the same parser after every write
-  assert.deepEqual(parseLines(fs.readFileSync(path.join(root, LINES_FILE), 'utf8')), rows);
-  assert.throws(() => setReviewed(root, '1'), /no line is written/);
+  assert.deepEqual(parseLines(text), rows);
+  // WHY (Destin, 2026-11-14: "yeah remove those"): the per-line tick is gone; lines saved with the old box still read
+  assert.ok(!/\[[ x]\]/.test(text));
+  assert.deepEqual(parseLines('- [ ] youcoded#1 new | Old box.\n- [x] youcoded#2 fixes | Old tick.'), [
+    { change: 'youcoded#1', group: 'new', text: 'Old box.' }, { change: 'youcoded#2', group: 'fixes', text: 'Old tick.' }]);
 });
 
 test('a change nobody will see is recorded as such, behind the scenes', () => {
@@ -52,9 +51,9 @@ test('refusals: no line, four lines, an over-long line, an unknown group', () =>
 test('a written line leads the release entry and decides its group; without one the working title is kept', () => {
   const merge = { sha: 'abcdef0123456', subject: 'Merge pull request #725 from itsdestin/session/paste', body: 'Release safety batch (wave 2)' };
   const plain = describeChange(merge, [], []);
-  assert.deepEqual([plain.notice, plain.reviewed, plain.key], [[], false, 'youcoded#725']);
-  const withLine = describeChange(merge, [], [{ change: 'youcoded#725', group: 'fixes', text: 'Long messages now send.', reviewed: true }]);
-  assert.deepEqual([withLine.notice, withLine.group, withLine.reviewed, withLine.text], [['Long messages now send.'], 'fixes', true, 'Release safety batch (wave 2)']);
+  assert.deepEqual([plain.notice, plain.key], [[], 'youcoded#725']);
+  const withLine = describeChange(merge, [], [{ change: 'youcoded#725', group: 'fixes', text: 'Long messages now send.' }]);
+  assert.deepEqual([withLine.notice, withLine.group, withLine.text], [['Long messages now send.'], 'fixes', 'Release safety batch (wave 2)']);
   // a commit made straight on master has no pull request: it is named by its commit
   assert.equal(describeChange({ sha: 'abcdef0123456', subject: 'Set announcement' }, [], []).key, 'youcoded@abcdef012');
 });

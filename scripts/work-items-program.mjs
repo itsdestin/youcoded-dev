@@ -24,7 +24,6 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { setStage, deleteCards, combineCards, setPaused, loadCards, STAGE_WORD } from './cards.mjs';
-import { setReviewed } from './release-lines.mjs';
 import { workspaceOf, masterHasCards, masterCopy, onMaster } from './cards-master.mjs';
 import { buildPage, PAGE_DIR, prefetch, prefetched, LIVE_GH_CALLS } from './manage.mjs';
 import { execFileSync } from 'node:child_process';
@@ -197,11 +196,6 @@ export function handle(root, req) {
       const reason = typeof req.reason === 'string' ? req.reason.trim() : '';
       const { saved } = change(root, `cards: #${req.id} ${reason ? 'paused' : 'unpaused'} (Work board)`, (r) => setPaused(r, req.id, reason));
       return { ok: true, message: `${reason ? 'Paused' : 'Unpaused'} #${req.id}. ${saved}` };
-    }
-    case 'noticeread': {
-      // WHY: Destin's tick on a release line written by an assistant (release-lines.mjs)
-      const { saved } = change(root, `cards: ${req.change} user line read (Work board)`, (r) => setReviewed(r, req.change, true));
-      return { ok: true, message: `Marked as read. ${saved}` };
     }
     case 'pictures': {
       const out = {}; let used = 0;

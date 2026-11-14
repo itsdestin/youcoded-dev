@@ -416,8 +416,7 @@ async function main() {
     // WHY here (Destin, 2026-11-14, "option a"): the line a user would notice is written when the work lands, by the
     // chat that did it, and saved straight to master like every other item change. Details: release-lines.mjs.
     if (cmd === 'notice') {
-      const { setLines, setReviewed } = await import('./release-lines.mjs');
-      if (o.reviewed) { const n = await save(o, root, `cards: ${id} user line read`, (r) => setReviewed(r, id, true)); console.log(`${id}: ${n} line(s) marked as read`); return; }
+      const { setLines } = await import('./release-lines.mjs');
       const lines = [o.line, o.line2, o.line3].filter((l) => typeof l === 'string');
       const r = await save(o, root, `cards: what users will notice for ${id}`, (dir) => setLines(dir, id, o.nothing ? 'behind' : o.group, lines, { nothing: !!o.nothing }));
       console.log(`${r.change} (${r.group}):\n${r.lines.map((l) => '  ' + l).join('\n')}`); return;

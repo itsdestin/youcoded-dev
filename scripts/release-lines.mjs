@@ -10,8 +10,10 @@
 // (cards-master.mjs commits cards/), so every chat and the Work board see a new line within seconds, and two
 // chats adding lines at once touch different lines of the file.
 //
-// One line of the file:   - [ ] youcoded#725 fixes | Long messages now send instead of being cut off.
-//   [ ] = written by an assistant, not yet read by Destin · [x] = he ticked it on the Work board
+// One line of the file:   - youcoded#725 fixes | Long messages now send instead of being cut off.
+// WHY no read/unread mark (Destin, 2026-11-14: "kinda confused about the point", "yeah remove those"): a tick per
+// line was built first, but he does not review lines one by one; editing the changelog draft is the check. Older
+// lines saved with a "[ ]" box still read fine and lose the box the next time the file is saved.
 //   change = youcoded#<pull request> or youcoded@<first 9 of a commit> · group = new | fixes | behind
 //
 // Tests: node --test scripts/release-lines.test.mjs
@@ -22,8 +24,8 @@ import path from 'node:path';
 export const LINES_FILE = path.join('cards', 'release-lines.md');
 export const LINE_GROUPS = ['new', 'fixes', 'behind'];
 export const NOTHING = 'Nothing visible.';
-const HEADER = '# What users will notice\n\nOne to three lines per merged change, written when it lands by `node scripts/cards.mjs notice`. Read by the Work board\'s "Since the last release" list and its changelog draft. `[x]` means Destin has read the line.\n\n';
-const ROW = /^- \[([ x])\] (\S+) (new|fixes|behind) \| (.+)$/;
+const HEADER = '# What users will notice\n\nOne to three lines per merged change, written when it lands by `node scripts/cards.mjs notice`. Read by the Work board\'s "Since the last release" list and its changelog draft.\n\n';
+const ROW = /^- (?:\[[ x]\] )?(\S+) (new|fixes|behind) \| (.+)$/;
 
 /** "725", "#725", "youcoded#725", "youcoded@abc123def" → the stored form. Throws on anything else. */
 export function changeKey(s) {
@@ -37,7 +39,7 @@ export function changeKey(s) {
 
 export function parseLines(text) {
   return String(text || '').split('\n').map((l) => ROW.exec(l)).filter(Boolean)
-    .map((m) => ({ reviewed: m[1] === 'x', change: m[2], group: m[3], text: m[4].trim() }));
+    .map((m) => ({ change: m[1], group: m[2], text: m[3].trim() }));
 }
 
 export function loadLines(root) {
@@ -48,11 +50,11 @@ function write(root, rows) {
   const file = path.join(root, LINES_FILE);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   // WHY the header is rewritten each time: the file holds nothing but the header and the lines, so there is nothing else to keep
-  fs.writeFileSync(file, HEADER + rows.map((r) => `- [${r.reviewed ? 'x' : ' '}] ${r.change} ${r.group} | ${r.text}`).join('\n') + '\n');
+  fs.writeFileSync(file, HEADER + rows.map((r) => `- ${r.change} ${r.group} | ${r.text}`).join('\n') + '\n');
 }
 
 /**
- * Set a change's lines (replacing any it had; rewriting them makes them unread again).
+ * Set a change's lines (replacing any it had).
  * `texts` is 1–3 lines, or [] with nothing:true for a change nobody will see.
  */
 export function setLines(root, change, group, texts, { nothing = false } = {}) {
@@ -69,21 +71,7 @@ export function setLines(root, change, group, texts, { nothing = false } = {}) {
   }
   const file = path.join(root, LINES_FILE);
   const prev = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
-  const rows = parseLines(prev).filter((r) => r.change !== key).concat(lines.map((text) => ({ reviewed: false, change: key, group, text })));
+  const rows = parseLines(prev).filter((r) => r.change !== key).concat(lines.map((text) => ({ change: key, group, text })));
   write(root, rows);
   return { change: key, group, lines };
-}
-
-/** Destin has read a change's lines (or un-read them). Returns how many lines changed. */
-export function setReviewed(root, change, reviewed = true) {
-  const key = changeKey(change);
-  const file = path.join(root, LINES_FILE);
-  const prev = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
-  const rows = parseLines(prev);
-  const mine = rows.filter((r) => r.change === key);
-  if (!mine.length) throw new Error(`no line is written for ${key} yet`);
-  let n = 0;
-  for (const r of mine) { if (r.reviewed !== !!reviewed) { r.reviewed = !!reviewed; n++; } }
-  write(root, rows);
-  return n;
 }

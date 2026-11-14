@@ -65,15 +65,12 @@ def body(rel, T):
     if not rel['groups']:
         out.append(f'<p class="t-xs muted">Nothing has landed since {E(rel["version"])}, so a release today would change nothing.</p>')
         return ''.join(out)
-    # WHY say the gaps out loud (Destin, 2026-11-14, "option a"): lines for users are written by assistants when work
-    # lands, so he needs to see at a glance how many changes still have none and how many lines he has not read.
-    gaps = []
+    # WHY say the gap out loud (Destin, 2026-11-14, "option a"): lines for users are written by assistants when work lands,
+    # so he needs to see at a glance how many changes still have none. (A per-line "Mark as read" tick was built and
+    # removed the same day at his word: editing the changelog draft is the check.)
     if rel.get('missing'):
-        gaps.append(f'{plural(rel["missing"], "change")} {"has" if rel["missing"] == 1 else "have"} no line written for users yet and {"shows its" if rel["missing"] == 1 else "show their"} working title.')
-    if rel.get('unread'):
-        gaps.append(f'{plural(rel["unread"], "change")} {"has a line" if rel["unread"] == 1 else "have lines"} you have not read yet.')
-    if gaps:
-        out.append(f'<div class="t-xs muted relgaps" data-tip="{T("rel.gaps")}">{" ".join(gaps)}</div>')
+        m = rel['missing']
+        out.append(f'<div class="t-xs muted relgaps" data-tip="{T("rel.gaps")}">{plural(m, "change")} {"has" if m == 1 else "have"} no line written for users yet and {"shows its" if m == 1 else "show their"} working title.</div>')
     hidden = 0
     out.append('<div class="relgrid">')
     for g in rel['groups']:
@@ -90,8 +87,7 @@ def body(rel, T):
             if notice:
                 # the line written for users leads; the working title drops to small print so the change can still be recognised
                 main = '<br>'.join(f'<span class="reltext">{E(n)}</span>' for n in notice)
-                unread = '' if c.get('reviewed') else f' · <button class="relread" data-relread="{E(c["key"])}" data-tip="{T("rel.read")}">Mark as read</button>'
-                det = f'<div class="t-2xs muted reldetail"><span data-tip="{T("rel.working")}">{E(c["text"])}</span>{unread}</div>'
+                det = f'<div class="t-2xs muted reldetail"><span data-tip="{T("rel.working")}">{E(c["text"])}</span></div>'
             else:
                 main = f'<span class="reltext">{E(c["text"])}</span>'
                 det += f'<div class="t-2xs muted reldetail"><span data-tip="{T("rel.noline")}">No line for users yet</span></div>'
@@ -117,8 +113,6 @@ CSS = '''
 .relchip,.relmore1{margin:2px 4px 0 0;vertical-align:baseline}
 .reldetail{margin-top:2px}
 .relgaps{margin:0 0 8px}
-.relread{font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
-.relread:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .reldraftfold{margin-top:12px}
 .reldraft{margin:0 0 8px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;background:var(--well);border:1px solid var(--edge-card);border-radius:var(--radius-md);color:var(--fg-2);user-select:text;max-height:320px;overflow:auto}
 .relchip{font:inherit;font-size:11px;line-height:14px;font-weight:500;padding:1px 8px;border-radius:var(--radius-lg);border:1px solid var(--edge-strong);background:transparent;color:var(--fg-2);cursor:pointer;transition:background-color 120ms steps(4)}
@@ -131,9 +125,6 @@ JS = r'''
 b.onclick=()=>{const open=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',open);
   document.querySelectorAll('.relextra').forEach(li=>li.hidden=!open);
   b.textContent=open?'Show fewer':'Show all '+b.dataset.n;fades()};})();
-// WHY (Destin, 2026-11-14): his tick is what stops an assistant-written line being marked unread
-document.addEventListener('click',async e=>{const r=e.target.closest('[data-relread]');if(!r)return;e.preventDefault();r.disabled=true;
-  try{const j=await send('/api/noticeread',{change:r.dataset.relread});done(j.message||('Marked as read. '+(j.saved||'')))}catch(err){r.disabled=false;toast(err.message)}});
 (function(){const b=document.getElementById('relcopy');if(!b)return;
 b.onclick=async()=>{const pre=document.getElementById('reldraft');
   // WHY the fallback: a page inside YouCoded may not be allowed to write to the clipboard; selecting the text lets Ctrl+C do it

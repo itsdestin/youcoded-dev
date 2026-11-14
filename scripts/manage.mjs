@@ -25,7 +25,7 @@ import { execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import os from 'node:os';
 import { releaseFacts } from './release-view.mjs';
-import { loadLines, setReviewed } from './release-lines.mjs';
+import { loadLines } from './release-lines.mjs';
 import { loadCards, neededBy, setStage, deleteCards, combineCards, STAGES, STAGE_WORD, SHIPPED } from './cards.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -289,8 +289,6 @@ export function makeServer(root, { useGit = true, tidy = false } = {}) {
       if (req.url === '/api/stage') { result = setStage(root, body.ids, body.stage); msg = `cards: moved ${result.map(i => '#' + i).join(', ')} to ${STAGE_WORD[body.stage]} (management page)`; }
       else if (req.url === '/api/delete') { result = deleteCards(root, body.ids); msg = `cards: deleted ${result.map(i => '#' + i).join(', ')} (management page)`; }
       else if (req.url === '/api/combine') { result = combineCards(root, body.ids, body.keep, body.title); msg = `cards: combined ${result.merged.map(i => '#' + i).join(', ')} into #${result.kept} (management page)`; }
-      // WHY (Destin, 2026-11-14): lines for users are written by assistants; his tick on the release list is how one stops being marked unread
-      else if (req.url === '/api/noticeread') { result = setReviewed(root, body.change, true); msg = `cards: ${body.change} user line read (management page)`; }
       else return send(404, { error: 'Not found.' });
       const saved = useGit ? save(root, msg + '\n\nCo-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>') : 'Saved to the files.';
       return send(200, { ok: true, result, saved, ...cardsPayload(root) });
