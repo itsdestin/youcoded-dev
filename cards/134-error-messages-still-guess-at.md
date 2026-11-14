@@ -13,8 +13,8 @@ area: Settings
 side: both
 ---
 Progress
-Done: Overnight 2026-11-12, branch session/look-wording-batch (not landed): 10 failed-load-shown-as-empty places now show Couldn't load + Try again: new-session model lists, Local models, sync log, Blocked users, Web search keys, Library update check, vote counts, project conversations and context files, friends and friend requests.
-Next: Game best-score and leaderboard rows, marketplace card count chips, project header still says 0 conversations beside the new error, phone error paths, about 73 silent button catches.
+Done: Landed 2026-11-13 (PR #748): ten places that showed a failed load as empty now say Couldn\x27t load … with Try again (groups B–I).
+Next: Left: game best-score and leaderboard rows, marketplace count chips, project header 0 conversations beside the new error, phone error paths, about 73 silent catches.
 Blocked: nothing recorded.
 
 Chats

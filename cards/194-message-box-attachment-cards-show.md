@@ -1,7 +1,7 @@
 ---
 id: 194
 title: Message-box attachment cards show no image preview in the dev window, on phones and on Android
-stage: explore
+stage: merged
 tags: files, renderer, bug
 branch: 194-message-box-attachment-cards-show
 created: 2026-10-23
