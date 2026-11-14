@@ -12,8 +12,8 @@ side: screens
 platform: Desktop only
 ---
 Progress
-Done: Built on session/round3-chat: Known issues leaves Help open behind (Destin, C-9).
-Next: Roadmap and Community rows still close Help; ask whether to match.
+Done: Round-3 Q-1: Roadmap and Community on Reddit also leave Help open (built on session/round3-chat)
+Next: lands with round3-chat
 Blocked: nothing recorded.
 
 Chats
