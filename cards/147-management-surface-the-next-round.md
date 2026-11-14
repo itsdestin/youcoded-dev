@@ -19,6 +19,7 @@ Next: (1) Bring back priority and version tags in a way that works. (2) Make the
 Blocked: nothing.
 
 Chats
+- 2026-11-14 session/147-work-board-release-view: chat started
 - 2026-11-11 session/147-work-board-release-view: chat started
 - 2026-10-17 session/work-cards-20261014: built the Work board this round builds on (merged 2026-10-16)
 
