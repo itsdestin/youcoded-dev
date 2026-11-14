@@ -1,0 +1,56 @@
+{
+  "title": "Office front page — round 2: your notes applied",
+  "key": "office-home-conveniences-review-2",
+  "out": "office-home-2.review.html",
+  "images": "images/office-home-2.review",
+  "runs": {
+    "before": "runs/after",
+    "after": "runs2/after"
+  },
+  "labels": { "before": "Round 1", "after": "Now" },
+  "live": { "worktree": "sessions/143-office-home-conveniences/youcoded" },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Office",
+      "path": "Office → Home → the Recent line",
+      "crop": "office/home",
+      "headline": "\"Open a file…\" is now \"Browse files\" with a folder icon, and the search box sits to its right.",
+      "changed": "Your R-1 note: button renamed and given a folder icon; search moved to the far right of the Recent line.",
+      "notice": "The button still opens your computer's file picker, Office files only.",
+      "risk": ""
+    },
+    {
+      "id": "R2-2",
+      "surface": "Office",
+      "path": "Office → Home → point at any file",
+      "crop": "office/home#hover",
+      "headline": "The four buttons now sit fully right, in the place of \"Opened … ago\", which fades out as they fade in.",
+      "changed": "Your R-2 note: the time and the buttons share one spot at the right edge, so nothing in the row shifts. The buttons also slide in a few pixels as they appear (a fifth of a second).",
+      "notice": "The time comes back as soon as the pointer leaves the row.",
+      "risk": "On a touch screen there is no pointing, so the buttons stay and the time is hidden there. With your computer's reduce-motion setting on, the swap happens without the slide."
+    },
+    {
+      "id": "R2-3",
+      "surface": "Office",
+      "path": "Office → Home → Rename",
+      "crop": "office/rename",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Rename now opens a small popup like Rename session: the name, Save, Cancel — no box inside the row.",
+      "changed": "Your R-2/R-4 notes: the in-row box is gone. The popup is the same shape as renaming a session, with the name picked out ready to type over.",
+      "notice": "The ending (.docx) isn't in the box, and the line under it says it stays, so the file keeps opening in Office. A taken name shows its reason at the top of the popup and keeps what you typed.",
+      "risk": ""
+    },
+    {
+      "id": "R2-4",
+      "surface": "Office",
+      "path": "Office → Home (live, in the test app)",
+      "headline": "Try it: point at a few files, right-click one, rename one — does the fade feel right?",
+      "hint": "This is the real page against pretend files. Point at rows to see the fade; Rename, Make a copy and Remove from Recent work here but touch no real files.",
+      "notice": "Watch the time fade out and the buttons slide in as you move down the list.",
+      "risk": "",
+      "live": { "app": "default", "params": { "openPage": "builtin:office" } }
+    }
+  ]
+}

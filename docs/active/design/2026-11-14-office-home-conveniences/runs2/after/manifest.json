@@ -1,0 +1,308 @@
+[
+  {
+    "name": "office/home#hover",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home#hover/midnight.png",
+    "ms": 2862,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home/light.png",
+    "ms": 2867,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home#hover",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home#hover/light.png",
+    "ms": 2927,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home/dark.png",
+    "ms": 2929,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/rename",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/rename/light.png",
+    "ms": 3039,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 307,
+      "w": 420,
+      "h": 287
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home/midnight.png",
+    "ms": 3052,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/rename",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/rename/dark.png",
+    "ms": 3057,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 307,
+      "w": 420,
+      "h": 287
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home#hover",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home#hover/dark.png",
+    "ms": 3186,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/rename",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/rename/creme.png",
+    "ms": 4892,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 307,
+      "w": 420,
+      "h": 287
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home/creme.png",
+    "ms": 4998,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home/meadow-mist.png",
+    "ms": 5070,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home#hover",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home#hover/creme.png",
+    "ms": 5238,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home#hover",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home#hover/halftone-dimension.png",
+    "ms": 6321,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 257,
+      "y": 99,
+      "w": 1175,
+      "h": 793
+    },
+    "parts": []
+  },
+  {
+    "name": "office/rename",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/rename/halftone-dimension.png",
+    "ms": 7621,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 307,
+      "w": 420,
+      "h": 287
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home#hover",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home#hover/meadow-mist.png",
+    "ms": 8113,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/home/halftone-dimension.png",
+    "ms": 8191,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 257,
+      "y": 99,
+      "w": 1175,
+      "h": 793
+    },
+    "parts": []
+  },
+  {
+    "name": "office/rename",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/rename/midnight.png",
+    "ms": 5501,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 307,
+      "w": 420,
+      "h": 287
+    },
+    "parts": []
+  },
+  {
+    "name": "office/rename",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs2/after/office/rename/meadow-mist.png",
+    "ms": 6890,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 315,
+      "w": 420,
+      "h": 271
+    },
+    "parts": []
+  }
+]
