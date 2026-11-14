@@ -11,6 +11,7 @@ summary: Three follow-ups: rebuild priority and version tags, make Screens compl
 area: Developer tools
 side: screens
 vision: together.workflow.surface
+work: session/147-work-board-release-view
 ---
 Progress
 Done: The Work board page is live in Destin's Pages folder (shipped Oct 16, 2026). The priority and version tags were removed on Oct 16 and have not been brought back.
@@ -18,6 +19,7 @@ Next: (1) Bring back priority and version tags in a way that works. (2) Make the
 Blocked: nothing.
 
 Chats
+- 2026-11-11 session/147-work-board-release-view: chat started
 - 2026-10-17 session/work-cards-20261014: built the Work board this round builds on (merged 2026-10-16)
 
 What it covers (Destin, 2026-10-16)

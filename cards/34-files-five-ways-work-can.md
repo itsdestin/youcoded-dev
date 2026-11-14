@@ -14,8 +14,8 @@ platform: Desktop only
 vision: chat.files.office, chat.files.drawer
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: 2026-11-12, same branch (app PR #737): (1) closing a window and having the chats end even though the window stayed open (a text file's own save-guard stopped the close after the chats were already ended): chats now end only once the window has really closed. (2) Office autosave over a change made outside the app now always keeps the overwritten version in Versions, no prompt. (3) Closing ANY window (not only the last) with unsaved files shows the existing 'Unsaved changes' prompt first.
+Next: Destin to review the third item (own commit, can be dropped). Note it also counts unsaved Office documents, not only typed text files.
 Blocked: nothing recorded.
 
 Chats

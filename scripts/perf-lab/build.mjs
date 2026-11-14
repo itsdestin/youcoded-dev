@@ -102,6 +102,15 @@ function cachedBuild(checkout, fp) {
   return { ...prev, ...fp, binary, appDir, cachedOnly: true };
 }
 
+// WHY the inspect switch is turned back on HERE, and only here (2026-11-11): the 2026-10-30 security hardening set
+// `electronFuses.enableNodeCliInspectArguments: false` in youcoded desktop/electron-builder.yml, so a packaged app now
+// ignores `--inspect`. The kit's `suspects.mjs --main-inspect 1` (the `minimized`/`cut` legs) hides and shows the window
+// through that main-process debugger. electron-builder's `-c.<key>=<value>` overrides one key of the loaded config for
+// THIS invocation only: electron-builder.yml is not edited, and release builds (desktop-release.yml runs the package.json
+// `build`/`dist` scripts from a clean checkout) never run this file, so they keep the switch off. These kit packages
+// live only under the checkout's desktop/release/ next to the kit stamp and are never published.
+export const KIT_BUILDER_ARGS = Object.freeze(['--linux', 'dir', '-c.electronFuses.enableNodeCliInspectArguments=true']);
+
 export async function buildApp(checkout = join(ROOT, 'worktrees', 'perf-lab'), { skipIfFresh = true, cachedOnly = false, perfCounters = false, checkSpace = requireDiskHeadroom, _deps = {} } = {}) {
   if (typeof cachedOnly !== 'boolean') throw Error('cached-only must be boolean');
   if (typeof perfCounters !== 'boolean') throw Error('perfCounters must be boolean');
@@ -121,7 +130,8 @@ export async function buildApp(checkout = join(ROOT, 'worktrees', 'perf-lab'), {
   if (skipIfFresh && existsSync(binary) && existsSync(stamp)) {
     const prev = JSON.parse(readFileSync(stamp, 'utf8'));
     // WHY the flag is part of freshness: a counters build and a normal build of the same source are different packages.
-    if (prev.sha === fp.sha && prev.dirty === fp.dirty && Boolean(prev.perfCounters) === perfCounters) return { binary, appDir, ...prev };
+    // WHY kitInspect too: a package built before the override below cannot be driven by `suspects.mjs --only cut`.
+    if (prev.sha === fp.sha && prev.dirty === fp.dirty && Boolean(prev.perfCounters) === perfCounters && prev.kitInspect === true) return { binary, appDir, ...prev };
   }
   // WHY: the measured package alone is ~540 MB; allow staging as well as the
   // shared disk reserve. Reusing a verified cached build needs no new allocation.
@@ -136,9 +146,9 @@ export async function buildApp(checkout = join(ROOT, 'worktrees', 'perf-lab'), {
   // (renderer/state/transcript-batch-counters.ts). Absent for every normal build, so a lab candidate without the flag
   // measures the shipping code path.
   await exec('npx', ['vite', 'build'], desktop, 'vite build', perfCounters ? { env: { ...process.env, VITE_PERF_COUNTERS: '1' } } : undefined);
-  await exec('npx', ['electron-builder', '--linux', 'dir'], desktop, 'electron-builder');
+  await exec('npx', ['electron-builder', ...KIT_BUILDER_ARGS], desktop, 'electron-builder');
   if (!existsSync(binary)) throw new Error(`build finished but ${binary} is missing`);
-  const info = { ...fp, perfCounters, builtAt: new Date().toISOString(), buildMs: Date.now() - t0 };
+  const info = { ...fp, perfCounters, kitInspect: true, builtAt: new Date().toISOString(), buildMs: Date.now() - t0 };
   writeFileSync(stamp, JSON.stringify(info, null, 2));
   return { binary, appDir, ...info };
 }

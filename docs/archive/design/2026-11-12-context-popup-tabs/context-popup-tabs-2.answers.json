@@ -1,0 +1,59 @@
+{
+ "deck": "context-popup-tabs-2",
+ "started": "2026-11-12T09:37:29.604Z",
+ "submitted": "2026-11-12T09:40:30Z",
+ "cur": 6,
+ "answers": {
+  "R2-1": {
+   "v": "yes",
+   "t": 1794476259171,
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "t": 1794476282556,
+   "seconds": 23,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-3": {
+   "v": "yes",
+   "t": 1794476321594,
+   "seconds": 39,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-4": {
+   "v": "yes",
+   "t": 1794476339098,
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-5": {
+   "v": "yes",
+   "t": 1794476349354,
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-6": {
+   "note": "still dont like the \"3 of 13 sections ....\" just confusing",
+   "t": 1794476383896,
+   "v": "other",
+   "seconds": 35,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-Q": {
+   "v": "pick",
+   "pick": "add-to-57",
+   "t": 1794476429083,
+   "seconds": 45,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

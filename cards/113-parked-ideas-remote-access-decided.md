@@ -15,8 +15,8 @@ paused: Destin decided to leave these as they are for now
 vision: sync.follow.remote
 ---
 Progress
-Done: nothing built; decided to leave three phone quirks as they are (2026-10-02, Destin).
-Next: Destin or a tester runs a real-phone check of (a) the connection and reconnect pairing after the 2026-10-23 phone fixes (#688), and (c) whether a phone can add a protected folder. Item (b) stays as Destin chose.
+Done: Nothing code-side; real-phone checks listed in the overnight checklist.
+Next: Run the phone checklist.
 Blocked: needs a real Android phone; nothing in code blocks it.
 
 Chats

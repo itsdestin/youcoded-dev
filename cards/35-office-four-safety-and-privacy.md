@@ -12,13 +12,15 @@ area: Files & documents
 side: behind
 platform: Desktop only
 vision: chat.files.office
+work: session/office-save-robustness
 ---
 Progress
-Done: The document converter is now sealed inside its own job folder, and on Linux it has no network access (shipped in version 1.3.1, commit 3ce5f0b6d). Picture downloads from web addresses check every address they resolve to and every redirect before fetching (office-pictures.ts). 2026-11-10: the error log no longer copies the editor's text (which could hold words from the document); it records only the length, the kind of error and the position in the editor's own code. Built and reviewed on branch session/release-safety (app repo), NOT merged yet. Cost: the editor's own wording of a fault is no longer in the log.
-Next: The log fix landed on 2026-11-10 (youcoded PR #726). Rest is Batch 4: test whether Mac and Windows can still fetch pictures from a document, check Windows folder privacy, close the Teredo and second-lookup gaps for web-address pictures, and decide separately about the seven cosmetic faults. Also worth a look: the converter's own error output (up to 4000 characters) still goes to the log; it holds file paths, and would hold document words only if the converter quotes content in its errors (not checked).
+Done: 2026-11-14, branch session/office-save-robustness (app 7f671f37e, not merged): unsaved edits on an unplugged drive no longer deleted at startup; a file renamed/moved/deleted while open is no longer recreated at the old name; long file names save; a locked folder says so; the same file via a link no longer gets two tabs that overwrite each other; Windows busy-file message.
+Next: Destin to review and say merge. Windows-only: hidden save folder visible during saves, and the busy-file message, unverified.
 Blocked: needs a Windows and a Mac machine to test; the seven cosmetic faults need the running app to re-check.
 
 Chats
+- 2026-11-14 session/office-save-robustness: chat started
 
 From the old roadmap (files, status confirmed, seen on desktop, last checked 2026-10-02)
 Office: four safety and privacy edge cases. (a) On Mac and Windows, an Office document holding a picture given as a web address can make the converter download it outside the app's own checks; only Linux blocks this. (b) On Windows, the private folders for saving and temporary files rely on inherited permissions, so another account on the PC might read a document mid-save (untested). (c) An Office editor error line can copy up to 300 characters of the document's text into the app's log. (d) A picture dropped from a web address is checked as public, but the download looks it up again, so a site could still point it at a home-network address; one disguise (Teredo) is not unwrapped either.

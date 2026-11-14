@@ -1,0 +1,682 @@
+[
+  {
+    "name": "chat/session-context#ancestors",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#ancestors/halftone-dimension.png",
+    "ms": 7115,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#ancestors",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#ancestors/meadow-mist.png",
+    "ms": 11376,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#skill-open-hover",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#skill-open-hover/halftone-dimension.png",
+    "ms": 16004,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#skill-open-hover",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#skill-open-hover/meadow-mist.png",
+    "ms": 29054,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context/dark.png",
+    "ms": 1553,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context/midnight.png",
+    "ms": 1591,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context/light.png",
+    "ms": 1593,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context/creme.png",
+    "ms": 2126,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#claude-code-global",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#claude-code-global/dark.png",
+    "ms": 2760,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global/dark.png",
+    "ms": 2982,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#claude-code-global",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#claude-code-global/midnight.png",
+    "ms": 2984,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global/light.png",
+    "ms": 3049,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global/midnight.png",
+    "ms": 2462,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#native/creme.png",
+    "ms": 1204,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global-engine",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global-engine/light.png",
+    "ms": 2606,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context/meadow-mist.png",
+    "ms": 5996,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#claude-code-global",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#claude-code-global/light.png",
+    "ms": 6162,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#claude-code-global",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#claude-code-global/creme.png",
+    "ms": 6411,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context/halftone-dimension.png",
+    "ms": 6453,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#native/dark.png",
+    "ms": 1437,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#claude-code-global",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#claude-code-global/halftone-dimension.png",
+    "ms": 6719,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global/creme.png",
+    "ms": 6741,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#native/light.png",
+    "ms": 1116,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global-engine",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global-engine/dark.png",
+    "ms": 5377,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global/halftone-dimension.png",
+    "ms": 8087,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global-engine",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global-engine/creme.png",
+    "ms": 6987,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#native/midnight.png",
+    "ms": 2431,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#native/halftone-dimension.png",
+    "ms": 3457,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global-engine",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global-engine/midnight.png",
+    "ms": 7408,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global-engine",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global-engine/halftone-dimension.png",
+    "ms": 7769,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#project/light.png",
+    "ms": 6358,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#project/dark.png",
+    "ms": 6499,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#project/halftone-dimension.png",
+    "ms": 6565,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#project/midnight.png",
+    "ms": 5782,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#claude-code-global",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#claude-code-global/meadow-mist.png",
+    "ms": 13429,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global-engine",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global-engine/meadow-mist.png",
+    "ms": 11171,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#project/creme.png",
+    "ms": 8655,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#global",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#global/meadow-mist.png",
+    "ms": 13645,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#native",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#native/meadow-mist.png",
+    "ms": 9952,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#project",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/251-context-popup-three-tabs/docs/active/design/2026-11-12-context-popup-tabs/runs/after/chat/session-context#project/meadow-mist.png",
+    "ms": 9404,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  }
+]

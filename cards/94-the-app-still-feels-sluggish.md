@@ -14,8 +14,8 @@ work: backup/performance-stream-attribution-wip, session/93-batcher-counters
 vision: chat.converse.multi
 ---
 Progress
-Done: Shipped in the app. Find now searches messages already loaded in a chat (youcoded#591, 2026-10-04). Switching is cheaper: closed panels cost nothing on a switch, and a switch click was cut about 15-20% in the lab (youcoded#616, 2026-10-08, in v1.3.1 or later).
-Next: Measure switching and typing again in the installed app (the built-in timer records each switch). Then choose fixes for the three open problems: typing pauses while a long chat loads in the background (not reproduced in one run on current master), unexplained pauses of several hundred milliseconds when switching or resizing, and the switch animation cost (Destin decides whether a cheaper look is acceptable).
+Done: Re-measured on a quiet machine (2026-11-12, packaged build, software drawing): chat switch shows in 25-35 ms, no dropped frames, typing right after a switch waits under 1 ms; six-session workload switch p95 59-61 ms. Nothing slow found to fix.
+Next: Hand check on the real screen; terminal-view switch is ~520 ms (software drawing, unproven on a real card).
 Blocked: Destin's decision on the animation look (docs/active/... rule .claude/rules/session-strip-motion.md forbids changing it otherwise). The paused experiments on backup/performance-stream-attribution-wip must not be applied over master.
 
 See also #102: 94's chat-switch pauses (item c) are the same slow session-switch clicks that 102 measures in detail.

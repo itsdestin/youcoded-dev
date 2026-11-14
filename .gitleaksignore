@@ -1,0 +1,3 @@
+# Not a secret: an earlier version of a note quoted a model settings name from a test ('qwen35moe.expert_count').
+# Same false alarm as the app repo's exception. Destin OK'd it 2026-11-10 (wave-1 deck Q-19).
+0dbaf88f713232ddf82669726b31e320030f58db:docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md:generic-api-key:28

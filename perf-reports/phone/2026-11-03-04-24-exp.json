@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "date": "2026-11-03T04:24:30.051Z",
+    "label": "exp",
+    "device": "SM-F766U1",
+    "android": "17",
+    "webview": "Chrome/156.0.8078.47",
+    "refreshHz": 120,
+    "frameMs": 8.3,
+    "screen": {
+      "w": 1080,
+      "h": 2520
+    },
+    "repeat": 3,
+    "trace": true,
+    "experiment": "(document.querySelector('.settings-drawer').style.display='none','settings panel hidden')"
+  },
+  "results": [
+    {
+      "step": "skills-drawer-resize",
+      "what": "Drag the drawer handle up to full height and back down",
+      "slowFrames": 25,
+      "droppedFrames": 56,
+      "worstFrameMs": 59,
+      "p95FrameMs": 25,
+      "longFrames": 1,
+      "longFramesMs": 56,
+      "tapResponseMs": 0,
+      "shownMs": null,
+      "pageBusyMs": 732,
+      "graphicsBusyMs": 970,
+      "compositorBusyMs": 230,
+      "cpuAppPct": 75,
+      "cpuAssistantPct": 0,
+      "memoryMb": 442,
+      "failed": 0,
+      "first": {
+        "shownMs": null,
+        "slowFrames": 28,
+        "worstFrameMs": 59,
+        "longFramesMs": 56
+      },
+      "runs": [
+        {
+          "frames": 256,
+          "slowFrames": 28,
+          "droppedFrames": 56,
+          "worstFrameMs": 59,
+          "p95FrameMs": 25,
+          "longFrames": 1,
+          "longFramesMs": 56,
+          "longFrameTop": [
+            {
+              "d": 56,
+              "block": 0,
+              "style": 2,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 0,
+          "shownMs": null,
+          "cpuAppPct": 75,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 732,
+            "graphics": 998,
+            "compositor": 230
+          },
+          "memoryMb": 442,
+          "worked": true
+        },
+        {
+          "frames": 257,
+          "slowFrames": 22,
+          "droppedFrames": 49,
+          "worstFrameMs": 42,
+          "p95FrameMs": 25,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 16,
+          "shownMs": null,
+          "cpuAppPct": 75,
+          "cpuAssistantPct": 3,
+          "threads": {
+            "page": 742,
+            "graphics": 953,
+            "compositor": 232
+          },
+          "memoryMb": 443,
+          "worked": true
+        },
+        {
+          "frames": 257,
+          "slowFrames": 25,
+          "droppedFrames": 56,
+          "worstFrameMs": 67,
+          "p95FrameMs": 25,
+          "longFrames": 1,
+          "longFramesMs": 69,
+          "longFrameTop": [
+            {
+              "d": 69,
+              "block": 0,
+              "style": 1,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 0,
+          "shownMs": null,
+          "cpuAppPct": 74,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 717,
+            "graphics": 970,
+            "compositor": 217
+          },
+          "memoryMb": 442,
+          "worked": true
+        }
+      ]
+    }
+  ]
+}

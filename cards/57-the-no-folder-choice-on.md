@@ -14,7 +14,7 @@ work: session/android-ux-test
 ---
 Progress
 Done: Chats can start with "No folder," which runs the assistant in a clean, empty folder the app keeps (no files or instructions). Shipped in the September 2026 build. On the phone, a session with no folder now opens that same clean spot (shipped 2026-09-16).
-Next: re-test the desktop "No folder" choice; decide what an incognito chat keeps and leaves out (not built yet); decide whether a built-in "Your Assistant" project gets built (not built yet).
+Next: re-test the desktop "No folder" choice; decide what an incognito chat keeps and leaves out (not built yet); decide whether a built-in "Your Assistant" project gets built (not built yet). Also decide here (Destin, 2026-11-12, #251 deck R2-Q): YouCoded's own engine does not read the every-project rules file (~/.claude/CLAUDE.md) — it reads rules only from the project's folder up to the top of its repository, while Claude Code reads both. Whatever becomes the home for global instruction files must also be read into every chat on YouCoded's engine; the pop-up's Global context tab shows "No every-project rules" there until it is.
 Blocked: the phone part is in an unmerged Android test branch (session/android-ux-test), waiting on card #213.
 
 Chats

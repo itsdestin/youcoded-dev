@@ -1,0 +1,75 @@
+# What users will notice
+
+One to three lines per merged change, written when it lands by `node scripts/cards.mjs notice`. Read by the Work board's "Since the last release" list and its changelog draft.
+
+- youcoded#694 fixes | Welcome back now reopens each session with Skip permissions the way you left it.
+- youcoded#695 fixes | Very large replies no longer freeze the app for minutes when they finish.
+- youcoded#695 fixes | The chat no longer jumps around while a page is still drawing.
+- youcoded#695 fixes | Code blocks over 1,500 lines now show without colour, to keep the app fast.
+- youcoded#696 behind | Website: new Security and Changelog pages; the licence now shows as MIT on GitHub.
+- youcoded#697 behind | Readme screenshots now use the default theme.
+- youcoded#699 behind | Readme, public docs and website wording refreshed.
+- youcoded#679 behind | Nothing visible.
+- youcoded#701 behind | Nothing visible.
+- youcoded#706 behind | Nothing visible.
+- youcoded#708 behind | Nothing visible.
+- youcoded#710 behind | Nothing visible.
+- youcoded#715 behind | Nothing visible.
+- youcoded#738 behind | Nothing visible.
+- youcoded@b666f6de4 behind | Nothing visible.
+- youcoded#705 fixes | Tapping a file name in chat now finds the file even when the assistant gave only a short path.
+- youcoded#705 fixes | When a file cannot be opened, the reason now shows even while another file is open.
+- youcoded#707 new | The assistant can now comment on files outside your project, after asking you: Yes, Allow for this chat, or No.
+- youcoded#709 new | The buddy window now shows your main chat, with the same cards, questions and session list.
+- youcoded#709 new | The buddy chat comes in two sizes and remembers which one you chose.
+- youcoded#711 new | Anonymous usage counts now come only from official builds; fresh installs also send a few one-time setup milestones (About, Privacy).
+- youcoded#712 new | Voice input now warns when the microphone hears no sound, and says why nothing was written after you stop.
+- youcoded#713 new | Permission cards offer more precise Always-allow choices.
+- youcoded#713 new | New "Sign out everywhere" option; phones are signed out after 90 days.
+- youcoded#716 fixes | Background commands and watchers no longer show as Running or Watching forever after they end.
+- youcoded#717 new | The privacy policy has been rewritten to describe exactly what the app and server record.
+- youcoded#718 new | Installed plugins found to be unsafe can now be switched off.
+- youcoded#718 new | Themes and official plugins are checked against the published copy before they install.
+- youcoded#719 fixes | Claude Code chats no longer lock up with "Queue identity is not ready"; a send waits up to 10 seconds and goes out.
+- youcoded#721 fixes | Windows: the "found beside your chat's files" message now shows the folder's real capitalisation.
+- youcoded#722 fixes | Linux: when no secure password storage is installed, the app now says so and what to install.
+- youcoded#723 behind | The phone app's built-in system library now includes Alpine's security fixes.
+- youcoded#724 new | A theme whose files changed without a new version number now shows the Update button.
+- youcoded#725 fixes | Messages over 10,000 characters now send instead of sitting marked Unconfirmed.
+- youcoded#726 fixes | After a window reloads, it reopens the chat you were in.
+- youcoded#726 fixes | The Office error log, which goes into bug reports, no longer contains your document's text.
+- youcoded#727 fixes | Arch Linux: a copy installed from another package no longer downloads an update that fails; it says to use the package manager.
+- youcoded#727 fixes | Windows sign-in now retries when Windows refuses a local port.
+- youcoded#727 fixes | The same folder in different capitals is no longer saved twice on Windows and Mac.
+- youcoded#730 fixes | Phone: first-run Claude Code questions show as cards, and every sign-in returns to the app.
+- youcoded#730 fixes | Phone: Connect to Desktop now checks whether Tailscale is on and explains plainly when it cannot connect.
+- youcoded#730 fixes | Phone: the lock screen shows only "A session needs you"; attachments are kept seven days.
+- youcoded#735 behind | Website: smoother scrolling, theme clicks and FAQ.
+- youcoded#736 fixes | Editing a waiting message keeps its file chips, and the title card no longer covers a short chat.
+- youcoded#736 fixes | Terminals keep their graphics when more than 16 Claude Code chats are open.
+- youcoded#736 fixes | The assistant's Edit tool now copes with curly quotes and dashes.
+- youcoded#737 fixes | Word and Excel previews now stop after 60 seconds and say the file took too long, instead of hanging.
+- youcoded#737 fixes | Hovering a comment's "5h ago" shows the full date and time.
+- youcoded#737 fixes | Closing any window with unsaved files now asks first.
+- youcoded#739 fixes | Clicking a quote chip while a reply is streaming no longer snaps the chat back to the bottom.
+- youcoded#739 fixes | Jump to bottom no longer flashes when you drag in a chat that cannot scroll.
+- youcoded#740 new | "What the assistant was given" now has three tabs: Overview, Global context and Project context.
+- youcoded#744 behind | Website: new opening intro and a redesigned phone page.
+- youcoded#746 new | When the assistant's browser asks for approval, you can now answer from your phone.
+- youcoded#747 new | Waiting messages show their file names as chips.
+- youcoded#747 new | A confirmation popup appears before a Gemma model downloads.
+- youcoded#747 new | A one-time notice tells you when a damaged Claude Code settings file was replaced.
+- youcoded#748 new | Hover hints across the app now use the app's own style.
+- youcoded#748 new | Ten places that showed an empty list when loading failed now say what went wrong, with Try again.
+- youcoded#750 fixes | After a crash, an interrupted step reads "completion unknown, inspect before retrying" instead of "Canceled".
+- youcoded#750 fixes | Reports from finished helpers and background commands reach the assistant without waiting for you to type.
+- youcoded#751 behind | Website: faster intro, better layout at in-between widths, smoother FAQ.
+- youcoded#753 behind | Website: demo flicker and end-of-intro hitch fixed; demo page restyled.
+- youcoded#754 new | Local models respond faster: each chat keeps its place, and the default context is now 64k (was 32k).
+- youcoded#754 new | A local chat that grows too long now shows one clear card with Summarise.
+- youcoded#754 new | The local engine no longer gets stuck showing as busy.
+- youcoded#756 new | Right-click a picture in chat for a menu.
+- youcoded#756 new | The folder list is now ordered by last use.
+- youcoded#756 new | Picking a quick chip over words you have typed asks Replace or Add to end.
+- youcoded#755 fixes | More places now say so when something fails to load or save, instead of showing nothing.
+- youcoded#755 fixes | A crashed chat now shows "Session ended unexpectedly".

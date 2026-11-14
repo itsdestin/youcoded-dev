@@ -15,8 +15,8 @@ platform: Desktop only
 vision: chat.harness.tokens, chat.harness.compaction
 ---
 Progress
-Done: Cache fixes shipped in Sept 2026 (youcoded #461, #464, #553, #554). Native compaction with durable restore shipped 2026-09-24 (youcoded #559). Reuse chip counting fixed (#405). A 500k cloud context option shipped (#652). Per-provider output caps shipped (#670).
-Next: Decide whether the expected-vs-surprise cache-miss display still needs a deck. Measure OpenRouter and local cache behavior. Decide on a model-switch warning in the picker. Check whether the helper-cache item is still wanted given cards 71 and 198.
+Done: OpenRouter served-by record landed via app PR #750 (2026-11-13).
+Next: About two weeks after the release that carries it, re-run the measuring script to see whether cache misses line up with a change of serving company.
 Blocked: Nothing recorded. The ChatGPT routing-label branch and the Reuse-chip deck need confirming before they can be tracked.
 
 Chats

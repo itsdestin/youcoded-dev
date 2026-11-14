@@ -1,7 +1,7 @@
 ---
 id: 213
 title: Android test findings: startup crash, sync, attach, phone screens and polish
-stage: polish
+stage: merged
 tags: android, bug, release-blocker, user-interface
 branch: 213-android-test-findings-startup-crash
 finish: Every yes in findings.questions.answers.json is fixed and verified on a real phone; report at docs/active/investigations/2026-11-01-android-ux-test/report.md

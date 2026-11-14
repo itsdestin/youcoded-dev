@@ -1,0 +1,30 @@
+{
+ "deck": "phone-polish-3-review",
+ "started": "2026-11-08T01:15:41.028Z",
+ "submitted": "2026-11-08T01:17:20Z",
+ "cur": 2,
+ "answers": {
+  "P3-1": {
+   "v": "yes",
+   "t": 1794100567406,
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P3-2": {
+   "v": "yes",
+   "t": 1794100570308,
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P3-3": {
+   "v": "other",
+   "t": 1794100639385,
+   "note": "uhhh no. that seems janky. we have a million other menus that scroll and also have a glass effect. i didn't approve getting rid of the fade effect. that is a core part of our ui/design language.",
+   "seconds": 70,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

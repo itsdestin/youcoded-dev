@@ -11,8 +11,8 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery, session/163-crash-resume-repair
 ---
 Progress
-Done: Merged/pushed app PR #662 as a6c47f79ae4120aea48e0e5c514a420ce81d5de7 and archive/workspace PR #287 as b5237db37185db1cd60856be186bd49e8df28257. Both CI gates passed. Source merged tree matches verified candidate; archived records match checked candidate, with one unrelated concurrent #93 bookkeeping entry preserved. Evidence is privately retained outside disposable worktrees.
-Next: Complete. Independent stronger report-acceptance protocol boundary remains under #71, and close-out-tool false positives under #22; those cards stay open.
+Done: Crash-resume repair prepared on app branch session/engine-followups (cherry-picked onto current master, proper message, 2 missing tests added, checks pass). Not merged.
+Next: Destin says merge when ready
 Blocked: None for this shipped recovery work. No release/tag, installed-app modification, device-runtime or Windows/macOS execution claim.
 
 Chats

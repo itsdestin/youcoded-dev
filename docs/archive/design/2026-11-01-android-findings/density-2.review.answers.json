@@ -1,0 +1,29 @@
+{
+ "deck": "android-density-review-2",
+ "started": "2026-11-02T09:56:34.135Z",
+ "submitted": "2026-11-02T09:57:04Z",
+ "cur": 2,
+ "answers": {
+  "E-1": {
+   "v": "yes",
+   "t": 1793613399096,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-2": {
+   "v": "yes",
+   "t": 1793613401923,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-3": {
+   "v": "yes",
+   "t": 1793613422784,
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

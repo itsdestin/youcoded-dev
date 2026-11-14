@@ -1,0 +1,953 @@
+{
+  "meta": {
+    "date": "2026-11-03T04:29:01.456Z",
+    "label": "after-drawer",
+    "device": "SM-F766U1",
+    "android": "17",
+    "webview": "Chrome/156.0.8078.47",
+    "refreshHz": 120,
+    "frameMs": 8.3,
+    "screen": {
+      "w": 1080,
+      "h": 2520
+    },
+    "repeat": 3,
+    "trace": true,
+    "experiment": null
+  },
+  "results": [
+    {
+      "step": "keyboard-open",
+      "what": "Tap the message box; the keyboard slides up",
+      "slowFrames": 1,
+      "droppedFrames": 1,
+      "worstFrameMs": 14,
+      "p95FrameMs": 8,
+      "longFrames": 0,
+      "longFramesMs": 0,
+      "tapResponseMs": 56,
+      "shownMs": null,
+      "pageBusyMs": 295,
+      "graphicsBusyMs": 116,
+      "compositorBusyMs": 97,
+      "cpuAppPct": 48,
+      "cpuAssistantPct": 0,
+      "memoryMb": 374,
+      "screenJanky": 5,
+      "screenFrames": 47,
+      "screenP99": 23,
+      "failed": 0,
+      "first": {
+        "shownMs": null,
+        "slowFrames": 10,
+        "worstFrameMs": 41,
+        "longFramesMs": 114
+      },
+      "runs": [
+        {
+          "frames": 147,
+          "slowFrames": 10,
+          "droppedFrames": 17,
+          "worstFrameMs": 41,
+          "p95FrameMs": 17,
+          "longFrames": 1,
+          "longFramesMs": 114,
+          "longFrameTop": [
+            {
+              "d": 114,
+              "block": 0,
+              "style": 14,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 96,
+          "shownMs": null,
+          "cpuAppPct": 48,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 348,
+            "graphics": 220,
+            "compositor": 109
+          },
+          "memoryMb": 378,
+          "worked": true,
+          "screenFrames": 50,
+          "screenJanky": 20,
+          "screenP90": 31,
+          "screenP99": 69
+        },
+        {
+          "frames": 159,
+          "slowFrames": 1,
+          "droppedFrames": 1,
+          "worstFrameMs": 14,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 56,
+          "shownMs": null,
+          "cpuAppPct": 40,
+          "cpuAssistantPct": 19,
+          "threads": {
+            "page": 222,
+            "graphics": 116,
+            "compositor": 82
+          },
+          "memoryMb": 374,
+          "worked": true,
+          "screenFrames": 47,
+          "screenJanky": 5,
+          "screenP90": 17,
+          "screenP99": 23
+        },
+        {
+          "frames": 153,
+          "slowFrames": 1,
+          "droppedFrames": 1,
+          "worstFrameMs": 13,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 32,
+          "shownMs": null,
+          "cpuAppPct": 48,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 295,
+            "graphics": 115,
+            "compositor": 97
+          },
+          "memoryMb": 371,
+          "worked": true,
+          "screenFrames": 47,
+          "screenJanky": 5,
+          "screenP90": 17,
+          "screenP99": 19
+        }
+      ]
+    },
+    {
+      "step": "keyboard-close",
+      "what": "Press Back; the keyboard slides down",
+      "slowFrames": 6,
+      "droppedFrames": 7,
+      "worstFrameMs": 17,
+      "p95FrameMs": 9,
+      "longFrames": 0,
+      "longFramesMs": 0,
+      "tapResponseMs": 0,
+      "shownMs": null,
+      "pageBusyMs": 335,
+      "graphicsBusyMs": 154,
+      "compositorBusyMs": 106,
+      "cpuAppPct": 51,
+      "cpuAssistantPct": 0,
+      "memoryMb": 367,
+      "screenJanky": 8,
+      "screenFrames": 37,
+      "screenP99": 32,
+      "failed": 0,
+      "first": {
+        "shownMs": null,
+        "slowFrames": 6,
+        "worstFrameMs": 25,
+        "longFramesMs": 0
+      },
+      "runs": [
+        {
+          "frames": 149,
+          "slowFrames": 6,
+          "droppedFrames": 7,
+          "worstFrameMs": 25,
+          "p95FrameMs": 9,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 0,
+          "shownMs": null,
+          "cpuAppPct": 51,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 335,
+            "graphics": 143,
+            "compositor": 106
+          },
+          "memoryMb": 375,
+          "worked": true,
+          "screenFrames": 37,
+          "screenJanky": 8,
+          "screenP90": 28,
+          "screenP99": 32
+        },
+        {
+          "frames": 147,
+          "slowFrames": 7,
+          "droppedFrames": 7,
+          "worstFrameMs": 17,
+          "p95FrameMs": 9,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 0,
+          "shownMs": null,
+          "cpuAppPct": 51,
+          "cpuAssistantPct": 1,
+          "threads": {
+            "page": 320,
+            "graphics": 160,
+            "compositor": 110
+          },
+          "memoryMb": 367,
+          "worked": true,
+          "screenFrames": 36,
+          "screenJanky": 11,
+          "screenP90": 28,
+          "screenP99": 32
+        },
+        {
+          "frames": 156,
+          "slowFrames": 3,
+          "droppedFrames": 3,
+          "worstFrameMs": 17,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 0,
+          "shownMs": null,
+          "cpuAppPct": 55,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 369,
+            "graphics": 154,
+            "compositor": 102
+          },
+          "memoryMb": 367,
+          "worked": true,
+          "screenFrames": 40,
+          "screenJanky": 6,
+          "screenP90": 29,
+          "screenP99": 30
+        }
+      ]
+    },
+    {
+      "step": "menu-open",
+      "what": "Tap ☰; the menu opens",
+      "slowFrames": 1,
+      "droppedFrames": 1,
+      "worstFrameMs": 17,
+      "p95FrameMs": 8,
+      "longFrames": 0,
+      "longFramesMs": 0,
+      "tapResponseMs": 40,
+      "shownMs": 31,
+      "pageBusyMs": 195,
+      "graphicsBusyMs": 54,
+      "compositorBusyMs": 95,
+      "cpuAppPct": 51,
+      "cpuAssistantPct": 0,
+      "memoryMb": 387,
+      "screenJanky": 1,
+      "screenFrames": 35,
+      "screenP99": 18,
+      "failed": 0,
+      "first": {
+        "shownMs": 36,
+        "slowFrames": 1,
+        "worstFrameMs": 25,
+        "longFramesMs": 0
+      },
+      "runs": [
+        {
+          "frames": 102,
+          "slowFrames": 1,
+          "droppedFrames": 2,
+          "worstFrameMs": 25,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 48,
+          "shownMs": 36,
+          "cpuAppPct": 51,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 204,
+            "graphics": 56,
+            "compositor": 103
+          },
+          "memoryMb": 386,
+          "worked": true,
+          "screenFrames": 35,
+          "screenJanky": 1,
+          "screenP90": 16,
+          "screenP99": 25
+        },
+        {
+          "frames": 101,
+          "slowFrames": 1,
+          "droppedFrames": 1,
+          "worstFrameMs": 17,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 40,
+          "shownMs": 29,
+          "cpuAppPct": 51,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 195,
+            "graphics": 54,
+            "compositor": 91
+          },
+          "memoryMb": 387,
+          "worked": true,
+          "screenFrames": 36,
+          "screenJanky": 1,
+          "screenP90": 15,
+          "screenP99": 18
+        },
+        {
+          "frames": 98,
+          "slowFrames": 1,
+          "droppedFrames": 1,
+          "worstFrameMs": 16,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 40,
+          "shownMs": 31,
+          "cpuAppPct": 49,
+          "cpuAssistantPct": 3,
+          "threads": {
+            "page": 169,
+            "graphics": 51,
+            "compositor": 95
+          },
+          "memoryMb": 387,
+          "worked": true,
+          "screenFrames": 35,
+          "screenJanky": 1,
+          "screenP90": 13,
+          "screenP99": 17
+        }
+      ]
+    },
+    {
+      "step": "settings-open",
+      "what": "Tap Settings in the ☰ menu; Settings opens",
+      "slowFrames": 6,
+      "droppedFrames": 6,
+      "worstFrameMs": 17,
+      "p95FrameMs": 11,
+      "longFrames": 0,
+      "longFramesMs": 0,
+      "tapResponseMs": 40,
+      "shownMs": 51,
+      "pageBusyMs": 264,
+      "graphicsBusyMs": 62,
+      "compositorBusyMs": 161,
+      "cpuAppPct": 71,
+      "cpuAssistantPct": 4,
+      "memoryMb": 444,
+      "screenJanky": 9,
+      "screenFrames": 66,
+      "screenP99": 36,
+      "failed": 0,
+      "first": {
+        "shownMs": 88,
+        "slowFrames": 14,
+        "worstFrameMs": 67,
+        "longFramesMs": 118
+      },
+      "runs": [
+        {
+          "frames": 101,
+          "slowFrames": 14,
+          "droppedFrames": 31,
+          "worstFrameMs": 67,
+          "p95FrameMs": 24,
+          "longFrames": 2,
+          "longFramesMs": 118,
+          "longFrameTop": [
+            {
+              "d": 62,
+              "block": 0,
+              "style": 2,
+              "script": 0,
+              "top": []
+            },
+            {
+              "d": 56,
+              "block": 0,
+              "style": 2,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 40,
+          "shownMs": 88,
+          "cpuAppPct": 78,
+          "cpuAssistantPct": 4,
+          "threads": {
+            "page": 264,
+            "graphics": 121,
+            "compositor": 138
+          },
+          "memoryMb": 435,
+          "worked": true,
+          "screenFrames": 45,
+          "screenJanky": 14,
+          "screenP90": 48,
+          "screenP99": 93
+        },
+        {
+          "frames": 124,
+          "slowFrames": 3,
+          "droppedFrames": 3,
+          "worstFrameMs": 17,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 40,
+          "shownMs": 51,
+          "cpuAppPct": 67,
+          "cpuAssistantPct": 4,
+          "threads": {
+            "page": 260,
+            "graphics": 56,
+            "compositor": 161
+          },
+          "memoryMb": 444,
+          "worked": true,
+          "screenFrames": 67,
+          "screenJanky": 6,
+          "screenP90": 20,
+          "screenP99": 30
+        },
+        {
+          "frames": 123,
+          "slowFrames": 6,
+          "droppedFrames": 6,
+          "worstFrameMs": 17,
+          "p95FrameMs": 11,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 40,
+          "shownMs": 49,
+          "cpuAppPct": 71,
+          "cpuAssistantPct": 1,
+          "threads": {
+            "page": 302,
+            "graphics": 62,
+            "compositor": 179
+          },
+          "memoryMb": 444,
+          "worked": true,
+          "screenFrames": 66,
+          "screenJanky": 9,
+          "screenP90": 29,
+          "screenP99": 36
+        }
+      ]
+    },
+    {
+      "step": "appearance-open",
+      "what": "In Settings, tap Appearance; its popup opens",
+      "slowFrames": 5,
+      "droppedFrames": 11,
+      "worstFrameMs": 50,
+      "p95FrameMs": 9,
+      "longFrames": 1,
+      "longFramesMs": 58,
+      "tapResponseMs": 56,
+      "shownMs": 46,
+      "pageBusyMs": 258,
+      "graphicsBusyMs": 92,
+      "compositorBusyMs": 72,
+      "cpuAppPct": 44,
+      "cpuAssistantPct": 2,
+      "memoryMb": 497,
+      "screenJanky": 10,
+      "screenFrames": 13,
+      "screenP99": 85,
+      "failed": 0,
+      "first": {
+        "shownMs": 52,
+        "slowFrames": 10,
+        "worstFrameMs": 100,
+        "longFramesMs": 250
+      },
+      "runs": [
+        {
+          "frames": 90,
+          "slowFrames": 10,
+          "droppedFrames": 36,
+          "worstFrameMs": 100,
+          "p95FrameMs": 25,
+          "longFrames": 3,
+          "longFramesMs": 250,
+          "longFrameTop": [
+            {
+              "d": 101,
+              "block": 0,
+              "style": 2,
+              "script": 0,
+              "top": []
+            },
+            {
+              "d": 86,
+              "block": 0,
+              "style": 1,
+              "script": 0,
+              "top": []
+            },
+            {
+              "d": 63,
+              "block": 9,
+              "style": 1,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 184,
+          "shownMs": 52,
+          "cpuAppPct": 67,
+          "cpuAssistantPct": 14,
+          "threads": {
+            "page": 338,
+            "graphics": 250,
+            "compositor": 96
+          },
+          "memoryMb": 526,
+          "worked": true,
+          "screenFrames": 17,
+          "screenJanky": 12,
+          "screenP90": 125,
+          "screenP99": 125
+        },
+        {
+          "frames": 115,
+          "slowFrames": 5,
+          "droppedFrames": 11,
+          "worstFrameMs": 50,
+          "p95FrameMs": 9,
+          "longFrames": 1,
+          "longFramesMs": 53,
+          "longFrameTop": [
+            {
+              "d": 53,
+              "block": 0,
+              "style": 1,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 56,
+          "shownMs": 42,
+          "cpuAppPct": 44,
+          "cpuAssistantPct": 2,
+          "threads": {
+            "page": 258,
+            "graphics": 92,
+            "compositor": 67
+          },
+          "memoryMb": 496,
+          "worked": true,
+          "screenFrames": 13,
+          "screenJanky": 10,
+          "screenP90": 69,
+          "screenP99": 73
+        },
+        {
+          "frames": 113,
+          "slowFrames": 3,
+          "droppedFrames": 9,
+          "worstFrameMs": 50,
+          "p95FrameMs": 8,
+          "longFrames": 1,
+          "longFramesMs": 58,
+          "longFrameTop": [
+            {
+              "d": 58,
+              "block": 0,
+              "style": 2,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 56,
+          "shownMs": 46,
+          "cpuAppPct": 39,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 256,
+            "graphics": 91,
+            "compositor": 72
+          },
+          "memoryMb": 497,
+          "worked": true,
+          "screenFrames": 12,
+          "screenJanky": 9,
+          "screenP90": 73,
+          "screenP99": 85
+        }
+      ]
+    },
+    {
+      "step": "skills-drawer-open",
+      "what": "Tap the compass; the skills drawer slides up",
+      "slowFrames": 6,
+      "droppedFrames": 9,
+      "worstFrameMs": 33,
+      "p95FrameMs": 17,
+      "longFrames": 0,
+      "longFramesMs": 0,
+      "tapResponseMs": 112,
+      "shownMs": 35,
+      "pageBusyMs": 205,
+      "graphicsBusyMs": 50,
+      "compositorBusyMs": 105,
+      "cpuAppPct": 62,
+      "cpuAssistantPct": 0,
+      "memoryMb": 485,
+      "screenJanky": 7,
+      "screenFrames": 45,
+      "screenP99": 61,
+      "failed": 0,
+      "first": {
+        "shownMs": 37,
+        "slowFrames": 6,
+        "worstFrameMs": 92,
+        "longFramesMs": 99
+      },
+      "runs": [
+        {
+          "frames": 82,
+          "slowFrames": 6,
+          "droppedFrames": 17,
+          "worstFrameMs": 92,
+          "p95FrameMs": 17,
+          "longFrames": 1,
+          "longFramesMs": 99,
+          "longFrameTop": [
+            {
+              "d": 99,
+              "block": 0,
+              "style": 2,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 168,
+          "shownMs": 37,
+          "cpuAppPct": 58,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 189,
+            "graphics": 85,
+            "compositor": 91
+          },
+          "memoryMb": 488,
+          "worked": true,
+          "screenFrames": 41,
+          "screenJanky": 7,
+          "screenP90": 30,
+          "screenP99": 117
+        },
+        {
+          "frames": 94,
+          "slowFrames": 7,
+          "droppedFrames": 9,
+          "worstFrameMs": 33,
+          "p95FrameMs": 17,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 112,
+          "shownMs": 35,
+          "cpuAppPct": 62,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 249,
+            "graphics": 50,
+            "compositor": 108
+          },
+          "memoryMb": 485,
+          "worked": true,
+          "screenFrames": 45,
+          "screenJanky": 7,
+          "screenP90": 29,
+          "screenP99": 61
+        },
+        {
+          "frames": 94,
+          "slowFrames": 4,
+          "droppedFrames": 6,
+          "worstFrameMs": 33,
+          "p95FrameMs": 10,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 104,
+          "shownMs": 31,
+          "cpuAppPct": 62,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 205,
+            "graphics": 47,
+            "compositor": 105
+          },
+          "memoryMb": 485,
+          "worked": true,
+          "screenFrames": 50,
+          "screenJanky": 5,
+          "screenP90": 30,
+          "screenP99": 57
+        }
+      ]
+    },
+    {
+      "step": "skills-drawer-resize",
+      "what": "Drag the drawer handle up to full height and back down",
+      "slowFrames": 6,
+      "droppedFrames": 11,
+      "worstFrameMs": 50,
+      "p95FrameMs": 8,
+      "longFrames": 1,
+      "longFramesMs": 55,
+      "tapResponseMs": 40,
+      "shownMs": null,
+      "pageBusyMs": 767,
+      "graphicsBusyMs": 739,
+      "compositorBusyMs": 381,
+      "cpuAppPct": 95,
+      "cpuAssistantPct": 0,
+      "memoryMb": 490,
+      "screenJanky": 16,
+      "screenFrames": 150,
+      "screenP99": 65,
+      "failed": 0,
+      "first": {
+        "shownMs": null,
+        "slowFrames": 6,
+        "worstFrameMs": 367,
+        "longFramesMs": 378
+      },
+      "runs": [
+        {
+          "frames": 251,
+          "slowFrames": 6,
+          "droppedFrames": 48,
+          "worstFrameMs": 367,
+          "p95FrameMs": 8,
+          "longFrames": 1,
+          "longFramesMs": 378,
+          "longFrameTop": [
+            {
+              "d": 378,
+              "block": 0,
+              "style": 1,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 40,
+          "shownMs": null,
+          "cpuAppPct": 88,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 646,
+            "graphics": 866,
+            "compositor": 300
+          },
+          "memoryMb": 488,
+          "worked": true,
+          "screenFrames": 114,
+          "screenJanky": 16,
+          "screenP90": 24,
+          "screenP99": 350
+        },
+        {
+          "frames": 290,
+          "slowFrames": 10,
+          "droppedFrames": 11,
+          "worstFrameMs": 25,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 24,
+          "shownMs": null,
+          "cpuAppPct": 99,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 773,
+            "graphics": 732,
+            "compositor": 399
+          },
+          "memoryMb": 490,
+          "worked": true,
+          "screenFrames": 150,
+          "screenJanky": 21,
+          "screenP90": 28,
+          "screenP99": 36
+        },
+        {
+          "frames": 290,
+          "slowFrames": 5,
+          "droppedFrames": 9,
+          "worstFrameMs": 50,
+          "p95FrameMs": 8,
+          "longFrames": 1,
+          "longFramesMs": 55,
+          "longFrameTop": [
+            {
+              "d": 55,
+              "block": 0,
+              "style": 0,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 40,
+          "shownMs": null,
+          "cpuAppPct": 95,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 767,
+            "graphics": 739,
+            "compositor": 381
+          },
+          "memoryMb": 491,
+          "worked": true,
+          "screenFrames": 157,
+          "screenJanky": 11,
+          "screenP90": 19,
+          "screenP99": 65
+        }
+      ]
+    },
+    {
+      "step": "projects-open",
+      "what": "Tap Projects in the ☰ menu; Projects opens with its files",
+      "slowFrames": 5,
+      "droppedFrames": 10,
+      "worstFrameMs": 33,
+      "p95FrameMs": 9,
+      "longFrames": 0,
+      "longFramesMs": 0,
+      "tapResponseMs": 48,
+      "shownMs": 40,
+      "pageBusyMs": 343,
+      "graphicsBusyMs": 101,
+      "compositorBusyMs": 77,
+      "cpuAppPct": 35,
+      "cpuAssistantPct": 98,
+      "memoryMb": 405,
+      "screenJanky": 3,
+      "screenFrames": 14,
+      "screenP99": 69,
+      "failed": 0,
+      "first": {
+        "shownMs": 37,
+        "slowFrames": 8,
+        "worstFrameMs": 67,
+        "longFramesMs": 80
+      },
+      "runs": [
+        {
+          "frames": 140,
+          "slowFrames": 8,
+          "droppedFrames": 18,
+          "worstFrameMs": 67,
+          "p95FrameMs": 17,
+          "longFrames": 1,
+          "longFramesMs": 80,
+          "longFrameTop": [
+            {
+              "d": 80,
+              "block": 0,
+              "style": 15,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 48,
+          "shownMs": 37,
+          "cpuAppPct": 34,
+          "cpuAssistantPct": 185,
+          "threads": {
+            "page": 344,
+            "graphics": 156,
+            "compositor": 73
+          },
+          "memoryMb": 408,
+          "worked": true,
+          "screenFrames": 13,
+          "screenJanky": 5,
+          "screenP90": 69,
+          "screenP99": 77
+        },
+        {
+          "frames": 148,
+          "slowFrames": 5,
+          "droppedFrames": 10,
+          "worstFrameMs": 33,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 48,
+          "shownMs": 40,
+          "cpuAppPct": 36,
+          "cpuAssistantPct": 74,
+          "threads": {
+            "page": 335,
+            "graphics": 101,
+            "compositor": 87
+          },
+          "memoryMb": 405,
+          "worked": true,
+          "screenFrames": 14,
+          "screenJanky": 3,
+          "screenP90": 42,
+          "screenP99": 61
+        },
+        {
+          "frames": 153,
+          "slowFrames": 4,
+          "droppedFrames": 10,
+          "worstFrameMs": 33,
+          "p95FrameMs": 9,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 96,
+          "shownMs": 51,
+          "cpuAppPct": 35,
+          "cpuAssistantPct": 98,
+          "threads": {
+            "page": 343,
+            "graphics": 100,
+            "compositor": 77
+          },
+          "memoryMb": 405,
+          "worked": true,
+          "screenFrames": 14,
+          "screenJanky": 3,
+          "screenP90": 44,
+          "screenP99": 69
+        }
+      ]
+    }
+  ]
+}

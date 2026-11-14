@@ -13,8 +13,8 @@ platform: Desktop only
 vision: chat.files.office
 ---
 Progress
-Done: Large spreadsheets and big Word files now open without freezing the window (merged to master 2026-10-24, PR youcoded#695, commit 8ce7e709f). Opening a 200,000-row spreadsheet went from a 1.7-second freeze to 0.46 seconds (per card 93). Background sleeping for Office documents is already in place (office-store.ts:16). Not yet released: the last release was v1.3.3 on 2026-10-23.
-Next: Re-measure the remaining cases in a dev instance: a large Markdown file opening in the Files viewer, saving a 20 MB spreadsheet while typing, restoring an old Office version, and memory with several Office tabs open. Then decide which 2 to 3 items to keep.
+Done: Destin, overnight deck 2026-11-13 C-13: leave very long path lists as they are for now.
+Next: Nothing now.
 Blocked: Windows and Mac are not measured. Each remaining case needs a real run to confirm.
 
 Chats

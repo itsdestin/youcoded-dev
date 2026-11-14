@@ -1,0 +1,145 @@
+{
+ "title": "Overnight: six visible changes to keep or remove",
+ "key": "overnight-pictures-2026-11-12",
+ "out": "overnight.review.html",
+ "images": "images/overnight.review",
+ "runs": {
+  "before": "runs/q62before",
+  "after": "runs/q62after",
+  "toast": "runs/chat11",
+  "gemma": "runs/chat45",
+  "phone": "runs/phone-20261112-113348",
+  "lookbefore": "runs/lookbefore",
+  "lookafter": "runs/lookafter"
+ },
+ "themes": [
+  "meadow-mist",
+  "light"
+ ],
+ "theme": "fixed",
+ "steps": [
+  {
+   "id": "V-1",
+   "surface": "Chat",
+   "path": "The waiting strip just above the message box",
+   "crop": "chat#queue-waiting-after@1440x230+0+660",
+   "runs": [
+    "before",
+    "after"
+   ],
+   "headline": "A waiting message now shows the names of the files attached to it.",
+   "changed": "Under a waiting message, each attached file shows as a small chip with an icon and its name (never the folder path). Up to three show, then \"+N more\". You asked to see this before it lands (wave 2 deck).",
+   "notice": "You can tell which files will go out with a waiting message.",
+   "risk": "The waiting strip is one row taller when files are attached. Shown with practice data; not yet tried with a real waiting message.",
+   "themes": [
+    "meadow-mist"
+   ]
+  },
+  {
+   "id": "V-2",
+   "surface": "Chat",
+   "path": "Above the message box, once, after the app had to replace a damaged Claude Code settings file",
+   "crop": "dev/toast#settings-repaired@1440x330+0+570",
+   "runs": [
+    "toast"
+   ],
+   "new": true,
+   "headline": "A one-time notice when a damaged Claude Code settings file had to be replaced.",
+   "changed": "You said yes to this notice on the wave 2 deck. It stays 30 seconds and reads: \"YouCoded couldn't read your Claude Code settings file, so it kept the old copy and started a fresh one. Your own settings in the old copy were not carried over.\" A Show old copy button opens the kept file. It guesses no cause.",
+   "notice": "You are told once, instead of your settings quietly resetting.",
+   "risk": "Computer only for now (the phone question is further down). Proven by a test and this practice picture, not with a really damaged file.",
+   "themes": [
+    "meadow-mist"
+   ]
+  },
+  {
+   "id": "V-3",
+   "surface": "Settings",
+   "path": "Settings, Local models, pressing Download on a Gemma model (also first-run setup and Add from Hugging Face)",
+   "crop": "settings/assistant/local/gemma-terms@panel",
+   "runs": [
+    "gemma"
+   ],
+   "new": true,
+   "headline": "Download on a Gemma model now asks first, as you described.",
+   "changed": "You asked for \"a short confirmation popup after clicking download/continue, that offer a cancel/download buttons\". Checking the terms first turned up a surprise: Gemma 4 (the three builds the app offers) is under the ordinary Apache 2.0 licence with no use limits. Sources read on 12 November: the Hugging Face pages of those builds and Google's own Gemma 4 licence page. So the popup only credits Google and links the licence.",
+   "notice": "One extra click before a Gemma download starts. Cancel starts nothing.",
+   "risk": "With no use limits to pass on, the popup may not be worth the click. No removes it. Older Gemma versions were not checked; their popup says the terms of that exact model were not checked.",
+   "themes": [
+    "meadow-mist"
+   ]
+  },
+  {
+   "id": "V-4",
+   "surface": "Phone",
+   "path": "A chat open on the phone while the assistant's browser on your computer asks for approval",
+   "crop": [
+    {
+     "crop": "chat#phone-browser-site",
+     "label": "Use a website"
+    },
+    {
+     "crop": "chat#phone-browser-final",
+     "label": "A final step"
+    },
+    {
+     "crop": "chat#phone-browser-handoff",
+     "label": "Needs you"
+    }
+   ],
+   "runs": [
+    "phone"
+   ],
+   "new": true,
+   "headline": "The assistant's browser approval questions now appear on the phone.",
+   "changed": "Before, the question only reached the computer's own window, so on a phone the assistant waited, gave up, and said you had declined. Now the phone chat shows the same card as the computer, with the same words and buttons. You asked for this on 26 October (\"build in remote browser approvals like every other approval card\").",
+   "notice": "You can approve or refuse from the phone.",
+   "risk": "Passed its tests and these practice pictures only. Nobody has answered a real browser question from a real phone; that is step A of the phone checklist.",
+   "themes": [
+    "meadow-mist"
+   ]
+  },
+  {
+   "id": "V-5",
+   "surface": "Projects",
+   "path": "A project's Conversations tab when the list cannot be read (practice failure)",
+   "crop": "projects/conversations#load-failed@1160x300+140+330",
+   "runs": [
+    "lookbefore",
+    "lookafter"
+   ],
+   "labels": {
+    "lookbefore": "Before",
+    "lookafter": "After"
+   },
+   "themes": [
+    "light"
+   ],
+   "headline": "A list that failed to load now says so, instead of claiming it is empty.",
+   "changed": "Before, a failed read showed \"No conversations in this project yet.\" Now it shows \"Couldn't load this project's conversations\" with the real reason and a Try again button. This is one of ten places changed the same way; the full list is on the questions page under Look and wording.",
+   "notice": "A failure no longer looks like you have nothing. The red text here says Mock failure because the practice app fakes the reason; the real app shows the real one.",
+   "risk": "The project header above still says 0 conversations beside the new message; that is on the card for the next round."
+  },
+  {
+   "id": "V-6",
+   "surface": "Library",
+   "path": "The Library when the check for updates fails (practice failure)",
+   "crop": "library#update-check-failed@1440x330+0+30",
+   "runs": [
+    "lookbefore",
+    "lookafter"
+   ],
+   "labels": {
+    "lookbefore": "Before",
+    "lookafter": "After"
+   },
+   "themes": [
+    "light"
+   ],
+   "headline": "A failed update check now shows a message instead of quietly hiding every Update badge.",
+   "changed": "Before, if the check failed every Update badge vanished, which read as \"all up to date\". Now a box at the top says \"Couldn't check for updates\" with the reason and Try again, and badges already known stay.",
+   "notice": "You can tell \"nothing to update\" from \"could not check\".",
+   "risk": "Seen in the practice app only."
+  }
+ ]
+}

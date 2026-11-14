@@ -1,0 +1,80 @@
+{
+  "title": "Phone polish — second try on two fixes",
+  "key": "phone-polish-2-review",
+  "out": "phone-polish-2.review.html",
+  "images": "images/phone-polish-2.review",
+  "runs": {
+    "abefore": "runs2/a/before",
+    "aafter": "runs2/a/after",
+    "bbefore": "runs2/b/before",
+    "bafter": "runs2/b/after",
+    "cbefore": "runs2/c/before",
+    "cafter": "runs2/c/after"
+  },
+  "steps": [
+    {
+      "id": "P2-1",
+      "surface": "Welcome screen, when you have past conversations",
+      "path": "Open the app with no session open",
+      "crop": "welcome#returning@390x200+0+470",
+      "runs": [
+        "abefore",
+        "aafter"
+      ],
+      "labels": {
+        "abefore": "Before (original)",
+        "aafter": "After"
+      },
+      "headline": "Resume session stays an outline everywhere; only themes with a background picture get a tint behind it.",
+      "changed": "The solid box is gone. On plain themes (Light, Crème, Dark, Midnight) the button is exactly as it was. On themes with a background picture (Meadow Mist, Halftone) it gets a see-through tint of the theme's own background colour and full-strength text, so the label no longer sits straight on the picture.",
+      "notice": "Switch themes: Light, Crème, Dark and Midnight are unchanged; Meadow Mist now reads clearly over the trees.",
+      "risk": "On Meadow Mist the tint is the pale sky colour, so the button reads a little lighter than the green New session button above it.",
+      "highlight": {
+        "box": [
+          16,
+          35,
+          68,
+          22
+        ]
+      }
+    },
+    {
+      "id": "P2-2",
+      "surface": "Welcome screen, phone turned sideways",
+      "path": "Turn the phone sideways on the welcome screen",
+      "crop": "welcome/new-session",
+      "runs": [
+        "bbefore",
+        "bafter"
+      ],
+      "labels": {
+        "bbefore": "Before (original)",
+        "bafter": "After"
+      },
+      "headline": "With the phone sideways, the mascot and heading step aside so the whole form fits.",
+      "changed": "On a screen shorter than 500 px (a phone held sideways) the mascot and the \"Start your first session\" heading are left out, so the form fits with its Start button in view, no scrolling. Taller screens, including your computer, keep them exactly as before. If something still doesn't fit, the screen scrolls rather than cutting it off.",
+      "notice": "The form sits in the middle with Start session at the bottom; the welcome screen without the form (New session / Resume) also drops its mascot when sideways.",
+      "risk": "A computer window dragged shorter than 500 px also hides the mascot until it's made taller again.",
+      "highlight": "panel"
+    },
+    {
+      "id": "P2-3",
+      "surface": "Project → Files → filter menu",
+      "path": "Projects, a project, Files, the filter button",
+      "crop": "projects/files/filter",
+      "runs": [
+        "cbefore",
+        "cafter"
+      ],
+      "labels": {
+        "cbefore": "Before",
+        "cafter": "After"
+      },
+      "highlight": "panel",
+      "headline": "Hidden system files are now hidden, with \"Show hidden files\" in the filter menu, as you picked.",
+      "changed": "Files and folders whose names start with a dot (.claude.json, .gitignore, .github) no longer show in a project's Files, in folders or in searches. A new Visibility group in the filter menu has a Show hidden files switch that brings them back; Clear turns it off again.",
+      "notice": "The new Visibility row at the bottom of the menu. Also built (no picture): never having set up sync is now a grey \"Sync off\" chip with no dot on Settings, as you picked.",
+      "risk": "The file count at the top of a project still includes hidden files, so it can read a few higher than the cards you see."
+    }
+  ]
+}

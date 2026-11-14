@@ -14,8 +14,8 @@ vision: chat.steer.permissions, chat.converse.native
 work: session/66-passwordless-admin
 ---
 Progress
-Done: Scoped passwordless admin approvals shipped (youcoded PR #650, 2026-10-19). Also shipped in the wider Always-allow rework (PR #713, 2026-11-05): per-part chained commands and edit choices. Floor-forced permission cards now say why (commit 9bf0805a5).
-Next: Still open, per code check: (1) Local and OpenRouter sessions have no Skip Permissions option; (2) Edit tool does not normalise curly quotes or dashes; (3) the picture cache is never cleaned up; (4) the old PermissionOverrides code still exists. Several other items need a test in the running app or a research run before anyone can say whether they are still open.
+Done: 2026-11-12: Edit tool quote/dash fallback and picture re-shrink after a model switch LANDED (app PR #736); both proven by tests only.
+Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): NO Skip Permissions option for local/OpenRouter chats; drop item (e). Other items unchanged.
 Blocked: Nothing for the admin part. Other items wait on a decision about splitting the card.
 
 Chats

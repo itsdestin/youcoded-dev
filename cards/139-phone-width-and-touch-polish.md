@@ -14,8 +14,8 @@ vision: everywhere.platforms.android
 work: session/139-touch-session-scroll, session/narrow-screen-proposals
 ---
 Progress
-Done: The active-session list now scrolls with a finger on phones and remote access. Tapping still switches sessions. Mouse and header drags still work. Shipped in PR #634 (merged 2026-10-18). Not yet tested on a real touch device.
-Next: Fix the remaining phone-screen items: clearer wording, text that wraps badly or gets cut off, and buttons that are too small or only appear on hover. Check whether the Magnify control still needs work. Many of these overlap with the phone-layout work in card #213 and with the untracked narrow-screen-proposals branch.
+Done: Checked Projects and the new-session form at phone width: no clipping found. No code change.
+Next: Remaining items are wording (needs Destin's approval) or belong to the phone-layout card #235.
 Blocked: Nothing blocks the merged scroll fix. The remaining groups need a decision on which overlapping workstream owns them.
 
 Chats

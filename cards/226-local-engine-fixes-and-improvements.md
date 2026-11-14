@@ -1,7 +1,7 @@
 ---
 id: 226
 title: Local engine fixes and improvements
-stage: polish
+stage: merged
 tags: local-models, settings/local-models, native-harness, performance, desktop, bug
 related: 176
 vision: chat.converse.local, yours.model.localsettings
@@ -13,9 +13,9 @@ priority: P3
 work: session/local-model-hardening
 ---
 Progress
-Done: The fixes listed below are finished and saved on the work branch (not yet on the main app). Fixed: the local model no longer gets stuck showing 'busy' after loading; long chats on small context windows now size search results to the room left, refuse junk summaries, and show one clear 'too long' message with Summarize; models with the right files now use a speed boost (MTP) for dense models, roughly doubling reply speed on the 27B model; the ROCm and Speculative decoding wording now matches what was measured; cloud chats no longer wake the local engine; a too-long chat logs its token counts. Testing: the full check was reported green, and one end-to-end 9B test was clean; a second run hit an unexplained 'too long' error that was not reproduced.
-Next: Destin reviews the work; then the 7 app commits and 2 workspace doc commits are pushed to the backup copy.
-Blocked: Nothing. Backed up to GitHub 2026-11-10 (app and workspace branches session/local-model-hardening) after Destin allowed the secrets-scan exception for a model settings name in a test. Waits for his review and testing before landing.
+Done: 2026-11-13: everything decided on both review decks is built, tested and pushed on session/local-model-hardening (app head 62cc21bdb). Independent review done; its six findings fixed; full checks passed after the fixes. Strix Halo leads measured: the two ROCm settings do not fix its slowdown; save-to-disk works for ordinary models only.
+Next: Destin says whether to merge. After merge: archive the status page and decks, close this card. Follow-ups filed as #262 (wide testing), #263 (save to disk), #264 (rough edges left).
+Blocked: Desktop PC unreachable over SSH since the 2026-11-12 test; the test folder ~/yc-test-226 (and possibly a test engine) is still on it and must be removed when it is back. The fixes for the six review findings were not re-read by a second reviewer.
 
 Chats
 - 2026-11-09 session/local-model-hardening: speed work (warm-up, per-chat slots) built; context faults and MTP to fix here

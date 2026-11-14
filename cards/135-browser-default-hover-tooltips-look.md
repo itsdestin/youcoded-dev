@@ -15,8 +15,8 @@ work: session/ui-consistency-audit
 vision: yours.look.finetune
 ---
 Progress
-Done: Settings screens for Assistant and Local models were brought to the shared look (fix batches 1 and 2, Sept 2026, on master). Card levels were rolled out to Settings popups (Sept 28, on master). The app's own hover hint is used across the main chat and some other screens, and hints no longer stick after a click (Oct 2026, on master).
-Next: convert the remaining browser-default hover hints in settings, marketplace and project view, then decide the contrast items (warning colour on pale themes) and the button-alignment question Destin deferred on 2026-10-13.
+Done: LANDED PR #755: brand colours adjusted app-side for five light community themes
+Next: publish theme list with the release (wecoded-themes branch session/look-wording-batch not published)
 Blocked: nothing recorded.
 
 Chats

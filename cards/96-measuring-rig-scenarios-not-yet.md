@@ -15,8 +15,8 @@ vision: together.workflow.perf
 work: session/android-ux-test
 ---
 Progress
-Done: The app fix that stops file previews, file comparisons and file indexing from freezing the app shipped in version 1.3.2 (app change #665, merged 21 Oct 2026). The speed-testing toolkit work was merged to the workspace master as PR #318 on 24 Oct 2026.
-Next: check speed on a real graphics card, typing while lots of output streams in, and Windows, Mac and phone checks. The phone speed lab is in progress on the Android branch and is not merged yet.
+Done: Fixed two broken lab checks (youcoded-dev session/speed-batch cd893b547, 071de67cc): terminal/files/projects lab phases aborted because the app hides its HOME from the process list; the document phase stopped on a memory cap that over-counted. Filled in terminal switching, files, file-type ladders (lane F, 47 cases), history, scrollback.
+Next: Windows, Mac, phone and real graphics card still unproven.
 Blocked: nothing recorded.
 
 Chats
