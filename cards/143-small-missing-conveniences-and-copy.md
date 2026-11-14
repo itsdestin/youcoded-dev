@@ -12,8 +12,8 @@ area: Chat
 side: screens
 ---
 Progress
-Done: Built on session/round3-chat: right-click menu on pictures (four items), folder list ordered by last use, three stylings of the quick-chip Replace/Add choice as a workbench mock-up (not wired in).
-Next: Destin picks one chip-choice styling (A strip, B small menu, C replace with Undo); then wire it in.
+Done: Review fixes on session/round3-chat: picture menu now uses the guarded public-only fetch with streamed cap, picture-only Save, no file: addresses; folder order stamps only person-started new sessions.
+Next: Destin picks a chip-choice styling.
 Blocked: nothing recorded.
 
 Chats
