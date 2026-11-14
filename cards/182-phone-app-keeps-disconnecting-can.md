@@ -10,8 +10,8 @@ created: 2026-10-22
 why: Destin: "i have serious stability/reliability/performance issues with the mobile app. it seems to disconnect frequently and i often find myself unable to refresh messages or send new ones."
 ---
 Progress
-Done: Built on session/round3-chat: after about 20 s of silence the phone strip says Can't reach your computer. It may be asleep or off. YouCoded will keep trying.
-Next: Check on a real phone.
+Done: Round-3 R3-8: strip sentence alone, no draft line (as built)
+Next: lands with round3-chat
 Blocked: nothing.
 
 Chats
