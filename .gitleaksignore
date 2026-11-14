@@ -1,3 +1,5 @@
 # Not a secret: an earlier version of a note quoted a model settings name from a test ('qwen35moe.expert_count').
 # Same false alarm as the app repo's exception. Destin OK'd it 2026-11-10 (wave-1 deck Q-19).
 0dbaf88f713232ddf82669726b31e320030f58db:docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md:generic-api-key:28
+# Not a secret: prose in the mesh threat model ("generation key, device id, session id") trips generic-api-key.
+c76ced37dc75311b67381392ee36f875304c231c:docs/active/investigations/2026-11-14-mesh-phase0/threat-model.md:generic-api-key:125
