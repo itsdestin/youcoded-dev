@@ -1,0 +1,131 @@
+{
+  "title": "Phones and narrow windows — everything on the branch, with your words",
+  "key": "narrow-screens-record",
+  "out": "narrow-screens.record.html",
+  "images": "images/narrow-screens.record",
+  "runs": {
+    "after": "runs/after"
+  },
+  "themes": [
+    "light",
+    "dark",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Top bar",
+      "path": "The strip across the top of the Android app",
+      "crop": [
+        {"crop": "chat#top-today@390x110+0+0", "label": "Today"},
+        {"crop": "chat#top-lights@390x110+0+0", "label": "On the branch"}
+      ],
+      "runs": ["after"],
+      "new": true,
+      "headline": "Top bar: ☰ and Projects on the left, + New session and terminal on the right, the plain name with status lights between.",
+      "changed": "Round 2 showed four bars. The one called \"Two buttons each side\" had ☰ and Projects left, + New session and terminal right. You wrote: \"i want two buttons on each side from pair, a more simply styled name dropdown button kinda like drawer (i want the dropdown chevron, name, status indicator all to be in the same hover container). and maybe a row of indicator lights very small below the name?\" Round 3 kept those four buttons and you picked the lights: \"make it a bit prettier and clean up some of the dead space… lights can probably fade away in expanded view\". Round 4: \"Yes\", plus \"make the whole hoverable area of the current name dropdown button area clickable\".",
+      "notice": "So + New session on the right came from the \"pair\" bar you named, not from a separate question. Nobody asked you about that button on its own. If you want different buttons beside the name, say which in the note.",
+      "risk": "Your branch-review note says you don't like that button; this slide only records how it got here."
+    },
+    {
+      "id": "R-2",
+      "surface": "Session list",
+      "path": "Tap the session name at the top of the Android app",
+      "crop": [
+        {"crop": "chat/sessions#phone-today@390x470+0+0", "label": "Today"},
+        {"crop": "chat/sessions#phone-lights@390x470+0+0", "label": "On the branch"}
+      ],
+      "runs": ["after"],
+      "new": true,
+      "headline": "Session list: same dropdown as today, now edge to edge, with tidier rows and a \"Your sessions\" heading.",
+      "changed": "Four small changes, each from an answer. Rows: status is a dot instead of the Working/Inactive word, the model shows without \"YouCoded Coder ·\", and the folder name gets room first. You wrote (round 1, Q-5): \"i think we can condense while losing less information. between a/c\". Heading: round 1 S-1, you chose \"Change it\" to \"Your sessions\". Shape: round 4 you picked \"Drops down, full width\" over \"Slides up from the bottom\" and \"Its own screen\". Lights under the name fade while it is open (your round 3 note).",
+      "notice": "It looks close to today on purpose: you picked the shape nearest today's. Compare the right edge of each row: today's model names are cut off (\"Qwen2.5…\", \"GPT 5.6…\"); here they are whole.",
+      "risk": "Wide windows keep today's list; only narrow screens get these rows."
+    },
+    {
+      "id": "R-3",
+      "surface": "Status pills",
+      "path": "The pills under the message box, on a phone browser connected to your computer",
+      "crop": [
+        {"crop": "chat#phone-pills-today@390x190+0+654", "label": "Today"},
+        {"crop": "chat#phone-pills-compact@390x190+0+654", "label": "On the branch"}
+      ],
+      "runs": ["after"],
+      "new": true,
+      "headline": "Pills: one swipeable row, each pill shaped like the shortcut chips, Remote as a computer icon first.",
+      "changed": "Round 1 Q-3, about the REMOTE word in the top bar: \"replace with a better styled always-on status bar chip\". Q-6: you picked one scrolling row, \"and maybe much smaller truncated or icon-based versions for each pill\". Round 2: \"every single element in that bottom row appears to have a unique style/size/height/roundness? and some of these need to be shortened, like remote.\" Round 3: \"the spacing is very weird… they get too close to the edge\". Round 4: \"Yes\", with \"the fade effect seems a little broken on the right side\", now fixed by letting the pencil scroll with the pills.",
+      "notice": "Your branch-review note asks for two more changes: a light computer icon with a green glow behind its outline, and much shorter pills. Those are next, after this record.",
+      "measured": "Pills are 32 px tall today on the branch, matching master's narrow-window chips"
+    },
+    {
+      "id": "R-4",
+      "surface": "Narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "crop": [
+        {"crop": "chat#window-today", "label": "Today"},
+        {"crop": "chat#window-decided", "label": "On the branch"}
+      ],
+      "runs": ["after"],
+      "new": true,
+      "headline": "In a narrow computer window the branch's top bar is broken: + lands on the name, terminal on the window buttons.",
+      "changed": "Round 1 Q-9 you chose \"width decides\": a narrow computer window gets the phone layout. Master's phone review later made the same rule. The pills below the message box come through fine here.",
+      "notice": "The top bar was only designed for a phone, which has no minimize, maximize or close buttons. Your note: \"also the terminal and close/minimize/maximize overlap as well. and we need to think through how this would look on a mac.\" On a Mac those three buttons sit at the LEFT, so there ☰ and Projects would be the ones crowded.",
+      "risk": "Not fixable by shrinking the name alone; this needs its own design round."
+    },
+    {
+      "id": "W-1",
+      "words": true,
+      "surface": "Shortcut chips",
+      "path": "Journal, Inbox, Git Status… above the message box",
+      "headline": "Shortcut chips: unchanged on the branch.",
+      "changed": "Round 1 you asked to put them behind a button; round 2 built that, and you wrote: \"nevermind, lets just leave the current row\".",
+      "notice": "Nothing on the branch touches them. Master has since made them taller in narrow windows, which is why the pills grew to match.",
+      "yes": "Right",
+      "no": "Not right"
+    },
+    {
+      "id": "W-2",
+      "words": true,
+      "surface": "☰ menu",
+      "path": "The ☰ button at the top left on a phone",
+      "headline": "☰ menu: unchanged on the branch. The \"everything panel\" is kept only as a reference.",
+      "changed": "Round 3 showed three bigger ☰ panels. You wrote: \"for now it should stay today. but i want to keep a version of hub as a reference for the future full buildout of an alternative mobile mode.\" Round 4 on a choice in Appearance: \"this would be a later thing… not a thing today.\"",
+      "notice": "The hub's pictures and code are saved in the workspace notes, and card #222 (rearrange the main chat window) covers it later.",
+      "yes": "Right",
+      "no": "Not right"
+    },
+    {
+      "id": "W-3",
+      "words": true,
+      "surface": "Options you passed on",
+      "path": "Practice-app code on the branch",
+      "headline": "The options you didn't pick are still in the practice code, and get deleted when the real build happens.",
+      "changed": "Top bars: \"full name, small count\", \"side drawer\", \"two buttons each side\" (outlined), \"one plain button\", \"everything panel\". Lists: \"slides up from the bottom\", \"its own screen\". None of them can appear in the app you use; they exist only so the decks could show them.",
+      "notice": "About 730 lines on the branch are this practice code, including the chosen options. Nothing on the branch changes the app for anyone yet.",
+      "yes": "Understood",
+      "no": "I have questions"
+    },
+    {
+      "id": "W-4",
+      "words": true,
+      "surface": "Two small repairs",
+      "path": "Not part of the design",
+      "headline": "Two small repairs ride along: a sparkle animation clean-up, and a check that counted the wrong thing.",
+      "changed": "The little sparkle burst now stops its timer when it disappears, so it can't fire after it is gone. One automatic check of the status bar now counts only what it means to count.",
+      "notice": "Nothing you can see. They were found while building the practice options.",
+      "yes": "Understood",
+      "no": "I have questions"
+    },
+    {
+      "id": "W-5",
+      "words": true,
+      "surface": "What happens next",
+      "path": "This session, short route",
+      "headline": "Next, in this session: your pill changes, then the narrow-window and Mac top bar, shown to you directly.",
+      "changed": "From your branch-review answers: try a light computer icon with a green glow, and much shorter pills; rethink the top bar for narrow computer windows on Windows, Linux and Mac; build with the short route, no automatic reviewers. Touch-screen sizing is settled by master's rule.",
+      "notice": "\"List first, then details\" (your round 1 S-2) is set aside for now: master already did it for Pages and Resume, and nothing else needs it today.",
+      "yes": "Sounds right",
+      "no": "Change the plan"
+    }
+  ]
+}

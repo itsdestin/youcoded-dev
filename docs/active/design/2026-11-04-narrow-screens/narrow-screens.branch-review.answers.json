@@ -1,0 +1,95 @@
+{
+ "deck": "narrow-screens-branch-review",
+ "started": "2026-11-12T22:19:38.377Z",
+ "submitted": "2026-11-14T07:41:55Z",
+ "cur": 10,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794641654112,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794641657905,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "V-1": {
+   "note": "i definitely don't think i agreed to new session on the right?",
+   "t": 1794641693925,
+   "v": "other",
+   "seconds": 36,
+   "theme": "light",
+   "zoom": 1
+  },
+  "V-2": {
+   "note": "i dont think i agreed to this at all either?",
+   "t": 1794641719466,
+   "v": "other",
+   "seconds": 26,
+   "theme": "light",
+   "zoom": 1
+  },
+  "V-3": {
+   "note": "i dont like the shading of that computer icon. it should be light like the others, maybe with a green glow behind the computer outline. i also think i want to try making the chips vertically shorter/smaller. by a lot. ",
+   "t": 1794641873997,
+   "v": "other",
+   "seconds": 155,
+   "theme": "light",
+   "zoom": 1
+  },
+  "D-1": {
+   "v": "other",
+   "t": 1794641967410,
+   "note": "i don't like that button at all. also the terminal and close/minimize/maximize overlap as well. and we need to think through how this would look on a mac.",
+   "seconds": 93,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "other",
+   "t": 1794641996090,
+   "note": "i think i need to see a full image deck of everything the branch changes currently, with quotes of my rationale and such. ",
+   "seconds": 29,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "settled",
+   "t": 1794642010872,
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794642031738,
+   "note": "confused",
+   "seconds": 21,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "short",
+   "t": 1794642053775,
+   "note": "we will iterate a lot directly, but skip automatic reviewers and such for now",
+   "seconds": 22,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1794642113860,
+   "note": "for now i just want to figure this design out here. its been a few days and i'm confused about what's done and what we're doing",
+   "seconds": 60,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
