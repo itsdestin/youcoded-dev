@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: No right-click menu on images, no recent-folder list, no replace-or-add choice for quick chips, and sizes that differ from websites.
 area: Chat
 side: screens
+work: session/143-office-home-conveniences
 ---
 Progress
 Done: Round-3 decks (2026-11-14): picture menu yes; quick chip over typed words = design A strip (built, reviewed, on session/round3-chat); folder order by last use = land
@@ -17,6 +18,7 @@ Next: Destin: unsaved synced folders stay at bottom or auto-save on first use (Q
 Blocked: nothing recorded.
 
 Chats
+- 2026-11-14 session/143-office-home-conveniences: chat started
 
 From the old roadmap (user-interface, status needs-verify, seen on all, last checked 2026-09-01)
 Small missing conveniences and copy fixes (4 things). (a) Right-clicking an image offers no Copy image, Save as, Copy address or Ask about this; (b) the project-folder picker should be a dropdown of recent folders, but no recents list exists; (c) tapping a quick chip over existing text should offer Replace or Append (Destin, 2026-09-02); (d) file and model sizes disagree with websites (74.2 GB vs 79.7 GB); decided to count 1000-based everywhere.
