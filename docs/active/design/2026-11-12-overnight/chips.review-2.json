@@ -1,0 +1,25 @@
+{
+ "title": "File chips on a waiting message, round 2: on the same line",
+ "key": "overnight-chips-round-2",
+ "out": "chips.review-2.html",
+ "images": "images/chips.review-2",
+ "runs": {"before": "runs/q62inline-before", "after": "runs/q62inline-after"},
+ "themes": ["meadow-mist"],
+ "steps": [
+  {"id": "K-1", "surface": "Chat", "path": "The waiting strip just above the message box", "crop": "chat#queue-waiting-after@1440x230+0+660", "runs": ["before", "after"],
+   "headline": "The file chips now sit on the same line, right after the words.",
+   "changed": "You asked for the chips in line after the text. They now follow the words on one line instead of sitting on a second row. Icon and file name, up to three, then \"+N more\".",
+   "notice": "The waiting strip keeps its old height.",
+   "risk": "Practice data; not yet tried with a real waiting message."},
+  {"id": "K-2", "surface": "Chat", "path": "The waiting strip, with a long message", "crop": "chat#queue-waiting-long@1440x230+0+660", "runs": ["after"], "new": true,
+   "headline": "With a long message, the words are cut short so the chips stay visible.",
+   "changed": "On a computer the strip never wraps. A long message ends in \"...\" before the chips.",
+   "notice": "You always see which files are attached, even when the message is long.",
+   "risk": "You see less of a long waiting message than before when files are attached. Edit still shows all of it."},
+  {"id": "K-3", "surface": "Chat on a phone", "path": "The waiting strip at phone width", "crop": "chat#queue-waiting-phone@390x330+0+514", "runs": ["after"], "new": true,
+   "headline": "On a phone, the chips drop under the words when they do not fit beside them.",
+   "changed": "At phone width, words and chips share the line only if both fit. Otherwise the chips go underneath, so the words are not squeezed to nothing.",
+   "notice": "On a narrow phone with two chips, the strip is two rows.",
+   "risk": "This differs from the computer, where it is always one line."}
+ ]
+}

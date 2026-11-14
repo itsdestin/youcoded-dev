@@ -12,8 +12,8 @@ side: both
 vision: yours.look.reduced, yours.look.themes
 ---
 Progress
-Done: Overnight 2026-11-12: tried to re-measure with the speed lab, but the computer never got quiet (load 40-128 from other sessions), so no numbers and no changes.
-Next: Re-run the lab on an idle machine (startup, history, workload, terminal, artifacts, scrollback phases). See speed REPORT notes.
+Done: Destin, overnight deck 2026-11-13 C-12: keep particle and glass effects on by default.
+Next: Nothing; real-graphics-card cost still unmeasured.
 Blocked: the high-refresh smoothness check needs Destin's eyes on the real screen.
 
 Chats

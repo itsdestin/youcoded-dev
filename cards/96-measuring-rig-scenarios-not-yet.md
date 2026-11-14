@@ -15,8 +15,8 @@ vision: together.workflow.perf
 work: session/android-ux-test
 ---
 Progress
-Done: Overnight 2026-11-12: tried to re-measure with the speed lab, but the computer never got quiet (load 40-128 from other sessions), so no numbers and no changes.
-Next: Re-run the lab on an idle machine (startup, history, workload, terminal, artifacts, scrollback phases). See speed REPORT notes.
+Done: Fixed two broken lab checks (youcoded-dev session/speed-batch cd893b547, 071de67cc): terminal/files/projects lab phases aborted because the app hides its HOME from the process list; the document phase stopped on a memory cap that over-counted. Filled in terminal switching, files, file-type ladders (lane F, 47 cases), history, scrollback.
+Next: Windows, Mac, phone and real graphics card still unproven.
 Blocked: nothing recorded.
 
 Chats

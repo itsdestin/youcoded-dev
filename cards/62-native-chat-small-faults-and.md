@@ -15,8 +15,8 @@ vision: chat.converse.native, chat.converse.queue
 work: session/fix-anthropic-many-image-brick, session/chat-followups
 ---
 Progress
-Done: 2026-11-12 overnight: queued strip now shows file-name chips (max 3, then +N more) for a waiting message with files; branch session/chat-followups commit b4ce7911a; before/after pictures made.
-Next: Destin reviews the picture, then merge.
+Done: 2026-11-13: per Destin the file chips now sit in the same line after the message text (commit 67ec8e30b); long messages truncate their words so chips stay visible; on a phone they may drop under the words.
+Next: Destin reviews the new pictures, then merge.
 Blocked: nothing recorded.
 
 Chats

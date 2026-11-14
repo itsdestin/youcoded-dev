@@ -13,8 +13,8 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: 2026-11-12 overnight: one-time toast 'YouCoded couldn't read your Claude Code settings file...' with Show old copy, desktop window only; commit ed0318aea on session/chat-followups.
-Next: Destin decides whether phones/Android also get it (needs opening one phone channel).
+Done: Destin, overnight deck 2026-11-13: notice approved (V-2 yes); C-1: phones and the Android app get the notice too.
+Next: Build the phone/Android side of the notice (one read-only question a phone may ask).
 Blocked: Nothing blocks the shipped part. Needs a real Android, Windows and Mac run to confirm the rest.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.

@@ -13,8 +13,8 @@ area: Settings
 side: both
 ---
 Progress
-Done: Batch 2 (part): failed loads that looked like 'none' now say so with Try again in 6 places: new-session model list, Default model row, Local models list, Sync log, Blocked users, Web search options. Branch session/look-wording-batch.
-Next: Remaining empty-as-none rows (Library update badges, vote counts, project/file lists, friends, games), the ~73 silent catches, phone error paths.
+Done: Overnight 2026-11-12, branch session/look-wording-batch (not landed): 10 failed-load-shown-as-empty places now show Couldn't load + Try again: new-session model lists, Local models, sync log, Blocked users, Web search keys, Library update check, vote counts, project conversations and context files, friends and friend requests.
+Next: Game best-score and leaderboard rows, marketplace card count chips, project header still says 0 conversations beside the new error, phone error paths, about 73 silent button catches.
 Blocked: nothing recorded.
 
 Chats

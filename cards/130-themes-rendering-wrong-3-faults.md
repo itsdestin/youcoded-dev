@@ -13,8 +13,8 @@ side: screens
 vision: yours.look.themes
 ---
 Progress
-Done: Re-ran contrast checks 2026-11-12: all 14 themes pass hard/surface checks (2 soft warnings); provider brand colours still fail 4.5:1 in 27 pairs on 5 light themes.
-Next: Destin chooses how self-built themes get a real preview picture, and how to fix brand colours (see overnight report).
+Done: Destin, overnight deck 2026-11-13 C-11: self-built theme previews should become a real captured picture, as its own approved feature later. C-10: publish the rebuilt theme list (wecoded-themes branch session/look-wording-batch, e2a5c52) when the release containing app PR #724 goes out.
+Next: File the real-preview feature card; publish the list at release time.
 Blocked: nothing recorded.
 
 See also #51: Both are about theme preview pictures being unreliable (51b in the marketplace, 130a for themes you build yourself), and Destin asked to fix the whole class.

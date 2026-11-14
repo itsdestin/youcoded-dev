@@ -14,8 +14,8 @@ platform: Desktop only
 vision: everywhere.platforms.desktop
 ---
 Progress
-Done: Overnight 2026-11-12: tried to re-measure with the speed lab, but the computer never got quiet (load 40-128 from other sessions), so no numbers and no changes.
-Next: Re-run the lab on an idle machine (startup, history, workload, terminal, artifacts, scrollback phases). See speed REPORT notes.
+Done: Re-measured launch: window shows in ~200 ms blank, sessions listed ~690 ms (old figure 1.3 s is stale). Rarely-used screens already load separately on desktop. Chess and QR code are ~1.7% of the start file.
+Next: Nothing worth splitting; close or reword.
 Blocked: the current launch time is not measured yet, so the 1.3 s figure is old.
 
 Chats

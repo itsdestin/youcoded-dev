@@ -12,8 +12,8 @@ side: screens
 platform: Desktop only
 ---
 Progress
-Done: Checked the (i) help bubble in Local models: it opens below the (i), does not cover it. No plain fault found.
-Next: Destin decides whether Known issues should close the Help popup.
+Done: Destin, overnight deck 2026-11-13 C-9: Known issues should keep Help open behind (not close it).
+Next: Build it.
 Blocked: nothing recorded.
 
 Chats

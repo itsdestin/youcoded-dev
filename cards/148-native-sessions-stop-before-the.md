@@ -13,8 +13,8 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Early-stop fix ported onto current master on session/engine-followups: 22 delivery tests, 19 fail on master without it and all pass with it; checks pass. Not merged; a real-model check is still unproven.
-Next: Destin decides on landing and on a small live check
+Done: Destin said "okay with early stop" (2026-11-13) after the explanation; landed via app PR #750.
+Next: Watch real use for idle stalls after helpers; the cause of his original live stall is still unproven, so the card stays open until he has used a build with it.
 Blocked: Spending ledger numbers disagree (5.20 of 15 USD vs 0.27 headroom under 10 USD); recheck before any paid run
 
 Chats

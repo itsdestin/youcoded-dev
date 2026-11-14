@@ -13,8 +13,8 @@ platform: Desktop only
 vision: chat.files.office
 ---
 Progress
-Done: Overnight 2026-11-12: tried to re-measure with the speed lab, but the computer never got quiet (load 40-128 from other sessions), so no numbers and no changes.
-Next: Re-run the lab on an idle machine (startup, history, workload, terminal, artifacts, scrollback phases). See speed REPORT notes.
+Done: Destin, overnight deck 2026-11-13 C-13: leave very long path lists as they are for now.
+Next: Nothing now.
 Blocked: Windows and Mac are not measured. Each remaining case needs a real run to confirm.
 
 Chats
