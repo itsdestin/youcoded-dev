@@ -1,0 +1,36 @@
+[
+  {
+    "name": "pages/library/settings#foot",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4f/before/pages/library/settings#foot/meadow-mist.png",
+    "ms": 4497,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 158,
+      "w": 600,
+      "h": 584
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/library/settings#foot",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step4f/before/pages/library/settings#foot/halftone-dimension.png",
+    "ms": 5235,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 149,
+      "w": 600,
+      "h": 603
+    },
+    "parts": []
+  }
+]

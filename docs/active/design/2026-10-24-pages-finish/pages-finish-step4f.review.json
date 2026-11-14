@@ -1,0 +1,38 @@
+{
+ "title": "Page settings: Delete page",
+ "key": "pages-finish-step4f-review",
+ "out": "pages-finish-step4f.review.html",
+ "images": "images/pages-finish-step4f.review",
+ "runs": {
+  "before": "runs-step4f/before",
+  "after": "runs-step4f/after"
+ },
+ "themes": [
+  "meadow-mist",
+  "halftone-dimension"
+ ],
+ "steps": [
+  {
+   "id": "F-button",
+   "surface": "Page settings",
+   "path": "Pages → a page's gear → the foot of Page settings",
+   "crop": "pages/library/settings#foot@620x230+410+540",
+   "headline": "Page settings ends with a Delete page button.",
+   "changed": "A red-outlined Delete page button at the bottom right, like Delete automation.",
+   "notice": "The assistant will send you here instead of deleting a page itself. Built-in pages have no Page settings, so they can't be deleted."
+  },
+  {
+   "id": "F-warning",
+   "surface": "Page settings",
+   "path": "Pages → a page's gear → Delete page",
+   "crop": "pages/library/settings#delete@620x300+410+515",
+   "runs": [
+    "after"
+   ],
+   "new": true,
+   "headline": "Delete page turns into a red warning, with Keep or Delete for each of its automations.",
+   "changed": "The button becomes a red warning. Each linked automation gets its own Keep / Delete. Nothing is removed until you press Delete.",
+   "notice": "An automation only this page uses starts on Delete. One another page also uses starts on Keep. A kept one keeps running, and may fail if its instructions mention the deleted page."
+  }
+ ]
+}
