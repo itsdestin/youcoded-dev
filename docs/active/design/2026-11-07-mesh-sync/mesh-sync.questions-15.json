@@ -1,5 +1,5 @@
 {
- "title": "Your chats on every device — round 15: 37 choices after the first tests",
+ "title": "Your chats on every device — round 15: 38 choices after the first tests",
  "key": "mesh-sync-questions-15",
  "out": "mesh-sync.questions-15.html",
  "stage": "ask",
@@ -16,31 +16,31 @@
    "path": "Progress since round 14",
    "headline": "Nothing has reached the app yet. Does that match what you expected?",
    "changed": "1) All the first-round tests have run. 2) Several rules in the design lost chat data in testing, and each has a fix. The fixes are proven on throwaway models only, not yet on the real app. 3) Nothing has reached the app. 4) The first invisible parts are being built, switched off. 5) Windows and Mac are still untested, because we have no such computer. 'The relay' below means the always-on mailbox that passes locked messages between your devices. It cannot read them.",
-   "notice": "You will see nothing different in the app after this round. The 37 questions that follow are the ones only you can answer.",
+   "notice": "You will see nothing different in the app after this round. The 38 questions that follow are the ones only you can answer.",
    "yes": "Got it",
    "no": "Unclear"
   },
   {
    "id": "G-1",
    "page": "Pairing and security",
-   "intro": "How devices join your set, and what they are allowed to do. 13 questions."
+   "intro": "How devices join your set, and what they are allowed to do. 14 questions."
   },
   {
    "id": "P-1",
    "words": true,
    "surface": "Pairing",
    "path": "Typing a code to add a device",
-   "headline": "What should the code you type when pairing look like?",
+   "headline": "What characters should the secret part of the pairing code use?",
    "today": "With no camera, you can type a short code to add a device. It stops working after a few minutes. The design does not say how long it is or what characters it uses.",
    "problem": "Short, all-number codes are easy to type but easier for a stranger on the network to guess while you pair. Letters and numbers are safer, but awkward on a phone's number pad.",
-   "proposal": "A code like K7QD-4MXW9R. The first part says where to meet. The last 6 characters are the secret, with no look-alikes such as 0 and O. It works for 5 minutes and shuts down after 3 wrong tries. You will type this on your phone every pairing.",
+   "proposal": "The code has two parts: a 'where to meet' part, then a 6-character secret. This question is only about the secret. Letters and digits, with no look-alikes such as 0 and O. It works for 5 minutes and shuts down after 3 wrong tries. The next question is about the first part's length.",
    "options": [
     {
      "id": "letters-digits",
      "label": "Letters and digits, 6 secret characters",
      "pros": [
       "A stranger guesses it about 1 time in 358 million (3 tries). That is stricter than other apps that do this.",
-      "Still short. Recommended: safest, and still short."
+      "Still short."
      ],
      "cons": [
       "Letters are awkward on a number pad."
@@ -71,14 +71,50 @@
    ]
   },
   {
+   "id": "P-14",
+   "words": true,
+   "surface": "Pairing",
+   "path": "Typing a code to add a device",
+   "headline": "How long should the whole pairing code be?",
+   "today": "Scanning a QR code is the main way to pair. The typed code is the fallback. As built tonight it is 19 characters, like K7QD-4MXW-9RT2-HB6C-XPL.",
+   "problem": "The first part of the code tells both devices where to meet. If it is long, nobody can guess it, but you type a lot. If it is short, a stranger could now and then guess it and spoil a pairing attempt. They could never join your devices; you would just have to start again with a new code.",
+   "proposal": "Keep the long code for now, because typing is the rare fallback and it cannot be spoiled. Choose the short one if 19 characters feels like too much on a phone.",
+   "options": [
+    {
+     "id": "long-19",
+     "label": "19 characters",
+     "pros": [
+      "A stranger cannot spoil your pairing.",
+      "Already built and tested."
+     ],
+     "cons": [
+      "Long to type on a phone.",
+      "Easy to mistype."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "short-10",
+     "label": "About 10 characters, like K7QD-4MXW9R",
+     "pros": [
+      "Much quicker to type."
+     ],
+     "cons": [
+      "A stranger could occasionally make a pairing attempt fail. You would start again.",
+      "Needs a small rebuild and re-test."
+     ]
+    }
+   ]
+  },
+  {
    "id": "P-2",
    "words": true,
    "surface": "Pairing",
    "path": "After typing a code",
-   "headline": "Should both screens show the same 4-digit number when you pair?",
+   "headline": "Should both screens show the same 6-digit number when you pair?",
    "today": "The device you already own shows the new device's name and asks 'Add this device?'. Nothing proves the name is really yours.",
    "problem": "Someone who read your code over your shoulder, or from a camera, could pair first and name their device 'Destin's phone'. You would tap yes.",
-   "proposal": "After pairing by typed code, both screens show the same 4-digit number. You confirm they match before you can answer 'Add this device?'. A security review asked for the same step. It is a new step you have not approved.",
+   "proposal": "After pairing by typed code, both screens show the same 6-digit number. You confirm they match before you can answer 'Add this device?'. A security review asked for the same step. It is a new step you have not approved.",
    "options": [
     {
      "id": "matching-number",
