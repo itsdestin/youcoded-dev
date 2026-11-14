@@ -15,8 +15,8 @@ work: session/ui-consistency-audit
 vision: yours.look.finetune
 ---
 Progress
-Done: Landed 2026-11-13 (PR #748, 48be9bca3): about 90 browser hover hints replaced by the app hover hint.
-Next: Per-theme brand colours for the 27 contrast failures on five light themes, shown before/after (C-8). Theme list rebuild on wecoded-themes branch session/look-wording-batch is NOT published: publish with the release that contains #724 (C-10).
+Done: Brand colours now adjust per community theme at runtime (round3-look branch): the 27 unreadable name/colour pairs on five light themes are 0; Light, Creme, Dark, Midnight untouched. Before/after pictures made.
+Next: Destin to look at the pictures; then it can land. Theme list rebuild (C-10) still waits for a release.
 Blocked: nothing recorded.
 
 Chats
