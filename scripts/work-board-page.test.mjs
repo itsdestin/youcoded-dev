@@ -20,10 +20,10 @@ test('inside YouCoded every button that says "Not built yet" in a browser has a 
   for (const m of page.matchAll(/<button class="mitem"[^>]*role="menuitem"[^>]*data-does[^>]*><span>([^<]+)<\/span>/g)) labels.add(m[1].trim());
   const acts = new Set([...fs.readFileSync(path.join(HERE, '..', 'pages', 'work-board', 'renderer', 'page_mode.py'), 'utf8').matchAll(/^\s*'([^']+)':\s*(?:async\s*)?(?:\(|id=>)/gm)].map((m) => m[1]));
   assert.ok(labels.size > 3, 'found the buttons');
-  // The buttons below are placeholders on purpose until Destin decides what they do (proposals in the 2026-11-11 cleanup deck); any NEW dead button fails.
-  const PLACEHOLDERS = new Set(['What changed last time', 'Leave a note', "That's wrong"]);
+  // WHY no exceptions (Destin, 2026-11-14: "remove"): the three placeholder buttons are gone, so every button must have a job
+  for (const gone of ['What changed last time', 'Leave a note', "That's wrong"]) assert.ok(!page.includes(`>${gone}</button>`), `${gone} is back`);
   const free = new Set([...fs.readFileSync(path.join(HERE, '..', 'pages', 'work-board', 'renderer', 'page_mode.py'), 'utf8').matchAll(/^\s*'([^']+)':\(\)=>/gm)].map((m) => m[1]));
-  const dead = [...labels].filter((l) => !acts.has(l) && !free.has(l) && !PLACEHOLDERS.has(l) && !l.includes('${'));
+  const dead = [...labels].filter((l) => !acts.has(l) && !free.has(l) && !l.includes('${'));
   assert.deepEqual(dead, [], `no handler inside YouCoded for: ${dead.join(', ')}`);
 });
 

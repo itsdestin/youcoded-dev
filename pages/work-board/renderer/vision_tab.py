@@ -341,7 +341,8 @@ function focus(id,fromBack){const n=VN[id];if(!n)return;
     +((n.shares||[]).length?group('Shares parts with','vis.p.shares',null,n.shares.map(x=>row(x,x.because)).join('')):'')
     +(ev.length?`<details class="fold"><summary class="foldrow" data-tip="${T('vis.howknow')}"><span class="t-xs">How we know <span class="cnt" data-tip="${T('vis.howknow.count')}">${ev.length}</span></span><span class="chev">›</span></summary><ul class="ev t-xs">${ev.map(e=>`<li><span class="kind">${e.kind}</span>${e.note||''} <span class="muted">${nice(e.date||'')}</span><div class="muted t-2xs">${e.ref||''}</div></li>`).join('')}</ul></details>`:'');
   openPanel('',kind,top+(left&&right?`<div class="dcols"><div class="dcol">${left}</div><div class="dcol">${right}</div></div>`:`<div class="dcol">${left}${right}</div>`),
-  `<button class="btn" data-does data-tip="${T('vis.wrong')}">That's wrong</button><button class="btn primary" data-does data-tip="${T('vis.start')}">Start a session on this</button>`);
+  // WHY one button (Destin, 2026-11-14: "remove"): "That's wrong" was a placeholder that did nothing
+  `<button class="btn primary" data-does data-tip="${T('vis.start')}">Start a session on this</button>`);
   $('#pback').hidden=!vHist.length;
   $$('#pbody .vshot').forEach(b=>b.onclick=()=>openShot(b.dataset.shot));
 }
