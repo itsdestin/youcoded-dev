@@ -1,0 +1,284 @@
+{
+ "deck": "mesh-sync-questions-15",
+ "started": "2026-11-15T00:35:16.142Z",
+ "submitted": "2026-11-15T00:58:30Z",
+ "cur": 5,
+ "answers": {
+  "S-0": {
+   "v": "yes",
+   "t": 1794702924326,
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "P-1": {
+   "v": "pick",
+   "pick": "letters-digits",
+   "t": 1794703513684,
+   "note": "want to better understand this from a security perspective. like how difficult it would actually be to brute force your way into pariing with someones devices under this method",
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-14": {
+   "v": "pick",
+   "pick": "long-19",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-2": {
+   "v": "pick",
+   "pick": "matching-number",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-3": {
+   "v": "pick",
+   "pick": "refuse",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-4": {
+   "v": "other",
+   "t": 1794703513684,
+   "note": "option a is far too confusing and verbose. i think we should try to hit much closer to b, with a handful of honest (but much more clear/concise) caveats. end-to-end encrpytion is still end-to-end, even if \"another user could steal your device and read your data\" ",
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-5": {
+   "v": "pick",
+   "pick": "ask-and-warn",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-6": {
+   "v": "pick",
+   "pick": "as-designed",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-7": {
+   "v": "pick",
+   "pick": "no-switch",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-8": {
+   "v": "pick",
+   "pick": "one-tap",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-9": {
+   "v": "pick",
+   "pick": "skip",
+   "t": 1794703513684,
+   "note": "you're super overcomplicating this. from a ux/ui perspective, this would be fucking miserable",
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-10": {
+   "v": "other",
+   "t": 1794703513684,
+   "note": "confusing as fuck. what? this seems overcomplicated",
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-11": {
+   "v": "pick",
+   "pick": "key-number",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-12": {
+   "v": "pick",
+   "pick": "both-confirm",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "P-13": {
+   "v": "pick",
+   "pick": "as-designed",
+   "t": 1794703513684,
+   "seconds": 42,
+   "theme": "midnight"
+  },
+  "C-1": {
+   "v": "pick",
+   "pick": "pictures-travel",
+   "t": 1794703997539,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-2": {
+   "v": "pick",
+   "pick": "error-not-finished",
+   "t": 1794703997539,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-3": {
+   "v": "other",
+   "t": 1794703997539,
+   "note": "what? how does this make any sense? why would just opening/closing cause it to fork? that seems like a serious bug if so",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-4": {
+   "v": "pick",
+   "pick": "upload-like-phone",
+   "t": 1794703997539,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-5": {
+   "v": "pick",
+   "pick": "all-of-it",
+   "t": 1794703997539,
+   "note": "EITHER a keep-everything device OR a cloud backup",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-6": {
+   "v": "pick",
+   "pick": "hold-24h",
+   "t": 1794703997539,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-8": {
+   "v": "other",
+   "t": 1794703997539,
+   "note": "what? this seems like a serious issue. why would stuff typed into terminal be any different from messages typed and sent in the chat window?",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-9": {
+   "v": "pick",
+   "pick": "check-then-allow",
+   "t": 1794703997539,
+   "note": "kinda confused about this. when would a user actually encounter this? is there a better/more \"correct\" way to do this?",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-10": {
+   "v": "pick",
+   "pick": "leave-labelled",
+   "t": 1794703997539,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-11": {
+   "v": "other",
+   "t": 1794703997539,
+   "note": "it seems like these are issues your trying to work around instead of building the correct version that elminates the issues/prevents these kinds of clashes from happening in the first place",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-12": {
+   "v": "pick",
+   "pick": "leave-as-is",
+   "t": 1794703997539,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-13": {
+   "v": "other",
+   "t": 1794703997539,
+   "note": "what?",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-14": {
+   "v": "pick",
+   "pick": "as-designed",
+   "t": 1794703997539,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-15": {
+   "v": "pick",
+   "pick": "quiet-new-home",
+   "t": 1794703997539,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-16": {
+   "v": "other",
+   "t": 1794703997539,
+   "note": "this seems confusing. it feels like we're really overengineering for a bunch of error cases that could be either prevented or handled much more simply.",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "C-17": {
+   "v": "pick",
+   "pick": "highest-wins",
+   "t": 1794703997539,
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "F-1": {
+   "v": "other",
+   "t": 1794704057501,
+   "note": "what?",
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "F-2": {
+   "note": "confused. what does this actually mean for real users from a ux perspective",
+   "t": 1794704057501,
+   "v": "other",
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "F-3": {
+   "v": "pick",
+   "pick": "two-files",
+   "t": 1794704057501,
+   "seconds": 20,
+   "theme": "midnight"
+  },
+  "R-1": {
+   "v": "other",
+   "t": 1794704294448,
+   "note": "not going to pay just yet, but i likely will likely start paying before we finalize/merge/launch this branch/feature. want to better understand costs and such first",
+   "seconds": 79,
+   "theme": "midnight"
+  },
+  "R-2": {
+   "v": "other",
+   "t": 1794704294448,
+   "note": "why would 1-device users have literally any relay storage or utilization? if they don't have a second device, then there is nothing to sync to. this would just be wasted cost/effort. users with only a single device should not cost anything or use our worker until they've connected a second device, right?",
+   "seconds": 79,
+   "theme": "midnight"
+  },
+  "R-3": {
+   "v": "other",
+   "t": 1794704294448,
+   "note": "i don't think we should be communicating most of this to users. the only time they should get a notice/warning is when it is actually directly impacting a chat that a user is trying to resume but is no longer avialable and needs device catchup, i'd think. there's nothing for a user to do with the warnings so they'd just be confusing",
+   "seconds": 79,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "pick",
+   "pick": "setup-desktop",
+   "t": 1794704309487,
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "pick",
+   "pick": "test-each-system",
+   "t": 1794704309487,
+   "seconds": 8,
+   "theme": "midnight"
+  }
+ }
+}
