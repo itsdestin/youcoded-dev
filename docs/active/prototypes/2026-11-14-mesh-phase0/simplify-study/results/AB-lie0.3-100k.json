@@ -1,0 +1,49 @@
+{
+ "runs": 100000,
+ "schedulesWith": {
+  "anyCopy": 69068,
+  "staleOwnerWrite": 35496,
+  "inPlaceTakeover": 57761,
+  "handover": 43166,
+  "copyOfferedToUser": 16135,
+  "someTakeover": 81558,
+  "doubleGrant": 59,
+  "lyingRelayEffect": 28113,
+  "staleOwnerWriteWithoutRestore": 15371
+ },
+ "totals": {
+  "stale": 98184,
+  "inplace": 77281,
+  "copyOffered": 22082,
+  "copyUser": 16538,
+  "copyAuto": 104242,
+  "partialDropped": 10548,
+  "doubleGrant": 59,
+  "relayFork": 1474,
+  "handover": 64922,
+  "handoverAbort": 2718,
+  "casFail": 69539,
+  "excused": 15855,
+  "relayOnlyDestroyed": 534,
+  "endOwnerless": 1,
+  "endMultiOwner": 0,
+  "endOwnerViewsDiffer": 11,
+  "terminal": 68953,
+  "restore": 85477,
+  "straddle": 27386,
+  "lieUsed": 40840
+ },
+ "failures": {},
+ "copyChatsTotal": 116747,
+ "causes": {
+  "peer": 4358,
+  "terminal": 47089,
+  "cas-lost": 9447,
+  "lost-ownership": 13127,
+  "handover-in": 329,
+  "relay": 960,
+  "watcher": 2104,
+  "nested": 2
+ },
+ "firstSeeds": {}
+}

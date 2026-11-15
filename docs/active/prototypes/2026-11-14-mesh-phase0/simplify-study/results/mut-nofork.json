@@ -1,0 +1,77 @@
+{
+ "runs": 20000,
+ "schedulesWith": {
+  "anyCopy": 10547,
+  "staleOwnerWrite": 6952,
+  "inPlaceTakeover": 11550,
+  "handover": 8546,
+  "copyOfferedToUser": 3111,
+  "someTakeover": 16305,
+  "doubleGrant": 0,
+  "lyingRelayEffect": 0,
+  "staleOwnerWriteWithoutRestore": 3181
+ },
+ "totals": {
+  "stale": 18857,
+  "inplace": 15287,
+  "copyOffered": 4284,
+  "copyUser": 3226,
+  "copyAuto": 13736,
+  "partialDropped": 0,
+  "doubleGrant": 0,
+  "relayFork": 0,
+  "handover": 12740,
+  "handoverAbort": 521,
+  "casFail": 13702,
+  "excused": 3177,
+  "relayOnlyDestroyed": 28,
+  "endOwnerless": 0,
+  "endMultiOwner": 0,
+  "endOwnerViewsDiffer": 0,
+  "terminal": 13736,
+  "restore": 16850,
+  "straddle": 5192,
+  "lieUsed": 0
+ },
+ "failures": {
+  "P1-reply-lost": 5333,
+  "P0-live-loss": 980,
+  "P7-honest-relay-destroyed-data": 20
+ },
+ "copyChatsTotal": 16962,
+ "causes": {
+  "terminal": 9370
+ },
+ "firstSeeds": {
+  "P1-reply-lost": [
+   130000004,
+   130000006,
+   130000007,
+   130000011,
+   130000016,
+   130000021,
+   130000023,
+   130000028
+  ],
+  "P0-live-loss": [
+   130000023,
+   130000028,
+   130000056,
+   130000095,
+   130000110,
+   130000115,
+   130000163,
+   130000176
+  ],
+  "P7-honest-relay-destroyed-data": [
+   130002163,
+   130002179,
+   130003526,
+   130004367,
+   130005468,
+   130008358,
+   130009457,
+   130011655
+  ]
+ }
+}

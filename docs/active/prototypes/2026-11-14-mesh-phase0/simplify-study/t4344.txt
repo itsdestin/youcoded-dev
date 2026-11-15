@@ -1,0 +1,383 @@
+terminal d0 
+   d0 X[l1.@00]0@0m1
+   d1 X[l1.@00]0@0m1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]0@0m1
+   RELAY X0@0m1[l1.]
+peer d0 
+   d0 X[l1.@00]0@0m1
+   d1 X[l1.@00]0@0m1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]0@0m1
+   RELAY X0@0m1[l1.]
+writePartial d1 
+   d0 X[l1.@00]0@0m1
+   d1 X[l1.@00]0@0m1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]0@0m1
+   RELAY X0@0m1[l1.]
+chip d1 
+   d0 X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@1m-1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]0@0m1
+   RELAY X1@1m-1[l1.]
+chip d3 
+   d0 X[l1.@00]1@1m-1
+   d1 X[l1.@00]3@2m-1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]3@2m-1
+   RELAY X3@2m-1[l1.]
+write d2 
+   d0 X[l1.@00]1@1m-1
+   d1 X[l1.@00]3@2m-1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]3@2m-1
+   RELAY X3@2m-1[l1.]
+write d2 
+   d0 X[l1.@00]1@1m-1
+   d1 X[l1.@00]3@2m-1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]3@2m-1
+   RELAY X3@2m-1[l1.]
+sync d1 
+   d0 X[l1.@00]1@1m-1
+   d1 X[l1.@00]3@2m-1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]3@2m-1
+   RELAY X3@2m-1[l1.]
+sleep d0 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]3@2m-1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]3@2m-1
+   RELAY X3@2m-1[l1.]
+chip d1 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+link d3 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]0@0m1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+peer d3 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+peer d3 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+peer d3 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+write d0 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+link d2 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+snapshot d0 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+peer d1 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+chip d0 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+link d1 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]1@3m-1
+   d2 X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X1@3m-1[l1.]
+chip d2 
+   d0z- X[l1.@00]1@1m-1
+   d1 X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m-1[l1.]
+net d1 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m-1[l1.]
+write d3 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m-1[l1.]
+relayToggle d3 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY DOWN X2@4m-1[l1.]
+link d1 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY DOWN X2@4m-1[l1.]
+peer d1 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY DOWN X2@4m-1[l1.]
+relayToggle d0 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m-1[l1.]
+check d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m-1[l1.]
+write d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l2@42 l3.@42]2@4m3
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m3[l1. l2 l3.]
+link d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l2@42 l3.@42]2@4m3
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m3[l1. l2 l3.]
+net d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00 l2@42 l3.@42]2@4m3
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m3[l1. l2 l3.]
+check d3 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00 l2@42 l3.@42]2@4m3
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m3[l1. l2 l3.]
+restore d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m3[l1. l2 l3.]
+check d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]1@3m-1
+   d3 X[l1.@00]1@3m-1
+   RELAY X2@4m3[l1. l2 l3.]
+sync d3 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]1@3m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY X2@4m3[l1. l2 l3.]
+chip d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY X2@4m3[l1. l2 l3.]
+peer d0 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY X2@4m3[l1. l2 l3.]
+wake d3 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY X2@4m3[l1. l2 l3.]
+net d0 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY X2@4m3[l1. l2 l3.]
+chip d2 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY X2@4m3[l1. l2 l3.]
+peer d0 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY X2@4m3[l1. l2 l3.]
+relayToggle d0 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+write d0 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+link d3 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+snapshot d1 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2- X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+net d2 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+chip d2 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]2@4m-1
+   d3 X[l1.@00 l2@42 l3.@42]2@4m3
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+  COPY by d3 handover-in id X~l2 tail l2@4d2 l3@4d2
+chip d3 
+   d0z X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]3@5m-1
+   d3 X[l1.@00]3@5m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+net d0 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]3@5m-1
+   d3 X[l1.@00]3@5m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+write d3 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00]3@5m-1
+   d3 X[l1.@00 l4@53 l5.@53]3@5m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+chip d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+peer d3 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+writePartial d3 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+wake d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY DOWN X2@4m3[l1. l2 l3.]
+relayToggle d3 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY X2@4m3[l1. l2 l3.]
+link d2 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY X2@4m3[l1. l2 l3.]
+writePartial d0 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY X2@4m3[l1. l2 l3.]
+sync d1 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY X2@4m3[l1. l2 l3.]
+wake d1 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY X2@4m3[l1. l2 l3.]
+write d0 
+   d0z- X[l1.@00]1@1m-1
+   d1- X[l1.@00]2@4m-1
+   d2 X[l1.@00 l4@53 l5.@53]2@6m-1
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m-1
+   RELAY X2@4m3[l1. l2 l3.]
+  COPY by d2 cas-lost id X~l4 tail l4@5d3 l5@5d3
+  COPY by d0 peer id X~l2 tail l2@4d2 l3@4d2
+  COPY by d1 peer id X~l2 tail l2@4d2 l3@4d2
+  COPY by d2 peer id X~l2 tail l2@4d2 l3@4d2
+  COPY by d2 cas-lost id X~l4 tail l4@5d3 l5@5d3
+  COPY by d2 peer id X~l2 tail l2@4d2 l3@4d2
+  COPY by d2 cas-lost id X~l4 tail l4@5d3 l5@5d3
+FINAL
+   d0 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l4[l1.@00 l4@53 l5.@53]3@0m3 X~l2[l1.@00 l2@42 l3.@42]2@0m3
+   d1 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m3 X~l4[l1.@00 l4@53 l5.@53]3@0m3
+   d2 X[l1.@00 l2@42 l3.@42]2@4m3 X~l4[l1.@00 l4@53 l5.@53]3@0m3 X~l2[l1.@00 l2@42 l3.@42]2@0m3
+   d3 X[l1.@00 l4@53 l5.@53]2@6m-1 X~l2[l1.@00 l2@42 l3.@42]2@0m3 X~l4[l1.@00 l4@53 l5.@53]3@0m3
+   RELAY X2@4m3[l1. l2 l3.] X~l22@0m3[l1. l2 l3.] X~l43@0m3[l1. l4 l5.]
+{
+ },
+ },
+ },
+ },
+ }
+}
+P2-not-converged first seeds: [4344]
+P3-owner-disagree first seeds: [4344]
