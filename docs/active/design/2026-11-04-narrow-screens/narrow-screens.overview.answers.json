@@ -1,0 +1,82 @@
+{
+ "deck": "narrow-screens-overview",
+ "started": "2026-11-15T00:30:04.455Z",
+ "submitted": "2026-11-15T00:34:39Z",
+ "cur": 9,
+ "answers": {
+  "V-1": {
+   "v": "yes",
+   "t": 1794702610471,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "V-2": {
+   "v": "yes",
+   "t": 1794702616315,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "V-3": {
+   "v": "yes",
+   "t": 1794702620784,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "V-4": {
+   "v": "yes",
+   "t": 1794702624164,
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  },
+  "V-5": {
+   "v": "yes",
+   "t": 1794702662807,
+   "note": "how willl this work with much longer session names? i want to make sure nothing ever overlaps. names should be truncated with ... if too long to fit",
+   "seconds": 39,
+   "theme": "light",
+   "zoom": 1
+  },
+  "V-6": {
+   "v": "yes",
+   "t": 1794702681455,
+   "seconds": 19,
+   "theme": "light",
+   "zoom": 1
+  },
+  "V-7": {
+   "v": "yes",
+   "t": 1794702688266,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-1": {
+   "v": "no",
+   "t": 1794702834153,
+   "note": "some of this feels really janky. for example, its weird that the hover box over the session name area seemingly touches the top of the window and the bottom of the header. then, clicking resume leaves the \"your sessions\" window up above the resume list in the background. new session button doesn't seem to work at all. these were all working before, and i didnt think we'd messed with most of this logic, so idk whats happening",
+   "seconds": 146,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-2": {
+   "note": "same issues as last q",
+   "t": 1794702855827,
+   "v": "no",
+   "seconds": 22,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-3": {
+   "note": "okay resume/new session seem to work fine here",
+   "t": 1794702877398,
+   "v": "yes",
+   "seconds": 22,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
