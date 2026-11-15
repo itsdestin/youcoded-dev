@@ -1,0 +1,177 @@
+{
+  "title": "Phones and narrow windows — everything that would change, in one place",
+  "key": "narrow-screens-overview",
+  "out": "narrow-screens.overview.html",
+  "images": "images/narrow-screens.overview",
+  "runs": {
+    "overview": "runs/overview",
+    "before": "runs/wide/before",
+    "after": "runs/wide/after"
+  },
+  "themes": ["light", "dark", "halftone-dimension"],
+  "live": {
+    "worktree": "sessions/narrow-screen-proposals/youcoded",
+    "paneWidth": 390
+  },
+  "steps": [
+    {
+      "id": "V-1",
+      "surface": "Top bar on a phone",
+      "path": "The strip across the top of the Android app or a phone browser",
+      "crop": [
+        {"crop": "chat#top-today@390x110+0+0", "label": "Today"},
+        {"crop": "chat#top-lights@390x110+0+0", "label": "Decided"}
+      ],
+      "runs": ["overview"],
+      "new": true,
+      "headline": "Phone top bar: one plain name button in the middle of the screen, with small status lights under it.",
+      "changed": "Today the name sits in an outlined pill with a \"+N\" count beside it. Decided: menu and Projects on the left, the terminal switch on the right, and the session name centred with one small light per session underneath.",
+      "notice": "Tapping anywhere on the name or the lights opens your sessions. The lights fade while the list is open.",
+      "risk": "The lights stop at 12; with more sessions than that, the rest only show in the list. There is no + New session on the bar: it stays inside the list."
+    },
+    {
+      "id": "V-2",
+      "surface": "Session list on a phone",
+      "path": "Tap the session name at the top",
+      "crop": [
+        {"crop": "chat/sessions#phone-today@390x470+0+0", "label": "Today"},
+        {"crop": "chat/sessions#phone-lights@390x470+0+0", "label": "Decided"}
+      ],
+      "runs": ["overview"],
+      "new": true,
+      "headline": "Phone session list: full width, under a \"Your sessions\" heading, with model names no longer cut off.",
+      "changed": "The list runs edge to edge instead of floating as a narrower box. Each row shows the model alone (\"Sonnet\", not \"Claude Code · Sonnet\"), lines up with the heading, and has no drag handle.",
+      "notice": "Working / Inactive stay as words, as today. Model names that were cut short today now fit.",
+      "risk": "Without the drag handle, sessions can't be reordered by dragging on a phone."
+    },
+    {
+      "id": "V-3",
+      "surface": "Pills and shortcut chips on a phone",
+      "path": "Above and below the message box, on a phone browser connected to your computer",
+      "crop": [
+        {"crop": "chat#phone-pills-today@390x200+0+644", "label": "Today"},
+        {"crop": "chat#phone-pills-compact@390x200+0+644", "label": "Decided"}
+      ],
+      "runs": ["overview"],
+      "new": true,
+      "headline": "Pills and shortcut chips: one swipeable row each, all the same 24-pixel height and shape.",
+      "changed": "Today the pills wrap onto two lines in mixed sizes, and \"REMOTE\" sits in the top bar. Decided: one row you swipe sideways, a small computer icon with a faint green glow first in the row when you are connected to your computer, and a square edit pencil.",
+      "measured": "Pills and chips 24 px tall (today: chips 32 px, pills 20 to 24 px)",
+      "notice": "The bottom of the screen is about one line shorter, so more of the chat shows.",
+      "risk": "24 px is below the 32 px finger size used elsewhere on phones, so a tap near a pill's edge may miss. Pills past the right edge are hidden until you swipe."
+    },
+    {
+      "id": "V-4",
+      "surface": "Top bar in a narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "crop": [
+        {"crop": "chat#window-today@390x60+0+0", "label": "Today"},
+        {"crop": "chat#window-decided@390x60+0+0", "label": "Decided"}
+      ],
+      "runs": ["overview"],
+      "new": true,
+      "headline": "Narrow computer window: the session name sits on the left after the menu, readable, with its lights.",
+      "changed": "Today the name is squeezed to a letter or two between the buttons. Decided: Projects moves into the menu, the name starts right after the menu button, and the Minimize / Maximize / Close buttons keep their place.",
+      "notice": "The window also stops shrinking at 340 pixels wide, so nothing can overlap.",
+      "risk": "Projects takes two clicks instead of one in a narrow window. The 340-pixel stop is the one change already in real app code, and it has never been tried in a real window yet."
+    },
+    {
+      "id": "V-5",
+      "surface": "The whole narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "crop": [
+        {"crop": "chat#window-today", "label": "Today"},
+        {"crop": "chat#window-decided", "label": "Decided"}
+      ],
+      "runs": ["overview"],
+      "new": true,
+      "headline": "The full narrow window: the new top bar above, the single row of pills below.",
+      "changed": "Everything from the earlier pages together, in a computer window instead of a phone.",
+      "notice": "A Mac follows the same rule with its coloured buttons on the left. That is described only; no picture of a Mac can be made here.",
+      "risk": "The Mac version will be built without anyone having seen it."
+    },
+    {
+      "id": "V-6",
+      "surface": "Menu in a narrow computer window",
+      "path": "Click the three-line menu at the top left",
+      "crop": [
+        {"crop": "chat/overflow@390x300+0+0", "label": "Today"},
+        {"crop": "chat/overflow#window-decided@390x300+0+0", "label": "Decided"}
+      ],
+      "runs": ["overview"],
+      "new": true,
+      "headline": "The menu itself keeps the same rows, including Projects.",
+      "changed": "The menu's rows are the same as today. What differs in the picture is the bar above it.",
+      "notice": "Projects is reached here in a narrow computer window."
+    },
+    {
+      "id": "V-7",
+      "surface": "Session list in a wide window",
+      "path": "Click the session name at the top of a normal-sized window",
+      "crop": "chat/sessions@420x400+510+50",
+      "runs": ["before", "after"],
+      "headline": "At every width, each session row shows the model alone, so long names are no longer cut off.",
+      "changed": "\"Claude Code · Sonnet\" becomes \"Sonnet\"; \"YouCoded Coder · Qwen2.5 C…\" becomes \"Qwen2.5 Coder:14b\". The small brand mark stays beside it.",
+      "notice": "This is the only change people on a normal-sized computer window will see. Hold the pointer over the model to read the full text.",
+      "risk": "Which app runs the model (Claude Code or YouCoded Coder) is now told only by the small mark and the hover text."
+    },
+    {
+      "id": "L-1",
+      "surface": "Try it: phone",
+      "path": "A phone connected to your computer",
+      "headline": "Click around the decided phone layout: does anything feel wrong?",
+      "hint": "Tap the name or lights to open your sessions. Swipe or scroll the pill row under the message box sideways. Tap the three-line menu. Nothing here is saved and no model answers.",
+      "changed": "The decided top bar, session list, pills and chips, all switched on together.",
+      "notice": "This is a practice copy of the app with made-up sessions.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 700,
+        "params": {
+          "platform": "android",
+          "connection": "remote",
+          "narrowTop": "lights",
+          "narrowList": "dropdown",
+          "narrowPills": "compact"
+        }
+      },
+      "yes": "Feels right",
+      "no": "Something is off"
+    },
+    {
+      "id": "L-2",
+      "surface": "Try it: narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "headline": "Click around the decided narrow computer window: does anything feel wrong?",
+      "hint": "Click the name to open your sessions, and the three-line menu to find Projects. The window buttons are for show here.",
+      "changed": "The same layout with the name on the left and Projects inside the menu.",
+      "notice": "The 340-pixel stop can't be felt here; that needs a real test window, which comes during the build.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 700,
+        "params": {
+          "narrowTop": "lights",
+          "narrowList": "dropdown",
+          "narrowPills": "compact"
+        }
+      },
+      "yes": "Feels right",
+      "no": "Something is off"
+    },
+    {
+      "id": "L-3",
+      "surface": "Try it: wide window",
+      "path": "A normal-sized window",
+      "headline": "Open the session list in a wide window: are the model-only rows right?",
+      "hint": "Click the session name at the top. Hold the pointer over a model name to see the full text.",
+      "changed": "Only the model text in each row differs from today.",
+      "notice": "Everything else in a wide window is as it is today on this branch.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Feels right",
+      "no": "Something is off"
+    }
+  ]
+}
