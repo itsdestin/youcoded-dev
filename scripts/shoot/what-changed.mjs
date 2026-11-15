@@ -83,6 +83,10 @@ if (opt.retake) {
       const dest = join(run, side, ...r.name.split('/'), `${r.theme}.png`);
       mkdirSync(dirname(dest), { recursive: true });
       copyFileSync(r.file, dest);
+      // WHY the companion file too: the comparison names buttons and words from <theme>.elements.json. Without
+      // it a retaken picture was compared by pixels alone ("other visual changes"), unlike its other theme.
+      const parts = r.file.replace(/\.png$/, '.elements.json');
+      if (existsSync(parts)) copyFileSync(parts, dest.replace(/\.png$/, '.elements.json'));
       const at = manifest.findIndex((m) => `${m.name}|${m.theme}` === key);
       const rec = { ...r, file: dest };
       if (at >= 0) manifest[at] = rec; else manifest.push(rec);
