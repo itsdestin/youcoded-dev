@@ -15,4 +15,5 @@ Next: Rebase both branches onto master (far behind), then build the decided layo
 Blocked: nothing
 
 Chats
+- 2026-11-15 session/narrow-screen-proposals: chat started
 - 2026-11-10 session/narrow-screen-proposals: phone layout rounds 1-4 answered; build continues here (Destin 2026-11-10)
