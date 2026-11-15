@@ -69,10 +69,10 @@ reviewers and such for now"). No UX tester, code reviewer, contract or grader un
 
 ## What the branches hold now
 
-**App (`youcoded`, `session/narrow-screen-proposals`, tip `8c6bb291f`, 13 commits on master
+**App (`youcoded`, `session/narrow-screen-proposals`, tip `ed3e3c7d5`, 14 commits on master
 `0444f47d9`):** commits `511443894` … `df72bffe3` (rounds 1–4, rebase follow-ups, branch-review
 screens), then `74d7c15b5` (round 5), `ac08faec5` (6), `d72287bc7` (7), `fe3a962a1` (8),
-`8c6bb291f` (9), plus a comment correction in `workbench-mode.ts` (2026-11-14).
+`8c6bb291f` (9), and `ed3e3c7d5` (a comment correction in `workbench-mode.ts`, 2026-11-14).
 
 - Workbench switches `narrowTop`, `narrowList`, `narrowPills` in
   `desktop/src/renderer/workbench-mode.ts`. Outside the workbench every switch reads `today`, so
