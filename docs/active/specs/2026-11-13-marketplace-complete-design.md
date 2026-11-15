@@ -218,9 +218,7 @@ pulled in for free"). This adds one part type, **app**: an outside program the l
 installs and YouCoded shows in its own panel, with an adapter that tells the app how to start
 it, where its window goes, how the theme is applied to it, and what the assistant may do in
 it. The built-in Office (OnlyOffice) and the built-in browser are the two existing examples to
-generalise from. STILL TO DESIGN in this document (adapter contract, theming, what the assistant may do
-inside it, safety step for a whole program). It is also the real answer to the 77
-uninstallable Docker rows.
+generalise from. Drafted in section 9. It is also the real answer to the 77 uninstallable Docker rows.
 
 ### How updates treat a copy you changed
 
@@ -405,6 +403,108 @@ then Pages and new kinds.
 8. **Assistant search; phone layout.**
 
 Not designed here: paying authors (tip jar). The publisher page is where it would attach.
+
+## 9. Full open-source apps (draft, awaiting the 2026-11-14 apps deck)
+
+**What exists to generalise from** (studied 2026-11-14):
+- *Office* (a fork of OnlyOffice): shipped inside the installer, about 440 MB, pinned by
+  version and checksum per platform (`youcoded/desktop/office-pin.json`). No server: the editor
+  is files shown in a locked frame at its own address per document. Fully themed — the app
+  posts its colours, fonts and corners into the frame and a small bridge maps them onto the
+  editor (`office-theme.ts`). The assistant can only add and answer comments. No network.
+  Desktop only.
+- *Browser*: uses a Chromium browser already on the computer, or downloads one (~150 MB) on
+  first use. Runs hidden as a helper process and is shown as a live picture in a side panel,
+  with clicks passed back. Web pages are not themed. The assistant has eight declared tools,
+  asks once per site and before every final step, and page text is marked untrusted. Desktop
+  only.
+- *Pages*: a locked frame with no network except connections the person approved; may run one
+  declared program file, approved by fingerprint.
+
+**Three ways an app can be shown**, and what each can honestly promise:
+
+| Way | Fits | Themed | Example |
+|---|---|---|---|
+| **Inside a panel, from files** | Apps built as web pages | Fully, when the adapter maps colours | Office, drawing boards, diagram tools |
+| **Inside a panel, from a local service** | Programs that serve their own screen on this computer (often Docker tools) | Partly: colours where the adapter can inject them | Media servers, note servers, dashboards |
+| **In its own window, beside YouCoded** | Ordinary desktop programs | Only if the program has its own theme system the adapter can write to | Firefox, GIMP, LibreOffice |
+
+A desktop program cannot be drawn inside a YouCoded panel in a way that works on Windows, Mac
+and Linux alike. The Browser's live-picture method works only because a browser can run
+hidden; it is not a general answer. So "skinned with YouCoded theming" is a full promise for
+the first row, a partial one for the second, and "matching colours where the program allows"
+for the third. The listing page says which.
+
+**The adapter** is a small file in the listing (`app.json`), and is the only part we can read
+and review in full:
+- *get*: the program's official download per platform, each pinned by checksum; or a system
+  package; or a container image. Size shown before install.
+- *run*: nothing (files only), a helper process, or a container; how to tell it is healthy;
+  it stops when its panel has been closed for a while and on quit.
+- *show*: panel from files, panel from a local address, or own window.
+- *theme*: a map from YouCoded's colour, font and corner tokens to the program's own settings,
+  or a generated theme file for programs that take one.
+- *assistant*: a closed list of named actions the assistant may take (open, read, comment,
+  export…), each marked ask-first or not. No general "control the screen" (that is the
+  separate desktop-control exploration, #160).
+- *files*: which file types it opens ("opens .docx"), which feeds `provides` and an "Open
+  with" choice. It reaches the person's files only through the app's existing file permission.
+- *network*: the addresses it may reach, shown under "What this can do".
+- *data*: its own folder under the listing. Uninstall removes the program and asks about the
+  data.
+
+**Safety for a whole program.** Neither the rule scan nor the AI reviewer can read a 400 MB
+program. What can be checked: the adapter itself (fully reviewed); that the download is the
+project's own official release, unchanged (checksum against the project's published one);
+known-vulnerability lists for that release. The label for the program is therefore a fact —
+"Official release of X, unchanged" — not "Reviewed". An app listing whose download is not an
+official release is never shown in browsing. Every app listing carries the ability "Runs a
+full program on your computer".
+
+**Where it runs.** Desktop first. On the phone and remote web an app listing shows "Needs the
+desktop app" (the Runs-here rule). Remote viewing of a panel app is possible later for the
+first two rows, never for own-window apps.
+
+**Updates.** A new adapter or a new pinned release is a new version like any other; a release
+that adds network addresses or assistant actions asks first (deck Q-8).
+
+**Built-ins become the first two app listings** (`origin: builtin`): Office and Browser are
+described by the same adapter shape, which is the test that the shape is right.
+
+## 10. Suggest to the author (draft, awaiting the 2026-11-14 apps deck)
+
+Destin, 2026-11-14: "some things make sense to merge upstream, but some niche user preference
+things won't make sense to try to push upstream … how would this interact with github?"
+
+**Choosing what to send.** From a listing someone created from another, **Suggest to the
+author** has the assistant list the differences as separate plain-language changes ("Added a
+weekly view", "Renamed the greeting to 'Hey Sam'"). Changes that look useful to anyone start
+ticked; changes that look personal (names, colours, private details, the person's own
+accounts) start unticked. The person adjusts the ticks, adds a sentence, and sends. Only the
+ticked changes are sent; their own copy is untouched.
+
+**What the author gets.** A summary in plain words, a **Try it** button that installs the
+suggestion as a temporary copy beside their own, and Accept / Decline with an optional reply.
+Accepting publishes a new version with the suggester credited. Declining changes nothing for
+either side.
+
+**How it meets GitHub.** Underneath, a suggestion is a pull request on the listing's
+repository.
+- Listings published through YouCoded: the request lives in our organisation and the author
+  handles it entirely in the app.
+- Authors who publish from their own GitHub and have claimed their listing in YouCoded: the
+  request is opened on their repository under YouCoded's account, naming the suggester, and
+  shows in the app as well. They can answer in either place.
+- Authors who have never touched YouCoded — most of the ~4,000 imported listings: nothing is
+  sent automatically. Unasked requests from a bot to projects that never joined would read as
+  spam and could get our account restricted. The button reads "The author isn't on YouCoded"
+  and offers "Open the project on GitHub".
+The same split applies to **Report a problem**: claimed listings receive it; for unclaimed
+ones the report is kept on the listing for other users and links to the project's own issue
+page.
+
+**Claiming a listing** (also needed for "Verified publisher", section 6): the author proves
+control of the source once, from the app or the website.
 
 ## Open (technical, for review rounds)
 

@@ -1,0 +1,360 @@
+{
+  "title": "Marketplace — categories",
+  "key": "marketplace-apps-and-suggestions",
+  "out": "marketplace-apps-and-suggestions.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-C1",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "The filters at the top of the list",
+      "headline": "Should listings be sorted by what they do, by who they are for, or both?",
+      "today": "Listings carry three different topic labels, and almost none are filled in. The menu called Vibe covers 10 listings out of about 4,000.",
+      "problem": "You asked for categories for basic functions such as Calendar, Task Management and Document Editing. Those answer 'what does it do'. Labels such as School or Work answer a different question: 'who is it for'. One list that mixes both is hard to scan.",
+      "proposal": "Pick how many lists there are. In every case an AI sorts each listing and you can overrule it.",
+      "options": [
+        {
+          "id": "two",
+          "label": "Two lists",
+          "summary": "'What it does' (Calendar, Tasks, Notes, Documents, Spreadsheets, Mail, Browser, Money, Music, Photos, Coding tools) and 'Who it's for' (School, Work, Home, Health, Fun).",
+          "pros": [
+            "Each list answers one question, so each stays short.",
+            "'Calendar' becomes the same word a Page uses when it says it needs a calendar, so the store can suggest one.",
+            "You can combine them: Tasks for School."
+          ],
+          "cons": [
+            "Two filters to learn instead of one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "function",
+          "label": "Only 'What it does'",
+          "pros": [
+            "One list, like a phone app store.",
+            "Still gives the shared word for 'needs a calendar'."
+          ],
+          "cons": [
+            "No quick way to say 'show me things for school'."
+          ]
+        },
+        {
+          "id": "one-mixed",
+          "label": "One mixed list",
+          "summary": "Calendar, Tasks, School, Work and the rest side by side.",
+          "pros": [
+            "One filter."
+          ],
+          "cons": [
+            "A long list where a school planner could sit under Calendar, Tasks or School, and people look in the wrong one."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-C2",
+      "words": true,
+      "answer": "words",
+      "prompt": "Paste the site's address, or name the page that holds its categories",
+      "surface": "Marketplace",
+      "path": "The category list",
+      "headline": "Where is the Open Source Everything category list you want this matched to?",
+      "today": "You said the Open Source Everything site could be the reference for categories. I searched the workspace and your notes and found no address or category list for it.",
+      "problem": "Without it I would invent a list, and you would then have two lists that disagree.",
+      "proposal": "Give me the address and the marketplace categories are drawn from it."
+    },
+    {
+      "id": "P-2",
+      "page": "Full open-source apps",
+      "intro": "You said the marketplace should let people bring in whole open-source apps such as OnlyOffice and Firefox, themed, for free. These decide how that works."
+    },
+    {
+      "id": "S-A1",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "An app listing's page",
+      "headline": "An app is themed fully, partly or only in matching colours, depending on how it is built, and its page says which.",
+      "changed": "Apps built as web pages (like Office) sit inside a YouCoded panel and take the full theme. Programs that serve their own screen on your computer sit inside a panel and take colours where possible. Ordinary desktop programs such as Firefox open in their own window beside YouCoded and match colours only if the program has its own theme setting.",
+      "notice": "Not every app can look like part of YouCoded. A desktop program cannot be drawn inside a panel in a way that works on Windows, Mac and Linux alike. The page for each app states which of the three it is before you install.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "Q-A2",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Publishing an app",
+      "headline": "Who should be allowed to add a full app to the marketplace?",
+      "today": "Two apps exist inside YouCoded, Office and the Browser, and both were wired in by us. Nobody else can add one.",
+      "problem": "A full program is far too large for our checks to read. All we can read is the small set of instructions that tells YouCoded how to fetch, start and theme it.",
+      "proposal": "Pick who can publish those instructions. In every case the program itself must be the project's own official download, unchanged, or the listing is not shown.",
+      "options": [
+        {
+          "id": "anyone-reviewed",
+          "label": "Anyone, after AI review",
+          "summary": "The instructions are read by the AI reviewer and the download is confirmed as the official one before the listing appears.",
+          "pros": [
+            "Matches 'every and any free open source app'.",
+            "The catalog of apps grows without waiting on you."
+          ],
+          "cons": [
+            "A badly written set of instructions can still give a broken or ugly app.",
+            "Depends on the AI reviewer existing first."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "anyone-you",
+          "label": "Anyone, after you approve",
+          "pros": [
+            "A person looks at every app before it is listed."
+          ],
+          "cons": [
+            "You become the queue. Apps wait on your time."
+          ]
+        },
+        {
+          "id": "us-only",
+          "label": "Only YouCoded, for now",
+          "pros": [
+            "Every app is one we tested ourselves."
+          ],
+          "cons": [
+            "A handful of apps, not 'any'.",
+            "The community cannot help."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-A3",
+      "words": true,
+      "surface": "The assistant",
+      "path": "Working inside an installed app",
+      "headline": "How much should the assistant be able to do inside an installed app?",
+      "today": "Inside Office the assistant can only add and answer comments. Inside the Browser it has eight named actions and asks before final steps such as paying or sending.",
+      "problem": "An app the assistant cannot touch is just a window. An assistant that can do anything inside any app is hard to keep safe.",
+      "proposal": "Pick the rule for every app.",
+      "options": [
+        {
+          "id": "declared",
+          "label": "Only actions the app lists",
+          "summary": "Each app names what the assistant may do (open, read, comment, export) and which of those ask you first.",
+          "pros": [
+            "You can read the list before installing.",
+            "An update that adds an action asks you, as you approved for other abilities.",
+            "It is how Office and the Browser already work."
+          ],
+          "cons": [
+            "The assistant can do less in apps whose author listed little."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "screen",
+          "label": "Let it use the screen",
+          "summary": "The assistant looks at the app and clicks, like a person.",
+          "pros": [
+            "Works with any app, with no list to write."
+          ],
+          "cons": [
+            "Slow and error-prone.",
+            "Hard to say in advance what it might click.",
+            "This is a separate unexplored piece of work, not part of the marketplace."
+          ]
+        },
+        {
+          "id": "nothing",
+          "label": "Nothing",
+          "pros": [
+            "Simplest and safest."
+          ],
+          "cons": [
+            "The app sits beside the assistant without the two working together."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-A4",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "The safety label on an app",
+      "headline": "An app's safety label says 'Official release, unchanged', never 'Reviewed'.",
+      "changed": "Our checks cannot read a 400 MB program. What we can prove is that the download is the project's own release and has not been altered. The label says exactly that. The small set of instructions around it is reviewed in full, and every app carries the note 'Runs a full program on your computer'.",
+      "notice": "App listings look slightly different from plugins on safety: they vouch for where the program came from, not for what is inside it. The size is shown before install, since these are large.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "Q-A5",
+      "words": true,
+      "surface": "The app's top bar",
+      "path": "Where an installed app opens from",
+      "headline": "Where should installed apps live once you have several?",
+      "today": "Office has its own icon in the top bar. Pages open from the Pages area. The Browser opens in the side panel of a chat.",
+      "problem": "If every installed app adds an icon to the top bar, five apps crowd it.",
+      "proposal": "Pick where apps open from.",
+      "options": [
+        {
+          "id": "with-pages",
+          "label": "With Pages, pin favourites",
+          "summary": "Apps sit in the same place as Pages. You choose which ones also get an icon in the top bar.",
+          "pros": [
+            "One place for everything you have added, which fits 'pages on steroids'.",
+            "The top bar holds only what you chose."
+          ],
+          "cons": [
+            "Office would move there too, unless pinned, which changes where people find it today."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "own-area",
+          "label": "A separate Apps area",
+          "pros": [
+            "Apps and Pages stay distinct."
+          ],
+          "cons": [
+            "Two near-identical places to look."
+          ]
+        },
+        {
+          "id": "top-bar",
+          "label": "Each gets a top-bar icon",
+          "pros": [
+            "One click to any app."
+          ],
+          "cons": [
+            "The bar fills up quickly."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-A6",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Apps on the phone",
+      "headline": "Apps are desktop-only at first; on the phone their listings say 'Needs the desktop app'.",
+      "changed": "Office and the Browser are already desktop-only. Full programs are built for computers, so app listings follow the rule you set on 1 November: shown at the end with the reason.",
+      "notice": "Phone users see apps but cannot install them. Viewing a panel app from the phone through the desktop could come later.",
+      "yes": "Holds",
+      "no": "Change this"
+    },
+    {
+      "id": "P-3",
+      "page": "Suggest to the author",
+      "intro": "You approved this in principle and asked how it would work in practice, what is worth sending, and how it meets GitHub."
+    },
+    {
+      "id": "Q-S1",
+      "words": true,
+      "surface": "Something you created from someone else's listing",
+      "path": "The Suggest to the author button",
+      "headline": "How should the app decide which of your changes are sent to the author?",
+      "today": "Nothing exists. You raised the concern that some changes help everyone and some are personal taste.",
+      "problem": "Sending everything would push your name, your colours and your private details at the author. Asking you to describe the changes yourself needs skills most people do not have.",
+      "proposal": "Pick how the changes are chosen.",
+      "options": [
+        {
+          "id": "assistant-ticks",
+          "label": "Assistant lists, you tick",
+          "summary": "The assistant lists each change in plain words. Useful-to-anyone ones start ticked; personal ones (names, colours, private details) start unticked. You adjust and send.",
+          "pros": [
+            "Personal things stay out unless you add them.",
+            "You see exactly what is sent.",
+            "The author gets clean, separate changes."
+          ],
+          "cons": [
+            "The assistant can misjudge what is personal, so the list needs a glance."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "all",
+          "label": "Send everything",
+          "pros": [
+            "One press."
+          ],
+          "cons": [
+            "Personal changes and private details can go out.",
+            "Authors get a muddle and decline more."
+          ]
+        },
+        {
+          "id": "describe",
+          "label": "You describe it in words",
+          "summary": "You write what you would like changed; no files are sent.",
+          "pros": [
+            "Nothing of yours leaves."
+          ],
+          "cons": [
+            "The author has to redo the work themselves, so less gets accepted."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-S2",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Listings whose author has never used YouCoded",
+      "headline": "What should happen to suggestions and problem reports for authors who are not on YouCoded?",
+      "today": "Most of the roughly 4,000 listings were imported from outside projects on GitHub. Their authors never signed up and may not know YouCoded lists them.",
+      "problem": "A suggestion has to arrive somewhere. Sending requests from a YouCoded account to projects that never asked for them can read as spam and could get our GitHub account restricted.",
+      "proposal": "Pick the rule for those authors. Authors who publish through YouCoded, or who have confirmed a listing is theirs, always receive suggestions and reports in the app.",
+      "options": [
+        {
+          "id": "claimed-only",
+          "label": "Only authors who joined",
+          "summary": "For the rest the button reads 'The author isn't on YouCoded' and offers to open the project on GitHub. Problem reports are kept on the listing for other users to see.",
+          "pros": [
+            "No unasked messages from us to outside projects.",
+            "Other users still see known problems on the listing."
+          ],
+          "cons": [
+            "For most listings today, a suggestion goes nowhere unless the person uses GitHub themselves."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "send-all",
+          "label": "Send to every author on GitHub",
+          "pros": [
+            "Every suggestion reaches someone."
+          ],
+          "cons": [
+            "Outside projects may see it as spam.",
+            "Risk to the one GitHub account everything depends on."
+          ]
+        },
+        {
+          "id": "invite",
+          "label": "Invite once, then send",
+          "summary": "The first suggestion for an outside project sends its author one polite invitation; later ones wait until they join.",
+          "pros": [
+            "Authors learn their work is listed and wanted.",
+            "At most one unasked message per project."
+          ],
+          "cons": [
+            "Still one unasked message each, across thousands of projects over time."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-S3",
+      "words": true,
+      "surface": "An author's own listing",
+      "path": "A suggestion arriving",
+      "headline": "The author sees a plain summary, can try the suggestion beside their own, and accepts or declines.",
+      "changed": "Try it installs the suggested version as a temporary copy without touching the author's own. Accept publishes a new version with the suggester credited. Decline changes nothing for either person and can carry a reply. Authors who work on GitHub can answer there instead; both places show the same result.",
+      "notice": "Authors get a new inbox for suggestions. The person who suggested keeps their own copy whatever the answer.",
+      "yes": "Holds",
+      "no": "Change this"
+    }
+  ]
+}
