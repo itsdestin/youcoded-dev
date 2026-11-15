@@ -1,12 +1,11 @@
 ---
-status: draft
+status: active
 ---
 # Pages step 4 — automations: technical design
 
-**Status 2026-11-13: draft. Nothing here is built** — only the screens exist, in the workbench
-against `renderer/dev/workbench/automations-mock.ts`. Every decision below is answered on a deck or
-in chat. Do not build until the screens under "Still to settle" are drawn and approved and one
-design-review round has run. Route (review deck `Q-route`): finish steps 4, 5 and 6, then ship once.
+**Status 2026-11-15: BUILT on `session/90-pages-finish`, not merged.** Code map: `docs/MAP.md` →
+Automations. Where the build differs from the text below, the build wins and is listed under
+"What the build changed". Route (review deck `Q-route`): finish steps 4, 5 and 6, then ship once.
 The 2026-11-08 "fence" proposal (deck `plan-g`, never submitted) is DROPPED: Destin called it
 overcomplicated, and it made Claude, other models and Windows/phones behave differently, against
 his "the underlying engine for any automation should be easily interchangeable".
@@ -223,3 +222,30 @@ while YouCoded is closed.
    offered for automations on the phone, and the model menu says why.
 10. The drift review Destin asked for on `pages-finish-review#Q-missed` was the 2026-11-12
     pass over his past chats that dropped the fence.
+
+## What the build changed (2026-11-14/15)
+
+- **One runner, two engines.** `automation-runner.ts` holds everything a person can see or set; an
+  engine only carries out the instruction (`native-engine.ts`, `claude-engine.ts`).
+- **Claude lane asks through a hook + stdio, not a relay.** A `--settings` PreToolUse hook answers
+  "ask" for every tool; with `--permission-prompts host --permission-prompt-tool stdio` each call
+  arrives as `can_use_tool` on stdout and is answered on stdin (measured, CC 2.1.325). Without the
+  hook Claude Code runs commands it judges harmless with no question at all.
+- **Claude lane saves no session** (`--no-session-persistence`), where decision 2 said "saved, kept
+  apart": fifteen places read `~/.claude/projects`. Cost: a Claude run cut off by closing the app
+  starts over (the run list says so) instead of continuing. The app's own models continue from the
+  saved conversation and ask before redoing the half-done step.
+- **Page data reaches a run through the page-data program a chat already has** (`run-pages.ts`),
+  started with only the linked pages' folders; no new tools.
+- **Commands: a `*` right after a `/` stands for a file under that folder** (`job-rules.ts`
+  `filePatternCovers`). The chat matcher cannot express "run this program on any file in that folder",
+  the approved example on the Add menu.
+- **Phones:** every new channel is closed to a PAIRED phone or remote browser until Destin decides
+  (`tests/fixtures/phone-open-channels.json` is his list). The Android app itself is unaffected.
+- **Delete page** moves the folder to the bin where the computer has one. The page's chat LIST goes;
+  the conversations themselves stay in Resume (the app has no "delete a chat" yet).
+- **Not stored:** nothing was dropped from the types; `devices` and `notify` are saved and unused.
+- **Not built:** practice runs (after the first version), service permissions and events (step 5),
+  system notifications (card #240), the one-time daily-limit override (card #90 note).
+- **Not verified:** a real run on one of the app's own models (unit-tested with a stand-in model
+  only); Windows and macOS; the phone; a run surviving a real app restart.
