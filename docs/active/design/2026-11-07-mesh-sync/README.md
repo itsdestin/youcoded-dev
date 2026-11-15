@@ -475,3 +475,41 @@ Report: `docs/active/investigations/2026-11-14-mesh-phase0/T12b-decide-closed.md
 Adopted as engineering (design.md 5.4 now holds 15 numbered rules, 5.3 the id scheme with permanent aliases and `h[0] = SHA-256(chat id ‖ segment)`, segment always 0, S2/S5/6.2/9/12/13 updated): tips and list `parent`; a takeover names its own device's open host entries; a member holding lines for a chat with no valid host entry writes a claim; release duties with `owner` and `role`; reversible set-aside; copy only from members; highest `format` wins. Section 2 untouched (hash unchanged). Phase 5 exit now requires re-running the fuzzer on the real implementation at the same counts plus an independent generator. New open item O27 (hidden second version on delete).
 
 Awaits Destin (round-15 deck, page "Chats and versions"): C-9 pending display and exit, C-10 delete with a hidden second version, C-11 more "Two versions" rows (reworded), C-12 which row keeps the name (reworded), C-13 "checking" and no copying from an untrusted device (reworded), new C-15 chat with a cancelled host record given to its holder, new C-16 second-version row vanishing on early removal, new C-17 higher minimum app version wins. Mutual removal stays on P-10; note the simulator only exercised the fixed-order choice, so picking "both removed" reopens the rules.
+
+## 2026-11-15: round 15 answered (submitted 2026-11-15 00:58 UTC)
+
+Answers file: `mesh-sync.questions-15.answers.json`. 26 picked, 12 "other", 1 yes.
+
+**Steer that outranks the individual answers (his notes on P-9, P-10, C-11, C-16):** the clash
+handling is "overengineering for a bunch of error cases that could be either prevented or handled
+much more simply"; "build the correct version that eliminates the issues". A simplification study
+is running (`investigations/2026-11-14-mesh-phase0/simplify-study.md`); C-9, C-11, C-13, C-15,
+C-16, C-17 and P-10 are NOT applied to the design until it reports and he has decided.
+
+**Picked:** P-1 letters-digits (note: wants the brute-force odds explained); P-14 long-19; P-2
+matching-number; P-3 refuse; P-5 ask-and-warn; P-6 as-designed; P-7 no-switch; P-8 one-tap; P-9
+skip ("from a ux/ui perspective, this would be fucking miserable"); P-11 key-number; P-12
+both-confirm; P-13 as-designed; C-1 pictures-travel; C-2 error-not-finished; C-4
+upload-like-phone; C-5 all-of-it, with his change: "EITHER a keep-everything device OR a cloud
+backup" may confirm; C-6 hold-24h; C-9 check-then-allow (confused: "when would a user actually
+encounter this? is there a better/more 'correct' way"); C-10 leave-labelled; C-12 leave-as-is;
+C-14 as-designed; C-15 quiet-new-home; C-17 highest-wins; F-3 two-files; S-1 setup-desktop;
+S-2 test-each-system.
+
+**Other (his words):**
+- P-4: "option a is far too confusing and verbose … much closer to b, with a handful of honest
+  (but much more clear/concise) caveats. end-to-end encryption is still end-to-end". Wording to be
+  redrafted for his approval.
+- P-10: "confusing as fuck. what? this seems overcomplicated". Not decided; with the study.
+- C-3: "why would just opening/closing cause it to fork? that seems like a serious bug if so".
+  Read as: no notice may appear for this (the runtime's own housekeeping lines); explained in chat.
+- C-8: "why would stuff typed into terminal be any different from messages typed … in the chat
+  window?" The question was badly put (it meant a plain terminal outside the app); explained in chat.
+- C-11, C-13 ("what?"), C-16: with the study.
+- F-1 ("what?"), F-2 ("what does this actually mean for real users"): explained in chat; F-1
+  still needs his answer.
+- R-1: not paying yet; "likely … before we finalize/merge/launch"; wants costs explained first.
+- R-2: a one-device user must use no relay storage and cost nothing until a second device is
+  connected. ADOPTED as a rule; the starter allowance is dropped.
+- R-3: no relay-full notices; the only notice is on a chat the user tries to resume that is not
+  available yet. ADOPTED.
