@@ -113,6 +113,7 @@ TIP = {
   'place.Settings': 'Every setting in the app.',
   'place.Devices & sync': 'Keeping things the same on every computer and phone, and using the app from your phone.',
   'place.Leaving & updating': 'What you see when you close the app or an update is ready.',
+  'place.Buddy': 'The small floating helper window, and what it shows.',
   'place.Developer tools': 'Screens for building the app, not for people who use it.',
   'place.Other': 'Screens that do not fit any of the places above.',
 

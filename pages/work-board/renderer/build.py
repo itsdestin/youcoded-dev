@@ -107,7 +107,9 @@ PLACES = [  # (name, screen prefixes)
   ('Settings', ['settings']),
   ('Devices & sync', ['settings/sync','settings/remote','settings/android','chat/takeover','projects/turn-on-sync']),
   ('Leaving & updating', ['app/unsaved-before-quit','chat/update','chat/close-session','chat/quit-sessions']),
-  ('Developer tools', ['dev/','settings/development']),
+  ('Buddy', ['buddy']),
+  # WHY settings/development left this line (2026-11-14): Report a bug and Contribute are ordinary Settings pages
+  ('Developer tools', ['dev/']),
 ]
 DESC = {  # plain sentences for the main screens; everything else says so honestly
   'chat':'The conversation. Where you talk to the assistant and it answers, asks, and shows its work.',
