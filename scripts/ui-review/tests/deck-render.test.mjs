@@ -1718,10 +1718,12 @@ by['Q-3']['reopened'] = 'You asked for it bigger.'; by['Q-3']['trail'] = [{'roun
 # Q-5 was answered in an earlier, separate deck too: one topic, two rounds
 by['Q-5']['answered'] = [{'round': 'Round 2', 'answer': 'An older pick', 'notes': ['first thoughts']}]
 q4 = dict(by['Q-2'], id='Q-4', headline='Fourth topic?'); q4.pop('resolved')
-rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'calls': [{'id': 'r1', 'call': 'A row.', 'why': 'Because.', 'more': 'Where it came from: earlier.'}]}
+rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'calls': [{'id': 'r1', 'call': 'A row.', 'why': 'Because.', 'more': {'today': 'Where it came from: earlier.', 'change': 'Now it is different.', 'pros': ['Clear.']}}]}
+q6 = dict(by['Q-2'], id='Q-6', headline='Sixth topic?'); q6.pop('resolved'); q6['answered'] = {'round': 'Round 2', 'answer': 'Yes'}
 raw['stage'] = 'design'
 raw['steps'] = [by['P-1'], by['Q-1'], {'id': 'P-2', 'page': 'Design page', 'intro': 'Pick between the drawings.', 'stage': 'design'}, by['Q-2'], by['Q-5'], by['Q-3'], q4,
-                {'id': 'P-3', 'page': 'Rows page', 'intro': 'Tick what is fine.', 'stage': 'design'}, rows]
+                {'id': 'P-3', 'page': 'Rows page', 'intro': 'Tick what is fine.', 'stage': 'design'}, rows,
+                {'id': 'P-4', 'page': 'Settled page', 'intro': 'Nothing here needs you.', 'stage': 'design'}, q6]
 json.dump(raw, open(p, 'w'))`;
   await sleep(1200);   // the build stamp has one-second precision: round 2 must be a different build from round 1, as it always is in practice
   { const r = spawnSync('python3', ['-c', edit], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
@@ -1730,7 +1732,7 @@ json.dump(raw, open(p, 'w'))`;
   const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
   const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(300); };
   // The header's boxes: they must be identical on every page (Destin, round 11: "the header still re-sizes/re-arranges itself when clicking between pages").
-  const HDR = "(()=>{const r=x=>{const b=document.querySelector(x).getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(Math.round).join()};return [r('.top'),r('#done'),r('.stagerow')].join('|')})()";
+  const HDR = "(()=>{const r=x=>{const b=document.querySelector(x).getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(Math.round).join()};return [r('.top'),r('#done'),r('#stages')].join('|')})()";
   try {
     await sleep(900);
     assert.ok(readdirSync(dirname(spec)).some(f => /^questions\.answers\.\d+\.json$/.test(f)), 'serve moved his round-1 answers aside as a dated file');
@@ -1766,9 +1768,14 @@ json.dump(raw, open(p, 'w'))`;
         [['Understanding', 'done', true], ['Design', 'on', false], ['Before build', 'later', false], ['After build', 'later', false]]);
       assert.equal(await q("document.querySelectorAll('#stages .stagebtn .stagetick').length"), 1, 'the finished stage carries a check');
       assert.equal(await q("document.querySelectorAll('#stages .recordlink, .recordbanner').length + (/Earlier stages/.test(document.body.innerText) ? 1 : 0)"), 0, 'no "Earlier stages" link or banner');
-      // Previously answered: a top-level card headed like a list
-      assert.equal(await q("document.querySelector('.prevgrp > .qh').textContent"), 'Previously answered');
-      assert.equal(await q("document.querySelector('.prevgrp > .qnum').textContent.length > 0 && document.querySelector('.prevgrp .prevn').textContent"), '2');
+      // Previously answered: ONE folded row (title, count, chevron) at the foot of a page that has something for him; shut until pressed
+      assert.equal(await q("document.querySelector('.prevfold .foldtitle').textContent"), 'Previously answered');
+      assert.equal(await q("document.querySelector('.prevfold .fchip').textContent"), '2');
+      assert.equal(await q("document.querySelector('.prevfold .foldbody').hidden"), true, 'folded by default');
+      assert.equal(await q("document.querySelector('.prevfold .foldhead').getBoundingClientRect().height < 60"), true, 'a single row');
+      assert.equal(await q("document.querySelectorAll('.prevfold .foldhead .chev').length"), 1);
+      await q("document.querySelector('.prevfold .foldhead').click()"); await sleep(150);
+      assert.equal(await q("document.querySelector('.prevfold .foldbody').hidden"), false, 'it opens in place');
       assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.prevtopic .anstitle')].map(e => e.textContent))")), ['Second topic?', 'Fifth topic?']);
       const card = await q("document.querySelector('.prevtopic[data-id=Q-2]').innerText");
       assert.match(card, /Second topic\?/); assert.match(card, /Round 4/); assert.match(card, /You answered/); assert.match(card, /Made quiet in the next build\./);
@@ -1810,12 +1817,13 @@ json.dump(raw, open(p, 'w'))`;
       assert.equal(await q(HDR), hdr0, 'the header is identical on a finished stage');
       assert.equal(await q("document.querySelector('.prevgrp > .qh').textContent"), 'Previously answered');
       assert.equal(await q("document.querySelectorAll('.prevtopic .reopenbtn').length"), 0, 'no Reopen in a finished stage');
+      assert.equal(await q("document.querySelectorAll('.prevfold').length"), 0, 'a finished stage shows its cards, not a folded row');
       assert.equal(await q("document.querySelectorAll('#cards article.q:not(.prev), #cards .pagenote').length"), 0, 'nothing in it asks for an answer');
       assert.equal(await q("document.querySelectorAll('#steps span').length"), 1, 'the bars show the viewed stage\'s pages');
       assert.equal(await q("document.querySelector('#stages li.viewing').textContent.trim()"), 'Understanding');
       assert.match(await q("document.querySelector('#count').textContent"), /0 of \d+ answered/, 'a finished stage never counts as waiting');
       // the current stage's name leads back; a later stage is not pressable
-      assert.equal(await q("document.querySelectorAll('#stages button').length"), 2, 'the finished stage and the way back: no other button');
+      assert.equal(await q("document.querySelectorAll('#stages .stagebtn').length"), 2, 'the finished stage and the way back: no other stage button');
       await q("document.querySelector('#stages li.on .stagebtn').click()"); await sleep(300);
       assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Rows page', 'back where he was');
       assert.equal(await q(HDR), hdr0);
@@ -1831,6 +1839,28 @@ json.dump(raw, open(p, 'w'))`;
       assert.equal(await q("[...document.querySelectorAll('.leavebtn')].filter(b => b.offsetParent).length"), 1, 'a reopened topic he has not answered can be put back');
       await q("document.querySelector('.leavebtn').click()"); await sleep(300);
       assert.deepEqual(await ids(), ['Q-3', 'Q-4'], 'Leave as answered puts it back');
+      // Round 13: only pages that need him are the path; the last one ends with ONE folded row that opens the all-answered pages
+      assert.equal(await q("document.querySelectorAll('.earlierfold').length"), 0, 'not on the first page');
+      await q("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
+      assert.equal(await q("document.querySelectorAll('#steps span').length"), 2, 'the all-answered page is not in the bars');
+      assert.equal(await q("document.querySelector('.earlierfold .foldtitle').textContent"), 'Everything answered earlier');
+      assert.equal(await q("document.querySelector('.earlierfold .foldhead .fchip').textContent"), '1');
+      assert.equal(await q("document.querySelector('.earlierfold .foldbody').hidden"), true, 'folded by default');
+      assert.equal(await q("document.querySelector('#save').textContent"), 'Submit feedback', 'the foot says what the header says');
+      assert.equal(await q("document.querySelectorAll('#cards .rowmore .card.part').length"), 2, 'a row\'s More is labelled parts (today, change)');
+      assert.equal(await q("document.querySelectorAll('#cards .rowmore .pcbox').length"), 1, 'and its good points');
+      await q("document.querySelector('.earlierfold .foldhead').click()"); await sleep(150);
+      assert.equal(await q("[...document.querySelectorAll('.earlieritem')].map(b => b.innerText.replace(/\\s+/g, ' ')).join('|')"), 'Settled page 1');
+      await q("document.querySelector('.earlieritem').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Settled page');
+      assert.equal(await q("document.querySelectorAll('.fintag').length"), 0, 'it is not a finished stage');
+      assert.equal(await q("document.querySelectorAll('.prevtopic').length"), 1);
+      assert.equal(await q("document.querySelectorAll('.prevtopic .reopenbtn').length"), 0, 'read-only: nothing to reopen here');
+      assert.equal(await q(HDR), hdr0, 'the header is identical there too');
+      assert.equal(await q("document.querySelector('#save').textContent"), 'Back to your questions');
+      await q("document.querySelector('#save').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Rows page', 'back in the path');
+      await q("document.querySelectorAll('#steps span')[0].click()"); await sleep(250);
       // a phone: no sideways scroll, same header on every page, the finished stage fits too
       const m = await cdp(await freePort(), 390, 800);
       try {
@@ -1844,9 +1874,49 @@ json.dump(raw, open(p, 'w'))`;
         await m.evaluate("document.querySelector('#stages .stagebtn').click()"); await sleep(300);
         assert.equal(await m.evaluate(HDR), h0, 'and on a finished stage');
         assert.equal(await m.evaluate(fit), true, 'a finished stage fits a phone');
+        assert.equal(await m.evaluate("getComputedStyle(document.querySelector('.stagecompact')).display !== 'none' && getComputedStyle(document.querySelector('.stageflow')).display === 'none'"), true, 'a phone shows the current stage with "N of 4"');
+        assert.match(await m.evaluate("document.querySelector('.stagecompact').innerText"), /of 4/);
+        assert.equal(await m.evaluate("(()=>{const t=document.querySelector('.top').getBoundingClientRect();return [...document.querySelectorAll('#stages,#steps,#done')].every(e=>{const b=e.getBoundingClientRect();return b.top>=t.top-1&&b.bottom<=t.bottom+1})})()"), true, 'one row at 390px: bars, stage and Submit all inside the header');
         assert.deepEqual(m.errors, []);
       } finally { m.close(); }
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
+    // Round 13 (Destin: the new round opened on page 9 full of last round's answers because the browser's old copy was restored): a copy saved by another
+    // build is dropped; a copy from THIS build is restored; and nothing that is not an open topic is ever saved or sent.
+    const stale = async (builtAt, pre) => {
+      const n = await cdp(await freePort(), 1400, 1000);
+      try {
+        await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+        await n.evaluate(`fetch('/answers').then(r => r.json()).then(d => {const at = ${JSON.stringify(builtAt)} || DECK.built.at; localStorage.setItem('deck:' + DECK.key, JSON.stringify({ deck: DECK.key, started: d.started || '2026-11-01T00:00:00Z', cur: 1, built: { at }, answers: ${JSON.stringify(pre)}, pageNotes: { 'P-9': 'old note', 'P-2': 'kept note' } })); return 1})`);
+        await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+        return n;
+      } catch (e) { n.close(); throw e; }
+    };
+    {
+      const n = await stale('2026-11-12T11:26:42Z', { 'Q-2': { v: 'pick', pick: 'a', t: 1 }, 'Q-1': { v: 'yes', t: 1 }, 'GONE-1': { v: 'yes', t: 1 }, 'Q-3': { v: 'pick', pick: 'a', t: 1 } });
+      try {
+        assert.notEqual(await n.evaluate("document.querySelector('.ptitle').textContent"), 'Settled page', 'he is never dropped on a page that needs nothing from him');
+        await n.evaluate("document.querySelectorAll('#steps span')[0].click()"); await sleep(300);
+        assert.equal(await n.evaluate("document.querySelectorAll('article.q[data-id=Q-3] .ans.on, article.q[data-id=Q-3] .card.variant.on').length"), 0, 'and none of its answers are put back');
+        assert.equal(await n.evaluate("document.querySelector('#pnote').value"), '', 'nor its page notes');
+      } finally { n.close(); }
+    }
+    {
+      const FUT = 9999999999999;   // newer than anything the first pass saved, so the browser's copy wins as it does after a real re-serve
+      const n = await stale('', { 'Q-2': { v: 'pick', pick: 'a', t: FUT }, 'GONE-1': { v: 'yes', t: FUT }, 'Q-3': { v: 'pick', pick: 'a', t: FUT } });
+      try {
+        assert.equal(await n.evaluate("document.querySelectorAll('article.q[data-id=Q-3] .card.variant.on').length"), 1, 'a copy from THIS build is restored (a re-serve keeps his answers)');
+        assert.equal(await n.evaluate("document.querySelector('#pnote').value"), 'kept note', 'its page note comes back too');
+        // the pruned state is what gets saved and sent: no settled topic, no id this deck does not have
+        await n.evaluate("(()=>{const p=document.querySelector('#pnote');p.value='hello';p.dispatchEvent(new Event('input',{bubbles:true}))})()"); await sleep(900);
+        const saved = JSON.parse(await n.evaluate("localStorage.getItem('deck:' + DECK.key)"));
+        assert.deepEqual(Object.keys(saved.answers).filter(k => !['Q-3', 'Q-4', 'L-1'].includes(k)), [], 'only open topics are kept: ' + Object.keys(saved.answers));
+        assert.equal(saved.answers['Q-3'].pick, 'a');
+        const disk = JSON.parse(await n.evaluate("fetch('/answers').then(r => r.text())"));
+        assert.deepEqual(Object.keys(disk.answers || {}).filter(k => !['Q-3', 'Q-4', 'L-1'].includes(k)), [], 'and only those are in the answers file');
+        assert.deepEqual(Object.keys(disk.pageNotes || {}), ['P-2'], 'page notes only for pages of this deck');
+        assert.equal(await n.evaluate("(window.__deckSummaryOf(JSON.parse(localStorage.getItem('deck:' + DECK.key)))).includes('Q-2 ')"), false, 'a settled topic is not in the summary');
+      } finally { n.close(); }
+    }
   } finally { srv.kill(); }
 });

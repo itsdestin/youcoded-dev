@@ -443,7 +443,10 @@ STATES = ('new', 'changed', 'settled')
 TRAIL_PARTS = ('round', 'asked', 'built', 'said')
 TRAIL_WORDS_MAX = 60     # each part of one trail step
 MORE_WORDS_MAX = 120     # each part of a row's More
-MORE_PARTS = ('does', 'returns', 'why')
+MORE_PARTS = ('does', 'returns', 'why', 'today', 'problem', 'change', 'pros', 'cons')
+# WHY (Destin, round 12: a row's More should be "more similar to our existing context/pros/cons structure"): a row's More can carry the same labelled
+# parts a question has. today / problem / change are text; pros and cons are short lists. does / returns / why stay for the older check rows.
+MORE_LISTS = ('pros', 'cons')
 REUSE_ITEMS_MAX = 12
 
 
@@ -488,11 +491,20 @@ def _validate_more(c, where, errors):
         return
     parts = {'does': more} if isinstance(more, str) else more
     if not isinstance(parts, dict) or not parts:
-        errors.append(f'{where}: more is a short text, or an object with does, returns and why')
+        errors.append(f'{where}: more is a short text, or an object with {", ".join(MORE_PARTS)}')
         return
     for k, v in parts.items():
         if k not in MORE_PARTS:
-            errors.append(f'{where}: more has "{k}" — it holds does, returns and why')
+            errors.append(f'{where}: more has "{k}" — it holds {", ".join(MORE_PARTS)}')
+        elif k in MORE_LISTS:
+            if not isinstance(v, list) or not v or not all(isinstance(x, str) and x.strip() for x in v):
+                errors.append(f'{where}: more.{k} is a short list of plain lines, or left out')
+            else:
+                for x in v:
+                    if word_count(x) > MORE_WORDS_MAX:
+                        errors.append(f'{where}: a line of more.{k} is {word_count(x)} words (max {MORE_WORDS_MAX})')
+                    for w in banned_in(x):
+                        errors.append(f'{where}: more.{k} uses banned word "{w}"')
         elif not isinstance(v, str) or not v.strip():
             errors.append(f'{where}: more.{k} is plain text, or left out')
         else:
@@ -932,7 +944,7 @@ def validate(spec):
     grows.validate_fields(spec, errors)
     if grows.is_grows(spec):
         if not words_only(spec) or has_contract(spec):
-            errors.append('grows: a deck that grows is a question deck (pages of questions and lists, no pictures, no contract)')
+            errors.append('grows: a deck that grows is a question deck (pages of questions and lists; a question or a row may carry a picture; no contract)')
         else:
             errors.extend(grows.problems(spec))
     return errors, warnings

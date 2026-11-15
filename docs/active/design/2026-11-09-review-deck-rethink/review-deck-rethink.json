@@ -698,7 +698,9 @@
           }
         }
       ],
-      "id": "r1-Q-11"
+      "id": "r1-Q-11",
+      "picture": "pictures/walkthrough.png",
+      "caption": "A drawing of two parts of a walkthrough: one screen, and one behind-the-scenes story."
     },
     {
       "surface": "Review decks",
@@ -829,9 +831,299 @@
     },
     {
       "id": "PD-0",
-      "page": "Answered cards, stages and headings",
+      "page": "Your changes, and the drawings you picked",
       "stage": "design",
-      "intro": "Tick each change that looks right, or comment on it. Everything you answered earlier is on the pages after this one."
+      "intro": "Check the changes you asked for, and whether the build still matches the drawings you picked."
+    },
+    {
+      "id": "W-1",
+      "gallery": true,
+      "surface": "Review decks",
+      "words": true,
+      "path": "Any deck link I send you",
+      "headline": "What you asked for last round",
+      "calls": [
+        {
+          "id": "header",
+          "call": "The header is one row: stage names at the left, progress bars in the middle, Submit feedback at the right.",
+          "why": "No second strip under it, and it does not change between pages. On a phone the stages shrink to the one you are in.",
+          "more": {
+            "today": "The stage names sat in their own strip under the header, so the top of every page was two bars.",
+            "problem": "You asked for the progress bars in the middle and the stage names in the same single row, at the left.",
+            "change": "One row now: stages left, bars centred, the filled Submit feedback button right. On a phone the stages fold into the current one with a small \"2 of 4\"; press it to see the others.",
+            "pros": [
+              "One thin bar instead of two.",
+              "The header is the same size on every page."
+            ],
+            "cons": [
+              "On a phone the finished stages are one press further away."
+            ]
+          },
+          "picture": "pictures/r13-header.png",
+          "before": "pictures/r13-header-before.png",
+          "visual": true
+        },
+        {
+          "id": "path",
+          "call": "You only walk through pages that need you.",
+          "why": "The bars, Back and Next skip pages with nothing for you to answer, and the deck opens on the first page that needs you.",
+          "more": {
+            "today": "The deck opened on a page of finished answers, and every earlier page sat between you and the new questions.",
+            "problem": "You asked why you start on a page that needs nothing from you, and why you must click back through old answers to reach the end.",
+            "change": "Pages with nothing open are not in the path. They are reached from one folded row at the bottom of the last page.",
+            "pros": [
+              "The first page you see is a page with something to answer."
+            ],
+            "cons": [
+              "Your older answers are one press further away."
+            ]
+          },
+          "picture": "pictures/r13-path.png",
+          "visual": true,
+          "picture_name": "Built now"
+        },
+        {
+          "id": "fold",
+          "call": "Your earlier answers on a page are one folded row.",
+          "why": "It says \"Previously answered\" with a count, and opens in place when you press it.",
+          "more": {
+            "today": "A big card of every earlier answer sat above the page and pushed the new questions down.",
+            "problem": "You asked for the card to collapse into a single row.",
+            "change": "It is one row at the bottom of the page, shut by default. Pressing it opens the same cards in place.",
+            "pros": [
+              "The page starts with what needs you."
+            ],
+            "cons": [
+              "One press to read your old answers."
+            ]
+          },
+          "picture": "pictures/r13-folded.png",
+          "before": "pictures/r13-prev-before.png",
+          "visual": true
+        },
+        {
+          "id": "earlier",
+          "call": "Pages that are all answered open from one row: \"Everything answered earlier\".",
+          "why": "It lists each subject with a count; pressing a subject shows its answered cards.",
+          "more": {
+            "today": "Those pages were part of the walk-through.",
+            "problem": "You did not want to click through them to reach the end.",
+            "change": "The row sits at the bottom of the last page. Nothing there can be answered; to change your mind, comment on this page.",
+            "pros": [
+              "Nothing is lost; everything stays one press away."
+            ],
+            "cons": [
+              "You cannot reopen a topic from those pages."
+            ]
+          },
+          "picture": "pictures/r13-earlier-open.png",
+          "visual": true,
+          "picture_name": "Built now"
+        },
+        {
+          "id": "pictures",
+          "call": "Earlier answers have their pictures back, with the marks you drew.",
+          "why": "A card that had a drawing when you answered it shows the drawing again.",
+          "more": {
+            "today": "About 45 earlier questions and rows had lost their pictures when they were carried in.",
+            "problem": "You asked why the pictures were missing and whether earlier design work had been lost.",
+            "change": "The pictures are restored from the earlier decks. Where you drew areas on a picture, the areas and your comments show on it, read-only.",
+            "pros": [
+              "What you judged then is what you see now."
+            ],
+            "cons": [
+              "Older drawings show how things looked then, not now."
+            ]
+          },
+          "picture": "pictures/r13-answered-pic.png",
+          "visual": true,
+          "picture_name": "Built now"
+        },
+        {
+          "id": "original",
+          "call": "A previously answered card opens to its original look.",
+          "why": "Press \"Show the full card\" to see the question as you saw it, with your pick marked.",
+          "more": {
+            "today": "This was a text row that described the button without showing it.",
+            "problem": "You said it was a visual question with no visual to judge from.",
+            "change": "The picture beside this row is the opened card itself: options, your pick and your note, nothing changeable.",
+            "pros": [
+              "You see the real thing."
+            ],
+            "cons": [
+              "A card with many rows is long when opened."
+            ]
+          },
+          "picture": "pictures/r13-original.png",
+          "visual": true,
+          "picture_name": "Built now"
+        },
+        {
+          "id": "more",
+          "call": "A row's More is laid out like a question.",
+          "why": "Today, the problem, what is different now, and good and not-so-good points when they help.",
+          "more": {
+            "today": "More was a few lines of loose text.",
+            "problem": "You asked for it to look like the context, pros and cons of a question.",
+            "change": "It now uses the same labelled boxes as a question. This row is an example: press More.",
+            "pros": [
+              "Each row can be judged without remembering anything."
+            ],
+            "cons": [
+              "More is longer than before."
+            ]
+          },
+          "picture": "pictures/r13-more.png",
+          "visual": true,
+          "picture_name": "Built now"
+        },
+        {
+          "id": "versions",
+          "call": "Versions of a question are dropped.",
+          "why": "A reworded question will not show an old wording beside the new one.",
+          "more": {
+            "today": "Each card already shows every round of your answers.",
+            "problem": "The versions idea confused you twice and was not recommended.",
+            "change": "It is not built and not offered again. If you want it, comment here."
+          }
+        }
+      ]
+    },
+    {
+      "id": "D-1",
+      "gallery": true,
+      "surface": "Review decks",
+      "words": true,
+      "path": "Any deck link I send you",
+      "headline": "Drawings you picked, beside what is built",
+      "calls": [
+        {
+          "id": "stages",
+          "call": "Stages sit across the top, and topics stay in place.",
+          "why": "Built, but not as drawn: no counts, finished stages have a check, and the stage names share the header row.",
+          "more": {
+            "today": "You picked the drawing with four stage buttons across the top.",
+            "problem": "You also said you hated its styling, so the match has to be checked by eye.",
+            "change": "Drawn: rounded buttons with \"Design - 3 open\". Built: plain names; the stage you are on is highlighted and the finished ones carry a check. The counts were left out because the page already says what needs you.",
+            "pros": [
+              "Same idea: where the deck is, at the top."
+            ],
+            "cons": [
+              "The highlighted name is still a rounded shape, which may read as the styling you disliked."
+            ]
+          },
+          "picture": "pictures/r13-header.png",
+          "before": "pictures/r9-e1.png",
+          "visual": true,
+          "before_name": "Drawing you picked",
+          "picture_name": "Built now"
+        },
+        {
+          "id": "popup",
+          "call": "A picture opens large with your comments in a strip at the right.",
+          "why": "Matches the drawing: true size, a Before and After switch, comments at the right.",
+          "more": {
+            "today": "You picked the drawing with comments at the right.",
+            "problem": "Check that the build is the same layout.",
+            "change": "Built as drawn. The built one adds a True size and Fit switch, and a plain line saying which row it belongs to.",
+            "pros": [
+              "Text on the picture is readable."
+            ],
+            "cons": [
+              "A very tall picture scrolls."
+            ]
+          },
+          "picture": "pictures/r13-popup.png",
+          "before": "pictures/r9-v1.png",
+          "visual": true,
+          "before_name": "Drawing you picked",
+          "picture_name": "Built now"
+        },
+        {
+          "id": "sink",
+          "call": "Answered topics sink below the open ones.",
+          "why": "Built differently: drawn as a list of one-line rows, built as one row that opens to full cards.",
+          "more": {
+            "today": "You liked the drawing where answered topics drop to the bottom as one-line rows, each with its round.",
+            "problem": "You wanted them to look like the original question, and then asked for one single row.",
+            "change": "Drawn: several rows, each a topic. Built: one \"Previously answered\" row; inside, each topic is a card with your answer and its round.",
+            "pros": [
+              "The page starts with what needs you."
+            ],
+            "cons": [
+              "A topic is two presses away."
+            ]
+          },
+          "picture": "pictures/r13-folded.png",
+          "before": "pictures/r10-a2.png",
+          "visual": true,
+          "before_name": "Drawing you picked",
+          "picture_name": "Built now"
+        },
+        {
+          "id": "tick",
+          "call": "Each row has a tick and a pencil.",
+          "why": "Matches the drawing, without the Fine / Change asked / Not looked at labels you disliked.",
+          "more": {
+            "today": "You picked \"Tick or change\" and said you did not like the coloured state labels.",
+            "problem": "Check the labels and the bottom bar are gone.",
+            "change": "Drawn: a label and dot on every row, and a bar reading \"2 rows not looked at\". Built: only the tick and the pencil. A small count at the top right of the list still reads \"3 of 5 looked at\".",
+            "pros": [
+              "A row is never approved by accident."
+            ],
+            "cons": [
+              "The small count is the one leftover of the drawing."
+            ]
+          },
+          "picture": "pictures/r13-ticks.png",
+          "before": "pictures/r10-b1.png",
+          "visual": true,
+          "before_name": "Drawing you picked",
+          "picture_name": "Built now"
+        },
+        {
+          "id": "trail",
+          "call": "A topic with a past shows one line of it, and the rest opens on request.",
+          "why": "Built differently from the drawing: the drawing showed the whole trail on every item.",
+          "more": {
+            "today": "You picked \"each item carries its own trail\" and said it needed more refining.",
+            "problem": "The full trail on every item was long.",
+            "change": "Built: one muted line under the title with a More link that opens the trail.",
+            "pros": [
+              "Short by default."
+            ],
+            "cons": [
+              "The trail is hidden until pressed."
+            ]
+          },
+          "picture": "pictures/r13-trail.png",
+          "before": "pictures/r6-b1.png",
+          "visual": true,
+          "before_name": "Drawing you picked",
+          "picture_name": "Built now"
+        },
+        {
+          "id": "marks",
+          "call": "The yellow header stays, and the repeated line from the drawing is gone.",
+          "why": "You marked wasted text lines, a gap that was too large, and \"tf is this\" on parts of a drawing.",
+          "more": {
+            "today": "Your marks on the drawing are on the card for that question.",
+            "problem": "Check the wasted line (\"2 topics need your answer\" twice) is gone and the gaps are smaller.",
+            "change": "The duplicate line does not exist in the built page. The yellow header is kept. I did not measure the gaps against your marks, so say if one still looks too large.",
+            "pros": [
+              "Less repeated text."
+            ],
+            "cons": [
+              "Gaps are not checked one by one."
+            ]
+          },
+          "picture": "pictures/r13-landing.png",
+          "before": "pictures/r10-a2.png",
+          "visual": true,
+          "before_name": "Drawing you picked",
+          "picture_name": "Built now"
+        }
+      ]
     },
     {
       "id": "N-1",
@@ -870,7 +1162,8 @@
           "why": "They are grouped by subject under Understanding and Design, newest first, each page named for its subject.",
           "more": "Pictures from the old questions could not come along, so a few cards describe a drawing you are not shown, and the old \"new / changed / settled\" markers are gone. The eighth deck was never sent, so it has no answers here."
         }
-      ]
+      ],
+      "resolved": "Pictures are back on earlier answers. The \"full card\" row is replaced below by a picture of an answered card opened to its original look."
     },
     {
       "id": "N-2",
@@ -915,7 +1208,8 @@
           "why": "A row you never looked at is never taken as approved.",
           "more": "This replaces the row you answered \"what?\" to. Before a build such rows are only listed when you send the deck, and you can still send it."
         }
-      ]
+      ],
+      "resolved": "The header is one row: stages left, bars middle, Submit right. A row's More is laid out like a question: today, problem, what is different now."
     },
     {
       "id": "VER-1",
@@ -953,7 +1247,8 @@
             "More to build and keep consistent."
           ]
         }
-      ]
+      ],
+      "resolved": "Dropped, not built. The round-by-round answers on each card already show what changed."
     },
     {
       "id": "PD-1",
@@ -1494,7 +1789,9 @@
           }
         }
       ],
-      "id": "r1-Q-14"
+      "id": "r1-Q-14",
+      "picture": "pictures/binder.png",
+      "caption": "A drawing of the proposal, not built yet."
     },
     {
       "id": "PD-2",
@@ -1906,7 +2203,9 @@
           }
         }
       ],
-      "id": "r10-L-1"
+      "id": "r10-L-1",
+      "picture": "pictures/r10-a2.png",
+      "caption": "Drawing B from the first page."
     },
     {
       "surface": "Review decks",
@@ -1991,7 +2290,9 @@
           }
         }
       ],
-      "id": "r10-L-2"
+      "id": "r10-L-2",
+      "picture": "pictures/r9-e1.png",
+      "caption": "Last round's drawing, the one you disliked."
     },
     {
       "surface": "Review decks",
@@ -2129,7 +2430,8 @@
           "id": "popup",
           "call": "A picture opens at its real size and scrolls, with comments in a strip at the right.",
           "why": "The top bar has Before / After, a Fit switch and an ×. Try it on any picture in this deck.",
-          "decided": "\"far too small and zoomed out… 90% of this popup page is unused dead space\""
+          "decided": "\"far too small and zoomed out… 90% of this popup page is unused dead space\"",
+          "picture": "pictures/r10-popup.png"
         },
         {
           "id": "details",
@@ -2140,7 +2442,8 @@
         {
           "id": "kinds",
           "call": "Each list holds one kind of row and says which at its head.",
-          "why": "For your information, Yours to change, Results, or Checks. The tool refuses a mixed list."
+          "why": "For your information, Yours to change, Results, or Checks. The tool refuses a mixed list.",
+          "picture": "pictures/r10-rows.png"
         },
         {
           "id": "touch",
@@ -2427,17 +2730,22 @@
               "drag-to-comment on the opened picture"
             ],
             "note": "Same folding card, with the deck's picture comments added."
-          }
+          },
+          "picture": "pictures/r7-attachments-open.png",
+          "before": "pictures/r7-attachments-closed.png"
         },
         {
           "id": "trail",
           "call": "Each row can carry its own story, round by round: what you asked, what was built, what you said.",
-          "why": "Open \"How this changed\" on any row of this list to see it."
+          "why": "Open \"How this changed\" on any row of this list to see it.",
+          "picture": "pictures/r7-trail-open.png",
+          "before": "pictures/r7-trail-closed.png"
         },
         {
           "id": "since",
           "call": "A deck after its first round opens with a \"Since last round\" line: how many rows are new, changed and settled.",
-          "why": "Each count jumps to its rows. Settled rows fold shut at the bottom of a list."
+          "why": "Each count jumps to its rows. Settled rows fold shut at the bottom of a list.",
+          "picture": "pictures/r7-since-last-round.png"
         },
         {
           "id": "paste",
@@ -2448,27 +2756,33 @@
               "Chat → message box attachment pills"
             ],
             "note": "Same pill shape and remove button."
-          }
+          },
+          "picture": "pictures/r7-paste-pills.png"
         },
         {
           "id": "more",
           "call": "A check row has a More line: what it does, what comes back, and why it is suggested for this build.",
-          "why": "Required on every check you can switch on or off."
+          "why": "Required on every check you can switch on or off.",
+          "picture": "pictures/r7-check-more.png"
         },
         {
           "id": "reuse",
           "call": "A design or row can say which existing app parts it is built from, behind a small (i).",
-          "why": "You said this belongs in the deck, not in chat. The first and fourth rows here carry one."
+          "why": "You said this belongs in the deck, not in chat. The first and fourth rows here carry one.",
+          "picture": "pictures/r7-reuse-i.png"
         },
         {
           "id": "live",
           "call": "A wording page can carry a \"Use it / Edit words\" switch: open any dropdown in the running practice app, then switch to freeze it and retype its words.",
-          "why": "Not yet tried by a real hand, and it needs the practice app running, so the deck starts slower."
+          "why": "Not yet tried by a real hand, and it needs the practice app running, so the deck starts slower.",
+          "picture": "pictures/r7-use-it.png",
+          "before": "pictures/r7-edit-words.png"
         },
         {
           "id": "buttons",
           "call": "Buttons follow the app's design guide: only Next and Done are filled; a chosen answer gets an outline and a tick.",
-          "why": "Open since round 4."
+          "why": "Open since round 4.",
+          "picture": "pictures/r7-buttons.png"
         },
         {
           "id": "pill",
@@ -2549,7 +2863,8 @@
           "id": "screen",
           "call": "Wording is edited on a copy of the real app screen, zoomed in on the popup. The text boxes per label are gone and refused from now on.",
           "why": "Two real YouCoded screens are on the next page to try.",
-          "decided": "\"directly edit text on the real ui surface so i can see it in context\""
+          "decided": "\"directly edit text on the real ui surface so i can see it in context\"",
+          "picture": "pictures/r4-screen-edit.png"
         },
         {
           "id": "flow",
@@ -2561,31 +2876,37 @@
           "id": "status",
           "call": "Every check row has the same status pill at its right, and you can change any of them, mine included.",
           "why": "\"Left for you to try\" rows now start as Not tried. A status you set shows a solid ring.",
-          "decided": "\"i should be able to update the statuses myself for all including the ones you put unclear for\""
+          "decided": "\"i should be able to update the statuses myself for all including the ones you put unclear for\"",
+          "picture": "pictures/r4-status.png"
         },
         {
           "id": "foot",
           "call": "A comment box sits at the foot of every page. The Notes button in the header is gone.",
           "why": "Your words there reach me first, named by page.",
-          "decided": "\"an extra more visible input region at the bottom of each page\""
+          "decided": "\"an extra more visible input region at the bottom of each page\"",
+          "picture": "pictures/r4-status.png"
         },
         {
           "id": "viewer",
           "call": "A click on any picture opens a full-window viewer: the picture large, its comments beside it, every picture of the page in a strip below.",
           "why": "It stays open while you drag areas, type and delete comments. Arrow keys move between pictures.",
-          "decided": "\"more space and a better surface to actually leave/manage comments and such and quickly scan through all of the changes at once\""
+          "decided": "\"more space and a better surface to actually leave/manage comments and such and quickly scan through all of the changes at once\"",
+          "picture": "pictures/r4-viewer.png",
+          "before": "pictures/r3-large.png"
         },
         {
           "id": "tiles",
           "call": "Pictures on a changed-screens page are about twice as large.",
           "why": "Two tiles across instead of three or four.",
-          "decided": "\"rendered far too small to be useful\""
+          "decided": "\"rendered far too small to be useful\"",
+          "picture": "pictures/r4-gallery.png"
         },
         {
           "id": "pill",
           "call": "Each card shows its state as a pill at the top right: Not answered, Answered with the time, Accepted, or how many changes you made.",
           "why": "It replaces the green tick and the word \"answered\".",
-          "decided": "\"answered status could be a top-right status pill instead of plaintext and checkmark\""
+          "decided": "\"answered status could be a top-right status pill instead of plaintext and checkmark\"",
+          "picture": "pictures/r4-status.png"
         },
         {
           "id": "history",
@@ -2629,13 +2950,15 @@
           "id": "c3",
           "call": "A test browser retyped a button on the real About popup. The button grew to two lines, the change was listed and saved, and Put back restored it.",
           "why": "The picture shows it.",
-          "result": "pass"
+          "result": "pass",
+          "picture": "pictures/r4-screen-edit.png"
         },
         {
           "id": "c4",
           "call": "A test browser opened the viewer, dragged an area, typed a comment and deleted one, without the viewer closing.",
           "why": "Now a permanent automatic check.",
-          "result": "pass"
+          "result": "pass",
+          "picture": "pictures/r4-viewer.png"
         },
         {
           "id": "c5",
@@ -2720,7 +3043,9 @@
           "id": "pencil",
           "call": "Every list row has one pencil. It opens one box for a change, a question or a stray thought.",
           "why": "\"Change this\" and \"More context\" are gone.",
-          "decided": "\"simplify down to a single pencil/edit icon on each of these rows that opens the comment box\""
+          "decided": "\"simplify down to a single pencil/edit icon on each of these rows that opens the comment box\"",
+          "picture": "pictures/r3-rows-after.png",
+          "before": "pictures/built-calls.png"
         },
         {
           "id": "allfine",
@@ -2732,19 +3057,22 @@
           "id": "pics",
           "call": "Row pictures are small, sit at the right, and open large inside the deck.",
           "why": "No more empty space beside a tall picture, and no new browser tab.",
-          "decided": "\"introduces a lot of deadspace … opens it in a separate tab, which is strange\""
+          "decided": "\"introduces a lot of deadspace … opens it in a separate tab, which is strange\"",
+          "picture": "pictures/r3-large.png"
         },
         {
           "id": "notes",
           "call": "A Notes button in the header, on every page, for comments tied to no question.",
           "why": "A blue dot shows when it holds something. It reaches me first, above your answers.",
-          "decided": "\"there is no additional/separate notes button for me to leave misc/unrelated comments\""
+          "decided": "\"there is no additional/separate notes button for me to leave misc/unrelated comments\"",
+          "picture": "pictures/r3-gallery-notes.png"
         },
         {
           "id": "voice",
           "call": "Voice now follows YouCoded's own method: words appear about three times a second, and it stops by itself after two seconds of quiet.",
           "why": "Four bars and a clock show inside the box while it listens.",
-          "decided": "\"make this work much more like how it actually works in youcoded, including showing my words as i speak\""
+          "decided": "\"make this work much more like how it actually works in youcoded, including showing my words as i speak\"",
+          "picture": "pictures/r3-voice-wording.png"
         },
         {
           "id": "wording",
@@ -2788,22 +3116,28 @@
         {
           "id": "g-rows",
           "call": "List rows",
-          "why": "Two buttons per row became one pencil; pictures moved right and shrank."
+          "why": "Two buttons per row became one pencil; pictures moved right and shrank.",
+          "picture": "pictures/r3-rows-after.png",
+          "before": "pictures/built-calls.png"
         },
         {
           "id": "g-header",
           "call": "Header and page foot",
-          "why": "Title said once, no Prev/Next in the header, Back beside Next at the foot, Notes added."
+          "why": "Title said once, no Prev/Next in the header, Back beside Next at the foot, Notes added.",
+          "picture": "pictures/r3-gallery-notes.png",
+          "before": "pictures/r3-header-before.png"
         },
         {
           "id": "g-voice",
           "call": "Speaking into a box",
-          "why": "Bars and a clock inside the box's right edge. Wording boxes are at the bottom."
+          "why": "Bars and a clock inside the box's right edge. Wording boxes are at the bottom.",
+          "picture": "pictures/r3-voice-wording.png"
         },
         {
           "id": "g-large",
           "call": "A picture opened large",
-          "why": "Sits over the page. Your earlier rectangles show on it."
+          "why": "Sits over the page. Your earlier rectangles show on it.",
+          "picture": "pictures/r3-large.png"
         }
       ],
       "answered": [
@@ -2881,7 +3215,8 @@
           "id": "c3",
           "call": "Voice, fed a recording in place of the microphone: words reached the box as they were spoken, and it stopped by itself after the quiet.",
           "why": "The picture shows it mid-sentence.",
-          "result": "pass"
+          "result": "pass",
+          "picture": "pictures/r3-voice-wording.png"
         },
         {
           "id": "c4",
@@ -2948,19 +3283,22 @@
           "id": "areas",
           "call": "Drag a rectangle on any picture to comment on that area.",
           "why": "A numbered box opens under the picture. The rectangle and your words are saved together.",
-          "decided": "\"rectangular drag-regions instead of single-dot pins … highlight any size rectangle within an image and comment on it\""
+          "decided": "\"rectangular drag-regions instead of single-dot pins … highlight any size rectangle within an image and comment on it\"",
+          "picture": "pictures/built-area.png"
         },
         {
           "id": "lists",
           "call": "Lists where every row stands unless you flag it, each with its own text box.",
           "why": "Used for calls I made, and for every page of this walkthrough. Also shows the microphone while listening.",
-          "decided": "\"each item i choose to change should have its own little text box underneath/attached to it\""
+          "decided": "\"each item i choose to change should have its own little text box underneath/attached to it\"",
+          "picture": "pictures/built-calls.png"
         },
         {
           "id": "stamp",
           "call": "The deck shows when it was built and from which version; each answer shows its time.",
           "why": "Top-left label on every page, and an Answered column on the finish screen.",
-          "decided": "\"tracking the date/time and branch/commit a deck was built against, specific date/time each question is answered by me\""
+          "decided": "\"tracking the date/time and branch/commit a deck was built against, specific date/time each question is answered by me\"",
+          "picture": "pictures/built-finish.png"
         },
         {
           "id": "checked",
@@ -3525,7 +3863,9 @@
           }
         }
       ],
-      "id": "r2-R-1"
+      "id": "r2-R-1",
+      "picture": "pictures/question.png",
+      "caption": "Drag anywhere on this drawing to try it."
     },
     {
       "surface": "Review decks",
@@ -3635,7 +3975,9 @@
           }
         }
       ],
-      "id": "r1-Q-4"
+      "id": "r1-Q-4",
+      "picture": "pictures/answers.png",
+      "caption": "A drawing of the proposal, not built yet."
     },
     {
       "surface": "Review decks",
@@ -3679,7 +4021,9 @@
           }
         }
       ],
-      "id": "r1-Q-5"
+      "id": "r1-Q-5",
+      "picture": "pictures/pins.png",
+      "caption": "A drawing of the proposal, not built yet."
     },
     {
       "id": "PD-8",
@@ -4301,7 +4645,8 @@
         {
           "id": "t-notes",
           "call": "Title of the Notes panel",
-          "why": "Shown when you press Notes."
+          "why": "Shown when you press Notes.",
+          "picture": "pictures/r3-gallery-notes.png"
         },
         {
           "id": "t-notesph",
@@ -4321,7 +4666,8 @@
         {
           "id": "t-large",
           "call": "Line under a picture opened large",
-          "why": "Shown at the bottom of the screen."
+          "why": "Shown at the bottom of the screen.",
+          "picture": "pictures/r3-large.png"
         }
       ],
       "answered": [
@@ -4504,7 +4850,9 @@
           }
         }
       ],
-      "id": "r1-Q-10"
+      "id": "r1-Q-10",
+      "picture": "pictures/decided.png",
+      "caption": "A drawing of the proposal, not built yet."
     },
     {
       "surface": "Review decks",
@@ -4556,7 +4904,9 @@
           }
         }
       ],
-      "id": "r1-Q-6"
+      "id": "r1-Q-6",
+      "picture": "pictures/cover.png",
+      "caption": "A drawing of the proposal, not built yet."
     },
     {
       "surface": "Review decks",
@@ -4610,7 +4960,9 @@
           }
         }
       ],
-      "id": "r1-Q-7"
+      "id": "r1-Q-7",
+      "picture": "pictures/question.png",
+      "caption": "A drawing. The green \"Checked today\" line is the new part."
     },
     {
       "surface": "Review decks",
@@ -4698,5 +5050,17 @@
       ],
       "id": "r1-Q-9"
     }
-  ]
+  ],
+  "stale_answers": {
+    "2026-11-15T00:10:27Z": [
+      "G-1",
+      "T-1",
+      "B-1",
+      "B-2",
+      "B-3",
+      "R-1",
+      "L-1",
+      "L-2"
+    ]
+  }
 }

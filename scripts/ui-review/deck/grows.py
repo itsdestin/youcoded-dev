@@ -118,14 +118,21 @@ def earlier_rounds(spec, include_live=True, exclude_built=None):
             found.append((saved['submitted'], os.path.basename(path), saved))
     found.sort(key=lambda x: (x[0], x[1]))
     rounds, by_build = [], {}
+    # WHY `stale_answers` (Destin's round-12 file carried round-11 answers because his browser restored its old copy): a spec may say which ids in a
+    # file, found by its `submitted` time, were NOT said in that round; they are dropped from it, so they are not counted twice.
+    stale = spec.get('stale_answers') if isinstance(spec.get('stale_answers'), dict) else {}
     for submitted, _, saved in found:
         at = saved['built'].get('at') if isinstance(saved.get('built'), dict) else None
-        if at and at in by_build:
-            rounds[by_build[at]] = {'submitted': submitted, 'answers': saved.get('answers') or {}}   # a later send of the same round
+        drop = set(stale.get(submitted) or [])
+        ans = {k: v for k, v in (saved.get('answers') or {}).items() if k not in drop}
+        # WHY only a copy that says `sent_before` is "a later send of the same round" (serve.py writes it on a same-build re-serve): two files that merely
+        # carry the same build stamp are two rounds when nothing says the second was a re-send (a stamp copied from an old browser copy does not make one).
+        if at and at in by_build and saved.get('sent_before'):
+            rounds[by_build[at]] = {'submitted': submitted, 'answers': ans}   # a later send of the same round
             continue
         if at:
             by_build[at] = len(rounds)
-        rounds.append({'submitted': submitted, 'answers': saved.get('answers') or {}})
+        rounds.append({'submitted': submitted, 'answers': ans})
     before = spec.get('rounds_before') if isinstance(spec.get('rounds_before'), int) else 0
     for i, r in enumerate(rounds, 1):
         r['n'] = before + i
@@ -262,6 +269,25 @@ def problems(spec):
             if isinstance(c, dict):
                 cite(f'{st.get("id")}/{c.get("id")}', c.get('call'), 'the bold line')
                 cite(f'{st.get("id")}/{c.get("id")}', c.get('why'), 'the plain line')
+    # WHY (Destin, round 12: "this is a visual question, but lacks a visual reference"): something he would SEE is judged from a picture, never from words.
+    # An open question or row flagged "visual": true must carry a `picture`.
+    # WHY (round 12: "what we include in more should be… more similar to our existing context/pros/cons structure"): on an open list he can change, a row's
+    # More that exists must be labelled like a question: it needs today, problem or change (a bare string or does/returns/why no longer passes).
+    for st in _steps(spec):
+        if info[st.get('id')]['answered']:
+            continue
+        sid = st.get('id')
+        if st.get('visual') and not (st.get('picture') or (st.get('options') and all(o.get('picture') for o in st['options'] if isinstance(o, dict)))):
+            errs.append(f'{sid}: "{st.get("headline", sid)}" is flagged visual but has no picture; a change he would see is judged from a picture, so add "picture" (a file beside the spec)')
+        for c in st.get('calls') or []:
+            if not isinstance(c, dict):
+                continue
+            if c.get('visual') and not c.get('picture'):
+                errs.append(f'{sid}/{c.get("id")}: this row is flagged visual but has no picture; add "picture" (and "before" when it changed), or take "visual" off')
+            m = c.get('more')
+            if tickable(st) and m is not None and not (isinstance(m, dict) and any(m.get(k) for k in ('today', 'problem', 'change'))):
+                errs.append(f'{sid}/{c.get("id")}: more on a row he can change is labelled like a question: give it today (what it is now), problem and/or change (what is different now), '
+                            f'and pros / cons if they help; a bare line or does/returns/why does not pass')
     for p in spec.get('steps') or []:
         if isinstance(p, dict) and is_page(p):
             cite(p.get('id'), p.get('intro'), 'the page intro')
@@ -286,11 +312,15 @@ def validate_fields(spec, errors):
     if grows is not None and grows is not True:
         errors.append('grows is true or left out (one deck for the whole feature, re-built each round)')
     on = grows is True
-    for k in ('rounds_before', 'retired'):
+    for k in ('rounds_before', 'retired', 'stale_answers'):
         if k in spec and not on:
             errors.append(f'{k} belongs on a deck that grows; add "grows": true')
     if on and 'rounds_before' in spec and (not isinstance(spec['rounds_before'], int) or isinstance(spec['rounds_before'], bool) or spec['rounds_before'] < 0):
         errors.append('rounds_before is a whole number: how many separate decks this feature had before this one')
+    if on and 'stale_answers' in spec:
+        r = spec['stale_answers']
+        if not isinstance(r, dict) or not all(isinstance(k, str) and isinstance(v, list) and v and all(isinstance(i, str) for i in v) for k, v in r.items()):
+            errors.append('stale_answers is {"<the file\'s submitted time>": ["<step id>", ...]}: answers in that round\'s file that were not said in that round')
     if on and 'retired' in spec:
         r = spec['retired']
         if not isinstance(r, dict) or not all(isinstance(k, str) and isinstance(v, str) and v.strip() for k, v in r.items()):
@@ -324,6 +354,12 @@ def validate_fields(spec, errors):
                 errors.append(f'{sid}: {k} belongs on a deck that grows; add "grows": true to the spec')
         if not on:
             continue
+        # `visual` marks a question or row whose change he would SEE (checked in problems(): it needs a picture).
+        if 'visual' in st and not isinstance(st['visual'], bool):
+            errors.append(f'{sid}: visual is true or false')
+        for c in st.get('calls') or []:
+            if isinstance(c, dict) and 'visual' in c and not isinstance(c['visual'], bool):
+                errors.append(f'{sid}/{c.get("id")}: visual is true or false')
         a = st.get('answered')
         if a is not None:
             # WHY a list too (round 12): one entry per round he answered it, oldest first; `given` is his saved answer verbatim.

@@ -922,8 +922,9 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
 .growact{display:flex;justify-content:flex-end}
 .growact[hidden]{display:none}
 /* The stage indicator: plain words, no box, nothing to press except the quiet link. */
-.stagerow{flex:none;padding:6px 20px;background:var(--panel);border-bottom:1px solid var(--edge)} .stagerow:has(.stagebar[hidden]){display:none}
-.stagebar{flex:1;display:flex;align-items:center;gap:12px;min-width:0} .stagebar[hidden]{display:none}
+/* Round 13: the stage names live in the header's one row, at the left (the strip that used to sit under it is gone). */
+.stagebar{position:relative;flex:0 0 auto;display:flex;align-items:center;gap:12px;min-width:0} .stagebar[hidden]{display:none}
+.stagecompact{display:none}
 .stageflow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0;padding:0;list-style:none;font-size:12px}
 .stageflow li{color:var(--fg-muted);white-space:nowrap}
 .stageflow li>span,.stageflow li>.stagebtn{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px}
@@ -978,3 +979,47 @@ body[data-grows] .saved[hidden]{display:inline-block;visibility:hidden}
 .rowref{display:block;font-style:normal;font-size:12px;color:var(--fg-muted)}
 /* A phone: the four stage names fit one line (smaller type, tighter pills). */
 @media (max-width:700px){.stageflow{font-size:11px;gap:0} .stageflow li>span,.stageflow li>.stagebtn{padding:3px 6px;gap:3px}}
+
+/* ── Round 13 (Destin's round-12 answers): one header row, folded rows, structured More, pictures on answered cards ───────────────────────────
+   "the progress bars in the middle, with understanding/design/before build/etc in the same single header row on the lefthand side". The bars are
+   the middle (`.nav` is flexible and centred); Submit feedback is filled at the right. */
+body[data-grows] .nav{justify-content:center}
+body[data-grows] .top .wrap{flex-wrap:nowrap}
+/* A phone: the line is the stage on screen with a small "2 of 4"; pressing it opens the names. The saved note takes no room (a failed save still shows, under the header). */
+@media (max-width:700px){
+  body[data-grows] .top{padding:14px 12px 8px}
+  body[data-grows] .top .wrap{gap:8px}
+  .stagecompact{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 8px;border:0;border-radius:999px;background:var(--inset);color:var(--fg);font:600 12px/1 var(--font);cursor:pointer;white-space:nowrap}
+  .stagecompact{width:150px;justify-content:space-between;box-sizing:border-box} .stagecompact .scname{overflow:hidden;text-overflow:ellipsis}   /* a fixed width: the header must not change size between pages */
+  .stagecompact small{font:400 11px/1 var(--font);color:var(--fg-muted)}
+  .stagecompact .chev{width:12px;height:12px}
+  .stageflow{display:none;position:absolute;z-index:30;left:0;top:calc(100% + 6px);flex-direction:column;align-items:stretch;gap:2px;padding:6px;margin:0;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,.25);min-width:170px;font-size:13px}
+  .stagebar.open .stageflow{display:flex}
+  .stageflow li>span,.stageflow li>.stagebtn{width:100%;box-sizing:border-box;padding:6px 10px;gap:8px}
+  body[data-grows] .nav{flex:1 1 40px;min-width:0}
+  body[data-grows] .steps{min-width:40px}
+  body[data-grows] #done{padding:0 10px}
+  body[data-grows] .saved{min-width:0;width:0;overflow:visible;position:relative;flex:none}
+  body[data-grows] .saved[hidden],body[data-grows] .saved[data-ok="1"]{display:none}
+  body[data-grows] .saved[data-ok="0"]{position:fixed;top:60px;right:12px;z-index:40}
+}
+/* A page's folded rows: the same fold the app uses, one row, shut until pressed. */
+.prevfoldwrap,.earlierwrap{display:block}
+.pages .prevfoldwrap,.pages .earlierwrap{padding:0;background:none;border:0;gap:0}
+.prevfold,.earlierfold{margin-top:0}
+.prevfold>.foldhead,.earlierfold>.foldhead{min-height:40px}
+.prevfold>.foldhead .foldtitle,.earlierfold>.foldhead .foldtitle{font-size:13px;font-weight:500;color:var(--fg)}
+.prevfold>.foldbody,.earlierfold>.foldbody{padding:6px 12px 12px}
+.earlierlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.earlieritem{width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:36px;padding:6px 8px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg);font:inherit;font-size:13px;text-align:left;cursor:pointer}
+@media (hover:hover){.earlieritem:hover{background:var(--inset)}}
+.earlieritem:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* A row's More, drawn like a question's Today / Problem / Proposal (the same cards), one under the other: the row is narrow. */
+.rowmore .parts{grid-template-columns:1fr;gap:8px}
+.rowmore .proscons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:700px){.rowmore .proscons{grid-template-columns:1fr}}
+.rowmore .pcbox{padding:10px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well)}
+.rowmore .pcbox h3{margin:0 0 4px;font:600 11px/1.3 var(--font);color:var(--fg-muted);letter-spacing:.04em;text-transform:uppercase}
+.rowmore .pcbox{display:block} .rowmore .pcbox h3{display:block} .rowmore .pcbox ul{list-style:disc;margin:0;padding-left:18px;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
+/* A picture on a question inside an answered card is the same picture, with the areas he drew on it. */
+.prev .qpic img{max-width:100%}

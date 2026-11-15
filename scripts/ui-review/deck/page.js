@@ -21,8 +21,18 @@
   // understanding/earlier stages"): a finished stage is reached by pressing its name in the stage line; RECORD is the pages of all
   // finished stages, grouped by stage in finPages().
   const RECORD = DECK.grows && ALLPAGES ? ALLPAGES.filter(p => p.record) : [];
-  const finPages = k => RECORD.filter(p => p.stage === k);
-  const PAGES = DECK.grows && ALLPAGES ? ALLPAGES.filter(p => !p.record) : ALLPAGES, LAST = PAGES ? PAGES.length - 1 : N - 1;
+  const finPages = k => (k === '__earlier' ? ANSWERED : RECORD.filter(p => p.stage === k));
+  // WHY only pages that need him are the path (Destin, round 12: "why am i starting on a page full of completed questions?… why would we put the
+  // newly requested responses on the first tab and make me click back through all the prior answers to get to the end?"): on a growing deck the
+  // bars, Back/Next and the landing page cover only current-stage pages with at least one OPEN topic. A page holding nothing but answered topics
+  // (ANSWERED) is reached from one folded row at the end of the path, never walked through. If nothing is open at all the whole stage stays the path.
+  const CURPAGES = DECK.grows && ALLPAGES ? ALLPAGES.filter(p => !p.record) : ALLPAGES;
+  const openTopic = id => { const x = DECK.steps.find(s => s.id === id); return !!x && !x.context && !(x.grow && x.grow.answered); };
+  const OPENPAGES = DECK.grows && CURPAGES ? CURPAGES.filter(p => p.steps.some(openTopic)) : CURPAGES;
+  const PAGES = DECK.grows && CURPAGES && OPENPAGES.length ? OPENPAGES : CURPAGES, LAST = PAGES ? PAGES.length - 1 : N - 1;
+  const ANSWERED = DECK.grows && CURPAGES && OPENPAGES.length ? CURPAGES.filter(p => !OPENPAGES.includes(p)) : [];
+  const EARLIER = '__earlier';   // the pseudo-stage that shows ANSWERED pages
+
   const stepById = id => DECK.steps.find(x => x.id === id);
   const pageSteps = i => (PAGES[i] ? PAGES[i].steps.map(stepById).filter(Boolean) : []);
   const curStep = () => (PAGES ? {} : DECK.steps[cur]) || {};
@@ -391,6 +401,7 @@
     const h = e.target.closest && e.target.closest('.foldhead'); if (!h) return;
     const fold = h.closest('.fold'), k = okey(h.dataset.kind, h.dataset.sid, h.dataset.call), on = !openMap[k]; openMap[k] = on;
     fold.classList.toggle('open', on); h.setAttribute('aria-expanded', on); fold.querySelector(':scope > .foldbody').hidden = !on;
+    if (on) fold.querySelectorAll('textarea').forEach(grow);   // a box drawn while hidden has no height until it is shown
   });
   // ── ATTACHMENTS: a row's pictures are the app's Deliverables card ───────────────────────
   // WHY (Destin, 2026-11-10, round 7, on a list page: "these attachements also aren't what i
@@ -420,14 +431,18 @@
     const open = attIsOpen(st, c), n = (c.before ? 1 : 0) + (c.picture ? 1 : 0);
     return `<div class="attcard${open ? ' open' : ''}" data-sid="${esc(st.id)}" data-call="${esc(c.id)}"><button type="button" class="atthead" aria-expanded="${open}">${ATT_GLYPH}<span class="attbar" aria-hidden="true">|</span><span class="attlabel">Attachments</span><span class="attn">${n}</span><span class="attfill"></span>${CHEV}</button>`
       + `<div class="attbody"${open ? '' : ' hidden'}><div class="attstrip scroll-mask-x">`
-      + (c.before ? attTile(st, c, c.before, 'row ' + c.id + ' before', 'Before') : '')
-      + (c.picture ? attTile(st, c, c.picture, 'row ' + c.id, c.before ? 'After' : fileName(c.picture)) : '')
+      + (c.before ? attTile(st, c, c.before, 'row ' + c.id + ' before', c.before_name || 'Before') : '')
+      + (c.picture ? attTile(st, c, c.picture, 'row ' + c.id, c.picture_name || (c.before ? 'After' : fileName(c.picture))) : '')
       + `</div></div></div>`;
   };
+  // WHY marks on an answered card (Destin, round 12: "why are the pictures missing?... we've lost some of our earlier design/feedback work"): the areas he drew on a
+  // picture in an earlier round are in his saved answer (`grow.given.marks`). A settled card shows them on its picture and in the popup, read-only.
+  const lockedSid = sid => { const x = stepById(sid); return !!x && settled(x) && !!x.grow.given; };
+  const marksOf = sid => lockedSid(sid) ? (stepById(sid).grow.given.marks || []) : ((state.answers[sid] || {}).marks || []);
   // A tile says how many comments he has left on its picture, so a closed strip still shows where he has written.
   function paintAtt() {
     $$('.atttile').forEach(t => {
-      const n = (((state.answers[t.dataset.sid] || {}).marks) || []).filter(m => m.pic === t.dataset.pk).length;
+      const n = marksOf(t.dataset.sid).filter(m => m.pic === t.dataset.pk).length;
       const cm = t.querySelector('.tilecm'); cm.hidden = !n; cm.textContent = n + (n === 1 ? ' comment' : ' comments');
     });
     $$('.attcard').forEach(card => card.classList.toggle('has', !!card.querySelector('.tilecm:not([hidden])')));
@@ -459,9 +474,18 @@
   // description/subheader should also have a 'more' button to offer an expanded description"): on a deck that grows a row is its bold line and one
   // plain line, and `more` (where it came from, the detail) sits behind a small More / Less link at the end of that plain line.
   const growMoreBtn = (st, c) => { const open = isOpen('more', st.id, c.id); return ` <button type="button" class="tlink revealbtn" data-kind="more" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" data-on="More" data-off="Less" aria-expanded="${open}">${open ? 'Less' : 'More'}</button>`; };
+  // WHY a row's More can be labelled like a question (Destin, round 12: "what we include in more should be... more similar to our existing context/pros/cons
+  // structure"): today / problem / change (what is different now) as the question's own Today / Problem / Proposal cards, then pros and cons.
+  // The old list-of-lines form (does / returns / why, or one string) still draws for rows carried in from earlier rounds.
+  const moreParts = m => !!m && typeof m === 'object' && !!(m.today || m.problem || m.change || (m.pros || []).length || (m.cons || []).length);
+  const rowParts = m => {
+    const cards = [['Today', m.today], ['The problem', m.problem], ['What is different now', m.change]].filter(([, t]) => t).map(([h, t]) => partCard(h, t)).join('');
+    const pc = (h, k) => (m[k] || []).length ? `<div class="pcbox pc-${k}"><h3>${h}</h3>${bullets(m, k)}</div>` : '';
+    return (cards ? `<div class="parts">${cards}</div>` : '') + ((m.pros || []).length || (m.cons || []).length ? `<div class="proscons">${pc('Good about it', 'pros')}${pc('Not so good', 'cons')}</div>` : '');
+  };
   const growMoreBody = (st, c) => {
     const open = isOpen('more', st.id, c.id), m = c.more;
-    const body = typeof m === 'string' ? `<p>${esc(m)}</p>` : moreLines(c);
+    const body = typeof m === 'string' ? `<p>${esc(m)}</p>` : moreParts(m) ? rowParts(m) : moreLines(c);
     return `<div class="revealbody rowmore"${open ? '' : ' hidden'}>${body}</div>`;
   };
   const callLi = (st, c) => {
@@ -946,19 +970,42 @@
       const r = await fetch('/answers', { cache: 'no-store' });
       if (r.ok) {
         server = true; document.body.dataset.served = '1';
-        const disk = await r.json();
+        let disk = await r.json();
+        // WHY (a preview of a rebuilt growing deck showed "Feedback submitted" on every page): a SUBMITTED file from another build is last round's record
+        // (serve moves it aside before a real review), never this round's state.
+        if (GROWS && DECK.built && disk && disk.submitted && disk.built && disk.built.at !== DECK.built.at) disk = {};
         // The browser's copy only counts for THIS round: a submitted round, or one the file says
         // started at another time, belongs to an earlier review of the same deck.
-        const sameRound = local && local.answers && !local.submitted && (!disk.started || !local.started || disk.started === local.started);
+        // WHY a growing deck also needs the SAME BUILD (Destin, round 12: the new round opened on page 9 full of round-11 answers): the browser's copy
+        // is keyed by the deck's name, which is the same every round, and a fresh file has no start time to disagree with, so last round's answers
+        // were folded into the new round. A copy saved by another build is last round's, however it got there.
+        const sameBuild = !GROWS || !DECK.built || !!(local && local.built && local.built.at === DECK.built.at);
+        const sameRound = sameBuild && local && local.answers && !local.submitted && (!disk.started || !local.started || disk.started === local.started);
         const next = sameRound ? merged(disk && disk.answers ? disk : { ...local, answers: {} }, local) : disk;
         if (next && next.answers) Object.assign(state, next);
+        pruneStale();
         for (const [id, a] of Object.entries(state.answers || {})) if (a) { const { t, ...rest } = a; stamped[id] = JSON.stringify(rest); }
         if (sameRound && JSON.stringify([next.answers, next.pageNotes, next.notes, next.pageAttach, next.notesAttach]) !== JSON.stringify([disk && disk.answers || {}, disk && disk.pageNotes, disk && disk.notes, disk && disk.pageAttach, disk && disk.notesAttach])) save();   // the backup held something the file lost
         else showSaved(true);   // what is on screen is what is in the file, so say so from the start
         return;
       }
     } catch (e) { /* not served */ }
-    if (local && local.answers) Object.assign(state, local);
+    // A plain file (not served): the browser's copy, but only if it belongs to this build of a growing deck.
+    if (local && local.answers && (!GROWS || !DECK.built || (local.built && local.built.at === DECK.built.at))) Object.assign(state, local);
+    pruneStale();
+  }
+  // WHY (Destin, round 12): what is saved or sent must hold answers only for what this build asks. On a growing deck that is the OPEN topics
+  // (plus ones he reopened); an id that is answered history, no longer in the deck, or from another round never travels in the answers.
+  // The landing page is then the first page needing him: a stale page number from another build is dropped with the rest.
+  function pruneStale() {
+    if (!GROWS) return;
+    const open = id => { const x = DECK.steps.find(q => q.id === id); return !!x && !x.context && (!(x.grow && x.grow.answered) || !!(state.reopened || {})[id]); };
+    for (const id of Object.keys(state.answers || {})) if (!open(id)) delete state.answers[id];
+    if (state.reopened) { for (const id of Object.keys(state.reopened)) { const x = DECK.steps.find(q => q.id === id); if (!(x && x.grow && x.grow.answered)) delete state.reopened[id]; } if (!Object.keys(state.reopened).length) delete state.reopened; }
+    const pageIds = new Set((ALLPAGES || []).map(p => p.id));
+    for (const k of ['pageNotes', 'pageAttach']) if (state[k]) { for (const id of Object.keys(state[k])) if (!pageIds.has(id)) delete state[k][id]; if (!Object.keys(state[k]).length) delete state[k]; }
+    if (DECK.built) state.built = DECK.built;
+    if (!(state.cur >= 0 && state.cur <= LAST)) state.cur = 0;
   }
   let retry = null, lastSig = '', loaded = false;
   const post = () => fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) });
@@ -973,7 +1020,7 @@
         // This page is older than the file (it was open across a server restart). Fold the
         // file's answers in — the newer of each wins — and save the union, instead of losing either.
         const disk = await (await fetch('/answers', { cache: 'no-store' })).json();
-        Object.assign(state, merged(state, disk)); paintState(); if (PAGES) { const pn = $('#pnote'); if (pn && document.activeElement !== pn) pn.value = (state.pageNotes || {})[PAGES[cur].id] || ''; }
+        Object.assign(state, merged(state, disk)); pruneStale(); paintState(); if (PAGES) { const pn = $('#pnote'); if (pn && document.activeElement !== pn) pn.value = (state.pageNotes || {})[PAGES[cur].id] || ''; }
         r = await post();
       }
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -1098,10 +1145,12 @@
     $('#cards').innerHTML = (named ? pageHead(pg, false) : '')
       + (cur === 0 ? topNotes() : '')
       + steps.map(st => qArticle(st, false)).join('')
-      + prevGroup(sunk, true)
+      + prevFold(sunk, pg)
       // WHY (Destin, round 4, on the header Notes button: "nah i wanted like an extra more visible input region at the bottom of each page"): a
       // thought about the page as a whole gets a box he cannot miss, where he ends up after reading it — one per page, saved as pageNotes[page id].
       + `<section class="pagenote"><label for="pnote">Anything else about this page</label><div class="pnotebox"><textarea class="pnote" id="pnote" rows="2" data-page="${esc(pg.id)}" placeholder="A comment on the page as a whole, or anything no row or question covers"></textarea></div></section>`;
+    // WHY the last open page ends with one folded row (Destin, round 12): pages holding only answered topics are not walked through; they open from here.
+    if (cur === LAST) $('#cards').insertAdjacentHTML('beforeend', earlierRow());
     { const pn = $('#pnote'); pn.value = (state.pageNotes || {})[pg.id] || ''; pn.disabled = !!state.submitted; }
     afterPageDrawn();
   }
@@ -1172,6 +1221,28 @@
   const prevGroup = (list, canReopen) => list.length
     ? `<section class="prevgrp"><p class="qnum"><span class="n"><span class="kindline">Nothing needed from you</span></span></p><span class="grpn prevn">${list.length}</span><h2 class="qh">Previously answered</h2>`
       + `<div class="prevlist">${list.map(st => prevTopic(st, canReopen)).join('')}</div></section>` : '';
+  // WHY one folded row (Destin, round 12: "the card with the answered questions should be collapsible/expandable into a single row"): on a page that
+  // has something for him, his earlier answers sit at the bottom as ONE row (title, count, chevron) that opens in place. Shut by default, so the
+  // page starts with what needs him.
+  const prevFold = (list, pg) => {
+    if (!list.length) return '';
+    const open = isOpen('prev', pg.id);
+    return `<section class="prevgrp prevfoldwrap"><div class="fold prevfold${open ? ' open' : ''}"><button type="button" class="foldhead" data-kind="prev" data-sid="${esc(pg.id)}" data-call="" aria-expanded="${open}"><span class="foldtitle">Previously answered</span><span class="foldchips"><span class="fchip">${list.length}</span></span><span class="foldfill"></span>${CHEV}</button>`
+      + `<div class="foldbody"${open ? '' : ' hidden'}><div class="prevlist">${list.map(st => prevTopic(st, true)).join('')}</div></div></div></section>`;
+  };
+  // The answered-only pages of this stage, behind ONE folded row on the last open page: a list of subject names with counts, each opening that
+  // subject's answered cards (read-only: nothing on a page he is not walking through can be reopened).
+  const answeredCount = pg => pg.steps.map(stepById).filter(st => st && !st.context && st.grow && st.grow.answered).length;
+  function earlierRow() {
+    if (!ANSWERED.length) return '';
+    const open = isOpen('earlier', 'all'), total = ANSWERED.reduce((n, p) => n + answeredCount(p), 0);
+    return `<section class="prevgrp earlierwrap"><div class="fold earlierfold${open ? ' open' : ''}"><button type="button" class="foldhead" data-kind="earlier" data-sid="all" data-call="" aria-expanded="${open}"><span class="foldtitle">Everything answered earlier</span><span class="foldchips"><span class="fchip">${total}</span></span><span class="foldfill"></span>${CHEV}</button>`
+      + `<div class="foldbody"${open ? '' : ' hidden'}><ul class="earlierlist">${ANSWERED.map((p, i) => `<li><button type="button" class="earlieritem" data-i="${i}"><span class="eitem">${esc(p.title)}</span><span class="fchip">${answeredCount(p)}</span></button></li>`).join('')}</ul></div></div></section>`;
+  }
+  $('#cards').addEventListener('click', e => {
+    const b = e.target.closest('.earlieritem'); if (!b || !GROWS) return;
+    viewStage = EARLIER; recPage = +b.dataset.i; render();
+  });
   // The same locked card, painted from his saved answer (`grow.given`): the pick on its option, the buttons pressed, his note in the note box,
   // ticks pressed and his comments under their rows. Nothing here can change; nothing is written to the answers file.
   function paintLocked() {
@@ -1216,10 +1287,10 @@
     $('#replay').hidden = true; $('#zoom').hidden = true; $('#livehint').hidden = true; $('#headline').hidden = true;
     const ss = pg.steps.map(stepById).filter(Boolean);
     // A background list (facts) is drawn as it always is; every other topic is a previously-answered card without Reopen.
-    $('#cards').innerHTML = pageHead(pg, true) + ss.filter(st => st.context).map(st => qArticle(st, false)).join('')
+    $('#cards').innerHTML = pageHead(pg, viewStage !== EARLIER) + ss.filter(st => st.context).map(st => qArticle(st, false)).join('')
       + prevGroup(ss.filter(st => !st.context && st.grow && st.grow.answered), false);
-    layout(); paintLocked(); paintStages(); paintBars();
-    $('#save').disabled = false; $('#save').textContent = recPage >= pages.length - 1 ? 'Back to ' + stageName(GROWS.stage) : 'Next page ›';
+    layout(); paintLocked(); wireMarks(); paintStages(); paintBars();   // WHY wireMarks: the areas he drew on an old picture are painted here too (round 12: pictures and marks were missing)
+    $('#save').disabled = false; $('#save').textContent = recPage >= pages.length - 1 ? (viewStage === EARLIER ? 'Back to your questions' : 'Back to ' + stageName(GROWS.stage)) : 'Next page ›';
     $('#back').hidden = pages.length === 1; $('#back').disabled = recPage === 0;
     scrollTop();
   }
@@ -1251,8 +1322,12 @@
     if (!GROWS || !PAGES) return;
     const box = $('#stages'); box.hidden = false;
     const at = Math.max(0, STAGE_KEYS.indexOf(GROWS.stage)), shown = viewStage || GROWS.stage, sig = shown + '|' + at;
-    if (box._sig === sig) return; box._sig = sig;
-    box.innerHTML = `<ol class="stageflow" aria-label="Stages of this deck">` + STAGE_KEYS.map((k, i) => {
+    if (box._sig === sig) return; box._sig = sig; box.classList.remove('open');
+    // WHY a compact button too (Destin, round 12: at a phone's width the four names do not fit beside the bars and the button): below 700px the line
+    // shrinks to the stage on screen with a small "2 of 4"; pressing it opens the four names, finished ones pressable.
+    const here = Math.max(0, STAGE_KEYS.indexOf(shown === EARLIER ? GROWS.stage : shown));
+    box.innerHTML = `<button type="button" class="stagecompact" aria-expanded="false" title="The stages of this deck"><span class="scname">${esc(stageName(STAGE_KEYS[here]))}</span><small>${here + 1} of 4</small>${CHEV}</button>`
+      + `<ol class="stageflow" aria-label="Stages of this deck">` + STAGE_KEYS.map((k, i) => {
       const name = esc(stageName(k)), view = k === shown ? ' viewing' : '';
       if (i < at && finPages(k).length) return `<li class="done${view}"><button type="button" class="stagebtn" data-stage="${k}" title="Read the finished ${name} stage">${TICK}<span>${name}</span></button></li>`;
       if (i < at) return `<li class="done${view}">${TICK}<span>${name}</span></li>`;
@@ -1261,6 +1336,11 @@
       return `<li class="later"><span>${name}</span></li>`;
     }).join('') + `</ol>`;
   }
+  document.addEventListener('click', e => {
+    const c = e.target.closest && e.target.closest('.stagecompact'), box = $('#stages');
+    if (c) { const on = !box.classList.contains('open'); box.classList.toggle('open', on); c.setAttribute('aria-expanded', on); return; }
+    if (box && box.classList.contains('open') && !(e.target.closest && e.target.closest('#stages'))) { box.classList.remove('open'); const k = box.querySelector('.stagecompact'); if (k) k.setAttribute('aria-expanded', 'false'); }
+  });
   $('#stages').addEventListener('click', e => {
     const b = e.target.closest('.stagebtn'); if (!b || !GROWS) return;
     const k = b.dataset.stage; viewStage = k === GROWS.stage ? null : k; recPage = 0;
@@ -1498,7 +1578,8 @@
     $('#count').textContent = done + ' of ' + askedNow().length + ' answered' + (state.submitted ? ' · submitted, read-only' : '');
     // On a page the forward button is navigation, not "save this answer" — it is never disabled
     // for an unanswered question, because there are several of them on screen.
-    $('#save').disabled = !!state.submitted; $('#save').textContent = cur === LAST ? 'Done' : 'Next page ›';
+    // WHY one wording (Destin, round 12): the foot button and the header's button say the same thing, "Submit feedback", never "Done".
+    $('#save').disabled = !!state.submitted; $('#save').textContent = cur === LAST ? (GROWS ? 'Submit feedback' : 'Done') : 'Next page ›';
     $('#back').hidden = PAGES.length === 1; $('#back').disabled = cur === 0;
     $('#prev').disabled = cur === 0; $('#next').disabled = cur === LAST; $('#next').textContent = cur === LAST ? 'Last page' : 'Next ›';
   }
@@ -1988,17 +2069,17 @@
   }
   function drawMarks() {
     $$('.markable .mark').forEach(m => m.remove());
-    $$('.markable').forEach(box => ((state.answers[box.dataset.sid] || {}).marks || []).forEach((m, i) => {
+    $$('.markable').forEach(box => marksOf(box.dataset.sid).forEach((m, i) => {
       if (m.pic !== box.dataset.pk) return;
       const el = document.createElement('span'); el.className = 'mark';
       el.style.cssText = `left:${m.x}%;top:${m.y}%;width:${m.w}%;height:${m.h}%`; el.innerHTML = `<b>${i + 1}</b>`;
       box.appendChild(el);
     }));
     $$('.marklist').forEach(l => {
-      const sid = l.dataset.sid, marks = (state.answers[sid] || {}).marks || [];
+      const sid = l.dataset.sid, marks = marksOf(sid), lk = lockedSid(sid) || state.submitted;
       l.innerHTML = marks.length
-        ? marks.map((m, i) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="1" data-sid="${esc(sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(sid)}" data-i="${i}" title="Remove this area" aria-label="Remove this area"${state.submitted ? ' disabled' : ''}>${BIN}</button></div>`).join('')
-        : (state.submitted ? '' : '<p class="markhint">Drag across any part of the picture to comment on that area.</p>');
+        ? marks.map((m, i) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="1" data-sid="${esc(sid)}" data-i="${i}" placeholder="What about this area?"${lk ? ' disabled' : ''}>${esc(m.text || '')}</textarea>${lockedSid(sid) ? '' : `<button type="button" class="markx" data-sid="${esc(sid)}" data-i="${i}" title="Remove this area" aria-label="Remove this area"${lk ? ' disabled' : ''}>${BIN}</button>`}</div>`).join('')
+        : (lk ? '' : '<p class="markhint">Drag across any part of the picture to comment on that area.</p>');
     });
     paintViewer(); paintAtt();
     addMics(); paintPills();
@@ -2140,18 +2221,18 @@
     pair.innerHTML = sibs.length < 2 ? '' : sibs.map((t, i) => `<button type="button" class="segb${t === viewA ? ' on' : ''}" data-sib="${i}">${esc(t.dataset.name)}</button>`).join('');
     // WHY a button on touch screens (Destin, round 9, Q-4: "Tap a 'Comment on an area' button, then drag"):
     // with a finger, any drag on a picture drew an area, so scrolling a large picture meant aiming for the gaps.
-    const arm = v.querySelector('.varm'); arm.hidden = !(COARSE && a.markable && !state.submitted);
+    const arm = v.querySelector('.varm'); arm.hidden = !(COARSE && a.markable && !state.submitted && !lockedSid(a.sid));
     arm.classList.toggle('on', armed); arm.textContent = armed ? 'Now drag on the picture' : 'Comment on an area';
     box.classList.toggle('armed', armed);
     v.querySelector('.vside h3').textContent = a.video ? 'Comments on this clip' : 'Comments on this picture';
-    const marks = (state.answers[a.sid] || {}).marks || [];
+    const marks = marksOf(a.sid), lk = lockedSid(a.sid) || !!state.submitted;
     // Only this picture's areas, under the numbers they carry on the picture.
     const mine = marks.map((m, i) => [m, i]).filter(x => x[0].pic === a.pk);
     const side = v.querySelector('.vcomments'), act = document.activeElement;
     // Never rebuilt under his caret: typing in a comment repaints the page, and would lose his place.
     if (!(act && act.closest && act.closest('.vcomments') && side.querySelectorAll('.markrow').length === mine.length))
-      side.innerHTML = mine.map(([m, i]) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="2" data-sid="${esc(a.sid)}" data-i="${i}" placeholder="What about this area?"${state.submitted ? ' disabled' : ''}>${esc(m.text || '')}</textarea><button type="button" class="markx" data-sid="${esc(a.sid)}" data-i="${i}" title="Take this comment away" aria-label="Take this comment away"${state.submitted ? ' disabled' : ''}>${BIN}</button></div>`).join('')
-        + `<p class="markhint">${a.video ? 'To comment on a clip, use the pencil on its row.' : !a.markable || state.submitted ? '' : mine.length ? (COARSE ? 'Tap the button, then drag, to add another.' : 'Drag across another part to add a comment.') : (COARSE ? 'Tap the button above, then drag across a part of the picture.' : 'Drag across any part of the picture to comment on it.')}</p>`;
+      side.innerHTML = mine.map(([m, i]) => `<div class="markrow"><b>${i + 1}</b><textarea class="markt" rows="2" data-sid="${esc(a.sid)}" data-i="${i}" placeholder="What about this area?"${lk ? ' disabled' : ''}>${esc(m.text || '')}</textarea>${lockedSid(a.sid) ? '' : `<button type="button" class="markx" data-sid="${esc(a.sid)}" data-i="${i}" title="Take this comment away" aria-label="Take this comment away"${lk ? ' disabled' : ''}>${BIN}</button>`}</div>`).join('')
+        + `<p class="markhint">${a.video ? 'To comment on a clip, use the pencil on its row.' : lockedSid(a.sid) ? (mine.length ? 'Your comments from when you answered this.' : '') : !a.markable || state.submitted ? '' : mine.length ? (COARSE ? 'Tap the button, then drag, to add another.' : 'Drag across another part to add a comment.') : (COARSE ? 'Tap the button above, then drag across a part of the picture.' : 'Drag across any part of the picture to comment on it.')}</p>`;
   }
   function closeBig() { const v = $('.viewer'); if (v) v.remove(); viewA = null; armed = false; }
   document.addEventListener('click', e => {
@@ -2182,7 +2263,7 @@
   const pct = n => Math.round(n * 10) / 10;
   document.addEventListener('pointerdown', e => {
     if (state.submitted || e.button !== 0 || !e.target.closest) return;
-    const img = e.target.closest('.markable img'); if (!img) return;
+    const img = e.target.closest('.markable img'); if (!img || lockedSid(img.closest('.markable').dataset.sid)) return;   // an answered card's picture shows his old areas; it takes no new ones
     // On a touch screen a drag scrolls, unless he tapped "Comment on an area" first (round 9, Q-4).
     if (COARSE && !armed) return;
     drag = { box: img.closest('.markable'), r: img.getBoundingClientRect(), x0: e.clientX, y0: e.clientY, el: null, id: e.pointerId };

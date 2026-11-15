@@ -73,10 +73,27 @@ class Grows(unittest.TestCase):
         answers(self.tmp, '1', {}, live=True)
         self.assertEqual(round_number(self.load()), 2)
 
-    def test_copies_of_one_build_are_one_round(self):
+    def test_copies_of_one_build_are_one_round_when_the_later_one_is_a_resend(self):
         answers(self.tmp, '1', {'Q-1': {'v': 'yes'}}, built='B1')
         answers(self.tmp, '2', {'Q-1': {'v': 'yes'}}, built='B1', submitted='2026-11-02T10:00:00Z')
+        p = os.path.join(self.tmp, 'grow.answers.2.json'); d = json.load(open(p)); d['sent_before'] = '2026-11-01T10:00:00Z'; json.dump(d, open(p, 'w'))   # serve.py writes this on a same-build re-serve
         self.assertEqual(round_number(self.load()), 2)
+
+    def test_two_files_with_one_build_stamp_are_two_rounds_when_nothing_says_resend(self):
+        # WHY (round 12): his browser copied last round's build stamp into the new round's file, so a stamp alone cannot mean "the same round".
+        answers(self.tmp, '1', {'Q-1': {'v': 'yes'}}, built='B1')
+        answers(self.tmp, '2', {'Q-1': {'v': 'yes'}}, built='B1', submitted='2026-11-02T10:00:00Z')
+        self.assertEqual(round_number(self.load()), 3)
+
+    def test_stale_answers_in_a_round_file_are_dropped_from_that_round(self):
+        answers(self.tmp, '1', {'Q-1': {'v': 'pick', 'pick': 'a'}, 'Q-2': {'v': 'pick', 'pick': 'a'}})
+        answers(self.tmp, '2', {'Q-1': {'v': 'pick', 'pick': 'a'}, 'Q-2': {'v': 'pick', 'pick': 'b'}})   # Q-1 is last round's, copied by the browser
+        spec = self.load(stale_answers={'2026-11-02T10:00:00Z': ['Q-1']})
+        self.assertEqual(validate(spec)[0], [])
+        steps = {s['id']: s for s in deck_data(spec, {})['steps']}
+        self.assertEqual([e['round'] for e in steps['Q-1']['grow']['story']], ['Round 1'], 'said once')
+        self.assertEqual([e['round'] for e in steps['Q-2']['grow']['story']], ['Round 1', 'Round 2'])
+        self.has(validate(self.load(stale_answers={'x': 'Q-1'}))[0], 'stale_answers is')
 
     # answered
     def test_a_plain_earlier_answer_is_answered_and_shows_his_choice(self):
@@ -299,7 +316,7 @@ class Grows(unittest.TestCase):
 
     def test_background_lines_and_answered_topics_may_cite_rounds(self):
         st = base_spec()
-        st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', 'more': 'Asked in round 7 (R-1).'}], past='You asked in round 3.',
+        st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', 'more': {'change': 'Asked in round 7 (R-1).'}}], past='You asked in round 3.',
                                         trail=[{'round': 'Round 3', 'built': 'x'}], checked='Read round 4.')
         st['steps'][2]['headline'] = 'Round 4 said Q-9?'
         st['steps'][2]['answered'] = {'round': 'Round 1', 'answer': 'Yes'}
@@ -309,6 +326,41 @@ class Grows(unittest.TestCase):
         st = base_spec(); st['steps'][0]['intro'] = 'x' * 161
         self.has(validate(load_spec(put(self.tmp, st)))[0], 'the page intro is 161 characters (max 160)')
         st['steps'][0]['intro'] = 'x' * 160
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+
+    # ── round 13 (Destin, round 12): a row's More is labelled like a question; a change he would see needs a picture ──
+    def test_more_on_an_open_row_he_can_change_is_labelled_like_a_question(self):
+        for bad in ('A bare line.', {'does': 'It does a thing.', 'why': 'Because.'}, {'pros': ['Quick.']}):
+            st = base_spec(); st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', 'more': bad}])
+            self.has(validate(load_spec(put(self.tmp, st)))[0], 'more on a row he can change is labelled like a question')
+        st = base_spec(); st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.',
+                                                                   'more': {'today': 'One way.', 'problem': 'Slow.', 'change': 'Quicker.', 'pros': ['Fast.'], 'cons': ['New.']}}])
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+        st['steps'][1]['calls'][0]['more'] = {'change': 'Quicker.', 'pros': 'not a list'}
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'more.pros is a short list')
+
+    def test_an_old_style_more_still_passes_where_the_row_is_not_open_to_change(self):
+        st = base_spec(); st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', 'more': 'Old wording.'}], answered={'round': 'Round 2', 'answer': 'Yes'})
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+        st = base_spec(); st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', 'result': 'pass', 'more': {'does': 'A thing.'}}])
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])   # a results list is not his to change
+
+    def test_an_open_visual_row_or_question_must_carry_a_picture(self):
+        open(os.path.join(self.tmp, 'p.png'), 'wb').write(b'\x89PNG')
+        more = {'change': 'Different.'}
+        st = base_spec(); st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', 'more': more, 'visual': True}])
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'L-1/r1: this row is flagged visual but has no picture')
+        st['steps'][1]['calls'][0]['picture'] = 'p.png'
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+        st = base_spec(); st['steps'][1]['visual'] = True
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'is flagged visual but has no picture')
+        st['steps'][1]['picture'] = 'p.png'
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+        st['steps'][1]['visual'] = 'yes'
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'visual is true or false')
+
+    def test_an_answered_visual_row_needs_no_picture(self):
+        st = base_spec(); st['steps'][1]['visual'] = True; st['steps'][1]['answered'] = {'round': 'Round 2', 'answer': 'Yes'}
         self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
 
 
