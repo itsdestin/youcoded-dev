@@ -1,0 +1,117 @@
+{
+ "mix": "removal",
+ "relay": "honest",
+ "variant": "NOCUT",
+ "sched": 20000,
+ "fail": {
+  "CUT": 834
+ },
+ "stale": {
+  "offline-owner": 5427,
+  "ONLINE-honest-unchecked": 1924,
+  "unchecked-after-wake": 5
+ },
+ "copies": 27691,
+ "copyCause": {
+  "relay-sync": 23128,
+  "peer-sync": 4166,
+  "handover": 196,
+  "copy": 201
+ },
+ "loss": 0,
+ "inherent": 0,
+ "dbl": 0,
+ "tap": 71183,
+ "tapCopy": 1551,
+ "tapPlace": 64874,
+ "tapDirect": 31204,
+ "tapMoved": 1508,
+ "tapVacated": 11284,
+ "overrideUser": 2342,
+ "ownerless": 0,
+ "examples": [
+  {
+   "seed": 4100027,
+   "k": "CUT",
+   "msg": "CUT late entry wins dev 1 chat c0"
+  },
+  {
+   "seed": 4105002,
+   "k": "CUT",
+   "msg": "CUT late entry wins dev 0 chat c0"
+  },
+  {
+   "seed": 4110013,
+   "k": "CUT",
+   "msg": "CUT late entry wins dev 0 chat c0"
+  },
+  {
+   "seed": 4115064,
+   "k": "CUT",
+   "msg": "CUT late entry wins dev 1 chat c1"
+  }
+ ],
+ "failSeeds": {
+  "CUT": [
+   4100027,
+   4100044,
+   4100068,
+   4100077,
+   4100079,
+   4100129,
+   4100137,
+   4100144,
+   4100158,
+   4100219,
+   4100227,
+   4100240,
+   4105002,
+   4105016,
+   4105017,
+   4105045,
+   4105055,
+   4105082,
+   4105095,
+   4105106,
+   4105109,
+   4105122,
+   4105148,
+   4105150,
+   4110013,
+   4110031,
+   4110065,
+   4110116,
+   4110152,
+   4110158,
+   4110159,
+   4110181,
+   4110189,
+   4110197,
+   4110205,
+   4110233,
+   4115064,
+   4115082,
+   4115091,
+   4115102
+  ]
+ },
+ "dem": 27691,
+ "demLonger": 23277,
+ "unreachableMarkChats": 972,
+ "chatsTotal": 53226,
+ "vacChecked": 7108,
+ "unreachMarkSched": 913,
+ "staleSched": 4681,
+ "copySched": 9519,
+ "lateSched": 9507,
+ "demLonger3": 4279,
+ "copyWhy_behind": 1057,
+ "userCopySched": 1310,
+ "copyWhy_nonote": 480,
+ "tie": 342,
+ "tie3": 26,
+ "escNoWrite": 40,
+ "copyWhy_mismatch": 14,
+ "tieLonger": 58,
+ "tieLonger3": 24
+}

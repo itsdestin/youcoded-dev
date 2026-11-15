@@ -1,0 +1,1 @@
+{"variant":"recv","relay":"withhold","seed0":1,"runs":500000,"signed":463288,"o1":0,"o2":0,"o3":0,"race":16061,"thiefStays":16146,"lostHonest":9636,"lostHonestWithStash":6528,"lostHonestSecondRemover":5703,"stashRuns":0,"stashRunsSigned":266468,"honestSafeWithStash":245568,"steerSeeds":[],"o1Seeds":[],"o3Seeds":[],"lostHonestAny":25697,"twoDev":124981,"twoDevDead":6507}

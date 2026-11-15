@@ -1,0 +1,142 @@
+{
+ "mix": "restore",
+ "relay": "ly80",
+ "variant": "NOGAP",
+ "sched": 40000,
+ "fail": {
+  "ORPHAN": 11,
+  "R2-ORPHAN": 11,
+  "ESC-ORPHAN": 11
+ },
+ "stale": {
+  "offline-owner": 7627,
+  "relay-lie": 4216,
+  "rolled-back": 770,
+  "ONLINE-honest-unchecked": 401,
+  "unchecked-after-wake": 21
+ },
+ "copies": 23278,
+ "copyCause": {
+  "handover": 1001,
+  "relay-sync": 19156,
+  "peer-sync": 3106,
+  "copy": 15
+ },
+ "loss": 0,
+ "inherent": 20534,
+ "dbl": 434,
+ "tap": 140569,
+ "tapCopy": 7355,
+ "tapPlace": 117468,
+ "tapDirect": 66987,
+ "tapMoved": 9239,
+ "tapVacated": 0,
+ "overrideUser": 4340,
+ "ownerless": 0,
+ "examples": [
+  {
+   "seed": 4402184,
+   "k": "ORPHAN",
+   "msg": "ORPHAN hidden rid 6 on dev 0"
+  },
+  {
+   "seed": 4402184,
+   "k": "R2-ORPHAN",
+   "msg": "R2-ORPHAN hidden rid 6 on dev 0"
+  },
+  {
+   "seed": 4402184,
+   "k": "ESC-ORPHAN",
+   "msg": "ESC-ORPHAN hidden rid 6 on dev 0"
+  },
+  {
+   "seed": 4414016,
+   "k": "ORPHAN",
+   "msg": "ORPHAN hidden rid 6 on dev 0"
+  },
+  {
+   "seed": 4414016,
+   "k": "R2-ORPHAN",
+   "msg": "R2-ORPHAN hidden rid 6 on dev 0"
+  },
+  {
+   "seed": 4414016,
+   "k": "ESC-ORPHAN",
+   "msg": "ESC-ORPHAN hidden rid 6 on dev 0"
+  },
+  {
+   "seed": 4422332,
+   "k": "ORPHAN",
+   "msg": "ORPHAN hidden rid 7 on dev 0"
+  },
+  {
+   "seed": 4422332,
+   "k": "R2-ORPHAN",
+   "msg": "R2-ORPHAN hidden rid 7 on dev 0"
+  },
+  {
+   "seed": 4422332,
+   "k": "ESC-ORPHAN",
+   "msg": "ESC-ORPHAN hidden rid 7 on dev 0"
+  }
+ ],
+ "failSeeds": {
+  "ORPHAN": [
+   4402184,
+   4414016,
+   4416265,
+   4416864,
+   4422332,
+   4423056,
+   4423349,
+   4423617,
+   4427958,
+   4428407,
+   4429391
+  ],
+  "R2-ORPHAN": [
+   4402184,
+   4414016,
+   4416265,
+   4416864,
+   4422332,
+   4423056,
+   4423349,
+   4423617,
+   4427958,
+   4428407,
+   4429391
+  ],
+  "ESC-ORPHAN": [
+   4402184,
+   4414016,
+   4416265,
+   4416864,
+   4422332,
+   4423056,
+   4423349,
+   4423617,
+   4427958,
+   4428407,
+   4429391
+  ]
+ },
+ "chatsTotal": 107583,
+ "dem": 23278,
+ "demLonger": 16344,
+ "staleSched": 8901,
+ "copySched": 10418,
+ "copyWhy_nonote": 6503,
+ "userCopySched": 5598,
+ "copyWhy_behind": 837,
+ "demLonger3": 1141,
+ "dblSched": 1340,
+ "tie": 1072,
+ "unreachableMarkChats": 1236,
+ "unreachMarkSched": 1199,
+ "tieLonger": 172,
+ "tieLonger3": 13,
+ "tie3": 16,
+ "escNoWrite": 266,
+ "copyWhy_mismatch": 15
+}

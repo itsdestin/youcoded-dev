@@ -1,0 +1,117 @@
+{
+ "mix": "removal",
+ "relay": "honest",
+ "variant": "NOVACATE",
+ "sched": 20000,
+ "fail": {
+  "VAC": 806
+ },
+ "stale": {
+  "offline-owner": 5356,
+  "ONLINE-honest-unchecked": 1807,
+  "unchecked-after-wake": 2
+ },
+ "copies": 27761,
+ "copyCause": {
+  "relay-sync": 23107,
+  "peer-sync": 4276,
+  "handover": 217,
+  "copy": 161
+ },
+ "loss": 0,
+ "inherent": 0,
+ "dbl": 0,
+ "tap": 70316,
+ "tapCopy": 2717,
+ "tapPlace": 62681,
+ "tapDirect": 31316,
+ "tapMoved": 1462,
+ "tapVacated": 0,
+ "overrideUser": 3076,
+ "ownerless": 0,
+ "examples": [
+  {
+   "seed": 4300028,
+   "k": "VAC",
+   "msg": "VAC copy offered for a chat whose owner was removed c0"
+  },
+  {
+   "seed": 4305000,
+   "k": "VAC",
+   "msg": "VAC copy offered for a chat whose owner was removed c1"
+  },
+  {
+   "seed": 4310005,
+   "k": "VAC",
+   "msg": "VAC copy offered for a chat whose owner was removed c0"
+  },
+  {
+   "seed": 4315015,
+   "k": "VAC",
+   "msg": "VAC copy offered for a chat whose owner was removed c0"
+  }
+ ],
+ "failSeeds": {
+  "VAC": [
+   4300028,
+   4300049,
+   4300050,
+   4300054,
+   4300077,
+   4300095,
+   4300111,
+   4300115,
+   4300131,
+   4300226,
+   4300232,
+   4300247,
+   4305000,
+   4305003,
+   4305058,
+   4305071,
+   4305077,
+   4305104,
+   4305108,
+   4305120,
+   4305129,
+   4305151,
+   4305205,
+   4305215,
+   4310005,
+   4310032,
+   4310085,
+   4310088,
+   4310104,
+   4310108,
+   4310125,
+   4310163,
+   4310231,
+   4310311,
+   4310333,
+   4310359,
+   4315015,
+   4315019,
+   4315030,
+   4315048
+  ]
+ },
+ "chatsTotal": 53175,
+ "dem": 27761,
+ "demLonger": 23272,
+ "copySched": 9426,
+ "lateSched": 9446,
+ "vacChecked": 6208,
+ "demLonger3": 4089,
+ "staleSched": 4633,
+ "copyWhy_behind": 2021,
+ "userCopySched": 2050,
+ "unreachableMarkChats": 1515,
+ "unreachMarkSched": 1427,
+ "copyWhy_nonote": 632,
+ "escNoWrite": 34,
+ "tie": 327,
+ "copyWhy_mismatch": 64,
+ "tieLonger": 41,
+ "tieLonger3": 14,
+ "tie3": 15
+}

@@ -1,0 +1,116 @@
+{
+ "mix": "poison",
+ "relay": "honest",
+ "variant": "NOOVERRIDE",
+ "sched": 20000,
+ "fail": {
+  "ESC": 2902
+ },
+ "stale": {
+  "offline-owner": 3691,
+  "ONLINE-honest-unchecked": 689,
+  "unchecked-after-wake": 1
+ },
+ "copies": 11423,
+ "copyCause": {
+  "relay-sync": 10255,
+  "handover": 70,
+  "peer-sync": 1086,
+  "copy": 12
+ },
+ "loss": 0,
+ "inherent": 0,
+ "dbl": 0,
+ "tap": 76662,
+ "tapCopy": 7154,
+ "tapPlace": 57808,
+ "tapDirect": 38443,
+ "tapMoved": 1537,
+ "tapVacated": 3484,
+ "overrideUser": 0,
+ "ownerless": 0,
+ "examples": [
+  {
+   "seed": 4200017,
+   "k": "ESC",
+   "msg": "ESC no way to continue c0 on 2"
+  },
+  {
+   "seed": 4205005,
+   "k": "ESC",
+   "msg": "ESC no way to continue c0 on 2"
+  },
+  {
+   "seed": 4210004,
+   "k": "ESC",
+   "msg": "ESC no way to continue c0 on 2"
+  },
+  {
+   "seed": 4215006,
+   "k": "ESC",
+   "msg": "ESC no way to continue c0 on 2"
+  }
+ ],
+ "failSeeds": {
+  "ESC": [
+   4200017,
+   4200022,
+   4200025,
+   4200031,
+   4200032,
+   4200033,
+   4200034,
+   4200048,
+   4200053,
+   4200070,
+   4200076,
+   4200088,
+   4205005,
+   4205008,
+   4205015,
+   4205016,
+   4205021,
+   4205030,
+   4205031,
+   4205039,
+   4205043,
+   4205049,
+   4205051,
+   4205054,
+   4210004,
+   4210005,
+   4210010,
+   4210011,
+   4210015,
+   4210017,
+   4210019,
+   4210022,
+   4210023,
+   4210029,
+   4210030,
+   4210042,
+   4215006,
+   4215012,
+   4215017,
+   4215021
+  ]
+ },
+ "dem": 11423,
+ "demLonger": 8858,
+ "chatsTotal": 55508,
+ "copySched": 5088,
+ "copyWhy_behind": 6742,
+ "unreachableMarkChats": 5395,
+ "unreachMarkSched": 4810,
+ "staleSched": 2962,
+ "userCopySched": 4912,
+ "vacChecked": 2136,
+ "lateSched": 2058,
+ "demLonger3": 960,
+ "escNoWrite": 3085,
+ "tie": 62,
+ "copyWhy_nonote": 370,
+ "copyWhy_mismatch": 42,
+ "tieLonger": 4,
+ "tie3": 1
+}
