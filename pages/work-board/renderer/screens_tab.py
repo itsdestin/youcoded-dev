@@ -361,8 +361,9 @@ function renderWall(list){const by={};list.forEach(g=>{(by[g.place]=by[g.place]|
     <div class="wall">${L.map((g,i)=>tile(g,more&&i>=SHOWN)).join('')}</div></section>`}).join('')||`<div class="empty">No screen matches all of these. <button class="btn sm" id="sall" data-tip="${T('scr.everything')}">Show every screen</button></div>`}
 let VIS=[];
 function sRender(){const list=SG.filter(pass);VIS=list.slice().sort((a,b)=>PLACES.indexOf(a.place)-PLACES.indexOf(b.place)||byPath(a,b));
-  $('#sbody').innerHTML=renderWall(list);
-  $$('#sbody .tile').forEach(t=>{const go=()=>openShot(t.dataset.id);t.onclick=go;t.onkeydown=e=>{if(e.key==='Enter')go()}});
+  const cv=hunt()==='changed'&&!S.f.has('new'); // the change-first view; with New pressed too, the screen wall
+  $('#sbody').innerHTML=cv?renderChanges():renderWall(list);
+  $$('#sbody .tile').forEach(t=>{const go=()=>t.dataset.ci?openChange(+t.dataset.ci):openShot(t.dataset.id);t.onclick=go;t.onkeydown=e=>{if(e.key==='Enter')go()}});
   $$('#sbody .showall').forEach(b=>b.onclick=()=>{const k=b.closest('.gsec').dataset.k;S.open[k]=!S.open[k];sRender()});
   const sa=$('#sall');if(sa)sa.onclick=()=>{S.f.clear();S.q='';S.ask=null;S.only=null;$('#sq').value='';$('#sshow').value='';sRender()};
   const n=list.length;
@@ -372,6 +373,7 @@ function sRender(){const list=SG.filter(pass);VIS=list.slice().sort((a,b)=>PLACE
   // WHY said per filter: "13 of 191 screens" under New read as 13 new screens; most are older screens with new situations
   const H=hunt(),nNew=list.filter(g=>g.newn===g.states.length).length;
   const lead=H==='new'?`${n} screens can show something ${CM.release} could not${nNew?` (${nNew} of them are whole new screens)`:': each is an older screen with new situations, listed on its tile'}.`
+    :cv?`${CVIS.length} changes since ${CM.release}: ${CVIS.filter(ci=>CL[ci].wide).length} show up in many places, the rest are on one screen each.`
     :H==='changed'?`${n} screens look different from ${CM.release}.`
     :(n===SG.length?'All '+n+' screens':n+' of '+SG.length+' screens')+', grouped by where they are in the app.';
   $('#scount').textContent=lead+(nb?` ${nb} situations could not be compared: ${CM.release} cannot open them for a picture.`:'');
@@ -382,6 +384,56 @@ function sRender(){const list=SG.filter(pass);VIS=list.slice().sort((a,b)=>PLACE
 $$('.sbar [data-f]').forEach(b=>b.onclick=()=>{const f=b.dataset.f;S.f.has(f)?S.f.delete(f):S.f.add(f);sRender()});
 $('#sshow').onchange=e=>{const v=e.target.value;S.ask=v===''?null:+v;sRender()};
 $('#sq').oninput=e=>{S.q=e.target.value.trim().toLowerCase();sRender()};
+// ---- the change-first view (Changed since <release>)
+// WHY (Destin, 2026-11-14: "re-evaluate how screens are grouped/ordered ... simpler and more intuitive with
+// clearer hierarchy"): the list was one tile per SCREEN, with the changes two levels down (situation strip,
+// theme tabs). Measured on run10: one change (tool cards show the file name, not the whole path) was reported
+// on 114 situations, and "Chat" hid 54 changed situations behind one tile. Here the unit is a CHANGE:
+//  - a change found on WIDE or more situations is one entry ("114 places"), opened on its plainest example;
+//  - every other entry is one situation, showing only what is left once those wide changes are taken out;
+//  - one theme (the tile theme; another only when the tile theme did not change there). No theme tabs, no strip.
+const sigOf=c=>c.kind==='pixels'?null:[c.kind,c.role||'',c.name||'',c.oldText||'',c.newText||''].join('|');
+const WIDE=5;
+let CL=null,CHI=null,CVIS=[];
+function thOf(st){const ch=st.ch||{};return ch[CM.tile]&&ch[CM.tile].status==='changed'?CM.tile:CM.themes.find(x=>ch[x]&&ch[x].status==='changed')}
+function buildChanges(){if(CL)return CL;
+  const sits=[];SG.forEach(g=>g.states.forEach((st,i)=>{if(stSince(st)!=='changed')return;const th=thOf(st);if(!th)return;sits.push({g,i,st,th,ch:st.ch[th].changes||[]})}));
+  const occ={};sits.forEach((x,k)=>new Set(x.ch.map(sigOf).filter(Boolean)).forEach(sg=>(occ[sg]=occ[sg]||new Set()).add(k)));
+  const wideSigs=Object.keys(occ).filter(sg=>occ[sg].size>=WIDE).sort((a,b)=>occ[b].size-occ[a].size);
+  // WHY clusters: one edit shows as several lines (old words gone, new words there); lines found on nearly the
+  // same set of pictures (4 in 5 shared) are one change
+  const clusters=[];
+  wideSigs.forEach(sg=>{const A=occ[sg];const c=clusters.find(c=>{let n=0;A.forEach(k=>{if(c.at.has(k))n++});return n/(A.size+c.at.size-n)>=0.8});
+    if(c){c.sigs.add(sg);A.forEach(k=>c.at.add(k))}else clusters.push({sigs:new Set([sg]),at:new Set(A)})});
+  const isWide=new Set(wideSigs);
+  const wide=clusters.map(c=>{const where=[...c.at].map(k=>sits[k]);
+    const ex=where.slice().sort((a,b)=>(a.st.ph?1:0)-(b.st.ph?1:0)||a.ch.length-b.ch.length)[0];
+    return {...ex,wide:true,where,keep:x=>c.sigs.has(sigOf(x))}});
+  const one=sits.filter(x=>!x.ch.length||x.ch.some(c=>!isWide.has(sigOf(c)))).map(x=>({...x,keep:c=>!isWide.has(sigOf(c))}));
+  one.sort((a,b)=>PLACES.indexOf(a.g.place)-PLACES.indexOf(b.g.place)||byPath(a.g,b.g)||a.i-b.i);
+  return CL=[...wide,...one]}
+function plain(h){const d=document.createElement('div');d.innerHTML=h;return d.textContent}
+const sitName=e=>e.g.t+(e.st.l!=='Usual'?' · '+e.st.l:'');
+function cTile(e,ci){const st=e.st,full=!st.crop&&!st.ph;
+  // WHY visible lines first: "new words below the visible part" is the least telling line to name a tile by
+  const G=groupChanges(e.ch.filter(e.keep)).sort((x,y)=>(x.items[0].hidden?1:0)-(y.items[0].hidden?1:0));
+  const R=G.length?rowText(G[0]):['Looks different',''],first=plain(R[0]),detail=plain(R[1]||'');
+  // a wide change is named by what it is, with its words underneath; a single one by where it is
+  const name=e.wide?first:sitName(e);
+  const sub=e.wide?(detail||'For example on '+sitName(e)):first+(G.length>1?', and '+(G.length-1)+' more':'');
+  const badge=e.wide?e.where.length+' places':G.length>1?G.length+' changes':'';
+  const tip=e.wide?'One change that shows up in many pictures. Click to see it, and every place it appears.':'Click to compare this with '+CM.release+'.';
+  return `<figure class="tile ctile" data-ci="${ci}" tabindex="0" data-tip="${esc(tip)}"><div class="timg${full?' full':''}"><img src="${st.img}" alt="" decoding="async" loading="lazy"><span class="tov">${badge?`<span class="badge" data-tip="${esc(e.wide?'How many pictures show this same change.':'How many separate changes are on this picture.')}">${badge}</span>`:''}${st.ph?`<span class="badge" data-tip="${esc('Photographed at phone size.')}">Phone</span>`:''}</span></div>
+  <figcaption class="tcap"><span class="tn">${esc(name)}</span><span class="tp">${esc(sub)}</span></figcaption></figure>`}
+function renderChanges(){const L=buildChanges();const sec=(k,desc,ids)=>ids.length?`<section class="gsec expanded"><div class="sechead"><div class="gtext"><h2 class="gh"><span>${esc(k)}</span><span class="cnt" data-tip="${esc('How many changes are in this group.')}">${ids.length}</span></h2>${desc?`<p class="gdesc">${esc(desc)}</p>`:''}</div></div><div class="wall">${ids.map(ci=>cTile(L[ci],ci)).join('')}</div></section>`:'';
+  const idx=L.map((e,ci)=>ci),w=idx.filter(ci=>L[ci].wide&&!S.q),o=idx.filter(ci=>!L[ci].wide&&pass(L[ci].g));
+  CVIS=[...w,...o];
+  return sec('Seen in many places','Each of these is one change that shows up in many pictures. It is listed once here and left out below.',w)
+    +PLACES.map(k=>sec(k,'',o.filter(ci=>L[ci].g.place===k))).join('')
+    ||'<div class="empty">Nothing changed that matches.</div>'}
+function openChange(ci){const e=buildChanges()[ci];if(!e)return;if(!DCUR)LASTFOCUS=document.activeElement;
+  DCUR=e.g.id;DST=e.i;DTH=e.th;DCMP=true;DZOOM=null;DWIN=false;CHI=ci;drawShot();
+  $('#scrim').hidden=false;$('#dwrap').hidden=false;$('#dbody').scrollTop=0;fades();$('#dclose').focus({preventScroll:true})}
 // ---- the picture popup
 let DCUR=null,DST=0,DWIN=false,DPATH=false,LASTFOCUS=null;
 // WHY compare state lives with the popup (2026-11-04): the comparison is this popup's "What changed" view, not
@@ -393,7 +445,7 @@ let DCMP=false,DZOOM=null,DTH=null;
 // that changed; one that is the same, or has no release picture, just says so under the usual picture.
 function stSince(st){const v=Object.values(st.ch||{}).map(t=>t.status);if(!v.length)return null;
   return v.includes('changed')||v.includes('removed')?'changed':v.includes('new')?'new':v.every(s=>s==='nobefore')?'nobefore':'same'}
-function openShot(id,stIdx){const g=GI[id];if(!g)return;if(!DCUR)LASTFOCUS=document.activeElement;DCUR=id;DWIN=false;DZOOM=null;DTH=null;
+function openShot(id,stIdx){const g=GI[id];if(!g)return;CHI=null;if(!DCUR)LASTFOCUS=document.activeElement;DCUR=id;DWIN=false;DZOOM=null;DTH=null;
   // WHY: opened while looking for changes, the popup opens on the first situation that changed, compared
   const hunting=CM&&S.f.has('since'),first=g.states.findIndex(s=>stSince(s)==='changed');
   // looking for new things, the popup opens on the first new situation
@@ -404,7 +456,7 @@ function pathHTML(g){const chain=g.chain.map(id=>GI[id]);const kids=g.kids.map(k
   return `<section class="dpath" id="dpath"><div class="sechead"><div class="gtext"><h3 class="gh" data-tip="${T('pop.way')}">How you get here</h3><p class="gdesc">${g.depth===1?'It opens straight from the main window.':'Start at the main window and click through these, left to right.'}</p></div></div>
   <div class="trail"><div class="start t-xs muted">The main window</div>${chain.map(c=>`<span class="arrow">${IAR}</span>`+tile(c,false,'',c.states[0])).join('')}<span class="arrow">${IAR}</span>${tile(g,false,'here',g.states[DST])}</div>
   <div class="sechead"><div class="gtext"><h3 class="gh"><span data-tip="${T('pop.opens')}">What opens from here</span><span class="cnt" data-tip="${T('pop.opens.count')}">${kids.length}</span></h3>${kids.length?'':'<p class="gdesc">Nothing else opens from this screen.</p>'}</div></div><div class="wall">${kids.map(k=>tile(k,false,'',k.states[0])).join('')}</div></section>`}
-function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+(g.states.length>1&&st.l!=='Usual'?' · '+st.l:'');
+function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+(g.states.length>1&&st.l!=='Usual'?' · '+st.l:'')+(CHI!=null?'  ('+(CVIS.indexOf(CHI)+1)+' of '+CVIS.length+')':'');
   $('#dti').dataset.tip=g.desc||(KINDW[g.kind]+' in '+g.place+'.');
   const where=['The main window',...g.crumbs.map(c=>c.w)].map(w=>`<span>${esc(w)}</span>`).join('<span class="sep">›</span>')+`<span class="sep">›</span><b>${esc(g.t)}</b>`;
   const work=g.work.map(i=>EFF[i]);
@@ -436,7 +488,8 @@ function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+
   $$('#dpath .tile:not(.here)').forEach(t=>{t.onclick=()=>openShot(t.dataset.id);t.onkeydown=e=>{if(e.key==='Enter')openShot(t.dataset.id)}});
   const cb=$('#dcmpbtn');if(cb)cb.onclick=()=>{DCMP=!cmpOn;DZOOM=null;drawShot()};
   $('#dpathbtn').onclick=()=>{DPATH=!DPATH;drawShot();if(DPATH)requestAnimationFrame(()=>$('#dpath').scrollIntoView({block:'start',behavior:'smooth'}))};
-  const i=VIS.findIndex(x=>x.id===DCUR);$('#dprev').disabled=i<=0;$('#dnext').disabled=i<0||i>=VIS.length-1;
+  // in the change-first view the arrows walk the changes, in the order of the page
+  const i=CHI!=null?CVIS.indexOf(CHI):VIS.findIndex(x=>x.id===DCUR),N=CHI!=null?CVIS.length:VIS.length;$('#dprev').disabled=i<=0;$('#dnext').disabled=i<0||i>=N-1;
   requestAnimationFrame(()=>fade($('#dbody')))}
 // ---- the comparison: both sides of one screen, marked like the Git review's diff (red = how it was, green = now)
 const ROLEW={button:['button','buttons'],link:['link','links'],checkbox:['tick box','tick boxes'],switch:['switch','switches'],textbox:['text box','text boxes'],combobox:['menu','menus'],tab:['tab','tabs'],img:['picture','pictures'],heading:['heading','headings'],menuitem:['menu item','menu items'],radio:['option','options']};
@@ -455,7 +508,7 @@ function groupChanges(list){const G=[],by={};list.forEach(c=>{const k=c.kind+'|'
 // "everything below here moved" is one fact, marked as the band it opened, not one box per cell
 function withShift(t){const G=groupChanges(t.changes||[]);const s=t.shift;if(!s||!s.y)return G;
   const y=s.fromY||0,band={x:0,y:s.y>0?y-s.y:y,w:t.vw,h:Math.abs(s.y)};
-  return [{k:'shift',dy:s.y,items:[{kind:'shift',box:band,beforeBox:{x:0,y:s.y>0?y-s.y:y+s.y,w:t.vw,h:Math.abs(s.y)}}]},...G]}
+  return [{k:'shift',dy:s.y,items:[{kind:'shift',box:band,beforeBox:{x:0,y:s.y>0?y-s.y:y,w:t.vw,h:Math.abs(s.y)}}]},...G]}
 function names(items){const n=items.filter(c=>c.name).map(c=>'“'+c.name+'”');return n.length<=3?n.join(', '):n.slice(0,3).join(', ')+' and '+(n.length-3)+' more'}
 // WHY the join rule: the comparer trims each piece, so a space goes between pieces except before punctuation
 // WHY whole sentences when most words changed (2026-11-07 review: a rewritten sentence read as confetti of struck and
@@ -502,24 +555,29 @@ function cmpHTML(g,st){const ch=st.ch||{};
   // WHY only the themes that changed get a tab: a tab that opens "nothing is different" is a dead end
   const th=CM.themes.filter(x=>ch[x]&&ch[x].status==='changed'),same=CM.themes.filter(x=>ch[x]&&!th.includes(x));
   if(!DTH||!th.includes(DTH))DTH=th.includes(CM.tile)?CM.tile:th[0];
-  const t=ch[DTH];const list=withShift(t);
-  const tabs=th.length>1?`<div class="cmpbar"><div class="tabs" role="group" aria-label="Theme">${th.map(x=>`<button data-th="${x}" aria-pressed="${x===DTH}" data-tip="${T('cmp.theme')}">${esc(themeName(x))} <span class="count" data-tip="${T('cmp.count')}">${withShift(ch[x]).length}</span></button>`).join('')}</div></div>`:'';
+  // e: opened from the change-first view, so only that entry's lines are listed and marked
+  const e=CHI!=null?CL[CHI]:null,t0=ch[DTH];
+  const t=e?{...t0,changes:(t0.changes||[]).filter(e.keep),shift:e.wide?null:t0.shift}:t0;const list=withShift(t);
+  const tabs=!e&&th.length>1?`<div class="cmpbar"><div class="tabs" role="group" aria-label="Theme">${th.map(x=>`<button data-th="${x}" aria-pressed="${x===DTH}" data-tip="${T('cmp.theme')}">${esc(themeName(x))} <span class="count" data-tip="${T('cmp.count')}">${withShift(ch[x]).length}</span></button>`).join('')}</div></div>`:'';
   // WHY only the situations that changed: the same ones are summed up in one line instead
   const chg=g.states.map((s,i)=>[s,i]).filter(([s])=>stSince(s)==='changed');
-  const strip=chg.length>1?`<div class="sstrip" role="group" aria-label="Situations that changed">${chg.map(([s,i])=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(s.l)})"><span class="si"><img src="${s.img}" alt=""></span><span>${esc(s.l)}</span></button>`).join('')}</div>`:'';
+  const places=e&&e.wide?`<div class="sstrip" role="group" aria-label="Places this change appears">${e.where.map((w,k)=>`<button aria-pressed="${w.g.id===DCUR&&w.i===DST}" data-wp="${k}" data-tip="${esc('See this change on '+sitName(w)+'.')}"><span class="si"><img src="${w.st.img}" alt=""></span><span>${esc(sitName(w))}</span></button>`).join('')}</div>`:'';
+  const strip=e?places:chg.length>1?`<div class="sstrip" role="group" aria-label="Situations that changed">${chg.map(([s,i])=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(s.l)})"><span class="si"><img src="${s.img}" alt=""></span><span>${esc(s.l)}</span></button>`).join('')}</div>`:'';
   const sides=DZOOM?[DZOOM]:['before','after'];
   const body=`<div class="cmppics${sides.length===1?' one':''}">${sides.map(sd=>cmpPic(g,st,t,sd,list)).join('')}</div>`;
   const rows=list.map((gr,gi)=>{const [a,b]=rowText(gr);return `<button class="row rowbtn slim cmprow" data-g="${gi}" data-tip="${T('cmp.row')}"><div class="body"><div class="t-xs">${a}</div>${b?`<div class="hint wrap">${b}</div>`:''}</div></button>`}).join('');
   // WHY counted apart (2026-11-07 review): new situations and ones the release has no picture of are not "the same"
   const by=k=>g.states.filter(x=>stSince(x)===k).length,nS=by('same'),nN=by('new'),nB=by('nobefore');
   const sit=(n,w)=>n===1?`1 other situation ${w[0]}`:`${n} other situations ${w[1]}`;
-  const also=[th.length===1&&same.length?`Only in ${esc(themeName(DTH))}; ${same.map(x=>esc(themeName(x))).join(', ')} looks the same.`:'',
+  const hid=e&&!e.wide?(t0.changes||[]).filter(c=>!e.keep(c)).length:0;
+  const also=e?[e.wide?`This one change appears in ${e.where.length} places; pick one above to see it there.`:'',hid?`Left out here: ${hid===1?'1 line that belongs':hid+' lines that belong'} to changes seen in many places (top of the page).`:'',th.length===1&&same.length?`Only in ${esc(themeName(DTH))}; ${same.map(x=>esc(themeName(x))).join(', ')} looks the same.`:''].filter(Boolean).join(' '):[th.length===1&&same.length?`Only in ${esc(themeName(DTH))}; ${same.map(x=>esc(themeName(x))).join(', ')} looks the same.`:'',
     nS?sit(nS,['looks the same.','look the same.']):'',nN?(nN===1?'1 situation is new.':nN+' situations are new.'):'',nB?(nB===1?`1 has no ${esc(CM.release)} picture.`:`${nB} have no ${esc(CM.release)} picture.`):''].filter(Boolean).join(' ');
   const note=`Red = ${esc(CM.release)}, green = now. Tap a line to find it.${also?' '+also:''}`;
   const steady=t.unstable?`<p class="t-xs muted">Moving parts (animations, clocks) were left out.</p>`:'';
   const listHTML=`<section class="cmplist"><div class="sechead"><div class="gtext"><h3 class="gh">What changed<span class="cnt" data-tip="${T('cmp.count')}">${list.length}</span></h3><p class="gdesc">${note}</p></div></div>${rows}${steady}</section>`;
   return `<div class="dcmp">${tabs}${strip}${body}${listHTML}</div>`}
-function wireCmp(g){$$('#dbody [data-th]').forEach(b=>b.onclick=()=>{DTH=b.dataset.th;drawShot()});
+function wireCmp(g){$$('#dbody [data-wp]').forEach(b=>b.onclick=()=>{const w=CL[CHI].where[+b.dataset.wp];DCUR=w.g.id;DST=w.i;DTH=w.th;DZOOM=null;drawShot()});
+  $$('#dbody [data-th]').forEach(b=>b.onclick=()=>{DTH=b.dataset.th;drawShot()});
   $$('#dbody [data-st]').forEach(b=>b.onclick=()=>{DST=+b.dataset.st;DZOOM=null;drawShot()});
   $$('#dbody [data-zoom]').forEach(b=>b.onclick=()=>{DZOOM=DZOOM?null:b.dataset.zoom;drawShot()});
   // WHY light up on point and on keyboard focus: the line and its marks are found together
@@ -527,7 +585,8 @@ function wireCmp(g){$$('#dbody [data-th]').forEach(b=>b.onclick=()=>{DTH=b.datas
     r.onmouseenter=()=>on(true);r.onmouseleave=()=>on(false);r.onfocus=()=>on(true);r.onblur=()=>on(false);
     // WHY a tap keeps its marks lit: a phone has no pointing, so the tap is how the line is found there
     r.onclick=()=>{$$('#dbody .hl.hot').forEach(h=>h.classList.remove('hot'));on(true);const h=$('#dbody .hl[data-g="'+r.dataset.g+'"]');if(h)h.scrollIntoView({block:'nearest',behavior:'smooth'})}})}
-function stepShot(d){const i=VIS.findIndex(x=>x.id===DCUR);const n=VIS[i+d];if(n)openShot(n.id)}
+function stepShot(d){if(CHI!=null){const n=CVIS[CVIS.indexOf(CHI)+d];if(n!=null)openChange(n);return}
+  const i=VIS.findIndex(x=>x.id===DCUR);const n=VIS[i+d];if(n)openShot(n.id)}
 function closeShot(){if(!DCUR)return;DCUR=null;$('#scrim').hidden=true;$('#dwrap').hidden=true;hideTip();if(LASTFOCUS&&LASTFOCUS.focus)LASTFOCUS.focus({preventScroll:true})}
 $('#dclose').onclick=closeShot;$('#scrim').onclick=closeShot;$('#dwrap').onclick=e=>{if(e.target.id==='dwrap')closeShot()};
 $('#dprev').onclick=()=>stepShot(-1);$('#dnext').onclick=()=>stepShot(1);
