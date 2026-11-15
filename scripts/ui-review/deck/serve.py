@@ -415,6 +415,14 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
                 return self._json(404, {'error': 'not a page'})
             return super().do_GET()
 
+        def end_headers(self):
+            # WHY (2026-11-14): a rebuilt deck keeps the same link, and the app's browser showed
+            # Destin the copy it had kept from the round before ("that looks the same as what i
+            # just submitted"). Telling the browser never to keep a copy makes every open fetch
+            # the deck as it is now.
+            self.send_header('Cache-Control', 'no-store')
+            super().end_headers()
+
         def list_directory(self, path):
             # Never list a folder: the deck folder holds other decks and their answers.
             self.send_error(404, 'not a page')
