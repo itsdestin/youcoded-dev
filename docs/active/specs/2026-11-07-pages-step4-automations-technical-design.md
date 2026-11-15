@@ -247,5 +247,14 @@ while YouCoded is closed.
 - **Not stored:** nothing was dropped from the types; `devices` and `notify` are saved and unused.
 - **Not built:** practice runs (after the first version), service permissions and events (step 5),
   system notifications (card #240), the one-time daily-limit override (card #90 note).
+- **Verified in a development copy of the app (2026-11-15, Claude Haiku):** create, Run now, the
+  question appearing, the answer, a refused command, the run list, Delete. Plus two real Claude runs
+  through the runner (files and commands; a page's data read and changed, another page refused).
 - **Not verified:** a real run on one of the app's own models (unit-tested with a stand-in model
-  only); Windows and macOS; the phone; a run surviving a real app restart.
+  only); the screens driven by hand against the real backend; Windows and macOS; the phone; a run
+  surviving a real app restart.
+- **Code review (2026-11-15, fresh reviewer):** 16 findings, all fixed except: no overall time limit on
+  a run; a paid model with no published price is not stopped by its monthly limit; stopping a Claude
+  run does not stop commands it had started; `summaries()` reads every run record on each change.
+- **Known flaky check:** the `first-draw-stability` click path (chat scrolling) failed in 2 of 4 full
+  `verify.sh` runs under load and passed 3 of 3 alone; nothing in this work touches the chat view.
