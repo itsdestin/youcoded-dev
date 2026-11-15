@@ -1,0 +1,105 @@
+{
+  "title": "Phones and narrow windows — your four notes, fixed",
+  "key": "narrow-screens-overview-2",
+  "out": "narrow-screens.overview-2.html",
+  "themes": [
+    "light",
+    "dark",
+    "halftone-dimension"
+  ],
+  "live": {
+    "worktree": "sessions/narrow-screen-proposals/youcoded",
+    "paneWidth": 390
+  },
+  "steps": [
+    {
+      "id": "F-1",
+      "surface": "Phone",
+      "path": "A phone connected to your computer",
+      "headline": "Phone: do the hover box, Resume and New session behave now?",
+      "hint": "Hold the pointer over the name. Tap it, then tap Resume. Open the list again and tap + New session.",
+      "changed": "Your note: \"the hover box … touches the top of the window and the bottom of the header\", \"clicking resume leaves the 'your sessions' window up\", \"new session button doesn't seem to work at all\". The highlight now stops 4 pixels short of the bar's top and bottom. Resume closes the list. New session opens its form inside the list.",
+      "notice": "One cause was behind both button problems: every tap inside the list was also counted as a tap on the name, which opens or closes the list.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 700,
+        "params": {
+          "narrowTop": "lights",
+          "narrowList": "dropdown",
+          "narrowPills": "compact",
+          "platform": "android",
+          "connection": "remote"
+        }
+      },
+      "yes": "Fixed",
+      "no": "Still off"
+    },
+    {
+      "id": "F-2",
+      "surface": "Narrow computer window",
+      "path": "The YouCoded window on a computer, dragged narrow",
+      "headline": "Narrow computer window: the same three fixes.",
+      "hint": "Same three things: hover the name, Resume, + New session.",
+      "changed": "The same fixes apply here; it is the same name button.",
+      "notice": "The window buttons are for show in this practice copy.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 700,
+        "params": {
+          "narrowTop": "lights",
+          "narrowList": "dropdown",
+          "narrowPills": "compact"
+        }
+      },
+      "yes": "Fixed",
+      "no": "Still off"
+    },
+    {
+      "id": "F-3",
+      "surface": "Long name, narrow computer window",
+      "path": "A session with a very long name",
+      "headline": "A very long name now ends in \"…\" and never runs over the buttons.",
+      "hint": "Look at the top bar. Open the list to read the whole name.",
+      "changed": "Your note: \"names should be truncated with ... if too long to fit\". Before this fix a long name was drawn straight across the menu and window buttons. Now it is cut to the room it has and ends in \"…\".",
+      "notice": "Elsewhere in the app long names still fade out at the end; only this narrow bar uses \"…\".",
+      "live": {
+        "app": "site",
+        "paneWidth": 390,
+        "height": 700,
+        "params": {
+          "narrowTop": "lights",
+          "narrowList": "dropdown",
+          "narrowPills": "compact",
+          "title": "A very long session name that cannot possibly fit in the bar"
+        }
+      },
+      "yes": "Fixed",
+      "no": "Still off"
+    },
+    {
+      "id": "F-4",
+      "surface": "Long name, phone",
+      "path": "A session with a very long name, on a phone",
+      "headline": "The same long name on a phone.",
+      "hint": "Look at the top bar.",
+      "changed": "Same rule as the narrow window, with the name centred.",
+      "notice": "The name keeps clear of the buttons on both sides.",
+      "live": {
+        "app": "site",
+        "paneWidth": 390,
+        "height": 700,
+        "params": {
+          "narrowTop": "lights",
+          "narrowList": "dropdown",
+          "narrowPills": "compact",
+          "platform": "android",
+          "title": "A very long session name that cannot possibly fit in the bar"
+        }
+      },
+      "yes": "Fixed",
+      "no": "Still off"
+    }
+  ]
+}

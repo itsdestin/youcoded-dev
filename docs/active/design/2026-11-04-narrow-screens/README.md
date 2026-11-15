@@ -103,6 +103,21 @@ Android was never built with these changes.
 `runs/after/chat*` folders and `sheet-*.jpg`) are local scratch — retake with `shoot`, do not
 commit them.
 
+**Overview deck, 2026-11-14 evening (`narrow-screens.overview.*`, app tip `885b7aacd` after
+`ed3e3c7d5`):** Destin said yes to every picture (V-1…V-7) and no to the phone and narrow-window
+live panes. Fixed on the app branch, re-shown in `narrow-screens.overview-2.*` (answers pending):
+
+- Taps inside the session list also toggled it (the list is a portal; its clicks reached the name
+  stack). Resume left the list up, New session closed over its own form. The stack now ignores
+  clicks that did not start inside it. **Carry this into the build** (a real button fixes it too).
+- The name's hover highlight stops 4px short of the bar's top and bottom.
+- V-5: a long name ran over the buttons. It is now held to the stack's width and ends in "…"
+  (`.session-name-stack` rules in `globals.css`); elsewhere pill names still fade.
+- `line-budgets.test.ts` had been failing since rounds 5–9 (main.ts, SessionStrip, globals.css);
+  budgets raised with reasons, to lower again in the build. The "related tests pass" claim above
+  did not include it.
+- New screen `chat/overflow#window-decided`.
+
 ## Before building
 
 - **Both branches are far behind master** (2026-11-14: app 223 commits, workspace 263). Rebase
