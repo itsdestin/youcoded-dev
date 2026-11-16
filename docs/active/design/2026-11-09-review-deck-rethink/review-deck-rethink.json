@@ -987,7 +987,8 @@
             "change": "It is not built and not offered again. If you want it, comment here."
           }
         }
-      ]
+      ],
+      "resolved": "Pages are back as their own pages, finished ones first with green bars. \"Everything answered earlier\" is gone. A comment on a picture now counts as your response, and the More boxes reach the right edge."
     },
     {
       "id": "D-1",
@@ -5049,6 +5050,117 @@
         }
       ],
       "id": "r1-Q-9"
+    },
+    {
+      "id": "PD-10",
+      "page": "Check the five fixes from your last answers",
+      "intro": "Each row is something I changed because of what you wrote. Tick it if it is right, or comment on it or its picture.",
+      "stage": "design"
+    },
+    {
+      "id": "F-1",
+      "gallery": true,
+      "surface": "Review decks",
+      "words": true,
+      "path": "Any deck link I send you",
+      "headline": "The fixes, one row each",
+      "calls": [
+        {
+          "id": "pages",
+          "call": "Finished pages are back as their own pages, before the page that needs you.",
+          "why": "Their bars at the top are green. The deck opens on the first page that needs you, and Back goes into the finished ones.",
+          "more": {
+            "today": "Pages with nothing open had been taken out of the walk-through and put behind one folded row.",
+            "problem": "You had not asked for them to go. You asked to start at the first page that needs you, with the finished pages kept before it.",
+            "change": "Every page of the stage is a page again. Finished pages come first with a green bar; pages that need you come after, grey until you have dealt with them. The deck opens on the first one that needs you.",
+            "pros": [
+              "Nothing is hidden: Back leads to every old answer.",
+              "Green bars show what is done at a glance."
+            ],
+            "cons": [
+              "With many pages each bar is thin."
+            ]
+          },
+          "picture": "pictures/r14-finished.png",
+          "before": "pictures/r14-landing.png",
+          "before_name": "Where the deck opens",
+          "picture_name": "A finished page",
+          "visual": true
+        },
+        {
+          "id": "gone",
+          "call": "\"Everything answered earlier\" is gone.",
+          "why": "\"Previously answered\" stays, only on a page that has both old answers and new questions.",
+          "more": {
+            "today": "Two folded rows with almost the same name did nearly the same job: one on a page with new questions, one at the end of the deck listing subjects.",
+            "problem": "You asked what the difference was, and found it confusing.",
+            "change": "The end-of-deck row and its list of subjects are removed. A page with only old answers shows its answered cards openly. A page with both folds the old answers into one row at its foot.",
+            "pros": [
+              "One idea, one name."
+            ],
+            "cons": [
+              "A finished page is longer than a folded row would be."
+            ]
+          },
+          "picture": "pictures/r14-prevfold.png",
+          "visual": true,
+          "picture_name": "Built now"
+        },
+        {
+          "id": "picmark",
+          "call": "A comment on a picture counts as your answer to its row.",
+          "why": "The pencil lights up, the tick comes off, and your words show under the row.",
+          "more": {
+            "today": "Only a pencil comment counted. A note left on a row's picture left the row \"not looked at\".",
+            "problem": "You said that commenting on an image should count as a response, the same as pressing the pencil.",
+            "change": "A mark on a row's picture changes that row exactly as a pencil comment does. Removing the mark puts the row back to not looked at.",
+            "pros": [
+              "No second step: the comment on the picture is enough."
+            ],
+            "cons": [
+              "If you had ticked the row as fine, the mark takes the tick off; tick again after removing the mark."
+            ]
+          },
+          "picture": "pictures/r14-picmark.png",
+          "visual": true,
+          "picture_name": "Built now"
+        },
+        {
+          "id": "margin",
+          "call": "The boxes behind More line up with the row's right edge.",
+          "why": "They run the full width of the row, under the tick and pencil too.",
+          "more": {
+            "today": "The boxes stopped short, level with the end of the row's words.",
+            "problem": "You marked the right margin as odd and inconsistent.",
+            "change": "The boxes now span the whole row, so their right edge matches everything else in it.",
+            "pros": [
+              "Edges line up."
+            ],
+            "cons": [
+              "On a very wide window the boxes are wide too."
+            ]
+          },
+          "picture": "pictures/r14-more.png",
+          "visual": true,
+          "picture_name": "Built now"
+        },
+        {
+          "id": "leak",
+          "call": "Nothing you type in one round shows up in the next.",
+          "why": "An old open copy of the page kept saving into the same file after the deck was rebuilt, and the new page read it back.",
+          "more": {
+            "today": "A comment from your last round appeared in this round's comment box.",
+            "problem": "A tab of the old page was still open. It kept saving what it held, and the new page loaded that as if it were new.",
+            "change": "Every page now marks what it saves with its own version. The new page ignores anything from another version. The server refuses a save from an old page, which then tells you to reload.",
+            "pros": [
+              "What you type belongs to one round only."
+            ],
+            "cons": [
+              "An old tab stops saving and asks you to reload; anything typed in it after the rebuild is not kept."
+            ]
+          }
+        }
+      ]
     }
   ],
   "stale_answers": {

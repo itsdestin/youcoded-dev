@@ -1798,9 +1798,11 @@ json.dump(raw, open(p, 'w'))`;
       await q("document.querySelector('.prevtopic[data-id=Q-2] .card.variant:not(.on)').click()"); await sleep(100);
       assert.equal(await q("JSON.stringify([...document.querySelectorAll('.prevtopic[data-id=Q-2] .card.variant.on')].map(c => c.dataset.pick))"), '["a"]', 'a press on a locked option changes nothing');
       assert.equal(await q("[...document.querySelectorAll('#cards *')].filter(e => parseFloat(getComputedStyle(e).borderLeftWidth) > 1.5 && getComputedStyle(e).borderRightWidth !== getComputedStyle(e).borderLeftWidth).length"), 0, 'no coloured bar at the left edge of anything');
-      // pages: the bars are the navigation; the header does not move
-      assert.equal(await q("document.querySelectorAll('#steps span').length"), 2);
-      await q("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
+      // pages (round 14): every page of the stage is its own bar. The page with nothing open comes FIRST and is green; the deck landed on the first page that needs him
+      assert.equal(await q("document.querySelectorAll('#steps span').length"), 3);
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#steps span')].map(s => s.className.trim()))")), ['done', 'on', ''], 'finished page: green; this page: current; the other: neutral');
+      assert.equal(await q("(()=>{const g=x=>getComputedStyle(document.querySelectorAll('#steps span')[x]).backgroundColor;const t=document.createElement('i');t.style.background='var(--yes)';document.body.appendChild(t);const yes=getComputedStyle(t).backgroundColor;t.remove();return [g(0)===yes,g(1)===yes,g(2)===yes].join()})()"), 'true,false,false', 'only the finished page is drawn green');
+      await q("document.querySelectorAll('#steps span')[2].click()"); await sleep(250);
       assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Rows page');
       assert.equal(await q(HDR), hdr0, 'the header is identical on the second page');
       // a row stands alone: bold line, plain line, More reveals the background
@@ -1809,6 +1811,8 @@ json.dump(raw, open(p, 'w'))`;
       await q("document.querySelector('.call .src .revealbtn').click()"); await sleep(100);
       assert.equal(await q("document.querySelector('.call .rowmore').hidden"), false);
       assert.match(await q("document.querySelector('.call .rowmore').innerText"), /Where it came from: earlier\./);
+      // round 14: the structured More spans the row's full inner width, the same right edge as the row's own line (it used to stop short of the tick and pencil)
+      assert.equal(await q("(()=>{const r=document.querySelector('.call .rowmore').getBoundingClientRect().right, w=document.querySelector('.call .callrow').getBoundingClientRect().right; return Math.abs(r-w)<=1})()"), true, 'More reaches the right edge of the row');
       assert.equal(await q("document.querySelector('.call .src .revealbtn').textContent"), 'Less');
       // a finished stage: press its name; its page says Finished, topics are previously-answered cards with no Reopen, nothing waits
       await q("document.querySelector('#stages .stagebtn').click()"); await sleep(300);
@@ -1827,7 +1831,7 @@ json.dump(raw, open(p, 'w'))`;
       await q("document.querySelector('#stages li.on .stagebtn').click()"); await sleep(300);
       assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Rows page', 'back where he was');
       assert.equal(await q(HDR), hdr0);
-      await q("document.querySelectorAll('#steps span')[0].click()"); await sleep(250);
+      await q("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
       assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Design page');
       // Reopen: the topic moves up among the open ones, is answerable, and counts again
       await q("document.querySelector('.reopenbtn[data-sid=Q-2]').click()"); await sleep(300);
@@ -1839,28 +1843,30 @@ json.dump(raw, open(p, 'w'))`;
       assert.equal(await q("[...document.querySelectorAll('.leavebtn')].filter(b => b.offsetParent).length"), 1, 'a reopened topic he has not answered can be put back');
       await q("document.querySelector('.leavebtn').click()"); await sleep(300);
       assert.deepEqual(await ids(), ['Q-3', 'Q-4'], 'Leave as answered puts it back');
-      // Round 13: only pages that need him are the path; the last one ends with ONE folded row that opens the all-answered pages
-      assert.equal(await q("document.querySelectorAll('.earlierfold').length"), 0, 'not on the first page');
-      await q("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
-      assert.equal(await q("document.querySelectorAll('#steps span').length"), 2, 'the all-answered page is not in the bars');
-      assert.equal(await q("document.querySelector('.earlierfold .foldtitle').textContent"), 'Everything answered earlier');
-      assert.equal(await q("document.querySelector('.earlierfold .foldhead .fchip').textContent"), '1');
-      assert.equal(await q("document.querySelector('.earlierfold .foldbody').hidden"), true, 'folded by default');
+      // Round 14: a finished page is its own page, before the pages that need him. Back from the landing page goes into it; it shows its answered cards
+      // directly (no folded row, no "Everything answered earlier"), with Reopen; reopening makes it need him again (its bar turns neutral).
+      assert.equal(await q("document.querySelectorAll('.earlierfold').length + (/Everything answered earlier/.test(document.body.innerText) ? 1 : 0)"), 0, 'that row is gone');
+      assert.equal(await q("document.querySelectorAll('.prevfold').length"), 1, 'this page has open topics AND answered ones: the one folded row');
+      assert.equal(await q("document.querySelector('#back').disabled"), false, 'Back leads into the finished page');
+      await q("document.querySelector('#back').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Settled page');
+      assert.equal(await q("document.querySelector('.fintag').textContent"), 'Finished');
+      assert.equal(await q("document.querySelectorAll('.prevfold').length"), 0, 'a finished page shows its cards directly');
+      assert.equal(await q("document.querySelectorAll('.prevtopic').length"), 1);
+      assert.equal(await q("document.querySelectorAll('.prevtopic .reopenbtn').length"), 1, 'Reopen is there on a finished page of the current stage');
+      assert.equal(await q(HDR), hdr0, 'the header is identical on the finished page');
+      assert.equal(await q("document.querySelector('#steps span').className.trim()"), 'done on', 'its bar is green and outlined while he is on it');
+      await q("document.querySelector('.reopenbtn').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('#steps span').classList.contains('done')"), false, 'reopened: the page needs him again, so its bar is neutral');
+      await q("document.querySelector('.leavebtn').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('#steps span').classList.contains('done')"), true, 'put back: green again');
+      await q("document.querySelector('#next').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Design page', 'Next walks on to the pages that need him');
+      await q("document.querySelectorAll('#steps span')[2].click()"); await sleep(250);
       assert.equal(await q("document.querySelector('#save').textContent"), 'Submit feedback', 'the foot says what the header says');
       assert.equal(await q("document.querySelectorAll('#cards .rowmore .card.part').length"), 2, 'a row\'s More is labelled parts (today, change)');
       assert.equal(await q("document.querySelectorAll('#cards .rowmore .pcbox').length"), 1, 'and its good points');
-      await q("document.querySelector('.earlierfold .foldhead').click()"); await sleep(150);
-      assert.equal(await q("[...document.querySelectorAll('.earlieritem')].map(b => b.innerText.replace(/\\s+/g, ' ')).join('|')"), 'Settled page 1');
-      await q("document.querySelector('.earlieritem').click()"); await sleep(300);
-      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Settled page');
-      assert.equal(await q("document.querySelectorAll('.fintag').length"), 0, 'it is not a finished stage');
-      assert.equal(await q("document.querySelectorAll('.prevtopic').length"), 1);
-      assert.equal(await q("document.querySelectorAll('.prevtopic .reopenbtn').length"), 0, 'read-only: nothing to reopen here');
-      assert.equal(await q(HDR), hdr0, 'the header is identical there too');
-      assert.equal(await q("document.querySelector('#save').textContent"), 'Back to your questions');
-      await q("document.querySelector('#save').click()"); await sleep(300);
-      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Rows page', 'back in the path');
-      await q("document.querySelectorAll('#steps span')[0].click()"); await sleep(250);
+      await q("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
       // a phone: no sideways scroll, same header on every page, the finished stage fits too
       const m = await cdp(await freePort(), 390, 800);
       try {
@@ -1868,7 +1874,7 @@ json.dump(raw, open(p, 'w'))`;
         const fit = "document.documentElement.scrollWidth <= window.innerWidth && document.body.scrollWidth <= window.innerWidth && document.querySelector('#cards').scrollWidth <= document.querySelector('#cards').clientWidth + 1";
         assert.equal(await m.evaluate(fit), true, 'no sideways scrolling at 390px');
         const h0 = await m.evaluate(HDR);
-        await m.evaluate("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
+        await m.evaluate("document.querySelectorAll('#steps span')[2].click()"); await sleep(250);
         assert.equal(await m.evaluate(HDR), h0, 'the header is identical on the second page at 390px');
         assert.equal(await m.evaluate(fit), true);
         await m.evaluate("document.querySelector('#stages .stagebtn').click()"); await sleep(300);
@@ -1896,7 +1902,7 @@ json.dump(raw, open(p, 'w'))`;
       const n = await stale('2026-11-12T11:26:42Z', { 'Q-2': { v: 'pick', pick: 'a', t: 1 }, 'Q-1': { v: 'yes', t: 1 }, 'GONE-1': { v: 'yes', t: 1 }, 'Q-3': { v: 'pick', pick: 'a', t: 1 } });
       try {
         assert.notEqual(await n.evaluate("document.querySelector('.ptitle').textContent"), 'Settled page', 'he is never dropped on a page that needs nothing from him');
-        await n.evaluate("document.querySelectorAll('#steps span')[0].click()"); await sleep(300);
+        await n.evaluate("document.querySelectorAll('#steps span')[1].click()"); await sleep(300);
         assert.equal(await n.evaluate("document.querySelectorAll('article.q[data-id=Q-3] .ans.on, article.q[data-id=Q-3] .card.variant.on').length"), 0, 'and none of its answers are put back');
         assert.equal(await n.evaluate("document.querySelector('#pnote').value"), '', 'nor its page notes');
       } finally { n.close(); }
@@ -1918,5 +1924,103 @@ json.dump(raw, open(p, 'w'))`;
         assert.equal(await n.evaluate("(window.__deckSummaryOf(JSON.parse(localStorage.getItem('deck:' + DECK.key)))).includes('Q-2 ')"), false, 'a settled topic is not in the summary');
       } finally { n.close(); }
     }
+    // Round 14 (Destin, round 13: a comment typed in the PREVIOUS round showed up in this round's box): an old tab of the old page had kept saving into the
+    // answers file, and the new page loaded it. Seed exactly that, both in the browser and in the file.
+    {
+      const live = join(dirname(spec), 'questions.answers.json');
+      const old = { deck: 'questions-fixture', started: '2026-11-12T11:29:08.899Z', cur: 2, built: { at: '2026-11-12T11:26:42Z' },
+        answers: { 'Q-3': { v: 'pick', pick: 'a', t: 9999999999999 }, 'Q-4': { v: 'yes', t: 9999999999999 } }, pageNotes: { 'P-2': 'LAST ROUND page comment', 'P-3': 'another old one', 'P-4': 'and one more' }, notes: 'old general note' };
+      writeFileSync(live, JSON.stringify(old));
+      const n = await cdp(await freePort(), 1400, 1000);
+      try {
+        await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+        await n.evaluate(`localStorage.setItem('deck:' + DECK.key, ${JSON.stringify(JSON.stringify(old))})`);   // and the browser holds the same old copy
+        await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+        assert.equal(await n.evaluate("document.querySelector('.ptitle').textContent"), 'Design page', 'lands on the first page that needs him, not where the old copy was');
+        const pages = await n.evaluate("document.querySelectorAll('#steps span').length");
+        for (let i = 0; i < pages; i++) {
+          await n.evaluate(`document.querySelectorAll('#steps span')[${i}].click()`); await sleep(250);
+          assert.equal(await n.evaluate("document.querySelector('#pnote').value"), '', 'page ' + i + ': the comment box is empty');
+        }
+        await n.evaluate("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
+        assert.equal(await n.evaluate("document.querySelectorAll('article.q[data-id=Q-3] .card.variant.on, article.q[data-id=Q-3] .ans.on').length"), 0, 'no old answer is put back');
+        // what this page saves is its own: the old file is kept aside, and the live one holds none of the old words
+        await n.evaluate("(()=>{const p=document.querySelector('#pnote');p.value='this round';p.dispatchEvent(new Event('input',{bubbles:true}))})()"); await sleep(1000);
+        const now = JSON.parse(readFileSync(live, 'utf8'));
+        assert.deepEqual(now.pageNotes, { 'P-2': 'this round' }); assert.equal(now.notes, undefined);
+        assert.equal(now.built.at, await n.evaluate("DECK.built.at"));
+        const kept = readdirSync(dirname(spec)).filter(f => f.includes('.unsent.'));
+        assert.equal(kept.length, 1, 'the old copy is kept, not lost');
+        assert.equal(JSON.parse(readFileSync(join(dirname(spec), kept[0]), 'utf8')).pageNotes['P-2'], 'LAST ROUND page comment');
+        // and an old tab still open is refused by the server, not folded in
+        const r = JSON.parse(await n.evaluate("fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ deck: DECK.key, built: { at: '2026-11-12T11:26:42Z' }, answers: {}, pageNotes: { 'P-2': 'from the old tab' } }) }).then(async r => JSON.stringify([r.status, (await r.json()).reason]))"));
+        assert.deepEqual(r, [409, 'old-build']);
+        assert.equal(JSON.parse(readFileSync(live, 'utf8')).pageNotes['P-2'], 'this round', 'nothing from the old tab was written');
+      } finally { n.close(); }
+    }
+  } finally { srv.kill(); }
+});
+
+// Round 14 (Destin, round 13: "just commenting on an image should count as a response/pencil/edit click"): an area drawn on a row's picture IS that row's
+// comment on a list he ticks or changes. Pencil pressed, tick off, counted as looked at, shown under the row, listed in the summary; removing it undoes it.
+test('a comment on a row\'s picture counts as his response to that row', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-markrow-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
+raw['steps'] = [{'id': 'L-2', 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': 'Calls I made', 'gallery': True,
+  'calls': [{'id': 'a', 'call': 'No sound.', 'why': 'None else.', 'picture': 'pic.png'}, {'id': 'b', 'call': 'Five rows.', 'why': 'Matches.'}]}]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1440, 1000);
+    const ev = e => c.evaluate(e);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      for (let i = 0; i < 40 && !(await ev("!!window.__deckReady").catch(() => false)); i++) await sleep(250);
+      const row = k => `(()=>{const li=document.querySelector('li.call[data-call=${k}]');return JSON.stringify([li.querySelector('.calledit').getAttribute('aria-pressed'), li.querySelector('.calltick').getAttribute('aria-pressed'), li.classList.contains('chg'), (li.querySelector('.markline')||{}).textContent||''])})()`;
+      const pill = "document.querySelector('article.q .qstate').textContent";
+      await ev("document.querySelector('li.call[data-call=b] .calltick').click()"); await sleep(100);
+      assert.equal(await ev(pill), '1 of 2 looked at');
+      await ev("document.querySelector('.atttile').click()"); await sleep(400);
+      const r = await ev("(()=>{const i=document.querySelector('.viewer .lbbox img').getBoundingClientRect();return {x:i.left,y:i.top,w:i.width,h:i.height}})()");
+      const x0 = r.x + r.w * 0.3, y0 = r.y + r.h * 0.3, x1 = r.x + r.w * 0.6, y1 = r.y + r.h * 0.6;
+      await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0, y: y0 });
+      await c.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: x0, y: y0, button: 'left', clickCount: 1 });
+      for (let i = 1; i <= 4; i++) await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0 + (x1 - x0) * i / 4, y: y0 + (y1 - y0) * i / 4, button: 'left', buttons: 1 });
+      await c.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x1, y: y1, button: 'left', clickCount: 1 }); await sleep(200);
+      await ev("(()=>{const t=document.querySelector('.viewer .markt');t.value='too quiet';t.dispatchEvent(new Event('input',{bubbles:true}))})()"); await sleep(200);
+      await ev("document.querySelector('.viewer .vclose').click()"); await sleep(150);
+      // the row is now changed, exactly as if he had typed a pencil comment
+      assert.deepEqual(JSON.parse(await ev(row('a'))), ['true', 'false', true, 'On the picture: “too quiet”'], 'pencil pressed, no tick, his words under the row');
+      assert.equal(await ev(pill), 'All looked at', 'it counts as looked at');
+      await ev("document.querySelector('li.call[data-call=a] .calltick').click()"); await sleep(100);
+      assert.equal(JSON.parse(await ev(row('a')))[1], 'false', 'a stray press of the tick does nothing to a commented row');
+      const st = JSON.parse(await ev("localStorage.getItem('deck:' + DECK.key)"));
+      assert.equal(st.answers['L-2'].v, 'other'); assert.deepEqual(st.answers['L-2'].ok, { b: true });
+      // the summary lists it as a comment on that row, and not as "not looked at"
+      const mine = await ev(`window.__deckSummaryOf(${JSON.stringify(st)})`);
+      assert.match(mine, /area 1 on row a \("No sound\."\)/); assert.doesNotMatch(mine, /not looked at/);
+      const theirs = spawnSync('python3', ['-c', `import sys, json; sys.path.insert(0, ${JSON.stringify(join(HERE, '..'))});
+from deck.spec import load_spec; from deck.serve import summary
+print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())))`], { input: JSON.stringify(st), encoding: 'utf8' }).stdout;
+      for (const line of mine.split('\n').filter(l => /area 1|ticked/.test(l))) assert.ok(theirs.includes(line.trim()), 'the server prints it the same way: ' + line);
+      // taking the mark away undoes it: the row is not looked at again
+      await ev("document.querySelector('.atttile').click()"); await sleep(400);
+      await ev("document.querySelector('.viewer .markx').click()"); await sleep(200);
+      await ev("document.querySelector('.viewer .vclose').click()"); await sleep(150);
+      assert.deepEqual(JSON.parse(await ev(row('a'))), ['false', 'false', false, '']);
+      assert.equal(await ev(pill), '1 of 2 looked at');
+      assert.deepEqual(c.errors, []);
+    } finally { c.close(); }
   } finally { srv.kill(); }
 });

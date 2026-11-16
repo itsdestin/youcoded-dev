@@ -21,17 +21,16 @@
   // understanding/earlier stages"): a finished stage is reached by pressing its name in the stage line; RECORD is the pages of all
   // finished stages, grouped by stage in finPages().
   const RECORD = DECK.grows && ALLPAGES ? ALLPAGES.filter(p => p.record) : [];
-  const finPages = k => (k === '__earlier' ? ANSWERED : RECORD.filter(p => p.stage === k));
-  // WHY only pages that need him are the path (Destin, round 12: "why am i starting on a page full of completed questions?… why would we put the
-  // newly requested responses on the first tab and make me click back through all the prior answers to get to the end?"): on a growing deck the
-  // bars, Back/Next and the landing page cover only current-stage pages with at least one OPEN topic. A page holding nothing but answered topics
-  // (ANSWERED) is reached from one folded row at the end of the path, never walked through. If nothing is open at all the whole stage stays the path.
+  const finPages = k => RECORD.filter(p => p.stage === k);
+  // WHY every page of the stage is a page again, finished ones FIRST (Destin, round 13: "where did the other pages go then? i didn't ask you to
+  // eliminate the others, just to put things that need me at the end and start me at the first page that needs me"; "they should remain their own
+  // pages at the top, but just be before the pages that need me with a green status bar"): the stage's pages with nothing open come first, in
+  // their own order, then the pages with an open topic. The deck lands on the first page that needs him; Back goes into the finished ones.
   const CURPAGES = DECK.grows && ALLPAGES ? ALLPAGES.filter(p => !p.record) : ALLPAGES;
   const openTopic = id => { const x = DECK.steps.find(s => s.id === id); return !!x && !x.context && !(x.grow && x.grow.answered); };
-  const OPENPAGES = DECK.grows && CURPAGES ? CURPAGES.filter(p => p.steps.some(openTopic)) : CURPAGES;
-  const PAGES = DECK.grows && CURPAGES && OPENPAGES.length ? OPENPAGES : CURPAGES, LAST = PAGES ? PAGES.length - 1 : N - 1;
-  const ANSWERED = DECK.grows && CURPAGES && OPENPAGES.length ? CURPAGES.filter(p => !OPENPAGES.includes(p)) : [];
-  const EARLIER = '__earlier';   // the pseudo-stage that shows ANSWERED pages
+  const needsHim = p => p.steps.some(openTopic);
+  const PAGES = DECK.grows && CURPAGES ? [...CURPAGES.filter(p => !needsHim(p)), ...CURPAGES.filter(needsHim)] : CURPAGES, LAST = PAGES ? PAGES.length - 1 : N - 1;
+  const FIRSTNEED = DECK.grows && PAGES ? Math.max(0, PAGES.findIndex(needsHim)) : 0;
 
   const stepById = id => DECK.steps.find(x => x.id === id);
   const pageSteps = i => (PAGES[i] ? PAGES[i].steps.map(stepById).filter(Boolean) : []);
@@ -463,9 +462,13 @@
   const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
   // 'changed' | 'ok' | 'unlooked'. Twin of spec.row_states, including its reading of decks answered before
   // round 10 (accepted, or changes with no `ok` at all: the untouched rows were fine).
+  // WHY a mark on a row's picture is the row's response (Destin, round 13: "just commenting on an image should count as a response/pencil/edit click"):
+  // an area he drew on a row's picture (the popup's `row <id>` or `row <id> before`) changes that row exactly as a pencil comment does.
+  const rowMarks = (a, cid) => ((a || {}).marks || []).filter(m => m.pic === 'row ' + cid || m.pic === 'row ' + cid + ' before');
+  const rowOfPic = (st, pic) => { if (!st || !tickable(st)) return null; const m = /^row (.+?)( before)?$/.exec(pic || ''); return m && st.calls.some(c => c.id === m[1]) ? m[1] : null; };
   const rowState = (a, cid) => {
     a = a || {}; const legacy = !!a.accepted || (!('ok' in a) && a.v === 'other');
-    return cid in (a.changes || {}) ? 'changed' : ((a.ok || {})[cid] || legacy) ? 'ok' : 'unlooked';
+    return cid in (a.changes || {}) || rowMarks(a, cid).length ? 'changed' : ((a.ok || {})[cid] || legacy) ? 'ok' : 'unlooked';
   };
   const unlooked = st => tickable(st) ? st.calls.filter(c => rowState(state.answers[st.id], c.id) === 'unlooked') : [];
   // Answered, for the counts: a "Yours to change" list only when EVERY row is ticked or changed.
@@ -490,7 +493,9 @@
   };
   const callLi = (st, c) => {
     // A row is: its story (if it has one), its words, its status pill and pencil, then at most one Attachments card.
-    return `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}">${storyLines(c)}<div class="callrow"><div class="calltext"${GROWS && c.more ? ' data-reveal' : ''}><div class="callhead"><p class="callwhat">${esc(c.call)}</p>${reuseTip(c)}</div><p class="src">${esc(c.why)}${GROWS && c.more ? growMoreBtn(st, c) : ''}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}${GROWS && c.more ? growMoreBody(st, c) : moreLines(c)}</div><div class="callflags">${resultPill(st, c)}</div>${tickable(st) ? `<button type="button" class="iconbtn calltick" aria-pressed="false" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="This is fine" aria-label="This is fine">${CHECK}</button>` : ''}<button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''}${tickable(st) ? ' aria-pressed="false"' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea><button type="button" class="markx callx" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Take this comment away" aria-label="Take this comment away">${BIN}</button></div>${attCard(st, c)}</li>`;
+    // WHY the structured More is a sibling of the row, not inside its words (Destin, round 13, marking it: "right margin seems weird/inconsistent here"):
+    // inside `.calltext` its boxes stopped short of the tick and pencil column; below the row they span the row's full inner width.
+    return `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"${GROWS && c.more ? ' data-reveal' : ''}>${storyLines(c)}<div class="callrow"><div class="calltext"><div class="callhead"><p class="callwhat">${esc(c.call)}</p>${reuseTip(c)}</div><p class="src">${esc(c.why)}${GROWS && c.more ? growMoreBtn(st, c) : ''}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}${GROWS && c.more ? '' : moreLines(c)}</div><div class="callflags">${resultPill(st, c)}</div>${tickable(st) ? `<button type="button" class="iconbtn calltick" aria-pressed="false" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="This is fine" aria-label="This is fine">${CHECK}</button>` : ''}<button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''}${tickable(st) ? ' aria-pressed="false"' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea><button type="button" class="markx callx" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Take this comment away" aria-label="Take this comment away">${BIN}</button></div>${GROWS && c.more ? growMoreBody(st, c) : ''}${attCard(st, c)}</li>`;
   };
   // WHY groups (round 8): a row's state is shown by WHERE it sits — under a small heading "New", "Changed"
   // or "Already settled" — not by a badge. Rows keep the order they were written in inside a group. With
@@ -963,6 +968,20 @@
     el.textContent = ok ? 'Saved ✓' : 'NOT saved — retrying';
     el.title = ok ? 'Your answers are in the file next to this deck.' : 'Could not save (' + why + '). Retrying every 2 seconds; your answers are also kept in this browser.';
   }
+  // WHY (round 13): a saved state is only ever read back by a page of the SAME build; one with another stamp, or none, is ignored — on every deck.
+  const mine = o => !DECK.built || !!(o && o.built && o.built.at === DECK.built.at);
+  // The server refused this page's save because the deck was rebuilt since it opened: say so plainly and stop sending anything, so this tab can
+  // never write over the new round (nor over the browser copy the new page keeps).
+  let outdated = false;
+  function showOutdated() {
+    outdated = true; clearTimeout(retry);
+    const sv = $('#saved'); if (sv) { sv.hidden = false; sv.dataset.ok = '0'; sv.textContent = 'Out of date'; }
+    if ($('#staleline')) return;
+    const p = document.createElement('p'); p.className = 'sentline staleline'; p.id = 'staleline'; p.setAttribute('role', 'alert');
+    p.innerHTML = 'This page is out of date: the deck was rebuilt after you opened it, so nothing you type here is saved. <button type="button" class="btn sm" id="stalereload">Reload to see the new questions</button>';
+    const cards = $('#cards'); cards.parentElement.insertBefore(p, cards.parentElement.firstChild);
+    $('#stalereload').onclick = () => location.reload();
+  }
   async function load() {
     let local = null;
     try { local = JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) { /* no storage */ }
@@ -971,6 +990,10 @@
       if (r.ok) {
         server = true; document.body.dataset.served = '1';
         let disk = await r.json();
+        // WHY every saved state is tied to the build that wrote it (Destin, round 13: a comment typed in the previous round sat in this round's box;
+        // a tab of the OLD page, still open after the rebuild, had kept saving its state into the file this page then loaded, and loading re-stamped it
+        // as ours): the file counts only if the page that wrote it was THIS build. Anything else is another round's, however it got there.
+        if (!mine(disk)) disk = {};
         // WHY (a preview of a rebuilt growing deck showed "Feedback submitted" on every page): a SUBMITTED file from another build is last round's record
         // (serve moves it aside before a real review), never this round's state.
         if (GROWS && DECK.built && disk && disk.submitted && disk.built && disk.built.at !== DECK.built.at) disk = {};
@@ -979,7 +1002,7 @@
         // WHY a growing deck also needs the SAME BUILD (Destin, round 12: the new round opened on page 9 full of round-11 answers): the browser's copy
         // is keyed by the deck's name, which is the same every round, and a fresh file has no start time to disagree with, so last round's answers
         // were folded into the new round. A copy saved by another build is last round's, however it got there.
-        const sameBuild = !GROWS || !DECK.built || !!(local && local.built && local.built.at === DECK.built.at);
+        const sameBuild = mine(local);
         const sameRound = sameBuild && local && local.answers && !local.submitted && (!disk.started || !local.started || disk.started === local.started);
         const next = sameRound ? merged(disk && disk.answers ? disk : { ...local, answers: {} }, local) : disk;
         if (next && next.answers) Object.assign(state, next);
@@ -991,7 +1014,7 @@
       }
     } catch (e) { /* not served */ }
     // A plain file (not served): the browser's copy, but only if it belongs to this build of a growing deck.
-    if (local && local.answers && (!GROWS || !DECK.built || (local.built && local.built.at === DECK.built.at))) Object.assign(state, local);
+    if (local && local.answers && mine(local)) Object.assign(state, local);
     pruneStale();
   }
   // WHY (Destin, round 12): what is saved or sent must hold answers only for what this build asks. On a growing deck that is the OPEN topics
@@ -1010,6 +1033,7 @@
   let retry = null, lastSig = '', loaded = false;
   const post = () => fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) });
   async function save() {
+    if (outdated) return;
     stamp(); lastSig = JSON.stringify(state);
     try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) { /* no storage */ }
     if (!server) return;
@@ -1017,6 +1041,8 @@
     try {
       let r = await post();
       if (r.status === 409) {
+        const why = await r.clone().json().catch(() => ({}));
+        if (why.reason === 'old-build') { showOutdated(); return; }
         // This page is older than the file (it was open across a server restart). Fold the
         // file's answers in — the newer of each wins — and save the union, instead of losing either.
         const disk = await (await fetch('/answers', { cache: 'no-store' })).json();
@@ -1142,15 +1168,16 @@
     $('#headline').hidden = true;   // the page's own heading leads the column instead
     // The implicit page (one page, no marker) is named after the deck, which the chip already says; it gets no heading.
     const named = pg.intro || pg.title !== DECK.title;
-    $('#cards').innerHTML = (named ? pageHead(pg, false) : '')
+    // WHY a finished page shows its answered cards directly, not folded (Destin, round 13): nothing on it needs him, so there is no "new" content for
+    // the fold to get out of the way of. A page with BOTH keeps the one folded "Previously answered" row at its foot.
+    const finished = GROWS && sunk.length && !steps.some(st => !st.context);
+    $('#cards').innerHTML = (named ? pageHead(pg, finished) : '')
       + (cur === 0 ? topNotes() : '')
       + steps.map(st => qArticle(st, false)).join('')
-      + prevFold(sunk, pg)
+      + (finished ? prevGroup(sunk, true) : prevFold(sunk, pg))
       // WHY (Destin, round 4, on the header Notes button: "nah i wanted like an extra more visible input region at the bottom of each page"): a
       // thought about the page as a whole gets a box he cannot miss, where he ends up after reading it — one per page, saved as pageNotes[page id].
       + `<section class="pagenote"><label for="pnote">Anything else about this page</label><div class="pnotebox"><textarea class="pnote" id="pnote" rows="2" data-page="${esc(pg.id)}" placeholder="A comment on the page as a whole, or anything no row or question covers"></textarea></div></section>`;
-    // WHY the last open page ends with one folded row (Destin, round 12): pages holding only answered topics are not walked through; they open from here.
-    if (cur === LAST) $('#cards').insertAdjacentHTML('beforeend', earlierRow());
     { const pn = $('#pnote'); pn.value = (state.pageNotes || {})[pg.id] || ''; pn.disabled = !!state.submitted; }
     afterPageDrawn();
   }
@@ -1230,21 +1257,15 @@
     return `<section class="prevgrp prevfoldwrap"><div class="fold prevfold${open ? ' open' : ''}"><button type="button" class="foldhead" data-kind="prev" data-sid="${esc(pg.id)}" data-call="" aria-expanded="${open}"><span class="foldtitle">Previously answered</span><span class="foldchips"><span class="fchip">${list.length}</span></span><span class="foldfill"></span>${CHEV}</button>`
       + `<div class="foldbody"${open ? '' : ' hidden'}><div class="prevlist">${list.map(st => prevTopic(st, true)).join('')}</div></div></div></section>`;
   };
-  // The answered-only pages of this stage, behind ONE folded row on the last open page: a list of subject names with counts, each opening that
-  // subject's answered cards (read-only: nothing on a page he is not walking through can be reopened).
-  const answeredCount = pg => pg.steps.map(stepById).filter(st => st && !st.context && st.grow && st.grow.answered).length;
-  function earlierRow() {
-    if (!ANSWERED.length) return '';
-    const open = isOpen('earlier', 'all'), total = ANSWERED.reduce((n, p) => n + answeredCount(p), 0);
-    return `<section class="prevgrp earlierwrap"><div class="fold earlierfold${open ? ' open' : ''}"><button type="button" class="foldhead" data-kind="earlier" data-sid="all" data-call="" aria-expanded="${open}"><span class="foldtitle">Everything answered earlier</span><span class="foldchips"><span class="fchip">${total}</span></span><span class="foldfill"></span>${CHEV}</button>`
-      + `<div class="foldbody"${open ? '' : ' hidden'}><ul class="earlierlist">${ANSWERED.map((p, i) => `<li><button type="button" class="earlieritem" data-i="${i}"><span class="eitem">${esc(p.title)}</span><span class="fchip">${answeredCount(p)}</span></button></li>`).join('')}</ul></div></div></section>`;
-  }
-  $('#cards').addEventListener('click', e => {
-    const b = e.target.closest('.earlieritem'); if (!b || !GROWS) return;
-    viewStage = EARLIER; recPage = +b.dataset.i; render();
-  });
   // The same locked card, painted from his saved answer (`grow.given`): the pick on its option, the buttons pressed, his note in the note box,
   // ticks pressed and his comments under their rows. Nothing here can change; nothing is written to the answers file.
+  // The words he left on a row's picture, shown under the row like his pencil comment (read-only: the popup is where they are changed).
+  function paintMarkLine(li, pm) {
+    let el = li.querySelector(':scope > .markline');
+    if (!pm.length) { if (el) el.remove(); return; }
+    if (!el) { el = document.createElement('p'); el.className = 'markline'; const at = li.querySelector(':scope > .callbox'); li.insertBefore(el, at); }
+    el.textContent = 'On the picture: ' + pm.map(m => (m.text || '').trim() ? quoted(m.text) : 'an area you marked').join(' · ');
+  }
   function paintLocked() {
     $$('#cards article.q.prev').forEach(art => {
       const st = stepById(art.dataset.id) || {}, a = (st.grow || {}).given || {};
@@ -1257,13 +1278,14 @@
         p.dataset.now = now; p.className = 'result pillbtn ' + now + (now !== p.dataset.own ? ' yours' : ''); p.textContent = RESULT[now]; p.disabled = true;
       });
       art.querySelectorAll('li.call').forEach(li => {
-        const id = li.dataset.call, ch = a.changes || {}, on = id in ch;
+        const id = li.dataset.call, ch = a.changes || {}, typed = id in ch, pm = rowMarks(a, id), on = typed || pm.length > 0;
+        paintMarkLine(li, pm);
         const ed = li.querySelector('.calledit'), tk = li.querySelector('.calltick'), box = li.querySelector('.callbox'), t = li.querySelector('.callt'), x = li.querySelector('.callx');
         li.classList.toggle('chg', on);
         if (ed) { ed.classList.toggle('on', on); ed.setAttribute('aria-pressed', on); ed.disabled = true; }
         if (tk) { const k = rowState(a, id) === 'ok'; tk.classList.toggle('on', k); tk.setAttribute('aria-pressed', k); tk.disabled = true; tk.title = ''; }
-        if (box) box.hidden = !on;
-        if (t) { t.value = on ? ch[id] : ''; t.disabled = true; }
+        if (box) box.hidden = !typed;
+        if (t) { t.value = typed ? ch[id] : ''; t.disabled = true; }
         if (x) x.hidden = true;
       });
     });
@@ -1287,10 +1309,10 @@
     $('#replay').hidden = true; $('#zoom').hidden = true; $('#livehint').hidden = true; $('#headline').hidden = true;
     const ss = pg.steps.map(stepById).filter(Boolean);
     // A background list (facts) is drawn as it always is; every other topic is a previously-answered card without Reopen.
-    $('#cards').innerHTML = pageHead(pg, viewStage !== EARLIER) + ss.filter(st => st.context).map(st => qArticle(st, false)).join('')
+    $('#cards').innerHTML = pageHead(pg, true) + ss.filter(st => st.context).map(st => qArticle(st, false)).join('')
       + prevGroup(ss.filter(st => !st.context && st.grow && st.grow.answered), false);
     layout(); paintLocked(); wireMarks(); paintStages(); paintBars();   // WHY wireMarks: the areas he drew on an old picture are painted here too (round 12: pictures and marks were missing)
-    $('#save').disabled = false; $('#save').textContent = recPage >= pages.length - 1 ? (viewStage === EARLIER ? 'Back to your questions' : 'Back to ' + stageName(GROWS.stage)) : 'Next page ›';
+    $('#save').disabled = false; $('#save').textContent = recPage >= pages.length - 1 ? 'Back to ' + stageName(GROWS.stage) : 'Next page ›';
     $('#back').hidden = pages.length === 1; $('#back').disabled = recPage === 0;
     scrollTop();
   }
@@ -1325,7 +1347,7 @@
     if (box._sig === sig) return; box._sig = sig; box.classList.remove('open');
     // WHY a compact button too (Destin, round 12: at a phone's width the four names do not fit beside the bars and the button): below 700px the line
     // shrinks to the stage on screen with a small "2 of 4"; pressing it opens the four names, finished ones pressable.
-    const here = Math.max(0, STAGE_KEYS.indexOf(shown === EARLIER ? GROWS.stage : shown));
+    const here = Math.max(0, STAGE_KEYS.indexOf(shown));
     box.innerHTML = `<button type="button" class="stagecompact" aria-expanded="false" title="The stages of this deck"><span class="scname">${esc(stageName(STAGE_KEYS[here]))}</span><small>${here + 1} of 4</small>${CHEV}</button>`
       + `<ol class="stageflow" aria-label="Stages of this deck">` + STAGE_KEYS.map((k, i) => {
       const name = esc(stageName(k)), view = k === shown ? ' viewing' : '';
@@ -1378,7 +1400,7 @@
     const ct = e.target.closest('.callt');
     if (ct && !state.submitted) { const a = state.answers[ct.dataset.sid] || {}; if (a.changes && ct.dataset.call in a.changes) { a.changes[ct.dataset.call] = ct.value; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); } return; }
     const mt = e.target.closest('.markt');
-    if (mt && !state.submitted) { const m = ((state.answers[mt.dataset.sid] || {}).marks || [])[+mt.dataset.i]; if (m) { m.text = mt.value; clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); } return; }
+    if (mt && !state.submitted) { const m = ((state.answers[mt.dataset.sid] || {}).marks || [])[+mt.dataset.i]; if (m) { m.text = mt.value; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); } return; }   // paintState: the words show under the row as he types
     const n = e.target.closest('.note[data-id]'); if (!n || !PAGES) return;
     state.answers[n.dataset.id] = { ...(state.answers[n.dataset.id] || {}), note: n.value };
     paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
@@ -1452,7 +1474,7 @@
     if (state.submitted) return;
     const st = stepById(sid); if (!st || !tickable(st)) return;
     const a = { ...(state.answers[sid] || {}) };
-    if (cid in (a.changes || {})) return;
+    if (cid in (a.changes || {}) || rowMarks(a, cid).length) return;   // a row with his comment (pencil or picture) is not ticked by a stray press
     legacyToTicks(st, a);
     const ok = { ...(a.ok || {}) };
     if (ok[cid]) delete ok[cid]; else ok[cid] = true;
@@ -1462,7 +1484,7 @@
   // What `v` says for a "Yours to change" list: other if any row has a change; yes only when every row is
   // ticked and none changed; otherwise no answer, so a half-read list is never taken as approved.
   function settleList(st, a) {
-    const ch = Object.keys(a.changes || {}).length, ok = Object.keys(a.ok || {}).length;
+    const ch = st.calls.filter(c => rowState({ ...a, ok: a.ok || {} }, c.id) === 'changed').length, ok = Object.keys(a.ok || {}).length;   // WHY rowState: a row changed by a mark on its picture counts like a pencil comment
     delete a.accepted; delete a.dk;
     if (ch) a.v = 'other';
     else if (ok && ok === st.calls.length) a.v = 'yes';
@@ -1507,9 +1529,10 @@
       const btn = li.querySelector('.calledit');
       if (btn) {
         const box = li.querySelector('.callt'), wrap = li.querySelector('.callbox');
-        const ch = (state.answers[btn.dataset.sid] || {}).changes || {}; const on = btn.dataset.call in ch;
-        li.classList.toggle('chg', on); wrap.hidden = !on; btn.classList.toggle('on', on); btn.disabled = !!state.submitted; box.disabled = !!state.submitted;
-        btn.title = on ? 'Go to your comment' : 'Comment on this, or say what to change';
+        const ans = state.answers[btn.dataset.sid] || {}, ch = ans.changes || {}, typed = btn.dataset.call in ch, pm = rowMarks(ans, btn.dataset.call), on = typed || pm.length > 0;
+        paintMarkLine(li, pm);
+        li.classList.toggle('chg', on); wrap.hidden = !typed; btn.classList.toggle('on', on); btn.disabled = !!state.submitted; box.disabled = !!state.submitted;
+        btn.title = typed ? 'Go to your comment' : on ? 'Add words to your comment on the picture' : 'Comment on this, or say what to change';
         // The two controls show the row's state themselves (round 10): no words, no dots, no edge bar.
         btn.setAttribute('aria-pressed', on);
         { const tk = li.querySelector('.calltick'); if (tk) {
@@ -1518,7 +1541,7 @@
           tk.title = on ? 'Take your comment away first' : ticked ? 'Undo: this is fine' : 'This is fine';
         } }
         { const x = li.querySelector('.callx'); if (x) x.disabled = !!state.submitted; }
-        if (document.activeElement !== box) { box.value = on ? ch[btn.dataset.call] : ''; grow(box); }
+        if (document.activeElement !== box) { box.value = typed ? ch[btn.dataset.call] : ''; grow(box); }
       }
     });
     addMics();
@@ -1777,7 +1800,7 @@
       if (GROWS && st.grow && st.grow.answered && !reopenedIn[st.id]) continue;   // answered in an earlier round: nothing is asked, so nothing is summed
       const a = (S.answers || {})[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
       const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && st.variants ? 'none' : (v === 'other' && a.dk ? "don't know" : v));
-      lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a) + tickWords(st, a));
+      lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '') + extras(a, st) + tickWords(st, a));
     }
     const when = (S.submitted || '').slice(0, 16).replace('T', ' ');
     const head = DECK.key + ' · ' + (when ? 'submitted ' + when : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · '
@@ -1804,14 +1827,16 @@
     return (n ? '\n    ticked as fine — ' + n + (n === 1 ? ' row' : ' rows') : '')
       + st.calls.filter(c => rowState(a, c.id) === 'unlooked').map(c => '\n    not looked at — "' + c.call + '"').join('');
   }
-  function extras(a) {
+  function extras(a, st) {
     const out = [];
     for (const [k, v] of Object.entries(a.results || {})) out.push('\n    status ' + k + ' — he set it to ' + (RESULT[v] || v));
     for (const [k, t] of Object.entries(a.changes || {})) out.push('\n    change ' + k + ' — "' + String(t || '').trim() + '"');
     (a.asks || []).forEach(k => out.push('\n    more context wanted on ' + k));
     // {from, to} from a screen he retyped words on; a plain string from a round-3 wording row.
     for (const [k, t] of Object.entries(a.edits || {})) out.push(t && typeof t === 'object' ? '\n    reword "' + t.from + '" → "' + t.to + '"' + (t.state ? ' — seen with: ' + t.state : '') : '\n    reword ' + k + ' — "' + String(t || '').trim() + '"');
-    (a.marks || []).forEach((m, i) => out.push('\n    area ' + (i + 1) + ' on ' + m.pic + ' (left ' + m.x + '%, top ' + m.y + '%, ' + m.w + '% wide, ' + m.h + '% tall) — "' + String(m.text || '').trim() + '"'));
+    // WHY the row's own words (round 13): an area on a row's picture is that row's comment, so the line says which row, by its words.
+    const picName = pic => { const r = rowOfPic(st, pic), c = r && st.calls.find(x => x.id === r); return c ? pic + ' ("' + c.call + '")' : pic; };
+    (a.marks || []).forEach((m, i) => out.push('\n    area ' + (i + 1) + ' on ' + picName(m.pic) + ' (left ' + m.x + '%, top ' + m.y + '%, ' + m.w + '% wide, ' + m.h + '% tall) — "' + String(m.text || '').trim() + '"'));
     // Pictures and file paths he pasted into a box (round 7): the path is what a session opens.
     for (const [k, l] of Object.entries(a.attach || {})) (l || []).forEach(p => out.push('\n    attached to ' + attachLabel(k) + ' — ' + pillWords(p)));
     (a.marks || []).forEach((m, i) => (m.attach || []).forEach(p => out.push('\n    attached to area ' + (i + 1) + ' — ' + pillWords(p))));
@@ -1851,7 +1876,7 @@
     // Fix: only a POST the server actually accepted may say "Submitted ✓". Claiming success
     // when the server is gone sends Destin back to the conversation with nothing waiting there.
     let ok = false, why = '';
-    try { const r = await fetch('/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); ok = r.ok; if (!ok) why = 'HTTP ' + r.status; }
+    try { const r = await fetch('/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); ok = r.ok; if (!ok) { why = 'HTTP ' + r.status; if (r.status === 409) { const j = await r.json().catch(() => ({})); if (j.reason === 'old-build') { showOutdated(); $('#veil').classList.remove('on'); state.submitted = null; return; } } } }
     catch (e) { why = (e && e.message) || String(e); server = false; }   // the server is gone: a re-opened dialog must take the copy/paste branch, not repeat "saving as you went"
     if (!ok) {
       state.submitted = null;   // summary() then labels it "not submitted", which is the truth
@@ -2087,10 +2112,11 @@
   function removeMark(sid, i) {
     if (state.submitted) return;
     const a = state.answers[sid]; if (!a || !a.marks) return;
-    a.marks.splice(i, 1); if (!a.marks.length) delete a.marks;
+    const gone = a.marks.splice(i, 1)[0]; if (!a.marks.length) delete a.marks;
     // WHY (review 2026-11-10): the last area gone left the answer stuck on "Other" with nothing
     // behind it. Same rule every other way of taking a thing back already follows.
     if (a.v === 'other' && !openRows(a) && !(a.marks || []).length && !Object.keys(a.results || {}).length) delete a.v;
+    { const st = stepById(sid); if (st && rowOfPic(st, gone && gone.pic)) { a.ok = { ...(a.ok || {}) }; settleList(st, a); } }   // taking the mark away undoes the row's change
     paintState(); drawMarks(); save();
   }
   // ── A picture opens large INSIDE the deck ──────────────────────────────────────────────
@@ -2256,7 +2282,8 @@
   document.addEventListener('input', e => {
     const mt = e.target.closest && e.target.closest('.viewer .markt'); if (!mt || state.submitted) return;
     const m = ((state.answers[mt.dataset.sid] || {}).marks || [])[+mt.dataset.i];
-    if (m) { m.text = mt.value; grow(mt); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300); }
+    if (m) { m.text = mt.value; grow(mt); paintState(); clearTimeout(noteTimer);   // paintState: his words show under the row as he types them
+      noteTimer = setTimeout(save, 300); }
   });
   document.addEventListener('keydown', e => { if ($('.viewer') && e.key === 'Escape') { closeBig(); drawMarks(); } });
   let drag = null, swallowClick = false;
@@ -2292,9 +2319,13 @@
     // WHY 3% (UX review 2026-11-10): a 1% x 2% slip left a barely visible dot that counted as an answer.
     if (!d.rect || d.rect.w < 3 || d.rect.h < 3) return;
     const sid = d.box.dataset.sid, a = { ...(state.answers[sid] || {}) };
+    const st = stepById(sid), rid = rowOfPic(st, d.box.dataset.pk);
+    if (rid) legacyToTicks(st, a);
     a.marks = (a.marks || []).concat([{ pic: d.box.dataset.pk, ...d.rect, text: '' }]);
     // An area with a comment IS a response; with no button pressed it counts as "something else".
     if (!a.v || a.v === 'skip') a.v = 'other';
+    // On a row of a list he ticks or changes, the area is that row's comment: its tick comes off and the list's answer follows.
+    if (rid) { a.ok = { ...(a.ok || {}) }; delete a.ok[rid]; settleList(st, a); }
     state.answers[sid] = a; paintState(); drawMarks(); save();
     // Drawn in the viewer: it stays open and the new comment's box, beside the picture, takes the caret.
     const boxes = $$(`${$('.viewer') ? '.viewer ' : ''}.markt[data-sid="${CSS.escape(sid)}"]`); if (boxes.length) boxes[boxes.length - 1].focus();
@@ -2513,7 +2544,7 @@
   // tab closed, so a note typed in that window was lost; and a microphone could stay recording after
   // the page went away. The server also cancels a recording whose polls stop (serve.py VoiceBridge).
   function flush() {
-    if (!loaded || state.submitted) return;
+    if (!loaded || state.submitted || outdated) return;
     stamp();
     const sig = JSON.stringify(state); if (sig === lastSig) return;
     try { localStorage.setItem(LS, sig); } catch (e) { /* no storage */ }
@@ -2538,7 +2569,7 @@
     // clamping to LAST lands on the last page instead of rendering nothing.
     cur = q.get('step') ? Math.max(0, Math.min(LAST, +q.get('step') - 1)) : Math.max(0, Math.min(LAST, state.cur || 0));
     // A deck that grows opens on the first page with a topic still open, not on page 1 (answered pages are behind him).
-    if (GROWS && !q.get('step') && !state.cur) { const i = PAGES.findIndex((p, k) => pageSteps(k).some(needsAnswer)); if (i > 0) cur = i; }
+    if (GROWS && !q.get('step') && !state.cur) cur = FIRSTNEED;
     if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
     stepStart = Date.now(); stamp(); lastSig = JSON.stringify(state); loaded = true; render();   // WHY lastSig now: a page that has changed nothing must not rewrite the browser backup when it closes
     if (state.submitted) { lockSubmitted(); showFinished(); }   // an archived deck re-opened after its submit lands on the finish screen — its answers, read back — instead of a step full of dead buttons

@@ -25,7 +25,7 @@ import time
 
 from .grows import settled_ids
 from .live import has_live
-from .spec import UI_REVIEW, SpecError, is_page, pages as spec_pages, row_states, tickable, workspace_root
+from .spec import UI_REVIEW, SpecError, is_page, pages as spec_pages, row_of_pic, row_states, tickable, workspace_root
 
 # WHY not workspace_root() (2026-09-26): that is where the SUB-REPO checkouts are cloned once
 # (youcoded/, wecoded-themes/) and shared across every worktree — it is NOT where this deck
@@ -76,20 +76,44 @@ def write_atomic(path, obj):
 _SAVE_LOCK = threading.Lock()
 
 
-def save_state(apath, state, submit=False):
+def _stamp_of(obj):
+    """The build stamp (`built.at`) a page or a saved state carries, or None."""
+    b = (obj or {}).get('built') if isinstance(obj, dict) else None
+    return b.get('at') if isinstance(b, dict) else None
+
+
+def save_state(apath, state, submit=False, served_build=None):
     """Guard and write one answers state under the lock. Returns (status, body).
     A saved `submitted` is never removed: a late autosave from a tab that has not seen the
-    submit carries it forward instead of erasing it."""
+    submit carries it forward instead of erasing it.
+
+    WHY `served_build` (Destin, round 13: a comment he typed in the previous round showed up in the new round's box):
+    a tab of the OLD page, still open after the deck was rebuilt, kept autosaving its own state into the answers
+    file; the new page then loaded that file as if it were this round's. Every saved state now carries the build
+    stamp of the page that wrote it, and a page whose stamp is not the build being served is refused (reason
+    `old-build`) and told to reload. A file left by another build is set aside, never deleted or merged in."""
     with _SAVE_LOCK:
-        dropped = dropped_answers(apath, state)
-        if dropped:
-            return 409, {'error': 'refused: this page would drop the saved answers for '
-                          + ', '.join(dropped) + ' — reload the page to pick up what is on disk'}
+        if served_build and _stamp_of(state) != served_build:
+            return 409, {'error': 'This page is out of date: the deck was rebuilt. Reload the page to see the new questions.', 'reason': 'old-build'}
         try:
             with open(apath) as f:
                 saved = json.load(f)
         except (OSError, ValueError):
             saved = None
+        if served_build and isinstance(saved, dict) and saved.get('deck') == state.get('deck') and _stamp_of(saved) != served_build and not saved.get('submitted') \
+                and (saved.get('answers') or saved.get('pageNotes') or saved.get('notes')):
+            # What an older build saved is kept beside the deck (not matched by the `.answers.*.json` round files).
+            when = ''.join(c for c in time.strftime('%Y%m%d%H%M%S', time.gmtime()))
+            keep = apath[:-len('.answers.json')] + f'.unsent.{when}.json' if apath.endswith('.answers.json') else apath + f'.unsent.{when}'
+            n = 1
+            while os.path.exists(keep):
+                n += 1; keep = keep.replace('.json', '') + f'-{n}.json'
+            os.replace(apath, keep)
+            saved = None
+        dropped = dropped_answers(apath, state) if saved is not None else []
+        if dropped:
+            return 409, {'error': 'refused: this page would drop the saved answers for '
+                          + ', '.join(dropped) + ' — reload the page to pick up what is on disk'}
         if isinstance(saved, dict) and saved.get('submitted') and saved.get('deck') == state.get('deck'):
             state['submitted'] = saved['submitted']
         if submit:
@@ -166,7 +190,7 @@ def attach_label(k):
     return 'his note' if k == 'note' else 'his typed answer' if k == 'text' else 'change ' + k[7:] if k.startswith('change:') else k
 
 
-def extras(a):
+def extras(a, st=None):
     """What an answer carries beyond its button and note (Destin, 2026-11-09, rethink Q-5 and
     Q-10): the lines of a "calls I made" list he marked for change, each with his own words, and
     the areas he dragged on a picture, each with where it is and what he said about it. Printed
@@ -190,8 +214,11 @@ def extras(a):
             out.append(f'\n    reword "{t.get("from", "")}" → "{t.get("to", "")}"{seen}')
         else:
             out.append(f'\n    reword {k} — "{(t or "").strip()}"')
+    # WHY the row's own words (round 13): an area on a row's picture is that row's comment, so the line says which row.
     for i, m in enumerate(a.get('marks') or []):
-        out.append(f'\n    area {i + 1} on {m.get("pic")} (left {m.get("x")}%, top {m.get("y")}%, '
+        row = row_of_pic(st, m.get('pic'))
+        pic = f'{m.get("pic")} ("{row.get("call", "")}")' if row else m.get('pic')
+        out.append(f'\n    area {i + 1} on {pic} (left {m.get("x")}%, top {m.get("y")}%, '
                    f'{m.get("w")}% wide, {m.get("h")}% tall) — "{(m.get("text") or "").strip()}"')
     # Pictures and file paths he pasted into a box (round 7): the path is what a session opens.
     for k, lst in (a.get('attach') or {}).items():
@@ -251,7 +278,7 @@ def summary(spec, state):
         # Fix: a note is a note (Destin, 2026-09-04) — no tag to print. An older answers
         # file may still carry a leftover per-note category alongside it; it is simply
         # never read here, so it has no effect on the summary.
-        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else '') + extras(a) + tick_lines(st, a))
+        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else '') + extras(a, st) + tick_lines(st, a))
     when = (state.get('submitted') or '')[:16].replace('T', ' ')
     head = (f'{spec["key"]} · {"submitted " + when if when else "not submitted"} · '
             f'{counts["yes"]} yes · {counts["no"]} no · {counts["other"]} other · '
@@ -476,7 +503,7 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
                 # edits in site-copy-editor.py on 2026-09-10. The deck is the surface he answers
                 # every UI review on, so a stale page here loses review answers. A write may add
                 # or change answers; it may never make a saved answer disappear.
-                code, reply = save_state(apath, state, submit=self.path == '/submit')
+                code, reply = save_state(apath, state, submit=self.path == '/submit', served_build=_built_at(spec))
                 if code != 200:
                     return self._json(code, reply)
                 if self.path == '/answers':
@@ -687,12 +714,21 @@ def already_served(spec):
     return {'pid': pid, 'url': other_url}
 
 
+_BUILT_CACHE = {}
+
+
 def _built_at(spec):
-    """When the deck page on disk was built (its build stamp), or None."""
+    """When the deck page on disk was built (its build stamp), or None. Cached by file time and size: every
+    autosave asks, and the page can be several megabytes."""
+    path = os.path.join(spec['_base'], spec['out'])
     try:
-        with open(os.path.join(spec['_base'], spec['out'])) as f:
-            m = re.search(r'"built":\s*\{[^}]*"at":\s*"([^"]+)"', f.read())
-        return m.group(1) if m else None
+        st = os.stat(path)
+        key = (path, st.st_mtime_ns, st.st_size)
+        if key not in _BUILT_CACHE:
+            with open(path) as f:
+                m = re.search(r'"built":\s*\{[^}]*"at":\s*"([^"]+)"', f.read())
+            _BUILT_CACHE.clear(); _BUILT_CACHE[key] = m.group(1) if m else None
+        return _BUILT_CACHE[key]
     except OSError:
         return None
 

@@ -54,6 +54,10 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .nav{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;min-width:0}
 .steps{display:flex;gap:3px;align-items:center;flex:1;max-width:360px;min-width:90px} .steps span{flex:1;height:7px;border-radius:3px;background:var(--inset);cursor:pointer;transition:transform .15s}
 .steps span:hover{transform:scaleY(1.4)} .steps span.on{box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--fg)}
+/* WHY green finished bars (Destin, round 13: "we used to have colored bars to indicate whether a page was finished or not at the top, but those seem
+   to have gone away?"): the page script has always marked a finished page `done`, but nothing in this file ever drew it. On a deck that grows a page
+   with nothing left for him (and one he has now dealt with) is green; pages still needing him stay the neutral grey. */
+body[data-grows] .steps span.done{background:var(--yes)}
 .steps span.yes,.steps span.pick{background:var(--yes)} .steps span.no{background:var(--no)} .steps span.other{background:var(--other)} .steps span.skip{background:var(--fg-faint)}
 .count{font-size:11px;color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 /* Save status (page.js showSaved): visible at every width, unlike .count — a failed save is the one
@@ -999,22 +1003,20 @@ body[data-grows] .top .wrap{flex-wrap:nowrap}
   .stageflow li>span,.stageflow li>.stagebtn{width:100%;box-sizing:border-box;padding:6px 10px;gap:8px}
   body[data-grows] .nav{flex:1 1 40px;min-width:0}
   body[data-grows] .steps{min-width:40px}
+  /* WHY (round 13: every page is a bar again, so a stage can have ten or more): thinner gaps on a phone leave the bars room to be seen. */
+  body[data-grows] .steps{gap:1px}
   body[data-grows] #done{padding:0 10px}
   body[data-grows] .saved{min-width:0;width:0;overflow:visible;position:relative;flex:none}
   body[data-grows] .saved[hidden],body[data-grows] .saved[data-ok="1"]{display:none}
   body[data-grows] .saved[data-ok="0"]{position:fixed;top:60px;right:12px;z-index:40}
 }
 /* A page's folded rows: the same fold the app uses, one row, shut until pressed. */
-.prevfoldwrap,.earlierwrap{display:block}
-.pages .prevfoldwrap,.pages .earlierwrap{padding:0;background:none;border:0;gap:0}
-.prevfold,.earlierfold{margin-top:0}
-.prevfold>.foldhead,.earlierfold>.foldhead{min-height:40px}
-.prevfold>.foldhead .foldtitle,.earlierfold>.foldhead .foldtitle{font-size:13px;font-weight:500;color:var(--fg)}
-.prevfold>.foldbody,.earlierfold>.foldbody{padding:6px 12px 12px}
-.earlierlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
-.earlieritem{width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:36px;padding:6px 8px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg);font:inherit;font-size:13px;text-align:left;cursor:pointer}
-@media (hover:hover){.earlieritem:hover{background:var(--inset)}}
-.earlieritem:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.prevfoldwrap{display:block}
+.pages .prevfoldwrap{padding:0;background:none;border:0;gap:0}
+.prevfold{margin-top:0}
+.prevfold>.foldhead{min-height:40px}
+.prevfold>.foldhead .foldtitle{font-size:13px;font-weight:500;color:var(--fg)}
+.prevfold>.foldbody{padding:6px 12px 12px}
 /* A row's More, drawn like a question's Today / Problem / Proposal (the same cards), one under the other: the row is narrow. */
 .rowmore .parts{grid-template-columns:1fr;gap:8px}
 .rowmore .proscons{display:grid;grid-template-columns:1fr 1fr;gap:8px}

@@ -366,3 +366,22 @@ class Grows(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class RowMarkTests(unittest.TestCase):
+    """Round 14 (Destin, round 13): a comment left on a row's picture is that row's comment, like a pencil comment."""
+    LIST = {'id': 'W-1', 'words': True, 'surface': 'S', 'path': 'P', 'headline': 'H',
+            'calls': [{'id': 'a', 'call': 'Row A.', 'why': 'w'}, {'id': 'b', 'call': 'Row B.', 'why': 'w'}]}
+
+    def test_a_mark_on_a_rows_picture_changes_that_row(self):
+        from deck.spec import row_states, row_of_pic
+        a = {'v': 'other', 'ok': {'b': True}, 'marks': [{'pic': 'row a', 'text': 'too quiet'}]}
+        self.assertEqual(row_states(self.LIST, a), {'a': 'changed', 'b': 'ok'})
+        self.assertEqual(row_states(self.LIST, {'ok': {}, 'marks': [{'pic': 'row a before', 'text': ''}]})['a'], 'changed')
+        self.assertEqual(row_states(self.LIST, {'ok': {}, 'marks': [{'pic': 'row zzz'}]}), {'a': 'unlooked', 'b': 'unlooked'})
+        self.assertIsNone(row_of_pic({**self.LIST, 'context': True}, 'row a'))   # a background list has no rows to answer
+
+    def test_the_summary_reads_it_as_a_comment_on_the_row(self):
+        from deck.grows import answer_view
+        _, notes = answer_view(self.LIST, {'v': 'other', 'marks': [{'pic': 'row a', 'text': 'too quiet'}]})
+        self.assertEqual(notes, ['Row A. — too quiet'])

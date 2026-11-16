@@ -627,6 +627,15 @@ def tickable(step):
         and bool(step['calls']) and not any(c.get('result') for c in step['calls'])
 
 
+def row_of_pic(step, pic):
+    """The row of a "Yours to change" list that a mark's picture belongs to (`row <id>` or `row <id> before`), or None.
+    WHY (Destin, round 13): a comment left on a row's picture is that row's comment, exactly like a pencil comment."""
+    if not step or not tickable(step):
+        return None
+    m = re.match(r'^row (.+?)( before)?$', pic or '')
+    return next((c for c in step['calls'] if m and c.get('id') == m.group(1)), None)
+
+
 def row_states(step, a):
     """{row id: 'changed' | 'ok' | 'unlooked'} for a tickable list, from its saved answer `a`.
     WHY the legacy branch: a deck answered before round 10 carried `accepted: true` (or a list
@@ -639,7 +648,7 @@ def row_states(step, a):
     out = {}
     for c in step.get('calls') or []:
         r = c.get('id')
-        out[r] = 'changed' if r in ch else 'ok' if (ok.get(r) or legacy) else 'unlooked'
+        out[r] = 'changed' if r in ch or any(row_of_pic(step, m.get('pic')) is c for m in a.get('marks') or []) else 'ok' if (ok.get(r) or legacy) else 'unlooked'
     return out
 
 

@@ -22,7 +22,7 @@ import json
 import os
 import re
 
-from .spec import is_page, row_states, tickable, unlooked_rows, word_count
+from .spec import is_page, row_of_pic, row_states, tickable, unlooked_rows, word_count
 
 STAGES = ('understanding', 'design', 'before', 'after')
 STAGE_NAMES = {'understanding': 'Understanding', 'design': 'Design', 'before': 'Before build', 'after': 'After build'}
@@ -67,7 +67,11 @@ def answer_view(st, a):
         answer = ANSWER_NAMES.get(v, v)
     notes = [t for t in [(a.get('text') or '').strip(), (a.get('note') or '').strip()] if t]
     notes += [f'{rows.get(k) or k} — {(t or "").strip()}' for k, t in (a.get('changes') or {}).items() if (t or '').strip()]
-    notes += [f'On a picture — {(m.get("text") or "").strip()}' for m in a.get('marks') or [] if (m.get('text') or '').strip()]
+    # WHY a mark on a row's picture reads as that row's comment (Destin, round 13), the same as a pencil comment.
+    for m in a.get('marks') or []:
+        if (m.get('text') or '').strip():
+            row = row_of_pic(st, m.get('pic'))
+            notes.append(f'{(row or {}).get("call") or ""} — {(m.get("text") or "").strip()}' if row else f'On a picture — {(m.get("text") or "").strip()}')
     # `state` (round 7b): what was open on the screen when the words were changed.
     notes += [f'Reword “{t.get("from", "")}” to “{t.get("to", "")}”' + (f' (seen with: {t["state"]})' if t.get('state') else '')
               if isinstance(t, dict) else f'{rows.get(k) or k} reworded — {t}'
