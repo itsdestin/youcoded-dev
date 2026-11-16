@@ -105,7 +105,7 @@ commit them.
 
 **Overview deck, 2026-11-14 evening (`narrow-screens.overview.*`, app tip `885b7aacd` after
 `ed3e3c7d5`):** Destin said yes to every picture (V-1…V-7) and no to the phone and narrow-window
-live panes. Fixed on the app branch, re-shown in `narrow-screens.overview-2.*` (answers pending):
+live panes. Fixed on the app branch, re-shown in `narrow-screens.overview-2.*` (F-1…F-4 all yes):
 
 - Taps inside the session list also toggled it (the list is a portal; its clicks reached the name
   stack). Resume left the list up, New session closed over its own form. The stack now ignores

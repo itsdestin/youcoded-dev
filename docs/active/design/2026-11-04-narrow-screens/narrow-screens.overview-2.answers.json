@@ -1,0 +1,36 @@
+{
+ "deck": "narrow-screens-overview-2",
+ "started": "2026-11-16T01:29:22.776Z",
+ "submitted": "2026-11-16T01:48:06Z",
+ "cur": 3,
+ "answers": {
+  "F-1": {
+   "v": "yes",
+   "t": 1794792775383,
+   "seconds": 213,
+   "theme": "light",
+   "zoom": 1
+  },
+  "F-2": {
+   "v": "yes",
+   "t": 1794792854762,
+   "seconds": 79,
+   "theme": "light",
+   "zoom": 1
+  },
+  "F-3": {
+   "v": "yes",
+   "t": 1794792870840,
+   "seconds": 16,
+   "theme": "light",
+   "zoom": 1
+  },
+  "F-4": {
+   "v": "yes",
+   "t": 1794793639744,
+   "seconds": 769,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
