@@ -16,7 +16,7 @@ work: session/office-save-robustness
 ---
 Progress
 Done: 2026-11-16: save-robustness work merged in youcoded#758 (with Office Home).
-Next: Remaining: Windows-only checks (hidden save folder, busy-file message), the four original safety/privacy edge cases.
+Next: Remaining: Windows-only checks (hidden save folder, busy-file message); the four original safety/privacy edge cases; and save-audit leftovers (2026-11-15): an app crash can lose up to ~1 s of typing, a power cut can lose the last seconds of the unsaved-typing backup (not flushed to disk), a 'not modified' edge case, and the save-failed message doesn't name the file.
 Blocked: needs a Windows and a Mac machine to test; the seven cosmetic faults need the running app to re-check.
 
 Chats
