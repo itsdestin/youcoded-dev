@@ -918,3 +918,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-14 #194 Message-box attachment cards show no image preview in the dev window, on phones and on Android (youcoded PR #747 (320b0bcaa); Android and test-copy previews continue on #254)
 - [x] 2026-11-14 #226 Local engine fixes and improvements (youcoded#754, youcoded-dev#375)
 - [x] 2026-11-14 #147 Management surface: the next round (youcoded-dev PR #378)
+- [x] 2026-11-16 #143 Small missing conveniences and wording fixes (youcoded#758)

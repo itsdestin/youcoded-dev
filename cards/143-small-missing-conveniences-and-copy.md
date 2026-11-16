@@ -1,7 +1,7 @@
 ---
 id: 143
 title: Small missing conveniences and wording fixes
-stage: planning
+stage: merged
 priority: P3
 tags: user-interface, feature
 branch: 143-small-missing-conveniences-and-copy
