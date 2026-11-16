@@ -15,8 +15,8 @@ vision: chat.files.office
 work: session/office-save-robustness
 ---
 Progress
-Done: 2026-11-14, branch session/office-save-robustness (app 7f671f37e, not merged): unsaved edits on an unplugged drive no longer deleted at startup; a file renamed/moved/deleted while open is no longer recreated at the old name; long file names save; a locked folder says so; the same file via a link no longer gets two tabs that overwrite each other; Windows busy-file message.
-Next: Destin to review and say merge. Windows-only: hidden save folder visible during saves, and the busy-file message, unverified.
+Done: 2026-11-16: save-robustness work merged in youcoded#758 (with Office Home).
+Next: Remaining: Windows-only checks (hidden save folder, busy-file message), the four original safety/privacy edge cases.
 Blocked: needs a Windows and a Mac machine to test; the seven cosmetic faults need the running app to re-check.
 
 Chats
