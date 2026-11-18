@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YouCoded Brand Guide</title>
+<link rel="icon" href="assets/default-32.png">
+<!-- WHY: the brand's three typefaces, loaded the same way the live site loads them. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,800;9..40,900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* WHY: this page draws the brand from the same values as docs/brand/README.md.
+   If a value changes there, change it here too (both are pinned by verify anchors). */
+:root{
+  --canvas:#F7F0FB; --panel:#EFE3F6; --edge:#C9B0DB;
+  --ink:#21152C; --ink2:#43354E; --muted:#8A7B96;
+  --accent:#8B47B8; --gradA:#9D5BD0; --gradB:#D25AA0;
+  --night:#140B1E; --nightPanel:#1F1329; --nightInk:#F3EAF9; --nightSoft:#B3A8BC; --nightAccent:#C99BF0;
+  --ok:#2E7D4F; --bad:#B3261E;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--canvas);color:var(--ink);font:400 16px/1.6 'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header.top{position:sticky;top:0;z-index:5;background:rgba(247,240,251,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--edge)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;font:400 14px 'Outfit',sans-serif}
+nav a{color:var(--ink2);text-decoration:none;padding:6px 10px;border-radius:8px;white-space:nowrap}
+nav a:hover{background:var(--panel)}
+section{padding:56px 0;border-bottom:1px solid var(--edge)}
+.kicker{font:500 12px 'JetBrains Mono',monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--ink2);margin:0 0 8px}
+h1{font:900 clamp(40px,7vw,72px)/.97 'DM Sans',sans-serif;letter-spacing:-.05em;margin:0}
+h2{font:800 clamp(28px,4vw,40px)/1.06 'DM Sans',sans-serif;letter-spacing:-.04em;margin:0 0 12px}
+h3{font:700 18px/1.3 'DM Sans',sans-serif;margin:0 0 6px}
+.em{color:var(--accent)}
+p.lead{font-size:18px;color:var(--ink2);max-width:640px}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:20px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.label{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+code{font:500 13px 'JetBrains Mono',monospace;background:rgba(139,71,184,.1);padding:1px 6px;border-radius:5px}
+
+/* The logo, drawn as live text exactly like the site's .wm / .wm-you / .wm-tag */
+.lockup{display:flex;align-items:center;gap:calc(var(--s)*.25*1.39);--s:48px}
+.lockup img{width:calc(var(--s)*1.39);height:calc(var(--s)*1.39);filter:drop-shadow(0 3px 6px rgba(60,20,100,.22))}
+.wm{font:600 var(--s)/1 'Outfit',sans-serif;letter-spacing:-.035em;color:var(--ink,#21152C);white-space:nowrap;transform:translateY(calc(var(--s)*-.05))}
+.wm .you{padding-right:.02em;background:linear-gradient(100deg,var(--a,#9D5BD0),var(--b,#D25AA0));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.wm .tag{display:block;font:400 .33em/1.2 'Outfit',sans-serif;letter-spacing:-.005em;color:var(--muted);margin:.18em 0 0 .03em}
+.stack{text-align:center}
+.stack .wm .tag{font-size:.34em}
+.yc{width:88px;height:88px;border-radius:22px;background:linear-gradient(160deg,#fff,#f4eefa);box-shadow:0 4px 14px rgba(60,20,100,.18),inset 0 0 0 1px rgba(201,176,219,.8);display:grid;place-items:center}
+.yc span{font:600 46px/1 'Outfit',sans-serif;letter-spacing:-.04em;color:var(--ink);transform:translateY(-6px)}
+.yc .you{background:linear-gradient(100deg,#9D5BD0,#D25AA0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stage{display:flex;align-items:center;justify-content:center;min-height:170px;border-radius:14px;background:var(--canvas);border:1px solid var(--edge);padding:24px;overflow:hidden}
+.stage.dark{background:var(--night);border-color:#45305A}
+.stage.dark .wm{color:var(--nightInk)}
+.stage.dark .wm .tag{color:var(--nightSoft)}
+.clear{position:relative;outline:1.5px dashed var(--accent);outline-offset:calc(var(--s)*.7)}
+
+/* Swatches */
+.sw{border-radius:14px;overflow:hidden;border:1px solid var(--edge);background:#fff}
+.sw .chip{height:92px}
+.sw .meta{padding:10px 12px;font-size:14px;line-height:1.35}
+.sw .meta b{display:block}
+.sw .meta code{background:none;padding:0;color:var(--ink2)}
+.ratio{display:flex;height:40px;border-radius:10px;overflow:hidden;border:1px solid var(--edge)}
+
+/* Type */
+.spec{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:baseline;padding:18px 0;border-top:1px solid var(--edge)}
+.spec:first-child{border-top:0}
+
+/* Do / don't */
+.dd{border-radius:14px;border:1px solid var(--edge);overflow:hidden;background:#fff}
+.dd .stage{border:0;border-radius:0;min-height:130px}
+.dd .cap{padding:10px 14px;font-size:14px;border-top:1px solid var(--edge)}
+.dd .cap b{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;margin-right:6px}
+.dd.do .cap b{color:var(--ok)} .dd.dont .cap b{color:var(--bad)}
+.words{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.words ul{margin:0;padding-left:18px}
+.strike{text-decoration:line-through;text-decoration-color:var(--bad);text-decoration-thickness:2px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{text-align:left;padding:8px 10px;border-top:1px solid var(--edge);vertical-align:top}
+th{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-top:0}
+
+/* End card + poster samples */
+.endcard{aspect-ratio:9/16;max-width:260px;margin:0 auto;border-radius:18px;background:radial-gradient(120% 80% at 30% 20%,#fff 0,#F7F0FB 40%,#E6D3F2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:1px solid var(--edge)}
+.endcard img{width:74px;filter:drop-shadow(0 8px 18px rgba(60,20,100,.28))}
+.poster{aspect-ratio:4/5;max-width:300px;margin:0 auto;border-radius:18px;background:var(--canvas);border:1px solid var(--edge);padding:26px;display:flex;flex-direction:column;justify-content:space-between}
+.poster.night{background:var(--night);border-color:#45305A;color:var(--nightInk)}
+.poster.night .wm{color:var(--nightInk)} .poster.night .em{color:var(--nightAccent)} .poster.night .kicker{color:var(--nightSoft)}
+footer{padding:40px 0 64px;color:var(--ink2);font-size:14px}
+@media (max-width:640px){ .spec{grid-template-columns:1fr;gap:4px} .words{grid-template-columns:1fr} header.top .lockup{--s:26px!important} header.top .wm .tag{display:none} }
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <div class="lockup" style="--s:28px"><img src="assets/default-128.png" alt=""><div class="wm"><span class="you">you</span>coded<span class="tag">open source everything</span></div></div>
+  <nav aria-label="Sections">
+    <a href="#logo">Logo</a><a href="#icon">Icon</a><a href="#colour">Colour</a><a href="#type">Type</a><a href="#voice">Voice</a><a href="#examples">Examples</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<section style="padding-top:72px">
+  <p class="kicker">Brand guide · 2026-11-18</p>
+  <h1>How YouCoded <span class="em">looks</span> and talks.</h1>
+  <p class="lead">For anything people outside the project will see: the website, films, posters, ads, posts and listings. The full rules are in <code>docs/brand/README.md</code>. This page shows them.</p>
+  <div class="grid g3" style="margin-top:28px">
+    <div class="card"><div class="label" style="margin:0 0 6px">Name in a sentence</div><h3>YouCoded</h3>Capital Y, capital C, one word.</div>
+    <div class="card"><div class="label" style="margin:0 0 6px">Tagline</div><h3>open source everything</h3>Always lowercase.</div>
+    <div class="card"><div class="label" style="margin:0 0 6px">One-line description</div><h3>Your personal AI assistant and open source everything app.</h3></div>
+  </div>
+</section>
+
+<section id="logo">
+  <p class="kicker">The logo</p>
+  <h2>Typed, not drawn.</h2>
+  <p class="lead">Lowercase "youcoded" in Outfit SemiBold, letter spacing −3.5%. "you" in the gradient <code>#9D5BD0 → #D25AA0</code>, "coded" in deep plum <code>#21152C</code>.</p>
+  <div class="grid g2" style="margin-top:20px">
+    <div><div class="stage"><div class="lockup" style="--s:44px"><img src="assets/default-128.png" alt="YouCoded icon"><div class="wm"><span class="you">you</span>coded<span class="tag">open source everything</span></div></div></div><div class="label">1 · Icon + name + tagline (main)</div></div>
+    <div><div class="stage"><div class="lockup" style="--s:44px"><img src="assets/default-128.png" alt="YouCoded icon"><div class="wm"><span class="you">you</span>coded</div></div></div><div class="label">2 · Icon + name</div></div>
+    <div><div class="stage"><div class="stack" style="--s:52px"><div class="wm"><span class="you">you</span>coded<span class="tag">open source everything</span></div></div></div><div class="label">3 · Stacked (setup screens)</div></div>
+    <div><div class="stage"><div class="lockup" style="--s:52px"><div class="wm"><span class="you">you</span>coded</div></div></div><div class="label">4 · Name only</div></div>
+    <div><div class="stage"><div class="yc"><span><span class="you">y</span>c</span></div></div><div class="label">5 · "yc" initials (approved, unused)</div></div>
+    <div><div class="stage dark"><div class="lockup" style="--s:44px"><img src="assets/default-128.png" alt="YouCoded icon"><div class="wm"><span class="you">you</span>coded<span class="tag">open source everything</span></div></div></div><div class="label">On dark: "coded" turns light <code>#F3EAF9</code></div></div>
+  </div>
+
+  <h3 style="margin-top:36px">Clear space and minimum sizes</h3>
+  <div class="grid g2">
+    <div class="stage" style="min-height:220px"><div class="lockup clear" style="--s:36px"><img src="assets/default-128.png" alt=""><div class="wm"><span class="you">you</span>coded</div></div></div>
+    <div class="card"><table>
+      <tr><th>Rule</th><th>Value</th></tr>
+      <tr><td>Clear space (dashed line)</td><td>Half the icon's height on every side</td></tr>
+      <tr><td>Icon to name gap</td><td>A quarter of the icon's height</td></tr>
+      <tr><td>Smallest icon</td><td>16px</td></tr>
+      <tr><td>Smallest icon + name</td><td>96px wide</td></tr>
+      <tr><td>Smallest name alone</td><td>64px wide</td></tr>
+      <tr><td>Smallest "yc"</td><td>12px</td></tr>
+    </table></div>
+  </div>
+
+  <h3 style="margin-top:36px">In other themes, the name takes the theme's colours</h3>
+  <p>Only when the piece is about themes. Ads, posters and posts use the default purple.</p>
+  <div class="grid g4" style="margin-top:12px">
+    <div class="stage" style="min-height:110px"><div class="lockup" style="--s:26px"><img src="assets/default-128.png" alt=""><div class="wm"><span class="you">you</span>coded</div></div></div>
+    <div class="stage" style="min-height:110px;background:#EAF3F2"><div class="lockup" style="--s:26px;--a:#4D90B1;--b:#59A5A1"><img src="assets/meadow-mist-128.png" alt=""><div class="wm" style="--ink:#0E3A24;color:#0E3A24"><span class="you">you</span>coded</div></div></div>
+    <div class="stage" style="min-height:110px;background:#FBEFF1"><div class="lockup" style="--s:26px;--a:#AF4F52;--b:#A55964"><img src="assets/strawberry-kitty-128.png" alt=""><div class="wm" style="color:#5A1428"><span class="you">you</span>coded</div></div></div>
+    <div class="stage" style="min-height:110px;background:#EFE8F7"><div class="lockup" style="--s:26px;--a:#A658A4;--b:#8059A5"><img src="assets/kuromi-dreamer-128.png" alt=""><div class="wm" style="color:#2A1748"><span class="you">you</span>coded</div></div></div>
+  </div>
+
+  <h3 style="margin-top:36px">Don't</h3>
+  <div class="grid g3">
+    <div class="dd dont"><div class="stage"><span style="font:800 40px 'DM Sans',sans-serif;letter-spacing:.02em;color:#21152C">YOUCODED</span></div><div class="cap"><b>Don't</b>capitals or another font</div></div>
+    <div class="dd dont"><div class="stage"><span style="font:600 40px/1 'Outfit',sans-serif;letter-spacing:-.035em;background:linear-gradient(100deg,#3b82f6,#9D5BD0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">youcoded</span></div><div class="cap"><b>Don't</b>new colours or gradient on "coded"</div></div>
+    <div class="dd dont"><div class="stage"><span style="font:600 40px/1 'Outfit',sans-serif;letter-spacing:-.035em;color:#21152C;text-shadow:0 0 18px #c99bf0,0 0 4px #9D5BD0;transform:scaleX(1.3);display:inline-block">youcoded</span></div><div class="cap"><b>Don't</b>glow, stretch or add effects</div></div>
+  </div>
+</section>
+
+<section id="icon">
+  <p class="kicker">The icon</p>
+  <h2>The glass buddy is the brand's <span class="em">face</span>.</h2>
+  <p class="lead">It changes with each theme inside the app. In marketing, use the default one unless the piece is about themes.</p>
+  <div class="grid g4" style="margin-top:20px">
+    <div class="card" style="text-align:center"><img src="assets/default-128.png" width="96" alt=""><div class="label">Default · use this</div></div>
+    <div class="card" style="text-align:center"><img src="assets/golden-sunbreak-128.png" width="96" alt=""><div class="label">Golden Sunbreak</div></div>
+    <div class="card" style="text-align:center"><img src="assets/halftone-dimension-128.png" width="96" alt=""><div class="label">Halftone Dimension</div></div>
+    <div class="card" style="text-align:center"><img src="assets/kuromi-dreamer-128.png" width="96" alt=""><div class="label">Kuromi Dreamer</div></div>
+    <div class="card" style="text-align:center"><img src="assets/meadow-mist-128.png" width="96" alt=""><div class="label">Meadow Mist</div></div>
+    <div class="card" style="text-align:center"><img src="assets/strawberry-kitty-128.png" width="96" alt=""><div class="label">Strawberry Kitty</div></div>
+    <div class="card" style="text-align:center"><img src="assets/devils-garden-128.png" width="96" alt=""><div class="label">Devil's Garden</div></div>
+  </div>
+  <p style="margin-top:16px">Full-size app icon: <code>youcoded/desktop/assets/icon.png</code> (1024px). Every icon is generated by <code>youcoded/scripts/build-icons.mjs</code>. Never edit the image files by hand.</p>
+</section>
+
+<section id="colour">
+  <p class="kicker">Colour</p>
+  <h2>Mostly lavender and plum, <span class="em">a little purple</span>.</h2>
+  <div class="ratio" style="margin:20px 0 6px" aria-label="Rough proportions">
+    <div style="flex:70;background:#F7F0FB"></div><div style="flex:20;background:#21152C"></div><div style="flex:7;background:#8B47B8"></div><div style="flex:3;background:linear-gradient(100deg,#9D5BD0,#D25AA0)"></div>
+  </div>
+  <div class="label" style="margin-top:0">Roughly 70% background · 20% text · 10% or less purple and gradient</div>
+
+  <h3 style="margin-top:28px">Light (default)</h3>
+  <div class="grid g4">
+    <div class="sw"><div class="chip" style="background:#F7F0FB"></div><div class="meta"><b>Lavender</b><code>#F7F0FB</code><br>Background</div></div>
+    <div class="sw"><div class="chip" style="background:#EFE3F6"></div><div class="meta"><b>Lilac</b><code>#EFE3F6</code><br>Panels</div></div>
+    <div class="sw"><div class="chip" style="background:#C9B0DB"></div><div class="meta"><b>Edge</b><code>#C9B0DB</code><br>Borders</div></div>
+    <div class="sw"><div class="chip" style="background:#21152C"></div><div class="meta"><b>Deep plum</b><code>#21152C</code><br>Text, instead of black</div></div>
+    <div class="sw"><div class="chip" style="background:#43354E"></div><div class="meta"><b>Plum 2</b><code>#43354E</code><br>Secondary text</div></div>
+    <div class="sw"><div class="chip" style="background:#8A7B96"></div><div class="meta"><b>Grey-violet</b><code>#8A7B96</code><br>Taglines only</div></div>
+    <div class="sw"><div class="chip" style="background:#8B47B8"></div><div class="meta"><b>Brand purple</b><code>#8B47B8</code><br>The one accent</div></div>
+    <div class="sw"><div class="chip" style="background:linear-gradient(100deg,#9D5BD0,#D25AA0)"></div><div class="meta"><b>Gradient</b><code>#9D5BD0 → #D25AA0</code><br>"you", one bold moment</div></div>
+  </div>
+
+  <h3 style="margin-top:28px">Dark</h3>
+  <div class="grid g4">
+    <div class="sw"><div class="chip" style="background:#140B1E"></div><div class="meta"><b>Plum-black</b><code>#140B1E</code><br>Background, never #000</div></div>
+    <div class="sw"><div class="chip" style="background:#1F1329"></div><div class="meta"><b>Panel</b><code>#1F1329</code></div></div>
+    <div class="sw"><div class="chip" style="background:#F3EAF9"></div><div class="meta"><b>Light text</b><code>#F3EAF9</code></div></div>
+    <div class="sw"><div class="chip" style="background:#B3A8BC"></div><div class="meta"><b>Soft text</b><code>#B3A8BC</code></div></div>
+    <div class="sw"><div class="chip" style="background:#C99BF0"></div><div class="meta"><b>Light purple</b><code>#C99BF0</code><br>Accent on dark</div></div>
+  </div>
+
+  <h3 style="margin-top:28px">Readability (measured)</h3>
+  <div class="card"><table>
+    <tr><th>Pair</th><th>Contrast</th><th>OK for</th></tr>
+    <tr><td><span style="color:#21152C;font-weight:700">Plum</span> on lavender</td><td>15.6 : 1</td><td>Everything</td></tr>
+    <tr><td><span style="color:#8B47B8;font-weight:700">Brand purple</span> on lavender</td><td>5.1 : 1</td><td>Text and buttons</td></tr>
+    <tr><td><span style="background:#8B47B8;color:#fff;padding:1px 6px;border-radius:4px">White</span> on brand purple</td><td>5.7 : 1</td><td>Buttons</td></tr>
+    <tr><td><span style="color:#D25AA0;font-weight:700">Gradient ends</span> on lavender</td><td>3.3–3.9 : 1</td><td>Large type only (the logo)</td></tr>
+    <tr><td><span style="color:#8A7B96;font-weight:700">Grey-violet</span> on lavender</td><td>3.5 : 1</td><td>Taglines only, never body text</td></tr>
+    <tr><td><span style="background:#140B1E;color:#C99BF0;padding:1px 6px;border-radius:4px">Light purple</span> on plum-black</td><td>8.6 : 1</td><td>Accent on dark</td></tr>
+    <tr><td><span style="background:#140B1E;color:#8B47B8;padding:1px 6px;border-radius:4px">Brand purple</span> on plum-black</td><td>3.4 : 1</td><td>Avoid</td></tr>
+  </table></div>
+
+  <h3 style="margin-top:28px">Not our look</h3>
+  <div class="grid g3">
+    <div class="dd dont"><div class="stage" style="background:radial-gradient(circle at 50% 50%,#7dd3fc 0,#6366f1 40%,#1e1b4b 100%)"><span style="font:800 26px 'DM Sans';color:#fff;text-shadow:0 0 20px #a5b4fc">✨ AI ✨</span></div><div class="cap"><b>Don't</b>blue-purple glow, orbs, sparkles</div></div>
+    <div class="dd dont"><div class="stage" style="background:#000"><span style="font:800 26px 'DM Sans';color:#f59e0b">Pure black + gold</span></div><div class="cap"><b>Don't</b>pure black, or a non-purple accent on dark</div></div>
+    <div class="dd do"><div class="stage" style="background:#140B1E"><span style="font:900 30px/1 'DM Sans';letter-spacing:-.05em;color:#F3EAF9">Make it <span style="color:#C99BF0">yours.</span></span></div><div class="cap"><b>Do</b>plum-black with the light purple</div></div>
+  </div>
+</section>
+
+<section id="type">
+  <p class="kicker">Type</p>
+  <h2>Three typefaces. <span class="em">No others.</span></h2>
+  <div class="card" style="margin-top:20px">
+    <div class="spec"><div><div class="label" style="margin:0">Outfit 600 · −3.5%</div>The logo</div><div style="font:600 40px/1 'Outfit';letter-spacing:-.035em">youcoded</div></div>
+    <div class="spec"><div><div class="label" style="margin:0">Outfit 400</div>Tagline, nav, setup</div><div style="font:400 22px 'Outfit';color:#8A7B96">open source everything</div></div>
+    <div class="spec"><div><div class="label" style="margin:0">DM Sans 900 · −5%</div>Big headline</div><div style="font:900 44px/.97 'DM Sans';letter-spacing:-.05em">Whatever you want it <span class="em">to be.</span></div></div>
+    <div class="spec"><div><div class="label" style="margin:0">DM Sans 800 · −4%</div>Section heading</div><div style="font:800 28px/1.1 'DM Sans';letter-spacing:-.04em">Connect your services.</div></div>
+    <div class="spec"><div><div class="label" style="margin:0">DM Sans 400</div>Body</div><div style="font:400 16px/1.6 'DM Sans';color:#43354E">Ask it for a control panel for your house, a page for your money, or a game for a slow afternoon.</div></div>
+    <div class="spec"><div><div class="label" style="margin:0">JetBrains Mono 500</div>Kicker</div><div class="kicker" style="margin:0">What is this?</div></div>
+  </div>
+</section>
+
+<section id="voice">
+  <p class="kicker">Voice</p>
+  <h2>Hopeful, plain, honest, <span class="em">a little defiant.</span></h2>
+  <div class="grid g2" style="margin-top:20px">
+    <div class="dd do"><div class="stage" style="min-height:110px;justify-content:flex-start"><span style="font:500 17px/1.45 'DM Sans'">Ask it for a page that tracks every bill, and it builds one. On any AI model, even a free one on your own computer.</span></div><div class="cap"><b>Do</b>one concrete example, everyday words</div></div>
+    <div class="dd dont"><div class="stage" style="min-height:110px;justify-content:flex-start"><span style="font:500 17px/1.45 'DM Sans'">Unleash a seamless, model-agnostic agentic harness that supercharges your workflow.</span></div><div class="cap"><b>Don't</b>jargon and AI-ad clichés</div></div>
+    <div class="dd do"><div class="stage" style="min-height:110px;justify-content:flex-start"><span style="font:500 17px/1.45 'DM Sans'">You don't need to know how to code. If you can use ChatGPT, you can use YouCoded.</span></div><div class="cap"><b>Do</b>invite everyone in</div></div>
+    <div class="dd dont"><div class="stage" style="min-height:110px;justify-content:flex-start"><span style="font:500 17px/1.45 'DM Sans'">Coding is obsolete. Developers are about to be replaced.</span></div><div class="cap"><b>Don't</b>dig at people who code</div></div>
+  </div>
+  <div class="words card" style="margin-top:20px">
+    <div><h3>Prefer</h3><ul><li>assistant, app, your own computer</li><li>any AI model, free, open source</li><li>pages, themes, add-ons, files</li><li>asks before it acts</li></ul></div>
+    <div><h3>Avoid</h3><ul><li>harness, LLM, inference, agentic</li><li>model-agnostic, local-first, BYOK</li><li>artifacts, autonomous</li><li>"a GUI for Claude Code"</li></ul></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>Never write</h3>
+    <p style="margin:0"><span class="strike">real app</span> · <span class="strike">real files</span> · <span class="strike">actually reads</span> · <span class="strike">does real work</span> · <span class="strike">self-improving</span> · <span class="strike">unleash</span> · <span class="strike">supercharge</span> · <span class="strike">seamless</span> · <span class="strike">revolutionize</span> · <span class="strike">next-generation</span> · <span class="strike">game-changer</span> · <span class="strike">your AI copilot</span></p>
+  </div>
+</section>
+
+<section id="examples" style="border-bottom:0">
+  <p class="kicker">Examples</p>
+  <h2>Put together.</h2>
+  <div class="grid g3" style="margin-top:20px;align-items:start">
+    <div><div class="endcard"><img src="assets/default-128.png" alt=""><div class="wm" style="--s:38px"><span class="you">you</span>coded</div><div class="kicker" style="margin:4px 0 0;color:#21152C">youcoded.ai</div><div class="kicker" style="margin:0;font-size:9px">Free · Windows · Mac · Linux · Android</div></div><div class="label" style="text-align:center">Film end card (9:16), held ≥ 2.5 s</div></div>
+    <div><div class="poster"><div><p class="kicker">Open source</p><div style="font:900 32px/.97 'DM Sans';letter-spacing:-.05em">Make your technology <span class="em">yours.</span></div></div><div class="lockup" style="--s:22px"><img src="assets/default-128.png" alt=""><div class="wm"><span class="you">you</span>coded<span class="tag">open source everything</span></div></div></div><div class="label" style="text-align:center">Feed poster (4:5)</div></div>
+    <div><div class="poster night"><div><p class="kicker">Any AI model</p><div style="font:900 32px/.97 'DM Sans';letter-spacing:-.05em">Even the <span class="em">free</span> ones on your own computer.</div></div><div class="lockup" style="--s:22px"><img src="assets/default-128.png" alt=""><div class="wm"><span class="you">you</span>coded<span class="tag" style="color:#B3A8BC">open source everything</span></div></div></div><div class="label" style="text-align:center">Dark poster (4:5)</div></div>
+  </div>
+</section>
+
+</main>
+<footer><div class="wrap">Source of truth: <code>docs/brand/README.md</code> in the youcoded-dev workspace. Changes need Destin's approval.</div></footer>
+</body>
+</html>
