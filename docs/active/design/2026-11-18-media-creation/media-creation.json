@@ -4,7 +4,7 @@
   "tag": "feature",
   "out": "media-creation.html",
   "grows": true,
-  "stage": "understanding",
+  "stage": "design",
   "retired": {},
   "steps": [
     {
@@ -625,6 +625,591 @@
           "cons": [
             "Every download of the app grows by about 100 MB."
           ]
+        }
+      ]
+    },
+    {
+      "id": "P-designs",
+      "page": "How it looks",
+      "intro": "Two to four drawings of each new card, made from the app's own parts. Pick one each, or say what to change.",
+      "stage": "design"
+    },
+    {
+      "id": "Q-d-approval",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "The card that appears before anything is made",
+      "headline": "Which approval card should appear before a picture, sound or video is made?",
+      "today": "The closest card today is the one the assistant shows before a step that buys or sends something: a question with Yes and No.",
+      "problem": "This card must also show what will be made, a list of makers to switch between, and the price, without becoming a form.",
+      "proposal": "Its own card in the assistant's reply: your request quoted, a Made by list, the price, and an orange Approve, the app's colour for anything that costs money.",
+      "checked": "Drawn on 2026-11-18 in the app's design workbench from its real buttons, cards and menus; nothing like it exists in the app today.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Own card",
+          "picture": "pictures/design-media-approval-b-card.png",
+          "summary": "Request, maker list, price, Decline and an orange Approve.",
+          "pros": [
+            "Every part has its own clear place.",
+            "Uses the orange button the app already keeps for spending money."
+          ],
+          "cons": [
+            "Taller than the other two."
+          ],
+          "reuse": {
+            "from": [
+              "Settings: the app's dropdown, buttons and boxes"
+            ],
+            "new": [
+              "the card's arrangement"
+            ]
+          },
+          "recommended": true
+        },
+        {
+          "id": "ask",
+          "label": "Permission card",
+          "picture": "pictures/design-media-approval-a-ask.png",
+          "summary": "Today's Yes / No permission card, with the maker list under it.",
+          "pros": [
+            "Looks exactly like every other request for permission."
+          ],
+          "cons": [
+            "Its buttons are fixed as Yes and No, green and red, not an orange Approve.",
+            "The maker list sits below the buttons, after the choice."
+          ],
+          "reuse": {
+            "from": [
+              "The permission card, as used by the browser's final-step ask"
+            ],
+            "new": [
+              "the maker list inside it"
+            ]
+          }
+        },
+        {
+          "id": "compact",
+          "label": "One line",
+          "picture": "pictures/design-media-approval-c-compact-open.png",
+          "summary": "One line; the maker button opens a list with price and what each is good at.",
+          "pros": [
+            "Smallest; the chat stays readable.",
+            "The list says what each maker is good at."
+          ],
+          "cons": [
+            "The request is cut short on one line.",
+            "Easy to approve without reading."
+          ],
+          "reuse": {
+            "from": [
+              "The app's small menu"
+            ],
+            "new": [
+              "the one-line layout",
+              "the maker list's lines"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-d-picture",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "A finished picture in the assistant's reply",
+      "headline": "How should a finished picture appear in the chat?",
+      "today": "Finished files arrive on a Deliverables card that you open to see them.",
+      "problem": "You asked for pictures to show full size first. What sits around it decides how busy the chat gets.",
+      "proposal": "The picture full width, with one quiet line under it: maker, cost and file name. Copy, Save as, Open and Show in folder live in its right-click menu.",
+      "checked": "Drawn on 2026-11-18 in the app's design workbench from its real buttons, cards and menus; nothing like it exists in the app today.",
+      "options": [
+        {
+          "id": "bare",
+          "label": "Picture and a line",
+          "picture": "pictures/design-media-picture-result-bare.png",
+          "summary": "Just the picture and a small line under it.",
+          "pros": [
+            "Quietest; the picture is the whole message."
+          ],
+          "cons": [
+            "Open and Show in folder are only in the right-click menu."
+          ],
+          "reuse": {
+            "from": [
+              "The chat's reply bubble"
+            ],
+            "new": [
+              "the picture frame",
+              "the line under it"
+            ]
+          },
+          "recommended": true
+        },
+        {
+          "id": "footer",
+          "label": "With buttons",
+          "picture": "pictures/design-media-picture-result-footer.png",
+          "summary": "The same, with Show in folder and Open buttons on the line.",
+          "pros": [
+            "Actions are visible without knowing about right-click."
+          ],
+          "cons": [
+            "Two more buttons under every picture."
+          ],
+          "reuse": {
+            "from": [
+              "The app's outlined buttons"
+            ],
+            "new": [
+              "the picture frame",
+              "the line under it"
+            ]
+          }
+        },
+        {
+          "id": "files",
+          "label": "With files card",
+          "picture": "pictures/design-media-picture-result-deliverables.png",
+          "summary": "The picture, then today's Deliverables card under it.",
+          "pros": [
+            "Matches how other finished files arrive."
+          ],
+          "cons": [
+            "The file is shown twice: picture and card."
+          ],
+          "reuse": {
+            "from": [
+              "The Deliverables card"
+            ],
+            "new": [
+              "the picture frame"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-d-sound",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "A sound in the chat, made or sent",
+      "headline": "Which sound card should play sounds in the chat?",
+      "today": "The chat cannot play sound today.",
+      "problem": "The card has to be small enough to sit in a reply, yet show what the sound is and how far it has played.",
+      "proposal": "One slim line: play or pause, a wave that fills as it plays, and the time. The same line sits in your own message when you send a recording.",
+      "checked": "Drawn on 2026-11-18 in the app's design workbench from its real buttons, cards and menus; nothing like it exists in the app today.",
+      "options": [
+        {
+          "id": "pill",
+          "label": "Slim line",
+          "picture": "pictures/design-media-sound-card-pill.png",
+          "summary": "Play, a filling wave and the time, on one line.",
+          "pros": [
+            "Small; fits in a reply or your own message."
+          ],
+          "cons": [
+            "No name or maker shown on it."
+          ],
+          "reuse": {
+            "from": [
+              "The chat's reply bubble"
+            ],
+            "new": [
+              "the play button",
+              "the wave"
+            ]
+          },
+          "recommended": true
+        },
+        {
+          "id": "card",
+          "label": "Card with name",
+          "picture": "pictures/design-media-sound-card-card.png",
+          "summary": "A card with the sound's name and maker, a bigger wave and Show in folder.",
+          "pros": [
+            "Says what the sound is and where it came from."
+          ],
+          "cons": [
+            "About three times taller."
+          ],
+          "reuse": {
+            "from": [
+              "The app's outlined button"
+            ],
+            "new": [
+              "the card's layout",
+              "the play button",
+              "the wave"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-d-video",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "A video being made, and a finished one",
+      "headline": "Which video card should show a video being made and then finished?",
+      "today": "The chat cannot show video today, and nothing takes minutes to arrive.",
+      "problem": "A video takes minutes. You need to see it is coming and keep chatting, then open it in your own video player.",
+      "proposal": "A card that shows progress and Stop while it is made, then the first frame, length, maker and Open.",
+      "checked": "Drawn on 2026-11-18 in the app's design workbench from its real buttons, cards and menus; nothing like it exists in the app today.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Card",
+          "picture": "pictures/design-media-video-card-card.png",
+          "summary": "Progress and Stop while making; then first frame, details and Open.",
+          "pros": [
+            "Clear in both states."
+          ],
+          "cons": [
+            "Medium size in the chat."
+          ],
+          "reuse": {
+            "from": [
+              "The app's progress bar, fact chips and buttons"
+            ],
+            "new": [
+              "the card's layout"
+            ]
+          },
+          "recommended": true
+        },
+        {
+          "id": "row",
+          "label": "Slim row",
+          "picture": "pictures/design-media-video-card-row.png",
+          "summary": "The same two states, as one slim row each.",
+          "pros": [
+            "Smallest."
+          ],
+          "cons": [
+            "The first frame is tiny."
+          ],
+          "reuse": {
+            "from": [
+              "The app's progress bar and buttons"
+            ],
+            "new": [
+              "the row's layout"
+            ]
+          }
+        },
+        {
+          "id": "poster",
+          "label": "Big frame",
+          "picture": "pictures/design-media-video-card-poster.png",
+          "summary": "The first frame full width, like a picture, with Open.",
+          "pros": [
+            "Looks most like the result."
+          ],
+          "cons": [
+            "Looks playable but opens elsewhere.",
+            "No drawing yet of the making state."
+          ],
+          "reuse": {
+            "from": [
+              "The app's fact chip and button"
+            ],
+            "new": [
+              "the frame layout"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-d-limit",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "When a chat reaches its spending limit",
+      "headline": "Which card should appear when a chat reaches its spending limit?",
+      "today": "No spending limit exists today.",
+      "problem": "The card must say what was spent and let you raise this chat's limit, in five dollar steps, without hiding the way to stop.",
+      "proposal": "A card like the approval card: spent so far, a full bar, the new limit to pick, Stop and an orange Continue.",
+      "checked": "Drawn on 2026-11-18 in the app's design workbench from its real buttons, cards and menus; nothing like it exists in the app today.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Card",
+          "picture": "pictures/design-media-limit-card-card.png",
+          "summary": "Matches the own-card approval design.",
+          "pros": [
+            "Same look as the approval card beside it."
+          ],
+          "cons": [
+            "Taller than a notice."
+          ],
+          "reuse": {
+            "from": [
+              "The app's progress bar, dropdown and buttons"
+            ],
+            "new": [
+              "the card's layout"
+            ]
+          },
+          "recommended": true
+        },
+        {
+          "id": "notice",
+          "label": "Warning box",
+          "picture": "pictures/design-media-limit-card-notice.png",
+          "summary": "The app's amber warning box with the choice inside.",
+          "pros": [
+            "Clearly a warning."
+          ],
+          "cons": [
+            "Amber may feel like an error rather than a choice."
+          ],
+          "reuse": {
+            "from": [
+              "The app's warning box, dropdown and buttons"
+            ],
+            "new": [
+              "the choice inside the box"
+            ]
+          }
+        },
+        {
+          "id": "ask",
+          "label": "Permission card",
+          "picture": "pictures/design-media-limit-card-ask.png",
+          "summary": "Today's Yes / No permission card.",
+          "pros": [
+            "Matches the permission-card approval design."
+          ],
+          "cons": [
+            "Yes and No, not Continue and Stop."
+          ],
+          "reuse": {
+            "from": [
+              "The permission card"
+            ],
+            "new": [
+              "the dropdown inside it"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "L-states",
+      "words": true,
+      "surface": "Chat",
+      "path": "Other states of the new cards",
+      "headline": "Other moments the cards must cover",
+      "calls": [
+        {
+          "id": "S-edit",
+          "call": "Editing a picture you attached: the card shows a small copy of it beside your request.",
+          "why": "So you can see which picture will be changed.",
+          "visual": true,
+          "picture": "pictures/design-media-approval-b-card-edit.png",
+          "more": {
+            "today": "Attached pictures appear only in your own message.",
+            "problem": "With several pictures in a chat, it is unclear which one gets changed.",
+            "change": "Drawn on the own-card design; the same thumbnail goes on whichever design you pick."
+          }
+        },
+        {
+          "id": "S-chatgpt",
+          "call": "With only a ChatGPT plan connected: the card says a paid service is needed, with Open chatgpt.com and Connect a service.",
+          "why": "As agreed: two ways forward, nothing to approve.",
+          "visual": true,
+          "picture": "pictures/design-media-approval-b-chatgpt-only.png",
+          "more": {
+            "today": "A ChatGPT plan can chat but cannot pay for pictures in our app.",
+            "problem": "A card with nothing to approve would be a dead end.",
+            "change": "Connect a service opens Cloud providers."
+          }
+        },
+        {
+          "id": "S-menu",
+          "call": "Right-clicking a picture opens the app's menu: Copy, Save as, Open, Show in folder.",
+          "why": "As agreed; on a phone a long press opens it.",
+          "visual": true,
+          "picture": "pictures/design-media-picture-result-menu.png",
+          "more": {
+            "today": "Pictures in the chat have no menu.",
+            "problem": "Saving a picture elsewhere means finding its file.",
+            "change": "The same menu works on attached pictures too."
+          }
+        },
+        {
+          "id": "S-sent",
+          "call": "A recording you send shows as the same sound line inside your own message.",
+          "why": "So your recordings and the assistant's sounds play the same way.",
+          "visual": true,
+          "picture": "pictures/design-media-sound-card-sent.png",
+          "more": {
+            "today": "The microphone only turns speech into typed words.",
+            "problem": "How you choose between typing by voice and sending a recording is still to be designed.",
+            "change": "Only the look is shown here; that choice comes in a later drawing."
+          }
+        },
+        {
+          "id": "S-light",
+          "call": "In light themes the cards follow the theme; the orange Approve stays orange.",
+          "why": "The app keeps one fixed orange for spending money on every theme.",
+          "visual": true,
+          "picture": "pictures/design-media-approval-b-card-light.png",
+          "more": {
+            "today": "Fast mode's Turn on button already works this way.",
+            "problem": "A theme-coloured Approve would not read as spending money.",
+            "change": "Every design follows each theme the same way."
+          }
+        }
+      ]
+    },
+    {
+      "id": "P-defaults",
+      "page": "Starting settings",
+      "intro": "What happens before anyone changes a setting. Tick each one that is fine, or press the pencil to change it.",
+      "stage": "design"
+    },
+    {
+      "id": "L-defaults",
+      "words": true,
+      "surface": "Pictures, sound and video",
+      "path": "Before any setting is changed",
+      "headline": "How it behaves out of the box",
+      "calls": [
+        {
+          "id": "D-first-maker",
+          "call": "The first time, the card starts on Google's Nano Banana 2.1.",
+          "why": "It is among the cheapest good makers, about three cents a picture, and can also edit an attached picture.",
+          "more": {
+            "today": "Nothing is chosen, because nothing exists yet.",
+            "problem": "Starting on an expensive maker surprises people; starting on a weak one disappoints them.",
+            "change": "After the first picture, the card starts on whatever you picked last."
+          }
+        },
+        {
+          "id": "D-one-picture",
+          "call": "Each approval makes one picture.",
+          "why": "Several at once multiplies the price; you can ask for more.",
+          "more": {
+            "today": "Some apps make four at a time.",
+            "problem": "Four pictures cost four times as much, often without being asked for.",
+            "change": "Ask for \"three versions\" and the card shows the price for three."
+          }
+        },
+        {
+          "id": "D-shape",
+          "call": "The assistant picks the picture's shape from your request, and the card shows it.",
+          "why": "\"A phone wallpaper\" should come out tall without you naming sizes.",
+          "more": {
+            "today": "Nothing to pick yet.",
+            "problem": "A fixed square shape is wrong for wallpapers, banners and slides.",
+            "change": "The shape and size appear on the card before you approve, so you can say if it is wrong."
+          }
+        },
+        {
+          "id": "D-folder",
+          "call": "Made files go in a folder named \"Made with AI\" inside the project.",
+          "why": "A plain name says what is in it; the assistant can move files out to where they belong.",
+          "more": {
+            "today": "September's plan called it a scratch pictures folder, unnamed.",
+            "problem": "An unclear name gets the folder mistaken for project files.",
+            "change": "Sound and video go in the same folder as pictures."
+          }
+        },
+        {
+          "id": "D-personal-folder",
+          "call": "A chat with no project saves to Pictures, then YouCoded, on your computer.",
+          "why": "That is where people look for pictures, and it is kept until you delete it.",
+          "more": {
+            "today": "Chats without a project have no folder for files.",
+            "problem": "A hidden app folder would be hard to find.",
+            "change": "Sound and video made there go to the same folder."
+          }
+        },
+        {
+          "id": "D-limit",
+          "call": "Every chat starts with five dollars to spend on made items.",
+          "why": "Your choice: it covers pictures, sound and video together.",
+          "more": {
+            "today": "No limit exists, because nothing costs per use.",
+            "problem": "Without a limit, a loop or misunderstanding could spend real money.",
+            "change": "Raising it applies to that chat only; a new chat starts at five dollars again."
+          }
+        },
+        {
+          "id": "D-voice",
+          "call": "Read aloud starts on the built-in free voice.",
+          "why": "It costs nothing and works offline; a cloud voice is one setting away.",
+          "more": {
+            "today": "Nothing reads aloud today.",
+            "problem": "Starting on a paid voice would charge people who never chose it.",
+            "change": "The built-in voice downloads, about 100 MB, the first time you press Read aloud."
+          }
+        },
+        {
+          "id": "D-phone",
+          "call": "On the phone, a long press does what right-click does on the computer.",
+          "why": "Phones have no right-click; the same menu opens.",
+          "more": {
+            "today": "Phones open the remote app, with no right-click.",
+            "problem": "The Read aloud and picture menus would be unreachable on a phone.",
+            "change": "Everything else, cards included, looks the same at phone width."
+          }
+        }
+      ]
+    },
+    {
+      "id": "L-failures",
+      "words": true,
+      "surface": "Pictures, sound and video",
+      "path": "When something goes wrong",
+      "headline": "What you see when making something fails",
+      "calls": [
+        {
+          "id": "F-refused",
+          "call": "The service refuses the request: a notice in place of the result says it refused, and nothing is charged.",
+          "why": "Services turn down some requests, for example real people or violence.",
+          "more": {
+            "today": "Nothing to refuse yet.",
+            "problem": "A silent failure leaves you waiting.",
+            "change": "The assistant can suggest a different wording; it never retries by itself."
+          }
+        },
+        {
+          "id": "F-no-service",
+          "call": "No paid service is connected: the card says so, with a button to Cloud providers.",
+          "why": "Nobody should get as far as Approve with nothing to pay with.",
+          "more": {
+            "today": "The Cloud providers page holds keys only for chatting.",
+            "problem": "A card with nothing to approve is a dead end.",
+            "change": "A ChatGPT-plan chat also mentions chatgpt.com, as agreed."
+          }
+        },
+        {
+          "id": "F-no-credit",
+          "call": "The service says the account is out of credit: a notice says so, with a button to that service's billing page.",
+          "why": "Prepaid services stop when the credit runs out.",
+          "more": {
+            "today": "Nothing to pay for yet.",
+            "problem": "A raw error from the service means nothing to most people.",
+            "change": "Nothing is charged by our app for a failed attempt."
+          }
+        },
+        {
+          "id": "F-video-closed",
+          "call": "If the app closes while a video is being made, it is fetched the next time you open that chat.",
+          "why": "Video takes minutes, and the service has already been paid.",
+          "more": {
+            "today": "Nothing takes minutes today.",
+            "problem": "Losing a paid video because the app closed would waste money.",
+            "change": "The card shows \"still being made\" until it arrives."
+          }
         }
       ]
     }
