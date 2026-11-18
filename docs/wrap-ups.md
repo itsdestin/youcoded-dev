@@ -1514,3 +1514,12 @@ recurred — the repetition is the data.
 - A web chat's "two overlooked ROCm settings" cost ~1.5 hours to disprove: one no longer exists at b10665 (`AMD_WMMA_AVAILABLE` is compiled in), the other is a no-op on Arch/CachyOS because the system `librocblas.so` is built without hipBLASLt → applied: `youcoded/docs/engine-dependencies.md` (ROCm vs Vulkan, measured), so the next session reads the answer instead of testing it.
 - Destin's ideas that were filed nowhere: wide real-world testing and per-device default (deck 1), save a chat's place to disk → cards #262, #263. The review's six unfixed rough edges lived only in the status page, which is archived at merge → card #264.
 - deleted/merged: none found; looked at the status page's "Research leads not pursued" (two leads struck through in place rather than a second list).
+
+## 2026-11-18 — writing down what YouCoded is for (session/vision-statement, youcoded-dev PR #380, youcoded PR #764, cards #268, #269)
+- Destin's test question "what is youcoded?" got a narrow "assistant with extras" answer: the big vision lived only in `docs/vision/…voice-notes.md`, which nothing but an old wrap-up linked, and CLAUDE.md gave it one clause → applied: `docs/vision/VISION.md` plus a short summary at the top of CLAUDE.md's About section (every session now loads it).
+- The Work board's feature-level vision map (`pages/work-board/renderer/vision-skeleton.json`) existed but was found only by chasing a card's `vision:` field (~3 calls) → applied: VISION.md links it.
+- The assistant inside the app is told one sentence about YouCoded; Claude Code run by the app is told nothing → card #268 (umbrella, linked to #234, #57, #52, #63, #214).
+- CLAUDE.md names a deleted-folder 2026-08-31 handoff as website "Copy authority" → card #269 (guidance edit waits for Destin).
+- A website redesign proposed in prose was rejected ("i dont really like a lot of your website recommendations"); Destin parked the website → no new note: `~/system/me/preferences.md` already says show working variants first. RECURRED in kind: proposing design in words.
+- Destin declined pointing the idea-filing guide at VISION.md → dropped at his word.
+- deleted/merged: none found; looked at the voice notes (kept verbatim as the source VISION.md cites).
