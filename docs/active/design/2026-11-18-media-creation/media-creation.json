@@ -1,6 +1,7 @@
 {
   "title": "Make pictures, read-aloud and video from a chat",
   "key": "media-creation",
+  "tag": "feature",
   "out": "media-creation.html",
   "grows": true,
   "stage": "understanding",
@@ -21,7 +22,8 @@
       "changed": "We build making pictures first. Reading replies aloud comes next, video after that. Searching by meaning stays an idea to explore later, not something we build now.",
       "notice": "The first version you try only makes pictures. Read-aloud and video come in later versions.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "resolved": "All three are now planned together, as you chose; they are still built in that order. Read-aloud, sound and video statements are on their own pages."
     },
     {
       "id": "U-chat-only",
@@ -32,31 +34,34 @@
       "changed": "You type something like \"make me a poster of…\" in a chat. The assistant writes the picture request for you. No new screen, button or menu is added to start it.",
       "notice": "Making pictures feels like part of talking to the assistant, not a separate tool.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "resolved": "Kept in the chat, and the assistant must ask clearly and suggest other ways first (its own statement). The separate studio is filed as an idea for later."
     },
     {
       "id": "U-approve-card",
       "words": true,
       "surface": "Chat",
       "path": "A chat where the assistant offers to make a picture",
-      "headline": "Nothing is made, and nothing is paid, until you press Approve on a card in the chat.",
-      "changed": "Before any picture is made, a card appears in the chat. It shows what will be made, which service makes it and the price. You can switch to a better or cheaper option on the card, then approve or decline.",
-      "notice": "Every picture costs one press of yours. A declined card costs nothing.",
+      "headline": "Nothing is made, and nothing is paid, until you press Approve on a card in the chat, except in Full Auto.",
+      "changed": "Before any picture, sound or video is made, a card appears in the chat showing what will be made, which service makes it and the price. In Full Auto, the permission setting that never asks, the card is skipped and the work starts at once.",
+      "notice": "In normal chats every item costs one press of yours. In Full Auto things get made without asking; the cost shows afterwards.",
       "picture": "pictures/today-approval-card.png",
       "caption": "Today's closest relative: the card the assistant shows before a step that buys, sends or submits something. The picture card would sit in the same place.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "reopened": "You agreed, but said Full Auto should go ahead without the card."
     },
     {
       "id": "U-remember-model",
       "words": true,
       "surface": "Chat",
       "path": "The approval card",
-      "headline": "The card starts on the last option you approved, when that option can do the job.",
-      "changed": "The app remembers the picture option you last approved. If it can't do the new job (for example it can't edit an attached picture), the card picks another and says why.",
-      "notice": "You don't pick a service every time. The price can change only when the card tells you why.",
+      "headline": "The card remembers which picture maker you picked last time and starts on it.",
+      "changed": "The card has a list of picture makers, cheap and pricey, to pick from before you approve. Next time, the list starts on the one you picked last, so you don't choose again each time.",
+      "notice": "Say you switch to a cheaper maker once. From then on the card starts on that cheaper one until you change it.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "reopened": "This read as confusing; here it is plainly."
     },
     {
       "id": "U-create-edit",
@@ -80,7 +85,8 @@
       "picture": "pictures/today-files-card.png",
       "caption": "Today the assistant hands you finished files on a Deliverables card like these. A finished picture would arrive the same way.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "resolved": "Added as its own statement: every made file carries a label saying it was made by AI and with which model, so you can find and filter them."
     },
     {
       "id": "U-local-connect",
@@ -99,10 +105,11 @@
       "surface": "Chat",
       "path": "A chat signed in with a ChatGPT plan",
       "headline": "A ChatGPT plan sign-in cannot pay for pictures; a separately paid service is always needed.",
-      "changed": "ChatGPT's own app makes pictures on your plan, but OpenAI does not let other apps use the plan for that. Pictures in our app need a service you pay separately, such as OpenRouter or an OpenAI key. The card says so plainly in a ChatGPT-plan chat.",
-      "notice": "Someone with only a ChatGPT plan sees a card saying they need to connect a paid picture service first.",
+      "changed": "OpenAI does not let other apps use a ChatGPT plan to make pictures. Pictures in our app need a separately paid service, such as OpenRouter or an OpenAI key. In a ChatGPT-plan chat the card says so, and says you can make pictures on your plan at chatgpt.com instead.",
+      "notice": "Someone with only a ChatGPT plan sees two ways forward: connect a paid service here, or use chatgpt.com.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "reopened": "You agreed, and asked that the card also point to ChatGPT's own website."
     },
     {
       "id": "U-today",
@@ -126,12 +133,146 @@
       "proposal": "Anything you write here shapes the first drawings. Leaving it empty is fine.",
       "checked": "Nothing has been drawn for this feature as of 2026-11-18.",
       "answer": "words",
-      "prompt": "For example: the card should look like…, the picture should appear…"
+      "prompt": "For example: the card should look like…, the picture should appear…",
+      "resolved": "Each idea became its own statement: the right-click Read aloud, the built-in voice, the sound card, pictures shown full size, the picture menu and the video card."
+    },
+    {
+      "id": "P-pictures",
+      "page": "Pictures and video in the chat",
+      "intro": "From your notes: how made pictures and videos show up, and how the assistant decides to make one.",
+      "stage": "understanding"
+    },
+    {
+      "id": "U-ask-first",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any chat",
+      "headline": "The assistant offers a paid picture, sound or video only when you clearly ask, and suggests other ways where they fit.",
+      "changed": "Before reaching for a paid maker, the assistant considers drawing it another way, such as a chart, a simple drawing it writes itself, or a 3D program like Blender, and gives you the pros and cons.",
+      "notice": "A request like \"make a diagram\" may get a drawn diagram instead of a paid picture, with a note on why.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-full-size",
+      "words": true,
+      "surface": "Chat",
+      "path": "A finished picture in a chat",
+      "headline": "A finished picture always shows full size in the chat first, not as a small file card.",
+      "changed": "The made picture appears in the assistant's reply at full width, as the result. It may also be listed on a files card, but the picture itself always comes first.",
+      "notice": "You see the picture straight away without opening anything.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-picture-menu",
+      "words": true,
+      "surface": "Chat",
+      "path": "Right-click any picture in a chat",
+      "headline": "Right-clicking a picture in the chat opens a menu: copy, save as, open, show in folder.",
+      "changed": "Every picture in the chat, made or attached, gets a right-click menu with Copy, Save as, Open and Show in folder.",
+      "notice": "You can paste a picture into another app, or save it somewhere else, in two clicks.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-label",
+      "words": true,
+      "surface": "Project files",
+      "path": "Every made picture, sound and video file",
+      "headline": "Every made file carries a label saying it was made by AI, with which maker and when.",
+      "changed": "The label is written inside the file itself, so it stays when the file is moved or copied. The app's file lists can show and filter by it.",
+      "notice": "You can always tell a made picture from a photo, and list only made files.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-video-card",
+      "words": true,
+      "surface": "Chat",
+      "path": "A finished video in a chat",
+      "headline": "A finished video shows as a card in the chat that opens in your computer's video player; it does not play in the chat.",
+      "changed": "The card shows the video's first frame, its length and an Open button. Making a video takes minutes; the card shows progress meanwhile, and you can keep chatting.",
+      "notice": "Video never slows the chat down. Watching it opens your usual video player.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-video-services",
+      "words": true,
+      "surface": "The approval card",
+      "path": "The list of video makers on the card",
+      "headline": "Video is made through OpenRouter or a Google key; OpenAI no longer offers video.",
+      "changed": "OpenRouter reaches several video makers, including Google's. A Google key reaches Google's directly. OpenAI shut its video service in September 2026.",
+      "notice": "Video costs more than pictures, often a dollar or more per clip; the card shows the estimate before you approve.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-sound",
+      "page": "Read-aloud and sound",
+      "intro": "From your notes: reading messages aloud, the voices, and playing sound in the chat.",
+      "stage": "understanding"
+    },
+    {
+      "id": "U-read-menu",
+      "words": true,
+      "surface": "Chat",
+      "path": "Right-click any message",
+      "headline": "Right-clicking any message, yours or the assistant's, offers Read aloud.",
+      "changed": "Read aloud is a new choice in each message's right-click menu. It plays the message in the chosen voice, with a way to stop it.",
+      "notice": "Any message can be listened to, without asking the assistant.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-voice-builtin",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings, where the voice is chosen",
+      "headline": "A pleasant free voice is built into the app; a setting swaps it for a cloud voice paid with your key.",
+      "changed": "The built-in voice runs on your computer, free and offline. A setting switches to a finer cloud voice, like how naming chats can use the simple way or the assistant.",
+      "notice": "Read aloud works for everyone at no cost. Better voices are one setting away.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-voice-services",
+      "words": true,
+      "surface": "Settings",
+      "path": "The list of cloud voices",
+      "headline": "Cloud voices use the same services as pictures: OpenRouter, or an OpenAI or Google key you already added.",
+      "changed": "No new account is needed: the keys already used for pictures also pay for voices.",
+      "notice": "Google's voices are the cheapest, about a fifth of a cent for ten seconds.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-sound-card",
+      "words": true,
+      "surface": "Chat",
+      "path": "A sound in a chat",
+      "headline": "A sound in the chat shows as a card with play and pause, a simple wave that fills as it plays, and the time.",
+      "changed": "Any sound the assistant makes, and any recording you send, appears in the chat as this card and plays right there.",
+      "notice": "You hear sounds in place, without opening another program.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-send-recording",
+      "words": true,
+      "surface": "Chat",
+      "path": "The message box",
+      "headline": "You can send a voice recording as a message, not only speak to type.",
+      "changed": "Today the microphone turns your speech into typed words. You could also send the recording itself, which appears as a sound card in your message.",
+      "notice": "Useful for sending a sound for the assistant to work with, like a voice to copy or a clip to tidy up.",
+      "yes": "Holds",
+      "no": "Fails"
     },
     {
       "id": "P-decide",
       "page": "What is still open",
-      "intro": "Questions the September chat left open. Each has my recommendation; pick one or write your own.",
+      "intro": "Decisions still open. Each has my recommendation; pick one or write your own.",
       "stage": "understanding"
     },
     {
@@ -267,38 +408,39 @@
       "words": true,
       "surface": "Settings",
       "path": "Settings, where a picture program on your own computer is connected",
-      "headline": "How much should connecting ComfyUI, a free picture program people run on their own computer, ask of them?",
-      "today": "The app can run chat models on your computer, but it has no way to connect to a picture program.",
-      "problem": "ComfyUI has no simple \"make a picture\" button for other apps. Each kind of picture model needs its own saved recipe of steps, and recipes differ from one setup to the next.",
-      "proposal": "You give the app ComfyUI's address (it fills in the usual one for you). The app brings ready recipes for the two or three most common model kinds. Experienced users can add a recipe file of their own.",
+      "headline": "Should the first version connect to ComfyUI, a free picture program some people run, or wait for the app's own free engine?",
+      "today": "Connecting a picture program on your computer, such as ComfyUI, was planned for the first version.",
+      "problem": "Connecting it is about a week of work, but it keeps breaking as people's setups and models change. Few people run it: it needs a strong graphics card and technical setup.",
+      "proposal": "Leave it out of the first version. Keep the idea for when the app brings its own free engine that runs on your computer, which serves everyone, not just ComfyUI users.",
       "checked": "ComfyUI's own documentation read 2026-11-18. The app's local engine code checked the same day: it runs chat models only.",
       "options": [
         {
-          "id": "recipes",
-          "label": "Ready recipes",
+          "id": "skip",
+          "label": "Skip for now",
           "recommended": true,
-          "summary": "Address plus built-in recipes, own files optional.",
+          "summary": "No local picture option in the first version.",
           "pros": [
-            "Most ComfyUI users can connect without exporting anything.",
-            "Experienced users keep full control with their own recipe."
+            "A week sooner, and nothing that breaks with each ComfyUI update.",
+            "The later built-in engine helps everyone, not just ComfyUI users."
           ],
           "cons": [
-            "A setup unlike our ready recipes still needs its own file.",
-            "Our recipes need updating when popular models change."
+            "Pictures cost money until the built-in engine exists.",
+            "The few people who already run ComfyUI wait longer."
           ]
         },
         {
-          "id": "own-file",
-          "label": "Bring your own",
-          "summary": "Address plus a recipe file you export from ComfyUI.",
+          "id": "connect",
+          "label": "Connect ComfyUI",
+          "summary": "As planned in September.",
           "pros": [
-            "Works with any setup, and is less for us to keep up to date."
+            "A free choice on the card for people who already run it."
           ],
           "cons": [
-            "Exporting a recipe is a technical step most people won't know."
+            "About a week more, plus ongoing fixes as setups change."
           ]
         }
-      ]
+      ],
+      "reopened": "You asked how hard connecting ComfyUI would be, and whether to skip it until the app has its own engine."
     },
     {
       "id": "Q-claude-code",
@@ -407,6 +549,81 @@
           ],
           "cons": [
             "Weeks more silence on a request from a real user."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-auto-limit",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings, Permissions, Full Auto",
+      "headline": "In Full Auto, should an expensive picture, sound or video still stop and ask?",
+      "today": "Full Auto lets the assistant act without asking. Nothing it does today costs per use.",
+      "problem": "One video can cost a dollar or more. In Full Auto a misunderstanding, or a loop, could spend real money before you notice.",
+      "proposal": "Full Auto skips the card for anything under a price you set, one dollar to start. Above it, the card still appears.",
+      "checked": "Full Auto checked in today's app code on 2026-11-18. Video prices from OpenRouter's and Google's pages, read the same day.",
+      "options": [
+        {
+          "id": "limit",
+          "label": "Ask above a limit",
+          "recommended": true,
+          "summary": "Full Auto stops only for items over your limit.",
+          "pros": [
+            "Small items flow without asking.",
+            "A mistake can't quietly spend much."
+          ],
+          "cons": [
+            "One more setting.",
+            "A pricey video still interrupts Full Auto."
+          ]
+        },
+        {
+          "id": "never",
+          "label": "Never ask",
+          "summary": "Full Auto makes everything without the card.",
+          "pros": [
+            "Full Auto never stops."
+          ],
+          "cons": [
+            "Nothing caps what a mistake can spend."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-voice-download",
+      "words": true,
+      "surface": "Settings",
+      "path": "The first time you use Read aloud",
+      "headline": "Should the built-in voice come with the app, or download the first time you use Read aloud?",
+      "today": "Voice typing works this way: its speech model, about 640 MB, downloads the first time you use the microphone.",
+      "problem": "A built-in voice adds about 100 MB. Inside the app, everyone downloads it; on first use, the first Read aloud waits for it.",
+      "proposal": "Download it the first time you press Read aloud, with a progress bar, like voice typing does.",
+      "checked": "Voice typing download read in today's app code on 2026-11-18. Voice size is typical of small free voices such as Piper and Kokoro.",
+      "options": [
+        {
+          "id": "first-use",
+          "label": "On first use",
+          "recommended": true,
+          "summary": "Downloads when you first press Read aloud.",
+          "pros": [
+            "The app stays smaller for people who never use it.",
+            "Works like voice typing already does."
+          ],
+          "cons": [
+            "The first Read aloud waits a minute or so."
+          ]
+        },
+        {
+          "id": "bundled",
+          "label": "With the app",
+          "summary": "Inside the installer.",
+          "pros": [
+            "Read aloud works instantly, even offline from the start."
+          ],
+          "cons": [
+            "Every download of the app grows by about 100 MB."
           ]
         }
       ]
