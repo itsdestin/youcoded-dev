@@ -1,0 +1,719 @@
+{
+  "title": "Code review, round 2: merge the fixes, and decide the bigger changes",
+  "key": "code-review-2026-11-18-round2",
+  "out": "code-review.round2.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Fixes ready to merge",
+      "intro": "Each fix re-checked that its bug was real today, added a test that fails without the fix, passed the checks, and passed an independent reviewer. Yes merges it so it ships in the next version."
+    },
+    {
+      "id": "F-1",
+      "words": true,
+      "surface": "Message box",
+      "path": "Dragging a file onto the message box, on the computer",
+      "headline": "Merge the fix that makes dragging a file onto the message box attach it again?",
+      "today": "Dropping a file on the message box does nothing.",
+      "problem": "A newer version of the app's underlying browser engine removed the way the app read a dropped file's location.",
+      "proposal": "Yes: the app uses the engine's new supported way, so dropped files attach as before. Phone and browser behave as they do today. Not yet tried by dragging a real file in a dev copy; the tests and reviewer passed."
+    },
+    {
+      "id": "F-2",
+      "words": true,
+      "surface": "Phone pairing",
+      "path": "Phone app → Add a computer → scan QR code",
+      "headline": "Merge the fix that switches the camera off when the QR scanner closes?",
+      "today": "After scanning or pressing Close, the camera stays on and the green dot remains.",
+      "problem": "Battery drain and a camera that looks like it's watching you.",
+      "proposal": "Yes: closing the scanner turns the camera off; scanning looks the same. Not tried on a real phone yet. To check: open the scanner, press Close, and the dot should disappear."
+    },
+    {
+      "id": "F-3",
+      "words": true,
+      "surface": "Games",
+      "path": "Games → Connect 4 or chess → end of an online match",
+      "headline": "Merge the rematch fix: when your opponent asks first, your button says 'Accept rematch' and starts the game?",
+      "today": "If your opponent asks first, your button is greyed out and reads 'Rematch requested'.",
+      "problem": "You can't accept a rematch you didn't ask for. Chess had the same bug.",
+      "proposal": "Yes: your button reads 'Accept rematch' and the next game starts for both. Fixed in both games. Not played live between two copies yet."
+    },
+    {
+      "id": "F-4",
+      "words": true,
+      "surface": "Plugins",
+      "path": "Marketplace → install a plugin that fails partway",
+      "headline": "Merge the fix so a failed plugin install cleans up and trying again works?",
+      "today": "A failed install leaves its files behind and every retry says 'already installed'.",
+      "problem": "The plugin can't be installed without hunting down a hidden folder.",
+      "proposal": "Yes: a failed install removes what it copied, and Install again really retries. An existing, working install is never removed."
+    },
+    {
+      "id": "F-5",
+      "words": true,
+      "surface": "Phone",
+      "path": "Phone app reconnecting to a computer with no chats open",
+      "headline": "Merge the fix so the phone jumps to new chats after reconnecting to a computer with none open?",
+      "today": "In that case the phone stays on the empty screen when a new chat starts.",
+      "problem": "You have to find the new chat by hand.",
+      "proposal": "Yes: the phone switches to the new chat as it normally does. The computer app is unaffected."
+    },
+    {
+      "id": "F-6",
+      "words": true,
+      "surface": "Releasing the app",
+      "path": "The /release step",
+      "headline": "Merge the release-check fix, including updated release instructions that drop the old games-server steps?",
+      "today": "The release check always fails, and the release instructions still say to check the old games server.",
+      "problem": "/release can't pass, and its instructions point at a server we no longer use.",
+      "proposal": "Yes: the check passes, and the instructions no longer mention the old games server. Games are now released with the marketplace server automatically. Only you see this."
+    },
+    {
+      "id": "F-7",
+      "words": true,
+      "surface": "Marketplace publishing",
+      "path": "The 'publish your plugin' helper",
+      "headline": "Merge the marketplace publishing fix so anyone can submit a plugin?",
+      "today": "The helper's last step always fails for anyone but you.",
+      "problem": "Nobody else can publish a plugin.",
+      "proposal": "Yes: it makes the person their own copy and submits from there. A name clash stops with a plain message instead of overwriting, and an approved plugin then appears in the app without you re-running anything. Not yet tried end to end with a real outside account."
+    },
+    {
+      "id": "F-8",
+      "words": true,
+      "surface": "Apple plugin",
+      "path": "Marketplace → Apple services skills, on a Mac",
+      "headline": "Merge the Apple skills fix so they work on a standard Mac?",
+      "today": "Every Apple skill call fails on a standard Mac.",
+      "problem": "They relied on two tools Macs don't ship with, and a failure was reported as success.",
+      "proposal": "Yes: built-in replacements, real failure reporting, and a guard so nothing can ever delete your whole iCloud Drive. The first reviewer caught that risk and the second pass fixed it. Tested on Linux only, not a real Mac."
+    },
+    {
+      "id": "F-9",
+      "words": true,
+      "surface": "Word documents",
+      "path": "Comments on a .docx file in the app",
+      "headline": "Merge the Word comments fix: no leftover markers after deleting, and a size limit when saving?",
+      "today": "Deleting a comment thread or a single reply leaves hidden markers, and saving has no size limit.",
+      "problem": "Word may say the file needs repair, and a specially made file could make the app use huge amounts of memory.",
+      "proposal": "Yes: deleting removes every marker, and saving uses the same limit as opening. Word should open the file without a repair prompt."
+    },
+    {
+      "id": "P-2",
+      "page": "Your earlier questions",
+      "intro": "The four you marked 'Don't know' last time, with the explanation you asked for."
+    },
+    {
+      "id": "E-1",
+      "words": true,
+      "surface": "Usage numbers",
+      "path": "The marketplace server's old web dashboard page",
+      "headline": "Delete the old dashboard web page on the marketplace server?",
+      "today": "You read your usage numbers on the Analytics page in the app, and they're correct. There is also an older dashboard web page on the server.",
+      "problem": "That old page is the one with empty numbers. It can't even sign you in from a browser, so nobody has seen it. It's leftover code with misleading comments.",
+      "proposal": "Yes: remove the old page; your Analytics page in the app is untouched. No: leave it."
+    },
+    {
+      "id": "E-2",
+      "words": true,
+      "surface": "Saved files and settings",
+      "path": "Anywhere the app writes a file",
+      "headline": "Route every file the app saves through its one safe saving method?",
+      "today": "About 40 places save files their own way instead of using the app's safe method.",
+      "problem": "Two saves at once can overwrite each other and lose a change. A crash or power cut mid-save can leave a half-written file that later reads as empty, so the setting resets to default.",
+      "proposal": "Yes: every save uses the safe method, and an automatic check stops new homemade ones. Nobody sees a change when it works. It touches about 40 files, each tested and independently reviewed. Saves become very slightly slower, too little to notice."
+    },
+    {
+      "id": "E-3",
+      "words": true,
+      "surface": "How we build",
+      "path": "Work cards",
+      "headline": "Group card progress updates into one commit per session instead of one per note?",
+      "today": "Every card progress note is its own commit. They are 43% of all workspace commits.",
+      "problem": "Real changes get buried and sessions clash over the same file.",
+      "proposal": "Pick how. Either way, everything stays backed up on GitHub.",
+      "options": [
+        {
+          "id": "batch",
+          "label": "One commit per session",
+          "recommended": true,
+          "summary": "A session's card notes are saved together when it ends, or when it pauses.",
+          "pros": ["Smallest change: same files, same place, same Work board.", "Cuts card commits by roughly nine in ten."],
+          "cons": ["If a session crashes before saving, its last few notes are lost (the work itself is not)."]
+        },
+        {
+          "id": "branch",
+          "label": "Separate cards branch",
+          "summary": "Cards live on their own branch on GitHub, apart from the code.",
+          "pros": ["Code history has no card noise at all."],
+          "cons": ["The Work board and tools need changing to read from it.", "Two places to look."]
+        }
+      ]
+    },
+    {
+      "id": "E-4",
+      "words": true,
+      "surface": "How we build",
+      "path": "The file-size limits each code file has",
+      "headline": "Replace the per-file size limits with ordinary warnings for very long functions and files, like most teams use?",
+      "today": "Each code file has its own exact line limit, adjusted by hand 141 times in the last month.",
+      "problem": "As you said, it's an unusual practice: code gets squeezed to hit a number instead of being organised well.",
+      "proposal": "Yes: delete the limits file. The code checker warns when a single function or file gets very long or tangled, and code review handles the rest. No: keep the limits."
+    },
+    {
+      "id": "P-3",
+      "page": "Hidden failures: how they show up",
+      "intro": "You approved making failures visible. About 25 places hide failures that matter (like settings that fail to save); about 450 more hide harmless ones."
+    },
+    {
+      "id": "H-1",
+      "words": true,
+      "surface": "Every screen",
+      "path": "When something the app tried fails",
+      "headline": "How loud should a failure that used to be hidden be?",
+      "today": "Those failures show nothing at all.",
+      "problem": "Too quiet and nobody notices; too loud and the app feels broken over small things.",
+      "proposal": "Pick a style.",
+      "options": [
+        {
+          "id": "mix",
+          "label": "Depends on weight",
+          "recommended": true,
+          "summary": "A small pop-up for minor things; the red notice box with Try again when work could be lost.",
+          "pros": ["Lost work gets something that stays; a mis-set button just gets a note."],
+          "cons": ["Two looks to keep consistent."]
+        },
+        {
+          "id": "popup",
+          "label": "Small pop-up always",
+          "pros": ["Quiet and already used throughout the app."],
+          "cons": ["Disappears in seconds; easy to miss even when work was lost."]
+        },
+        {
+          "id": "box",
+          "label": "Red notice box always",
+          "pros": ["Never missed, always has a button."],
+          "cons": ["Takes space on every screen, even for trivial things."]
+        }
+      ]
+    },
+    {
+      "id": "H-2",
+      "words": true,
+      "surface": "Every screen",
+      "path": "The ~450 harmless hidden failures",
+      "headline": "What should happen to the ~450 places that hide harmless failures?",
+      "today": "They hide failures that genuinely don't matter, such as a cache that couldn't be cleared.",
+      "problem": "Fixing all of them would add pointless messages; ignoring them lets new harmful ones blend in.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "freeze-sweep",
+          "label": "Freeze, then sweep",
+          "recommended": true,
+          "summary": "Block new ones now, fix the 25 harmful ones, then go through the rest over time, marking each harmless or fixing it.",
+          "pros": ["Safe immediately; the list only shrinks.", "No flood of new messages."],
+          "cons": ["Takes a while to reach zero."]
+        },
+        {
+          "id": "freeze",
+          "label": "Freeze only",
+          "pros": ["Quickest."],
+          "cons": ["The old list lingers forever."]
+        },
+        {
+          "id": "all",
+          "label": "Fix them all now",
+          "pros": ["Clean."],
+          "cons": ["Huge job; most would get messages nobody needs."]
+        }
+      ]
+    },
+    {
+      "id": "H-3",
+      "words": true,
+      "surface": "Settings",
+      "path": "A setting that fails to save",
+      "headline": "When a setting fails to save, should the screen go back to the real value?",
+      "today": "The screen shows your choice even though it didn't save.",
+      "problem": "The screen lies: Fast mode looks on but isn't.",
+      "proposal": "Yes: on/off settings flip back to the real value with a message; typed text such as notes stays on screen marked 'not saved' with Try again, so you don't lose what you wrote. No: always keep your choice on screen, marked 'not saved'."
+    },
+    {
+      "id": "H-4",
+      "words": true,
+      "surface": "Every screen",
+      "path": "Wording of the new failure messages",
+      "headline": "How do you want to approve the wording of the new failure messages?",
+      "today": "Each new user-facing sentence needs your approval.",
+      "problem": "There will be a few dozen new messages across about five batches.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "first-two",
+          "label": "First two batches, then pattern",
+          "recommended": true,
+          "summary": "You approve every message in the first two batches on decks; after that I follow the approved pattern and only bring you exceptions.",
+          "pros": ["You set the voice; fewer decks later."],
+          "cons": ["You won't see every later message."]
+        },
+        {
+          "id": "every",
+          "label": "Every batch",
+          "pros": ["You see every word."],
+          "cons": ["About five decks."]
+        }
+      ]
+    },
+    {
+      "id": "H-5",
+      "words": true,
+      "surface": "Analytics",
+      "path": "The analytics on/off setting",
+      "headline": "Include in this work the bug where a damaged settings file turns analytics back on after you turned it off?",
+      "today": "If the file storing your analytics choice gets damaged, the app treats you as opted in.",
+      "problem": "It could send anonymous usage counts after someone said no.",
+      "proposal": "Yes: a damaged file means analytics off. It's a small privacy fix, included here. No: handle it separately later."
+    },
+    {
+      "id": "H-6",
+      "words": true,
+      "surface": "How we build",
+      "path": "The automatic check against new hidden failures",
+      "headline": "Should the check that refuses new hidden failures block a change, or only warn?",
+      "today": "Nothing checks for this.",
+      "problem": "Warnings tend to get ignored; that's how there came to be 478.",
+      "proposal": "Yes: it blocks, and a one-line written reason lets a genuinely harmless case through. No: warning only."
+    },
+    {
+      "id": "P-4",
+      "page": "Honest 'done' for backups",
+      "intro": "You approved backups and checks proving they worked before saying done. The Android backup and 'Back up now' questions were already answered and went to the mesh/sync session."
+    },
+    {
+      "id": "D-1",
+      "words": true,
+      "surface": "Backups",
+      "path": "Settings → Backup, after a backup runs",
+      "headline": "Should a skipped backup look different from a failed one?",
+      "today": "There are two results: success, or sometimes an error.",
+      "problem": "A skip (another backup was already running) is normal and shouldn't look like a failure.",
+      "proposal": "Yes: three looks. A green check 'Backed up just now'; the red box with the reason and Try again for a failure; a calm grey line 'Skipped: another backup is running'. No: a skip looks like a failure."
+    },
+    {
+      "id": "D-2",
+      "words": true,
+      "surface": "Backups on Android",
+      "path": "A phone that already has a GitHub or Drive backup set up",
+      "headline": "When those phone backup options are hidden, what happens to ones people already set up?",
+      "today": "Some phones may already have a GitHub or Drive backup that silently does nothing.",
+      "problem": "Hiding the option shouldn't make their setup vanish without a word.",
+      "proposal": "Yes: keep the entry and show 'Not supported on this device' with a Remove button, as computers already do for unsupported cases. No: remove it silently."
+    },
+    {
+      "id": "D-3",
+      "words": true,
+      "surface": "Backups",
+      "path": "Checking that backed-up files really arrived",
+      "headline": "Check that files really arrived on manual backups, and only check names on automatic ones?",
+      "today": "Nothing checks that a backup arrived.",
+      "problem": "Checking everything on every hourly run would be slow and use more Drive traffic.",
+      "proposal": "Yes: 'Back up now' checks names and sizes (a few seconds longer); automatic runs check names only. No: check everything every time."
+    },
+    {
+      "id": "D-4",
+      "words": true,
+      "surface": "Sync",
+      "path": "Pressing 'Sync now' while sync is off; handing a chat to another device",
+      "headline": "Show 'Sync is off — turn it on to sync' instead of silently doing nothing?",
+      "today": "'Sync now' with sync off does nothing, without a word.",
+      "problem": "It looks broken. Related side effect: handing a chat to another device would refuse if its last messages couldn't be saved first, instead of going ahead without them.",
+      "proposal": "Yes: show the message, and refuse that handoff rather than lose the last messages. No: as today."
+    },
+    {
+      "id": "P-5",
+      "page": "Cleanup when chats close",
+      "intro": "You approved making sure everything a chat starts is cleaned up. These are about the unclear cases."
+    },
+    {
+      "id": "L-1",
+      "words": true,
+      "surface": "Backups",
+      "path": "A leftover lock that blocks backups",
+      "headline": "If the app can't tell whether a backup is still running, should it take over after a long wait?",
+      "today": "A leftover lock from a crash blocks backups forever, silently.",
+      "problem": "Backups quietly stop until someone finds and deletes the leftover.",
+      "proposal": "Yes: backups take over after about two hours (a doubled backup is harmless). Developer tools instead stop with a plain message and a Reset button. No: always stop and ask."
+    },
+    {
+      "id": "L-2",
+      "words": true,
+      "surface": "Backups",
+      "path": "Settings → Backup warning",
+      "headline": "Show the red backup warning if backups have been skipped for over a day?",
+      "today": "Skipped backups are only written to a log nobody reads.",
+      "problem": "You can't tell backups have stalled.",
+      "proposal": "Yes: the existing warning appears after about 24 hours of skips, with wording you approve. No: log only."
+    },
+    {
+      "id": "L-3",
+      "words": true,
+      "surface": "How we build",
+      "path": "The new leak test",
+      "headline": "Should the 'open and close 50 chats, nothing left over' test block a change that fails it?",
+      "today": "No test checks for leftovers.",
+      "problem": "Without blocking, leaks creep back.",
+      "proposal": "Yes: it blocks, so a future feature must clean up after itself. No: report only."
+    },
+    {
+      "id": "P-6",
+      "page": "Which features work on which device",
+      "intro": "You approved a table of what works on computer, phone and browser. These decide what people see where something doesn't work."
+    },
+    {
+      "id": "V-1",
+      "words": true,
+      "surface": "Phone and browser",
+      "path": "A setting that exists on the computer but not on this device",
+      "headline": "When a feature doesn't work on a device, what should people see?",
+      "today": "Some appear and then fail; some are hidden; there's no rule.",
+      "problem": "Features shown where they don't work look broken.",
+      "proposal": "Pick a rule.",
+      "options": [
+        {
+          "id": "mixed",
+          "label": "Hide, or explain",
+          "recommended": true,
+          "summary": "Hide things that make no sense there (extra windows). Show setup things greyed with one line: 'Set this up on your computer'.",
+          "pros": ["No dead ends, and it teaches where things live."],
+          "cons": ["Two rules to keep consistent."]
+        },
+        {
+          "id": "hide",
+          "label": "Always hide",
+          "pros": ["Cleanest screens."],
+          "cons": ["People may not know a feature exists."]
+        },
+        {
+          "id": "grey",
+          "label": "Always grey out",
+          "pros": ["Everything is discoverable."],
+          "cons": ["Clutter, especially on a phone."]
+        }
+      ]
+    },
+    {
+      "id": "V-2",
+      "words": true,
+      "surface": "Voice on Android",
+      "path": "Phone app → Settings → Voice → custom words",
+      "headline": "Hide the custom-words voice setting on Android until it's built there?",
+      "today": "It shows on Android, but saving it gives an error.",
+      "problem": "It looks broken.",
+      "proposal": "Yes: hide it on Android now and keep it on the to-do list. No: build it for Android first, which is real work."
+    },
+    {
+      "id": "V-3",
+      "words": true,
+      "surface": "Remote access",
+      "path": "A paired phone or browser changing setup on your computer",
+      "headline": "Which setup changes should a paired phone or browser be allowed to make on your computer?",
+      "today": "A paired phone can change backups, saved folders, keys and more on your computer, with no sign on the computer.",
+      "problem": "If a paired phone is lost or stolen, those changes are invisible and long-lasting.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "per-group",
+          "label": "Lock the risky ones",
+          "recommended": true,
+          "summary": "A phone can look at backups, folders and keys but not change them; installing skills and other settings stay open.",
+          "pros": ["Closes the riskiest gaps and keeps couch-friendly things."],
+          "cons": ["Some changes need the computer."]
+        },
+        {
+          "id": "read-only",
+          "label": "All read-only",
+          "pros": ["Safest."],
+          "cons": ["Can't install a skill from the couch."]
+        },
+        {
+          "id": "as-is",
+          "label": "Keep as is",
+          "pros": ["Nothing taken away."],
+          "cons": ["The security gap stays."]
+        }
+      ]
+    },
+    {
+      "id": "V-4",
+      "words": true,
+      "surface": "How we build",
+      "path": "The new device-table check",
+      "headline": "Should the device check block only new mismatches at first, with existing ones on a list to fix?",
+      "today": "Nothing checks this.",
+      "problem": "Blocking everything at once would stop all other work until every gap is fixed.",
+      "proposal": "Yes: block new ones, keep a shrinking list of old ones. No: block everything from day one."
+    },
+    {
+      "id": "V-5",
+      "words": true,
+      "surface": "How we build",
+      "path": "The device table itself",
+      "headline": "Do you want to see the full works / hidden / not-yet table before any screens change?",
+      "today": "There is no table yet.",
+      "problem": "The 'not yet' entries are your priorities to set.",
+      "proposal": "Yes: I'll show it as a deck page first. No: I'll apply the rules above and show you before/after pictures."
+    },
+    {
+      "id": "P-7",
+      "page": "Checking data from outside",
+      "intro": "You approved checking that data from files, the network and the phone is the right shape, and failing safe."
+    },
+    {
+      "id": "I-1",
+      "words": true,
+      "surface": "Settings files",
+      "path": "A damaged settings file",
+      "headline": "When a settings file is damaged, should 'safe' mean optional things switch off?",
+      "today": "A damaged file can flip things the wrong way, such as analytics back on.",
+      "problem": "'Fail safe' needs a definition.",
+      "proposal": "Yes: damaged means analytics off, optional features off, lists empty, and a copy of the bad file is kept. No: keep today's defaults."
+    },
+    {
+      "id": "I-2",
+      "words": true,
+      "surface": "Settings files",
+      "path": "When the app replaces a damaged file",
+      "headline": "Should people be told when a damaged file of their own choices is replaced?",
+      "today": "Nothing is said.",
+      "problem": "Someone whose theme or folders reset won't know why.",
+      "proposal": "Yes: a short notice for files holding your own choices (theme, models, folders), for example 'A settings file was damaged. We kept a copy and started fresh.' Internal bookkeeping stays silent. No: always silent."
+    },
+    {
+      "id": "I-3",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "A broken entry in the marketplace list",
+      "headline": "Hide a broken marketplace entry and report it to the marketplace owner, rather than showing it greyed out?",
+      "today": "A broken entry can break the list or show strangely.",
+      "problem": "Showing it greyed out adds clutter and new wording.",
+      "proposal": "Yes: hide it and report it to the owner through the existing reports. No: show it greyed with 'unavailable right now'."
+    },
+    {
+      "id": "I-4",
+      "words": true,
+      "surface": "Phone",
+      "path": "A phone sending something the computer doesn't accept",
+      "headline": "When the computer rejects something a phone sent, should the phone say it didn't work?",
+      "today": "It's quietly ignored, so the phone action just does nothing.",
+      "problem": "A real bug becomes invisible.",
+      "proposal": "Yes: the phone shows its normal 'that didn't work, try again'. The first release only logs mismatches, so older phones aren't affected; the next release enforces it. No: keep ignoring."
+    },
+    {
+      "id": "I-5",
+      "words": true,
+      "surface": "How we build",
+      "path": "The check against reading files without checking them",
+      "headline": "Should the new check block any new unchecked file read, with existing ones on a shrinking list?",
+      "today": "There are 323 places that read files without checking them.",
+      "problem": "A warning-only check gets ignored.",
+      "proposal": "Yes: block new ones, shrink the list over time. No: warn only."
+    },
+    {
+      "id": "I-6",
+      "words": true,
+      "surface": "Skills",
+      "path": "Instructions hidden in web pages or emails a skill reads",
+      "headline": "Handle 'hidden instructions in web pages and emails' as its own separate item?",
+      "today": "Some skills read emails or web pages without guarding against instructions hidden in them.",
+      "problem": "It's a different kind of risk, fixed mainly by wording in the skills themselves.",
+      "proposal": "Yes: its own work card, so this work stays reviewable. No: fold it in, which adds about two days."
+    },
+    {
+      "id": "P-8",
+      "page": "Trimming what every session loads",
+      "intro": "You asked for details. Every session loads about 76 KB today: the main instructions (26 KB), the start-up report (42 KB), the live-app safety rule and your global rules."
+    },
+    {
+      "id": "T-1",
+      "words": true,
+      "surface": "How we build",
+      "path": "The start-up report's lookup tables",
+      "headline": "How hard should the start-up report's lookup tables be cut?",
+      "today": "The start-up report lists every part of the app with all its files: 23 KB loaded every session.",
+      "problem": "Most sessions use one or two rows.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "aggressive",
+          "label": "One file per row",
+          "recommended": true,
+          "pros": ["Saves about 10.5 KB every session."],
+          "cons": ["Sessions sometimes open the full map for the second file."]
+        },
+        {
+          "id": "gentle",
+          "label": "Shorten each row",
+          "pros": ["Keeps more detail."],
+          "cons": ["Saves about 6.5 KB; rows cut mid-thought."]
+        },
+        {
+          "id": "leave",
+          "label": "Leave them",
+          "pros": ["No risk."],
+          "cons": ["Saves nothing."]
+        }
+      ]
+    },
+    {
+      "id": "T-2",
+      "words": true,
+      "surface": "How we build",
+      "path": "The how-to sections of the main instructions",
+      "headline": "Which how-to sections should stay written out in full in the main instructions?",
+      "today": "Seven how-to sections (features, decks, workbench, screenshots and so on) are written out in full.",
+      "problem": "They cost about 3 KB in every session, even ones that don't need them.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "keep-features",
+          "label": "Keep the features section",
+          "recommended": true,
+          "summary": "Keep 'New features and UI changes' (deck first, ask before skipping) in full; shrink the other six to a pointer each.",
+          "pros": ["Your most important approval rules stay up front, word for word."],
+          "cons": ["Saves about 2 KB instead of 3."]
+        },
+        {
+          "id": "all-pointers",
+          "label": "All become pointers",
+          "pros": ["Saves about 3 KB."],
+          "cons": ["Approval rules are one hop away."]
+        },
+        {
+          "id": "keep-all",
+          "label": "Keep all",
+          "pros": ["No risk."],
+          "cons": ["Saves nothing."]
+        }
+      ]
+    },
+    {
+      "id": "T-3",
+      "words": true,
+      "surface": "How we build",
+      "path": "Dated notes inside the main instructions",
+      "headline": "Keep the '(Destin, date)' tags on rules you decided, but move the incident stories out?",
+      "today": "The instructions carry 21 dated backstories explaining why a rule exists.",
+      "problem": "The instructions themselves say stories don't belong there, and they cost space every session.",
+      "proposal": "Yes: keep your name-and-date tags so you can see where each rule came from, and move the stories to the detailed docs. No: move the tags too, which saves about 1.5 KB more."
+    },
+    {
+      "id": "T-4",
+      "words": true,
+      "surface": "How we build",
+      "path": "The live-app safety rule",
+      "headline": "Rewrite the live-app safety rule for Linux, showing you the exact new text first?",
+      "today": "The rule names a Windows folder and a Windows command that don't exist on this computer.",
+      "problem": "A session reading it can't tell what the real Linux equivalents are.",
+      "proposal": "Yes: I rewrite and shorten it for Linux and show you the exact text before it changes. No: only add the Linux paths, no shortening."
+    },
+    {
+      "id": "T-5",
+      "words": true,
+      "surface": "How we build",
+      "path": "The rule about when to merge",
+      "headline": "Make the main instructions the one home for the merge rule, with the other two places pointing to it?",
+      "today": "Your global rules, the main instructions and the workflows doc each word the merge rule differently.",
+      "problem": "They partly contradict each other: 'never suggest merging' versus 'ask ready to merge once nearly done'.",
+      "proposal": "Yes: one statement in the main instructions, including your 'ask ready to merge? once you say it's nearly done'. Your global rules file is yours, so I'd only propose its edit. No: only fix the workflows doc."
+    },
+    {
+      "id": "T-6",
+      "words": true,
+      "surface": "How we build",
+      "path": "The start-up report",
+      "headline": "Stop the start-up report warning about the archived youcoded-core repository?",
+      "today": "Every session reports youcoded-core as '4 months stale'.",
+      "problem": "It's archived on purpose, so the warning can never be fixed and just adds noise.",
+      "proposal": "Yes: mark it archived and skip it. No: keep the warning."
+    },
+    {
+      "id": "T-7",
+      "words": true,
+      "surface": "How we build",
+      "path": "The size check on always-loaded instructions",
+      "headline": "Add an honest size limit on everything sessions load at start, so it can't creep back?",
+      "today": "The existing check counts less than half of what is really loaded, so it always passes.",
+      "problem": "Savings slowly leak back.",
+      "proposal": "Yes: a limit on the true total (about 56 KB, down from 76 KB today). A future large addition would have to be trimmed. No: no limit."
+    },
+    {
+      "id": "P-9",
+      "page": "Nightly health checks",
+      "intro": "You approved nightly checks, built on what already runs. Most checks already run on GitHub every night; what's missing is one place that reads them all and tells you."
+    },
+    {
+      "id": "N-1",
+      "words": true,
+      "surface": "Morning report",
+      "path": "Where the nightly results show up",
+      "headline": "Where do you want to read the nightly report?",
+      "today": "Nightly results sit on GitHub, where nobody looks.",
+      "problem": "Problems wait until someone happens to notice.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "session",
+          "label": "File + session briefing",
+          "recommended": true,
+          "summary": "A short report file, plus one line in each session's start-up briefing.",
+          "pros": ["Nothing new to build; can't disturb your running app."],
+          "cons": ["You see it when a session starts, not before."]
+        },
+        {
+          "id": "board",
+          "label": "Work board card",
+          "pros": ["Visible on the Work board page."],
+          "cons": ["Writes into your live Pages folder; more to build."]
+        },
+        {
+          "id": "email",
+          "label": "Email",
+          "pros": ["Reaches your phone."],
+          "cons": ["Another inbox; needs mail access."]
+        }
+      ]
+    },
+    {
+      "id": "N-2",
+      "words": true,
+      "surface": "Morning report",
+      "path": "When it runs",
+      "headline": "Run the nightly report at about 6:30 a.m., after GitHub's overnight checks finish?",
+      "today": "GitHub's overnight checks finish by about 3 a.m.",
+      "problem": "Running at login instead would slow your start-up.",
+      "proposal": "Yes: 6:30 a.m. on this computer. No: run it when you log in."
+    },
+    {
+      "id": "N-3",
+      "words": true,
+      "surface": "Morning report",
+      "path": "Phone notifications",
+      "headline": "Send a phone notification only when something is red?",
+      "today": "You already get some alerts through your existing phone notification channel.",
+      "problem": "Daily pings get ignored within a week; no pings means a red morning waits.",
+      "proposal": "Yes: a ping only on red. No: no pings, the file only."
+    },
+    {
+      "id": "N-4",
+      "words": true,
+      "surface": "Morning report",
+      "path": "The themes and marketplace repositories",
+      "headline": "Give the quiet repositories (themes, marketplace) their own small daily check?",
+      "today": "They only run checks when something changes.",
+      "problem": "GitHub quietly switches off schedules on repositories with no activity, so their checks can silently stop.",
+      "proposal": "Yes: a small daily run keeps them checked and awake. No: the report just shows 'last checked N days ago'."
+    }
+  ]
+}
