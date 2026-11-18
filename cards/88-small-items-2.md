@@ -13,7 +13,7 @@ side: both
 vision: together.added.reddit
 ---
 Progress
-Done: Small-choices deck C-1 (2026-11-18): Destin chose to wait — add the website Community link once the subreddit has more posts
+Done: Small-choices deck C-1 (2026-11-18): Destin chose to wait; add the website Community link once the subreddit has more posts
 Next: Ask again once r/youcoded has a few posts
 Blocked: nothing.
 
