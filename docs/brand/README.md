@@ -27,12 +27,13 @@ release notes, a share image or an email. It covers how YouCoded looks and how i
 
 ## 1. The brand in one breath
 
-YouCoded is a free, open-source AI assistant and "everything app" for Windows, Mac, Linux and
-Android, plus any phone browser through your own computer. You ask it in plain words for what you
-want: help with files and writing, a page for something in your life, a new feature, a game or a
-whole new look. It builds those things inside the app, on whichever AI model you choose, including
-free ones running on your own computer. It was built entirely through conversation with AI by
-someone who has never written code.
+youcoded is one open app through which anyone, with no software skill, makes their technology
+work for them. Ask for what you want and it builds it inside the app: a page that runs your home or
+your money, a new feature, a game, a whole new look. Then share it, so everyone who installs
+youcoded can change it and help build it. Today it is mostly an AI assistant on desktop, phone and
+the web; that is the doorway. The destination is an everything app: the home base for your digital
+life, on technology you own. It was built entirely through conversation with AI by someone who has
+never written code. (Full vision: `docs/vision/VISION.md`.)
 
 **What it stands for:** software you own, not rent. Anything a big company makes, a community
 of passionate people can now make better, without needing to know how to code. "Open source
@@ -93,8 +94,9 @@ Everyone", and any "a GUI for Claude Code" framing.
 
 The logo is **typed, not drawn**: lowercase "youcoded" in Outfit SemiBold, with "you" in the
 brand gradient and "coded" in deep plum, usually beside the glass-buddy icon. **There is no
-logo image file yet.** Make it with live text (website), the `Wordmark` / `Lockup` parts in the
-marketing films' brand kit, or by following the recipe below.
+logo image file yet.** Build it from the recipe below. The live website (`youcoded/docs/index.html`,
+the "THE LOGO" styles) is the reference version: copy from there, never from an older piece of
+marketing.
 
 ### The recipe
 
@@ -326,14 +328,44 @@ sides. `docs/brand/guide.html` shows this next to the old version.
 | We are | We are not |
 |---|---|
 | **Hopeful:** a real chance to own your technology again | Doom-y, or "AI will replace you" |
-| **Plain:** words anyone's parent would understand | Jargon ("agentic", "LLM", "harness", "MCP") |
+| **Clear:** written for smart people with little time | Talking down, or jargon nobody asked for ("agentic", "LLM", "harness", "MCP") |
 | **Honest:** say what works today, and what it costs | Hype, invented numbers, "coming soon" dressed up as shipped |
 | **A little defiant:** tired of renting software and being locked in | Smug, preachy, or insulting to people who use Apple, Google or Microsoft |
 | **Warm and human:** one person built this with AI, and it shows | Corporate ("leverage", "solutions", "empower") |
 
+### Who we're writing for (Destin, 2026-11-18)
+
+Assume every reader is **smart, informed and quick to learn, with little time** and little
+interest in routine features or technical specs.
+
+- **Never treat readers as slow.** No over-explaining, no hand-holding, no piling on rhetorical
+  devices (stacked questions, "imagine a world…", triple repetition for effect).
+- **Don't simplify until the meaning is lost.** Vague, padded language annoys smart readers as
+  much as jargon does.
+- **Technical terms only where they help the reader**, and explained the first time.
+- **Say each thing once.** Never repeat the same point on one page, in one film or in one
+  campaign burst.
+
+### Edit every draft twice
+
+1. **Cut 20%.** Ask: "How can I cut a fifth of this without changing what it means, while making it
+   more useful and more striking?" Then cut it.
+2. **Make everything earn its place.** Ask: "Is this concise and punchy? Does every word, frame and
+   page earn its spot?" Anything that doesn't goes.
+
+### Never undersell, never blend in
+
+- **Sell the vision, not just the feature list.** youcoded is the start of an everything app that
+  anyone can reshape, not "an AI chat app with extras".
+- **Don't headline what rivals also have.** Choosing any AI model, running models on your own
+  computer, being open source, having a terminal: Claude Code, Hermes, opencode and others offer
+  some or all of these. Mention them briefly as facts; never make them the pitch.
+- **The test:** after seeing any piece, nobody should be able to ask *"so… why not just use Claude
+  Code or Hermes?"* If they could, the piece is selling the wrong thing.
+
 ### How to write
 
-- **Lead with what YouCoded becomes**: pages, features and looks you ask for. Not "a front end
+- **Lead with what youcoded becomes**: pages, features and looks you ask for. Not "a front end
   for Claude Code". The narrow hook gets the click; the bigger idea gets the install.
 - **Show, don't list.** One concrete example ("a control panel for your house") beats five
   adjectives.
@@ -370,14 +402,20 @@ Every claim must be true in the app people can download today. Check it against 
 source before it goes out; the fact sheet (`youcoded-feature-fact-sheet.md`) is a list of
 features, not approved copy, and parts of it date from August 2026.
 
-**Strong and true (lead with these):**
-- **It becomes what you ask for:** pages, features and looks, built inside the app.
-- **Every device:** Windows, Mac, Linux, Android, and any browser through your own computer.
-  Most rival apps have no phone app at all. The Android app runs the assistant on the phone itself.
-- **Any AI model:** your Claude or ChatGPT plan, hundreds of models through OpenRouter, or a free
-  model running privately on your own computer (no extra software needed).
-- **Free and open source** (MIT licence). Cloud AI models are paid to whoever provides them.
-- **You stay in control:** it asks before it acts, and every permission can be taken back.
+**What sets youcoded apart (lead with these):**
+- **It becomes what you ask for:** pages that are real small apps, new features and whole new
+  looks, built inside one app you can see and use, without touching code.
+- **Made for people who don't code.** Rival agents were built by and for developers; youcoded's
+  whole interface is built for everyone else.
+- **Everyone can build it.** What you make (a page, a theme, a skill) can be shared through the
+  marketplace, so the app grows with its users.
+- **One home for your digital life:** chat, files, an Office editor, a browser, pages for home and
+  money, games with friends, in one app on every device. The Android app runs the assistant on the
+  phone itself; most rival apps have no phone app at all.
+
+**True, but table stakes** (rivals have them too: state them briefly, never as the headline):
+any AI model, including free ones on your own computer · free and open source (MIT) · asks
+before it acts, with every permission revocable · terminal and Claude Code support for developers.
 
 **Never claim:**
 - **An iPhone app.** iPhones and iPads use YouCoded in the browser, connected to your own
@@ -396,8 +434,8 @@ live add-ons, 13 of them made for YouCoded (`wecoded-marketplace/README.md`). Ne
 "336 community plugins".
 
 **Competitors:** you may name them; no comparison tables, and don't argue against something they
-no longer do (ChatGPT and Claude can reach your files now). Compare on what still holds: every
-device, any model, your own storage, open source.
+no longer do (ChatGPT and Claude can reach your files now). Compare only on what sets youcoded
+apart (above), never on table stakes.
 
 **Required wording:** wherever we name Anthropic, OpenAI or OpenRouter at length (website footer,
 store listings, README), include: *"YouCoded is an independent, community-built project. Not
@@ -413,7 +451,7 @@ Say "Claude" and "ChatGPT" for the products; never imply a partnership.
 | Channel | Notes |
 |---|---|
 | **Website** youcoded.ai | Source `youcoded/docs/index.html`; rules in `.claude/rules/landing-page.md`. Destin edits copy in place with `scripts/ui-review/site-copy-editor.py`. |
-| **Short films and ads** | Brief and brand kit: `scripts/marketing/` (branch `session/marketing-videos` until merged). The first promo film's tools: `scripts/promo/`. |
+| **Short films and ads** | Follow sections 4–10 of this guide. Film the app with `scripts/ui-review/README.md` → "Recording a loop". Older films and their kits are history, not references. |
 | **Google Ads** | Plan: `docs/active/plans/2026-10-27-google-ads-beginner-experiment.html` (card #228). Headlines follow section 10; no claim from section 11's "never" list. |
 | **Reddit, Hacker News, Product Hunt** | Drafts and order: `docs/active/plans/2026-10-22-discovery-launch-kit.md`. Posts go out under Destin's name and in his voice, only with his go-ahead. |
 | **GitHub** | README subtitle is the one-line description (section 3). Repo descriptions name YouCoded and link youcoded.ai. |
@@ -439,6 +477,4 @@ can see, so each needs Destin's go-ahead.
   Destin's GitHub profile has no bio or link.
 - No logo image files (SVG/PNG of the wordmark and lockups) exist for people outside the codebase,
   such as a press kit or a designer.
-- The marketing films' brand kit uses `#140B1C` for its dark background; the app's Night theme
-  (and this guide) use `#140B1E`. The difference is invisible.
 - "YouCoded" is not trademarked yet (`~/system/legal/README.md`).
