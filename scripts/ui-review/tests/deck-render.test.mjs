@@ -2154,3 +2154,60 @@ json.dump(raw, open(p, 'w')); print(p)`;
     } finally { m.close(); }
   } finally { srv.kill(); }
 });
+
+// ── "New" tags on a growing deck, and an early mockup screen (round 16) ─────────────────────────
+// WHY pinned (Destin, round 15: "if a full page is new, a big NEW tag next to the title without tags on individual cards; if the page is carried
+// on with already-answered questions, only the new cards get the tag"): real files end to end, the last round's build recorded its topic ids.
+test('round 16: a wholly new page gets one big New tag by its title, an old page tags only its new cards, and a mockup can be a screen step', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-r16-'));
+  const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)})
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); q1 = raw['steps'][0]
+def q(i, h, **kw): return {**q1, 'id': i, 'headline': h, **kw}
+raw['grows'] = True; raw['stage'] = 'design'
+os.makedirs(os.path.join(os.path.dirname(p), 'mock'), exist_ok=True)
+open(os.path.join(os.path.dirname(p), 'mock', 'menu.html'), 'w').write('<!doctype html><html data-frozen="600x400"><head><meta charset="utf-8"></head><body><div><p>Pick a game</p></div></body></html>')
+mock = {'id': 'S-1', 'words': True, 'surface': 'Menu', 'path': 'Mockup', 'headline': 'The words on the menu mockup', 'screen': 'mock/menu.html'}
+raw['steps'] = [{'id': 'P-1', 'page': 'Old page', 'intro': 'Carried on.', 'stage': 'design'}, q('Q-1', 'Answered earlier?'), q('Q-2', 'Still open?'), q('Q-3', 'Added since?'),
+                {'id': 'P-2', 'page': 'Brand new page', 'intro': 'All of it is new.', 'stage': 'design'}, q('Q-4', 'Fresh one?'), mock]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  // the last round: submitted, answered only Q-1, and its build recorded the topics it showed
+  writeFileSync(join(dirname(spec), 'questions.answers.json'), JSON.stringify({ deck: 'questions-fixture', submitted: '2026-11-01T10:00:00Z', built: { at: '2026-11-01T09:00:00Z', ids: ['Q-1', 'Q-2'] }, answers: { 'Q-1': { v: 'pick', pick: 'a' } } }));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  try {
+    await sleep(900);
+    for (const [w, h] of [[1400, 900], [390, 800]]) {
+      const c = await cdp(await freePort(), w, h);
+      try {
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html?step=0` }); await ready(c);
+        const q = e => c.evaluate(e);
+        // the old page: one small tag, on the card that is new, none by the title
+        assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Old page');
+        assert.equal(await q("document.querySelectorAll('.pagehead .newtag').length"), 0, w + ': an old page has no tag by its title');
+        assert.equal(await q("[...document.querySelectorAll('article.q .newtag')].map(t => t.closest('article.q').dataset.id).join()"), 'Q-3', w + ': only the new card');
+        assert.equal(await q("document.querySelector('article.q[data-id=Q-3] .qhrow .newtag').textContent"), 'New');
+        assert.equal(await q("document.querySelector('article.q[data-id=Q-3] .qh').textContent"), 'Added since?', 'the title text is only the title');
+        assert.equal(await q("(() => { const t = document.querySelector('.newtag'), h = document.querySelector('article.q[data-id=Q-3] .qh'); return Math.abs((t.getBoundingClientRect().top + t.getBoundingClientRect().bottom) / 2 - (h.getBoundingClientRect().top + h.getBoundingClientRect().bottom) / 2) < 14 })()"), true, w + ': beside the title');
+        assert.equal(await q("document.documentElement.scrollWidth <= window.innerWidth"), true, w + ': no sideways scroll');
+        // the accent colour, sentence case, no dot or left bar
+        assert.equal(await q("(()=>{const i=document.createElement('i');i.style.color='var(--accent)';document.body.appendChild(i);const a=getComputedStyle(i).color;i.remove();return getComputedStyle(document.querySelector('.newtag')).color===a})()"), true, 'accent colour');
+        assert.equal(await q("getComputedStyle(document.querySelector('.newtag'),'::before').content"), 'none');
+        // the new page: one big tag beside its title, none on its cards
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html?step=2` }); await ready(c);
+        assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Brand new page');
+        assert.equal(await q("document.querySelector('.ptitlerow .newtag.big').textContent"), 'New');
+        assert.equal(await q("document.querySelectorAll('article.q .newtag').length"), 0, w + ': no tags on the cards of a wholly new page');
+        assert.equal(await q("parseFloat(getComputedStyle(document.querySelector('.newtag.big')).fontSize) > 11"), true, 'the page tag is the bigger one');
+        // the mockup is an ordinary screen step: its words can be retyped
+        for (let i = 0; i < 30 && !(await q("(()=>{const f=document.querySelector('.screenframe');return !!(f && f._armed && f.contentDocument && f.contentDocument.querySelector('[data-w]'))})()")); i++) await sleep(250);
+        assert.equal(await q("[...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].map(e => e.dataset.k).join()"), 'Pick a game', 'the mockup frame shows its text, editable');
+        assert.deepEqual(c.errors, [], w + ' console');
+      } finally { c.close(); }
+    }
+  } finally { srv.kill(); }
+});

@@ -5211,7 +5211,8 @@
             "\"What did I approve?\" stays unanswerable."
           ]
         }
-      ]
+      ],
+      "resolved": "No new file: your answers already record which version of the deck you saw; the final check now compares against that version."
     },
     {
       "id": "LS-2",
@@ -5361,7 +5362,8 @@
           "picture": "pictures/r15-new-round.png",
           "caption": "The round number made more prominent in the header."
         }
-      ]
+      ],
+      "resolved": "A wholly new page gets a big New tag by its title. On a page with answered questions, only the new questions get a small New tag."
     },
     {
       "id": "LS-L",
@@ -5457,6 +5459,96 @@
             ],
             "cons": [
               "Rounds arrive later."
+            ]
+          }
+        }
+      ],
+      "resolved": "Wording can now be edited early on a mockup when you ask, outside the normal order. The other four rows are kept."
+    },
+    {
+      "id": "PD-12",
+      "page": "What I built from your last answers",
+      "intro": "Each row is something I built from what you wrote. Tick it if it is right, or comment on it or its picture.",
+      "stage": "design"
+    },
+    {
+      "id": "F-2",
+      "gallery": true,
+      "surface": "Review decks",
+      "words": true,
+      "path": "Any deck link I send you",
+      "headline": "What changed, one row each",
+      "calls": [
+        {
+          "id": "newpage",
+          "call": "A page that is wholly new carries a big \"New\" tag next to its title.",
+          "why": "Its cards carry no tags of their own. This page is the example.",
+          "more": {
+            "today": "A new round gave no sign of which pages had just arrived.",
+            "problem": "You asked for a tag on a new page, beside its title, with no tags on its cards.",
+            "change": "A page where everything open is new, and nothing was answered before, gets one large accent-coloured \"New\" next to its heading.",
+            "pros": [
+              "You see at once which pages are new.",
+              "The cards stay clean."
+            ],
+            "cons": [
+              "On a phone the tag may sit on its own line under a long title."
+            ]
+          },
+          "picture": "pictures/r16-newpage.png",
+          "picture_name": "This page's heading",
+          "visual": true
+        },
+        {
+          "id": "newcard",
+          "call": "On a page you have already answered part of, only the new questions get a small \"New\" tag.",
+          "why": "The tag sits beside the question's title. A question you reopened is not tagged.",
+          "more": {
+            "today": "A page that mixes old answers with new questions showed no sign of which was which.",
+            "problem": "You asked that, on a page carried over from earlier rounds, only the new cards get the tag, not the title.",
+            "change": "Each new question gets a small \"New\" beside its title. The page heading stays plain. This deck has no such page today, so the picture is a test copy built with the real tool.",
+            "pros": [
+              "You go straight to what arrived.",
+              "Old questions look as before."
+            ],
+            "cons": [
+              "On a big round many cards could carry the tag."
+            ]
+          },
+          "picture": "pictures/r16-newcard.png",
+          "picture_name": "A page with an old answer and a new question",
+          "visual": true
+        },
+        {
+          "id": "mockup",
+          "call": "You can ask to edit words or parts of a design early, on a mockup.",
+          "why": "Normally wording waits for the finished screens. If you ask, I prepare a mockup and you edit its text in place.",
+          "more": {
+            "today": "Wording was only ever edited at the end, on real screens.",
+            "problem": "You wanted an opening to change a mockup's words and parts earlier, outside the usual order, when you say so.",
+            "change": "The rules now allow it on request. The page that shows the mockup is the same one used for real screens, so you click the words and retype them.",
+            "pros": [
+              "Early wording changes need no finished build.",
+              "Only when you ask, so the normal order stays."
+            ],
+            "cons": [
+              "A mockup is a drawing; the real screen may still differ."
+            ]
+          }
+        },
+        {
+          "id": "approved",
+          "call": "The final check compares the build against the version you approved.",
+          "why": "Not against the page as it stands later. Nothing new to save: your answers already name the version.",
+          "more": {
+            "today": "The final check read the plan file as it is now.",
+            "problem": "You asked what we would save; your answers already record which version you saw, so a second copy is not needed.",
+            "change": "The check reads the plan as it was when you answered, and says so when that version cannot be found.",
+            "pros": [
+              "Later edits cannot change what counts as your request."
+            ],
+            "cons": [
+              "If that version is missing, it falls back to the current file."
             ]
           }
         }

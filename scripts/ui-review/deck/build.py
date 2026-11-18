@@ -347,8 +347,12 @@ def _built(spec):
             return subprocess.run(['git', *args], cwd=spec.get('_base') or '.', capture_output=True, text=True, timeout=5).stdout.strip()
         except (OSError, subprocess.SubprocessError):
             return ''
+    # WHY `ids` (a growing deck's "New" tags): the next round must know which topics this build showed. The answers file
+    # keeps only topics he answered, so the build stamp, which rides into that file, carries the full list. Last key: serve.py
+    # finds `at` with a pattern that stops at the first closing brace.
     return {'built': {'at': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
-                      'branch': git('rev-parse', '--abbrev-ref', 'HEAD'), 'commit': git('rev-parse', '--short', 'HEAD')}}
+                      'branch': git('rev-parse', '--abbrev-ref', 'HEAD'), 'commit': git('rev-parse', '--short', 'HEAD'),
+                      **({'ids': [st['id'] for st in spec['steps'] if isinstance(st, dict) and not is_page(st) and st.get('id')]} if is_grows(spec) else {})}}
 
 
 def _history(spec):
@@ -460,6 +464,14 @@ def deck_data(spec, boxes):
             if st['id'] in gd:
                 st['grow'] = gd[st['id']]
         grown = {'grows': {'round': round_number(spec), 'stages': STAGE_NAMES, 'stage': spec.get('stage')}}
+        # WHY (Destin, round 15: "if a full page is new, a big NEW tag next to the title without tags on individual cards"): a page is new
+        # when everything on it that is open is new and nothing on it was answered in an earlier round; page.js then tags the heading.
+        # Any other page tags only its new topics (st.grow.new).
+        steps_by_id = {s_.get('id'): s_ for s_ in steps}
+        for pgd in paged.get('pages', []):
+            on = [steps_by_id[i] for i in pgd['steps'] if i in steps_by_id and not steps_by_id[i].get('context')]
+            if on and not pgd.get('record') and all((s_.get('grow') or {}).get('new') for s_ in on):
+                pgd['new'] = True
     return {**live, **paged, **grown, **_built(spec), **({} if is_grows(spec) else _history(spec)), 'title': spec['title'], 'key': spec['key'], 'runs': runs,
             # Any other run name (`round3`) shows as written unless `labels` names it.
             'runLabels': {**{r: r for r in spec['runs']}, 'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},

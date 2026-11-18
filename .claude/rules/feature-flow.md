@@ -47,11 +47,11 @@ better"). He may ask for another order on any build.
 6. **Walkthrough after the build** — the main steering round. Finished when
    `review-cards.py walkthrough-check <before.json>` passes: every request is a row (after rows
    carry `"from": "<step>/<row>"`, or `"dropped": "<why>"`), every check left on has a result,
-   and he goes through the after deck changing nothing (rounds 1–2, R-9). No merge without his word.
+   and he goes through the after deck changing nothing. No merge without his word.
 7. **Wording pass** on the real screens (`screen` steps), last.
 
 Small work with clear direction may start at step 6; ask first.
-**Why:** round 6, S-1. **Guard:** none — candidate.
+**Guard:** none — candidate.
 
 ## What is asked, shown, listed, never shown
 **Invariant:**
@@ -59,11 +59,11 @@ Small work with clear direction may start at step 6; ask first.
   money, privacy, anything that removes or changes an existing control, and where his
   understanding and yours may differ.
 - **His to decide, early, on drawings (never as a words-only question):** layout, placement,
-  the path between screens, how parts and functions affect each other (round 2, R-4).
+  the path between screens, how parts and functions affect each other.
 - **Listed as rows:** **defaults and phone layout first** (he cares), then failure and empty
   states, sizes, order, speed.
-- **Wording:** never before the build.
-- **Unsure which group → list it** (round 2, R-5); never decide silently.
+- **Wording:** last, on real screens; early only if he asks, on a mockup `screen` step, outside this order.
+- **Unsure which group → list it**; never decide silently.
 - **Never shown:** code organisation, libraries, a reviewer's raw report (each finding is its
   own "found in review" row instead). Tests added or removed ARE shown, in plain words.
 

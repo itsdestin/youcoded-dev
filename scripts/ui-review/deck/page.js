@@ -1145,7 +1145,9 @@
       // WHY no "Question 1 of 1" (Destin, round 11: "this question right now is calling itself 1 of 1, but there's no way that's accurate by
       // any possible count"): a question carries no number at all; only a list carries its small kind label.
       + (locked ? '' : (st.kind === 'calls' ? `<p class="qnum"><span class="n"><span class="kindline">${listKind(st)}</span></span></p>` : '') + `<span class="qstate" aria-live="polite" hidden></span>`)
-      + (locked ? '' : `<h2 class="qh">${esc(st.headline)}</h2>`)
+      // WHY a small "New" tag beside the title of a new topic on a page that is not wholly new (Destin, round 15); a wholly new page tags its heading instead.
+      + (locked ? '' : (st.grow && st.grow.new && !(PAGES && PAGES[cur] && PAGES[cur].new)
+        ? `<div class="qhrow"><h2 class="qh">${esc(st.headline)}</h2><span class="newtag">New</span></div>` : `<h2 class="qh">${esc(st.headline)}</h2>`))
       // WHY (Destin, round 10: "one summary line of its past, the full story opens on request"): on a deck that grows the story is ONE fold line under the title.
       + (locked ? '' : growPast(st))
       + (listy(st) ? '' : (GROWS ? '' : storyLines(st)) + moreLines(st) + (st.reuse ? `<div class="builtfrom">Built from the app's own parts${reuseTip(st)}</div>` : ''))
@@ -1159,7 +1161,7 @@
   // WHY a real heading with the intro as ONE line under it (Destin, round 11: opening lines "don't really well explain what the page is or
   // what i'm expected to do with it… don't really draw my attention as like titles… and kinda conflict with the other pages titles in the top
   // left corner"): the header no longer names the page; the page names itself, big, and says in one line what he is deciding.
-  const pageHead = (pg, finished) => `<header class="pagehead"><div class="ptitlerow"><h1 class="ptitle">${esc(pg.title)}</h1>${finished ? '<span class="fintag">Finished</span>' : ''}</div>`
+  const pageHead = (pg, finished) => `<header class="pagehead"><div class="ptitlerow"><h1 class="ptitle">${esc(pg.title)}</h1>${pg.new ? '<span class="newtag big">New</span>' : ''}${finished ? '<span class="fintag">Finished</span>' : ''}</div>`
     + (pg.intro ? `<p class="intro">${esc(pg.intro)}</p>` : '') + `</header>`;
   function renderPage() {
     const pg = PAGES[cur], all = pageSteps(cur);

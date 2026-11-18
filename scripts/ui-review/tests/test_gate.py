@@ -5,6 +5,7 @@ import io
 import json
 import os
 import sys
+import subprocess
 import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
@@ -194,3 +195,51 @@ class TickGate(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class ApprovedVersion(unittest.TestCase):
+    """The final check reads the before-walkthrough AS HE SAW IT: git at the commit his answers file records."""
+    def git(self, *a):
+        subprocess.run(['git', '-c', 'user.name=t', '-c', 'user.email=t@t', *a], cwd=self.tmp, check=True, capture_output=True)
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.b = os.path.join(self.tmp, 'x.walkthrough.json')
+        self.a = os.path.join(self.tmp, 'x.walkthrough.after.json')
+        self.git('init', '-q')
+        w(self.b, BEFORE)
+        self.git('add', 'x.walkthrough.json'); self.git('commit', '-qm', 'approved')
+        self.commit = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=self.tmp, capture_output=True, text=True).stdout.strip()
+        w(self.a, AFTER)
+        w(os.path.join(self.tmp, 'x.walkthrough.answers.json'), {**SUB, 'built': {'at': 'x', 'commit': self.commit}})
+        w(os.path.join(self.tmp, 'x.walkthrough.after.answers.json'), SUB)
+
+    def test_a_later_edit_to_the_file_does_not_change_what_he_approved(self):
+        # his request row `save` is dropped from the file AFTER he answered; the approved version still has it, so the after-walkthrough still answers it
+        edited = json.loads(json.dumps(BEFORE)); edited['steps'][0]['calls'] = [c for c in edited['steps'][0]['calls'] if c['id'] != 'save']
+        w(self.b, edited)
+        problems, notes = check_gate(self.b)
+        self.assertEqual(problems, [])
+        self.assertTrue(any('as it was when he answered it' in n for n in notes), notes)
+        # and an after-walkthrough that no longer answers the approved request is refused, whatever the file says now
+        after = json.loads(json.dumps(AFTER)); after['steps'][0]['calls'][0].pop('from')
+        w(self.a, after)
+        self.assertTrue(any('request W-1/save' in p for p in check_gate(self.b)[0]))
+
+    def test_unknown_commit_falls_back_to_the_file_with_a_note(self):
+        w(os.path.join(self.tmp, 'x.walkthrough.answers.json'), {**SUB, 'built': {'at': 'x', 'commit': 'deadbee'}})
+        problems, notes = check_gate(self.b)
+        self.assertEqual(problems, [])
+        self.assertTrue(any('current before-build walkthrough file' in n and 'deadbee' in n for n in notes), notes)
+
+    def test_no_commit_recorded_falls_back_with_a_note(self):
+        w(os.path.join(self.tmp, 'x.walkthrough.answers.json'), SUB)
+        notes = check_gate(self.b)[1]
+        self.assertTrue(any('records no build commit' in n for n in notes), notes)
+
+    def test_outside_git_falls_back(self):
+        tmp = tempfile.mkdtemp(); b = os.path.join(tmp, 'x.walkthrough.json')
+        w(b, BEFORE); w(os.path.join(tmp, 'x.walkthrough.after.json'), AFTER)
+        w(os.path.join(tmp, 'x.walkthrough.answers.json'), {**SUB, 'built': {'commit': 'abc1234'}})
+        w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), SUB)
+        self.assertEqual(check_gate(b)[0], [])

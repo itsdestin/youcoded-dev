@@ -25,7 +25,7 @@ import json
 import os
 import re
 
-from .grows import settled_ids
+from .grows import settled_ids, spec_at_commit
 from .spec import strip_comments, unlooked_rows, tickable
 
 # Checks he can switch (before the build) carry one of these; after the build the row carries a
@@ -153,11 +153,22 @@ def check_gate(before_path, after=None):
     """-> (problems, notes). `problems` non-empty means NOT finished."""
     problems, notes = [], []
     after = after or after_path(before_path)
-    try:
-        before = _load(before_path)
-    except (OSError, ValueError) as e:
-        return [f'cannot read the before-build walkthrough {before_path}: {e}'], notes
     b_ans = _read_answers(answers_file(before_path))
+    # WHY the before-walkthrough is read AS HE SAW IT (Destin, round 15): his answers file records the commit the deck was built at
+    # (`built.commit`), so the exact version he approved is in git. Comparing against today's file would let a later edit change what
+    # "his requests" were. When the commit or the path is not available, fall back to the current file and say so.
+    commit = ((b_ans or {}).get('built') or {}).get('commit') if isinstance((b_ans or {}).get('built'), dict) else None
+    approved = spec_at_commit(before_path, commit) if commit else None
+    if isinstance(approved, dict):
+        before = strip_comments(approved)
+        notes.append(f'compared against the before-build walkthrough as it was when he answered it (commit {commit})')
+    else:
+        try:
+            before = _load(before_path)
+        except (OSError, ValueError) as e:
+            return [f'cannot read the before-build walkthrough {before_path}: {e}'], notes
+        notes.append('compared against the current before-build walkthrough file: ' + (
+            f'commit {commit} or the file at it is not available' if commit else 'his answers file records no build commit'))
     if not b_ans or not b_ans.get('submitted'):
         problems.append('the before-build walkthrough has not been submitted — he has not answered it yet')
         b_ans = b_ans or {}

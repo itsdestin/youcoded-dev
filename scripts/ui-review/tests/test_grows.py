@@ -10,7 +10,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from deck.build import deck_data                                   # noqa: E402
 from deck.gate import check_gate                                   # noqa: E402
-from deck.grows import earlier_rounds, round_number, settled_ids   # noqa: E402
+from deck.grows import earlier_rounds, previous_ids, round_number, settled_ids   # noqa: E402
 from deck.serve import summary                                     # noqa: E402
 from deck.spec import load_spec, validate                          # noqa: E402
 
@@ -388,6 +388,81 @@ class Grows(unittest.TestCase):
         step = [s for s in d['steps'] if s['id'] == 'Q-1'][0]
         self.assertEqual(step['grow']['given']['pick'], 'b'); self.assertEqual(step['grow']['given']['marks'][0]['pic'], 'option a')
         self.assertTrue(step['options'][0]['picture'])
+
+
+class NewTags(unittest.TestCase):
+    """A topic is "new" when it is open and was not in the deck as he last saw it; a page is new when all its open topics are
+    new and nothing on it was answered. (Destin, round 15, "New tags".)"""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def build(self, spec, built, **given):
+        put(self.tmp, spec)
+        answers(self.tmp, '1', given or {'Q-1': {'v': 'pick', 'pick': 'a'}}, built=None, live=True)
+        path = os.path.join(self.tmp, 'grow.answers.json')
+        with open(path) as f:
+            saved = json.load(f)
+        saved['built'] = built
+        with open(path, 'w') as f:
+            json.dump(saved, f)
+        return deck_data(load_spec(os.path.join(self.tmp, 'grow.json')), {})
+
+    def spec(self):
+        s = base_spec()
+        s['steps'] = [{'id': 'P-1', 'page': 'Old page', 'intro': 'Judge.', 'stage': 'design'}, question('Q-1', 'First question?'), question('Q-2', 'Second question?'),
+                      {'id': 'P-2', 'page': 'Brand new page', 'intro': 'Pick.', 'stage': 'design'}, question('Q-3', 'Third question?'), question('Q-4', 'Fourth question?')]
+        return s
+
+    def test_new_topics_are_tagged_and_a_wholly_new_page_is_new(self):
+        d = self.build(self.spec(), {'at': 'a', 'ids': ['Q-1', 'Q-2']})
+        flags = {s['id']: bool((s.get('grow') or {}).get('new')) for s in d['steps']}
+        self.assertEqual(flags, {'Q-1': False, 'Q-2': False, 'Q-3': True, 'Q-4': True})
+        self.assertEqual([bool(p.get('new')) for p in d['pages']], [False, True])
+
+    def test_a_page_with_an_answered_topic_is_not_new_but_its_new_card_is_tagged(self):
+        s = self.spec(); s['steps'].insert(3, question('Q-5', 'Fifth question?'))   # joins the old page
+        d = self.build(s, {'at': 'a', 'ids': ['Q-1', 'Q-2']})
+        flags = {x['id']: bool((x.get('grow') or {}).get('new')) for x in d['steps']}
+        self.assertTrue(flags['Q-5'] and not flags['Q-1'])
+        self.assertFalse(d['pages'][0].get('new'), 'the old page has an answered topic and open old ones')
+
+    def test_a_page_whose_only_topics_are_new_but_carries_an_answered_one_is_not_new(self):
+        s = self.spec(); s['steps'][5:5] = []   # keep
+        s['steps'] = [{'id': 'P-1', 'page': 'Mixed', 'intro': 'x', 'stage': 'design'}, question('Q-1', 'Old answered?'), question('Q-9', 'Brand new?')]
+        d = self.build(s, {'at': 'a', 'ids': ['Q-1']})
+        self.assertFalse(d['pages'][0].get('new'))
+        self.assertTrue(next(x for x in d['steps'] if x['id'] == 'Q-9')['grow']['new'])
+
+    def test_a_reopened_topic_is_not_new(self):
+        s = self.spec(); s['steps'][2] = question('Q-2', 'Second question?', reopened='You asked for more.')
+        d = self.build(s, {'at': 'a', 'ids': ['Q-1', 'Q-2']})
+        self.assertFalse((next(x for x in d['steps'] if x['id'] == 'Q-2').get('grow') or {}).get('new'))
+
+    def test_a_reopened_topic_missing_from_the_last_build_is_still_not_new(self):
+        s = self.spec(); s['steps'][2] = question('Q-2', 'Second question?', reopened='You asked for more.')
+        d = self.build(s, {'at': 'a', 'ids': ['Q-1']})
+        self.assertFalse((next(x for x in d['steps'] if x['id'] == 'Q-2').get('grow') or {}).get('new'))
+
+    def test_nothing_is_new_before_any_round_or_when_the_last_build_is_unknown(self):
+        put(self.tmp, self.spec())
+        d = deck_data(load_spec(os.path.join(self.tmp, 'grow.json')), {})
+        self.assertFalse(any((x.get('grow') or {}).get('new') for x in d['steps']))
+        d = self.build(self.spec(), {'at': 'a'})   # an old answers file: no ids, no commit
+        self.assertFalse(any((x.get('grow') or {}).get('new') for x in d['steps']))
+
+    def test_an_old_answers_file_reads_the_ids_from_its_commit(self):
+        import subprocess
+        g = lambda *a: subprocess.run(['git', '-c', 'user.name=t', '-c', 'user.email=t@t', *a], cwd=self.tmp, check=True, capture_output=True)
+        old = self.spec(); old['steps'] = [x for x in old['steps'] if x.get('id') not in ('Q-3', 'Q-4')]
+        put(self.tmp, old); g('init', '-q'); g('add', 'grow.json'); g('commit', '-qm', 'round 1')
+        commit = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=self.tmp, capture_output=True, text=True).stdout.strip()
+        d = self.build(self.spec(), {'at': 'a', 'commit': commit})
+        self.assertEqual({x['id'] for x in d['steps'] if (x.get('grow') or {}).get('new')}, {'Q-3', 'Q-4'})
+        self.assertEqual(previous_ids(load_spec(os.path.join(self.tmp, 'grow.json'))), {'Q-1', 'Q-2'})
+
+    def test_the_build_stamp_records_the_topic_ids(self):
+        d = deck_data(load_spec(put(self.tmp, self.spec())), {})
+        self.assertEqual(d['built']['ids'], ['Q-1', 'Q-2', 'Q-3', 'Q-4'])
 
 
 if __name__ == '__main__':

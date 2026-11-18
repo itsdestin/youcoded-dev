@@ -48,15 +48,14 @@ no status words; a row he neither ticked nor changed is "not looked at", never a
 `more`). Mixed lists are refused. No "Details" fold: a row's `trail` is plain lines above its
 words, `more` behind a small More (growing decks) or labelled lines below, `reuse` behind an (i).
 `picture`/`before` are Attachments tiles.
-`state` is a group heading. A pencil pressed again keeps the comment; the bin removes it. Each page
+`state` is a group heading. Each page
 ends with a comment box. A re-served deck of the same build reopens with his answers.
 **Why:** "why is it the only row in this card that has the… chip?" (round 8); round 9, K-1, V-1,
 Q-3, Q-4. **Guard:** `test_rethink.py`, `test_serve.py`, `deck-render.test.mjs`.
 
 ## Wording is edited on the real screen, after the build
 **Invariant:** no text box per label. A `screen` step edits `shoot --page`'s still copy, scrubbed of
-anything that runs and framed without scripts; `liveScreen` adds Use it / Edit words. **Why:** boxes
-were "terrible" (2026-11-10). **Guard:** `deck-render.test.mjs`, `freeze.test.mjs`.
+anything that runs; `liveScreen` adds Use it / Edit words. Only if he asks earlier: a `screen` step on a frozen mockup (`mock/<name>.html`). **Why:** boxes were "terrible". **Guard:** `deck-render.test.mjs`, `freeze.test.mjs`.
 
 ## A slide decides, not the deck
 **Invariant:** `runs`/`labels`, `"pick": "several"`, `"answer": "words"` sit on the SLIDE. **Why:** deck-level shapes split one ask across decks. **Guard:** `test_spec.py`, `test_words.py`.

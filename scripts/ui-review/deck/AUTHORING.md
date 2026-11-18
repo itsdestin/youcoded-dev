@@ -526,6 +526,26 @@ this wins.
   after speech stop the microphone. While listening the microphone shows four level bars and
   a clock inside the box. Still no custom vocabulary.
 
+### "New" tags on a growing deck, and the final check (round 16)
+
+A topic is **new** when it is open and its id was not in the deck as he last saw it (the newest earlier round's
+build). Every build records its topic ids in `built.ids`, which rides into his answers file; an older file
+without them is read from the spec at its `built.commit` (`git show`). No earlier round, or neither
+available: nothing is new. A reopened topic is never new. A page whose open topics are ALL new and that holds
+no answered topic gets one big "New" tag beside its heading and none on its cards; any other page tags only
+its new cards, small, beside the title. Nothing to write in the spec.
+
+`walkthrough-check` compares the build against the before-walkthrough as it was at the commit in its answers
+file (`built.commit`), and prints a note when it falls back to the current file (no commit, not in git).
+
+### Editing wording early, on a mockup (only when he asks)
+
+Wording is normally edited last, on real screens. When he asks to edit wording or elements earlier, prepare a
+mockup and give him a `screen` step on it, outside the normal order. A `screen` step takes any frozen `.html`
+beside the spec, a subfolder included: save one from the workbench with `shoot --page`, or write a static
+page at `mock/<name>.html` with `<html data-frozen="WxH" data-frozen-panel="x,y,w,h">` (the second is the
+part to zoom on), inline styles, and no script, handler or network load. Then `"screen": "mock/<name>.html"`.
+
 ### Editing the words on the real screen (round 4, 2026-11-10)
 
 Wording is never asked before the build, and never as a text box per label ("this system is

@@ -97,6 +97,21 @@ class RethinkTests(unittest.TestCase):
         old2 = summary(s, {'answers': {'K-1': {'v': 'other', 'changes': {'sound': 'x'}}}})
         self.assertNotIn('not looked at', old2); self.assertIn('change sound', old2)
 
+    def test_a_hand_made_mockup_in_a_mock_folder_can_be_a_screen_step(self):
+        # Destin, round 15: he may ask to edit words/elements EARLY, on a mockup, outside the normal order. A screen step takes any
+        # frozen .html file beside the spec (a subfolder is fine), so the mockup is just such a file: `data-frozen` marker, no code.
+        base = os.path.dirname(words_spec(self.tmp))
+        os.makedirs(os.path.join(base, 'mock'), exist_ok=True)
+        page = '<!doctype html><html data-frozen="600x400" data-frozen-panel="20,20,300,200"><head><meta charset="utf-8"></head><body><div><p>Pick a game</p></div></body></html>'
+        with open(os.path.join(base, 'mock', 'menu.html'), 'w') as f:
+            f.write(page)
+        with open(os.path.join(base, 'mock', 'code.html'), 'w') as f:
+            f.write(page.replace('<div>', '<div><script>1</script>'))
+        scr = {k: v for k, v in CALLS.items() if k != 'calls'}
+        self.assertEqual(self.errs(lambda r: r['steps'].append({**scr, 'screen': 'mock/menu.html'})), [])
+        e = self.errs(lambda r: r['steps'].append({**scr, 'screen': 'mock/code.html'}))
+        self.assertTrue(any('cannot be shown for editing' in x for x in e), e)
+
     def test_page_source_keeps_the_two_fixes_destin_named(self):
         # He named two faults (2026-11-09): a green circle on an answered question, and two
         # text boxes on a typed answer. Both were one-line causes; these keep them from returning.

@@ -21,6 +21,7 @@ import glob
 import json
 import os
 import re
+import subprocess
 
 from .spec import is_page, row_of_pic, row_states, tickable, unlooked_rows, word_count
 
@@ -132,17 +133,64 @@ def earlier_rounds(spec, include_live=True, exclude_built=None):
         # WHY only a copy that says `sent_before` is "a later send of the same round" (serve.py writes it on a same-build re-serve): two files that merely
         # carry the same build stamp are two rounds when nothing says the second was a re-send (a stamp copied from an old browser copy does not make one).
         if at and at in by_build and saved.get('sent_before'):
-            rounds[by_build[at]] = {'submitted': submitted, 'answers': ans}   # a later send of the same round
+            rounds[by_build[at]] = {'submitted': submitted, 'answers': ans, 'built': saved.get('built')}   # a later send of the same round
             continue
         if at:
             by_build[at] = len(rounds)
-        rounds.append({'submitted': submitted, 'answers': ans})
+        rounds.append({'submitted': submitted, 'answers': ans, 'built': saved.get('built')})
     before = spec.get('rounds_before') if isinstance(spec.get('rounds_before'), int) else 0
     for i, r in enumerate(rounds, 1):
         r['n'] = before + i
         r['label'] = f'Round {r["n"]}'
         r['when'] = r['submitted'][:10]
     return rounds
+
+
+def spec_at_commit(path, commit):
+    """The text of the spec file `path` as it was at git `commit`, parsed, or None when git, the commit or
+    the path is not available. WHY (Destin, final-check + "New" tags): each answers file records the build's commit,
+    so the exact deck he saw can be read back from git instead of saving a second copy."""
+    try:
+        here = os.path.dirname(os.path.abspath(path))
+        top = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=here, capture_output=True, text=True, timeout=10)
+        if top.returncode:
+            return None
+        rel = os.path.relpath(os.path.realpath(path), os.path.realpath(top.stdout.strip())).replace(os.sep, '/')
+        shown = subprocess.run(['git', 'show', f'{commit}:{rel}'], cwd=here, capture_output=True, text=True, timeout=20)
+        return json.loads(shown.stdout) if shown.returncode == 0 else None
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return None
+
+
+def previous_ids(spec):
+    """The topic ids of the deck as Destin last SAW it (the newest earlier round's build), or None when that is not
+    known (no earlier round, or an old answers file naming neither the ids nor a commit to read them from).
+    New builds record their topic ids in the build stamp (`built.ids`); an older file falls back to the spec at its commit."""
+    rounds = earlier_rounds(spec)
+    built = rounds[-1].get('built') if rounds else None
+    if not isinstance(built, dict):
+        return None
+    if isinstance(built.get('ids'), list):
+        return set(built['ids'])
+    commit = built.get('commit')
+    if commit and spec.get('_base') and spec.get('_stem'):
+        old = spec_at_commit(os.path.join(spec['_base'], spec['_stem'] + '.json'), commit)
+        if isinstance(old, dict):
+            return {st.get('id') for st in old.get('steps') or [] if isinstance(st, dict) and not is_page(st) and st.get('id')}
+    return None
+
+
+def new_ids(spec, info):
+    """Ids of topics that are NEW this round: open, and not in the deck as he last saw it. A reopened topic is
+    not new (it was there). With no earlier round nothing is new (everything would be, and a tag on all is noise)."""
+    before = previous_ids(spec)
+    if before is None:
+        return set()
+    return {sid for sid, i in info.items() if sid not in before and not i['answered'] and not _by_id(spec, sid).get('reopened')}
+
+
+def _by_id(spec, sid):
+    return next((st for st in _steps(spec) if st.get('id') == sid), {})
 
 
 def round_number(spec):
@@ -435,4 +483,7 @@ def step_data(spec):
     """What each step carries to the page, as {step id: dict} (empty for a deck that does not grow)."""
     if not is_grows(spec):
         return {}
-    return {sid: {k: v for k, v in i.items() if not k.startswith('_')} for sid, i in step_info(spec).items()}
+    info = step_info(spec)
+    fresh = new_ids(spec, info)
+    # WHY `new` only when true: an unchanged topic's data stays exactly as it was.
+    return {sid: {**{k: v for k, v in i.items() if not k.startswith('_')}, **({'new': True} if sid in fresh else {})} for sid, i in info.items()}
