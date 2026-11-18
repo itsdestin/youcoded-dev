@@ -14,9 +14,9 @@ side: both
 work: session/round4-silent-places
 ---
 Progress
-Done: Round 4 built on session/round4-silent-places (app, pushed, NOT landed): ~40 silent failures now visible (toasts, in-place boxes, thin strips, save notices), reviewed three times, 56+ tests added; decks served 2026-11-14 (docs/active/design/2026-11-14-round4)
-Next: Destin: pictures deck (5 kinds) + questions deck (land-or-hold, 5 questions: effort/Fast chips, synced rename wording, dropped-connection tag save, phone paste, Android toasts vs boxes)
-Blocked: nothing recorded.
+Done: Round 4 landed (youcoded#766): ~40 silent places now show a notice; Effort/Fast chips hidden until read; final false-alarm review fixed 3 cases (empty right-click Paste, phone file rename, older computer's project list)
+Next: Destin to decide: make picture paste actually work on a phone (upload the pasted picture like Attach does) instead of doing nothing
+Blocked: Synced-project rename notice skipped: sync retries by itself, so it would be a false alarm
 
 Chats
 - 2026-11-14 session/round4-silent-places: chat started
