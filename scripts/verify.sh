@@ -333,21 +333,6 @@ fi
 TSC=tsc
 [[ -x "$DESKTOP/node_modules/.bin/tsgo" ]] && TSC=tsgo
 
-# Line budgets FIRST, synchronously (~2 s), printed before the parallel checks start.
-# WHY: an over-budget file was the most repeated verify failure in docs/wrap-ups.md
-# (four sessions; six overruns in one, 2026-09-27), and it only surfaced when every
-# check had finished, minutes later. Reported now, it is fixed while the rest run.
-# Still counted as a failure at the end; the related-tests run repeats it harmlessly.
-BUDGETS_FAILED=0
-if [[ -f "$DESKTOP/tests/line-budgets.test.ts" ]]; then
-  if ! ( cd "$DESKTOP" && npx vitest run tests/line-budgets.test.ts ) >"$LOGDIR/budgets.log" 2>&1; then
-    BUDGETS_FAILED=1
-    echo "FAIL  line budgets (checked first — the other checks still run)"
-    grep -E 'lines, budget' "$LOGDIR/budgets.log" | grep -vE '^\s*[-+]' | sed 's/^ */      /' | sort -u
-    echo ""
-  fi
-fi
-
 start types "types ($TSC --noEmit)" npx "$TSC" --noEmit -p tsconfig.json
 # The test tree is its own TS project (different module resolution, allowJs for
 # the .mjs orchestrator). Separate check so a failure names which tree broke.
@@ -423,7 +408,6 @@ fi
 
 FAILED=0
 FAILED_KEYS=()
-if [[ $BUDGETS_FAILED -eq 1 ]]; then FAILED=1; FAILED_KEYS+=("budgets"); fi
 for key in types testtypes tests knip lint design invariants screens journeys; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
@@ -453,7 +437,6 @@ done
 
 # The logs live on after the EXIT trap deletes $LOGDIR (a path to a deleted file is worse than none).
 if [[ -n "$KEEP" ]]; then
-  [[ $BUDGETS_FAILED -eq 1 ]] && cp "$LOGDIR/budgets.log" "$KEEP/budgets.log" 2>/dev/null
   echo ""
   echo "full logs (every check): $KEEP"
 fi
