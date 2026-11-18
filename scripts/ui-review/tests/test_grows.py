@@ -60,6 +60,20 @@ class Grows(unittest.TestCase):
     def has(self, errs, text):
         self.assertTrue(any(text in e for e in errs), errs)
 
+    # WHY (tidy): an old feature's earlier, separate decks live in an `earlier-rounds/` folder beside the growing deck. The build must
+    # read earlier ROUNDS only from the dated `<stem>.answers.<stamp>.json` files right beside the spec, never from that folder
+    # (nor from another deck's `<stem>.round3.answers.json`), or moving old decks would change the round number and the answered topics.
+    def test_old_decks_in_an_earlier_rounds_folder_are_not_rounds(self):
+        folder = os.path.join(self.tmp, 'earlier-rounds'); os.makedirs(folder)
+        for name in ('grow.answers.20261101.json', 'grow.answers.json', 'grow.round2.answers.json'):
+            with open(os.path.join(folder, name), 'w') as f:
+                json.dump({'deck': 'grow', 'submitted': '2026-11-01T10:00:00Z', 'answers': {'Q-1': {'v': 'pick', 'pick': 'a'}}}, f)
+        with open(os.path.join(self.tmp, 'grow.round2.answers.json'), 'w') as f:
+            json.dump({'deck': 'grow', 'submitted': '2026-11-01T10:00:00Z', 'answers': {'Q-1': {'v': 'pick', 'pick': 'a'}}}, f)
+        self.assertEqual(round_number(self.load()), 1)
+        self.assertEqual(earlier_rounds(self.load()), [])
+        self.assertEqual(settled_ids(self.load(), {}), set())
+
     # rounds
     def test_round_number_with_and_without_rounds_before(self):
         self.assertEqual(round_number(self.load()), 1)
@@ -252,10 +266,13 @@ class Grows(unittest.TestCase):
         put(self.tmp, before, 'x.walkthrough.json')
         after = {'title': 't', 'key': 'k2', 'out': 'k2.html', 'grows': True, 'steps': [
             {'id': 'P-1', 'page': 'After', 'intro': 'i', 'stage': 'after'},
-            {**lst, 'calls': [{'id': 'r1', 'call': 'One.', 'why': 'Yes.', 'from': 'W-1/save'}]}]}
+            {**lst, 'calls': [{'id': 'r1', 'call': 'One.', 'why': 'Yes.', 'from': 'W-1/save'}]},
+            # WHY: the after-build deck must carry this list (feature-flow step 5); ticked below so only W-1 is in question.
+            {'id': 'W-7', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'What changed while building', 'list': 'changed-while-building',
+             'calls': [{'id': 'b1', 'call': 'As drawn.', 'why': 'Nothing moved.', 'built': 'as planned'}]}]}
         put(self.tmp, after, 'x.walkthrough.after.json')
         json.dump({'submitted': '2026-11-01T10:00:00Z', 'answers': {}}, open(os.path.join(self.tmp, 'x.walkthrough.answers.json'), 'w'))
-        json.dump({'submitted': '2026-11-03T10:00:00Z', 'built': {'at': 'NOW'}, 'answers': {}}, open(os.path.join(self.tmp, 'x.walkthrough.after.answers.json'), 'w'))
+        json.dump({'submitted': '2026-11-03T10:00:00Z', 'built': {'at': 'NOW'}, 'answers': {'W-7': {'ok': {'b1': True}}}}, open(os.path.join(self.tmp, 'x.walkthrough.after.answers.json'), 'w'))
         problems = check_gate(os.path.join(self.tmp, 'x.walkthrough.json'))[0]
         self.assertTrue(any('not looked at' in p for p in problems), problems)
         # settled in an earlier round of the after deck: no longer a problem
@@ -463,6 +480,24 @@ class NewTags(unittest.TestCase):
     def test_the_build_stamp_records_the_topic_ids(self):
         d = deck_data(load_spec(put(self.tmp, self.spec())), {})
         self.assertEqual(d['built']['ids'], ['Q-1', 'Q-2', 'Q-3', 'Q-4'])
+
+
+class AfterStageLists(unittest.TestCase):
+    """A growing deck AT stage "after" is held to the two lists too (feature-flow step 5)."""
+    def errs(self, extra):
+        spec = {'title': 'Grow', 'key': 'grow', 'out': 'grow.html', 'themes': ['midnight'], 'grows': True, 'stage': 'after',
+                'steps': [{'id': 'P-1', 'page': 'After', 'intro': 'Go through it.', 'stage': 'after'}] + extra}
+        tmp = tempfile.mkdtemp()
+        return validate(load_spec(put(tmp, spec)))[0]
+
+    def test_refused_without_the_lists_and_accepted_with_them(self):
+        built = {'id': 'A-1', 'words': True, 'surface': 'S', 'path': 'P', 'headline': 'What changed while building',
+                 'list': 'changed-while-building', 'calls': [{'id': 'b1', 'call': 'Built it.', 'why': 'As drawn.', 'built': 'as planned'}]}
+        self.assertTrue(any('What changed while building' in e for e in self.errs([])))
+        self.assertEqual(self.errs([built]), [])
+
+    def test_a_deck_at_an_earlier_stage_is_not_held_to_it(self):
+        self.assertEqual(validate(load_spec(put(tempfile.mkdtemp(), base_spec())))[0], [])
 
 
 if __name__ == '__main__':

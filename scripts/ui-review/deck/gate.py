@@ -26,7 +26,7 @@ import os
 import re
 
 from .grows import settled_ids, spec_at_commit
-from .spec import strip_comments, unlooked_rows, tickable
+from .spec import after_build_list_errors, strip_comments, unlooked_rows, tickable
 
 # Checks he can switch (before the build) carry one of these; after the build the row carries a
 # real outcome. `todo` is "left for him to try", which is not a check result.
@@ -208,6 +208,10 @@ def check_gate(before_path, after=None):
             shown = results[0] if results else 'missing'
             problems.append(f'check {key} was switched on but has no result row (pass / fail / unclear) — it shows "{shown}"; a check is never reported as not run')
     # 4. his review of the after-build deck
+    # WHY (feature-flow step 5): the two lists are part of "finished", so a deck without them is not, however the
+    # rest was answered. A row of either list he has not ticked or changed is caught below with every other row.
+    for line in after_build_list_errors(aft):
+        problems.append(f'after-build walkthrough, not finished: {line}')
     a_ans = _read_answers(answers_file(after))
     if not a_ans or not a_ans.get('submitted'):
         problems.append('the after-build walkthrough has not been submitted — he has not gone through it yet')

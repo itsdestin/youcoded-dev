@@ -39,14 +39,15 @@ import json, sys; d = sys.argv[1]
 b = {"title": "t", "key": "y", "out": "y.html", "branch": "feat/walk-fixture", "steps": [
   {"id": "W-1", "calls": [{"id": "r", "call": "Saved.", "why": "Star.", "decided": "save it"}]}]}
 a = {"title": "t", "key": "y2", "out": "y2.html", "steps": [
-  {"id": "W-1", "calls": [{"id": "r", "call": "Built.", "why": "Yes.", "from": "W-1/r"}]}]}
+  {"id": "W-1", "calls": [{"id": "r", "call": "Built.", "why": "Yes.", "from": "W-1/r"}]},
+  {"id": "W-7", "words": True, "list": "changed-while-building", "calls": [{"id": "b", "call": "Built as drawn.", "why": "Nothing moved.", "built": "as planned"}]}]}
 json.dump(b, open(d + "/y.walkthrough.json", "w")); json.dump(a, open(d + "/y.walkthrough.after.json", "w"))
 json.dump({"submitted": "2026-11-11T10:00:00Z", "answers": {}}, open(d + "/y.walkthrough.answers.json", "w"))
 PY
 out=$(CLOSE_OUT_DOCS="$TMP/wdocs" bash "$WS/scripts/close-out.sh" feat/walk-fixture workspace)
 grep -q "TODO.*walkthrough not finished" <<<"$out" || { echo "expected unfinished walkthrough TODO"; echo "$out"; exit 1; }
 grep -q "after-build walkthrough has not been submitted" <<<"$out" || { echo "expected the reason"; echo "$out"; exit 1; }
-echo '{"submitted":"2026-11-11T12:00:00Z","answers":{}}' > "$W/y.walkthrough.after.answers.json"
+echo '{"submitted":"2026-11-11T12:00:00Z","answers":{"W-7":{"ok":{"b":true}}}}' > "$W/y.walkthrough.after.answers.json"
 out=$(CLOSE_OUT_DOCS="$TMP/wdocs" bash "$WS/scripts/close-out.sh" feat/walk-fixture workspace)
 grep -q "OK.*requests and 0 switched-on checks all answered" <<<"$out" || { echo "expected walkthrough OK"; echo "$out"; exit 1; }
 echo "close-out contract section: ok"

@@ -60,10 +60,28 @@
       "calls": [
         {"id": "c1", "call": "A saved search survives closing and reopening the app.", "why": "Saved, closed the dev window, reopened it, pressed the search.", "result": "pass"},
         {"_comment": "BEFORE the build a checks-menu row has result run (Will run) or skip, and MUST carry `more`: does (what it actually does, step by step), why (why it is or is not suggested for THIS build), and optionally returns (what comes back to him). Up to 120 words each.",
-         "id": "c2", "call": "A fresh reviewer reads the finished change.", "why": "Looks for anything that breaks a rule or could surprise you.", "result": "run",
+         "_comment_check": "`check: code-review` marks this row as the code review. After the build, once its result is pass / fail / unclear, the builder REQUIRES the `found-in-review` list below.",
+         "id": "c2", "call": "A fresh reviewer reads the finished change.", "why": "Looks for anything that breaks a rule or could surprise you.", "result": "run", "check": "code-review",
          "more": {"does": "A reviewer who has seen none of this conversation reads the changed files and the written design, then lists anything that breaks a rule or could surprise you.",
                   "returns": "One status row here (passed, failed or unclear) and a short plain-words list of what it found.",
                   "why": "Suggested on: saved searches are stored on this computer, so a mistake could lose your data."}}
+      ]
+    },
+    {
+      "_comment": "AFTER THE BUILD ONLY (delete both lists below in the before-build deck; the after-build deck is refused without the first). `list: changed-while-building` = what moved from the plan while building. One row per change; `built` is `as planned` or `adjusted`, and an adjusted row says why in `why` (his: \"what did you have to adjust\"). A deck that is the after-build one says so by `\"build\": \"after\"` at the top, by a growing deck at stage after, or by the file name <feature>.walkthrough.after.json.",
+      "id": "W-7", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "What changed while building", "list": "changed-while-building",
+      "calls": [
+        {"id": "b1", "call": "The star sits inside the box, at its right edge.", "why": "As drawn and approved.", "built": "as planned"},
+        {"id": "b2", "call": "The twenty-search limit is nineteen.", "why": "The twentieth row pushed the menu past the screen on a phone.", "built": "adjusted"}
+      ]
+    },
+    {
+      "_comment": "AFTER THE BUILD ONLY. `list: found-in-review` = each finding of the code review, one row each, in plain words (never the reviewer's raw report). If it found nothing, ONE row with `none_found: true` and a plain sentence. Required once the code-review check row has a result.",
+      "id": "W-8", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Found in review", "list": "found-in-review",
+      "calls": [
+        {"id": "f1", "call": "A saved search with an empty name could be saved.", "why": "Fixed: the star now asks for a name first."}
       ]
     },
     {

@@ -20,6 +20,7 @@
     "midnight",
     "light"
   ],
+  "_comment_after_build": "WHEN THE DECK MOVES TO STAGE \"after\" the builder REQUIRES two lists on its after pages (they cannot sit here, a page of a later stage is refused). Add a page marker {id, page, intro, stage: \"after\"} and then: (1) {id, words: true, surface, path, headline: \"What changed while building\", list: \"changed-while-building\", calls: [{id, call, why, built: \"as planned\"}, {id, call, why: \"the reason, in words\", built: \"adjusted\"}]} - at least one row; (2) when the code review ran (a result row carrying check: \"code-review\" with pass / fail / unclear): {id, words: true, surface, path, headline: \"Found in review\", list: \"found-in-review\", calls: [one row per finding]} - or ONE row with none_found: true and a plain sentence. The done gate also fails while he has not ticked or changed a row of either list. Full shapes: templates/walkthrough.json.",
   "retired": {},
   "_comment_retired": "retired: {\"<step id>\": \"why it went\"}. A topic he answered earlier cannot just disappear from the deck; list it here when you remove it on purpose.",
   "steps": [

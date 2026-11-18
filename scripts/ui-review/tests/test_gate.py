@@ -29,8 +29,12 @@ BEFORE = {'title': 't', 'key': 'k', 'out': 'k.html', 'steps': [
         {'id': 'c2', 'call': 'Phone check.', 'why': 'Narrow.', 'result': 'skip'}]}]}
 AFTER = {'title': 't', 'key': 'k2', 'out': 'k2.html', 'steps': [
     {'id': 'W-1', 'calls': [{'id': 'a', 'call': 'Built.', 'why': 'Yes.', 'from': 'W-1/save'}]},
-    {'id': 'W-5', 'calls': [{'id': 'r1', 'call': 'Reviewer found nothing.', 'why': 'Read.', 'from': 'W-5/c1', 'result': 'pass'}]}]}
+    {'id': 'W-5', 'calls': [{'id': 'r1', 'call': 'Reviewer found nothing.', 'why': 'Read.', 'from': 'W-5/c1', 'result': 'pass', 'check': 'code-review'}]},
+    # WHY: the after-build deck must carry the two lists (feature-flow step 5); the gate fails without them.
+    {'id': 'W-7', 'words': True, 'list': 'changed-while-building', 'calls': [{'id': 'b1', 'call': 'Star at the right edge.', 'why': 'As drawn.', 'built': 'as planned'}]},
+    {'id': 'W-8', 'words': True, 'list': 'found-in-review', 'calls': [{'id': 'f1', 'call': 'The review found nothing.', 'why': 'It read every changed file.', 'none_found': True}]}]}
 SUB = {'submitted': '2026-11-11T10:00:00Z', 'answers': {}}
+TICKED = {'submitted': '2026-11-11T10:00:00Z', 'answers': {'W-7': {'ok': {'b1': True}}, 'W-8': {'ok': {'f1': True}}}}
 
 
 class Gate(unittest.TestCase):
@@ -39,7 +43,7 @@ class Gate(unittest.TestCase):
         self.b = os.path.join(self.tmp, 'x.walkthrough.json')
         self.a = os.path.join(self.tmp, 'x.walkthrough.after.json')
 
-    def put(self, before=BEFORE, after=AFTER, b_ans=SUB, a_ans=SUB):
+    def put(self, before=BEFORE, after=AFTER, b_ans=SUB, a_ans=TICKED):
         w(self.b, before)
         if after is not None: w(self.a, after)
         if b_ans is not None: w(os.path.join(self.tmp, 'x.walkthrough.answers.json'), b_ans)
@@ -113,7 +117,7 @@ class Gate(unittest.TestCase):
             self.has(self.problems(a_ans={'submitted': 'x', 'answers': ans}), 'not finished')
 
     def test_accepted_and_passed_rows_are_not_changes(self):
-        ans = {'W-1': {'v': 'yes', 'accepted': True}, 'W-5': {'v': 'yes', 'results': {'r1': 'pass'}}}
+        ans = {'W-1': {'v': 'yes', 'accepted': True}, 'W-5': {'v': 'yes', 'results': {'r1': 'pass'}}, **TICKED['answers']}
         self.assertEqual(self.problems(a_ans={'submitted': 'x', 'answers': ans}), [])
 
     def test_page_and_general_notes_are_changes(self):
@@ -144,7 +148,7 @@ class Cli(unittest.TestCase):
         self.assertIn('NOT FINISHED', err.getvalue())
         w(os.path.join(tmp, 'x.walkthrough.after.json'), AFTER)
         w(os.path.join(tmp, 'x.walkthrough.answers.json'), SUB)
-        w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), SUB)
+        w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), TICKED)
         out = io.StringIO()
         with redirect_stdout(out):
             self.assertEqual(rc.main(['walkthrough-check', b]), 0)
@@ -193,6 +197,39 @@ class TickGate(unittest.TestCase):
         self.assertTrue(any('Second row words.' in p and 'not looked at' in p for p in problems), problems)
 
 
+class AfterBuildLists(unittest.TestCase):
+    """The done gate also needs "What changed while building" and "Found in review" (feature-flow step 5)."""
+    def gate(self, after, a_ans=TICKED):
+        tmp = tempfile.mkdtemp(); b = os.path.join(tmp, 'x.walkthrough.json')
+        w(b, BEFORE); w(os.path.join(tmp, 'x.walkthrough.after.json'), after)
+        w(os.path.join(tmp, 'x.walkthrough.answers.json'), SUB); w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), a_ans)
+        return check_gate(b)[0]
+
+    def without(self, step_id):
+        return dict(AFTER, steps=[st for st in AFTER['steps'] if st['id'] != step_id])
+
+    def test_both_lists_ticked_pass(self):
+        self.assertEqual(self.gate(AFTER), [])
+
+    def test_missing_changed_while_building_fails(self):
+        self.assertTrue(any('What changed while building' in p for p in self.gate(self.without('W-7'))))
+
+    def test_missing_found_in_review_fails_when_the_review_ran(self):
+        self.assertTrue(any('Found in review' in p for p in self.gate(self.without('W-8'))))
+
+    def test_an_unanswered_row_of_either_list_fails(self):
+        for sid, rid in (('W-7', 'b1'), ('W-8', 'f1')):
+            ans = json.loads(json.dumps(TICKED)); ans['answers'][sid] = {'ok': {}}
+            ps = self.gate(AFTER, ans)
+            self.assertTrue(any(f'{sid}/{rid}' in p and 'not looked at' in p for p in ps), ps)
+
+    def test_a_comment_on_a_row_counts_as_answered_but_still_a_change(self):
+        ans = json.loads(json.dumps(TICKED)); ans['answers']['W-7'] = {'changes': {'b1': 'why?'}}
+        ps = self.gate(AFTER, ans)
+        self.assertFalse(any('not looked at' in p for p in ps), ps)
+        self.assertTrue(any('he asked for a change' in p for p in ps), ps)
+
+
 if __name__ == '__main__':
     unittest.main()
 
@@ -212,7 +249,7 @@ class ApprovedVersion(unittest.TestCase):
         self.commit = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=self.tmp, capture_output=True, text=True).stdout.strip()
         w(self.a, AFTER)
         w(os.path.join(self.tmp, 'x.walkthrough.answers.json'), {**SUB, 'built': {'at': 'x', 'commit': self.commit}})
-        w(os.path.join(self.tmp, 'x.walkthrough.after.answers.json'), SUB)
+        w(os.path.join(self.tmp, 'x.walkthrough.after.answers.json'), TICKED)
 
     def test_a_later_edit_to_the_file_does_not_change_what_he_approved(self):
         # his request row `save` is dropped from the file AFTER he answered; the approved version still has it, so the after-walkthrough still answers it
@@ -241,5 +278,5 @@ class ApprovedVersion(unittest.TestCase):
         tmp = tempfile.mkdtemp(); b = os.path.join(tmp, 'x.walkthrough.json')
         w(b, BEFORE); w(os.path.join(tmp, 'x.walkthrough.after.json'), AFTER)
         w(os.path.join(tmp, 'x.walkthrough.answers.json'), {**SUB, 'built': {'commit': 'abc1234'}})
-        w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), SUB)
+        w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), TICKED)
         self.assertEqual(check_gate(b)[0], [])

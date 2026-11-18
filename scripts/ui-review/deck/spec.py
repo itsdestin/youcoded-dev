@@ -868,6 +868,76 @@ def _validate_history(spec, errors):
                     errors.append(f'related: {r["path"]} does not exist beside the spec')
 
 
+# ── the two lists an after-build deck must carry ─────────────────────────────────────────────────
+# WHY (Destin: "what did you have to adjust"; feature-flow step 5): after a build he must see, as rows he
+# can tick or answer, what changed from the plan while building and each code-review finding. These
+# were only a written rule, so a session could skip them. Now the builder refuses an after-build deck
+# without them and the done gate (gate.py) fails when they are missing or he has not answered a row.
+# Markers (all explicit, all in the spec): a list step says `"list": "changed-while-building"` or
+# `"list": "found-in-review"`; a check row says `"check": "code-review"`.
+LIST_KINDS = ('changed-while-building', 'found-in-review')
+BUILT_VALUES = ('as planned', 'adjusted')
+ADJUSTED_WHY_MIN = 3     # words: a bare "ok" is not a reason
+
+
+def is_after_build(spec):
+    """True for the deck he reads AFTER the build: `"build": "after"`, a growing deck AT stage `after`,
+    or the walkthrough convention that the after-build file is named `<feature>.walkthrough.after.json`
+    (the name gate.py already looks for)."""
+    return (spec.get('build') == 'after'
+            or (spec.get('grows') is True and spec.get('stage') == 'after')
+            or str(spec.get('_stem') or '').endswith('.after'))
+
+
+def _list_steps(spec, kind):
+    return [st for st in spec.get('steps') or [] if isinstance(st, dict) and st.get('list') == kind]
+
+
+def after_build_list_errors(spec):
+    """Plain-language problems with the two required lists of an after-build deck (empty when fine)."""
+    errs = []
+    steps = [st for st in spec.get('steps') or [] if isinstance(st, dict)]
+    for st in steps:
+        if 'list' in st and st['list'] not in LIST_KINDS:
+            errs.append(f'{st.get("id")}: list must be one of {", ".join(LIST_KINDS)}')
+    changed = _list_steps(spec, 'changed-while-building')
+    rows = [c for st in changed for c in (st.get('calls') or []) if isinstance(c, dict)]
+    if not rows:
+        errs.append('an after-build deck needs a list "What changed while building" ({"list": "changed-while-building", "calls": [...]}) '
+                    'with at least one row: each row says "built": "as planned", or "built": "adjusted" with the reason in "why"')
+    for st in changed:
+        if st.get('context') or any(c.get('result') for c in st.get('calls') or [] if isinstance(c, dict)):
+            errs.append(f'{st.get("id")}: "What changed while building" is a list he ticks or changes — no context list, no result chips')
+        for c in st.get('calls') or []:
+            if not isinstance(c, dict):
+                continue
+            where = f'{st.get("id")}/{c.get("id")}'
+            if c.get('built') not in BUILT_VALUES:
+                errs.append(f'{where}: a "What changed while building" row says "built": "as planned" or "built": "adjusted"')
+            elif c['built'] == 'adjusted' and word_count(c.get('why')) < ADJUSTED_WHY_MIN:
+                errs.append(f'{where}: an adjusted row says why it was adjusted, in "why" (at least {ADJUSTED_WHY_MIN} words)')
+    reviewed = any(isinstance(c, dict) and c.get('check') == 'code-review' and c.get('result') in ('pass', 'fail', 'unclear')
+                   for st in steps for c in (st.get('calls') or []))
+    found = _list_steps(spec, 'found-in-review')
+    if reviewed and not found:
+        errs.append('the code review was run, so the deck needs a list "Found in review" ({"list": "found-in-review", "calls": [...]}): '
+                    'one row per finding, or one row with "none_found": true and a plain sentence when it found nothing')
+    for st in found:
+        frows = [c for c in st.get('calls') or [] if isinstance(c, dict)]
+        none = [c for c in frows if c.get('none_found') is True]
+        if st.get('context') or any(c.get('result') for c in frows):
+            errs.append(f'{st.get("id")}: "Found in review" is a list he ticks or changes — no context list, no result chips')
+        if none and len(frows) != 1:
+            errs.append(f'{st.get("id")}: "none_found" is the only row of a "Found in review" list that found nothing — drop it or the findings')
+        if not frows:
+            errs.append(f'{st.get("id")}: "Found in review" needs one row per finding, or one row with "none_found": true')
+    for st in steps:
+        for c in st.get('calls') or []:
+            if isinstance(c, dict) and 'check' in c and not (isinstance(c['check'], str) and c['check'].strip()):
+                errs.append(f'{st.get("id")}/{c.get("id")}: check names which check the row reports, e.g. "code-review"')
+    return errs
+
+
 def validate(spec):
     """Returns (errors, warnings) as 'step-id: message' lines. Errors block crop/build."""
     errors, warnings, ids = [], [], set()
@@ -976,6 +1046,11 @@ def validate(spec):
             warnings.append(f'{sid}: measured has no number in it')
     _images_folder_warning(spec, warnings)
     _stage_checklist(spec, errors)
+    if 'build' in spec and spec['build'] not in ('before', 'after'):
+        errors.append('build is "before" or "after" (an after-build deck must carry the lists of what changed while building and what the review found)')
+    # WHY: only an after-build deck is held to the two lists; every other deck builds exactly as before.
+    if is_after_build(spec):
+        errors.extend(after_build_list_errors(spec))
     # WHY (Destin, rounds 1, 8 and 10: one deck that grows each round and keeps what he said): a spec
     # with "grows": true gets the extra checks in grows.py, including the refusal to lose an answer silently.
     from . import grows

@@ -406,5 +406,76 @@ class RethinkTests(unittest.TestCase):
         self.assertIn('id="stepsum"', open(os.path.join(DECK, 'page.html.tmpl')).read())
 
 
+BUILT = {'id': 'A-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'What changed while building', 'list': 'changed-while-building',
+         'calls': [{'id': 'b1', 'call': 'The board is five rows tall.', 'why': 'As drawn.', 'built': 'as planned'},
+                   {'id': 'b2', 'call': 'A win plays no sound.', 'why': 'The sound clashed with music playing.', 'built': 'adjusted'}]}
+FOUND = {'id': 'A-2', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Found in review', 'list': 'found-in-review',
+         'calls': [{'id': 'f1', 'call': 'An empty name could be saved.', 'why': 'Fixed: it now asks for a name.'}]}
+REVIEW = {'id': 'A-3', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Checks I ran',
+          'calls': [{'id': 'c1', 'call': 'A fresh reviewer read the change.', 'why': 'Read every changed file.', 'result': 'pass', 'check': 'code-review'}]}
+
+
+class AfterBuildLists(unittest.TestCase):
+    """feature-flow step 5: an after-build deck carries "What changed while building" and, when the code review
+    ran, "Found in review". Only an after-build deck is held to it."""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def errs(self, *steps, **top):
+        def m(r):
+            r['steps'] = list(steps); r.update(top)
+        return validate(spec_with(self.tmp, m))[0]
+
+    def has(self, errs, text):
+        self.assertTrue(any(text in e for e in errs), errs)
+
+    def test_a_complete_after_build_deck_builds(self):
+        self.assertEqual(self.errs(BUILT, REVIEW, FOUND, build='after'), [])
+
+    def test_a_before_build_deck_is_not_held_to_it(self):
+        self.assertEqual(self.errs(REVIEW, build='before'), [])
+        self.assertEqual(self.errs(REVIEW), [])
+
+    def test_missing_changed_while_building_is_refused(self):
+        self.has(self.errs(FOUND, REVIEW, build='after'), 'What changed while building')
+
+    def test_a_row_must_say_as_planned_or_adjusted(self):
+        bad = dict(BUILT, calls=[{'id': 'b1', 'call': 'Five rows.', 'why': 'As drawn.'}])
+        self.has(self.errs(bad, REVIEW, FOUND, build='after'), '"built": "as planned"')
+
+    def test_an_adjusted_row_needs_a_reason(self):
+        bad = dict(BUILT, calls=[{'id': 'b1', 'call': 'Five rows.', 'why': 'Ok.', 'built': 'adjusted'}])
+        self.has(self.errs(bad, REVIEW, FOUND, build='after'), 'says why it was adjusted')
+
+    def test_found_in_review_is_required_once_the_review_ran(self):
+        self.has(self.errs(BUILT, REVIEW, build='after'), 'Found in review')
+
+    def test_a_review_that_was_skipped_needs_no_found_list(self):
+        skipped = dict(REVIEW, calls=[dict(REVIEW['calls'][0], result='skip', more={'does': 'Reads the change.', 'why': 'Not suggested here.'})])
+        self.assertEqual(self.errs(BUILT, skipped, build='after'), [])
+
+    def test_a_review_that_found_nothing_says_so_in_one_row(self):
+        none = dict(FOUND, calls=[{'id': 'f0', 'call': 'The review found nothing.', 'why': 'It read every changed file.', 'none_found': True}])
+        self.assertEqual(self.errs(BUILT, REVIEW, none, build='after'), [])
+        both = dict(FOUND, calls=none['calls'] + FOUND['calls'])
+        self.has(self.errs(BUILT, REVIEW, both, build='after'), 'none_found')
+
+    def test_a_results_or_context_list_is_not_a_list_he_ticks(self):
+        ctx = dict(BUILT, context=True)
+        self.has(self.errs(ctx, build='after'), 'ticks or changes')
+
+    def test_unknown_list_kind_and_build_value_are_refused(self):
+        self.has(self.errs(dict(BUILT, list='other'), build='after'), 'list must be one of')
+        self.has(self.errs(REVIEW, build='later'), 'build is "before" or "after"')
+
+    def test_the_after_file_name_marks_it_too(self):
+        p = words_spec(self.tmp)
+        with open(p) as f: raw = json.load(f)
+        raw['steps'] = [REVIEW]
+        q = os.path.join(self.tmp, 'x.walkthrough.after.json')
+        with open(q, 'w') as f: json.dump(raw, f)
+        self.has(validate(load_spec(q))[0], 'What changed while building')
+
+
 if __name__ == '__main__':
     unittest.main()
