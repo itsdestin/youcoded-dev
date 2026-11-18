@@ -11,14 +11,15 @@ created: 2026-10-15
 summary: Many error messages still state a guessed cause or offer no next step; six of seven fix batches remain.
 area: Settings
 side: both
-work: session/round4-silent-places
+work: session/round4-silent-places, session/134-phone-paste
 ---
 Progress
-Done: Round 4 landed (youcoded#766): ~40 silent places now show a notice; Effort/Fast chips hidden until read; final false-alarm review fixed 3 cases (empty right-click Paste, phone file rename, older computer's project list)
-Next: Destin to decide: make picture paste actually work on a phone (upload the pasted picture like Attach does) instead of doing nothing
-Blocked: Synced-project rename notice skipped: sync retries by itself, so it would be a false alarm
+Done: Deck 2026-11-19 phone-paste: Destin said yes (branch session/134-phone-paste). He asked how paste works in the Android app and about paste previews; answered in chat
+Next: Merge on his word; Android app paste of pictures is a separate piece
+Blocked: Nothing
 
 Chats
+- 2026-11-18 session/134-phone-paste: chat started
 - 2026-11-14 session/round4-silent-places: chat started
 
 From the old roadmap (user-interface, status confirmed, seen on all, last checked 2026-09-11)

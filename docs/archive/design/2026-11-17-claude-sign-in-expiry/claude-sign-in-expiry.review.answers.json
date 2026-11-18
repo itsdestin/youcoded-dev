@@ -1,0 +1,128 @@
+{
+ "deck": "claude-sign-in-expiry-review",
+ "started": "2026-11-18T09:42:49.195Z",
+ "submitted": "2026-11-18T09:59:27Z",
+ "cur": 15,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "t": 1794995099331,
+   "seconds": 62,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "other",
+   "seconds": 198,
+   "theme": "midnight",
+   "zoom": 1,
+   "t": 1794995230038,
+   "note": "hmm i don't like how the styling of this menu thing changes between the last page (red outline) and this one. also simplify copy to \"Browser opened, please continue to sign-in.:\" with a youcoded spinner on the left side like a thinking bubble until sign-in is complete"
+  },
+  "R-3": {
+   "v": "no",
+   "t": 1794995390337,
+   "note": "honestly i'm back to thinking we drop the \"continue\" button. just show a \"sign in successful\" card and let the user continue by sending a follow up",
+   "seconds": 160,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-4": {
+   "note": "why amber instead of red?",
+   "t": 1794995407530,
+   "v": "other",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-5": {
+   "note": "\"Sgn in again from your host computer\"",
+   "t": 1794995555910,
+   "v": "yes",
+   "seconds": 148,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-6": {
+   "note": "don't love this. it's fine for now, but we should leave an open card to come back to errors that mimic text bubbles. these arrows should mirror the rules of real text bubbles, including margins and appearance/theme styling. we also may want to consider making buttons full-width on narrow screens but idk. also make the button \"Sign in\" instead of \"Sign in again\" on all devices",
+   "t": 1794995689664,
+   "v": "yes",
+   "seconds": 134,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-7": {
+   "v": "yes",
+   "t": 1794995709858,
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-8": {
+   "v": "yes",
+   "t": 1794995734349,
+   "seconds": 24,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-9": {
+   "v": "other",
+   "t": 1794995747687,
+   "note": "probably make red instead of yellow?",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-10": {
+   "v": "yes",
+   "t": 1794995765541,
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-11": {
+   "note": "change ends to expires",
+   "t": 1794995810754,
+   "v": "yes",
+   "seconds": 45,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-12": {
+   "v": "yes",
+   "t": 1794995830703,
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-13": {
+   "v": "yes",
+   "t": 1794995848463,
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-14": {
+   "v": "yes",
+   "t": 1794995865760,
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-15": {
+   "v": "yes",
+   "t": 1794995870775,
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-16": {
+   "v": "other",
+   "t": 1794995966501,
+   "note": "i think we can improve this visually. its kinda hard to notice in the current position. and doesn't quite feel tied to the sign in buttons. i think it should probably just temporarily replace both login options, since they're kinda useless without internet anyway?",
+   "seconds": 96,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

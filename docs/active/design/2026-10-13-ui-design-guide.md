@@ -556,8 +556,10 @@ app's own.
 - **A wrong input that trying again can't fix** (a file that isn't the right kind) offers the way to
   fix it ("Choose another file") as the notice's filled button instead of Try again (gt-r1 import
   builder; Destin did not object).
-- **"No internet" only when the computer reports no network** (amber); otherwise say the server could
-  not be reached (red). Never guess the cause (`docs/error-message-standards.md`).
+- **"No internet" only when the computer reports no network**, otherwise say the server could not be
+  reached; both are red, like the other failures beside them (Destin, card #236 review R-4/R-9,
+  2026-11-18: "probably make red instead of yellow" — it had been amber). Never guess the cause
+  (`docs/error-message-standards.md`).
 - **When an action finishes, keep its subject.** The card the action was about stays on screen, tagged
   with a status pill ("Submitted", "Not sent") and one line at its foot saying what happened; the
   next buttons sit where the action's were. While it runs, a single box with the spinner sits under the
