@@ -15,8 +15,8 @@
 :root{
   --canvas:#F7F0FB; --panel:#EFE3F6; --edge:#C9B0DB;
   --ink:#21152C; --ink2:#43354E; --muted:#8A7B96;
-  --accent:#8B47B8; --gradA:#9D5BD0; --gradB:#D25AA0;
-  --night:#140B1E; --nightPanel:#1F1329; --nightInk:#F3EAF9; --nightSoft:#B3A8BC; --nightAccent:#C99BF0;
+  --accent:#9750AA; --gradA:#9D5BD0; --gradB:#D25AA0;
+  --night:#140B1E; --nightPanel:#1F1329; --nightInk:#F3EAF9; --nightSoft:#B3A8BC; --nightAccent:#C387D3;
   --ok:#2E7D4F; --bad:#B3261E;
   /* WHY: the site's .wm sizes from --icon; a logo with no icon (stacked, name only, end card) still needs it defined or the whole font rule drops. */
   --icon:36px;
@@ -209,7 +209,7 @@ footer{padding:40px 0 64px;color:var(--ink2);font-size:14px}
   <p class="kicker">Colour</p>
   <h2>Mostly lavender and plum, <span class="em">a little purple</span>.</h2>
   <div class="ratio" style="margin:20px 0 6px" aria-label="Rough proportions">
-    <div style="flex:70;background:#F7F0FB"></div><div style="flex:20;background:#21152C"></div><div style="flex:7;background:#8B47B8"></div><div style="flex:3;background:linear-gradient(100deg,#9D5BD0,#D25AA0)"></div>
+    <div style="flex:70;background:#F7F0FB"></div><div style="flex:20;background:#21152C"></div><div style="flex:7;background:#9750AA"></div><div style="flex:3;background:linear-gradient(100deg,#9D5BD0,#D25AA0)"></div>
   </div>
   <div class="label" style="margin-top:0">Roughly 70% background · 20% text · 10% or less purple and gradient</div>
 
@@ -221,7 +221,7 @@ footer{padding:40px 0 64px;color:var(--ink2);font-size:14px}
     <div class="sw"><div class="chip" style="background:#21152C"></div><div class="meta"><b>Deep plum</b><code>#21152C</code><br>Text, instead of black</div></div>
     <div class="sw"><div class="chip" style="background:#43354E"></div><div class="meta"><b>Plum 2</b><code>#43354E</code><br>Secondary text</div></div>
     <div class="sw"><div class="chip" style="background:#8A7B96"></div><div class="meta"><b>Grey-violet</b><code>#8A7B96</code><br>Taglines only</div></div>
-    <div class="sw"><div class="chip" style="background:#8B47B8"></div><div class="meta"><b>Brand purple</b><code>#8B47B8</code><br>The one accent</div></div>
+    <div class="sw"><div class="chip" style="background:#9750AA"></div><div class="meta"><b>Brand purple</b><code>#9750AA</code><br>The one accent</div></div>
     <div class="sw"><div class="chip" style="background:linear-gradient(100deg,#9D5BD0,#D25AA0)"></div><div class="meta"><b>Gradient</b><code>#9D5BD0 → #D25AA0</code><br>"you", one bold moment</div></div>
   </div>
 
@@ -231,26 +231,26 @@ footer{padding:40px 0 64px;color:var(--ink2);font-size:14px}
     <div class="sw"><div class="chip" style="background:#1F1329"></div><div class="meta"><b>Panel</b><code>#1F1329</code></div></div>
     <div class="sw"><div class="chip" style="background:#F3EAF9"></div><div class="meta"><b>Light text</b><code>#F3EAF9</code></div></div>
     <div class="sw"><div class="chip" style="background:#B3A8BC"></div><div class="meta"><b>Soft text</b><code>#B3A8BC</code></div></div>
-    <div class="sw"><div class="chip" style="background:#C99BF0"></div><div class="meta"><b>Light purple</b><code>#C99BF0</code><br>Accent on dark</div></div>
+    <div class="sw"><div class="chip" style="background:#C387D3"></div><div class="meta"><b>Light purple</b><code>#C387D3</code><br>Accent on dark</div></div>
   </div>
 
   <h3 style="margin-top:28px">Readability (measured)</h3>
   <div class="card"><table>
     <tr><th>Pair</th><th>Contrast</th><th>OK for</th></tr>
     <tr><td><span style="color:#21152C;font-weight:700">Plum</span> on lavender</td><td>15.6 : 1</td><td>Everything</td></tr>
-    <tr><td><span style="color:#8B47B8;font-weight:700">Brand purple</span> on lavender</td><td>5.1 : 1</td><td>Text and buttons</td></tr>
-    <tr><td><span style="background:#8B47B8;color:#fff;padding:1px 6px;border-radius:4px">White</span> on brand purple</td><td>5.7 : 1</td><td>Buttons</td></tr>
+    <tr><td><span style="color:#9750AA;font-weight:700">Brand purple</span> on lavender</td><td>4.7 : 1</td><td>Text and buttons (on lilac panels, big or bold words only: 4.2 : 1)</td></tr>
+    <tr><td><span style="background:#9750AA;color:#fff;padding:1px 6px;border-radius:4px">White</span> on brand purple</td><td>5.2 : 1</td><td>Buttons</td></tr>
     <tr><td><span style="color:#D25AA0;font-weight:700">Gradient ends</span> on lavender</td><td>3.3–3.9 : 1</td><td>Large type only (the logo)</td></tr>
     <tr><td><span style="color:#8A7B96;font-weight:700">Grey-violet</span> on lavender</td><td>3.5 : 1</td><td>Taglines only, never body text</td></tr>
-    <tr><td><span style="background:#140B1E;color:#C99BF0;padding:1px 6px;border-radius:4px">Light purple</span> on plum-black</td><td>8.6 : 1</td><td>Accent on dark</td></tr>
-    <tr><td><span style="background:#140B1E;color:#8B47B8;padding:1px 6px;border-radius:4px">Brand purple</span> on plum-black</td><td>3.4 : 1</td><td>Avoid</td></tr>
+    <tr><td><span style="background:#140B1E;color:#C387D3;padding:1px 6px;border-radius:4px">Light purple</span> on plum-black</td><td>7.0 : 1</td><td>Accent on dark</td></tr>
+    <tr><td><span style="background:#140B1E;color:#9750AA;padding:1px 6px;border-radius:4px">Brand purple</span> on plum-black</td><td>3.7 : 1</td><td>Avoid</td></tr>
   </table></div>
 
   <h3 style="margin-top:28px">Not our look</h3>
   <div class="grid g3">
     <div class="dd dont"><div class="stage" style="background:radial-gradient(circle at 50% 50%,#7dd3fc 0,#6366f1 40%,#1e1b4b 100%)"><span style="font:800 26px 'DM Sans';color:#fff;text-shadow:0 0 20px #a5b4fc">✨ AI ✨</span></div><div class="cap"><b>Don't</b>blue-purple glow, orbs, sparkles</div></div>
     <div class="dd dont"><div class="stage" style="background:#000"><span style="font:800 26px 'DM Sans';color:#f59e0b">Pure black + gold</span></div><div class="cap"><b>Don't</b>pure black, or a non-purple accent on dark</div></div>
-    <div class="dd do"><div class="stage" style="background:#140B1E"><span style="font:900 30px/1 'DM Sans';letter-spacing:-.05em;color:#F3EAF9">Make it <span style="color:#C99BF0">yours.</span></span></div><div class="cap"><b>Do</b>plum-black with the light purple</div></div>
+    <div class="dd do"><div class="stage" style="background:#140B1E"><span style="font:900 30px/1 'DM Sans';letter-spacing:-.05em;color:#F3EAF9">Make it <span style="color:#C387D3">yours.</span></span></div><div class="cap"><b>Do</b>plum-black with the light purple</div></div>
   </div>
 </section>
 

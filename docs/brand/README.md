@@ -183,10 +183,9 @@ Built from the default "YouCoded" theme, which is also the website's default loo
 | Deep plum (ink) | `#21152C` | Text, and "coded". Use it instead of black. |
 | Plum 2 | `#43354E` | Secondary text |
 | Grey-violet | `#8A7B96` | Taglines and small notes only (it is too faint for body text) |
-| **Brand purple** | `#8B47B8` | The one accent: a key word, a button, a link |
+| **Brand purple** | `#9750AA` | The one accent: a key word, a button, a link. Chosen by Destin 2026-11-18 (option "C": a third of the way from the logo gradient's purple toward its pink, darkened so text stays readable). Replaces `#8B47B8`. |
 | Gradient | `#9D5BD0` → `#D25AA0` | "you" in the logo, and at most one bold moment per piece |
 
-<!-- verify: {"path": "youcoded/desktop/src/renderer/themes/builtin/youcoded.json", "contains": "#8B47B8"} -->
 <!-- verify: {"path": "youcoded/desktop/src/renderer/themes/builtin/youcoded.json", "contains": "#F7F0FB"} -->
 
 ### Dark (from the "YouCoded Night" theme)
@@ -197,9 +196,8 @@ Built from the default "YouCoded" theme, which is also the website's default loo
 | Panel | `#1F1329` | Cards on dark |
 | Light text | `#F3EAF9` | Text, and "coded" |
 | Soft text | `#B3A8BC` | Secondary text |
-| Light purple | `#C99BF0` | The accent on dark (the brand purple is too dark to read there) |
+| Light purple | `#C387D3` | The accent on dark: C's lighter partner (the brand purple is too dark to read there). Replaces `#C99BF0`. |
 
-<!-- verify: {"path": "youcoded/desktop/src/renderer/themes/builtin/youcoded-night.json", "contains": "#C99BF0"} -->
 
 ### Rules
 
@@ -209,10 +207,11 @@ Built from the default "YouCoded" theme, which is also the website's default loo
 - **One extra colour at most.** A film or campaign may add one supporting colour for its idea,
   but it must sit well beside the purple, and the purple must still read as the brand. On dark,
   the accent stays purple, not gold, red, coral or orange.
-- **Readability (measured):** plum on lavender 15.6:1 ✓ · brand purple on lavender 5.1:1 ✓ (fine
-  for text) · white on brand purple 5.7:1 ✓ (buttons) · gradient ends on lavender 3.3–3.9:1, so
+- **Readability (measured):** plum on lavender 15.6:1 ✓ · brand purple on lavender 4.7:1 ✓ (fine
+  for text) · brand purple on a lilac panel 4.2:1, so on panels use it only for big or bold words ·
+  white on brand purple 5.2:1 ✓ (buttons) · gradient ends on lavender 3.3–3.9:1, so
   only for large type like the logo · grey-violet on lavender 3.5:1, so taglines only · on dark,
-  light purple 8.6:1 ✓, brand purple 3.4:1 ✗.
+  light purple 7.0:1 ✓, brand purple 3.7:1 ✗.
 - **Avoid the generic AI-ad look:** purple-to-blue gradients, glowing orbs, sparkles, floating
   particles, circuit lines.
 - **Logos of AI companies** (Claude, OpenAI etc.) keep their own colours wherever they appear.
@@ -417,6 +416,9 @@ These are places that don't match this guide yet. Fixing any of them changes som
 can see, so each needs Destin's go-ahead.
 
 - The app's first-run setup screen still shows the retired tagline "agents for everyone".
+- The website and the app's default YouCoded themes still use the old purples (`#8B47B8`, and
+  `#C99BF0` on dark). Updating them is a visible change; the website's recorded demo clips would
+  need re-filming too.
 - The website's browser-tab title doesn't use the one-line description exactly. It reads
   "youcoded — your personal AI assistant…", with the name in lowercase.
 - The GitHub README writes "youcoded" in lowercase in sentences.
