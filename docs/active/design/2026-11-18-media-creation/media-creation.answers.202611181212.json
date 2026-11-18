@@ -1,0 +1,180 @@
+{
+ "deck": "media-creation",
+ "started": "2026-11-18T11:58:45.455Z",
+ "submitted": "2026-11-18T12:12:45Z",
+ "cur": 0,
+ "answers": {
+  "Q-d-approval": {
+   "v": "pick",
+   "pick": "card",
+   "t": 1795003964180,
+   "note": "this doesn't feel native to youcoded. please review other app/ui surfaces further and try to improve this a bit.",
+   "seconds": 112,
+   "theme": "ivory-schematic"
+  },
+  "Q-d-picture": {
+   "v": "pick",
+   "pick": "footer",
+   "t": 1795003964180,
+   "marks": [
+    {
+     "pic": "option footer",
+     "x": 6.4,
+     "y": 77.4,
+     "w": 29.2,
+     "h": 7.9,
+     "text": "don't like this bare text"
+    },
+    {
+     "pic": "option footer",
+     "x": 50.6,
+     "y": 76.9,
+     "w": 28.3,
+     "h": 8.9,
+     "text": "these should have icons (pulled from elsewhere in the app/similar buttons) and improved styling to match youcoded design principles"
+    }
+   ],
+   "seconds": 112,
+   "theme": "ivory-schematic"
+  },
+  "Q-d-sound": {
+   "note": "mm not quite any of these. A is closest, but i was envisioning the sound card in its own distinct container within the chat bubble instead of being bare in the bubble. ",
+   "t": 1795003964180,
+   "v": "pick",
+   "pick": "pill",
+   "seconds": 112,
+   "theme": "ivory-schematic"
+  },
+  "Q-d-video": {
+   "v": "pick",
+   "pick": "row",
+   "t": 1795003964180,
+   "note": "same comment as audio. also button alignement is weird here. did you review the youcoded design guide before building, or no?",
+   "seconds": 112,
+   "theme": "ivory-schematic"
+  },
+  "Q-d-limit": {
+   "note": "none of these. a is best, but way too busy and alignemnt is odd",
+   "t": 1795003964180,
+   "v": "other",
+   "seconds": 112,
+   "theme": "ivory-schematic"
+  },
+  "L-states": {
+   "ok": {
+    "S-sent": true
+   },
+   "marks": [
+    {
+     "pic": "row S-chatgpt",
+     "x": 9.4,
+     "y": 30.3,
+     "w": 64.8,
+     "h": 23.6,
+     "text": "Your ChatGPT plan only includes image generation on chatgpt.com. To generate images here, please connect a paid image provider."
+    },
+    {
+     "pic": "row S-menu",
+     "x": 39.2,
+     "y": 38,
+     "w": 32,
+     "h": 4.8,
+     "text": "also include our ask about this button."
+    },
+    {
+     "pic": "row S-menu",
+     "x": 7.9,
+     "y": 15.3,
+     "w": 4.6,
+     "h": 20,
+     "text": "i don't like that the left-alignement is off"
+    }
+   ],
+   "v": "other",
+   "t": 1795003964180,
+   "changes": {
+    "S-light": "where else is this orange used?",
+    "S-edit": "not sure if i love this exact design but it's fine in principle at least?"
+   },
+   "seconds": 112,
+   "theme": "ivory-schematic"
+  },
+  "L-defaults": {
+   "ok": {
+    "D-first-maker": true,
+    "D-shape": true,
+    "D-personal-folder": true,
+    "D-limit": true,
+    "D-voice": true,
+    "D-phone": true
+   },
+   "t": 1795003923416,
+   "changes": {
+    "D-one-picture": "i definitely wnat to have an \"allow for this session\" option for images. our 5$ limit should cover everything else. ",
+    "D-folder": "\"Generated Content\""
+   },
+   "v": "other",
+   "seconds": 84,
+   "theme": "ivory-schematic"
+  },
+  "L-failures": {
+   "ok": {
+    "F-refused": true,
+    "F-no-service": true,
+    "F-no-credit": true,
+    "F-video-closed": true
+   },
+   "t": 1795003923416,
+   "v": "yes",
+   "seconds": 84,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-18T11:57:49Z",
+  "branch": "session/267-media-creation",
+  "commit": "25b52dc4d07872a0872244fb94a80e01e012280f",
+  "spec_sha256": "eaee43f349801c6b82d49e36c81f37ebcc4566434ee760feba9f72841bc0edd1",
+  "spec_dirty": true,
+  "ids": [
+   "U-order",
+   "U-chat-only",
+   "U-approve-card",
+   "U-remember-model",
+   "U-create-edit",
+   "U-files",
+   "U-local-connect",
+   "U-gpt-plan",
+   "U-today",
+   "U-picture-them",
+   "U-ask-first",
+   "U-full-size",
+   "U-picture-menu",
+   "U-label",
+   "U-video-card",
+   "U-video-services",
+   "U-read-menu",
+   "U-voice-builtin",
+   "U-voice-services",
+   "U-sound-card",
+   "U-send-recording",
+   "Q-services",
+   "Q-same-key",
+   "Q-price",
+   "Q-local",
+   "Q-claude-code",
+   "Q-later",
+   "Q-github",
+   "Q-auto-limit",
+   "Q-voice-download",
+   "Q-d-approval",
+   "Q-d-picture",
+   "Q-d-sound",
+   "Q-d-video",
+   "Q-d-limit",
+   "L-states",
+   "L-defaults",
+   "L-failures"
+  ]
+ }
+}
