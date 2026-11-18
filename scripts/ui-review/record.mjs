@@ -32,7 +32,7 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs';
 import { runAutopilot, marksFile } from './autopilot.mjs';
-import { ensureBuild, openBrowser, resolveCheckout, serve } from '../shoot/engine.mjs';
+import { ensureBuild, openBrowser, resolveCheckout, serve, setShotScale } from '../shoot/engine.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -81,7 +81,13 @@ if (process.env.BASE_URL) {
 // One throw-away browser, one private tab: engine.mjs picks a free debugging
 // port, sets the Chrome flags shot.mjs/explore.mjs also use, and sweeps a
 // crashed run's leftover Chromes the next time anything here runs.
-const browser = await openBrowser({ width: W, height: H });
+// WHY RECORD_REAL_DENSITY (2026-11-18 campaign): with only the emulated density, Chrome's screencast hands back
+// frames at CSS size (1152x720 for a 2880x1800 take) and ffmpeg then UPSCALES them, so a "2x" clip is soft.
+// Launching Chrome at the real density (window in CSS px) makes the screencast deliver true ZOOM x frames.
+// Opt-in, so the landing loops film exactly as before.
+const realDensity = process.env.RECORD_REAL_DENSITY === '1';
+if (realDensity) setShotScale(ZOOM);
+const browser = await openBrowser(realDensity ? { width: CW, height: CH } : { width: W, height: H });
 const tab = await browser.newTab();
 process.on('exit', () => { try { browser.close(); } catch { /* best effort */ } try { built?.close(); } catch { /* best effort */ } });
 // `send`/`evaluate` alias the tab's CDP connection so everything below (selectors,
@@ -89,6 +95,10 @@ process.on('exit', () => { try { browser.close(); } catch { /* best effort */ } 
 const send = (method, params = {}) => tab.send(method, params);
 const evaluate = async (expression) => tab.evaluate(expression);
 
+// WHY RECORD_JPEG (2026-11-18 campaign): at 2880x1800 the screencast's PNG encode of every frame tops out near
+// 10 frames a second even on a quiet machine (typing came out 6 unique frames/s). JPEG q95 encodes several times
+// faster and is re-encoded at crf ~12 anyway. Stills keep PNG (RECORD_STILL needs lossless).
+const FEXT = process.env.RECORD_JPEG === '1' ? 'jpg' : 'png';
 const frames = [];
 // Fix: wall-clock of the FIRST screencast frame is the clip's time zero — every
 // action's start/end (stamped in Date.now()) is converted to video seconds by
@@ -109,7 +119,7 @@ process.on('exit', () => { if (process.env.KEEP_FRAMES === '1') { console.error(
 process.on('unhandledRejection', (err) => {
   try {
     if (frames.length) {
-      const last = join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0')}.png`);
+      const last = join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0')}.${FEXT}`);
       mkdirSync(dirname(outBase), { recursive: true }); copyFileSync(last, `${outBase}.fail.png`);
       console.error(`[record] failed — the last frame is at ${outBase}.fail.png`);
     }
@@ -123,7 +133,7 @@ tab.on((m) => {
   if (m.method !== 'Page.screencastFrame') return;
   if (frames.length === 0) firstFrameAt = Date.now();
   const n = frames.length;
-  writeFileSync(join(framesDir, `f${String(n).padStart(5, '0')}.png`), Buffer.from(m.params.data, 'base64'));
+  writeFileSync(join(framesDir, `f${String(n).padStart(5, '0')}.${FEXT}`), Buffer.from(m.params.data, 'base64'));
   frames.push({ n, t: m.params.metadata.timestamp });
   send('Page.screencastFrameAck', { sessionId: m.params.sessionId });
 });
@@ -202,6 +212,50 @@ async function drag(fromExpr, toExpr, ms = 800) {
   cur = b;
 }
 
+// Press, then travel along a hand-drawn path, then release: the one gesture a straight drag()
+// cannot express (a sun, a flower). `pts` are fractions (0-1) of the target's box, so a stroke
+// survives a layout change; WHY (2026-11-18 campaign): the paint-app clip has to show a real
+// painting being made with the mouse, with smooth interpolated travel between the points.
+async function stroke(expr, pts, ms, inFrame) {
+  const r = await rectOf(expr, inFrame);
+  if (!r) throw new Error(`MISSING ${expr}`);
+  const at = ([fx, fy]) => ({ x: r.x - r.w / 2 + fx * r.w, y: r.y - r.h / 2 + fy * r.h });
+  const path = pts.map(at);
+  await moveTo(path[0], 350);
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: path[0].x, y: path[0].y, button: 'left', buttons: 1, clickCount: 1 });
+  await sleep(50);
+  // Even travel along the path (arc-length), ~16 ms per step, so speed is constant.
+  const segs = path.slice(1).map((q, i) => ({ a: path[i], b: q, len: Math.hypot(q.x - path[i].x, q.y - path[i].y) }));
+  const total = segs.reduce((t, g) => t + g.len, 0) || 1;
+  const steps = Math.max(8, Math.round(ms / 16));
+  for (let i = 1; i <= steps; i++) {
+    let d = (i / steps) * total, g = segs[0];
+    for (const sg of segs) { g = sg; if (d <= sg.len) break; d -= sg.len; }
+    const k = g.len ? Math.min(1, d / g.len) : 1;
+    const x = g.a.x + (g.b.x - g.a.x) * k, y = g.a.y + (g.b.y - g.a.y) * k;
+    await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y, button: 'left', buttons: 1 });
+    await sleep(16);
+    cur = { x, y };
+  }
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: cur.x, y: cur.y, button: 'left', buttons: 0, clickCount: 1 });
+}
+
+// Smooth wheel scroll under the cursor: `dy` CSS px spread over `ms` with an ease-in-out, so a
+// gentle scroll reads as a person's, not a jump. WHY (2026-11-18 campaign): the trip-board clip
+// needs a slow glide down a long page, and a page in the sandboxed iframe can only be scrolled
+// by real wheel events (the recorder's `eval` runs in the outer document).
+async function scrollBy(dy, ms = 1200) {
+  const steps = Math.max(6, Math.round(ms / 16));
+  let sent = 0;
+  for (let i = 1; i <= steps; i++) {
+    const k = i / steps, e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    const target = dy * e;
+    await send('Input.dispatchMouseEvent', { type: 'mouseWheel', x: cur.x, y: cur.y, deltaX: 0, deltaY: target - sent });
+    sent = target;
+    await sleep(16);
+  }
+}
+
 async function typeSlow(text, cps = 18) {
   // Typing keeps time with the CLOCK, not with the page. WHY (2026-09-11): each letter used to
   // wait for both key events to round-trip and THEN sleep a full gap, so a theme with a moving
@@ -261,7 +315,7 @@ if (scene.pauseBackground) await evaluate("(()=>{Object.defineProperty(document,
 await moveTo({ x: CW * 0.6, y: CH * 0.55 }, 1);
 
 // ---- record ----
-await send('Page.startScreencast', { format: 'png', everyNthFrame: 1, maxWidth: W, maxHeight: H });
+await send('Page.startScreencast', { format: FEXT === 'jpg' ? 'jpeg' : 'png', ...(FEXT === 'jpg' ? { quality: 95 } : {}), everyNthFrame: 1, maxWidth: W, maxHeight: H });
 const t0 = Date.now();
 // Fix: every action is stamped (wall-clock start/end) for the marks file, so a
 // later editing pass can trim footage by label instead of a hand-measured frame.
@@ -270,12 +324,17 @@ const t0 = Date.now();
 // are the marks a beat trims to most often.
 const stamps = [];   // one per action: wall-clock start/end, for the marks file
 for (const [i, a] of scene.actions.entries()) {
-  const kind = Object.keys(a).find((k) => !['settle', 'mark', 'tag', 'ms', 'cps', 'to', 'timeout', 'modifiers', 'in'].includes(k)) ?? 'noop';
+  const kind = Object.keys(a).find((k) => !['settle', 'mark', 'tag', 'ms', 'cps', 'to', 'timeout', 'modifiers', 'in', 'pts'].includes(k)) ?? 'noop';
   const start = Date.now();
   if (a.hold != null) await sleep(a.hold);
   else if (a.wait != null) await sleep(a.wait);
   else if (a.moveTo) { const p = await rectOf(selExpr(a.moveTo), a.in === 'page'); if (!p) throw new Error(`MISSING ${a.moveTo}`); await moveTo(p, a.ms ?? 400); }
+  // movePt: glide the cursor to a point given as fractions of the window (CSS px). WHY (2026-11-18 campaign): after
+  // clicking a header button the cursor sat over it and its "Back to chat" tooltip covered the page title all shot.
+  else if (a.movePt) await moveTo({ x: CW * a.movePt[0], y: CH * a.movePt[1] }, a.ms ?? 500);
   else if (a.click) await click(selExpr(a.click), a.in === 'page');
+  else if (a.scroll != null) await scrollBy(a.scroll, a.ms ?? 1200);
+  else if (a.stroke) await stroke(selExpr(a.stroke), a.pts, a.ms ?? 800, a.in === 'page');
   else if (a.drag) await drag(selExpr(a.drag), selExpr(a.to), a.ms);
   else if (a.clickText) await click(textExpr(a.clickText, a.tag), a.in === 'page');
   else if (a.typeSlow != null) await typeSlow(a.typeSlow, a.cps);
@@ -320,14 +379,17 @@ if (frames.length < 10) { console.error(`only ${frames.length} frames — did th
 // ---- encode (frames are NOT evenly spaced: use a concat list with real durations) ----
 const list = frames.map((f, i) => {
   const next = frames[i + 1]?.t ?? f.t + 0.5;
-  return `file '${join(framesDir, `f${String(f.n).padStart(5, '0')}.png`)}'\nduration ${Math.max(0.016, next - f.t).toFixed(4)}`;
-}).join('\n') + `\nfile '${join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0')}.png`)}'\n`;
+  return `file '${join(framesDir, `f${String(f.n).padStart(5, '0')}.${FEXT}`)}'\nduration ${Math.max(0.016, next - f.t).toFixed(4)}`;
+}).join('\n') + `\nfile '${join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0')}.${FEXT}`)}'\n`;
 writeFileSync(join(framesDir, 'list.txt'), list);
 mkdirSync(dirname(outBase), { recursive: true });
 const enc = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', join(framesDir, 'list.txt'),
+  // WHY RECORD_CRF (2026-11-18, "you coded that." campaign): the landing loops are tiny web files
+  // at crf 33; a TV / YouTube ad is re-encoded again downstream and needs a near-clean master
+  // (the campaign films at crf 10-14). Unset keeps 33, so every landing scene is unchanged.
   // Fix: scene-level `fps` (default 24) sets the encode frame rate — the promo
   // films at 30 so no frame is doubled in a 30 fps edit.
-  '-vf', `scale=${W}:-2,fps=${scene.fps ?? 24},format=yuv420p`, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '33', '-row-mt', '1', '-an', `${outBase}.webm`]);
+  '-vf', `scale=${W}:-2,fps=${scene.fps ?? 24},format=yuv420p`, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', String(process.env.RECORD_CRF || 33), '-row-mt', '1', '-an', `${outBase}.webm`]);
 if (enc.status !== 0) { console.error(enc.stderr.toString()); process.exit(1); }
 // Poster = the LAST frame, not the first: a loop that starts in an empty chat
 // (rows 1/2/6/7 since 2026-08-28) would otherwise show a blank window wherever
@@ -346,7 +408,10 @@ if (scene.posterBefore) {
   const cut = frames[0].t + (st.start - firstFrameAt) / 1000;
   posterFrame = frames.filter((f) => f.t <= cut).at(-1) ?? frames[0];
 }
-spawnSync('magick', [join(framesDir, `f${String(posterFrame.n).padStart(5, '0')}.png`), '-quality', '82', `${outBase}.webp`]);
+// WHY RECORD_STILL (2026-11-18 campaign): posters need a LOSSLESS full-density frame; the .webp poster is
+// lossy and small. When set, the poster frame is copied out as the screencast's own PNG, untouched.
+if (process.env.RECORD_STILL) { mkdirSync(dirname(process.env.RECORD_STILL), { recursive: true }); copyFileSync(join(framesDir, `f${String(posterFrame.n).padStart(5, '0')}.${FEXT}`), process.env.RECORD_STILL); }
+spawnSync('magick', [join(framesDir, `f${String(posterFrame.n).padStart(5, '0')}.${FEXT}`), '-quality', '82', `${outBase}.webp`]);
 // framesDir cleanup now happens in the exit handler registered above (covers
 // error exits too, not just this success path).
 // Marks file: where every scene action landed in the finished clip, in video

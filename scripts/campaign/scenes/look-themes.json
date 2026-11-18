@@ -1,0 +1,42 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&seed=none&latency=150&replySpeed=2&replyClock=now&model=Gemma+3&title=golden+hour&reply=ad-look",
+ "theme": "youcoded",
+ "width": 1920,
+ "height": 1200,
+ "zoom": 1.66667,
+ "fps": 30,
+ "boot": 3000,
+ "pauseBackground": false,
+ "why": "2026-11-18 campaign 'you coded that.': same chat state held in each theme (THEME env), 3 s",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "make it feel like golden hour",
+   "cps": 12,
+   "mark": "typed"
+  },
+  {
+   "key": "Enter",
+   "settle": 300
+  },
+  {
+   "waitForText": "Created 2 files",
+   "timeout": 15000,
+   "settle": 500,
+   "mark": "ready"
+  },
+  {
+   "hold": 3000,
+   "mark": "held"
+  },
+  {
+   "hold": 1500
+  }
+ ]
+}

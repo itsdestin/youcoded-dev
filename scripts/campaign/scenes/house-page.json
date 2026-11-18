@@ -1,0 +1,62 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&seed=none&latency=0&replySpeed=2&replyClock=now&model=Gemma+3&title=home&reply=ad-house",
+ "theme": "youcoded",
+ "width": 1920,
+ "height": 1200,
+ "zoom": 1.66667,
+ "fps": 30,
+ "boot": 3000,
+ "pauseBackground": true,
+ "why": "2026-11-18 campaign 'you coded that.': Home page settled, slow toggles, for a camera push-in",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "button[aria-label='Open Home']",
+   "mark": "open",
+   "settle": 100
+  },
+  {
+   "movePt": [
+    0.97,
+    0.5
+   ],
+   "ms": 450,
+   "settle": 100
+  },
+  {
+   "waitForText": "Favorites",
+   "timeout": 20000,
+   "settle": 300,
+   "mark": "favorites",
+   "in": "page"
+  },
+  {
+   "hold": 2500
+  },
+  {
+   "click": "js:document.querySelector('.fav-grid [data-toggle]')",
+   "settle": 2880,
+   "mark": "lamp",
+   "in": "page"
+  },
+  {
+   "moveTo": "js:[...document.querySelectorAll('.room')].find(r=>r.querySelector('h2')&&r.querySelector('h2').textContent.trim()==='Study').querySelector('[data-toggle], [data-room]')",
+   "ms": 1440,
+   "in": "page"
+  },
+  {
+   "hold": 800
+  },
+  {
+   "click": "js:[...document.querySelectorAll('.room')].find(r=>r.querySelector('h2')&&r.querySelector('h2').textContent.trim()==='Study').querySelector('[data-toggle], [data-room]')",
+   "settle": 2880,
+   "mark": "lights",
+   "in": "page"
+  },
+  {
+   "hold": 1500
+  }
+ ]
+}
