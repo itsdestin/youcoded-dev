@@ -1,7 +1,7 @@
 ---
 id: 269
 title: Website copy guide points at a deleted 2026-08-31 handoff
-stage: explore
+stage: merged
 tags: dev-workspace, website
 branch: 269-website-copy-guide-points-at
 created: 2026-11-18
