@@ -12,8 +12,8 @@ summary: Nine automatic checks fail at random or under load, and eight test left
 area: Workspace
 ---
 Progress
-Done: Checked every item against master and 34 failed CI runs (2026-11-10). Flaky items b, d, e, f, g, h, i are already fixed on master (40 of 40 repeat runs clean); a and c could not be reproduced. Landed on master 2026-11-10 (app PR #727): one real flake not on the card fixed (background-command 'nothing new' test), two fixed waits replaced by real signals, and the Windows sign-in port failure fixed in the app (retries when Windows refuses a port). Test type-check exclusions: done (0 files).
-Next: 2026-11-12: one more unreliable test seen on GitHub: scripts/perf-lab/tests/stall-core.test.mjs 'owned real subprocess deadlines, RSS limit, malformed/empty output and exits fail closed and clean up' failed once on youcoded-dev PR #368 (expected true, got false) and passed on re-run with no change. Not yet diagnosed.
+Done: Stall-core flaky test diagnosed (3 load races) and fixed; 45 loaded runs clean
+Next: Destin reviews branch session/13-overnight-0 (no visible change)
 Blocked: nothing.
 
 Chats
