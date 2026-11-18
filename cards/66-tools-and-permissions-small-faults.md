@@ -14,8 +14,8 @@ vision: chat.steer.permissions, chat.converse.native
 work: session/66-passwordless-admin, session/66-search-root, session/66-image-cache-sweep
 ---
 Progress
-Done: Destin OK'd the 90-day threshold for the image-cache sweep (session/66-image-cache-sweep). Search-root branch recommended for dropping
-Next: Image-cache sweep waits for his merge word; delete search-root branch on his OK
+Done: Image-cache 90-day sweep merged (PR #772, c7485cd9e). Search-root branch dropped by Destin and deleted
+Next: Remaining card items as listed
 Blocked: Nothing
 
 Chats
