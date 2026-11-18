@@ -49,7 +49,8 @@
       "caption": "Today's closest relative: the card the assistant shows before a step that buys, sends or submits something. The picture card would sit in the same place.",
       "yes": "Holds",
       "no": "Fails",
-      "reopened": "You agreed, but said Full Auto should go ahead without the card."
+      "reopened": "You agreed, but said Full Auto should go ahead without the card.",
+      "resolved": "Added: in Full Auto, the first paid request in a chat goes back to the assistant with your check-in question, and goes ahead only once it has checked with you."
     },
     {
       "id": "U-remember-model",
@@ -223,7 +224,8 @@
       "changed": "Read aloud is a new choice in each message's right-click menu. It plays the message in the chosen voice, with a way to stop it.",
       "notice": "Any message can be listened to, without asking the assistant.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "resolved": "Answered in chat: how live voice modes differ from a model plus a voice key, and how the app could build one later."
     },
     {
       "id": "U-voice-builtin",
@@ -267,7 +269,8 @@
       "changed": "Today the microphone turns your speech into typed words. You could also send the recording itself, which appears as a sound card in your message.",
       "notice": "Useful for sending a sound for the assistant to work with, like a voice to copy or a clip to tidy up.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "resolved": "Noted: sending a recording gets its own careful design, including chats whose model cannot hear sound."
     },
     {
       "id": "P-decide",
@@ -589,7 +592,8 @@
             "Nothing caps what a mistake can spend."
           ]
         }
-      ]
+      ],
+      "resolved": "Changed to your plan: each chat starts with a five dollar total for made items; past it, a card offers raising it for that chat in five dollar steps. It survives restarts."
     },
     {
       "id": "Q-voice-download",

@@ -1,0 +1,156 @@
+{
+ "deck": "media-creation",
+ "started": "2026-11-18T11:08:49.665Z",
+ "submitted": "2026-11-18T11:23:27Z",
+ "cur": 3,
+ "answers": {
+  "U-approve-card": {
+   "v": "yes",
+   "seconds": 27,
+   "theme": "ivory-schematic",
+   "t": 1795000576211,
+   "note": "i think the first image call in full auto should bounce back to the model with \"Has the user explicitly approved the use of image/video/audio generation tools, and have you discussed scope/model/cost preferences? If so, you may re-attempt your generation request now. Otherwise, please take a moment to check in with the user before utilizing generation tools."
+  },
+  "U-remember-model": {
+   "v": "yes",
+   "seconds": 27,
+   "theme": "ivory-schematic",
+   "t": 1795000576211
+  },
+  "U-gpt-plan": {
+   "v": "yes",
+   "seconds": 27,
+   "theme": "ivory-schematic",
+   "t": 1795000576211
+  },
+  "U-ask-first": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "ivory-schematic",
+   "t": 1795000650413
+  },
+  "U-full-size": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "ivory-schematic",
+   "t": 1795000650413
+  },
+  "U-picture-menu": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "ivory-schematic",
+   "t": 1795000650413
+  },
+  "U-label": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "ivory-schematic",
+   "t": 1795000650413
+  },
+  "U-video-card": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "ivory-schematic",
+   "t": 1795000650413
+  },
+  "U-video-services": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "ivory-schematic",
+   "t": 1795000650413
+  },
+  "U-read-menu": {
+   "v": "yes",
+   "seconds": 35,
+   "theme": "ivory-schematic",
+   "t": 1795000824649,
+   "note": "out of curiosity, could you explain to me in chat how the true claude/openai/gemini \"live\" modes differ from just going back-and-forth with something like opus 5.5 with an audio api key in the middle? how would we build out a \"live\" mode in youcoded if i wanted to down the line?"
+  },
+  "U-voice-builtin": {
+   "v": "yes",
+   "seconds": 35,
+   "theme": "ivory-schematic",
+   "t": 1795000824649
+  },
+  "U-voice-services": {
+   "v": "yes",
+   "seconds": 35,
+   "theme": "ivory-schematic",
+   "t": 1795000824649
+  },
+  "U-sound-card": {
+   "v": "yes",
+   "seconds": 35,
+   "theme": "ivory-schematic",
+   "t": 1795000824649
+  },
+  "U-send-recording": {
+   "v": "yes",
+   "seconds": 35,
+   "theme": "ivory-schematic",
+   "t": 1795000824649,
+   "note": "we will need to be quite thoughtful about ux here, especially when utilizing models that may not accept native audio input"
+  },
+  "Q-local": {
+   "v": "pick",
+   "seconds": 20,
+   "theme": "ivory-schematic",
+   "t": 1795001006597,
+   "pick": "skip"
+  },
+  "Q-auto-limit": {
+   "v": "pick",
+   "seconds": 20,
+   "theme": "ivory-schematic",
+   "t": 1795001006597,
+   "pick": "limit",
+   "note": "i think every session should start with a 5$ total expenditure limit across image/video/voice (\"generative tools\"). crossing this limit should offer a card to the user that askes them to change hte limit just for the remainder of this session if they wish to continue, with a dropdown in increments of 5$. this limit (and amount expended so far) should persist across restarts and such"
+  },
+  "Q-voice-download": {
+   "v": "pick",
+   "seconds": 20,
+   "theme": "ivory-schematic",
+   "t": 1795001006597,
+   "pick": "first-use"
+  }
+ },
+ "built": {
+  "at": "2026-11-18T11:07:15Z",
+  "branch": "session/267-media-creation",
+  "commit": "3791c942d0f07e963d018365d28e87b56bf74011",
+  "spec_sha256": "9f9b1fb5e90590072f19e1d0e970d3ac124bc778f4020b8ba8ef4218eb06b7df",
+  "spec_dirty": true,
+  "ids": [
+   "U-order",
+   "U-chat-only",
+   "U-approve-card",
+   "U-remember-model",
+   "U-create-edit",
+   "U-files",
+   "U-local-connect",
+   "U-gpt-plan",
+   "U-today",
+   "U-picture-them",
+   "U-ask-first",
+   "U-full-size",
+   "U-picture-menu",
+   "U-label",
+   "U-video-card",
+   "U-video-services",
+   "U-read-menu",
+   "U-voice-builtin",
+   "U-voice-services",
+   "U-sound-card",
+   "U-send-recording",
+   "Q-services",
+   "Q-same-key",
+   "Q-price",
+   "Q-local",
+   "Q-claude-code",
+   "Q-later",
+   "Q-github",
+   "Q-auto-limit",
+   "Q-voice-download"
+  ]
+ }
+}
