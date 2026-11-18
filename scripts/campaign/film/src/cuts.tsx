@@ -36,7 +36,8 @@ export type CutSpec = {
 export const INPUT = { x: 0.3, y: 0.917 };
 /** Close-up framing for typing: the text's start stays in frame and the window's bottom edge
  * sits low in the frame instead of leaving a band of empty ground under it. */
-export const CLOSE = { scale: 2.3, x: 0.27, y: 0.8 };
+// 1.95 (not 2.3): the takes are 1920 px wide, so a tighter push would soften the text.
+export const CLOSE = { scale: 1.95, x: 0.3, y: 0.78 };
 
 export const Cut: React.FC<CutSpec> = ({ clip, from, at, dur, rate = 1, hold = 0, cam = [[0, 1, 0.5, 0.5]], fit }) => (
   <Sequence from={s(at)} durationInFrames={s(dur)} layout="none">

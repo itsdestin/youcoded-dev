@@ -1,0 +1,46 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&seed=none&latency=150&replySpeed=2&replyClock=now&model=Gemma+3&platform=android&title=golden+hour&reply=ad-look",
+ "theme": "youcoded",
+ "width": 1080,
+ "height": 2340,
+ "zoom": 2.6,
+ "fps": 30,
+ "boot": 3000,
+ "pauseBackground": false,
+ "why": "2026-11-18 campaign 'you coded that.': phone: ask for a look, swap to the warm desert theme",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "make it feel like golden hour",
+   "cps": 12,
+   "mark": "typed"
+  },
+  {
+   "key": "Enter",
+   "mark": "enter",
+   "settle": 300
+  },
+  {
+   "waitForText": "Created 2 files",
+   "timeout": 15000,
+   "settle": 500
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'devils-garden'})",
+   "settle": 900,
+   "mark": "swap"
+  },
+  {
+   "hold": 2500
+  },
+  {
+   "hold": 1500
+  }
+ ]
+}

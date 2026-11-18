@@ -3,7 +3,7 @@
 import React from 'react';
 import { AbsoluteFill, Audio, Sequence, staticFile } from 'remotion';
 import { EndCard, Ground, Headline, s, useB, words } from './brand';
-import { CamKey, CLOSE, Cut, mark } from './cuts';
+import { CamKey, CLOSE, Cut, mark, MARKS } from './cuts';
 import { Finale } from './finale';
 import { Looks } from './Hero';
 
@@ -28,8 +28,8 @@ export const Hero30: React.FC = () => {
         ]}
       />
       <Cut clip={clip} from={mark(clip, 'favorites') + 0.1} at={6} dur={2} cam={[[0, 1, 0.5, 0.5], [2, 1.1, 0.42, 0.42]]} />
-      <Cut clip="money" from={mark('money', 'spending') - 0.25} at={8} dur={2} cam={[[0, 1.1, 0.38, 0.4], [2, 1.2, 0.4, 0.4]]} />
-      <Cut clip="paint-page" from={19} at={10} dur={2} rate={3} cam={[[0, 1.12, 0.42, 0.5], [2, 1.2, 0.4, 0.5]]} />
+      <Cut clip="money" from={mark('money', 'spending', 'end') + 0.15} at={8} dur={2} cam={[[0, 1.1, 0.38, 0.4], [2, 1.2, 0.4, 0.4]]} />
+      <Cut clip="paint-page" from={MARKS['paint-page'].duration - 8.5} at={10} dur={2} rate={3} cam={[[0, 1.12, 0.42, 0.5], [2, 1.2, 0.4, 0.5]]} />
       <Cut clip="trip" from={mark('trip', 'scroll') - 0.2} at={12} dur={2} rate={1.6} cam={[[0, 1.12, 0.5, 0.42], [2, 1.2, 0.5, 0.46]]} />
       {/* No typed ask for the looks here: the four flips land on bar 8's stabs, then one bar of golden hour. */}
       <Looks askAt={14} flipAt={14} until={17.3} />
@@ -42,60 +42,34 @@ export const Hero30: React.FC = () => {
 };
 
 export type ShortSpec = {
-  ask: string; // clip with the typing
-  result?: { clip: string; from: number; rate?: number; cam?: CamKey[] };
-  look?: boolean; // theme short: flips instead of a result clip
+  clip: string; // phone take: typing, reply, then the result
+  result: number; // clip second the result starts (cut lands on the 4.0 s hit)
+  rate?: number; // result playback speed
   music: 'short_16' | 'short_16_alt';
 };
 
 /**
- * Vertical short, 1080×1920. 0–4 s the request in close-up; 4.0 s (music hit) the result;
- * 9.5 s the window rises and "you coded that." arrives; 12.0 s (logo hit) the end card.
- * Everything stays clear of the top 12% and bottom 20% (feed chrome).
+ * Vertical short, 1080×1920, filmed on the phone layout so the picture fills the frame.
+ * 0–4 s the request being typed (camera low on the message box); 4.0 s (music hit) cut to the
+ * result; 9.8 s the phone rises and "you coded that." arrives; 12.0 s (logo hit) the end card.
+ * Type stays out of the top 12% and bottom 20% (feed chrome).
  */
-export const Short: React.FC<ShortSpec> = ({ ask, result, look, music }) => {
+export const Short: React.FC<ShortSpec> = ({ clip, result, rate = 1, music }) => {
   const b = useB();
-  const typed0 = mark(ask, 'typed') - 0.4;
-  const typed1 = mark(ask, 'typed', 'end');
-  // Re-time the typing so it fills the 4-second intro, never faster than recorded.
-  const rate = Math.min(1, (typed1 - typed0) / 3.3);
-  const fit = 0.94;
+  const typed0 = mark(clip, 'typed') - 0.35;
+  // Re-time so the message is sent right at the 4.0 s cut: the finished sentence is on screen
+  // to the last frame, never an emptied box. Between 0.8x and 1.6x so typing still looks human.
+  const typeRate = Math.min(1.6, Math.max(0.8, (mark(clip, 'enter') - typed0) / 3.97));
+  const fit = 0.78;
   return (
     <AbsoluteFill>
       <Ground />
-      <Cut
-        clip={ask}
-        from={typed0}
-        at={0}
-        dur={4}
-        rate={rate}
-        fit={fit}
-        cam={[[0, 2.0, 0.24, 0.9], [4, 1.85, 0.3, 0.9]]}
-      />
-      {look ? (
-        <>
-          {['golden-sunbreak', 'cotton-candy-sky', 'devils-garden', 'meadow-mist'].map((t, i) => (
-            <Cut key={t} clip={`look-${t}`} from={mark(`look-${t}`, 'held') + 0.2} at={4 + i * 0.5} dur={0.5} fit={fit} cam={[[0, 1.9, 0.5, 0.5]]} />
-          ))}
-          <Cut clip="look-golden-sunbreak" from={mark('look-golden-sunbreak', 'held') - 0.6} at={6} dur={6} fit={fit}
-            cam={[[0, 1.9, 0.5, 0.5], [3.5, 2.0, 0.55, 0.45], [4.0, 0.92, 0.5, 0.72], [6, 0.9, 0.5, 0.72]]} />
-        </>
-      ) : (
-        result && (
-          <Cut
-            clip={result.clip}
-            from={result.from}
-            at={4}
-            dur={8}
-            rate={result.rate}
-            fit={fit}
-            cam={result.cam ?? [[0, 1.7, 0.35, 0.4], [5.5, 1.9, 0.45, 0.45], [6.0, 0.92, 0.5, 0.72], [8, 0.9, 0.5, 0.72]]}
-          />
-        )
-      )}
-      {/* The payoff sits below the risen window, above the feed's caption zone. */}
-      <Sequence from={s(9.9)} durationInFrames={s(2.1)} layout="none">
-        <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'flex-end', paddingBottom: '27%' }}>
+      <Cut clip={clip} from={typed0} at={0} dur={4} rate={typeRate} fit={fit}
+        cam={[[0, 1.55, 0.5, 0.81], [4, 1.45, 0.5, 0.8]]} />
+      <Cut clip={clip} from={result} at={4} dur={8} rate={rate} fit={fit}
+        cam={[[0, 1.0, 0.5, 0.5], [5.6, 1.06, 0.5, 0.5], [6.2, 0.7, 0.5, 0.683], [8, 0.69, 0.5, 0.683]]} />
+      <Sequence from={s(10.0)} durationInFrames={s(2.0)} layout="none">
+        <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'flex-end', paddingBottom: '21.5%' }}>
           <Headline words={words('you coded that.', ['you'])} start={0} size={6.4 * b} />
         </AbsoluteFill>
       </Sequence>
@@ -110,10 +84,11 @@ export const Short: React.FC<ShortSpec> = ({ ask, result, look, music }) => {
   );
 };
 
+const has = (clip: string) => !!MARKS[clip];
 export const SHORTS: Record<string, ShortSpec> = {
-  house: { ask: 'house-ask', result: { clip: 'house-ask', from: mark('house-ask', 'favorites') + 0.1, rate: 1.2 }, music: 'short_16' },
-  money: { ask: 'money', result: { clip: 'money', from: mark('money', 'spending') - 0.6 }, music: 'short_16_alt' },
-  paint: { ask: 'paint-ask', result: { clip: 'paint-page', from: 8, rate: 2.6 }, music: 'short_16' },
-  trip: { ask: 'trip', result: { clip: 'trip', from: mark('trip', 'page'), rate: 1.2 }, music: 'short_16_alt' },
-  look: { ask: 'look-youcoded', look: true, music: 'short_16' },
+  house: { clip: 'phone-house', result: has('phone-house') ? mark('phone-house', 'favorites') + 0.1 : 0, music: 'short_16' },
+  money: { clip: 'phone-money', result: has('phone-money') ? mark('phone-money', 'spending') - 1.0 : 0, music: 'short_16_alt' },
+  look: { clip: 'phone-look', result: has('phone-look') ? mark('phone-look', 'swap') - 0.05 : 0, music: 'short_16' },
+  ...(has('phone-paint') ? { paint: { clip: 'phone-paint', result: mark('phone-paint', 'studio') + 0.5, rate: 2.2, music: 'short_16_alt' as const } } : {}),
+  ...(has('phone-trip') ? { trip: { clip: 'phone-trip', result: mark('phone-trip', 'page') - 0.2, music: 'short_16' as const } } : {}),
 };

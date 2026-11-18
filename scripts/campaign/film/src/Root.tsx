@@ -9,10 +9,13 @@ const FinaleTest: React.FC = () => <Finale l1={15} l2={96} hit={216} addr={396} 
 
 // The poster series: one ask, one result, the same line.
 export const SERIES: Record<string, PosterProps> = {
-  house: { ask: 'make me a page that runs my house', img: 'ph-home.png', imgAspect: 1216 / 760 },
-  money: { ask: 'where does my money go?', img: 'ph-money.png', imgAspect: 1216 / 760 },
-  paint: { ask: 'a paint app for my niece', img: 'ph-paint.png', imgAspect: 1216 / 760 },
-  trip: { ask: 'plan lisbon with my sister', img: 'ph-trip.png', imgAspect: 1216 / 760 },
+  // Every crop has the same shape (1.9:1) so the series lines up poster to poster.
+  // crop = the one detail that sells each thing at feed size (fractions of the still).
+  house: { ask: 'make me a page that runs my house', img: 'still-home-page.png', imgAspect: 1.6, crop: { x: 0.03, y: 0.08, w: 0.63, h: 0.53 } },
+  money: { ask: 'where does my money go?', img: 'still-finance-spending.png', imgAspect: 1.6, crop: { x: 0.015, y: 0.07, w: 0.625, h: 0.526 } },
+  paint: { ask: 'a paint app for my niece', img: 'still-paint-page.png', imgAspect: 1.6, crop: { x: 0.05, y: 0.1, w: 0.9, h: 0.758 } },
+  trip: { ask: 'plan lisbon with my sister', img: 'still-trip-board.png', imgAspect: 1.6, crop: { x: 0.0, y: 0.04, w: 0.78, h: 0.657 } },
+  look: { ask: 'make it feel like golden hour', img: 'still-chat-devils-garden.png', imgAspect: 1.6, crop: { x: 0.02, y: 0.0, w: 0.96, h: 0.808 } },
 };
 
 const SIZES = {

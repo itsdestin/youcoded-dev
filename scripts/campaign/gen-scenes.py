@@ -100,3 +100,35 @@ scene('look-themes', LOOK, [BOX, {"typeSlow": "make it feel like golden hour", "
 scene('still-home', SITE + '&title=home&reply=ad-house',
       [{"click": "button[aria-label='Open Home']", "settle": 300}, inpage(waitForText="Favorites", timeout=20000, settle=300), {"hold": 2500}],
       why='Home page alive, for the poster still')
+# 8 phone takes (Android layout, portrait) for the vertical shorts and the hero's "on your phone" beat.
+# WHY phone=True: a desktop window in a 9:16 frame leaves half the frame empty; the phone layout fills it.
+PHONE = SITE + '&platform=android'
+# On phone width the pinned-page buttons are hidden; pages open from the ☰ menu → Pages list.
+def phone_open(name, mark="open"):
+    return [{"click": "button[aria-label='Open menu']", "settle": 500},
+            {"clickText": "Pages", "settle": 900},
+            {"waitForText": name, "timeout": 10000, "settle": 300},
+            {"clickText": name, "mark": mark, "settle": 100}]
+scene('phone-house', PHONE + '&title=home&reply=ad-house',
+      ask('make me a page that runs my house', 'Your Home page is ready.') +
+      phone_open('Home') + [NEUTRAL,
+       inpage(waitForText="Favorites", timeout=20000, settle=300, mark="favorites"), {"hold": 1200},
+       inpage(click=LAMP, settle=1800, mark="lamp")],
+      phone=True, why='phone: ask, open Home, lamp off')
+scene('phone-money', PHONE + '&title=money&reply=ad-money',
+      ask('where does my money go?', 'Your Finance page is ready.') +
+      phone_open('Finance') + [NEUTRAL,
+       inpage(waitForText="Net worth", tag="button", timeout=20000, settle=300, mark="networth"), {"hold": 1200},
+       inpage(clickText="Spending", tag="button", settle=2000, mark="spending")],
+      phone=True, why='phone: ask, open Finance, Spending')
+scene('phone-look', PHONE.replace('latency=0', 'latency=150') + '&title=golden+hour&reply=ad-look',
+      ask('make it feel like golden hour', 'Golden hour installed')[:-1] +
+      [{"waitForText": "Created 2 files", "timeout": 15000, "settle": 500},
+       {"eval": "window.__workbenchAppearanceSync({theme:'devils-garden'})", "settle": 900, "mark": "swap"}, {"hold": 2500}],
+      phone=True, pause=False, why='phone: ask for a look, swap to the warm desert theme')
+# No phone-paint: at phone width the paint page squeezes its canvas into a thin strip (2026-11-18).
+scene('phone-trip', PHONE + '&title=lisbon&reply=ad-trip&adPages=trip',
+      ask('plan lisbon with my sister', 'Your Lisbon page is ready.') + phone_open('Lisbon with Ana') +
+      [NEUTRAL, inpage(waitForText="Day by day", timeout=20000, settle=800, mark="page"), {"hold": 1500},
+       {"scroll": 700, "ms": 2600, "settle": 600, "mark": "scroll"}, {"hold": 800}],
+      phone=True, why='phone: ask, open Lisbon trip board, scroll')

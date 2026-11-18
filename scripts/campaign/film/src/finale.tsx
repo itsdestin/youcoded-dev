@@ -17,7 +17,8 @@ export const Finale: React.FC<{
   const f = useCurrentFrame();
   const b = useB();
   const size = 6 * b;
-  const darkIn = interpolate(f, [enter ?? l1 - 10, (enter ?? l1 - 10) + 10], [0, 1], clamp);
+  // WHY a hard cut (1 frame): a lavender→plum cross-dissolve passes through a muddy grey.
+  const darkIn = interpolate(f, [enter ?? l1 - 1, (enter ?? l1 - 1) + 1], [0, 1], clamp);
   // The flood back to lavender is quick (5 frames): it is the visual half of the music's hit.
   const darkOut = interpolate(f, [hit - 2, hit + 3], [0, 1], clamp);
   const dark = darkIn * (1 - darkOut);

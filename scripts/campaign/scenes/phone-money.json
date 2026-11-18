@@ -1,0 +1,83 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&seed=none&latency=0&replySpeed=2&replyClock=now&model=Gemma+3&platform=android&title=money&reply=ad-money",
+ "theme": "youcoded",
+ "width": 1080,
+ "height": 2340,
+ "zoom": 2.6,
+ "fps": 30,
+ "boot": 3000,
+ "pauseBackground": true,
+ "why": "2026-11-18 campaign 'you coded that.': phone: ask, open Finance, Spending",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "where does my money go?",
+   "cps": 12,
+   "mark": "typed"
+  },
+  {
+   "key": "Enter",
+   "mark": "enter",
+   "settle": 300
+  },
+  {
+   "waitForText": "Your Finance page is ready.",
+   "tag": "p",
+   "timeout": 20000,
+   "settle": 600
+  },
+  {
+   "click": "button[aria-label='Open menu']",
+   "settle": 500
+  },
+  {
+   "clickText": "Pages",
+   "settle": 900
+  },
+  {
+   "waitForText": "Finance",
+   "timeout": 10000,
+   "settle": 300
+  },
+  {
+   "clickText": "Finance",
+   "mark": "open",
+   "settle": 100
+  },
+  {
+   "movePt": [
+    0.97,
+    0.5
+   ],
+   "ms": 450,
+   "settle": 100
+  },
+  {
+   "waitForText": "Net worth",
+   "tag": "button",
+   "timeout": 20000,
+   "settle": 300,
+   "mark": "networth",
+   "in": "page"
+  },
+  {
+   "hold": 1200
+  },
+  {
+   "clickText": "Spending",
+   "tag": "button",
+   "settle": 2000,
+   "mark": "spending",
+   "in": "page"
+  },
+  {
+   "hold": 1500
+  }
+ ]
+}

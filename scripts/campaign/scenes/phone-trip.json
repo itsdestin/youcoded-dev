@@ -1,0 +1,84 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&seed=none&latency=0&replySpeed=2&replyClock=now&model=Gemma+3&platform=android&title=lisbon&reply=ad-trip&adPages=trip",
+ "theme": "youcoded",
+ "width": 1080,
+ "height": 2340,
+ "zoom": 2.6,
+ "fps": 30,
+ "boot": 3000,
+ "pauseBackground": true,
+ "why": "2026-11-18 campaign 'you coded that.': phone: ask, open Lisbon trip board, scroll",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "plan lisbon with my sister",
+   "cps": 12,
+   "mark": "typed"
+  },
+  {
+   "key": "Enter",
+   "mark": "enter",
+   "settle": 300
+  },
+  {
+   "waitForText": "Your Lisbon page is ready.",
+   "tag": "p",
+   "timeout": 20000,
+   "settle": 600
+  },
+  {
+   "click": "button[aria-label='Open menu']",
+   "settle": 500
+  },
+  {
+   "clickText": "Pages",
+   "settle": 900
+  },
+  {
+   "waitForText": "Lisbon with Ana",
+   "timeout": 10000,
+   "settle": 300
+  },
+  {
+   "clickText": "Lisbon with Ana",
+   "mark": "open",
+   "settle": 100
+  },
+  {
+   "movePt": [
+    0.97,
+    0.5
+   ],
+   "ms": 450,
+   "settle": 100
+  },
+  {
+   "waitForText": "Day by day",
+   "timeout": 20000,
+   "settle": 800,
+   "mark": "page",
+   "in": "page"
+  },
+  {
+   "hold": 1500
+  },
+  {
+   "scroll": 700,
+   "ms": 2600,
+   "settle": 600,
+   "mark": "scroll"
+  },
+  {
+   "hold": 800
+  },
+  {
+   "hold": 1500
+  }
+ ]
+}
