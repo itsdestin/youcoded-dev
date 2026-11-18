@@ -1,0 +1,72 @@
+{
+ "deck": "claude-sign-in-expiry-questions",
+ "started": "2026-11-18T02:05:00.242Z",
+ "submitted": "2026-11-18T02:11:44Z",
+ "cur": 4,
+ "answers": {
+  "S-history": {
+   "v": "yes",
+   "t": 1794967574875,
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "S-facts": {
+   "v": "yes",
+   "t": 1794967574875,
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "Q-scope": {
+   "v": "other",
+   "t": 1794967574875,
+   "note": "i honestly don't remember what the older session entailed, but if these screens are all similar/related we should probably just build them together.",
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "Q-where": {
+   "v": "pick",
+   "pick": "card-in-chat",
+   "t": 1794967770857,
+   "note": "\"has expired\" instead of \"has ended\"",
+   "seconds": 65,
+   "theme": "midnight"
+  },
+  "Q-how": {
+   "v": "yes",
+   "t": 1794967770857,
+   "seconds": 65,
+   "theme": "midnight"
+  },
+  "Q-retry": {
+   "v": "other",
+   "t": 1794967770857,
+   "dk": true,
+   "note": "unsure how this would work and the risk/benefit of just offering a \"continue\" button. messages sent when sign-in is expired still go to claude code/stay in chat transcript and are readable when sign-in is resolved, so i normally just say \"continue\" after fixing sign in and it works. unsure how we should proceed",
+   "seconds": 65,
+   "theme": "midnight"
+  },
+  "Q-warn-ahead": {
+   "v": "pick",
+   "pick": "settings-line",
+   "t": 1794967822894,
+   "note": "",
+   "seconds": 52,
+   "theme": "midnight"
+  },
+  "Q-slash-login": {
+   "v": "pick",
+   "pick": "leave-to-claude",
+   "t": 1794967855780,
+   "seconds": 33,
+   "theme": "midnight"
+  },
+  "Q-remote": {
+   "v": "pick",
+   "t": 1794967902420,
+   "note": "",
+   "pick": "say-host",
+   "seconds": 47,
+   "theme": "midnight"
+  }
+ }
+}
