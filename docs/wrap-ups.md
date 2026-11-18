@@ -1532,3 +1532,13 @@ recurred — the repetition is the data.
 - App screenshots in candidate purples were taken by editing the theme file in a loop and restoring it (8 runs, ~3 s each) → dropped: fast enough; a token-override flag for `shoot` isn't worth it for one use.
 - Left for Destin (each visible, listed in the guide's "Known gaps"): website + app themes to purple C, setup-screen tagline, README casing and repo links, logo files, trademark; telling the live marketing-videos session about the new rules.
 - deleted/merged: the guide itself cut from ~4,500 to ~1,900 words; `~/Documents/youcoded-brand-inventory-2026-11-18.md` is superseded (left for Destin to delete).
+
+## 2026-11-18 — card #236 sign-in expiry and no internet, investigation to merge (session/236-working-offline-sign-in-expiry, youcoded#767, youcoded-dev#383)
+- Why #236 sat unbuilt for two months: the 2026-09-14 session hit Destin's weekly usage limit mid-mockups and its answers sat on a side branch until the 11-09 inventory; found by grepping transcripts for the deck name (~6 calls) → dropped: the 11-09 "record-only changes land without asking" rule already covers stranded answers.
+- CLI 2.1.327 `claude auth status` exits 1 when logged out (it used to exit 0), so every signed-out install read "Signed-in state couldn't be read" with no way to sign in; only Destin's hands-on test in a dev copy caught it → applied: fixed in ClaudeAccount + detectAuth, pinned by `claude-account.test.ts` ("exits 1"), seen red.
+- A run-dev test copy's private HOME makes any browser sign-in open a blank Chrome profile (Destin hit it) → card #273.
+- gitleaks' generic-api-key rule blocks pushing any deck whose key ends in "-2" (the deck's own name) → card #274.
+- Fresh code review caught two real bugs my own tests missed: a sign-in phase that never reset, and a memo comparator ignoring the new `latest` prop (my test never flipped it true→false) → applied (both pinned); no ladder change: the reviewer step is what caught them.
+- Destin's words filed: error cards should follow real bubble rules → card #270; ChatGPT "expired" survives a restart → card #275 (awaiting his yes); "no internet is red" → design guide updated.
+- I ran `cat >> /dev/null` in a heredoc chain and hung a command for 2 minutes → dropped: my slip, not a workspace gap.
+- deleted/merged: the chat's red error card markup moved into one shared `ChatNoticeBubble` (SortedErrorCard and the new cards draw through it) and its two unused tones removed.
