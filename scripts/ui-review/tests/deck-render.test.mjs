@@ -2243,3 +2243,50 @@ json.dump(raw, open(p, 'w')); print(p)`;
     }
   } finally { srv.kill(); }
 });
+
+// The hands-off route — Destin, 2026-11-18: "I just tell a session: do all of this without me ... I just want to see it at the very end."
+test('hands-off deck: his own words are quoted on the first page and the three earlier stages are shown skipped (dimmed, not buttons, no check)', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-handsoff-'));
+  const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)})
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def lst(i, h, kind, calls): return {'id': i, 'words': True, 'surface': 'App', 'path': 'Somewhere', 'headline': h, 'list': kind, 'calls': calls}
+raw['grows'] = True; raw['tag'] = 'feature'; raw['stage'] = 'after'; raw['hands_off'] = 'do all of this without me please'
+raw['steps'] = [{'id': 'P-1', 'page': 'What you asked for', 'intro': 'Your words, then what you asked for.', 'stage': 'after'},
+  lst('L-1', 'What you asked for', 'asked-for', [{'id': 'a1', 'call': 'Searches can be saved.', 'why': 'A star saves them.'}]),
+  {'id': 'P-2', 'page': 'Choices I made for you', 'intro': 'Everything I decided in your place.', 'stage': 'after'},
+  lst('L-2', 'Choices I made for you', 'choices-made', [{'id': 'c1', 'call': 'The star sits at the right.', 'why': 'It matches the other buttons.'}]),
+  {'id': 'P-3', 'page': 'What changed', 'intro': 'What moved, and what the review found.', 'stage': 'after'},
+  lst('L-3', 'What changed while building', 'changed-while-building', [{'id': 'b1', 'call': 'Star at the right.', 'why': 'As planned.', 'built': 'as planned'}]),
+  lst('L-4', 'Found in review', 'found-in-review', [{'id': 'f1', 'call': 'Nothing found.', 'why': 'Read every file.', 'none_found': True}])]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  try {
+    await sleep(900);
+    for (const [w, h] of [[1400, 900], [390, 800]]) {
+      const c = await cdp(await freePort(), w, h);
+      try {
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html?step=1` }); await ready(c);
+        const q = e => c.evaluate(e);
+        assert.equal(await q("document.querySelector('.handsoff p').textContent"), 'do all of this without me please', w + ': his words quoted on the first page');
+        assert.equal(await q("document.querySelector('.ptitle').textContent"), 'What you asked for');
+        // the stage line (always in the page; the phone shows its compact button, the list sits behind it)
+        assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#stages .stageflow li')].map(li => [li.textContent.trim(), li.className.replace(' viewing', ''), !!li.querySelector('button'), li.title]))")),
+          [['Understanding', 'skipped', false, 'Skipped: you asked me to go ahead without you'], ['Design', 'skipped', false, 'Skipped: you asked me to go ahead without you'],
+           ['Before build', 'skipped', false, 'Skipped: you asked me to go ahead without you'], ['After build', 'on', false, '']], w + ': three skipped stages, After build current');
+        assert.equal(await q("document.querySelectorAll('#stages .stagetick').length"), 0, 'no check on a skipped stage');
+        assert.equal(await q("getComputedStyle(document.querySelector('#stages li.skipped')).opacity < 0.8"), true, 'dimmed');
+        assert.equal(await q("document.documentElement.scrollWidth <= window.innerWidth"), true, w + ': no sideways scroll');
+        // his words are quoted on the FIRST page only
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html?step=2` }); await ready(c);
+        assert.equal(await q("document.querySelectorAll('.handsoff').length"), 0, 'not repeated on the second page');
+        assert.deepEqual(c.errors, [], w + ' console');
+      } finally { c.close(); }
+    }
+  } finally { srv.kill(); }
+});

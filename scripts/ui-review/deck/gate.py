@@ -27,7 +27,7 @@ import json
 import os
 import re
 
-from .grows import settled_ids, spec_at_commit, spec_bytes_at_commit
+from .grows import hands_off_errors, settled_ids, spec_at_commit, spec_bytes_at_commit
 from .spec import after_build_list_errors, strip_comments, unlooked_rows, tickable
 
 # Checks he can switch (before the build) carry one of these; after the build the row carries a
@@ -192,8 +192,55 @@ def as_he_saw_it(path, built):
                       f'as-built copy matches what he was shown (fingerprint {want[:12]}) — show him the current version again')
 
 
+def is_hands_off_file(path):
+    """True when the spec at `path` is a hands-off deck (it carries "hands_off")."""
+    try:
+        spec = _load(path)
+    except (OSError, ValueError):
+        return False
+    return isinstance(spec, dict) and 'hands_off' in spec
+
+
+def check_hands_off(path):
+    """-> (problems, notes) for a hands-off deck: the ONE after-build deck he sees when he told a session to do the work without him.
+    WHY (Destin, 2026-11-18: "I just want to see it at the very end"): there is no before-build deck to compare against, so "finished" means
+    he went through this deck with nothing left unlooked at and asked for nothing; the same rules as the after-build half of the usual gate.
+    It reads the spec exactly as he saw it (the build fingerprint), and a commented row means another round, so it fails until that round passes."""
+    problems, notes = [], []
+    ans = _read_answers(answers_file(path))
+    if not ans or not ans.get('submitted'):
+        return ['the hands-off deck has not been submitted - he has not gone through it yet'], notes
+    spec, note, bad = as_he_saw_it(path, ans.get('built'))
+    if bad:
+        return [bad], notes
+    notes.append(note)
+    want = (ans.get('built') or {}).get('spec_sha256') if isinstance(ans.get('built'), dict) else None
+    if want:
+        with open(path, 'rb') as f:
+            if _sha(f.read()) != want:
+                problems.append(f'the hands-off deck ({os.path.basename(path)}) was changed after he submitted his answers to it - show him the current version and have him go through it again')
+    else:
+        notes.append('his answers file has no fingerprint of what he saw, so edits since he submitted could not be checked')
+    for line in hands_off_errors(spec) + after_build_list_errors(spec):
+        problems.append(f'hands-off deck, not finished: {line}')
+    # Every check row carries a real result; a row still showing "Will run" / "Skip" is a suggestion, never a result.
+    for key, (st, c) in rows(spec).items():
+        if c.get('result') in SWITCHES:
+            problems.append(f'hands-off deck, not finished: check {key} still shows "{c["result"]}" - after the work every check shows pass / fail / unclear (never "not run")')
+    for line in changes_requested(ans):
+        problems.append(f'hands-off deck, not finished: {line}')
+    settled = settled_ids({**spec, '_base': os.path.dirname(os.path.abspath(path)), '_stem': os.path.basename(os.path.splitext(path)[0])}, ans)
+    for line in unlooked_in(spec, ans, settled):
+        problems.append(f'hands-off deck, not finished: row {line} was not looked at - he neither ticked it nor asked for a change')
+    if not problems:
+        notes.insert(0, 'he went through the hands-off deck (what he asked for, the choices made for him, what changed, the checks) changing nothing')
+    return problems, notes
+
+
 def check_gate(before_path, after=None):
     """-> (problems, notes). `problems` non-empty means NOT finished."""
+    if after is None and is_hands_off_file(before_path):
+        return check_hands_off(before_path)
     problems, notes = [], []
     after = after or after_path(before_path)
     b_ans = _read_answers(answers_file(before_path))

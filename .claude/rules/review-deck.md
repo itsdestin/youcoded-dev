@@ -37,8 +37,8 @@ verify:
 Contract and Acceptance decks are retired. Several designs of one thing are ONE Choice slide.
 
 ## One growing deck per feature
-**Invariant:** `"grows": true`: one spec re-built each round, AT one `"stage"`; a change he asked for needs `reopened` or `resolved`; answered topics fold into "Previously answered"; every current-stage page has a bar (finished green first). A page is a heading + one line; a title, row or page line citing a round or step id is refused (use `more`). An open row's `more` is today/problem/change; `"visual": true` needs a `picture`. Saved state carries its build stamp and other builds' state is refused. A page comment, general note or note on an unanswered step is never dropped: the next build is refused until `notes_handled` says what was done. After the build the deck needs the lists "What changed while building" and, once the code review ran, "Found in review".
-**Why:** "sticky note" (round 8); "not editing prior sections" (round 11). **Guard:** `test_grows.py`, `test_rethink.py`, `deck-render.test.mjs`.
+**Invariant:** `"grows": true`: one spec re-built each round, AT one `"stage"`; a change he asked for needs `reopened` or `resolved`; answered topics fold into "Previously answered"; every current-stage page has a bar (finished green first). A page is a heading + one line; a title, row or page line citing a round or step id is refused (use `more`). An open row's `more` is today/problem/change; `"visual": true` needs a `picture`. Saved state carries its build stamp and other builds' state is refused. A page comment, general note or note on an unanswered step is never dropped: the next build is refused until `notes_handled` says what was done. After the build the deck needs the lists "What changed while building" and, once the code review ran, "Found in review". A hands-off deck (`"hands_off": "<his words>"`, stage `after` only) adds "What you asked for" and "Choices I made for you".
+**Why:** "sticky note" (round 8); "not editing prior sections" (round 11). **Guard:** `test_grows.py`, `test_rethink.py`, `test_hands_off.py`, `deck-render.test.mjs`.
 
 ## Lists: one kind of row per card
 **Invariant:** a words step with `calls` is ONE kind: facts (`context: true`), his to change (a tick and a pencil per row; a row neither ticked nor changed is "not looked at", never approved), or results (every row a `result`; run/skip checks carry `more`). Mixed lists are refused. `trail`, `more`, `reuse`, `picture`/`before` follow AUTHORING.md; no "Details" fold. Each page ends with a comment box.
@@ -53,11 +53,11 @@ Contract and Acceptance decks are retired. Several designs of one thing are ONE 
 
 ## Questions have four fields
 **Invariant:** questions share a page until a marker (`{"id", "page", "intro"}`). Each carries `today`, `problem`, `proposal`, `options[]` (`pros`, `cons`, at most one `recommended`); inline "Today: …" is refused. Every Today says how it was checked (`checked`).
-**Why:** stale Todays were the worst fault. **Guard:** `test_words.py`.
+**Guard:** `test_words.py`.
 
 ## Look at it before he does
 **Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve` (answered decks: `--no-build`); paste the printed link as the turn's last line. A change under `deck/` ships only after `selfie` shows him before and after.
-**Why:** four bad decks in a day. **Guard:** `test_cli.py`.
+**Guard:** `test_cli.py`.
 
 ## Themes and pictures
 **Invariant:** never hand-order `themes` (the deck opens on his app's theme; `--theme` overrides, `"theme": "fixed"` pins). A picture step shows ONE full-window shot. **Guard:** `test_spec.py`.

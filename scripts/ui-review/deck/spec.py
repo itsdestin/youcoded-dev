@@ -877,7 +877,8 @@ def _validate_history(spec, errors):
 # without them and the done gate (gate.py) fails when they are missing or he has not answered a row.
 # Markers (all explicit, all in the spec): a list step says `"list": "changed-while-building"` or
 # `"list": "found-in-review"`; a check row says `"check": "code-review"`.
-LIST_KINDS = ('changed-while-building', 'found-in-review')
+# The last two belong to a hands-off deck (grows.hands_off_errors refuses them anywhere else).
+LIST_KINDS = ('changed-while-building', 'found-in-review', 'asked-for', 'choices-made')
 BUILT_VALUES = ('as planned', 'adjusted')
 ADJUSTED_WHY_MIN = 3     # words: a bare "ok" is not a reason
 

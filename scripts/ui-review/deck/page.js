@@ -1214,6 +1214,8 @@
     // the fold to get out of the way of. A page with BOTH keeps the one folded "Previously answered" row at its foot.
     const finished = GROWS && sunk.length && !steps.some(st => !st.context);
     $('#cards').innerHTML = (named ? pageHead(pg, finished) : '')
+      // WHY (Destin, 2026-11-18): a hands-off deck opens with his own words, quoted, so he sees what he asked for before anything else.
+      + (cur === 0 && GROWS && GROWS.hands_off ? `<blockquote class="handsoff"><span class="hoby">You told me</span><p>${esc(GROWS.hands_off)}</p></blockquote>` : '')
       + (cur === 0 ? topNotes() : '')
       + steps.map(st => qArticle(st, false)).join('')
       + (finished ? prevGroup(sunk, true) : prevFold(sunk, pg)) + handledGroup(pg)
@@ -1435,6 +1437,9 @@
     box.innerHTML = `<button type="button" class="stagecompact" aria-expanded="false" title="The stages of this deck"><span class="scname">${esc(stageName(STAGE_KEYS[here]))}</span><small>${here + 1} of 4</small>${CHEV}</button>`
       + `<ol class="stageflow" aria-label="Stages of this deck">` + STAGE_KEYS.map((k, i) => {
       const name = esc(stageName(k)), view = k === shown ? ' viewing' : '';
+      // WHY (Destin, 2026-11-18: "do all of this without me ... I just want to see it at the very end"): on a hands-off deck the three earlier stages never
+      // happened for him, so they are dimmed, not pressable and carry no check (a check would say he finished them).
+      if (i < at && GROWS.hands_off) return `<li class="skipped" title="Skipped: you asked me to go ahead without you"><span>${name}</span></li>`;
       if (i < at && finPages(k).length) return `<li class="done${view}"><button type="button" class="stagebtn" data-stage="${k}" title="Read the finished ${name} stage">${TICK}<span>${name}</span></button></li>`;
       if (i < at) return `<li class="done${view}">${TICK}<span>${name}</span></li>`;
       if (i === at) return viewStage ? `<li class="on"><button type="button" class="stagebtn" data-stage="${k}" title="Back to ${name}"><span>${name}</span></button></li>`

@@ -23,7 +23,7 @@
         every row's source resolves to an answered step in a submitted deck and every mechanical guard exists on disk or on
         the contract's branch (exit 1 lists what doesn't); then reports, as ok:/todo: lines, whether the contract was signed
         (its own answers file) and whether the acceptance deck was submitted
-  python3 scripts/ui-review/review-cards.py walkthrough-check <feature>.walkthrough.json [<feature>.walkthrough.after.json]
+  python3 scripts/ui-review/review-cards.py walkthrough-check <feature>.walkthrough.json [<feature>.walkthrough.after.json]   (or one hands-off deck: walkthrough-check <deck>.json)
         the done / not-done gate for the walkthrough flow: exit 1 listing what is unfinished (see deck/gate.py)
   python3 scripts/ui-review/review-cards.py acceptance <feature>.contract.json
         merge <feature>.contract.verdicts.json into <feature>.contract.acceptance.json — the contract graded, plus a yes/no per human row
@@ -161,7 +161,7 @@ def main(argv):
     # `<stem>.after.json` beside it) — the done / not-done gate (deck/gate.py). Handled in main()
     # before a spec is loaded: it reads two raw specs and their answers, and needs no pictures.
     wc = sub.add_parser('walkthrough-check')
-    wc.add_argument('spec', help='the before-build walkthrough, <feature>.walkthrough.json')
+    wc.add_argument('spec', help='the before-build walkthrough, <feature>.walkthrough.json (or a hands-off deck: the one after-build deck)')
     wc.add_argument('after', nargs='?', help='the after-build walkthrough (default: <feature>.walkthrough.after.json)')
     # `selfie` is the one command with no spec of its own: it WRITES one.
     sf = sub.add_parser('selfie')

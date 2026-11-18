@@ -493,7 +493,9 @@ def deck_data(spec, boxes):
         for st in steps:
             if st['id'] in gd:
                 st['grow'] = gd[st['id']]
-        grown = {'grows': {'round': round_number(spec), 'stages': STAGE_NAMES, 'stage': spec.get('stage')}}
+        grown = {'grows': {'round': round_number(spec), 'stages': STAGE_NAMES, 'stage': spec.get('stage'),
+                           # WHY (Destin, 2026-11-18): a hands-off deck quotes his words on its first page and shows the three earlier stages skipped.
+                           **({'hands_off': spec['hands_off']} if isinstance(spec.get('hands_off'), str) and spec['hands_off'].strip() else {})}}
         # WHY (Destin, round 15: "if a full page is new, a big NEW tag next to the title without tags on individual cards"): a page is new
         # when everything on it that is open is new and nothing on it was answered in an earlier round; page.js then tags the heading.
         # Any other page tags only its new topics (st.grow.new).

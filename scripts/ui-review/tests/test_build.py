@@ -151,7 +151,8 @@ class TemplateTests(unittest.TestCase):
 
     DIR = os.path.join(os.path.dirname(HERE), 'templates')
     NAMES = ['approve.json', 'brief.json', 'choice.json', 'clip.json', 'contract.json',
-             'decide.json', 'growing.json', 'live.json', 'questions.json', 'tryit.json',
+             'decide.json', 'growing.json', 'hands-off.json',  # hands-off: the 2026-11-18 route, one after-build deck
+             'live.json', 'questions.json', 'tryit.json',
              # Round 3 of the 2026-11-09 rethink: the end-to-end walkthrough.
              'walkthrough.json']
 

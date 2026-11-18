@@ -39,7 +39,7 @@ No signed contract: the walkthroughs replace it. Depth: `scripts/ui-review/deck/
 6. **After-build walkthrough**, the main steering round. Finished when `review-cards.py walkthrough-check <before.json>` passes: every request is a row (`"from"`, or `"dropped"` with why), every check left on has a result, both lists are there and answered, and he changes nothing. No merge without his word.
 7. **Wording pass** on the real screens (`screen` steps), last.
 
-Small clear work may start at step 6; ask first. **Guard:** `test_gate.py`, `test_rethink.py` (an after-build deck without the two lists is refused).
+**Hands-off:** when he tells a session to do the work without him (no questions, no feedback), that is the go-ahead: skip steps 2-4, ask nothing, bring no earlier deck. Still explore, follow the design guide, run the default checks and stop for money, deletion, privacy or anything hard to undo. End with ONE growing deck at stage `after` with `"hands_off": "<his exact words>"` and the lists "What you asked for" and "Choices I made for you" (`templates/hands-off.json`); `walkthrough-check <deck>.json` gates it. Otherwise small clear work may start at step 6; ask first. **Guard:** `test_gate.py`, `test_rethink.py`, `test_hands_off.py`.
 
 ## What is asked, shown, listed, never shown
 **Invariant:**
@@ -47,27 +47,25 @@ Small clear work may start at step 6; ask first. **Guard:** `test_gate.py`, `tes
 - **Decided on drawings, early, never in words:** layout, placement, the path between screens, how parts interact.
 - **Listed as rows:** defaults and phone layout first, then failure states, sizes, order, speed. Unsure: list it.
 - **Wording:** last, on real screens (early only if he asks, on a mockup).
-- **Never shown:** code organisation, libraries, a reviewer's raw report (each finding is a "found in review" row). Tests added or removed ARE shown, plainly.
+- **Never shown:** code organisation, libraries, a reviewer's raw report. Tests added or removed ARE shown, plainly.
 
-**Why:** 784 decks analysed. **Guard:** none — candidate.
 
 ## Reuse the app's own parts
 **Invariant:** per screen, adopt every existing part that could do the job and record what is reused and new behind each design's (i), never in chat.
-**Why:** "match the rest of the app": 196 of his notes. **Guard:** none — candidate.
 
 ## The walkthrough, before and after
-**Invariant:** one deck (`templates/walkthrough.json`), same pages both times: what you asked for (his words) · every changed screen · behind the scenes · choices I made · checks, then what is left for him. After the build add each hard rule he stated as a checked row, and mark anything in no approved picture "new, not shown before".
-**Why:** his surprises were unapproved elements. **Guard:** `test_build.py`, `test_rethink.py`.
+**Invariant:** one deck (`templates/walkthrough.json`), same pages both times: what you asked for (his words) · every changed screen · behind the scenes · choices I made · checks, then what is left for him.
+**Guard:** `test_build.py`, `test_rethink.py`.
 
 ## The checks menu
-**Invariant:** before the build the Checks page lists every check and reviewer (`scripts/ui-review/{code-reviewer,ux-tester}.md`) with Will run / Skip and why for THIS build. **On unless he switches them off:** code review, tracing rows to answers, the fresh grader (`grader.md`), the done gate; the UX tester is off unless asked. A comment on a check goes to that checker. After the build each chosen check is a row with status and proof; the code review's row carries `"check": "code-review"`, each finding is a "found in review" row. Never report a check not run.
-**Why:** rounds 6, 9. **Guard:** `test_gate.py`.
+**Invariant:** before the build the Checks page lists every check and reviewer (`scripts/ui-review/{code-reviewer,ux-tester}.md`) with Will run / Skip and why for THIS build. **On unless he switches them off:** code review, tracing rows to answers, the fresh grader (`grader.md`), the done gate; the UX tester is off unless asked. A comment on a check goes to that checker. After the build each chosen check is a row with status and proof; the code review's row carries `"check": "code-review"`. Never report a check not run.
+**Guard:** `test_gate.py`.
 
 ## Records
 **Invariant:** `docs/**/*.answers.json` are tracked; older separate decks of a feature live in its `earlier-rounds/`. **Guard:** `test_grows.py`.
 
 ## The build stage
-**Invariant:** design → reviewer rounds in `docs/active/reviews/<date>-<feature>-design-review-<n>.md` (cap three) → tasks → build (`.claude/rules/performance.md`). **Guard:** none — candidate.
+**Invariant:** design → reviewer rounds in `docs/active/reviews/` (cap three) → tasks → build (`.claude/rules/performance.md`).
 
 ## Older work with a contract
 **Invariant:** a feature with a signed `<feature>.contract.json` finishes under it (`contract-check`, `close-out.sh`). Write no new contract.

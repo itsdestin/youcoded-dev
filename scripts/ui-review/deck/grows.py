@@ -582,6 +582,65 @@ def validate_fields(spec, errors):
             errors.append(f'the deck is at {STAGE_NAMES[cur]} but has no page of the {STAGE_NAMES[cur]} stage; add one, or move the deck\'s stage')
         if steps and not is_page(steps[0]):
             errors.append(f'{steps[0].get("id")}: on a deck that grows the first question follows a page marker that names its stage')
+    errors.extend(hands_off_errors(spec))
+
+
+# ── the hands-off route ──────────────────────────────────────────────────────────────────────────
+# WHY (Destin, 2026-11-18: "I just tell a session: do all of this without me ... I just want to see it at the very end, when you've done the
+# branch and done the review. Just show me everything that changed"): when he says to go ahead without him there are no earlier decks, so the ONE
+# deck he sees is the after-build deck, marked `"hands_off": "<his exact words>"`. Without the earlier decks, two things he would have decided
+# along the way must still be in front of him: what he asked for, and every choice made in his place.
+HANDS_OFF_LISTS = ('asked-for', 'choices-made')
+
+
+def _list_rows(steps, kind):
+    return [c for st in steps if st.get('list') == kind for c in st.get('calls') or [] if isinstance(c, dict)]
+
+
+def hands_off_errors(spec):
+    """Plain-language problems with a hands-off deck (empty when fine, and for any deck that is not one)."""
+    steps = [st for st in spec.get('steps') or [] if isinstance(st, dict)]
+    if 'hands_off' not in spec:
+        # The two lists only make sense on a hands-off deck; a stray one is refused rather than quietly shown.
+        return [f'{st.get("id")}: a list "{st["list"]}" belongs on a hands-off deck; add "hands_off": "<his exact words>" or drop the list'
+                for st in steps if st.get('list') in HANDS_OFF_LISTS]
+    errs = []
+    words = spec['hands_off']
+    if not isinstance(words, str) or not words.strip():
+        errs.append('hands_off is his exact words telling the session to go ahead without him, as text')
+    if not is_grows(spec):
+        errs.append('hands_off belongs on a deck that grows; add "grows": true')
+    if spec.get('stage') != 'after':
+        errs.append(f'a hands-off deck is only ever the after-build deck: set "stage": "after" (it is "{spec.get("stage")}"); there is no earlier deck for him to see when he said to go ahead without him')
+    for st in steps:
+        if is_page(st) and st.get('stage') in ('understanding', 'design', 'before'):
+            errs.append(f'{st.get("id")}: a hands-off deck has no {STAGE_NAMES[st["stage"]]} page; he asked not to be asked, so it holds only After build pages')
+    # What he asked for: first page. His words are drawn from hands_off; the rows are the things he asked for.
+    first = []
+    for st in steps:
+        if is_page(st) and first:
+            break
+        if not is_page(st):
+            first.append(st)
+    asked = [st for st in steps if st.get('list') == 'asked-for']
+    if not asked or not _list_rows(steps, 'asked-for'):
+        errs.append('a hands-off deck needs the list "What you asked for" ({"list": "asked-for", "calls": [...]}) on its first page: one row for each thing he asked for')
+    elif not any(st.get('list') == 'asked-for' for st in first):
+        errs.append('the list "What you asked for" belongs on the first page of a hands-off deck, under his own words')
+    choices = [st for st in steps if st.get('list') == 'choices-made']
+    crows = _list_rows(steps, 'choices-made')
+    if not choices or not crows:
+        errs.append('a hands-off deck needs the list "Choices I made for you" ({"list": "choices-made", "calls": [...]}): every decision he would normally have made in the stages he skipped '
+                    '(layout, where things sit, defaults, phone layout, wording), one row each; or ONE row with "none_made": true and a plain sentence when truly none')
+    for st in asked + choices:
+        if st.get('context') or any(isinstance(c, dict) and c.get('result') for c in st.get('calls') or []):
+            errs.append(f'{st.get("id")}: this is a list he ticks or changes: no context list, no result chips')
+    none = [c for c in crows if c.get('none_made') is True]
+    if none and len(crows) != 1:
+        errs.append('"none_made" is the only row of a "Choices I made for you" list that holds no choices: drop it or the choices')
+    if any('none_made' in c and c['none_made'] is not True for c in crows):
+        errs.append('none_made is true or left out')
+    return errs
 
 
 def settled_ids(spec, state=None):

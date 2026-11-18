@@ -284,6 +284,11 @@ for w in $(rg -l --glob '*.walkthrough.json' -e "\"branch\"[[:space:]]*:[[:space
   ls "$(dirname "$w")"/*.contract.json >/dev/null 2>&1 || WALKTHROUGHS+="$w"$'\n'
 done
 WALKTHROUGHS="${WALKTHROUGHS%$'\n'}"
+# Hands-off route (Destin, 2026-11-18, "do all of this without me ... I just want to see it at the very end"): there is no before-build deck, so
+# the ONE growing deck that carries "hands_off" and names this branch is gated by the same command, which reads it as a hands-off deck.
+for h in $(rg -l --glob '*.json' --glob '!*.answers*' --glob '!*.as-built.*' -e '"hands_off"' "$DOCS_DIR" 2>/dev/null || true); do
+  rg -q -e "\"branch\"[[:space:]]*:[[:space:]]*\"$BRANCH_RE\"" "$h" 2>/dev/null && WALKTHROUGHS+="${WALKTHROUGHS:+$'\n'}$h"
+done
 if [[ -z "$CONTRACTS" && -z "$WALKTHROUGHS" ]]; then
   note "no contract or walkthrough names this branch — the feature flow was not used, or the spec has no \"branch\""
 else
