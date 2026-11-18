@@ -2028,6 +2028,53 @@ print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())))
   } finally { srv.kill(); }
 });
 
+test('round 15: a pick between pictures in a growing deck shows its pictures once answered, with his pick and his marks, and the picture opens', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-pickpic-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); q1 = raw['steps'][0]
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+for n in ('a.png', 'b.png'): open(os.path.join(os.path.dirname(p), n), 'wb').write(png)
+opts = [{'id': 'a', 'label': 'Hover', 'pros': ['Clean.'], 'cons': ['No phone.'], 'picture': 'a.png', 'caption': 'On hover.'},
+        {'id': 'b', 'label': 'Always', 'pros': ['Visible.'], 'cons': ['Busy.'], 'picture': 'b.png', 'caption': 'Always shown.'}]
+given = {'v': 'pick', 'pick': 'b', 'marks': [{'pic': 'option a', 'x': 10, 'y': 10, 'w': 30, 'h': 30, 'text': 'too busy'}]}
+old = {**q1, 'id': 'Q-1', 'headline': 'Which look do you want?', 'visual': True, 'options': opts, 'answered': [{'round': 'Round 1', 'given': given}]}
+new = {**q1, 'id': 'Q-2', 'headline': 'Another look?', 'visual': True, 'options': opts}
+raw['grows'] = True; raw['stage'] = 'design'
+raw['steps'] = [{'id': 'P-1', 'page': 'Looks', 'intro': 'Pick one.', 'stage': 'design'}, old, new]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1440, 1000);
+    const ev = e => c.evaluate(e);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      for (let i = 0; i < 40 && !(await ev("!!window.__deckReady").catch(() => false)); i++) await sleep(250);
+      // the open question draws a picture in each option
+      assert.equal(await ev("document.querySelectorAll('article.q[data-id=\"Q-2\"] .card.variant .qpic img').length"), 2, 'an open pick between pictures shows both pictures');
+      // answered: fold open, full card open
+      await ev("[...document.querySelectorAll('button')].find(b => /Previously answered/.test(b.textContent)).click()"); await sleep(200);
+      await ev("[...document.querySelectorAll('button')].find(b => /Show the full card/.test(b.textContent)).click()"); await sleep(300);
+      assert.equal(await ev("document.querySelectorAll('article.q[data-id=\"Q-1\"] .card.variant .qpic img').length"), 2, 'the answered card still shows both pictures');
+      assert.equal(await ev("[...document.querySelectorAll('article.q[data-id=\"Q-1\"] .card.variant.on')].map(x => x.dataset.pick).join()"), 'b', 'his pick is marked');
+      assert.equal(await ev("document.querySelectorAll('article.q[data-id=\"Q-1\"] .markable .mark').length"), 1, 'the area he drew is on its picture');
+      // the picture opens (it threw before: a locked card has no headline element to read) with the question named and his area read-only
+      await ev("document.querySelector('article.q[data-id=\"Q-1\"] .card.variant[data-pick=a] .qpic > a').click()"); await sleep(400);
+      assert.equal(await ev("document.querySelector('.viewer .vabout').textContent"), 'Which look do you want?');
+      assert.equal(await ev("document.querySelectorAll('.viewer .mark').length"), 1);
+      assert.equal(await ev("(() => { const t = document.querySelector('.viewer .markt'); return t.value + '|' + t.disabled })()"), 'too busy|true');
+      assert.deepEqual(c.errors, []);
+    } finally { c.close(); }
+  } finally { srv.kill(); }
+});
+
 test('round 15: wide pictures fill their tile readably, one Submit feedback button, and a compact progress bar on a phone with many pages', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-r15-'));
   const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});

@@ -363,6 +363,32 @@ class Grows(unittest.TestCase):
         st = base_spec(); st['steps'][1]['visual'] = True; st['steps'][1]['answered'] = {'round': 'Round 2', 'answer': 'Yes'}
         self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
 
+    # ── round 15: a pick between PICTURES (options that each carry a picture) works in a growing deck, open and answered ──
+    def pictured(self, **kw):
+        open(os.path.join(self.tmp, 'a.png'), 'wb').write(b'\x89PNG'); open(os.path.join(self.tmp, 'b.png'), 'wb').write(b'\x89PNG')
+        st = question('Q-1', 'Which look?', visual=True, **kw)
+        st['options'][0].update(picture='a.png', caption='The first look.'); st['options'][1].update(picture='b.png', caption='The second look.')
+        return st
+
+    def test_a_pick_between_pictures_builds_in_a_growing_deck(self):
+        # WHY (Destin, round 15 page): options with a picture each are the "pick between pictures" question; "visual" is satisfied by them.
+        spec = base_spec(); spec['steps'][1] = self.pictured()
+        self.assertEqual(validate(load_spec(put(self.tmp, spec)))[0], [])
+        d = deck_data(load_spec(put(self.tmp, spec)), {})
+        step = [s for s in d['steps'] if s['id'] == 'Q-1'][0]
+        self.assertEqual([o['picture'] for o in step['options']], ['a.png', 'b.png'])
+        spec['steps'][1]['options'][1]['picture'] = 'missing.png'
+        self.has(validate(load_spec(put(self.tmp, spec)))[0], 'Q-1/b: picture missing.png does not exist')
+
+    def test_an_answered_pick_between_pictures_keeps_his_pick_and_marks(self):
+        given = {'v': 'pick', 'pick': 'b', 'marks': [{'pic': 'option a', 'x': 10, 'y': 10, 'w': 30, 'h': 30, 'text': 'too busy'}]}
+        spec = base_spec(); spec['steps'][1] = self.pictured(answered=[{'round': 'Round 1', 'given': given}])
+        self.assertEqual(validate(load_spec(put(self.tmp, spec)))[0], [])
+        d = deck_data(load_spec(put(self.tmp, spec)), {})
+        step = [s for s in d['steps'] if s['id'] == 'Q-1'][0]
+        self.assertEqual(step['grow']['given']['pick'], 'b'); self.assertEqual(step['grow']['given']['marks'][0]['pic'], 'option a')
+        self.assertTrue(step['options'][0]['picture'])
+
 
 if __name__ == '__main__':
     unittest.main()

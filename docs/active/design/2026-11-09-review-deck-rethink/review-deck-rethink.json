@@ -5161,6 +5161,306 @@
           }
         }
       ]
+    },
+    {
+      "id": "PD-11",
+      "page": "What the new way loses",
+      "intro": "Decide which losses to win back, and confirm the ones to keep.",
+      "stage": "design"
+    },
+    {
+      "id": "LS-1",
+      "surface": "Review decks",
+      "path": "Any deck link I send you",
+      "words": true,
+      "headline": "Should I save an exact copy of what you approved?",
+      "today": "When you submit the before-build walkthrough, your answers are saved with a date. The page itself keeps changing between rounds: topics reopen and wording is rebuilt.",
+      "problem": "Nothing shows exactly what you approved. If the finished build differs from the plan, neither of us can point to the page you actually agreed to.",
+      "proposal": "The moment you submit the before-build walkthrough, I save an untouchable copy of it. My final check then compares the build against that copy, not against a page that has since changed.",
+      "checked": "I searched the review-page tool on 2026-11-18 for any saved copy of a submitted page and found none; the final check reads the plan as it is now.",
+      "options": [
+        {
+          "id": "auto",
+          "label": "Save automatically",
+          "pros": [
+            "Exactly what you approved is always on file.",
+            "Nothing for you to remember or press."
+          ],
+          "cons": [
+            "One more file per feature to keep track of."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ask",
+          "label": "Save when you say so",
+          "pros": [
+            "You decide which moment counts as the agreement."
+          ],
+          "cons": [
+            "If you forget to say so, there is no record."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "Leave as it is",
+          "pros": [
+            "Nothing new to keep."
+          ],
+          "cons": [
+            "\"What did I approve?\" stays unanswerable."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "LS-2",
+      "surface": "Review decks",
+      "path": "Any deck link I send you",
+      "words": true,
+      "headline": "Should a fresh-eyes tester check every new screen?",
+      "today": "A tester who has never seen the app is offered on design decks and stays off unless you ask. In the old way it ran every time, before your first deck and after the build.",
+      "problem": "Without it, confusing wording and dead ends reach you first. With it, each feature costs more time before you see anything.",
+      "proposal": "The tester would run by default on any new or changed screen, before you see the first deck, and its findings are fixed before you look. You can still switch it off.",
+      "checked": "I read the checks menu rules on 2026-11-18: the tester is listed as offered on design decks, off unless asked.",
+      "options": [
+        {
+          "id": "default",
+          "label": "On for any new screen",
+          "pros": [
+            "You see fewer confusing screens.",
+            "Wording problems are caught before you read them."
+          ],
+          "cons": [
+            "Slower before your first look."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "big",
+          "label": "On only for big features",
+          "pros": [
+            "Small changes reach you quickly."
+          ],
+          "cons": [
+            "Small changes can still confuse you."
+          ]
+        },
+        {
+          "id": "off",
+          "label": "Off unless asked (today)",
+          "pros": [
+            "Fastest to your first look."
+          ],
+          "cons": [
+            "You become the tester."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "LS-3",
+      "surface": "Review decks",
+      "path": "Any deck link I send you",
+      "words": true,
+      "headline": "How should you name one item when talking to me in chat?",
+      "today": "Rows have no short name. You describe a row in your own words, and I have to guess which one you mean.",
+      "problem": "In a long page, \"the third thing about the header\" can match two rows, and I may change the wrong one.",
+      "proposal": "Each row could carry a short code, such as 2.3, that you can quote. Compare the three versions below; the third is how it is now.",
+      "checked": "I opened the current page on 2026-11-18: rows show only their bold line and plain line, with no code.",
+      "visual": true,
+      "options": [
+        {
+          "id": "hover",
+          "label": "Code on hover",
+          "pros": [
+            "Pages stay clean.",
+            "The code is there when you reach for it."
+          ],
+          "cons": [
+            "Not visible on a phone, which has no hover."
+          ],
+          "recommended": true,
+          "picture": "pictures/r15-code-hover.png",
+          "caption": "A faint code appears at the row's end when the mouse is over it."
+        },
+        {
+          "id": "always",
+          "label": "Code always shown",
+          "pros": [
+            "Works on a phone too.",
+            "Easy to read off."
+          ],
+          "cons": [
+            "A little more clutter on every row."
+          ],
+          "picture": "pictures/r15-code-always.png",
+          "caption": "A small faint code is always at the row's end."
+        },
+        {
+          "id": "none",
+          "label": "No code (today)",
+          "pros": [
+            "Cleanest page."
+          ],
+          "cons": [
+            "Naming a row stays guesswork."
+          ],
+          "picture": "pictures/r15-code-none.png",
+          "caption": "Rows as they are now."
+        }
+      ]
+    },
+    {
+      "id": "LS-4",
+      "surface": "Review decks",
+      "path": "Any deck link I send you",
+      "words": true,
+      "headline": "How should you know a new round has arrived?",
+      "today": "The deck keeps the same link and opens on the first page that needs you. The round number sits in a small chip in the header.",
+      "problem": "The old way gave a new link each round, which was a clear signal. Now nothing says \"this is new\" besides the page itself.",
+      "proposal": "Show one of three signals. Compare the three pictures below.",
+      "checked": "I opened the built deck on 2026-11-18: no note, tag or emphasis marks what arrived since your last visit.",
+      "visual": true,
+      "options": [
+        {
+          "id": "note",
+          "label": "One-line note at the top",
+          "pros": [
+            "Says in words what changed.",
+            "Appears only when something is new."
+          ],
+          "cons": [
+            "One more line above the first page."
+          ],
+          "recommended": true,
+          "picture": "pictures/r15-new-note.png",
+          "caption": "A note at the top of the first page with something to answer."
+        },
+        {
+          "id": "tag",
+          "label": "\"New\" tag on items",
+          "pros": [
+            "Points at the exact items."
+          ],
+          "cons": [
+            "Tags can pile up on a big round."
+          ],
+          "picture": "pictures/r15-new-tag.png",
+          "caption": "New items carry a small \"New\" tag."
+        },
+        {
+          "id": "round",
+          "label": "Bigger round number",
+          "pros": [
+            "No new elements on the page."
+          ],
+          "cons": [
+            "A number alone does not say what is new."
+          ],
+          "picture": "pictures/r15-new-round.png",
+          "caption": "The round number made more prominent in the header."
+        }
+      ]
+    },
+    {
+      "id": "LS-L",
+      "gallery": true,
+      "surface": "Review decks",
+      "path": "Any deck link I send you",
+      "words": true,
+      "headline": "Losses I'd keep",
+      "calls": [
+        {
+          "id": "speed",
+          "call": "Answering is slower: every row needs a tick or a comment.",
+          "why": "Why I'd keep it: a row you have not touched is never counted as approved.",
+          "more": {
+            "today": "Each row has a tick and a pencil. A row you leave alone stays \"not looked at\".",
+            "problem": "In the old way, rows you skipped counted as approved, so a quick pass was fast.",
+            "change": "Nothing changes if you keep this. To win speed back, comment on this row.",
+            "pros": [
+              "No change slips through unseen."
+            ],
+            "cons": [
+              "A long page takes longer to get through."
+            ]
+          },
+          "picture": "pictures/r15-loss-speed.png",
+          "visual": true,
+          "picture_name": "Rows now"
+        },
+        {
+          "id": "old",
+          "call": "Old rounds are not shown exactly as they were.",
+          "why": "Why I'd keep it: your earlier answers are rebuilt into today's look, and the original files stay on disk.",
+          "more": {
+            "today": "Earlier answers sit in \"Previously answered\", drawn with today's look.",
+            "problem": "Some cards carried in from old decks lost labels or switches along the way.",
+            "change": "Nothing changes if you keep this. To win it back, I would show each old round as it looked.",
+            "pros": [
+              "One look throughout the deck."
+            ],
+            "cons": [
+              "An old card may not match how you first saw it."
+            ]
+          },
+          "picture": "pictures/r15-loss-old.png",
+          "visual": true,
+          "picture_name": "An old answer now"
+        },
+        {
+          "id": "counts",
+          "call": "There are no status counts such as \"page 3 of 3 · 2 of 4 answered\".",
+          "why": "Why I'd keep it: the green and grey bars at the top show where you are.",
+          "more": {
+            "today": "The header holds one bar per page: green when done, grey when it needs you.",
+            "problem": "Numbers gave an exact figure, which the bars do not.",
+            "change": "Nothing changes if you keep this. To win it back, I would add the counts beside the bars.",
+            "pros": [
+              "A calmer header."
+            ],
+            "cons": [
+              "You cannot read an exact count."
+            ]
+          },
+          "picture": "pictures/r15-loss-bars.png",
+          "visual": true,
+          "picture_name": "The bars now"
+        },
+        {
+          "id": "wording",
+          "call": "Wording is only edited after the build, on the real screen.",
+          "why": "Why I'd keep it: you change words in place, in context, not in text boxes on a deck.",
+          "more": {
+            "today": "Before the build, wording is not asked. After it, you retype words on a frozen copy of the real screen.",
+            "problem": "In the old way, wording was reviewed in text boxes before anything was built.",
+            "change": "Nothing changes if you keep this. To win it back, I would ask for wording earlier.",
+            "pros": [
+              "You judge words where they will appear."
+            ],
+            "cons": [
+              "A wording problem is found late."
+            ]
+          }
+        },
+        {
+          "id": "slow",
+          "call": "Decks are slower for me to write.",
+          "why": "Why I'd keep it: more required fields, pictures and refusals make each question clearer to you.",
+          "more": {
+            "today": "The tool refuses a question missing its today, problem or proposal, or a visual row without a picture.",
+            "problem": "Each deck takes me longer to prepare, so you wait longer for a round.",
+            "change": "Nothing changes if you keep this. To win it back, I would loosen the refusals.",
+            "pros": [
+              "Every question arrives complete."
+            ],
+            "cons": [
+              "Rounds arrive later."
+            ]
+          }
+        }
+      ]
     }
   ],
   "stale_answers": {

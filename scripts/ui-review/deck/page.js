@@ -2238,7 +2238,10 @@
   const COARSE = /[?&]touch=1/.test(location.search) || (window.matchMedia && matchMedia('(pointer:coarse)').matches);
   const picTitle = a => {
     const cap = a.parentElement.querySelector('figcaption'), art = a.closest('article.q');
-    return { what: art ? art.querySelector('.qh').textContent : '', cap: cap ? cap.textContent : '' };
+    // WHY the fallback (round 15): a question opened from "Show the full card" is drawn locked, WITHOUT its own headline
+    // (the answered card above it carries it), so `.qh` is null there and pressing its picture threw and left an empty popup.
+    const qh = art && art.querySelector('.qh'), st = art && stepById(art.dataset.id);
+    return { what: qh ? qh.textContent : (st ? st.headline || '' : ''), cap: cap ? cap.textContent : '' };
   };
   // WHY one description for both openers (round 8, Destin: a tile "should open our popup image
   // screen/comment menu"): an Attachments tile is a button carrying its picture's address; a
