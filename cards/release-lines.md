@@ -81,3 +81,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#762 fixes | Reopening an old chat no longer makes the assistant reply on its own; a finished helper's report goes in with your next message.
 - youcoded#762 fixes | Phone: attached file names keep their accents, and a failed connection says whether your computer needs updating or can't be reached.
 - youcoded#757 behind | Nothing visible.
+- youcoded#741 behind | Nothing visible.
