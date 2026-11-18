@@ -355,6 +355,41 @@ class RethinkTests(unittest.TestCase):
         for needle in ('USER_STATE', 'data-entry-key', '.quick-chip', '.status-bar', 'editOf', 'liveframe', "'/app/probe.txt'"):
             self.assertIn(needle, js, needle)
 
+    def _png(self, name, w, h):
+        # A real, tiny PNG of the asked size (solid colour), written without any picture library.
+        import struct, zlib
+        def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+        raw = b''.join(b'\x00' + b'\x80' * w for _ in range(h))
+        data = b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 0, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(raw)) + chunk(b'IEND', b'')
+        os.makedirs(os.path.join(self.tmp, 'deck'), exist_ok=True)
+        with open(os.path.join(self.tmp, 'deck', name), 'wb') as f:
+            f.write(data)
+
+    def test_a_very_wide_picture_gets_a_warning_not_a_refusal(self):
+        # WHY (Destin, round 14): a 1400x85 strip is unreadable in its tile; the author is told to shoot a taller area.
+        self._png('strip.png', 1400, 85); self._png('normal.png', 400, 300)
+        def add(r):
+            r['steps'].append({**CALLS, 'calls': [{**CALLS['calls'][0], 'picture': 'strip.png'}, {**CALLS['calls'][1], 'picture': 'normal.png'}]})
+        errs, warns = validate(spec_with(self.tmp, add))
+        self.assertEqual(errs, [])
+        wide = [w for w in warns if 'strip.png' in w]
+        self.assertEqual(len(wide), 1, warns)
+        self.assertIn('shoot a taller area', wide[0])
+        self.assertFalse(any('normal.png' in w for w in warns), warns)
+
+    def test_a_wide_but_not_extreme_picture_gets_no_warning(self):
+        self._png('banner.png', 1000, 250)   # ratio 4: cropped in its tile, but not worth a warning
+        def add(r):
+            r['steps'].append({**CALLS, 'calls': [{**CALLS['calls'][0], 'picture': 'banner.png'}, CALLS['calls'][1]]})
+        self.assertFalse(any('banner.png' in w for w in validate(spec_with(self.tmp, add))[1]))
+
+    def test_page_script_crops_wide_tiles_and_compacts_the_bars(self):
+        # The page script and stylesheet carry the round-14 rules (behaviour is measured in deck-render.test.mjs).
+        js = open(os.path.join(DECK, 'page.js')).read(); css = open(os.path.join(DECK, 'page.css')).read()
+        self.assertIn("classList.toggle('wide'", js)
+        self.assertIn('.tilepv.wide img{object-fit:cover;object-position:left top}', css)
+        self.assertIn('id="stepsum"', open(os.path.join(DECK, 'page.html.tmpl')).read())
+
 
 if __name__ == '__main__':
     unittest.main()

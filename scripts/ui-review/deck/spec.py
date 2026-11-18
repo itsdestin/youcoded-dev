@@ -540,7 +540,32 @@ def _validate_reuse(x, where, errors):
         errors.append(f'{where}: reuse names at least one reused part (from) or one new part (new)')
 
 
-def _validate_calls(st, sid, errors):
+def _picture_size(path):
+    """(width, height) of a picture file, or None when it cannot be read. Pillow when present,
+    otherwise the PNG header (the only format the shoot tools write)."""
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            return im.size
+    except Exception:
+        pass
+    try:
+        with open(path, 'rb') as f:
+            head = f.read(24)
+        if head[:8] == b'\x89PNG\r\n\x1a\n':
+            return int.from_bytes(head[16:20], 'big'), int.from_bytes(head[20:24], 'big')
+    except OSError:
+        pass
+    return None
+
+
+# WHY (Destin, round 14: a 1400x85 header strip was an unreadable line in its tile): past this
+# width-to-height ratio the tile can only show a thin strip, so the author is told to shoot a
+# taller area. A warning, never a refusal: some pictures really are that shape.
+WIDE_PICTURE_RATIO = 5
+
+
+def _validate_calls(st, sid, errors, warnings=None):
     calls = st.get('calls')
     if not isinstance(calls, list) or not calls:
         errors.append(f'{sid}: calls is a non-empty list of {{id, call, why}}')
@@ -567,6 +592,10 @@ def _validate_calls(st, sid, errors):
                 errors.append(f'{sid}/{c["id"]}: {pk} is a file path beside the spec (no leading slash, no "..")')
             elif not os.path.exists(os.path.join(st.get('_base', ''), pic)):
                 errors.append(f'{sid}/{c["id"]}: {pk} {pic} does not exist beside the spec')
+            elif warnings is not None:
+                size = _picture_size(os.path.join(st.get('_base', ''), pic))
+                if size and size[1] and size[0] / size[1] > WIDE_PICTURE_RATIO:
+                    warnings.append(f'{sid}/{c["id"]}: {pk} {pic} is {size[0]}x{size[1]} — very wide and short, so it reads as a thin strip in its tile; shoot a taller area')
         if c.get('before') and not c.get('picture'):
             errors.append(f'{sid}/{c["id"]}: before needs a picture beside it — the after')
         # `wording` rows (round 3: a text box per label beside a small picture) are refused.
@@ -1129,7 +1158,7 @@ def _validate_words(spec, st, sid, errors, warnings):
     elif is_dev(st):
         _validate_dev(spec, st, sid, errors)
     elif is_calls(st):
-        _validate_calls({**st, '_base': spec.get('_base', '')}, sid, errors)
+        _validate_calls({**st, '_base': spec.get('_base', '')}, sid, errors, warnings)
     elif st.get('screen') is not None or st.get('liveScreen') is not None:
         # A SCREEN step (round 4): a still copy of an app screen (`shoot --page`) whose words he
         # retypes in place. Only after the build — before it there is no real screen to copy.

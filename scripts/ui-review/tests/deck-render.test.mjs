@@ -444,7 +444,7 @@ print(p)`;
       assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-3\"] .ans')].map(b=>b.textContent).join(',')"), 'Holds,Fails,Other');
       assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-4\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', 'Other']);
       assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-5\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', 'Other']);
-      assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Done', 'the last page finishes the deck');
+      assert.equal(await c.evaluate("document.querySelector('#save').hidden"), true, 'the last page has no second submit button: the header\'s Submit feedback is the one way to finish');
       // Q-4 answers Don't know; Q-5 answers Yes — two DIFFERENT question-kind steps in two
       // different states, so the finish screen has to tell them apart, not just echo one value.
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-4\"] .ans[data-v=other]').click()"); await sleep(300);
@@ -573,7 +573,8 @@ print(p)`;
     for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true')); i++) await sleep(100);
     assert.equal(await c.evaluate("document.querySelectorAll('#steps span').length"), 1, 'one page, one segment');
     assert.equal(await c.evaluate("document.querySelectorAll('article.q').length"), 4, 'every question on it');
-    assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Done');
+    assert.equal(await c.evaluate("document.querySelector('#save').hidden && document.querySelector('#controls').hidden"), true, 'a one-page deck has no foot button at all: the header submits');
+    assert.equal(await c.evaluate("document.querySelector('#done').textContent"), 'Submit feedback');
     assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'Questions fixture', 'the implicit page wears the deck title');
     // Fix (2026-09-05): a one-page deck has nothing to move BETWEEN — Prev/Next and the single
     // (always-full) progress segment used to sit there as dead controls.
@@ -1381,7 +1382,7 @@ print(p)`;
       await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
       // ── buttons follow the design guide ──
       assert.equal(await c.evaluate("document.querySelectorAll('.card.variant .ohead .key').length"), 0, 'no option-id chips on written options');
-      assert.equal(await c.evaluate("[...document.querySelectorAll('button.btn.primary')].filter(b=>b.offsetParent).length"), 2, 'two filled buttons in view: the foot\'s main button and, at his request (round 11: "fill it in"), the header\'s Submit feedback');
+      assert.equal(await c.evaluate("[...document.querySelectorAll('button.btn.primary')].filter(b=>b.offsetParent).length"), 1, 'one filled button in view: this is the last page, so the foot has only Back and the header\'s Submit feedback (round 11: "fill it in") is the single filled button (round 14: no second Submit feedback)');
       assert.equal(await c.evaluate("(()=>{const y=getComputedStyle(document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=yes]')),n=getComputedStyle(document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=no]')),b=getComputedStyle(document.querySelector('#back'));return y.borderTopColor===n.borderTopColor&&y.borderTopColor===b.borderTopColor&&y.backgroundColor===n.backgroundColor&&y.backgroundColor!==getComputedStyle(document.querySelector('#save')).backgroundColor})()"), true, 'answer buttons are outlined alike, in the same full-strength outline as Back, and not filled');
       assert.equal(await c.evaluate("(()=>{const q=document.querySelector('article.q[data-id=\"Q-2\"]');return q.querySelector('.ans[data-v=yes]').getBoundingClientRect().left>q.querySelector('.note').getBoundingClientRect().right-1})()"), true, 'the answer buttons sit at the right of their line');
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=yes]').click()"); await sleep(100);
@@ -1863,7 +1864,9 @@ json.dump(raw, open(p, 'w'))`;
       await q("document.querySelector('#next').click()"); await sleep(300);
       assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Design page', 'Next walks on to the pages that need him');
       await q("document.querySelectorAll('#steps span')[2].click()"); await sleep(250);
-      assert.equal(await q("document.querySelector('#save').textContent"), 'Submit feedback', 'the foot says what the header says');
+      assert.equal(await q("document.querySelector('#save').hidden"), true, 'the last page: the foot has no Submit feedback of its own');
+      assert.equal(await q("[...document.querySelectorAll('button')].filter(b => b.offsetParent && /Submit feedback/.test(b.textContent)).length"), 1, 'exactly one Submit feedback button is on screen');
+      assert.equal(await q("document.querySelector('#back').offsetParent !== null"), true, 'Back stays');
       assert.equal(await q("document.querySelectorAll('#cards .rowmore .card.part').length"), 2, 'a row\'s More is labelled parts (today, change)');
       assert.equal(await q("document.querySelectorAll('#cards .rowmore .pcbox').length"), 1, 'and its good points');
       await q("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
@@ -2022,5 +2025,85 @@ print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())))
       assert.equal(await ev(pill), '1 of 2 looked at');
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
+  } finally { srv.kill(); }
+});
+
+test('round 15: wide pictures fill their tile readably, one Submit feedback button, and a compact progress bar on a phone with many pages', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-r15-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); q1 = raw['steps'][0]
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+def png(name, w, h):
+    data = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress((b'\\x00' + b'\\x40\\x60\\x80' * w) * h)) + chunk(b'IEND', b'')
+    open(os.path.join(os.path.dirname(p), name), 'wb').write(data)
+png('strip.png', 1400, 300); png('normal.png', 400, 300)
+raw['grows'] = True; raw['rounds_before'] = 3; raw['stage'] = 'design'
+rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'gallery': True, 'calls': [{'id': 'a', 'call': 'A row.', 'why': 'Because.', 'picture': 'strip.png'}, {'id': 'b', 'call': 'Another.', 'why': 'Because.', 'picture': 'normal.png'}]}
+steps = []
+for i in range(1, 13):
+    steps.append({'id': 'P-%d' % i, 'page': 'Page %d' % i, 'intro': 'Intro.', 'stage': 'design'})
+    steps.append(rows if i == 1 else {**q1, 'id': 'Q-%d' % i, 'headline': 'Topic %d?' % i})
+raw['steps'] = steps
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(500); };
+  const HDR = "(()=>{const r=x=>{const b=document.querySelector(x).getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(Math.round).join()};return [r('.top'),r('#done'),r('.nav')].join('|')})()";
+  try {
+    await sleep(800);
+    // a laptop: the very wide picture's tile is cropped to fill (class wide); the ordinary one is left as it was
+    const c = await cdp(await freePort(), 1400, 900);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c);
+      assert.equal(await c.evaluate("document.querySelectorAll('#steps span').length"), 12);
+      assert.equal(await c.evaluate("document.querySelector('#stepsum').hidden"), true, 'a laptop has room for one bar per page');
+      await c.evaluate("document.querySelector('.atttile') && document.querySelector('.atttile').scrollIntoView()"); await sleep(1200);
+      assert.deepEqual(JSON.parse(await c.evaluate("JSON.stringify([...document.querySelectorAll('.tilepv')].map(t => t.classList.contains('wide')))")), [true, false], 'only the 1400x300 picture is a wide tile');
+      assert.equal(await c.evaluate("getComputedStyle(document.querySelector('.tilepv.wide img')).objectFit"), 'cover');
+      assert.equal(await c.evaluate("getComputedStyle(document.querySelector('.tilepv:not(.wide) img')).objectFit"), 'contain');
+      // the popup still shows the whole picture
+      await c.evaluate("document.querySelector('.atttile').click()"); await sleep(500);
+      assert.equal(await c.evaluate("(()=>{const i=document.querySelector('.viewer .lbbox img');return Math.abs(i.getBoundingClientRect().width / i.getBoundingClientRect().height - 1400 / 300) < 0.05})()"), true, 'the whole picture, uncropped, in the viewer');
+      await c.evaluate("document.querySelector('.viewer .vclose').click()"); await sleep(200);
+      // one Submit feedback button everywhere; the last page's foot has Back only
+      await c.evaluate("document.querySelectorAll('#steps span')[11].click()"); await sleep(400);
+      assert.equal(await c.evaluate("[...document.querySelectorAll('button')].filter(b => b.offsetParent && /Submit feedback/.test(b.textContent)).length"), 1, 'one Submit feedback on the last page');
+      assert.equal(await c.evaluate("document.querySelector('#save').hidden"), true);
+      assert.equal(await c.evaluate("document.querySelector('#back').offsetParent !== null"), true);
+      // the header button still submits: it opens the dialog, and after Submit it reads Submitted
+      await c.evaluate("document.querySelector('#done').click()"); await sleep(400);
+      assert.equal(await c.evaluate("document.querySelector('#veil').classList.contains('on')"), true, 'the header button opens the submit dialog');
+      assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#unlooked')).display !== 'none' || getComputedStyle(document.querySelector('#skipped')).display !== 'none'"), true, 'the not-yet-answered warning still shows');
+      assert.deepEqual(c.errors, []);
+    } finally { c.close(); }
+    // a phone with 12 pages: one compact bar and "n/12" instead of hair-thin bars; same header on every page; no sideways scroll
+    const m = await cdp(await freePort(), 390, 800);
+    try {
+      await m.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(m);
+      const fit = "document.documentElement.scrollWidth <= window.innerWidth && document.body.scrollWidth <= window.innerWidth";
+      assert.equal(await m.evaluate("document.querySelector('#stepsum').hidden"), false, 'compact progress shown');
+      assert.equal(await m.evaluate("document.querySelector('#steps').hidden"), true, 'the hair-thin bars are not');
+      assert.equal(await m.evaluate("document.querySelector('.sumbar').getBoundingClientRect().width >= 16"), true, 'the compact bar is wide enough to see');
+      assert.equal(await m.evaluate(fit), true, 'no sideways scrolling');
+      // (the page opens where the laptop left it, on the last page: press the bar's left end for page 1)
+      const press = x => m.evaluate(`(()=>{const r=document.querySelector('.sumbar').getBoundingClientRect();document.querySelector('.sumbar').dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:${x === 'left' ? 'r.left+1' : 'r.right-1'},clientY:r.top+3}))})()`);
+      await press('left'); await sleep(400);
+      const h0 = await m.evaluate(HDR);
+      assert.equal(await m.evaluate("document.querySelector('.sumtext').textContent"), '1/12');
+      assert.equal(await m.evaluate("document.querySelector('.summark').getBoundingClientRect().width > 0"), true, 'the page being viewed is outlined');
+      assert.match(await m.evaluate("document.querySelector('.sumbar').style.background"), /linear-gradient/);
+      // pressing the bar's right end jumps to the last page
+      await press('right'); await sleep(400);
+      assert.equal(await m.evaluate("document.querySelector('.sumtext').textContent"), '12/12', 'it jumped');
+      assert.equal(await m.evaluate(HDR), h0, 'the header is the same size on every page');
+      assert.equal(await m.evaluate(fit), true);
+      assert.equal(await m.evaluate("(()=>{const t=document.querySelector('.top').getBoundingClientRect();return [...document.querySelectorAll('#stages,#stepsum,#done')].every(e=>{const b=e.getBoundingClientRect();return b.top>=t.top-1&&b.bottom<=t.bottom+1})})()"), true, 'one row');
+      assert.equal(await m.evaluate("(()=>{const s=document.querySelector('#stepsum').getBoundingClientRect(),d=document.querySelector('#done').getBoundingClientRect();return s.right<=d.left+1})()"), true, 'the progress never runs under Submit feedback');
+      assert.deepEqual(m.errors, []);
+    } finally { m.close(); }
   } finally { srv.kill(); }
 });

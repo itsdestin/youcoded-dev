@@ -422,6 +422,13 @@
   // a video has no area-dragging.
   const isVideo = src => /\.(webm|mp4)(\?|#|$)/i.test(src);
   const fileName = src => { try { return decodeURIComponent(String(src).split(/[?#]/)[0].split('/').pop() || src); } catch (e) { return String(src); } };
+  // WHY (Destin, round 14: a 1400x85 header strip showed as a thin unreadable line): a picture more than three times wider than tall fills its tile
+  // cropped from the top-left at readable size (the CSS `.wide`); the popup still shows the whole picture. Decided once the picture has loaded.
+  const WIDE_RATIO = 3;
+  document.addEventListener('load', e => {
+    const im = e.target; if (!(im && im.tagName === 'IMG' && im.closest && im.closest('.tilepv'))) return;
+    im.closest('.tilepv').classList.toggle('wide', im.naturalHeight > 0 && im.naturalWidth / im.naturalHeight > WIDE_RATIO);
+  }, true);
   const attTile = (st, c, src, pk, name) => `<button type="button" class="atttile" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" data-pk="${esc(pk)}" data-src="${esc(src)}" data-name="${esc(name)}" data-video="${isVideo(src) ? 1 : 0}" title="Open ${esc(name)}">`
     + `<span class="tilepv">${isVideo(src) ? `<video src="${esc(src)}#t=0.1" preload="metadata" muted playsinline tabindex="-1"></video>` : `<img src="${esc(src)}" alt="" loading="lazy">`}<span class="tilecm" hidden></span></span>`
     + `<span class="tilefoot"><span class="tiletext"><span class="tilename">${esc(name)}</span></span><span class="tileopen" aria-hidden="true">${ATT_ARROW}</span></span></button>`;
@@ -1312,6 +1319,7 @@
     $('#cards').innerHTML = pageHead(pg, true) + ss.filter(st => st.context).map(st => qArticle(st, false)).join('')
       + prevGroup(ss.filter(st => !st.context && st.grow && st.grow.answered), false);
     layout(); paintLocked(); wireMarks(); paintStages(); paintBars();   // WHY wireMarks: the areas he drew on an old picture are painted here too (round 12: pictures and marks were missing)
+    $('#save').hidden = false; $('#controls').hidden = false;   // WHY: the last live page hides the foot button; a finished page's own button must show
     $('#save').disabled = false; $('#save').textContent = recPage >= pages.length - 1 ? 'Back to ' + stageName(GROWS.stage) : 'Next page ›';
     $('#back').hidden = pages.length === 1; $('#back').disabled = recPage === 0;
     scrollTop();
@@ -1323,7 +1331,37 @@
     box.hidden = false;
     if (box._n !== n) { box.innerHTML = Array.from({ length: n }, () => '<span></span>').join(''); box._n = n; $$('#steps span').forEach((sp, i) => sp.onclick = () => go(i)); }
     if (viewStage) $$('#steps span').forEach((sp, i) => { sp.className = 'done' + (i === recPage ? ' on' : ''); });
+    paintCompact();
   }
+  // WHY (Destin, round 14: "on a phone the bars become hair-thin"): when each page's bar would be under 12px wide, the header shows ONE bar split in
+  // proportion instead (finished pages green, the rest grey, the page being viewed outlined) with "3/11" beside it. Pressing the bar jumps to the page
+  // under the finger. The per-page bars stay in the page (hidden) because they are what carries each page's state. The "3/11" has a fixed width so
+  // the header is the same size on every page.
+  const COMPACT_MIN = 12;
+  function paintCompact() {
+    const box = $('#steps'), sum = $('#stepsum'); if (!GROWS || !PAGES || !sum) return;
+    const spans = $$('#steps span'), n = spans.length; if (!n || PAGES.length === 1) return;
+    box.hidden = false; sum.hidden = true;   // measure the real bars first
+    const gap = parseFloat(getComputedStyle(box).columnGap) || 0, w = box.clientWidth;
+    const compact = n > 1 && (w - gap * (n - 1)) / n < COMPACT_MIN;
+    box.hidden = compact; sum.hidden = !compact;
+    if (!compact) return;
+    const here = Math.max(0, spans.findIndex(sp => sp.classList.contains('on')));
+    // a hard-edged gradient: each page owns an equal slice, green when finished, grey otherwise
+    const stops = spans.map((sp, i) => `${sp.classList.contains('done') ? 'var(--yes)' : 'var(--inset)'} ${i * 100 / n}% ${(i + 1) * 100 / n}%`);
+    const bar = sum.querySelector('.sumbar'), mark = sum.querySelector('.summark'), txt = sum.querySelector('.sumtext');
+    bar.style.background = 'linear-gradient(to right,' + stops.join(',') + ')';
+    mark.style.left = (here * 100 / n) + '%'; mark.style.width = (100 / n) + '%';
+    txt.textContent = (here + 1) + '/' + n; txt.style.minWidth = (String(n).length * 2 + 1) + 'ch';   // "3/11", not "3 of 11": a phone's header has room for the short form only
+    sum.setAttribute('aria-label', 'Page ' + (here + 1) + ' of ' + n);
+  }
+  $('#stepsum').querySelector('.sumbar').addEventListener('click', e => {
+    const bar = e.currentTarget, r = bar.getBoundingClientRect(), n = $$('#steps span').length;
+    go(Math.max(0, Math.min(n - 1, Math.floor((e.clientX - r.left) / r.width * n))));
+  });
+  // WHY an observer on the nav (not just window resize): the stage name beside it is drawn after the first paint and changes how much room the bars get.
+  window.addEventListener('resize', paintCompact);
+  if (window.ResizeObserver) new ResizeObserver(() => paintCompact()).observe($('.nav'));
   $('#cards').addEventListener('click', e => {
     const ro = e.target.closest('.reopenbtn'), lv = e.target.closest('.leavebtn');
     if (!(ro || lv) || state.submitted) return;
@@ -1595,6 +1633,7 @@
       // A page whose topics are all answered already (nothing asked) shows as complete.
       seg.className = ((on.length && n === on.length) || (!on.length && pageSteps(i).length) ? 'done' : n ? 'part' : '') + (i === cur ? ' on' : '');
     });
+    paintCompact();
     const done = askedNow().filter(isAnswered).length;
     // WHY no "page 3 of 3" (Destin, round 11: "the header still re-sizes/re-arranges itself when clicking between pages, i think we should drop 'page 3 of 3'
     // from the top (the bars at the top are self-explanatory)"). A growing deck hides the count altogether (CSS); other decks keep "x of y answered".
@@ -1602,7 +1641,10 @@
     // On a page the forward button is navigation, not "save this answer" — it is never disabled
     // for an unanswered question, because there are several of them on screen.
     // WHY one wording (Destin, round 12): the foot button and the header's button say the same thing, "Submit feedback", never "Done".
-    $('#save').disabled = !!state.submitted; $('#save').textContent = cur === LAST ? (GROWS ? 'Submit feedback' : 'Done') : 'Next page ›';
+    // WHY (Destin, round 14: "two Submit feedback buttons"): the header's filled button is the one way to submit. On the last page the foot keeps only Back,
+    // and when there is no Back either (a one-page deck) the whole foot bar goes, so no empty strip is left behind.
+    $('#save').disabled = !!state.submitted; $('#save').textContent = 'Next page ›'; $('#save').hidden = cur === LAST;
+    $('#controls').hidden = cur === LAST && PAGES.length === 1;
     $('#back').hidden = PAGES.length === 1; $('#back').disabled = cur === 0;
     $('#prev').disabled = cur === 0; $('#next').disabled = cur === LAST; $('#next').textContent = cur === LAST ? 'Last page' : 'Next ›';
   }
