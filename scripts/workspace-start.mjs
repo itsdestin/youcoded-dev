@@ -8,6 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { formatBriefing, syncWorkspace, verifyWorkspaceIdentity } from './workspace-sync.mjs';
 import { sweep, formatSweep, isMergedInto } from './prune-worktrees.mjs';
 import { markTeamDevice, teamDeviceFile } from './team-device.mjs';
+import { briefingLine } from './morning-report.mjs';
 
 const inventory = JSON.parse(fs.readFileSync(new URL('./workspace-repos.json', import.meta.url), 'utf8'));
 function git(root, ...args) {
@@ -557,6 +558,10 @@ function main(args) {
   else {
     console.log(formatBriefing(result.reorientation.report));
     console.log(`Report: ${result.reorientation.reportPath}\n`);
+    // WHY (W-4): the nightly health summary reaches Destin through the start-up briefing; a stale or absent report is
+    // said out loud (stale) or not at all (never installed), so silence is never mistaken for health.
+    const morning = briefingLine();
+    if (morning) console.log(`${morning}\n`);
     console.log(`Session: ${result.session}`);
     for (const [name, repo] of Object.entries(result.repositories)) {
       console.log(`${name} (${repo.status}): ${repo.path}`);

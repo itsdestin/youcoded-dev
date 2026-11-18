@@ -250,6 +250,10 @@ compaction); read `scripts/luna/README.md` for the isolation model before the fi
 Deterministic prompt shape stays pinned by unit tests (`prompt-assembly.test.ts`,
 `prompt-cache.test.ts`, `chatgpt-model.test.ts`), not by the rig.
 
+## Morning report
+
+`node scripts/morning-report.mjs [--no-notify] [--print]` reads the GitHub schedules (one `gh run list --event schedule` per scheduled workflow, so pull-request runs cannot hide a daily check), doc anchors, stranded worktrees, shared checkouts, cards and disk, and writes `~/.local/state/youcoded-morning/latest.md` (30 days kept). Any check that cannot run is yellow, never green. Session start prints one line; it says STALE when the report is 2+ days old. Repos with no schedule only show "last run N days ago". The phone summary (counts only, high priority only when red) needs the ntfy topic in `$NTFY_TOPIC` or `~/.config/youcoded-morning/ntfy-topic`; the topic is otherwise only a GitHub secret. The 06:30 timer is `scripts/systemd/` + `scripts/install-morning-timer.sh` (dry run by default; `--yes` installs, `--remove` undoes). Installing is a system change: only after Destin confirms.
+
 ## Ending a Session
 
 **When Destin says "wrap up", "close out this session", "let's finish up", "we're done",
