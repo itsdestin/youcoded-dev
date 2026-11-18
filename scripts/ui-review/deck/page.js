@@ -1241,10 +1241,13 @@
     if (!GROWS || !st.grow) return '';
     const g = st.grow, mine = !!(state.reopened || {})[st.id];
     const line = g.line || (mine && g.round ? 'Answered in ' + g.round : '');
-    if (!line) return '';
+    // WHY (Destin, 2026-11-18: "better framed and better contextualized questions in the deck, not a chat response"): a topic that came back reframed
+    // says, in the same quiet muted words as its past line, what he asked and what is clearer now. No bar, no dot.
+    const reframe = g.reframed ? `<p class="pasttext reframe"><span class="youlabel">You asked:</span> \u201c${esc(g.asked || '')}\u201d</p><p class="pasttext reframe"><span class="youlabel">Clearer now:</span> ${esc(g.reframed)}</p>` : '';
+    if (!line) return reframe ? `<div class="pastline">${reframe}</div>` : '';
     const body = storyLines(st) + (g.story || []).map(x => noteLines(x.round + ' · you', x.answer, x.notes)).join('');
     const open = isOpen('past', st.id);
-    return `<div class="pastline" data-reveal><p class="pasttext">${esc(line)}${body ? ` <button type="button" class="tlink revealbtn" data-kind="past" data-sid="${esc(st.id)}" data-on="More" data-off="Less" aria-expanded="${open}">${open ? 'Less' : 'More'}</button>` : ''}</p>`
+    return `<div class="pastline" data-reveal>${reframe}<p class="pasttext">${esc(line)}${body ? ` <button type="button" class="tlink revealbtn" data-kind="past" data-sid="${esc(st.id)}" data-on="More" data-off="Less" aria-expanded="${open}">${open ? 'Less' : 'More'}</button>` : ''}</p>`
       + (body ? `<div class="revealbody"${open ? '' : ' hidden'}>${body}</div>` : '') + `</div>`;
   }
   // "More" / "Show the full question": one handler for every small text link that opens a body beside it.

@@ -166,6 +166,63 @@ class Grows(unittest.TestCase):
         st['steps'][1]['past'] = 'It was built once.'
         self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
 
+    # WHY (Destin, 2026-11-18): a question back in a deck means the topic was poorly framed; it returns reframed, never answered in chat.
+    def _asked(self, answer, **step):
+        answers(self.tmp, '1', {'Q-1': answer})
+        st = base_spec(); st['steps'][1].update(step)
+        return validate(load_spec(put(self.tmp, st)))[0]
+
+    def test_a_question_note_is_refused_until_reframed_or_resolved(self):
+        a = {'v': 'other', 'note': 'what is this for?'}
+        self.has(self._asked(a, reopened='You asked what it is for.'), 'do not answer it in chat')
+        self.has(self._asked(a), 'reframe it in the deck (reopened + reframed)')
+        self.assertEqual(self._asked(a, reopened='You asked what it is for.', reframed='Added what it is for.'), [])
+        self.assertEqual(self._asked(a, resolved='Done in round 2.'), [])
+
+    def test_each_trigger_word_counts_and_a_plain_note_does_not(self):
+        for words in ('I am confused', 'confusing', 'What is it', "what's it", 'Why this', 'how does it work', "I don't understand", 'unclear to me', 'ok?'):
+            self.has(self._asked({'v': 'other', 'note': words}, reopened='x'), 'reframe it in the deck')
+        self.assertEqual(self._asked({'v': 'other', 'note': 'make it bigger'}, reopened='Asked for bigger.'), [])
+        self.assertEqual(self._asked({'v': 'other', 'note': 'whyever'}, reopened='Asked.'), [])
+
+    def test_a_row_comment_or_other_text_that_is_a_question_is_refused(self):
+        self.has(self._asked({'v': 'other', 'text': 'how does that help'}, reopened='x'), 'reframe it in the deck')
+        self.has(self._asked({'v': 'other', 'changes': {'r1': 'huh, why?'}}, reopened='x'), 'reframe it in the deck')
+
+    def test_only_the_newest_round_is_checked(self):
+        answers(self.tmp, '1', {'Q-1': {'v': 'other', 'note': 'what is this?'}})
+        answers(self.tmp, '2', {'Q-2': {'v': 'yes'}})
+        st = base_spec(); st['steps'][1]['reopened'] = 'x'
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+
+    def test_reframed_needs_reopened(self):
+        self.has(self._asked({'v': 'yes'}, reframed='Clearer.'), 'reframed goes only with reopened')
+        self.has(self._asked({'v': 'other', 'note': 'no'}, reopened='x', reframed=' '.join(['w'] * 41)), 'reframed is 41 words')
+        st = base_spec(); del st['grows']; st['steps'][1]['reframed'] = 'x'
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'reframed belongs on a deck that grows')
+
+    def test_a_question_page_note_cannot_be_closed_with_read_not_acted_on(self):
+        with open(os.path.join(self.tmp, 'grow.answers.1.json'), 'w') as f:
+            json.dump({'deck': 'grow', 'submitted': '2026-11-01T10:00:00Z', 'built': {'at': 'B'}, 'answers': {}, 'pageNotes': {'P-2': 'why is this page here?'}}, f)
+        def errs(handled, **step):
+            st = base_spec(notes_handled=handled); st['steps'][4].update(step)
+            return validate(load_spec(put(self.tmp, st)))[0]
+        self.has(errs({'P-2': 'Read; not acted on'}), 'does not answer it')
+        self.assertEqual(errs({'P-2': 'Read; not acted on'}, reopened='x', reframed='Clearer now.'), [])
+        self.assertEqual(errs({'P-2': 'Moved the page intro and explained it.'}), [])
+        self.has(errs({}), 'reframe a topic on that page')
+
+    def test_a_plain_page_note_still_takes_read_not_acted_on(self):
+        with open(os.path.join(self.tmp, 'grow.answers.1.json'), 'w') as f:
+            json.dump({'deck': 'grow', 'submitted': '2026-11-01T10:00:00Z', 'built': {'at': 'B'}, 'answers': {}, 'pageNotes': {'P-2': 'looks fine'}}, f)
+        self.assertEqual(validate(load_spec(put(self.tmp, base_spec(notes_handled={'P-2': 'Read; not acted on'}))))[0], [])
+
+    def test_a_reframed_topic_carries_what_he_asked_and_what_is_clearer(self):
+        answers(self.tmp, '1', {'Q-1': {'v': 'other', 'note': 'make it bigger', 'text': 'why would that matter?'}})
+        st = base_spec(); st['steps'][1].update(reopened='He asked why.', reframed='Added what it changes.')
+        g = [s for s in deck_data(load_spec(put(self.tmp, st)), {})['steps'] if s['id'] == 'Q-1'][0]['grow']
+        self.assertEqual((g['asked'], g['reframed']), ('why would that matter?', 'Added what it changes.'))
+
     # field validation
     def test_field_errors_are_plain(self):
         def with_step(**kw):

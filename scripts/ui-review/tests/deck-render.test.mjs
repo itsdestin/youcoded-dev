@@ -1711,11 +1711,11 @@ json.dump(raw, open(p, 'w')); print(p)`;
   const at = /"built":\s*\{[^}]*"at":\s*"([^"]+)"/.exec(readFileSync(out, 'utf8'))[1];
   const LONG = 'a very long comment that must never be cut short '.repeat(12).trim();
   writeFileSync(join(dirname(spec), 'questions.answers.json'), JSON.stringify({ deck: 'questions-fixture', submitted: '2026-11-01T10:00:00Z', built: { at }, answers: {
-    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: LONG }, 'Q-3': { v: 'other', note: 'make it bigger please' }, 'Q-5': { v: 'pick', pick: 'a' } }, pageNotes: { 'P-2': 'this page line is unclear to me' } }));
+    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: LONG }, 'Q-3': { v: 'other', note: 'make it bigger please, why is it so small?' }, 'Q-5': { v: 'pick', pick: 'a' } }, pageNotes: { 'P-2': 'this page line is unclear to me' } }));
   const edit = `import json; p = ${JSON.stringify(spec)}; raw = json.load(open(p))
 by = {s['id']: s for s in raw['steps']}
 by['Q-2']['resolved'] = 'Made quiet in the next build.'
-by['Q-3']['reopened'] = 'You asked for it bigger.'; by['Q-3']['trail'] = [{'round': 'Round 4', 'built': 'A small one.'}]
+by['Q-3']['reopened'] = 'You asked for it bigger.'; by['Q-3']['reframed'] = 'Said what the size changes.'; by['Q-3']['trail'] = [{'round': 'Round 4', 'built': 'A small one.'}]
 # Q-5 was answered in an earlier, separate deck too: one topic, two rounds
 by['Q-5']['answered'] = [{'round': 'Round 2', 'answer': 'An older pick', 'notes': ['first thoughts']}]
 q4 = dict(by['Q-2'], id='Q-4', headline='Fourth topic?'); q4.pop('resolved')
@@ -1736,7 +1736,8 @@ json.dump(raw, open(p, 'w'))`;
   // The header's boxes: they must be identical on every page (Destin, round 11: "the header still re-sizes/re-arranges itself when clicking between pages").
   const HDR = "(()=>{const r=x=>{const b=document.querySelector(x).getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(Math.round).join()};return [r('.top'),r('#done'),r('#stages')].join('|')})()";
   try {
-    await sleep(900);
+    // WHY poll (a fixed 900 ms failed in the full run when the machine was busy, though the test passes alone): wait up to 15 s for serve to move the file aside.
+    for (let i = 0; i < 75 && !readdirSync(dirname(spec)).some(f => /^questions\.answers\.\d+\.json$/.test(f)); i++) await sleep(200);
     assert.ok(readdirSync(dirname(spec)).some(f => /^questions\.answers\.\d+\.json$/.test(f)), 'serve moved his round-1 answers aside as a dated file');
     const c = await cdp(await freePort(), 1400, 1000);
     try {
@@ -1765,7 +1766,12 @@ json.dump(raw, open(p, 'w'))`;
       assert.match(await q("document.querySelector('.handledgrp').innerText"), /this page line is unclear to me[\s\S]*Rewrote the page line\./);
       assert.equal(await q("document.querySelectorAll('.handledtopic').length"), 1);
       // the past is one small plain line with a text link, not a box with a chevron
-      assert.match(await q("document.querySelector('.pasttext').firstChild.textContent"), /^You asked for it bigger\./);
+      assert.match(await q("document.querySelector('.pasttext:not(.reframe)').firstChild.textContent"), /^You asked for it bigger\./);
+      // Destin, 2026-11-18: a topic he asked about returns reframed: his words and what is clearer now, quietly above the body (no bar, no dot)
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q[data-id=Q-3] .pastline .reframe')].map(e => e.innerText))")),
+        ['You asked: \u201cmake it bigger please, why is it so small?\u201d', 'Clearer now: Said what the size changes.']);
+      assert.equal(await q("document.querySelectorAll('article.q[data-id=Q-4] .reframe').length"), 0, 'a topic that was not reframed shows none');
+      assert.equal(await q("(()=>{const e=document.querySelector('article.q[data-id=Q-3] .reframe'),c=getComputedStyle(e);return c.borderLeftWidth+'|'+c.fontSize})()"), '0px|12px', 'quiet: no left bar, small text');
       assert.equal(await q("document.querySelector('.pastline .revealbody').hidden"), true, 'the story opens on request');
       assert.equal(await q("document.querySelector('.pastline .revealbtn').textContent"), 'More');
       await q("document.querySelector('.pastline .revealbtn').click()"); await sleep(100);

@@ -38,6 +38,13 @@ GIVEN_DROP = ('seconds', 'theme', 't', 'zoom', 'built')   # timing noise in a sa
 # refused only when it IS a step, page or row id of this deck or of an earlier round of it (see `known_ids`).
 ROUND_CITE = re.compile(r'\brounds?\s*\d+', re.I)
 ID_LIKE = re.compile(r'\b[A-Z]{1,3}-\d{1,2}\b', re.I)
+# WHY (Destin, 2026-11-18: "If I ask a follow-up question in a deck, sessions sometimes default to answering in chat... I usually want better
+# framed and better contextualized questions in the deck, not a chat response"): his words that read as a question or as confusion. THE one list;
+# the refusals below and nothing else read it. A "?" or one of these phrases (case-insensitive; the curly apostrophe counts as a straight one).
+QUESTION_PHRASES = ('confused', 'confusing', 'what is', "what's", 'why', 'how does', "don't understand", 'unclear')
+QUESTION_RE = re.compile(r'\?|\b(?:' + '|'.join(re.escape(w).replace("'", "['\u2019]") for w in QUESTION_PHRASES) + r')\b', re.I)
+REFRAMED_WORDS_MAX = 40   # what is clearer now (`reframed`, only with `reopened`)
+BARE_ACK = re.compile(r'^\W*read\b[^.]*\bnot acted on\W*$', re.I)   # the "Read; not acted on" line: it cannot answer a question
 ANSWER_NAMES = {'yes': 'Yes', 'no': 'No', 'other': 'Something else', 'skip': 'Not answered'}
 
 
@@ -82,6 +89,18 @@ def answer_view(st, a):
               if isinstance(t, dict) else f'{rows.get(k) or k} reworded — {t}'
               for k, t in (a.get('edits') or {}).items()]
     return answer, notes
+
+
+def reads_as_question(text):
+    return bool(QUESTION_RE.search(text or ''))
+
+
+def question_words(a):
+    """The words of ONE saved answer that read as a question or confusion: his note, his typed text, a row comment, a picture mark.
+    WHY the row's own words are not read (the row title may say "why" itself): only what he wrote counts."""
+    a = a or {}
+    said = [a.get('text'), a.get('note')] + list((a.get('changes') or {}).values()) + [m.get('text') for m in a.get('marks') or [] if isinstance(m, dict)]
+    return [t.strip() for t in said if isinstance(t, str) and t.strip() and reads_as_question(t)]
 
 
 def is_plain_acceptance(st, a):
@@ -303,6 +322,12 @@ def step_info(spec, **kw):
             info['line'] = line
         if st.get('resolved') and info['answered']:
             info['resolved'] = st['resolved']
+        # WHY (Destin, 2026-11-18): a reframed topic shows, quietly above its body, what he asked and what is clearer now.
+        if st.get('reopened') and st.get('reframed') and last:
+            said = ' / '.join(question_words(last['_a'])) if last['_a'] is not None else ''
+            said = said or _quote(last)
+            info['asked'] = said if len(said) <= 240 else said[:237] + '...'
+            info['reframed'] = st['reframed']
         info['_latest'] = latest
         info['_last'] = last
         out[sid] = info
@@ -376,6 +401,17 @@ def problems(spec):
         latest = info[st.get('id')]['_latest']
         if not latest or isinstance(st.get('answered'), dict):
             continue
+        # WHY (Destin, 2026-11-18: "My follow-ups typically indicate a deck question was poorly formed or lacked context... The decks should be
+        # largely self-contained"): an answer in the NEWEST round that asks something back or says he is confused is never answered in chat.
+        # The topic comes back reframed (reopened + reframed), or is `resolved` when it was really a request that has since been done.
+        newest = rounds[-1]['answers'].get(st.get('id')) if rounds else None
+        asked = question_words(newest) if real(newest) else []
+        if asked and not st.get('resolved') and not (st.get('reopened') and st.get('reframed')):
+            errs.append(f'{st["id"]}: in {rounds[-1]["label"].lower()} he asked something back or said he was confused on "{st.get("headline", st["id"])}" '
+                        f'("{" / ".join(asked)[:140]}"); reframe it in the deck (reopened + reframed) \u2014 do not answer it in chat. '
+                        f'Give it a clearer title, fuller today and problem, and options that carry the answer; "reframed" says what is clearer now '
+                        f'(or "resolved" if it was really a request that has been done)')
+            continue
         if is_plain_acceptance(st, latest['_a']) or st.get('reopened') or st.get('resolved'):
             continue
         errs.append(f'{st["id"]}: his {latest["round"].lower()} answer on "{st.get("headline", st["id"])}" asked for a change '
@@ -441,11 +477,26 @@ def problems(spec):
     # is only ever in the dated file, so a rebuild could drop it unseen. The latest round's must each say what was done ("notes_handled").
     if rounds:
         last = len(rounds) - 1
+        # WHY (same words, 2026-11-18): a page note that reads as a question cannot be closed with a bare "Read; not acted on"; it needs a topic on
+        # that page reopened with `reframed` (a step note: that step; the general note: any), or a real line of what was done.
+        page_of, reframed_on, cur_page = {}, set(), None
+        for x in spec.get('steps') or []:
+            if isinstance(x, dict) and is_page(x):
+                cur_page = x.get('id')
+            elif isinstance(x, dict):
+                page_of[x.get('id')] = cur_page
+                if x.get('reopened') and x.get('reframed'):
+                    reframed_on.update({x.get('id'), cur_page, 'general'})
         for key, said in round_notes(rounds[last], ()).items():
-            if not _ack(spec, key, rounds, last):
+            done = _ack(spec, key, rounds, last)
+            if done and reads_as_question(said) and BARE_ACK.match(done) and key not in reframed_on:
+                errs.append(f'{key}: his note ("{said[:70]}") reads as a question or confusion and "Read; not acted on" does not answer it; reframe a topic on '
+                            f'that page in the deck (reopened + reframed) \u2014 do not answer it in chat \u2014 or say what was really done')
+            if not done and not (reads_as_question(said) and key in reframed_on):
                 where = 'the general note' if key == 'general' else f'his note on "{key}"'
                 errs.append(f'{key}: {where} in {rounds[last]["label"].lower()} ("{said[:70]}") is not acknowledged; add to "notes_handled": '
-                            f'{{"{key}": "what was done about it, in plain words"}} (or "Read; not acted on" if that is true)')
+                            f'{{"{key}": "what was done about it, in plain words"}}' + (' or, as it reads as a question, reframe a topic on that page (reopened + reframed); do not answer it in chat'
+                            if reads_as_question(said) and key not in reframed_on else ' (or "Read; not acted on" if that is true)'))
     present = {st.get('id') for st in _steps(spec)}
     retired = spec.get('retired') if isinstance(spec.get('retired'), dict) else {}
     gone = {}
@@ -518,7 +569,7 @@ def validate_fields(spec, errors):
             elif stage is not None and stage not in STAGES:
                 errors.append(f'{sid}: stage is one of {", ".join(STAGES)}')
             continue
-        for k in ('answered', 'reopened', 'resolved', 'past'):
+        for k in ('answered', 'reopened', 'resolved', 'past', 'reframed'):
             if k in st and not on:
                 errors.append(f'{sid}: {k} belongs on a deck that grows; add "grows": true to the spec')
         if not on:
@@ -558,6 +609,14 @@ def validate_fields(spec, errors):
             errors.append(f'{sid}: a topic is answered or reopened, not both; drop one')
         if st.get('answered') is not None and st.get('past') is not None:
             errors.append(f'{sid}: past is for an open topic; this one is answered')
+        if st.get('reframed') is not None:
+            # WHY (Destin, 2026-11-18): "reframed" is what is clearer on a topic that came back; on any other topic it has nothing to say.
+            if st.get('reopened') is None:
+                errors.append(f'{sid}: reframed goes only with reopened (it says what is clearer on a topic that came back); add "reopened" or drop it')
+            elif not isinstance(st['reframed'], str) or not st['reframed'].strip():
+                errors.append(f'{sid}: reframed is one plain line: what is clearer now')
+            elif word_count(st['reframed']) > REFRAMED_WORDS_MAX:
+                errors.append(f'{sid}: reframed is {word_count(st["reframed"])} words (max {REFRAMED_WORDS_MAX}); one line')
         if st.get('reopened') is not None and st.get('resolved') is not None:
             errors.append(f'{sid}: reopened means the topic is open again, resolved means it stays answered; keep one')
         if st.get('reopened') is not None and st.get('past') is not None:
