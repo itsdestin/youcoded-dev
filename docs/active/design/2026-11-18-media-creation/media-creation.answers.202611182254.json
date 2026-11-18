@@ -1,0 +1,106 @@
+{
+ "deck": "media-creation",
+ "started": "2026-11-18T12:43:34.731Z",
+ "submitted": "2026-11-18T22:54:42Z",
+ "cur": 1,
+ "answers": {
+  "Q-d-picture": {
+   "v": "pick",
+   "pick": "box-icons",
+   "t": 1795042481261,
+   "seconds": 60,
+   "theme": "ivory-schematic"
+  },
+  "Q-d-approval": {
+   "v": "pick",
+   "pick": "frame-header",
+   "t": 1795042481261,
+   "seconds": 60,
+   "theme": "ivory-schematic"
+  },
+  "Q-d-sound": {
+   "v": "other",
+   "t": 1795042481261,
+   "note": "i think i want to see a few more options halfway between these two. ",
+   "seconds": 60,
+   "theme": "ivory-schematic"
+  },
+  "Q-d-video": {
+   "note": "i like the in-progress card from option A, but prefer the completion card from b. don't love the styling of the open button. also don't love the inconsistency of offering folder/other buttons for some cards like image/sound but not others.",
+   "t": 1795042481261,
+   "v": "other",
+   "seconds": 60,
+   "theme": "ivory-schematic"
+  },
+  "Q-d-limit": {
+   "v": "pick",
+   "pick": "slim",
+   "t": 1795042481261,
+   "note": "This chat has reached it's 5$ spending limit for image, video, and audio generation.",
+   "seconds": 60,
+   "theme": "ivory-schematic"
+  },
+  "L-states": {
+   "ok": {
+    "S-edit": true,
+    "S-menu": true,
+    "S-sent": true
+   },
+   "t": 1795042481261,
+   "changes": {
+    "S-chatgpt": "what do we show in claude code sessions that try to generate images without a provider connected?",
+    "S-light": "i dont like it. just use normal approval card styling."
+   },
+   "v": "other",
+   "seconds": 60,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-18T12:21:33Z",
+  "branch": "session/267-media-creation",
+  "commit": "dfa2486c4780fe30852356e72d26d6d91111b0e3",
+  "spec_sha256": "8758c8f449be8126cb9ccc53af79a7dd6ec488e653e78b9774d82476892b4eb5",
+  "spec_dirty": true,
+  "ids": [
+   "U-order",
+   "U-chat-only",
+   "U-approve-card",
+   "U-remember-model",
+   "U-create-edit",
+   "U-files",
+   "U-local-connect",
+   "U-gpt-plan",
+   "U-today",
+   "U-picture-them",
+   "U-ask-first",
+   "U-full-size",
+   "U-picture-menu",
+   "U-label",
+   "U-video-card",
+   "U-video-services",
+   "U-read-menu",
+   "U-voice-builtin",
+   "U-voice-services",
+   "U-sound-card",
+   "U-send-recording",
+   "Q-services",
+   "Q-same-key",
+   "Q-price",
+   "Q-local",
+   "Q-claude-code",
+   "Q-later",
+   "Q-github",
+   "Q-auto-limit",
+   "Q-voice-download",
+   "Q-d-approval",
+   "Q-d-picture",
+   "Q-d-sound",
+   "Q-d-video",
+   "Q-d-limit",
+   "L-states",
+   "L-defaults",
+   "L-failures"
+  ]
+ }
+}
