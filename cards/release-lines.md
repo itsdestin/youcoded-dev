@@ -95,3 +95,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#768 fixes | Clicking a link to a file outside the chat's folder now opens it, even when a different file with the same name was opened before.
 - youcoded#771 new | Pasting a picture in the phone browser now attaches it, just like the paperclip.
 - youcoded#772 behind | Shrunk copies of big pictures are cleaned up after 90 days unused; in chats older than that, those pictures may show as no longer available.
+- youcoded#773 behind | Nothing visible.
