@@ -1,0 +1,331 @@
+{
+ "house-ask": {
+  "duration": 59.763,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 1.389,
+    "end": 3.8
+   },
+   "enter": {
+    "start": 4.2,
+    "end": 4.368
+   },
+   "open": {
+    "start": 7.724,
+    "end": 18.796
+   },
+   "favorites": {
+    "start": 19.096,
+    "end": 20.043
+   },
+   "lamp": {
+    "start": 21.545,
+    "end": 28.588
+   },
+   "lights": {
+    "start": 48.319,
+    "end": 55.205
+   }
+  }
+ },
+ "house-page": {
+  "duration": 17.638,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "open": {
+    "start": 0.519,
+    "end": 1.268
+   },
+   "favorites": {
+    "start": 1.569,
+    "end": 1.588
+   },
+   "lamp": {
+    "start": 4.387,
+    "end": 5.143
+   },
+   "lights": {
+    "start": 12.23,
+    "end": 12.971
+   }
+  }
+ },
+ "look-cotton-candy-sky": {
+  "duration": 15.709,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 4.927,
+    "end": 5.548
+   },
+   "ready": {
+    "start": 6.434,
+    "end": 9.018
+   },
+   "held": {
+    "start": 9.519,
+    "end": 12.522
+   }
+  }
+ },
+ "look-devils-garden": {
+  "duration": 15.522,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 4.387,
+    "end": 7.247
+   },
+   "ready": {
+    "start": 8.37,
+    "end": 9.995
+   },
+   "held": {
+    "start": 10.495,
+    "end": 13.496
+   }
+  }
+ },
+ "look-golden-sunbreak": {
+  "duration": 18.432,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 5.248,
+    "end": 9.921
+   },
+   "ready": {
+    "start": 10.9,
+    "end": 12.923
+   },
+   "held": {
+    "start": 13.423,
+    "end": 16.424
+   }
+  }
+ },
+ "look-halftone-dimension": {
+  "duration": 14.864,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 3.64,
+    "end": 6.592
+   },
+   "ready": {
+    "start": 7.47,
+    "end": 9.344
+   },
+   "held": {
+    "start": 9.844,
+    "end": 12.845
+   }
+  }
+ },
+ "look-meadow-mist": {
+  "duration": 10.606,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 1.242,
+    "end": 2.433
+   },
+   "ready": {
+    "start": 3.15,
+    "end": 5.238
+   },
+   "held": {
+    "start": 5.738,
+    "end": 8.738
+   }
+  }
+ },
+ "look-midnight": {
+  "duration": 10.068,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 1.51,
+    "end": 2.066
+   },
+   "ready": {
+    "start": 2.802,
+    "end": 4.814
+   },
+   "held": {
+    "start": 5.315,
+    "end": 8.331
+   }
+  }
+ },
+ "look-youcoded": {
+  "duration": 9.684,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 1.17,
+    "end": 1.662
+   },
+   "ready": {
+    "start": 2.372,
+    "end": 4.377
+   },
+   "held": {
+    "start": 4.876,
+    "end": 7.877
+   }
+  }
+ },
+ "look": {
+  "duration": 10.814,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 1.194,
+    "end": 2.738
+   },
+   "enter": {
+    "start": 3.14,
+    "end": 3.151
+   },
+   "swap": {
+    "start": 5.955,
+    "end": 5.979
+   }
+  }
+ },
+ "money": {
+  "duration": 21.326,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 1.191,
+    "end": 2.652
+   },
+   "enter": {
+    "start": 3.053,
+    "end": 3.133
+   },
+   "open": {
+    "start": 5.734,
+    "end": 8.075
+   },
+   "networth": {
+    "start": 8.375,
+    "end": 8.425
+   },
+   "spending": {
+    "start": 13.387,
+    "end": 14.324
+   },
+   "1y": {
+    "start": 16.663,
+    "end": 17.772
+   }
+  }
+ },
+ "paint-ask": {
+  "duration": 84.185,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 1.321,
+    "end": 6.27
+   },
+   "enter": {
+    "start": 6.67,
+    "end": 7.499
+   },
+   "open": {
+    "start": 9.714,
+    "end": 15.51
+   },
+   "studio": {
+    "start": 15.811,
+    "end": 15.864
+   }
+  }
+ },
+ "paint-page": {
+  "duration": 32.212,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "open": {
+    "start": 0.507,
+    "end": 1.172
+   },
+   "studio": {
+    "start": 1.472,
+    "end": 1.475
+   }
+  }
+ },
+ "trip-page": {
+  "duration": 13.833,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "open": {
+    "start": 0.437,
+    "end": 1.351
+   },
+   "page": {
+    "start": 1.652,
+    "end": 1.665
+   },
+   "scroll": {
+    "start": 3.971,
+    "end": 8.555
+   },
+   "book": {
+    "start": 9.158,
+    "end": 9.849
+   }
+  }
+ },
+ "trip": {
+  "duration": 32.764,
+  "width": 2880,
+  "height": 1800,
+  "marks": {
+   "typed": {
+    "start": 1.435,
+    "end": 5.535
+   },
+   "enter": {
+    "start": 5.936,
+    "end": 6.899
+   },
+   "open": {
+    "start": 9.342,
+    "end": 15.621
+   },
+   "page": {
+    "start": 15.92,
+    "end": 15.991
+   },
+   "scroll": {
+    "start": 18.3,
+    "end": 26.045
+   },
+   "book": {
+    "start": 26.652,
+    "end": 28.168
+   }
+  }
+ }
+}
