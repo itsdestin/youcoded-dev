@@ -12,6 +12,7 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.converse
+work: session/7-pinned-bubbles
 ---
 Progress
 Done: The compaction-boundary fix (chat dividers in the right order after a summary) shipped in app PR #661 on 2026-10-20 and is on the main branch. Also already fixed and not listed on this card: a blank chat over a live conversation (PR #582, 2026-09-28); a pasted tab doubling a message (PR #558, 2026-09-24); the empty bubble above permission cards (commit 807fe9b66, 2026-09-02). RETESTED 2026-11-10 in a dev copy: the long-message case passed (4,745 characters with three file paths of over 1,000 characters each: one bubble, paths drawn as file chips, reply arrived, no error). The reload-to-wrong-chat case is card #146, fixed on branch session/release-safety.
@@ -19,6 +20,7 @@ Next: Still open: the floating-item overlap (no test exists) and the rare sighti
 Blocked: None for the shipped part. No release or Windows/macOS check has been made.
 
 Chats
+- 2026-11-18 session/7-pinned-bubbles: chat started
 - 2026-10-20 session/7-compaction-boundaries: chat started
 
 From the old roadmap (chat-data, status needs-verify, seen on desktop, last checked 2026-08-12)
