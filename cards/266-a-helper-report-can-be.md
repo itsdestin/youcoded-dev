@@ -11,8 +11,8 @@ why: Found 2026-11-14 while fixing a flaky test: destroy() does not wait for the
 work: session/266-native-small-faults
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Built on branch session/266-native-small-faults (youcoded, pushed, not merged); invisible fixes only, unit-tested. Full check run: only 2 unrelated tests timed out under heavy machine load and passed alone.
+Next: Independent reviewer, then Destin says merge. No deck needed (invisible). #210: tray still must be confirmed on a real build; #220 items 1 and 2 untouched.
 Blocked: nothing.
 
 Chats
