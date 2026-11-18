@@ -49,7 +49,7 @@ everything."
 |---|---|---|
 | In a sentence | **YouCoded** | Capital Y and capital C, one word. |
 | As the logo | **youcoded** | Lowercase, set as the logo (section 4). Only ever the logo, never in a sentence. |
-| Web address | **youcoded.ai** | Lowercase. Never "www.". Never "YouCoded.ai". |
+| Web address | **youcoded.ai** | **Always all lowercase, everywhere** (Destin, 2026-11-18): never capitals, small caps or an all-caps style, never "www.", never "YouCoded.ai". On its own (end card, poster) set it in Outfit 600; inside a sentence it takes the sentence's font. Never JetBrains Mono. |
 | Initials | **yc** | Only as the initials tile (section 4). Never "YC" in text. |
 
 **Never:** "Youcoded", "You Coded", "YOUCODED" (as a logo or in a headline), "YC", "the YouCoded
@@ -230,19 +230,62 @@ someone is reading), kept small and clearly part of the scene.
 |---|---|---|
 | **Outfit** | The logo, the tagline, website navigation and section text, the app's setup screens | Logo 600, −3.5% spacing · tagline 400 |
 | **DM Sans** | Headlines and body text | Big headline 900 (Black), −5% spacing, tight lines (0.97) · section heading 800, −4% · body 400/500, lines 1.6 |
-| **JetBrains Mono** | Small labels above headlines ("kickers"), badges, tiny notes | 500, ALL CAPS, +15% spacing, small |
+| **JetBrains Mono** | **Only** the short label above a headline ("kicker") and small badges, as on the website | 500, ALL CAPS, +15% spacing, small |
 
 <!-- verify: {"path": "youcoded/docs/index.html", "contains": "family=Outfit"} -->
 
 - **Headlines:** short, sentence case, one key word in brand purple. A full stop at the end is
   fine and is the house style on the website ("Whatever you want it to be.").
 - **Kickers:** one to three words, e.g. "WHAT IS THIS?", "FEATURES". Never a sentence.
+- **JetBrains Mono stays rare** (Destin, 2026-11-18: fine as the website uses it, disliked anywhere
+  else). Never use it for the web address, a list of platforms, captions, buttons, body text or
+  anything longer than three words. Those use DM Sans 500 (or Outfit for the web address).
+  At most one kicker per screen, poster or frame.
+
+---
+
+## 8. Spacing, alignment and hierarchy
+
+Every layout follows these five rules, so spacing is never a guess. (The app's own screens use the
+spacing scale in the UI design guide. This section is for marketing pieces and the website.)
+
+1. **One spacing scale.** Every gap, margin and padding is a step on this scale:
+   **0.5 · 1 · 1.5 · 2 · 3 · 4 · 6 · 8 × the base unit.** The base unit is **8px** on the web and
+   **the short side ÷ 60** in video and posters (18px on a 1080-wide frame). No gaps between steps.
+2. **Group, then space the groups.** Things that belong together sit close together. The gap
+   *between* groups is at least **twice** the gap *inside* a group. If every gap is the same, nothing
+   reads as a group (that was the fault in the first end card).
+3. **Safe margins.** Nothing comes closer to the edge than **8% of the short side**. In vertical
+   video, keep text out of the bottom 20% and top 12% too. A line that doesn't fit gets smaller or
+   breaks onto two lines. It never touches the edge.
+4. **One alignment per piece.** Either everything is centred or everything lines up on one left
+   edge. Never mix the two in one frame. A centred block sits slightly above the true middle
+   (its centre about 45% from the top).
+5. **Three levels at most**, and each one looks clearly different from its neighbours:
+   - **Level 1, what to remember:** the logo or the headline. The biggest thing, by far.
+   - **Level 2, what to do:** the web address, a button, a call to action. About half to a third the
+     size of level 1, in strong ink.
+   - **Level 3, fine print:** platforms, small notes. Clearly smaller (about ⅔ of level 2) and
+     softer in colour.
+   Two lines next to each other never share a style unless they are the same level.
+
+**Worked example: the end card** (9:16, base unit *b* = short side ÷ 60):
+
+| Group | Part | Size | Gap below |
+|---|---|---|---|
+| Brand (level 1) | Icon | 14*b* tall | 2*b* |
+| | Logo "youcoded" | 6*b* text size | **6*b*** (gap between groups) |
+| Action (level 2 + 3) | `youcoded.ai`, Outfit 600, lowercase, plum | 2.5*b* | 1*b* |
+| | "Free · Windows · Mac · Linux · Android", DM Sans 500, plum 2 | 1.5*b* | — |
+
+Everything centred, the whole block centred slightly above the middle, at least 8% clear at the
+sides. `docs/brand/guide.html` shows this next to the old version.
 - The app's own text font is Outfit in the default theme (other themes change it). That's
   about the app, not marketing.
 
 ---
 
-## 8. Pictures and video
+## 9. Pictures and video
 
 - **The app on screen is the real app.** Every shot of YouCoded is filmed or screenshotted from
   the real interface (the workbench tools in `scripts/ui-review/README.md` → "Recording a loop", or
@@ -265,7 +308,7 @@ someone is reading), kept small and clearly part of the scene.
 
 ---
 
-## 9. Voice and tone
+## 10. Voice and tone
 
 ### Personality
 
@@ -310,7 +353,7 @@ someone is reading), kept small and clearly part of the scene.
 
 ---
 
-## 10. What we can and can't claim
+## 11. What we can and can't claim
 
 Every claim must be true in the app people can download today. Check it against the app's
 source before it goes out; the fact sheet (`youcoded-feature-fact-sheet.md`) is a list of
@@ -354,13 +397,13 @@ Say "Claude" and "ChatGPT" for the products; never imply a partnership.
 
 ---
 
-## 11. By channel
+## 12. By channel
 
 | Channel | Notes |
 |---|---|
 | **Website** youcoded.ai | Source `youcoded/docs/index.html`; rules in `.claude/rules/landing-page.md`. Destin edits copy in place with `scripts/ui-review/site-copy-editor.py`. |
 | **Short films and ads** | Brief and brand kit: `scripts/marketing/` (branch `session/marketing-videos` until merged). The first promo film's tools: `scripts/promo/`. |
-| **Google Ads** | Plan: `docs/active/plans/2026-10-27-google-ads-beginner-experiment.html` (card #228). Headlines follow section 9; no claim from section 10's "never" list. |
+| **Google Ads** | Plan: `docs/active/plans/2026-10-27-google-ads-beginner-experiment.html` (card #228). Headlines follow section 10; no claim from section 11's "never" list. |
 | **Reddit, Hacker News, Product Hunt** | Drafts and order: `docs/active/plans/2026-10-22-discovery-launch-kit.md`. Posts go out under Destin's name and in his voice, only with his go-ahead. |
 | **GitHub** | README subtitle is the one-line description (section 3). Repo descriptions name YouCoded and link youcoded.ai. |
 | **Directories and stores** (SourceForge, AlternativeTo, winget, later Google Play) | Name: YouCoded. Short description: the one-line description. Icon: the default glass buddy. |
@@ -368,7 +411,7 @@ Say "Claude" and "ChatGPT" for the products; never imply a partnership.
 
 ---
 
-## 12. Known gaps (as of 2026-11-18)
+## 13. Known gaps (as of 2026-11-18)
 
 These are places that don't match this guide yet. Fixing any of them changes something people
 can see, so each needs Destin's go-ahead.
