@@ -280,3 +280,33 @@ def riser(dur, level=1.0):
     rel = int(0.015 * SR)
     out[:, -rel:] *= np.linspace(1, 0, rel)
     return out * level
+
+
+# ---------------------------------------------------------------- "Yours." opening (2026-11-18)
+def blip(freq, length=0.16, vel=1.0):
+    """A cold notification tick: clean sine + faint octave, 1 ms attack, fast decay. (2,n)
+    WHY so plain: the opening is the sound of being nagged by apps; it must feel sterile,
+    the opposite of the warm instruments that arrive at the flood."""
+    n = int(length * SR)
+    t = tt(n)
+    y = (np.sin(2 * np.pi * freq * t) + 0.25 * np.sin(4 * np.pi * freq * t)) * np.exp(-t / 0.045)
+    y *= np.minimum(1, t / 0.001) * vel * 0.32
+    return np.stack([y, y])
+
+
+def drone(dur, f0=73.42):
+    """Low uneasy cluster (D2 against E-flat2) that thickens and rises in level. (2,n)"""
+    n = int(dur * SR)
+    t = tt(n)
+    x = t / dur
+    out = np.zeros((2, n))
+    for f, det in ((f0, 0), (f0 * 2 ** (1 / 12), 7), (f0 * 2, -5)):
+        for ch, c in ((0, -det), (1, det)):
+            ff = f * 2 ** (c / 1200)
+            ph = 2 * np.pi * ff * t
+            saw = sum(np.sin(k * ph) / k for k in range(1, 7))
+            out[ch] += saw
+    out = np.stack([lowpass(out[c], 300 + 900 * 0.5, 2) for c in range(2)])
+    nz = np.stack([bandpass(_rng.standard_normal(n), 400, 2500, 2) for _ in range(2)]) * 0.35
+    out = (out * 0.6 + nz * x) * (x ** 2.0) * 0.12
+    return out

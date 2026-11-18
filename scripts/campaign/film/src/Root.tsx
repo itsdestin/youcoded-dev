@@ -2,6 +2,7 @@ import React from 'react';
 import { Composition, Still } from 'remotion';
 import { Finale } from './finale';
 import { Hero60 } from './Hero';
+import { Yours60 } from './Yours';
 import { Hero30, Short, SHORTS, ShortSpec } from './Cutdowns';
 import { PosterTall, PosterWide, PosterProps } from './poster';
 
@@ -27,6 +28,7 @@ const SIZES = {
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="Yours60" component={Yours60} durationInFrames={1800} fps={30} width={1920} height={1080} />
     <Composition id="Hero60" component={Hero60} durationInFrames={1800} fps={30} width={1920} height={1080} />
     <Composition id="Hero30" component={Hero30} durationInFrames={900} fps={30} width={1920} height={1080} />
     {Object.entries(SHORTS).map(([k, p]) => (

@@ -80,6 +80,20 @@ SONGS = {
                "breakdown_start": 42.0, "line_1": 42.4, "line_2": 46.0,
                "logo_hit": 50.0, "silence_by": 59.8},
     ),
+    # "Yours." (round 2): 0-10 the wall of nagging words (ticks + drone, hard stop at 10.0),
+    # 10-14 hush under the voice, 14-16 swell, 16.0 the flood (accent), groove, 36-40 lift,
+    # 40-46 groove, 46-52 breakdown, logo 52.0, silence by 59.8.
+    "yours_60": dict(
+        dur=60.0, hook=HOOK_A, restate=RESTATE_A, restate_dt=2.0, pat=PAT_A,
+        chords=["D"] * 5 + ["Bm", "G"] + ["A"] + ["D", "Bm", "G", "A"] * 2 + ["D", "Bm"]
+               + ["G", "A"] + ["D", "Bm", "G"] + ["Bm", "G", "A"] + ["Dlogo"] * 4,
+        modes=rep("wall", 5) + rep("hush", 2) + ["swell"] + rep("groove", 10) + ["lift", "liftfill"]
+              + rep("groove", 3) + ["break", "break", "break2"] + ["logo"] + rep("tail", 3),
+        accents=[16.0], logo=52.0, wall=True,
+        named={"wall_start": 1.0, "wall_stop": 10.0, "swell_start": 14.0, "flood": 16.0,
+               "cuts": [16.0, 20.0, 24.0, 28.0, 32.0], "lift_start": 36.0, "yours": 40.0,
+               "breakdown_start": 46.0, "logo_hit": 52.0, "silence_by": 59.8},
+    ),
     "hero_30": dict(
         dur=30.0, hook=HOOK_A, restate=RESTATE_A, restate_dt=2.0, pat=PAT_A,
         chords=["D", "G", "A"] + ["D", "Bm", "G", "A", "D", "Bm"] + ["G", "A"] + ["Dlogo"] * 4,
@@ -123,7 +137,7 @@ def render(spec):
     dur = spec["dur"]
     N = int(round(dur * SR))
     NB = N + 5 * SR  # render room for tails
-    names = ["kick", "perc", "hat", "shaker", "bass", "ep", "stab", "pluck", "pad", "fx", "logo"]
+    names = ["kick", "perc", "hat", "shaker", "bass", "ep", "stab", "pluck", "pad", "fx", "logo", "wall"]
     L = {k: np.zeros((2, NB)) for k in names}
     kicks = []
     hook, pat, alt = spec["hook"], spec["pat"], spec.get("alt", False)
@@ -238,7 +252,7 @@ def render(spec):
 
         # ---- pad
         padg = {"swell": (0.0, 1.0), "build": (0.3, 0.3), "breath": (0.6, 0.4), "groove": (0.35, 0.35), "lift": (0.4, 0.4), "liftfill": (0.4, 0.4),
-                "stabs": (0.35, 0.35), "break": (1.0, 1.0), "break2": (1.0, 1.5)}.get(mode)
+                "stabs": (0.35, 0.35), "break": (1.0, 1.0), "break2": (1.0, 1.5), "hush": (0.45, 0.6)}.get(mode)
         if padg and ch in CH:
             fr = [mtof(m) for m in vchord(ch)]
             ts = max(0.0, t0 - 0.2)
@@ -247,6 +261,23 @@ def render(spec):
         # ---- riser into the next section
         if mode == "swell":
             add(L["fx"], kit.riser(BAR, 1.0), t0)
+
+    # ---- "Yours." wall: one cold tick per word (timed from film/src/yours.json), a drone that
+    # thickens, then everything stops dead at wall_end so the silence lands like a cut.
+    if spec.get("wall"):
+        Y = json.load(open(os.path.join(os.path.dirname(__file__), "..", "film", "src", "yours.json")))
+        W = np.zeros((2, NB))
+        for i, w in enumerate(Y["wall"]):
+            f = mtof(85 if i % 2 == 0 else 86) if i < 7 else mtof([85, 86, 88, 86][i % 4])
+            add(W, kit.blip(f, 0.16, 1.0 if i < 7 else 0.75), w["t"], pan=0 if i < 7 else 0.4 * (-1) ** i)
+            if i < 7:
+                add(W, S["kick"], w["t"], 0.35)
+        add(W, kit.drone(Y["wall_end"] - 0.5), 0.5)
+        W += kit.convolve_ir(W * 0.25, kit.make_ir(1.2, 1.6, 21))
+        t_ = np.arange(NB) / SR
+        we = Y["wall_end"]
+        W *= np.clip((we - t_) / 0.004, 0, 1)  # 4 ms to zero: a hard stop without a click
+        L["wall"] += W  # its own bus: no shared reverb send, so nothing rings past the stop
 
     # ---- accent hits (hero 12.0, groove-start hits for the shorter cues)
     for a in spec["accents"]:
@@ -313,7 +344,7 @@ def render(spec):
     wet += kit.convolve_ir(L["perc"] * 0.30 + L["shaker"] * 0.05, room_ir)
 
     dry_gain = dict(kick=0.47, perc=0.75, hat=1.2, shaker=1.3, bass=0.42, ep=1.0, stab=1.0,
-                    pluck=1.1, pad=1.0, fx=1.0, logo=0.55)
+                    pluck=1.1, pad=1.0, fx=1.0, logo=0.55, wall=1.0)
     mix = wet * 1.0
     for k in names:
         mix += L[k] * dry_gain[k]
@@ -339,6 +370,10 @@ def render(spec):
         w = (t >= s0) & (t < s3)
         dep = np.interp(t[w], [s0, s1, s2, s3], [0.0, 0.96, 0.96, 0.0])
         mix[:, w] *= (1 - dep)
+    # ---- "Yours.": true silence for half a second after the wall stops, then the hush fades up
+    if spec.get("wall"):
+        mix *= (
+            np.where(t < 10.0, 1.0, np.interp(t, [10.0, 10.5, 11.5], [0.0, 0.0, 1.0])))[None, :]
     # ---- tail: smooth fade, true silence for the last 0.2 s
     f0, f1 = tl + 0.45 * (dur - 0.2 - tl), dur - 0.2
     g = np.where(t < f0, 1.0, np.where(t > f1, 0.0, 0.5 + 0.5 * np.cos(np.pi * (t - f0) / (f1 - f0))))
@@ -398,8 +433,13 @@ def main():
     out_dir = os.path.expanduser(sys.argv[1] if len(sys.argv) > 1 else "~/Videos/youcoded-campaign/music")
     os.makedirs(out_dir, exist_ok=True)
     scratch = os.environ.get("SCRATCH", "/tmp")
-    grid = {}
+    gp = os.path.join(out_dir, "grid.json")
+    # WHY merge: ONLY= renders one cue; the other cues' entries must survive.
+    grid = json.load(open(gp)) if os.path.exists(gp) else {}
+    only = os.environ.get("ONLY")
     for name, spec in SONGS.items():
+        if only and name not in only.split(","):
+            continue
         mix = render(spec)
         raw = os.path.join(scratch, f"{name}.f32")
         mix.T.astype(np.float32).tofile(raw)

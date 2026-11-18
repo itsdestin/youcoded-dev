@@ -1,0 +1,174 @@
+{
+ "bpm": 120,
+ "wall": [
+  {
+   "t": 1.0,
+   "text": "Sign in."
+  },
+  {
+   "t": 2.0,
+   "text": "Subscribe."
+  },
+  {
+   "t": 3.0,
+   "text": "Renew."
+  },
+  {
+   "t": 3.75,
+   "text": "Upgrade to continue."
+  },
+  {
+   "t": 4.5,
+   "text": "Accept the new terms."
+  },
+  {
+   "t": 5.25,
+   "text": "Your price has changed."
+  },
+  {
+   "t": 6.0,
+   "text": "Your data is shared with our partners."
+  },
+  {
+   "t": 6.75,
+   "text": "Payment failed."
+  },
+  {
+   "t": 7.15,
+   "text": "Sign in again."
+  },
+  {
+   "t": 7.47,
+   "text": "Your free trial ends today."
+  },
+  {
+   "t": 7.726,
+   "text": "Upgrade."
+  },
+  {
+   "t": 7.931,
+   "text": "Renew."
+  },
+  {
+   "t": 8.095,
+   "text": "Verify it's you."
+  },
+  {
+   "t": 8.226,
+   "text": "Ad-free for $4.99 a month."
+  },
+  {
+   "t": 8.351,
+   "text": "Subscribe to unlock."
+  },
+  {
+   "t": 8.476,
+   "text": "Update your payment method."
+  },
+  {
+   "t": 8.601,
+   "text": "This feature is now Premium."
+  },
+  {
+   "t": 8.726,
+   "text": "Accept cookies."
+  },
+  {
+   "t": 8.851,
+   "text": "Your storage is full."
+  },
+  {
+   "t": 8.976,
+   "text": "Sign in to continue."
+  },
+  {
+   "t": 9.101,
+   "text": "New terms of service."
+  },
+  {
+   "t": 9.226,
+   "text": "Renew now."
+  },
+  {
+   "t": 9.351,
+   "text": "Upgrade to Pro."
+  },
+  {
+   "t": 9.476,
+   "text": "Your plan is changing."
+  },
+  {
+   "t": 9.601,
+   "text": "Subscribe."
+  },
+  {
+   "t": 9.726,
+   "text": "Accept."
+  },
+  {
+   "t": 9.851,
+   "text": "Renew."
+  }
+ ],
+ "wall_end": 10.0,
+ "flood": 16.0,
+ "logo": 52.0,
+ "dur": 60.0,
+ "vo": [
+  {
+   "id": "l1",
+   "t": 10.5,
+   "text": "Somewhere along the way, everything became a subscription."
+  },
+  {
+   "id": "l2",
+   "t": 14.7,
+   "text": "Not anymore."
+  },
+  {
+   "id": "l3",
+   "t": 16.6,
+   "text": "Ask for a page that runs your home."
+  },
+  {
+   "id": "l4",
+   "t": 20.5,
+   "text": "One that keeps track of your money."
+  },
+  {
+   "id": "l5",
+   "t": 24.5,
+   "text": "Make it look like golden hour."
+  },
+  {
+   "id": "l6",
+   "t": 28.5,
+   "text": "Plan the trip you keep talking about."
+  },
+  {
+   "id": "l7",
+   "t": 32.5,
+   "text": "On your laptop. And your phone."
+  },
+  {
+   "id": "l8",
+   "t": 36.4,
+   "text": "You don't need to know how. You just ask."
+  },
+  {
+   "id": "l9",
+   "t": 40.5,
+   "text": "And whatever you make is yours. To keep, to change, to share."
+  },
+  {
+   "id": "l10",
+   "t": 46.6,
+   "text": "Free. And open source."
+  },
+  {
+   "id": "l11",
+   "t": 52.7,
+   "text": "youcoded."
+  }
+ ]
+}
