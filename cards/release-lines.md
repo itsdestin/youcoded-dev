@@ -93,3 +93,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#767 new | With no internet, the app says "No internet connection" right away, and sign-in buttons stop before opening a page that can't load.
 - youcoded#767 new | Settings shows when your Claude sign-in expires, and a signed-out Claude can now be signed in from Settings.
 - youcoded#768 fixes | Clicking a link to a file outside the chat's folder now opens it, even when a different file with the same name was opened before.
+- youcoded#771 new | Pasting a picture in the phone browser now attaches it, just like the paperclip.
