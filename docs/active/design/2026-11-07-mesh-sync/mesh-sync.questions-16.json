@@ -1,0 +1,373 @@
+{
+  "title": "Your chats on every device — round 16: 9 open questions",
+  "key": "mesh-sync-questions-16",
+  "out": "mesh-sync.questions-16.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "G-1",
+      "page": "Continuing a chat on another device",
+      "intro": "You said last round that I was handling clashes instead of preventing them. These two questions are the result. Example used throughout: a chat called 'Trip planning' that you started on your laptop and want to carry on with on your phone."
+    },
+    {
+      "id": "C-1",
+      "words": true,
+      "surface": "Chats",
+      "path": "Continue here",
+      "headline": "Should a chat only ever be written by one device at a time, with leftovers kept as a separate copy?",
+      "today": "The design lets any device take a chat over at any time. When two devices end up with different endings, you see a 'Two versions' row and are asked whether to keep both or archive the older one.",
+      "problem": "That freedom is what created most of the confusing questions last round. Every way two devices can disagree needed its own repair rule.",
+      "proposal": "One device writes a chat at a time. Moving it is a hand-over. In the rare case a device kept working without knowing the chat had moved, its extra replies are saved as a second chat named 'Trip planning (copy)'. Nothing is merged and nothing is deleted. Tested in about 2.6 million random runs on a model (not the real app yet): no reply lost.",
+      "options": [
+        {
+          "id": "adopt",
+          "label": "Yes, one writer and copies",
+          "pros": [
+            "One idea to remember: one chat, occasionally a copy, nothing lost.",
+            "No 'Two versions' row and no 'archive the older one?' question.",
+            "Easier for me to prove no reply can be lost."
+          ],
+          "cons": [
+            "A '(copy)' chat can occasionally appear without you tapping anything, when a device that worked offline comes back.",
+            "Copies never join back together. You delete the one you do not want.",
+            "About eight notices you already approved need new wording. They would come to you on a later deck.",
+            "I have not measured whether you would see copies more or less often than 'Two versions' today."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "No, keep today's design",
+          "pros": [
+            "Nothing new to approve.",
+            "Continuing a chat is always one tap."
+          ],
+          "cons": [
+            "The 'Two versions' row and its questions stay.",
+            "More rules, and a much bigger test before I can promise nothing is lost."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C-2",
+      "words": true,
+      "surface": "Chats",
+      "path": "Continue here, when the other device is asleep",
+      "headline": "Laptop is asleep and may hold replies your phone never received. What should the phone offer first?",
+      "today": "The phone continues the same chat with a warning. If the laptop later wakes with replies the phone never saw, a second version appears.",
+      "problem": "Usually the laptop sent everything before it slept, and the phone simply continues. This question is only about the less common case where it did not, for example the lid was closed mid-reply with no internet.",
+      "proposal": "The phone says 'Laptop may have newer replies' and shows the buttons below. This only matters if you answered yes to the question above.",
+      "options": [
+        {
+          "id": "copy-first",
+          "label": "'Continue as a copy' first, 'Continue here anyway' beside it",
+          "pros": [
+            "Never a surprise later.",
+            "You can still carry on in the same chat if you want to."
+          ],
+          "cons": [
+            "One extra choice to make in that case.",
+            "A few more copies in your chat list."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always-copy",
+          "label": "Always make a copy",
+          "pros": [
+            "Simplest. A chat can never have two writers."
+          ],
+          "cons": [
+            "In that case the chat always splits in two, even when the laptop had nothing new."
+          ]
+        },
+        {
+          "id": "in-place",
+          "label": "Continue in the same chat, as today",
+          "pros": [
+            "One tap, no choice to make."
+          ],
+          "cons": [
+            "If the laptop did have newer replies, a '(copy)' chat appears later without warning."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "G-2",
+      "page": "A lost or stolen device",
+      "intro": "Five questions about your set of devices. The hard case in all of them is a thief holding one of your devices, unlocked, that was already paired. A stranger without one of your devices cannot do any of this."
+    },
+    {
+      "id": "D-1",
+      "words": true,
+      "surface": "Devices",
+      "path": "Removing a device",
+      "headline": "A thief's device can 'remove you back' when you remove it. Should our relay decide who was first?",
+      "today": "As built: if two devices remove each other, both are out. A third device is untouched. Nothing is deleted, and you pair the good one again in about a minute. The relay is the always-on mailbox that passes locked messages between your devices.",
+      "problem": "A thief can prepare 'remove your phone' in advance and release it the moment you remove the stolen laptop. Your phone then drops out too. With only two devices, you are left with no set and start a fresh one. Security testing confirmed no clever rule can tell the thief's removal from an honest one.",
+      "proposal": "Either accept that rare re-pairing, or let the relay act as referee: the first removal it hears wins.",
+      "options": [
+        {
+          "id": "no-referee",
+          "label": "No referee: both drop out, you pair again",
+          "pros": [
+            "Nothing new to trust. The relay stays a plain mailbox.",
+            "Already built and tested."
+          ],
+          "cons": [
+            "In that rare theft case you have to pair your good device again.",
+            "With exactly two devices the set is gone and you start a new one. Chats on your device stay."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "relay-referee",
+          "label": "The relay decides who was first",
+          "pros": [
+            "In testing the thief's trick worked in about 3 of 100 attempts instead of about half."
+          ],
+          "cons": [
+            "If the relay itself were dishonest and working with the thief, it could keep the thief in and remove you.",
+            "More to build and to security-test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D-2",
+      "words": true,
+      "surface": "Devices",
+      "path": "Removing a device",
+      "headline": "When you remove a device, should the devices it added be removed with it?",
+      "today": "Any device in your set can add a new one. As built, removing a device leaves the devices it added in place.",
+      "problem": "A thief with your laptop could quietly add their own device before you notice. Removing the laptop would leave the thief's device in your set, still receiving your chats, until you spot it in the list and remove it too.",
+      "proposal": "Pick what removal does. Either way the removal screen would list the devices that were added by the one you are removing.",
+      "options": [
+        {
+          "id": "ask-each-time",
+          "label": "Ask on the removal screen, with those devices ticked to remove",
+          "pros": [
+            "A thief's added device goes unless you untick it.",
+            "Your own phone, added through that laptop last year, is one untick away from staying."
+          ],
+          "cons": [
+            "One more thing to read while removing a device.",
+            "Not built yet."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "stay",
+          "label": "They stay, as built",
+          "pros": [
+            "A phone you paired through the lost laptop keeps working."
+          ],
+          "cons": [
+            "Anything a thief added also stays until you notice and remove it."
+          ]
+        },
+        {
+          "id": "go",
+          "label": "They always go too",
+          "pros": [
+            "Nothing a thief added survives."
+          ],
+          "cons": [
+            "Your own devices that were added through the lost one drop out and must be paired again."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D-3",
+      "words": true,
+      "surface": "Devices",
+      "path": "Removing a device",
+      "headline": "Should any one device be able to remove all the others by itself?",
+      "today": "All your devices are equal. Any one of them, after its unlock (fingerprint, password), can remove any other, including the first device you set up. You approved this earlier.",
+      "problem": "A thief holding one unlocked device could remove every other device you own in a minute. Your chats stay on your own devices, but the set is broken and the thief's device keeps what it already had.",
+      "proposal": "Keep all devices equal, or ask a second device to agree when you have three or more.",
+      "options": [
+        {
+          "id": "equal",
+          "label": "Keep it: any device can remove any other",
+          "pros": [
+            "You can always remove a lost device from whichever device is in your hand.",
+            "Simple, built and tested."
+          ],
+          "cons": [
+            "A thief with one unlocked device can remove all your others."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "second-yes",
+          "label": "With three or more devices, a second device must agree",
+          "pros": [
+            "One stolen device cannot remove the rest.",
+            "It also defeats the 'remove you back' trick in the question above."
+          ],
+          "cons": [
+            "If your other device is at home and switched off, you cannot finish removing a stolen one until you reach it.",
+            "Not designed or tested yet."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D-4",
+      "words": true,
+      "surface": "Devices",
+      "path": "Adding a device",
+      "headline": "What is the most devices one person can have in a set?",
+      "today": "The design gives no limit. I built a placeholder limit of 16.",
+      "problem": "Security testing showed a set with no limit can be flooded by a thief's device adding dozens of fake devices, which stops your real devices from agreeing on a new shared key. A limit closes that.",
+      "proposal": "Pick a limit. At the limit, adding a device shows 'You have reached the most devices a set can hold. Remove one first.'",
+      "options": [
+        {
+          "id": "sixteen",
+          "label": "16 devices",
+          "pros": [
+            "Room for phones, tablets, laptops and a desktop many times over.",
+            "Already built and tested at this size."
+          ],
+          "cons": [
+            "Someone with a large collection of old devices could hit it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "eight",
+          "label": "8 devices",
+          "pros": [
+            "Less room for fake devices to hide in the list."
+          ],
+          "cons": [
+            "A household-sized collection of devices could hit it."
+          ]
+        },
+        {
+          "id": "thirty-two",
+          "label": "32 devices",
+          "pros": [
+            "Almost nobody would ever hit it."
+          ],
+          "cons": [
+            "A longer list to check for devices that should not be there.",
+            "Needs re-testing at that size."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D-5",
+      "words": true,
+      "surface": "Devices",
+      "path": "Adding a device",
+      "headline": "A new device never finished joining. Should it stay listed until you remove it?",
+      "today": "As built, a device that was added but never completed its first sign-in shows as 'pending' in your device list for good.",
+      "problem": "An earlier version removed such a device automatically after 15 minutes. In testing that rule removed a correctly paired device, so I took it out. Now a failed pairing leaves a 'pending' row behind.",
+      "proposal": "Leave it listed with a Remove button, or clear it away after a longer wait.",
+      "options": [
+        {
+          "id": "stay-pending",
+          "label": "Stay 'pending' with a Remove button",
+          "pros": [
+            "A good device is never removed by mistake.",
+            "You can see that something did not finish."
+          ],
+          "cons": [
+            "A leftover row until you tap Remove."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "clear-7-days",
+          "label": "Clear it away after 7 days",
+          "pros": [
+            "The list tidies itself."
+          ],
+          "cons": [
+            "A device left switched off for a week right after pairing would have to be paired again.",
+            "Not built or tested."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "G-3",
+      "page": "Project files and wording",
+      "intro": "One question you answered 'what?' last round, asked properly this time, and the privacy wording you asked me to redraft."
+    },
+    {
+      "id": "F-1",
+      "words": true,
+      "surface": "Project files",
+      "path": "Files arriving from another device",
+      "headline": "Should a settings file that can make your computer run commands wait for your OK when it arrives from another device?",
+      "today": "Project files changed on one device arrive on the others and replace the old copy automatically.",
+      "problem": "A few files are not documents. They are settings that make the assistant run commands the next time it starts, for example the '.claude' settings folder and the list of connected tools. If a thief's device changes one, your computer would receive it and run the thief's commands.",
+      "proposal": "Only for those few file types: the arriving file is kept beside yours as 'settings (from Laptop)' with a notice, and replaces yours when you tap Accept. Ordinary files keep arriving automatically.",
+      "options": [
+        {
+          "id": "hold-review",
+          "label": "Wait for my OK",
+          "pros": [
+            "A stolen device cannot make your computer run commands through a synced file.",
+            "Ordinary documents, code and notes are not affected."
+          ],
+          "cons": [
+            "When you change such a setting on one device, you tap Accept once on each other device.",
+            "One more kind of notice."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "automatic",
+          "label": "Replace automatically, like every other file",
+          "pros": [
+            "No taps. Settings follow you everywhere."
+          ],
+          "cons": [
+            "It is the most direct way for a stolen device to take control of your computer."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "W-1",
+      "words": true,
+      "surface": "Settings and the website",
+      "path": "What the app says about privacy",
+      "headline": "Is this the privacy wording you want?",
+      "today": "Last round you said my long sentence was too confusing, and asked for something close to 'end-to-end encrypted' with a few short, honest caveats.",
+      "problem": "A claim that is too broad would be untrue in two cases: someone who can unlock one of your devices, and backups to Drive, iCloud or GitHub.",
+      "proposal": "Headline: 'End-to-end encrypted. Only your devices can read your chats and project files. YouCoded cannot.' Under it, two short lines: 'Anyone who can unlock one of your devices can read what is on it.' and 'Backups to Drive, iCloud or GitHub are protected by those services, not by this encryption.' Used only once the security checks pass.",
+      "options": [
+        {
+          "id": "approve",
+          "label": "Yes, use that wording",
+          "pros": [
+            "Short, and true in every case we know of."
+          ],
+          "cons": [
+            "Two caveat lines sit under the headline."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "headline-only",
+          "label": "Headline only, caveats in the (i) popup",
+          "pros": [
+            "Cleaner on the screen."
+          ],
+          "cons": [
+            "The limits are one tap away instead of in view."
+          ]
+        }
+      ]
+    }
+  ]
+}
