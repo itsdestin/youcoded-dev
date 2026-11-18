@@ -48,6 +48,13 @@ with lowercase "youcoded".
 | **Web address** | **youcoded.ai**, always all lowercase: never capitals, small caps or "www.". On its own, Outfit 600; never JetBrains Mono. |
 | **Initials** | yc, only as the initials tile |
 
+**What the name means** (Destin, 2026-11-18). Two readings, both valid, one leads:
+1. **"That's so you-coded."** The everyday reading, and the one we write for. In Gen Z slang,
+   "coded" means "reads as" ("that's so you"). A youcoded app, page or look is unmistakably *yours*.
+2. **"You coded it."** A nod to the fact that a non-developer built the app by asking AI, and to
+   Claude Code. True, but secondary: in public copy, never explain the name or lean on "code",
+   which tells everyday people the app isn't for them.
+
 **Never:** Youcoded, You Coded, YOUCODED, YC. **Retired:** "agents for everyone", "YouCoded
 Assistant", "a GUI for Claude Code".
 **Related:** say "the youcoded marketplace" and "community themes", not "WeCoded" (that's only a

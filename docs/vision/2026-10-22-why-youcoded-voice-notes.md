@@ -58,6 +58,12 @@ Said in a session after noticing assistants kept describing YouCoded too narrowl
 >
 > And and and also like again like this isn't just like a software revolution like in in in in in in the big picture. the best possible world of this that I imagine it's an it's an entire economic revolution like this is a world where Google and Meta and Microsoft lose the power of monopoly that has existed for so long that the monopolies over data the monopolies over software engineering capacity because obviously these companies had so much money they could hire every capable software engine and s squish out anyone who tried to compete against them. But because of AI that's no longer the case. And U coded is like again, it's like one avenue towards channeling the potential of AI into something that is like almost a the world's first like crowdsourced software, the world's first like crowdsourced application, not just open source, where it's like you can add if you want to, but where the entire premise is reliant upon the idea that like everyone who downloads the app becomes a developer.
 
+## 5. What the name means (2026-11-18)
+
+Said after rejecting a campaign built on "you coded that."
+
+> Obviously it is kind of a play on the idea that like yes, you a non developer created or coded the app. Like it ha it's it's kind of a play on clawed code. It's kind of like yes that that's that's a small part of it. But it's more so supposed to be like the Gen Z slang. Like that's so U coded. If that makes sense. Um So so both meanings are valid, but I think the latter is more so how I envisioned U coded being interpreted by our everyday users.
+
 ## Notes for whoever reads this later
 
 - Speech-to-text artifacts, not his spelling: "Cash OS" = CachyOS, "ACS ZFlow13" = ASUS ROG Flow Z13,
