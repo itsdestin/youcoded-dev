@@ -1,0 +1,150 @@
+{
+ "deck": "media-creation",
+ "started": "2026-11-18T10:39:18.294Z",
+ "submitted": "2026-11-18T11:04:57Z",
+ "cur": 1,
+ "answers": {
+  "U-order": {
+   "note": "idk. part of me feels it may make more sense to plan/build all of these things together? since the engineering/ui/ux will probably overlap a bit",
+   "t": 1794999622510,
+   "v": "other",
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "U-chat-only": {
+   "v": "other",
+   "t": 1794999622510,
+   "note": "i think a normal model/session should have the capacity to create images/video/audio snippets using the openrouter/claude/openai/other api keys/accounts connected by user when supported (but also probably intruct never to use these generation tools without cle.ar/direct confirmation from user and also offer alternatives like programmatic generation, svgs, blender, etc where relevant with pros/cons). however, i also think it could eventually be very useful to have a separate image/video studio mode of some sort? but that can just be an idea/card for now",
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "U-approve-card": {
+   "v": "yes",
+   "t": 1794999622510,
+   "note": "full auto should allow this without approval tho",
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "U-remember-model": {
+   "v": "other",
+   "t": 1794999622510,
+   "note": "wait what? i don't really remember how our last conversation went, so i have no clue what you're talking about here",
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "U-create-edit": {
+   "v": "yes",
+   "t": 1794999622510,
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "U-files": {
+   "v": "yes",
+   "t": 1794999622510,
+   "note": "i think we should also include a readable tag of some sort that stays attached to each photo indicating it was generated (and with what model) so we can distinguish generated images easily/filterable.",
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "U-local-connect": {
+   "v": "yes",
+   "t": 1794999622510,
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "U-gpt-plan": {
+   "v": "yes",
+   "t": 1794999622510,
+   "note": "the card should also probably let them know they can use chatgpt web for images using their plan, in addition to our api key route",
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "U-today": {
+   "v": "yes",
+   "t": 1794999622510,
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "U-picture-them": {
+   "t": 1794999622510,
+   "v": "wrote",
+   "text": "I think for speech at least. I want that to show up in a like right click menu. on all messages. Um I wanna be able to right click something and then have it like read aloud using my speech api key? i think we should also add a \"dumb\" (but still modern and pleasant) tts engine built into the app, with a setting that lets users swap for a fancier cloud voice model via api key (kinda similar to how we offer \"dumb\" model naming or ai-assisted naming). Like I mentioned in my earlier responses, I think the assistant should be instructed to to only use generation with clear approval and to prefer or at least suggest alternatives like programmatic tools. i think generated images should always default to fully rendering in the chat window instead of showing as a file chip or deliverable thing (they may also do that, but should ALWAYS first show the full image as the generation result/output). we'll definitely need a right-click menu on images that offers copy/save/etc. videos should not render in the chat window, those can just show as a result card of some sort that opens externally. i think we should add a new sound card type that basically shows the play/pause button and simplified waveform progress bar style with a time so a model could include a sound in its response and i could include an audio recording directly and play it from the chat i sent it in?",
+   "seconds": 126,
+   "theme": "ivory-schematic"
+  },
+  "Q-services": {
+   "v": "pick",
+   "pick": "openrouter-plus",
+   "t": 1794999896435,
+   "seconds": 39,
+   "theme": "ivory-schematic"
+  },
+  "Q-same-key": {
+   "v": "pick",
+   "pick": "same",
+   "t": 1794999896435,
+   "seconds": 39,
+   "theme": "ivory-schematic"
+  },
+  "Q-price": {
+   "v": "pick",
+   "pick": "estimate",
+   "t": 1794999896435,
+   "seconds": 39,
+   "theme": "ivory-schematic"
+  },
+  "Q-local": {
+   "v": "other",
+   "t": 1794999896435,
+   "note": "hmm idk honestly. how hard is this going to be to integrate? part of me almost feels like we should just skip it and wait until we're ready to build our own image engine into the app as a follow up? idk...",
+   "seconds": 39,
+   "theme": "ivory-schematic"
+  },
+  "Q-claude-code": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1794999896435,
+   "seconds": 39,
+   "theme": "ivory-schematic"
+  },
+  "Q-later": {
+   "v": "pick",
+   "pick": "all-now",
+   "t": 1794999896435,
+   "seconds": 39,
+   "theme": "ivory-schematic"
+  },
+  "Q-github": {
+   "v": "pick",
+   "pick": "reply-later",
+   "t": 1794999896435,
+   "seconds": 39,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-18T10:14:51Z",
+  "branch": "session/267-media-creation",
+  "commit": "ca7486e398943dcf310d77277022c6a0a6907f36",
+  "spec_sha256": "2bba5728e4d62591d2a3114babcb2a6bd9ab86f8a2f5a6f43b239f47654f7745",
+  "spec_dirty": false,
+  "ids": [
+   "U-order",
+   "U-chat-only",
+   "U-approve-card",
+   "U-remember-model",
+   "U-create-edit",
+   "U-files",
+   "U-local-connect",
+   "U-gpt-plan",
+   "U-today",
+   "U-picture-them",
+   "Q-services",
+   "Q-same-key",
+   "Q-price",
+   "Q-local",
+   "Q-claude-code",
+   "Q-later",
+   "Q-github"
+  ]
+ }
+}
