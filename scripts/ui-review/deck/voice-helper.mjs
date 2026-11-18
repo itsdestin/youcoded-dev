@@ -196,6 +196,10 @@ async function stop() {
   finally { passing = false; open = []; openBytes = 0; }
 }
 
+// WHY (code review F8): the recorder (`parec`) is a child process; if this helper died from a signal or exit with it running, the microphone stayed open.
+// Every way out now stops it first.
+for (const sig of ['SIGTERM', 'SIGINT', 'SIGHUP']) process.on(sig, () => { stopRecorder(); process.exit(0); });
+process.on('exit', () => { if (rec) { try { rec.kill('SIGKILL'); } catch (e) { /* already gone */ } } });
 createInterface({ input: process.stdin }).on('line', line => {
   const cmd = line.trim();
   if (cmd === 'start') start();

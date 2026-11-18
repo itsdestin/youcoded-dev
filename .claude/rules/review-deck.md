@@ -37,7 +37,7 @@ verify:
 Contract and Acceptance decks are retired. Several designs of one thing are ONE Choice slide.
 
 ## One growing deck per feature
-**Invariant:** `"grows": true`: one spec re-built each round, AT one `"stage"`; a change he asked for needs `reopened` or `resolved`; answered topics fold into "Previously answered"; every current-stage page has a bar (finished green first). A page is a heading + one line; a title, row or page line citing a round or step id is refused (use `more`). An open row's `more` is today/problem/change; `"visual": true` needs a `picture`. Saved state carries its build stamp and other builds' state is refused. After the build the deck needs the lists "What changed while building" and, once the code review ran, "Found in review".
+**Invariant:** `"grows": true`: one spec re-built each round, AT one `"stage"`; a change he asked for needs `reopened` or `resolved`; answered topics fold into "Previously answered"; every current-stage page has a bar (finished green first). A page is a heading + one line; a title, row or page line citing a round or step id is refused (use `more`). An open row's `more` is today/problem/change; `"visual": true` needs a `picture`. Saved state carries its build stamp and other builds' state is refused. A page comment, general note or note on an unanswered step is never dropped: the next build is refused until `notes_handled` says what was done. After the build the deck needs the lists "What changed while building" and, once the code review ran, "Found in review".
 **Why:** "sticky note" (round 8); "not editing prior sections" (round 11). **Guard:** `test_grows.py`, `test_rethink.py`, `deck-render.test.mjs`.
 
 ## Lists: one kind of row per card

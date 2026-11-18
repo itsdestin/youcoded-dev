@@ -319,7 +319,7 @@ class Grows(unittest.TestCase):
         self.assertEqual([e['round'] for e in g['story']], ['Round 1', 'Round 1'])   # (hand round 1, then the file's first round: the author numbers them)
 
     def test_an_open_row_may_not_point_at_a_round_or_a_step_number(self):
-        for field, bad in (('call', 'Round 7 asked for this.'), ('call', 'See rounds 6-7.'), ('why', 'Same as R-1.'), ('why', 'You said so in round 3.')):
+        for field, bad in (('call', 'Round 7 asked for this.'), ('call', 'See rounds 6-7.'), ('why', 'Same as Q-2.'), ('why', 'You said so in round 3.')):
             st = base_spec(); st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', field: bad}])
             errs = validate(load_spec(put(self.tmp, st)))[0]
             self.has(errs, 'say it in plain words here and put where it came from in "more"')

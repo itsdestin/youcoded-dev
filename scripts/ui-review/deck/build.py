@@ -3,15 +3,17 @@
 + the deck data as one JSON object. Refuses when a picture or a box is missing, or a writing
 rule is broken — a deck with a hole in it is worse than no deck (spec §5)."""
 import datetime
+import hashlib
 import html
 import json
 import os
 import re
+import shutil
 import subprocess
 
 from .crops import image_name, is_focus_crop
 from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
-from .grows import STAGES, STAGE_NAMES, answer_view, is_grows, round_number, step_data
+from .grows import STAGES, STAGE_NAMES, answer_view, handled_view, is_grows, round_number, spec_bytes_at_commit, step_data
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_calls, is_choice, is_clip, is_contract,
                     is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
                     workspace_root)
@@ -350,9 +352,37 @@ def _built(spec):
     # WHY `ids` (a growing deck's "New" tags): the next round must know which topics this build showed. The answers file
     # keeps only topics he answered, so the build stamp, which rides into that file, carries the full list. Last key: serve.py
     # finds `at` with a pattern that stops at the first closing brace.
-    return {'built': {'at': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
-                      'branch': git('rev-parse', '--abbrev-ref', 'HEAD'), 'commit': git('rev-parse', '--short', 'HEAD'),
-                      **({'ids': [st['id'] for st in spec['steps'] if isinstance(st, dict) and not is_page(st) and st.get('id')]} if is_grows(spec) else {})}}
+    # WHY `commit` is the FULL hash, `spec_sha256` a fingerprint of the spec file as built, and `spec_dirty` whether it differed from the committed one
+    # (code review F1/F2): a deck is usually built and served BEFORE its edits are committed, so the commit alone names an OLDER file than the one he
+    # saw. The gate reads the version whose fingerprint matches, never one that merely sits at that commit.
+    built = {'at': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+             'branch': git('rev-parse', '--abbrev-ref', 'HEAD'), 'commit': git('rev-parse', 'HEAD')}
+    path = os.path.join(spec.get('_base') or '.', (spec.get('_stem') or '') + '.json')
+    try:
+        with open(path, 'rb') as f:
+            raw = f.read()
+        built['spec_sha256'] = hashlib.sha256(raw).hexdigest()
+        committed = spec_bytes_at_commit(path, built['commit']) if built['commit'] else None
+        built['spec_dirty'] = committed is None or hashlib.sha256(committed).hexdigest() != built['spec_sha256']
+    except OSError:
+        pass
+    if is_grows(spec):
+        built['ids'] = [st['id'] for st in spec['steps'] if isinstance(st, dict) and not is_page(st) and st.get('id')]
+    spec['_last_built'] = built   # review-cards.py build() keeps a copy of the spec as built when it was not committed
+    return {'built': built}
+
+
+def save_as_built(spec):
+    """When the spec he is about to see differs from the committed one, keep a copy of it beside the answers (`<stem>.as-built.<fingerprint>.json`),
+    so the gate can read exactly what he saw. Tracked like an answers file. Returns the path written, or None."""
+    b = spec.get('_last_built') or {}
+    if not b.get('spec_dirty') or not b.get('spec_sha256'):
+        return None
+    src = os.path.join(spec['_base'], spec['_stem'] + '.json')
+    dest = os.path.join(spec['_base'], f'{spec["_stem"]}.as-built.{b["spec_sha256"][:12]}.json')
+    if not os.path.exists(dest):
+        shutil.copyfile(src, dest)
+    return dest
 
 
 def _history(spec):
@@ -468,6 +498,14 @@ def deck_data(spec, boxes):
         # when everything on it that is open is new and nothing on it was answered in an earlier round; page.js then tags the heading.
         # Any other page tags only its new topics (st.grow.new).
         steps_by_id = {s_.get('id'): s_ for s_ in steps}
+        # WHY (code review F3): his comments that were not answers, and what was done about each, ride on the page they were left on
+        # (a note on a step goes to that step's page; the deck-wide note to the first page).
+        hv = handled_view(spec)
+        for pgd in paged.get('pages', []):
+            mine_ = [{**h, 'about': 'the whole deck' if k == 'general' else 'a question here' if k in pgd['steps'] else 'this page'}
+                     for k, lst in hv.items() for h in lst if k == pgd['id'] or k in pgd['steps'] or (k == 'general' and pgd is paged['pages'][0])]
+            if mine_:
+                pgd['handled'] = mine_
         for pgd in paged.get('pages', []):
             on = [steps_by_id[i] for i in pgd['steps'] if i in steps_by_id and not steps_by_id[i].get('context')]
             if on and not pgd.get('record') and all((s_.get('grow') or {}).get('new') for s_ in on):

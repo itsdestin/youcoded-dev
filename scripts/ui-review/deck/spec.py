@@ -673,7 +673,9 @@ def row_states(step, a):
     empty) can say a row was not looked at."""
     a = a or {}
     ch, ok = a.get('changes') or {}, a.get('ok') or {}
-    legacy = bool(a.get('accepted')) or ('ok' not in a and a.get('v') == 'other')
+    # WHY `not marks` (code review F4): an area dragged on a picture that is not one of this list's rows sets v='other' with no `ok`, and the new page
+    # also writes that; it must never turn every untouched row into "approved". Only the old shape (rows commented, no ticks, no marks) reads as legacy.
+    legacy = bool(a.get('accepted')) or ('ok' not in a and a.get('v') == 'other' and not a.get('marks') and bool(a.get('changes')))
     out = {}
     for c in step.get('calls') or []:
         r = c.get('id')

@@ -22,6 +22,7 @@ import json
 import os
 import re
 import subprocess
+from subprocess import SubprocessError as SubprocessError_
 
 from .spec import is_page, row_of_pic, row_states, tickable, unlooked_rows, word_count
 
@@ -33,7 +34,10 @@ INTRO_CHARS_MAX = 160     # a page's one plain line under its heading
 GIVEN_DROP = ('seconds', 'theme', 't', 'zoom', 'built')   # timing noise in a saved answer; everything else is his
 # WHY (Destin, round 11: "these descriptions frequently make references to earlier rounds, external content, etc, that i wouldn't
 # know off the top of my head, especially after walking away for a day or two"): a visible line may not point at a round or a step id.
-CITES = re.compile(r'\brounds?\s*\d+|\b[A-Z]{1,3}-\d{1,2}\b', re.I)
+# WHY only ids that really exist (code review F11): "GPT-4", "UTF-8" or "Pi-4" are product names, not step ids; a token that looks like an id is
+# refused only when it IS a step, page or row id of this deck or of an earlier round of it (see `known_ids`).
+ROUND_CITE = re.compile(r'\brounds?\s*\d+', re.I)
+ID_LIKE = re.compile(r'\b[A-Z]{1,3}-\d{1,2}\b', re.I)
 ANSWER_NAMES = {'yes': 'Yes', 'no': 'No', 'other': 'Something else', 'skip': 'Not answered'}
 
 
@@ -96,6 +100,11 @@ def is_plain_acceptance(st, a):
     return True
 
 
+def _words_of(saved):
+    """The things he said in a round outside any answer: page comments, the general note, and the pictures pasted on them."""
+    return {k: saved[k] for k in ('pageNotes', 'notes', 'pageAttach', 'notesAttach') if saved.get(k)}
+
+
 def earlier_rounds(spec, include_live=True, exclude_built=None):
     """The submitted rounds of THIS deck, oldest first: [{'n', 'label', 'when', 'answers'}].
     Files holding the same build stamp are one round (a same-build re-serve keeps a dated copy and
@@ -133,11 +142,11 @@ def earlier_rounds(spec, include_live=True, exclude_built=None):
         # WHY only a copy that says `sent_before` is "a later send of the same round" (serve.py writes it on a same-build re-serve): two files that merely
         # carry the same build stamp are two rounds when nothing says the second was a re-send (a stamp copied from an old browser copy does not make one).
         if at and at in by_build and saved.get('sent_before'):
-            rounds[by_build[at]] = {'submitted': submitted, 'answers': ans, 'built': saved.get('built')}   # a later send of the same round
+            rounds[by_build[at]] = {'submitted': submitted, 'answers': ans, 'built': saved.get('built'), **_words_of(saved)}   # a later send of the same round
             continue
         if at:
             by_build[at] = len(rounds)
-        rounds.append({'submitted': submitted, 'answers': ans, 'built': saved.get('built')})
+        rounds.append({'submitted': submitted, 'answers': ans, 'built': saved.get('built'), **_words_of(saved)})
     before = spec.get('rounds_before') if isinstance(spec.get('rounds_before'), int) else 0
     for i, r in enumerate(rounds, 1):
         r['n'] = before + i
@@ -146,19 +155,51 @@ def earlier_rounds(spec, include_live=True, exclude_built=None):
     return rounds
 
 
-def spec_at_commit(path, commit):
-    """The text of the spec file `path` as it was at git `commit`, parsed, or None when git, the commit or
-    the path is not available. WHY (Destin, final-check + "New" tags): each answers file records the build's commit,
-    so the exact deck he saw can be read back from git instead of saving a second copy."""
+def known_ids(spec, rounds):
+    """Every step, page and row id this deck has or ever had (upper-case), so a title may name a product ("GPT-4") but never a step ("Q-3")."""
+    ids = set()
+    for st in spec.get('steps') or []:
+        if isinstance(st, dict):
+            ids.add(str(st.get('id') or '').upper())
+            ids.update(str(c.get('id') or '').upper() for c in st.get('calls') or [] if isinstance(c, dict))
+    for r in rounds:
+        ids.update(k.upper() for k in r['answers'])
+        ids.update(str(i).upper() for i in ((r.get('built') or {}).get('ids') or []))
+        ids.update(k.upper() for k in r.get('pageNotes') or {})
+    ids.update(k.upper() for k in (spec.get('retired') or {}))
+    ids.discard('')
+    return ids
+
+
+# WHY (code review F10): `built.commit` comes from an answers file the browser wrote, and git reads a value starting "--" as an option.
+# Only a plain commit hash (7 to 40 hex characters) is ever handed to git.
+COMMIT_RE = re.compile(r'^[0-9a-fA-F]{7,40}$')
+
+
+def spec_bytes_at_commit(path, commit):
+    """The raw bytes of the spec file `path` at git `commit`, or None (git, the commit or the path is not available, or `commit` is not a hash)."""
+    if not isinstance(commit, str) or not COMMIT_RE.match(commit):
+        return None
     try:
         here = os.path.dirname(os.path.abspath(path))
         top = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=here, capture_output=True, text=True, timeout=10)
         if top.returncode:
             return None
         rel = os.path.relpath(os.path.realpath(path), os.path.realpath(top.stdout.strip())).replace(os.sep, '/')
-        shown = subprocess.run(['git', 'show', f'{commit}:{rel}'], cwd=here, capture_output=True, text=True, timeout=20)
-        return json.loads(shown.stdout) if shown.returncode == 0 else None
-    except (OSError, ValueError, subprocess.SubprocessError):
+        shown = subprocess.run(['git', 'show', f'{commit}:{rel}'], cwd=here, capture_output=True, timeout=20)
+        return shown.stdout if shown.returncode == 0 else None
+    except (OSError, SubprocessError_):
+        return None
+
+
+def spec_at_commit(path, commit):
+    """The text of the spec file `path` as it was at git `commit`, parsed, or None when git, the commit or
+    the path is not available. WHY (Destin, final-check + "New" tags): each answers file records the build's commit,
+    so the exact deck he saw can be read back from git instead of saving a second copy (gate.py checks it is the SAME bytes)."""
+    raw = spec_bytes_at_commit(path, commit)
+    try:
+        return json.loads(raw) if raw is not None else None
+    except ValueError:
         return None
 
 
@@ -274,6 +315,56 @@ def _quote(latest):
     return words if len(words) <= 140 else words[:137] + '...'
 
 
+def round_notes(rnd, step_ids):
+    """What he said in this round that no answer carries: {key: his words}. Key is a page id (a page comment), a step id (a note on a step he left
+    unanswered) or 'general' (the deck-wide note). A picture or file pasted with no words still counts (shown as that)."""
+    out = {}
+    pics = '(a picture or file, no words)'
+    for k, t in (rnd.get('pageNotes') or {}).items():
+        if (t or '').strip():
+            out[k] = t.strip()
+    for k, lst in (rnd.get('pageAttach') or {}).items():
+        if lst:
+            out.setdefault(k, pics)
+    if (rnd.get('notes') or '').strip():
+        out['general'] = rnd['notes'].strip()
+    elif rnd.get('notesAttach'):
+        out['general'] = pics
+    for sid, a in rnd['answers'].items():
+        if isinstance(a, dict) and not real(a) and (a.get('note') or '').strip():
+            out[sid] = a['note'].strip()
+    return out
+
+
+def _ack(spec, key, rounds, i):
+    """What was done about his words under `key` in rounds[i], or None when nothing says so.
+    A plain line counts unless an EARLIER round also had words under that key (then the line may be about that one: use {"round", "done"})."""
+    v = (spec.get('notes_handled') or {}).get(key)
+    if isinstance(v, dict):
+        return v.get('done') if v.get('round') in (None, rounds[i]['label']) else None
+    if isinstance(v, str) and v.strip():
+        if any(key in round_notes(r, ()) for r in rounds[:i]):
+            return None
+        return v
+    return None
+
+
+def handled_view(spec):
+    """{page id, step id or 'general': [{round, said, done}]}: his words that were not answers, with what was done, for the page to show."""
+    out = {}
+    if not is_grows(spec) or not isinstance(spec.get('notes_handled'), dict):
+        return out
+    rounds = earlier_rounds(spec)
+    for key in spec['notes_handled']:
+        for i in range(len(rounds) - 1, -1, -1):
+            said = round_notes(rounds[i], ()).get(key)
+            done = _ack(spec, key, rounds, i) if said else None
+            if said and done:
+                out.setdefault(key, []).append({'round': rounds[i]['label'], 'said': said, 'done': done})
+                break
+    return out
+
+
 def problems(spec):
     """The refusals that keep a rebuild from silently losing something he said (plain sentences)."""
     errs = []
@@ -308,8 +399,10 @@ def problems(spec):
     # WHY (Destin, round 11: rows "frequently make references to earlier rounds, external content, etc, that i wouldn't know off the
     # top of my head"): what he is asked to judge must make sense on its own. A topic that is still open may not point at a round or a
     # step id in its title, or in a row's bold line or plain line; where it came from goes behind "more".
+    known = known_ids(spec, rounds)
+
     def cite(where, text, what):
-        m = CITES.search(text or '')
+        m = ROUND_CITE.search(text or '') or next((x for x in ID_LIKE.finditer(text or '') if x.group(0).upper() in known), None)
         if m:
             errs.append(f'{where}: {what} says "{m.group(0)}"; say it in plain words here and put where it came from in "more" '
                         f'(he may come back after days and will not remember it)')
@@ -344,6 +437,15 @@ def problems(spec):
         if isinstance(p, dict) and is_page(p):
             cite(p.get('id'), p.get('intro'), 'the page intro')
             cite(p.get('id'), p.get('page'), 'the page name')
+    # WHY (code review F3; Destin: nothing he writes may be silently lost): a page comment, the general note or a note on a step he left unanswered
+    # is only ever in the dated file, so a rebuild could drop it unseen. The latest round's must each say what was done ("notes_handled").
+    if rounds:
+        last = len(rounds) - 1
+        for key, said in round_notes(rounds[last], ()).items():
+            if not _ack(spec, key, rounds, last):
+                where = 'the general note' if key == 'general' else f'his note on "{key}"'
+                errs.append(f'{key}: {where} in {rounds[last]["label"].lower()} ("{said[:70]}") is not acknowledged; add to "notes_handled": '
+                            f'{{"{key}": "what was done about it, in plain words"}} (or "Read; not acted on" if that is true)')
     present = {st.get('id') for st in _steps(spec)}
     retired = spec.get('retired') if isinstance(spec.get('retired'), dict) else {}
     gone = {}
@@ -364,7 +466,7 @@ def validate_fields(spec, errors):
     if grows is not None and grows is not True:
         errors.append('grows is true or left out (one deck for the whole feature, re-built each round)')
     on = grows is True
-    for k in ('rounds_before', 'retired', 'stale_answers'):
+    for k in ('rounds_before', 'retired', 'stale_answers', 'notes_handled'):
         if k in spec and not on:
             errors.append(f'{k} belongs on a deck that grows; add "grows": true')
     if on and 'rounds_before' in spec and (not isinstance(spec['rounds_before'], int) or isinstance(spec['rounds_before'], bool) or spec['rounds_before'] < 0):
@@ -373,6 +475,13 @@ def validate_fields(spec, errors):
         r = spec['stale_answers']
         if not isinstance(r, dict) or not all(isinstance(k, str) and isinstance(v, list) and v and all(isinstance(i, str) for i in v) for k, v in r.items()):
             errors.append('stale_answers is {"<the file\'s submitted time>": ["<step id>", ...]}: answers in that round\'s file that were not said in that round')
+    if on and 'notes_handled' in spec:
+        r = spec['notes_handled']
+        def ok_(v):
+            return (isinstance(v, str) and v.strip()) or (isinstance(v, dict) and set(v) <= {'round', 'done'} and isinstance(v.get('done'), str) and v['done'].strip()
+                                                         and (v.get('round') is None or isinstance(v['round'], str)))
+        if not isinstance(r, dict) or not all(isinstance(k, str) and ok_(v) for k, v in r.items()):
+            errors.append('notes_handled is {"<page id, step id or general>": "what was done about his words, one plain line"} (or {"round": "Round 3", "done": "..."})')
     if on and 'retired' in spec:
         r = spec['retired']
         if not isinstance(r, dict) or not all(isinstance(k, str) and isinstance(v, str) and v.strip() for k, v in r.items()):

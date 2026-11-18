@@ -98,13 +98,17 @@ class ServerFixes(unittest.TestCase):
         class P:
             def poll(self): return None
             def terminate(self): sent.append('terminate')
+            def wait(self, timeout=None): sent.append('wait')   # exits on its own once its input is closed
             class stdin:
                 @staticmethod
                 def write(x): sent.append(x.strip())
                 @staticmethod
                 def flush(): pass
+                @staticmethod
+                def close(): sent.append('closed')
         v = S.VoiceBridge(); v.proc = P(); v.close()
-        self.assertEqual(sent, ['cancel', 'terminate'])
+        # WHY (code review F8): cancel, close its input, WAIT for it to stop its recorder; terminate only if it does not exit
+        self.assertEqual(sent, ['cancel', 'closed', 'wait'])
     def test_a_recording_whose_page_went_away_is_cancelled(self):
         sent = []
         class P:

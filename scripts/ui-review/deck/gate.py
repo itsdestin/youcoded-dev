@@ -21,11 +21,13 @@ It refuses unless:
 WHY a command and not memory: a session building under time pressure forgets the boring
 checks; a command that exits non-zero cannot. WHY rows link by id and not by wording:
 wording is rewritten during a build, ids are not."""
+import glob
+import hashlib
 import json
 import os
 import re
 
-from .grows import settled_ids, spec_at_commit
+from .grows import settled_ids, spec_at_commit, spec_bytes_at_commit
 from .spec import after_build_list_errors, strip_comments, unlooked_rows, tickable
 
 # Checks he can switch (before the build) carry one of these; after the build the row carries a
@@ -149,26 +151,59 @@ def also_check(before, answers):
     return {k: comments[k] for k, v in checks(before, answers).items() if v == 'run' and comments.get(k)}
 
 
+def _sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def as_he_saw_it(path, built):
+    """-> (spec or None, note, problem or None): the spec file `path` as it was when the build in `built` was shown to him.
+    WHY (code review F1/F2): the build stamp's commit alone names the file as COMMITTED, but a deck is normally served before its edits are
+    committed, so that older file is not what he saw. The stamp's `spec_sha256` is the fingerprint of what he saw; the version used is the one whose
+    fingerprint matches: the committed one at the stamp's commit, a copy kept at build time (`<stem>.as-built.<fingerprint>.json`), or the file
+    now. When none matches the answer is "cannot tell", which is a failure, never a pass. A stamp without a fingerprint (an older answers file)
+    falls back to the old reading and says it could not be checked."""
+    built = built if isinstance(built, dict) else {}
+    want, commit = built.get('spec_sha256'), built.get('commit')
+    if not want:
+        approved = spec_at_commit(path, commit) if commit else None
+        if isinstance(approved, dict):
+            return strip_comments(approved), f'compared against the before-build walkthrough as it was when he answered it (commit {commit}; his answers file has no fingerprint of what he saw, so this could not be checked)', None
+        try:
+            return _load(path), 'compared against the current before-build walkthrough file: ' + (
+                f'commit {commit} or the file at it is not available' if commit else 'his answers file records no build commit'), None
+        except (OSError, ValueError) as e:
+            return None, '', f'cannot read the before-build walkthrough {path}: {e}'
+    raw = spec_bytes_at_commit(path, commit) if commit else None
+    if raw is not None and _sha(raw) == want:
+        return strip_comments(json.loads(raw)), f'compared against the walkthrough as it was when he answered it (commit {commit}, fingerprint matches)', None
+    stem = os.path.splitext(path)[0]
+    for cand in [f'{stem}.as-built.{want[:12]}.json', path]:
+        try:
+            with open(cand, 'rb') as f:
+                raw = f.read()
+        except OSError:
+            continue
+        if _sha(raw) == want:
+            try:
+                return strip_comments(json.loads(raw)), f'compared against the walkthrough as it was when he answered it ({os.path.basename(cand)}, fingerprint matches)', None
+            except ValueError:
+                break
+    return None, '', (f'cannot tell what he saw: {os.path.basename(path)} has changed since he answered it, and neither commit {commit} nor a saved '
+                      f'as-built copy matches what he was shown (fingerprint {want[:12]}) — show him the current version again')
+
+
 def check_gate(before_path, after=None):
     """-> (problems, notes). `problems` non-empty means NOT finished."""
     problems, notes = [], []
     after = after or after_path(before_path)
     b_ans = _read_answers(answers_file(before_path))
-    # WHY the before-walkthrough is read AS HE SAW IT (Destin, round 15): his answers file records the commit the deck was built at
-    # (`built.commit`), so the exact version he approved is in git. Comparing against today's file would let a later edit change what
-    # "his requests" were. When the commit or the path is not available, fall back to the current file and say so.
-    commit = ((b_ans or {}).get('built') or {}).get('commit') if isinstance((b_ans or {}).get('built'), dict) else None
-    approved = spec_at_commit(before_path, commit) if commit else None
-    if isinstance(approved, dict):
-        before = strip_comments(approved)
-        notes.append(f'compared against the before-build walkthrough as it was when he answered it (commit {commit})')
-    else:
-        try:
-            before = _load(before_path)
-        except (OSError, ValueError) as e:
-            return [f'cannot read the before-build walkthrough {before_path}: {e}'], notes
-        notes.append('compared against the current before-build walkthrough file: ' + (
-            f'commit {commit} or the file at it is not available' if commit else 'his answers file records no build commit'))
+    # WHY the before-walkthrough is read AS HE SAW IT (Destin, round 15): see as_he_saw_it. A later edit must not change what "his requests" were.
+    before, note, bad = as_he_saw_it(before_path, (b_ans or {}).get('built'))
+    if bad:
+        if not (b_ans or {}).get('submitted'):
+            return ['the before-build walkthrough has not been submitted — he has not answered it yet', bad], notes
+        return [bad], notes
+    notes.append(note)
     if not b_ans or not b_ans.get('submitted'):
         problems.append('the before-build walkthrough has not been submitted — he has not answered it yet')
         b_ans = b_ans or {}
@@ -216,6 +251,15 @@ def check_gate(before_path, after=None):
     if not a_ans or not a_ans.get('submitted'):
         problems.append('the after-build walkthrough has not been submitted — he has not gone through it yet')
     else:
+        # WHY (code review F2): the after-build spec is judged only if it is the one he went through; a result, a check row or a list row edited after
+        # his submit would otherwise pass unseen. (An answers file with no fingerprint cannot be checked, and says so.)
+        want = (a_ans.get('built') or {}).get('spec_sha256') if isinstance(a_ans.get('built'), dict) else None
+        if want:
+            with open(after, 'rb') as f:
+                if _sha(f.read()) != want:
+                    problems.append(f'the after-build walkthrough ({os.path.basename(after)}) was changed after he submitted his answers to it — show him the current version and have him go through it again')
+        else:
+            notes.append('the after-build answers file has no fingerprint of what he saw, so edits since he submitted could not be checked')
         for line in changes_requested(a_ans):
             problems.append(f'after-build walkthrough, not finished: {line}')
         # WHY (Destin, round 10): on a deck that grows, a list he settled in an earlier round is not asked

@@ -66,7 +66,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from deck.build import build_page                       # noqa: E402
+from deck.build import build_page, save_as_built                       # noqa: E402
 from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff   # noqa: E402
 from deck.gate import after_path, check_gate            # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
@@ -124,6 +124,10 @@ def build(spec):
     with open(out, 'w') as f:
         f.write(page)
     print('wrote', out)
+    # WHY (code review F1): a spec not yet committed when he is shown it is kept beside the answers, so the done gate can read what he saw.
+    kept = save_as_built(spec)
+    if kept:
+        print('kept the spec as he will see it:', kept)
     return 0
 
 

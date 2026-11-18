@@ -1711,7 +1711,7 @@ json.dump(raw, open(p, 'w')); print(p)`;
   const at = /"built":\s*\{[^}]*"at":\s*"([^"]+)"/.exec(readFileSync(out, 'utf8'))[1];
   const LONG = 'a very long comment that must never be cut short '.repeat(12).trim();
   writeFileSync(join(dirname(spec), 'questions.answers.json'), JSON.stringify({ deck: 'questions-fixture', submitted: '2026-11-01T10:00:00Z', built: { at }, answers: {
-    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: LONG }, 'Q-3': { v: 'other', note: 'make it bigger please' }, 'Q-5': { v: 'pick', pick: 'a' } } }));
+    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: LONG }, 'Q-3': { v: 'other', note: 'make it bigger please' }, 'Q-5': { v: 'pick', pick: 'a' } }, pageNotes: { 'P-2': 'this page line is unclear to me' } }));
   const edit = `import json; p = ${JSON.stringify(spec)}; raw = json.load(open(p))
 by = {s['id']: s for s in raw['steps']}
 by['Q-2']['resolved'] = 'Made quiet in the next build.'
@@ -1722,6 +1722,7 @@ q4 = dict(by['Q-2'], id='Q-4', headline='Fourth topic?'); q4.pop('resolved')
 rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'calls': [{'id': 'r1', 'call': 'A row.', 'why': 'Because.', 'more': {'today': 'Where it came from: earlier.', 'change': 'Now it is different.', 'pros': ['Clear.']}}]}
 q6 = dict(by['Q-2'], id='Q-6', headline='Sixth topic?'); q6.pop('resolved'); q6['answered'] = {'round': 'Round 2', 'answer': 'Yes'}
 raw['stage'] = 'design'
+raw['notes_handled'] = {'P-2': 'Rewrote the page line.'}   # code review F3: his page comment is acknowledged, and shown on that page
 raw['steps'] = [by['P-1'], by['Q-1'], {'id': 'P-2', 'page': 'Design page', 'intro': 'Pick between the drawings.', 'stage': 'design'}, by['Q-2'], by['Q-5'], by['Q-3'], q4,
                 {'id': 'P-3', 'page': 'Rows page', 'intro': 'Tick what is fine.', 'stage': 'design'}, rows,
                 {'id': 'P-4', 'page': 'Settled page', 'intro': 'Nothing here needs you.', 'stage': 'design'}, q6]
@@ -1756,6 +1757,9 @@ json.dump(raw, open(p, 'w'))`;
       assert.match(await q("document.querySelector('.chip .roundtag').textContent"), /Round 5/);
       assert.equal(await q("document.querySelector('#histbtn').hidden"), true, 'no History button');
       assert.deepEqual(await ids(), ['Q-3', 'Q-4']);
+      // Code review F3: his page comment from last round is shown on its page with what was done, in the quiet answered-card look
+      assert.match(await q("document.querySelector('.handledgrp').innerText"), /this page line is unclear to me[\s\S]*Rewrote the page line\./);
+      assert.equal(await q("document.querySelectorAll('.handledtopic').length"), 1);
       // the past is one small plain line with a text link, not a box with a chevron
       assert.match(await q("document.querySelector('.pasttext').firstChild.textContent"), /^You asked for it bigger\./);
       assert.equal(await q("document.querySelector('.pastline .revealbody').hidden"), true, 'the story opens on request');
@@ -1959,7 +1963,31 @@ json.dump(raw, open(p, 'w'))`;
         const r = JSON.parse(await n.evaluate("fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ deck: DECK.key, built: { at: '2026-11-12T11:26:42Z' }, answers: {}, pageNotes: { 'P-2': 'from the old tab' } }) }).then(async r => JSON.stringify([r.status, (await r.json()).reason]))"));
         assert.deepEqual(r, [409, 'old-build']);
         assert.equal(JSON.parse(readFileSync(live, 'utf8')).pageNotes['P-2'], 'this round', 'nothing from the old tab was written');
+        // Code review F5: a tab of an OLD page that tries to save must not overwrite the browser backup the new page keeps.
+        await n.evaluate("DECK.built.at = '2026-11-12T11:26:42Z'");   // from here this tab behaves as a tab of the old page
+        await n.evaluate("(()=>{const p=document.querySelector('#pnote');p.value='typed in the old tab';p.dispatchEvent(new Event('input',{bubbles:true}))})()"); await sleep(1000);
+        assert.equal(JSON.parse(await n.evaluate("localStorage.getItem('deck:' + DECK.key)")).pageNotes['P-2'], 'this round', 'the old tab left the new page\'s browser backup alone');
+        assert.equal(JSON.parse(readFileSync(live, 'utf8')).pageNotes['P-2'], 'this round', 'and the file');
       } finally { n.close(); }
+    }
+    // Code review F12: "Leave as answered" must hold when an older copy (browser backup or file) still says the topic is reopened. The control run
+    // (a copy that says reopened, nothing says it was left) shows the count really moves, so the assertion cannot pass by accident.
+    {
+      const live = join(dirname(spec), 'questions.answers.json');
+      const count = async (fileExtra, localExtra) => {
+        const n = await cdp(await freePort(), 1400, 1000);
+        try {
+          await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+          const at = await n.evaluate('DECK.built.at'), started = '2026-11-18T01:00:00Z';
+          writeFileSync(live, JSON.stringify({ deck: 'questions-fixture', started, built: { at }, answers: {}, ...fileExtra }));
+          await n.evaluate(`localStorage.setItem('deck:' + DECK.key, ${JSON.stringify(JSON.stringify({ deck: 'questions-fixture', started, built: { at }, answers: {}, ...localExtra }))})`);
+          await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+          return await n.evaluate("document.querySelector('#count').textContent");
+        } finally { n.close(); }
+      };
+      const base = await count({}, {}), reopened = await count({}, { reopened: { 'Q-2': true } }), left = await count({ left: { 'Q-2': 5 } }, { reopened: { 'Q-2': true } });
+      assert.notEqual(reopened, base, 'control: a reopened topic is counted as open again');
+      assert.equal(left, base, 'a topic he put back stays put when an older copy says reopened');
     }
   } finally { srv.kill(); }
 });

@@ -29,7 +29,7 @@ worktree** (never the shared checkout, whose files a session cannot commit), nam
 `<feature>.<round>.json` (`.questions.json`, `.walkthrough.json`, `.walkthrough.after.json`; a
 growing deck is just `<feature>.json`). The built page, the answers and rotated older answers land
 beside the spec. Answers files are committed (the record of his decisions). `preview/`,
-`*.serve.json`, `*.serve-port`, `*.workbench.log` and `*.unsent.*.json` are scratch.
+`*.serve.json`, `*.serve-port` and `*.workbench.log` are scratch. `*.unsent.*.json` (what an older build left unsent) and `*.as-built.*.json` (the spec as he saw it) are records, tracked like answers.
 Older, separate decks of a feature that now has a growing deck go in an `earlier-rounds/` folder
 beside it, with the pictures they use (the builder refuses `..` in picture paths, so each folder
 keeps its own `pictures/`). The growing deck reads earlier rounds only from dated answers files
@@ -52,7 +52,7 @@ right beside its spec, never from that folder (pinned by `test_grows.py`).
 | `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` |
 | `stage` | no | on a non-growing deck: `ask`, `design`, `contract`, `review` or `accept` (the build checks the deck carries that stage's slide; nothing else is forbidden). On a growing deck it means something else, see below |
 | `build` | no | `"before"` or `"after"`. `"after"` marks the after-build deck (see "After the build: two required lists") |
-| `grows`, `rounds_before`, `retired`, `stale_answers` | growing only | see "A deck that grows" |
+| `grows`, `rounds_before`, `retired`, `stale_answers`, `notes_handled` | growing only | see "A deck that grows" |
 | `earlier`, `related` | non-growing | History button (below); ignored on a growing deck |
 | `branch`, `sources` | contract | old contract decks only |
 
@@ -207,9 +207,11 @@ One deck per feature (`templates/growing.json`, code `deck/grows.py`). `"grows":
 
 **`visual: true`** on an open question or row: refused without a `picture`. A change he would see is judged from a picture, never from words: any row describing something he would see sets it.
 
-**Refused** (each message names the step and quotes him): his latest earlier answer was not a plain acceptance and the step has neither `reopened` nor `resolved`; an answered step gone from the spec and not in `"retired": {"<id>": "why"}`; a `trail` with no `reopened`/`past`/`answered` line to open from; `state` on a step or row; `answered` with `reopened` or `past`, or `reopened` with `resolved` or `past`; a line over its limit; `answered` without text `round` and `answer`; any growing field without `"grows": true`; a page with no, an unknown or out-of-order stage; a missing or unknown top-level stage.
+**Words that are not answers.** A page comment, the general note and a note on a step he left unanswered are never carried by a topic card, so a rebuild is REFUSED while any of them from the newest round is not acknowledged: `"notes_handled": {"<page id, step id or general>": "what was done, in plain words"}` (say "Read; not acted on" when true). If the same key held words in an earlier round too, write `{"round": "Round 3", "done": "..."}` so the line cannot stand in for the wrong round. Each acknowledged comment shows on its page, under "Your comments, and what was done", with what he wrote.
 
-**State and gate.** The saved page state carries its build stamp (`built.at`); a page reads back only state from its own build, and only open (plus reopened) topics are saved or sent. `serve` refuses a save or submit from another build (409, `reason: "old-build"`; the old page says "out of date, reload") and, when the current build first saves over a file an older build left, keeps that file as `<stem>.unsent.<time>.json` (never read as a round). `state.reopened = {"<id>": true}` sits beside the answers. The summaries and `gate.py` skip topics settled in an earlier round.
+**Refused** (each message names the step and quotes him): his latest earlier answer was not a plain acceptance and the step has neither `reopened` nor `resolved`; an answered step gone from the spec and not in `"retired": {"<id>": "why"}`; a `trail` with no `reopened`/`past`/`answered` line to open from; `state` on a step or row; `answered` with `reopened` or `past`, or `reopened` with `resolved` or `past`; a line over its limit; `answered` without text `round` and `answer`; any growing field without `"grows": true`; a page with no, an unknown or out-of-order stage; a missing or unknown top-level stage; his page comment, general note or note on an unanswered step from the newest round with no `notes_handled` line; a title, row or page line naming a round, or a step or page id that exists in this deck or its earlier rounds (a product name like "GPT-4" is fine).
+
+**State and gate.** The saved page state carries its build stamp (`built.at`); a page reads back only state from its own build, and only open (plus reopened) topics are saved or sent. `serve` refuses a save or submit from another build (409, `reason: "old-build"`; the old page says "out of date, reload") and, when the current build first saves over a file an older build left, keeps that file as `<stem>.unsent.<time>.json` when it holds anything of his (answers, notes, reopened topics, pasted pictures; never read as a round; `serve` prints a line when one is made, and it is a record to read, not delete). A file of another build that was SUBMITTED is kept as a dated round file instead, never folded into the new round. `state.reopened = {"<id>": true}` sits beside the answers; "Leave as answered" is remembered in `state.left` (a time), so an older copy cannot reopen it. The summaries and `gate.py` skip topics settled in an earlier round.
 
 ## Walkthroughs
 
@@ -222,7 +224,7 @@ One deck per feature (`templates/growing.json`, code `deck/grows.py`). `"grows":
 - **Found in review**: `"list": "found-in-review"`, required once a row carrying `"check": "code-review"` has a result of pass / fail / unclear. One row per finding in plain words (never the reviewer's raw report); when it found nothing, ONE row with `"none_found": true` and a plain sentence.
 Both are lists he ticks or changes: a `context` list or result chips on them is refused. A deck that is not after-build is unaffected.
 
-**The done gate.** `review-cards.py walkthrough-check <feature>.walkthrough.json [<after.json>]` exits 1 unless: the before-walkthrough was submitted; every request row (one with `decided`, or one he commented on) has an after row `"from": "<before step>/<row>"` or is named by an after row `"dropped": "<why>"`; every check left on has a result row; the after-build deck carries the two lists above; and the after-build deck was submitted with no change asked (a change, edit, marked area, fail/unclear status, a No, or any note) and no "Yours to change" row not looked at (rows settled in an earlier round of a growing deck are skipped). It compares against the before-walkthrough as it was at the commit in its answers file (`built.commit`, via `git show`), and notes when it falls back to the current file.
+**The done gate.** `review-cards.py walkthrough-check <feature>.walkthrough.json [<after.json>]` exits 1 unless: the before-walkthrough was submitted; every request row (one with `decided`, or one he commented on) has an after row `"from": "<before step>/<row>"` or is named by an after row `"dropped": "<why>"`; every check left on has a result row; the after-build deck carries the two lists above; and the after-build deck was submitted with no change asked (a change, edit, marked area, fail/unclear status, a No, or any note) and no "Yours to change" row not looked at (rows settled in an earlier round of a growing deck are skipped). It compares against the before-walkthrough exactly as he saw it: the build stamp records the full `commit`, `spec_sha256` (a fingerprint of the spec as built) and `spec_dirty`; the gate uses the version whose fingerprint matches (the committed one, else the `<stem>.as-built.<fingerprint>.json` copy `build` keeps when the spec was not committed, else the file now) and FAILS when none matches. The after-build spec must still match the fingerprint of the build he answered, or the gate fails (edited after his submit). An answers file with no fingerprint is read the old way and the gate says it could not check.
 
 ## Wording
 
@@ -251,7 +253,7 @@ Wording is never asked before the build and never as a text box per label. After
 `<spec stem>.answers.json`, written on every click and again on Submit:
 
     {"deck": "<key>", "started": "<iso>", "submitted": "<iso>",
-     "built": {"at": "<iso>", "commit": "<short>", "ids": [...]},
+     "built": {"at": "<iso>", "commit": "<full hash>", "spec_sha256": "<hash>", "spec_dirty": true, "ids": [...]},
      "answers": {"<step id>": {"v": "yes|no|other|pick|picks|wrote", "t": "<when>",
                                "pick": "<option or variant id>", "note": "…",
                                "changes": {}, "ok": {}, "results": {}, "marks": [], "edits": {}, "attach": {}}},

@@ -473,8 +473,10 @@
   // an area he drew on a row's picture (the popup's `row <id>` or `row <id> before`) changes that row exactly as a pencil comment does.
   const rowMarks = (a, cid) => ((a || {}).marks || []).filter(m => m.pic === 'row ' + cid || m.pic === 'row ' + cid + ' before');
   const rowOfPic = (st, pic) => { if (!st || !tickable(st)) return null; const m = /^row (.+?)( before)?$/.exec(pic || ''); return m && st.calls.some(c => c.id === m[1]) ? m[1] : null; };
+  // WHY marks and comments are required (code review F4): see spec.row_states, its twin. A bare area on a non-row picture is not the old shape.
+  const isLegacy = a => !!a.accepted || (!('ok' in a) && a.v === 'other' && !(a.marks || []).length && Object.keys(a.changes || {}).length > 0);
   const rowState = (a, cid) => {
-    a = a || {}; const legacy = !!a.accepted || (!('ok' in a) && a.v === 'other');
+    a = a || {}; const legacy = isLegacy(a);
     return cid in (a.changes || {}) || rowMarks(a, cid).length ? 'changed' : ((a.ok || {})[cid] || legacy) ? 'ok' : 'unlooked';
   };
   const unlooked = st => tickable(st) ? st.calls.filter(c => rowState(state.answers[st.id], c.id) === 'unlooked') : [];
@@ -961,7 +963,17 @@
       for (const [k, v] of Object.entries(extra.pageNotes || {})) { const w = longer(pn[k], v); if (w) pn[k] = w; }
       if (Object.keys(pn).length) out.pageNotes = pn;
       const gn = longer(base.notes, extra.notes); if (gn) out.notes = gn;
-      if (base.reopened || extra.reopened) out.reopened = { ...(base.reopened || {}), ...(extra.reopened || {}) };   // a topic he reopened stays reopened
+      // WHY (code review F12): "Leave as answered" is remembered as a time in `left` (and "Reopen" as one in `reopenedAt`), so when two copies disagree the LATER
+      // press wins: a topic he put back is not reopened again by an old copy, and one he reopened after that stays reopened.
+      const t = (o, id) => +((o || {})[id]) || 0, ids = new Set([...Object.keys(base.reopened || {}), ...Object.keys(extra.reopened || {}), ...Object.keys(base.left || {}), ...Object.keys(extra.left || {})]);
+      const ro = {}, left = {}, at = {};
+      for (const id of ids) {
+        const lt = Math.max(t(base.left, id), t(extra.left, id)), rt = Math.max(t(base.reopenedAt, id), t(extra.reopenedAt, id)), isOpen = (base.reopened || {})[id] || (extra.reopened || {})[id];
+        if (lt > rt) left[id] = lt; else { if (isOpen) ro[id] = true; if (rt) at[id] = rt; }
+      }
+      if (Object.keys(ro).length) out.reopened = ro; else delete out.reopened;   // a topic he reopened stays reopened
+      if (Object.keys(left).length) out.left = left; else delete out.left;
+      if (Object.keys(at).length) out.reopenedAt = at; else delete out.reopenedAt;
       const pa = { ...(base.pageAttach || {}) };
       for (const [k, v] of Object.entries(extra.pageAttach || {})) { const u = unionPills(pa[k], v); if (u.length) pa[k] = u; }
       if (Object.keys(pa).length) out.pageAttach = pa;
@@ -1031,6 +1043,7 @@
     if (!GROWS) return;
     const open = id => { const x = DECK.steps.find(q => q.id === id); return !!x && !x.context && (!(x.grow && x.grow.answered) || !!(state.reopened || {})[id]); };
     for (const id of Object.keys(state.answers || {})) if (!open(id)) delete state.answers[id];
+    if (state.left) { for (const id of Object.keys(state.left)) { const x = DECK.steps.find(q => q.id === id); if (!(x && x.grow && x.grow.answered)) { delete state.left[id]; if (state.reopenedAt) delete state.reopenedAt[id]; } } if (!Object.keys(state.left).length) delete state.left; if (state.reopenedAt && !Object.keys(state.reopenedAt).length) delete state.reopenedAt; }
     if (state.reopened) { for (const id of Object.keys(state.reopened)) { const x = DECK.steps.find(q => q.id === id); if (!(x && x.grow && x.grow.answered)) delete state.reopened[id]; } if (!Object.keys(state.reopened).length) delete state.reopened; }
     const pageIds = new Set((ALLPAGES || []).map(p => p.id));
     for (const k of ['pageNotes', 'pageAttach']) if (state[k]) { for (const id of Object.keys(state[k])) if (!pageIds.has(id)) delete state[k][id]; if (!Object.keys(state[k]).length) delete state[k]; }
@@ -1039,11 +1052,19 @@
   }
   let retry = null, lastSig = '', loaded = false;
   const post = () => fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) });
+  // WHY the browser backup is written only AFTER the server took the save (code review F5): an old tab's first autosave used to overwrite the
+  // new page's backup before the server could say "out of date". It also never replaces a backup left by a NEWER build (a failed send from an old tab).
+  function backup() {
+    try {
+      const had = JSON.parse(localStorage.getItem(LS) || 'null'), mineAt = state.built && state.built.at, hadAt = had && had.built && had.built.at;
+      if (mineAt && hadAt && hadAt > mineAt) return;
+      localStorage.setItem(LS, JSON.stringify(state));
+    } catch (e) { /* no storage */ }
+  }
   async function save() {
     if (outdated) return;
     stamp(); lastSig = JSON.stringify(state);
-    try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) { /* no storage */ }
-    if (!server) return;
+    if (!server) { backup(); return; }
     clearTimeout(retry);
     try {
       let r = await post();
@@ -1053,13 +1074,18 @@
         // This page is older than the file (it was open across a server restart). Fold the
         // file's answers in — the newer of each wins — and save the union, instead of losing either.
         const disk = await (await fetch('/answers', { cache: 'no-store' })).json();
-        Object.assign(state, merged(state, disk)); pruneStale(); paintState(); if (PAGES) { const pn = $('#pnote'); if (pn && document.activeElement !== pn) pn.value = (state.pageNotes || {})[PAGES[cur].id] || ''; }
+        // WHY only a file of THIS build is folded in (code review F7): another build's file, submitted or not, is last round's, never this round's.
+        if (mine(disk)) Object.assign(state, merged(state, disk));
+        pruneStale(); paintState(); if (PAGES) { const pn = $('#pnote'); if (pn && document.activeElement !== pn) pn.value = (state.pageNotes || {})[PAGES[cur].id] || ''; }
         r = await post();
+        if (r.status === 409 && ((await r.clone().json().catch(() => ({}))).reason === 'old-build')) { showOutdated(); return; }
       }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       lastSig = JSON.stringify(state);   // what is on disk now (a refused save folds the file in first)
+      backup();
       showSaved(true);
     } catch (e) {
+      backup();   // the server did not take it: the browser copy is the only one
       showSaved(false, (e && e.message) || String(e));
       retry = setTimeout(save, 2000);
     }
@@ -1183,7 +1209,7 @@
     $('#cards').innerHTML = (named ? pageHead(pg, finished) : '')
       + (cur === 0 ? topNotes() : '')
       + steps.map(st => qArticle(st, false)).join('')
-      + (finished ? prevGroup(sunk, true) : prevFold(sunk, pg))
+      + (finished ? prevGroup(sunk, true) : prevFold(sunk, pg)) + handledGroup(pg)
       // WHY (Destin, round 4, on the header Notes button: "nah i wanted like an extra more visible input region at the bottom of each page"): a
       // thought about the page as a whole gets a box he cannot miss, where he ends up after reading it — one per page, saved as pageNotes[page id].
       + `<section class="pagenote"><label for="pnote">Anything else about this page</label><div class="pnotebox"><textarea class="pnote" id="pnote" rows="2" data-page="${esc(pg.id)}" placeholder="A comment on the page as a whole, or anything no row or question covers"></textarea></div></section>`;
@@ -1299,6 +1325,14 @@
       });
     });
   }
+  // WHY (code review F3; Destin: nothing he writes may be silently lost): a comment he left on a page, on the whole deck or on a question he did not answer
+  // is not an answer, so no topic card carries it. Each one is shown here with a line saying what was done about it. Quiet: the same small
+  // answered-card look, no buttons.
+  const handledGroup = pg => (pg.handled || []).length
+    ? `<section class="prevgrp handledgrp"><p class="qnum"><span class="n"><span class="kindline">Nothing needed from you</span></span></p><span class="grpn prevn">${pg.handled.length}</span><h2 class="qh">Your comments, and what was done</h2><div class="prevlist">`
+      + pg.handled.map(h => `<section class="handledtopic"><div class="anshead"><h3 class="anstitle">Your comment on ${esc(h.about)}</h3><span class="ansround">${esc(h.round)}</span></div>`
+        + `<p class="ansline"><span class="youlabel">You wrote</span> <span class="ansval">${esc(h.said)}</span></p><p class="ansline"><span class="youlabel">What I did about it</span> ${esc(h.done)}</p></section>`).join('')
+      + `</div></section>` : '';
   const answeredList = list => prevGroup(list, true);
   // ── a finished stage ───────────────────────────────────────────────────────────────────────
   // WHY (Destin, round 11: of the "Earlier stages" link, "this feels really strange. too similar to the 'history' button from earlier. i think i
@@ -1319,7 +1353,7 @@
     const ss = pg.steps.map(stepById).filter(Boolean);
     // A background list (facts) is drawn as it always is; every other topic is a previously-answered card without Reopen.
     $('#cards').innerHTML = pageHead(pg, true) + ss.filter(st => st.context).map(st => qArticle(st, false)).join('')
-      + prevGroup(ss.filter(st => !st.context && st.grow && st.grow.answered), false);
+      + prevGroup(ss.filter(st => !st.context && st.grow && st.grow.answered), false) + handledGroup(pg);
     layout(); paintLocked(); wireMarks(); paintStages(); paintBars();   // WHY wireMarks: the areas he drew on an old picture are painted here too (round 12: pictures and marks were missing)
     $('#save').hidden = false; $('#controls').hidden = false;   // WHY: the last live page hides the foot button; a finished page's own button must show
     $('#save').disabled = false; $('#save').textContent = recPage >= pages.length - 1 ? 'Back to ' + stageName(GROWS.stage) : 'Next page ›';
@@ -1369,8 +1403,11 @@
     if (!(ro || lv) || state.submitted) return;
     const id = (ro || lv).dataset.sid, t = $('.content') || document.scrollingElement, y = t ? t.scrollTop : 0;
     state.reopened = { ...(state.reopened || {}) };
-    if (ro) state.reopened[id] = true; else delete state.reopened[id];
+    state.left = { ...(state.left || {}) }; state.reopenedAt = { ...(state.reopenedAt || {}) };
+    if (ro) { state.reopened[id] = true; state.reopenedAt[id] = Date.now(); delete state.left[id]; } else { delete state.reopened[id]; state.left[id] = Date.now(); delete state.reopenedAt[id]; }
     if (!Object.keys(state.reopened).length) delete state.reopened;
+    if (!Object.keys(state.left).length) delete state.left;
+    if (!Object.keys(state.reopenedAt).length) delete state.reopenedAt;
     save(); renderPage(); if (t) t.scrollTop = y;
   });
   // The stage line: the names of the four stages in order. A finished stage has a small check and can be pressed to read its pages; the stage the
@@ -1507,7 +1544,7 @@
   // A deck answered before round 10 meant "rows I did not touch are fine" (accepted). Reopened, the
   // first press on it writes those rows as real ticks, so editing one row never turns the others into "not looked at".
   function legacyToTicks(st, a) {
-    if (!(a.accepted || (!('ok' in a) && a.v === 'other'))) return;
+    if (!isLegacy(a)) return;
     a.ok = {}; st.calls.forEach(c => { if (!(c.id in (a.changes || {}))) a.ok[c.id] = true; });
   }
   function toggleTick(sid, cid) {
@@ -2368,6 +2405,7 @@
     const sid = d.box.dataset.sid, a = { ...(state.answers[sid] || {}) };
     const st = stepById(sid), rid = rowOfPic(st, d.box.dataset.pk);
     if (rid) legacyToTicks(st, a);
+    if (st && tickable(st) && !('ok' in a)) a.ok = {};   // WHY (F4): the new page always writes `ok` for a list, so a bare area is never mistaken for the old shape
     a.marks = (a.marks || []).concat([{ pic: d.box.dataset.pk, ...d.rect, text: '' }]);
     // An area with a comment IS a response; with no button pressed it counts as "something else".
     if (!a.v || a.v === 'skip') a.v = 'other';

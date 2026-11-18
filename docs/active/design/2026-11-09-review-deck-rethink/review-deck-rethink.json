@@ -5,6 +5,13 @@
   "grows": true,
   "rounds_before": 10,
   "stage": "design",
+  "notes_handled": {
+    "P-2": {"round": "Round 11", "done": "Done in round 11: the answered section became a top-level card named Previously answered, styled like Yours to change."},
+    "PD-2": {"round": "Round 13", "done": "Done in round 13: the deck opens on the first page that needs you, and the answered cards fold into one row you can open."},
+    "PD-3": {"round": "Round 13", "done": "Done in round 13: a page with nothing for you is no longer where the deck starts; it opens on the first page that needs you."},
+    "PD-5": {"round": "Round 13", "done": "Partly: the deck now opens on the first page that needs you instead of a finished one. Whether a review-only deck now says what it is for was not separately checked."},
+    "PD-0": {"round": "Round 13", "done": "Done in rounds 13 and 14: the deck starts on a page that needs you; saved answers are tied to the round that wrote them so old text is not carried over; a comment on a picture counts as a response."}
+  },
   "steps": [
     {
       "id": "PU-1",

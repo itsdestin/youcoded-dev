@@ -914,11 +914,11 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
    the questions?"; "What section of the deck is this on?"). An answered topic is a compact, quiet card; a topic's past is one plain
    muted line with a text link; the stage is a plain progress indicator, not tabs. All on the deck's own colours and type. */
 .answeredgrp{gap:10px}
-.prevtopic{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well)}
+.prevtopic,.handledtopic{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well)}
 .anshead{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
 .anstitle{margin:0;font:500 13px/1.35 var(--font);color:var(--fg)}
 .ansround{flex:none;font-size:12px;color:var(--fg-muted);white-space:nowrap}
-.ansline,.prevtopic p{margin:0;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
+.ansline,.prevtopic p,.handledtopic p{margin:0;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
 .youlabel{color:var(--fg-muted)} .ansval{color:var(--fg)}
 .prevtopic .decided{margin:0;font-size:12.5px;line-height:1.5;font-style:italic;color:var(--fg-2)}
 .prevtopic .plainrows{margin:0;padding-left:18px;font-size:12px;line-height:1.5;color:var(--fg-2)}
@@ -975,8 +975,8 @@ body[data-grows] .saved[hidden]{display:inline-block;visibility:hidden}
 .pages .prevgrp>.qh{margin:0;font-size:15px;font-weight:500;line-height:1.35}
 .prevn{position:absolute;top:12px;right:14px}
 .prevlist{display:flex;flex-direction:column;gap:10px}
-.prevtopic{gap:8px}
-.prevtopic .anshead{align-items:flex-start}
+.prevtopic,.handledtopic{gap:8px}
+.prevtopic .anshead,.handledtopic .anshead{align-items:flex-start}
 .prevround{display:flex;flex-direction:column;gap:4px} .prevround+.prevround{padding-top:8px;border-top:1px solid var(--edge)}
 .roundlabel{font-weight:600;color:var(--fg-muted)}
 .bodynote{font-size:12px;color:var(--fg-muted)}

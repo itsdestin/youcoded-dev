@@ -82,7 +82,28 @@ def _stamp_of(obj):
     return b.get('at') if isinstance(b, dict) else None
 
 
-def save_state(apath, state, submit=False, served_build=None):
+# WHY a list (code review F6): anything he typed or chose counts as his state, not only answers and notes: a reopened topic and a pasted picture
+# are his words too and must never be overwritten by the next build's first save without a copy.
+STATE_KEYS = ('answers', 'pageNotes', 'notes', 'reopened', 'left', 'pageAttach', 'notesAttach', 'marks')
+
+
+def holds_state(saved):
+    return any(saved.get(k) for k in STATE_KEYS)
+
+
+def aside_name(apath, kind, when):
+    """A free file name beside the answers file: 'unsent' (state of an older build never sent) or 'round' (an older build's SUBMITTED answers)."""
+    base = apath[:-len('.answers.json')] if apath.endswith('.answers.json') else apath
+    stamp = ''.join(c for c in when if c.isdigit()) or time.strftime('%Y%m%d%H%M%S', time.gmtime())
+    name = f'{base}.unsent.{stamp}.json' if kind == 'unsent' else f'{base}.answers.{stamp}.json'
+    root, n = name[:-len('.json')], 1
+    while os.path.exists(name):
+        n += 1
+        name = f'{root}-{n}.json'
+    return name
+
+
+def save_state(apath, state, submit=False, served_build=None, log=None):
     """Guard and write one answers state under the lock. Returns (status, body).
     A saved `submitted` is never removed: a late autosave from a tab that has not seen the
     submit carries it forward instead of erasing it.
@@ -100,15 +121,22 @@ def save_state(apath, state, submit=False, served_build=None):
                 saved = json.load(f)
         except (OSError, ValueError):
             saved = None
-        if served_build and isinstance(saved, dict) and saved.get('deck') == state.get('deck') and _stamp_of(saved) != served_build and not saved.get('submitted') \
-                and (saved.get('answers') or saved.get('pageNotes') or saved.get('notes')):
-            # What an older build saved is kept beside the deck (not matched by the `.answers.*.json` round files).
-            when = ''.join(c for c in time.strftime('%Y%m%d%H%M%S', time.gmtime()))
-            keep = apath[:-len('.answers.json')] + f'.unsent.{when}.json' if apath.endswith('.answers.json') else apath + f'.unsent.{when}'
-            n = 1
-            while os.path.exists(keep):
-                n += 1; keep = keep.replace('.json', '') + f'-{n}.json'
-            os.replace(apath, keep)
+        if served_build and isinstance(saved, dict) and saved.get('deck') == state.get('deck') and _stamp_of(saved) != served_build:
+            when = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+            if saved.get('submitted'):
+                # WHY (code review F7): another build's SUBMITTED file is a finished round: it is kept as one (the dated name rounds use) and never
+                # folded into the new round, nor allowed to stamp it "submitted".
+                keep = aside_name(apath, 'round', saved['submitted'][:19])
+                os.replace(apath, keep)
+                if log:
+                    log(f'[deck] an older build of this deck had been submitted — kept as {os.path.basename(keep)}; this build starts fresh')
+            elif holds_state(saved):
+                # What an older build saved is kept beside the deck (not matched by the `.answers.*.json` round files).
+                # WHY said out loud (code review F6): the copy is a record, tracked like answers; the session must notice it.
+                keep = aside_name(apath, 'unsent', when)
+                os.replace(apath, keep)
+                if log:
+                    log(f'[deck] an older build left unsent answers or notes — kept as {os.path.basename(keep)} (a record: read it, do not delete it)')
             saved = None
         dropped = dropped_answers(apath, state) if saved is not None else []
         if dropped:
@@ -146,6 +174,7 @@ def dropped_answers(apath, incoming):
 ATTACH_MAX = 10 * 1024 * 1024
 # WHY a count cap (review 2026-11-10): a paste loop could otherwise fill the disk.
 ATTACH_COUNT_MAX = 200
+JSON_MAX = 2 * 1024 * 1024   # the largest answers / voice / dev body the server will read
 _IMAGE_MAGIC = ((b'\x89PNG\r\n\x1a\n', '.png'), (b'\xff\xd8\xff', '.jpg'), (b'GIF87a', '.gif'), (b'GIF89a', '.gif'))
 
 
@@ -415,6 +444,17 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
             self.end_headers()
             self.wfile.write(body)
 
+        def do_HEAD(self):
+            # WHY (code review F9): HEAD skipped the Host/Origin and symlink checks GET has, so a rebinding page could learn which files exist and how big.
+            if self._wrong_origin():
+                return self._json(403, {'error': 'wrong host or origin'})
+            path = self.path.split('?')[0]
+            if path != '/' and not (serve_app and has_live(spec) and (path == '/app' or path.startswith('/app/'))) and path != '/answers':
+                root = os.path.realpath(spec['_base'])
+                if os.path.commonpath([os.path.realpath(self.translate_path(self.path)), root]) != root:
+                    return self._json(404, {'error': 'not a page'})
+            return super().do_HEAD()
+
         def do_GET(self):
             if self._wrong_origin():
                 return self._json(403, {'error': 'wrong host or origin'})
@@ -486,6 +526,10 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
                 from urllib.parse import parse_qs, urlparse
                 nm = (parse_qs(urlparse(self.path).query).get('name') or [''])[0]
                 return self._json(*save_attachment(spec, self.rfile.read(n), nm))
+            # WHY a size cap (code review F9): any length was read into memory; no answers file is anywhere near this.
+            if n > JSON_MAX:
+                self.close_connection = True
+                return self._json(413, {'error': f'that is larger than {JSON_MAX // (1024 * 1024)} MB'})
             try:
                 state = json.loads(self.rfile.read(n) or b'{}')
             except (ValueError, TypeError):
@@ -503,7 +547,7 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
                 # edits in site-copy-editor.py on 2026-09-10. The deck is the surface he answers
                 # every UI review on, so a stale page here loses review answers. A write may add
                 # or change answers; it may never make a saved answer disappear.
-                code, reply = save_state(apath, state, submit=self.path == '/submit', served_build=_built_at(spec))
+                code, reply = save_state(apath, state, submit=self.path == '/submit', served_build=_built_at(spec), log=log)
                 if code != 200:
                     return self._json(code, reply)
                 if self.path == '/answers':
@@ -545,6 +589,7 @@ class VoiceBridge:
         threading.Thread(target=self._watch, daemon=True).start()
 
     VOICE_QUIET_S = 5
+    VOICE_EXIT_WAIT_S = 3   # how long close() lets the helper stop its recorder before it is terminated
 
     def _watch(self):
         while not self.stopping:
@@ -646,7 +691,20 @@ class VoiceBridge:
         with self.lock:
             proc, self.proc = self.proc, None
         if proc and proc.poll() is None:
-            proc.terminate()
+            # WHY close the pipe and WAIT before terminating (code review F8): terminating at once could kill the helper before it read "cancel",
+            # leaving the recorder (and the microphone) running. Closing its input makes it stop the recorder and exit by itself.
+            try:
+                proc.stdin.close()
+            except OSError:
+                pass
+            try:
+                proc.wait(timeout=self.VOICE_EXIT_WAIT_S)
+            except subprocess.TimeoutExpired:
+                proc.terminate()   # the helper also stops its recorder on this signal
+                try:
+                    proc.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
 
 
 def launch_dev(spec, windows, step_id):
