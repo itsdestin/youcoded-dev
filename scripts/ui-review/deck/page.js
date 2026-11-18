@@ -1936,6 +1936,21 @@
     (a.marks || []).forEach((m, i) => (m.attach || []).forEach(p => out.push('\n    attached to area ' + (i + 1) + ' — ' + pillWords(p))));
     return out.join('');
   }
+  // WHY (Destin, 2026-11-18: "go to first skipped should actually focus the specific skipped question in the window"): opening
+  // the right PAGE left him hunting down a long page for the one card. Scroll the skipped question — or, for a list, its first
+  // row not looked at — to the middle of the window, give it keyboard focus, and outline it briefly so the eye lands on it.
+  function showFirst(st) {
+    requestAnimationFrame(() => {
+      const art = $(`#cards article.q[data-id="${CSS.escape(st.id)}"]`) || $(`#cards [data-sid="${CSS.escape(st.id)}"]`);
+      if (!art) return;
+      const row = tickable(st) && unlooked(st)[0] ? art.querySelector(`li.call[data-call="${CSS.escape(unlooked(st)[0].id)}"]`) : null;
+      const el = row || art;
+      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
+      el.focus({ preventScroll: true });
+      el.classList.add('seekflash'); setTimeout(() => el.classList.remove('seekflash'), 2200);
+    });
+  }
   function openDialog() {
     acceptLists(); paintState();
     record(); save();
@@ -1958,7 +1973,7 @@
     // going there means opening the PAGE that question sits on.
     const pageOf = st => PAGES ? Math.max(0, PAGES.findIndex(p => p.steps.includes(st.id))) : DECK.steps.indexOf(st);
     const firstTo = missing.concat(lists).sort((x, y) => pageOf(x) - pageOf(y))[0];
-    $('#first').style.display = firstTo ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(pageOf(firstTo)); };
+    $('#first').style.display = firstTo ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(pageOf(firstTo)); showFirst(firstTo); };
     $('#dlg-text').innerHTML = server
       ? 'Your answers have been saving to a file next to this deck as you went. Submitting tells Claude you\'re finished — it picks them up in the session and replies there. <b>Nothing to copy or paste</b>: close this tab and go back to the conversation.'
       : 'This deck is not being served, so Claude is not watching it. Copy the feedback below and paste it into the chat.';

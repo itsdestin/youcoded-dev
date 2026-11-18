@@ -1048,3 +1048,6 @@ body[data-grows] .top .wrap{flex-wrap:nowrap}
 .sumtext{flex:none;text-align:right;font:500 11px/1 var(--font);color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 /* WHY (round 14, still true): on the narrowest phones the progress bar beside the stage button gives up some room. The button itself takes its name's width (round 17), so it needs no width rule here. */
 @media (max-width:420px){.stagecompact{gap:3px;padding:0 6px;font-size:11px} .stagecompact small{font-size:10px} .summark{min-width:6px}}
+/* WHY: "Go to first skipped" outlines the card or row it lands on for a moment, so his eye finds it (Destin, 2026-11-18). */
+.seekflash{outline:2px solid var(--accent);outline-offset:-2px}
+.seekflash:focus{outline:2px solid var(--accent)}
