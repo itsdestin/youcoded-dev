@@ -15,6 +15,10 @@ if [ "$mode" = "--remove" ]; then
   systemctl --user daemon-reload
   echo "removed the morning-report timer"; exit 0
 fi
+# WHY: the service runs the SHARED checkout's copy; before this work is merged that file is absent,
+# the timer would fail silently and the briefing would only say STALE two days later.
+target="$HOME/youcoded-dev/scripts/morning-report.mjs"
+if [ ! -f "$target" ]; then echo "refusing: $target does not exist yet (install only after the morning-report work is merged)"; exit 1; fi
 echo "This would:"
 for u in "${units[@]}"; do echo "  copy $here/systemd/$u -> $dest/$u"; done
 echo "  run: systemctl --user daemon-reload"

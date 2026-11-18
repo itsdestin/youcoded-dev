@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Morning report: one short page saying which of YouCoded's checks are green and which need Destin.
 //
-//   node scripts/morning-report.mjs              # write the report, send the phone summary
-//   node scripts/morning-report.mjs --no-notify  # write only (what tests and manual runs use)
+//   node scripts/morning-report.mjs              # write the report only (safe for a casual manual run)
+//   node scripts/morning-report.mjs --notify     # also send the phone summary (what the timer passes)
 //   node scripts/morning-report.mjs --print      # also print the report
 //
 // WHY (card/plan W-4, approved 2026-11-18): the nightly GitHub checks already run, but nothing
@@ -284,7 +284,8 @@ function main(argv) {
   const count = summarize(sections);
   const d = new Date(now);
   const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  const notice = argv.includes('--no-notify') ? 'phone summary not requested' : sendPhone(count, readTopic());
+  // WHY opt-in: a casual manual run used to buzz Destin's phone; only the timer passes --notify.
+  const notice = argv.includes('--notify') ? sendPhone(count, readTopic()) : 'phone summary not requested';
   const md = renderReport(sections, dateStr, [notice]);
   writeReport(stateDir(), dateStr, md, { date: dateStr, generatedAt: new Date(now).toISOString(), count });
   if (argv.includes('--print')) console.log(md);
