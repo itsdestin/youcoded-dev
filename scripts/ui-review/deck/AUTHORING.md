@@ -1,420 +1,286 @@
 # Authoring a review deck
 
-Every field of every step kind, the page grammar, every refusal the builder makes, the answers
-file, the printed summary and every command. Read on demand; the short version — which kind to
-pick, and the six rules — is `.claude/rules/review-deck.md`. Design:
-`docs/archive/specs/2026-09-04-review-deck-consistency-design.md`, on top of
-`docs/archive/specs/2026-08-27-review-deck-v2-design.md` and
-`docs/archive/specs/2026-09-01-feature-flow-design.md`.
+How to write a deck for Destin: every step kind and field, the growing deck, lists he ticks or
+changes, pictures and marks, the checks menu and done gate, every refusal the builder makes, the
+answers file and every command. This is the one current description; how it got here is in
+`docs/active/design/2026-11-09-review-deck-rethink/HISTORY.md`. The short version (which kind to
+pick) is `.claude/rules/review-deck.md`; the order of a feature is `.claude/rules/feature-flow.md`.
 
-Copy a template from `scripts/ui-review/templates/` — one per kind, every field filled and
-explained in place. `_comment` keys (at any depth, including `_comment_<field>`) are stripped
-when the deck is built, so leave them or delete them as you like.
+Copy a template from `scripts/ui-review/templates/` (`approve`, `brief`, `choice`, `decide`, `clip`,
+`live`, `tryit`, `questions`, `walkthrough`, `growing`, `contract`): every field is filled and
+explained in place. `_comment` keys (any depth, including `_comment_<field>`) are stripped at build.
 
 ## Start here
 
 | Want to… | Read |
 |---|---|
-| Build and serve any deck, start to finish | "Order of work" (bottom of this file) |
-| Ask Destin 4+ questions at once | "Question — words only", "Page markers" |
-| Pick which step kind fits | `.claude/rules/review-deck.md`'s table, then "The step kinds" |
+| Build and serve any deck | "Order of work" |
+| Ask Destin 4+ questions | "Question", "Page markers" |
+| Run a whole feature across rounds | "A deck that grows" |
+| Show a whole piece of work before and after building | "Walkthroughs" |
 | Get a field or refusal exactly right | "Deck-level fields", "What the builder refuses" |
-| Know what a submission writes | "The answers file", "What he sees when he submits" |
-| Run `build`/`preview`/`serve`/etc. | "Commands" |
+| Know what a submission writes | "The answers file" |
+| Run `build` / `preview` / `serve` | "Commands" |
 
-## Where a deck lives, and what it is called
+## Where a deck lives
 
 A feature's decks sit in `docs/active/design/<date>-<feature>/` **of the session's workspace
-worktree** (the path `workspace-start` returned — never the shared `youcoded-dev` checkout, whose
-files a session cannot commit; one session built four decks there before noticing, 2026-09-10), named
-`<feature>.<round>.json` — `.questions.json`, `.review.json`, `.review-2.json`,
-`.contract.json`. The built page, the answers and any rotated older answers land beside the
-spec. Answers files are committed (they are the record of Destin's decisions); `preview/` (one folder per deck),
-`*.serve.json` and `*.workbench.log` are scratch and are ignored.
+worktree** (never the shared checkout, whose files a session cannot commit), named
+`<feature>.<round>.json` (`.questions.json`, `.walkthrough.json`, `.walkthrough.after.json`; a
+growing deck is just `<feature>.json`). The built page, the answers and rotated older answers land
+beside the spec. Answers files are committed (the record of his decisions). `preview/`,
+`*.serve.json`, `*.serve-port`, `*.workbench.log` and `*.unsent.*.json` are scratch.
+Older, separate decks of a feature that now has a growing deck go in an `earlier-rounds/` folder
+beside it, with the pictures they use (the builder refuses `..` in picture paths, so each folder
+keeps its own `pictures/`). The growing deck reads earlier rounds only from dated answers files
+right beside its spec, never from that folder (pinned by `test_grows.py`).
 
 ## Deck-level fields
 
 | Field | Required | What it is |
 |---|---|---|
-| `title` | yes | what the deck is about, in his words. Heads every page, and titles the first page of a question deck that opens with no marker |
-| `key` | yes | short name; his answers are saved under it, so keep it stable across rounds |
+| `title` | yes | what the deck is about, in his words |
+| `key` | yes | short name; his answers are saved under it, keep it stable across rounds |
 | `out` | yes | the HTML file `build` writes, beside the spec |
 | `steps` | yes | the steps, in the order he reads them |
-| `images` | pictures only | folder the cut crops land in, relative to the spec. Must contain the spec's own name, or two decks overwrite each other |
-| `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `shoot` output folder (`node scripts/shoot/shoot.mjs <screens> --before <branch> --after <worktree> --out runs` writes `runs/before` and `runs/after`), or an old sweep's folder. **Paths resolve from the spec's own folder** — write `runs/after` beside the spec; a workspace-root path such as `docs/active/design/<feature>/runs/after` is looked up UNDER the spec's folder and fails (measured 2026-09-10; a 2026-09-09 note said the opposite and cost one build). A slide shows all of them unless it names its own (below) |
-| `labels` | no | renames the run captions, e.g. `{"before": "Round 1", "after": "Round 2"}`; a slide may override its own |
-| (run names) | — | `today`, `before`, `after`, or any short lowercase name (`round3`) — a slide comparing with an older round names that run in its own `runs`. `before` always shows left of `after` |
-| `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
-| `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
-| `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json`. **A `shoot` screen name (`settings/sound`, from `shoot --list`) needs no entry here** — the whole picture is the screen. A name with `/` or `#` is taken as one on sight; a one-word screen (`projects`) is recognised because a run's own `manifest.json` lists it, so shoot it before you validate |
-| `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` — the build every pane comes from |
-| `branch` | contract | the branch the contract will be built on |
-| `stage` | no | `ask`, `design`, `contract`, `review` or `accept` — the tool then checks this deck carries that stage's slide. It never says which OTHER slides are allowed |
-| `sources` | contract | `{deck key: spec file}` for every deck a row may point back at |
+| `images` | pictures only | folder the cut crops land in, relative to the spec; must contain the spec's own name (warning otherwise: two decks would overwrite each other) |
+| `runs` | pictures only | every capture the deck can show: `today`, `before` and/or `after`, or any short lowercase name (`round3`), each a `shoot` output folder (`shoot.mjs <screens> --before <branch> --after <worktree> --out runs`). **Paths resolve from the spec's own folder**: write `runs/after`, not a workspace-root path. `before` always shows left of `after` |
+| `labels` | no | renames run captions, e.g. `{"before": "Round 1"}`; a slide may override |
+| `themes` | no | palettes offered; default all six. See "Themes" |
+| `theme` | no | only `"fixed"`: keep the spec's own theme order |
+| `crops` | no | extra crop regions `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on 1440x900 shots; shared names are in `scripts/ui-review/crops.json`. A `shoot` screen name (`settings/sound`) needs no entry: a name with `/` or `#` is taken on sight, a one-word screen is recognised from a run's `manifest.json` |
+| `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` |
+| `stage` | no | on a non-growing deck: `ask`, `design`, `contract`, `review` or `accept` (the build checks the deck carries that stage's slide; nothing else is forbidden). On a growing deck it means something else, see below |
+| `build` | no | `"before"` or `"after"`. `"after"` marks the after-build deck (see "After the build: two required lists") |
+| `grows`, `rounds_before`, `retired`, `stale_answers` | growing only | see "A deck that grows" |
+| `earlier`, `related` | non-growing | History button (below); ignored on a growing deck |
+| `branch`, `sources` | contract | old contract decks only |
 
-Fields on every step: `id` (unique, never reused), `surface` (the part of the app, in his
-words), `path` (how he would get there), `headline` (one sentence, 25 words max, no code
-words). A step may carry its own `themes` when its picture exists in one palette only.
-
-**Two tall pictures stay side by side** (2026-10-08): a before/after of a tall popup is shrunk to fit
-the screen beside each other rather than stacked full size — Destin can zoom with + for detail.
-The same holds for every **choice**: its designs are never stacked (composite designs too), and three
-or more tall designs open at the width that fills the row, the stage scrolling for the rest (2026-10-12).
-
-**`"crop": "<screen>@panel"`** cuts a close-up around that screen's panel in EVERY run and theme, plus
-16px — a popup that changed size gets one box covering both without measuring manifests. With no
-`highlight` written, a close-up whose change covers most of it boxes each run's own panel (no warning).
-
-**`"alsoChanges": ["Session details", "Resume → Organize"]`** on any slide lists the other screens a
-shared change reaches, in an "Also changes" card beside You'll notice — a yes is a yes to all of them.
-
-**A crop's SHAPE decides the page layout, and a tall one hides your Risk card.** The page
-tries every arrangement and keeps whichever shows the pictures largest: a wide crop puts
-What changed / You'll notice / Risk in a row UNDER the pictures, all three readable; a tall
-one puts them in a side column that is only about two cards deep, so the third is cut off
-mid-sentence and looks like a rendering fault. Crop to the part that carries your point —
-the greyed rows, the one card that changed — not the whole dialog around it. Measured
-2026-09-09: a 420x580 crop of a dialog clipped the Risk card at every viewport width and
-survived four rounds of shortening the words; recropping to 420x275 fixed it in one.
-Cropping the whole window instead is the opposite failure — the pane grows until the
-cards fall off the bottom of the screen entirely.
-
-### A slide names the pictures it shows
-
-`runs` on a SLIDE — a list of names the deck captures — says which pictures that slide puts on
-screen; without one it shows all of them. `labels` on a slide renames its own captions.
-
-    {"id": "B-1", "crop": "themes", "runs": ["after"], "labels": {"after": "Today"}, …}
-
-One picture is a BRIEF wherever it appears: the buttons read *Yes build it / No leave it* and
-`highlight` is required, because there is nothing to diff. Two are an APPROVE: *Yes keep it /
-No revert it*, `highlight` defaults to `"auto"`. So one deck now holds a "should we build
-this?" slide, a "keep it or revert it?" slide, a written question and the contract — the ask
-decides where a deck ends, not the screenshot rule.
-
-**A NEW state that is already built** (offline, incognito, a menu opened — something with no
-"before") is still one picture, but it is not a brief: add `"new": true` and the buttons read
-*Yes, keep it / No, remove it*. Refused on a two-picture slide (that already reads keep / revert)
-and on choice and decide slides. A `"review"` deck counts it as its review slide. WHY (games-social
-friction, proposal 5): every new practice state of the Games round reached Destin as "Yes build it"
-over something already in the app.
-
-WHY it moved (Destin, 2026-09-06): the capture set is a property of the picture, not of the
-deck. While it sat on the deck, a brief slide and an approve slide could never share a page and
-he was handed two links for one ask.
+Fields on every step: `id` (unique, never reused), `surface` (part of the app, his words), `path`
+(how he gets there), `headline` (one sentence, 25 words max, no code words). A step may carry its
+own `themes` when its picture exists in one palette only.
 
 ## The step kinds
 
 ### Approve — a change he can see (`approve.json`)
 
-Two runs; the rig boxes the pixels that differ.
+Two runs; the rig boxes the pixels that differ. Answers: **Yes keep it / No revert it / Other**.
 
 | Field | Required | What it is |
 |---|---|---|
-| `crop` | yes | which region of the screenshots to show — a `crops` name, a `shoot` screen name, or a close-up of one: `"<screen>@WxH+X+Y"` in the screen's own CSS pixels (the 1440×900 coordinates, whatever density it was shot at) — or a LIST of these laid side by side as one picture (below, "Several screens in one picture") |
-| `changed` | yes | the *What changed* card — the real difference, one or two sentences |
-| `notice` | yes | the *You'll notice* card — what is different for him while using it |
-| `risk` | no | the *Risk* card. Keep it to one sentence |
-| `measured` | no | a number that proves it (must contain a digit) |
-| `highlight` | no | on a `shoot` screen with one run: the screen's own panel, measured by `shoot` (write none). `"auto"` (the default on two runs), `"panel"` (the screen's own panel in every run — for a whole-page change, where `"auto"` would warn "whole-surface"; on a close-up `screen@WxH+X+Y` it boxes the part of the panel inside the close-up), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
+| `crop` | yes | region to show: a `crops` name, a `shoot` screen name, a close-up `"<screen>@WxH+X+Y"` (screen's own CSS pixels at 1440x900), `"<screen>@panel"` (that screen's panel in every run and theme, +16px), or a LIST of these (below) |
+| `changed` | yes | the *What changed* card, one or two sentences |
+| `notice` | yes | the *You'll notice* card |
+| `risk` | no | the *Risk* card; one sentence (warning over 40 words) |
+| `measured` | no | a number that proves it (warning with no digit) |
+| `highlight` | no | `"auto"` (default on two runs), `"panel"` (the screen's own panel in every run, for whole-page changes), `{"text"}`, `{"selector"}`, or `{"box": [l, t, w, h]}` in **percent of the crop**; a box leaving the picture is refused, a hand box warns. On a one-run `shoot` screen write none |
+| `alsoChanges` | no | `["Session details", …]`: other screens a shared change reaches, an "Also changes" card; a yes is a yes to all |
 
-He answers **Yes keep it / No revert it / Other**.
+**A crop's SHAPE decides the layout.** A wide crop puts What changed / You'll notice / Risk in a row under the pictures; a tall one puts them in a side column about two cards deep, and the third is cut off mid-sentence. Crop to the part that carries the point (a 420x580 dialog crop clipped Risk at every width; 420x275 fixed it). Cropping the whole window is the opposite failure. Two tall pictures stay side by side (shrunk to fit; he can zoom with +); three or more tall designs open at the width that fills the row and the stage scrolls.
+
+**A slide names its pictures.** `runs` on a slide lists the captures it shows (default: all), `labels` renames its captions. One picture is a BRIEF (*Yes build it / No leave it*, `highlight` required); two are an APPROVE. `"new": true` on a one-picture slide of an already-built new state (offline, a menu opened) reads *Yes, keep it / No, remove it* and counts as a `review` deck's slide.
+
+**Several screens in one picture.** `crop` may be a list of crop names or `{"crop", "label"}` (label four words at most); pieces are cut from one run and laid side by side, top-aligned, 16px apart, labels in a strip over each. Works on approve / brief / decide and each choice variant. `"auto"` still boxes the change across two runs; `"panel"`, `{"text"}` and `{"selector"}` are refused (no one panel); a hand `box` is percent of the composite.
 
 ### Brief — something not built yet (`brief.json`)
 
-The same fields over ONE picture — the deck captures one run, or the slide names one of the
-deck's with `runs` — so the buttons read **Yes build it / No leave it / Other** (or, with
-`"new": true`, **Yes keep it / No remove it**). With one picture there is nothing to diff, so a
-legacy crop needs a `highlight`; a `shoot` screen boxes its own panel, and a close-up
-(`screen@WxH+X+Y`) or a list of screens is already the focus and gets no box.
-
-### Several screens in one picture
-
-`"crop"` may be a list: each entry is a crop name (a screen, a close-up, a legacy name) or
-`{"crop": "<name>", "label": "<four words at most>"}`. The pieces are cut from the same run and
-laid side by side, top-aligned, 16 CSS px apart; with any label, a strip over every piece carries
-it in the theme's text colour (gaps and strips are see-through, so the deck page shows between).
-
-    "crop": [{"crop": "chat/games#offline@420x200+1010+70", "label": "No internet"},
-             {"crop": "chat/games#incognito@420x200+1010+70", "label": "Incognito"}]
-
-Works on approve / brief / decide steps and on a choice variant (each concept a folded + opened
-pair). `"auto"` still boxes the change across two runs; `"panel"` and `{"text"}` / `{"selector"}`
-are refused (there is no one panel, nothing measured); a hand `box` is percent of the whole
-composite. A missing piece is reported by number and the picture is not made. WHY (games-social
-friction, proposal 4): three rounds running hand-cut composites into fake `shots-<plan>` folders.
+The same fields over ONE picture: **Yes build it / No leave it / Other**. A legacy crop needs a `highlight`; a `shoot` screen boxes its own panel; a close-up or list is already the focus and gets no box.
 
 ### Choice — several pictures of one thing (`choice.json`)
 
-`variants[]` instead of `crop`/`changed`/`notice`; at least two. Pictures come from the deck's
-last run.
-
-| Variant field | Required | What it is |
-|---|---|---|
-| `id` | yes | what his answer records |
-| `label` | yes | the design's name, two or three words |
-| `crop` | yes | this design's own picture |
-| `summary` | no | one or two sentences on what it is and what it costs |
-| `measured` / `risk` / `highlight` | no | a number, this design's own risk, a box inside its picture |
-
-He **picks one**, or *None of these* / Other.
-
-Pictures `shoot` can take come from `shoot`. Pictures it cannot (a Remotion still, a frame of a
-film, a montage) go in a run folder by hand: `<run>/shots-<plan>/<theme>/<shot>.png`, with the spec's `crops` naming
-`["<plan>", "<shot>", "WxH+0+0"]` at the picture's own size. Every run's picture must be the
-same size, or the before/after diff cannot box the change.
+`variants[]` (at least two) instead of `crop`/`changed`/`notice`; pictures come from the deck's last run. Variant fields: `id`, `label` (two or three words), `crop`, optional `summary`, `measured`, `risk`, `highlight`. He picks one, or *None of these* / Other. Pictures `shoot` cannot take (a Remotion still, a montage) go in a run folder by hand: `<run>/shots-<plan>/<theme>/<shot>.png` plus a `crops` entry; every run's picture must be the same size. **A warning**: pictures of different widths with a later one wider than the first overflow the row; crop every design to one size, or put the widest first.
 
 ### Decide — written options over one picture (`decide.json`)
 
-`crop` + `highlight` (required — one picture, nothing to diff) + `options[]` (at least two on a
-picture deck). Option fields are the question option fields below, plus `cost` (what taking it
-costs). Optional `today` / `problem` / `proposal` draw the question's three cards above the
-options, as on a words-only question (before 2026-10-08 a picture decide dropped them silently).
-He **picks one**, or Other.
+`crop` + required `highlight` + `options[]` (at least two). Option fields are the question's, plus `cost`. Optional `today` / `problem` / `proposal` draw the question's three cards above the options. He picks one, or Other.
 
 ### Clip — motion, hover, a transition (`clip.json`)
 
-`clip` is a scene name (files at `<images>/clips/<name>--<run>.webm` with a `.webp` poster
-beside each, made by `scripts/ui-review/record-pair.sh`) or `{"before": "…", "after": "…"}`
-paths. Make the recordings first; `build` refuses a step whose files are missing. For anything
-he should DRIVE, use Live instead.
+`clip` is a scene name (`<images>/clips/<name>--<run>.webm` with a `.webp` poster, made by `scripts/ui-review/record-pair.sh`) or `{"before", "after"}` paths. Record first; the build refuses missing files. For anything he should DRIVE, use Live.
 
 ### Live — panes of the running app (`live.json`)
 
-Deck-level `live.worktree` names the build — a checkout holding `desktop/`, so for a session
-worktree it is `sessions/<key>/youcoded`, not `sessions/<key>` (that fails serve with "not a
-checkout with a desktop/ folder"). A pane shows one of two things:
+Deck-level `live.worktree` names a checkout holding `desktop/` (for a session worktree: `sessions/<key>/youcoded`). A pane's `live`:
 
-| A pane's `live` (or a variant's) | What it shows |
+| `live` | Shows |
 |---|---|
-| `{"surface", "round", "candidate"}` | ONE authored design out of `compare/registry.tsx`. `round` is required, because candidate names repeat across rounds |
-| `{"app": "<scenario>"}` | a real screen of the app: `default`, `empty`, `no-providers`, `refused`, `stress`, `site`. Add `"stalled": true` for the parked-turn state |
-| `{"view": "<name>"}` | one of the standalone surfaces: `tools`, `compare`, `assistant-final`, `attachments`, `session-pills` |
-| `"params": {"key": "value"}` (on an app pane) | extra workbench switches, text to text, e.g. `{"openPage": "page-home", "pagesHome": "connected"}` opens a Pages screen. A step-level `params` and a variant's add up (the variant wins a clash). Keys the pane already sets (`mode`, `child`, `theme`, `latency`, `scenario`, `view`, `stalled`) are refused at build time |
+| `{"surface", "round", "candidate"}` | one authored design from `compare/registry.tsx`; `round` required |
+| `{"app": "<scenario>"}` | a real screen: `default`, `empty`, `no-providers`, `refused`, `stress`, `site`; `"stalled": true` for the parked-turn state |
+| `{"view": "<name>"}` | `tools`, `compare`, `assistant-final`, `attachments`, `session-pills` |
+| `"params": {...}` on an app pane | extra workbench switches, text to text; keys the pane already sets (`mode`, `child`, `theme`, `latency`, `scenario`, `view`, `stalled`) are refused |
 
-`variants[]` (each naming its own candidate or screen) makes it a pick-one; without them it is
-yes/no. Four panes is the cap. An app pane needs no `changed` — nothing changed, it is the app
-as it is. ONE app pane with no `paneWidth` and no `height` **fills the stage**, so the whole
-screen is usable without scrolling; give it either and it takes that size instead, and a ROW of
-panes is a comparison and always keeps its declared size. An optional step-level `hint`
-appears **above** the panes in the scrolling comparison area; put operating directions there
-when they must be seen before the first interaction. The header's `path` is hidden at laptop
-widths and the question cards sit below the panes, so neither can carry those directions.
-
-WHY the app rows exist (Destin, 2026-09-06): a candidate is a SKETCH somebody wrote for one
-comparison. Asking him to operate a real screen had no shape at all, so a live slide could only
-ever offer drafts of things.
-
-`serve` boots that worktree's workbench; `--no-live` leaves a workbench you already started
-alone. Every pane is the renderer against a FAKE backend: real to look at and touch, but no
-model answering and nothing saved. For "does it actually work", use a Try-it slide.
+`variants[]` makes it a pick-one, else yes/no; four panes at most. An app pane needs no `changed`. ONE app pane with no `paneWidth`/`height` fills the stage; a row of panes keeps its declared size. A step-level `hint` shows above the panes (operating directions go there: the header `path` is hidden at laptop widths). `serve` boots that worktree's workbench; `--no-live` leaves one you started. Panes are the renderer against a FAKE backend: for "does it work" use Try-it.
 
 ### Try it in the real app (`tryit.json`)
 
-A words slide carrying `dev`. Served, it renders an **Open the dev window** button that starts
-the instance for you, plus the exact `run-dev.sh` line and a copy button; opened as a plain file
-the button is hidden, because there is no server to ask. The page posts the STEP id, never a
-command — `serve` rebuilds the line from the spec on disk, so a page cannot ask the server to run
-something else. The window it opens is a dev instance on shifted ports with its own profile, and
-outlives the deck's server, so submitting does not close what you are still looking at.
-
-| Field | Required | What it is |
-|---|---|---|
-| `dev.worktree` | yes | the checkout the dev window runs — a worktree name or a branch |
-| `dev.label` | no | the window title, so concurrent dev windows are tellable apart. Defaults to the worktree |
-| `dev.offset` / `dev.profile` | no | a second instance alongside one already running; pass both or neither |
-| `changed` / `notice` | yes | what the dev window runs, and what to watch for |
-| `yes` / `no` | no | default to *Yes, it works* / *No, it does not* |
-
-WHY (Destin, 2026-09-06): a live pane cannot show that something WORKS, only how it looks and
-feels. The contract's `live-app` rows were therefore answered in chat and written down by hand
-— the loose prose the deck exists to replace. This slide puts that verdict in the answers file
-with everything else. It is also the slide a `review` stage accepts.
+A words slide carrying `dev`. Served, it shows an **Open the dev window** button (the page posts the STEP id; `serve` rebuilds the command from the spec) plus the exact `run-dev.sh` line; as a plain file the button is hidden. The window is a dev instance with its own profile and outlives the server.
+`dev.worktree` (required), `dev.label`, `dev.offset` / `dev.profile` (both or neither), `changed` / `notice` (required), `yes` / `no` (default *Yes, it works* / *No, it does not*). A `review` stage accepts it.
 
 ### Question — words only (`questions.json`)
 
-`"words": true` and no picture of any kind.
+`"words": true`, no picture of any kind (a `picture` file is the one exception, below).
 
 | Field | Required | What it is |
 |---|---|---|
-| `headline` | yes | the question itself, 25 words max |
-| `today` | yes | what exists now — which part of the app, what it does for him |
-| `problem` | yes | what goes wrong or is missing, as he experiences it |
-| `proposal` | yes | what would change, as he would notice it. With no options, say what Yes / No / Don't know each lead to |
-| `options[]` | no | the written answers (see below); one is enough, three is usually the most he can hold |
+| `headline` | yes | the question, 25 words max |
+| `today` / `problem` / `proposal` | yes | what exists now / what goes wrong, as he experiences it / what would change. 60 words each at most. With no options, say what Yes / No / Other lead to |
+| `checked` | no | one plain sentence on how and when the Today claim was confirmed, shown behind the (i) beside "Today". State it for every Today you assert: a stale Today was the worst fault in past decks |
+| `options[]` | no | written answers; one is enough, three the most he can hold |
 | `risk` | no | the *Risk* card |
+| `picture`, `caption` | no | a file beside the spec; a question about how something looks carries one |
+| `reuse` | no | see "Reuse" |
 
-| Option field | Required | What it is |
+Option fields: `id`, `label` (two or three words, never "(recommended)"), `pros[]` / `cons[]` (each 25 words max; one of these or `summary` required), `summary`, `measured` (a digit), `recommended` (true on at most ONE), `picture`/`caption`, `reuse`. With options he picks one, or Other; without: **Yes / No / Other**.
+
+**How he answers**: `"pick": "several"` (any slide with `options` or `variants`) lets him choose more than one (`{"v": "picks", "picks": [...]}`); `"answer": "words"` (a words slide with nothing to pick) makes the answer a line he types, `prompt` is the placeholder (`{"v": "wrote", "text"}`). A typed answer has no separate note box: one text box per answer.
+
+### Statement — something you assert
+
+A words step with `changed` + `notice` and no `today`; `yes` / `no` relabel the buttons (under five words each). Exempt from the three-part rule.
+
+### Contract and acceptance (old work only)
+
+A step with `rows[]` (`id`, `statement` 25 words, `checkedBy`, `threshold`, `source`, `guard`, `note`), graded by `review-cards.py acceptance`. Retired: write none for new work; a feature with a signed contract finishes under it (`contract-check`).
+
+## Lists: rows he ticks or changes
+
+A words step with `"calls": [{"id", "call", "why"}]` and no `today` is a LIST. `call` and `why` are one line each, 40 words at most. A list is ONE kind of row, named by a small label above its title:
+
+| Kind | Made by | What he can do |
 |---|---|---|
-| `id` | yes | what his answer records |
-| `label` | yes | two or three words. Never write "(recommended)" into it |
-| `pros[]` / `cons[]` | one of these, or `summary` | short lines about HIS experience, never the code |
-| `summary` | no | a sentence beside (or instead of) the lists |
-| `measured` | no | a number (must contain a digit) |
-| `recommended` | no | `true` on at most ONE option; the page badges it |
+| **For your information** | `"context": true` | nothing; no pencils or chips, never answered or counted, every row dashed |
+| **Yours to change** | no `context`, no row with `result` | a tick ("This is fine") and a pencil per row |
+| **Results** / **Checks** | every row carries `result` | a status pill per row (see "The checks menu") |
 
-With options he **picks one**, or Other. Without them: **Yes / No / Other**.
+The builder refuses a list with some rows having `result` and some not, and a `context` list with any `result`. A question he must answer is never a row: it is its own card.
 
-### Statement — something you assert (also `"words": true`)
+**Tick or change** (a "Yours to change" list; `tickable`): two real buttons at each row's right (tick, pencil, at least 32px, `aria-pressed`). One state per row: writing a comment takes the tick off; pressing the tick on a row with a comment does nothing (the bin beside the comment removes it); a lit tick pressed again unlights it. The pencil pressed again keeps a saved comment; a small x removes it. **Nothing counts as fine until he ticks it**; moving on accepts nothing. The card's pill is silent until he acts, then "3 of 5 looked at" / "All looked at". At Done a warning counts and names the rows he neither ticked nor changed; he can still send. The finish table says "No changes · 2 not looked at". Saved: `answers[step].ok = {"<row id>": true}` beside `changes`; `v` is `other` if any row changed, `yes` only when every row is ticked and none changed, else unset. Old files (`accepted: true`, or `changes` with no `ok`) still read as "untouched rows were fine" (`spec.row_states`); `page.js rowState` is its twin. A mark he draws on a row's picture is that row's comment (pencil lit, tick off, counted as looked at); removing the mark undoes it.
 
-A words step with `changed` + `notice` and no `today`. `yes` / `no` relabel the buttons (under
-five words each). Exempt from the three-part rule; this is what acceptance rows are.
+Other row fields:
 
-### Contract — the definition of done (`contract.json`)
+- **`trail`**: `[{"round", "asked", "built", "said"}]` (at least one of asked/built/said; 60 words each; his words quoted as written), plain lines ABOVE the row's words on a non-growing deck. On a growing deck a trail opens only from the topic's past line. Put it on every item from the second round on.
+- **`more`**: a string or an object (any part 120 words max). A "Yours to change" row that is open on a growing deck carries `today` / `problem` / `change` (what is different now), optional `pros` / `cons` lists, drawn like a question's cards behind a small More / Less at the end of the plain line; the build refuses an open such row whose `more` has none of today / problem / change. Older `does` / `returns` / `why` and a bare string still draw (answered rows, results lists; on a non-growing deck as labelled lines under the row, always visible). A `run`/`skip` check row MUST carry `more` with at least `does` and `why`.
+- **`state`**: `"new" | "changed" | "settled"` on a row or written question (non-growing decks only): small headings New / Changed / Already settled with counts, in that order; no state pill. `"fold_settled": true` on the list folds the settled group into one row. When any item has a state, the first paged page opens with "Since last round: 3 new, 2 changed, 11 settled."
+- **`reuse`**: see "Reuse".
+- **`picture`** / **`before`**: a file beside the spec (image, or `.webm` / `.mp4` proof), `before` only with a `picture`: a before/after pair. See "Pictures, marks, attachments".
+- **`decided`** (walkthrough rows): the words he said that this row came from.
+- **`gallery: true`** on a list lays rows out as tiles, pictures first (a before/after tile is two wide), cards starting open; **`numbered: true`**: rows are steps in order.
+- **`visual: true`** (growing decks): see below.
 
-One step carrying `rows[]`. Each row: `id`, `statement` (25 words max — it becomes the
-acceptance deck's headline word for word), `checkedBy` (`mechanical` | `deck` | `live-app` |
-`human`), `threshold`, `source` (`<deck key>#<step id>`, or `review:<file>#<finding id>` for an
-accepted review finding), `guard` (required on a mechanical row), optional `note`. He answers
-**Yes that is done / No something is missing**.
+No row may carry `wording` (refused): wording is edited on the real screen, see "Wording".
 
-### Acceptance — the graded contract
+### Reuse
 
-Not hand-written: `review-cards.py acceptance <contract>` merges
-`<feature>.contract.verdicts.json` into a deck of statement steps, one per row.
+`"reuse": {"from": ["Settings → About popup", …], "new": ["the star button", …], "note": "one sentence"}` on a written option, a row, a question or a picture step: *Reused from the app* and *New in this design*, as a small (i) beside the words. The assistant works this out itself (which kinds of parts the screen needs, every existing app part that could do the job, adopt it) and records it here; it is never a chat question.
 
-## How he answers: several at once, or words he types
+## Pictures, marks, attachments
 
-Two fields that are about the ANSWER rather than the picture, so they sit on any slide that
-can carry them.
+- **Areas.** He drags a rectangle on any picture (a screenshot step's, a written question's, a row's); a drag under 3% makes none; taking the last away withdraws the answer. Saved as `answers[step].marks[] = {pic, x, y, w, h, text}` in percent of the picture; `pic` is the run name on a screenshot step, `the picture` or `option <id>` on a written one, `row <id>` / `row <id> before` on a row. Areas with no button pressed store `v: "other"`. Nothing can be dragged on a video or in a `context` list.
+- **Attachments tiles.** A row's pictures draw as ONE Attachments card (closed: a line with count and chevron; opened: a strip of tiles, one per picture or clip, named "Before" / "After" or by `before_name` / `picture_name`). The whole tile opens the picture viewer; a tile shows "n comments" once he wrote on it. Cards on a `gallery` list start open.
+- **The picture viewer** opens over the whole window at TRUE size (the area scrolls; True size / Fit and Before / After switches; comments in a strip at the right; the row's words as a box at the head of the strip). Shoot narrow (`--width 1000`) or crop to the changed part, or he scrolls sideways. A picture more than 3 times wider than tall fills its tile cropped from the top-left; over 5 times wider gets a build warning. On touch screens a drag scrolls: he taps **Comment on an area**, then drags one (`?touch=1` makes a desktop browser behave so, for checking). Pictures on questions and options use the card's full width.
+- **Video proof** plays with native controls, never by itself; the server answers whole files only, so keep clips short.
+- **Pasted pictures and paths.** Pasting or dropping an image into any comment box saves it in `<spec stem>.attachments/` (`POST /attach?name=…`, images only judged by their bytes, 10 MB, at most 200) and shows a pill; one line starting `/` or `~/` pasted becomes a path pill. Saved: `answers[step].attach["note" | "text" | "change:<row id>"]`, `marks[i].attach`, `pageAttach[<page id>]`, `notesAttach`. Stage the folder only if the pictures should outlive the scratch round. Opened as a plain file, an image paste says it needs the served deck.
+- **Voice.** Every text box has a microphone while served (`voice-helper.mjs`, the app's method: a sentence is closed at a pause, two seconds of quiet stops it).
 
-| Field | On | What it does |
-|---|---|---|
-| `"pick": "several"` | any slide with `options` or `variants` | he may choose more than one; clicking a chosen one again unpicks it. One line above the cards says so. Unpicking the last leaves the slide unanswered |
-| `"answer": "words"` | a words slide with nothing to pick | the answer is a line he types. `prompt` is the placeholder |
+## Page markers — question decks are pages
 
-They land in the answers file as `{"v": "picks", "picks": ["a", "c"]}` and
-`{"v": "wrote", "text": "…"}`, and print in the summary as `picks a, c` and `wrote "…"`.
+A deck whose every step is words-only with no contract renders as scrolling PAGES; questions share one page until a marker `{"id", "page", "intro"}` starts the next. `page` is a non-empty title, `intro` optional, **no other field** (a marker carrying anything else was meant to be a step). With no marker first, the first page takes the deck's `title`. Two markers in a row (an empty page) are refused; markers belong only in question decks (not with pictures, not with a contract). Progress counts pages; Prev / Next move between them; the page title is said once, in the header; a page opens in a card. Err on MORE questions per page. A deck with pictures keeps one step per screen, with a header **Notes** button (saved as top-level `notes`, printed first as `general notes — "…"`); a paged deck has a comment box at the foot of every page instead (`pageNotes[<marker id>]`, printed first, in page order).
 
-WHY (Destin, 2026-09-06): every slide ended in pick-exactly-one or yes/no, so "A and C, drop B"
-and "call it *this*" had nowhere to go but the free note — a paragraph a session has to
-interpret, not an answer the tool records as a decision.
+## A deck that grows
 
-## What stage the deck is at
+One deck per feature (`templates/growing.json`, code `deck/grows.py`). `"grows": true`; you edit the SAME spec every round and re-build it, never a new spec; a deck without `grows` is unaffected. Pictures and a contract are refused on the deck itself, but a question or row may carry a `picture` (a file beside the spec; a row also `before`).
 
-`"stage"` names where in a feature this deck sits, and the build refuses one that is missing
-the slide its stage exists for: **ask** needs a question, **design** something to look at and
-choose between, **contract** the definition-of-done table, **review** a before/after or a
-recording or live panes, **accept** a statement to accept or reject. Nothing else is forbidden —
-an ask deck may carry the contract it leads to. Leave `stage` out and nothing is checked.
+**Stage.** Top-level `"stage"` (required): `understanding`, `design`, `before`, `after`, in that order; the deck is AT one. Every page marker carries a `stage` too, stages in order. Refused: a page of a LATER stage, no page at the deck's stage, an OPEN topic on a page of an EARLIER stage (answer it or move it), a `reopened` topic outside the current stage. Advance `stage` when a stage is done; finished stages become the record.
 
-## Page markers — how a question deck is split
+**What he sees.** The header is one row: stage names at the left (on a phone, the current stage with "2 of 4", press for the others), page bars in the middle, a filled **Submit feedback** at the right; a "Round N" chip; no page title or question numbers in it. The stage line is a picture: finished stages carry a check and open their pages read-only ("Finished", no Reopen, never counted); the current stage is highlighted; later ones dimmed. Every page of the current stage has its own bar: pages with no open topic come first (green), then pages needing him (grey until every open topic is dealt with, then green); the deck lands on the first page that needs him. A finished page shows its answered cards with Reopen (current stage only; reopening turns its bar grey). On a phone with so many pages that each bar would be under 12px, the bars become one split bar with "3/11". The last page's foot has only Back: the header button is the one way to submit. A page is a heading + ONE plain line (`intro`, 160 characters max).
 
-A QUESTION deck — every step words-only, and no contract step — renders as scrolling PAGES
-rather than one step per screen. Every question shares one page until a marker starts the next.
-A deck that defines or grades done (a `rows` step) is picture-free too but is NOT paged: it
-keeps one step per screen, so its table gets the full width and its first question is on the
-first screen rather than under a 3,600px table.
+**Answered topics.** On a page with open and answered topics, one folded row "Previously answered" (title, count, chevron) opens in place: each answered topic folded to title, round(s), "You answered", his comments in full, `resolved` ("What I did about it"), and Reopen. "Show the full card" opens the original card from the same code as a live one, locked, with his pick, note, ticks, row comments and drawn areas (`given.marks`, read-only). Answered topics are never counted in "x of y", the segments, the finish dialog or either summary unless reopened. Open topics with a past show ONE muted line and a "More" link opening the story (`trail`) and his earlier answers, oldest first. A row on a growing deck is a bold line, one plain line, and `more` behind More / Less. The build refuses a title, row line or page line naming a round or a step id (`round 7`, `R-1`); `trail`, `more`, `past`, `resolved`, `checked` and answered topics may.
 
-    {"id": "P-2", "page": "Where saved searches live", "intro": "one line"}
+**New tags.** A topic is **new** when it is open and its id was not in the deck as he last saw it (the newest earlier round's build). Every build records its topic ids in `built.ids`, which rides into his answers file; an older file without them is read from the spec at its `built.commit` (`git show`). No earlier round, or neither available: nothing is new; a reopened topic never is. A page whose open topics are ALL new and that holds no answered topic gets one big "New" beside its heading and none on its cards; any other page tags only its new cards, small, beside the title. Nothing to write in the spec.
 
-- `page` is the page's title and must say something; `intro` is optional; **no other field is
-  allowed** — a marker that carries anything else was meant to be a step.
-- With no marker before the first question, the first page is titled with the deck's `title`.
-- A marker's page runs to the next marker, so two markers in a row is an empty page and is
-  refused.
-- Markers belong only in a question deck — not in one with pictures, not in one with a contract.
-- The progress bar counts pages; Prev / Next move between pages. A marker gets no answer row,
-  no summary line and cannot be a contract `source`.
-- Err on MORE questions per page: a page is one set he can hold in his head at once.
+**How rounds are found.** Each submit's answers are moved aside as `<stem>.answers.<stamp>.json` once a rebuilt deck is served; those dated files, in time order, are the earlier rounds, and a submitted live answers file not yet moved counts too (so rebuilding right after he answers already builds the next round). Round number = `rounds_before` (default 0) + earlier rounds + 1. Two files with one build stamp are two rounds unless the later carries `sent_before` (a re-send). `"stale_answers": {"<file's submitted time>": ["<id>", …]}` drops ids a file copied from the browser's old copy of the previous round. `build` of an answered growing deck is allowed.
+
+**What counts as answered.** A step (question or list, never a marker) is answered when the spec says so by hand — `"answered": {"round", "answer", "notes": [...]}` for a topic settled in an older separate deck, or a list of `{"round", "given": <his saved answer>}` oldest first (a topic answered again later is ONE topic listing every round; do not copy the latest round's file by hand, the tool reads it) — or an earlier round holds a real answer for the same id and the step has no `reopened`.
+
+**The routine, every round.**
+1. Read his answers. 2. Edit the same spec. For every topic where he asked for something other than a plain yes or pick (no, other, a note, a marked picture, a changed row, a row left not looked at) write ONE of `"reopened": "<one line of its past, 30 words>"` (open again, normally with a revised proposal) or `"resolved": "<what was done about it, 40 words>"` (stays answered). 3. For an open topic with a history but no reopening, `"past": "<one line>"` gives it the same fold. 4. Every page sits under a stage. 5. Add new topics; every Today carries `checked`. 6. Rebuild, `preview`, read the contact sheet, `serve`.
+
+**`visual: true`** on an open question or row: refused without a `picture`. A change he would see is judged from a picture, never from words: any row describing something he would see sets it.
+
+**Refused** (each message names the step and quotes him): his latest earlier answer was not a plain acceptance and the step has neither `reopened` nor `resolved`; an answered step gone from the spec and not in `"retired": {"<id>": "why"}`; a `trail` with no `reopened`/`past`/`answered` line to open from; `state` on a step or row; `answered` with `reopened` or `past`, or `reopened` with `resolved` or `past`; a line over its limit; `answered` without text `round` and `answer`; any growing field without `"grows": true`; a page with no, an unknown or out-of-order stage; a missing or unknown top-level stage.
+
+**State and gate.** The saved page state carries its build stamp (`built.at`); a page reads back only state from its own build, and only open (plus reopened) topics are saved or sent. `serve` refuses a save or submit from another build (409, `reason: "old-build"`; the old page says "out of date, reload") and, when the current build first saves over a file an older build left, keeps that file as `<stem>.unsent.<time>.json` (never read as a round). `state.reopened = {"<id>": true}` sits beside the answers. The summaries and `gate.py` skip topics settled in an earlier round.
+
+## Walkthroughs
+
+`templates/walkthrough.json`: the whole of one piece of work as pages of lists, shown before the build and again after with the same pages: 1 What you asked for and what you got (`decided` quotes him) · 2 Every screen that changed (`gallery`) · 3 Behind the scenes (`numbered`) · 4 Choices I made · 5 Checks, ending with what is left for him. Drop a page that would be empty; never add a sixth. A growing deck's after-build stage plays this role.
+
+**The checks menu.** Before the build the Checks page lists every suggested check and reviewer as a row with `result: "run"` (Will run) or `"skip"`, each with `more` (does / returns / why for THIS build). A comment on a check row is passed to that checker as "also check this". After the build each chosen check is a row with `result` `pass` / `fail` / `unclear` and, where there is one, a picture as proof; never report a check not run. `todo` means "left for him to try". A status is a pill at the row's right; pressing it opens the four statuses and his choice (`answers[step].results[<row id>]`) wins over yours, counts as a change, shows "changed from: …", and its menu marks the starting value "Suggested"/"my result". Add `"check": "code-review"` to the row that reports the code review.
+
+**After the build: two required lists.** An after-build deck (`"build": "after"`, a growing deck at stage `after`, or a file named `<feature>.walkthrough.after.json`) is refused without:
+- **What changed while building**: a words list with `"list": "changed-while-building"` and at least one row. Each row says `"built": "as planned"` or `"built": "adjusted"`; an adjusted row says why in `why` (at least 3 words). His words: "what did you have to adjust".
+- **Found in review**: `"list": "found-in-review"`, required once a row carrying `"check": "code-review"` has a result of pass / fail / unclear. One row per finding in plain words (never the reviewer's raw report); when it found nothing, ONE row with `"none_found": true` and a plain sentence.
+Both are lists he ticks or changes: a `context` list or result chips on them is refused. A deck that is not after-build is unaffected.
+
+**The done gate.** `review-cards.py walkthrough-check <feature>.walkthrough.json [<after.json>]` exits 1 unless: the before-walkthrough was submitted; every request row (one with `decided`, or one he commented on) has an after row `"from": "<before step>/<row>"` or is named by an after row `"dropped": "<why>"`; every check left on has a result row; the after-build deck carries the two lists above; and the after-build deck was submitted with no change asked (a change, edit, marked area, fail/unclear status, a No, or any note) and no "Yours to change" row not looked at (rows settled in an earlier round of a growing deck are skipped). It compares against the before-walkthrough as it was at the commit in its answers file (`built.commit`, via `git show`), and notes when it falls back to the current file.
+
+## Wording
+
+Wording is never asked before the build and never as a text box per label. After the build: `node scripts/shoot/shoot.mjs <screen> --page --themes <one> --out <folder>` saves `<theme>.html` (the screen's own elements and styling, all code removed by `scripts/shoot/freeze.mjs`); copy it beside the spec and add `{"id", "words": true, "surface", "path", "headline", "screen": "<file>.html"}` with no `calls`, `options`, `today` or `answer`. The deck shows it in a frame opened zoomed on the screen's panel (up to 1.5×; "Whole screen" shows all). Every run of text, and the grey hint in an empty box, can be clicked and retyped; nothing can be pressed. Each change is listed under the frame with "Put back" and saved as `answers[step].edits[<key>] = {from, to, state}`; the summary prints `reword "old" → "new" — seen with: <state>`. A screen left alone is accepted when he moves on.
+
+- Edits are keyed by the original words (a second identical text is `words #2`; over 80 characters: first 60 plus the length), so a change reappears wherever the same words are found; edits in a state he left stay listed, dimmed. `state` is a line read off the frozen screen (dialog title, selected tabs, opened controls) so a session can re-open the screen. Old `edits[<n>] = {from, to}` still read.
+- Only text inside the screen's panel that is really visible is editable, never `[data-entry-key]`, `.quick-chip`, `.status-bar`, `[data-model-chip]`, `.input-bar-container`, `[data-session-strip]` (one person's own state). Text drawn at run time (terminal, chart) cannot be edited.
+- **`"liveScreen": "settings/about"`** (a `shoot --list` name; the deck needs `live.worktree`; `screen` optional) adds a switch **Use it / Edit words** when served and the practice app builds: Use it runs the app in the frame on that screen, Edit words freezes it as it stands (same `freeze.mjs`). Plain file, `--no-live`, or a failed build: no switch, the saved file shows. The practice app is built like live panes (`serve.py _ensure_app`).
+- Saved screens are scrubbed (handlers, `javascript:` addresses, meta refresh, form targets, objects, remote pictures, `@import`), framed without scripts, and the builder refuses one still carrying any (`spec.live_code_in`); re-save an old one.
+- **Early, on a mockup, only when he asks:** give a `screen` step on any frozen `.html` beside the spec (a subfolder is fine): a saved `shoot --page` file, or a static page at `mock/<name>.html` with `<html data-frozen="WxH" data-frozen-panel="x,y,w,h">`, inline styles, no script, handler or network load.
 
 ## What the builder refuses
 
-`build` writes no page at all when any of these hold; it names the step and the field to use.
+`build` writes no page when any of these hold; each names the step and the field.
 
-Every step: a missing `id`, `surface`, `path` or `headline`; a duplicate `id`; a headline over
-25 words; a code word (`token`, `selector`, `component`, `reducer`, `handler`, `prop`, `props`,
-`ipc`, `react`, `dom`, `css class`, `tailwind`, `primitive`, `z-index`) in any text he reads; `themes`
-that is not a non-empty list.
-
-Questions:
-
-- `… missing today (a question says what exists, what goes wrong, and what would change — today / problem / proposal)`
-- `… today contains "Proposal:" — put it in the step's proposal field` — the inline labels
-  `Today:`, `Problem:`, `Proposal:`, `Pro:`, `Pros:`, `Con:`, `Cons:`, `Upside:`, `Downside:`
-  are refused inside `today`, `problem`, `proposal` and `summary`, by field name.
-- `… "(recommended)" in a label — set "recommended": true on the option instead`
-- `… two options are recommended — at most one`
-- `… an option needs pros, cons or a summary`
-- `… pick must be "one" or "several"`, `… pick "several" needs options or variants to pick between`
-- `… a written answer and a list to pick from are two different questions — drop one`
-- `… prompt is the placeholder in a written answer — add "answer": "words"`
-- `… a words step has no crop — there is no picture` (also `clip`, `highlight`, `variants`, `live`)
-
-Page markers: `a page marker carries only page and intro`; `a page marker needs a title in
-"page"`; `pages are for question decks — this deck has pictures`; `pages are for question decks
-— this deck defines done (it has a contract step)`; `an empty page`.
-
-Stages: `stage "<x>" is not one of ask, design, contract, review, accept`, `a "<stage>" deck
-needs <the slide it exists for>`.
-
-Placeholders: `… headline is still a placeholder — replace the "TODO: …" line with what actually
-changed on this page and what Destin will notice`. Any field of any step whose text starts
-`TODO:` blocks the build. `selfie` writes them on purpose — see below.
-
-Pictures: a missing crop file, an unknown crop name, an unresolved highlight box, `one picture
-and nothing to compare it with — this slide needs a highlight`, `"auto" highlight needs a before
-and an after run`, `runs names <x>, which the deck does not capture`.
-
-A list crop: `a list crop lays several pictures side by side — give at least two`, `piece N of the
-crop list needs a crop name (a list inside a list is not allowed)`, `piece N of the crop list
-carries only "crop" and "label"`, `unknown crop "<x>" in the crop list`, a label over four words or
-with a banned word, `"panel" highlight needs ONE shoot screen crop`, and (at crop time) `a picture
-made of several screens has no element to measure`.
-
-`"new"`: `"new" is true or absent`, `"new" is for ONE picture with no before — a before/after slide
-already reads keep / revert`, `"new" is for a one-picture keep-or-remove slide, not a choice` (or a
-decide step).
-
-Warnings (printed, but the page is still written): more than three options; a hand-placed
-`box`; a `measured` with no digit; a `risk` over 40 words; an `images` folder that does not
-contain the spec's name; **a choice whose pictures are different widths, with a later one wider
-than the first** — the page sizes the whole row by the first picture, so the row overflows and the
-outer pictures are cut off (`… the row is about N% too wide …`). Crop every design to one size, or
-put the widest first. WHY (games-social friction, proposal 6): 340 / 420 / 420 crops cut two
-drafts in round 4 and nothing said so.
+- **Every step:** missing `id`, `surface`, `path`, `headline`; duplicate `id`; headline over 25 words; a code word (`token`, `selector`, `component`, `reducer`, `handler`, `prop`, `props`, `ipc`, `react`, `dom`, `css class`, `tailwind`, `primitive`, `z-index`) in text he reads; `themes` not a non-empty list; any field starting `TODO:` (`selfie` writes them on purpose).
+- **Questions:** missing `today`/`problem`/`proposal`; an inline label (`Today:`, `Problem:`, `Proposal:`, `Pro:`, `Pros:`, `Con:`, `Cons:`, `Upside:`, `Downside:`) in those fields or `summary`; "(recommended)" in a label; two recommended options; an option with no pros, cons or summary; `pick` not `"one"`/`"several"`, or `"several"` with nothing to pick; a typed answer with a list to pick from; `prompt` without `"answer": "words"`; a words step carrying `crop`, `clip`, `highlight`, `variants` or `live`; over the word caps (60 per part, 25 per pro/con).
+- **Lists:** mixed rows (above); a `run`/`skip` row without `more`; `wording` rows; a `before` with no `picture`; a picture path that is absolute, has `..`, or is missing; `list` / `built` / `check` misuse (above).
+- **Page markers:** extra fields, no title, in a deck with pictures or a contract, an empty page.
+- **Pictures:** missing or unknown crop, an unresolved highlight, one picture with nothing to compare (needs a highlight), `"auto"` without a before and after, `runs` naming an uncaptured run; list crops (fewer than two pieces, nesting, extra piece fields, unknown piece, label over four words or with a banned word, `"panel"` needing ONE shoot screen); `"new"` must be true or absent and is for ONE picture with no before (not choice or decide).
+- **Stages:** unknown `stage`; a `"<stage>"` deck missing its slide; growing refusals above; `build` not `before`/`after`.
+- **Warnings** (printed, page still written): more than three options; a hand `box`; `measured` with no digit; `risk` over 40 words; a shared `images` folder; choice pictures of different widths; a picture over 5 times wider than tall.
 
 ## The answers file
 
 `<spec stem>.answers.json`, written on every click and again on Submit:
 
-    {"deck": "<key>",
-     "started": "<iso>", "submitted": "<iso>",
-     "answers": {"<step id>": {"v": "yes|no|other|pick",
-                               "pick": "<option or variant id>",   // when v is "pick"
-                               "dk": true,                          // only in files from before round 2 ("Don't know"); never written now
-                               "note": "…"}}}
+    {"deck": "<key>", "started": "<iso>", "submitted": "<iso>",
+     "built": {"at": "<iso>", "commit": "<short>", "ids": [...]},
+     "answers": {"<step id>": {"v": "yes|no|other|pick|picks|wrote", "t": "<when>",
+                               "pick": "<option or variant id>", "note": "…",
+                               "changes": {}, "ok": {}, "results": {}, "marks": [], "edits": {}, "attach": {}}},
+     "notes": "…", "pageNotes": {}, "reopened": {}}
 
-A note carries no tag: a note is a note (Destin, 2026-09-04). Old files carrying `note_kind`
-still load; the field is ignored. Serving a deck whose answers were already submitted moves the
-old file aside as `<stem>.answers.<stamp>.json` and starts a fresh review.
+A note carries no tag; old files with `note_kind`, `dk`, `asks` or `accepted` still load. Each answer's time `t` shows beside "answered" and on the finish screen; `built` (when and from which version the deck was built) rides along. Serving a deck whose answers were submitted: if the page on disk is the SAME build he answered, the submitted copy is kept as `<stem>.answers.<when>.json` and the deck reopens with his answers, editable, under a line saying when he sent them (`sent_before`); a second Submit replaces the first. A REBUILT deck starts empty, so re-serve an answered deck with `serve --no-build`. The archive of a submitted review is never overwritten.
 
-## What he sees when he submits
+**The finish screen** replaces the step on submit: a tick, "Feedback submitted", every answer read back in a table with labels (never ids) and named as the page does ("Page 2, Question 3 of 3"); `‹ Back to the deck` and the header's `Submitted ✓` toggle; the deck is read-only after. Reopened, it lands on the finish screen. The page says "Sent. You can close this tab." While served, `<stem>.serve.json` holds the pid and URL (a second `serve` of the same spec refuses; the page you are looking at is the file the server started on, so rebuild and ask him to reload). Saves are locked with their own temp file, a saved `submitted` is never removed by a later autosave, non-object bodies get 400, symlinks leaving the deck folder are not served, a recording is cancelled when the page stops polling, and a page flushes a pending save when its tab hides.
 
-The step is replaced by a **finish screen**: a tick, "Feedback submitted", and every answer read
-back in a table. It exists because the server exits on submit — after that there is nowhere else
-to read the answers, and the old behaviour (a greyed-out button on the last step) was
-indistinguishable from a click that did nothing. `‹ Back to the deck` and the header's
-`Submitted ✓` toggle between the two; the deck itself is read-only from then on. Re-opening a
-submitted deck lands on the finish screen, not on a step full of dead buttons.
-
-While a deck is being served, `<spec stem>.serve.json` beside it holds the pid and the URL — a
-second `serve` of the same spec refuses rather than rebuilding the page under the running one.
-The server's root redirects to the deck and folders never list.
-
-## The printed summary
-
-`serve` prints this when he submits (`wait` and `record` print the same), and its exit is the
-signal that the review is over:
+**The printed summary** (`serve` prints it on submit; `wait` and `record` print the same; its exit is the signal the review is over):
 
     saved-searches-questions · submitted 2026-09-05 04:58 · 2 yes · 0 no · 1 other · 2 picked · 0 skipped
     Q-1 yes
     Q-2 pick under-box — "keep it to three"
     Q-3 other
 
-One line per step, in spec order, page markers skipped. `pick <id>` is the option he chose,
-`none` is *None of these* on a pick-one and `other` is Other. (`don't know` appears only when
-reading an answers file saved before round 2.)
+One line per step in spec order, markers skipped; `pick <id>`, `none` is *None of these*, `other` is Other. Changed rows, areas, words, attachments and tick states print under their step: `ticked as fine — N rows`, `not looked at — "<row words>"`, `area N on row <id> ("<row words>")`, `reword …`, `attached to <box> — picture "…" saved at <path>`. `summaryOf(state)` in `page.js` and `summary()` in `serve.py` print the same text for the same state (a test feeds one state to both).
+
+## Themes
+
+A deck opens on the theme Destin's app is on, read from `~/.claude/youcoded-appearance.json` (a plain file, never held open): that theme moves to the front of `themes`, or is added when the deck has no pictures or its crops for it exist. When nothing was shot in it `build` says so and opens on the spec's first theme. `--theme <slug>` overrides; `"theme": "fixed"` keeps the spec's order. A theme whose manifest names a font family is drawn in it (a Google Fonts address is loaded when the deck opens).
+
+## History on a non-growing deck
+
+`"earlier": ["<older round>.json", …]` (spec files beside this one, newest first) and `"related": [{"title", "path", "how"}]` (`how`: one line, 40 words) add a History button to the header listing each earlier round's questions with his answers read-only, and the related decks as small buttons at the top of the first page. One topic, one folder. A growing deck has no History button and ignores both.
+
+## Design rules for what a deck draws
+
+Buttons follow the design guide: one filled button per view (the foot's Next / Done / header Submit), everything else outlined in `--edge-strong`, never a green or red outline; the chosen answer is an accent outline with a tick; the note box is at the left and Yes / No / Other at the right of one line. The card state pill is a status, not a control (a tinted pill with a dot); a list has none until it has something to say. **No coloured bar at the left edge of anything** ("fingernail styling"): his words are quoted and italic, nothing more; a test fails the page if any element has one. Never restate in words what the layout shows. In drawings made for him keep what is the deck's own, do not dress a deck as an app screen, and add no status words beside controls that already show the status. Bare text without a card is ignored as clutter.
 
 ## Commands
 
@@ -422,525 +288,21 @@ reading an answers file saved before round 2.)
 
 | Command | What it is for |
 |---|---|
-| `build <spec> [--theme SLUG]` | cut the crops, resolve every highlight, write the page. Refuses (no page) on any rule above |
-| `preview <spec> [--sizes 1440x900,1280x800,1024x768] [--themes …] [--out DIR]` | the built deck as pictures: one PNG per page × size × theme (every theme the deck carries, unless `--themes`) plus `contact.png`, in `<spec dir>/preview/<spec name>/` (emptied first, so no other deck's pages sit beside them), plus `contact-<theme>.png` per theme when the deck has several — far easier to read. **Look at the contact sheet before you serve.** Needs `google-chrome-stable`; exit 2 without it, exit 1 if the page logged an error |
-| `serve <spec> [--port N] [--timeout MIN] [--no-build] [--no-live]` | build, serve on 127.0.0.1, save answers as they arrive, exit when he submits. Prints `[deck] http://…` and **opens nothing** — put that line in chat as the last line of your turn. Run it in the background |
-| `wait <spec> [--timeout MIN]` | block on the answers file alone, for a session that no longer holds the `serve` process |
+| `build <spec> [--theme SLUG]` | cut crops, resolve highlights, write the page; refuses (no page) on any rule above |
+| `preview <spec> [--sizes 1440x900,1280x800,1024x768] [--themes …] [--out DIR]` | the built deck as pictures, one per page × size × theme plus `contact.png` (and `contact-<theme>.png`), in `<spec dir>/preview/<spec name>/` (emptied first). **Read the contact sheet before you serve.** Needs `google-chrome-stable` (exit 2 without, 1 if the page logged an error) |
+| `serve <spec> [--port N] [--timeout MIN] [--no-build] [--no-live]` | build, serve on 127.0.0.1, save answers as they arrive, exit on submit. Prints `[deck] http://…` and opens nothing: put it in chat as the last line of your turn. Run in the background |
+| `wait <spec> [--timeout MIN]` | block on the answers file alone |
 | `record <spec> '<pasted summary>'` | write the submitted answers file from the page's copy box, for a deck he answered as a plain file |
-| `selfie [--before <ref>] [--out DIR] [--dry-run]` | the deck reviewed on a deck: renders a fixture carrying every kind with the deck code at `--before` (default `origin/master`) and with this worktree's, then writes an approve deck of the two, boxed by pixel difference. Run it for any change to `page.css`, `page.js`, `page.html.tmpl` or `deck/fixture/`. **It does not serve.** Every step's `headline` and `changed` come out as `TODO:` placeholders the build refuses: you write, per step, what moved and what he will notice — the commit subjects since `--before` are seeded in each step's `_comment` to start from, and the run ends by listing the steps still to write plus the `serve` command that follows |
-| `contract-check <feature>.contract.json` | every row's source resolves to an answered step and every mechanical guard exists (exit 1 lists what does not); then `ok:` / `todo:` lines for the sign-off and the acceptance deck |
-| `acceptance <feature>.contract.json` | merge the grader's verdicts into `<feature>.contract.acceptance.json`, ready to serve |
-
-## Themes
-
-A deck opens on whatever theme Destin's app is on, read from
-`~/.claude/youcoded-appearance.json` (the app rewrites it on every appearance change; it is a
-plain file, never held open, so reading it is inside the live-app safety rule). That theme is
-moved to the front of `themes`, or added there when the deck has no pictures or its crops for
-that theme already exist. When nothing was shot in it, `build` says so and opens on the spec's
-first theme. `--theme <slug>` overrides; `"theme": "fixed"` keeps the spec's own order, for a
-deck whose point IS one theme.
+| `selfie [--before <ref>] [--out DIR] [--dry-run]` | the deck code reviewed on a deck: renders a fixture of every kind with the code at `--before` (default `origin/master`) and with this worktree's, writing an approve deck of the two. Run it for any change to `page.css`, `page.js`, `page.html.tmpl` or `deck/fixture/`. It does not serve; every `headline` / `changed` comes out `TODO:` for you to write |
+| `walkthrough-check <before.json> [<after.json>]` | the done gate (above) |
+| `contract-check <feature>.contract.json`, `acceptance <contract>` | old contract work only |
 
 ## Order of work
 
-1. Copy the template for the kind you need; write the steps.
-2. `build` — fix every refusal it names.
-3. `preview` — read `preview/<spec name>/contact.png` (and single pages when the sheet is too tall to
-   read). A defect you can see there is one he would see.
-4. `serve` in the background; put the printed `[deck] http://…` line in chat as the last line
-   of your turn, and stop.
-5. Its exit is the notification; read the summary it prints.
+1. Copy the template for the kind you need; write the steps. 2. `build`; fix every refusal. 3. `preview`; read `preview/<spec name>/contact.png` (single pages when the sheet is too tall): a defect you see is one he would see. 4. `serve` in the background; put the printed `[deck] http://…` line last in chat, and stop. 5. Its exit is the notification; read the summary.
 
-To change a picture on a deck he is looking at, `build` it again and tell him to reload — the
-server keeps serving the file it was started on; only a second `serve` of the same spec is refused
-(2026-09-09).
-
-A deck he has ALREADY answered is re-served with `serve --no-build` — never rebuilt. Rebuilding
-a historical deck means "fixing" the record of a past decision, and ten committed specs
-(seven archived, three still under `docs/active/`) no longer build against today's field names.
-That they fail loudly is correct; leave them as the record they are.
+A deck he has ALREADY answered is re-served with `serve --no-build`, never rebuilt (rebuilding a historical deck "fixes" the record; ten old specs no longer build against today's fields, which is correct, leave them). A growing deck is the exception: you rebuild it each round.
 
 ## Tests
 
-`cd scripts/ui-review/tests && python3 -m unittest test_spec test_words test_contract test_live
-test_tokens` (no binaries; also in CI). The renderer and the picture commands need Chrome and
-`magick`: `python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests
--p 'test_*.py'` and `node --test scripts/ui-review/tests/deck-render.test.mjs`.
-
-## Added in the 2026-11-09 rethink
-
-Source: Destin's answers in `docs/active/design/2026-11-09-review-deck-rethink/`.
-
-- **One text box per answer.** A question answered by typing (`"answer": "words"`) has no
-  separate note box. A calls list has none either.
-- **`checked`** (on any question with `today`): one plain sentence saying how and when the
-  Today claim was confirmed. Shown behind the small (i) beside "Today". State it for every
-  Today you assert; a stale Today was the worst fault in past decks.
-- **`picture` + `caption`** (on a written question and on each option): a file beside the
-  spec. A question about how something looks carries one. This is an instruction, not a
-  refusal.
-- **Areas.** He can drag a rectangle on any picture (a written question's picture or a
-  screenshot step) and comment on it. The answers file holds them as
-  `answers[step].marks[] = {pic, x, y, w, h, text}`, with the rectangle in percent of the
-  picture; `pic` is the run name on a screenshot step, `the picture` or `option <id>` on a
-  written one. An area with no button pressed is stored as `v: "other"`.
-- **Calls list**: a words step with `"calls": [{"id", "call", "why"}]` and no `today`. Small
-  choices you made yourself, one line and its reason each (40 words at most). Each stands
-  unless he opens its pencil (round 3; before that a "Change this" button); his words arrive as
-  `answers[step].changes[<call id>]`.
-- **Word caps**: `today`, `problem`, `proposal` are 60 words each at most; each pro or con 25.
-- **Build stamp**: the chip shows when the deck was built and the short version it was built
-  from; the same goes into the answers file as `built`. Each answer already carries `t`, the
-  time he gave it, now shown beside "answered" and on the finish screen.
-- **Voice**: every text box has a microphone while the deck is served (`voice-helper.mjs`).
-- The printed summary lists changed calls and areas under their step's line.
-
-## Added in round 3 (2026-11-10)
-
-Source: `review-deck-rethink.round3.answers.json`. Where this contradicts the section above,
-this wins.
-
-- **One pencil per list row.** "Change this" and "More context" are gone; the pencil opens one
-  comment box and his words arrive as `answers[step].changes[<row id>]` — a change, a question
-  or a stray thought, his to say. (`asks` appears only in answers from round-2 decks.)
-- **No "All fine".** A list has no answer button. When he moves to another page or presses
-  Done, every list on the page he is leaving that he did not touch is saved as `v: "yes"`. A
-  list on a page he never opened stays unanswered.
-- **Row pictures** are thumbnails at the row's right edge. `before` beside `picture` makes a
-  before/after pair. A click opens the picture large inside the deck (never a browser tab);
-  dragging on the large view marks an area exactly as on the small one.
-- **`wording` rows are retired** (round 4): the builder refuses them. See "Editing the words
-  on the real screen" below.
-- **`gallery: true`** on a list lays the rows out as tiles, pictures first — the "every screen
-  that changed" page of a walkthrough. A before/after tile is two columns wide.
-- **Notes about anything else**: a Notes button in the header, on picture-style decks only (a
-  deck with no page markers, one step per screen). Those decks have no page foot, so the button
-  and the "Notes about anything else" row of the finish table are their only place for a general
-  comment — both stay. Saved as the top-level `notes` string in the answers file and printed first
-  in the summary (`general notes — "…"`). A question deck (paged) has no header Notes button: it
-  has the comment box at the foot of every page instead (round 4, below).
-- **Question decks**: the page title is said once, in the header; Back sits directly left of
-  the one Next button at the foot; a list carries no "Question n of m" label.
-- **Voice** follows the app's method (`voice-helper.mjs`): a sentence is closed off at a pause
-  and not heard again, passes are chained a fifth of a second apart, and two seconds of quiet
-  after speech stop the microphone. While listening the microphone shows four level bars and
-  a clock inside the box. Still no custom vocabulary.
-
-### "New" tags on a growing deck, and the final check (round 16)
-
-A topic is **new** when it is open and its id was not in the deck as he last saw it (the newest earlier round's
-build). Every build records its topic ids in `built.ids`, which rides into his answers file; an older file
-without them is read from the spec at its `built.commit` (`git show`). No earlier round, or neither
-available: nothing is new. A reopened topic is never new. A page whose open topics are ALL new and that holds
-no answered topic gets one big "New" tag beside its heading and none on its cards; any other page tags only
-its new cards, small, beside the title. Nothing to write in the spec.
-
-`walkthrough-check` compares the build against the before-walkthrough as it was at the commit in its answers
-file (`built.commit`), and prints a note when it falls back to the current file (no commit, not in git).
-
-### Editing wording early, on a mockup (only when he asks)
-
-Wording is normally edited last, on real screens. When he asks to edit wording or elements earlier, prepare a
-mockup and give him a `screen` step on it, outside the normal order. A `screen` step takes any frozen `.html`
-beside the spec, a subfolder included: save one from the workbench with `shoot --page`, or write a static
-page at `mock/<name>.html` with `<html data-frozen="WxH" data-frozen-panel="x,y,w,h">` (the second is the
-part to zoom on), inline styles, and no script, handler or network load. Then `"screen": "mock/<name>.html"`.
-
-### Editing the words on the real screen (round 4, 2026-11-10)
-
-Wording is never asked before the build, and never as a text box per label ("this system is
-terrible… directly edit text on the real ui surface so i can see it in context"). After the
-build:
-
-1. `node scripts/shoot/shoot.mjs <screen name> --page --themes <one> --out <folder>` saves
-   `<theme>.html` beside each picture: the screen's own elements and styling with all code
-   removed (`scripts/shoot/freeze.mjs`). Copy it beside the spec.
-2. Add a step `{"id", "words": true, "surface", "path", "headline", "screen": "<file>.html"}`.
-   No `calls`, `options`, `today` or `answer`.
-
-The deck shows the file in a frame, opened zoomed on the screen's panel (the popup or menu,
-up to 1.5×); "Whole screen" shows all of it. Every run of text, and the grey hint in an empty
-box, can be clicked and retyped; the layout re-wraps as the app's would. Nothing on it can be
-pressed. Each change is listed under the frame with "Put back" and saved as
-`answers[step].edits[<key>] = {from, to, state}`; the summary prints `reword "old" → "new" —
-seen with: <state>`. A screen he leaves alone is accepted when he moves on, like a list. Text
-drawn by code at run time (a terminal, a chart) is a picture in the file and cannot be edited.
-
-**`"liveScreen": "settings/about"`** (round 7b, 2026-11-10: "the dropdown menus in that about
-popup should probably still work?") — the screen's name as `shoot --list` prints it. `screen`
-may be left out (a live-only step) or kept as the picture shown when the app cannot run. The deck
-needs `"live": {"worktree": "<name>"}`. When the deck is **served** and the practice app builds,
-the card gets a switch, **Use it / Edit words**: Use it is the practice app running in the frame,
-opened on that screen (menus, fold rows, tabs all work); Edit words freezes it as it stands with
-the same `freeze.mjs` function `shoot --page` uses and arms the editing above. Switching back
-returns to the same running app. A step with a saved file opens on Edit words; a live-only step
-on Use it. Opened as a plain file, served `--no-live`, or with an app that fails to build, there
-is no switch and the saved file shows as before (a live-only step says it needs the served deck).
-No deck without such a step builds or starts the app any differently.
-- **Edits are keyed by the original words** (a second identical text is `words #2`; text over 80
-  characters is its first 60 plus its length), not by position, so a change made in one state
-  reappears wherever the same words are found. Edits made in a state he has left stay listed
-  (dimmed) under the frame, with Put back. `state` is a short line read off the frozen screen:
-  the dialog's title, the selected tabs, and each opened control (`About, Your account
-  (optional) open`) — a session re-opens the screen like that to see the words in place. Old
-  answers with `edits[<n>] = {from, to}` (a position) still read and print.
-- **What can be edited:** only text inside the screen's panel (the top-most dialog, found the way
-  `shoot` finds it, plus any menu opened over it) that is really visible there, and never text
-  inside `[data-entry-key]` (chat messages — the running app only; the saved file drops it),
-  `.quick-chip`, `.status-bar`, `[data-model-chip]`, `.input-bar-container` or
-  `[data-session-strip]`: one person's own state, not copy everyone sees. Changes show only in
-  Edit words, not in the running app.
-- The practice app is built the way live panes build it (`serve.py` `_ensure_app`; the freeze
-  function ships in `DECK.live.freeze` only when a step names `liveScreen`). A screen that needs
-  other practice data (`scenario`, `params` in the screen list) reloads once under it; the
-  screen list's own `open` click steps and `viewport` are not replayed (the frame is 1440x900).
-
-### Also added in round 4
-
-- **Status pills are his to change.** A row's `result` (`pass`, `fail`, `unclear`, or `todo` for
-  "left for him to try") is a pill at the row's right; pressing it opens the four statuses.
-  His choice arrives as `answers[step].results[<row id>]`.
-- **A comment box at the foot of every page** replaces the header Notes button on question
-  decks only (paged decks): `pageNotes[<page marker id>]`, printed first in the summary. WHY:
-  "nah i wanted like an extra more visible input region at the bottom of each page". Picture-style
-  decks keep the header button (see "Notes about anything else" above).
-- **The picture viewer.** Any picture opens over the whole window with its comments beside it
-  and every picture of the page in a strip; it stays open while he drags areas and types.
-  Shoot pictures narrow (`--width 1000`) or cropped to the changed part so words stay readable.
-- **History.** `"earlier": ["<older round>.json", …]` (spec files beside this one, newest
-  first) and `"related": [{"title", "path"}]` put a History button in the header: every
-  earlier round's questions with his own answers and comments, read-only. One topic, one
-  folder; each new round names the rounds before it.
-- **Each card's state** is a pill at its top right (Not answered / Answered 12:47 / Accepted /
-  2 changes); a list's pill shows only once it has something to say.
-
-### Review fixes (2026-11-10)
-
-From a code review of the server, one of the page and a fresh-eyes tester. Where this contradicts
-an older section, this wins.
-
-- **A pencil pressed again keeps a saved comment**; it only returns to the box. A small x beside
-  the comment takes it away. An empty box still closes on the second press.
-- **`"context": true` lists** are never counted as answered, never accepted by moving on, and are
-  not in the summaries or the finish table. An untouched list that was accepted reads **Left as
-  listed** (not "Yes, build it") on the finish screen. The "Accepted" pill shows only once he has
-  moved on from the page (`accepted: true` beside `v: "yes"` in the answers) or changed a row.
-- **A status he changes** (any of them) counts as a change on the box and in the header, shows
-  "changed from: <what it was>" and an outline; the pill is a 32px-tall control with a chevron, and
-  its menu marks the starting value "Suggested" (run/skip) or "my result".
-- **The finish screen** names things as the page does ("Page 2, Question 3 of 3") and shows option
-  labels, never their ids; the submitted page says "Sent. You can close this tab."
-- **One summary:** the page's `summaryOf(state)` and `serve.py` `summary()` print the same text for
-  the same state (a test feeds one state to both). Page notes print in page order.
-- **A drag under 3% of the picture** makes no area; taking the last area away withdraws the answer.
-- **Saved screens** are scrubbed when `shoot --page` / Edit words freezes them (event handlers,
-  `javascript:` addresses, meta refresh, forms' targets, objects, remote pictures and `@import` are
-  removed), shown in a frame that may not run scripts, and refused by the builder if they still
-  carry any of those (`spec.live_code_in`). Re-save an old screen if the builder refuses it.
-- **A screen opened zoomed** fits the window's height too; a count of his edits sits above the frame.
-  Opened as a plain file, the page says words cannot be edited there.
-- **Serving:** saves are locked and use their own temp file; a saved `submitted` is never removed by
-  a later autosave; bodies that are not objects get 400; at most 200 attached pictures; the deck
-  folder's symlinks pointing outside it are not served; a recording is cancelled when the page stops
-  polling (or closes); the archive of a submitted review is never overwritten.
-- A page flushes a pending save when its tab is hidden or closed. A re-served deck that was already
-  submitted still starts a fresh review (the earlier answers are kept beside it) — by design.
-
-### Which starting point for a question about looks
-
-| He needs to judge… | Copy | Note |
-|---|---|---|
-| one change, before and after | `approve.json` | one full-window picture per step |
-| several designs of one thing | `choice.json` | three or four side by side; never a yes/no each |
-| one new screen with nothing before it | `brief.json` | `"new": true` once it is built |
-| a path through several screens | `walkthrough.json`, page 2 | tiles in the order a person meets them |
-| on-screen wording, after the build | a `screen` step | he types on a still copy of the real screen |
-| a whole piece of work | `walkthrough.json` | before the build and again after |
-
-## Added in round 7 (2026-11-10)
-
-Source: Destin's round-6 remarks on the deck itself. Where this contradicts a section above, this
-wins.
-
-- **Pictures in a row are an Attachments card of tiles.** A row's `picture` / `before` never draw
-  thumbnails at its right. Under the row's words sits a true copy of the app's Deliverables card
-  (`DeliverablesCard.tsx`): closed, one line (document glyph | "Attachments", the count, chevron at
-  the right); opened, a sideways strip of fixed-width tiles, ONE per picture or clip: the preview on
-  top, then its name ("Before" / "After", or the file name) and a small outlined open-arrow. The
-  whole tile is the button: it opens the full-window picture viewer with that row's words as the
-  title and its comments beside it; he drags a rectangle THERE, never inside the card. A tile
-  shows "n comments" on its corner once he has written on its picture. Cards on a `gallery: true`
-  list start open; others start closed; which he opened is remembered across page changes. The
-  viewer shows one picture, no arrows and no strip of other pictures. Areas keep the shape
-  `marks[] = {pic, x, y, w, h, text}`; for a row `pic` is `row <id>` (after / single) or
-  `row <id> before`. Nothing can be dragged on in a `context` list. (Destin, round 7: "a single
-  card for each image. clicking that should open our popup image screen/comment menu".)
-- **Pictures and file paths in any comment box become pills.** Paste (or drop) an image into a row
-  comment, an area comment, a question's note, a typed answer, the page-foot box or the general
-  notes box: the deck server keeps it in `<spec stem>.attachments/` under a name it makes itself
-  (`POST /attach?name=…`, raw image bytes; images only, judged by their bytes; 10 MB cap; same
-  Host/Origin check as every POST) and a pill with a small thumbnail, the name and an x appears under
-  the box. Paste text that is one line starting `/` or `~/` and it becomes a pill with the file's
-  name, the full path as its tooltip. Opened as a plain file, an image paste says it needs the served
-  deck. Saved shapes (a pill is `{kind: "image", name, path, url}` or `{kind: "path", name, path}`):
-  `answers[step].attach["note" | "text" | "change:<row id>"] = [pill…]`,
-  `answers[step].marks[i].attach = [pill…]`, `pageAttach[<page id>] = [pill…]`,
-  `notesAttach = [pill…]`. Printed in both summaries as `attached to <box> — picture "…" saved at
-  <path>` / `file <path>`; shown read-only after submit. The `.attachments` folder is not
-  committed by itself: stage it only if the pictures should outlive the scratch round.
-- **Buttons follow the design guide.** One filled button per view (the foot's Next / Done); answer
-  buttons and everything else are outlined in the full-strength outline (`--edge-strong`, not the
-  faint divider), never a green or red outline; on a question the note box is at the left and Yes /
-  No / Other at the right of the same line; the chosen answer is an accent outline with a tick, not a
-  second filled button. Written options no longer show their id as a chip (ids stay in the answers
-  file and summaries).
-- **The card state pill is a status, not a control.** A tinted pill with a dot, no outline, cannot be
-  pressed. A question says "Not answered" / "Answered 12:47". A list has NO pill until it has
-  something to say ("2 changes", or "Accepted" once he moves on); a `context: true` list never has one.
-  On a `context` list every row is dashed (the first used to be drawn solid) and nothing on it has a
-  pointer or a pencil.
-
-### Also added in round 7 (the history woven in; More; Built from; video proof)
-
-Source: Destin's round-6 remarks. Where this contradicts a section above, this wins.
-
-- **State is a group, never a badge.** A list row or a written question may carry `"state": "new"
-  | "changed" | "settled"`. A list with any stated row draws small plain headings with a count —
-  **New**, **Changed**, **Already settled**, in that order — and each row sits under its heading
-  in the order written; rows with no state come first under no heading. No row carries a state
-  pill: the only coloured pills on a page are real statuses (Passed, Unclear, …) and a card's
-  answered state. `"fold_settled": true` makes the settled group one closed fold row. (Destin,
-  round 7: the badges "don't really make much sense, not to mention the colors make them visually
-  confusing next to the unclear/pass/fail chips".)
-- **One "Details" fold per row.** `trail`, `more` and `reuse` on a list row (or `trail` / `reuse`
-  on a written question) all open from ONE fold row drawn like the app's `FoldRow`: a boxed line,
-  "Details" at the left, plain chips for what is inside ("2 rounds", "What it does", "Built
-  from"), the chevron at the right. There are no bare ">" openers and no underlined links
-  anywhere on a deck. `"trail": [{"round": "Round 3", "asked": "his words", "built": "what was
-  built", "said": "his reaction"}, …]` (each part optional, at least one of asked / built / said;
-  60 words each; his words quoted as written) draws one small block per round, then **Now**. Put
-  `state` and `trail` on every item from the second round on; leave them off in the first.
-- **Since last round.** When any row or question has a `state`, the first page of a paged deck
-  opens with one plain sentence: "Since last round: 3 new, 2 changed, 11 settled." Nothing in it
-  is pressable; the group headings do the navigating.
-- **Related decks at the top.** Each `related` entry may carry `"how"` (one line, 40 words at most)
-  saying how it relates; `related` entries are listed at the top of the first page as small outlined buttons, each with that
-  line, and also behind the header's History button. **History stays** as the full record.
-- **`more` on a list row.** `"more": {"does", "returns", "why"}` (any of them, 120 words each) or one
-  plain string: inside the row's Details fold, as labelled parts — *What it does*, *What comes
-  back*, *Why, for this build*. A row whose `result` is `run` or `skip` (a check
-  he switches on or off before the build) MUST carry `more` with at least `does` and `why`; the
-  builder refuses it otherwise ("a switch he cannot understand was his complaint").
-- **`reuse`: what a design is built from.** `"reuse": {"from": ["Settings → About popup", …],
-  "new": ["the star button", …], "note": "one sentence"}` on a written option, a list row, a
-  written question or a picture step. On a row or question it is a "Built from" part inside
-  Details; on an option card or a picture step's headline (where a fold would fight the click) it
-  is a small (i) hover tip. Either lists *Reused from the app* and *New in this design*. The assistant works
-  this out itself — which kinds of parts the screen needs, every existing app part that could do the
-  job, adopt it, say what is new — and records it here; it is never a chat question.
-- **Proof can be a video.** A row's `picture` / `before` may be a `.webm` or `.mp4` file beside the
-  spec. It is a tile like any picture (its first frame as the preview); the viewer plays it with native
-  controls, never by itself. No
-  area can be dragged on a video. (The deck server answers whole files only, so seeking inside a
-  long clip may be limited; keep proof clips short.)
-- **Invariants stated once, here.** Every `Today` carries `checked` (how it was confirmed), shown
-  behind the (i).
-
-## Changed in round 9 (2026-11-12)
-
-Source: Destin's round-8 remarks and round-9 answers. Where this contradicts a section above, this
-wins.
-
-- **One kind of row per card.** A list is one of three kinds and says so on a line at its head:
-  **For your information** (`"context": true`; no pencils, no result chips), **Yours to change**
-  (a pencil per row, nothing else), or **Results** (every row carries `result`; before a build,
-  run / skip checks, headed **Checks**). The builder refuses a list where some rows have a `result`
-  and some do not, and a `context` list with any `result`: split it. A question he must answer is
-  never a row; it is its own card. (Destin, round 8: "why is it the only row in this card that has
-  the unclear/etc dropdown chip?"; round 9, K-1.)
-- **There is no "Details" fold.** (Round 8: "what even is the point of this?… poorly styled text
-  dropped into a dropdown".) `trail` is drawn as plain lines ABOVE the row's (or question's) words:
-  "Round 3 · you" with his words quoted, "Round 3 · built" with what was built. `more` is labelled
-  lines UNDER the row's words (*What it does*, *What comes back*, *Why, for this build*), always
-  visible. `reuse` is a small (i) beside the words, everywhere. The fields and their limits are
-  unchanged. `fold_settled` still folds the settled group.
-- **The picture popup shows the picture at its true size.** It is no longer shrunk to fit the
-  window: the picture area scrolls, comments sit in a strip at the right (round 9, V-1), the header
-  has a True size / Fit switch, a Before / After switch when the row has both, and an ×. So shoot
-  narrow and close (`--width 1000`, or cropped to the changed part): a 2560-wide picture means
-  sideways scrolling.
-- **Touch screens:** a drag on a picture scrolls. He taps **Comment on an area** in the popup, then
-  drags one area (round 9, Q-4). With a mouse any drag draws, as before. `?touch=1` on the deck's
-  address makes a desktop browser behave as touch, for checking.
-- **Pictures on questions and options use the card's full width** (no height cap).
-- **Reopening an answered deck.** `serve` on a deck he already submitted, when the page on disk is
-  the same build he answered: the submitted copy is kept as `<stem>.answers.<when>.json`, and the
-  deck opens with his answers, editable, under a line saying when he sent them (`sent_before` in the
-  answers file); a second Submit replaces the first (round 9, Q-3). Until he submits again the live
-  answers file has no `submitted`; the dated copy is the record. A deck REBUILT since he answered
-  still starts empty, so keep using `serve --no-build` for an answered deck.
-
-## Changed after round 10 (2026-11-12)
-
-Source: the areas Destin marked on round 10's pictures. Where this contradicts a section above, this wins.
-
-- **No coloured bar at the left edge of anything.** He calls it "fingernail styling" and marked every
-  one: beside a quote of his words, beside a row's story, on an "unread" row. His words are quoted and
-  italic, nothing more. Drawings for him follow the same rule. A test fails the page if any element has one.
-- **A list's kind is one small label above its title** ("Yours to change", "Results", "Checks", "For
-  your information"), with no sentence after it. Never restate in words what the layout shows (design
-  guide, principle 3).
-- **A page's opening line sits in a card.** ("bare text with no card gets ignored easily as ai clutter".)
-- **The popup's title is the picture's short name**; the row or question it belongs to is said once, in a
-  box at the head of the comments strip.
-- **The theme's typeface.** A theme whose manifest names a font family is drawn in it; a Google Fonts
-  address in the manifest is loaded when the deck opens (round 10, L-3).
-- **In drawings for him:** keep what is the deck's own (the yellow header chip); do not dress a deck as an
-  app screen ("Esc · Back to chat" is not a deck part); no status words beside the controls that already
-  show the status ("i definitely dont like the weird new… change asked/fine/not looked at indicator things").
-
-## Tick or change (round 10)
-
-Source: Destin's round-10 answers, R-1 "Tick or change" and R-2 "Warn, list them, let me send anyway". Where
-this contradicts a section above, this wins.
-
-- **A "Yours to change" list** (`calls`, not `context`, no row with a `result`; `tickable` in spec.py and
-  page.js) gives each row two buttons at its right: a tick ("This is fine") and the pencil. The buttons
-  are real `<button>`s with `aria-pressed`, at least 32px; a lit one wears the answer buttons' accent
-  outline. No status words, dots or edge bars beside a row. Nothing counts as fine until he ticks it.
-- **One state per row.** Writing a comment takes that row's tick off. Pressing the tick on a row that has
-  a comment does nothing (the bin beside the comment is how a comment goes). A lit tick pressed again
-  takes it off.
-- **Moving on accepts nothing** for these lists (`acceptLists` skips them). Lists of facts, results,
-  checks and screens behave as before.
-- **The card's pill** is silent until he acts, then "3 of 5 looked at", then "All looked at". The header
-  count and the page segments count such a list as answered only when every row is ticked or changed.
-- **At Done**, a warning counts the rows he neither ticked nor changed and names them under their page and
-  list; he can still send. The finish table says "No changes · 2 not looked at".
-- **Saved shape:** `answers[step].ok = { "<row id>": true }` beside `changes`. The page always writes `ok`
-  (empty when nothing is ticked) once he touches a list, and never writes `accepted` for these lists.
-  `v` is `other` if any row changed, `yes` only when every row is ticked and none changed, otherwise unset.
-- **Both summaries** (`summaryOf` in page.js, `tick_lines` in serve.py) print `ticked as fine — N rows`
-  and, per row, `not looked at — "<the row's words>"`.
-- **The done gate** (`gate.py`): in the after-build walkthrough a row not looked at means NOT finished,
-  and the problem names the row.
-- **Old answers keep their meaning** (`row_states`): `accepted: true`, or a list with `changes` and no
-  `ok`, reads as "untouched rows were fine". Reopened, the first press writes those rows as real ticks.
-
-## A deck that grows (round 10)
-
-Source: Destin, rounds 1, 8 and 10 ("a single deck that kind of 'evolves' in response to my questions and
-keeps my earlier responses"; of the History button, "feels like you tacked on a sticky note"). Where this
-contradicts a section above, this wins. Template: `templates/growing.json`. Code: `deck/grows.py`.
-
-**One deck per feature.** Add `"grows": true` to the spec. You edit the SAME spec file every round and
-re-build it; you never start a new spec for the same feature, and `serve` prints the same file name each
-time. The deck moves through four stages (Understanding, Design, Before build, After build) by page. A
-deck without `"grows"` behaves exactly as it always did.
-
-**What he sees in round 2 and later.** The deck opens on the first page that still has an open topic. Open
-topics are on top, as before. Under them is one small heading, "Answered" with a count, and one compact card per
-topic he already settled (see "Changed after round 11" below: the question, "You answered" with his choice, his
-words in quotes, what you did about it, the round, **Reopen**). An open topic with a past shows ONE small plain line
-under its title and a "More" link that opens the story (`trail`) and his earlier answers, oldest first. The header
-shows "Round N" in the yellow chip; the stage the deck is at is a plain progress line under it. There is no
-History button, no "Since last round" sentence and no New / Changed / Settled headings. Answered topics are never
-counted in "x of y answered", the page segments, the finish dialog or either summary, unless he reopened them.
-
-**How rounds are found.** Each time he submits, `serve` moves the answers aside as
-`<stem>.answers.<stamp>.json` once a rebuilt deck is served. Those dated files, in time order, are the earlier
-rounds. A submitted answers file that has not been moved aside yet counts too, so rebuilding right after he
-answers already builds the next round. Copies carrying the same build stamp are one round (a same-build
-re-serve keeps a dated copy). Round number = `rounds_before` (default 0) + earlier rounds + 1. Use
-`"rounds_before": N` for a feature that already had N separate decks. `build` of an answered `grows` deck is
-allowed (it has no pictures to rewrite); other decks still refuse without `--rebuild-answered`.
-
-**What counts as answered.** A step (a question or a list, never a page marker) is answered when EITHER the spec
-says so by hand, `"answered": {"round": "Round 4", "answer": "Yes", "notes": ["his words"]}` (for a topic
-settled in an older, separate deck), OR an earlier round of this deck holds a real answer for the same step id and
-the step has no `"reopened"`.
-
-**The routine, every round.**
-1. Read his answers. 2. Edit the same spec. For each topic where he asked for something other than a plain
-yes or pick (he said no or other, wrote a note, marked a picture, changed a row, or left a row not looked at),
-write ONE of: `"reopened": "<one line of its past, up to 30 words>"` (the topic is open again, normally with a
-revised proposal) or `"resolved": "<what was done about it, up to 40 words>"` (it stays answered and shows that
-line). 3. For an open topic with a history but no reopening, `"past": "<one line>"` gives it the same fold. Its
-`trail` (round / asked / built / said) opens inside that fold and is never shown otherwise on a growing deck.
-4. Put every page under a stage: a page marker is `{"id", "page", "intro", "stage"}` with stage one of
-`understanding`, `design`, `before`, `after`, and the stages appear in that order. 5. Add new topics. 6. Rebuild,
-`preview`, read the contact sheet, `serve`.
-
-**What the tool refuses** (each message names the step and quotes him):
-- his latest earlier answer on a step was not a plain acceptance and the step has neither `reopened` nor
-  `resolved` ("his round 1 answer on "…" asked for a change; say what happened");
-- a step he answered earlier is gone from the spec and not listed in `"retired": {"<id>": "why, one line"}`;
-- a `trail` with no `reopened`, `past` or `answered` line to open from;
-- `state` on a step or row (answered topics sink by themselves);
-- `answered` with `reopened` (or `past`), or `reopened` with `resolved` or `past`; a line over its word limit;
-  `answered` without text `round` and `answer`;
-- any of the new fields on a deck without `"grows": true`; a page marker with no stage, an unknown stage or
-  stages out of order; a growing deck with pictures or a contract;
-- (round 11) no top-level `"stage"` (or an unknown one); a page of a LATER stage than the deck; no page at the
-  deck's stage; an OPEN topic on a page of an EARLIER stage (answer it, or move it to the current stage); a
-  `reopened` topic outside the current stage.
-`earlier` and `related` are ignored on a growing deck (not refused). A row's own `trail` inside a list keeps
-drawing as lines above the row.
-
-**The gate and summaries.** `serve.py`'s summary and `gate.py` skip topics settled in an earlier round, so the
-after-build gate does not call a list he already ticked "not looked at". Saved shape: `state.reopened =
-{"<step id>": true}` beside the answers.
-
-## Changed after round 11 (2026-11-14)
-
-Source: Destin on opening the growing deck: "it's very confusing that I can click around the different sections
-at the top and it jumps me between the sides… we're not editing prior sections of the deck once we've gotten to
-post build"; "what is that little dropdown section at the top of the questions?"; of the Answered strip, "It's
-not clear what the question was and how my response differed." Where this contradicts a section above, this wins.
-
-- **A deck is AT one stage.** Top-level `"stage"` (`understanding`, `design`, `before`, `after`) is required on a
-  growing deck (on any other deck `stage` keeps its old meaning, the slide checklist). Change it when a stage is
-  done; the pages of the stages behind it become the record.
-- **The stage line is a picture, not tabs.** Four names in order: earlier done, current lit, later dimmed, plus
-  "Stage 2 of 4" ("2 of 4 · Design" on a phone). No counts, nothing to press. Navigation, "x of y answered" and the
-  landing page cover the current stage's pages only.
-- **Earlier stages are a record.** One quiet "Earlier stages" link opens them read-only under a banner ("Nothing
-  here needs an answer", Back to the current stage). No answer buttons, comment boxes or Reopen; never counted. To change
-  something from an earlier stage he comments in the current one and you carry it forward.
-- **A topic's past is one muted line + "More"**, not a box with a chevron.
-- **An answered topic is a compact card:** title, "Round N", "You answered" with his choice (a tick-or-change list:
-  "3 of 5 rows ticked as fine"), his comments in quotes, "Done about it" (`resolved`), "Show the full question"
-  (read-only), and Reopen in the current stage only.
-
-## Changed after round 12 feedback (2026-11-14)
-
-Source: Destin's round-11 answers. On the answered cards: "i want them to look similar to how the original question would've been proposed/answered. also what about my history over rounds?"; on "Earlier stages": "too similar to the 'history' button… i should be able to just click back into understanding/earlier stages"; on rows: "often significantly lacking in context… we need to figure out how to better make each row self-contained"; on the page: "the numbering of questions is odd (… 1 of 1)", drop "page 3 of 3", and "'submit feedback' … fill it in". Where this contradicts a section above, this wins.
-
-- **Previously answered** replaces "Answered": one top-level card (small label, title, count) holding each answered topic. A topic starts folded: title, round(s), "You answered", his comments in full, `resolved` ("What I did about it"), Reopen (current stage only). "Show the full card" opens the original card from the same code as a live one, locked, with his pick, note, ticks and row comments on it.
-- **History over rounds:** `answered` may be a list, oldest first: `{"round": "Round 4", "given": <his saved answer, verbatim minus timing>}` or `{"round", "answer", "notes"}`. A topic answered again later is ONE topic listing every round. The answers file of the latest round is read by the tool itself (do not copy it by hand: the round would show twice).
-- **Stage line:** finished stages carry a check and are pressed to read their pages (marked "Finished", no Reopen, never counted); the current stage is highlighted and leads back; later stages are dimmed. No "Earlier stages" link, no banner.
-- **Header** is the same on every page: bars, saved note (space kept), filled "Submit feedback". No page title, no "page N of M", no question numbers.
-- **Page** = heading + ONE plain line (`intro`, max 160 characters, refused beyond).
-- **Rows** on a deck that grows: bold line, one plain line, `more` (a string, or does/returns/why) behind a small More / Less at the end of the plain line. The build refuses a title, row line or page line naming a round or a step id (`round 7`, `R-1`); `trail`, `more`, `past`, `resolved`, `checked` and answered topics may.
-
-## Changed after round 12 answers (2026-11-14)
-
-Source: Destin's round-12 answers. "why am i starting on a page full of completed questions?"; "why would we put the newly requested responses on the first tab and make me click back through all the prior answers to get to the end?"; "the card with the answered questions should be collapsible/expandable into a single row"; "progress bars in the middle, with understanding/design/before build/etc in the same single header row on the lefthand side"; "what we include in more should be… more similar to our existing context/pros/cons structure"; of a row about a look with no picture, "this is a visual question, but lacks a visual reference". Where this contradicts a section above, this wins.
-
-- **Only pages that need him are the path.** Bars, Back/Next, the landing page and "x of y" cover current-stage pages with at least one open topic. If none is open, the whole stage stays the path.
-- **Previously answered is one folded row** (title, count, chevron) at the foot of a page that has open topics; it opens in place. Pages with nothing open are reached from ONE folded row, "Everything answered earlier", at the foot of the LAST path page: subjects with counts, each opening its answered cards, read-only (no Reopen), with "Back to your questions". Finished stages still open from the stage line.
-- **The header is one row:** stage names at the left (on a phone: the stage on screen with "2 of 4"; press it for the others), bars in the middle, filled "Submit feedback" at the right. On the last page the foot has only Back: the header button is the one way to submit. On a phone with so many pages that each bar would be under 12px wide, the bars become one split bar with "3/11" beside it (press it to jump). A picture more than 3 times wider than tall fills its tile cropped from the top-left (the popup shows it whole); one more than 5 times wider gets a build warning, so shoot a taller area.
-- **Pictures:** a question or row of a growing deck may carry `picture` (and a row `before`), open or answered. Rows use the Attachments tiles and the true-size popup; `before_name` / `picture_name` rename the tiles ("Drawing you picked", "Built now"). `gallery: true` on a list opens its tiles. Areas he drew on a picture show on it in an answered card (carry his saved answer as `answered: [{round, given}]`; `given.marks` are drawn, read-only).
-- **A row's More** on a list he can change is labelled: `today`, `problem`, `change` (what is different now), optional `pros` / `cons` lists. It draws like a question's Today / Problem / Proposal. The build REFUSES, for an open such row, a `more` with none of today / problem / change. The old `does` / `returns` / `why` and a bare string still draw for answered rows and results lists.
-- **`"visual": true`** on an open question or row: the build REFUSES it without a `picture`. A change he would see is judged from a picture, never from words: any row describing something he would see sets it.
-- **Rounds:** two answers files with one build stamp are two rounds unless the later one carries `sent_before` (a re-send). `"stale_answers": {"<file's submitted time>": ["<id>", ...]}` drops ids a file copied from the browser's old copy of the previous round.
-- **The saved page state** is tied to its build: a browser copy from another build is ignored; only open topics (plus ones he reopened) are ever saved or sent.
-
-## Changed after round 13 answers (2026-11-15)
-
-Source: Destin's round-13 answers. "where did the other pages go then? i didn't ask you to eliminate the others"; "they should remain their own pages at the top, but just be before the pages that need me with a green status bar"; "tf is the difference between 'previously answered' and 'everything answered earlier'?"; "right margin seems weird/inconsistent here"; "just commenting on an image should count as a response/pencil/edit click"; and, of his old comment in the new box, "why was this text carried over from my last round of answers?". Where this contradicts a section above, this wins.
-
-- **Pages are back, finished first.** Every page of the current stage has its own bar. Pages with no open topic come BEFORE pages with one, in their own order. Finished bars are green (`--yes`); a page needing him is grey until every open topic on it is dealt with, then green; the viewed page keeps the outline. The deck lands on the first page that needs him; Back goes into the finished ones, Next walks the rest. A finished page shows its answered cards directly with Reopen (current stage only; reopening turns its bar grey). "Everything answered earlier" no longer exists. "Previously answered" stays as one folded row only on a page that has BOTH open and answered topics.
-- **A mark on a row's picture is that row's comment** (list he ticks or changes): pencil pressed, tick off, counted as looked at, quoted under the row, printed in the summary as `area N on row <id> ("<row words>")`. Removing the mark undoes it. `spec.row_states` and `page.js rowState` are twins.
-- **More boxes** sit under the whole row (full inner width), not beside the tick and pencil.
-- **Old state never leaks** (the cause: a tab of the old page kept autosaving into the answers file after a rebuild, and the new page loaded it, then stamped it as its own). Every saved state (browser copy and answers file) carries `built.at`. A page reads back only state from its own build. `serve` refuses a save or submit from another build (409, `reason: "old-build"`; the old page then says "out of date, reload") and, when the current build first saves over a file an older build left, keeps that file as `<stem>.unsent.<time>.json` (never read as a round). A re-serve of the same build still restores answers. `stale_answers` is unchanged and still only drops answer ids; page notes of earlier rounds are never carried into a round, so it needs no page-note form.
+`cd scripts/ui-review && python3 -m unittest discover -s tests -p 'test_*.py'` (specs, words, grows, gate, rethink, serve, build, cli; no browser for most), `node --test tests/deck-render.test.mjs` (renders the page; needs Chrome, about four minutes) and `bash tests/close-out-contract.test.sh`. Tests that pin the rules above: `test_words.py` (questions), `test_rethink.py` (lists, after-build lists, summaries), `test_grows.py` (growing decks and earlier-round isolation), `test_gate.py` (the done gate), `test_spec.py`, `test_serve.py`.
