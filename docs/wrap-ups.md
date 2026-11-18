@@ -1515,6 +1515,15 @@ recurred — the repetition is the data.
 - Destin's ideas that were filed nowhere: wide real-world testing and per-device default (deck 1), save a chat's place to disk → cards #262, #263. The review's six unfixed rough edges lived only in the status page, which is archived at merge → card #264.
 - deleted/merged: none found; looked at the status page's "Research leads not pursued" (two leads struck through in place rather than a second list).
 
+## 2026-11-18 — writing down what YouCoded is for (session/vision-statement, youcoded-dev PR #380, youcoded PR #764, cards #268, #269)
+- Destin's test question "what is youcoded?" got a narrow "assistant with extras" answer: the big vision lived only in `docs/vision/…voice-notes.md`, which nothing but an old wrap-up linked, and CLAUDE.md gave it one clause → applied: `docs/vision/VISION.md` plus a short summary at the top of CLAUDE.md's About section (every session now loads it).
+- The Work board's feature-level vision map (`pages/work-board/renderer/vision-skeleton.json`) existed but was found only by chasing a card's `vision:` field (~3 calls) → applied: VISION.md links it.
+- The assistant inside the app is told one sentence about YouCoded; Claude Code run by the app is told nothing → card #268 (umbrella, linked to #234, #57, #52, #63, #214).
+- CLAUDE.md names a deleted-folder 2026-08-31 handoff as website "Copy authority" → card #269 (guidance edit waits for Destin).
+- A website redesign proposed in prose was rejected ("i dont really like a lot of your website recommendations"); Destin parked the website → no new note: `~/system/me/preferences.md` already says show working variants first. RECURRED in kind: proposing design in words.
+- Destin declined pointing the idea-filing guide at VISION.md → dropped at his word.
+- deleted/merged: none found; looked at the voice notes (kept verbatim as the source VISION.md cites).
+
 ## 2026-11-18 — brand inventory, then a brand guide (session/brand-guide, workspace only)
 - First sweep for brand guidance excluded `docs/archive/` and told Destin "no brand guide exists"; the real record (`docs/archive/design/2026-10-01-brand-identity-v2/DECISIONS.md`) surfaced only via chatsearch on his push-back → applied: `docs/brand/README.md` is now the one current guide, pointed to from CLAUDE.md, `landing-page.md` and MAP; the archived record links forward.
 - RECURRED (2026-11-12, 11-13, today): a per-variant copy of the site with a style override was hand-built again (~12 calls, plus a crop/compare page) → applied: `scripts/site-variants/serve.py` + `toggle.js` (published site via `git archive`, switcher, accent or CSS per variant, recolours the live demo too); tested on port 8934; named in `landing-page.md` and MAP.
