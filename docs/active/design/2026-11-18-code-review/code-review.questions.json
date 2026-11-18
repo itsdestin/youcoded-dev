@@ -1,0 +1,363 @@
+{
+  "title": "This morning's code review: what to fix, and how we build",
+  "key": "code-review-2026-11-18",
+  "out": "code-review.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Bugs people hit in normal use",
+      "intro": "A strict second check traced each of these from a real click to the failure. Answer Yes to fix it, No to leave it."
+    },
+    {
+      "id": "B-1",
+      "words": true,
+      "surface": "Backups on Android",
+      "path": "Settings → Backup, in the phone app",
+      "headline": "What should Android do about the GitHub and Google Drive backup options, which don't work there?",
+      "today": "The phone app offers backup to GitHub and to Google Drive, the same as the computer.",
+      "problem": "On a phone, GitHub backup copies nothing yet says 'finished'. Drive backup needs a program the phone doesn't have, so it can never work. People believe they're backed up when they aren't.",
+      "proposal": "Either hide both on phones until they truly work, or build them properly for phones.",
+      "options": [
+        {
+          "id": "hide",
+          "label": "Hide them on phones",
+          "recommended": true,
+          "pros": ["Small and quick. Nobody is told 'backed up' when they aren't.", "Computers are unaffected."],
+          "cons": ["Phone users lose two choices until a later build adds them back."]
+        },
+        {
+          "id": "build",
+          "label": "Make them work on phones",
+          "pros": ["Phone users get real GitHub and Drive backup."],
+          "cons": ["Much bigger job: Drive needs a new way to connect on a phone.", "Until it lands, the false 'finished' stays."]
+        },
+        {
+          "id": "both",
+          "label": "Hide now, build later",
+          "pros": ["Ends the false 'finished' right away and keeps the goal."],
+          "cons": ["Two pieces of work instead of one."]
+        }
+      ]
+    },
+    {
+      "id": "B-2",
+      "words": true,
+      "surface": "Backups",
+      "path": "Settings → Backup → Back up now",
+      "headline": "Should 'Back up now' also copy your conversations and project files straight away?",
+      "today": "'Back up now' copies your settings and skills immediately. Conversations and project files only go on a once-a-day timer.",
+      "problem": "After adding a new backup place and pressing 'Back up now', your conversations may not arrive there for up to a day, while the button looks like it did everything.",
+      "proposal": "Yes: the button copies everything at once, so pressing it means everything is safe. No: it stays as it is."
+    },
+    {
+      "id": "B-3",
+      "words": true,
+      "surface": "Backups",
+      "path": "Settings → Backup, on an expired Google Drive backup",
+      "headline": "Should 'Sign in again' repair the expired Drive backup instead of adding a second one?",
+      "today": "When a Google Drive backup's sign-in expires, the app offers 'Sign in again'.",
+      "problem": "Signing in again creates a brand-new second backup. The old broken one stays in the list and keeps failing.",
+      "proposal": "Yes: signing in again fixes the existing backup, so you end with one working entry. No: it stays as it is."
+    },
+    {
+      "id": "B-4",
+      "words": true,
+      "surface": "Message box",
+      "path": "Dragging a file from your folders onto the message box, on the computer",
+      "headline": "Fix dragging a file onto the message box, which currently does nothing?",
+      "today": "You can drop a file onto the message box to attach it.",
+      "problem": "Since a recent update to the app's underlying browser engine, the drop does nothing at all: no attachment and no message.",
+      "proposal": "Yes: use the engine's supported way to read the dropped file, so dropping attaches it again. No: dragging stays broken; the attach button still works."
+    },
+    {
+      "id": "B-5",
+      "words": true,
+      "surface": "Phone pairing",
+      "path": "Phone app → Add a computer → scan QR code",
+      "headline": "Switch the camera off when the QR scanner closes on the phone?",
+      "today": "Pairing your phone opens the camera to scan a code.",
+      "problem": "After the scanner closes, the camera stays on: the green camera dot remains and the battery drains.",
+      "proposal": "Yes: closing the scanner turns the camera off. No: it stays as it is. Nothing else changes either way."
+    },
+    {
+      "id": "B-6",
+      "words": true,
+      "surface": "Games",
+      "path": "Games → Connect 4 or chess → end of a match",
+      "headline": "Fix the rematch button for the player who didn't ask first?",
+      "today": "At the end of an online match, either player can ask for a rematch.",
+      "problem": "When your opponent asks first, your button reads 'Rematch requested' and is greyed out, so you can't accept.",
+      "proposal": "Yes: your button becomes 'Accept rematch' and starts the next game. That label is new wording. No: rematches only work when you are the one asking."
+    },
+    {
+      "id": "B-7",
+      "words": true,
+      "surface": "Plugins",
+      "path": "Marketplace → install a plugin that fails partway",
+      "headline": "Clean up after a plugin install that fails, so trying again works?",
+      "today": "Installing a plugin copies its files, then registers it with the assistant.",
+      "problem": "If registering fails, the copied files stay behind. Every retry then says 'already installed', even though the plugin doesn't work.",
+      "proposal": "Yes: a failed install removes what it copied, so the next try starts clean. No: the user has to find and delete the leftover folder by hand."
+    },
+    {
+      "id": "B-8",
+      "words": true,
+      "surface": "Phone",
+      "path": "Phone app reconnecting to a computer with no chats open",
+      "headline": "Fix the phone not jumping to new chats after reconnecting to a computer with none open?",
+      "today": "When a new chat starts, the phone normally switches to it.",
+      "problem": "If the phone reconnects while the computer has no chats open, it stops switching to new chats until the app restarts.",
+      "proposal": "Yes: the phone switches to new chats again in that case. No: it stays as it is."
+    },
+    {
+      "id": "P-2",
+      "page": "Bugs only you, plugin makers or unusual files would hit",
+      "intro": "Real, but they don't touch most people's day."
+    },
+    {
+      "id": "M-1",
+      "words": true,
+      "surface": "Releasing the app",
+      "path": "The /release step you run to ship a version",
+      "headline": "Fix the release check that now fails every time because it reads a deleted file?",
+      "today": "Before a release, a check makes sure everything is in order.",
+      "problem": "It still reads the old games-server setup file, deleted when games moved servers, so the check can never pass and /release is blocked.",
+      "proposal": "Yes: drop that stale part of the check. No: the next release needs a manual workaround."
+    },
+    {
+      "id": "M-2",
+      "words": true,
+      "surface": "Marketplace publishing",
+      "path": "The 'publish your plugin' helper",
+      "headline": "Fix the marketplace publishing helper so people without access to our repository can submit plugins?",
+      "today": "A helper walks someone through publishing a plugin they built to the marketplace.",
+      "problem": "Its last step tries to submit from a place the person can't write to, so for anyone but you it always fails at the end.",
+      "proposal": "Yes: it makes the person their own copy first and submits from there, the normal way outside contributors submit. No: only you can publish."
+    },
+    {
+      "id": "M-3",
+      "words": true,
+      "surface": "Apple plugin",
+      "path": "Marketplace → Apple services skills, on a Mac",
+      "headline": "Fix the Apple skills, which fail on a standard Mac because they need two tools Macs don't ship with?",
+      "today": "The Apple plugin lets the assistant work with Notes, Reminders, Mail and similar apps on a Mac.",
+      "problem": "Every call relies on two small command-line tools a standard Mac lacks, so on most Macs every Apple skill fails.",
+      "proposal": "Yes: replace them with built-in equivalents, and check they work on a Mac before shipping. No: it works only for people who installed those tools themselves."
+    },
+    {
+      "id": "M-4",
+      "words": true,
+      "surface": "Word documents",
+      "path": "Opening and commenting on a .docx file in the app",
+      "headline": "Fix two problems with comments in Word files: leftover markers after deleting a thread, and an unsafe save?",
+      "today": "You can read, add and delete comments on Word documents inside the app.",
+      "problem": "Deleting a comment thread leaves its reply markers in the document, which Word may flag as needing repair. Separately, a specially made Word file could make the app use huge amounts of memory when saving comments.",
+      "proposal": "Yes: deleting removes every marker, and saving uses the same size limit opening already uses. No: both stay."
+    },
+    {
+      "id": "M-5",
+      "words": true,
+      "surface": "Usage dashboard",
+      "path": "The private admin dashboard on the marketplace server",
+      "headline": "Fix the admin dashboard, where daily users and the version, platform and country tables are always empty?",
+      "today": "Your private dashboard shows how many people use the app and on what.",
+      "problem": "The page reads the wrong field names, so the daily-users number and those three tables always show empty.",
+      "proposal": "Yes: point the page at the right fields so the numbers appear. No: the numbers stay blank; the data underneath is fine."
+    },
+    {
+      "id": "P-3",
+      "page": "Fixing whole families of bugs at once",
+      "intro": "About 1,400 findings came from seven repeated habits. Fixing a habit once, with a shared building block and an automatic check, prevents a whole family. Counts are rough."
+    },
+    {
+      "id": "R-1",
+      "words": true,
+      "surface": "Every screen",
+      "path": "Anywhere the app saves, loads or checks something",
+      "headline": "Stop the app silently hiding failures, so a problem shows a clear message instead of looking fine?",
+      "today": "In hundreds of places, when something fails, the app quietly carries on as if it worked.",
+      "problem": "You see 'saved', 'none found' or a blank screen when the real answer was an error. Examples: speed settings and chat tags that fail to save without a word. About 250 to 300 findings.",
+      "proposal": "Yes: one shared way to report failures, plus an automatic check that refuses new silent ones. You'll see more error messages, and each new message's wording comes to you for approval. No: fixed one at a time as found."
+    },
+    {
+      "id": "R-2",
+      "words": true,
+      "surface": "Backups, saves, checks",
+      "path": "Anything that reports 'done' or 'finished'",
+      "headline": "Make every backup, save and check prove it worked before it says 'done'?",
+      "today": "Many actions report success without checking that the work actually happened.",
+      "problem": "This is how the Android backup bug happened: it says 'finished' after copying nothing. About 70 to 90 findings.",
+      "proposal": "Yes: every such action returns 'worked', 'failed (why)' or 'skipped', with tests proving files really arrive. Options a device can't do are hidden there. No: fixed one at a time."
+    },
+    {
+      "id": "R-3",
+      "words": true,
+      "surface": "Saved files and settings",
+      "path": "Anywhere the app writes a file",
+      "headline": "Make every file the app saves go through one safe writer, so a crash can't leave a half-written file?",
+      "today": "The app has one safe way to save a file, but about forty places use their own copy instead.",
+      "problem": "Two quick saves can overwrite each other, and a crash mid-save can leave a file that later reads as empty, so settings reset. About 80 to 100 findings.",
+      "proposal": "Yes: all saves go through the one safe writer, with a check that refuses new homemade ones. Nobody will see a change, so under your standing rule it can land after an independent review. No: fixed one at a time."
+    },
+    {
+      "id": "R-4",
+      "words": true,
+      "surface": "Long-running app",
+      "path": "Closing chats, timers, locks, the camera",
+      "headline": "Make sure everything a chat starts is cleaned up when it closes, so the app doesn't slowly bog down?",
+      "today": "Chats, timers and locks each clean up after themselves, or forget to.",
+      "problem": "Leftovers pile up: memory grows over a long day, a stuck lock blocks backups, the camera stays on. About 120 to 150 findings.",
+      "proposal": "Yes: one cleanup list every closing chat runs, plus a test that opens and closes 50 chats and checks nothing is left over. No: fixed one at a time."
+    },
+    {
+      "id": "R-5",
+      "words": true,
+      "surface": "Computer, phone, browser",
+      "path": "Features that exist on more than one device",
+      "headline": "Track, per feature, whether it works on computer, phone and browser, and hide what doesn't?",
+      "today": "Each device's version of a feature is checked by name only, not by whether it actually works there.",
+      "problem": "Features appear on a device where they don't work (Android backup again). About 100 to 130 findings.",
+      "proposal": "Yes: each feature lists 'works', 'hidden' or 'not yet' per device, and a test fails if one is shown where it doesn't work. No: as today."
+    },
+    {
+      "id": "R-6",
+      "words": true,
+      "surface": "How we build",
+      "path": "The written rules sessions follow",
+      "headline": "Turn written development rules into automatic checks wherever a machine can check them?",
+      "today": "Many rules for how the app is built live only as written instructions.",
+      "problem": "Written rules get missed; the release check broke from exactly this. About 150 to 200 findings.",
+      "proposal": "Yes: each rule a machine can check becomes a check that blocks mistakes, and the written copy shrinks. No: rules stay written down."
+    },
+    {
+      "id": "R-7",
+      "words": true,
+      "surface": "Data from outside",
+      "path": "Files on disk, the network, the phone, the marketplace",
+      "headline": "Check that outside data is the right shape before using it, and fail safe when it isn't?",
+      "today": "Data from files, the phone or the internet is often used as-is.",
+      "problem": "A damaged file can flip a setting the wrong way. One example turns analytics back on after you'd turned it off. About 90 to 120 findings.",
+      "proposal": "Yes: one shared checker for incoming data that always fails safe (damaged means 'off'), plus tests that feed it junk. No: fixed one at a time."
+    },
+    {
+      "id": "R-8",
+      "words": true,
+      "surface": "How we build",
+      "path": "The order of the family fixes above",
+      "headline": "If you said yes to several family fixes, which order should they go in?",
+      "today": "Each family fix is a separate piece of work.",
+      "problem": "Doing them all at once would be a huge change that's hard to review.",
+      "proposal": "Pick an order. Each one gets its own branch and its own review.",
+      "options": [
+        {
+          "id": "safe-first",
+          "label": "Least risk first",
+          "recommended": true,
+          "summary": "Safe writer, then honest 'done', then cleanup, then hidden failures, then the rest.",
+          "pros": ["Starts with invisible fixes that can't change what you see.", "Each step makes the next one easier."],
+          "cons": ["The most visible improvement (clear error messages) comes later."]
+        },
+        {
+          "id": "visible-first",
+          "label": "Most visible first",
+          "summary": "Hidden failures and honest 'done' first, then the invisible ones.",
+          "pros": ["You and users notice the difference sooner."],
+          "cons": ["Starts with the changes that need the most wording approval from you."]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "How we build the app",
+      "intro": "Ideas from the latest AI-development practices and from our own commit history."
+    },
+    {
+      "id": "W-1",
+      "words": true,
+      "surface": "How we build",
+      "path": "Work cards",
+      "headline": "Store work-card progress updates outside the git history?",
+      "today": "Every time a work card's progress changes, it's saved as its own commit.",
+      "problem": "43% of all workspace commits, 802 of 1,846, are card bookkeeping. It buries real changes, slows reviews and causes clashes between sessions.",
+      "proposal": "Yes: card progress is kept in a separate place that doesn't create commits. Cards still exist and the Work board still shows them. No: as today."
+    },
+    {
+      "id": "W-2",
+      "words": true,
+      "surface": "How we build",
+      "path": "The file-size limits each code file has",
+      "headline": "Replace exact per-file size limits with a few broad size bands?",
+      "today": "Each code file has its own exact line limit, raised or lowered by hand.",
+      "problem": "The limits file changed 141 times in one month, and code gets squeezed to hit a number rather than to read well.",
+      "proposal": "Yes: a few bands (small, medium, large) and only a jump between bands needs attention. No: as today."
+    },
+    {
+      "id": "W-3",
+      "words": true,
+      "surface": "How we build",
+      "path": "The instructions every session loads",
+      "headline": "Trim the instructions every session loads at start, moving detail into files read only when needed?",
+      "today": "Every session starts by loading about 67 KB of instructions and status reports.",
+      "problem": "That costs money on every session, and important rules get lost among less important ones.",
+      "proposal": "Yes: keep only what every session needs, with pointers to the rest. A moved rule might be missed, so each move is checked. No: as today."
+    },
+    {
+      "id": "W-4",
+      "words": true,
+      "surface": "How we build",
+      "path": "Scheduled checks",
+      "headline": "Run a few automatic health checks every night and report problems in the morning?",
+      "today": "Checks run only when a session asks for them.",
+      "problem": "Broken documentation, failing checks on GitHub and abandoned work folders go unnoticed for days.",
+      "proposal": "Yes: a nightly job checks these and leaves a short report. It uses some credits each night. No: as today."
+    },
+    {
+      "id": "W-5",
+      "words": true,
+      "surface": "How we build",
+      "path": "Reviews like this morning's",
+      "headline": "Should reviews like this morning's be repeated?",
+      "today": "This morning's review used about 110 Sonnet agents and found about 1,400 issues.",
+      "problem": "It found real bugs, but the first round of checkers confirmed everything. Only the stricter second check separated real problems from rare ones.",
+      "proposal": "Pick how often.",
+      "options": [
+        {
+          "id": "monthly",
+          "label": "Monthly, smaller",
+          "recommended": true,
+          "summary": "One area at a time, with the strict check built in from the start.",
+          "pros": ["Catches new problems while they're fresh.", "Smaller reports you can actually act on."],
+          "cons": ["Uses credits every month."]
+        },
+        {
+          "id": "before-release",
+          "label": "Before each release",
+          "pros": ["Finds problems right before people get them."],
+          "cons": ["Can delay a release when it finds something."]
+        },
+        {
+          "id": "only-asked",
+          "label": "Only when you ask",
+          "pros": ["No ongoing cost."],
+          "cons": ["Problems pile up between reviews, as they did here."]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "The file-link fix from today",
+      "intro": "The REPORT.md link that wouldn't open."
+    },
+    {
+      "id": "C-1",
+      "words": true,
+      "surface": "Chat file links",
+      "path": "Clicking a file link in chat",
+      "headline": "Ready to merge the file-link fix?",
+      "today": "Clicking a link to a file outside the chat's folder can fail when an older file with the same name was opened before.",
+      "problem": "That's why the REPORT.md link didn't open. It affects any common name: README, notes, REPORT.",
+      "proposal": "Yes: I merge it, push it and it ships in the next version. Tests and an independent review passed. No: it waits on its branch."
+    }
+  ]
+}
