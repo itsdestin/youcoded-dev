@@ -58,8 +58,8 @@ export const Short: React.FC<ShortSpec> = ({ clip, result, rate = 1, music }) =>
   const b = useB();
   const typed0 = mark(clip, 'typed') - 0.35;
   // Re-time so the message is sent right at the 4.0 s cut: the finished sentence is on screen
-  // to the last frame, never an emptied box. Between 0.8x and 1.6x so typing still looks human.
-  const typeRate = Math.min(1.6, Math.max(0.8, (mark(clip, 'enter') - typed0) / 3.97));
+  // to the last frame, never an emptied box. Between 0.65x and 1.6x so typing still looks human.
+  const typeRate = Math.min(1.6, Math.max(0.65, (mark(clip, 'enter') - typed0) / 3.97));
   const fit = 0.78;
   return (
     <AbsoluteFill>
