@@ -1434,7 +1434,8 @@
     // WHY a compact button too (Destin, round 12: at a phone's width the four names do not fit beside the bars and the button): below 700px the line
     // shrinks to the stage on screen with a small "2 of 4"; pressing it opens the four names, finished ones pressable.
     const here = Math.max(0, STAGE_KEYS.indexOf(shown));
-    box.innerHTML = `<button type="button" class="stagecompact" aria-expanded="false" title="The stages of this deck"><span class="scname">${esc(stageName(STAGE_KEYS[here]))}</span><small>${here + 1} of 4</small>${CHEV}</button>`
+    // WHY (phone, 390px): "After build" was cut to "After bu…" because "2 of 4" took the room; "2/4" is shorter and the button name is read out in full by aria-label. All four names sit in one grid cell, three hidden, so the button is always as wide as the longest name and never changes size when he views another stage.
+    box.innerHTML = `<button type="button" class="stagecompact" aria-expanded="false" title="The stages of this deck" aria-label="${esc(stageName(STAGE_KEYS[here]))}, stage ${here + 1} of 4. Press for the other stages."><span class="scname">${STAGE_KEYS.map((k, i) => `<span class="scn${i === here ? ' on' : ''}"${i === here ? '' : ' aria-hidden="true"'}>${esc(stageName(k))}</span>`).join('')}</span><small aria-hidden="true">${here + 1}/4</small>${CHEV}</button>`
       + `<ol class="stageflow" aria-label="Stages of this deck">` + STAGE_KEYS.map((k, i) => {
       const name = esc(stageName(k)), view = k === shown ? ' viewing' : '';
       // WHY (Destin, 2026-11-18: "do all of this without me ... I just want to see it at the very end"): on a hands-off deck the three earlier stages never

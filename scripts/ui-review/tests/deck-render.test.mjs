@@ -1891,8 +1891,10 @@ json.dump(raw, open(p, 'w'))`;
         await m.evaluate("document.querySelector('#stages .stagebtn').click()"); await sleep(300);
         assert.equal(await m.evaluate(HDR), h0, 'and on a finished stage');
         assert.equal(await m.evaluate(fit), true, 'a finished stage fits a phone');
-        assert.equal(await m.evaluate("getComputedStyle(document.querySelector('.stagecompact')).display !== 'none' && getComputedStyle(document.querySelector('.stageflow')).display === 'none'"), true, 'a phone shows the current stage with "N of 4"');
-        assert.match(await m.evaluate("document.querySelector('.stagecompact').innerText"), /of 4/);
+        assert.equal(await m.evaluate("getComputedStyle(document.querySelector('.stagecompact')).display !== 'none' && getComputedStyle(document.querySelector('.stageflow')).display === 'none'"), true, 'a phone shows the current stage with "N/4"');
+        assert.match(await m.evaluate("document.querySelector('.stagecompact').innerText"), /\d\/4/);
+        // WHY (round 17): "After build" was cut to "After bu…" at 390px. The button now takes its name's width, so the name on screen must not be cut, and the button must still sit inside the one-row header.
+        assert.equal(await m.evaluate("(()=>{const n=document.querySelector('.stagecompact .scn.on');return n.scrollWidth<=n.clientWidth+0.5 && n.getBoundingClientRect().width>=n.scrollWidth-0.5})()"), true, 'a phone shows the whole stage name, none cut with an ellipsis');
         assert.equal(await m.evaluate("(()=>{const t=document.querySelector('.top').getBoundingClientRect();return [...document.querySelectorAll('#stages,#steps,#done')].every(e=>{const b=e.getBoundingClientRect();return b.top>=t.top-1&&b.bottom<=t.bottom+1})})()"), true, 'one row at 390px: bars, stage and Submit all inside the header');
         assert.deepEqual(m.errors, []);
       } finally { m.close(); }
@@ -2280,6 +2282,8 @@ json.dump(raw, open(p, 'w')); print(p)`;
           [['Understanding', 'skipped', false, 'Skipped: you asked me to go ahead without you'], ['Design', 'skipped', false, 'Skipped: you asked me to go ahead without you'],
            ['Before build', 'skipped', false, 'Skipped: you asked me to go ahead without you'], ['After build', 'on', false, '']], w + ': three skipped stages, After build current');
         assert.equal(await q("document.querySelectorAll('#stages .stagetick').length"), 0, 'no check on a skipped stage');
+        // WHY (round 17): the After build deck on a phone cut its stage name to "After bu…"; the name must show whole, at both sizes.
+        assert.equal(await q("(()=>{const b=document.querySelector('.stagecompact');if(getComputedStyle(b).display==='none')return document.querySelector('#stages li.on').textContent.trim()==='After build';const n=b.querySelector('.scn.on');return n.textContent==='After build'&&n.scrollWidth<=n.clientWidth+0.5})()"), true, w + ': the stage name After build is shown whole');
         assert.equal(await q("getComputedStyle(document.querySelector('#stages li.skipped')).opacity < 0.8"), true, 'dimmed');
         assert.equal(await q("document.documentElement.scrollWidth <= window.innerWidth"), true, w + ': no sideways scroll');
         // his words are quoted on the FIRST page only

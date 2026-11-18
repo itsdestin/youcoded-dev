@@ -1008,7 +1008,8 @@ body[data-grows] .top .wrap{flex-wrap:nowrap}
   body[data-grows] .top{padding:14px 12px 8px}
   body[data-grows] .top .wrap{gap:8px}
   .stagecompact{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 8px;border:0;border-radius:999px;background:var(--inset);color:var(--fg);font:600 12px/1 var(--font);cursor:pointer;white-space:nowrap}
-  .stagecompact{width:150px;justify-content:space-between;box-sizing:border-box} .stagecompact .scname{overflow:hidden;text-overflow:ellipsis}   /* a fixed width: the header must not change size between pages */
+  /* WHY (round 17): the button was a fixed 150px (128px on the narrowest phones) and cut "After build" to "After bu…". All four stage names now share one grid cell, three hidden, so the button is as wide as the LONGEST name in the deck's own type: the current name is never cut, and the header does not change size when he views another stage. */
+  .stagecompact{flex:none;box-sizing:border-box} .stagecompact .scname{display:grid;justify-items:start} .stagecompact .scname>.scn{grid-area:1/1;visibility:hidden;white-space:nowrap} .stagecompact .scname>.scn.on{visibility:visible}
   .stagecompact small{font:400 11px/1 var(--font);color:var(--fg-muted)}
   .stagecompact .chev{width:12px;height:12px}
   .stageflow{display:none;position:absolute;z-index:30;left:0;top:calc(100% + 6px);flex-direction:column;align-items:stretch;gap:2px;padding:6px;margin:0;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,.25);min-width:170px;font-size:13px}
@@ -1045,5 +1046,5 @@ body[data-grows] .top .wrap{flex-wrap:nowrap}
 .sumbar{position:relative;flex:1;min-width:16px;height:7px;border-radius:3px;background:var(--inset);cursor:pointer}
 .summark{position:absolute;top:-3px;height:13px;min-width:8px;box-sizing:border-box;border:1.5px solid var(--fg);border-radius:3px;pointer-events:none}
 .sumtext{flex:none;text-align:right;font:500 11px/1 var(--font);color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-/* WHY (round 14): on the narrowest phones the stage button gives up a little width so the compact progress bar beside it has room to be seen. Fixed, so the header is still the same on every page. */
-@media (max-width:420px){.stagecompact{width:128px} .summark{min-width:6px}}
+/* WHY (round 14, still true): on the narrowest phones the progress bar beside the stage button gives up some room. The button itself takes its name's width (round 17), so it needs no width rule here. */
+@media (max-width:420px){.stagecompact{gap:3px;padding:0 6px;font-size:11px} .stagecompact small{font-size:10px} .summark{min-width:6px}}

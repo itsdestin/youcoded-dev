@@ -5561,6 +5561,315 @@
           }
         }
       ]
+    },
+    {
+      "id": "PD-13",
+      "page": "What goes in each stage",
+      "intro": "Mark whether each stage's job is right, then decide how strictly the deck builder keeps them apart.",
+      "stage": "design"
+    },
+    {
+      "id": "MAP-1",
+      "words": true,
+      "visual": true,
+      "surface": "Review decks",
+      "path": "Any deck link I send you",
+      "headline": "Is this the right job for each of the four stages?",
+      "today": "The four stages exist, but their jobs are written only in rules. You told me the line between Understanding and Design is unclear.",
+      "problem": "Without one clear split, items drift: a drawing in Understanding, or a question about what gets built in Design.",
+      "proposal": "This map is the split. The five statements below mark each stage's job; the questions after them decide how strictly the builder keeps to it.",
+      "checked": "I read the feature-flow rule and the authoring guide on 2026-11-18: each describes the stages in its own words, and no single page lays out what belongs where.",
+      "picture": "pictures/r17-stage-map.png",
+      "caption": "The four stages side by side: the question each answers, what belongs, what does not, and when it is finished."
+    },
+    {
+      "id": "ST-U",
+      "words": true,
+      "headline": "Understanding asks: are we solving the right problem, with the right limits?",
+      "changed": "It holds what exists today with pictures of today's app, what you want in your words, who it is for, what is in, later or never, hard rules, choices that change what gets built, and research. It is finished when every statement holds and every scope and rule question is answered.",
+      "notice": "You see no drawing of a new screen and are not asked how anything looks until this stage is done.",
+      "yes": "Holds",
+      "no": "Fails",
+      "surface": "Review decks",
+      "path": "Any deck link I send you"
+    },
+    {
+      "id": "ST-D",
+      "words": true,
+      "headline": "Design asks: is this the right shape?",
+      "changed": "It holds drawings to pick between for every screen and state (empty, error, loading), the path between screens, and defaults and phone layout as rows with pictures. It is finished when every screen in scope has a drawing you picked.",
+      "notice": "You pick by looking, not by reading options. No new question about what gets built is asked here, and no wording.",
+      "yes": "Holds",
+      "no": "Fails",
+      "surface": "Review decks",
+      "path": "Any deck link I send you"
+    },
+    {
+      "id": "ST-B",
+      "words": true,
+      "headline": "Before build asks: is this everything you will get, and how should I check it?",
+      "changed": "Every request is a row traced to your answer, with final pictures, behind-the-scenes changes in plain words, choices I made that you never decided, and the checks menu. It is finished when you go through it and change nothing.",
+      "notice": "Nothing new is decided here. If something new does come up, it is marked as new.",
+      "yes": "Holds",
+      "no": "Fails",
+      "surface": "Review decks",
+      "path": "Any deck link I send you"
+    },
+    {
+      "id": "ST-A",
+      "words": true,
+      "headline": "After build asks: did we build what you agreed, and what changed?",
+      "changed": "What you asked for is matched to what was built, with real before and after pictures, what changed while building, what review found, check results and things for you to try. The wording pass on real screens comes last. It is finished when the done check passes.",
+      "notice": "You see the real screens, not drawings, and you can say what is wrong with each.",
+      "yes": "Holds",
+      "no": "Fails",
+      "surface": "Review decks",
+      "path": "Any deck link I send you"
+    },
+    {
+      "id": "ST-T",
+      "words": true,
+      "headline": "To place a question: does your answer change what exists or must happen (Understanding), or only how it looks and flows (Design)?",
+      "changed": "Would your answer change which screens exist or what they must do? Then it is Understanding. Would it change how a screen looks or flows? Then it is Design. Worked example, making pictures from a chat: “Nothing is made, and nothing is paid, until you press Approve” is a rule, so Understanding. The card showing what will be made, which service makes it and the price, with a list of makers to pick from, is what it must do, so also Understanding. Where the price sits and how the maker list looks is Design.",
+      "notice": "A question about whether the card shows a price is asked in words, early. Where the price sits is decided later, on drawings.",
+      "yes": "Holds",
+      "no": "Fails",
+      "surface": "Review decks",
+      "path": "Any deck link I send you"
+    },
+    {
+      "id": "SEAM-1",
+      "words": true,
+      "headline": "Should the deck builder enforce what goes where?",
+      "today": "Nothing stops a drawing from landing on an Understanding page, or a new pick-between-options question on a Before build page. The builder checks stage order and questions left open on earlier pages, not what kind of card sits where.",
+      "problem": "Without a check, a session can put a design question in the wrong stage, and the line between Understanding and Design blurs, as you noticed.",
+      "proposal": "The builder refuses misplaced items and says why: a drawing or pick-between-pictures on an Understanding page; a Design question with no picture; a new options question on a Before or After build page unless marked “Came up late”.",
+      "checked": "I read the builder's list of refusals and the growing-deck checks on 2026-11-18: they cover stage order and open questions on earlier pages, nothing about which cards belong on which stage.",
+      "options": [
+        {
+          "id": "refuse",
+          "label": "Refuse misplaced items",
+          "pros": [
+            "The line stays where you drew it, whoever builds the deck.",
+            "A misplaced item is caught before you ever see it."
+          ],
+          "cons": [
+            "A real exception needs a one-line mark to get through."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "warn",
+          "label": "Warn only",
+          "pros": [
+            "A deck is never blocked from reaching you."
+          ],
+          "cons": [
+            "A warning scrolls past, so misplaced items still reach you."
+          ]
+        },
+        {
+          "id": "rules",
+          "label": "Leave to the rules",
+          "pros": [
+            "Nothing new to build."
+          ],
+          "cons": [
+            "This is today, and it let the line blur."
+          ]
+        }
+      ],
+      "surface": "Review decks",
+      "path": "Any deck link I send you"
+    },
+    {
+      "id": "SEAM-2",
+      "words": true,
+      "headline": "When something new comes up in a later stage, where should it be asked?",
+      "today": "No place is agreed. The builder refuses an open question left on an earlier stage's page, so a new one can only go on the current stage's page, unmarked.",
+      "problem": "An unmarked late question looks like part of that page's own job. You cannot tell it from the planned ones, and the earlier pages stop being a clean record.",
+      "proposal": "Ask it on the current page, tagged “Came up late”, with one line saying what brought it up. Earlier pages stay exactly as you answered them.",
+      "checked": "I read the builder's stage checks on 2026-11-18. Your earlier words “not editing prior sections” are recorded in the review-deck rule.",
+      "options": [
+        {
+          "id": "late",
+          "label": "Ask here, mark it",
+          "pros": [
+            "Earlier pages stay exactly as you answered them.",
+            "You can see which questions were not planned."
+          ],
+          "cons": [
+            "A page can hold a question from a different job."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "back",
+          "label": "Step back a stage",
+          "pros": [
+            "Every question sits in its proper stage."
+          ],
+          "cons": [
+            "Finished pages reopen, so the record you relied on changes under you.",
+            "The deck moves backwards while the work moves forward."
+          ]
+        },
+        {
+          "id": "hold",
+          "label": "Hold for next feature",
+          "pros": [
+            "The current deck stays focused."
+          ],
+          "cons": [
+            "Something that affects this build can go unanswered until it is built."
+          ]
+        }
+      ],
+      "surface": "Review decks",
+      "path": "Any deck link I send you"
+    },
+    {
+      "id": "SEAM-3",
+      "words": true,
+      "headline": "Should every picture say what it shows: Today, Drawing or Built?",
+      "today": "A picture has a caption only when someone writes one. Nothing says whether it is today's app, a drawing of something not yet built, or the finished screen.",
+      "problem": "You can take a drawing for something that exists, or today's screen for the new one, especially in a small tile.",
+      "proposal": "A small label on every picture: Today for the app as it is, Drawing for something not built, Built for the finished screen. Compare the three versions below.",
+      "checked": "I opened the built deck on 2026-11-18: a picture carries only the caption its author typed, if any. The pictures below are copies of the real deck with labels added for comparison.",
+      "options": [
+        {
+          "id": "all",
+          "label": "Label every picture",
+          "pros": [
+            "You never have to guess what you are looking at.",
+            "The same on tiles and on big pictures."
+          ],
+          "cons": [
+            "A small label sits on every picture, covering a corner of it."
+          ],
+          "recommended": true,
+          "picture": "pictures/r17-label-all.png",
+          "caption": "A tile labelled Today and a drawing labelled Drawing."
+        },
+        {
+          "id": "drawings",
+          "label": "Label drawings only",
+          "pros": [
+            "Only the pictures that could mislead are marked.",
+            "Fewer labels to look past."
+          ],
+          "cons": [
+            "An unlabelled picture could still be a drawing nobody marked."
+          ],
+          "picture": "pictures/r17-label-drawings.png",
+          "caption": "Only the drawing carries a label."
+        },
+        {
+          "id": "none",
+          "label": "No labels (today)",
+          "pros": [
+            "Pictures are shown clean."
+          ],
+          "cons": [
+            "What a picture shows depends on its caption being written."
+          ],
+          "picture": "pictures/r17-label-none.png",
+          "caption": "As the deck is now."
+        }
+      ],
+      "surface": "Review decks",
+      "path": "Any deck link I send you",
+      "visual": true
+    },
+    {
+      "id": "SEAM-4",
+      "words": true,
+      "headline": "Should the deck move to the next stage only when the current one is finished?",
+      "today": "The build already refuses an open question left on an earlier stage's page, and names it. No other check is made when the deck moves on.",
+      "problem": "A stage can be left half done and then become the record, with nothing said at the moment of moving on.",
+      "proposal": "Moving the deck to the next stage is refused while any question or list of the current stage is still open, naming each one, so a stage is never left half done.",
+      "checked": "I read the growing-deck checks in the builder on 2026-11-18: the only stage check on moving on is the open-question-on-an-earlier-page refusal.",
+      "options": [
+        {
+          "id": "refuse",
+          "label": "Refuse until finished",
+          "pros": [
+            "A stage is never left half answered.",
+            "The message names exactly what is still open."
+          ],
+          "cons": [
+            "A round waits on every open item, even a small one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "warn",
+          "label": "Warn, then allow",
+          "pros": [
+            "Never holds a round up."
+          ],
+          "cons": [
+            "A warning scrolls past, so unfinished stages become the record."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "No check",
+          "pros": [
+            "Nothing new to build."
+          ],
+          "cons": [
+            "Only the earlier-page rule catches a half-done stage."
+          ]
+        }
+      ],
+      "surface": "Review decks",
+      "path": "Any deck link I send you"
+    },
+    {
+      "id": "SEAM-5",
+      "words": true,
+      "headline": "How should a session choose between the three routes through a feature?",
+      "today": "The routes are: all four stages; straight to Before build when you have given clear direction; or the one after-build deck when you say to do it without you. For small clear work a session is told to ask you first.",
+      "problem": "Asking first interrupts you on every small job. Deciding silently could skip a stage you wanted.",
+      "proposal": "A session names the route it is taking in its first message and goes ahead. You can redirect it at any time, and it moves to the route you name.",
+      "checked": "I read the feature-flow rule on 2026-11-18: it covers the do-it-without-me route and says to ask first before starting small clear work later in the flow.",
+      "options": [
+        {
+          "id": "say",
+          "label": "Say it, then go ahead",
+          "pros": [
+            "No interruption for clear work.",
+            "You always know which route is running."
+          ],
+          "cons": [
+            "A wrong guess costs a little work before you redirect."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ask",
+          "label": "Always ask first",
+          "pros": [
+            "Nothing starts without your say-so."
+          ],
+          "cons": [
+            "One more question before every job, even clear ones."
+          ]
+        },
+        {
+          "id": "silent",
+          "label": "Decide silently",
+          "pros": [
+            "No extra chat."
+          ],
+          "cons": [
+            "You learn which route ran only when a deck is missing."
+          ]
+        }
+      ],
+      "surface": "Review decks",
+      "path": "Any deck link I send you"
     }
   ],
   "stale_answers": {
