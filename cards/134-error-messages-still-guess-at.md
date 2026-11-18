@@ -14,8 +14,8 @@ side: both
 work: session/round4-silent-places, session/134-phone-paste
 ---
 Progress
-Done: Round 4 landed (youcoded#766): ~40 silent places now show a notice; Effort/Fast chips hidden until read; final false-alarm review fixed 3 cases (empty right-click Paste, phone file rename, older computer's project list)
-Next: Destin to decide: make picture paste actually work on a phone (upload the pasted picture like Attach does) instead of doing nothing
+Done: Phone picture-paste built on session/134-phone-paste: pasted picture uploads via Attach route; tests added
+Next: Destin reviews deck docs/active/design/2026-11-19-phone-paste/phone-paste.review.json
 Blocked: Synced-project rename notice skipped: sync retries by itself, so it would be a false alarm
 
 Chats
