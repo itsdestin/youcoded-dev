@@ -11,14 +11,15 @@ created: 2026-10-15
 summary: Many error messages still state a guessed cause or offer no next step; six of seven fix batches remain.
 area: Settings
 side: both
-work: session/round4-silent-places
+work: session/round4-silent-places, session/134-phone-paste
 ---
 Progress
-Done: Round 4 built on session/round4-silent-places (app, pushed, NOT landed): ~40 silent failures now visible (toasts, in-place boxes, thin strips, save notices), reviewed three times, 56+ tests added; decks served 2026-11-14 (docs/active/design/2026-11-14-round4)
-Next: Destin: pictures deck (5 kinds) + questions deck (land-or-hold, 5 questions: effort/Fast chips, synced rename wording, dropped-connection tag save, phone paste, Android toasts vs boxes)
-Blocked: nothing recorded.
+Done: Deck 2026-11-19 phone-paste: Destin said yes (branch session/134-phone-paste). He asked how paste works in the Android app and about paste previews; answered in chat
+Next: Merge on his word; Android app paste of pictures is a separate piece
+Blocked: Nothing
 
 Chats
+- 2026-11-18 session/134-phone-paste: chat started
 - 2026-11-14 session/round4-silent-places: chat started
 
 From the old roadmap (user-interface, status confirmed, seen on all, last checked 2026-09-11)

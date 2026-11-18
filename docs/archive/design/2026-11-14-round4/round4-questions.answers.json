@@ -1,0 +1,87 @@
+{
+ "deck": "round-four-questions",
+ "started": "2026-11-18T11:36:40.928Z",
+ "submitted": "2026-11-18T11:40:29Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1795001836522,
+   "seconds": 6,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1795001836522,
+   "seconds": 6,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1795001836522,
+   "seconds": 6,
+   "theme": "midnight"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1795001836522,
+   "seconds": 6,
+   "theme": "midnight"
+  },
+  "S-5": {
+   "v": "yes",
+   "t": 1795001836522,
+   "seconds": 6,
+   "theme": "midnight"
+  },
+  "S-6": {
+   "v": "yes",
+   "t": 1795001836522,
+   "seconds": 6,
+   "theme": "midnight"
+  },
+  "L-1": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1795002028246,
+   "note": "i want you to do a final pass to ensure we didnt accidentally introduce any new false/misleading error cases. never want to show an error/warning for something that's actually fine. or any other regressions we might've somehow introduced. i don't need to see these changes if there are any.",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "hide",
+   "t": 1795002028246,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "notice",
+   "t": 1795002028246,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "leave",
+   "t": 1795002028246,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1795002028246,
+   "note": "uh, what? why does it not do anything? ",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1795002028246,
+   "note": "i think a lot of this may have been dealt with in another branch or on master? but idk. hard to judge this without seeing",
+   "seconds": 32,
+   "theme": "midnight"
+  }
+ }
+}

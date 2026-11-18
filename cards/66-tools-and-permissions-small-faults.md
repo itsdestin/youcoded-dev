@@ -11,14 +11,16 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.steer.permissions, chat.converse.native
-work: session/66-passwordless-admin
+work: session/66-passwordless-admin, session/66-search-root, session/66-image-cache-sweep
 ---
 Progress
-Done: 2026-11-12: Edit tool quote/dash fallback and picture re-shrink after a model switch LANDED (app PR #736); both proven by tests only.
-Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): NO Skip Permissions option for local/OpenRouter chats; drop item (e). Other items unchanged.
-Blocked: Nothing for the admin part. Other items wait on a decision about splitting the card.
+Done: Deck 2026-11-19 search-root: Destin questioned the value - the assistant can scope its own searches and the new-session menu starts chats in a project folder, not a subfolder. Recommended dropping session/66-search-root
+Next: Drop the search-root branch on his OK; image-cache sweep branch still waits on the 90-day OK
+Blocked: Nothing
 
 Chats
+- 2026-11-18 session/66-image-cache-sweep: chat started
+- 2026-11-18 session/66-search-root: chat started
 - 2026-10-19 session/66-passwordless-admin: chat started
 
 From the old roadmap (native-harness › tools, status confirmed, seen on desktop, last checked 2026-08-12)
