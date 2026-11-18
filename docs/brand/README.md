@@ -163,18 +163,19 @@ secondary text). Centred, on lavender, held at least 2.5 s.
 **Hopeful, clear, honest, a little defiant.** Never doom-y, corporate, smug, or insulting to people
 who use Apple, Google or Microsoft.
 
-**The reader** (Destin, 2026-11-18) is smart, informed and quick to learn, with little time and
-little interest in routine features or specs. So:
+**Always assume the audience** is smart, informed and quick to learn, with little time and little
+interest in mundane features or tech specs. So:
 - Never talk down: no over-explaining, no stacked rhetorical tricks ("imagine a world…").
 - Don't simplify until the meaning is lost.
 - Technical terms only where they help, explained the first time ("your own computer", not "local
   inference").
 - Say each thing once per page, film or campaign.
 
-**Edit every draft twice:** (1) cut 20% without changing the meaning; (2) make sure every word,
-frame and page earns its place.
+**Edit every draft twice.** First pass, ask: *"How can I cut 20% of this without changing the
+meaning, while making it more meaningful, useful and impactful?"* Final pass, ask: *"Is this
+concise and punchy? Does every word, frame and page earn its value?"* Anything that doesn't, goes.
 
-**Never undersell, never blend in.** Sell the vision, not a feature list. Don't make the pitch
+**Never undersell, never blend in.** Sell the vision, not a soulless feature list. Don't make the pitch
 about what rivals also offer (section 10). **Test:** nobody should finish a piece asking "so… why
 not just use Claude Code or Hermes?"
 
