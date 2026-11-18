@@ -89,3 +89,6 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#764 behind | Nothing visible.
 - youcoded#765 behind | Nothing visible.
 - youcoded#766 fixes | The Effort and Fast chips stay hidden until the app has really read your saved choice, instead of showing a guess.
+- youcoded#767 new | When your Claude, ChatGPT or OpenRouter sign-in runs out, the chat shows a card with a Sign in button instead of an error you have to decode.
+- youcoded#767 new | With no internet, the app says "No internet connection" right away, and sign-in buttons stop before opening a page that can't load.
+- youcoded#767 new | Settings shows when your Claude sign-in expires, and a signed-out Claude can now be signed in from Settings.
