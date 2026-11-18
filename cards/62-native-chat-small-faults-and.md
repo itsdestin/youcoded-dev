@@ -15,8 +15,8 @@ vision: chat.converse.native, chat.converse.queue
 work: session/fix-anthropic-many-image-brick, session/chat-followups, session/62-queue-edit-choice
 ---
 Progress
-Done: Landed 2026-11-13 (youcoded PR #747, 320b0bcaa): files attached to a waiting message show as chips in line after the text; on phones they drop underneath.
-Next: Remaining faults on this card are untouched.
+Done: Item (d) built: editing a waiting message into a non-empty box now asks Replace or Append (YouCoded engine only); tests added; branch session/62-queue-edit-choice pushed
+Next: Destin reviews deck /home/destin/youcoded-dev/worktrees/sessions/62-queue-edit-choice/docs/active/design/2026-11-19-queue-edit-choice/queue-edit-choice.review.json
 Blocked: nothing recorded.
 
 Chats
