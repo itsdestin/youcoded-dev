@@ -693,8 +693,7 @@
             ]
           }
         }
-      ],
-      "reopened": "You picked the own card but said it didn't feel native; it is now drawn in the permission card's own frame."
+      ]
     },
     {
       "id": "Q-d-picture",
@@ -754,8 +753,7 @@
             ]
           }
         }
-      ],
-      "reopened": "You picked the version with buttons, but disliked the bare text and wanted icons in the app's style."
+      ]
     },
     {
       "id": "Q-d-sound",
@@ -764,21 +762,21 @@
       "surface": "Chat",
       "path": "A sound in the chat, made or sent",
       "headline": "Which sound card should play sounds in the chat?",
-      "today": "Finished files and tool steps each sit in their own bordered box inside the reply.",
-      "problem": "The first drawings put the player straight on the bubble.",
-      "proposal": "One bordered box: play, the filling wave, the time and View in folder, all on one line.",
-      "checked": "Redrawn on 2026-11-18 in the app's design workbench, inside a real reply bubble, from the permission card's frame and the Deliverables card's box.",
+      "today": "Pictures now show a box under them with the file name, maker and cost, and Open and View in folder at the right.",
+      "problem": "The one-line sound box hid what the sound was; the two-part box was twice as tall.",
+      "proposal": "Three middle grounds, all with the same Open and View in folder buttons as pictures and video.",
+      "checked": "Redrawn on 2026-11-18 in the app's design workbench, inside a real reply bubble, from the Deliverables card's box and the app's icon buttons.",
       "options": [
         {
-          "id": "box-line",
-          "label": "One-line box",
-          "picture": "pictures/design2-media-sound-card-one-line.png",
-          "summary": "Play, wave, time and View in folder in one box.",
+          "id": "two-tight",
+          "label": "Two tight lines",
+          "picture": "pictures/design3-media-sound-card-a-two-lines.png",
+          "summary": "A top line like the picture box, with play, wave and time tight under it.",
           "pros": [
-            "Smallest; fits anywhere, your own messages too."
+            "Reads exactly like the picture box above a player."
           ],
           "cons": [
-            "Does not say what the sound is or who made it."
+            "Still two lines."
           ],
           "reuse": {
             "from": [
@@ -793,15 +791,38 @@
           "recommended": true
         },
         {
-          "id": "box-header",
-          "label": "Box with a top line",
-          "picture": "pictures/design2-media-sound-card-with-header.png",
-          "summary": "A top line with name, maker and cost, the player under it.",
+          "id": "name-over",
+          "label": "Name over wave",
+          "picture": "pictures/design3-media-sound-card-b-name-over-wave.png",
+          "summary": "One line: play, the name sitting over a thin wave, time and buttons.",
           "pros": [
-            "Says what it is and what it cost, like a finished picture."
+            "Smallest that still names the sound."
           ],
           "cons": [
-            "Twice as tall."
+            "No maker or cost shown.",
+            "The thin wave is harder to see."
+          ],
+          "reuse": {
+            "from": [
+              "The Deliverables box",
+              "The app's small icon buttons"
+            ],
+            "new": [
+              "the play button",
+              "the wave"
+            ]
+          }
+        },
+        {
+          "id": "details-under",
+          "label": "Details under wave",
+          "picture": "pictures/design3-media-sound-card-c-details-under.png",
+          "summary": "One line: play, the wave with name, maker and cost in small text under it.",
+          "pros": [
+            "Shows everything in one row."
+          ],
+          "cons": [
+            "The small text is easy to miss."
           ],
           "reuse": {
             "from": [
@@ -815,7 +836,7 @@
           }
         }
       ],
-      "reopened": "You wanted the sound in its own box within the reply, not bare in the bubble."
+      "reopened": "You wanted options between the one-line box and the box with a top line."
     },
     {
       "id": "Q-d-video",
@@ -824,43 +845,22 @@
       "surface": "Chat",
       "path": "A video being made, and a finished one",
       "headline": "Which video card should show a video being made and then finished?",
-      "today": "Finished files and tool steps each sit in their own bordered box inside the reply.",
-      "problem": "The first drawings floated buttons mid-row and put the video bare in the bubble.",
-      "proposal": "While making: one box line with progress and Stop at the right. Finished: a box with a small first frame, the details, and Open at the right.",
-      "checked": "Redrawn on 2026-11-18 in the app's design workbench, inside a real reply bubble, from the permission card's frame and the Deliverables card's box.",
+      "today": "Pictures and sounds now carry Open and View in folder as small icon buttons at the right of their box.",
+      "problem": "The finished video had its own pill-shaped Open button, unlike every other card.",
+      "proposal": "While making: one box line with progress and Stop. Finished: the info line with the same two icon buttons, the first frame full width under it.",
+      "checked": "Redrawn on 2026-11-18 in the app's design workbench, inside a real reply bubble, from the Deliverables card's box and the app's icon buttons.",
       "options": [
         {
-          "id": "box-thumb",
-          "label": "Box with small frame",
-          "picture": "pictures/design2-media-video-card-stacked.png",
-          "summary": "Progress and Stop while making; then a small first frame, details and Open.",
+          "id": "combined",
+          "label": "Combined",
+          "recommended": true,
+          "picture": "pictures/design3-media-video-card-making-then-done.png",
+          "summary": "The making card you liked, then the big-frame finished card, with the shared buttons.",
           "pros": [
-            "Small, and clearly opens elsewhere."
+            "Same buttons, same place, as pictures and sound."
           ],
           "cons": [
-            "The first frame is small."
-          ],
-          "reuse": {
-            "from": [
-              "The Deliverables box",
-              "The app's progress bar and buttons"
-            ],
-            "new": [
-              "the frame beside the details"
-            ]
-          },
-          "recommended": true
-        },
-        {
-          "id": "box-big",
-          "label": "Box with big frame",
-          "picture": "pictures/design2-media-video-card-side.png",
-          "summary": "A top line with details and icon buttons; the first frame full width under it.",
-          "pros": [
-            "The first frame is easy to see."
-          ],
-          "cons": [
-            "A big frame looks playable but opens your video player."
+            "The big frame still opens in your video player, not in the chat."
           ],
           "reuse": {
             "from": [
@@ -868,12 +868,12 @@
               "The app's progress bar and small icon buttons"
             ],
             "new": [
-              "the big frame"
+              "the full-width frame"
             ]
           }
         }
       ],
-      "reopened": "You wanted the video in its own box, like sound, and said the button alignment was off."
+      "reopened": "You liked the first drawing while it is being made, the second once finished, and wanted the same buttons as the other cards."
     },
     {
       "id": "Q-d-limit",
@@ -933,7 +933,7 @@
           }
         }
       ],
-      "reopened": "You chose none: the first was best but too busy and badly aligned. Now simpler, in the permission card's frame."
+      "resolved": "Your sentence is on the card, and its buttons now use the normal approval styling, with no orange. The final card is under \"Other moments the cards must cover\"."
     },
     {
       "id": "L-states",
@@ -947,11 +947,11 @@
           "call": "Editing a picture you attached: the card shows a small copy of it under your request.",
           "why": "So you can see which picture will be changed.",
           "visual": true,
-          "picture": "pictures/design2-media-approval-a-body-edit.png",
+          "picture": "pictures/design3-media-approval-b-header-edit.png",
           "more": {
             "today": "Attached pictures appear only in your own message.",
             "problem": "With several pictures in a chat, it is unclear which one gets changed.",
-            "change": "Now drawn in the permission card frame. You said the idea is fine; the exact look follows the approval card you pick."
+            "change": "Redrawn on your chosen card, with the maker in the top line."
           }
         },
         {
@@ -959,11 +959,23 @@
           "call": "With only a ChatGPT plan: \"Your ChatGPT plan only includes image generation on chatgpt.com. To generate images here, please connect a paid image provider.\"",
           "why": "As agreed: two ways forward, nothing to approve.",
           "visual": true,
-          "picture": "pictures/design2-media-approval-a-body-chatgpt-only.png",
+          "picture": "pictures/design3-media-approval-b-header-chatgpt-only.png",
           "more": {
             "today": "A ChatGPT plan can chat but cannot pay for pictures in our app.",
             "problem": "A card with nothing to approve would be a dead end.",
-            "change": "Your wording, word for word, with Open chatgpt.com and Connect a provider."
+            "change": "Redrawn on your chosen card; your wording unchanged."
+          }
+        },
+        {
+          "id": "S-no-provider",
+          "call": "Any chat with no picture service connected, Claude Code included: \"Making images here needs a paid image provider. Connect one to continue.\"",
+          "why": "Claude's company sells no picture service, so a Claude Code chat always needs another provider.",
+          "visual": true,
+          "picture": "pictures/design3-media-approval-b-header-no-provider.png",
+          "more": {
+            "today": "Claude Code chats can use the app's own tools, but Anthropic offers no picture service.",
+            "problem": "Without this, the assistant would try and fail with a confusing error.",
+            "change": "Not now closes the card; Connect a provider opens Cloud providers."
           }
         },
         {
@@ -992,18 +1004,30 @@
         },
         {
           "id": "S-light",
-          "call": "The orange Approve stays orange on every theme; today only Fast mode's \"Turn on and accept charges\" uses it.",
-          "why": "The app keeps one fixed orange for spending money on every theme.",
+          "call": "No orange: Approve, Allow for this chat and Decline look and sit exactly like every other permission card, on every theme.",
+          "why": "Your choice: normal approval card styling.",
           "visual": true,
-          "picture": "pictures/design2-media-approval-a-body-light.png",
+          "picture": "pictures/design3-media-approval-b-header-light.png",
           "more": {
-            "today": "One place uses this orange today: confirming Fast mode in the model picker, which costs extra.",
-            "problem": "A theme-coloured Approve would not read as spending money.",
-            "change": "Approve and the limit's Continue would be its second and third uses, all three about spending money."
+            "today": "Permission cards show Yes, Always allow and No in green, blue and red.",
+            "problem": "An orange Approve set this card apart from every other request.",
+            "change": "Shown here in a light theme; the dark one is the same card."
+          }
+        },
+        {
+          "id": "S-limit",
+          "call": "The spending limit card, with your sentence and the normal approval buttons.",
+          "why": "Your pick, finished: one sentence and one line of choices.",
+          "visual": true,
+          "picture": "pictures/design3-media-limit-card-ask-slim.png",
+          "more": {
+            "today": "No spending limit exists.",
+            "problem": "The earlier drawing used orange and two sentences.",
+            "change": "Continue raises this chat's limit to the amount picked."
           }
         }
       ],
-      "reopened": "You wanted your exact ChatGPT wording, the app's own picture menu with Ask about this, and asked where the orange appears."
+      "reopened": "You asked what a Claude Code chat shows with no picture service, and wanted the normal approval styling instead of orange."
     },
     {
       "id": "P-defaults",
