@@ -1,7 +1,7 @@
 ---
 id: 236
 title: Working offline, sign-in expiry and the startup menu: the decided behaviour
-stage: planning
+stage: merged
 tags: accounts, offline, user-interface, feature
 branch: 236-working-offline-sign-in-expiry
 finish: The app behaves offline and after a sign-in expiry the way the 2026-09-14 answers say, and the startup menu matches them.
