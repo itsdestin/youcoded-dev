@@ -14,9 +14,9 @@ side: both
 work: session/round4-silent-places, session/134-phone-paste
 ---
 Progress
-Done: Phone picture-paste built on session/134-phone-paste: pasted picture uploads via Attach route; tests added
-Next: Destin reviews deck docs/active/design/2026-11-19-phone-paste/phone-paste.review.json
-Blocked: Synced-project rename notice skipped: sync retries by itself, so it would be a false alarm
+Done: Deck 2026-11-19 phone-paste: Destin said yes (branch session/134-phone-paste). He asked how paste works in the Android app and about paste previews; answered in chat
+Next: Merge on his word; Android app paste of pictures is a separate piece
+Blocked: Nothing
 
 Chats
 - 2026-11-18 session/134-phone-paste: chat started
