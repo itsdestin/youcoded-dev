@@ -1,0 +1,326 @@
+{
+ "deck": "code-review-2026-11-18-round2",
+ "started": "2026-11-18T23:04:30.157Z",
+ "submitted": "2026-11-18T23:35:43Z",
+ "cur": 8,
+ "answers": {
+  "F-1": {
+   "v": "yes",
+   "t": 1795043109802,
+   "seconds": 4,
+   "theme": "midnight"
+  },
+  "F-2": {
+   "v": "yes",
+   "t": 1795043109802,
+   "seconds": 4,
+   "theme": "midnight"
+  },
+  "F-3": {
+   "v": "yes",
+   "t": 1795043109802,
+   "seconds": 4,
+   "theme": "midnight"
+  },
+  "F-4": {
+   "v": "yes",
+   "t": 1795043109802,
+   "seconds": 4,
+   "theme": "midnight"
+  },
+  "F-5": {
+   "v": "yes",
+   "t": 1795043109802,
+   "seconds": 4,
+   "theme": "midnight"
+  },
+  "F-6": {
+   "v": "yes",
+   "t": 1795043109802,
+   "seconds": 4,
+   "theme": "midnight"
+  },
+  "F-7": {
+   "v": "yes",
+   "t": 1795043109802,
+   "seconds": 4,
+   "theme": "midnight"
+  },
+  "F-8": {
+   "v": "yes",
+   "t": 1795043109802,
+   "seconds": 4,
+   "theme": "midnight"
+  },
+  "F-9": {
+   "v": "yes",
+   "t": 1795043109802,
+   "seconds": 4,
+   "theme": "midnight"
+  },
+  "E-1": {
+   "v": "yes",
+   "t": 1795043469165,
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "E-2": {
+   "v": "other",
+   "dk": true,
+   "t": 1795043469165,
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "E-3": {
+   "v": "pick",
+   "t": 1795043469165,
+   "note": "risks of data loss or forgetting cards? this seems like i would frequently lose work if i close and forget about a session before it saves its work?",
+   "pick": "batch",
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "E-4": {
+   "v": "yes",
+   "t": 1795043469165,
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "H-1": {
+   "v": "pick",
+   "pick": "mix",
+   "t": 1795043629503,
+   "seconds": 27,
+   "theme": "midnight"
+  },
+  "H-2": {
+   "v": "other",
+   "t": 1795043629503,
+   "note": "confused. to be clear, NO harmless/irrelevant failures should get a warning message. i do think we should try to fix the ones we know of with a swarm of agents, but we shouldn't add messages for them if a user wouldn't care or be able to do anything about it. unsure what you mean by freeze exactly.",
+   "seconds": 27,
+   "theme": "midnight"
+  },
+  "H-3": {
+   "v": "yes",
+   "t": 1795043629503,
+   "seconds": 27,
+   "theme": "midnight"
+  },
+  "H-4": {
+   "v": "pick",
+   "pick": "first-two",
+   "t": 1795043629503,
+   "seconds": 27,
+   "theme": "midnight"
+  },
+  "H-5": {
+   "v": "yes",
+   "t": 1795043629503,
+   "seconds": 27,
+   "theme": "midnight"
+  },
+  "H-6": {
+   "v": "yes",
+   "t": 1795043629503,
+   "seconds": 27,
+   "theme": "midnight"
+  },
+  "D-1": {
+   "v": "yes",
+   "t": 1795043765038,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "D-2": {
+   "v": "other",
+   "t": 1795043765038,
+   "dk": true,
+   "note": "kinda confused about what the issues are here. also don't want to break sync features that are working, like message downloads on android, which currently work fine i think.",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "D-3": {
+   "v": "yes",
+   "t": 1795043765038,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "D-4": {
+   "v": "yes",
+   "t": 1795043765038,
+   "note": "we shouldnt be offering a sync now button if no sync is enabled",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "L-1": {
+   "v": "yes",
+   "t": 1795043817623,
+   "seconds": 18,
+   "theme": "midnight"
+  },
+  "L-2": {
+   "v": "yes",
+   "t": 1795043817623,
+   "seconds": 18,
+   "theme": "midnight"
+  },
+  "L-3": {
+   "v": "yes",
+   "t": 1795043817623,
+   "seconds": 18,
+   "theme": "midnight"
+  },
+  "V-1": {
+   "v": "pick",
+   "pick": "mixed",
+   "t": 1795044133343,
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "V-2": {
+   "v": "yes",
+   "t": 1795044133343,
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "V-3": {
+   "v": "other",
+   "t": 1795044133343,
+   "note": "leave for now, but add a card for future consideration/exploration w context",
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "V-4": {
+   "v": "other",
+   "dk": true,
+   "t": 1795044133343,
+   "note": "confused",
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "V-5": {
+   "v": "yes",
+   "t": 1795044133343,
+   "seconds": 63,
+   "theme": "midnight"
+  },
+  "I-1": {
+   "v": "other",
+   "dk": true,
+   "t": 1795044336450,
+   "note": "confused. how often does this realistically happen?",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "I-2": {
+   "v": "yes",
+   "t": 1795044336450,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "I-3": {
+   "v": "yes",
+   "t": 1795044336450,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "I-4": {
+   "v": "other",
+   "t": 1795044336450,
+   "dk": true,
+   "note": "wym? dont we already do this? confused",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "I-5": {
+   "v": "other",
+   "dk": true,
+   "t": 1795044336450,
+   "note": "confused",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "I-6": {
+   "v": "yes",
+   "t": 1795044336450,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "T-1": {
+   "v": "other",
+   "t": 1795044839006,
+   "note": "what? explain",
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "T-2": {
+   "v": "other",
+   "t": 1795044839006,
+   "note": "also confused. i don't wnat to make sweeping changes to workspace docs/guidance without clear examples/context/reasoning. this question and the last few are super undercooked",
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "T-3": {
+   "v": "no",
+   "t": 1795044839006,
+   "note": "get rid of the tags and the stories in main docs. commit history and chat/deck history are plenty when we need to figure out how/why something exists",
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "T-4": {
+   "v": "other",
+   "dk": true,
+   "t": 1795044839006,
+   "note": "we use both windows and linux machines, so idk?",
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "T-5": {
+   "v": "yes",
+   "t": 1795044839006,
+   "note": "maybe? i still need to see exactly what you'd be doing here",
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "T-6": {
+   "v": "yes",
+   "t": 1795044839006,
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "T-7": {
+   "v": "other",
+   "dk": true,
+   "t": 1795044839006,
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "N-1": {
+   "note": "can we use our existing ntfy system as well?",
+   "t": 1795044942575,
+   "v": "pick",
+   "pick": "session",
+   "seconds": 26,
+   "theme": "midnight"
+  },
+  "N-2": {
+   "v": "yes",
+   "t": 1795044942575,
+   "seconds": 26,
+   "theme": "midnight"
+  },
+  "N-3": {
+   "v": "other",
+   "t": 1795044942575,
+   "dk": true,
+   "note": "i think i'd also like to recieve the nightly report",
+   "seconds": 26,
+   "theme": "midnight"
+  },
+  "N-4": {
+   "v": "no",
+   "t": 1795044942575,
+   "seconds": 26,
+   "theme": "midnight"
+  }
+ }
+}
