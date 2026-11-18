@@ -1,0 +1,258 @@
+{
+ "title": "Automations are built: the decisions left before moving on",
+ "key": "pages-finish-step4-done-questions",
+ "out": "pages-finish-step4-done.questions.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "steps": [
+  {
+   "id": "Q-phones",
+   "words": true,
+   "surface": "Automations",
+   "path": "A phone or web browser paired to your computer",
+   "headline": "What should a paired phone be able to do with automations?",
+   "today": "You can pair a phone or a web browser to the YouCoded running on your computer and use the app from there. Automations are new, and for now a paired phone can do nothing with them: its Automations page shows an empty list, and Page settings has no Delete page. The YouCoded app installed on an Android phone is separate and is not affected.",
+   "problem": "An automation that needs your OK shows an orange dot and waits. If you are away from the computer, you cannot see the question or answer it from your phone, so the run sits there until you are back or its wait runs out.",
+   "proposal": "Your rule is that each new thing a paired phone may do is your decision, so I closed everything until you choose.",
+   "options": [
+    {
+     "id": "read-answer",
+     "label": "See and answer",
+     "summary": "The phone lists automations and their runs, and can answer a question (Allow, Allow from now on, Don't allow). Creating, editing, running, deleting and Delete page stay on the computer.",
+     "pros": [
+      "A waiting automation can be answered from anywhere, which is when a phone matters most.",
+      "Nothing on the phone can create, change or remove an automation or a page."
+     ],
+     "cons": [
+      "\"Allow from now on\" from the phone does change one permission to Always allowed.",
+      "To fix or pause an automation you still need the computer."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "everything",
+     "label": "Everything",
+     "summary": "The phone can do all that the computer can: create, edit, run, pause, delete, and Delete page.",
+     "pros": [
+      "Full control away from the computer."
+     ],
+     "cons": [
+      "Anyone holding a paired phone can delete pages and automations, or give an automation new permissions on your computer.",
+      "The permission screens are tight on a small screen and have not been checked there."
+     ]
+    },
+    {
+     "id": "closed",
+     "label": "Keep closed",
+     "summary": "Leave it as it is now.",
+     "pros": [
+      "Nothing about automations can be touched from outside the computer."
+     ],
+     "cons": [
+      "A waiting automation cannot be answered away from the computer.",
+      "A paired phone shows an empty Automations page, which looks broken."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-chats",
+   "words": true,
+   "surface": "Pages",
+   "path": "Page settings, the Delete page button at the foot, its red warning",
+   "headline": "Delete page says its chats are removed, but the conversations stay. Which should change?",
+   "today": "You approved a red warning that reads: \"The page, its earlier versions and its chats are removed. This can't be undone.\" As built, deleting a page removes the page, its saved versions, and the page's own list of chats. The conversations themselves stay in Resume under their project, like any other chat.",
+   "problem": "The warning promises more than happens. Someone who deleted a page to get rid of what they said in its chat would still find those conversations in Resume. YouCoded has no way to delete a chat anywhere yet.",
+   "proposal": "Either the words change to match what happens, or deleting chats gets built.",
+   "options": [
+    {
+     "id": "wording",
+     "label": "Change the words",
+     "summary": "The warning would read: \"The page and its earlier versions are removed. Its chats stay in Resume. This can't be undone.\"",
+     "pros": [
+      "True today, and nothing new that can destroy anything.",
+      "Conversations you might still want are never lost by deleting a page."
+     ],
+     "cons": [
+      "Old page chats stay in Resume until the app can delete chats."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "build",
+     "label": "Build chat deletion",
+     "summary": "Deleting a page would also delete its conversations for good.",
+     "pros": [
+      "Matches the wording you approved; nothing of the page is left behind."
+     ],
+     "cons": [
+      "A new way to permanently lose conversations, which the app has never had, and it would need its own design and safety checks.",
+      "Adds work before step 4 can ship."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-claude-resume",
+   "words": true,
+   "surface": "Automations",
+   "path": "A run that was going when YouCoded was closed",
+   "headline": "Is it acceptable that a cut-off run on a Claude model starts over instead of continuing?",
+   "today": "You chose that a run cut off by closing the app should pick up where it stopped. On the app's own models (ChatGPT, OpenRouter and the like) it does: it continues from its saved conversation and asks before redoing the step it was in the middle of. On a Claude model it cannot continue: when you reopen the app it asks \"Start this run again from the beginning?\", and if you say yes it starts over and the run list says \"Started over\".",
+   "problem": "Starting over can repeat steps that already happened, which is why it asks first. Making Claude runs continue means letting Claude save each run the way it saves your chats, in the same place. About fifteen parts of the app read that place (the chat list, Resume, chat search, syncing), and each would need to be taught to ignore runs. Miss one and automation runs show up among your chats.",
+   "proposal": "Yes keeps what is built. No has me build the continuing version, with a check on every one of those places.",
+   "yes": "Accept starting over",
+   "no": "Build continuing"
+  },
+  {
+   "id": "Q-evaluator",
+   "words": true,
+   "surface": "Chats on the app's own models",
+   "path": "The tools the assistant is given in every chat",
+   "headline": "Run the model evaluator on the new \"propose an automation\" tool?",
+   "today": "So the assistant can propose an automation from a chat, it now has one more tool in every chat on the app's own models. Each tool is described to the model at the start of a chat. The evaluator is a test rig that runs set tasks on several models and compares how well they do before and after a change like this.",
+   "problem": "An extra tool can make some models, mostly small local ones, pick the wrong tool or get slower. Without a run we do not know whether this one does. Your rule is that I offer the evaluator and never run it unasked, because real runs on paid models cost money.",
+   "proposal": "Pick how far to go.",
+   "options": [
+    {
+     "id": "dry",
+     "label": "Free dry run only",
+     "summary": "Checks that the tasks and the new tool load correctly. Sends nothing to a paid model.",
+     "pros": [
+      "Costs nothing.",
+      "Catches a broken tool description."
+     ],
+     "cons": [
+      "Says nothing about whether models behave worse."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "paid",
+     "label": "Paid run with a cap",
+     "summary": "A before and after comparison on real models, stopped at a spending cap you name.",
+     "pros": [
+      "The only way to see a real change in how models behave."
+     ],
+     "cons": [
+      "Costs money; you would need to say the cap and which key file to use."
+     ]
+    },
+    {
+     "id": "skip",
+     "label": "Skip it",
+     "pros": [
+      "No time or money spent."
+     ],
+     "cons": [
+      "A drop in quality on small models would only be noticed in use."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Loose ends and what comes next",
+   "intro": "The first page was about how automations behave. These are about tidying up and the order of the remaining work."
+  },
+  {
+   "id": "Q-leftovers",
+   "words": true,
+   "surface": "Your computer",
+   "path": "Two things my testing left behind",
+   "headline": "Delete the two leftovers from my testing?",
+   "today": "Testing with real Claude runs left two things. One: a folder at ~/.youcoded/automations holding empty lists and one small settings file. Your installed app does not read it; when automations ship, the app will use this same folder. Two: one short test conversation in your Claude history, saved under a scratch folder whose name contains cc-probe-work. It is me telling Claude to run \"echo hi\".",
+   "problem": "The test conversation may show up as a stray chat in Resume. The folder is harmless but was not there before. I do not delete things on your computer without your word.",
+   "proposal": "Yes removes the test conversation and empties the automations folder. No leaves both as they are.",
+   "yes": "Delete both",
+   "no": "Leave them"
+  },
+  {
+   "id": "Q-flaky",
+   "words": true,
+   "surface": "The checks I run before calling work done",
+   "path": "One click-path check about chat scrolling",
+   "headline": "Should I track down the chat-scrolling check that fails only under load, before going on?",
+   "today": "Before calling desktop work done I run a full set of checks. One of them opens a long chat, scrolls up and measures whether the text you are reading jumps. It failed in 3 of the 5 full runs during this work and passed every time I ran it by itself. Nothing in the automations work touches chat scrolling. Since then a \"flaky test cleanup\" was merged to the main line, which may or may not cover this one.",
+   "problem": "Your rule is that a flaky check is fixed when found, never set aside. A check that sometimes fails also hides real breaks. But this one is in a part of the app outside this work, and finding the cause could take hours.",
+   "proposal": "Pick when it gets looked at.",
+   "options": [
+    {
+     "id": "after-merge",
+     "label": "Bring in the main line, then see",
+     "summary": "I bring the main line's latest work into this branch (needed before shipping anyway), re-run the checks three times, and only chase it if it still fails.",
+     "pros": [
+      "May already be fixed, at no extra cost.",
+      "Does not hold up the rest."
+     ],
+     "cons": [
+      "If it still fails, it gets chased then, which delays the next step."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "now",
+     "label": "Chase it now",
+     "pros": [
+      "Follows your rule to the letter."
+     ],
+     "cons": [
+      "Hours on something that may already be fixed on the main line."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-next",
+   "words": true,
+   "surface": "Finishing Pages",
+   "path": "The remaining steps before Pages ships as one release",
+   "headline": "What should I build next?",
+   "today": "You decided to finish steps 4, 5 and 6 and then ship once. Step 4 (automations) is done on its branch. Step 5 is accounts: a page or an automation signing in to a service such as Gmail, so \"when an email arrives\" and \"read my email\" become real. Step 6 is sharing pages with other people, including asking again for approvals on a page someone else made.",
+   "problem": "Step 5 builds on Google sign-in work that another session did and never backed up or finished; it sits only in that session's folder on this computer (155-google-files). I should not take over another session's unfinished work without your word, and I do not know whether you consider it ready.",
+   "proposal": "Pick the order.",
+   "options": [
+    {
+     "id": "step6",
+     "label": "Step 6 first",
+     "summary": "Start sharing now; come back to accounts when the Google work is settled.",
+     "pros": [
+      "Nothing is blocked; work continues today.",
+      "Sharing also closes a known hole: a shared page keeps its approvals after its code is rewritten."
+     ],
+     "cons": [
+      "The practice Email sorter and other service automations stay unreal for longer."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "step5-take",
+     "label": "Step 5, using that work",
+     "summary": "I pick up the Google work from the other session's folder, back it up, review it, and build accounts on it.",
+     "pros": [
+      "Follows the order you set.",
+      "Email and calendar automations become real sooner."
+     ],
+     "cons": [
+      "I would be building on work I did not write and that was left unfinished; reviewing it comes first and may find problems.",
+      "If that session is still in use, two sessions would be working on the same thing."
+     ]
+    },
+    {
+     "id": "ship4",
+     "label": "Ship step 4 by itself first",
+     "summary": "Change the earlier decision: get automations into the app now, then do 5 and 6.",
+     "pros": [
+      "You can use automations for real and find problems early."
+     ],
+     "cons": [
+      "Reverses \"ship once\"; service permissions would show as not available yet.",
+      "Needs the screens clicked through by hand against the real app first, which has not been done."
+     ]
+    }
+   ]
+  }
+ ]
+}
