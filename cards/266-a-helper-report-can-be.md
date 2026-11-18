@@ -1,7 +1,7 @@
 ---
 id: 266
 title: A helper report can be delivered twice if the app quits mid-delivery
-stage: explore
+stage: merged
 tags: native-harness, bug
 related: 62
 branch: 266-a-helper-report-can-be
