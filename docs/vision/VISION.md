@@ -25,8 +25,8 @@ can do real work on your computer with any AI model you choose, plus Themes, Pag
 an Office editor, a browser and a community marketplace.
 
 **That is the doorway, not the destination.** The destination is an *everything app*: the home
-base for your whole digital life, the one place a person runs their digital life from — documents, money, home, devices, social life,
-automations — on technology they own, can change, and never have to rent.
+base for your whole digital life — documents, money, home, devices, social life, automations —
+on technology you own, can change, and never have to rent.
 
 Do not judge YouCoded by what it is today. Judge today's work by how far it moves toward this.
 
