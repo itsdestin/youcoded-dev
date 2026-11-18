@@ -14,8 +14,8 @@ vision: chat.steer.permissions, chat.converse.native
 work: session/66-passwordless-admin, session/66-search-root, session/66-image-cache-sweep
 ---
 Progress
-Done: 2026-11-12: Edit tool quote/dash fallback and picture re-shrink after a model switch LANDED (app PR #736); both proven by tests only.
-Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-11-12-wave-2): NO Skip Permissions option for local/OpenRouter chats; drop item (e). Other items unchanged.
+Done: image-cache sweep (90-day, refresh on reuse) built, tested, pushed
+Next: Needs independent code review before landing as invisible fix; no deck (invisible)
 Blocked: Nothing for the admin part. Other items wait on a decision about splitting the card.
 
 Chats
