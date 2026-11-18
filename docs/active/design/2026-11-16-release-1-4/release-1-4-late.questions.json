@@ -1,0 +1,91 @@
+{
+  "title": "Release 1.3.4: late changes on master",
+  "key": "release-1-4-late",
+  "out": "release-1-4-late.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "L-1",
+      "words": true,
+      "surface": "Error messages across the app",
+      "path": "The 'silent failures round 4' batch (#766)",
+      "headline": "The 'silent failures' batch you chose to hold was merged by another session. Keep it in 1.3.4?",
+      "today": "In the first release deck you chose to hold this batch (about 40 places that now say when something failed) for the next release. Another work session merged it into master on Nov 18.",
+      "problem": "It is now part of what 1.3.4 would ship. The new review found no false or stuck messages in it; a few things now fail visibly that used to fail quietly (for example, uninstalling a plugin whose folder can't be deleted now says so and keeps it listed).",
+      "proposal": "Yes keeps it in 1.3.4. No means I take it back out of master before the release and it returns afterwards.",
+      "yes": "Keep it in",
+      "no": "Take it out"
+    },
+    {
+      "id": "L-2",
+      "words": true,
+      "surface": "Sign-in and setup",
+      "path": "The new 'No internet connection' check (#767)",
+      "headline": "Should the 'No internet' check confirm with a real connection before blocking sign-in?",
+      "today": "New since your review: the app decides you're offline when two quick address lookups fail. Then first-run sign-in buttons are replaced by 'No internet connection', Sign in buttons in Settings and the chat stop, and paid-model chats end a reply with 'No internet' instead of retrying.",
+      "problem": "On school or office networks that reach the internet only through a proxy, or some VPNs, those lookups can fail while the internet works. A student could be stuck at first-run setup with Try again repeating the same failing check.",
+      "proposal": "Pick how to handle it before release.",
+      "options": [
+        {
+          "id": "confirm",
+          "label": "Double-check first",
+          "summary": "When the quick check says offline, the app also tries a real secure connection before deciding. Same messages, only shown when truly offline.",
+          "pros": ["No one who is online gets blocked.", "No visible change for people who really are offline."],
+          "cons": ["About a second longer before 'No internet' appears when truly offline."],
+          "recommended": true
+        },
+        {
+          "id": "try-anyway",
+          "label": "Add 'Try anyway'",
+          "summary": "Keep the check as is, and add a 'Try anyway' link under 'No internet connection'.",
+          "pros": ["People can always get past it."],
+          "cons": ["A new link to word; people still see a wrong message first."]
+        },
+        {
+          "id": "ship",
+          "label": "Ship as is",
+          "pros": ["No more changes."],
+          "cons": ["Some people on school or work networks may be unable to sign in."]
+        }
+      ]
+    },
+    {
+      "id": "L-3",
+      "words": true,
+      "surface": "Chat pictures",
+      "path": "The 90-day cleanup of shrunk picture copies (#772)",
+      "headline": "Should the 90-day picture cleanup count from last use, so chats you keep using don't lose their pictures?",
+      "today": "New since your review: the app keeps a shrunk copy of each picture you send, for the assistant. Copies are now deleted 90 days after they were made. Your original picture files are never touched.",
+      "problem": "Reopening a chat doesn't count as using the copy, so even a chat you open every week has its copies deleted after 90 days. After that the assistant is told 'image no longer available' although your original still exists. What you see on screen is unaffected.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "last-use",
+          "label": "Count from last use",
+          "summary": "Reopening a chat marks its copies as used, so only copies untouched for 90 days are removed.",
+          "pros": ["Chats you keep using never lose their pictures.", "Disk still gets cleaned for chats you abandoned."],
+          "cons": ["Small change before release."],
+          "recommended": true
+        },
+        {
+          "id": "as-is",
+          "label": "Keep as is",
+          "pros": ["No change."],
+          "cons": ["The assistant forgets pictures in long-running chats after 90 days."]
+        }
+      ]
+    },
+    {
+      "id": "L-4",
+      "words": true,
+      "surface": "Release",
+      "path": "Changes going into master from other work sessions",
+      "headline": "Freeze master until 1.3.4 ships, except release fixes you approve?",
+      "today": "While this release was being prepared, other work sessions merged 10 more changes into master. Each one needs reviewing and a new test build before release.",
+      "problem": "If merges keep coming, the release keeps moving: every new change means another review and rebuild, and a late change could slip in untested.",
+      "proposal": "Yes: I add a note to the workspace that app changes wait for 1.3.4 unless you approve them as release fixes; other sessions keep working on their branches and merge after the release. No: merges continue and I re-check before tagging.",
+      "yes": "Freeze it",
+      "no": "Keep merging"
+    }
+  ]
+}
