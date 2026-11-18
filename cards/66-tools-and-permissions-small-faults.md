@@ -11,7 +11,7 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.steer.permissions, chat.converse.native
-work: session/66-passwordless-admin
+work: session/66-passwordless-admin, session/66-search-root
 ---
 Progress
 Done: 2026-11-12: Edit tool quote/dash fallback and picture re-shrink after a model switch LANDED (app PR #736); both proven by tests only.
@@ -19,6 +19,7 @@ Next: DECIDED by Destin on the wave-2 deck 2026-11-12 (docs/active/design/2026-1
 Blocked: Nothing for the admin part. Other items wait on a decision about splitting the card.
 
 Chats
+- 2026-11-18 session/66-search-root: chat started
 - 2026-10-19 session/66-passwordless-admin: chat started
 
 From the old roadmap (native-harness › tools, status confirmed, seen on desktop, last checked 2026-08-12)
