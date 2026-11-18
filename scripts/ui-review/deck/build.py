@@ -510,7 +510,7 @@ def deck_data(spec, boxes):
             on = [steps_by_id[i] for i in pgd['steps'] if i in steps_by_id and not steps_by_id[i].get('context')]
             if on and not pgd.get('record') and all((s_.get('grow') or {}).get('new') for s_ in on):
                 pgd['new'] = True
-    return {**live, **paged, **grown, **_built(spec), **({} if is_grows(spec) else _history(spec)), 'title': spec['title'], 'key': spec['key'], 'runs': runs,
+    return {**live, **paged, **grown, **_built(spec), **({} if is_grows(spec) else _history(spec)), 'title': spec['title'], 'tag': (spec.get('tag') or '').strip() or None, 'key': spec['key'], 'runs': runs,
             # Any other run name (`round3`) shows as written unless `labels` names it.
             'runLabels': {**{r: r for r in spec['runs']}, 'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},

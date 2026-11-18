@@ -466,6 +466,14 @@ def validate_fields(spec, errors):
     if grows is not None and grows is not True:
         errors.append('grows is true or left out (one deck for the whole feature, re-built each round)')
     on = grows is True
+    # WHY (Destin, 2026-11-18): the yellow header should say what kind of work a deck is in one
+    # consistent form — "FEATURE: …", "BUG: …", "OPTIMIZATION: …", or a short custom word when
+    # none fits. Required on a growing deck (one per piece of work); any deck may carry it.
+    tag = spec.get('tag')
+    if tag is not None and (not isinstance(tag, str) or not tag.strip() or len(tag.strip()) > 20 or ':' in tag):
+        errors.append('tag is one short word for the kind of work: "feature", "bug", "optimization", or your own (up to 20 letters, no colon)')
+    elif on and tag is None:
+        errors.append('a deck that grows needs "tag": "feature", "bug" or "optimization" (or a short word of your own) — the header shows it before the title')
     for k in ('rounds_before', 'retired', 'stale_answers', 'notes_handled'):
         if k in spec and not on:
             errors.append(f'{k} belongs on a deck that grows; add "grows": true')

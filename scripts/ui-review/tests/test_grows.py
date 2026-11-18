@@ -24,7 +24,7 @@ def question(i, headline, **kw):
 
 def base_spec(**over):
     # WHY both pages are Design (round 11): a deck is AT one stage; an open topic may not sit on an earlier stage's page.
-    spec = {'title': 'Grow', 'key': 'grow', 'out': 'grow.html', 'themes': ['midnight'], 'grows': True, 'stage': 'design',
+    spec = {'title': 'Grow', 'key': 'grow', 'out': 'grow.html', 'themes': ['midnight'], 'grows': True, 'tag': 'feature', 'stage': 'design',
             'steps': [{'id': 'P-1', 'page': 'Understanding', 'intro': 'Judge.', 'stage': 'design'},
                       question('Q-1', 'First question?'), question('Q-2', 'Second question?'),
                       {'id': 'P-2', 'page': 'Design', 'intro': 'Pick.', 'stage': 'design'},
@@ -177,6 +177,17 @@ class Grows(unittest.TestCase):
         self.has(with_step(reopened='a', resolved='b'), 'keep one')
         self.has(with_step(state='new'), 'sink to the bottom by themselves')
 
+    def test_a_growing_deck_names_its_kind_of_work(self):
+        # Destin, 2026-11-18: the header reads "FEATURE: …", "BUG: …", "OPTIMIZATION: …" or a short custom word.
+        st = base_spec(); del st['tag']
+        self.has(validate(load_spec(put(self.tmp, st)))[0], 'needs "tag"')
+        for bad in ('', 'a: b', 'x' * 21, 3):
+            st = base_spec(); st['tag'] = bad
+            self.has(validate(load_spec(put(self.tmp, st)))[0], 'tag is one short word')
+        st = base_spec(); st['tag'] = 'chore'
+        self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])
+        self.assertEqual(deck_data(load_spec(put(self.tmp, st)), {})['tag'], 'chore')
+
     def test_the_new_fields_mean_nothing_without_grows(self):
         st = base_spec(); del st['grows']; st['steps'][1]['reopened'] = 'x'; st['rounds_before'] = 1
         errs = validate(load_spec(put(self.tmp, st)))[0]
@@ -264,7 +275,7 @@ class Grows(unittest.TestCase):
                'calls': [{'id': 'r1', 'call': 'One.', 'why': 'Yes.'}]}
         before = {'title': 't', 'key': 'k', 'out': 'k.html', 'steps': [{'id': 'W-1', 'calls': [{'id': 'save', 'call': 'A.', 'why': 'b', 'decided': 'x'}]}]}
         put(self.tmp, before, 'x.walkthrough.json')
-        after = {'title': 't', 'key': 'k2', 'out': 'k2.html', 'grows': True, 'steps': [
+        after = {'title': 't', 'key': 'k2', 'out': 'k2.html', 'grows': True, 'tag': 'feature', 'steps': [
             {'id': 'P-1', 'page': 'After', 'intro': 'i', 'stage': 'after'},
             {**lst, 'calls': [{'id': 'r1', 'call': 'One.', 'why': 'Yes.', 'from': 'W-1/save'}]},
             # WHY: the after-build deck must carry this list (feature-flow step 5); ticked below so only W-1 is in question.
@@ -485,7 +496,7 @@ class NewTags(unittest.TestCase):
 class AfterStageLists(unittest.TestCase):
     """A growing deck AT stage "after" is held to the two lists too (feature-flow step 5)."""
     def errs(self, extra):
-        spec = {'title': 'Grow', 'key': 'grow', 'out': 'grow.html', 'themes': ['midnight'], 'grows': True, 'stage': 'after',
+        spec = {'title': 'Grow', 'key': 'grow', 'out': 'grow.html', 'themes': ['midnight'], 'grows': True, 'tag': 'feature', 'stage': 'after',
                 'steps': [{'id': 'P-1', 'page': 'After', 'intro': 'Go through it.', 'stage': 'after'}] + extra}
         tmp = tempfile.mkdtemp()
         return validate(load_spec(put(tmp, spec)))[0]

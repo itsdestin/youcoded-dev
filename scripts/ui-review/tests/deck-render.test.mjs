@@ -1698,7 +1698,7 @@ p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p)); q1, q2 = raw['steps'][0], raw['steps'][1]
 q1 = {**q1, 'options': q1['options'] + [{'id': 'b', 'label': 'Elsewhere', 'summary': 'Somewhere else.', 'pros': ['Quiet.'], 'cons': ['Hidden.']}]}
 def q(i, h, **kw): return {**q1, 'id': i, 'headline': h, **kw}
-raw['grows'] = True
+raw['grows'] = True; raw['tag'] = 'feature'
 raw['rounds_before'] = 3
 # WHY round 1 is AT understanding (round 11): a deck is at one stage, so its only page is that stage's.
 raw['stage'] = 'understanding'
@@ -1754,7 +1754,11 @@ json.dump(raw, open(p, 'w'))`;
       // Submit feedback is one filled button
       assert.equal(await q("document.querySelector('#done').textContent"), 'Submit feedback');
       assert.equal(await q("(()=>{const t=document.createElement('i');t.style.background='var(--accent)';document.body.appendChild(t);const a=getComputedStyle(t).backgroundColor;t.remove();return getComputedStyle(document.querySelector('#done')).backgroundColor===a})()"), true, 'filled with the accent colour');
-      assert.match(await q("document.querySelector('.chip .roundtag').textContent"), /Round 5/);
+      // Destin, 2026-11-18: the header reads "FEATURE: <title>" and a bare date; no "Round N", no word "built", no version code
+      assert.match(await q("document.querySelector('#deck-title').textContent"), /^FEATURE: /);
+      assert.equal(await q("document.querySelector('.chip .roundtag')"), null, 'no Round label in the header');
+      assert.ok(!/built|Round|[0-9a-f]{7,}/.test(await q("document.querySelector('.chip .built').textContent")), 'the date stands alone');
+      assert.match(await q("document.querySelector('.chip .built').title"), /Round 5/, 'the round stays in the hover text');
       assert.equal(await q("document.querySelector('#histbtn').hidden"), true, 'no History button');
       assert.deepEqual(await ids(), ['Q-3', 'Q-4']);
       // Code review F3: his page comment from last round is shown on its page with what was done, in the quiet answered-card look
@@ -2071,7 +2075,7 @@ opts = [{'id': 'a', 'label': 'Hover', 'pros': ['Clean.'], 'cons': ['No phone.'],
 given = {'v': 'pick', 'pick': 'b', 'marks': [{'pic': 'option a', 'x': 10, 'y': 10, 'w': 30, 'h': 30, 'text': 'too busy'}]}
 old = {**q1, 'id': 'Q-1', 'headline': 'Which look do you want?', 'visual': True, 'options': opts, 'answered': [{'round': 'Round 1', 'given': given}]}
 new = {**q1, 'id': 'Q-2', 'headline': 'Another look?', 'visual': True, 'options': opts}
-raw['grows'] = True; raw['stage'] = 'design'
+raw['grows'] = True; raw['tag'] = 'feature'; raw['stage'] = 'design'
 raw['steps'] = [{'id': 'P-1', 'page': 'Looks', 'intro': 'Pick one.', 'stage': 'design'}, old, new]
 json.dump(raw, open(p, 'w')); print(p)`;
   const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
@@ -2114,7 +2118,7 @@ def png(name, w, h):
     data = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress((b'\\x00' + b'\\x40\\x60\\x80' * w) * h)) + chunk(b'IEND', b'')
     open(os.path.join(os.path.dirname(p), name), 'wb').write(data)
 png('strip.png', 1400, 300); png('normal.png', 400, 300)
-raw['grows'] = True; raw['rounds_before'] = 3; raw['stage'] = 'design'
+raw['grows'] = True; raw['tag'] = 'feature'; raw['rounds_before'] = 3; raw['stage'] = 'design'
 rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'gallery': True, 'calls': [{'id': 'a', 'call': 'A row.', 'why': 'Because.', 'picture': 'strip.png'}, {'id': 'b', 'call': 'Another.', 'why': 'Because.', 'picture': 'normal.png'}]}
 steps = []
 for i in range(1, 13):
@@ -2193,7 +2197,7 @@ from fixture import words_spec
 p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p)); q1 = raw['steps'][0]
 def q(i, h, **kw): return {**q1, 'id': i, 'headline': h, **kw}
-raw['grows'] = True; raw['stage'] = 'design'
+raw['grows'] = True; raw['tag'] = 'feature'; raw['stage'] = 'design'
 os.makedirs(os.path.join(os.path.dirname(p), 'mock'), exist_ok=True)
 open(os.path.join(os.path.dirname(p), 'mock', 'menu.html'), 'w').write('<!doctype html><html data-frozen="600x400"><head><meta charset="utf-8"></head><body><div><p>Pick a game</p></div></body></html>')
 mock = {'id': 'S-1', 'words': True, 'surface': 'Menu', 'path': 'Mockup', 'headline': 'The words on the menu mockup', 'screen': 'mock/menu.html'}

@@ -11,6 +11,7 @@
   "_comment_key": "key: a short name; his answers are saved under it. Keep it the same every round.",
   "out": "saved-searches.html",
   "grows": true,
+  "tag": "feature",
   "_comment_grows": "grows: true switches all of this on. A deck without it behaves exactly as before.",
   "_comment_stage": "stage: the stage this deck is AT now (understanding, design, before, after). Refused: a page of a LATER stage; an open topic (not answered, not a background list) on a page of an EARLIER stage; a reopened topic anywhere but the current stage; no page at the current stage. Move the deck on by changing this when a stage is done.",
   "stage": "design",

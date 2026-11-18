@@ -308,3 +308,6 @@ A deck he has ALREADY answered is re-served with `serve --no-build`, never rebui
 ## Tests
 
 `cd scripts/ui-review && python3 -m unittest discover -s tests -p 'test_*.py'` (specs, words, grows, gate, rethink, serve, build, cli; no browser for most), `node --test tests/deck-render.test.mjs` (renders the page; needs Chrome, about four minutes) and `bash tests/close-out-contract.test.sh`. Tests that pin the rules above: `test_words.py` (questions), `test_rethink.py` (lists, after-build lists, summaries), `test_grows.py` (growing decks and earlier-round isolation), `test_gate.py` (the done gate), `test_spec.py`, `test_serve.py`.
+
+## The header and the kind of work
+The yellow header reads `REVIEW DECK | <TAG>: <title> | <date built>`. `"tag"` is required on a growing deck: `"feature"`, `"bug"`, `"optimization"`, or one short word of your own (up to 20 letters, no colon); it is shown in capitals before the title. The date stands alone; the round and the version are only in its hover text and the answers file (Destin, 2026-11-18). A words step's `changed` box is headed by its page's stage: "What this means" (Understanding), "What would change" (Design), "What will change" (Before build), "What changed" (After build and decks without stages).

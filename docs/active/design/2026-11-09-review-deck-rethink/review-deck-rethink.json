@@ -3,6 +3,7 @@
   "key": "review-deck-rethink",
   "out": "review-deck-rethink.html",
   "grows": true,
+ "tag": "feature",
   "rounds_before": 10,
   "stage": "design",
   "notes_handled": {

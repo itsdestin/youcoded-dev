@@ -252,8 +252,13 @@
   };
   // No card at all when there is nothing to put in it: a slide showing a REAL screen of the app
   // has no "what changed", and an empty titled box reads as a rendering fault.
+  // WHY the heading follows the stage (Destin, 2026-11-18: "the 'what changed' section headers in the understanding tab maybe
+  // dont make the most sense"): an Understanding statement describes what exists or what he wants, a Design or before-build row
+  // describes something not built yet, and only after the build has anything changed. Same box, honest heading.
+  const stageOfStep = st => { const p = (ALLPAGES || []).find(pg => pg.steps.includes(st.id)); return (p && p.stage) || (GROWS && GROWS.stage) || ''; };
+  const changedHead = st => ({ understanding: 'What this means', design: 'What would change', before: 'What will change' })[stageOfStep(st)] || 'What changed';
   const changedCard = st => !st.changed && !st.measured ? ''
-    : `<section class="card"><h3>${ICON.change}What changed</h3>${st.changed ? `<p>${esc(st.changed)}</p>` : ''}${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`;
+    : `<section class="card"><h3>${ICON.change}${esc(changedHead(st))}</h3>${st.changed ? `<p>${esc(st.changed)}</p>` : ''}${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`;
   const noticeCard = st => st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '';
   // "Also changes" (close-session friction, proposal 15): the other screens a shared change
   // reaches, listed with the notice so a yes here is a yes to all of them.
@@ -905,17 +910,19 @@
     state.answers[id] = a; paintState(); save();
     const n = PAGES ? $(`#cards article.q[data-id="${CSS.escape(id)}"] .note`) : $('#note'); if (n) n.focus();
   }
-  $('#deck-title').textContent = DECK.title; document.title = DECK.title;
-  // WHY (Destin, 2026-11-09, rethink Q-6): which version of the work a deck was built from,
-  // and when, proves its value on every deck — stale decks were his top complaint. It sits
-  // quietly in the chip, and rides into the answers file so the record says what he was shown.
-  if (GROWS) {
-    const r = document.createElement('span'); r.className = 'roundtag'; r.textContent = 'Round ' + GROWS.round; $('.chip').append(r);
-  }
+  // WHY (Destin, 2026-11-18): the header title takes one consistent form, "FEATURE: <title>"
+  // (or BUG / OPTIMIZATION / a custom word), so every deck says what kind of work it is.
+  const fullTitle = (DECK.tag ? DECK.tag.toUpperCase() + ': ' : '') + DECK.title;
+  $('#deck-title').textContent = fullTitle; document.title = fullTitle;
+  // WHY (Destin, 2026-11-09, rethink Q-6): when a deck was built proves it is current — stale
+  // decks were his top complaint. WHY only the date (2026-11-18: drop the version code, the word
+  // "built" and the "Round N" label): the date alone answers "is this new?"; the version and
+  // round stay in the hover text and the answers file, where the record needs them.
   if (DECK.built) {
     const b = DECK.built, when = new Date(b.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-    const el = document.createElement('span'); el.className = 'built'; el.textContent = 'built ' + when + (b.commit ? ' · ' + b.commit : '');
-    el.title = 'This deck was built ' + when + (b.branch ? ' from the work on ' + b.branch : '') + (b.commit ? ' (version ' + b.commit + ')' : '') + '.';
+    const el = document.createElement('span'); el.className = 'built'; el.textContent = when;
+    if (GROWS) el.dataset.round = GROWS.round;
+    el.title = (GROWS ? 'Round ' + GROWS.round + '. ' : '') + 'This deck was built ' + when + (b.branch ? ' from the work on ' + b.branch : '') + (b.commit ? ' (version ' + b.commit.slice(0, 9) + ')' : '') + '.';
     $('.chip').append(el); state.built = b;
   }
   document.body.dataset.screen = 'deck';   // 'finished' once submitted — read by deck-render.test.mjs
