@@ -1,0 +1,132 @@
+{
+  "title": "Expired sign-ins and no internet: your changes",
+  "key": "claude-sign-in-expiry-review-2",
+  "out": "claude-sign-in-expiry.review-2.html",
+  "images": "images/claude-sign-in-expiry.review-2",
+  "stage": "review",
+  "runs": {
+    "after": "runs-2/after"
+  },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Chat, Claude Code conversation",
+      "path": "The expired reply",
+      "crop": "chat#signin-expired-cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "The button now reads \"Sign in\".",
+      "changed": "Your R-6 note: \"Sign in\" instead of \"Sign in again\", on every device and in Settings.",
+      "notice": "Same card otherwise."
+    },
+    {
+      "id": "R2-2",
+      "surface": "Chat, Claude Code conversation",
+      "path": "After pressing Sign in",
+      "crop": "chat#signin-waiting-cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "While your browser is open: the same red-ringed card, the app's spinner, and your wording.",
+      "changed": "Your R-2 note: the style no longer changes between steps, and the line reads \"Browser opened, please continue to sign in.\" with the thinking spinner on the left until sign-in completes.",
+      "notice": "Cancel stays, so you can back out.",
+      "risk": "I wrote \"sign in\" (two words, the action) where your note had \"sign-in\" (the noun)."
+    },
+    {
+      "id": "R2-3",
+      "surface": "Chat, Claude Code conversation",
+      "path": "After you finish signing in",
+      "crop": "chat#signin-back-cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "No Continue button: the card just says \"Sign in successful.\"",
+      "changed": "Your R-3 note. The ring turns green so it reads as the same card, now resolved. The same applies to ChatGPT and OpenRouter cards.",
+      "notice": "You carry on by sending your next message; your earlier message is still there for Claude to read.",
+      "risk": "Also means nothing is ever sent for you, so the hidden \"continue\" is gone from the plan."
+    },
+    {
+      "id": "R2-4",
+      "surface": "Chat, Claude Code conversation",
+      "path": "Pressing Sign in with no internet",
+      "crop": "chat#signin-offline-cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "No internet is red now, everywhere.",
+      "changed": "Your R-4/R-9 notes. I had used amber because the design guide says \"No internet\" is amber; I will update that line in the guide to red so the two agree.",
+      "notice": "Every sign-in and no-internet card in chat, Settings and first launch is one colour."
+    },
+    {
+      "id": "R2-5",
+      "surface": "Chat, on a phone connected to your computer",
+      "path": "The expired reply from another device",
+      "crop": "chat#signin-remote-cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "\"Sign in again from your host computer.\"",
+      "changed": "Your R-5 wording, used for Claude, ChatGPT and OpenRouter, in chat and in Settings.",
+      "notice": "Still no button, by your round-one answer."
+    },
+    {
+      "id": "R2-6",
+      "surface": "Chat, Claude Code conversation",
+      "path": "A message sent with no internet",
+      "crop": "chat#offline-cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Claude Code's connection error, now red.",
+      "changed": "Same red as R2-4. Try again checks the connection again; once you are back online the card reads \"You're back online.\" and you carry on with your next message.",
+      "notice": "Matches R2-3: nothing is sent for you."
+    },
+    {
+      "id": "R2-7",
+      "surface": "Settings",
+      "path": "Assistant settings, Cloud providers, Claude Code",
+      "crop": "settings/assistant/cloud",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "\"Sign-in expires Nov 23.\"",
+      "changed": "Your R-11 note: \"expires\" instead of \"ends\".",
+      "notice": "Same quiet line otherwise."
+    },
+    {
+      "id": "R2-8",
+      "surface": "Settings",
+      "path": "Assistant settings, Cloud providers, Claude Code",
+      "crop": "settings/assistant/cloud#claude-expired",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "An expired sign-in's button reads \"Sign in\" here too.",
+      "changed": "Same change as R2-1, inside the Settings card.",
+      "notice": "Pressing it here or in chat is still one flow."
+    },
+    {
+      "id": "R2-9",
+      "surface": "First launch",
+      "path": "The sign-in page, after pressing Log in with no internet",
+      "crop": "first-run#authenticate-offline",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Offline, the notice takes the place of the login buttons, with Try again.",
+      "changed": "Your R-16 note: the buttons are no use without internet, so the red notice replaces them inside the card (the design guide's \"a failed action replaces the buttons it came from\"). Try again repeats the login you pressed.",
+      "notice": "Harder to miss, and clearly about the buttons you just pressed.",
+      "risk": "‹ All options still takes you back to the other ways in, like a local model that needs no internet."
+    }
+  ]
+}

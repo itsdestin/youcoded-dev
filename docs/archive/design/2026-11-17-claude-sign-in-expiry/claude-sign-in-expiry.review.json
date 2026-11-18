@@ -1,0 +1,183 @@
+{
+  "title": "Expired sign-ins and no internet: the pictures",
+  "key": "claude-sign-in-expiry-review",
+  "out": "claude-sign-in-expiry.review.html",
+  "images": "images/claude-sign-in-expiry.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat, Claude Code conversation",
+      "path": "A message sent after your Claude sign-in ran out",
+      "crop": "chat#signin-expired-cc",
+      "headline": "Claude Code's \"Login expired · Please run /login\" reply becomes a card with Sign in again.",
+      "changed": "The reply is drawn as the same red-ringed card the app already uses for ChatGPT and OpenRouter errors, with one plain sentence and the fix as a button.",
+      "notice": "One press opens the same browser sign-in you used on day one. No terminal, no typing /login. The Settings gear also gets a red dot until you are signed in (your round-two answer); the sample app here already shows one for a sync warning, so it looks the same in both pictures.",
+      "risk": "Only the most recent expired reply gets the button; older ones in the history become one quiet line: \"Your Claude sign-in expired here.\""
+    },
+    {
+      "id": "R-2",
+      "surface": "Chat, Claude Code conversation",
+      "path": "After pressing Sign in again",
+      "crop": "chat#signin-waiting-cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "While your browser is open, the card says so and offers Cancel.",
+      "changed": "New state. No red ring here: nothing is wrong, you are just busy in the browser.",
+      "notice": "Settings shows the same thing at the same moment, so pressing Sign in again in two places never opens two browser tabs.",
+      "risk": "Untested on Android: the phone's browser should hand you back to the app when you finish, as first launch does."
+    },
+    {
+      "id": "R-3",
+      "surface": "Chat, Claude Code conversation",
+      "path": "After you finish signing in",
+      "crop": "chat#signin-back-cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Once you are back in, the card offers Continue.",
+      "changed": "New state. Continue tells Claude to carry on, exactly like typing \"continue\" yourself, but that word is hidden from the chat (your round-two note); you just see Claude start working again.",
+      "notice": "The card then reads \"Signed in to Claude again\" and the conversation picks up where it stopped.",
+      "risk": "The hidden \"continue\" is the one part the pictures cannot show; it is built in the next step and you will try it in a dev window."
+    },
+    {
+      "id": "R-4",
+      "surface": "Chat, Claude Code conversation",
+      "path": "Pressing Sign in again with no internet",
+      "crop": "chat#signin-offline-cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "With no internet, the browser stays closed and the card turns amber with Try again.",
+      "changed": "New state. The app checks the connection itself first; only when that check fails does it say \"no internet\".",
+      "notice": "You find out in a second, instead of a browser page that never loads."
+    },
+    {
+      "id": "R-5",
+      "surface": "Chat, on a phone connected to your computer",
+      "path": "The same expired reply, seen from another device",
+      "crop": "chat#signin-remote-cc",
+      "headline": "From a phone connected to your computer, the card says where to sign in, with no button.",
+      "changed": "Your round-one answer: Claude Code runs on the computer, so the sign-in has to finish there. Same wording as the ChatGPT card already uses.",
+      "notice": "Nothing opens on a computer you cannot see.",
+      "risk": "The design guide asks for a button on every error box; this one has none on purpose, by your answer."
+    },
+    {
+      "id": "R-6",
+      "surface": "Chat, at phone width",
+      "path": "The Android app",
+      "crop": "chat#signin-expired-cc-phone",
+      "headline": "The card fits a phone screen, with the button beside the sentence.",
+      "changed": "The same card at 390 px wide. On the phone app itself the button works (it opens the phone's browser).",
+      "notice": "Nothing to scroll sideways; the sentence wraps if needed."
+    },
+    {
+      "id": "R-7",
+      "surface": "Chat, ChatGPT conversation",
+      "path": "A message sent after your ChatGPT sign-in ran out",
+      "crop": "chat#signin-expired-chatgpt",
+      "headline": "The ChatGPT card gets Sign in again on the card, where Open settings used to be.",
+      "changed": "Your round-two answer, \"match Claude\": the fix is on the card, and after signing in it offers Continue like Claude's.",
+      "notice": "No more hunting through Settings for the right button."
+    },
+    {
+      "id": "R-8",
+      "surface": "Chat, OpenRouter conversation",
+      "path": "A message OpenRouter refused because of your key",
+      "crop": "chat#signin-expired-openrouter",
+      "headline": "OpenRouter's card offers both ways back: Paste a new key, or Sign in with OpenRouter.",
+      "changed": "Your round-two answer: the app will remember how you connect from now on, and show only that way; connections made before this change see both, once.",
+      "notice": "Paste a new key opens the same key window as Settings.",
+      "risk": "Remembering how you connected happens behind the scenes; for anyone who connects after this ships, only their own way is shown."
+    },
+    {
+      "id": "R-9",
+      "surface": "Chat, Claude Code conversation",
+      "path": "A message sent with no internet",
+      "crop": "chat#offline-cc",
+      "headline": "Claude Code's \"API Error: Unable to connect…\" becomes \"No internet connection\" with Try again.",
+      "changed": "Only when the app's own check confirms you are offline; with the internet working, Claude Code's own words stay, so a problem on Anthropic's side is never blamed on your connection.",
+      "notice": "Try again checks once more and, if you are back online, carries on, like Continue."
+    },
+    {
+      "id": "R-10",
+      "surface": "Chat, ChatGPT or OpenRouter conversation",
+      "path": "A message sent with no internet",
+      "crop": "chat#offline-native",
+      "headline": "The same \"No internet connection\" card in ChatGPT and OpenRouter conversations, straight away.",
+      "changed": "Today these spend about a minute on \"trying again\" before \"Couldn't reach OpenRouter\". With the app's check confirming you are offline, the amber card shows at once.",
+      "notice": "One card for every kind of conversation."
+    },
+    {
+      "id": "R-11",
+      "surface": "Settings",
+      "path": "Assistant settings, Cloud providers, Claude Code",
+      "crop": "settings/assistant/cloud",
+      "headline": "The Claude card says when your sign-in ends.",
+      "changed": "Your round-one answer, \"a line in Settings\": \"Max plan. Sign-in ends Nov 23.\" Read from Claude Code itself.",
+      "notice": "Quiet: no dot and nothing in the chat until it actually runs out.",
+      "risk": "Untested: the date may move later on its own as you use Claude. If it does, the line simply shows the new date."
+    },
+    {
+      "id": "R-12",
+      "surface": "Settings",
+      "path": "Assistant settings, Cloud providers, Claude Code",
+      "crop": "settings/assistant/cloud#claude-expired",
+      "headline": "An expired Claude sign-in reads \"Sign-in expired\" with Sign in again inside the card.",
+      "changed": "Today the card keeps saying \"Signed in as…\" while every message fails. The notice across the card's foot is the same box OpenRouter's broken key already uses.",
+      "notice": "Settings and the chat card are one flow: pressing either one updates both."
+    },
+    {
+      "id": "R-13",
+      "surface": "Settings",
+      "path": "Assistant settings, Cloud providers, Claude Code",
+      "crop": "settings/assistant/cloud#claude-signed-out",
+      "headline": "A signed-out Claude card gets a Sign in button.",
+      "changed": "Not asked before, so it needs your yes: today, after first launch, there is no way to sign Claude Code in from the app at all. This reuses the same sign-in.",
+      "notice": "Someone who skipped Claude at first launch can add it later from Settings."
+    },
+    {
+      "id": "R-14",
+      "surface": "Settings",
+      "path": "Pressing Sign in again with no internet",
+      "crop": "settings/assistant/cloud#claude-offline",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Settings' sign-in buttons say \"No internet connection\" too, instead of opening the browser.",
+      "changed": "New state. The same check and words as the chat card, for Claude, ChatGPT and OpenRouter.",
+      "notice": "No more 5 to 10 minute wait for a timeout."
+    },
+    {
+      "id": "R-15",
+      "surface": "Settings",
+      "path": "Assistant settings, Cloud providers, ChatGPT",
+      "crop": "settings/assistant/cloud#chatgpt-expired",
+      "headline": "An expired ChatGPT sign-in reads \"Sign-in expired\" with Sign in again, not \"Not signed in\".",
+      "changed": "Today the app quietly deletes a sign-in OpenAI refuses to renew, and the card looks as if you never signed in.",
+      "notice": "You can tell \"it ran out\" from \"I never set this up\"."
+    },
+    {
+      "id": "R-16",
+      "surface": "First launch",
+      "path": "The sign-in page, pressing Log in with no internet",
+      "crop": "first-run#authenticate-offline",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "On first launch, a sign-in pressed offline says so under the buttons, and the browser stays closed.",
+      "changed": "New state. Amber, because it is not a failure; pressing the button again tries again.",
+      "notice": "A new user without internet learns why in a second, not after a 5-minute timeout."
+    }
+  ]
+}
