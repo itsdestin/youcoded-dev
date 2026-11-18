@@ -1,8 +1,9 @@
 ---
-status: active
+status: superseded
 created: 2026-08-31
 updated: 2026-08-31
 owner: landing-page redesign — pick up and keep iterating
+superseded_by: docs/brand/README.md (copy and brand), the live site (layout)
 ---
 
 # Start here: landing-page redesign

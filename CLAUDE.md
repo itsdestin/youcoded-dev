@@ -109,7 +109,7 @@ Pictures of named screens: `node scripts/shoot/shoot.mjs <names|'globs'> [--them
 
 ### Demo clips and the landing page
 
-Use recordings of the running renderer, not drawings. Start at `scripts/ui-review/README.md` → Recording a loop, and `.claude/rules/landing-page.md`. Copy authority: `docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md`. Do not write "real app / real files / actually reads / does real work / self-improving." The fact sheet is inventory, not copy.
+**Anything public — site, film, poster, ad, post, listing, README — follows the brand guide `docs/brand/README.md`** (name, tagline, logo, colours, type, voice, allowed claims; visual version `docs/brand/guide.html`). Use recordings of the running renderer, not drawings. Start at `scripts/ui-review/README.md` → Recording a loop, and `.claude/rules/landing-page.md`. The fact sheet is inventory, not copy.
 
 ### Asking a page a question, and A/B-ing the answer
 

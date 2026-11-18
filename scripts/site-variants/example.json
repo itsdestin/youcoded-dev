@@ -1,0 +1,5 @@
+[
+  {"name": "Today"},
+  {"name": "Purple C", "accent": "#9750AA"},
+  {"name": "Bigger headline", "css": "h1{font-size:6.4rem!important}"}
+]
