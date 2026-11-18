@@ -82,3 +82,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#762 fixes | Phone: attached file names keep their accents, and a failed connection says whether your computer needs updating or can't be reached.
 - youcoded#757 behind | Nothing visible.
 - youcoded#741 behind | Nothing visible.
+- youcoded#732 behind | Nothing visible.
