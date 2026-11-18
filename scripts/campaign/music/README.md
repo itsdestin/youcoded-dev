@@ -5,7 +5,7 @@ so there is no licence or attribution to carry). Key D major, 120 BPM, one bar =
 
 | File | Length | Notes |
 |---|---|---|
-| hero_60.wav | 60 s | intro bars 1-3, swell bar 4, bass + percussion bar 5, accent hit 12.0, groove 14-32, four stabs 32.0/32.5/33.0/33.5, groove to 38, breakdown 38-46, logo hit 46.0, ring, silence by 59.8 |
+| hero_60.wav | 60 s | v2 map: intro 1-3, swell 4, bass + percussion bar 5, accent 12.0, groove 14-32, stabs 32.0-33.5, groove to 38, lift 38-42 (stab + pluck on every beat, clap-roll fill), breakdown 42-50, logo hit 50.0, silence by 59.8 (previous cut kept as hero_60_v1.wav) |
 | hero_30.wav | 30 s | intro, groove hit 6.0, stabs 14.0-15.5, breakdown 18-22, logo 22.0, silence by 29.8 |
 | short_16.wav | 16 s | intro, hit + groove 4.0, logo 12.0, silence by 15.8 |
 | short_16_alt.wav | 16 s | same map, different hook (bouncier), different chord order, bass and ep rhythm |

@@ -67,15 +67,18 @@ SONGS = {
     "hero_60": dict(
         dur=60.0, hook=HOOK_A, restate=RESTATE_A, restate_dt=2.0, pat=PAT_A,
         chords=["D", "Bm", "G", "A", "G", "A"] + ["D", "Bm", "G", "A"] * 3 + ["D"]
-               + ["Bm", "G", "Dadd9", "A"] + ["Dlogo"] * 7,
+               + ["G", "A"] + ["Bm", "G", "Dadd9", "A"] + ["Dlogo"] * 5,
         modes=rep("intro", 3) + ["swell"] + rep("build", 2) + ["breath"] + rep("groove", 9)
-              + ["stabs"] + rep("groove", 2) + rep("break", 3) + ["break2"] + ["logo"] + rep("tail", 6),
-        accents=[12.0], logo=46.0,
+              + ["stabs"] + rep("groove", 2) + ["lift", "liftfill"] + rep("break", 3) + ["break2"]
+              + ["logo"] + rep("tail", 4),
+        accents=[12.0], logo=50.0,
         named={"intro_start": 0.0, "swell_start": 6.0, "bass_and_percussion_in": 8.0,
                "accent_hit": 12.0, "groove_start": 14.0,
                "cuts": [14.0, 18.0, 22.0, 26.0, 30.0],
-               "chord_stabs": [32.0, 32.5, 33.0, 33.5], "breakdown_start": 38.0,
-               "line_1": 38.5, "line_2": 42.0, "logo_hit": 46.0, "silence_by": 59.8},
+               "chord_stabs": [32.0, 32.5, 33.0, 33.5], "lift_start": 38.0,
+               "lift_beat_figure": [38.0 + 0.5 * i for i in range(8)], "fill_start": 41.5,
+               "breakdown_start": 42.0, "line_1": 42.4, "line_2": 46.0,
+               "logo_hit": 50.0, "silence_by": 59.8},
     ),
     "hero_30": dict(
         dur=30.0, hook=HOOK_A, restate=RESTATE_A, restate_dt=2.0, pat=PAT_A,
@@ -139,17 +142,18 @@ def render(spec):
             add(L["kick"], S["kick"], t, v)
             kicks.append(t)
 
-        if mode in ("groove", "stabs"):
+        LIFT = ("lift", "liftfill")
+        if mode in ("groove", "stabs") + LIFT:
             for b in range(4):
                 tb = t0 + b * BEAT
-                if round(tb, 3) not in acc:
+                if round(tb, 3) not in acc and not (mode == "liftfill" and b == 3):
                     hit_kick(tb, 0.9)
-            if mode == "groove":
+            if mode == "groove" or mode in LIFT:
                 for b in (1, 3):
                     tb = t0 + b * BEAT
                     add(L["perc"], S["clap"], tb, 0.9)
                     add(L["perc"], S["snap"], tb, 0.7)
-                for b in range(4):  # offbeat closed hats, slightly swung-soft
+                for b in range(4 if mode != "liftfill" else 3):  # offbeat closed hats
                     add(L["hat"], S["hat"], t0 + b * BEAT + EIGHTH, 0.55, pan=0.25 * (-1) ** b)
                 if alt and bi % 2 == 1:
                     add(L["perc"], S["rim"], t0 + 7 * EIGHTH, 0.5, pan=0.3)
@@ -167,8 +171,8 @@ def render(spec):
                 add(L["shaker"], S["shaker"], t0 + e * EIGHTH, 0.3, pan=0.3 * (-1) ** e)
 
         # ---- bass
-        if mode in ("groove", "build"):
-            gain = 1.0 if mode == "groove" else 0.8
+        if mode in ("groove", "build") + LIFT:
+            gain = 0.8 if mode == "build" else 1.0
             for pos, ln, which in pat["bass"]:
                 t = t0 + pos * EIGHTH
                 if round(t, 3) in acc:
@@ -193,7 +197,7 @@ def render(spec):
         elif mode == "build":
             for pos, v in pat["ep"]:
                 ep_chord(t0 + pos * EIGHTH, 0.7 * v, 0.4, 0.9, 1.0, 0.004)
-        elif mode == "groove":
+        elif mode == "groove" or mode in LIFT:
             for pos, v in pat["ep"]:
                 ep_chord(t0 + pos * EIGHTH, 0.85 * v, 0.34, 0.85, 1.05, 0.004)
         elif mode == "stabs":
@@ -207,6 +211,22 @@ def render(spec):
             for e in range(0, 8, 2):
                 ep_chord(t0 + e * EIGHTH, 0.40 if e else 0.5, 0.55, 1.1, 0.8, 0.008)
 
+        # ---- lift (bars 20-21): a chord stab AND an eighth-note pluck on every beat, so a picture
+        # cut on any half-second has something to land on; bar 21 ends in a clap roll then drops out
+        if mode in LIFT:
+            for b in range(4):
+                tb = t0 + b * BEAT
+                for k, m in enumerate(CH[ch]["ep"]):
+                    add(L["stab"], kit.ep_note(mtof(m), 0.42, 0.95, 0.2, 1.5), tb + k * 0.003)
+                top = CH[ch]["ep"][1:]
+                add(L["pluck"], kit.pluck(mtof(top[b % 4] + 12), 0.6, 0.75, 0.13), tb + EIGHTH,
+                    pan=0.3 * (-1) ** b)
+            if mode == "liftfill":
+                for i in range(4):
+                    tr = t0 + 1.5 + i * 0.125
+                    add(L["perc"], S["clap"], tr, 0.4 + 0.2 * i)
+                    add(L["perc"], S["snap"], tr, 0.4 + 0.2 * i)
+
         # ---- plucked hook
         if mode in hook_modes() and ch in hook:
             vel = hook_modes()[mode]
@@ -217,7 +237,7 @@ def render(spec):
                     t0 + pos * EIGHTH, pan=0.35 * (-1) ** i)
 
         # ---- pad
-        padg = {"swell": (0.0, 1.0), "build": (0.3, 0.3), "breath": (0.6, 0.4), "groove": (0.35, 0.35),
+        padg = {"swell": (0.0, 1.0), "build": (0.3, 0.3), "breath": (0.6, 0.4), "groove": (0.35, 0.35), "lift": (0.4, 0.4), "liftfill": (0.4, 0.4),
                 "stabs": (0.35, 0.35), "break": (1.0, 1.0), "break2": (1.0, 1.5)}.get(mode)
         if padg and ch in CH:
             fr = [mtof(m) for m in vchord(ch)]
