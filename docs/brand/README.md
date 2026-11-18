@@ -45,15 +45,22 @@ everything."
 
 ## 2. The name
 
+**Lowercase is the default** (Destin, 2026-11-18). Write **youcoded** everywhere the brand is
+speaking casually or as itself, and save **YouCoded** for formal, properly grammatical writing.
+
 | Where | Write it | Notes |
 |---|---|---|
-| In a sentence | **YouCoded** | Capital Y and capital C, one word. |
-| As the logo | **youcoded** | Lowercase, set as the logo (section 4). Only ever the logo, never in a sentence. |
+| **Brand voice** (taglines, short lines, headlines on posters and films, end cards, social posts and bios, captions, merch, the logo) | **youcoded** | Lowercase, one word. Short lines around it go lowercase too (section 3). |
+| **Formal writing** (legal text, press releases, store and directory descriptions, documentation, emails to companies, full paragraphs on the website or README) | **YouCoded** | Capital Y and capital C, one word, inside normally capitalised sentences. |
+| As the logo | **youcoded** | Set as the logo (section 4). |
 | Web address | **youcoded.ai** | **Always all lowercase, everywhere** (Destin, 2026-11-18): never capitals, small caps or an all-caps style, never "www.", never "YouCoded.ai". On its own (end card, poster) set it in Outfit 600; inside a sentence it takes the sentence's font. Never JetBrains Mono. |
 | Initials | **yc** | Only as the initials tile (section 4). Never "YC" in text. |
 
-**Never:** "Youcoded", "You Coded", "YOUCODED" (as a logo or in a headline), "YC", "the YouCoded
-app" when "YouCoded" alone works.
+**When unsure:** if the text would look normal on a poster, a sticker or a social post, use
+lowercase. If it would look normal in a letter or a legal page, use YouCoded.
+
+**Never:** "Youcoded", "You Coded", "YOUCODED", "YC", or "youcoded" at the start of a formal
+sentence (rephrase instead). "The YouCoded app" only when "YouCoded" alone doesn't read well.
 
 **Related names:**
 - **WeCoded** is only the name of the GitHub folders behind the marketplace and community themes
@@ -66,11 +73,15 @@ app" when "YouCoded" alone works.
 
 ## 3. Tagline and key lines
 
+**Short brand lines are all lowercase**, name and words alike (Destin, 2026-11-18): taglines,
+slogans, poster and film headlines, end-card lines, bios, captions. Acronyms keep their capitals
+("AI"). Full sentences in formal writing use normal capitals.
+
 | Line | Use it for |
 |---|---|
-| **open source everything** | **The tagline (official, Destin 2026-11-18).** Next to the logo, end cards, profile bios, merch. Always lowercase. |
-| **Your personal AI assistant and open source everything app.** | The one-line description: page titles, store and directory listings, README subtitle, search snippets. |
-| **Make your technology useful, fun, yours.** | The website's headline and share-image title (the word "useful" cycles to "fun" and "yours"). Fine as an ad or film headline. |
+| **open source everything** | **The tagline (official, Destin 2026-11-18).** Next to the logo, end cards, profile bios, merch. |
+| **your personal AI assistant and open source everything app** | The one-line description in brand places: page titles, profile bios, README subtitle, share text. In formal places (store and directory listings) write "YouCoded is your personal AI assistant and open source everything app." |
+| **make your technology useful, fun, yours.** | A brand headline for ads, posters and films. (The website shows it in title case today: see section 13.) |
 
 **Retired, do not use in new work:** "agents for everyone" (the Oct 2026 tagline; still on the
 app's first-run setup screen until that screen is updated), "YouCoded Assistant", "Agents for
@@ -233,7 +244,8 @@ someone is reading), kept small and clearly part of the scene.
 
 <!-- verify: {"path": "youcoded/docs/index.html", "contains": "family=Outfit"} -->
 
-- **Headlines:** short, sentence case, one key word in brand purple. A full stop at the end is
+- **Headlines:** short, one key word in brand purple. On posters, films and ads they are all
+  lowercase (section 3); website section headings use sentence case. A full stop at the end is
   fine and is the house style on the website ("Whatever you want it to be.").
 - **Kickers:** one to three words, e.g. "WHAT IS THIS?", "FEATURES". Never a sentence.
 - **JetBrains Mono stays rare** (Destin, 2026-11-18: fine as the website uses it, disliked anywhere
@@ -419,9 +431,10 @@ can see, so each needs Destin's go-ahead.
 - The website and the app's default YouCoded themes still use the old purples (`#8B47B8`, and
   `#C99BF0` on dark). Updating them is a visible change; the website's recorded demo clips would
   need re-filming too.
-- The website's browser-tab title doesn't use the one-line description exactly. It reads
-  "youcoded — your personal AI assistant…", with the name in lowercase.
-- The GitHub README writes "youcoded" in lowercase in sentences.
+- The website's big headline is in title case ("Make Your Technology Yours."); short brand lines
+  are now lowercase.
+- The GitHub README's paragraphs write "youcoded" in lowercase; paragraphs are formal writing, so
+  they should say "YouCoded". (Its subtitle is a brand line and stays lowercase.)
 - The marketplace and themes GitHub pages have bare descriptions and don't link to youcoded.ai;
   Destin's GitHub profile has no bio or link.
 - No logo image files (SVG/PNG of the wordmark and lockups) exist for people outside the codebase,
