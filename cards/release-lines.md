@@ -88,3 +88,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#761 fixes | Pressing Ctrl+V in the message box after copying an image in a web browser now attaches the picture.
 - youcoded#764 behind | Nothing visible.
 - youcoded#765 behind | Nothing visible.
+- youcoded#766 fixes | The Effort and Fast chips stay hidden until the app has really read your saved choice, instead of showing a guess.
