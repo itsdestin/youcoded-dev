@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped (youcoded#767)
 card: 236
 branch: session/236-working-offline-sign-in-expiry (youcoded + youcoded-dev)
 ---
