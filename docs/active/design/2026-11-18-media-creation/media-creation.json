@@ -49,7 +49,6 @@
       "caption": "Today's closest relative: the card the assistant shows before a step that buys, sends or submits something. The picture card would sit in the same place.",
       "yes": "Holds",
       "no": "Fails",
-      "reopened": "You agreed, but said Full Auto should go ahead without the card.",
       "resolved": "Added: in Full Auto, the first paid request in a chat goes back to the assistant with your check-in question, and goes ahead only once it has checked with you."
     },
     {
@@ -61,8 +60,7 @@
       "changed": "The card has a list of picture makers, cheap and pricey, to pick from before you approve. Next time, the list starts on the one you picked last, so you don't choose again each time.",
       "notice": "Say you switch to a cheaper maker once. From then on the card starts on that cheaper one until you change it.",
       "yes": "Holds",
-      "no": "Fails",
-      "reopened": "This read as confusing; here it is plainly."
+      "no": "Fails"
     },
     {
       "id": "U-create-edit",
@@ -109,8 +107,7 @@
       "changed": "OpenAI does not let other apps use a ChatGPT plan to make pictures. Pictures in our app need a separately paid service, such as OpenRouter or an OpenAI key. In a ChatGPT-plan chat the card says so, and says you can make pictures on your plan at chatgpt.com instead.",
       "notice": "Someone with only a ChatGPT plan sees two ways forward: connect a paid service here, or use chatgpt.com.",
       "yes": "Holds",
-      "no": "Fails",
-      "reopened": "You agreed, and asked that the card also point to ChatGPT's own website."
+      "no": "Fails"
     },
     {
       "id": "U-today",
@@ -442,8 +439,7 @@
             "About a week more, plus ongoing fixes as setups change."
           ]
         }
-      ],
-      "reopened": "You asked how hard connecting ComfyUI would be, and whether to skip it until the app has its own engine."
+      ]
     },
     {
       "id": "Q-claude-code",
