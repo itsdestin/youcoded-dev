@@ -143,6 +143,22 @@ async function waitFor(tab, expr, ms) {
   return null;
 }
 
+// Waits until `selector` exists inside the Page iframe. The frame is sandboxed (opaque origin), so the outer document cannot
+// read it: it is its own Chrome target, reached by auto-attach (same route as ui-review/record.mjs) and read over the browser connection.
+async function waitForFrame(tab, selector, ms) {
+  let session = null;
+  const off = tab.on((m) => { if (m.method === 'Target.attachedToTarget' && m.params.targetInfo.type === 'iframe') session = m.params.sessionId; });
+  try {
+    await tab.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
+    for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 100))) {
+      if (!session) continue;
+      const r = await tab.browser.send('Runtime.evaluate', { expression: `!!document.querySelector(${JSON.stringify(selector)})`, returnByValue: true }, session).catch(() => null);
+      if (r?.result?.value === true) return true;
+    }
+    return false;
+  } finally { off(); await tab.send('Target.setAutoAttach', { autoAttach: false, waitForDebuggerOnStart: false, flatten: true }).catch(() => {}); }
+}
+
 // Is the screen's mark on screen? Its surface is the nearest dialog / layer / drawer around it.
 // Returns the panel's box when it is, or the reason it is not.
 // A screen can be mounted more than once (one chat per session), so every copy of the mark
@@ -257,6 +273,9 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
       if (!why?.panel) throw new Error(`not showing after its ${screen.waitMs} ms wait: ${why}`);
     }
+    // WHY (frameReady): the mark above is the app's; a Page's own content is drawn by its iframe a moment later (under load, a
+    // long moment). Wait on the thing itself — the selector appearing inside the frame — never a fixed sleep. Refuse, not skip.
+    if (screen.frameReady && !(await waitForFrame(tab, screen.frameReady, 30_000))) throw new Error(`the page frame never drew ${screen.frameReady} within 30 s, so the picture would show an unfinished page`);
     r.panel = why.panel;
     // WHY wait on the theme's font (2026-10-02): a before/after of an UNCHANGED screen came
     // back with the theme's font on one side and the fallback on the other, at random. A

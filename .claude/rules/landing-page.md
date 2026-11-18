@@ -8,6 +8,8 @@ paths:
   - "**/docs/gallery/**"
   - "scripts/ui-review/**"
   - "**/desktop/src/renderer/dev/workbench/**"
+  - "**/scripts/promo/**"
+  - "**/docs/brand/**"
 last_verified: 2026-09-26
 verify:
   - path: scripts/ui-review/site-assets.sh
@@ -44,6 +46,8 @@ The site is `youcoded/docs/index.html` (GitHub Pages serves `/docs`). Its pictur
 NOT drawn: every loop, still and the live embed come from the real renderer through the
 workbench. **How-to for all of it: `scripts/ui-review/README.md` → "Recording a loop".**
 Rebuilt 2026-08-28 for 1.3.0 (youcoded #360): `docs/archive/specs/2026-08-27-landing-page-rebuild-design.md`.
+**Name, tagline, logo, colours, type, voice and allowed claims: the brand guide `docs/brand/README.md`.**
+**Comparing looks on the real page:** `scripts/site-variants/serve.py <variants.json>` (switcher, accent or CSS per variant) — don't hand-build per-variant copies.
 
 ## Assets are generated, never hand-edited
 **Invariant:** `bash scripts/ui-review/site-assets.sh <worktree>` regenerates `docs/media/`

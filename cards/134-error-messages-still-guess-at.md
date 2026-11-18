@@ -14,8 +14,8 @@ side: both
 work: session/round4-silent-places
 ---
 Progress
-Done: LANDED youcoded PR #755 (714c033ba): failure notices for games, marketplace (thin strips), project header, Backup and Sync (+scroll), 8 small settings saves; New best hidden when unproven; crash notice; instant remote failure reason. PR #756: website demo no longer bundles practice pages
-Next: next round: remaining ~38 silent places as a list with sample pictures (Q-10)
+Done: Round 4 built on session/round4-silent-places (app, pushed, NOT landed): ~40 silent failures now visible (toasts, in-place boxes, thin strips, save notices), reviewed three times, 56+ tests added; decks served 2026-11-14 (docs/active/design/2026-11-14-round4)
+Next: Destin: pictures deck (5 kinds) + questions deck (land-or-hold, 5 questions: effort/Fast chips, synced rename wording, dropped-connection tag save, phone paste, Android toasts vs boxes)
 Blocked: nothing recorded.
 
 Chats

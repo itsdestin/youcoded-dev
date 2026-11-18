@@ -73,3 +73,17 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#756 new | Picking a quick chip over words you have typed asks Replace or Add to end.
 - youcoded#755 fixes | More places now say so when something fails to load or save, instead of showing nothing.
 - youcoded#755 fixes | A crashed chat now shows "Session ended unexpectedly".
+- youcoded#758 new | Office Home: rename, copy, show in folder, ask about a file, or remove it from Recent, from a hover button or right-click; plus search and Show all.
+- youcoded#758 new | Save As now opens the copy in a new tab beside the original.
+- youcoded#758 new | Saving is more reliable: Save is never greyed out, a failed save retries by itself, and unsaved typing survives moved files and unplugged drives.
+- youcoded#760 fixes | A long message sent in a new chat no longer gets stuck as "Paused" — it sends right away.
+- youcoded#762 fixes | The first-run cards read the newest Claude Code's sign-in and 'New MCP Server Found' screens again.
+- youcoded#762 fixes | Reopening an old chat no longer makes the assistant reply on its own; a finished helper's report goes in with your next message.
+- youcoded#762 fixes | Phone: attached file names keep their accents, and a failed connection says whether your computer needs updating or can't be reached.
+- youcoded#757 behind | Nothing visible.
+- youcoded#741 behind | Nothing visible.
+- youcoded#732 behind | Nothing visible.
+- youcoded#752 behind | Nothing visible.
+- youcoded#745 behind | Nothing visible.
+- youcoded#761 fixes | Pressing Ctrl+V in the message box after copying an image in a web browser now attaches the picture.
+- youcoded#764 behind | Nothing visible.

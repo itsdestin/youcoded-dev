@@ -917,3 +917,6 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-14 #261 Website: first demo shows the old look for a moment; end of intro hitches (youcoded PR #753, youcoded-dev PR #373)
 - [x] 2026-11-14 #194 Message-box attachment cards show no image preview in the dev window, on phones and on Android (youcoded PR #747 (320b0bcaa); Android and test-copy previews continue on #254)
 - [x] 2026-11-14 #226 Local engine fixes and improvements (youcoded#754, youcoded-dev#375)
+- [x] 2026-11-14 #147 Management surface: the next round (youcoded-dev PR #378)
+- [x] 2026-11-16 #143 Small missing conveniences and wording fixes (youcoded#758)
+- [x] 2026-11-18 #269 Website copy guide points at a deleted 2026-08-31 handoff (youcoded-dev PR #382)

@@ -1,0 +1,41 @@
+{
+  "title": "Office front page — does it actually work?",
+  "key": "office-home-conveniences-tryit",
+  "out": "office-home.tryit.html",
+  "stage": "review",
+  "steps": [
+    {
+      "words": true,
+      "id": "T-1",
+      "surface": "Office",
+      "path": "Dev window → Office → Home → Browse files → Documents / Office practice",
+      "headline": "Open \"Practice memo\" with Browse files, go back to Home, then rename it with its pencil — does the new name show and still open?",
+      "dev": { "worktree": "session/143-office-home-conveniences", "label": "Office Home" },
+      "changed": "This window is a separate test copy of the app, running the new code on real files. Three practice files are waiting in Documents / Office practice; nothing else of yours is touched unless you pick it.",
+      "notice": "The file in your Documents folder really changes name. Its Versions (Versions button, once it's open) come along with it.",
+      "risk": "It's a real rename on disk — use the practice files."
+    },
+    {
+      "words": true,
+      "id": "T-2",
+      "surface": "Office",
+      "path": "Dev window → Office → Home → right-click a practice file",
+      "headline": "Make a copy, then Remove from Recent — does the copy appear beside it, and does the file leave the list but stay in the folder?",
+      "dev": { "worktree": "session/143-office-home-conveniences", "label": "Office Home" },
+      "changed": "Same window as before. Make a copy writes \"… (copy).docx\" in the same folder; Remove from Recent only edits the list.",
+      "notice": "\"View in folder\" in the same menu shows the copy next to the original in your file manager.",
+      "risk": ""
+    },
+    {
+      "words": true,
+      "id": "T-3",
+      "surface": "Office",
+      "path": "Dev window → Office → open a practice file, type something, go back to Home",
+      "headline": "Rename a file open in a tab — does the tab return in place under the new name, typing kept?",
+      "dev": { "worktree": "session/143-office-home-conveniences", "label": "Office Home" },
+      "changed": "The app saves the file, closes its tab, renames it, and puts the tab back where it was — you stay on Home.",
+      "notice": "The tab briefly disappears and returns with the new name.",
+      "risk": "If the file is open in another window, rename says \"Close this file in Office first, then rename it.\""
+    }
+  ]
+}

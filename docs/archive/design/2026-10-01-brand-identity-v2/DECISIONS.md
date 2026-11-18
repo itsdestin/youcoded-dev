@@ -3,6 +3,10 @@ status: shipped
 ---
 # YouCoded brand identity — every pick (rounds 5–32, 2026-10-01 → 10-04) and where it is built
 
+> **Current brand rules: `docs/brand/README.md`** (2026-11-18). This file is the history of how the
+> logo and icons were chosen. The tagline "agents for everyone" below was replaced by
+> "open source everything" on 2026-10-18 (confirmed by Destin 2026-11-18).
+
 **Every piece approved, one deck at a time** (last answers: `brand-identity-v31`, then the website's `brand-website-v2`, 2026-10-04). Every line
 below is a submitted deck answer (`brand-identity-v<N>.answers.json` beside this file). Applied to the app
 and themes on `session/brand-identity-v2`, and to the website on `session/brand-website` (see the end).
