@@ -14,8 +14,8 @@ vision: chat.steer.permissions, chat.converse.native
 work: session/66-passwordless-admin, session/66-search-root, session/66-image-cache-sweep
 ---
 Progress
-Done: Deck 2026-11-19 search-root: Destin questioned the value - the assistant can scope its own searches and the new-session menu starts chats in a project folder, not a subfolder. Recommended dropping session/66-search-root
-Next: Drop the search-root branch on his OK; image-cache sweep branch still waits on the 90-day OK
+Done: Destin OK'd the 90-day threshold for the image-cache sweep (session/66-image-cache-sweep). Search-root branch recommended for dropping
+Next: Image-cache sweep waits for his merge word; delete search-root branch on his OK
 Blocked: Nothing
 
 Chats
