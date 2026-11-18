@@ -76,3 +76,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#758 new | Office Home: rename, copy, show in folder, ask about a file, or remove it from Recent, from a hover button or right-click; plus search and Show all.
 - youcoded#758 new | Save As now opens the copy in a new tab beside the original.
 - youcoded#758 new | Saving is more reliable: Save is never greyed out, a failed save retries by itself, and unsaved typing survives moved files and unplugged drives.
+- youcoded#760 fixes | A long message sent in a new chat no longer gets stuck as "Paused" — it sends right away.
