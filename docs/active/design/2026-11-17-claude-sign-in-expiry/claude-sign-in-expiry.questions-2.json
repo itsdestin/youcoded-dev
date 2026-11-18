@@ -1,0 +1,184 @@
+{
+  "title": "Sign-ins and no internet: the whole card, round two",
+  "key": "claude-sign-in-expiry-questions-2",
+  "out": "claude-sign-in-expiry.questions-2.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-recap",
+      "words": true,
+      "surface": "This piece of work",
+      "path": "Card #236: what the September deck covered",
+      "headline": "Card #236 is three related problems. One is already fixed; the other two are what we build together.",
+      "changed": "1) STARTUP SCREENS: typing a message while a new Claude Code conversation was starting could answer \"No, exit\" on a hidden screen and end the session. FIXED since September: the app recognises those screens again, and the message box stays greyed out until the conversation has started. 2) EXPIRED SIGN-INS: Claude, ChatGPT and OpenRouter sign-ins run out, and you find out from a failed message. 3) NO INTERNET: signing in or chatting offline ends in a long wait or a confusing error that never says \"no internet\".",
+      "notice": "This round builds 2 and 3 for all three providers, with your September answers plus round one. Nothing changes for problem 1.",
+      "yes": "Build 2 and 3",
+      "no": "Not like that"
+    },
+    {
+      "id": "S-today",
+      "words": true,
+      "surface": "ChatGPT and OpenRouter",
+      "path": "What exists today, checked 2026-11-17",
+      "headline": "ChatGPT and OpenRouter already show a red card in the chat when their sign-in fails, but nothing lets you fix it there.",
+      "changed": "When a ChatGPT sign-in has expired or OpenRouter refuses your key, the reply stops with a red card that says so, plus Try again (which fails again) and Open settings. In Settings, an expired ChatGPT sign-in reads only \"Not signed in\". The app already re-checks your OpenRouter key every 5 minutes and when you open Settings. No sign-in failure puts a dot on the Settings gear.",
+      "notice": "The new work is mostly adding a real fix button to cards that already exist, and making the three providers behave the same.",
+      "yes": "Understood",
+      "no": "Questions"
+    },
+    {
+      "id": "Q-continue",
+      "words": true,
+      "surface": "Chat",
+      "path": "The expired-sign-in card in a Claude Code conversation, after you sign back in",
+      "headline": "Once you are signed back in, should the card offer a Continue button that picks up where it stopped?",
+      "today": "As you said: the message you sent stays in the conversation, and Claude reads it once you are signed in. Typing \"continue\" is what works today.",
+      "problem": "A Retry that resends your message would put it in the conversation twice, and Claude would see it twice.",
+      "proposal": "Pick what the card offers once you are back in. ChatGPT and OpenRouter conversations already have a Try again that carries on the stopped reply without resending, and keep it.",
+      "options": [
+        {
+          "id": "continue-button",
+          "label": "A Continue button",
+          "summary": "The card's Sign in again turns into Continue. Pressing it sends \"continue\" for you, exactly what you type today.",
+          "pros": [
+            "One press instead of typing.",
+            "Nothing is sent twice; Claude sees your original message once."
+          ],
+          "cons": [
+            "A visible \"continue\" message appears in the chat, as it does when you type it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "resend",
+          "label": "Resend my message",
+          "pros": [
+            "Feels like the message simply went through."
+          ],
+          "cons": [
+            "Your message appears twice in the conversation, and Claude may answer it twice."
+          ]
+        },
+        {
+          "id": "nothing",
+          "label": "No button",
+          "summary": "The card just says \"Signed in\" and you type what you like.",
+          "pros": [
+            "Nothing is ever sent for you."
+          ],
+          "cons": [
+            "You type \"continue\" yourself every time."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-chat-button",
+      "words": true,
+      "surface": "Chat",
+      "path": "The red card in a ChatGPT or OpenRouter conversation",
+      "headline": "Should the ChatGPT and OpenRouter cards get a Sign in again button, like Claude's?",
+      "today": "Their cards offer Try again, which fails again until you sign in, and Open settings, which takes you to the Model Providers page to find the right button yourself.",
+      "problem": "Claude's card will fix it in one press. If the other two still send you to Settings, the same problem works differently depending on the model.",
+      "proposal": "Yes: the card's main button becomes Sign in again (ChatGPT) or Reconnect (OpenRouter), and Try again turns into Continue once you are back in, matching Claude. No: keep Open settings.",
+      "yes": "Yes, match Claude",
+      "no": "Keep Open settings"
+    },
+    {
+      "id": "Q-openrouter-how",
+      "words": true,
+      "surface": "OpenRouter",
+      "path": "Reconnecting after OpenRouter refuses your key",
+      "headline": "The app never recorded how you connected OpenRouter. What should Reconnect offer?",
+      "today": "In September you said reconnecting should use whichever way you first connected: pasting a key or signing in through the browser. Today both end up stored the same way, so the app cannot tell which you used.",
+      "problem": "Anyone who connected before this change has no record, so the app has to guess or ask.",
+      "proposal": "Pick what Reconnect does.",
+      "options": [
+        {
+          "id": "remember-else-both",
+          "label": "Remember from now; else both",
+          "summary": "New connections are recorded. For older ones, Reconnect opens a small choice: Sign in with OpenRouter, or Paste a new key.",
+          "pros": [
+            "Follows your September answer for everyone who connects from now on.",
+            "Never guesses wrong for older connections."
+          ],
+          "cons": [
+            "Older connections see one extra choice, once."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "browser-first",
+          "label": "Browser sign-in first",
+          "summary": "Reconnect always opens the browser sign-in, with \"paste a key instead\" as a small link.",
+          "pros": [
+            "One press for most people; no key to copy."
+          ],
+          "cons": [
+            "Someone who pasted a key on purpose (for a spending cap, say) gets a key they did not choose."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-offline",
+      "page": "No internet",
+      "intro": "In September you chose: say \"no internet\" only after the app's own check fails, stop before opening the browser, and show a card in chat with Retry, including when the connection drops mid-conversation."
+    },
+    {
+      "id": "S-offline-chat",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any conversation, when the internet is down",
+      "headline": "One \"No internet connection\" card for every kind of conversation, shown as soon as the app's own check confirms it.",
+      "changed": "Today a ChatGPT or OpenRouter conversation spends about a minute on \"Can't reach … trying again\" before a card says \"Check your internet connection\". A Claude Code conversation shows Claude Code's own error, such as \"API Error: Unable to connect to API (ConnectionRefused)\" (seen nearly 100 times in your past conversations). With this change, when a message fails the app checks the connection itself, twice. If both checks fail, the card reads \"No internet connection\" with Retry, which resends once you are back online. If the check passes, the real error is shown as today, so a problem on the provider's side is never blamed on your connection.",
+      "notice": "Offline, you find out in seconds rather than a minute, in plain words, the same way in every conversation.",
+      "yes": "Build it",
+      "no": "Not like that"
+    },
+    {
+      "id": "S-offline-signin",
+      "words": true,
+      "surface": "Sign-in buttons",
+      "path": "First launch, and Settings, Model Providers",
+      "headline": "Every sign-in button checks the connection first, and offline it says so instead of opening the browser.",
+      "changed": "Today, pressing a sign-in button offline opens a browser page that never loads, then the app waits 5 to 10 minutes before saying the sign-in timed out. With this change, the message \"No internet connection\" appears under the button you pressed, with Retry, and the browser stays closed. This covers Claude, ChatGPT and OpenRouter, on the first-launch screen, in Settings, and on the new Sign in again buttons in chat.",
+      "notice": "No more waiting minutes for a timeout that sounds like your fault.",
+      "yes": "Build it",
+      "no": "Not like that"
+    },
+    {
+      "id": "Q-dot",
+      "words": true,
+      "surface": "Settings gear",
+      "path": "The header, top right (and the ||| menu on narrow screens)",
+      "headline": "Which colour should the Settings gear dot be when a sign-in has run out?",
+      "today": "The gear shows a red dot for problems like a sync failure, and a blue dot for suggestions like connecting a phone. Sign-ins put no dot there today.",
+      "problem": "You chose a Settings dot in September but not which kind. The colour tells you how urgent it is.",
+      "proposal": "The dot appears only while a provider you have connected is expired, and clears itself once you sign in again.",
+      "options": [
+        {
+          "id": "red",
+          "label": "Red",
+          "pros": [
+            "Matches the fact that conversations on that model cannot reply."
+          ],
+          "cons": [
+            "Red for something that is one press to fix may feel alarming."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "blue",
+          "label": "Blue",
+          "pros": [
+            "Calmer; reads as \"something to look at\"."
+          ],
+          "cons": [
+            "Blue already means suggestions, so it is easy to ignore."
+          ]
+        }
+      ]
+    }
+  ]
+}
