@@ -2,7 +2,10 @@
   "title": "Release 1.3.4: late changes on master",
   "key": "release-1-4-late",
   "out": "release-1-4-late.questions.html",
-  "themes": ["midnight", "light"],
+  "themes": [
+    "midnight",
+    "light"
+  ],
   "steps": [
     {
       "id": "L-1",
@@ -30,22 +33,35 @@
           "id": "confirm",
           "label": "Double-check first",
           "summary": "When the quick check says offline, the app also tries a real secure connection before deciding. Same messages, only shown when truly offline.",
-          "pros": ["No one who is online gets blocked.", "No visible change for people who really are offline."],
-          "cons": ["About a second longer before 'No internet' appears when truly offline."],
+          "pros": [
+            "No one who is online gets blocked.",
+            "No visible change for people who really are offline."
+          ],
+          "cons": [
+            "About a second longer before 'No internet' appears when truly offline."
+          ],
           "recommended": true
         },
         {
           "id": "try-anyway",
           "label": "Add 'Try anyway'",
           "summary": "Keep the check as is, and add a 'Try anyway' link under 'No internet connection'.",
-          "pros": ["People can always get past it."],
-          "cons": ["A new link to word; people still see a wrong message first."]
+          "pros": [
+            "People can always get past it."
+          ],
+          "cons": [
+            "A new link to word; people still see a wrong message first."
+          ]
         },
         {
           "id": "ship",
           "label": "Ship as is",
-          "pros": ["No more changes."],
-          "cons": ["Some people on school or work networks may be unable to sign in."]
+          "pros": [
+            "No more changes."
+          ],
+          "cons": [
+            "Some people on school or work networks may be unable to sign in."
+          ]
         }
       ]
     },
@@ -63,15 +79,24 @@
           "id": "last-use",
           "label": "Count from last use",
           "summary": "Reopening a chat marks its copies as used, so only copies untouched for 90 days are removed.",
-          "pros": ["Chats you keep using never lose their pictures.", "Disk still gets cleaned for chats you abandoned."],
-          "cons": ["Small change before release."],
+          "pros": [
+            "Chats you keep using never lose their pictures.",
+            "Disk still gets cleaned for chats you abandoned."
+          ],
+          "cons": [
+            "Small change before release."
+          ],
           "recommended": true
         },
         {
           "id": "as-is",
           "label": "Keep as is",
-          "pros": ["No change."],
-          "cons": ["The assistant forgets pictures in long-running chats after 90 days."]
+          "pros": [
+            "No change."
+          ],
+          "cons": [
+            "The assistant forgets pictures in long-running chats after 90 days."
+          ]
         }
       ]
     },
@@ -81,7 +106,7 @@
       "surface": "Release",
       "path": "Changes going into master from other work sessions",
       "headline": "Freeze master until 1.3.4 ships, except release fixes you approve?",
-      "today": "While this release was being prepared, other work sessions merged 10 more changes into master. Each one needs reviewing and a new test build before release.",
+      "today": "While this release was being prepared, other work sessions merged 21 more changes into master (10 by Nov 18 morning, 11 more since). Each one needs reviewing and a new test build before release.",
       "problem": "If merges keep coming, the release keeps moving: every new change means another review and rebuild, and a late change could slip in untested.",
       "proposal": "Yes: I add a note to the workspace that app changes wait for 1.3.4 unless you approve them as release fixes; other sessions keep working on their branches and merge after the release. No: merges continue and I re-check before tagging.",
       "yes": "Freeze it",
