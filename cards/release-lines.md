@@ -105,3 +105,5 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#779 fixes | Deleting comments in a Word document no longer leaves markers that make Word ask to repair it.
 - youcoded#781 fixes | Messages you queue in a chat no longer get stuck while a background helper waits for your permission.
 - youcoded#781 fixes | Pressing Send now on a waiting message tells you why it can't send yet.
+- youcoded#782 fixes | A picture or file sent with no words no longer gets stuck at the bottom of the chat.
+- youcoded#782 fixes | A message the computer never confirms now shows a note inside its bubble after 30 seconds, with Send again and Dismiss or Discard.
