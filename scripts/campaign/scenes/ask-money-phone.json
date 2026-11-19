@@ -1,0 +1,47 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=2&reply=campaign-money&platform=android&replyClock=now&title=my%20money",
+ "theme": "youcoded",
+ "width": 1170,
+ "height": 2532,
+ "zoom": 3,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 3000,
+ "pauseBackground": true,
+ "actions": [
+  {
+   "hold": 600
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "show me where my money goes",
+   "cps": 20,
+   "mark": "type"
+  },
+  {
+   "hold": 500
+  },
+  {
+   "key": "Enter",
+   "mark": "send"
+  },
+  {
+   "waitForText": "Created 2 files",
+   "timeout": 30000,
+   "mark": "built"
+  },
+  {
+   "waitForText": "Finance is ready",
+   "timeout": 30000
+  },
+  {
+   "hold": 2000,
+   "mark": "end"
+  }
+ ]
+}

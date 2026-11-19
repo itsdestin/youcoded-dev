@@ -1,0 +1,33 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=0&officePort=34697",
+ "theme": "youcoded",
+ "width": 2160,
+ "height": 1350,
+ "zoom": 1.95,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 9000,
+ "pauseBackground": false,
+ "ready": "(()=>{if(!window.__yo&&window.__youcodedScreens){window.__yo=1;window.__youcodedScreens.open('office/document')}return document.readyState==='complete'&&!!document.querySelector('[data-screen=\"office/document\"]')&&(true)})()",
+ "actions": [
+  {
+   "hold": 800,
+   "mark": "open"
+  },
+  {
+   "hold": 2000
+  },
+  {
+   "wheel": 40,
+   "steps": 14,
+   "ms": 1500,
+   "at": "iframe",
+   "mark": "scroll"
+  },
+  {
+   "hold": 2000
+  }
+ ]
+}

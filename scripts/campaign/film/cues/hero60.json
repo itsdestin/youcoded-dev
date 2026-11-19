@@ -1,0 +1,9 @@
+[
+ {"t0": 12.25, "t1": 14.15, "type": "typing", "cps": 11, "gain": -3},
+ {"t": 14.4, "type": "bloom"},
+ {"t": 18.4, "type": "toggle", "gain": -3}, {"t": 19.86, "type": "toggle", "gain": -3},
+ {"t0": 21.7, "t1": 22.9, "type": "typing", "cps": 11, "gain": -3}, {"t": 23.05, "type": "pop", "gain": -3},
+ {"t0": 26.5, "t1": 27.8, "type": "typing", "cps": 11, "gain": -3}, {"t": 27.95, "type": "pop", "gain": -3},
+ {"t0": 31.3, "t1": 32.5, "type": "typing", "cps": 11, "gain": -3}, {"t": 32.65, "type": "pop", "gain": -3},
+ {"t": 33.6, "type": "whoosh", "gain": -3}, {"t": 34.8, "type": "whoosh", "gain": -3}, {"t": 35.95, "type": "whoosh"}
+]

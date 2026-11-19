@@ -1,0 +1,376 @@
+{
+ "ask-doc": {
+  "file": "footage/ask-doc.mp4",
+  "duration": 8.393,
+  "marks": {
+   "type": [
+    1.198,
+    3.201
+   ],
+   "send": [
+    4.101,
+    4.106
+   ],
+   "built": [
+    4.506,
+    5.709
+   ],
+   "end": [
+    6.109,
+    8.109
+   ]
+  }
+ },
+ "ask-home-phone": {
+  "file": "footage/ask-home-phone.mp4",
+  "duration": 9.25475,
+  "marks": {
+   "type": [
+    1.212,
+    2.913
+   ],
+   "send": [
+    3.814,
+    3.821
+   ],
+   "built": [
+    4.221,
+    6.177
+   ],
+   "end": [
+    6.978,
+    8.978
+   ]
+  }
+ },
+ "ask-home": {
+  "file": "footage/ask-home.mp4",
+  "duration": 9.1965,
+  "marks": {
+   "type": [
+    1.197,
+    2.849
+   ],
+   "send": [
+    3.75,
+    3.755
+   ],
+   "built": [
+    4.155,
+    6.113
+   ],
+   "end": [
+    6.914,
+    8.914
+   ]
+  }
+ },
+ "ask-money-phone": {
+  "file": "footage/ask-money-phone.mp4",
+  "duration": 9.28,
+  "marks": {
+   "type": [
+    1.216,
+    2.635
+   ],
+   "send": [
+    3.536,
+    3.541
+   ],
+   "built": [
+    3.94,
+    6.201
+   ],
+   "end": [
+    7.002,
+    9.003
+   ]
+  }
+ },
+ "ask-money": {
+  "file": "footage/ask-money.mp4",
+  "duration": 9.17175,
+  "marks": {
+   "type": [
+    1.197,
+    2.52
+   ],
+   "send": [
+    3.42,
+    3.426
+   ],
+   "built": [
+    3.826,
+    6.086
+   ],
+   "end": [
+    6.887,
+    8.888
+   ]
+  }
+ },
+ "ask-theme-phone": {
+  "file": "footage/ask-theme-phone.mp4",
+  "duration": 20.86825,
+  "marks": {
+   "type": [
+    1.2,
+    2.722
+   ],
+   "send": [
+    3.623,
+    3.627
+   ],
+   "built": [
+    4.028,
+    5.985
+   ],
+   "swap1": [
+    7.885,
+    7.886
+   ],
+   "swap2": [
+    11.886,
+    11.886
+   ],
+   "swap3": [
+    13.587,
+    13.587
+   ],
+   "swap4": [
+    15.288,
+    15.288
+   ],
+   "swap5": [
+    16.989,
+    16.989
+   ],
+   "swap6": [
+    18.689,
+    18.69
+   ]
+  }
+ },
+ "ask-theme": {
+  "file": "footage/ask-theme.mp4",
+  "duration": 20.8425,
+  "marks": {
+   "type": [
+    1.193,
+    2.691
+   ],
+   "send": [
+    3.593,
+    3.598
+   ],
+   "built": [
+    3.998,
+    5.955
+   ],
+   "swap1": [
+    7.856,
+    7.856
+   ],
+   "swap2": [
+    11.856,
+    11.857
+   ],
+   "swap3": [
+    13.557,
+    13.557
+   ],
+   "swap4": [
+    15.258,
+    15.258
+   ],
+   "swap5": [
+    16.958,
+    16.958
+   ],
+   "swap6": [
+    18.658,
+    18.659
+   ]
+  }
+ },
+ "home-themes": {
+  "file": "footage/home-themes.mp4",
+  "duration": 14.4835,
+  "marks": {
+   "swap1": [
+    3.791,
+    3.791
+   ],
+   "swap2": [
+    5.491,
+    5.492
+   ],
+   "swap3": [
+    7.192,
+    7.193
+   ],
+   "swap4": [
+    8.893,
+    8.896
+   ],
+   "swap5": [
+    10.596,
+    10.596
+   ],
+   "swap6": [
+    12.297,
+    12.3
+   ]
+  }
+ },
+ "market-themes": {
+  "file": "footage/market-themes.mp4",
+  "duration": 7.14175,
+  "marks": {
+   "open": [
+    0.015,
+    0.819
+   ],
+   "scroll": [
+    2.32,
+    4.953
+   ]
+  }
+ },
+ "money-themes": {
+  "file": "footage/money-themes.mp4",
+  "duration": 14.45525,
+  "marks": {
+   "swap1": [
+    3.755,
+    3.755
+   ],
+   "swap2": [
+    5.455,
+    5.456
+   ],
+   "swap3": [
+    7.158,
+    7.158
+   ],
+   "swap4": [
+    8.858,
+    8.858
+   ],
+   "swap5": [
+    10.559,
+    10.559
+   ],
+   "swap6": [
+    12.266,
+    12.267
+   ]
+  }
+ },
+ "office-doc": {
+  "file": "footage/office-doc.mp4",
+  "duration": 7.411,
+  "marks": {
+   "open": [
+    0.02,
+    0.82
+   ],
+   "scroll": [
+    2.82,
+    4.726
+   ]
+  }
+ },
+ "page-home-phone": {
+  "file": "footage/page-home-phone.mp4",
+  "duration": 7.6765,
+  "marks": {
+   "open": [
+    0.028,
+    1.528
+   ],
+   "lamp": [
+    1.528,
+    1.917
+   ],
+   "scroll": [
+    3.517,
+    3.517
+   ],
+   "living": [
+    5.118,
+    5.503
+   ]
+  }
+ },
+ "page-home": {
+  "file": "footage/page-home.mp4",
+  "duration": 14.762,
+  "marks": {
+   "open": [
+    0.417,
+    0.825
+   ],
+   "lamp": [
+    3.804,
+    4.228
+   ],
+   "thermo": [
+    5.829,
+    6.407
+   ],
+   "lamp-on": [
+    9.403,
+    9.847
+   ],
+   "living": [
+    11.747,
+    12.274
+   ]
+  }
+ },
+ "page-money-phone": {
+  "file": "footage/page-money-phone.mp4",
+  "duration": 10.08,
+  "marks": {
+   "open": [
+    0.026,
+    1.835
+   ],
+   "spending": [
+    1.835,
+    2.219
+   ],
+   "year": [
+    4.425,
+    4.807
+   ],
+   "bills": [
+    7.013,
+    7.395
+   ]
+  }
+ },
+ "page-money": {
+  "file": "footage/page-money.mp4",
+  "duration": 11.68375,
+  "marks": {
+   "open": [
+    0.418,
+    0.818
+   ],
+   "spending": [
+    3.324,
+    3.755
+   ],
+   "year": [
+    5.966,
+    6.37
+   ],
+   "bills": [
+    8.577,
+    8.994
+   ]
+  }
+ }
+}

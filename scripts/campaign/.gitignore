@@ -1,0 +1,6 @@
+footage/
+out/
+node_modules/
+film/public/footage
+film/public/audio
+film/public/stills

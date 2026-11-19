@@ -1,0 +1,43 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=2&reply=campaign-doc&replyClock=now&title=garden%20plan",
+ "theme": "youcoded",
+ "width": 2160,
+ "height": 1350,
+ "zoom": 1.95,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 3000,
+ "pauseBackground": true,
+ "actions": [
+  {
+   "hold": 600
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "turn my notes into a plan for the garden",
+   "cps": 20,
+   "mark": "type"
+  },
+  {
+   "hold": 500
+  },
+  {
+   "key": "Enter",
+   "mark": "send"
+  },
+  {
+   "waitForText": "Garden plan.docx",
+   "timeout": 30000,
+   "mark": "built"
+  },
+  {
+   "hold": 2000,
+   "mark": "end"
+  }
+ ]
+}

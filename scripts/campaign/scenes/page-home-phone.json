@@ -1,0 +1,43 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=2&reply=site&platform=android",
+ "theme": "youcoded",
+ "width": 1170,
+ "height": 2532,
+ "zoom": 3,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 4000,
+ "pauseBackground": true,
+ "ready": "(()=>{if(!window.__yo&&window.__youcodedScreens){window.__yo=1;window.__youcodedScreens.open('pages/focus/page-home#site-phone')}return document.readyState==='complete'&&!!document.querySelector('[data-screen=\"pages/focus/page-home\"]')})()",
+ "actions": [
+  {
+   "hold": 1500,
+   "mark": "open"
+  },
+  {
+   "click": "js:document.querySelector(\".fav-grid [aria-label^='Floor lamp']\")",
+   "in": "page",
+   "mark": "lamp"
+  },
+  {
+   "hold": 1200
+  },
+  {
+   "eval": "1",
+   "mark": "scroll"
+  },
+  {
+   "hold": 1200
+  },
+  {
+   "click": "js:[...document.querySelectorAll('.room')].find(r=>r.querySelector('h2')&&r.querySelector('h2').textContent.trim()==='Living Room').querySelector('[data-room]')",
+   "in": "page",
+   "mark": "living"
+  },
+  {
+   "hold": 1500
+  }
+ ]
+}

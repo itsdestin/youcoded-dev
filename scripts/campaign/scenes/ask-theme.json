@@ -1,0 +1,85 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=2&reply=campaign-theme&replyClock=now&title=a%20new%20look",
+ "theme": "youcoded",
+ "width": 2160,
+ "height": 1350,
+ "zoom": 1.95,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 3000,
+ "pauseBackground": true,
+ "ready": "(()=>{const T=['golden-sunbreak','meadow-mist','halftone-dimension','cotton-candy-sky','midnight','youcoded'];const w=window;if(!w.__workbenchAppearanceSync)return false;w.__pw=w.__pw||{n:0};const n=w.__pw.n++;if(n>=T.length*6)return true;if(n%6===0)w.__workbenchAppearanceSync({theme:T[n/6]});return false})()",
+ "actions": [
+  {
+   "hold": 600
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "make it feel like golden hour",
+   "cps": 20,
+   "mark": "type"
+  },
+  {
+   "hold": 500
+  },
+  {
+   "key": "Enter",
+   "mark": "send"
+  },
+  {
+   "waitForText": "Created 2 files",
+   "timeout": 30000,
+   "mark": "built"
+  },
+  {
+   "hold": 1500
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'golden-sunbreak'})",
+   "mark": "swap1"
+  },
+  {
+   "hold": 3600
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'meadow-mist'})",
+   "mark": "swap2"
+  },
+  {
+   "hold": 1300
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'halftone-dimension'})",
+   "mark": "swap3"
+  },
+  {
+   "hold": 1300
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'cotton-candy-sky'})",
+   "mark": "swap4"
+  },
+  {
+   "hold": 1300
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'midnight'})",
+   "mark": "swap5"
+  },
+  {
+   "hold": 1300
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'youcoded'})",
+   "mark": "swap6"
+  },
+  {
+   "hold": 1500
+  }
+ ]
+}

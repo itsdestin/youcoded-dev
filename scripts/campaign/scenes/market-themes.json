@@ -1,0 +1,31 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=0&officePort=34697",
+ "theme": "youcoded",
+ "width": 2160,
+ "height": 1350,
+ "zoom": 1.95,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 5000,
+ "pauseBackground": false,
+ "ready": "(()=>{if(!window.__yo&&window.__youcodedScreens){window.__yo=1;window.__youcodedScreens.open('marketplace/themes')}return document.readyState==='complete'&&!!document.querySelector('[data-screen=\"marketplace/themes\"]')&&((()=>{const im=[...document.images].filter(i=>i.offsetParent);return im.length>5&&im.every(i=>i.complete&&i.naturalWidth>0)})())})()",
+ "actions": [
+  {
+   "hold": 800,
+   "mark": "open"
+  },
+  {
+   "hold": 1500
+  },
+  {
+   "wheel": 500,
+   "ms": 2500,
+   "mark": "scroll"
+  },
+  {
+   "hold": 1500
+  }
+ ]
+}

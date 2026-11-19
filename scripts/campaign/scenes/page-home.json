@@ -1,0 +1,73 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=2&reply=site",
+ "theme": "youcoded",
+ "width": 2160,
+ "height": 1350,
+ "zoom": 1.95,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 3000,
+ "pauseBackground": true,
+ "actions": [
+  {
+   "hold": 400
+  },
+  {
+   "click": "button[aria-label='Open Home']",
+   "settle": 300,
+   "mark": "open"
+  },
+  {
+   "waitForText": "Favorites",
+   "in": "page",
+   "timeout": 30000
+  },
+  {
+   "moveTo": "js:document.querySelector('.fav-head')",
+   "in": "page",
+   "ms": 300
+  },
+  {
+   "hold": 1500
+  },
+  {
+   "click": "js:document.querySelector(\".fav-grid [aria-label^='Floor lamp']\")",
+   "in": "page",
+   "mark": "lamp"
+  },
+  {
+   "hold": 1200
+  },
+  {
+   "click": "js:[...document.querySelectorAll(\"button[aria-label='Warmer']\")].find(b=>b.offsetParent)",
+   "in": "page",
+   "settle": 500,
+   "mark": "thermo"
+  },
+  {
+   "click": "js:[...document.querySelectorAll(\"button[aria-label='Warmer']\")].find(b=>b.offsetParent)",
+   "in": "page"
+  },
+  {
+   "hold": 1500
+  },
+  {
+   "click": "js:document.querySelector(\".fav-grid [aria-label^='Floor lamp']\")",
+   "in": "page",
+   "mark": "lamp-on"
+  },
+  {
+   "hold": 1500
+  },
+  {
+   "click": "js:[...document.querySelectorAll('.room')].find(r=>r.querySelector('h2')&&r.querySelector('h2').textContent.trim()==='Living Room').querySelector('[data-room]')",
+   "in": "page",
+   "mark": "living"
+  },
+  {
+   "hold": 1800
+  }
+ ]
+}

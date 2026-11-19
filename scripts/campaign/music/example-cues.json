@@ -1,0 +1,8 @@
+[
+  {"t0": 1.0, "t1": 4.2, "type": "typing", "cps": 9},
+  {"t": 4.6, "type": "send"},
+  {"t": 7.0, "type": "whoosh"},
+  {"t": 14.4, "type": "bloom"},
+  {"t": 17.0, "type": "pop"},
+  {"t": 18.5, "type": "toggle", "gain": -2}
+]

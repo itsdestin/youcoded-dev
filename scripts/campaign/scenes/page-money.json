@@ -1,0 +1,64 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=2&reply=site",
+ "theme": "youcoded",
+ "width": 2160,
+ "height": 1350,
+ "zoom": 1.95,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 3000,
+ "pauseBackground": true,
+ "actions": [
+  {
+   "hold": 400
+  },
+  {
+   "click": "button[aria-label='Open Finance']",
+   "settle": 300,
+   "mark": "open"
+  },
+  {
+   "waitForText": "Net worth",
+   "tag": "button",
+   "in": "page",
+   "timeout": 30000
+  },
+  {
+   "moveTo": "js:[...document.querySelectorAll('*')].find(e=>!e.children.length&&e.textContent.trim().startsWith('Checked just now'))",
+   "in": "page",
+   "ms": 300
+  },
+  {
+   "hold": 1800
+  },
+  {
+   "clickText": "Spending",
+   "tag": "button",
+   "in": "page",
+   "mark": "spending"
+  },
+  {
+   "hold": 1800
+  },
+  {
+   "clickText": "1Y",
+   "tag": "button",
+   "in": "page",
+   "mark": "year"
+  },
+  {
+   "hold": 1800
+  },
+  {
+   "clickText": "Bills & subscriptions",
+   "tag": "button",
+   "in": "page",
+   "mark": "bills"
+  },
+  {
+   "hold": 2000
+  }
+ ]
+}
