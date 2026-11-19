@@ -11,14 +11,16 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.steer.permissions, chat.converse.native
-work: session/66-passwordless-admin
+work: session/66-passwordless-admin, session/66-search-root, session/66-image-cache-sweep
 ---
 Progress
-Done: Scoped passwordless admin approvals shipped (youcoded PR #650, 2026-10-19). Also shipped in the wider Always-allow rework (PR #713, 2026-11-05): per-part chained commands and edit choices. Floor-forced permission cards now say why (commit 9bf0805a5).
-Next: Still open, per code check: (1) Local and OpenRouter sessions have no Skip Permissions option; (2) Edit tool does not normalise curly quotes or dashes; (3) the picture cache is never cleaned up; (4) the old PermissionOverrides code still exists. Several other items need a test in the running app or a research run before anyone can say whether they are still open.
-Blocked: Nothing for the admin part. Other items wait on a decision about splitting the card.
+Done: Image-cache 90-day sweep merged (PR #772, c7485cd9e). Search-root branch dropped by Destin and deleted
+Next: Remaining card items as listed
+Blocked: Nothing
 
 Chats
+- 2026-11-18 session/66-image-cache-sweep: chat started
+- 2026-11-18 session/66-search-root: chat started
 - 2026-10-19 session/66-passwordless-admin: chat started
 
 From the old roadmap (native-harness › tools, status confirmed, seen on desktop, last checked 2026-08-12)

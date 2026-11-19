@@ -10,8 +10,8 @@ created: 2026-10-23
 why: RECURRED 2026-10-22: scripts/shoot/shoot.mjs waits for focus in the page iframe before the Escape check; raised 10 s -> 30 s today and still failed once at load ~20 in the queue-delivery session (passes alone in 2.6 s). The menu opens on the frame's own load event (fixtures/kit-pieces-page.ts); a raised budget twice is a treadmill — needs a signal the page itself sends.
 ---
 Progress
-Done: the screenshot checker now waits 30 seconds (was 10) for the Pages menu to open before its Escape-key check, and the menu's page keeps asking for keyboard focus until it gets it (youcoded-dev commits 99a3ad8b1 and 732bf7c89; youcoded commit ed32a9dbe, all 2026-10-22).
-Next: re-run the check on a busy machine to see whether it still fails; if it does, choose the page-sent signal.
+Done: Re-tested 2026-11-10: 28 of 28 passes, 1-3.7 seconds each against a 30 second limit, including 64 busy loops with the check pinned to one core, and during a full run at machine load 40-98. Could not make it fail.
+Next: Close as fixed, or keep as a watch item. If it ever recurs, session/android-ux-test adds a way to slow the page on purpose to reproduce it.
 Blocked: nothing.
 
 Chats

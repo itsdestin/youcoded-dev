@@ -13,8 +13,8 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: The Claude direct controls and the message queue that waits for you now work in the app (app PR #657, merged 2026-10-20; tracked as card 169).
-Next: Fix or verify the open items from the original five: (a) a broken settings file is backed up and replaced with no message to you; (b) a settings change can be skipped with no message when another program is busy with the file; (e) the saved test recordings of Claude Code are old (version 2.1.281), so a newer Claude Code could break the app without tests failing. Check (c) and (d), which look already fixed. The wider direct-control follow-ups move to card 12 or a new card.
+Done: LANDED PR #756: notices above message box, button under long notices, settings-repair notice reworded (Show file) and reaches phones
+Next: remaining faults on this card
 Blocked: Nothing blocks the shipped part. Needs a real Android, Windows and Mac run to confirm the rest.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.

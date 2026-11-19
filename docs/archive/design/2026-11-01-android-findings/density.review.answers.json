@@ -1,0 +1,45 @@
+{
+ "deck": "android-density-review",
+ "started": "2026-11-02T09:16:06.331Z",
+ "submitted": "2026-11-02T09:18:50Z",
+ "cur": 4,
+ "answers": {
+  "D-1": {
+   "v": "yes",
+   "t": 1793610971789,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-2": {
+   "v": "yes",
+   "t": 1793611085867,
+   "seconds": 35,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-3": {
+   "v": "yes",
+   "t": 1793611086743,
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-4": {
+   "v": "pick",
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "t": 1793611064726,
+   "pick": "fold"
+  },
+  "D-5": {
+   "v": "other",
+   "t": 1793611129843,
+   "note": "idk, i feel like there's a smarter/smoother way to hide imtes on old messages while allowing users to ssee them when needed?",
+   "seconds": 98,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

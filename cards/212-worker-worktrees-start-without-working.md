@@ -1,7 +1,7 @@
 ---
 id: 212
 title: Worker worktrees start without working dependencies
-stage: explore
+stage: merged
 tags: dev-workspace
 branch: 212-worker-worktrees-start-without-working
 finish: workspace-start provisions wecoded-marketplace/worker the same way as desktop (fresh install when the shared copy is outdated), so tsc and vitest work in a new worker worktree with no manual step

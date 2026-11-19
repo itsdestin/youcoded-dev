@@ -1,0 +1,24 @@
+{
+ "deck": "terminal-keys-looks3",
+ "started": "2026-11-05T23:41:03.266Z",
+ "submitted": "2026-11-05T23:43:06Z",
+ "cur": 1,
+ "answers": {
+  "L3-1": {
+   "v": "other",
+   "t": 1793922128459,
+   "note": "it's hard to judge because that's avery poorly done version of the \"tray\" idea. all of the corner roundings are different and the internal chips almost seem to overlap the external container.",
+   "seconds": 65,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "L3-2": {
+   "v": "pick",
+   "pick": "seven",
+   "t": 1793922185810,
+   "seconds": 57,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,55 @@
+{
+  "title": "Phone polish — round three",
+  "key": "phone-polish-3-review",
+  "out": "phone-polish-3.review.html",
+  "images": "images/phone-polish-3.review",
+  "runs": {
+    "abefore": "runs3/a/before",
+    "aafter": "runs3/a/after",
+    "bbefore": "runs3/b/before",
+    "bafter": "runs3/b/after",
+    "cbefore": "runs3/c/before",
+    "cafter": "runs3/c/after"
+  },
+  "steps": [
+    {
+      "id": "P3-1",
+      "surface": "Welcome screen, when you have past conversations",
+      "path": "Open the app with no session open",
+      "crop": "welcome#returning@390x200+0+470",
+      "runs": ["abefore", "aafter"],
+      "labels": {"abefore": "Before (original)", "aafter": "After"},
+      "highlight": {"box": [16, 35, 68, 22]},
+      "headline": "Resume session keeps its original see-through, blurred look, with a light tint so the text reads.",
+      "changed": "Back to the original outlined, frosted button on every theme. On themes with a background picture it now has a half-strength tint of the theme's own background colour under the blur, and full-strength text. Plain themes are untouched.",
+      "notice": "Halftone looks almost exactly like the original; Meadow Mist's label now reads over the dark trees, with the picture still showing through.",
+      "risk": "On Meadow Mist the tint lightens the button a little compared with the original."
+    },
+    {
+      "id": "P3-2",
+      "surface": "Welcome screen, phone turned sideways",
+      "path": "Turn the phone sideways on the welcome screen",
+      "crop": "welcome/new-session",
+      "runs": ["bbefore", "bafter"],
+      "labels": {"bbefore": "Before (original)", "bafter": "After"},
+      "highlight": "panel",
+      "headline": "Sideways, the heading stays; only the mascot and the one-line explanation step aside.",
+      "changed": "\"Start your first session\" now stays on short screens. To make room, the mascot and the sentence under the heading are left out and the gap below the heading is tighter, so the whole form still fits with Start session in view. Taller screens, including your computer, are unchanged.",
+      "notice": "The heading sits above the form; Start session is fully in view with no scrolling.",
+      "risk": "The \"Dev window\" label in these pictures only appears in the practice app, not on your phone."
+    },
+    {
+      "id": "P3-3",
+      "surface": "Project → Files → filter menu, on a phone",
+      "path": "Projects, a project, Files, the filter button",
+      "crop": "projects/files/filter",
+      "runs": ["cbefore", "cafter"],
+      "labels": {"cbefore": "Before", "cafter": "After"},
+      "highlight": "panel",
+      "headline": "On a phone the filter menu is frosted glass again, like on your computer.",
+      "changed": "Why it was see-through: on a phone the projects page scrolls, and its edge fade works by masking the page; a masked area stops frosted glass inside it from blurring what's behind. Your computer's page doesn't scroll, so it never had the mask. The page now scrolls without that fade (the chat does the same), so the filter menu, the project card and the tab switcher are all frosted on a phone.",
+      "notice": "Switch to Halftone or Meadow Mist: the cards behind the menu are blurred instead of showing straight through.",
+      "risk": "On a phone, the projects page's content no longer fades at its top and bottom edges while scrolling; it scrolls with a plain edge."
+    }
+  ]
+}

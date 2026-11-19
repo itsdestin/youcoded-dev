@@ -1,0 +1,24 @@
+{
+ "deck": "sign-out-notices-review",
+ "started": "2026-11-10T23:43:45.387Z",
+ "submitted": "2026-11-10T23:44:37Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794354248638,
+   "note": "",
+   "seconds": 23,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794354276099,
+   "note": "",
+   "seconds": 27,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

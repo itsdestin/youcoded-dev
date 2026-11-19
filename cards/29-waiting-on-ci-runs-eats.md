@@ -13,9 +13,9 @@ vision: everywhere.added.update
 work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record, session/29-hotfix-lane, session/test-suite-rethink
 ---
 Progress
-Done: The bug-fix release lane is live: a small fix can now ship as its own version without waiting for the next big release (youcoded#686, youcoded-admin#19, youcoded-dev#305, merged 2026-10-23; releases v1.3.2 and v1.3.3 went out). Beta version numbers now restart after each big release (youcoded#633, merged 2026-10-18).
-Next: Decide what to do with the open test-speed experiments (PR #272 and the session/29-ci-fastpaths branch). Get one real timing run of the full test suite before calling it faster. Save or delete the unsaved experiment work (only on this device). Build upkeep (model-list check, package size, dependency upgrades) is separate work.
-Blocked: No blocker for the release lane. The fast-test work needs Destin's decision on whether to keep it, and any paid or signing change still needs his approval.
+Done: Destin, 2026-11-10: test-speed experiments dropped. The two app changes that existed only on his computer were backed up (branch session/29-ci-fastpaths in the app repo, commits 6ad3d2b87 and a85342b9a); PR #272 closed; the 29-ci-fastpaths work folder removed. Both session/29-ci-fastpaths branches stay on GitHub as the backup.
+Next: Nothing for the experiments. The card's other ideas (a nightly rehearsal build; running one test file on one system) are still unbuilt.
+Blocked: 
 
 Chats
 - 2026-10-22 session/29-hotfix-lane: chat started

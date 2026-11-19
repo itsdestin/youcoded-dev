@@ -138,12 +138,35 @@ async function side(checkout, outDir, pick, which = null) {
   } finally { pool?.close(); server.close(); editor?.stop(); }
 }
 
+// WHY (2026-11-18, load-flaky-tests): the mark probe used to be a bare 5 s evaluate that THREW on a timeout. At load
+// 60-150 a busy page needs longer than 5 s to answer a one-line query (office/presentation failed "Runtime.evaluate
+// timed out after 5s" while opening in seconds alone). A probe that gets no answer is "not showing yet", not a failure:
+// the loops that poll it already have their own deadlines, and a screen that never shows still fails with the reason.
+const MARK_PROBE_MS = 20_000;
+const markNow = (tab, screen) => tab.evaluate(MARK_CHECK(markOf(screen)), MARK_PROBE_MS).catch((e) => `the page gave no answer: ${e.message}`);
+
 async function waitFor(tab, expr, ms) {
   for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 50))) {
     const v = await tab.evaluate(`(() => { try { return ${expr}; } catch { return null; } })()`, 5000).catch(() => null);
     if (v) return v;
   }
   return null;
+}
+
+// Waits until `selector` exists inside the Page iframe. The frame is sandboxed (opaque origin), so the outer document cannot
+// read it: it is its own Chrome target, reached by auto-attach (same route as ui-review/record.mjs) and read over the browser connection.
+async function waitForFrame(tab, selector, ms) {
+  let session = null;
+  const off = tab.on((m) => { if (m.method === 'Target.attachedToTarget' && m.params.targetInfo.type === 'iframe') session = m.params.sessionId; });
+  try {
+    await tab.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
+    for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 100))) {
+      if (!session) continue;
+      const r = await tab.browser.send('Runtime.evaluate', { expression: `!!document.querySelector(${JSON.stringify(selector)})`, returnByValue: true }, session).catch(() => null);
+      if (r?.result?.value === true) return true;
+    }
+    return false;
+  } finally { off(); await tab.send('Target.setAutoAttach', { autoAttach: false, waitForDebuggerOnStart: false, flatten: true }).catch(() => {}); }
 }
 
 // Is the screen's mark on screen? Its surface is the nearest dialog / layer / drawer around it.
@@ -202,6 +225,12 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // WHY: use the renderer's explicit workbench theme route as well as the storage mirror;
     // a capture must not be labelled Dark/Halftone while actually showing Light.
     q.set('theme', theme);
+    // WHY (2026-11-10, card #146): a desktop window now remembers its chat in sessionStorage so a reload reopens it.
+    // This tab is reused for every screen, so the chat the PREVIOUS screen left selected would be restored on the next
+    // one, and that screen's opener would find its own chat (or project) not showing. A person opening a screen gets
+    // a fresh window, so each picture starts with this tab's per-window storage empty. (Cleared on the old page,
+    // same origin, before navigating; about:blank on the first screen throws, hence the catch.)
+    await tab.evaluate('try{sessionStorage.clear()}catch(e){}').catch(() => {});
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);
@@ -214,7 +243,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       if (!opened?.ok) throw new Error(opened?.reason ?? 'open failed');
       for (const t1 = Date.now(); Date.now() - t1 < 2500;) {
         await tab.still(1500);
-        why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);   // a #state is marked as its plain screen, unless it names its own `mark`
+        why = await markNow(tab, screen);   // a #state is marked as its plain screen, unless it names its own `mark`
         if (why?.panel) break;
       }
     }
@@ -225,7 +254,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // screen that is truly missing still fails, just later; one that shows is unaffected.
     for (const t2 = Date.now(); !why?.panel && Date.now() - t2 < 12_000;) {
       await tab.still(1500);
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
     }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
     // "Open this first" (screen list `open`): clicks replayed like a journey once the screen
@@ -241,7 +270,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       // picture (submit-ticket friction, proposal 14) — move it off the page. A `hover` step
       // ending the list is kept: that hover is what the picture is for.
       if (pointerRestsOnClick(steps)) { await driver.pointerAway(); await tab.still(1000); }
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
       if (!why?.panel) throw new Error(`not showing after its open steps: ${why}`);
     }
     // `waitMs` (screen list): a state that changes by itself is photographed LATER, on purpose —
@@ -251,9 +280,12 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     if (screen.waitMs) {
       await new Promise((res) => setTimeout(res, screen.waitMs));
       await tab.still(1500);
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
       if (!why?.panel) throw new Error(`not showing after its ${screen.waitMs} ms wait: ${why}`);
     }
+    // WHY (frameReady): the mark above is the app's; a Page's own content is drawn by its iframe a moment later (under load, a
+    // long moment). Wait on the thing itself — the selector appearing inside the frame — never a fixed sleep. Refuse, not skip.
+    if (screen.frameReady && !(await waitForFrame(tab, screen.frameReady, 30_000))) throw new Error(`the page frame never drew ${screen.frameReady} within 30 s, so the picture would show an unfinished page`);
     r.panel = why.panel;
     // WHY wait on the theme's font (2026-10-02): a before/after of an UNCHANGED screen came
     // back with the theme's font on one side and the fallback on the other, at random. A
@@ -381,7 +413,12 @@ function fullSizeAlike(a, b) {
 
 function lookalikes(results, screens) {
   const same = new Map(screens.filter((s) => s.sameAs).map((s) => [s.name, s.sameAs.name]));
-  const expected = (a, b) => same.get(a) === b || same.get(b) === a;
+  // WHY follow the chain to its end (2026-11-11, chat-engine batch): a screen can name only ONE
+  // sameAs. `dev/toast#none` names `chat#queue-idle-after`, which names `chat`, so all three are
+  // one picture on purpose; comparing direct partners only flagged `chat = dev/toast#none` in
+  // some runs and turned verify.sh red on a branch that had not touched any of them.
+  const root = (n) => { const seen = new Set(); while (same.has(n) && !seen.has(n)) { seen.add(n); n = same.get(n); } return n; };
+  const expected = (a, b) => same.get(a) === b || same.get(b) === a || root(a) === root(b);
   const out = [];
   for (const theme of themes) {
     const got = results.filter((r) => r.ok && r.theme === theme && r.thumb);

@@ -12,6 +12,6 @@ why: youcoded PR #444 (session/sync-retry-feedback, Sep 7) fixed this but was ne
 Progress
 Done: nothing yet.
 Next: plan it.
-Blocked: nothing.
+Blocked: Left out of the files batch on 2026-11-11: sync is being redesigned (cards #64, #241, #243; design stage, nothing built yet), so this waits for that.
 
 Chats

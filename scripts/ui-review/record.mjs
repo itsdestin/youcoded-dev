@@ -332,7 +332,21 @@ if (enc.status !== 0) { console.error(enc.stderr.toString()); process.exit(1); }
 // Poster = the LAST frame, not the first: a loop that starts in an empty chat
 // (rows 1/2/6/7 since 2026-08-28) would otherwise show a blank window wherever
 // the video isn't playing yet — before scroll, reduced-motion, slow networks.
-spawnSync('magick', [join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0')}.png`), '-quality', '82', `${outBase}.webp`]);
+// WHY `posterBefore` (Destin, 2026-11-13: "i see the theme a demo for just a
+// split second as i scroll down"). The landing page's "yours" clip ENDS in a
+// different theme from the one it starts in, so its last frame is another
+// theme's picture: on the golden page the still was the purple app, shown for a
+// moment before the clip started. A scene may name one of its marks; the still
+// is then the last frame captured BEFORE that action began (for "yours": the
+// finished conversation, just before the look swaps). Every other clip is unchanged.
+let posterFrame = frames.at(-1);
+if (scene.posterBefore) {
+  const st = stamps.find((s) => s.mark === scene.posterBefore);
+  if (!st) { console.error(`posterBefore: no action is marked "${scene.posterBefore}"`); process.exit(1); }
+  const cut = frames[0].t + (st.start - firstFrameAt) / 1000;
+  posterFrame = frames.filter((f) => f.t <= cut).at(-1) ?? frames[0];
+}
+spawnSync('magick', [join(framesDir, `f${String(posterFrame.n).padStart(5, '0')}.png`), '-quality', '82', `${outBase}.webp`]);
 // framesDir cleanup now happens in the exit handler registered above (covers
 // error exits too, not just this success path).
 // Marks file: where every scene action landed in the finished clip, in video

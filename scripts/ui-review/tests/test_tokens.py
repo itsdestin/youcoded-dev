@@ -9,6 +9,20 @@ TOKENS = os.path.join(os.path.dirname(HERE), 'deck', 'tokens.json')
 GLOBALS = os.path.join(workspace_root(), 'youcoded', 'desktop', 'src', 'renderer', 'styles', 'globals.css')
 KEYS = ['canvas', 'panel', 'inset', 'well', 'accent', 'on-accent', 'fg', 'fg-2', 'fg-dim', 'fg-muted', 'fg-faint', 'edge', 'link']
 
+# WHY: bare open() in json.load/json.dump/read() left the file handle for the garbage collector to close,
+# which printed a ResourceWarning per call and buried real failures in the output (card #15 e).
+def _jload(p):
+    with open(p) as f:
+        return json.load(f)
+
+def _jdump(o, p):
+    with open(p, 'w') as f:
+        json.dump(o, f)
+
+def _read(p, **kw):
+    with open(p, **kw) as f:
+        return f.read()
+
 def css_block(css, theme):
     sel = f'[data-theme="{theme}"]'
     i = css.index(sel); j = css.index('}', i)
@@ -16,14 +30,14 @@ def css_block(css, theme):
 
 class TokenTests(unittest.TestCase):
     def test_four_themes_with_all_keys(self):
-        t = json.load(open(TOKENS))
+        t = _jload(TOKENS)
         self.assertEqual(sorted(t), ['creme', 'dark', 'light', 'midnight'])
         for theme, tok in t.items():
             for k in KEYS: self.assertRegex(tok[k], r'^#[0-9A-Fa-f]{6}$', f'{theme}.{k}')
             self.assertIsInstance(tok['_dark'], bool)
     def test_values_match_globals_css(self):
         self.assertTrue(os.path.exists(GLOBALS), GLOBALS + ' missing — the pin must fail, not skip')
-        css = open(GLOBALS).read(); t = json.load(open(TOKENS))
+        css = _read(GLOBALS); t = _jload(TOKENS)
         for theme, tok in t.items():
             block = css_block(css, theme)
             for k in KEYS:

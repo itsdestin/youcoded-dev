@@ -1,0 +1,325 @@
+{
+  "meta": {
+    "date": "2026-11-03T07:15:53.334Z",
+    "label": "after-rowfade",
+    "device": "SM-F766U1",
+    "android": "17",
+    "webview": "Chrome/156.0.8078.47",
+    "refreshHz": 120,
+    "frameMs": 8.3,
+    "screen": {
+      "w": 1080,
+      "h": 2520
+    },
+    "repeat": 3,
+    "trace": true,
+    "experiment": null
+  },
+  "results": [
+    {
+      "step": "appearance-open",
+      "what": "In Settings, tap Appearance; its popup opens",
+      "slowFrames": 4,
+      "droppedFrames": 18,
+      "worstFrameMs": 117,
+      "p95FrameMs": 9,
+      "longFrames": 1,
+      "longFramesMs": 120,
+      "tapResponseMs": 200,
+      "shownMs": 58,
+      "pageBusyMs": 212,
+      "graphicsBusyMs": 130,
+      "compositorBusyMs": 39,
+      "pageKinds": {
+        "Style (re-checking styles)": 28,
+        "Layout": 4,
+        "Paint": 28,
+        "Prepare layers": 19,
+        "Script": 81,
+        "Garbage collection": 4
+      },
+      "cpuAppPct": 35,
+      "cpuAssistantPct": 15,
+      "memoryMb": 495,
+      "screenJanky": 3,
+      "screenFrames": 3,
+      "screenP99": 150,
+      "failed": 0,
+      "first": {
+        "shownMs": 58,
+        "slowFrames": 4,
+        "worstFrameMs": 133,
+        "longFramesMs": 65
+      },
+      "runs": [
+        {
+          "frames": 101,
+          "slowFrames": 4,
+          "droppedFrames": 24,
+          "worstFrameMs": 133,
+          "p95FrameMs": 10,
+          "longFrames": 1,
+          "longFramesMs": 65,
+          "longFrameTop": [
+            {
+              "d": 65,
+              "block": 12,
+              "style": 0,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 224,
+          "shownMs": 58,
+          "cpuAppPct": 35,
+          "cpuAssistantPct": 15,
+          "threads": {
+            "page": 257,
+            "graphics": 146,
+            "compositor": 37,
+            "pageKinds": {
+              "Style (re-checking styles)": 28,
+              "Layout": 4,
+              "Paint": 28,
+              "Prepare layers": 19,
+              "Script": 81,
+              "Garbage collection": 4
+            }
+          },
+          "memoryMb": 495,
+          "worked": true,
+          "screenFrames": 3,
+          "screenJanky": 2,
+          "screenP90": 150,
+          "screenP99": 150
+        },
+        {
+          "frames": 104,
+          "slowFrames": 4,
+          "droppedFrames": 18,
+          "worstFrameMs": 117,
+          "p95FrameMs": 9,
+          "longFrames": 1,
+          "longFramesMs": 120,
+          "longFrameTop": [
+            {
+              "d": 120,
+              "block": 0,
+              "style": 1,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 200,
+          "shownMs": 48,
+          "cpuAppPct": 39,
+          "cpuAssistantPct": 39,
+          "threads": {
+            "page": 190,
+            "graphics": 130,
+            "compositor": 47,
+            "pageKinds": {
+              "Style (re-checking styles)": 30,
+              "Layout": 5,
+              "Paint": 24,
+              "Prepare layers": 15,
+              "Script": 46,
+              "Garbage collection": 0
+            }
+          },
+          "memoryMb": 496,
+          "worked": true,
+          "screenFrames": 6,
+          "screenJanky": 4,
+          "screenP90": 150,
+          "screenP99": 150
+        },
+        {
+          "frames": 114,
+          "slowFrames": 3,
+          "droppedFrames": 13,
+          "worstFrameMs": 67,
+          "p95FrameMs": 8,
+          "longFrames": 2,
+          "longFramesMs": 125,
+          "longFrameTop": [
+            {
+              "d": 75,
+              "block": 0,
+              "style": 0,
+              "script": 0,
+              "top": []
+            },
+            {
+              "d": 50,
+              "block": 0,
+              "style": 5,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 152,
+          "shownMs": 62,
+          "cpuAppPct": 31,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 212,
+            "graphics": 78,
+            "compositor": 39,
+            "pageKinds": {
+              "Style (re-checking styles)": 44,
+              "Layout": 4,
+              "Paint": 27,
+              "Prepare layers": 15,
+              "Script": 53,
+              "Garbage collection": 0
+            }
+          },
+          "memoryMb": 493,
+          "worked": true,
+          "screenFrames": 3,
+          "screenJanky": 3,
+          "screenP90": 89,
+          "screenP99": 89
+        }
+      ]
+    },
+    {
+      "step": "skills-drawer-resize",
+      "what": "Drag the drawer handle up to full height and back down",
+      "slowFrames": 9,
+      "droppedFrames": 9,
+      "worstFrameMs": 17,
+      "p95FrameMs": 8,
+      "longFrames": 0,
+      "longFramesMs": 0,
+      "tapResponseMs": 48,
+      "shownMs": null,
+      "pageBusyMs": 729,
+      "graphicsBusyMs": 743,
+      "compositorBusyMs": 367,
+      "pageKinds": {
+        "Style (re-checking styles)": 485,
+        "Layout": 1,
+        "Paint": 88,
+        "Prepare layers": 181,
+        "Script": 84,
+        "Garbage collection": 31
+      },
+      "cpuAppPct": 86,
+      "cpuAssistantPct": 1,
+      "memoryMb": 462,
+      "screenJanky": 35,
+      "screenFrames": 97,
+      "screenP99": 40,
+      "failed": 0,
+      "first": {
+        "shownMs": null,
+        "slowFrames": 4,
+        "worstFrameMs": 17,
+        "longFramesMs": 0
+      },
+      "runs": [
+        {
+          "frames": 297,
+          "slowFrames": 4,
+          "droppedFrames": 4,
+          "worstFrameMs": 17,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 48,
+          "shownMs": null,
+          "cpuAppPct": 86,
+          "cpuAssistantPct": 0,
+          "threads": {
+            "page": 743,
+            "graphics": 749,
+            "compositor": 337,
+            "pageKinds": {
+              "Style (re-checking styles)": 485,
+              "Layout": 1,
+              "Paint": 88,
+              "Prepare layers": 181,
+              "Script": 84,
+              "Garbage collection": 31
+            }
+          },
+          "memoryMb": 462,
+          "worked": true,
+          "screenFrames": 106,
+          "screenJanky": 23,
+          "screenP90": 23,
+          "screenP99": 34
+        },
+        {
+          "frames": 287,
+          "slowFrames": 10,
+          "droppedFrames": 12,
+          "worstFrameMs": 25,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 48,
+          "shownMs": null,
+          "cpuAppPct": 88,
+          "cpuAssistantPct": 1,
+          "threads": {
+            "page": 697,
+            "graphics": 743,
+            "compositor": 367,
+            "pageKinds": {
+              "Style (re-checking styles)": 438,
+              "Layout": 1,
+              "Paint": 89,
+              "Prepare layers": 181,
+              "Script": 79,
+              "Garbage collection": 20
+            }
+          },
+          "memoryMb": 461,
+          "worked": true,
+          "screenFrames": 97,
+          "screenJanky": 35,
+          "screenP90": 30,
+          "screenP99": 46
+        },
+        {
+          "frames": 291,
+          "slowFrames": 9,
+          "droppedFrames": 9,
+          "worstFrameMs": 17,
+          "p95FrameMs": 8,
+          "longFrames": 0,
+          "longFramesMs": 0,
+          "longFrameTop": [],
+          "tapResponseMs": 48,
+          "shownMs": null,
+          "cpuAppPct": 83,
+          "cpuAssistantPct": 45,
+          "threads": {
+            "page": 729,
+            "graphics": 734,
+            "compositor": 375,
+            "pageKinds": {
+              "Style (re-checking styles)": 442,
+              "Layout": 1,
+              "Paint": 89,
+              "Prepare layers": 183,
+              "Script": 89,
+              "Garbage collection": 18
+            }
+          },
+          "memoryMb": 465,
+          "worked": true,
+          "screenFrames": 86,
+          "screenJanky": 41,
+          "screenP90": 29,
+          "screenP99": 40
+        }
+      ]
+    }
+  ]
+}

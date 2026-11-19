@@ -15,7 +15,11 @@ export function* boundedProcPids({ open = path => opendirSync(path, { bufferSize
   const directory = open('/proc');
   try {
     for (let count=0; count<maxEntries; count++) {
-      const entry=directory.readSync(); if(!entry) return;
+      // WHY (card #13 flake): for a process that is exiting, /proc can list a name with an unknown type and Node
+      // then lstat()s it; if the process is gone by then the read throws ENOENT. That pid no longer exists, so it
+      // is skipped, not a failure; before this it surfaced as a cleanup error and failed a healthy cleanup.
+      let entry; try { entry=directory.readSync(); } catch (error) { if (error?.code==='ENOENT') continue; throw error; }
+      if(!entry) return;
       if (/^[1-9]\d*$/.test(entry.name)) { const pid=Number(entry.name); if(Number.isSafeInteger(pid)) yield pid; }
     }
     // Do not perform an extra unbounded lookahead: exactly-cap observations

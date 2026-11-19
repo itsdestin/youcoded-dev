@@ -1,0 +1,54 @@
+{
+ "deck": "phone-polish-review",
+ "started": "2026-11-07T23:57:45.066Z",
+ "submitted": "2026-11-08T00:00:41Z",
+ "cur": 5,
+ "answers": {
+  "PP-1": {
+   "v": "other",
+   "t": 1794095937635,
+   "note": "no i don't like it. i think it looks more inconsistent now compared to all of the other themes, where the resume button more closely matches the background color. the contrast was definitely janky before and needs fixing, but this was not the way.",
+   "seconds": 73,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PP-2": {
+   "v": "yes",
+   "t": 1794095952589,
+   "seconds": 15,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PP-3": {
+   "v": "yes",
+   "t": 1794095966505,
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PP-4": {
+   "note": "just look at this screen. super janky. probably a better way to make this fit, even if we need to drop the mascot and text in this view. but it shouldn't change things on devices where the screens already work fine like my pc.",
+   "t": 1794096015584,
+   "v": "other",
+   "seconds": 49,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PP-5": {
+   "v": "pick",
+   "pick": "grey-quiet",
+   "t": 1794096031254,
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PP-6": {
+   "v": "pick",
+   "pick": "hide-switch",
+   "t": 1794096040791,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

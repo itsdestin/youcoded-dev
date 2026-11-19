@@ -1,0 +1,26 @@
+{
+  "title": "Editing a waiting message when the message box already has text",
+  "key": "queue edit choice",
+  "out": "queue-edit-choice.review.html",
+  "images": "images/queue-edit-choice.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "New" },
+  "themes": ["midnight", "light"],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "Q-1",
+      "surface": "Chat",
+      "path": "A message waiting behind a running reply, then Edit, with words already typed in the message box",
+      "crop": [
+        { "crop": "dev/toast#queue-edit-busy@1200x160+120+690", "label": "Today" },
+        { "crop": "dev/toast#queue-edit-ask@1200x160+120+690", "label": "New" }
+      ],
+      "new": true,
+      "headline": "Editing a waiting message into a box that has text now asks Replace or Append, instead of refusing.",
+      "changed": "Today a notice says to finish or clear your draft first, and nothing happens. Now the notice asks Replace or Append. Replace swaps your typed text for the waiting message (files return as chips). Append adds the waiting message after your text, with its files beside any already attached.",
+      "notice": "With an empty box nothing changes. With text in the box you pick a button. If you ignore the question it fades after 15 seconds and the message stays waiting, untouched.",
+      "risk": "Replace discards what you typed. Append joins the two with one space, no new line. Only conversations on YouCoded's own engine; Claude Code conversations keep their current refusal."
+    }
+  ]
+}

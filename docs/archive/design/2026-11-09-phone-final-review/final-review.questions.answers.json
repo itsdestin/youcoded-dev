@@ -1,0 +1,194 @@
+{
+ "deck": "phone-final-review",
+ "started": "2026-11-10T00:42:15.820Z",
+ "submitted": "2026-11-10T01:09:04Z",
+ "cur": 5,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794271822084,
+   "seconds": 36,
+   "theme": "halftone-dimension"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794271822084,
+   "note": "inclined to say we already tested gpt sign in and it worked fine",
+   "seconds": 36,
+   "theme": "halftone-dimension"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1794271822084,
+   "note": "there is another, separate but related session going on in parallel that is making some additional potential design tweaks to make the phone ui even more mobile friendly. that is kinda separate, but just an fyi. i will rebase it on this work after we are done and merged",
+   "seconds": 36,
+   "theme": "halftone-dimension"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794271822084,
+   "seconds": 36,
+   "theme": "halftone-dimension"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "catch-up-retest",
+   "t": 1794272165159,
+   "seconds": 69,
+   "theme": "halftone-dimension"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794272165159,
+   "note": "i think another parallel workstream is trying to improve our test infrastructure to better reflect/test real user flows on all platforms, so some of this may be covered. you should look for and review that parallel work before we decide what, if anything, to change here",
+   "seconds": 69,
+   "theme": "halftone-dimension"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1794272165159,
+   "note": "confused. seems like we may want to think this through just a smige further? what already exists, and how much effort is involved with the various options?",
+   "seconds": 69,
+   "theme": "halftone-dimension"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1794272165159,
+   "note": "confused. i thought we had created some sort of mechanism a while back to track how claude's screens/tui prompts/etc drift and notify us if anything fails or stops working automatically. seems like we should piggyback on this? and also, if possible, attempt to build in a way that's less fragile and would prevent from breaking in the first place? or at least have a better safe automatic fallback? like maybe just auto-switching into terminal view for the first menu or something? but idk",
+   "seconds": 69,
+   "theme": "halftone-dimension"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "everywhere-remembered",
+   "t": 1794272587607,
+   "seconds": 84,
+   "theme": "halftone-dimension"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "split",
+   "t": 1794272587607,
+   "note": "i want to explore existing simlar app distinctions for touch vs desktop vs narrow desktop view, etc, and make sure we're being consistent about however we implement this change",
+   "seconds": 84,
+   "theme": "halftone-dimension"
+  },
+  "Q-7": {
+   "v": "other",
+   "t": 1794272587607,
+   "note": "kinda confused",
+   "seconds": 84,
+   "theme": "halftone-dimension"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "start-from-setting",
+   "t": 1794272587607,
+   "note": "i mean it should always start in auto for claude code i believe, unless i toggle bypass permissions. and then we should know exactly for native sessions how those work",
+   "seconds": 84,
+   "theme": "halftone-dimension"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "deck-and-try",
+   "t": 1794272587607,
+   "note": "yeah you'll just need to explain all changes that affect pc and potential risks/downsides and i will verify",
+   "seconds": 84,
+   "theme": "halftone-dimension"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "new-only",
+   "t": 1794272731652,
+   "seconds": 29,
+   "theme": "halftone-dimension"
+  },
+  "Q-11": {
+   "v": "other",
+   "t": 1794272731652,
+   "note": "confused.",
+   "seconds": 29,
+   "theme": "halftone-dimension"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "finish",
+   "t": 1794272731652,
+   "seconds": 29,
+   "theme": "halftone-dimension"
+  },
+  "Q-13": {
+   "v": "pick",
+   "pick": "auto-proposal",
+   "t": 1794272731652,
+   "seconds": 29,
+   "theme": "halftone-dimension"
+  },
+  "Q-14": {
+   "v": "pick",
+   "pick": "say-and-ask",
+   "t": 1794272731652,
+   "note": "",
+   "seconds": 29,
+   "theme": "halftone-dimension"
+  },
+  "Q-15": {
+   "v": "pick",
+   "pick": "limit-and-clean",
+   "t": 1794272860454,
+   "seconds": 43,
+   "theme": "halftone-dimension"
+  },
+  "Q-16": {
+   "v": "pick",
+   "pick": "all-now",
+   "t": 1794272860454,
+   "seconds": 43,
+   "theme": "halftone-dimension"
+  },
+  "Q-17": {
+   "v": "picks",
+   "picks": [
+    "partykit-wording",
+    "flaky-test",
+    "save-decks",
+    "pin-watch"
+   ],
+   "t": 1794272860454,
+   "seconds": 43,
+   "theme": "halftone-dimension"
+  },
+  "Q-18": {
+   "v": "picks",
+   "picks": [
+    "fresh-install",
+    "account-and-chatgpt",
+    "phone-to-computer"
+   ],
+   "t": 1794272943374,
+   "seconds": 21,
+   "theme": "halftone-dimension"
+  },
+  "Q-19": {
+   "v": "pick",
+   "pick": "server-first",
+   "t": 1794272943374,
+   "seconds": 21,
+   "theme": "halftone-dimension"
+  },
+  "Q-20": {
+   "v": "other",
+   "t": 1794272943374,
+   "note": "i think this is already underway in a different session",
+   "seconds": 21,
+   "theme": "halftone-dimension"
+  },
+  "Q-21": {
+   "v": "other",
+   "dk": true,
+   "t": 1794272943374,
+   "seconds": 21,
+   "theme": "halftone-dimension"
+  }
+ }
+}

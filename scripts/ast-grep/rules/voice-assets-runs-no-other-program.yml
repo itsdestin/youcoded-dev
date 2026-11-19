@@ -26,9 +26,10 @@ note: |
   declared with that name (as a declaration OR a named function/generator
   expression), a string or template piece, a comment — not a proof that no
   other kind exists; add a kind when a probe finds one.
-  Not on the retired list, so not banned here either: execSync, fork and
-  execFile's promisified forms. Banning them would be stricter than the
-  retired case and is Destin's call (noted in the u11 fix report).
+  2026-11-10 (card #15(g), Destin approved): widened past the retired cases —
+  branch B also names execSync and fork, and branch A matches the module name
+  in quotes (require('child_process'), import('child_process'), either quote,
+  the node: spelling), not just `from 'child_process'`.
   Branch A and B include comments, as the retired case did (it read the file
   unstripped). Branch C excludes comments of both kinds.
   The import half is ALSO oxlint `no-restricted-imports` scoped to this file
@@ -86,14 +87,18 @@ utils:
       - kind: program
 rule:
   any:
-    # A — the import, in any node.
+    # A — the module named in quotes, in any node: `from 'child_process'`,
+    # `require('child_process')`, `import('child_process')`, either quote, a
+    # template piece, and the `node:` spelling. (Widened 2026-11-10, card #15(g):
+    # it used to match only the text `from 'child_process'`.)
     - matches: text-node
-      regex: "from 'child_process'"
-      not: { has: { regex: "from 'child_process'" } }
-    # B — a call (or a declaration) of a process-spawning name, in any node.
+      regex: "['\"`](node:)?child_process['\"`]"
+      not: { has: { regex: "['\"`](node:)?child_process['\"`]" } }
+    # B — a call (or a declaration) of ANY process-spawning name, in any node.
+    # (Widened 2026-11-10, card #15(g): execSync and fork were missing.)
     - matches: text-node
-      regex: "\\b(execFile|execFileSync|spawn|spawnSync|exec)\\s*\\("
-      not: { has: { regex: "\\b(execFile|execFileSync|spawn|spawnSync|exec)\\s*\\(" } }
+      regex: "\\b(execFile|execFileSync|execSync|spawn|spawnSync|fork|exec)\\s*\\("
+      not: { has: { regex: "\\b(execFile|execFileSync|execSync|spawn|spawnSync|fork|exec)\\s*\\(" } }
     # C — an external unpacker named in code (comments excluded).
     - matches: text-node
       regex: "bzip2|tar\\.exe|System32"

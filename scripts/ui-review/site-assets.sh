@@ -2,11 +2,11 @@
 # Regenerates every landing-page demo asset from the REAL renderer:
 #   docs/site/           the live embed (npm run build:site)
 #   docs/media/          one WebM loop + WebP poster per showcase row (record.mjs)
-#   docs/gallery/        gallery stills as WebP (shot.mjs + magick)
+#   (docs/gallery/idea-*.webp, the four ideas-wall pictures, are NOT made here: see step 3)
 #   docs/media/embed-*   the demo window's per-theme stills, shot from the built embed (embed-posters.mjs)
 # Run before every release so the site can never drift from the app again.
 # Usage: bash scripts/ui-review/site-assets.sh <worktree-or-path> [--out <dir>]
-#   --out <dir> (or SITE_ASSETS_OUT=<dir>): write media/gallery/site somewhere other
+#   --out <dir> (or SITE_ASSETS_OUT=<dir>): write media/site somewhere other
 #   than <checkout>/docs — for a test run against scratch/. NEVER point this at
 #   youcoded/docs/media, docs/gallery or docs/site from a worktree other than the
 #   one you mean to release: those are committed site assets.
@@ -72,31 +72,12 @@ for theme in youcoded meadow-mist halftone-dimension golden-sunbreak; do
   done
 done
 
-# 3. gallery — the 48 stills are no longer shown: the page's bottom strip became the ideas wall
-# (docs/gallery/idea-*.webp, captured by hand from the demo's Home and Finance pages and the
-# workbench's paint and trip-board pages, 2026-10-21). This step still refreshes the stills for
-# anything else that reads docs/gallery; regenerating the idea stills is card #175.
-for theme in midnight meadow-mist halftone-dimension creme light dark; do
-  WORKTREE="$TDIR" node "$HERE/shot.mjs" "$HERE/plans/site-gallery.json" "$TMP" "$theme"
-done
-# shot.mjs exits 0 even when a shot failed verification — it files the miss under
-# <theme>/_unverified/ instead. Refuse BEFORE deleting the previous good stills,
-# otherwise a miss silently vanishes from the gallery.
-if compgen -G "$TMP/*/_unverified/*.png" >/dev/null; then
-  echo "[site-assets] unverified gallery shots — fix the plan and re-run:" >&2; ls "$TMP"/*/_unverified/ >&2; exit 1
-fi
-NPNG=$(ls "$TMP"/*/*.png | wc -l)
-if [[ "$NPNG" -ne 48 ]]; then echo "[site-assets] expected 48 gallery shots (8 screens × 6 themes), got $NPNG" >&2; exit 1; fi
-mkdir -p "$OUT/gallery"
-# WHY: the hand-captured idea-*.webp stills share this folder and the page shows them; a blanket
-# *.webp delete removed all four during the v1.3.3 release run (2026-10-23). Delete only the
-# generated <screen>-<theme> stills.
-find "$OUT/gallery" -maxdepth 1 \( -name '*.png' -o -name '*.webp' \) ! -name 'idea-*' -delete
-for f in "$TMP"/*/*.png; do
-  theme="$(basename "$(dirname "$f")")"; name="$(basename "$f" .png)"
-  magick "$f" -resize 1200x -quality 80 "$OUT/gallery/$name-$theme.webp"
-done
-du -sh "$OUT/media" "$OUT/gallery"
+# 3. gallery — NOT regenerated here, on purpose. The page's bottom strip is the ideas wall: four
+# pictures, docs/gallery/idea-*.webp. WHY (Destin, 2026-11-11, card #175): most of those pages are
+# one-off examples he made, not built-in app pages, and he does not want them remade on every
+# release as if they were app features. They change only when he asks, by hand
+# (site-idea-stills.sh still makes them on request). Nothing in docs/gallery is written or deleted.
+du -sh "$OUT/media"
 
 # 4. embed — vite build is independent of the dev server; empties docs/site (see step 2)
 (cd "$TDIR/desktop" && npm run build:site >/dev/null)
@@ -106,7 +87,7 @@ du -sh "$OUT/media" "$OUT/gallery"
 # made the live demo "pop in" over it). Exits non-zero, writing nothing, if any theme failed to paint.
 node "$HERE/embed-posters.mjs" "$OUT"
 if [[ "$OUT" == "$TDIR/docs" ]]; then
-  echo "site assets regenerated under $OUT — review $OUT/gallery and $OUT/media, then commit them"
+  echo "site assets regenerated under $OUT — review $OUT/media, then commit them"
 else
   echo "site assets regenerated under $OUT (a scratch override — nothing under $TDIR/docs was touched)"
 fi

@@ -13,6 +13,9 @@
 //                                                creates cards/<n>-<slug>.md with the next number; prints its path
 //   node scripts/cards.mjs close <id> --ref "<commit or PR>"
 //                                                stage → merged, and one line in docs/shipped.md
+//   node scripts/cards.mjs notice <pull request> --group new|fixes|behind --line "<what a user will notice>"
+//                                                written when a change lands; feeds the Work board's release list
+//                                                and changelog draft (release-lines.mjs). --nothing: nobody will see it
 //   node scripts/cards.mjs check                 every card parses, every stage is a known one, every
 //                                                "needs" names a card that exists; exit 1 otherwise
 //   node scripts/cards.mjs --root <dir> …        workspace root; defaults to the git checkout you are IN
@@ -410,6 +413,14 @@ async function main() {
     if (cmd === 'link') { await save(o, root, `cards: #${id} ← ${o.branch}`, (r) => linkWork(r, id, o.branch, o.line === true ? '' : o.line)); console.log(`#${id} linked to ${o.branch}`); return; }
     if (cmd === 'progress') { await save(o, root, `cards: #${id} progress`, (r) => setProgress(r, id, o)); console.log(`#${id} progress written`); return; }
     if (cmd === 'pause') { await save(o, root, `cards: #${id} ${o.reason ? 'paused' : 'unpaused'}`, (r) => setPaused(r, id, o.reason === true ? '' : o.reason)); console.log(`#${id} ${o.reason ? 'paused' : 'unpaused'}`); return; }
+    // WHY here (Destin, 2026-11-14, "option a"): the line a user would notice is written when the work lands, by the
+    // chat that did it, and saved straight to master like every other item change. Details: release-lines.mjs.
+    if (cmd === 'notice') {
+      const { setLines } = await import('./release-lines.mjs');
+      const lines = [o.line, o.line2, o.line3].filter((l) => typeof l === 'string');
+      const r = await save(o, root, `cards: what users will notice for ${id}`, (dir) => setLines(dir, id, o.nothing ? 'behind' : o.group, lines, { nothing: !!o.nothing }));
+      console.log(`${r.change} (${r.group}):\n${r.lines.map((l) => '  ' + l).join('\n')}`); return;
+    }
     if (cmd === 'stage') { await save(o, root, `cards: ${o.ids} → ${o.to}`, (r) => setStage(r, String(o.ids).split(','), o.to)); console.log(`moved ${o.ids} to ${o.to}`); return; }
   } catch (e) { console.error(`cards: ${e.message}`); process.exit(1); }
   console.error([
@@ -420,6 +431,8 @@ async function main() {
     '  pause <id> --reason "<why>"   (pause <id> with no --reason unpauses)',
     '  stage --ids 3,7 --to explore|planning|build|polish',
     '  close <id> --ref "<commit or PR>"',
+    '  notice <pull request, e.g. 725> --group new|fixes|behind --line "<what a user will notice>" [--line2 "…"] [--line3 "…"]',
+    '  notice <pull request> --nothing        (a change nobody will see)',
   ].join('\n'));
   process.exit(2);
 }

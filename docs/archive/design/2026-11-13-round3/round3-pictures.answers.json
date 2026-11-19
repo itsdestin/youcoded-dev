@@ -1,0 +1,89 @@
+{
+ "deck": "round-three-pictures",
+ "started": "2026-11-14T06:22:53.560Z",
+ "submitted": "2026-11-14T06:31:01Z",
+ "cur": 10,
+ "answers": {
+  "R3-1": {
+   "v": "yes",
+   "t": 1794637393418,
+   "seconds": 20,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  },
+  "R3-2": {
+   "v": "yes",
+   "t": 1794637408934,
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-3": {
+   "v": "yes",
+   "t": 1794637419761,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-4": {
+   "v": "yes",
+   "t": 1794637439143,
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-5": {
+   "v": "yes",
+   "t": 1794637547878,
+   "seconds": 109,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-6": {
+   "v": "yes",
+   "t": 1794637557243,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-6b": {
+   "v": "yes",
+   "t": 1794637688343,
+   "note": "i think with big notices like this, it would be a better use of space to put the button under the text on the bottom right. i also think this particular notice/button action are super confusing",
+   "seconds": 131,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-6c": {
+   "v": "yes",
+   "t": 1794637707813,
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-7": {
+   "v": "yes",
+   "t": 1794637755654,
+   "seconds": 48,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-8": {
+   "v": "pick",
+   "pick": "a",
+   "t": 1794637815386,
+   "note": "the latter part is self explanatory",
+   "seconds": 60,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-9": {
+   "v": "pick",
+   "pick": "strip",
+   "t": 1794637858628,
+   "seconds": 43,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

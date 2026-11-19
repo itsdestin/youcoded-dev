@@ -64,12 +64,21 @@ const ACT={
   'Start another chat on this card':id=>ACT['Start a chat on this'](id),
   'Resume latest chat':async id=>{const c=chatsOf(id)[0];if(!c){toast('No chat for this item was found on this computer.');return}const r=await Y.chats.resume(c.id);if(!r.ok)toast(r.reason)},
   'Go to chat':async id=>{const c=chatsOf(id).find(x=>x.open)||chatsOf(id)[0];if(!c){toast('No open chat for this item was found.');return}const r=await Y.chats.resume(c.id);if(!r.ok)toast(r.reason)},
+  // WHY (found 2026-11-11 auditing every button): each chat in an item's "View chats" list has its own "Resume chat" button and nothing handled
+  // it, so inside YouCoded it only showed "Not built yet". It reopens THAT chat (matched by the branch name shown on its row).
+  'Resume chat':async(id,b)=>{const name=((b&&b.closest('.tl')&&b.closest('.tl').querySelector('.rt'))||{}).textContent;const c=chatsOf(id).find(x=>x.branch===(name||'').trim());
+    if(!c){toast('That conversation was not found on this computer. Only its branch name is recorded on the item.');return}const r=await Y.chats.resume(c.id);if(!r.ok)toast(r.reason)},
   'Fix failing checks':id=>start(`${brief(id)}\nBranches: ${branchesOf(id).join(', ')}\n\nIts checks fail. Find the failing checks on its pull requests, fix them on its branch, and push.`),
   'Merge to master':id=>start(`${brief(id)}\nBranches: ${branchesOf(id).join(', ')}\n\nMerge this item to master: merge and push each of its branches, run the close-out, archive its lifecycle docs, close the item (node scripts/cards.mjs close ${id} --ref "<merge commit>"), and clean up its copies and branches.`),
   'Open review deck':id=>start(`${brief(id)}\n\nServe this item's review deck so I can answer it.`),
   'Unpause':async id=>{try{boardDone((await run({op:'pause',id,reason:''})).message)}catch(e){toast(e.message)}},
   'Pause…':id=>pauseDlg(id),
   'Close…':id=>start(`${brief(id)}\nBranches: ${branchesOf(id).join(', ')}\n\nClose this item without merging: back up any unsaved changes, close its pull requests, remove its copies on this computer, and take it off the list. Its branches stay on GitHub.`),
+};
+const FREE={
+  'Ask the assistant about it':()=>start(`I am looking at the "${DCUR}" screen of YouCoded in the Work board's Screens tab. Find where its code lives (start at docs/MAP.md; the screen names are listed by node scripts/shoot/shoot.mjs --list), then tell me in plain words what it does and anything about it that looks wrong.`),
+  'Start a session on this':()=>{const n=(typeof vCur!=='undefined'&&typeof VN!=='undefined'&&VN[vCur])||null;if(!n){toast('Open a part of the big picture first.');return}
+    return start(`Big picture part: ${n.title} (${n.id}). Status on the board: ${n.status}.${n.why?'\nWhy: '+String(n.why).replace(/<[^>]*>/g,''):''}\n\nStart work on this. First check whether a work item already covers it (node scripts/cards.mjs index); if one does, work on that item, otherwise propose how to file it.`)}
 };
 function pauseDlg(id){openPanel('','Pause #'+id,`<p class="t-xs dim" style="margin:0">Paused items keep everything; only the marker changes. Say why, so it is clear later.</p><input class="field" id="preason" style="width:100%" placeholder="Why it is paused" data-tip="Shown on the item while it is paused."><div class="lerr" id="lerr" hidden></div>`,
   `<button class="btn" id="lcancel" data-tip="Closes this without changing anything.">Cancel</button><button class="btn primary" id="lgo" data-tip="Marks it paused with your reason and saves.">Pause</button>`);
@@ -78,8 +87,11 @@ function pauseDlg(id){openPanel('','Pause #'+id,`<p class="t-xs dim" style="marg
 document.addEventListener('click',e=>{const tp=e.target.closest('[data-tidy-prompt]');if(tp){e.preventDefault();e.stopImmediatePropagation();start(tp.dataset.tidyPrompt).catch(err=>toast(err.message));return}
   const b=e.target.closest('button,[role=menuitem]');if(!b)return;
   // WHY the first span for a menu item: its effect is written under its name (today_tab.menu)
-  const label=(b.getAttribute('role')==='menuitem'&&b.querySelector('span')||b).textContent.trim();const fn=ACT[label];
-  if(!fn)return;const id=item(b);if(id==null||!C[id])return;e.preventDefault();e.stopImmediatePropagation();Promise.resolve(fn(id)).catch(err=>toast(err.message))},true);
+  const label=(b.getAttribute('role')==='menuitem'&&b.querySelector('span')||b).textContent.trim();
+  // WHY (2026-11-11): these two popup buttons belong to a screen or a Big picture part, not a work item, so they were never reached by ACT below
+  const fr=FREE[label];if(fr){e.preventDefault();e.stopImmediatePropagation();Promise.resolve(fr()).catch(err=>toast(err.message));return}
+  const fn=ACT[label];
+  if(!fn)return;const id=item(b);if(id==null||!C[id])return;e.preventDefault();e.stopImmediatePropagation();Promise.resolve(fn(id,b)).catch(err=>toast(err.message))},true);
 })();
 '''
 

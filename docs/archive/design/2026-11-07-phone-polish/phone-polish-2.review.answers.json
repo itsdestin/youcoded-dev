@@ -1,0 +1,32 @@
+{
+ "deck": "phone-polish-2-review",
+ "started": "2026-11-08T00:13:32.330Z",
+ "submitted": "2026-11-08T00:16:39Z",
+ "cur": 2,
+ "answers": {
+  "P2-1": {
+   "note": "no i still dont like. i liked the original in halftone much more with a transparent/blurred background. we should keep that styling in all themes inlcuding halftone/meadow mist, but just figure out how to tint it so the text is readable.",
+   "t": 1794096887179,
+   "v": "other",
+   "seconds": 75,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "P2-2": {
+   "v": "yes",
+   "t": 1794096913774,
+   "note": "we should probably keep at least the \"start your first session\" text",
+   "seconds": 27,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "P2-3": {
+   "note": "filter menus like this should never be fully transparent on any theme. this should have some sort of glassmorhpism effect applied. it already looks right in my built app with the same theme (halftone), so idk why the glass effect is missing here?",
+   "t": 1794096998536,
+   "v": "other",
+   "seconds": 85,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

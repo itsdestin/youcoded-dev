@@ -1,0 +1,99 @@
+{
+  "title": "Phone terminal keys — restyled",
+  "key": "terminal-keys-review",
+  "out": "terminal-keys.review.html",
+  "images": "images/terminal-keys.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "steps": [
+    {
+      "id": "TK-1",
+      "surface": "Terminal view on a phone",
+      "path": "The row of keys above the message box",
+      "crop": "chat/terminal#phone",
+      "headline": "The terminal keys now look like the app's other buttons, with real arrow icons.",
+      "changed": "Each key is the app's shared button: the theme's own corner shape and colours, the same press shade as every other button. The left and right arrows are proper arrow icons instead of tiny text arrows. Keys sit a little closer together so the whole row fits on a phone in every theme.",
+      "measured": "7 keys, 32 px tall, 4 px apart; Halftone's wide letters cut the last key off before and fit now",
+      "notice": "On Halftone the keys are round pills like its other buttons; on Meadow Mist they match its rounded chips. When Ctrl is switched on it fills with the theme colour.",
+      "risk": "The keys are 2 px narrower each, so a very wide theme font could still push the last key past the edge; the row then scrolls sideways as before."
+    },
+    {
+      "id": "TK-2",
+      "surface": "Terminal view on a phone",
+      "path": "The up and down arrows on the right, above the keys (standard frame style)",
+      "crop": "chat/terminal#phone",
+      "headline": "The up and down arrows are one card with clear arrow icons, kept inside the frame.",
+      "changed": "The two separate squares became one card holding both keys, with a line between them and bigger arrow icons. Each key keeps its 40 px size for easy tapping.",
+      "measured": "40 × 40 px each, as before; now 17 px from the screen edge instead of 8 px, clear of the frame's border",
+      "notice": "In the standard frame style the arrows no longer sit on the terminal's border line.",
+      "risk": "The card has no shadow, so on a busy wallpaper it relies on its border to stand out."
+    },
+    {
+      "id": "TK-3",
+      "surface": "Terminal view on a phone",
+      "path": "The up and down arrows, floating frame style",
+      "crop": "chat/terminal#phone-floating",
+      "headline": "In the floating style the arrows now line up above the send button too.",
+      "changed": "They used to sit a fixed distance from the screen edge, whatever the frame style. Now they measure where the message box is and sit right above its send button, so each style, and any theme that moves the box, keeps them the same comfortable distance in.",
+      "notice": "The arrows' right edge lines up with the send button below them in all three styles.",
+      "risk": "If the message box is ever missing from the screen, the arrows fall back to the old spot 8 px from the edge."
+    },
+    {
+      "id": "TK-5",
+      "surface": "Terminal view on a phone",
+      "path": "The up and down arrows, float frame style",
+      "crop": "chat/terminal#phone-float",
+      "headline": "In the float style the arrows also line up above the send button.",
+      "changed": "They used to sit a fixed distance from the screen edge, whatever the frame style. Now they measure where the message box is and sit right above its send button, so each style, and any theme that moves the box, keeps them the same comfortable distance in.",
+      "notice": "The arrows' right edge lines up with the send button below them in all three styles.",
+      "risk": "If the message box is ever missing from the screen, the arrows fall back to the old spot 8 px from the edge."
+    },
+    {
+      "id": "TK-4",
+      "words": true,
+      "surface": "Terminal view on a phone",
+      "path": "The Ctrl key at the start of the row",
+      "headline": "Should the Ctrl key actually work?",
+      "today": "Tapping Ctrl lights it up, but it does nothing: the next key you type is sent exactly as if Ctrl were off. It has been like this since the key row was made.",
+      "problem": "A key that lights up and then does nothing looks broken. Ctrl+C (stop what is running) and Ctrl+D are the common reasons to want it in a terminal.",
+      "proposal": "Make it a real one-shot Ctrl, like a phone terminal app: tap Ctrl, then tap a letter on your keyboard, and that letter is sent as Ctrl+letter; Ctrl then switches itself off.",
+      "options": [
+        {
+          "label": "Make Ctrl work for the next letter",
+          "recommended": true,
+          "pros": [
+            "Ctrl+C and the other shortcuts become possible on a phone",
+            "the key stops looking broken."
+          ],
+          "cons": [
+            "A tap on Ctrl by accident changes the next letter you type in the terminal until it switches off."
+          ],
+          "id": "work"
+        },
+        {
+          "label": "Remove the Ctrl key",
+          "pros": [
+            "One fewer key, more room in the row",
+            "nothing that looks broken."
+          ],
+          "cons": [
+            "No way to send Ctrl shortcuts from a phone at all."
+          ],
+          "id": "remove"
+        },
+        {
+          "label": "Leave it as it is",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "It keeps lighting up and doing nothing."
+          ],
+          "id": "leave"
+        }
+      ]
+    }
+  ]
+}

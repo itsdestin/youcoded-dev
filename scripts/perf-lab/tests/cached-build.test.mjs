@@ -1,17 +1,17 @@
 // No git repo/commits, build commands, package execution or asset provisioning.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync, realpathSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync, symlinkSync, realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildApp } from '../build.mjs';
+import { buildApp, KIT_BUILDER_ARGS } from '../build.mjs';
 
 function cached() {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'cached-lab-'))), release = join(root, 'desktop/release');
   const appDir = join(release, 'linux-unpacked'), binary = join(appDir, 'youcoded'), stamp = join(release, '.perf-lab-build.json');
   mkdirSync(appDir, { recursive: true }); writeFileSync(binary, 'unit executable bytes');
   const fp = { sha: 'a'.repeat(40), dirty: 'b'.repeat(12), branch: 'unit' };
-  writeFileSync(stamp, JSON.stringify({ ...fp, builtAt: '2026-10-20T00:00:00.000Z', buildMs: 20 }));
+  writeFileSync(stamp, JSON.stringify({ ...fp, kitInspect: true, builtAt: '2026-10-20T00:00:00.000Z', buildMs: 20 }));
   const effects = [];
   const deps = { fingerprint: async checkout => { assert.equal(checkout, root); effects.push('fingerprint'); return fp; },
     exec: async () => { effects.push('BUILD'); throw Error('build command must never execute'); } };
@@ -54,6 +54,32 @@ test('build-command guard is wired to real fallback path while default fresh-cac
     rmSync(c.stamp);
     await assert.rejects(buildApp(c.root, { _deps: c.deps, checkSpace: () => c.effects.push('SPACE') }), /build command must never execute/);
     assert.deepEqual(c.effects, ['fingerprint', 'fingerprint', 'SPACE', 'BUILD']);
+  } finally { c.close(); }
+});
+
+// The kit's own package turns the main-process debugger back on (suspects.mjs --main-inspect needs it) through a
+// one-invocation electron-builder override; the shipped electron-builder.yml keeps it off.
+test('a kit build overrides only the inspect switch on the electron-builder command line', async () => {
+  const c = cached();
+  try {
+    rmSync(c.stamp);
+    const calls = [];
+    c.deps.exec = async (cmd, args, _cwd, step) => { calls.push({ cmd, args, step }); if (step === 'electron-builder') throw Error('stop after builder'); return ''; };
+    await assert.rejects(buildApp(c.root, { _deps: c.deps, checkSpace: () => {} }), /stop after builder/);
+    const builder = calls.find(x => x.step === 'electron-builder');
+    assert.deepEqual(builder.args, ['electron-builder', '--linux', 'dir', '-c.electronFuses.enableNodeCliInspectArguments=true']);
+    assert.deepEqual([...KIT_BUILDER_ARGS], builder.args.slice(1));
+  } finally { c.close(); }
+});
+
+test('a cached package built without the inspect override is rebuilt, not reused', async () => {
+  const c = cached();
+  try {
+    const { kitInspect, ...older } = JSON.parse(readFileSync(c.stamp, 'utf8'));
+    assert.equal(kitInspect, true);
+    writeFileSync(c.stamp, JSON.stringify(older));
+    await assert.rejects(buildApp(c.root, { _deps: c.deps, checkSpace: () => c.effects.push('SPACE') }), /build command must never execute/);
+    assert.deepEqual(c.effects, ['fingerprint', 'SPACE', 'BUILD']);
   } finally { c.close(); }
 });
 

@@ -1,0 +1,53 @@
+{
+ "deck": "office-home-conveniences-review-1",
+ "started": "2026-11-14T09:32:52.855Z",
+ "submitted": "2026-11-14T09:37:36Z",
+ "cur": 5,
+ "answers": {
+  "R-1": {
+   "note": "search should be to the right of the open a file button. i think we should replace \"open a file\" with \"Browse Files\" and a folder icon",
+   "t": 1794648896810,
+   "v": "yes",
+   "seconds": 124,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "note": "i think these buttons should be fully right aligned and replace the changed/opended x days/hours ago text while on hover. nice/polished fade in/out animation too please. i think the rename should be more like session renaming in the session switcher/resume browser",
+   "t": 1794648978831,
+   "v": "other",
+   "seconds": 82,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "t": 1794648993102,
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-4": {
+   "note": "don't love that text input area. feels very out of place",
+   "t": 1794649011175,
+   "v": "other",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-5": {
+   "v": "yes",
+   "t": 1794649025951,
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-6": {
+   "v": "yes",
+   "t": 1794649055247,
+   "seconds": 29,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,100 @@
+{
+ "deck": "phone-final-review-2",
+ "started": "2026-11-10T02:28:38.110Z",
+ "submitted": "2026-11-10T02:39:17Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794277766994,
+   "seconds": 16,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794277766994,
+   "note": "",
+   "seconds": 16,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "other",
+   "t": 1794277766994,
+   "note": "can you explain this further in laymans terms? i'm still a bit confused about what we're doing, what the costs are, pros/cons, etc",
+   "seconds": 16,
+   "theme": "midnight"
+  },
+  "F-1": {
+   "v": "pick",
+   "pick": "fix-traps-here",
+   "t": 1794277994813,
+   "note": "unsure. have an agent review this in the context of the other session. if it seems like it will be dealt with or obsoleted by the other session, skip. if it's unrelated and can be done here without conflict or contradiction, do it.",
+   "seconds": 76,
+   "theme": "midnight"
+  },
+  "F-2": {
+   "v": "pick",
+   "pick": "all-three",
+   "t": 1794277994813,
+   "note": "to be clear, i only ever want to switch to terminal as an absolute last resort if the other native menus wouldn't work. if the native menu works, we should use it, and we should make sure it's flexible and works in the most situations it can without being fragile or risking other breakage or issues",
+   "seconds": 76,
+   "theme": "midnight"
+  },
+  "F-3": {
+   "v": "pick",
+   "pick": "limit-life-signin",
+   "t": 1794277994813,
+   "seconds": 76,
+   "theme": "midnight"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794278310492,
+   "seconds": 79,
+   "theme": "midnight"
+  },
+  "F-4": {
+   "v": "pick",
+   "t": 1794278310492,
+   "note": "",
+   "pick": "touch-and-narrow",
+   "seconds": 79,
+   "theme": "midnight"
+  },
+  "F-5": {
+   "note": "confused about what we're asking here. how does the terminal layout differ across various categories ",
+   "t": 1794278310492,
+   "v": "other",
+   "seconds": 79,
+   "theme": "midnight"
+  },
+  "F-6": {
+   "v": "other",
+   "t": 1794278310492,
+   "note": "can you investigate the history of this? why is this built this way? any regressions we might introduce if we follow your recommendation?",
+   "seconds": 79,
+   "theme": "midnight"
+  },
+  "F-7": {
+   "v": "pick",
+   "pick": "always-auto",
+   "t": 1794278356475,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "F-8": {
+   "v": "pick",
+   "pick": "no-switch",
+   "t": 1794278356475,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "F-9": {
+   "v": "pick",
+   "pick": "claude-tests",
+   "t": 1794278356475,
+   "seconds": 15,
+   "theme": "midnight"
+  }
+ }
+}

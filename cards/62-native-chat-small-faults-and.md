@@ -12,14 +12,16 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.converse.native, chat.converse.queue
-work: session/fix-anthropic-many-image-brick
+work: session/fix-anthropic-many-image-brick, session/chat-followups, session/62-queue-edit-choice
 ---
 Progress
-Done: The "Try again" button on a failed reply shipped on 2026-10-21 (app PR #670, dev PR #293), along with stuck-conversation fixes, per-provider length caps and recovery for cut-off replies. Queued-message editing appears fixed in code (attachments carried over, queue visible after reload) but still needs a real re-test.
-Next: Still to check or fix: (a) ChatGPT card refresh after a plan upgrade; (b) thinking bubble flicker on slow streams; (d) the Replace/Append choice (the silent overwrite is blocked, but the choice was never built); (f) cut-off summary wording; (g) exact request kept for resume; (h) pasted paths eaten as commands (deprioritized Aug 10).
-Blocked: nothing recorded.
+Done: Deck 2026-11-19 queue-edit-choice: Destin said no - the refusal is fine, Replace/Append is overcomplicated. Branch session/62-queue-edit-choice not to be merged
+Next: Delete the branch once he OKs it
+Blocked: Nothing
 
 Chats
+- 2026-11-18 session/62-queue-edit-choice: chat started
+- 2026-11-12 session/chat-followups: chat started
 - 2026-10-21 session/fix-anthropic-many-image-brick: Stuck conversations after provider errors, cut-off replies, the new error card
 
 From the old roadmap (native-harness › sessions, status confirmed, seen on desktop, last checked 2026-08-10)

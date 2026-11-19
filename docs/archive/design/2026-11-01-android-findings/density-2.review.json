@@ -1,0 +1,43 @@
+{
+  "title": "Phone screens, round 2 — Backup & sync folded, smarter message times",
+  "key": "android-density-review-2",
+  "out": "density-2.review.html",
+  "images": "images/density-2-review",
+  "runs": { "before": "runs-density-2/before", "after": "runs-density-2/after" },
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "E-1",
+      "surface": "Backup & sync",
+      "path": "Settings → Backup & sync, on a phone",
+      "crop": "settings/sync",
+      "headline": "On a phone, Additional backups is one row, so Backup & sync fits on one screen.",
+      "changed": "Your D-4 answer. The row names where the extra copy goes and how it is doing (\"Google Drive, backed up 5m ago\"), or \"Off\". If an extra copy has a problem, the row says \"Problem with Google Drive\" and opens by itself.",
+      "measured": "Backup & sync about 140 px shorter on a 390 px phone",
+      "notice": "Main backup and History are visible without scrolling.",
+      "risk": "Pausing the extra copy or adding a destination takes one more tap. The computer is unchanged."
+    },
+    {
+      "id": "E-2",
+      "surface": "Backup & sync",
+      "path": "Settings → Backup & sync → tap Additional backups, on a phone",
+      "crop": "settings/sync#phone-additional-open@panel",
+      "runs": ["after"],
+      "labels": { "after": "Opened" },
+      "headline": "Tapping the row opens everything the section shows today, inside the same box.",
+      "changed": "The same switch, destinations, Add a backup and Back up all now, in the fold-out box style used elsewhere in settings.",
+      "notice": "Tap the row again to fold it.",
+      "risk": "The switch sits one line lower than the row's title, inside the opened box."
+    },
+    {
+      "id": "E-3",
+      "surface": "Chat",
+      "path": "Any conversation, on a phone (with message times turned on in Appearance)",
+      "crop": "chat#phone",
+      "headline": "On a phone, only the times that tell you something are shown; tap any message to see its time.",
+      "changed": "Your D-5 idea. A message keeps its time when it is the newest one, or the first after a pause of 30 minutes or more, or the first on a new day. Every other time is hidden until you tap that message; tap again to hide it. Taps on links and buttons inside a message work as before.",
+      "notice": "In the picture only the first and newest messages keep their time, since the rest were sent minutes apart. In a conversation you come back to, the first message of each sitting shows when you came back.",
+      "risk": "Tapping a message to see its time is not obvious; nothing on screen hints at it. Tapping text you meant to select does nothing new. The computer still shows every time. Tap behaviour is not in these pictures; you can try it on the phone once I install it."
+    }
+  ]
+}

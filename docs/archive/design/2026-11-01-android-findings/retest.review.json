@@ -1,0 +1,104 @@
+{
+  "title": "Phone retest — eight more fixes found on your Flip",
+  "key": "android-retest-review",
+  "out": "retest.review.html",
+  "images": "images/retest-review",
+  "runs": { "before": "r/before", "after": "r/after" },
+  "themes": ["light"],
+  "theme": "fixed",
+  "crops": {
+    "games": ["phone", "games", "540x1205+0+0"],
+    "devices": ["phone", "devices", "540x1205+0+0"],
+    "pages": ["phone", "pages", "540x1205+0+0"],
+    "trust": ["phone", "trust", "540x1205+0+0"],
+    "mode": ["phone", "mode", "540x1205+0+0"],
+    "newform": ["phone", "newform", "540x1205+0+0"],
+    "terminal": ["phone", "terminal", "540x1205+0+0"],
+    "addproject": ["phone", "addproject", "540x1205+0+0"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Games",
+      "path": "☰ menu → Games, on the phone",
+      "crop": "games",
+      "headline": "Games on the phone now says Online straight away instead of hanging on Connecting… forever.",
+      "changed": "The phone's screen wrongly treated itself as a second window of the app, and a second window switches its own online connection off. It now knows a phone has no second windows.",
+      "measured": "Online within 1 second of opening Games (was: never)",
+      "notice": "Friends see you online from the phone, and Connect 4 / Chess show who you can play.",
+      "risk": "None seen. Matches still need the game rooms merged into your server before they can start."
+    },
+    {
+      "id": "R-2",
+      "surface": "Backup & sync",
+      "path": "Settings → Backup & sync → Devices",
+      "crop": "devices",
+      "headline": "Your phone is listed by its own name as Android, not as \"localhost · Linux\".",
+      "changed": "The phone's assistant runs on a small built-in Linux whose name is always \"localhost\". The app now hands it the phone's own name (the one in your phone's settings) and marks it Android. The old \"localhost\" entry was renamed by itself, not duplicated.",
+      "notice": "\"Destin's Z Flip7 (this device) · Android\" in the list. On a phone each name gets its own line, so long names are no longer cut to \"Des…\".",
+      "risk": "If you ever renamed a device by hand, that name is kept; only an untouched \"localhost\" is replaced."
+    },
+    {
+      "id": "R-3",
+      "surface": "Pages",
+      "path": "☰ menu → Pages → tap a page",
+      "crop": "pages",
+      "headline": "On a phone, the page-list button moved into the top bar, so it no longer sits on top of the page.",
+      "changed": "The list ↔ page switch now sits next to Back to chat. A thin leftover line from the hidden list along the left edge is gone too.",
+      "notice": "The page's own content starts cleanly at the top left; tap the switch in the top bar to go back to the list.",
+      "risk": "The switch is a small icon; it shows only when a page is open."
+    },
+    {
+      "id": "R-4",
+      "surface": "Chat",
+      "path": "New session in a folder Claude Code has not been told to trust yet",
+      "crop": "trust",
+      "headline": "The Trust this folder card keeps Claude Code's own line breaks, and the folder path no longer runs off the card.",
+      "changed": "The card used to join every line into one paragraph. On a phone Claude Code draws no blank lines, so the app now also starts a new line where a sentence ends, and keeps the path on its own line. The bottom label also says \"Sync off\" instead of \"Sync failing\" when sync was simply never turned on.",
+      "notice": "Easier to read before tapping Yes. The same line-break rule applies to every Claude Code prompt card.",
+      "risk": "A wrapped line that happens to start with a capital after a full stop may start a new line where Claude Code did not."
+    },
+    {
+      "id": "R-5",
+      "surface": "Chat",
+      "path": "The mode label in the bottom row, right after a new Claude Code session starts",
+      "crop": "mode",
+      "headline": "The mode label shows AUTO from the start, instead of NORMAL until Claude's first reply.",
+      "changed": "On the phone Claude Code draws \"auto mode on\" with cursor jumps instead of spaces, so the app never recognised it. It now reads those jumps as spaces. Answered cards also lose the stray colon (\"Trust This Folder?\" not \"Trust This Folder?:\").",
+      "measured": "AUTO within 12 seconds of starting (was: NORMAL until the first reply)",
+      "notice": "The label matches what Claude is really doing as soon as the session opens.",
+      "risk": "None seen; desktop already read it correctly and is unchanged."
+    },
+    {
+      "id": "R-6",
+      "surface": "Session list",
+      "path": "Session name at the top → New session",
+      "crop": "newform",
+      "headline": "The phone's new-session form no longer offers \"Launch in new window\", which a phone cannot do.",
+      "changed": "Same cause as the games bug: the form thought the phone could open windows.",
+      "notice": "One less switch that did nothing.",
+      "risk": ""
+    },
+    {
+      "id": "R-7",
+      "surface": "Terminal view",
+      "path": "The terminal button at the top right of a Claude Code chat",
+      "crop": "terminal",
+      "headline": "Terminal text no longer has its first letter cut off by the frame's left edge on a phone.",
+      "changed": "A little space on the left of the terminal, on phone-width screens only.",
+      "measured": "12 px of space; desktop unchanged",
+      "notice": "Claude's \"❯\" prompt and the first letter of each line are fully visible.",
+      "risk": "One fewer character fits on each terminal line on a phone. The yellow \"cross-session messaging\" warning is Claude Code's own and only appears in terminal view."
+    },
+    {
+      "id": "R-8",
+      "surface": "Projects",
+      "path": "Projects → project name → Add a project",
+      "crop": "addproject",
+      "headline": "\"Use a folder already on this computer\" now says \"this phone\" on a phone.",
+      "changed": "Two more spots of \"computer\" wording fixed (this card, and removing an API key). The project search also no longer pops the keyboard up by itself on touch screens.",
+      "notice": "Wording matches the device you are holding.",
+      "risk": ""
+    }
+  ]
+}

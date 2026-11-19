@@ -298,6 +298,57 @@ test('guard: the explicit override lets a deliberate commit through', () => {
   rmSync(p.root, { recursive: true, force: true });
 });
 
+// Card #19 (g): conflict markers must be refused in EVERY commit path. The hook used to exit 0
+// early for linked worktrees and for the override, which is where all session commits happen.
+const MARK = '<'.repeat(7);   // built in code so this file itself has no marker at column 0
+const MARK_END = '>'.repeat(7);
+function commitWith(cwd, content, env = {}) {
+  writeFileSync(join(cwd, 'a.txt'), content);
+  return tryCommit(cwd, env);
+}
+test('guard: conflict markers are refused in a linked WORKTREE commit', () => {
+  const p = makePair();
+  installHook(p.local);
+  const wt = join(p.root, 'wt');
+  git(p.local, 'worktree', 'add', '-q', wt, '-b', 'feature');
+  const r = commitWith(wt, `ok\n${MARK} HEAD\nmine\n=======\ntheirs\n${MARK_END} other\n`);
+  assert.notEqual(r.code, 0, 'a worktree commit with markers must fail');
+  assert.match(r.out, /merge-conflict markers/);
+  assert.match(r.out, /a\.txt/);
+  rmSync(p.root, { recursive: true, force: true });
+});
+test('guard: conflict markers are refused even with YOUCODED_ALLOW_MAIN_COMMIT', () => {
+  const p = makePair();
+  installHook(p.local);
+  const r = commitWith(p.local, `${MARK} HEAD\nx\n${MARK_END} o\n`, { YOUCODED_ALLOW_MAIN_COMMIT: '1' });
+  assert.notEqual(r.code, 0);
+  assert.match(r.out, /merge-conflict markers/);
+  rmSync(p.root, { recursive: true, force: true });
+});
+test('guard: conflict markers are refused even when an external diff driver is configured', () => {
+  const p = makePair();
+  installHook(p.local);
+  // /bin/true prints nothing, as a driver that hides the patch would; without --no-ext-diff the hook sees no markers.
+  const r = commitWith(p.local, `${MARK} HEAD\nx\n${MARK_END} o\n`, { YOUCODED_ALLOW_MAIN_COMMIT: '1', GIT_EXTERNAL_DIFF: '/bin/true' });
+  assert.notEqual(r.code, 0);
+  assert.match(r.out, /merge-conflict markers/);
+  rmSync(p.root, { recursive: true, force: true });
+});
+test('guard: a markdown "=======" underline is not a conflict marker', () => {
+  const p = makePair();
+  installHook(p.local);
+  const r = commitWith(p.local, 'Title\n=======\ntext\n', { YOUCODED_ALLOW_MAIN_COMMIT: '1' });
+  assert.equal(r.code, 0, r.out);
+  rmSync(p.root, { recursive: true, force: true });
+});
+test('guard: YOUCODED_ALLOW_CONFLICT_MARKERS lets one deliberate marker commit through', () => {
+  const p = makePair();
+  installHook(p.local);
+  const r = commitWith(p.local, `${MARK} HEAD\n`, { YOUCODED_ALLOW_MAIN_COMMIT: '1', YOUCODED_ALLOW_CONFLICT_MARKERS: '1' });
+  assert.equal(r.code, 0, r.out);
+  rmSync(p.root, { recursive: true, force: true });
+});
+
 // Historical matches remain local proposals. These regressions ensure the
 // compatibility entry point reports them instead of reviving destructive cleanup.
 

@@ -1,0 +1,113 @@
+{
+ "deck": "local-models-review-questions",
+ "started": "2026-11-10T03:38:08.396Z",
+ "submitted": "2026-11-10T03:50:43Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794281914682,
+   "seconds": 13,
+   "theme": "halftone-dimension"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794281914682,
+   "seconds": 13,
+   "theme": "halftone-dimension"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "always",
+   "t": 1794282241643,
+   "note": "this would only happen when a user explicitly chooses to start with a local model, i imagine? in which case its extremely unlikely they don't intend to actually start the chat. so we should always prep the model",
+   "seconds": 65,
+   "theme": "halftone-dimension"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794282241643,
+   "note": "we should increase the default to 64k or something. i think we already make this all fully configurable, so a user could change it if they want. we can include a separate follow up later on to make the default smarter per-device",
+   "seconds": 65,
+   "theme": "halftone-dimension"
+  },
+  "Q-3": {
+   "v": "other",
+   "dk": true,
+   "t": 1794282241643,
+   "note": "kinda confused about the benefits/costs of this whole thing. how do other harnesses and such handle this?",
+   "seconds": 65,
+   "theme": "halftone-dimension"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1794282241643,
+   "note": "my pc has a 4070 and can dual boot windows/cachyos. we should do more testing wherever you think it might actually be useful",
+   "seconds": 65,
+   "theme": "halftone-dimension"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1794282241643,
+   "note": "this needs to be considered much further in much more detail. how do other harnesses manage this? alternative approaches with pros/cons? ",
+   "seconds": 65,
+   "theme": "halftone-dimension"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "leave",
+   "t": 1794282501228,
+   "seconds": 65,
+   "theme": "halftone-dimension"
+  },
+  "Q-7": {
+   "v": "other",
+   "dk": true,
+   "t": 1794282501228,
+   "note": "kinda confused about how/when this would actually happen. i think our first priority should be preventing this outcome in the first place, so a chat is always continuable/recoverable. but for the cases where its not, i think we need to explain better? cuz this state is currently just confusing.",
+   "seconds": 65,
+   "theme": "halftone-dimension"
+  },
+  "Q-8": {
+   "v": "other",
+   "dk": true,
+   "t": 1794282501228,
+   "seconds": 65,
+   "theme": "halftone-dimension"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "keep-25",
+   "t": 1794282501228,
+   "seconds": 65,
+   "theme": "halftone-dimension"
+  },
+  "Q-10": {
+   "v": "other",
+   "t": 1794282638282,
+   "note": "want to see how other cloud/local harnesses like hermes,opencode,pi etc work",
+   "seconds": 34,
+   "theme": "halftone-dimension"
+  },
+  "Q-11": {
+   "v": "yes",
+   "t": 1794282638282,
+   "seconds": 34,
+   "theme": "halftone-dimension"
+  },
+  "Q-12": {
+   "v": "other",
+   "t": 1794282638282,
+   "note": "lets make the refinements/improvements i suggested and do additional testing as needed",
+   "seconds": 34,
+   "theme": "halftone-dimension"
+  },
+  "Q-13": {
+   "v": "other",
+   "dk": true,
+   "t": 1794282638282,
+   "seconds": 34,
+   "theme": "halftone-dimension"
+  }
+ }
+}

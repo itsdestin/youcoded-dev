@@ -35,6 +35,7 @@ thin shell. **Full context: `youcoded/docs/android-runtime.md` — read before n
   environment lives in `RuntimeInstaller.environment()`.
 - **Bumping a pin is a phone test**, not a CI test: every pin in `pins.env` was run on a real phone.
 
-## Build-type parity (R8) — guard: `./gradlew :app:assembleReleaseTest` (CI: `android-ci.yml`)
-- **Release enables R8 minification; debug skips it.** `HostJsBridge`'s `@JavascriptInterface` method must keep its
-  name (AGP keeps annotated members; don't add string-based reflection). Run `assembleReleaseTest` before tagging.
+## Build-type parity (R8) — guard: `./gradlew :app:assembleDebug` (CI: `android-ci.yml`)
+- **Release and the Dev copy (`debug`) both run R8** with the same rules (debug stays debuggable; 2026-11-10). `HostJsBridge`'s
+  `@JavascriptInterface` method must keep its name (AGP keeps annotated members; don't add string-based reflection).
+  Run `assembleDebug` before tagging.

@@ -1,0 +1,72 @@
+{
+ "deck": "context-popup-tabs",
+ "started": "2026-11-12T08:57:34.494Z",
+ "submitted": "2026-11-12T09:10:08Z",
+ "cur": 7,
+ "answers": {
+  "T-1": {
+   "note": "i want \"Global Context\"  and \"Project Context",
+   "t": 1794473964676,
+   "v": "other",
+   "seconds": 110,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "T-2": {
+   "note": "drop \"so youcoded didnt shorten anything. replace with \"This chat is running on Claude Code, which utilizes its own settings and instructions. As such, this menu may not be 100% accurate, and your assistant may have different loaded with tools, instructions, or settings not listed here.\".",
+   "t": 1794474209248,
+   "v": "yes",
+   "seconds": 245,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "T-3": {
+   "note": "thats wayyyyyy too much copy and too many letters before we see any card styling. use the youcoded ui/design guide. i really hate bare text on the popup modal like that",
+   "t": 1794474266166,
+   "v": "other",
+   "seconds": 57,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "T-4": {
+   "v": "yes",
+   "t": 1794474327790,
+   "note": "but i think we can improve visually. build in tools should probably be a single collapsible row that defaults to listing all tools when expanded, instead of having the separate show all 7 button",
+   "seconds": 62,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "T-5": {
+   "note": "remove written by you, for every project. remove you, in every project and youcoded didnt shorten it. we should think of a better replacement for \"written by you, for every project\" that actually explains what gets pulled into/displayed in the section or just a statement that \"instructions injected before every chat with your assistant in every project\"",
+   "t": 1794474494033,
+   "v": "other",
+   "seconds": 166,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "T-6": {
+   "note": "need to fix these subheadings and such also. just too much text",
+   "t": 1794474531187,
+   "v": "other",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "one-list",
+   "t": 1794474548355,
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1794474607133,
+   "note": "i'm almost certain we already do this and you just didnt investigate thoroughly enough? at the very least there should already be a card for it? kinda confused",
+   "seconds": 59,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

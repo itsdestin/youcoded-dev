@@ -54,7 +54,7 @@ The workflow is **always**:
 4. Inspect/probe the dev window, not the live app.
 5. When the change ships, shut down the dev window per the existing "Pushing to master green-lights closing the dev server" rule.
 
-If `run-dev.sh` doesn't fit (e.g., testing a built artifact), use `assembleReleaseTest` for Android (installs as a side-by-side APK with `.releasetest` suffix, separate data) or build a fresh installer in a temp dir for desktop. Never test against the production install.
+If `run-dev.sh` doesn't fit (e.g., testing a built artifact), use the Android Dev copy (`assembleDebug`; installs side by side as `com.youcoded.app.dev` with its own data) or build a fresh installer in a temp dir for desktop. Never test against the production install.
 
 ## What to ask for
 

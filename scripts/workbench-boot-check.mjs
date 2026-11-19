@@ -81,6 +81,16 @@ const ROUTES = [
   // files). A standalone surface, so it needs its own route to be mount-checked.
   ['attachment chip mock-ups', '&child=1&view=attachments'],
   ['session status pills', '&child=1&view=session-pills'],
+  // WHY: the phone 'Can't reach your computer' strip mock-up (app PR #756) is a view like the others; the every-view-has-a-route guard
+  // (workbench-boot-check.test.mjs) failed on master until it was listed.
+  ['unreachable strip mock-ups', '&child=1&view=unreachable-strip'],
+  // The three buddy mock-ups (renderer/index.tsx `__view === 'buddy-*'`). WHY (card #18(i)):
+  // they were added to the app's view switch without a route here, so three of the eight
+  // `view=` surfaces had no boot guard. scripts/workbench-boot-check.test.mjs now fails if a
+  // `__view === '…'` value is ever missing from this list.
+  ['buddy group', '&child=1&view=buddy-group'],
+  ['buddy chat window', '&child=1&view=buddy-chat'],
+  ['buddy new-session screens', '&child=1&view=buddy-session'],
   // The parked-turn opt-in (toolbar "Stalled turn" toggle → ?stalled=1). It
   // replays the fixture's `{"type":"stalled"}` line, which is the ONLY way the
   // red "Provider may have stalled" card, its live count-up timer and its

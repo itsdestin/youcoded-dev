@@ -25,6 +25,40 @@
 # between clones. Source of truth: scripts/git-hooks/pre-commit.
 set -euo pipefail
 
+# Refuse to commit unresolved merge-conflict markers (card #19 g).
+#
+# WHY this runs FIRST: every early `exit 0` below (the main-checkout override and
+# the linked-worktree allowance) skips the rest of the hook, and ALL session work is
+# done in linked worktrees -- so a marker check placed after them would never run
+# for the commits it exists to catch.
+#
+# Only STAGED ADDED lines are inspected, and only the opening/closing markers
+# (7 '<' or '>' at column 0, then a space or end of line). A bare `=======` is
+# deliberately NOT matched: a 7-character markdown heading underline is legitimate,
+# and every real conflict also has the '<<<<<<<' and '>>>>>>>' lines anyway.
+# Narrow exemption for the rare file that must contain a marker (e.g. a test
+# fixture): build it in code ('<'.repeat(7)) so it is not at column 0, or commit
+# with YOUCODED_ALLOW_CONFLICT_MARKERS=1 for that one commit.
+if [ -z "${YOUCODED_ALLOW_CONFLICT_MARKERS:-}" ]; then
+    # WHY --no-ext-diff: a configured external diff driver (diff.external, GIT_EXTERNAL_DIFF) replaces the
+    # patch text this awk reads, so markers would slip through unseen.
+    marker_hits=$(git diff --cached -U0 --no-color --no-ext-diff --diff-filter=ACMR \
+        | awk '/^\+\+\+ /{f=substr($0,7);next} /^\+(<<<<<<<|>>>>>>>)( |$)/{print f": "substr($0,2)}' || true)
+    if [ -n "$marker_hits" ]; then
+        {
+            echo
+            echo "  ✗ Refusing to commit: unresolved merge-conflict markers in staged changes:"
+            echo
+            printf '%s\n' "$marker_hits" | sed 's/^/      /'
+            echo
+            echo "  Resolve the conflict, re-stage the file, and commit again."
+            echo "  (A deliberate marker, e.g. in a test fixture: YOUCODED_ALLOW_CONFLICT_MARKERS=1 git commit ...)"
+            echo
+        } >&2
+        exit 1
+    fi
+fi
+
 # An explicit, deliberate override -- not a mistake anyone makes by accident.
 # Owner-only skills that commit and push in the same breath use it on purpose:
 # a commit created and pushed together never strands the branch.

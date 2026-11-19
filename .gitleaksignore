@@ -7,3 +7,10 @@
 # WHY: the first version of this very file quoted one of those practice ids as an example in
 # its comment, so the scanner flagged the comment too. Same harmless id; the quote is gone.
 b35acfc46e3dd59ffe1863a39e359e6c2b46dbbd:.gitleaksignore:generic-api-key:2
+# Not a secret: an earlier version of a note quoted a model settings name from a test ('qwen35moe.expert_count').
+# Same false alarm as the app repo's exception. Destin OK'd it 2026-11-10 (wave-1 deck Q-19).
+0dbaf88f713232ddf82669726b31e320030f58db:docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md:generic-api-key:28
+# Not a secret: the review deck's own name ('claude-sign-in-expiry-questions-2', its "key" field), which the
+# generic key rule mistakes for a credential. Card #236, 2026-11-17.
+85eb31051072cabee16bfb607b73bccfd31e4c57:docs/active/design/2026-11-17-claude-sign-in-expiry/claude-sign-in-expiry.questions-2.json:generic-api-key:3
+85eb31051072cabee16bfb607b73bccfd31e4c57:docs/active/design/2026-11-17-claude-sign-in-expiry/claude-sign-in-expiry.questions-2.html:generic-api-key:500

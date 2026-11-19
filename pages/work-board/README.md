@@ -24,5 +24,16 @@ only once his installed app is a release that carries the `chats` and `program` 
 **Testing in a dev window**: a dev instance shares `~/YouCoded` and `~/.claude` with the real app, so the page
 was tried with `HOME` pointed at a scratch folder (see `cards/19-*.md` for the setup traps found).
 
-Without the app (`node scripts/manage.mjs`), the same page runs in a browser with the Oct 12 snapshot for
-Tidy up and the guessed "Working" marker.
+Without the app (`node scripts/manage.mjs`), the same page runs in a browser. Its facts are the same live ones
+(Tidy up, Since the last release); only the guessed "Working" marker differs, and buttons that need the app show a note.
+
+**Since the last release** is worked out each time the page is drawn by `scripts/release-view.mjs` (tests beside it):
+the newest `vX.Y.Z` tag of the app repo that its master contains, plus every merge after it, grouped and linked to
+work items. It asks GitHub first through a small cache folder (`~/.cache/youcoded-work-board/app-refs.git`) and never
+fetches into the shared `youcoded/` checkout; offline it says it is using the last copy. Nothing about a release is typed in.
+
+**How a change reaches the installed board:** the installed `work-items.mjs` imports `scripts/work-items-program.mjs`
+from the shared workspace folder (the path written at install time), and that program draws the page with
+`renderer/`. So code changes arrive when the shared checkout of master updates (merge, then workspace sync or
+`git pull`), with no re-install, and the page picks them up the next time it is opened. Only a change to
+`page.json`, `page.html` or `work-items.mjs.template` needs `install-work-board.mjs` again (and a fresh approval).

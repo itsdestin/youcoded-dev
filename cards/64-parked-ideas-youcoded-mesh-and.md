@@ -2,7 +2,7 @@
 id: 64
 title: Ideas: YouCoded Mesh and Cloud
 stage: explore
-work: session/mesh-sync-design
+work: session/mesh-sync-design, session/64-mesh-sync-build
 priority: P3
 tags: native-harness, sessions, feature
 needs: 61
@@ -21,6 +21,7 @@ Blocked: Automatic device choice for scheduled jobs may depend on card 61 (Agent
 See also #119: Reaching your computer through a YouCoded account without Tailscale (119) is part of the same long-term Mesh and Cloud idea as 64.
 
 Chats
+- 2026-11-14 session/64-mesh-sync-build: chat started
 
 From the old roadmap (native-harness › sessions, status parked, seen on all, last checked 2026-09-08)
 Parked ideas: YouCoded Mesh and Cloud — 2 things (v1.4, not a release promise). (a) "YouCoded Mesh" (Destin, 2026-09-08) picks a suitable device of yours for remote requests and scheduled duties without you managing which one; needs suitability, permissions and no duplicate runs designed. (b) "YouCoded Cloud" runs an automation when none of your devices is online, as an optional, possibly paid fallback after Mesh; needs consent, spending limits and privacy designed.

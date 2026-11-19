@@ -12,8 +12,8 @@ side: screens
 platform: Desktop only
 ---
 Progress
-Done: Part (c), the chat drag between windows, shipped 2026-09-04 (youcoded#419; a labelled 'Move here' drop area now appears in the other window). The Development menu this card names was folded into Help & feedback on 2026-09-28 (commit 8b5540403, in v1.3.1); its Known issues row still closes the Help popup and opens a web page with no in-app message.
-Next: (a) decide whether that closing-and-opening behaviour is still wanted, and (b) check the info hints on a live dev window to see whether they cover their rows.
+Done: LANDED PR #756: Known issues, Roadmap and Reddit rows leave Help open
+Next: remaining items on this card
 Blocked: nothing recorded.
 
 Chats

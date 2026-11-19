@@ -13,8 +13,8 @@ side: both
 vision: together.added.reddit
 ---
 Progress
-Done: The Reddit community link is in the app's Settings, under Help and feedback, as "Community on Reddit". It also appears in a Help tip. Shipped September 10, 2026.
-Next: (1) Destin decides whether to add a link on the website. (2) Run the app in a dev build with many chats arriving at once and check whether the warning still appears. If it does not, close this card.
+Done: Small-choices deck C-1 (2026-11-18): Destin chose to wait; add the website Community link once the subreddit has more posts
+Next: Ask again once r/youcoded has a few posts
 Blocked: nothing.
 
 Chats
