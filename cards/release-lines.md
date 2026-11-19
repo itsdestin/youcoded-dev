@@ -99,3 +99,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#780 behind | Nothing visible.
 - youcoded#774 fixes | Dragging a file onto the message box attaches it again.
 - youcoded#775 fixes | On Android, the camera switches off when the QR scanner closes.
+- youcoded#776 fixes | In online games, you can accept a rematch your opponent asked for.
