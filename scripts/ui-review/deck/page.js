@@ -233,7 +233,7 @@
   // the position — Option A, Option B — and the id follows it quietly, because the answers file,
   // the summary and any contract row still speak in ids.
   const LETTERS = 'ABCDEFGH';
-  const optionCard = (o, cls, i) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}${reuseTip(o)}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${pictureFig(o, ' opt')}${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+  const optionCard = (o, cls, i, st) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${optTag(st, o)}${o.recommended ? '<span class="badge">Recommended</span>' : ''}${reuseTip(o)}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${pictureFig(o, ' opt')}${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
   // WHY (Destin, 2026-11-04: "i want to visualize some of these options better"): a written
   // question about how something LOOKS drew "Other — need to see it" seven times out of ten.
   // A question, and each of its options, may now carry a picture; a click opens it full size.
@@ -509,7 +509,7 @@
     // A row is: its story (if it has one), its words, its status pill and pencil, then at most one Attachments card.
     // WHY the structured More is a sibling of the row, not inside its words (Destin, round 13, marking it: "right margin seems weird/inconsistent here"):
     // inside `.calltext` its boxes stopped short of the tick and pencil column; below the row they span the row's full inner width.
-    return `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"${GROWS && c.more ? ' data-reveal' : ''}>${storyLines(c)}<div class="callrow"><div class="calltext"><div class="callhead"><p class="callwhat">${esc(c.call)}</p>${reuseTip(c)}</div><p class="src">${esc(c.why)}${GROWS && c.more ? growMoreBtn(st, c) : ''}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}${GROWS && c.more ? '' : moreLines(c)}</div><div class="callflags">${resultPill(st, c)}</div>${tickable(st) ? `<button type="button" class="iconbtn calltick" aria-pressed="false" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="This is fine" aria-label="This is fine">${CHECK}</button>` : ''}<button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''}${tickable(st) ? ' aria-pressed="false"' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea><button type="button" class="markx callx" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Take this comment away" aria-label="Take this comment away">${BIN}</button></div>${GROWS && c.more ? growMoreBody(st, c) : ''}${attCard(st, c)}</li>`;
+    return `<li class="call${c.before ? ' pair' : ''}" data-call="${esc(c.id)}"${GROWS && c.more ? ' data-reveal' : ''}>${storyLines(c)}<div class="callrow"><div class="calltext"><div class="callhead"><p class="callwhat">${esc(c.call)}</p>${rowTag(st, c)}${reuseTip(c)}</div>${rowLines(st, c)}<p class="src">${esc(c.why)}${GROWS && c.more ? growMoreBtn(st, c) : ''}</p>${c.decided ? `<p class="decided">${esc(c.decided)}</p>` : ''}${GROWS && c.more ? '' : moreLines(c)}</div><div class="callflags">${resultPill(st, c)}</div>${tickable(st) ? `<button type="button" class="iconbtn calltick" aria-pressed="false" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="This is fine" aria-label="This is fine">${CHECK}</button>` : ''}<button type="button" class="iconbtn calledit"${st.context ? ' hidden' : ''}${tickable(st) ? ' aria-pressed="false"' : ''} data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Comment on this, or say what to change" aria-label="Comment on this, or say what to change">${PENCIL}</button></div><div class="callbox" hidden><textarea class="callt" rows="1" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" placeholder="Your comment, or what it should be instead"></textarea><button type="button" class="markx callx" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" title="Take this comment away" aria-label="Take this comment away">${BIN}</button></div>${GROWS && c.more ? growMoreBody(st, c) : ''}${attCard(st, c)}</li>`;
   };
   // WHY groups (round 8): a row's state is shown by WHERE it sits — under a small heading "New", "Changed"
   // or "Already settled" — not by a badge. Rows keep the order they were written in inside a group. With
@@ -817,8 +817,8 @@
     : st.kind === 'question' ? pictureFig(st) + partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
-    : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + alsoCard(st) + riskCard(st)
-    : st.kind === 'decide' ? (st.words ? pictureFig(st) : '') + partCards(st) + pickHint(st) + noticeCard(st) + alsoCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
+    : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i, st)).join('') + noticeCard(st) + alsoCard(st) + riskCard(st)
+    : st.kind === 'decide' ? (st.words ? pictureFig(st) : '') + partCards(st) + pickHint(st) + noticeCard(st) + alsoCard(st) + st.options.map((o, i) => optionCard(o, ' option', i, st)).join('') + riskCard(st)
     : changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st);
 
   // A one-picture slide is a BRIEF (nothing built yet): "keep / revert" would ask about work that
@@ -1182,9 +1182,9 @@
       + (locked ? '' : (st.grow && st.grow.new && !(PAGES && PAGES[cur] && PAGES[cur].new)
         ? `<div class="qhrow"><h2 class="qh">${esc(st.headline)}</h2><span class="newtag">New</span></div>` : `<h2 class="qh">${esc(st.headline)}</h2>`))
       // WHY (Destin, round 10: "one summary line of its past, the full story opens on request"): on a deck that grows the story is ONE fold line under the title.
-      + (locked ? '' : growPast(st))
+      + (locked ? '' : growPast(st) + diffTop(st))
       + (listy(st) ? '' : (GROWS ? '' : storyLines(st)) + moreLines(st) + (st.reuse ? `<div class="builtfrom">Built from the app's own parts${reuseTip(st)}</div>` : ''))
-      + `<div class="qbody">${cardsFor(st)}</div>`
+      + `<div class="qbody">${cardsFor(st)}</div>` + (locked ? '' : diffFoot(st))
       + (locked ? '' : leaveButton(st))
       + (listy(st) ? '' : `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
       // WHY (Destin, 2026-11-09): "there should never be two text fields in an answer". A question answered by typing already has its box.
@@ -1234,6 +1234,43 @@
   // ── growing decks: a topic's past, the Answered list, Reopen ───────────────────────────────
   const noteLines = (label, answer, notes) => `<dl class="story">`
     + [answer ? [label, answer] : null, ...(notes || []).map(n => [answer ? '' : label, quoted(n)])].filter(Boolean).map((r, i, a) => `<div class="sline you"><dt>${i === 0 ? esc(r[0]) : ''}</dt><dd>${esc(r[1])}</dd></div>`).join('') + `</dl>`;
+  // ── what changed since he answered a reopened topic (grow.diff, built by reopen_diff.py) ───────────────────
+  // WHY (Destin, 2026-11-18: "It feels like it keeps resetting rows/questions on me with no clear indication of what (if anything) actually
+  // changed"): quiet tags and muted lines only: the existing New tag, the muted Finished-tag look for Changed, no bars, no dots, no new colours.
+  const diffOf = st => (GROWS && st && st.grow && st.grow.diff) || null;
+  const rowDiff = (st, c) => { const d = diffOf(st); return d && d.kind === 'calls' && d.rows ? d.rows[c.id] || null : null; };
+  const rowTag = (st, c) => { const r = rowDiff(st, c); return r && r.tag === 'new' ? ' <span class="newtag">New</span>' : r && r.tag === 'changed' ? ' <span class="fintag">Changed</span>' : ''; };
+  const rowLines = (st, c) => {
+    const r = rowDiff(st, c); if (!r) return '';
+    const bits = [];
+    if (r.tag === 'changed') bits.push(r.before ? 'Before: ' + esc(r.before) : esc((r.parts || []).join(' · ')));
+    if (r.said) bits.push('You said: “' + esc(r.said) + '”');
+    return bits.map(b => `<p class="difline">${b}</p>`).join('');
+  };
+  const optTag = (st, o) => { const m = (diffOf(st) || {}).options; const t = m && m[o.id]; return t === 'new' ? ' <span class="newtag">New</span>' : t === 'changed' ? ' <span class="fintag">Changed</span>' : t === 'yourpick' ? ' <span class="fintag">Your pick before</span>' : ''; };
+  // Under a list's or question's title: the counts (list) or what he picked / marked before (question, statement).
+  const diffTop = st => {
+    const d = diffOf(st); if (!d) return '';
+    const lines = d.kind === 'calls' ? (d.summary ? [esc(d.summary)] : []) : (d.lines || []).map(esc).concat(d.kind === 'statement' && d.changed ? [d.before ? 'Changed. Before: ' + esc(d.before) : 'Changed'] : []);
+    return lines.length ? `<div class="pastline diff">${lines.map(l => `<p class="pasttext">${l}</p>`).join('')}</div>` : '';
+  };
+  const diffFoot = st => { const d = diffOf(st); return d && d.kind === 'calls' && (d.removed || []).length ? `<p class="pasttext diff">Taken out since you last saw it: ${d.removed.map(esc).join('; ')}</p>` : ''; };
+  // The ticks he gave on rows that did not change come with him into the new round, written into the answers like his own ticks (so the saved
+  // record and the "looked at" counts see them). `state.carried` remembers which were already carried, so a tick he takes off stays off.
+  function seedCarried() {
+    if (!GROWS || state.submitted) return;
+    let did = false;
+    for (const st of DECK.steps) {
+      const d = diffOf(st); if (!d || d.kind !== 'calls' || !tickable(st)) continue;
+      const done = (state.carried || {})[st.id] || [], todo = st.calls.filter(c => (d.rows[c.id] || {}).carried && !done.includes(c.id));
+      if (!todo.length) continue;
+      const a = { ...(state.answers[st.id] || {}) }; a.ok = { ...(a.ok || {}) };
+      for (const c of todo) if (rowState(a, c.id) === 'unlooked') a.ok[c.id] = true;
+      settleList(st, a); state.answers[st.id] = a;
+      state.carried = { ...(state.carried || {}), [st.id]: done.concat(todo.map(c => c.id)) }; did = true;
+    }
+    if (did) save();
+  }
   // An open topic with a past: ONE small plain muted line under the title, then a text link "More" that opens the story.
   // WHY (Destin, round 11: "what is that little dropdown section at the top of the questions? It doesn't seem to be related
   // to any specific question"): it was drawn as a full-width box with a chevron, like a row. Now it is one line of words.
@@ -2672,6 +2709,7 @@
   });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
   load().then(() => {
+    seedCarried();   // WHY (Destin, 2026-11-18: "keeps resetting rows ... on me"): ticks he gave on rows that did not change start ticked
     // WHY (Destin, round 9, Q-3): a deck he already sent reopens with his answers, still editable. One plain
     // line above the page says when he sent them, so nothing looks lost and nothing looks locked.
     if (state.sent_before && !state.submitted) {

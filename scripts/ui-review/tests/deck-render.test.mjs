@@ -2252,6 +2252,68 @@ json.dump(raw, open(p, 'w')); print(p)`;
   } finally { srv.kill(); }
 });
 
+// Destin, 2026-11-18: "It feels like it keeps resetting rows/questions on me with no clear indication of what (if anything) actually changed."
+test('a reopened list shows what changed and keeps the ticks he gave on unchanged rows; a reopened question shows what he picked', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-rd-'));
+  const py = `import sys, json, os, hashlib; sys.path.insert(0, ${JSON.stringify(HERE)})
+tmp = ${JSON.stringify(tmp)}
+def row(i, call, why='Because.'): return {'id': i, 'call': call, 'why': why}
+def lst(rows, **kw): return {'id': 'L-1', 'words': True, 'surface': 'S', 'path': 'P', 'headline': 'The list', 'calls': rows, **kw}
+def opt(i, label): return {'id': i, 'label': label, 'summary': 'About ' + label, 'pros': ['Good.'], 'cons': ['Bad.']}
+def qn(opts, **kw): return {'id': 'Q-1', 'words': True, 'surface': 'S', 'path': 'P', 'headline': 'Which one?', 'today': 't', 'problem': 'p', 'proposal': 'x', 'options': opts, **kw}
+def deck(steps): return {'title': 'RD', 'key': 'rd', 'out': 'rd.html', 'themes': ['midnight'], 'grows': True, 'tag': 'f', 'stage': 'design', 'steps': [{'id': 'P-1', 'page': 'Design', 'intro': 'Pick.', 'stage': 'design'}] + steps}
+old = deck([lst([row('keep', 'Kept row.'), row('edit', 'Old wording row.'), row('gone', 'Dropped row.')]), qn([opt('a', 'Alpha'), opt('b', 'Beta')])])
+raw = json.dumps(old).encode(); sha = hashlib.sha256(raw).hexdigest()
+open(os.path.join(tmp, 'rd.as-built.' + sha[:12] + '.json'), 'wb').write(raw)
+open(os.path.join(tmp, 'rd.answers.20261101.json'), 'w').write(json.dumps({'deck': 'rd', 'submitted': '2026-11-01T10:00:00Z', 'built': {'at': '2026-11-01T09:00:00Z', 'spec_sha256': sha},
+  'answers': {'L-1': {'v': 'other', 'ok': {'keep': True}, 'changes': {'edit': 'say it plainer'}}, 'Q-1': {'v': 'pick', 'pick': 'a', 'note': 'nearly'}}}))
+new = deck([lst([row('keep', 'Kept row.'), row('edit', 'New wording row.'), row('fresh', 'Fresh row.')], reopened='Two rows changed.'),
+            qn([opt('a', 'Alpha'), opt('c', 'Gamma')], reopened='A new option.')])
+p = os.path.join(tmp, 'rd.json'); json.dump(new, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('rd.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(500); };
+  const saved = () => { try { return JSON.parse(readFileSync(join(dirname(spec), 'rd.answers.json'), 'utf8')); } catch (e) { return {}; } };
+  try {
+    await sleep(900);
+    for (const [w, h] of [[1400, 900], [390, 800]]) {
+      const c = await cdp(await freePort(), w, h);
+      try {
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/rd.html?step=1` }); await ready(c);
+        const q = e => c.evaluate(e), L = 'article.q[data-id="L-1"]', R = id => `${L} li.call[data-call="${id}"]`;
+        assert.equal(await q(`${JSON.stringify(L)} && document.querySelector('${L} .pastline.diff .pasttext').textContent`), '1 new · 1 changed · 1 unchanged');
+        // the kept row starts ticked, with no label; the changed row says what it was and what he said; the new row is tagged New
+        assert.equal(await q(`document.querySelector('${R('keep')} .calltick').getAttribute('aria-pressed')`), 'true', w + ': carried tick is pressed');
+        assert.equal(await q(`document.querySelector('${R('edit')} .calltick').getAttribute('aria-pressed')`), 'false');
+        assert.equal(await q(`document.querySelector('${R('keep')}').textContent.includes('ticked this before')`), false, 'no label on a carried tick');
+        assert.equal(await q(`document.querySelector('${R('edit')} .callhead .fintag').textContent`), 'Changed');
+        assert.match(await q(`document.querySelector('${R('edit')}').textContent`), /Before: Old wording row\./);
+        assert.match(await q(`document.querySelector('${R('edit')}').textContent`), /You said: “say it plainer”/);
+        assert.equal(await q(`document.querySelector('${R('fresh')} .callhead .newtag').textContent`), 'New');
+        assert.equal(await q(`document.querySelector('${L}').textContent.includes('Taken out since you last saw it: Dropped row.')`), true);
+        // the tick is written into the answers (so the record and the done gate see it)
+        for (let i = 0; i < 20 && !((saved().answers || {})['L-1'] || {}).ok; i++) await sleep(250);
+        assert.deepEqual(((saved().answers || {})['L-1'] || {}).ok, { keep: true }, w + ': carried tick saved');
+        // the question: what he picked and noted, options tagged, nothing preselected
+        assert.deepEqual(await q(`[...document.querySelectorAll('article.q[data-id="Q-1"] .pastline.diff .pasttext')].map(p => p.textContent)`), ['You picked before: Alpha', 'You said: “nearly”']);
+        assert.deepEqual(await q(`[...document.querySelectorAll('article.q[data-id="Q-1"] .variant')].map(o => o.dataset.pick + ':' + [...o.querySelectorAll('.ohead .newtag, .ohead .fintag')].map(t => t.textContent).join('/'))`), ['a:Your pick before', 'c:New']);
+        assert.equal(await q(`document.querySelectorAll('article.q[data-id="Q-1"] .variant.on, article.q[data-id="Q-1"] .variant.picked').length`), 0, 'his old pick is not preselected');
+        // untick works and stays unticked after a reload (a tick he took off is never put back)
+        await q(`document.querySelector('${R('keep')} .calltick').click()`); await sleep(400);
+        assert.equal(await q(`document.querySelector('${R('keep')} .calltick').getAttribute('aria-pressed')`), 'false', w + ': untick works');
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/rd.html?step=1` }); await ready(c);
+        assert.equal(await q(`document.querySelector('${R('keep')} .calltick').getAttribute('aria-pressed')`), 'false', w + ': stays unticked after reload');
+        assert.equal(await q("document.documentElement.scrollWidth <= window.innerWidth"), true, w + ': no sideways scroll');
+        assert.deepEqual(c.errors, [], w + ' console');
+        // reset for the second size: put the carried tick back by clearing this round's saved state
+        if (w === 1400) { try { writeFileSync(join(dirname(spec), 'rd.answers.json'), '{}'); } catch (e) { /* none */ } await c.evaluate("localStorage.clear()"); }
+      } finally { c.close(); }
+    }
+  } finally { srv.kill(); }
+});
+
 // The hands-off route — Destin, 2026-11-18: "I just tell a session: do all of this without me ... I just want to see it at the very end."
 test('hands-off deck: his own words are quoted on the first page and the three earlier stages are shown skipped (dimmed, not buttons, no check)', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'deck-handsoff-'));

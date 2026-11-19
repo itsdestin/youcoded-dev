@@ -1052,3 +1052,8 @@ body[data-grows] .top .wrap{flex-wrap:nowrap}
 /* WHY: "Go to first skipped" outlines the card or row it lands on for a moment, so his eye finds it (Destin, 2026-11-18). */
 .seekflash{outline:2px solid var(--accent);outline-offset:-2px}
 .seekflash:focus{outline:2px solid var(--accent)}
+
+/* WHY (Destin, 2026-11-18: "no clear indication of what actually changed"): what changed on a reopened row or option is quiet muted text; a tag beside the bold line. */
+.calltext .difline{margin:0 0 2px;font-size:12px;line-height:1.5;color:var(--fg-muted)}
+.callhead .newtag,.callhead .fintag,.ohead .newtag,.ohead .fintag{margin-left:6px;vertical-align:middle}
+.pastline.diff{margin:0 0 8px} p.pasttext.diff{margin:8px 0 0}

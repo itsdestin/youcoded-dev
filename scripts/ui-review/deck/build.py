@@ -13,6 +13,7 @@ import subprocess
 
 from .crops import image_name, is_focus_crop
 from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
+from . import reopen_diff
 from .grows import STAGES, STAGE_NAMES, answer_view, handled_view, is_grows, round_number, spec_bytes_at_commit, step_data
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_calls, is_choice, is_clip, is_contract,
                     is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
@@ -490,9 +491,15 @@ def deck_data(spec, boxes):
     grown = {}
     if is_grows(spec):
         gd = step_data(spec)
+        # WHY (Destin, 2026-11-18: "It feels like it keeps resetting rows/questions on me with no clear indication of what (if anything)
+        # actually changed"): a reopened topic carries what changed since he answered it (and, on a list, the ticks he already gave).
+        rdiffs, rwarns = reopen_diff.compute(spec)
+        spec['_reopen_warnings'] = rwarns
         for st in steps:
             if st['id'] in gd:
                 st['grow'] = gd[st['id']]
+                if st['id'] in rdiffs:
+                    st['grow']['diff'] = rdiffs[st['id']]
         grown = {'grows': {'round': round_number(spec), 'stages': STAGE_NAMES, 'stage': spec.get('stage'),
                            # WHY (Destin, 2026-11-18): a hands-off deck quotes his words on its first page and shows the three earlier stages skipped.
                            **({'hands_off': spec['hands_off']} if isinstance(spec.get('hands_off'), str) and spec['hands_off'].strip() else {})}}
@@ -576,4 +583,4 @@ def build_page(spec, boxes):
     # the wrong palette before page.js's render() ran. Substitute the spec's actual first theme.
     page = page.replace('__TITLE__', html.escape(spec['title'])).replace('__THEME__', html.escape(spec['themes'][0]))
     page = page.replace('__DECK__', embed_json(deck_data(spec, boxes)))
-    return page, warnings
+    return page, warnings + list(spec.get('_reopen_warnings') or [])
