@@ -1542,3 +1542,11 @@ recurred — the repetition is the data.
 - Destin's words filed: error cards should follow real bubble rules → card #270; ChatGPT "expired" survives a restart → card #275 (awaiting his yes); "no internet is red" → design guide updated.
 - I ran `cat >> /dev/null` in a heredoc chain and hung a command for 2 minutes → dropped: my slip, not a workspace gap.
 - deleted/merged: the chat's red error card markup moved into one shared `ChatNoticeBubble` (SortedErrorCard and the new cards draw through it) and its two unused tones removed.
+
+## 2026-11-18 — overnight card sweep, deck answers, landing (youcoded#771 #772 #773 #780, youcoded-dev#389 #390)
+- Overnight build: 6 branches from ~160 open cards; Destin approved 2 (phone paste #134, image-cache 90-day sweep #66), rejected 2 (queue-edit Replace/Append #62: "the refusal was fine. this is overcomplicated"; search-root #66: "in what world would i ever be starting the assistant in a subfolder") → filed on the cards. Both rejects were Claude-written specs nobody had checked against a real user path → dropped as a rule: the triage step already scores value; noted here so the next overnight sweep asks "which real menu or flow reaches this?" before building a Claude-only spec.
+- Handoff facts (file locations, decisions, scope) lived only in a handoff file on a side branch; Destin asked whether the cards were self-contained → applied: copied into the progress notes of #92 #114 #235 #231 #255. Proposed (guidance edit waits for Destin): handoffs write their facts into the card's progress note, the file is optional.
+- Six tests failed only under heavy load (load 58–200) → fixed (CPU budgets instead of wall time, beforeAll fixture, shoot probe/hold), independently reviewed, landed #780/#390.
+- My gitleaks call used a nonexistent `-q` flag and `&& git push` after `| tail` hid the failure; the pre-push hook scanned anyway → dropped: the hook is the executing guard; my slip.
+- Local-only branches seen in the sweep (not this session's): 8 workspace, 18 app, including `session/usage-visibility-20260929`, the usage-stats mockup card #231 points to → reported to Destin.
+- deleted/merged: overnight handoff file superseded by the card notes (left on session/overnight-2026-11-19).
