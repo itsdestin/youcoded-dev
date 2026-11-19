@@ -135,6 +135,13 @@ async function side(checkout, outDir, pick, which = null) {
   } finally { pool?.close(); server.close(); editor?.stop(); }
 }
 
+// WHY (2026-11-18, load-flaky-tests): the mark probe used to be a bare 5 s evaluate that THREW on a timeout. At load
+// 60-150 a busy page needs longer than 5 s to answer a one-line query (office/presentation failed "Runtime.evaluate
+// timed out after 5s" while opening in seconds alone). A probe that gets no answer is "not showing yet", not a failure:
+// the loops that poll it already have their own deadlines, and a screen that never shows still fails with the reason.
+const MARK_PROBE_MS = 20_000;
+const markNow = (tab, screen) => tab.evaluate(MARK_CHECK(markOf(screen)), MARK_PROBE_MS).catch((e) => `the page gave no answer: ${e.message}`);
+
 async function waitFor(tab, expr, ms) {
   for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 50))) {
     const v = await tab.evaluate(`(() => { try { return ${expr}; } catch { return null; } })()`, 5000).catch(() => null);
@@ -233,7 +240,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       if (!opened?.ok) throw new Error(opened?.reason ?? 'open failed');
       for (const t1 = Date.now(); Date.now() - t1 < 2500;) {
         await tab.still(1500);
-        why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);   // a #state is marked as its plain screen, unless it names its own `mark`
+        why = await markNow(tab, screen);   // a #state is marked as its plain screen, unless it names its own `mark`
         if (why?.panel) break;
       }
     }
@@ -244,7 +251,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // screen that is truly missing still fails, just later; one that shows is unaffected.
     for (const t2 = Date.now(); !why?.panel && Date.now() - t2 < 12_000;) {
       await tab.still(1500);
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
     }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
     // "Open this first" (screen list `open`): clicks replayed like a journey once the screen
@@ -260,7 +267,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       // picture (submit-ticket friction, proposal 14) — move it off the page. A `hover` step
       // ending the list is kept: that hover is what the picture is for.
       if (pointerRestsOnClick(steps)) { await driver.pointerAway(); await tab.still(1000); }
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
       if (!why?.panel) throw new Error(`not showing after its open steps: ${why}`);
     }
     // `waitMs` (screen list): a state that changes by itself is photographed LATER, on purpose —
@@ -270,7 +277,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     if (screen.waitMs) {
       await new Promise((res) => setTimeout(res, screen.waitMs));
       await tab.still(1500);
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
       if (!why?.panel) throw new Error(`not showing after its ${screen.waitMs} ms wait: ${why}`);
     }
     // WHY (frameReady): the mark above is the app's; a Page's own content is drawn by its iframe a moment later (under load, a
