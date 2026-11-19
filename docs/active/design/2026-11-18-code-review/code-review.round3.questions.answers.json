@@ -1,0 +1,117 @@
+{
+ "deck": "code-review-2026-11-18-round3",
+ "started": "2026-11-19T02:20:51.333Z",
+ "submitted": "2026-11-19T02:25:10Z",
+ "cur": 3,
+ "answers": {
+  "G-1": {
+   "v": "yes",
+   "t": 1795054927671,
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "G-2": {
+   "v": "yes",
+   "t": 1795054927671,
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "G-3": {
+   "v": "yes",
+   "t": 1795054927671,
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "G-4": {
+   "v": "yes",
+   "t": 1795054927671,
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "G-5": {
+   "v": "yes",
+   "t": 1795054927671,
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "G-6": {
+   "v": "yes",
+   "t": 1795054927671,
+   "note": "uhh why would it be on this computer? none of our other ntfy or automatic operations require this computer?",
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "G-7": {
+   "v": "yes",
+   "t": 1795054927671,
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "G-8": {
+   "v": "yes",
+   "t": 1795054927671,
+   "seconds": 10,
+   "theme": "midnight"
+  },
+  "W-1": {
+   "v": "yes",
+   "t": 1795055018819,
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "W-2": {
+   "v": "other",
+   "t": 1795055018819,
+   "dk": true,
+   "note": "would this block a user from being able to close a session?",
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "W-3": {
+   "v": "yes",
+   "t": 1795055018819,
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "W-4": {
+   "v": "yes",
+   "t": 1795055018819,
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "W-5": {
+   "v": "other",
+   "t": 1795055018819,
+   "seconds": 17,
+   "theme": "midnight",
+   "note": "confused. what does this report actually do/check. where do these show up",
+   "dk": true
+  },
+  "V-1": {
+   "v": "other",
+   "seconds": 31,
+   "theme": "midnight",
+   "t": 1795055077175,
+   "dk": true,
+   "note": "later. make this a separate follow up card or something"
+  },
+  "V-2": {
+   "v": "yes",
+   "seconds": 31,
+   "theme": "midnight",
+   "t": 1795055077175
+  },
+  "X-1": {
+   "v": "yes",
+   "t": 1795055109126,
+   "seconds": 16,
+   "theme": "midnight"
+  },
+  "X-2": {
+   "v": "yes",
+   "t": 1795055109126,
+   "seconds": 16,
+   "theme": "midnight"
+  }
+ }
+}
