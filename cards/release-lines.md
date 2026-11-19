@@ -103,4 +103,5 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#777 fixes | A plugin install that fails partway cleans up, so trying again works.
 - youcoded#778 fixes | The phone switches to a new chat after reconnecting to a computer with no chats open.
 - youcoded#779 fixes | Deleting comments in a Word document no longer leaves markers that make Word ask to repair it.
+- youcoded#781 fixes | Messages you queue in a chat no longer get stuck while a background helper waits for your permission.
 - youcoded#781 fixes | Pressing Send now on a waiting message tells you why it can't send yet.
