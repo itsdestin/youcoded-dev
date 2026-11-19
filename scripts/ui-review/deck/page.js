@@ -1248,10 +1248,14 @@
     return bits.map(b => `<p class="difline">${b}</p>`).join('');
   };
   const optTag = (st, o) => { const m = (diffOf(st) || {}).options; const t = m && m[o.id]; return t === 'new' ? ' <span class="newtag">New</span>' : t === 'changed' ? ' <span class="fintag">Changed</span>' : t === 'yourpick' ? ' <span class="fintag">Your pick before</span>' : ''; };
-  // Under a list's or question's title: the counts (list) or what he picked / marked before (question, statement).
+  // Under a list's title: the counts ("2 new · 1 changed · 5 unchanged"). Nothing for a question or statement.
+  // WHY (Destin, 2026-11-18: "i hate this new section you added. confusing as fuck visually"): a reopened question stacked three blocks
+  // that said the same thing (his question + "Clearer now", the past line, then "You picked before / You said / None of these options").
+  // Now the past line with its More is the only thing above a question; the reworded question itself is the answer to what he asked, and
+  // the quiet tags on the options (New, Changed, Your pick before) show what moved.
   const diffTop = st => {
     const d = diffOf(st); if (!d) return '';
-    const lines = d.kind === 'calls' ? (d.summary ? [esc(d.summary)] : []) : (d.lines || []).map(esc).concat(d.kind === 'statement' && d.changed ? [d.before ? 'Changed. Before: ' + esc(d.before) : 'Changed'] : []);
+    const lines = d.kind === 'calls' && d.summary ? [esc(d.summary)] : [];
     return lines.length ? `<div class="pastline diff">${lines.map(l => `<p class="pasttext">${l}</p>`).join('')}</div>` : '';
   };
   const diffFoot = st => { const d = diffOf(st); return d && d.kind === 'calls' && (d.removed || []).length ? `<p class="pasttext diff">Taken out since you last saw it: ${d.removed.map(esc).join('; ')}</p>` : ''; };
@@ -1278,13 +1282,13 @@
     if (!GROWS || !st.grow) return '';
     const g = st.grow, mine = !!(state.reopened || {})[st.id];
     const line = g.line || (mine && g.round ? 'Answered in ' + g.round : '');
-    // WHY (Destin, 2026-11-18: "better framed and better contextualized questions in the deck, not a chat response"): a topic that came back reframed
-    // says, in the same quiet muted words as its past line, what he asked and what is clearer now. No bar, no dot.
-    const reframe = g.reframed ? `<p class="pasttext reframe"><span class="youlabel">You asked:</span> \u201c${esc(g.asked || '')}\u201d</p><p class="pasttext reframe"><span class="youlabel">Clearer now:</span> ${esc(g.reframed)}</p>` : '';
-    if (!line) return reframe ? `<div class="pastline">${reframe}</div>` : '';
+    // WHY no "You asked: / Clearer now:" lines (Destin, 2026-11-18: "confusing as fuck visually. not what i intended"): a reframed topic answers
+    // him by being a clearer question (fuller Today / Problem, the answer inside the options), not by a note about itself. His own words stay
+    // one click away under More. `reframed` is still required in the spec: it is the session's record of what it changed.
+    if (!line) return '';
     const body = storyLines(st) + (g.story || []).map(x => noteLines(x.round + ' · you', x.answer, x.notes)).join('');
     const open = isOpen('past', st.id);
-    return `<div class="pastline" data-reveal>${reframe}<p class="pasttext">${esc(line)}${body ? ` <button type="button" class="tlink revealbtn" data-kind="past" data-sid="${esc(st.id)}" data-on="More" data-off="Less" aria-expanded="${open}">${open ? 'Less' : 'More'}</button>` : ''}</p>`
+    return `<div class="pastline" data-reveal><p class="pasttext">${esc(line)}${body ? ` <button type="button" class="tlink revealbtn" data-kind="past" data-sid="${esc(st.id)}" data-on="More" data-off="Less" aria-expanded="${open}">${open ? 'Less' : 'More'}</button>` : ''}</p>`
       + (body ? `<div class="revealbody"${open ? '' : ' hidden'}>${body}</div>` : '') + `</div>`;
   }
   // "More" / "Show the full question": one handler for every small text link that opens a body beside it.

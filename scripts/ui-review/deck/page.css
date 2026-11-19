@@ -928,7 +928,7 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
 .tlink:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
 .pastline{margin:0 0 8px}
 .pasttext{margin:0;font-size:12px;line-height:1.5;color:var(--fg-muted)}
-.pastline .reframe{margin-bottom:2px} .pastline .reframe .youlabel{color:var(--fg-muted)}
+
 .pastline .revealbody{margin-top:6px;padding:0;border:0;gap:4px} .pastline .story{margin:0}
 .growact{display:flex;justify-content:flex-end}
 .growact[hidden]{display:none}
