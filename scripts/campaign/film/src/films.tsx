@@ -10,13 +10,15 @@ import stills from './stills.json';
 // were removed: they are usually free, and "billed monthly" beside them read as a false claim about other products.
 const RENTED = ['documents', 'photos', 'storage', 'music', 'smart home', 'budgeting', 'notes', 'passwords', 'video', 'backup', 'design', 'films', 'fitness', 'games'];
 const WIDE = { x: 17.5, y: 16.6, w: 65, h: 72.2 };           // the app window in a 16:9 frame (room below for the small print)
-const TALL = { x: 8.5, y: 24.5, w: 83, h: 52.5 };            // the app card in a 9:16 frame (clear of the top 12% and bottom 20%)
+// WHY phone-shaped (w 62): the wider card showed only the top half of the phone screen and sliced the thermostat dial.
+const TALL = { x: 19, y: 24.5, w: 62, h: 52.5 };             // the app card in a 9:16 frame (clear of the top 12% and bottom 20%)
 const FINE_WIDE = 92.2, FINE_TALL = 78.7;                     // where the small print sits under each
 const SPED = 'sped up · sample data';
 const SPED_HOME = 'sped up · sample data · home control works with Home Assistant';
 const Score: React.FC<{ name: string }> = ({ name }) => <Audio src={staticFile(`audio/${name}.wav`)} />;
 // Every still, chat included: the wall needs as many different pictures as there are (20), or it reads as six repeated.
-const WALL = stills as string[];
+// The Finance stills are left out: their practice data shows a negative balance and a credit warning, the wrong mood for an advert.
+const WALL = (stills as string[]).filter((s) => !/page-money/.test(s));
 
 /** One "ask": a sentence typed on the lavender field, which rises to become the caption as the
  *  result appears beneath it. `T` is the bar line it starts on; it lasts `len` seconds. */
@@ -25,7 +27,7 @@ const Ask: React.FC<{ T: number; len: number; text: string; shots: (t0: number, 
   return (
     <>
       <Typing text={text} at={T} start={T + 0.1} end={T + 0.1 + typeFor} dockAt={T + typeFor + 0.15} out={out}
-        size={tall ? 5.6 : 4.6} y={tall ? 45 : 47} maxWidth={tall ? 80 : 84} dockY={tall ? 17.6 : 10.5} dockSize={tall ? 3.3 : 2.3} />
+        size={tall ? 4.4 : 4.6} y={tall ? 45 : 47} maxWidth={tall ? 92 : 84} dockY={tall ? 17.6 : 10.5} dockSize={tall ? 3.3 : 2.3} />   {/* tall 4.4: the sentence stays on ONE line, so no word is stranded */}
       <Stage at={stageAt} out={out} box={tall ? TALL : WIDE} shots={shots(stageAt, out)} radius={tall ? 2.4 : 1.6} />
       {note && <Fine text={note} at={stageAt} out={out} y={tall ? FINE_TALL : FINE_WIDE} />}
     </>
@@ -38,10 +40,11 @@ const Ask: React.FC<{ T: number; len: number; text: string; shots: (t0: number, 
 /** The last moment of the build: "Created 2 files", then "Home is ready". */
 const homeBuilt = (clip: string) => (t0: number, t1: number): Shot[] => [{ clip, from: mark(clip, 'end') - (t1 - t0) + 0.25, at: t0, out: t1 }];
 /** The page in use, one continuous take starting just before the lamp is switched. */
-const homePage = (clip: string) => (t0: number, t1: number): Shot[] => [{ clip, from: mark(clip, 'lamp') - 0.9, at: t0, out: t1 }];
+const homePage = (clip: string) => (t0: number, t1: number): Shot[] => [{ clip, from: mark(clip, 'lamp') - 0.9, at: t0, out: t1, cut: true }];
 /** The reply finishing, then the whole app changing its look on the beat (`beats` = swap times). */
 const themeSwaps = (clip: string, beats: number[]) => (t0: number, t1: number): Shot[] => {
-  const s: Shot[] = [{ clip, from: mark(clip, 'built', 'end') - (beats[0] - t0) + 0.1, at: t0, out: beats[0] }];
+  // Never start before the message is sent: an empty chat under the typed caption read as a mismatch.
+  const s: Shot[] = [{ clip, from: Math.max(mark(clip, 'send') - 0.05, mark(clip, 'built', 'end') - (beats[0] - t0) + 0.1), at: t0, out: beats[0] }];
   // the last look is held, so it drifts in very slightly rather than sitting dead still
   beats.forEach((b, i) => s.push({ clip, from: mark(clip, `swap${i + 1}`) - 0.04, at: b, out: beats[i + 1] ?? t1, zoom: i === beats.length - 1 ? [1, 1.035] : undefined }));
   return s;
@@ -56,29 +59,31 @@ export const Hero60: React.FC = () => (
   <AbsoluteFill>
     <Score name="hero60-mix" />
     <Night />
-    <Ledger at={0.2} out={8.3} items={RENTED} />
+    <Ledger at={0.2} out={8.8} items={RENTED} />
     <Line dark text="for twenty years, software has been / something you *rent.*" at={0.3} out={4.55} size={5.2} />
-    <Line dark text="pay forever. / own *nothing.*" at={4.75} out={8.15} size={8.8} />
-    <Line dark text="now you can just *ask.*" at={8.35} out={11.95} size={5.2} />
+    <Line dark text="pay forever. / own *nothing.*" at={4.75} out={8.7} size={8.8} />
+    <Line dark text="now you can just *ask.*" at={8.9} out={11.95} size={5.2} />
     <Typing dark text="build me a page that runs my house" at={12.0} start={12.25} end={14.15} out={14.9} />
     <Bloom at={14.4}>
       <Typing text="build me a page that runs my house" at={12.0} start={12.25} end={14.15} dockAt={14.6} out={21.55} />
       <Stage at={14.9} out={21.55} box={WIDE} shots={[...homeBuilt('ask-home')(14.9, 16.3), ...homePage('page-home')(16.3, 21.55)]} />
       <Fine text={SPED_HOME} at={14.9} out={21.55} y={FINE_WIDE} />
     </Bloom>
-    {/* 21.6-28.8: the look. The whole app turns to sunset on the bar line and is held: it is the film's most beautiful frame. */}
-    <Ask T={21.6} len={7.15} typeFor={1.1} text="make it feel like sunset" note={SPED} shots={themeSwaps('ask-theme', [24.0])} />
-    {/* 28.8-36.0: what that means */}
-    <Line text="what you make / stays on *your* devices." at={28.85} out={32.3} size={7} />
-    <Line text="nobody can / take it *back.*" at={32.5} out={35.9} size={8.8} />
+    {/* 21.6-27.4: the look. The whole app turns to sunset on the bar line and is held. WHY it ends at 27.4: the take
+        itself moves on to another look 3.6 s after the sunset, and holding longer showed that as a glitch. */}
+    <Ask T={21.6} len={5.85} typeFor={1.1} text="make it feel like sunset" note={SPED} shots={themeSwaps('ask-theme', [24.0])} />
+    {/* 27.5-36.0: what that means. WHY these words: an earlier "stays on your devices" is not true today (chats go to
+        an AI provider); "is yours" and "open source, nobody can lock you out" are (MIT licence, your own files). */}
+    <Line text="what you make / is *yours.*" at={27.55} out={31.5} size={8.8} />
+    <Line text="it's open source. / nobody can lock you *out.*" at={31.7} out={35.9} size={7} />
     {/* 36.0-48.0: it is not one app, it is everyone's */}
     <Wall at={35.95} out={48.1} stills={WALL} cols={4} rows={4} dim={[[36.6, 41.3], [41.5, 45.5]]} />
     <Line text="everyone who installs it / can *change* it." at={36.9} out={41.1} size={6.2} />
     <Line text="and *share* what they made." at={41.6} out={45.3} size={6.2} />
     {/* 48.0-55.2: the stance */}
     <AbsoluteFillDay at={48.0} />
-    <Line text="software you *own,* / not rent." at={48.15} out={55.1} size={9.6} y={45} />
-    <Line text="free and open source." at={50.6} out={55.1} size={2.9} y={66} weight={500} />
+    <Line text="ask for it. / it's *yours.*" at={48.15} out={51.4} size={9.6} />
+    <Line text="software you *own,* / not rent." at={51.6} out={55.1} size={9.6} />
     <EndCard at={55.2} />
   </AbsoluteFill>
 );
@@ -121,15 +126,16 @@ export const ShortHouse: React.FC = () => (
   <AbsoluteFill>
     <Score name="short-house-mix" />
     <Night />
-    <Typing dark text="build me a page that runs my house" at={0} start={0.2} end={2.0} out={2.9} size={6.6} maxWidth={80} y={44} />
+    <Typing dark text="build me a page that runs my house" at={0} start={0.2} end={2.0} out={2.9} size={5.4} maxWidth={88} y={44} />
     <Bloom at={2.4} cy={44}>
-      <Typing text="build me a page that runs my house" at={0} start={0.2} end={2.0} dockAt={2.6} out={7.15} size={6.6} maxWidth={80} y={44} dockY={17.6} dockSize={3.3} />
+      <Typing text="build me a page that runs my house" at={0} start={0.2} end={2.0} dockAt={2.6} out={7.15} size={5.4} maxWidth={88} y={44} dockY={17.6} dockSize={2.7} />
       <Stage at={2.9} out={7.15} box={TALL} radius={2.4} shots={[...homeBuilt('ask-home-phone')(2.9, 4.0), ...homePage('page-home-phone')(4.0, 7.15)]} />
       <Fine text={SPED} at={2.9} out={7.15} y={FINE_TALL} />
     </Bloom>
     <AbsoluteFillDay at={7.2} />
-    <Line text="ask for it. / it's *yours.*" at={7.3} out={9.5} size={9.5} y={46} stagger={0.04} />
-    <Line text="software / you *own,* / not rent." at={9.65} out={11.95} size={9.5} y={46} stagger={0.04} />
+    {/* one line held, with the campaign line joining under it on the score's lift at 9.6: both get full reading time */}
+    <Line text="ask for it. / it's *yours.*" at={7.3} out={11.95} size={9.5} y={42} stagger={0.04} />
+    <Line text="software you own, not rent." at={9.65} out={11.95} size={3.5} y={57} weight={700} stagger={0.03} />
     <EndCard at={12.0} />
   </AbsoluteFill>
 );
@@ -138,7 +144,7 @@ export const ShortYours: React.FC = () => (
   <AbsoluteFill>
     <Score name="short-yours-mix" />
     <Day />
-    <Typing text="make it feel like sunset" at={0} start={0.15} end={1.15} dockAt={1.3} out={7.15} size={6.6} maxWidth={80} y={44} dockY={17.6} dockSize={3.3} />
+    <Typing text="make it feel like sunset" at={0} start={0.15} end={1.15} dockAt={1.3} out={7.15} size={4.4} maxWidth={92} y={44} dockY={17.6} dockSize={3.3} />
     <Stage at={1.5} out={7.15} box={TALL} radius={2.4} shots={themeSwaps('ask-theme-phone', [4.8])(1.5, 7.15)} />
     <Fine text={SPED} at={1.5} out={7.15} y={FINE_TALL} />
     <AbsoluteFillDay at={7.2} />

@@ -146,7 +146,8 @@ export const mark = (clip: string, label: string, edge: 'start' | 'end' = 'start
   return edge === 'start' ? m[0] : m[1];
 };
 export type Shot = { clip: string; from: number; at: number; out: number; rate?: number;
-  /** which part of the picture to keep when the frame is a different shape: 0 = top, 1 = bottom */ focusY?: number; zoom?: [number, number]; };
+  /** which part of the picture to keep when the frame is a different shape: 0 = top, 1 = bottom */ focusY?: number; zoom?: [number, number];
+  /** join to the shot before with a near-cut instead of a 0.3 s dissolve. WHY: dissolving the chat into the Home page printed one screen's text over the other for a third of a second. */ cut?: boolean; };
 
 /** Real app footage in a rounded, softly lit frame. `shots` play back to back; each fades over the last. */
 export const Stage: React.FC<{
@@ -170,7 +171,7 @@ export const Stage: React.FC<{
     }}>
       {shots.map((s, i) => {
         if (frame < s.at * FPS - 1 || frame > s.out * FPS + 12) return null;
-        const o = i === 0 ? 1 : ramp(frame, s.at, s.at + 0.3);
+        const o = i === 0 ? 1 : ramp(frame, s.at, s.at + (s.cut ? 0.1 : 0.3));
         const z = s.zoom ? interpolate(frame, [s.at * FPS, s.out * FPS], s.zoom, clamp) : 1;
         const info = CLIPS[s.clip];
         if (!info) return null;
@@ -248,7 +249,7 @@ export const Lockup: React.FC<{ icon: number; dark?: boolean }> = ({ icon, dark 
 export const EndCard: React.FC<{ at: number; tagline?: boolean }> = ({ at, tagline = false }) => {
   const frame = useCurrentFrame(); const u = useU();
   if (frame < at * FPS) return null;
-  const a = (d: number) => ramp(frame, at + d, at + d + 0.8);
+  const a = (d: number) => ramp(frame, at + d * 0.45, at + d * 0.45 + 0.5);   // WHY quicker: on the 3 s end cards of the shorts the old 1.3 s build left under 2 s fully shown
   const rise = (p: number) => ({ opacity: p, transform: `translateY(${(1 - p) * 1.2 * u}px)` });
   const icon = a(0);
   return (
@@ -276,12 +277,12 @@ export const Ledger: React.FC<{ at: number; out: number; items: string[] }> = ({
   const drift = interpolate(frame, [at * FPS, out * FPS], [0, -9 * u]);
   const row = 4.3 * u;
   return (
-    <AbsoluteFill style={{ opacity: o * 0.5, alignItems: 'center',
+    <AbsoluteFill style={{ opacity: o * 0.8, alignItems: 'center',   /* WHY 0.8: at 0.5 the list was too faint to read and looked like noise */
       WebkitMaskImage: 'linear-gradient(180deg, transparent 3%, #000 16%, #000 24%, transparent 36%, transparent 62%, #000 74%, #000 84%, transparent 97%)', maskImage: 'linear-gradient(180deg, transparent 3%, #000 16%, #000 24%, transparent 36%, transparent 62%, #000 74%, #000 84%, transparent 97%)' }}>
       <div style={{ position: 'absolute', top: height * 0.06 + drift, width: '62%' }}>
         {items.map((it, i) => (
           <div key={i} style={{ height: row, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: `1px solid rgba(179,168,188,0.16)`,
-            fontFamily: DMSANS, fontWeight: 500, fontSize: 1.5 * u, color: 'rgba(179,168,188,0.42)', letterSpacing: '-0.01em' }}>
+            fontFamily: DMSANS, fontWeight: 500, fontSize: 1.5 * u, color: 'rgba(179,168,188,0.6)', letterSpacing: '-0.01em' }}>
             <span>{it}</span><span>billed monthly</span>
           </div>
         ))}

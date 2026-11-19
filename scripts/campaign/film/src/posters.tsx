@@ -12,7 +12,11 @@ const useFrame = () => {
   const { width: W, height: H } = useVideoConfig();
   const r = W / H;
   const shape: Shape = r < 0.9 ? 'tall' : r < 1.35 ? 'square' : 'wide';
-  return { W, H, r, shape, u: Math.min(W, H) / 60, m: Math.min(W, H) * 0.085 };
+  const m = Math.min(W, H) * 0.085;
+  // WHY mt/mb: a 9:16 story is shown under the phone app's own buttons, so the guide keeps the top 12% and
+  // bottom 20% clear there. Every other shape uses the ordinary margin top and bottom.
+  const story = H / W > 1.6;
+  return { W, H, r, shape, u: Math.min(W, H) / 60, m, mt: story ? H * 0.125 : m, mb: story ? H * 0.2 : m };
 };
 /** A headline: "/" breaks lines, *word* is the purple one. */
 const Head: React.FC<{ text: string; size: number; dark?: boolean }> = ({ text, size, dark }) => (
@@ -51,16 +55,16 @@ const BgNight = () => <AbsoluteFill style={{ background: C.night }} />;
 
 // ---- 1. own: the campaign line, type only ----
 const Own: React.FC = () => {
-  const { W, H, shape, u, m } = useFrame();
+  const { W, H, shape, u, m, mt, mb } = useFrame();
   const head = shape === 'wide' ? 'software you *own,* / not rent.' : 'software / you *own,* / not rent.';
-  const size = shape === 'tall' ? (W - 2 * m) / 4.75 : shape === 'square' ? (W - 2 * m) / 5.9 : Math.min((W - 2 * m) / 8.2, (H - 2 * m) / 3.6);   // WHY 5.9 on a square: at 4.5 the headline and body pushed the footer off the bottom edge
+  const size = shape === 'tall' ? (W - 2 * m) / 4.75 : shape === 'square' ? (W - 2 * m) / 6.9 : Math.min((W - 2 * m) / 8.2, (H - 2 * m) / 3.6);   // WHY 5.9 on a square: at 4.5 the headline and body pushed the footer off the bottom edge, and at 5.9 the gaps were squeezed shut
   return (
     <AbsoluteFill><BgDay />
-      <div style={{ position: 'absolute', left: m, right: m, top: m, bottom: m, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
         <Eyebrow text="free · open source" size={1.5 * u} />
         <div style={{ height: (shape === 'tall' ? 5 : 3) * u }} />
         <Head text={head} size={size} />
-        <div style={{ height: (shape === 'tall' ? 4 : 3) * u }} />
+        <div style={{ height: (shape === 'wide' ? 3 : 4.5) * u }} />
         <Body size={(shape === 'wide' ? 2.2 : 2.5) * u} width={shape === 'wide' ? '58%' : '88%'}>
           One open app that becomes what you ask for. A page that runs your house. A new look. A feature nobody has built yet. No code.
         </Body>
@@ -82,30 +86,36 @@ const textH = (u: number, size: number, lines: number, bodyLines: number, bodySi
 
 // ---- 2. ask: the sentence, and the thing it made ----
 const Ask: React.FC = () => {
-  const { W, H, shape, u, m } = useFrame();
+  const { W, H, shape, u, m, mt, mb } = useFrame();
   const wide = shape === 'wide';
   const footH = shape === 'square' ? 6.2 : FOOT_H;      // a square uses the one-row foot, so the picture is not a thin strip
   const rows = wide ? ['build me a page', 'that runs', 'my house'] : ['build me a page', 'that runs my house'];
   const colW = wide ? W * 0.46 - m : W - 2 * m;
   const longest = Math.max(...rows.map((r) => r.length)) + 0.6;          // + the caret
   const bodySize = 2.3 * u;
-  const size = Math.min(colW / (longest * EM), wide ? (H - 2 * m - (FOOT_H + 12) * u) / rows.length : H * 0.085);
+  const sq = shape === 'square';                       // a square has the least room: smaller headline, no sub-line, so the picture stays a useful size
+  const size = Math.min(colW / (longest * EM), wide ? (H - 2 * m - (FOOT_H + 12) * u) / rows.length : H * (sq ? 0.072 : 0.085));
   const caret = <span style={{ display: 'inline-block', width: size * 0.075, height: size * 0.9, marginLeft: size * 0.07, borderRadius: size, background: C.purple, verticalAlign: '-0.1em' }} />;
-  const top = m + textH(u, size, rows.length, 1, bodySize) + 3.5 * u, bottom = m + footH * u + 3.5 * u;
+  const top = mt + textH(u, size, rows.length, sq ? 0 : 1, bodySize) + (sq ? 1 : 3.5) * u, bottom = mb + footH * u + 3.5 * u;
   const img = 'stills/page-home--youcoded.png';
+  // WHY the picture keeps its own 16:10 shape: filling a differently shaped box cut pills and the thermostat dial
+  // in half. It is now the whole page, as large as the space allows, left-aligned with the text (or centred in
+  // its half on wide posters).
+  const fit = (w: number, h: number) => { const iw = Math.min(w, h * 1.6); return { width: iw, height: iw / 1.6 }; };
+  const wideBox = fit(W * 0.5 - m, H - 2 * m), tallBox = fit(W - 2 * m, H - top - bottom);
   return (
     <AbsoluteFill><BgDay />
       {wide
-        ? <Shot u={u} src={img} style={{ left: W * 0.5, top: m, width: W * 0.5 - m, height: H - 2 * m }} />
-        : <Shot u={u} src={img} style={{ left: m, right: m, top, bottom }} />}
-      <div style={{ position: 'absolute', left: m, width: colW, top: m, bottom: m, display: 'flex', flexDirection: 'column' }}>
+        ? <Shot u={u} src={img} style={{ left: W * 0.5, top: (H - wideBox.height) / 2, ...wideBox }} />
+        : <Shot u={u} src={img} style={{ left: m, top: top + (H - top - bottom - tallBox.height) / 2, ...tallBox }} />}
+      <div style={{ position: 'absolute', left: m, width: colW, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
         <Eyebrow text="you asked" size={1.5 * u} />
         <div style={{ height: 3 * u }} />
         <div style={{ fontFamily: DMSANS, fontWeight: 900, fontSize: size, letterSpacing: '-0.05em', lineHeight: 1.0, whiteSpace: 'nowrap', color: C.plum }}>
           {rows.map((r, i) => <div key={i}>{r}{i === rows.length - 1 && caret}</div>)}
         </div>
-        <div style={{ height: 2.4 * u }} />
-        <Body size={bodySize}>Ask for it. It builds it. It's yours.</Body>
+        {!sq && <div style={{ height: 2.4 * u }} />}
+        {!sq && <Body size={bodySize}>Ask for it. It's yours.</Body>}
         <div style={{ flex: 1 }} />
         <Foot u={u} row={shape === 'square'} tight={shape === 'square'} />
       </div>
@@ -115,21 +125,21 @@ const Ask: React.FC = () => {
 
 // ---- 3. quote: the founder, in his own words ----
 const Quote: React.FC = () => {
-  const { W, H, shape, u, m } = useFrame();
+  const { W, H, shape, u, m, mt, mb } = useFrame();
   const size = shape === 'tall' ? (W - 2 * m) / 10.6 : shape === 'square' ? (W - 2 * m) / 12.4 : Math.min((W - 2 * m) / 18.5, (H - 2 * m) / 7.2);
   const q = shape === 'wide'
     ? '“anything that a private company / can make, an open source community / of passionate people can now / make *better.*”'
     : '“anything that a / private company can / make, an open source / community of / passionate people / can now make *better.*”';
   return (
     <AbsoluteFill><BgNight />
-      <div style={{ position: 'absolute', left: m, right: m, top: m, bottom: m, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
         {/* WHY "from the founder": "time to fight back" is also his phrase, but above this sentence it read as a caption he never gave it, and it was the one place the campaign shouted (two reviews). */}
         <Eyebrow dark text="from the founder" size={1.5 * u} />
         {/* WHY: on a 9:16 story the quote sat at the top over a large empty lower half; a flexible gap centres it instead. */}
         <div style={H / W > 1.5 ? { flex: 1, minHeight: 5 * u } : { height: (shape === 'tall' ? 5 : 3) * u }} />
         <Head dark text={q} size={size} />
         <div style={{ height: 3 * u }} />
-        <Body dark size={2.2 * u} width={shape === 'wide' ? '60%' : '90%'}>Destin Moss, who built youcoded without writing a line of code.</Body>
+        <Body dark size={2.2 * u} width={shape === 'wide' ? '60%' : '90%'}>Destin Moss, who built youcoded without writing code.</Body>
         <div style={{ flex: 1, minHeight: 4 * u }} />
         <Foot u={u} dark row={shape !== 'tall'} tight={shape === 'square'} />
       </div>
@@ -138,10 +148,10 @@ const Quote: React.FC = () => {
 };
 
 // ---- 4. everyone: the same app, as many different people made it ----
-const WALL = ['page-home--golden-sunbreak', 'chat--meadow-mist', 'page-money--midnight', 'office-doc--youcoded', 'page-home--cotton-candy-sky', 'market-themes--youcoded',
-  'page-money--halftone-dimension', 'chat--golden-sunbreak', 'page-home--midnight', 'page-money--meadow-mist', 'chat--cotton-candy-sky', 'page-money--cotton-candy-sky'].map((n) => `stills/${n}.png`);
+const WALL = ['page-home--golden-sunbreak', 'chat--meadow-mist', 'page-home--meadow-mist', 'office-doc--youcoded', 'page-home--cotton-candy-sky', 'market-themes--youcoded',
+  'chat--halftone-dimension', 'chat--golden-sunbreak', 'page-home--midnight', 'page-home--halftone-dimension', 'chat--cotton-candy-sky', 'chat--midnight'].map((n) => `stills/${n}.png`);
 const Everyone: React.FC = () => {
-  const { W, H, shape, u, m } = useFrame();
+  const { W, H, shape, u, m, mt, mb } = useFrame();
   const wide = shape === 'wide';
   const footH = shape === 'square' ? 6.2 : FOOT_H;      // a square uses the one-row foot, so the picture is not a thin strip
   const rowsT = wide ? ['everyone who', 'installs it can', '*change* it.'] : ['everyone who installs it', 'can *change* it.'];
@@ -153,8 +163,8 @@ const Everyone: React.FC = () => {
   // The wall fills exactly the space the text leaves: whole rows top to bottom, bleeding off the sides.
   const area = wide
     ? { left: W * 0.5, top: m, width: W * 0.5 + gap, height: H - 2 * m }
-    : { left: -W * 0.04, top: m + textH(u, size * 0.98, rowsT.length, bodyLines, bodySize) + 3.5 * u, width: W * 1.08, height: 0 };
-  if (!wide) area.height = H - area.top - m - (footH + 3.5) * u;
+    : { left: -W * 0.04, top: mt + textH(u, size * 0.98, rowsT.length, bodyLines, bodySize) + 3.5 * u, width: W * 1.08, height: 0 };
+  if (!wide) area.height = H - area.top - mb - (footH + 3.5) * u;
   const want = wide ? 2 : 3;                                              // tiles across before the bleed
   const rows = Math.max(1, Math.round(area.height / ((area.width / want) * 0.625 + gap)));
   const tileH = (area.height - gap * (rows - 1)) / rows, tileW = tileH * 1.6;
@@ -173,12 +183,12 @@ const Everyone: React.FC = () => {
           );
         })}
       </div>
-      <div style={{ position: 'absolute', left: m, width: colW, top: m, bottom: m, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'absolute', left: m, width: colW, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
         <Eyebrow text="built together" size={1.5 * u} />
         <div style={{ height: 3 * u }} />
         <Head text={rowsT.join(' / ')} size={size} />
         <div style={{ height: 2.4 * u }} />
-        <Body size={bodySize} width="94%">A new look, a new page, a fix for something that annoys you. Ask for it, then share it.</Body>
+        <Body size={bodySize} width="94%">A new look, a new page, a feature you wish it had. Ask for it, then share it.</Body>
         <div style={{ flex: 1 }} />
         <Foot u={u} row={shape === 'square'} tight={shape === 'square'} />
       </div>
@@ -203,7 +213,10 @@ export const Banner: React.FC = () => {
       <AbsoluteFill style={{ background: C.lavender, boxShadow: `inset 0 0 0 ${Math.max(1, H * 0.008)}px ${C.border}` }}>
         <div style={{ position: 'absolute', left: pad, right: pad, top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: H * 0.2 }}>
           <Head text="software you *own,* / not rent." size={hs} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: H * 0.08, flex: 'none' }}><Icon size={H * 0.32} /><Wordmark size={H * 0.22} /></div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: H * 0.06, flex: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: H * 0.08 }}><Icon size={H * 0.32} /><Wordmark size={H * 0.22} /></div>
+            <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: H * 0.1, color: C.plum }}>youcoded.ai</span>
+          </div>
         </div>
       </AbsoluteFill>
     );
@@ -226,7 +239,8 @@ export const Banner: React.FC = () => {
       <div style={{ position: 'absolute', left: pad, right: pad, top: pad, bottom: pad, display: 'flex', flexDirection: 'column' }}>
         <Head text="software / you *own,* / not rent." size={hs} />
         <div style={{ height: hs * 0.32 }} />
-        <div style={{ fontFamily: DMSANS, fontWeight: 500, fontSize: hs * 0.27, lineHeight: 1.3, color: C.plum2, letterSpacing: '-0.01em' }}>One open app that becomes what you ask for.</div>
+        {/* the narrowest slot drops the sentence: at 160 px wide it would be about 8 px tall */}
+        {r > 0.4 && <div style={{ fontFamily: DMSANS, fontWeight: 500, fontSize: hs * 0.27, lineHeight: 1.3, color: C.plum2, letterSpacing: '-0.01em' }}>One open app that becomes what you ask for.</div>}
         {/* WHY: tall "skyscraper" slots had a blank middle third; the Home page (a real frame from the film) fills it. */}
         {tower && r > 0.4          /* the narrowest slot (160 wide) shows only an unreadable sliver, so it stays type-only */
           ? <div style={{ flex: 1, margin: `${hs * 0.45}px 0`, borderRadius: W * 0.03, overflow: 'hidden', boxShadow: `0 ${W * 0.02}px ${W * 0.06}px rgba(74,38,110,0.22), 0 0 0 1px rgba(201,176,219,0.7)` }}>
