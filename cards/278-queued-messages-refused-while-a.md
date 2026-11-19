@@ -1,7 +1,7 @@
 ---
 id: 278
 title: Queued messages refused while a background agent waits on a question
-stage: build
+stage: merged
 tags: claude-code-integration, chat-data, sessions, bug
 related: 193
 branch: 278-queued-messages-refused-while-a
