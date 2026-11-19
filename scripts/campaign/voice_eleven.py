@@ -26,6 +26,6 @@ try:
     audio = urllib.request.urlopen(req, timeout=300).read()
 except urllib.error.HTTPError as e:
     sys.exit(f"{name}: HTTP {e.code} {e.read().decode()[:300]}")
-out = os.path.expanduser(f"~/Videos/youcoded-campaign/voice/eleven/{name}.mp3")
+out = os.path.expanduser(f"~/Videos/youcoded-campaign/voice/eleven/{os.environ.get("TAKE_DIR", "")}{name}.mp3")
 open(out, "wb").write(audio)
 print(out)
