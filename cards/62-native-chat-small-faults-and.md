@@ -12,14 +12,15 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.converse.native, chat.converse.queue
-work: session/fix-anthropic-many-image-brick, session/chat-followups
+work: session/fix-anthropic-many-image-brick, session/chat-followups, session/62-queue-edit-choice
 ---
 Progress
-Done: Landed 2026-11-13 (youcoded PR #747, 320b0bcaa): files attached to a waiting message show as chips in line after the text; on phones they drop underneath.
-Next: Remaining faults on this card are untouched.
-Blocked: nothing recorded.
+Done: Deck 2026-11-19 queue-edit-choice: Destin said no - the refusal is fine, Replace/Append is overcomplicated. Branch session/62-queue-edit-choice not to be merged
+Next: Delete the branch once he OKs it
+Blocked: Nothing
 
 Chats
+- 2026-11-18 session/62-queue-edit-choice: chat started
 - 2026-11-12 session/chat-followups: chat started
 - 2026-10-21 session/fix-anthropic-many-image-brick: Stuck conversations after provider errors, cut-off replies, the new error card
 

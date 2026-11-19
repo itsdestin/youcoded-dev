@@ -89,3 +89,19 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#764 behind | Nothing visible.
 - youcoded#765 behind | Nothing visible.
 - youcoded#766 fixes | The Effort and Fast chips stay hidden until the app has really read your saved choice, instead of showing a guess.
+- youcoded#767 new | When your Claude, ChatGPT or OpenRouter sign-in runs out, the chat shows a card with a Sign in button instead of an error you have to decode.
+- youcoded#767 new | With no internet, the app says "No internet connection" right away, and sign-in buttons stop before opening a page that can't load.
+- youcoded#767 new | Settings shows when your Claude sign-in expires, and a signed-out Claude can now be signed in from Settings.
+- youcoded#768 fixes | Clicking a link to a file outside the chat's folder now opens it, even when a different file with the same name was opened before.
+- youcoded#771 new | Pasting a picture in the phone browser now attaches it, just like the paperclip.
+- youcoded#772 behind | Shrunk copies of big pictures are cleaned up after 90 days unused; in chats older than that, those pictures may show as no longer available.
+- youcoded#773 behind | Nothing visible.
+- youcoded#780 behind | Nothing visible.
+- youcoded#774 fixes | Dragging a file onto the message box attaches it again.
+- youcoded#775 fixes | On Android, the camera switches off when the QR scanner closes.
+- youcoded#776 fixes | In online games, you can accept a rematch your opponent asked for.
+- youcoded#777 fixes | A plugin install that fails partway cleans up, so trying again works.
+- youcoded#778 fixes | The phone switches to a new chat after reconnecting to a computer with no chats open.
+- youcoded#779 fixes | Deleting comments in a Word document no longer leaves markers that make Word ask to repair it.
+- youcoded#781 fixes | Messages you queue in a chat no longer get stuck while a background helper waits for your permission.
+- youcoded#781 fixes | Pressing Send now on a waiting message tells you why it can't send yet.

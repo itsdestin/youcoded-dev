@@ -1,0 +1,282 @@
+"""walkthrough-check: the done / not-done gate for the walkthrough flow (deck/gate.py).
+Picture-free: specs here are bare JSON with rows, and answers files are written by hand in the
+shape serve.py saves (answers[step] = {v, changes, results, ...}, plus `submitted`)."""
+import io
+import json
+import os
+import sys
+import subprocess
+import tempfile
+import unittest
+from contextlib import redirect_stderr, redirect_stdout
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(HERE))
+from deck.gate import also_check, changes_requested, check_gate   # noqa: E402
+
+
+def w(path, obj):
+    with open(path, 'w') as f:
+        json.dump(obj, f)
+
+
+BEFORE = {'title': 't', 'key': 'k', 'out': 'k.html', 'steps': [
+    {'id': 'W-1', 'calls': [
+        {'id': 'save', 'call': 'A search can be saved.', 'why': 'A star.', 'decided': 'i run the same search every monday'},
+        {'id': 'extra', 'call': 'Star is big.', 'why': 'Easy to hit.'}]},
+    {'id': 'W-5', 'calls': [
+        {'id': 'c1', 'call': 'Reviewer reads it.', 'why': 'Rules.', 'result': 'run'},
+        {'id': 'c2', 'call': 'Phone check.', 'why': 'Narrow.', 'result': 'skip'}]}]}
+AFTER = {'title': 't', 'key': 'k2', 'out': 'k2.html', 'steps': [
+    {'id': 'W-1', 'calls': [{'id': 'a', 'call': 'Built.', 'why': 'Yes.', 'from': 'W-1/save'}]},
+    {'id': 'W-5', 'calls': [{'id': 'r1', 'call': 'Reviewer found nothing.', 'why': 'Read.', 'from': 'W-5/c1', 'result': 'pass', 'check': 'code-review'}]},
+    # WHY: the after-build deck must carry the two lists (feature-flow step 5); the gate fails without them.
+    {'id': 'W-7', 'words': True, 'list': 'changed-while-building', 'calls': [{'id': 'b1', 'call': 'Star at the right edge.', 'why': 'As drawn.', 'built': 'as planned'}]},
+    {'id': 'W-8', 'words': True, 'list': 'found-in-review', 'calls': [{'id': 'f1', 'call': 'The review found nothing.', 'why': 'It read every changed file.', 'none_found': True}]}]}
+SUB = {'submitted': '2026-11-11T10:00:00Z', 'answers': {}}
+TICKED = {'submitted': '2026-11-11T10:00:00Z', 'answers': {'W-7': {'ok': {'b1': True}}, 'W-8': {'ok': {'f1': True}}}}
+
+
+class Gate(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.b = os.path.join(self.tmp, 'x.walkthrough.json')
+        self.a = os.path.join(self.tmp, 'x.walkthrough.after.json')
+
+    def put(self, before=BEFORE, after=AFTER, b_ans=SUB, a_ans=TICKED):
+        w(self.b, before)
+        if after is not None: w(self.a, after)
+        if b_ans is not None: w(os.path.join(self.tmp, 'x.walkthrough.answers.json'), b_ans)
+        if a_ans is not None: w(os.path.join(self.tmp, 'x.walkthrough.after.answers.json'), a_ans)
+
+    def problems(self, **kw):
+        self.put(**kw)
+        return check_gate(self.b)[0]
+
+    def has(self, ps, text):
+        self.assertTrue(any(text in p for p in ps), ps)
+
+    def test_finished_passes(self):
+        self.assertEqual(self.problems(), [])
+
+    def test_before_not_submitted(self):
+        self.has(self.problems(b_ans={'answers': {}}), 'before-build walkthrough has not been submitted')
+
+    def test_before_answers_missing(self):
+        self.has(self.problems(b_ans=None), 'before-build walkthrough has not been submitted')
+
+    def test_no_after_walkthrough(self):
+        self.has(self.problems(after=None), 'no after-build walkthrough yet')
+
+    def test_request_without_row_refused(self):
+        after = json.loads(json.dumps(AFTER)); del after['steps'][0]['calls'][0]['from']
+        self.has(self.problems(after=after), 'request W-1/save')
+
+    def test_dropped_request_with_reason_counts_and_blank_reason_refused(self):
+        after = json.loads(json.dumps(AFTER)); after['steps'][0]['calls'][0]['dropped'] = 'cut for time'
+        self.assertEqual(self.problems(after=after), [])
+        after['steps'][0]['calls'][0]['dropped'] = ' '
+        self.has(self.problems(after=after), '"dropped" needs the reason')
+
+    def test_commented_row_is_a_request(self):
+        ans = {'submitted': 'x', 'answers': {'W-1': {'v': 'other', 'changes': {'extra': 'make it smaller'}}}}
+        self.has(self.problems(b_ans=ans), 'request W-1/extra')
+
+    def test_bad_link_refused(self):
+        after = json.loads(json.dumps(AFTER)); after['steps'][0]['calls'][0]['from'] = 'W-9/nope'
+        self.has(self.problems(after=after), 'not a row of the before-build walkthrough')
+
+    def test_switched_on_check_needs_a_result(self):
+        after = json.loads(json.dumps(AFTER)); after['steps'][1]['calls'][0]['result'] = 'run'
+        self.has(self.problems(after=after), 'check W-5/c1')
+        del after['steps'][1]['calls'][0]['result']
+        self.has(self.problems(after=after), 'check W-5/c1')
+
+    def test_a_failed_check_still_counts_as_run(self):
+        after = json.loads(json.dumps(AFTER)); after['steps'][1]['calls'][0]['result'] = 'fail'
+        self.assertEqual(self.problems(after=after), [])
+
+    def test_skipped_check_needs_no_row_but_his_switch_wins(self):
+        # He switched c2 ON in the deck: the spec said skip, his answer wins.
+        ans = {'submitted': 'x', 'answers': {'W-5': {'v': 'other', 'results': {'c2': 'run'}}}}
+        self.has(self.problems(b_ans=ans), 'check W-5/c2')
+        # He switched c1 OFF: no result row required.
+        ans = {'submitted': 'x', 'answers': {'W-5': {'v': 'other', 'results': {'c1': 'skip'}}}}
+        after = json.loads(json.dumps(AFTER)); del after['steps'][1]
+        self.assertEqual(self.problems(b_ans=ans, after=after), [])
+
+    def test_after_not_submitted(self):
+        self.has(self.problems(a_ans={'answers': {}}), 'after-build walkthrough has not been submitted')
+
+    def test_after_changes_requested(self):
+        for ans in ({'W-1': {'v': 'other', 'changes': {'a': 'no'}}},
+                    {'W-5': {'v': 'other', 'results': {'r1': 'fail'}}},
+                    {'W-1': {'v': 'other', 'marks': [{'pic': 'p', 'text': 'x'}]}},
+                    {'W-1': {'v': 'other', 'edits': {'k': {'from': 'a', 'to': 'b'}}}},
+                    {'W-1': {'v': 'yes', 'note': 'hmm'}}):
+            self.has(self.problems(a_ans={'submitted': 'x', 'answers': ans}), 'not finished')
+
+    def test_accepted_and_passed_rows_are_not_changes(self):
+        ans = {'W-1': {'v': 'yes', 'accepted': True}, 'W-5': {'v': 'yes', 'results': {'r1': 'pass'}}, **TICKED['answers']}
+        self.assertEqual(self.problems(a_ans={'submitted': 'x', 'answers': ans}), [])
+
+    def test_page_and_general_notes_are_changes(self):
+        self.has(self.problems(a_ans={'submitted': 'x', 'answers': {}, 'pageNotes': {'p1': 'one more thing'}}), 'page p1')
+        self.has(self.problems(a_ans={'submitted': 'x', 'answers': {}, 'notes': 'hi'}), 'general note')
+
+    def test_comment_on_a_check_is_passed_on(self):
+        ans = {'submitted': 'x', 'answers': {'W-5': {'v': 'other', 'changes': {'c1': 'look at the empty state'}}}}
+        self.put(b_ans=ans)
+        self.assertEqual(also_check(BEFORE, ans), {'W-5/c1': 'look at the empty state'})
+        self.assertIn('also check (W-5/c1): look at the empty state', check_gate(self.b)[1][-1])
+
+    def test_changes_requested_empty(self):
+        self.assertEqual(changes_requested(SUB), [])
+
+
+class Cli(unittest.TestCase):
+    def test_exit_codes(self):
+        sys.path.insert(0, os.path.dirname(HERE))
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('rc', os.path.join(os.path.dirname(HERE), 'review-cards.py'))
+        rc = importlib.util.module_from_spec(spec); spec.loader.exec_module(rc)
+        tmp = tempfile.mkdtemp(); b = os.path.join(tmp, 'x.walkthrough.json')
+        w(b, BEFORE)
+        err = io.StringIO()
+        with redirect_stderr(err):
+            self.assertEqual(rc.main(['walkthrough-check', b]), 1)
+        self.assertIn('NOT FINISHED', err.getvalue())
+        w(os.path.join(tmp, 'x.walkthrough.after.json'), AFTER)
+        w(os.path.join(tmp, 'x.walkthrough.answers.json'), SUB)
+        w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), TICKED)
+        out = io.StringIO()
+        with redirect_stdout(out):
+            self.assertEqual(rc.main(['walkthrough-check', b]), 0)
+        self.assertTrue(out.getvalue().startswith('ok: '))
+
+
+class TickGate(unittest.TestCase):
+    """Round 10, "Tick or change": a row of a "Yours to change" list he neither ticked nor changed means he
+    has not gone through the after-build deck, so the gate says NOT finished."""
+    LIST = {'id': 'W-9', 'words': True, 'calls': [
+        {'id': 'r1', 'call': 'First row words.', 'why': 'x'}, {'id': 'r2', 'call': 'Second row words.', 'why': 'x'}]}
+
+    def probs(self, ans):
+        from deck.gate import unlooked_in
+        return unlooked_in({'steps': [self.LIST]}, {'answers': {'W-9': ans} if ans is not None else {}})
+
+    def test_untouched_list_names_both_rows(self):
+        out = self.probs(None)
+        self.assertEqual(len(out), 2); self.assertIn('First row words.', out[0])
+
+    def test_ticked_and_changed_rows_are_fine(self):
+        self.assertEqual(self.probs({'v': 'other', 'ok': {'r1': True}, 'changes': {'r2': 'no'}}), [])
+
+    def test_one_row_left_is_named(self):
+        out = self.probs({'ok': {'r1': True}})
+        self.assertEqual(len(out), 1); self.assertIn('W-9/r2', out[0])
+
+    def test_old_shape_accepted_still_reads_as_accepted(self):
+        self.assertEqual(self.probs({'v': 'yes', 'accepted': True}), [])
+        self.assertEqual(self.probs({'v': 'other', 'changes': {'r1': 'x'}}), [])
+
+    def test_a_results_list_or_context_list_is_never_asked_to_be_ticked(self):
+        from deck.gate import unlooked_in
+        for extra in ({'context': True}, {}):
+            st = dict(self.LIST, **extra)
+            if not extra: st['calls'] = [dict(c, result='pass') for c in st['calls']]
+            self.assertEqual(unlooked_in({'steps': [st]}, {'answers': {}}), [])
+
+    def test_the_whole_gate_refuses_an_unlooked_row(self):
+        tmp = tempfile.mkdtemp(); b = os.path.join(tmp, 'x.walkthrough.json'); a = os.path.join(tmp, 'x.walkthrough.after.json')
+        w(b, {'title': 't', 'key': 'k', 'out': 'k.html', 'steps': [{'id': 'W-1', 'calls': [{'id': 'save', 'call': 'S', 'why': 'x', 'decided': 'q'}]}]})
+        w(a, {'title': 't', 'key': 'k2', 'out': 'k2.html', 'steps': [dict(self.LIST, calls=[dict(self.LIST['calls'][0], **{'from': 'W-1/save'}), self.LIST['calls'][1]])]})
+        w(os.path.join(tmp, 'x.walkthrough.answers.json'), SUB)
+        w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), {'submitted': 'x', 'answers': {'W-9': {'ok': {'r1': True}}}})
+        problems = check_gate(b)[0]
+        self.assertTrue(any('Second row words.' in p and 'not looked at' in p for p in problems), problems)
+
+
+class AfterBuildLists(unittest.TestCase):
+    """The done gate also needs "What changed while building" and "Found in review" (feature-flow step 5)."""
+    def gate(self, after, a_ans=TICKED):
+        tmp = tempfile.mkdtemp(); b = os.path.join(tmp, 'x.walkthrough.json')
+        w(b, BEFORE); w(os.path.join(tmp, 'x.walkthrough.after.json'), after)
+        w(os.path.join(tmp, 'x.walkthrough.answers.json'), SUB); w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), a_ans)
+        return check_gate(b)[0]
+
+    def without(self, step_id):
+        return dict(AFTER, steps=[st for st in AFTER['steps'] if st['id'] != step_id])
+
+    def test_both_lists_ticked_pass(self):
+        self.assertEqual(self.gate(AFTER), [])
+
+    def test_missing_changed_while_building_fails(self):
+        self.assertTrue(any('What changed while building' in p for p in self.gate(self.without('W-7'))))
+
+    def test_missing_found_in_review_fails_when_the_review_ran(self):
+        self.assertTrue(any('Found in review' in p for p in self.gate(self.without('W-8'))))
+
+    def test_an_unanswered_row_of_either_list_fails(self):
+        for sid, rid in (('W-7', 'b1'), ('W-8', 'f1')):
+            ans = json.loads(json.dumps(TICKED)); ans['answers'][sid] = {'ok': {}}
+            ps = self.gate(AFTER, ans)
+            self.assertTrue(any(f'{sid}/{rid}' in p and 'not looked at' in p for p in ps), ps)
+
+    def test_a_comment_on_a_row_counts_as_answered_but_still_a_change(self):
+        ans = json.loads(json.dumps(TICKED)); ans['answers']['W-7'] = {'changes': {'b1': 'why?'}}
+        ps = self.gate(AFTER, ans)
+        self.assertFalse(any('not looked at' in p for p in ps), ps)
+        self.assertTrue(any('he asked for a change' in p for p in ps), ps)
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+class ApprovedVersion(unittest.TestCase):
+    """The final check reads the before-walkthrough AS HE SAW IT: git at the commit his answers file records."""
+    def git(self, *a):
+        subprocess.run(['git', '-c', 'user.name=t', '-c', 'user.email=t@t', *a], cwd=self.tmp, check=True, capture_output=True)
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.b = os.path.join(self.tmp, 'x.walkthrough.json')
+        self.a = os.path.join(self.tmp, 'x.walkthrough.after.json')
+        self.git('init', '-q')
+        w(self.b, BEFORE)
+        self.git('add', 'x.walkthrough.json'); self.git('commit', '-qm', 'approved')
+        self.commit = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=self.tmp, capture_output=True, text=True).stdout.strip()
+        w(self.a, AFTER)
+        w(os.path.join(self.tmp, 'x.walkthrough.answers.json'), {**SUB, 'built': {'at': 'x', 'commit': self.commit}})
+        w(os.path.join(self.tmp, 'x.walkthrough.after.answers.json'), TICKED)
+
+    def test_a_later_edit_to_the_file_does_not_change_what_he_approved(self):
+        # his request row `save` is dropped from the file AFTER he answered; the approved version still has it, so the after-walkthrough still answers it
+        edited = json.loads(json.dumps(BEFORE)); edited['steps'][0]['calls'] = [c for c in edited['steps'][0]['calls'] if c['id'] != 'save']
+        w(self.b, edited)
+        problems, notes = check_gate(self.b)
+        self.assertEqual(problems, [])
+        self.assertTrue(any('as it was when he answered it' in n for n in notes), notes)
+        # and an after-walkthrough that no longer answers the approved request is refused, whatever the file says now
+        after = json.loads(json.dumps(AFTER)); after['steps'][0]['calls'][0].pop('from')
+        w(self.a, after)
+        self.assertTrue(any('request W-1/save' in p for p in check_gate(self.b)[0]))
+
+    def test_unknown_commit_falls_back_to_the_file_with_a_note(self):
+        w(os.path.join(self.tmp, 'x.walkthrough.answers.json'), {**SUB, 'built': {'at': 'x', 'commit': 'deadbee'}})
+        problems, notes = check_gate(self.b)
+        self.assertEqual(problems, [])
+        self.assertTrue(any('current before-build walkthrough file' in n and 'deadbee' in n for n in notes), notes)
+
+    def test_no_commit_recorded_falls_back_with_a_note(self):
+        w(os.path.join(self.tmp, 'x.walkthrough.answers.json'), SUB)
+        notes = check_gate(self.b)[1]
+        self.assertTrue(any('records no build commit' in n for n in notes), notes)
+
+    def test_outside_git_falls_back(self):
+        tmp = tempfile.mkdtemp(); b = os.path.join(tmp, 'x.walkthrough.json')
+        w(b, BEFORE); w(os.path.join(tmp, 'x.walkthrough.after.json'), AFTER)
+        w(os.path.join(tmp, 'x.walkthrough.answers.json'), {**SUB, 'built': {'commit': 'abc1234'}})
+        w(os.path.join(tmp, 'x.walkthrough.after.answers.json'), TICKED)
+        self.assertEqual(check_gate(b)[0], [])

@@ -1,0 +1,26 @@
+{
+ "deck": "review-deck-rethink",
+ "started": "2026-11-16T23:27:51.561Z",
+ "submitted": "2026-11-16T23:28:51Z",
+ "cur": 0,
+ "answers": {
+  "F-1": {
+   "ok": {
+    "pages": true,
+    "gone": true,
+    "picmark": true,
+    "margin": true,
+    "leak": true
+   },
+   "t": 1794871730325,
+   "v": "yes",
+   "seconds": 59,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-16T02:12:19Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "01e3bf65a"
+ }
+}

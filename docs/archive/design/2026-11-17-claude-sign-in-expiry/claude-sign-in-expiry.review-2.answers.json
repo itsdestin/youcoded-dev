@@ -1,0 +1,72 @@
+{
+ "deck": "claude-sign-in-expiry-review-2",
+ "started": "2026-11-18T11:28:23.929Z",
+ "submitted": "2026-11-18T11:29:42Z",
+ "cur": 8,
+ "answers": {
+  "R2-1": {
+   "v": "yes",
+   "t": 1795001307949,
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "t": 1795001311535,
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-3": {
+   "v": "yes",
+   "t": 1795001364240,
+   "note": "\"Sign in successful. Send another message to continue.\" and the card should disappear on the next send",
+   "seconds": 53,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-4": {
+   "v": "yes",
+   "t": 1795001367472,
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-5": {
+   "v": "yes",
+   "t": 1795001370166,
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-6": {
+   "v": "yes",
+   "t": 1795001372342,
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-7": {
+   "v": "yes",
+   "t": 1795001375351,
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-8": {
+   "v": "yes",
+   "t": 1795001377702,
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-9": {
+   "v": "yes",
+   "t": 1795001381501,
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

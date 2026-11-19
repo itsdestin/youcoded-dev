@@ -1,0 +1,365 @@
+{
+ "title": "Review decks: how topics change, and the look",
+ "key": "review-deck-rethink-round10",
+ "out": "review-deck-rethink.round10.html",
+ "earlier": [
+  "review-deck-rethink.round9.json",
+  "review-deck-rethink.round8.json",
+  "review-deck-rethink.round7.json",
+  "review-deck-rethink.round6.json",
+  "review-deck-rethink.round5.json",
+  "review-deck-rethink.round4.json",
+  "review-deck-rethink.round3.json",
+  "review-deck-rethink.round2.json",
+  "review-deck-rethink.questions.json"
+ ],
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "How a topic changes over rounds",
+   "intro": "Judge here: which way should a deck treat a topic over time? You said you wanted real cases first. Each drawing shows the same three: voice input (answered once), the pencil (answered, then reopened by you), and \"what came before\" (built and rejected twice). Press a picture to open it at full size."
+  },
+  {
+   "id": "A-1",
+   "path": "Any deck, from its first round to the finished build",
+   "headline": "What should happen to a topic after you answer it?",
+   "today": "Each round is a separate deck. Earlier rounds sit behind a History button, which you dislike.",
+   "checked": "Opened the round-9 deck today; the History button is still in its header.",
+   "problem": "You have not decided. You described two ideas: a question that evolves into refined versions, or an answered question that sinks to the bottom with its round.",
+   "proposal": "Pick one, and say what to borrow from another. All three keep one link per feature and the four stages across the top.",
+   "surface": "Review decks",
+   "words": true,
+   "options": [
+    {
+     "id": "place",
+     "label": "In place",
+     "picture": "pictures/r10-a1.png",
+     "pros": [
+      "A topic never moves, so you can find it again.",
+      "An open topic shows its whole story above the question."
+     ],
+     "cons": [
+      "The longest page; it grows every round.",
+      "Open topics sit scattered among settled ones."
+     ]
+    },
+    {
+     "id": "sink",
+     "label": "Answered sinks",
+     "picture": "pictures/r10-a2.png",
+     "recommended": true,
+     "pros": [
+      "The page opens on exactly what needs you.",
+      "A reopened topic returns to the top and says where it came from."
+     ],
+     "cons": [
+      "Topics change position.",
+      "An open topic shows one line of its past, not the full story, unless I add that."
+     ]
+    },
+    {
+     "id": "versions",
+     "label": "Versions",
+     "picture": "pictures/r10-a3.png",
+     "pros": [
+      "A question truly evolves in one spot.",
+      "Short page, fixed places."
+     ],
+     "cons": [
+      "Earlier versions hide behind arrows; you could answer without seeing them.",
+      "A new control to learn, and the most work to build."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "A-2",
+   "path": "An open topic that has been through several rounds",
+   "headline": "How much of a topic's past should show without pressing anything?",
+   "today": "In drawing A the full story shows. In B one summary line shows. In C none shows until you step back.",
+   "checked": "Compared the three drawings on this page today.",
+   "problem": "You disliked both a hidden History button and a busy page. This is the trade between them.",
+   "proposal": "Pick how much is visible on an open topic. It applies to whichever shape you chose above.",
+   "surface": "Review decks",
+   "words": true,
+   "options": [
+    {
+     "id": "line",
+     "label": "One summary line, the rest opens on request",
+     "recommended": true,
+     "pros": [
+      "Calm page.",
+      "The past is one press away, on the topic itself."
+     ],
+     "cons": [
+      "One press to read your own earlier words."
+     ]
+    },
+    {
+     "id": "full",
+     "label": "The full story, always",
+     "pros": [
+      "Nothing hidden."
+     ],
+     "cons": [
+      "A topic argued over five rounds puts ten lines above its question."
+     ]
+    },
+    {
+     "id": "none",
+     "label": "Nothing unless asked",
+     "pros": [
+      "Shortest page."
+     ],
+     "cons": [
+      "Close to the History button you disliked."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Marking a row as looked at",
+   "intro": "Judge here: how should you tell a deck you have looked at a row? You said you do not want a row \"accidentally taken as approved just because i didnt read or see it\". Four drawings of the same five rows, half finished."
+  },
+  {
+   "id": "R-1",
+   "path": "A \"Yours to change\" list",
+   "headline": "How should a row be marked as looked at?",
+   "today": "A row has one pencil. A row you leave alone counts as approved.",
+   "checked": "Read the list code today.",
+   "problem": "A row you never reached is approved the same as one you read and liked.",
+   "proposal": "Pick one. The comment box at the foot of the page, which you like, stays in all four.",
+   "surface": "Review decks",
+   "words": true,
+   "options": [
+    {
+     "id": "tick",
+     "label": "Tick or change",
+     "picture": "pictures/r10-b1.png",
+     "recommended": true,
+     "pros": [
+      "\"Not looked at\" and \"fine\" can never be confused.",
+      "The page counts what is left."
+     ],
+     "cons": [
+      "One press per row; slow on a long list."
+     ]
+    },
+    {
+     "id": "seen",
+     "label": "Seen as you scroll",
+     "picture": "pictures/r10-b2.png",
+     "pros": [
+      "No extra buttons.",
+      "Next tells you if you skipped rows."
+     ],
+     "cons": [
+      "\"Seen\" means it was on screen, not that you read it.",
+      "Scroll tracking can misfire on a phone."
+     ]
+    },
+    {
+     "id": "rest",
+     "label": "Approve the rest",
+     "picture": "pictures/r10-b3.png",
+     "pros": [
+      "Fast when most rows are fine.",
+      "The button wakes only after the last row has been on screen."
+     ],
+     "cons": [
+      "One press still approves rows you scrolled past unread."
+     ]
+    },
+    {
+     "id": "today",
+     "label": "As today",
+     "picture": "pictures/r10-b4.png",
+     "pros": [
+      "Nothing to learn."
+     ],
+     "cons": [
+      "The exact problem you named."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-2",
+   "path": "Finishing a page with rows not looked at",
+   "headline": "Should rows you have not looked at stop you sending the deck?",
+   "today": "Nothing stops you. Untouched rows are sent as approved.",
+   "checked": "Read the finish-screen code today.",
+   "problem": "A warning can be ignored; a block can be annoying when you only care about two rows.",
+   "proposal": "Pick what happens at Done.",
+   "surface": "Review decks",
+   "words": true,
+   "options": [
+    {
+     "id": "warn",
+     "label": "Warn, list them, let me send anyway",
+     "recommended": true,
+     "pros": [
+      "You stay in charge.",
+      "Rows you skipped are sent as \"not looked at\", never as approved."
+     ],
+     "cons": [
+      "I may build on rows you never read; they come back next round marked so."
+     ]
+    },
+    {
+     "id": "block",
+     "label": "Block until every row is handled",
+     "pros": [
+      "Nothing unread is ever built on."
+     ],
+     "cons": [
+      "A long list must be finished before any answer reaches me."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "The look",
+   "intro": "Judge here: is this the right look? The seven drawings on the earlier pages are in your Ivory Schematic colours, with dots and plain words where last round had outlined labels."
+  },
+  {
+   "id": "L-1",
+   "path": "Every drawing in this deck",
+   "headline": "Do these drawings look like part of YouCoded?",
+   "today": "Last round you called the drawing ugly and said you hated its \"fingernail styling\".",
+   "checked": "Read your round-9 comment on question E-1 today.",
+   "problem": "I took \"fingernail\" to mean the small rounded outlined labels. If I guessed wrong, the new drawings miss the point.",
+   "proposal": "Yes means I build decks to look like these. No or Other: say what is still off, or drag across the part of the picture you mean.",
+   "surface": "Review decks",
+   "words": true,
+   "picture": "pictures/r10-a2.png",
+   "caption": "Drawing B from the first page.",
+   "yes": "Yes, this look",
+   "no": "No"
+  },
+  {
+   "id": "L-2",
+   "path": "What you meant last round",
+   "headline": "What was the \"fingernail styling\"?",
+   "today": "I removed every small rounded outlined label and replaced each with a dot and a plain word.",
+   "checked": "Compared last round's drawing with this round's today.",
+   "problem": "I am guessing at your meaning.",
+   "proposal": "Pick the closest, or write it.",
+   "surface": "Review decks",
+   "words": true,
+   "picture": "pictures/r9-e1.png",
+   "caption": "Last round's drawing, the one you disliked.",
+   "options": [
+    {
+     "id": "pills",
+     "label": "The small rounded outlined labels",
+     "pros": [
+      "Already gone in the new drawings."
+     ],
+     "cons": [
+      "None."
+     ]
+    },
+    {
+     "id": "stages",
+     "label": "The row of stage buttons at the top",
+     "pros": [
+      "Now the app's own tab strip."
+     ],
+     "cons": [
+      "None."
+     ]
+    },
+    {
+     "id": "else",
+     "label": "Something else (please write it)",
+     "pros": [
+      "I fix the right thing."
+     ],
+     "cons": [
+      "None."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-3",
+   "path": "Every deck",
+   "headline": "Should decks use your theme's typeface too?",
+   "today": "Decks now open in your theme's colours. The lettering is still the deck's own typewriter-style face.",
+   "checked": "Opened a deck in Ivory Schematic today.",
+   "problem": "The app uses your theme's typeface (Space Grotesk). The deck does not, so it still reads as a different product.",
+   "proposal": "Yes makes each deck fetch the typeface from Google when it opens, as the app does. No keeps the current lettering.",
+   "surface": "Review decks",
+   "words": true,
+   "yes": "Yes, match the app",
+   "no": "No, keep it"
+  },
+  {
+   "id": "P-4",
+   "page": "Built since your last answers",
+   "intro": "Judge here: is each thing built the way you meant? These are from your round-9 answers. Change any row with its pencil."
+  },
+  {
+   "id": "N-1",
+   "path": "Any deck link I send you",
+   "headline": "What you decided last round, now built",
+   "gallery": true,
+   "surface": "Review decks",
+   "words": true,
+   "calls": [
+    {
+     "id": "popup",
+     "call": "A picture opens at its real size and scrolls, with comments in a strip at the right.",
+     "why": "The top bar has Before / After, a Fit switch and an ×. Try it on any picture in this deck.",
+     "decided": "\"far too small and zoomed out… 90% of this popup page is unused dead space\"",
+     "picture": "pictures/r10-popup.png"
+    },
+    {
+     "id": "details",
+     "call": "The \"Details\" fold is gone.",
+     "why": "A row's story is plain lines above it, a check's explanation is under it, reuse notes are behind a small (i).",
+     "decided": "\"what even is the point of this?\""
+    },
+    {
+     "id": "kinds",
+     "call": "Each list holds one kind of row and says which at its head.",
+     "why": "For your information, Yours to change, Results, or Checks. The tool refuses a mixed list.",
+     "picture": "pictures/r10-rows.png"
+    },
+    {
+     "id": "touch",
+     "call": "On a phone, a drag scrolls a picture. You tap \"Comment on an area\" first, then drag.",
+     "why": "Not yet tried with a real finger."
+    },
+    {
+     "id": "reopen",
+     "call": "A deck you already sent reopens with your answers, still editable, and says when you sent them.",
+     "why": "A deck I rebuilt since then still starts empty. Not yet seen in a real browser."
+    },
+    {
+     "id": "theme",
+     "call": "Decks open in your current theme's colours.",
+     "why": "This deck is the first. Say if anything is hard to read in it."
+    },
+    {
+     "id": "checks",
+     "call": "The four safety checks are back, on unless you switch them off.",
+     "why": "A comment on a check's row tells that check what else to look at. Code review is on for every build."
+    },
+    {
+     "id": "gate",
+     "call": "Work cannot be called finished while a request is unaccounted for or a check has no result.",
+     "why": "Any note you leave on the after-build deck also counts as not finished. Say if that is too strict."
+    },
+    {
+     "id": "ignore",
+     "call": "The backup scanner ignores four lines, not the three I counted.",
+     "why": "My own note in the ignore file quoted one of the same harmless ids and was flagged too."
+    }
+   ]
+  }
+ ]
+}

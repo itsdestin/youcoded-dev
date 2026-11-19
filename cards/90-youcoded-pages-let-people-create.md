@@ -16,7 +16,7 @@ vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
 Done: Step 4 (automations) built on session/90-pages-finish: runner, both engines, page button, propose from chat, real Delete page; reviewed and tried in a dev copy
-Next: Destin: phones decision, Delete page chats wording, evaluator offer; then step 5 (accounts) and step 6 (sharing)
+Next: When the app design kit (card 150) exists, rebuild the Pages kit from its approved examples and reusable pieces, so Page guidance is tied to the real app UI (Destin, design-guidance deck, 2026-11-18).
 Blocked: step 4 build waits on that deck.
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.

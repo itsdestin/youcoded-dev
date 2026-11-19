@@ -1,0 +1,61 @@
+{
+ "deck": "claude-sign-in-expiry-questions-2",
+ "started": "2026-11-18T07:43:41.759Z",
+ "submitted": "2026-11-18T07:47:10Z",
+ "cur": 1,
+ "answers": {
+  "S-recap": {
+   "v": "yes",
+   "t": 1794987951495,
+   "seconds": 26,
+   "theme": "midnight"
+  },
+  "S-today": {
+   "v": "yes",
+   "t": 1794987951495,
+   "seconds": 26,
+   "theme": "midnight"
+  },
+  "Q-continue": {
+   "v": "pick",
+   "pick": "continue-button",
+   "t": 1794987951495,
+   "note": "i dont think this should be a regular visible user message. this should be something we hide from the chat renderer and show instead just as the assistant beginning its work again",
+   "seconds": 26,
+   "theme": "midnight"
+  },
+  "Q-chat-button": {
+   "v": "yes",
+   "t": 1794987951495,
+   "seconds": 26,
+   "theme": "midnight"
+  },
+  "Q-openrouter-how": {
+   "v": "pick",
+   "t": 1794987951495,
+   "note": "",
+   "pick": "remember-else-both",
+   "seconds": 26,
+   "theme": "midnight"
+  },
+  "S-offline-chat": {
+   "v": "yes",
+   "t": 1794988027660,
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "S-offline-signin": {
+   "v": "yes",
+   "t": 1794988027660,
+   "seconds": 25,
+   "theme": "midnight"
+  },
+  "Q-dot": {
+   "v": "pick",
+   "pick": "red",
+   "t": 1794988027660,
+   "seconds": 25,
+   "theme": "midnight"
+  }
+ }
+}
