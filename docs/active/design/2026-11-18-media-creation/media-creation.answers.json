@@ -1,7 +1,7 @@
 {
  "deck": "media-creation",
  "started": "2026-11-19T00:05:09.278Z",
- "submitted": null,
+ "submitted": "2026-11-19T00:22:54Z",
  "cur": 0,
  "answers": {
   "L-states": {
@@ -11,9 +11,20 @@
     "S-menu": true,
     "S-sent": true,
     "S-light": true,
-    "S-limit": true
+    "S-limit": true,
+    "S-no-provider": true
    },
-   "t": 1795046709449
+   "t": 1795047773596,
+   "v": "yes",
+   "seconds": 8,
+   "theme": "ivory-schematic"
+  },
+  "Q-d-video": {
+   "v": "pick",
+   "pick": "making-then-small",
+   "t": 1795047773596,
+   "seconds": 8,
+   "theme": "ivory-schematic"
   }
  },
  "built": {
