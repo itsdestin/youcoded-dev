@@ -94,7 +94,11 @@ pillars into concrete capabilities.
 
 ## What this document is not
 
-- **Not website or marketing copy.** Public wording keeps its own rules
-  (`.claude/rules/landing-page.md`). The ideas here can inform copy; the sentences are not copy.
+- **Not website or marketing copy.** Public wording keeps its own rules (`docs/brand/README.md`,
+  `.claude/rules/landing-page.md`). The ideas here can inform copy; the sentences are not copy.
+- **Not a feature list.** "Money" and "home" above name areas of life YouCoded is headed for; the
+  dashboards Destin made for them are his own examples and do not ship in the app. Marketing shows
+  people making YouCoded do what *they* want, and treats any one example as evidence of that
+  (brand guide section 9, The pitch).
 - **Not permission.** Anything a user can see or feel still needs Destin's approval first.
 - **Not a promise of dates.** It says where YouCoded is going, not when.

@@ -21,8 +21,8 @@ post, a listing, a README, release notes. `docs/brand/guide.html` shows it all d
 ## 1. The brand
 
 youcoded is one open app through which anyone, with no software skill, makes their technology
-work for them. Ask for what you want and it builds it inside the app: a page that runs your home or
-money, a new feature, a game, a whole new look. Share it, and everyone who installs youcoded can
+work for them. You make youcoded do what you want by telling it: it becomes your own app and your
+own assistant, shaped to how you live. Share what you made, and everyone who installs youcoded can
 use it and build on it. Today it is mostly an AI assistant; that is the doorway. The destination is
 an everything app on technology you own. Built entirely through conversation with AI by someone
 who has never written code. Full vision: `docs/vision/VISION.md`.
@@ -179,7 +179,33 @@ concise and punchy? Does every word, frame and page earn its value?"* Anything t
 about what rivals also offer (section 10). **Test:** nobody should finish a piece asking "so… why
 not just use Claude Code or Hermes?"
 
-- **Show one concrete example** ("a page that runs your house") over a list of adjectives.
+- **Show one concrete example** over a list of adjectives, written to the rules below.
+
+### The pitch: you are building your own youcoded (Destin, 2026-11-18)
+
+"The idea is that you are customizing youcoded. You are building youcoded. You are making your own
+app, your own assistant that does whatever … you want it to do. And everything else is just
+evidence towards that end."
+
+- **Say "make youcoded do X", never "build a page for X".** The audience has never used youcoded
+  and does not know what a "page" is. Do not use "page" or "Pages" for a thing youcoded makes in
+  anything aimed at newcomers.
+- **An example is evidence, never a feature.** Nothing in an example may read as something that
+  comes in the download. The smart-home and money dashboards are **not included in the app**: they
+  are things Destin made for himself. Never present them, or anything like them, as features.
+- **Every example stands on its own.** It must carry what the person wants, why it is worth
+  wanting, and how it differs from what already exists. "Build a home page" is neither cool nor
+  unique: Google Home and Apple Home already do that. The difference is that it is made to *your*
+  wishes. His example of the right shape: "I want youcoded to help me manage my smart home. I
+  don't care about TVs, I already have remotes, but I would like my lights, my light controls and
+  my thermostat settings on the front page. Just limit it to my room, put all the other rooms on a
+  different page or further down."
+- **Stop reaching for the home and the money.** Those two were used in nearly every marketing
+  piece up to 2026-11-18. Think more broadly: what would this particular viewer want their
+  technology to do that nothing they own will do for them? Use the home or money example only
+  when it is the best one for that piece, never by default, and never both.
+- **Test:** could the example be answered with "there is already an app for that"? Then it has
+  not shown the customising, and it is not ready.
 - **Respect developers:** "you don't need to code", never "coders are obsolete".
 - **Destin's story** (no coding background; dropped Microsoft, Apple and Google) is our strongest
   material. Quote him from `docs/vision/2026-10-22-why-youcoded-voice-notes.md`; never paraphrase.
@@ -195,18 +221,19 @@ not just use Claude Code or Hermes?"
 Every claim must be true in today's download. Check the app's source, not the August fact sheet.
 
 **Lead with what sets youcoded apart:**
-- **It becomes what you ask for:** pages that work as small apps, new features, whole new looks,
-  without code.
+- **It becomes what you ask for:** tell it what you want it to do and it reshapes itself: new
+  abilities, small apps of your own inside it, whole new looks, without code.
 - **Made for people who don't code.** Rival agents were built by and for developers.
 - **Everyone can build it:** themes, skills and more are shared through the marketplace.
-- **One home for your digital life:** chat, files, an Office editor, a browser, pages, games with
+- **One home for your digital life:** chat, files, an Office editor, a browser, games with
   friends, on every device. The Android app runs the assistant on the phone itself.
 
 **Table stakes** (rivals have them; state briefly, never as the pitch): any AI model including free
 local ones · free and open source (MIT) · asks before acting · terminal and Claude Code support.
 
 **Never claim:** an iPhone app (iPhones use it in the browser, through your computer), a big
-community (most add-ons are imported), or developer-editor features. **Check first:** background
+community (most add-ons are imported), developer-editor features, or that a smart-home or money
+dashboard comes with the app (neither is included; section 9, The pitch). **Check first:** background
 tasks, PDFs, automations, models running inside the Android app. **Numbers:** dated and sourced
 only (2026-11-18: 302 marketplace add-ons, 13 made for youcoded).
 
