@@ -45,8 +45,12 @@ export function cronIntervalDays(cron) {
 
 /** The first cron line in a workflow file's text, as days between runs, or null when it has none. */
 export function scheduleDays(text) {
-  const cron = text.match(/^\s*-\s*cron:\s*['"]([^'"]+)['"]/m);
-  return cron ? cronIntervalDays(cron[1]) : null;
+  // WHY quotes optional: an unquoted `- cron: 30 13 * * *` is valid YAML; missing it would skip a
+  // scheduled check and read green.
+  const cron = text.match(/^\s*-\s*cron:\s*['"]?([^'"#\n]+?)['"]?\s*(?:#.*)?$/m);
+  if (cron) return cronIntervalDays(cron[1]);
+  // A `schedule:` with no readable cron is unknown, not "unscheduled": fall back to daily so it is still judged.
+  return /^\s*schedule:/m.test(text) ? 1 : null;
 }
 
 /**
@@ -150,10 +154,18 @@ export function collectRepoSchedules(label, repository, now = Date.now(), ghFn =
 
 export function collectAnchors(root = ROOT, exec = run) {
   const title = 'Workspace doc checks';
-  try { exec('node', [path.join(root, 'scripts', 'audit-anchors.mjs'), '--no-diff'], { cwd: root }); return { title, level: 'green', summary: 'doc links and rules still point at real files', details: [] }; }
-  catch (e) {
+  try {
+    const out = String(exec('node', [path.join(root, 'scripts', 'audit-anchors.mjs'), '--no-diff'], { cwd: root }));
+    // WHY say so: the checker exits 0 but skips anchors that point into a repo that is not cloned here
+    // (youcoded-admin is private), and that gap must be visible rather than silently fine.
+    const gap = /not on disk \(unverifiable/.test(out) ? '; anchors into repos not cloned here (the private one) were not checked' : '';
+    return { title, level: 'green', summary: `doc links and rules still point at real files${gap}`, details: [] };
+  } catch (e) {
     if (e.status == null) return couldNot(title, e);
-    return { title, level: 'red', summary: 'the doc/anchor check fails', details: String(e.stdout ?? '').split('\n').filter(Boolean).slice(-5) };
+    // WHY from the first FAIL: the failures print first; the last lines are unrelated summary lines.
+    const lines = String(e.stdout ?? '').split('\n').filter(Boolean);
+    const from = Math.max(0, lines.findIndex((l) => l.startsWith('FAIL')));
+    return { title, level: 'red', summary: 'the doc/anchor check fails', details: lines.slice(from, from + 15) };
   }
 }
 
@@ -189,6 +201,9 @@ function main(argv) {
   }
   console.log(md);
   console.log(`Phone message (not sent from here): ${message}`);
+  // WHY exit 1 on red (CI only): the outputs above are already written, so the phone still hears the counts, and the
+  // run itself goes red (GitHub emails the owner) even if the ntfy secret is missing. A local dry run stays exit 0.
+  if (argv.includes('--ci') && count.red > 0) process.exitCode = 1;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) main(process.argv.slice(2));

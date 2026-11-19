@@ -31,9 +31,11 @@ jobs:
       message: ${{ steps.report.outputs.message }}
       red: ${{ steps.report.outputs.red }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7
         with:
           node-version: 22
 
@@ -72,14 +74,14 @@ jobs:
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          REPORT_RESULT: ${{ needs.report.result }}
           MESSAGE: ${{ needs.report.outputs.message }}
           RED: ${{ needs.report.outputs.red }}
         run: |
           if [ -z "$NTFY_TOPIC" ]; then echo "NTFY_TOPIC not set; the run's summary is the only notice."; exit 0; fi
           priority=default; tags=white_check_mark
-          if [ "$REPORT_RESULT" != "success" ] || [ -z "$MESSAGE" ]; then
-            # The report itself broke: say so, never stay silent.
+          if [ -z "$MESSAGE" ]; then
+            # No message means the report itself broke (a red report still writes its message before the job
+            # fails): say so, never stay silent.
             MESSAGE="Morning report could not run. Open the run on GitHub."; priority=high; tags=warning
           elif [ "${RED:-0}" != "0" ]; then
             priority=high; tags=warning

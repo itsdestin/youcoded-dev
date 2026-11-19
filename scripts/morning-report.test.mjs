@@ -19,6 +19,12 @@ test('a workflow file with a cron line is scheduled; one without is not', () => 
   assert.equal(scheduleDays('on: [pull_request]\n'), null);
 });
 
+test('an unquoted or commented cron line still counts as scheduled; a bare schedule block is judged, not skipped', () => {
+  assert.equal(scheduleDays('on:\n  schedule:\n    - cron: 30 13 * * *  # morning\n'), 1);
+  assert.equal(scheduleDays('on:\n  schedule:\n    - cron: "17 6 * * 1"\n'), 7);
+  assert.equal(scheduleDays('on:\n  schedule:\n    # nothing readable\n'), 1);
+});
+
 test('a failed scheduled run is red', () => {
   assert.equal(judgeSchedule(wf, [run({ conclusion: 'failure' })], NOW).level, 'red');
   assert.equal(judgeSchedule(wf, [run({ conclusion: 'timed_out' })], NOW).level, 'red');
@@ -102,6 +108,14 @@ test('doc check and cards check: pass is green, nonzero exit is red, a tool that
   assert.equal(collectCards('/r', ok).summary, 'cards: 5 ok');
   assert.equal(collectCards('/r', bad).level, 'red');
   assert.equal(collectCards('/r', missing).level, 'yellow');
+});
+
+test('doc check says when it skipped anchors, and red details start at the first FAIL', () => {
+  const skipped = collectAnchors('/r', () => 'WARN anchors in a repo that is not on disk (unverifiable here, not drift):\n');
+  assert.equal(skipped.level, 'green');
+  assert.match(skipped.summary, /not checked/);
+  const bad = () => { throw Object.assign(new Error('x'), { status: 1, stdout: 'noise\nFAIL anchors:\n  a missing\nsummary\n' }); };
+  assert.equal(collectAnchors('/r', bad).details[0], 'FAIL anchors:');
 });
 
 test('phone message carries counts only, in the agreed words', () => {
