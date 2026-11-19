@@ -9,8 +9,7 @@ Each call returns a few different voices reading the full script; all are saved 
 import base64, json, os, sys, urllib.request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 KEY = open(os.path.expanduser("~/.config/youcoded-campaign/elevenlabs.key")).read().strip()
-src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "voice_eleven.py")).read()
-SCRIPT = src.split('SCRIPT = """')[1].split('"""')[0]
+SCRIPT = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "narration.md")).read().split("\n---\n", 1)[1].strip()
 name, desc = sys.argv[1], sys.argv[2]
 body = {"voice_description": desc, "model_id": "eleven_ttv_v3", "text": SCRIPT, "auto_generate_text": False}
 req = urllib.request.Request("https://api.elevenlabs.io/v1/text-to-voice/design", data=json.dumps(body).encode(),

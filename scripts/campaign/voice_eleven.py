@@ -15,20 +15,9 @@ stability = float(sys.argv[3]) if len(sys.argv) > 3 else 0.0  # v3: 0 = most exp
 # (mp3_44100_128: higher bitrates need the Creator plan.)
 # WHY cues: one flat read was the problem with every earlier voice. The cues ask for a different
 # energy per beat of the story (sly, hushed, delighted, rousing).
-SCRIPT = """[mischievously] Once upon a time... a few companies built all the world's software.
-[dryly] They decided what it did. What it cost. And who kept your data.
-[conspiratorial] And everyone else? [short pause] Simply paid the rent.
-
-[whispers] And then... [warmly, with wonder] something wonderful happened.
-[delighted] Anyone could build software. Just by asking.
-
-[excited, picking up pace] A home that runs the way you live. Tools made for your work. A computer that, at last, feels like yours.
-And whatever you make, everyone can use, and make better.
-[proudly] Not one company's app. Everyone's.
-[brightly] On your devices. With any AI you like. Free, and open.
-
-[slowly, rousing] It's time to free ourselves from the tech monopolies of the past.
-[triumphant] It's time, at last... to open source everything."""
+# WHY a separate file: Destin edits the words himself (narration.md); everything below its
+# "---" line is the text that gets recorded.
+SCRIPT = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "narration.md")).read().split("\n---\n", 1)[1].strip()
 
 body = {"text": SCRIPT, "model_id": "eleven_v3", "voice_settings": {"stability": stability}}
 req = urllib.request.Request(f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}?output_format=mp3_44100_128",
