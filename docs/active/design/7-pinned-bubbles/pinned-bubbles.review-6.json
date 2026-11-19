@@ -1,0 +1,44 @@
+{
+  "title": "Messages stuck at the bottom of the chat — tuning the card's colours across themes",
+  "key": "pinned-bubbles-review-6",
+  "out": "pinned-bubbles.review-6.html",
+  "images": "images/pinned-bubbles.review-6",
+  "runs": { "tune": "runs/tune" },
+  "labels": { "tune": "Six built-in themes" },
+  "crops": {
+    "tuneC": ["chat", "tuneC", "2522x1650+0+0"],
+    "tuneD": ["chat", "tuneD", "2522x1650+0+0"],
+    "tuneE": ["chat", "tuneE", "2522x1650+0+0"]
+  },
+  "steps": [
+    {
+      "id": "T-1", "surface": "Chat",
+      "path": "Last round's option C in all six built-in themes (amber = not sure, red = didn't send)",
+      "crop": "tuneC", "runs": ["tune"], "new": true, "themes": ["midnight"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Baseline: last round's option C. The card takes the theme's page colours, so it fights the bubble in every theme.",
+      "changed": "Nothing new, shown in all six themes so you can compare. Dark themes get a dark card in a light bubble; light themes get a pale card in a dark bubble.",
+      "notice": "This is what you said still felt off."
+    },
+    {
+      "id": "T-2", "surface": "Chat",
+      "path": "The card's colours worked out from the bubble's own colour, gentle",
+      "crop": "tuneD", "runs": ["tune"], "new": true, "themes": ["midnight"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Option D: the card is the bubble's own colour shifted toward amber or red, so it belongs to the bubble in every theme.",
+      "changed": "Same card shape, same place. Its fill is the bubble colour blended about one-fifth toward amber or red, with a stronger outline. Words and buttons use the bubble's own text colour: outlined Dismiss or Discard, filled Send again.",
+      "notice": "It's worked out the same way the file and reference pills inside a sent bubble already are: from the bubble's colours, so every theme, including community ones, gets a matching card without hand-tuning.",
+      "risk": "Send again is light where the bubble is dark (Light, Crème, YouCoded) and dark where it is light: always the opposite of the bubble so it stands out."
+    },
+    {
+      "id": "T-3", "surface": "Chat",
+      "path": "The same as D with stronger colour",
+      "crop": "tuneE", "runs": ["tune"], "new": true, "themes": ["midnight"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Option E: same as D but blended twice as far toward amber or red, so the warning reads louder.",
+      "changed": "The fill is the bubble colour blended about two-fifths toward amber or red. Everything else as in D.",
+      "notice": "Clearly amber or red at a glance in every theme.",
+      "risk": "On YouCoded's purple bubbles the amber turns peachy and the red turns pink-purple, because the colour is mixed with the purple."
+    }
+  ]
+}
