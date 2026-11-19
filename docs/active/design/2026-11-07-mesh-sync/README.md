@@ -513,3 +513,36 @@ S-2 test-each-system.
   connected. ADOPTED as a rule; the starter allowance is dropped.
 - R-3: no relay-full notices; the only notice is on a chat the user tries to resume that is not
   available yet. ADOPTED.
+
+## 2026-11-19: round 16 answered, and withdrawn (the building session's mistake)
+
+Answers file: `mesh-sync.questions-16.answers.json`. Destin stopped at the first question:
+"i thought the entire premise of the current design was already basically 1 device controls a
+chat at a time. i really dont understand the difference of what you're proposing" and "you also
+need to evaluate all of my earlier messages and responses because i feel like some of these have
+already been answered".
+
+He is right. Checked against section 2 (unchanged, hash `b17453dc…`):
+- C-1 (one writer per chat): ALREADY his design. 2.1 "One device hosts each chat"; 2.7 "first to
+  be heard becomes host"; 2.7 "Versions. Accidental duplicates are prevented. The one unavoidable
+  case is two devices [continuing while they cannot reach each other]". The simplification study
+  changes the ENGINEERING under 5.4, not his experience. Section 2 is NOT changed: the row stays
+  "Two versions", the archive question stays, the notices stay word for word. No "(copy)" naming.
+- C-2 (default button when behind): ALREADY answered by the 2.7 notice table ("may be behind":
+  warn, continuing could create a second version; "known to be behind": button "Continue from
+  here as a new version").
+- D-3 (any device can remove any other): ALREADY answered, 2.4 "Any device may add or remove
+  another, after passing its own unlock".
+- D-1 / P-10 (two devices remove each other): engineering and security call, not asked again.
+  Both are removed (as built; nothing new is trusted). He called the question overcomplicated twice.
+- D-2 (devices a removed device added): stay, as built; follows 2.4 "Nothing is removed without
+  a yes". "Laptop was added by Phone" (2.4) already tells him who added what.
+- D-5 (half-joined device): stays listed as pending until removed; same rule.
+- D-4 (most devices in a set): 16, a security limit; its message is shown at UI review.
+- F-1 (project settings files that can run commands): safe default is hold for review (threat
+  model). The assistant's own setup is not synced by this feature at all (card #248, D8 Q-2), so
+  this covers only a `.claude` folder inside a synced project. Shown at UI review; he can overrule.
+- W-1 (privacy wording): drafted to his round-15 direction; shown on the real screen at UI review.
+
+Rule for this session from now on: before asking Destin anything, check section 2 and this file;
+ask only what neither answers; engineering choices that do not change section 2 are not asked.
