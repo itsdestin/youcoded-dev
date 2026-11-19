@@ -23,7 +23,8 @@ test('scrubFrozen takes out everything that can run or fetch', { skip: !have && 
   for (const bad of ['onclick', 'onmouseover', 'javascript:', 'http-equiv', '@import', 'http://x', 'http://evil', '<object', '<embed', 'https://x/y.png'])
     assert.ok(!html.toLowerCase().includes(bad.toLowerCase()), 'still there: ' + bad + '\n' + html);
   assert.ok(html.includes('data:image/png;base64,AAAA'), 'a picture packed into the file must stay');
-  assert.ok(html.includes('https://fine.example/'), 'an ordinary link stays');
+  // WHY an exact href match: the code scanner reads a bare substring check of a URL as a weak URL filter (PR 391).
+  assert.ok(/href="https:\/\/fine\.example\/"/.test(html), 'an ordinary link stays');
   assert.ok(html.includes('href="#local"'), 'an in-page reference stays');
   assert.ok(!/java\s*script/i.test(html.replace(/\s+/g, '')), 'the whitespace-split javascript: address is gone too');
 });
