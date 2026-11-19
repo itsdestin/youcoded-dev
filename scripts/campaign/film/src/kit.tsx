@@ -219,7 +219,7 @@ export const Wall: React.FC<{ at: number; out: number; stills: string[]; cols: n
           </div>
         ))}
       </div>
-      <AbsoluteFill style={{ background: C.lavender, opacity: veil * 0.8 }} />
+      <AbsoluteFill style={{ background: C.lavender, opacity: veil * 0.9 }} /> {/* WHY 0.9: at 0.8 a headline crossing a dark tile fell to about 3:1 contrast */}
     </AbsoluteFill>
   );
 };
@@ -243,7 +243,9 @@ export const Lockup: React.FC<{ icon: number; dark?: boolean }> = ({ icon, dark 
 );
 
 /** The brand guide's end card (§7), measured in u: icon 14 · gap 2 · name 7 · gap 6 · address 3 · gap 1 · platforms 2. */
-export const EndCard: React.FC<{ at: number; tagline?: boolean }> = ({ at, tagline = true }) => {
+// WHY no tagline by default (review, 2026-11-18): the guide's end card is icon, name, address, platforms. A second
+// line under the name shrank the specified 6-unit gap and put small grey type where the guide allows grey only large.
+export const EndCard: React.FC<{ at: number; tagline?: boolean }> = ({ at, tagline = false }) => {
   const frame = useCurrentFrame(); const u = useU();
   if (frame < at * FPS) return null;
   const a = (d: number) => ramp(frame, at + d, at + d + 0.8);
@@ -284,6 +286,20 @@ export const Ledger: React.FC<{ at: number; out: number; items: string[] }> = ({
           </div>
         ))}
       </div>
+    </AbsoluteFill>
+  );
+};
+
+/** The small print under filmed footage. WHY: the takes are shortened and use practice data, and the home page
+ *  needs a Home Assistant connection; saying so on screen keeps the film honest (brand guide: claims must be true). */
+export const Fine: React.FC<{ text: string; at: number; out: number; y: number }> = ({ text, at, out, y }) => {
+  const frame = useCurrentFrame(); const u = useU();
+  const o = window01(frame, at + 0.4, out, 0.5, 0.3);
+  if (o <= 0) return null;
+  return (
+    <AbsoluteFill style={{ alignItems: 'center' }}>
+      <div style={{ position: 'absolute', top: `${y}%`, transform: 'translateY(-50%)', opacity: o * 0.78, fontFamily: DMSANS, fontWeight: 500,
+        fontSize: 1.35 * u, letterSpacing: '0', color: C.plum2 }}>{text}</div>
     </AbsoluteFill>
   );
 };

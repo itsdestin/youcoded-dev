@@ -1,5 +1,5 @@
 [
- {"t0": 0.35, "t1": 2.15, "type": "typing", "cps": 11, "gain": -3},
+ {"t0": 0.2, "t1": 2.0, "type": "typing", "cps": 19, "gain": -3},
  {"t": 2.4, "type": "bloom"},
- {"t": 5.7, "type": "toggle", "gain": -3}, {"t": 7.5, "type": "toggle", "gain": -3}
+ {"t": 4.9, "type": "toggle", "gain": -3}
 ]

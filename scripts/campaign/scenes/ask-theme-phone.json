@@ -20,7 +20,7 @@
    "settle": 200
   },
   {
-   "typeSlow": "make it feel like golden hour",
+   "typeSlow": "make it feel like sunset",
    "cps": 20,
    "mark": "type"
   },
@@ -40,28 +40,28 @@
    "hold": 1500
   },
   {
-   "eval": "window.__workbenchAppearanceSync({theme:'golden-sunbreak'})",
+   "eval": "window.__workbenchAppearanceSync({theme:'cotton-candy-sky'})",
    "mark": "swap1"
   },
   {
    "hold": 3600
   },
   {
-   "eval": "window.__workbenchAppearanceSync({theme:'meadow-mist'})",
+   "eval": "window.__workbenchAppearanceSync({theme:'golden-sunbreak'})",
    "mark": "swap2"
   },
   {
    "hold": 1300
   },
   {
-   "eval": "window.__workbenchAppearanceSync({theme:'halftone-dimension'})",
+   "eval": "window.__workbenchAppearanceSync({theme:'meadow-mist'})",
    "mark": "swap3"
   },
   {
    "hold": 1300
   },
   {
-   "eval": "window.__workbenchAppearanceSync({theme:'cotton-candy-sky'})",
+   "eval": "window.__workbenchAppearanceSync({theme:'halftone-dimension'})",
    "mark": "swap4"
   },
   {

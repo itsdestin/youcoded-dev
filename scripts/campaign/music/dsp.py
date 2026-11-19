@@ -24,6 +24,26 @@ def bp(x, f1, f2, order=2):
     return signal.sosfilt(sos, x, axis=0)
 
 
+def _biquad(x, b, a):
+    return signal.sosfilt(signal.tf2sos(b / a[0], a / a[0]), x, axis=0)
+
+
+def peak_eq(x, f0, gain_db, q=0.8):
+    """RBJ peaking EQ (bell). WHY: a gentle bell cut around 250-500 Hz removes the 'boxy' build-up without thinning the piano."""
+    A = 10 ** (gain_db / 40); w = 2 * np.pi * f0 / SR; al = np.sin(w) / (2 * q); c = np.cos(w)
+    b = np.array([1 + al * A, -2 * c, 1 - al * A]); a = np.array([1 + al / A, -2 * c, 1 - al / A])
+    return _biquad(x, b, a)
+
+
+def high_shelf(x, f0, gain_db, s=0.7):
+    """RBJ high shelf. WHY: a soft presence/air lift (a few dB above ~3 kHz) opens up a muffled mix without a harsh peak."""
+    A = 10 ** (gain_db / 40); w = 2 * np.pi * f0 / SR; c = np.cos(w)
+    al = np.sin(w) / 2 * np.sqrt((A + 1 / A) * (1 / s - 1) + 2); sq = 2 * np.sqrt(A) * al
+    b = np.array([A * ((A + 1) + (A - 1) * c + sq), -2 * A * ((A - 1) + (A + 1) * c), A * ((A + 1) + (A - 1) * c - sq)])
+    a = np.array([(A + 1) - (A - 1) * c + sq, 2 * ((A - 1) - (A + 1) * c), (A + 1) - (A - 1) * c - sq])
+    return _biquad(x, b, a)
+
+
 def db(x):
     return 10 ** (x / 20.0)
 

@@ -9,12 +9,17 @@ def _fade(x, ms=3):
     n = int(ms * SR / 1000); x = x.copy(); x[:n] *= np.linspace(0, 1, n); x[-n:] *= np.linspace(1, 0, n); return x
 
 def key(rng):
-    """Soft muted key tick: a short damped thump + a dull noise click; pitch/brightness vary a little per press."""
+    """Soft muted key tick: a short damped thump + a bright-ish noise click; pitch (+-2 semitones) and brightness vary per press.
+    WHY: the old tick was 94% below 500 Hz, where the music masks it, and every press was nearly identical (machine-gun).
+    Now the click carries energy at 2-4 kHz (where it cuts through at low level) and each press picks one of three
+    brightness variants, so a burst of typing sounds like fingers, not a sample repeated."""
     t = _t(0.06)
-    f = 170 * 2 ** (rng.uniform(-0.9, 0.9) / 12)
-    body = np.sin(2 * np.pi * f * t) * np.exp(-t / 0.012)
-    click = lp(bp(rng.standard_normal(len(t)), 900, 3200), rng.uniform(2200, 3000), 2) * np.exp(-t / 0.004)
-    return _fade(_norm(0.8 * body + 0.5 * _norm(click)), 2) * 10 ** (rng.uniform(-1.5, 0) / 20)
+    f = 190 * 2 ** (rng.uniform(-2.0, 2.0) / 12)
+    bright = (0.8, 1.0, 1.3)[int(rng.integers(0, 3))]              # three brightness variants
+    body = np.sin(2 * np.pi * f * t) * np.exp(-t / 0.010)
+    lo, hi = 1800 * bright, min(7000, 5200 * bright)
+    click = lp(bp(rng.standard_normal(len(t)), lo, hi), min(8000, rng.uniform(4200, 5400) * bright), 2) * np.exp(-t / 0.0035)
+    return _fade(_norm(0.35 * body + 0.9 * _norm(click)), 2) * 10 ** (rng.uniform(-1.5, 0) / 20)
 
 def send(rng):
     """Soft upward two-note blip (G5 -> D6, both in the C add9 world)."""
@@ -34,15 +39,21 @@ def bloom(rng):
     return _fade(_norm(lp(0.9 * _norm(tones) + nz / (np.abs(nz).max() + 1e-9) * 0.5, 7000, 2)), 12)
 
 def whoosh(rng):
-    """Very subtle ~0.4 s filtered-noise pass: band sweeps 500 -> 2800 Hz."""
+    """Very subtle ~0.4 s filtered-noise pass: band sweeps ~600 -> 4500 Hz, peaking 0.05 s after the cue.
+    WHY: the old whoosh sat in 500-2k and peaked 0.2 s late, so it was masked and arrived after the picture moved.
+    Now it has real 2-4 kHz air and a fast 50 ms rise, then a soft 0.35 s fall."""
     n = int(0.4 * SR); t = np.arange(n) / SR
     nz = rng.standard_normal(n)
     # crossfade between three fixed band-passes to fake a sweep (cheap and click-free)
-    a, b, c = bp(nz, 350, 800), bp(nz, 800, 1700), bp(nz, 1700, 3200)
-    u = t / 0.4
-    wa, wb, wc = np.clip(1 - u * 2, 0, 1), 1 - np.abs(u * 2 - 1), np.clip(u * 2 - 1, 0, 1)
+    a, b, c = bp(nz, 450, 1100), bp(nz, 1100, 2400), bp(nz, 2200, 5200)
+    a, b, c = a / a.std(), b / b.std(), c / c.std()   # equal power per band so the loudness peak follows the envelope (peak at ~50 ms), not the wider top band
+    u = np.clip(t / 0.3, 0, 1)
+    # power-complementary (cos/sin) crossfade keeps the total loudness constant through the sweep
+    ang = u * np.pi
+    wa = np.where(u < 0.5, np.cos(ang), 0.0); wc = np.where(u > 0.5, -np.cos(ang), 0.0); wb = np.abs(np.sin(ang))
     x = a * wa + b * wb + c * wc
-    return _fade(_norm(x * np.sin(np.pi * u) ** 2), 5)
+    env = np.where(t < 0.05, np.sin(0.5 * np.pi * t / 0.05) ** 2, np.cos(0.5 * np.pi * np.clip((t - 0.05) / 0.35, 0, 1)) ** 2)
+    return _fade(_norm(lp(x, 6500, 2) * env), 5)
 
 def pop(rng):
     """Soft rounded tick for something appearing: 520 Hz sine gliding down slightly."""
@@ -52,14 +63,17 @@ def pop(rng):
     return _fade(_norm(lp(w, 3500)), 3)
 
 def toggle(rng):
-    """Soft switch: two tiny ticks 45 ms apart, the second a little lower and softer."""
+    """Soft switch: two tiny ticks 45 ms apart, the second a little lower and softer.
+    WHY: was 98% in 500-2k; now each tick is a short 2.4-3.2 kHz 'tock' plus a band-limited 2-5.5 kHz click so it
+    reads as a soft UI switch even 20+ dB under the music, while the top is rolled off (no hiss, nothing toy-like)."""
     out = np.zeros(int(0.14 * SR))
-    for d, f, g in [(0.0, 1500, 1.0), (0.045, 950, 0.7)]:
+    for d, f, g in [(0.0, 3200, 1.0), (0.045, 2400, 0.7)]:
         t = _t(0.05)
-        w = (np.sin(2 * np.pi * f * t) * np.exp(-t / 0.008) + 0.4 * lp(rng.standard_normal(len(t)), 3000) * np.exp(-t / 0.003)) * g
+        w = (np.sin(2 * np.pi * f * t) * np.exp(-t / 0.006) + 0.9 * lp(bp(rng.standard_normal(len(t)), 2000, 5500), 6000) * np.exp(-t / 0.003)) * g
         o = int(d * SR); out[o:o + len(w)] += w
-    return _fade(_norm(lp(out, 4200)), 2)
+    return _fade(_norm(lp(out, 6500)), 2)
 
 KIT = dict(key=key, send=send, bloom=bloom, whoosh=whoosh, pop=pop, toggle=toggle)
 # nominal level of each sound relative to the "SFX reference" (dB); keys are tiny so they sit lower
-TRIM = dict(key=-4.0, send=0.0, bloom=-2.0, whoosh=-5.0, pop=-1.0, toggle=-2.0)
+# WHY: whoosh and toggle raised by 6 dB (they were 22-30 dB under the music and inaudible)
+TRIM = dict(key=-4.0, send=0.0, bloom=-2.0, whoosh=1.0, pop=-1.0, toggle=4.0)

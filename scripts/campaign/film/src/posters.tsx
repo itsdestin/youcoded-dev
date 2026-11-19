@@ -53,7 +53,7 @@ const BgNight = () => <AbsoluteFill style={{ background: C.night }} />;
 const Own: React.FC = () => {
   const { W, H, shape, u, m } = useFrame();
   const head = shape === 'wide' ? 'software you *own,* / not rent.' : 'software / you *own,* / not rent.';
-  const size = shape === 'tall' ? (W - 2 * m) / 4.75 : shape === 'square' ? (W - 2 * m) / 4.5 : Math.min((W - 2 * m) / 8.2, (H - 2 * m) / 3.6);
+  const size = shape === 'tall' ? (W - 2 * m) / 4.75 : shape === 'square' ? (W - 2 * m) / 5.9 : Math.min((W - 2 * m) / 8.2, (H - 2 * m) / 3.6);   // WHY 5.9 on a square: at 4.5 the headline and body pushed the footer off the bottom edge
   return (
     <AbsoluteFill><BgDay />
       <div style={{ position: 'absolute', left: m, right: m, top: m, bottom: m, display: 'flex', flexDirection: 'column' }}>
@@ -65,7 +65,7 @@ const Own: React.FC = () => {
           One open app that becomes what you ask for. A page that runs your house. A new look. A feature nobody has built yet. No code.
         </Body>
         <div style={{ flex: 1, minHeight: 4 * u }} />
-        <Foot u={u} row={shape === 'wide'} />
+        <Foot u={u} row={shape !== 'tall'} tight={shape === 'square'} />
       </div>
     </AbsoluteFill>
   );
@@ -123,14 +123,15 @@ const Quote: React.FC = () => {
   return (
     <AbsoluteFill><BgNight />
       <div style={{ position: 'absolute', left: m, right: m, top: m, bottom: m, display: 'flex', flexDirection: 'column' }}>
-        <Eyebrow dark text="time to fight back" size={1.5 * u} />
+        {/* WHY "from the founder": "time to fight back" is also his phrase, but above this sentence it read as a caption he never gave it, and it was the one place the campaign shouted (two reviews). */}
+        <Eyebrow dark text="from the founder" size={1.5 * u} />
         {/* WHY: on a 9:16 story the quote sat at the top over a large empty lower half; a flexible gap centres it instead. */}
         <div style={H / W > 1.5 ? { flex: 1, minHeight: 5 * u } : { height: (shape === 'tall' ? 5 : 3) * u }} />
         <Head dark text={q} size={size} />
         <div style={{ height: 3 * u }} />
-        <Body dark size={2.2 * u} width={shape === 'wide' ? '60%' : '90%'}>Destin Moss, who built YouCoded without writing a line of code.</Body>
+        <Body dark size={2.2 * u} width={shape === 'wide' ? '60%' : '90%'}>Destin Moss, who built youcoded without writing a line of code.</Body>
         <div style={{ flex: 1, minHeight: 4 * u }} />
-        <Foot u={u} dark row={shape === 'wide'} />
+        <Foot u={u} dark row={shape !== 'tall'} tight={shape === 'square'} />
       </div>
     </AbsoluteFill>
   );
@@ -227,14 +228,14 @@ export const Banner: React.FC = () => {
         <div style={{ height: hs * 0.32 }} />
         <div style={{ fontFamily: DMSANS, fontWeight: 500, fontSize: hs * 0.27, lineHeight: 1.3, color: C.plum2, letterSpacing: '-0.01em' }}>One open app that becomes what you ask for.</div>
         {/* WHY: tall "skyscraper" slots had a blank middle third; the Home page (a real frame from the film) fills it. */}
-        {tower
+        {tower && r > 0.4          /* the narrowest slot (160 wide) shows only an unreadable sliver, so it stays type-only */
           ? <div style={{ flex: 1, margin: `${hs * 0.45}px 0`, borderRadius: W * 0.03, overflow: 'hidden', boxShadow: `0 ${W * 0.02}px ${W * 0.06}px rgba(74,38,110,0.22), 0 0 0 1px rgba(201,176,219,0.7)` }}>
               <Img src={staticFile('stills/page-home--youcoded.png')} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '34% 30%' }} />
             </div>
           : <div style={{ flex: 1 }} />}
         <div style={{ display: 'flex', flexDirection: tower ? 'column' : 'row', alignItems: tower ? 'flex-start' : 'center', justifyContent: 'space-between', gap: icon * 0.3 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: icon * 0.25 }}><Icon size={icon} /><Wordmark size={icon * 0.72} /></div>
-          <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: icon * 0.42, color: C.purple }}>youcoded.ai</span>
+          <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: icon * 0.42, color: C.plum }}>youcoded.ai</span>
         </div>
       </div>
     </AbsoluteFill>

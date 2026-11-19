@@ -17,7 +17,9 @@ let n = 0;
 for (const [clip, name] of [['home-themes', 'page-home'], ['money-themes', 'page-money'], ['ask-theme', 'chat']]) {
   if (!existsSync(join(SRC, `${clip}.mp4`))) { console.log(`skipped ${clip}: not filmed`); continue; }
   const m = marks(clip);
-  THEMES.forEach((th, i) => { grab(clip, m[`swap${i + 1}`].end + 0.95, `${name}--${th}`); n++; });
+  // The chat take leads with the sunset look (it answers "make it feel like sunset"), so its order differs.
+  const order = clip === 'ask-theme' ? ['cotton-candy-sky', 'golden-sunbreak', 'meadow-mist', 'halftone-dimension', 'midnight', 'youcoded'] : THEMES;
+  order.forEach((th, i) => { grab(clip, m[`swap${i + 1}`].end + 0.95, `${name}--${th}`); n++; });
 }
 for (const clip of ['office-doc', 'market-themes']) { grab(clip, marks(clip).open.end + 0.6, `${clip}--youcoded`); n++; }
 console.log(`${n} stills`);
