@@ -1,0 +1,170 @@
+{
+ "deck": "design-guidance",
+ "started": "2026-11-19T01:25:14.385Z",
+ "submitted": "2026-11-19T01:32:48Z",
+ "cur": 1,
+ "answers": {
+  "U-1": {
+   "v": "yes",
+   "t": 1795051678027,
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  },
+  "U-2": {
+   "v": "yes",
+   "t": 1795051678027,
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  },
+  "U-3": {
+   "v": "yes",
+   "t": 1795051678027,
+   "note": "or, when inventing something new, not matching the soul/spirit/structure of what already exists within the app. agents may sometimes need to create new ui elements, and that is acceptable, but those elements should never feel entirely unique or out of place.",
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  },
+  "U-4": {
+   "v": "yes",
+   "t": 1795051678027,
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  },
+  "U-5": {
+   "v": "yes",
+   "t": 1795051678027,
+   "note": "i'd want to review the final rebuilt one before we lock in. ",
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  },
+  "U-6": {
+   "v": "yes",
+   "t": 1795051678027,
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  },
+  "U-7": {
+   "v": "yes",
+   "t": 1795051678027,
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  },
+  "U-8": {
+   "v": "yes",
+   "t": 1795051678027,
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  },
+  "Q-1": {
+   "note": "unsure. how would we access these? what is the real benefit of having both? want to consider more thoroughly",
+   "t": 1795051966970,
+   "v": "other",
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "examples-first",
+   "t": 1795051966970,
+   "note": "i think examples/pieces together. idk what exactly \"screen atlas\"  means or how that would differ from what already exists",
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  },
+  "L-1": {
+   "ok": {
+    "ex-one-job": true,
+    "ex-notice": true,
+    "ex-failed-action": true,
+    "ex-button-rows": true,
+    "ex-settings-group": true,
+    "ex-multi-group-popup": true,
+    "ex-detail-page": true,
+    "ex-card-grid": true,
+    "ex-menus-lists": true,
+    "ex-empty-loading": true,
+    "ex-chips-pills": true,
+    "ex-side-panel": true
+   },
+   "t": 1795051966970,
+   "v": "yes",
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "shrink",
+   "t": 1795051966970,
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "as-needed",
+   "t": 1795051966970,
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1795051966970,
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1795051966970,
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1795051966970,
+   "note": "yeah there may already be open cards/items to improve the page builder. we should link or integrate with those to make a more comprehensive page builder kit eventually that provides more re-usable components and such",
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "include",
+   "t": 1795051966970,
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  },
+  "Q-9": {
+   "v": "wrote",
+   "text": "I want this to be like filterable and like sortable in a lot of ways. Like the visual hierarchy should be pretty clear. It should be pretty easy for me to find different elements and also like see how those elements interact with specific screens, like where a specific button or error type is used frequently in the app if that makes sense. Uh.",
+   "t": 1795051966970,
+   "seconds": 29,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-19T01:02:27Z",
+  "branch": "session/150-design-guidance-rebuild",
+  "commit": "f70e5a29225d5770205724e699c54054493da979",
+  "spec_sha256": "1a78067f7d3285b16cbeddb3dd2f759030d7c6279e938d7cde04b790164b905b",
+  "spec_dirty": true,
+  "ids": [
+   "U-1",
+   "U-2",
+   "U-3",
+   "U-4",
+   "U-5",
+   "U-6",
+   "U-7",
+   "U-8",
+   "Q-1",
+   "Q-2",
+   "L-1",
+   "Q-3",
+   "Q-4",
+   "Q-5",
+   "Q-6",
+   "Q-7",
+   "Q-8",
+   "Q-9"
+  ]
+ }
+}

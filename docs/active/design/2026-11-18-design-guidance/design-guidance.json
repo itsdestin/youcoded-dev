@@ -45,7 +45,8 @@
       "changed": "Six reviewers read about 1,145 of your pushbacks since August. Every one ranked this first: hand-made error boxes, buttons, cards, dropdowns, fades.",
       "notice": "The fix usually landed only once you named the existing piece yourself, often after three to six rounds.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "resolved": "Recorded as a rule for the rebuild: a new piece is allowed when nothing existing fits, but it is built from the app's parts and must look like a sibling of them, never out of place."
     },
     {
       "id": "U-4",
@@ -67,7 +68,8 @@
       "changed": "Your words from an earlier deck: \"this should be about more general rules/principles/design instructions that will apply when building new surfaces, with only pointers to existing surfaces to reference.\"",
       "notice": "Today's guide is 935 lines. The rebuilt one is much shorter.",
       "yes": "Holds",
-      "no": "Fails"
+      "no": "Fails",
+      "resolved": "The rebuilt guide comes back to you on a deck to review before it replaces today's guide."
     },
     {
       "id": "U-6",
@@ -113,97 +115,90 @@
       "words": true,
       "surface": "Visual kit",
       "path": "How you open it",
-      "headline": "How should you open the kit?",
-      "today": "No kit exists. Reports reach you as file paths you paste into YouCoded, which open instantly.",
-      "checked": "Checked 2026-11-18: no gallery or catalogue page exists in the app or workspace beyond the icon and pill sheets.",
-      "problem": "A live page needs a dev copy of the app running first. A saved page opens instantly but only shows the themes that were photographed.",
-      "proposal": "Pick how you want to reach it. Agents use the live one either way.",
+      "headline": "Where do you open the kit: a link from chat, a file you open any time, or both?",
+      "today": "Decks reach you as a link an agent pastes in chat; the page only works while that agent's session has it running. Reports reach you as a file path you paste into YouCoded, which opens any time.",
+      "checked": "Checked 2026-11-18 against how this deck and the audit report reached you.",
+      "problem": "A link gives you everything live but only while an agent is running it. A file opens any time with no agent, but holds pictures, not the live pieces.",
+      "proposal": "Pick how you reach it. Either way agents copy the real code; this is only about how you look at it.",
       "options": [
         {
           "id": "both",
-          "label": "Both",
+          "label": "File, with a live link when needed",
           "recommended": true,
-          "summary": "A live page that redraws in any theme, plus a saved page made from it automatically that you open from a path.",
+          "summary": "Everyday browsing is a file you open any time, with filters, search and pictures in your theme and at phone width. When you want another theme or to hover and click, ask and an agent gives you the live link.",
           "pros": [
-            "Opens instantly any time, no setup.",
-            "Live version available when you want to try other themes."
+            "Opens any time, with no agent and nothing to start.",
+            "Live version still there for trying themes or interactions."
           ],
           "cons": [
-            "A little more to build."
+            "The file shows only the themes that were photographed.",
+            "A little more to build: the file is made from the live page automatically."
           ]
         },
         {
-          "id": "live",
-          "label": "Live page only",
-          "summary": "Runs from the dev copy of the app; switches any theme and phone width live.",
+          "id": "link",
+          "label": "Link from chat only",
+          "summary": "Like a deck: an agent starts it and pastes the link. Every theme, phone width, hover and open menus.",
           "pros": [
-            "Always current, every theme."
+            "Everything is live and current."
           ],
           "cons": [
-            "Something must be started before you can open it."
+            "Only reachable while an agent is running it; no browsing on your own."
           ]
         },
         {
-          "id": "saved",
-          "label": "Saved page only",
-          "summary": "An HTML file of pictures, rebuilt whenever the pieces change.",
+          "id": "file",
+          "label": "File only",
+          "summary": "Pictures with filters and search, rebuilt automatically when pieces change. No live version.",
           "pros": [
-            "Opens instantly from a path."
+            "Simplest; opens any time."
           ],
           "cons": [
-            "Only the themes and widths that were photographed.",
-            "Agents get pictures, not live code to copy."
+            "No hover, no trying other themes, no clicking into a menu."
           ]
         }
-      ]
+      ],
+      "reopened": "You were unsure how you would reach it and what having both buys you.",
+      "reframed": "Said how each one is opened, what each can and cannot show, and what both gives you over one."
     },
     {
       "id": "Q-2",
       "words": true,
       "surface": "Visual kit",
       "path": "What it holds",
-      "headline": "Which parts of the kit should be built first?",
-      "today": "The app has about 38 shared building blocks and about 183 named screens, but no assembled examples.",
-      "checked": "Counted 2026-11-18 from the shared pieces folder and the screenshot tool's screen list.",
-      "problem": "Building pieces, examples and the screen atlas at once delays everything. Examples are what would have prevented the most misses.",
-      "proposal": "Pick an order. Every part gets built in the end.",
+      "headline": "Pieces and examples come first, together. Should the kit also show every screen, to see where each piece is used?",
+      "today": "Screens exist only as about 183 names in the screenshot tool's list. A picture is taken only when an agent asks for one; nothing lets you browse them or see which screens use a given button or error box.",
+      "checked": "Checked 2026-11-18: the tool lists screens by name; no page shows them or links them to pieces.",
+      "problem": "You asked to see where a button or error type is used across the app. Without screen pictures, a piece can only list screen names.",
+      "proposal": "Pieces and examples are built together first. This decides what comes after them.",
       "options": [
         {
-          "id": "examples-first",
-          "label": "Examples first",
+          "id": "where-used",
+          "label": "Then add where it's used",
           "recommended": true,
-          "summary": "Ready-made examples and the pieces they use, then the full pieces list, then the screen atlas.",
+          "summary": "After pieces and examples, every screen gets a picture, grouped by kind. Each piece links to the screens that use it, and each screen lists its pieces.",
           "pros": [
-            "Targets the biggest cause of misses soonest.",
-            "Each example is approved once and reused forever."
+            "Answers \"where is this error box used?\" in one click.",
+            "Filter screens by kind, area or never reviewed."
           ],
           "cons": [
-            "The full screen atlas comes last."
+            "The largest part to build; pictures refresh automatically but take a while to make."
           ]
         },
         {
-          "id": "pieces-first",
-          "label": "Pieces first",
-          "summary": "Every building block in every style first, then examples, then screens.",
+          "id": "names-only",
+          "label": "Pieces and examples only",
+          "summary": "No screen pictures. Each piece lists the names of screens that use it.",
           "pros": [
-            "A complete reference of parts early."
+            "Smaller and done sooner."
           ],
           "cons": [
-            "Single pieces alone did not stop agents assembling them wrongly."
-          ]
-        },
-        {
-          "id": "all-at-once",
-          "label": "All at once",
-          "summary": "Pieces, examples and the screen atlas built together.",
-          "pros": [
-            "One finished thing to review."
-          ],
-          "cons": [
-            "Longest wait before anything is usable."
+            "You cannot see the screens, only their names."
           ]
         }
-      ]
+      ],
+      "reopened": "You chose examples first, wanted pieces alongside, and asked what the screen atlas meant.",
+      "reframed": "Pieces and examples are now one first step. The atlas is described as what it is: pictures of every screen, linked to the pieces each one uses."
     },
     {
       "id": "L-1",
@@ -216,73 +211,121 @@
           "id": "ex-one-job",
           "call": "One-job popup",
           "why": "A small popup that does one thing, one card holding its words, box and stacked buttons. Took six decks to settle.",
-          "more": {"today": "Each new small popup was laid out differently.", "problem": "Grey hint placement and button position were corrected again and again.", "change": "One approved example every new small popup copies."}
+          "more": {
+            "today": "Each new small popup was laid out differently.",
+            "problem": "Grey hint placement and button position were corrected again and again.",
+            "change": "One approved example every new small popup copies."
+          }
         },
         {
           "id": "ex-notice",
           "call": "Notice and error box",
           "why": "The one tinted box, its sentence, a Details fold, buttons inside at the right. Hand-made versions were corrected about 20 times.",
-          "more": {"today": "Agents kept drawing their own warning and error boxes.", "problem": "You had to say \"use the existing style\" in many decks.", "change": "Info, warning, error and unknown-error versions to copy."}
+          "more": {
+            "today": "Agents kept drawing their own warning and error boxes.",
+            "problem": "You had to say \"use the existing style\" in many decks.",
+            "change": "Info, warning, error and unknown-error versions to copy."
+          }
         },
         {
           "id": "ex-failed-action",
           "call": "Failed action",
           "why": "When Send, Install or Download fails: the notice takes the buttons' place and keeps what you wrote.",
-          "more": {"today": "Failures were drawn differently on each screen.", "problem": "Retry above the details, two light buttons, no main button.", "change": "One example of a failure replacing its buttons."}
+          "more": {
+            "today": "Failures were drawn differently on each screen.",
+            "problem": "Retry above the details, two light buttons, no main button.",
+            "change": "One example of a failure replacing its buttons."
+          }
         },
         {
           "id": "ex-button-rows",
           "call": "Button rows",
           "why": "One, two and three buttons: side by side, stacked, red confirm, costs money. Bottom-left buttons were corrected in about ten decks.",
-          "more": {"today": "Button placement is described in words only.", "problem": "Filled buttons kept landing at the bottom-left or unbalanced.", "change": "Every approved arrangement shown, wide and narrow."}
+          "more": {
+            "today": "Button placement is described in words only.",
+            "problem": "Filled buttons kept landing at the bottom-left or unbalanced.",
+            "change": "Every approved arrangement shown, wide and narrow."
+          }
         },
         {
           "id": "ex-settings-group",
           "call": "Settings group",
           "why": "A small label over one card of rows with switches, a fold-out row and a full-width follow-up button.",
-          "more": {"today": "Settings screens were rebuilt by hand each time.", "problem": "Bare text on the popup, boxes in boxes, folds opening a separate card.", "change": "One assembled group to copy."}
+          "more": {
+            "today": "Settings screens were rebuilt by hand each time.",
+            "problem": "Bare text on the popup, boxes in boxes, folds opening a separate card.",
+            "change": "One assembled group to copy."
+          }
         },
         {
           "id": "ex-multi-group-popup",
           "call": "Popup with several groups",
           "why": "Labelled cards, the body scrolling under a fade, buttons pinned to the bottom line.",
-          "more": {"today": "Close session and Submit a ticket do this, but nothing points to them as the pattern.", "problem": "Buttons ended up under the last card or inside it.", "change": "One example with the pinned bottom line."}
+          "more": {
+            "today": "Close session and Submit a ticket do this, but nothing points to them as the pattern.",
+            "problem": "Buttons ended up under the last card or inside it.",
+            "change": "One example with the pinned bottom line."
+          }
         },
         {
           "id": "ex-detail-page",
           "call": "Detail page",
           "why": "Something you open from a card: top card with name, status, chips and actions, then two columns.",
-          "more": {"today": "Only the Marketplace detail pages follow it.", "problem": "New detail views kept inventing their own layout.", "change": "One example any new detail view copies."}
+          "more": {
+            "today": "Only the Marketplace detail pages follow it.",
+            "problem": "New detail views kept inventing their own layout.",
+            "change": "One example any new detail view copies."
+          }
         },
         {
           "id": "ex-card-grid",
           "call": "Card grid",
           "why": "Raised cards for things you open or install: name and status, one chip row that scrolls sideways, two lines of description.",
-          "more": {"today": "Your Library is the reference.", "problem": "Chips of different sizes, wrapping chip rows, flat cards.", "change": "One example card and grid."}
+          "more": {
+            "today": "Your Library is the reference.",
+            "problem": "Chips of different sizes, wrapping chip rows, flat cards.",
+            "change": "One example card and grid."
+          }
         },
         {
           "id": "ex-menus-lists",
           "call": "Menus and pick lists",
           "why": "The small menu under a control, a dropdown, a quick picker with search, and a list's manage row at the foot.",
-          "more": {"today": "Several hand-made popovers still exist.", "problem": "Menus with their own shape, transparent menus, missing fades.", "change": "One example of each list kind."}
+          "more": {
+            "today": "Several hand-made popovers still exist.",
+            "problem": "Menus with their own shape, transparent menus, missing fades.",
+            "change": "One example of each list kind."
+          }
         },
         {
           "id": "ex-empty-loading",
           "call": "Empty, loading and full-screen error",
           "why": "First-time card with one button, the quiet nothing-picked line, the loading line, and a whole screen that cannot load.",
-          "more": {"today": "These exist as pieces but not shown in place.", "problem": "Empty screens with a small notice at the top, dead-end error states.", "change": "Each state shown in a real screen frame."}
+          "more": {
+            "today": "These exist as pieces but not shown in place.",
+            "problem": "Empty screens with a small notice at the top, dead-end error states.",
+            "change": "Each state shown in a real screen frame."
+          }
         },
         {
           "id": "ex-chips-pills",
           "call": "Chips, pills and tags in a row",
           "why": "Status pills with dots, fact chips, tags and filter chips beside a search box, all the same height.",
-          "more": {"today": "Each is a separate piece.", "problem": "Mismatched heights and roundness, text sitting too high beside a dot, corrected over several decks.", "change": "One example lining them up together."}
+          "more": {
+            "today": "Each is a separate piece.",
+            "problem": "Mismatched heights and roundness, text sitting too high beside a dot, corrected over several decks.",
+            "change": "One example lining them up together."
+          }
         },
         {
           "id": "ex-side-panel",
           "call": "Side panel and full screen",
           "why": "Which surface a new feature uses: top-bar button opens a panel or full screen, popups only from Settings or a status chip.",
-          "more": {"today": "The rule exists in words.", "problem": "Wrong surface was one of the most common arrangement misses.", "change": "One example of each, with where each opens from."}
+          "more": {
+            "today": "The rule exists in words.",
+            "problem": "Wrong surface was one of the most common arrangement misses.",
+            "change": "One example of each, with where each opens from."
+          }
         }
       ]
     },
@@ -478,7 +521,8 @@
             "Roughly doubles the example work."
           ]
         }
-      ]
+      ],
+      "resolved": "Noted on card 90 (Pages): once this kit exists, the Pages kit is rebuilt from its approved examples and reusable pieces."
     },
     {
       "id": "Q-8",
