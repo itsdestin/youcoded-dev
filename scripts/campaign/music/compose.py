@@ -268,8 +268,8 @@ def render(spec):
         Y = json.load(open(os.path.join(os.path.dirname(__file__), "..", "film", "src", "yours.json")))
         W = np.zeros((2, NB))
         for i, w in enumerate(Y["wall"]):
-            f = mtof(85 if i % 2 == 0 else 86) if i < 7 else mtof([85, 86, 88, 86][i % 4])
-            add(W, kit.blip(f, 0.16, 1.0 if i < 7 else 0.75), w["t"], pan=0 if i < 7 else 0.4 * (-1) ** i)
+            # WHY no blip here any more: the notification chimes now live in sfx.py with the
+            # rest of the sound design; the music keeps only its pulse and drone.
             if i < 7:
                 add(W, S["kick"], w["t"], 0.35)
         add(W, kit.drone(Y["wall_end"] - 0.5), 0.5)

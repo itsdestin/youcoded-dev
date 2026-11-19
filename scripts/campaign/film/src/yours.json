@@ -114,61 +114,58 @@
  "flood": 16.0,
  "logo": 52.0,
  "dur": 60.0,
- "vo": [
+ "asks": [
   {
-   "id": "l1",
-   "t": 10.5,
-   "text": "Somewhere along the way, everything became a subscription."
+   "id": "house",
+   "at": 16,
+   "clip": "house-ask",
+   "voice": "am_michael",
+   "say": "Make me a page that runs my house.",
+   "line": "Your home.",
+   "purple": "home.",
+   "say_len": 2.188
   },
   {
-   "id": "l2",
-   "t": 14.7,
-   "text": "Not anymore."
+   "id": "money",
+   "at": 20,
+   "clip": "money",
+   "voice": "af_heart",
+   "say": "Where does my money go?",
+   "line": "Your money.",
+   "purple": "money.",
+   "say_len": 1.187
   },
   {
-   "id": "l3",
-   "t": 16.6,
-   "text": "Ask for a page that runs your home."
+   "id": "paint",
+   "at": 24,
+   "clip": "paint-ask",
+   "voice": "bf_emma",
+   "say": "A paint app for my niece.",
+   "line": "Your family.",
+   "purple": "family.",
+   "say_len": 1.547
   },
   {
-   "id": "l4",
-   "t": 20.5,
-   "text": "One that keeps track of your money."
+   "id": "trip",
+   "at": 28,
+   "clip": "trip",
+   "voice": "am_puck",
+   "say": "Plan Lisbon with my sister.",
+   "line": "Your plans.",
+   "purple": "plans.",
+   "say_len": 1.455
   },
   {
-   "id": "l5",
-   "t": 24.5,
-   "text": "Make it look like golden hour."
-  },
-  {
-   "id": "l6",
-   "t": 28.5,
-   "text": "Plan the trip you keep talking about."
-  },
-  {
-   "id": "l7",
-   "t": 32.5,
-   "text": "On your laptop. And your phone."
-  },
-  {
-   "id": "l8",
-   "t": 36.4,
-   "text": "You don't need to know how. You just ask."
-  },
-  {
-   "id": "l9",
-   "t": 40.5,
-   "text": "And whatever you make is yours. To keep, to change, to share."
-  },
-  {
-   "id": "l10",
-   "t": 46.6,
-   "text": "Free. And open source."
-  },
-  {
-   "id": "l11",
-   "t": 52.7,
-   "text": "youcoded."
+   "id": "look",
+   "at": 32,
+   "clip": "look-youcoded",
+   "voice": "af_bella",
+   "say": "Make it feel like golden hour.",
+   "line": "Your look.",
+   "purple": "look.",
+   "say_len": 1.576
   }
- ]
+ ],
+ "ask_voice_at": 0.15,
+ "result_at": 2.3
 }
