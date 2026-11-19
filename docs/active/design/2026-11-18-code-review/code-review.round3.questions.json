@@ -1,0 +1,198 @@
+{
+  "title": "Code review, round 3: merge the new work and approve its wording",
+  "key": "code-review-2026-11-18-round3",
+  "out": "code-review.round3.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "New work ready to merge",
+      "intro": "Each piece below was built to your answers from round 2, tested, and checked by an independent reviewer. Yes merges it. The wording these add is on the next page, and nothing with new wording merges until you approve it there."
+    },
+    {
+      "id": "G-1",
+      "words": true,
+      "surface": "Marketplace server",
+      "path": "The old dashboard web page",
+      "headline": "Merge the removal of the old, unreachable dashboard page?",
+      "today": "The old page still exists on the server but can't sign anyone in.",
+      "problem": "Leftover code with misleading comments.",
+      "proposal": "Yes: it's gone. Your Analytics page in the app is untouched, and all 504 server tests pass. Nobody will notice."
+    },
+    {
+      "id": "G-2",
+      "words": true,
+      "surface": "How we build",
+      "path": "Code size limits",
+      "headline": "Merge the switch from exact per-file size limits to ordinary warnings?",
+      "today": "Every code file has its own exact line limit, adjusted by hand.",
+      "problem": "You called it an odd practice, and it caused constant edits and merge clashes.",
+      "proposal": "Yes: the limits file is gone. The code checker now warns (never blocks) on files over 1,000 lines, functions over 300 lines, and very tangled functions. Today that's 21 files, 42 functions and 66 tangled functions; those counts are a to-fix list, not errors. App users see nothing."
+    },
+    {
+      "id": "G-3",
+      "words": true,
+      "surface": "How we build",
+      "path": "The main instructions every session loads",
+      "headline": "Merge the removal of the name-and-date tags and backstories from the main instructions?",
+      "today": "The instructions carried ten '(Destin, date)' tags and several incident stories.",
+      "problem": "As you said, git history and deck history already record why rules exist.",
+      "proposal": "Yes: tags and stories are gone, and every rule says exactly what it said before. The start-up report also stops warning about the archived youcoded-core repository. The instructions changed on master today too, so I'll combine the two carefully at merge."
+    },
+    {
+      "id": "G-4",
+      "words": true,
+      "surface": "Long-running app",
+      "path": "Closing chats; backups blocked by a leftover lock",
+      "headline": "Merge the cleanup work: leftovers removed when a chat closes, and stuck backup locks that clear themselves?",
+      "today": "A chat leaves some memory behind when it closes, and a crash can leave a lock that blocks backups forever.",
+      "problem": "Slow growth over a long day; backups that silently stop.",
+      "proposal": "Yes: closing a chat frees what it held, a leftover backup lock is taken over after about two hours, and a test opening and closing 50 chats now guards against leftovers. Adds one warning message (next page)."
+    },
+    {
+      "id": "G-5",
+      "words": true,
+      "surface": "Morning report",
+      "path": "A daily report at 6:30 a.m.",
+      "headline": "Merge the morning report: a page, one line in each session's briefing, and a phone message via ntfy?",
+      "today": "Overnight results sit on GitHub where nobody looks.",
+      "problem": "Problems wait until someone notices.",
+      "proposal": "Yes: the report and its script are merged. Running it by hand only writes the page; only the 6:30 timer sends a phone message. The timer itself is installed only if you say yes below."
+    },
+    {
+      "id": "G-6",
+      "words": true,
+      "surface": "Morning report",
+      "path": "This computer's scheduled tasks",
+      "headline": "Once merged, install the 6:30 a.m. timer on this computer?",
+      "today": "Nothing runs the report automatically.",
+      "problem": "Installing a timer changes this computer's settings, so it needs your OK.",
+      "proposal": "Yes: I install a user-level timer (not system-wide). It runs at 6:30 each morning and can be removed with one command. No: run it by hand when wanted."
+    },
+    {
+      "id": "G-7",
+      "words": true,
+      "surface": "Every screen",
+      "path": "Settings that fail to save, closing a chat",
+      "headline": "Merge the first batch of hidden-failure fixes, once you approve its wording on the next page?",
+      "today": "Fast mode, effort level, chat tags and notes can fail to save without a word.",
+      "problem": "You think it's saved; it isn't.",
+      "proposal": "Yes: these now say so, and on/off settings snap back to the real value. A damaged analytics file now means analytics off. An automatic check blocks any new hidden failure unless it's marked harmless with a reason. Harmless failures still show nothing."
+    },
+    {
+      "id": "G-8",
+      "words": true,
+      "surface": "Voice on Android",
+      "path": "Phone app → microphone → custom words",
+      "headline": "Merge the device table and the hiding of the custom-words voice setting on Android?",
+      "today": "Custom words shows on the phone app but gives an error when used.",
+      "problem": "It looks broken, and there's no list of what works where.",
+      "proposal": "Yes: custom words is hidden on the phone app (kept on the to-do list), and the table exists with a check that only reports for now. No other screen changes."
+    },
+    {
+      "id": "P-2",
+      "page": "New wording to approve",
+      "intro": "Every sentence these changes add. Yes approves it as written; Other lets you rewrite it in the note."
+    },
+    {
+      "id": "W-1",
+      "words": true,
+      "surface": "Model picker",
+      "path": "A small pop-up when a setting fails to save",
+      "headline": "Approve 'Couldn't save Fast mode.' and 'Couldn't save the effort level.'?",
+      "today": "Nothing is shown when these fail.",
+      "problem": "You'd believe the change took effect.",
+      "proposal": "Yes: these two pop-ups appear only when the save fails, and the setting flips back to what's really in effect."
+    },
+    {
+      "id": "W-2",
+      "words": true,
+      "surface": "Closing a chat",
+      "path": "Red box in the close-chat prompt, with Try again",
+      "headline": "Approve 'Couldn't save tags and note. This chat is still open.' for when closing a chat can't save them?",
+      "today": "The chat closes and your tags or note are silently lost.",
+      "problem": "Lost work.",
+      "proposal": "Yes: the chat stays open with this message and Try again. When only some parts failed, it names them, for example 'Couldn't save your note.'"
+    },
+    {
+      "id": "W-3",
+      "words": true,
+      "surface": "Chat naming settings",
+      "path": "Settings → naming, when picking a model",
+      "headline": "Approve 'Couldn't check the model list right now. Try again in a moment.'?",
+      "today": "If the model list can't load, the check is skipped silently and a model that won't work can be picked.",
+      "problem": "Naming later fails for no visible reason.",
+      "proposal": "Yes: this line shows under the picker when the list can't load."
+    },
+    {
+      "id": "W-4",
+      "words": true,
+      "surface": "Backups",
+      "path": "Settings → Backup, red warning",
+      "headline": "Approve this warning after a day of skipped backups: 'Backups haven't run for over a day'?",
+      "today": "Skipped backups are only logged.",
+      "problem": "You can't tell backups have stalled.",
+      "proposal": "Yes: title 'Backups haven't run for over a day', body 'Every attempt was skipped because another backup still looks like it is running.' It clears itself once a backup runs. It gives no instruction, because I haven't confirmed that restarting the app fixes it."
+    },
+    {
+      "id": "W-5",
+      "words": true,
+      "surface": "Morning report",
+      "path": "The phone message and the session briefing line",
+      "headline": "Approve the morning report's wording on your phone and in session briefings?",
+      "today": "There is no report.",
+      "problem": "The wording should be short enough to read at a glance.",
+      "proposal": "Yes: the phone message is titled 'YouCoded morning report', reading 'Morning report: 12 fine.' or 'Morning report: 10 fine, 2 red. Open the report on your computer.' The briefing line reads 'Morning report (Nov 19): all 12 green.' If the timer stops, it reads 'Morning report: STALE, last written 3 days ago (timer may not be running).'"
+    },
+    {
+      "id": "P-3",
+      "page": "What works where",
+      "intro": "The device table now exists: 42 features, each marked works, hidden or not-yet for computer, Android app and browser. Two things need you."
+    },
+    {
+      "id": "V-1",
+      "words": true,
+      "surface": "Android app",
+      "path": "The device table",
+      "headline": "Should I try the 21 untested Android-app entries on a phone, rather than guess?",
+      "today": "Half the rows were filled in from the code; nobody has tried those features on a real phone, so they're marked as guesses.",
+      "problem": "A wrong guess would hide something that works, or show something that doesn't.",
+      "proposal": "Yes: I install the separate Dev copy of the Android app (it can't touch your real app) and you or I try each one. Examples: changing your account, friends, reopening a closed chat. No: keep the guesses until someone hits a problem."
+    },
+    {
+      "id": "V-2",
+      "words": true,
+      "surface": "How we build",
+      "path": "The check that compares the table to the screens",
+      "headline": "Should the device check stop new mistakes while old ones get fixed over time?",
+      "today": "The check only reports. It found some features already shown on a device where they don't work.",
+      "problem": "If it blocked everything now, no other work could merge until every old mismatch was fixed.",
+      "proposal": "Yes: anything new must match the table, and the existing mismatches go on a list that is fixed down. No: report only, never block."
+    },
+    {
+      "id": "P-4",
+      "page": "Two small follow-ups the builders raised",
+      "intro": "Both are behind the scenes."
+    },
+    {
+      "id": "X-1",
+      "words": true,
+      "surface": "How we build",
+      "path": "Workspace scripts that use lock files",
+      "headline": "Give the workspace scripts the same self-clearing lock the app now has?",
+      "today": "Some workspace scripts use their own lock files, which a crash can leave behind and block the next session.",
+      "problem": "Sessions sometimes waited minutes for a lock today.",
+      "proposal": "Yes: the scripts use one lock that checks whether its owner is still running, as its own small piece of work. No: leave them."
+    },
+    {
+      "id": "X-2",
+      "words": true,
+      "surface": "How we build",
+      "path": "The session start-up report",
+      "headline": "Have the start-up report read the list of repositories from one file instead of its own copy?",
+      "today": "The start-up report keeps its own list of the five repositories, separate from the main list.",
+      "problem": "Two lists drift apart. That's how the archived one kept showing as stale.",
+      "proposal": "Yes: one list, read everywhere. No: leave the two lists."
+    }
+  ]
+}
