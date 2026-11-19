@@ -26,22 +26,39 @@ asks = Y["asks"]
 
 args = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", o.picture,
         "-i", os.path.join(V, "music/yours_60.wav"), "-i", os.path.join(V, "music/sfx_yours.wav")]
+# ---- the voice stem, built sample-exact before mixing.
+# WHY not ffmpeg's adelay inside the big mix: in that graph the leading silence was dropped
+# and every voice landed ~16 s early (measured 2026-11-18 by matching each take's waveform
+# in the final file). Placing the takes in numpy, then checking the result, cannot drift.
+import numpy as np
+SR = 48000
+scratch = os.path.join(V, "voice", ".stem")
+os.makedirs(scratch, exist_ok=True)
+stem = np.zeros(int(60 * SR), dtype=np.float32)
 for a in asks:
-    args += ["-i", os.path.join(V, "voice/asks", f"{a['id']}.wav")]
-parts = []
-for i, a in enumerate(asks):
-    ms = int(round((a["at"] + Y["ask_voice_at"]) * 1000))
+    tmp = os.path.join(scratch, f"{a['id']}.f32")
     # Each voice: evened out, the boom and hiss trimmed, a touch of presence, and a small
     # room so it sounds like a person in a space rather than dry text-to-speech.
-    parts.append(f"[{i + 3}:a]aresample=48000,aformat=channel_layouts=mono,highpass=f=90,lowpass=f=11000,"
-                 "equalizer=f=3000:t=q:w=1:g=2,equalizer=f=250:t=q:w=1:g=-2,"
-                 "loudnorm=I=-17:TP=-3:LRA=7,aresample=48000,"
-                 "aecho=0.85:0.6:23|41|67:0.16|0.11|0.07,"
-                 f"adelay={ms}:all=1[v{i}]")
-vo_in = "".join(f"[v{i}]" for i in range(len(asks)))
-graph = ";".join(parts) + (
-    f";{vo_in}amix=inputs={len(asks)}:normalize=0:duration=longest,apad,atrim=0:60,"
-    "pan=stereo|c0=c0|c1=c0,asplit=2[vo][key]"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(V, "voice/asks", f"{a['id']}.wav"), "-af",
+                    "aresample=48000,aformat=channel_layouts=mono,highpass=f=90,lowpass=f=11000,"
+                    "equalizer=f=3000:t=q:w=1:g=2,equalizer=f=250:t=q:w=1:g=-2,"
+                    "loudnorm=I=-17:TP=-3:LRA=7,aresample=48000,aecho=0.85:0.6:23|41|67:0.16|0.11|0.07",
+                    "-f", "f32le", "-ac", "1", "-ar", str(SR), tmp], check=True)
+    v = np.fromfile(tmp, dtype=np.float32)
+    i = int(round((a["at"] + Y["ask_voice_at"]) * SR))
+    stem[i:i + len(v)] += v[: len(stem) - i]
+vo_raw = os.path.join(scratch, "voices.f32")
+stem.tofile(vo_raw)
+# Prove it: each take must be found where the film types it (within 20 ms).
+for a in asks:
+    v = np.fromfile(os.path.join(scratch, f"{a['id']}.f32"), dtype=np.float32)
+    n = len(stem) + len(v)
+    cc = np.fft.irfft(np.fft.rfft(stem, n) * np.conj(np.fft.rfft(v, n)), n)[: len(stem)]
+    found, want = np.argmax(cc) / SR, a["at"] + Y["ask_voice_at"]
+    assert abs(found - want) < 0.02, f"{a['id']} lands at {found:.3f}s, film types it at {want:.3f}s"
+args += ["-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", vo_raw]
+graph = (
+    "[3:a]apad,atrim=0:60,pan=stereo|c0=c0|c1=c0,asplit=2[vo][key]"
     # Music dips while someone speaks and comes back in ~0.4 s.
     f";[1:a]aresample=48000,volume={o.music}[m];[key]apad[keyp];"
     "[m][keyp]sidechaincompress=threshold=0.02:ratio=6:attack=20:release=380:makeup=1,atrim=0:60[md]"
@@ -66,3 +83,15 @@ if r.returncode:
 m = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", o.out, "-af", "ebur128=peak=true", "-f", "null", "-"],
                    capture_output=True, text=True).stderr.split("Summary:")[-1]
 print(f"{o.out}  {m.split('I:')[1].split('LUFS')[0].strip()} LUFS  TP {m.split('Peak:')[1].split('dBFS')[0].strip()}")
+
+# Final proof, on the finished file: every voice where the film types it.
+fin = os.path.join(scratch, "final.f32")
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", o.out, "-f", "f32le", "-ac", "1", "-ar", str(SR), fin], check=True)
+mix = np.fromfile(fin, dtype=np.float32)
+for a in asks:
+    v = np.fromfile(os.path.join(scratch, f"{a['id']}.f32"), dtype=np.float32)
+    n = len(mix) + len(v)
+    cc = np.fft.irfft(np.fft.rfft(mix, n) * np.conj(np.fft.rfft(v, n)), n)[: len(mix)]
+    found = np.argmax(cc) / SR
+    want = a["at"] + Y["ask_voice_at"]
+    print(f"  {a['id']:6s} heard at {found:6.3f}s  typed from {want:6.3f}s  {'ok' if abs(found - want) < 0.03 else 'WRONG'}")
