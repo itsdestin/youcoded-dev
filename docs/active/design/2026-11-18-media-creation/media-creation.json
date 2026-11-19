@@ -835,8 +835,7 @@
             ]
           }
         }
-      ],
-      "reopened": "You wanted options between the one-line box and the box with a top line."
+      ]
     },
     {
       "id": "Q-d-video",
@@ -845,22 +844,23 @@
       "surface": "Chat",
       "path": "A video being made, and a finished one",
       "headline": "Which video card should show a video being made and then finished?",
-      "today": "Pictures and sounds now carry Open and View in folder as small icon buttons at the right of their box.",
-      "problem": "The finished video had its own pill-shaped Open button, unlike every other card.",
-      "proposal": "While making: one box line with progress and Stop. Finished: the info line with the same two icon buttons, the first frame full width under it.",
-      "checked": "Redrawn on 2026-11-18 in the app's design workbench, inside a real reply bubble, from the Deliverables card's box and the app's icon buttons.",
+      "today": "Pictures and sounds carry Open and View in folder as small icon buttons at the right of their box.",
+      "problem": "The last drawing showed the big first-frame card, which you had already turned down; you wanted the small finished card.",
+      "proposal": "While making: one box line with progress and Stop. Finished: the small first frame at the left, name and details beside it, and the same two icon buttons at the right.",
+      "checked": "Redrawn on 2026-11-19 in the app's design workbench, inside a real reply bubble, from the Deliverables card's box and the app's icon buttons.",
       "options": [
         {
-          "id": "combined",
-          "label": "Combined",
+          "id": "making-then-small",
+          "label": "Small finished card",
           "recommended": true,
-          "picture": "pictures/design3-media-video-card-making-then-done.png",
-          "summary": "The making card you liked, then the big-frame finished card, with the shared buttons.",
+          "picture": "pictures/design4-media-video-card-making-then-small.png",
+          "summary": "The making card you liked, then the small finished card you picked, with the shared icon buttons.",
           "pros": [
+            "Takes little room in the chat.",
             "Same buttons, same place, as pictures and sound."
           ],
           "cons": [
-            "The big frame still opens in your video player, not in the chat."
+            "The first frame is small; the video plays in your video player."
           ],
           "reuse": {
             "from": [
@@ -868,12 +868,12 @@
               "The app's progress bar and small icon buttons"
             ],
             "new": [
-              "the full-width frame"
+              "the small first frame beside the details"
             ]
           }
         }
       ],
-      "reopened": "You liked the first drawing while it is being made, the second once finished, and wanted the same buttons as the other cards."
+      "reopened": "You wanted the small finished card from the earlier drawing, not the big frame."
     },
     {
       "id": "Q-d-limit",
@@ -968,14 +968,14 @@
         },
         {
           "id": "S-no-provider",
-          "call": "Any chat with no picture service connected, Claude Code included: \"Making images here needs a paid image provider. Connect one to continue.\"",
-          "why": "Claude's company sells no picture service, so a Claude Code chat always needs another provider.",
+          "call": "Every chat with no picture service and not on a ChatGPT plan, Claude Code included: \"Making images here needs a paid image provider. Connect one to continue.\"",
+          "why": "The app knows what each chat runs on, so only one of the two messages can ever appear.",
           "visual": true,
           "picture": "pictures/design3-media-approval-b-header-no-provider.png",
           "more": {
-            "today": "Claude Code chats can use the app's own tools, but Anthropic offers no picture service.",
-            "problem": "Without this, the assistant would try and fail with a confusing error.",
-            "change": "Not now closes the card; Connect a provider opens Cloud providers."
+            "today": "Each chat already knows which service it runs on: Claude Code, a ChatGPT plan, a key, or a model on this computer.",
+            "problem": "You asked whether this replaces the ChatGPT message, and how the app tells the two apart.",
+            "change": "No picture service connected: a ChatGPT-plan chat gets the ChatGPT message; every other chat gets this one. Once any picture service is connected, neither shows and the normal approval card appears."
           }
         },
         {
@@ -1027,7 +1027,8 @@
           }
         }
       ],
-      "reopened": "You asked what a Claude Code chat shows with no picture service, and wanted the normal approval styling instead of orange."
+      "reopened": "You asked when this message shows instead of the ChatGPT one.",
+      "reframed": "The no-service row now says which chats see it, and its details explain how the app picks between it and the ChatGPT message."
     },
     {
       "id": "P-defaults",

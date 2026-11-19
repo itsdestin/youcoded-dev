@@ -1,0 +1,1179 @@
+{
+  "title": "Make pictures, read-aloud and video from a chat",
+  "key": "media-creation",
+  "tag": "feature",
+  "out": "media-creation.html",
+  "grows": true,
+  "stage": "design",
+  "retired": {},
+  "steps": [
+    {
+      "id": "P-understand",
+      "page": "Here is how I understand this",
+      "intro": "What you decided in September, and what I found in the app. Mark each one Holds or Fails.",
+      "stage": "understanding"
+    },
+    {
+      "id": "U-order",
+      "words": true,
+      "surface": "The whole feature",
+      "path": "Plan for this work",
+      "headline": "Pictures come first, then read-aloud, then video.",
+      "changed": "We build making pictures first. Reading replies aloud comes next, video after that. Searching by meaning stays an idea to explore later, not something we build now.",
+      "notice": "The first version you try only makes pictures. Read-aloud and video come in later versions.",
+      "yes": "Holds",
+      "no": "Fails",
+      "resolved": "All three are now planned together, as you chose; they are still built in that order. Read-aloud, sound and video statements are on their own pages."
+    },
+    {
+      "id": "U-chat-only",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any chat",
+      "headline": "You ask for a picture in an ordinary chat; there is no separate Create screen.",
+      "changed": "You type something like \"make me a poster of…\" in a chat. The assistant writes the picture request for you. No new screen, button or menu is added to start it.",
+      "notice": "Making pictures feels like part of talking to the assistant, not a separate tool.",
+      "yes": "Holds",
+      "no": "Fails",
+      "resolved": "Kept in the chat, and the assistant must ask clearly and suggest other ways first (its own statement). The separate studio is filed as an idea for later."
+    },
+    {
+      "id": "U-approve-card",
+      "words": true,
+      "surface": "Chat",
+      "path": "A chat where the assistant offers to make a picture",
+      "headline": "Nothing is made, and nothing is paid, until you press Approve on a card in the chat, except in Full Auto.",
+      "changed": "Before any picture, sound or video is made, a card appears in the chat showing what will be made, which service makes it and the price. In Full Auto, the permission setting that never asks, the card is skipped and the work starts at once.",
+      "notice": "In normal chats every item costs one press of yours. In Full Auto things get made without asking; the cost shows afterwards.",
+      "picture": "pictures/today-approval-card.png",
+      "caption": "Today's closest relative: the card the assistant shows before a step that buys, sends or submits something. The picture card would sit in the same place.",
+      "yes": "Holds",
+      "no": "Fails",
+      "resolved": "Added: in Full Auto, the first paid request in a chat goes back to the assistant with your check-in question, and goes ahead only once it has checked with you."
+    },
+    {
+      "id": "U-remember-model",
+      "words": true,
+      "surface": "Chat",
+      "path": "The approval card",
+      "headline": "The card remembers which picture maker you picked last time and starts on it.",
+      "changed": "The card has a list of picture makers, cheap and pricey, to pick from before you approve. Next time, the list starts on the one you picked last, so you don't choose again each time.",
+      "notice": "Say you switch to a cheaper maker once. From then on the card starts on that cheaper one until you change it.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-create-edit",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any chat",
+      "headline": "Version one makes new pictures and changes a picture you attach; no painting over one part of a picture.",
+      "changed": "\"Make a picture of…\" and \"change this picture I attached so that…\" both work. Selecting one area of a picture to change only that area is left out.",
+      "notice": "To change part of a picture you describe the change in words rather than marking the area.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-files",
+      "words": true,
+      "surface": "Project files",
+      "path": "The project folder, and the chat's files list",
+      "headline": "Finished pictures are saved in a pictures folder inside the project and are never deleted automatically.",
+      "changed": "Each picture is saved as a real file in a scratch pictures folder inside the chat's project. A chat with no project saves to a personal Pictures folder the app keeps. The picture also shows in the chat and in that chat's list of files.",
+      "notice": "Pictures pile up until you or the assistant move or delete them. The assistant can move a picture to where it belongs.",
+      "picture": "pictures/today-files-card.png",
+      "caption": "Today the assistant hands you finished files on a Deliverables card like these. A finished picture would arrive the same way.",
+      "yes": "Holds",
+      "no": "Fails",
+      "resolved": "Added as its own statement: every made file carries a label saying it was made by AI and with which model, so you can find and filter them."
+    },
+    {
+      "id": "U-local-connect",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings, where services are connected",
+      "headline": "For making pictures on your own computer, the app connects to a tool you already run, such as ComfyUI; it installs nothing.",
+      "changed": "Someone who already runs a picture program on their computer can point the app at it, and it shows up as a choice on the card like any paid service. The app does not download or install a picture engine in this version.",
+      "notice": "Most people will see only online services on the card. People with their own setup get a free choice that runs on their computer.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-gpt-plan",
+      "words": true,
+      "surface": "Chat",
+      "path": "A chat signed in with a ChatGPT plan",
+      "headline": "A ChatGPT plan sign-in cannot pay for pictures; a separately paid service is always needed.",
+      "changed": "OpenAI does not let other apps use a ChatGPT plan to make pictures. Pictures in our app need a separately paid service, such as OpenRouter or an OpenAI key. In a ChatGPT-plan chat the card says so, and says you can make pictures on your plan at chatgpt.com instead.",
+      "notice": "Someone with only a ChatGPT plan sees two ways forward: connect a paid service here, or use chatgpt.com.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-today",
+      "words": true,
+      "surface": "The whole app",
+      "path": "Checked in today's code",
+      "headline": "Today the app can look at pictures and take spoken typing, but it makes no pictures, speech or video.",
+      "changed": "I searched all of today's app code. You can attach a picture for the assistant to look at, and speak instead of typing. Nothing in the app makes a picture, reads text aloud or makes video.",
+      "notice": "Everything in this feature is new; there is nothing old to replace or remove.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-picture-them",
+      "words": true,
+      "surface": "The whole feature",
+      "path": "Your own picture of it",
+      "headline": "If you already picture how any of this looks, describe it here. Skip it if not.",
+      "today": "Nothing is drawn yet. The next step is two to four drawn designs of the approval card and of a finished picture in the chat.",
+      "problem": "If you already have a look in mind, drawings that miss it waste a step.",
+      "proposal": "Anything you write here shapes the first drawings. Leaving it empty is fine.",
+      "checked": "Nothing has been drawn for this feature as of 2026-11-18.",
+      "answer": "words",
+      "prompt": "For example: the card should look like…, the picture should appear…",
+      "resolved": "Each idea became its own statement: the right-click Read aloud, the built-in voice, the sound card, pictures shown full size, the picture menu and the video card."
+    },
+    {
+      "id": "P-pictures",
+      "page": "Pictures and video in the chat",
+      "intro": "From your notes: how made pictures and videos show up, and how the assistant decides to make one.",
+      "stage": "understanding"
+    },
+    {
+      "id": "U-ask-first",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any chat",
+      "headline": "The assistant offers a paid picture, sound or video only when you clearly ask, and suggests other ways where they fit.",
+      "changed": "Before reaching for a paid maker, the assistant considers drawing it another way, such as a chart, a simple drawing it writes itself, or a 3D program like Blender, and gives you the pros and cons.",
+      "notice": "A request like \"make a diagram\" may get a drawn diagram instead of a paid picture, with a note on why.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-full-size",
+      "words": true,
+      "surface": "Chat",
+      "path": "A finished picture in a chat",
+      "headline": "A finished picture always shows full size in the chat first, not as a small file card.",
+      "changed": "The made picture appears in the assistant's reply at full width, as the result. It may also be listed on a files card, but the picture itself always comes first.",
+      "notice": "You see the picture straight away without opening anything.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-picture-menu",
+      "words": true,
+      "surface": "Chat",
+      "path": "Right-click any picture in a chat",
+      "headline": "Right-clicking a picture in the chat opens a menu: copy, save as, open, show in folder.",
+      "changed": "Every picture in the chat, made or attached, gets a right-click menu with Copy, Save as, Open and Show in folder.",
+      "notice": "You can paste a picture into another app, or save it somewhere else, in two clicks.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-label",
+      "words": true,
+      "surface": "Project files",
+      "path": "Every made picture, sound and video file",
+      "headline": "Every made file carries a label saying it was made by AI, with which maker and when.",
+      "changed": "The label is written inside the file itself, so it stays when the file is moved or copied. The app's file lists can show and filter by it.",
+      "notice": "You can always tell a made picture from a photo, and list only made files.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-video-card",
+      "words": true,
+      "surface": "Chat",
+      "path": "A finished video in a chat",
+      "headline": "A finished video shows as a card in the chat that opens in your computer's video player; it does not play in the chat.",
+      "changed": "The card shows the video's first frame, its length and an Open button. Making a video takes minutes; the card shows progress meanwhile, and you can keep chatting.",
+      "notice": "Video never slows the chat down. Watching it opens your usual video player.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-video-services",
+      "words": true,
+      "surface": "The approval card",
+      "path": "The list of video makers on the card",
+      "headline": "Video is made through OpenRouter or a Google key; OpenAI no longer offers video.",
+      "changed": "OpenRouter reaches several video makers, including Google's. A Google key reaches Google's directly. OpenAI shut its video service in September 2026.",
+      "notice": "Video costs more than pictures, often a dollar or more per clip; the card shows the estimate before you approve.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-sound",
+      "page": "Read-aloud and sound",
+      "intro": "From your notes: reading messages aloud, the voices, and playing sound in the chat.",
+      "stage": "understanding"
+    },
+    {
+      "id": "U-read-menu",
+      "words": true,
+      "surface": "Chat",
+      "path": "Right-click any message",
+      "headline": "Right-clicking any message, yours or the assistant's, offers Read aloud.",
+      "changed": "Read aloud is a new choice in each message's right-click menu. It plays the message in the chosen voice, with a way to stop it.",
+      "notice": "Any message can be listened to, without asking the assistant.",
+      "yes": "Holds",
+      "no": "Fails",
+      "resolved": "Answered in chat: how live voice modes differ from a model plus a voice key, and how the app could build one later."
+    },
+    {
+      "id": "U-voice-builtin",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings, where the voice is chosen",
+      "headline": "A pleasant free voice is built into the app; a setting swaps it for a cloud voice paid with your key.",
+      "changed": "The built-in voice runs on your computer, free and offline. A setting switches to a finer cloud voice, like how naming chats can use the simple way or the assistant.",
+      "notice": "Read aloud works for everyone at no cost. Better voices are one setting away.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-voice-services",
+      "words": true,
+      "surface": "Settings",
+      "path": "The list of cloud voices",
+      "headline": "Cloud voices use the same services as pictures: OpenRouter, or an OpenAI or Google key you already added.",
+      "changed": "No new account is needed: the keys already used for pictures also pay for voices.",
+      "notice": "Google's voices are the cheapest, about a fifth of a cent for ten seconds.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-sound-card",
+      "words": true,
+      "surface": "Chat",
+      "path": "A sound in a chat",
+      "headline": "A sound in the chat shows as a card with play and pause, a simple wave that fills as it plays, and the time.",
+      "changed": "Any sound the assistant makes, and any recording you send, appears in the chat as this card and plays right there.",
+      "notice": "You hear sounds in place, without opening another program.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-send-recording",
+      "words": true,
+      "surface": "Chat",
+      "path": "The message box",
+      "headline": "You can send a voice recording as a message, not only speak to type.",
+      "changed": "Today the microphone turns your speech into typed words. You could also send the recording itself, which appears as a sound card in your message.",
+      "notice": "Useful for sending a sound for the assistant to work with, like a voice to copy or a clip to tidy up.",
+      "yes": "Holds",
+      "no": "Fails",
+      "resolved": "Noted: sending a recording gets its own careful design, including chats whose model cannot hear sound."
+    },
+    {
+      "id": "P-decide",
+      "page": "What is still open",
+      "intro": "Decisions still open. Each has my recommendation; pick one or write your own.",
+      "stage": "understanding"
+    },
+    {
+      "id": "Q-services",
+      "words": true,
+      "surface": "The approval card",
+      "path": "The list of picture options on the card",
+      "headline": "Which paid picture services should the first version work with?",
+      "today": "The app connects to OpenRouter, OpenAI, Google, Anthropic and a ChatGPT plan, but only to chat with them. None of those connections is used to make pictures.",
+      "problem": "Each service is one more thing to sign up for and keep working. Too few leaves people without a service they already pay for; too many means more broken options to maintain.",
+      "proposal": "Start with OpenRouter, where one key reaches about 70 picture makers (OpenAI's, Google's and others). Also use an OpenAI or Google key you have already added.",
+      "checked": "App code read on 2026-11-18 (the Add provider choices and the provider list). Service details from each company's own pricing and help pages, read 2026-11-18.",
+      "options": [
+        {
+          "id": "openrouter-plus",
+          "label": "OpenRouter plus keys",
+          "recommended": true,
+          "summary": "OpenRouter, plus an OpenAI or Google key you already added.",
+          "pros": [
+            "One OpenRouter key gives the widest choice at the companies' own prices.",
+            "People who already added an OpenAI or Google key need no new account."
+          ],
+          "cons": [
+            "OpenAI may ask some people to verify their identity before its pictures work.",
+            "Google needs billing turned on; its free tier does not cover pictures."
+          ]
+        },
+        {
+          "id": "openrouter-only",
+          "label": "OpenRouter only",
+          "summary": "One service for everyone.",
+          "pros": [
+            "One key, one price list, one thing to set up and keep working.",
+            "OpenRouter's list says which makers can edit a picture, so the card can show only suitable ones."
+          ],
+          "cons": [
+            "Someone who pays OpenAI or Google directly has to sign up for OpenRouter too."
+          ]
+        },
+        {
+          "id": "wide",
+          "label": "Also smaller services",
+          "summary": "Add fal.ai, MuAPI and VideoRouter too.",
+          "pros": [
+            "More choice, and the person who asked on GitHub gets exactly the services they named."
+          ],
+          "cons": [
+            "Three more key screens to build and keep working.",
+            "MuAPI and VideoRouter are young companies, and neither publishes a list the card can read prices from."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-same-key",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings, Assistant settings, Cloud providers",
+      "headline": "Should a key you already added for chatting also pay for pictures?",
+      "today": "Keys sit on the Cloud providers page, one card per service. Each key is used only for chatting.",
+      "problem": "If pictures need a separate key, people add the same key twice. If the chat key also pays for pictures, money is spent from a key someone may think of as chat-only.",
+      "proposal": "The same key covers both. Every picture still waits for your Approve on the card, and the card names the service it will bill.",
+      "checked": "Cloud providers page checked in today's app code, and photographed, on 2026-11-18.",
+      "picture": "pictures/today-providers.png",
+      "caption": "Today's Cloud providers page. Each card holds one service's key, used only for chatting.",
+      "options": [
+        {
+          "id": "same",
+          "label": "Same key",
+          "recommended": true,
+          "summary": "One key per service, used for chat and pictures.",
+          "pros": [
+            "No extra setup: pictures just work for anyone already connected.",
+            "Nothing is spent without your press on the card."
+          ],
+          "cons": [
+            "The bill for chats and pictures arrives together from that service."
+          ]
+        },
+        {
+          "id": "separate",
+          "label": "Separate picture key",
+          "summary": "Pictures need their own key, even for the same service.",
+          "pros": [
+            "Picture spending is kept apart from chat spending."
+          ],
+          "cons": [
+            "Everyone sets up twice.",
+            "Two copies of one key to keep up to date."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-price",
+      "words": true,
+      "surface": "The approval card",
+      "path": "The price shown on the card",
+      "headline": "What should the card show when the exact price can't be known before the picture is made?",
+      "today": "Nothing shows a price for pictures, because the app makes none.",
+      "problem": "Some makers charge a fixed price per picture. Others charge by how much detail they end up drawing, so the exact cost is only known afterwards.",
+      "proposal": "Show \"about $0.04\" before, worked out from that maker's price list, then the real cost under the finished picture. If no estimate exists, the card says \"price unknown\", never \"free\".",
+      "checked": "Pricing pages of OpenRouter, OpenAI and Google read 2026-11-18; OpenRouter reports the real cost of each picture once it is made.",
+      "options": [
+        {
+          "id": "estimate",
+          "label": "Estimate, then real cost",
+          "recommended": true,
+          "summary": "\"About\" before, the exact cost after.",
+          "pros": [
+            "Every maker can be offered.",
+            "You always learn what it really cost."
+          ],
+          "cons": [
+            "The real cost can come out a little above the estimate."
+          ]
+        },
+        {
+          "id": "exact-only",
+          "label": "Exact prices only",
+          "summary": "Offer only makers with a fixed price per picture.",
+          "pros": [
+            "What you approve is exactly what you pay."
+          ],
+          "cons": [
+            "Leaves out several of the best makers, including OpenAI's newest."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-local",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings, where a picture program on your own computer is connected",
+      "headline": "Should the first version connect to ComfyUI, a free picture program some people run, or wait for the app's own free engine?",
+      "today": "Connecting a picture program on your computer, such as ComfyUI, was planned for the first version.",
+      "problem": "Connecting it is about a week of work, but it keeps breaking as people's setups and models change. Few people run it: it needs a strong graphics card and technical setup.",
+      "proposal": "Leave it out of the first version. Keep the idea for when the app brings its own free engine that runs on your computer, which serves everyone, not just ComfyUI users.",
+      "checked": "ComfyUI's own documentation read 2026-11-18. The app's local engine code checked the same day: it runs chat models only.",
+      "options": [
+        {
+          "id": "skip",
+          "label": "Skip for now",
+          "recommended": true,
+          "summary": "No local picture option in the first version.",
+          "pros": [
+            "A week sooner, and nothing that breaks with each ComfyUI update.",
+            "The later built-in engine helps everyone, not just ComfyUI users."
+          ],
+          "cons": [
+            "Pictures cost money until the built-in engine exists.",
+            "The few people who already run ComfyUI wait longer."
+          ]
+        },
+        {
+          "id": "connect",
+          "label": "Connect ComfyUI",
+          "summary": "As planned in September.",
+          "pros": [
+            "A free choice on the card for people who already run it."
+          ],
+          "cons": [
+            "About a week more, plus ongoing fixes as setups change."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-claude-code",
+      "words": true,
+      "surface": "Chat",
+      "path": "A chat running Claude Code, and a chat running any other model",
+      "headline": "Should pictures work in Claude Code chats as well as in chats with the app's other models?",
+      "today": "The app already gives Claude Code chats some of its own abilities, such as sending you a link or editing Pages. Those work the same in both kinds of chat.",
+      "problem": "Most people using the app chat through Claude Code. Leaving it out would hide pictures from them; including it means building the card to work in two kinds of chat.",
+      "proposal": "Both kinds of chat get the same card, the same choices and the same pictures folder.",
+      "checked": "App code read 2026-11-18: Claude Code chats receive the app's link, Pages, comments and browser abilities.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Both kinds",
+          "recommended": true,
+          "summary": "Same card whatever the chat runs on.",
+          "pros": [
+            "Pictures behave the same everywhere.",
+            "Claude Code users can make pictures without changing chats."
+          ],
+          "cons": [
+            "A little more to build before the first version is ready."
+          ]
+        },
+        {
+          "id": "native-first",
+          "label": "Other models first",
+          "summary": "Claude Code chats get it in a later version.",
+          "pros": [
+            "A slightly earlier first version."
+          ],
+          "cons": [
+            "Most people would not see the feature at first."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-later",
+      "words": true,
+      "surface": "The whole feature",
+      "path": "Plan for this work",
+      "headline": "Should read-aloud and video be designed now, or after pictures are built?",
+      "today": "Nothing is decided yet about how read-aloud or video look or behave.",
+      "problem": "Designing all three now takes longer before anything ships. Designing pictures alone risks a card that later needs reworking for sound and video.",
+      "proposal": "Design and build pictures now, keeping the card general enough for sound and video. Read-aloud and video come back as later pages of this same deck.",
+      "checked": "The September chat closed with the picture plan only; read-aloud and video were listed as still open.",
+      "options": [
+        {
+          "id": "pictures-first",
+          "label": "Pictures first",
+          "recommended": true,
+          "summary": "Ship pictures, then design the next one.",
+          "pros": [
+            "You get something to use sooner.",
+            "Real use of pictures shapes the read-aloud design."
+          ],
+          "cons": [
+            "The card may need small changes when sound arrives."
+          ]
+        },
+        {
+          "id": "all-now",
+          "label": "Design all three",
+          "summary": "Plan pictures, read-aloud and video together, then build pictures.",
+          "pros": [
+            "One card designed for all three from the start."
+          ],
+          "cons": [
+            "Weeks more design before you can make a single picture."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-github",
+      "words": true,
+      "surface": "GitHub",
+      "path": "The request on GitHub for a picture, sound and video screen",
+      "headline": "What should we tell the person on GitHub who asked for a picture, sound and video screen and their own keys?",
+      "today": "A Windows user asked in October for a screen like Open Generative AI, a free picture and video app, and for a place to add MuAPI or VideoRouter keys. Nobody has replied.",
+      "problem": "They asked for a separate screen, which the first version will not have, and for two services we haven't chosen.",
+      "proposal": "Thank them, say pictures are coming inside the chat and paid with your own key, and say a separate screen and their two services may come later.",
+      "checked": "The GitHub request read 2026-11-18: no replies. Open Generative AI's own page shows it makes pictures through MuAPI.",
+      "options": [
+        {
+          "id": "reply-now",
+          "label": "Reply now",
+          "recommended": true,
+          "summary": "Explain the plan and ask if OpenRouter would work for them.",
+          "pros": [
+            "They have waited almost a month; a reply shows the request was heard.",
+            "Their answer tells us whether OpenRouter is enough."
+          ],
+          "cons": [
+            "It promises a direction before anything is built."
+          ]
+        },
+        {
+          "id": "reply-later",
+          "label": "Reply on release",
+          "summary": "Reply once pictures are in a release.",
+          "pros": [
+            "The reply points at something they can use."
+          ],
+          "cons": [
+            "Weeks more silence on a request from a real user."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-auto-limit",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings, Permissions, Full Auto",
+      "headline": "In Full Auto, should an expensive picture, sound or video still stop and ask?",
+      "today": "Full Auto lets the assistant act without asking. Nothing it does today costs per use.",
+      "problem": "One video can cost a dollar or more. In Full Auto a misunderstanding, or a loop, could spend real money before you notice.",
+      "proposal": "Full Auto skips the card for anything under a price you set, one dollar to start. Above it, the card still appears.",
+      "checked": "Full Auto checked in today's app code on 2026-11-18. Video prices from OpenRouter's and Google's pages, read the same day.",
+      "options": [
+        {
+          "id": "limit",
+          "label": "Ask above a limit",
+          "recommended": true,
+          "summary": "Full Auto stops only for items over your limit.",
+          "pros": [
+            "Small items flow without asking.",
+            "A mistake can't quietly spend much."
+          ],
+          "cons": [
+            "One more setting.",
+            "A pricey video still interrupts Full Auto."
+          ]
+        },
+        {
+          "id": "never",
+          "label": "Never ask",
+          "summary": "Full Auto makes everything without the card.",
+          "pros": [
+            "Full Auto never stops."
+          ],
+          "cons": [
+            "Nothing caps what a mistake can spend."
+          ]
+        }
+      ],
+      "resolved": "Changed to your plan: each chat starts with a five dollar total for made items; past it, a card offers raising it for that chat in five dollar steps. It survives restarts."
+    },
+    {
+      "id": "Q-voice-download",
+      "words": true,
+      "surface": "Settings",
+      "path": "The first time you use Read aloud",
+      "headline": "Should the built-in voice come with the app, or download the first time you use Read aloud?",
+      "today": "Voice typing works this way: its speech model, about 640 MB, downloads the first time you use the microphone.",
+      "problem": "A built-in voice adds about 100 MB. Inside the app, everyone downloads it; on first use, the first Read aloud waits for it.",
+      "proposal": "Download it the first time you press Read aloud, with a progress bar, like voice typing does.",
+      "checked": "Voice typing download read in today's app code on 2026-11-18. Voice size is typical of small free voices such as Piper and Kokoro.",
+      "options": [
+        {
+          "id": "first-use",
+          "label": "On first use",
+          "recommended": true,
+          "summary": "Downloads when you first press Read aloud.",
+          "pros": [
+            "The app stays smaller for people who never use it.",
+            "Works like voice typing already does."
+          ],
+          "cons": [
+            "The first Read aloud waits a minute or so."
+          ]
+        },
+        {
+          "id": "bundled",
+          "label": "With the app",
+          "summary": "Inside the installer.",
+          "pros": [
+            "Read aloud works instantly, even offline from the start."
+          ],
+          "cons": [
+            "Every download of the app grows by about 100 MB."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-designs",
+      "page": "How it looks",
+      "intro": "Two to four drawings of each new card, made from the app's own parts. Pick one each, or say what to change.",
+      "stage": "design"
+    },
+    {
+      "id": "Q-d-approval",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "The card that appears before anything is made",
+      "headline": "Which approval card should appear before a picture, sound or video is made?",
+      "today": "Permission requests in the chat share one frame: an icon and a label on a top line, then the question and the buttons at the right.",
+      "problem": "The first drawing invented its own card, so it looked foreign next to every other request in the chat.",
+      "proposal": "The same frame as every permission request, with the maker list and price inside, Decline, Allow for this chat, and an orange Approve.",
+      "checked": "Redrawn on 2026-11-18 in the app's design workbench, inside a real reply bubble, from the permission card's frame and the Deliverables card's box.",
+      "options": [
+        {
+          "id": "frame-body",
+          "label": "List in the body",
+          "picture": "pictures/design2-media-approval-a-body.png",
+          "summary": "Top line says what and how much; the Made by list sits on its own line under your request.",
+          "pros": [
+            "The maker list is easy to find and read.",
+            "Same frame as every other request."
+          ],
+          "cons": [
+            "One line taller."
+          ],
+          "reuse": {
+            "from": [
+              "The permission card's frame",
+              "The app's dropdown",
+              "The orange spending button"
+            ],
+            "new": [
+              "the maker line inside the card"
+            ]
+          },
+          "recommended": true
+        },
+        {
+          "id": "frame-header",
+          "label": "List in the top line",
+          "picture": "pictures/design2-media-approval-b-header.png",
+          "summary": "The maker choice sits in the card's top line as a small dropdown.",
+          "pros": [
+            "Shortest card."
+          ],
+          "cons": [
+            "A dropdown in a title line is unusual in the app.",
+            "Easier to miss before approving."
+          ],
+          "reuse": {
+            "from": [
+              "The permission card's frame",
+              "The app's dropdown",
+              "The orange spending button"
+            ],
+            "new": [
+              "a dropdown in the top line"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-d-picture",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "A finished picture in the assistant's reply",
+      "headline": "How should a finished picture appear in the chat?",
+      "today": "Finished files arrive in a bordered box inside the reply, with an icon, a name and actions at the right.",
+      "problem": "The first drawing put loose grey text and plain buttons under the picture.",
+      "proposal": "The picture full width, with the same bordered box under it: picture icon, file name, maker and cost, and the app's small Open and View in folder icon buttons at the right.",
+      "checked": "Redrawn on 2026-11-18 in the app's design workbench, inside a real reply bubble, from the permission card's frame and the Deliverables card's box.",
+      "options": [
+        {
+          "id": "box-icons",
+          "label": "Box with icons",
+          "picture": "pictures/design2-media-picture-result-row.png",
+          "summary": "One box line under the picture; Open and View in folder as icon buttons.",
+          "pros": [
+            "Matches the Deliverables box.",
+            "Actions visible but quiet."
+          ],
+          "cons": [
+            "Icon buttons need a hover to name themselves."
+          ],
+          "reuse": {
+            "from": [
+              "The chat's picture display",
+              "The Deliverables box",
+              "The app's small icon buttons"
+            ],
+            "new": [
+              "the line's arrangement"
+            ]
+          },
+          "recommended": true
+        },
+        {
+          "id": "box-fold",
+          "label": "Box that opens",
+          "picture": "pictures/design2-media-picture-result-header-menu.png",
+          "summary": "The same box with a fold arrow; opening it shows labelled View in folder and Open buttons.",
+          "pros": [
+            "Buttons have words, not just icons."
+          ],
+          "cons": [
+            "One more press to reach them."
+          ],
+          "reuse": {
+            "from": [
+              "The chat's picture display",
+              "The Deliverables box",
+              "The app's outlined buttons"
+            ],
+            "new": [
+              "the fold inside the box"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-d-sound",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "A sound in the chat, made or sent",
+      "headline": "Which sound card should play sounds in the chat?",
+      "today": "Pictures now show a box under them with the file name, maker and cost, and Open and View in folder at the right.",
+      "problem": "The one-line sound box hid what the sound was; the two-part box was twice as tall.",
+      "proposal": "Three middle grounds, all with the same Open and View in folder buttons as pictures and video.",
+      "checked": "Redrawn on 2026-11-18 in the app's design workbench, inside a real reply bubble, from the Deliverables card's box and the app's icon buttons.",
+      "options": [
+        {
+          "id": "two-tight",
+          "label": "Two tight lines",
+          "picture": "pictures/design3-media-sound-card-a-two-lines.png",
+          "summary": "A top line like the picture box, with play, wave and time tight under it.",
+          "pros": [
+            "Reads exactly like the picture box above a player."
+          ],
+          "cons": [
+            "Still two lines."
+          ],
+          "reuse": {
+            "from": [
+              "The Deliverables box",
+              "The app's small icon buttons"
+            ],
+            "new": [
+              "the play button",
+              "the wave"
+            ]
+          },
+          "recommended": true
+        },
+        {
+          "id": "name-over",
+          "label": "Name over wave",
+          "picture": "pictures/design3-media-sound-card-b-name-over-wave.png",
+          "summary": "One line: play, the name sitting over a thin wave, time and buttons.",
+          "pros": [
+            "Smallest that still names the sound."
+          ],
+          "cons": [
+            "No maker or cost shown.",
+            "The thin wave is harder to see."
+          ],
+          "reuse": {
+            "from": [
+              "The Deliverables box",
+              "The app's small icon buttons"
+            ],
+            "new": [
+              "the play button",
+              "the wave"
+            ]
+          }
+        },
+        {
+          "id": "details-under",
+          "label": "Details under wave",
+          "picture": "pictures/design3-media-sound-card-c-details-under.png",
+          "summary": "One line: play, the wave with name, maker and cost in small text under it.",
+          "pros": [
+            "Shows everything in one row."
+          ],
+          "cons": [
+            "The small text is easy to miss."
+          ],
+          "reuse": {
+            "from": [
+              "The Deliverables box",
+              "The app's small icon buttons"
+            ],
+            "new": [
+              "the play button",
+              "the wave"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-d-video",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "A video being made, and a finished one",
+      "headline": "Which video card should show a video being made and then finished?",
+      "today": "Pictures and sounds carry Open and View in folder as small icon buttons at the right of their box.",
+      "problem": "The last drawing showed the big first-frame card, which you had already turned down; you wanted the small finished card.",
+      "proposal": "While making: one box line with progress and Stop. Finished: the small first frame at the left, name and details beside it, and the same two icon buttons at the right.",
+      "checked": "Redrawn on 2026-11-19 in the app's design workbench, inside a real reply bubble, from the Deliverables card's box and the app's icon buttons.",
+      "options": [
+        {
+          "id": "making-then-small",
+          "label": "Small finished card",
+          "recommended": true,
+          "picture": "pictures/design4-media-video-card-making-then-small.png",
+          "summary": "The making card you liked, then the small finished card you picked, with the shared icon buttons.",
+          "pros": [
+            "Takes little room in the chat.",
+            "Same buttons, same place, as pictures and sound."
+          ],
+          "cons": [
+            "The first frame is small; the video plays in your video player."
+          ],
+          "reuse": {
+            "from": [
+              "The Deliverables box",
+              "The app's progress bar and small icon buttons"
+            ],
+            "new": [
+              "the small first frame beside the details"
+            ]
+          }
+        }
+      ],
+      "reopened": "You wanted the small finished card from the earlier drawing, not the big frame."
+    },
+    {
+      "id": "Q-d-limit",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "When a chat reaches its spending limit",
+      "headline": "Which card should appear when a chat reaches its spending limit?",
+      "today": "Permission requests in the chat share one frame with the buttons at the right.",
+      "problem": "The first drawing had a bar, two sentences and a dropdown on its own line.",
+      "proposal": "One sentence, then the new limit, Stop and an orange Continue on one line at the right.",
+      "checked": "Redrawn on 2026-11-18 in the app's design workbench, inside a real reply bubble, from the permission card's frame and the Deliverables card's box.",
+      "options": [
+        {
+          "id": "slim",
+          "label": "One sentence",
+          "picture": "pictures/design2-media-limit-card-ask-slim.png",
+          "summary": "\"This chat has spent its $5.00 limit.\" and one line of choices.",
+          "pros": [
+            "Shortest; nothing to read twice."
+          ],
+          "cons": [
+            "Does not repeat what the limit covers."
+          ],
+          "reuse": {
+            "from": [
+              "The permission card's frame",
+              "The app's dropdown",
+              "The orange spending button"
+            ],
+            "new": [
+              "the choices line"
+            ]
+          },
+          "recommended": true
+        },
+        {
+          "id": "two-lines",
+          "label": "With a reminder",
+          "picture": "pictures/design2-media-limit-card-ask.png",
+          "summary": "The same, with spent of limit in the top line and a reminder of what it covers.",
+          "pros": [
+            "Reminds you the limit covers pictures, sound and video."
+          ],
+          "cons": [
+            "One more line."
+          ],
+          "reuse": {
+            "from": [
+              "The permission card's frame",
+              "The app's dropdown",
+              "The orange spending button"
+            ],
+            "new": [
+              "the choices line"
+            ]
+          }
+        }
+      ],
+      "resolved": "Your sentence is on the card, and its buttons now use the normal approval styling, with no orange. The final card is under \"Other moments the cards must cover\"."
+    },
+    {
+      "id": "L-states",
+      "words": true,
+      "surface": "Chat",
+      "path": "Other states of the new cards",
+      "headline": "Other moments the cards must cover",
+      "calls": [
+        {
+          "id": "S-edit",
+          "call": "Editing a picture you attached: the card shows a small copy of it under your request.",
+          "why": "So you can see which picture will be changed.",
+          "visual": true,
+          "picture": "pictures/design3-media-approval-b-header-edit.png",
+          "more": {
+            "today": "Attached pictures appear only in your own message.",
+            "problem": "With several pictures in a chat, it is unclear which one gets changed.",
+            "change": "Redrawn on your chosen card, with the maker in the top line."
+          }
+        },
+        {
+          "id": "S-chatgpt",
+          "call": "With only a ChatGPT plan: \"Your ChatGPT plan only includes image generation on chatgpt.com. To generate images here, please connect a paid image provider.\"",
+          "why": "As agreed: two ways forward, nothing to approve.",
+          "visual": true,
+          "picture": "pictures/design3-media-approval-b-header-chatgpt-only.png",
+          "more": {
+            "today": "A ChatGPT plan can chat but cannot pay for pictures in our app.",
+            "problem": "A card with nothing to approve would be a dead end.",
+            "change": "Redrawn on your chosen card; your wording unchanged."
+          }
+        },
+        {
+          "id": "S-no-provider",
+          "call": "Every chat with no picture service and not on a ChatGPT plan, Claude Code included: \"Making images here needs a paid image provider. Connect one to continue.\"",
+          "why": "The app knows what each chat runs on, so only one of the two messages can ever appear.",
+          "visual": true,
+          "picture": "pictures/design3-media-approval-b-header-no-provider.png",
+          "more": {
+            "today": "Each chat already knows which service it runs on: Claude Code, a ChatGPT plan, a key, or a model on this computer.",
+            "problem": "You asked whether this replaces the ChatGPT message, and how the app tells the two apart.",
+            "change": "No picture service connected: a ChatGPT-plan chat gets the ChatGPT message; every other chat gets this one. Once any picture service is connected, neither shows and the normal approval card appears."
+          }
+        },
+        {
+          "id": "S-menu",
+          "call": "Right-clicking a made picture opens the app's own menu: Copy image, Save image as, Open file, View in folder, Ask about this.",
+          "why": "As agreed; on a phone a long press opens it.",
+          "visual": true,
+          "picture": "pictures/design2-media-picture-result-menu.png",
+          "more": {
+            "today": "Pictures in the chat have no menu.",
+            "problem": "Saving a picture elsewhere means finding its file.",
+            "change": "It is the chat's existing right-click menu, so it lines up like everywhere else and names things the same way."
+          }
+        },
+        {
+          "id": "S-sent",
+          "call": "A recording you send shows as the same sound line inside your own message.",
+          "why": "So your recordings and the assistant's sounds play the same way.",
+          "visual": true,
+          "picture": "pictures/design-media-sound-card-sent.png",
+          "more": {
+            "today": "The microphone only turns speech into typed words.",
+            "problem": "How you choose between typing by voice and sending a recording is still to be designed.",
+            "change": "Only the look is shown here; that choice comes in a later drawing."
+          }
+        },
+        {
+          "id": "S-light",
+          "call": "No orange: Approve, Allow for this chat and Decline look and sit exactly like every other permission card, on every theme.",
+          "why": "Your choice: normal approval card styling.",
+          "visual": true,
+          "picture": "pictures/design3-media-approval-b-header-light.png",
+          "more": {
+            "today": "Permission cards show Yes, Always allow and No in green, blue and red.",
+            "problem": "An orange Approve set this card apart from every other request.",
+            "change": "Shown here in a light theme; the dark one is the same card."
+          }
+        },
+        {
+          "id": "S-limit",
+          "call": "The spending limit card, with your sentence and the normal approval buttons.",
+          "why": "Your pick, finished: one sentence and one line of choices.",
+          "visual": true,
+          "picture": "pictures/design3-media-limit-card-ask-slim.png",
+          "more": {
+            "today": "No spending limit exists.",
+            "problem": "The earlier drawing used orange and two sentences.",
+            "change": "Continue raises this chat's limit to the amount picked."
+          }
+        }
+      ],
+      "reopened": "You asked when this message shows instead of the ChatGPT one.",
+      "reframed": "The no-service row now says which chats see it, and its details explain how the app picks between it and the ChatGPT message."
+    },
+    {
+      "id": "P-defaults",
+      "page": "Starting settings",
+      "intro": "What happens before anyone changes a setting. Tick each one that is fine, or press the pencil to change it.",
+      "stage": "design"
+    },
+    {
+      "id": "L-defaults",
+      "words": true,
+      "surface": "Pictures, sound and video",
+      "path": "Before any setting is changed",
+      "headline": "How it behaves out of the box",
+      "calls": [
+        {
+          "id": "D-first-maker",
+          "call": "The first time, the card starts on Google's Nano Banana 2.1.",
+          "why": "It is among the cheapest good makers, about three cents a picture, and can also edit an attached picture.",
+          "more": {
+            "today": "Nothing is chosen, because nothing exists yet.",
+            "problem": "Starting on an expensive maker surprises people; starting on a weak one disappoints them.",
+            "change": "After the first picture, the card starts on whatever you picked last."
+          }
+        },
+        {
+          "id": "D-one-picture",
+          "call": "Each approval makes one picture.",
+          "why": "Several at once multiplies the price; you can ask for more.",
+          "more": {
+            "today": "Some apps make four at a time.",
+            "problem": "Four pictures cost four times as much, often without being asked for.",
+            "change": "Ask for \"three versions\" and the card shows the price for three."
+          }
+        },
+        {
+          "id": "D-shape",
+          "call": "The assistant picks the picture's shape from your request, and the card shows it.",
+          "why": "\"A phone wallpaper\" should come out tall without you naming sizes.",
+          "more": {
+            "today": "Nothing to pick yet.",
+            "problem": "A fixed square shape is wrong for wallpapers, banners and slides.",
+            "change": "The shape and size appear on the card before you approve, so you can say if it is wrong."
+          }
+        },
+        {
+          "id": "D-folder",
+          "call": "Made files go in a folder named \"Generated Content\" inside the project.",
+          "why": "A plain name says what is in it; the assistant can move files out to where they belong.",
+          "more": {
+            "today": "September's plan called it a scratch pictures folder, unnamed.",
+            "problem": "An unclear name gets the folder mistaken for project files.",
+            "change": "Sound and video go in the same folder as pictures."
+          }
+        },
+        {
+          "id": "D-personal-folder",
+          "call": "A chat with no project saves to Pictures, then YouCoded, on your computer.",
+          "why": "That is where people look for pictures, and it is kept until you delete it.",
+          "more": {
+            "today": "Chats without a project have no folder for files.",
+            "problem": "A hidden app folder would be hard to find.",
+            "change": "Sound and video made there go to the same folder."
+          }
+        },
+        {
+          "id": "D-limit",
+          "call": "Every chat starts with five dollars to spend on made items.",
+          "why": "Your choice: it covers pictures, sound and video together.",
+          "more": {
+            "today": "No limit exists, because nothing costs per use.",
+            "problem": "Without a limit, a loop or misunderstanding could spend real money.",
+            "change": "Raising it applies to that chat only; a new chat starts at five dollars again."
+          }
+        },
+        {
+          "id": "D-voice",
+          "call": "Read aloud starts on the built-in free voice.",
+          "why": "It costs nothing and works offline; a cloud voice is one setting away.",
+          "more": {
+            "today": "Nothing reads aloud today.",
+            "problem": "Starting on a paid voice would charge people who never chose it.",
+            "change": "The built-in voice downloads, about 100 MB, the first time you press Read aloud."
+          }
+        },
+        {
+          "id": "D-phone",
+          "call": "On the phone, a long press does what right-click does on the computer.",
+          "why": "Phones have no right-click; the same menu opens.",
+          "more": {
+            "today": "Phones open the remote app, with no right-click.",
+            "problem": "The Read aloud and picture menus would be unreachable on a phone.",
+            "change": "Everything else, cards included, looks the same at phone width."
+          }
+        }
+      ],
+      "resolved": "Folder renamed \"Generated Content\". The approval card gains \"Allow for this chat\" for pictures, after which the chat's five dollar limit is the only check; it is drawn on the approval card."
+    },
+    {
+      "id": "L-failures",
+      "words": true,
+      "surface": "Pictures, sound and video",
+      "path": "When something goes wrong",
+      "headline": "What you see when making something fails",
+      "calls": [
+        {
+          "id": "F-refused",
+          "call": "The service refuses the request: a notice in place of the result says it refused, and nothing is charged.",
+          "why": "Services turn down some requests, for example real people or violence.",
+          "more": {
+            "today": "Nothing to refuse yet.",
+            "problem": "A silent failure leaves you waiting.",
+            "change": "The assistant can suggest a different wording; it never retries by itself."
+          }
+        },
+        {
+          "id": "F-no-service",
+          "call": "No paid service is connected: the card says so, with a button to Cloud providers.",
+          "why": "Nobody should get as far as Approve with nothing to pay with.",
+          "more": {
+            "today": "The Cloud providers page holds keys only for chatting.",
+            "problem": "A card with nothing to approve is a dead end.",
+            "change": "A ChatGPT-plan chat also mentions chatgpt.com, as agreed."
+          }
+        },
+        {
+          "id": "F-no-credit",
+          "call": "The service says the account is out of credit: a notice says so, with a button to that service's billing page.",
+          "why": "Prepaid services stop when the credit runs out.",
+          "more": {
+            "today": "Nothing to pay for yet.",
+            "problem": "A raw error from the service means nothing to most people.",
+            "change": "Nothing is charged by our app for a failed attempt."
+          }
+        },
+        {
+          "id": "F-video-closed",
+          "call": "If the app closes while a video is being made, it is fetched the next time you open that chat.",
+          "why": "Video takes minutes, and the service has already been paid.",
+          "more": {
+            "today": "Nothing takes minutes today.",
+            "problem": "Losing a paid video because the app closed would waste money.",
+            "change": "The card shows \"still being made\" until it arrives."
+          }
+        }
+      ]
+    }
+  ]
+}

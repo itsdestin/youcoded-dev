@@ -1,23 +1,9 @@
 {
  "deck": "media-creation",
- "started": "2026-11-18T23:53:18.811Z",
- "submitted": "2026-11-19T00:02:32Z",
+ "started": "2026-11-19T00:05:09.278Z",
+ "submitted": null,
  "cur": 0,
  "answers": {
-  "Q-d-sound": {
-   "v": "pick",
-   "pick": "two-tight",
-   "t": 1795046551346,
-   "seconds": 92,
-   "theme": "ivory-schematic"
-  },
-  "Q-d-video": {
-   "note": "i said i didnt like the big frame card, i wanted the small completion card from the earlier option b",
-   "t": 1795046551346,
-   "v": "other",
-   "seconds": 92,
-   "theme": "ivory-schematic"
-  },
   "L-states": {
    "ok": {
     "S-edit": true,
@@ -27,20 +13,14 @@
     "S-light": true,
     "S-limit": true
    },
-   "t": 1795046551346,
-   "changes": {
-    "S-no-provider": "just to confirm, this would take the place of the chatgpt message in non-gpt subscription sessions? or how do we make the distinction"
-   },
-   "v": "other",
-   "seconds": 92,
-   "theme": "ivory-schematic"
+   "t": 1795046709449
   }
  },
  "built": {
-  "at": "2026-11-18T23:02:45Z",
+  "at": "2026-11-19T00:05:08Z",
   "branch": "session/267-media-creation",
-  "commit": "dda3052f2c0698653c1c39a93c14c873566e0e1d",
-  "spec_sha256": "954bb60cd5ac3f8c48e9f43e4d3a28b6f20a46246e67cb61a59ca61c0f8736c5",
+  "commit": "fd26f4c835038d38a7ff4a2722363c9e44a06e7f",
+  "spec_sha256": "c315e708323c260943148fdba5b85bcca89d0c8476a59fb25670d606e15c40ac",
   "spec_dirty": true,
   "ids": [
    "U-order",
@@ -81,6 +61,16 @@
    "L-states",
    "L-defaults",
    "L-failures"
+  ]
+ },
+ "carried": {
+  "L-states": [
+   "S-edit",
+   "S-chatgpt",
+   "S-menu",
+   "S-sent",
+   "S-light",
+   "S-limit"
   ]
  }
 }
