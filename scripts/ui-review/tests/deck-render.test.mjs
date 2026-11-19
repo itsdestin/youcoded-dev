@@ -5,9 +5,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, dirname } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import net from 'node:net';
 // WHY the driver is not in this file any more: `review-cards.py preview` needs the same
@@ -430,21 +430,21 @@ print(p)`;
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-1\"] .card.option').click()"); await sleep(200);
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .card.option[data-pick=b]').click()"); await sleep(200);
       assert.equal(await c.evaluate("document.querySelectorAll('article.q.done').length"), 2, 'both answered questions take the done edge');
-      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^page 1 of 2 · 2 of 5 answered/);
+      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^2 of 5 answered/);
       await c.evaluate("const n=document.querySelector('article.q[data-id=\"Q-1\"] .note'); n.value='smaller'; n.dispatchEvent(new Event('input', {bubbles:true}))");
       await sleep(500);
 
       // Next page: the statement and TWO yes/no/don't-know questions (Q-4, and Q-5 added above
       // just for this test), all on one page.
       await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
-      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^page 2 of 2 /);
+      assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^\d+ of \d+ answered/, 'the count no longer says which page');
       assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'What we promise');
       assert.equal(await c.evaluate("document.querySelector('#wsub').textContent"), 'Statements, not questions.');
       assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q')].map(a=>a.dataset.id)"), ['Q-3', 'Q-4', 'Q-5']);
       assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-3\"] .ans')].map(b=>b.textContent).join(',')"), 'Holds,Fails,Other');
-      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-4\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', "Don't know"]);
-      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-5\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', "Don't know"]);
-      assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Done', 'the last page finishes the deck');
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-4\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', 'Other']);
+      assert.deepEqual(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"Q-5\"] .ans')].map(b=>b.textContent)"), ['Yes', 'No', 'Other']);
+      assert.equal(await c.evaluate("document.querySelector('#save').hidden"), true, 'the last page has no second submit button: the header\'s Submit feedback is the one way to finish');
       // Q-4 answers Don't know; Q-5 answers Yes — two DIFFERENT question-kind steps in two
       // different states, so the finish screen has to tell them apart, not just echo one value.
       await c.evaluate("document.querySelector('article.q[data-id=\"Q-4\"] .ans[data-v=other]').click()"); await sleep(300);
@@ -454,7 +454,8 @@ print(p)`;
       assert.deepEqual([answers.answers['Q-1'].v, answers.answers['Q-1'].pick], ['pick', 'a']);
       assert.equal(answers.answers['Q-1'].note, 'smaller');
       assert.deepEqual([answers.answers['Q-2'].v, answers.answers['Q-2'].pick], ['pick', 'b']);
-      assert.deepEqual([answers.answers['Q-4'].v, answers.answers['Q-4'].dk], ['other', true], "don't know is Other with a flag");
+      // Round 2 (2026-11-09): "Don't know" became plain "Other" — one button, no flag.
+      assert.deepEqual([answers.answers['Q-4'].v, answers.answers['Q-4'].dk], ['other', undefined]);
       assert.equal(answers.answers['Q-5'].v, 'yes', 'the second question-kind step answers yes');
       // A page marker is not a step: it is never in the deck's steps and never gets an answer.
       assert.equal(await c.evaluate('DECK.steps.some(s => s.id === "P-2")'), false);
@@ -486,7 +487,7 @@ print(p)`;
       const rows = JSON.parse(await c.evaluate(
         "JSON.stringify([...document.querySelectorAll('#responses tbody tr')].map(r=>[...r.cells].map(c=>c.textContent.trim())))"));
       assert.equal(rows.length, 5, 'five steps, not two pages');
-      assert.equal(rows[3][2], "Don't know");
+      assert.equal(rows[3][2], 'Something else');
       assert.equal(rows[4][2], 'Yes', 'a question answered yes reads back as "Yes", not the picture deck\'s "Yes, keep it"');
       assert.deepEqual(c.errors, []);
     } finally { c.close(); }
@@ -572,7 +573,8 @@ print(p)`;
     for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true')); i++) await sleep(100);
     assert.equal(await c.evaluate("document.querySelectorAll('#steps span').length"), 1, 'one page, one segment');
     assert.equal(await c.evaluate("document.querySelectorAll('article.q').length"), 4, 'every question on it');
-    assert.equal(await c.evaluate("document.querySelector('#save').textContent"), 'Done');
+    assert.equal(await c.evaluate("document.querySelector('#save').hidden && document.querySelector('#controls').hidden"), true, 'a one-page deck has no foot button at all: the header submits');
+    assert.equal(await c.evaluate("document.querySelector('#done').textContent"), 'Submit feedback');
     assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'Questions fixture', 'the implicit page wears the deck title');
     // Fix (2026-09-05): a one-page deck has nothing to move BETWEEN — Prev/Next and the single
     // (always-full) progress segment used to sit there as dead controls.
@@ -613,7 +615,7 @@ test('submit lands on a finish screen that reads the answers back, and the deck 
     assert.equal(await c.evaluate("document.querySelector('#step').hidden"), true, 'the step is put away');
     // The sentence Destin asked for, verbatim — it is the whole point of the screen.
     assert.equal(await c.evaluate("document.querySelector('.finished .lede').textContent.trim()"),
-      'The Assistant should receive your responses in just a moment.');
+      'Sent. You can close this tab. The Assistant should receive your responses in just a moment.');
     // Every step is read back, including the one with no answer.
     const rows = JSON.parse(await c.evaluate("JSON.stringify([...document.querySelectorAll('#responses tbody tr')].map(r=>[...r.cells].map(c=>c.textContent.trim())))"));
     assert.equal(rows.length, 3);
@@ -998,6 +1000,10 @@ test('a save that fails says so and retries, and a restart or a stale page loses
   await sleep(800); await open(2);
   await c.evaluate("document.querySelector('.ans[data-v=yes]').click()");
   await until(async () => (await savedText()) === 'Saved ✓', '"Saved"');
+  // Fix (2026-11-10): "Saved ✓" is already on screen from the page LOAD, so the wait above can
+  // return before this click's save has landed — the file was then read too early (ENOENT),
+  // and the failed test left its browser open, hanging the whole run. Wait for the file itself.
+  await until(async () => { try { return onDisk()['S-2'].v === 'yes'; } catch { return false; } }, 'the first answer to reach the file');
   assert.equal(onDisk()['S-2'].v, 'yes');
   // The server dies while the page is open: the next answer says it is NOT saved.
   await open(1);
@@ -1138,4 +1144,1221 @@ test('a slide lists the other screens its change also reaches', async () => {
     assert.deepEqual(got, { head: 'Also changes', items: ['Session details', 'Resume → Organize'] });
     assert.deepEqual(c.errors, []);
   } finally { c.close(); srv.kill(); }
+});
+
+// The 2026-11-09 rethink, driven like a hand would: drag an area on a picture, mark one call
+// for change. Pins what Destin asked for — "rectangular drag-regions … comment on it", and a
+// calls list where "each item i choose to change should have its own little text box".
+test('an area dragged on a picture and a changed call are saved, and neither lights Don\'t know', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-rethink-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
+raw['steps'] = [{'id': 'Q-9', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Keep this layout?',
+    'today': 'The board sits left of the chat.', 'problem': 'It is cramped.', 'proposal': 'Move it above.',
+    'checked': 'Opened the games screen today.', 'picture': 'pic.png', 'caption': 'The board today.'},
+  {'id': 'K-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Calls I made for you',
+    'calls': [{'id': 'size', 'call': 'The board is five rows tall.', 'why': 'It matches the other games.', 'result': 'unclear'},
+              {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.', 'result': 'pass', 'picture': 'pic.png', 'before': 'pic.png'}]},
+  {'id': 'S-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'The words on the games menu', 'screen': 'menu.html'}]
+# A still copy of a screen, as \`shoot --page\` saves one: the size it was laid out at, where its panel sits.
+open(os.path.join(os.path.dirname(p), 'menu.html'), 'w').write('<!doctype html><html data-frozen-panel="10,10,200,120" data-frozen="400x300"><head><meta charset="utf-8"></head><body><h1>Pick a game</h1><button>Start</button><input placeholder="Search games"></body></html>')
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1440, 900);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      for (let i = 0; i < 40 && !(await c.evaluate("!!window.__deckReady && !!document.querySelector('.markable img') && document.querySelector('.markable img').complete").catch(() => false)); i++) await sleep(250);
+      assert.equal(await c.evaluate("document.querySelectorAll('.how .tip').length"), 1, 'Today carries its how-it-was-checked note');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .n').textContent"), 'Results', 'a list carries its kind, never a "Question n of m" label');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .note').length"), 0, 'a calls list has no shared note box');
+      await c.evaluate(`(()=>{const img=document.querySelector('.markable img'),r=img.getBoundingClientRect();
+        img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+40,clientY:r.top+30}));
+        document.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+200,clientY:r.top+150}));
+        document.dispatchEvent(new PointerEvent('pointerup',{}));})()`);
+      await sleep(100);
+      await c.evaluate(`(()=>{const t=document.querySelector('.markt');t.value='too cramped';t.dispatchEvent(new Event('input',{bubbles:true}));
+        document.querySelectorAll('.calledit')[1].click();
+        const b=document.querySelectorAll('.callt')[1];b.value='play the chime';b.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      await sleep(900);
+      assert.equal(await c.evaluate("document.querySelectorAll('.markable .mark').length"), 1, 'the area is drawn on the picture');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"Q-9\"] .ans[data-v=other]').classList.contains('on')"), true, 'an area with no button pressed reads as Other');
+      // Round 3: one pencil per row, no "All fine", no second button.
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .ans').length"), 0, 'a list has no answer button');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .calledit').length"), 2, 'one pencil per row');
+      // Round 4: the words are retyped on a still copy of the real screen, not in a list of boxes.
+      for (let i = 0; i < 40 && !(await c.evaluate("document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]').length === 3").catch(() => false)); i++) await sleep(250);
+      assert.equal(await c.evaluate("[...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].map(e=>e.matches('input')?e.value:e.textContent).join('|')"), 'Pick a game|Start|Search games', 'every piece of text, and a box hint, is editable');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"S-1\"] .ans, article.q[data-id=\"S-1\"] .note').length"), 0, 'a screen has no answer buttons or note box');
+      await c.evaluate(`(()=>{const t=document.querySelector('.screenframe').contentDocument.querySelector('h1 [data-w]');t.textContent='Choose a game';t.dispatchEvent(new Event('input',{bubbles:true}));
+        const b=document.querySelector('.screenframe').contentDocument.querySelector('button [data-w]');b.textContent='Go';b.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.screenedits li').length"), 2, 'each change is listed under the screen');
+      await c.evaluate("document.querySelectorAll('.screenundo')[1].click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelector('.screenframe').contentDocument.querySelector('button').textContent"), 'Start', 'Put back restores the words on the screen');
+      // A picture opens large inside the deck, not in a new tab; a click closes it.
+      assert.equal(await c.evaluate("document.querySelectorAll('.qpic a[target]').length"), 0, 'no picture opens a browser tab');
+      // Round 7: a row's pictures are NOT small right-hand thumbnails; they live in an Attachments card.
+      assert.equal(await c.evaluate("document.querySelectorAll('.callpics, .qpic.row').length"), 0, 'no row thumbnails');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"K-1\"] .attcard').length"), 1, 'the row with pictures has one Attachments card');
+      assert.equal(await c.evaluate("document.querySelector('.attcard.open')"), null, 'a list that is not a gallery starts with its card closed');
+      assert.equal(await c.evaluate("document.querySelector('.attlabel').textContent + ' ' + document.querySelector('.attn').textContent"), 'Attachments 2', 'closed: the word and how many pictures');
+      await c.evaluate("document.querySelector('.atthead').click()"); await sleep(100);
+      // Round 8 (Destin: "a single card for each image. clicking that should open our popup image screen/comment menu").
+      assert.equal(await c.evaluate("[...document.querySelectorAll('.attcard .atttile .tilename')].map(f=>f.textContent).join()"), 'Before,After', 'one tile per picture, each named');
+      assert.ok(await c.evaluate("(()=>{const t=[...document.querySelectorAll('.attcard .atttile')].map(x=>x.getBoundingClientRect());return t.length===2&&t[0].width===224&&t[1].width===224&&Math.abs(t[0].top-t[1].top)<1})()"), 'tiles are the app\'s fixed width, side by side');
+      assert.equal(await c.evaluate("document.querySelectorAll('.attcard .markable').length"), 0, 'nothing is drawn on inside the card');
+      await c.evaluate("document.querySelector('.attcard .atttile').click()"); await sleep(300);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .lbbox.markable img').length"), 1, 'a tile opens the picture window');
+      assert.equal(await c.evaluate("document.querySelector('.viewer .vtitle').textContent"), 'Before', 'the title is the picture\'s short name');
+      assert.ok((await c.evaluate("document.querySelector('.viewer .vabout').textContent")).length > 5, 'the row it belongs to is described once, in the strip');
+      // Round 9, V-1: the picture is at its true size (never shrunk to the window), and Before/After is a switch in the header.
+      assert.ok(await c.evaluate("(()=>{const i=document.querySelector('.viewer .lbbox img');return i.naturalWidth>0&&Math.abs(i.getBoundingClientRect().width-2-i.naturalWidth)<2})()"), 'true size');
+      assert.equal(await c.evaluate("[...document.querySelectorAll('.viewer .vpair .segb')].map(b=>b.textContent+(b.classList.contains('on')?'*':'')).join()"), 'Before*,After');
+      await c.evaluate("document.querySelectorAll('.viewer .vpair .segb')[1].click()"); await sleep(150);
+      assert.equal(await c.evaluate("document.querySelector('.viewer .vtitle').textContent"), 'After', 'the switch shows the other picture in the same popup');
+      await c.evaluate("document.querySelectorAll('.viewer .vpair .segb')[0].click()"); await sleep(150);
+      assert.equal(await c.evaluate("document.querySelector('.viewer .varm').hidden"), true, 'with a mouse there is no extra button: any drag draws');
+      // An area dragged on the picture in the window: its comment box sits beside the picture.
+      await c.evaluate(`(()=>{const img=document.querySelector('.viewer .lbbox img'),r=img.getBoundingClientRect();
+        img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+r.width*0.2,clientY:r.top+r.height*0.2}));
+        document.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+r.width*0.6,clientY:r.top+r.height*0.6}));
+        document.dispatchEvent(new PointerEvent('pointerup',{}));})()`);
+      await sleep(150);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 1, 'the comment for an area sits beside its picture');
+      assert.equal(await c.evaluate("document.querySelectorAll('.marklist[data-sid=\"K-1\"] .markt').length"), 0, 'and is not repeated in a list at the top of the question');
+      await c.evaluate("document.querySelector('.viewer .markt').value='the old one'; document.querySelector('.viewer .markt').dispatchEvent(new Event('input',{bubbles:true}))");
+      await c.evaluate("document.querySelector('.viewer .vclose').click()"); await sleep(100);
+      assert.equal(await c.evaluate("(()=>{const e=document.querySelector('.atttile .tilecm');return !e.hidden&&e.textContent})()"), '1 comment', 'the tile says how many comments are on its picture');
+      await c.evaluate("document.querySelector('.atthead').click()"); await sleep(50);
+      assert.equal(await c.evaluate("document.querySelector('.attbody').hidden"), true, 'the card closes again');
+      // A written question's own picture still enlarges, one picture only.
+      await c.evaluate("document.querySelector('article.q[data-id=\"Q-9\"] .qpic > a').click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vstage img').length"), 1, 'the picture opens in the viewer, over the page');
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vthumb, .viewer .vnav, .viewer .vstrip').length"), 0, 'no arrows, no strip of other pictures');
+      // Round 4: an area drawn in the viewer keeps it open, with its comment box beside the picture.
+      await c.evaluate(`(()=>{const img=document.querySelector('.viewer .lbbox img'),r=img.getBoundingClientRect();
+        img.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0,clientX:r.left+20,clientY:r.top+20}));
+        document.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+120,clientY:r.top+90}));
+        document.dispatchEvent(new PointerEvent('pointerup',{}));})()`);
+      await sleep(150);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 2, 'the earlier area and the new one both have their boxes in the viewer');
+      await c.evaluate("[...document.querySelectorAll('.viewer .markx')].pop().click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer .vcomments .markt').length"), 1, 'a comment can be taken away in the viewer');
+      await c.evaluate("document.querySelector('.viewer .vclose').click()"); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('.viewer').length"), 0, 'Close closes it');
+      // Notes tied to no question.
+      await c.evaluate(`(()=>{const g=document.querySelector('.pnote');g.value='header is busy';g.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      // Round 4: every status pill is his to change.
+      await c.evaluate("document.querySelector('.result.pillbtn').click()"); await sleep(50);
+      await c.evaluate("document.querySelector('.resultmenu button[data-v=fail]').click()"); await sleep(50);
+      assert.equal(await c.evaluate("document.querySelector('.result.pillbtn').textContent"), 'Failed', 'the pill shows the status he set');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"K-1\"] .qstate').textContent"), '3 changes', 'the card says how much he changed (a comment, an area, a status)');
+      await sleep(700);
+      assert.deepEqual(c.errors, []);
+    } finally { await c.close(); }
+    const saved = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
+    assert.equal(saved.answers['Q-9'].marks[0].text, 'too cramped');
+    assert.ok(saved.answers['Q-9'].marks[0].w > 30 && saved.answers['Q-9'].marks[0].h > 30, JSON.stringify(saved.answers['Q-9'].marks[0]));
+    assert.deepEqual(saved.answers['K-1'].changes, { sound: 'play the chime' });
+    assert.equal(saved.answers['K-1'].marks[0].pic, 'row sound before', 'an area on a row picture is named for its row and which picture');
+    assert.equal(saved.answers['K-1'].marks[0].text, 'the old one');
+    assert.deepEqual(saved.answers['S-1'].edits, { 'Pick a game': { from: 'Pick a game', to: 'Choose a game' } }, 'words retyped on the screen are saved as from and to');
+    assert.equal(Object.values(saved.pageNotes)[0], 'header is busy', 'the comment at the foot of the page is saved beside the answers');
+    assert.deepEqual(saved.answers['K-1'].results, { size: 'fail' }, 'a status he changed is saved against its row');
+    assert.ok(saved.built && saved.built.at, 'the answers file records which build he was shown');
+  } finally { srv.kill(); }
+});
+
+// Round 7 (2026-11-10): the Attachments card, pills in comment boxes, buttons that follow the design
+// guide, and the card state pill. Driven like a hand would: open a card, change page and come back,
+// paste a picture and a path, press an answer.
+test('round 7: attachments card, pasted pills, guide-following buttons, and a state pill that is only shown when it has something to say', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-r7-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
+def lst(i, h, calls, **kw): return {'id': i, 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': h, 'calls': calls, **kw}
+raw['steps'] = [{'id': 'P-1', 'page': 'Rows', 'intro': 'Judge the rows.'},
+  lst('G-1', 'Every screen that changed', [{'id': 'g', 'call': 'Board moved.', 'why': 'Matches.', 'before': 'pic.png', 'picture': 'pic.png'}], gallery=True),
+  lst('L-2', 'Calls I made', [{'id': 'a', 'call': 'No sound.', 'why': 'None else.', 'picture': 'pic.png'}, {'id': 'b', 'call': 'Five rows.', 'why': 'Matches.'}]),
+  lst('C-1', 'What exists today', [{'id': 'x', 'call': 'Fact one.', 'why': 'Read.'}, {'id': 'y', 'call': 'Fact two.', 'why': 'Read.'}], context=True),
+  {'id': 'P-2', 'page': 'Questions', 'intro': 'Answer.'},
+  {'id': 'Q-1', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Which one?', 'today': 'Five run.', 'problem': 'Slow.', 'proposal': 'Pick.', 'checked': 'Read today.',
+   'options': [{'id': 'lead', 'label': 'First', 'pros': ['Good.'], 'cons': ['Bad.']}, {'id': 'trail', 'label': 'Second', 'pros': ['Good.'], 'cons': ['Bad.']}]},
+  {'id': 'Q-2', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Run twice?', 'today': 'Twice.', 'problem': 'Slow.', 'proposal': 'Once.', 'checked': 'Read today.'},
+  {'id': 'Q-3', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Describe it', 'today': 'None.', 'problem': 'Unknown.', 'proposal': 'Tell me.', 'checked': 'Read today.', 'answer': 'words'}]
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("!!window.__deckReady").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  const png = `(async()=>{const c=document.createElement('canvas');c.width=90;c.height=60;const x=c.getContext('2d');x.fillStyle='#c33';x.fillRect(0,0,90,60);const b=await new Promise(r=>c.toBlob(r,'image/png'));return new File([b],'my screenshot.png',{type:'image/png'})})()`;
+  const paste = (sel, kind) => `(async()=>{const el=document.querySelector(${JSON.stringify(sel)});const dt=new DataTransfer();
+    ${kind === 'image' ? `dt.items.add(await ${png});` : `dt.setData('text', ${JSON.stringify(kind)});`}
+    el.focus();el.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,cancelable:true}));})()`;
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1440, 1000);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      await ready(c);
+      // ── the card state pill: nothing until there is something to say; never on a background list ──
+      const vis = sel => `(()=>{const e=document.querySelector(${JSON.stringify(sel)});return !!e && getComputedStyle(e).display!=='none' && !e.hidden})()`;
+      assert.equal(await c.evaluate(vis('article.q[data-id="G-1"] .qstate')), false, 'an untouched list carries no pill');
+      assert.equal(await c.evaluate(vis('article.q[data-id="L-2"] .qstate')), false);
+      assert.equal(await c.evaluate(vis('article.q[data-id="C-1"] .qstate')), false, 'a background list never has one');
+      assert.equal(await c.evaluate("document.body.innerText.includes('Not reviewed')"), false);
+      // a background-only list: dashed from the FIRST row, nothing to press
+      assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"C-1\"] .call')].map(e=>getComputedStyle(e).borderTopStyle).join()"), 'dashed,dashed', 'the first row is dashed like the rest');
+      assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"C-1\"] .calledit')].every(e=>getComputedStyle(e).display==='none') && getComputedStyle(document.querySelector('article.q[data-id=\"C-1\"] .call')).cursor"), 'default', 'no pencil, no pointer');
+      // ── attachments: a gallery's card is open by itself; another stays closed until opened ──
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"G-1\"] .attcard').classList.contains('open')"), true, 'the "every screen that changed" list opens its cards');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .attcard').classList.contains('open')"), false);
+      await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .atthead').click()");
+      // typing a comment gives the list a pill that says how much it holds
+      await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .calledit').click()"); await sleep(60);
+      await c.evaluate("(()=>{const b=document.querySelector('article.q[data-id=\"L-2\"] .callt');b.value='add a chime';b.dispatchEvent(new Event('input',{bubbles:true}))})()");
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .qstate').textContent"), '1 of 2 looked at', 'round 10: a "Yours to change" list says how many rows he has looked at, in one short phrase');
+      assert.equal(await c.evaluate("(()=>{const s=getComputedStyle(document.querySelector('article.q[data-id=\"L-2\"] .qstate'));return s.pointerEvents+' '+s.borderTopWidth})()"), 'none 0px', 'the pill cannot be pressed and is not drawn as a bordered control');
+      // ── pictures and paths pasted into boxes become pills, saved under their box ──
+      await c.evaluate(paste('article.q[data-id="L-2"] .callt', 'image')); await sleep(900);
+      await c.evaluate(paste('article.q[data-id="L-2"] .callt', '/home/destin/youcoded-dev/docs/MAP.md')); await sleep(100);
+      await c.evaluate(paste('article.q[data-id="L-2"] .callt', '/ this is a sentence, not a path')); await sleep(100);
+      assert.equal(await c.evaluate("[...document.querySelectorAll('article.q[data-id=\"L-2\"] .attpill')].map(p=>p.textContent.replace('×','').trim()).join('|')"), 'my screenshot.png|MAP.md', 'a picture and a path are pills; a sentence that starts with a slash is left as text');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .attpill.file').title"), '/home/destin/youcoded-dev/docs/MAP.md', 'the full path is the tooltip');
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"L-2\"] .callt').value"), 'add a chime', 'the pasted path did not also land as raw text');
+      assert.equal(await c.evaluate("(()=>{const i=document.querySelector('article.q[data-id=\"L-2\"] .attpill.img img');return i.complete&&i.naturalWidth>0})()"), true, 'the thumbnail loads from the deck server');
+      // ── round 10, "Tick or change": a tick and a pencil on every row of a "Yours to change" list ──
+      {
+        const L = 'article.q[data-id="L-2"]', row = id => `${L} .call[data-call="${id}"]`;
+        const q = js => c.evaluate(js);
+        const pressed = (id, kind) => q(`document.querySelector('${row(id)} .${kind}').getAttribute('aria-pressed')`);
+        const saved = async () => JSON.parse(await q("localStorage.getItem('deck:' + DECK.key)")).answers['L-2'];
+        assert.equal(await q(`document.querySelectorAll('${L} .calltick').length`), 2, 'a tick on each row');
+        assert.equal(await q(`[...document.querySelectorAll('${L} .calltick, ${L} .calledit')].every(b => b.tagName === 'BUTTON' && b.getBoundingClientRect().height >= 32 && b.getAttribute('aria-label'))`), true, 'real buttons, at least 32px, with names');
+        assert.equal(await q(`document.querySelectorAll('article.q[data-id="C-1"] .calltick').length`), 0, 'a background list has no ticks');
+        assert.equal(await pressed('a', 'calledit'), 'true', 'the pencil of a commented row looks selected'); assert.equal(await pressed('a', 'calltick'), 'false');
+        // a tick on a commented row keeps the comment and does not tick
+        await q(`document.querySelector('${row('a')} .calltick').click()`); await sleep(100);
+        assert.equal(await pressed('a', 'calltick'), 'false'); assert.equal(await q(`document.querySelector('${row('a')} .callt').value`), 'add a chime');
+        // ticking the other row: pressed, saved, and the pill counts it
+        await q(`document.querySelector('${row('b')} .calltick').click()`); await sleep(100);
+        assert.equal(await pressed('b', 'calltick'), 'true'); assert.deepEqual((await saved()).ok, { b: true }); assert.equal((await saved()).accepted, undefined, 'moving on no longer writes accepted');
+        assert.equal(await q(`document.querySelector('${L} .qstate').textContent`), 'All looked at');
+        // no status words, dots or coloured edge beside a row
+        assert.equal(await q(`/Not looked at|Change asked|\\bFine\\b/.test(document.querySelector('${L}').innerText)`), false, 'the controls are the only status');
+        // pressing a lit tick takes it off
+        await q(`document.querySelector('${row('b')} .calltick').click()`); await sleep(100);
+        assert.equal(await pressed('b', 'calltick'), 'false'); assert.deepEqual((await saved()).ok, {});
+        // writing a comment on a ticked row clears the tick
+        await q(`document.querySelector('${row('b')} .calltick').click()`); await sleep(60);
+        await q(`document.querySelector('${row('b')} .calledit').click()`); await sleep(60);
+        assert.equal(await pressed('b', 'calltick'), 'false', 'a comment takes the tick off'); assert.equal(await pressed('b', 'calledit'), 'true');
+        await q(`document.querySelector('${row('b')} .callx').click()`); await sleep(100);
+        assert.equal(await pressed('b', 'calledit'), 'false');
+      }
+      // leave the page and come back: the open card and the pills are still there
+      await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
+      // ── buttons follow the design guide ──
+      assert.equal(await c.evaluate("document.querySelectorAll('.card.variant .ohead .key').length"), 0, 'no option-id chips on written options');
+      assert.equal(await c.evaluate("[...document.querySelectorAll('button.btn.primary')].filter(b=>b.offsetParent).length"), 1, 'one filled button in view: this is the last page, so the foot has only Back and the header\'s Submit feedback (round 11: "fill it in") is the single filled button (round 14: no second Submit feedback)');
+      assert.equal(await c.evaluate("(()=>{const y=getComputedStyle(document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=yes]')),n=getComputedStyle(document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=no]')),b=getComputedStyle(document.querySelector('#back'));return y.borderTopColor===n.borderTopColor&&y.borderTopColor===b.borderTopColor&&y.backgroundColor===n.backgroundColor&&y.backgroundColor!==getComputedStyle(document.querySelector('#save')).backgroundColor})()"), true, 'answer buttons are outlined alike, in the same full-strength outline as Back, and not filled');
+      assert.equal(await c.evaluate("(()=>{const q=document.querySelector('article.q[data-id=\"Q-2\"]');return q.querySelector('.ans[data-v=yes]').getBoundingClientRect().left>q.querySelector('.note').getBoundingClientRect().right-1})()"), true, 'the answer buttons sit at the right of their line');
+      await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .ans[data-v=yes]').click()"); await sleep(100);
+      assert.equal(await c.evaluate("(()=>{const on=document.querySelector('article.q[data-id=\"Q-2\"] .ans.on');return !!on && on.dataset.v==='yes' && getComputedStyle(on).backgroundColor!==getComputedStyle(document.querySelector('#save')).backgroundColor && getComputedStyle(on,'::before').content.includes('✓')})()"), true, 'the chosen answer shows a tick and does not become a second filled button');
+      assert.match(await c.evaluate("document.querySelector('article.q[data-id=\"Q-2\"] .qstate').textContent"), /^Answered/);
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"Q-1\"] .qstate').textContent"), 'Not answered', 'a question still says so');
+      // a picture in the typed answer, a path in the page-foot box
+      await c.evaluate(paste('article.q[data-id="Q-3"] .ans-write', 'image')); await sleep(900);
+      await c.evaluate(paste('#pnote', '~/system/global.md')); await sleep(100);
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"Q-3\"] .attpill.img').length + ',' + document.querySelectorAll('.pagenote .attpill.file').length"), '1,1');
+      await c.evaluate("document.querySelector('#back').click()"); await sleep(300);
+      assert.equal(await c.evaluate("document.querySelector('article.q[data-id=\"G-1\"] .attcard').classList.contains('open') + ',' + document.querySelector('article.q[data-id=\"L-2\"] .attcard').classList.contains('open')"), 'true,true', 'cards he opened stay open when the page is redrawn');
+      assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"L-2\"] .attpill').length"), 2, 'pills come back with the page');
+      await sleep(700);
+    } finally { await c.close(); }
+    const saved = JSON.parse(readFileSync(spec.replace(/\.json$/, '.answers.json'), 'utf8'));
+    const l2 = saved.answers['L-2'].attach['change:a'];
+    assert.deepEqual(l2.map(p => [p.kind, p.name]), [['image', 'my screenshot.png'], ['path', 'MAP.md']]);
+    assert.equal(l2[1].path, '/home/destin/youcoded-dev/docs/MAP.md');
+    assert.ok(existsSync(l2[0].path) && l2[0].path.includes('.attachments'), 'the picture is kept beside the spec');
+    assert.equal(saved.answers['Q-3'].attach.text[0].kind, 'image');
+    assert.equal(Object.values(saved.pageAttach)[0][0].path, '~/system/global.md');
+    // a reload restores them
+    const c2 = await cdp(await freePort(), 1440, 1000);
+    try {
+      await c2.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c2);
+      assert.equal(await c2.evaluate("document.querySelectorAll('article.q[data-id=\"L-2\"] .attpill').length"), 2, 'pills are restored on reload');
+      if (await c2.evaluate("!document.querySelector('.pagenote .attpill')")) { await c2.evaluate("document.querySelector('#save').click()"); await sleep(300); }
+      await c2.evaluate("document.querySelector('.pagenote .px').click()"); await sleep(100);
+      assert.equal(await c2.evaluate("document.querySelectorAll('.pagenote .attpill').length"), 0, 'the x takes a pill away');
+      await sleep(700);
+    } finally { await c2.close(); }
+    // opened as a plain file there is no server to keep a picture: say so
+    const c3 = await cdp(await freePort(), 1440, 1000);
+    try {
+      await c3.send('Page.navigate', { url: 'file://' + spec.replace(/\.json$/, '.html') }); await ready(c3);
+      await c3.evaluate("(()=>{const b=[...document.querySelectorAll('.pnote')][0];window.__box=b})()");
+      await c3.evaluate(paste('.pnote', 'image')); await sleep(300);
+      assert.match(await c3.evaluate("document.querySelector('.attpills .micerr').textContent"), /plain file.*deck server/, 'image paste says plainly that it needs the served deck');
+      assert.equal(await c3.evaluate("document.querySelectorAll('.attpill').length"), 0);
+    } finally { await c3.close(); }
+  } finally { srv.kill(); }
+});
+
+// Round 7, second half (2026-11-10): history woven into the deck (state pill, trail, Settled fold,
+// "Since last round" line, related decks with a line each), a row's More, "Built from", and video proof.
+test('rounds 8-9: rows grouped by state with no badges, no Details fold (story and explanation in the open), a plain since-last-round sentence, and a video tile that cannot be dragged on', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-r7b-'));
+  const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); d = os.path.dirname(p)
+open(os.path.join(d, 'proof.webm'), 'wb').write(b'\\x1a\\x45\\xdf\\xa3' + b'\\x00' * 40)
+json.dump({'title': 'older', 'key': 'older', 'out': 'older.html', 'steps': []}, open(os.path.join(d, 'older.json'), 'w'))
+T = [{'round': 'Round 3', 'asked': 'there is no notes button', 'built': 'A Notes button.', 'said': 'i wanted a box at the foot'}, {'round': 'Round 4', 'built': 'A box at the foot of every page.'}]
+def lst(i, h, calls, **kw): return {'id': i, 'words': True, 'surface': 'Decks', 'path': 'Rows', 'headline': h, 'calls': calls, **kw}
+raw['related'] = [{'title': 'Round 6 deck', 'path': 'older.json', 'how': 'Where you chose the trail.'}]
+raw['steps'] = [{'id': 'P-1', 'page': 'One', 'intro': 'Judge the rows.'},
+  lst('L-1', 'What you asked for', [
+    {'id': 'old', 'call': 'Settled thing.', 'why': 'Done.', 'state': 'settled', 'trail': T},
+    {'id': 'chg', 'call': 'Changed thing.', 'why': 'Follows you.', 'state': 'changed', 'trail': T, 'reuse': {'from': ['The pencil button'], 'new': ['The star'], 'note': 'Only the star is new.'}},
+    {'id': 'new', 'call': 'New thing.', 'why': 'Fresh.', 'state': 'new', 'picture': 'proof.webm'}], fold_settled=True),
+  {'id': 'P-2', 'page': 'Two', 'intro': 'Checks.'},
+  lst('L-2', 'Checks', [{'id': 'c', 'call': 'Phone width.', 'why': 'Narrow page.', 'result': 'skip', 'more': {'does': 'Opens it narrow.', 'returns': 'A picture.', 'why': 'Not suggested: desktop only.'}}])]
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("!!window.__deckReady").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1200, 1000);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c);
+      const q = e => c.evaluate(e);
+      // the one line at the top of the first page, and the related deck with its own line
+      assert.equal(await q("document.querySelector('.since').textContent.replace(/\\s+/g, ' ')"), 'Since last round: 1 new, 1 changed, 1 settled.');
+      assert.equal(await q("document.querySelectorAll('.topnotes button, .topnotes a:not(.btn)').length"), 0, 'a plain sentence: nothing in it is a link');
+      assert.match(await q("document.querySelector('.reltop li').textContent"), /Round 6 deck.*Where you chose the trail\./);
+      // Round 8: a row's state is its GROUP (New, Changed, Already settled), never a badge on the row.
+      assert.equal(await q("document.querySelectorAll('.stpill').length"), 0, 'no state badges');
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.card.calls .grph')].map(h => h.textContent))")), ['New1', 'Changed1']);
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.card.calls > .grp > ul > li.call')].map(l => l.dataset.call))")), ['new', 'chg']);
+      assert.match(await q("document.querySelector('.settledfold .foldhead').textContent"), /^Already settled\s*1$/);
+      assert.equal(await q("document.querySelector('.settledfold > .foldbody').hidden"), true);
+      // Round 9 (Destin, on the Details fold: "what even is the point of this?"; K-1 yes): no fold. The story is
+      // plain lines above the row's words, in the open; what a design reuses is behind a small (i).
+      assert.equal(await q("document.querySelectorAll('.fold.details').length"), 0, 'no Details fold anywhere');
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('li[data-call=chg] .story .sline dt')].map(p => p.textContent))")), ['Round 3 · you', 'Round 3 · built', 'Round 3 · you', 'Round 4 · built']);
+      assert.equal(await q("document.querySelector('li[data-call=chg] .story .sline.you dd').textContent"), '“there is no notes button”', 'his words are quoted');
+      assert.ok(await q("(()=>{const s=document.querySelector('li[data-call=chg] .story').getBoundingClientRect(),w=document.querySelector('li[data-call=chg] .callwhat').getBoundingClientRect();return s.height>0&&s.bottom<=w.top+1})()"), 'the story is visible, above the row\'s words');
+      assert.match(await q("document.querySelector('li[data-call=chg] .callhead .how .tip').textContent"), /Reused from the app.*The pencil button.*New in this design.*The star/);
+      // every list says which of the three kinds of card it is
+      assert.equal(await q("document.querySelector('article.q .qnum .kindline').textContent"), 'Yours to change');
+      assert.equal(await q("[...document.querySelectorAll('#cards *')].filter(e => parseFloat(getComputedStyle(e).borderLeftWidth) > 1.5 && getComputedStyle(e).borderRightWidth !== getComputedStyle(e).borderLeftWidth).length"), 0, 'no coloured bar at the left edge of anything ("fingernail")');
+      // a video is a tile like any picture; its window plays it with controls and cannot be dragged on
+      await q("document.querySelector('li[data-call=new] .atthead').click()");
+      await q("document.querySelector('li[data-call=new] .atttile[data-video=\"1\"]').click()"); await sleep(200);
+      assert.equal(await q("(()=>{const v=document.querySelector('.viewer .lbbox video');return v && v.controls && !v.autoplay && v.paused;})()"), true);
+      assert.equal(await q("document.querySelector('.viewer .lbbox').classList.contains('markable')"), false);
+      await q("document.querySelector('.viewer .vclose').click()");
+      // the settled group opens like any fold
+      await q("document.querySelector('.settledfold .foldhead').click()"); await sleep(100);
+      assert.equal(await q("document.querySelector('.settledfold > .foldbody').hidden"), false);
+      // the second page: a run/skip row's fuller explanation is labelled lines under its words, in the open
+      await q("document.querySelector('#save').click()"); await sleep(400);
+      assert.equal(await q("document.querySelector('.topnotes') === null"), true, 'the summary is only on the first page');
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.morelines .mline dt')].map(d => d.textContent))")), ['What it does', 'What comes back', 'Why, for this build']);
+      assert.ok(await q("document.querySelector('.morelines').getBoundingClientRect().height > 0"));
+      assert.equal(await q("document.querySelector('article.q .qnum .kindline').textContent"), 'Checks');
+      // nothing on the page is an underlined link or a bare disclosure triangle
+      assert.equal(await q("[...document.querySelectorAll('#cards a, #cards button')].filter(e => getComputedStyle(e).textDecorationLine.includes('underline')).length"), 0);
+      assert.deepEqual(c.errors, []);
+    } finally { await c.close(); }
+  } finally { srv.kill(); }
+});
+
+// ── Use it / Edit words (round 7b) ───────────────────────────────────────────────────────────
+// Destin, 2026-11-10, on the frozen About popup: "i think the dropdown menus in that about popup
+// should probably still work?" A screen step that names `liveScreen` runs the practice app in the
+// frame (Use it) and freezes it as it stands (Edit words). No real practice app here: serve is
+// started through a wrapper that points the build at a stand-in script printing a folder with ONE
+// tiny page — it has the same `__youcodedScreens` door the real app has, a dialog with a fold row
+// whose hidden sentence only exists once opened, and one chat message sitting behind the dialog.
+test('Use it runs the app, Edit words freezes it as it stands, and a change keeps what was open', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-usit-'));
+  const dist = join(tmp, 'dist'); mkdirSync(dist);
+  writeFileSync(join(dist, 'index.html'), `<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;font:14px sans-serif}
+.dlg{position:fixed;left:400px;top:150px;width:420px;height:300px;background:#fff;border:1px solid #000;z-index:5}
+.msg{position:absolute;left:410px;top:200px;z-index:1}</style></head><body>
+<div class="msg" data-entry-key="m1">One person's own chat message, long enough to count</div><div id="root"></div>
+<script>window.__youcodedScreens={list:()=>[{name:'settings/about'}],open:async()=>{root.innerHTML='<div role="dialog" class="dlg" aria-label="About"><span data-screen="settings/about" hidden></span><h2>About</h2><p>Always shown words</p><button id="f" aria-expanded="false">Your account</button><p id="hid" hidden>Hidden sentence about accounts</p></div>';
+f.onclick=()=>{const o=f.getAttribute('aria-expanded')!=='true';f.setAttribute('aria-expanded',String(o));hid.hidden=!o};return {ok:true}}};</script></body></html>`);
+  writeFileSync(join(tmp, 'build.mjs'), `console.log(${JSON.stringify(dist)});`);
+  mkdirSync(join(tmp, 'tree', 'desktop'), { recursive: true });
+  const py = `import sys, json; sys.path.insert(0, ${JSON.stringify(HERE)})
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)}); raw = json.load(open(p))
+raw['live'] = {'worktree': 'w'}
+raw['steps'] = [{'id': 'S-1', 'words': True, 'surface': 'Settings', 'path': 'About', 'headline': 'The words on the About popup', 'screen': 'about.html', 'liveScreen': 'settings/about'}]
+open(__import__('os').path.join(__import__('os').path.dirname(p), 'about.html'), 'w').write('<!doctype html><html data-frozen="1440x900"><head><meta charset="utf-8"></head><body><h1>Saved copy words</h1></body></html>')
+json.dump(raw, open(p, 'w')); print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const wrap = (extra) => `import sys, runpy; sys.path.insert(0, ${JSON.stringify(join(HERE, '..'))})
+import deck.serve as sv
+sv.resolve_worktree = lambda n: ${JSON.stringify(join(tmp, 'tree'))}
+sv.SHOOT_BUILD_SCRIPT = ${JSON.stringify(join(tmp, 'build.mjs'))}
+sys.argv = [${JSON.stringify(RC)}, 'serve', ${JSON.stringify(spec)}, '--no-build', '--timeout', '2'${extra}]
+runpy.run_path(${JSON.stringify(RC)}, run_name='__main__')`;
+  const servers = [];
+  const start = async (extra) => { const port = await freePort(); const s = spawn('python3', ['-c', wrap(`, '--port', '${port}'${extra}`)], { stdio: ['ignore', 'pipe', 'pipe'] }); servers.push(s); await sleep(1200); return port; };
+  try {
+    const port = await start('');
+    const c = await cdp(await freePort(), 1500, 1100);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      const until = async (js, n = 80) => { for (let i = 0; i < n && !(await c.evaluate(js).catch(() => false)); i++) await sleep(250); assert.ok(await c.evaluate(js).catch(() => false), 'timed out waiting for: ' + js); };
+      await until("!!window.__deckReady && !document.querySelector('.seg').hidden");
+      assert.equal(await c.evaluate("document.querySelector('.card.screen').dataset.mode"), 'edit', 'a step with a saved file opens on that file, as before');
+      await c.evaluate("document.querySelector('.seg [data-mode=use]').click()");
+      await until("document.querySelector('.liveframe') && document.querySelector('.liveframe')._ready");
+      await c.evaluate("document.querySelector('.liveframe').contentDocument.getElementById('f').click()");
+      await c.evaluate("document.querySelector('.seg [data-mode=edit]').click()");
+      await until("(()=>{const f=document.querySelector('.screenframe:not(.liveframe)');return f.src.startsWith('blob:')&&f._armed&&f._armed===f.contentDocument&&document.querySelector('.card.screen').dataset.mode==='edit'})()");
+      const keys = JSON.parse(await c.evaluate("JSON.stringify([...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].map(e=>e.dataset.k))"));
+      assert.deepEqual(keys, ['About', 'Always shown words', 'Your account', 'Hidden sentence about accounts'], 'the sentence the fold hid is there, and the chat message behind the popup is not editable');
+      await c.evaluate(`(()=>{const t=[...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].find(e=>e.dataset.k.startsWith('Hidden'));t.textContent='Shown after opening';t.dispatchEvent(new Event('input',{bubbles:true}))})()`);
+      await sleep(900);
+      const saved = JSON.parse(await c.evaluate("fetch('/answers').then(r=>r.text())")).answers['S-1'].edits;
+      assert.deepEqual(saved, { 'Hidden sentence about accounts': { from: 'Hidden sentence about accounts', to: 'Shown after opening', state: 'About, Your account open' } }, 'saved by its words, with what was open');
+      // Back to the running app: the change stays listed; the fold is still open there. Freezing again puts it back on the screen.
+      await c.evaluate("document.querySelector('.seg [data-mode=use]').click()"); await sleep(300);
+      assert.equal(await c.evaluate("document.querySelectorAll('.screenedits li').length"), 1, 'the change stays listed while he is in Use it');
+      assert.equal(await c.evaluate("document.querySelector('.liveframe').contentDocument.getElementById('f').getAttribute('aria-expanded')"), 'true', 'the running app kept its fold open');
+      await c.evaluate("document.querySelector('.seg [data-mode=edit]').click()"); await sleep(400);
+      await until("(()=>{const f=document.querySelector('.screenframe:not(.liveframe)');return f._armed&&f._armed===f.contentDocument&&[...f.contentDocument.querySelectorAll('[data-w]')].some(e=>e.textContent==='Shown after opening')})()");
+      await c.evaluate("document.querySelector('.screenundo').click()"); await sleep(300);
+      assert.equal(await c.evaluate("[...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].some(e=>e.textContent==='Hidden sentence about accounts')"), true, 'Put back restores the words');
+      assert.deepEqual(c.errors, []);
+    } finally { await c.close(); }
+    // Served without the practice app: no switch, the saved file as before. (One server per spec at a time: stop the first.)
+    servers[0].kill(); await sleep(600);
+    const port2 = await start(", '--no-live'");
+    const c2 = await cdp(await freePort(), 1500, 1100);
+    try {
+      await c2.send('Page.navigate', { url: `http://127.0.0.1:${port2}/questions.html` });
+      for (let i = 0; i < 40 && !(await c2.evaluate("!!window.__deckReady && !!document.querySelector('.screenframe')._armed").catch(() => false)); i++) await sleep(250);
+      await sleep(600);
+      assert.equal(await c2.evaluate("document.querySelector('.seg').hidden"), true, 'no switch when the app cannot run');
+      assert.equal(await c2.evaluate("document.querySelector('.screenframe').contentDocument.querySelector('[data-w]').dataset.k"), 'Saved copy words', 'the saved file is shown');
+    } finally { await c2.close(); }
+  } finally { for (const s of servers) s.kill(); }
+});
+
+// Review fixes (2026-11-10): what three reviews of the deck found, driven the way a hand would —
+// a background list is never answered, the finish table names things as the page does, a second
+// press of the pencil keeps a comment, a tiny drag draws nothing, a typed-answer box locks on
+// Submit, and the page's summary is character-for-character the server's.
+test('review fixes: context lists, finish wording, pencil, tiny drags, locked boxes, one summary', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-rf-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
+def lst(i, h, calls, **kw): return {'id': i, 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': h, 'calls': calls, **kw}
+raw['steps'] = [{'id': 'P-1', 'page': 'Rows', 'intro': 'Judge the rows.'},
+  lst('G-1', 'Screens', [{'id': 'g', 'call': 'Board moved.', 'why': 'Matches.', 'result': 'run', 'more': {'does': 'Looks at it.', 'returns': 'A picture.', 'why': 'Cheap.'}, 'picture': 'pic.png'}, {'id': 'h', 'call': 'Second.', 'why': 'Ok.', 'result': 'run', 'more': {'does': 'Runs it.', 'returns': 'A list.', 'why': 'Cheap.'}}]),
+  lst('G-2', 'Untouched', [{'id': 'u', 'call': 'Left alone.', 'why': 'Fine.'}]),
+  lst('C-1', 'What exists today', [{'id': 'x', 'call': 'Fact one.', 'why': 'Read.'}], context=True),
+  {'id': 'P-2', 'page': 'Questions', 'intro': 'Answer.'},
+  {'id': 'Q-1', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Which one?', 'today': 'Five run.', 'problem': 'Slow.', 'proposal': 'Pick.', 'checked': 'Read today.',
+   'options': [{'id': 'lead', 'label': 'First option', 'pros': ['Good.'], 'cons': ['Bad.']}, {'id': 'trail', 'label': 'Second', 'pros': ['Good.'], 'cons': ['Bad.']}]},
+  {'id': 'Q-3', 'words': True, 'surface': 'Chats', 'path': 'Rules', 'headline': 'Describe it', 'today': 'None.', 'problem': 'Unknown.', 'proposal': 'Tell me.', 'checked': 'Read today.', 'answer': 'words'}]
+json.dump(raw, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('questions.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1280, 900);
+  const ev = e => c.evaluate(e);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/${basename(spec).replace(/\.json$/, '.html')}` });
+    for (let i = 0; i < 40 && !(await ev('!!window.__deckReady').catch(() => false)); i++) await sleep(250); await sleep(300);
+    assert.match(await ev("document.querySelector('#count').textContent"), /0 of 4 answered/, 'a background list is not counted as something to answer');
+    assert.equal(await ev("document.querySelector('.qstate').hidden"), true, 'an untouched list shows no state pill (not "Accepted")');
+    // The pencil: a second press keeps a saved comment; only the x takes it away.
+    await ev("document.querySelector('.calledit[data-sid=\"G-1\"][data-call=\"g\"]').click()"); await sleep(100);
+    await ev(`(()=>{const t=document.querySelector('.callt[data-sid="G-1"][data-call="g"]');t.value='keep me';t.dispatchEvent(new Event('input',{bubbles:true}));})()`); await sleep(100);
+    await ev("document.querySelector('.calledit[data-sid=\"G-1\"][data-call=\"g\"]').click()"); await sleep(100);
+    assert.equal(await ev("document.querySelector('.callt[data-sid=\"G-1\"][data-call=\"g\"]').value"), 'keep me', 'a second press of the pencil must not delete the comment');
+    assert.equal(await ev("document.querySelector('.callt[data-sid=\"G-1\"][data-call=\"g\"]').closest('.callbox').hidden"), false);
+    await ev("document.querySelector('.callx[data-sid=\"G-1\"][data-call=\"g\"]').click()"); await sleep(100);
+    assert.equal(await ev("document.querySelector('.callt[data-sid=\"G-1\"][data-call=\"g\"]').closest('.callbox').hidden"), true, 'the small x takes the comment away');
+    // A status he changes looks changed, and the header agrees with the box.
+    await ev("document.querySelector('.result.pillbtn').click()"); await sleep(50);
+    await ev("document.querySelector('.resultmenu button[data-v=skip]').click()"); await sleep(100);
+    assert.equal(await ev("document.querySelector('.reswas').textContent"), 'changed from: Will run');
+    assert.match(await ev("document.querySelector('#count').textContent"), /1 of 4 answered/);
+    assert.ok(await ev("document.querySelector('.result.pillbtn').getBoundingClientRect().height >= 32"), 'the status pill is at least 32px tall');
+    // Pictures: a tiny drag draws nothing, a real one does, and taking the last area away withdraws the answer.
+    await ev("(()=>{const h=document.querySelector('.atthead'); if(!h.closest('.attcard').classList.contains('open')) h.click();})()"); await sleep(200);
+    await ev("document.querySelector('.atttile').click()"); await sleep(400);
+    const r = await ev("(()=>{const i=document.querySelector('.viewer .lbbox img').getBoundingClientRect();return {x:i.left,y:i.top,w:i.width,h:i.height}})()");
+    const drag = async (a, b, d, e2) => {
+      const x0 = r.x + r.w * a, y0 = r.y + r.h * b, x1 = r.x + r.w * d, y1 = r.y + r.h * e2;
+      await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0, y: y0 });
+      await c.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: x0, y: y0, button: 'left', clickCount: 1 });
+      for (let i = 1; i <= 4; i++) await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0 + (x1 - x0) * i / 4, y: y0 + (y1 - y0) * i / 4, button: 'left', buttons: 1 });
+      await c.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x1, y: y1, button: 'left', clickCount: 1 }); await sleep(200);
+    };
+    await drag(0.3, 0.3, 0.315, 0.32);
+    assert.equal(await ev("document.querySelectorAll('.viewer .vcomments .markrow').length"), 0, 'a drag under 3% makes no area');
+    await drag(0.3, 0.3, 0.6, 0.6);
+    assert.equal(await ev("document.querySelectorAll('.viewer .vcomments .markrow').length"), 1, 'a real drag makes one');
+    await ev("document.querySelector('.markx:not(.callx)').click()"); await sleep(200);
+    await ev("document.querySelector('.viewer .vclose').click()"); await sleep(100);
+    assert.equal(await ev("JSON.stringify(Object.keys(JSON.parse(localStorage.getItem('deck:' + DECK.key)).answers['G-1'] || {}).includes('marks'))"), 'false');
+    // One summary: the page and the server agree on the same state.
+    const st = { deck: 'x', submitted: '2026-11-10T10:00:00Z', notes: 'general words', notesAttach: [{ kind: 'path', name: 'a.txt', path: '/tmp/a.txt' }],
+      pageNotes: { 'P-2': 'about questions', 'P-1': 'about rows' }, pageAttach: { 'P-1': [{ kind: 'image', name: 'p.png', path: '/tmp/p.png' }] },
+      answers: { 'G-1': { v: 'other', results: { h: 'weird' }, changes: { g: 'x' }, marks: [{ pic: 'row g', x: 1, y: 2, w: 3, h: 4, text: 'm' }] }, 'L-2': { ok: { b: true } }, 'Q-1': { v: 'pick', pick: 'lead', note: 'n' }, 'Q-3': { v: 'wrote', text: 'hello' }, 'C-1': { v: 'yes' } } };
+    const mine = await ev(`window.__deckSummaryOf(${JSON.stringify(st)})`);
+    const theirs = spawnSync('python3', ['-c', `import sys, json; sys.path.insert(0, ${JSON.stringify(join(HERE, '..'))});
+from deck.spec import load_spec; from deck.serve import summary
+print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())), end='')`], { input: JSON.stringify(st), encoding: 'utf8' });
+    assert.equal(theirs.status, 0, theirs.stderr);
+    assert.equal(mine, theirs.stdout, 'the page and serve.py must print the same summary for the same state');
+    assert.ok(!mine.includes('undefined') && !mine.includes('C-1'), 'no "undefined", and a background list has no line');
+    // Finish: labels, not ids; the numbering the page uses; a list left alone reads "Left as listed".
+    await ev("document.querySelector('#save').click()"); await sleep(300);
+    await ev("document.querySelector('.card.variant[data-pick=\"lead\"]').click()"); await sleep(100);
+    await ev("document.querySelector('#done').click()"); await sleep(200);
+    // Round 10, R-2: rows he never ticked or changed are counted and named at Done; he can still send.
+    assert.equal(await ev("getComputedStyle(document.querySelector('#unlooked')).display"), 'flex');
+    assert.match(await ev("document.querySelector('#unlookedn').textContent"), /not looked at/);
+    assert.match(await ev("document.querySelector('#unlookedl').innerText"), /Left alone\./);
+    assert.equal(await ev("document.querySelector('#submit').disabled"), false, 'he can still send');
+    assert.match(await ev("document.querySelector('#feedback').value + ' ' + window.__deckSummaryOf(JSON.parse(localStorage.getItem('deck:' + DECK.key)))"), /not looked at — "Left alone\."/);
+    const warn = await ev("document.querySelector('#skipn').textContent");
+    assert.match(warn, /Page 2, /, warn); assert.ok(!/step 4|step \d/.test(warn), warn);
+    await ev("document.querySelector('#submit').click()"); await sleep(1200);
+    const rows = await ev("[...document.querySelectorAll('#responses tbody tr')].map(r => r.innerText.replace(/\\s+/g, ' '))");
+    assert.ok(rows.some(t => /Untouched.*No changes · 1 not looked at/.test(t)), 'a "Yours to change" list he moved past untouched is NOT accepted: it reads "not looked at": ' + rows.join(' // '));
+    assert.ok(rows.some(t => /First option/.test(t)) && !rows.some(t => /\blead\b/.test(t)), 'the option label, never its internal id: ' + rows.join(' // '));
+    assert.ok(!rows.some(t => /What exists today/.test(t)), 'a background list is not in the finish table');
+    assert.equal(await ev("document.querySelector('.ans-write').disabled"), true, 'the typed-answer box locks on Submit');
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
+});
+
+// ── a deck that grows (round 10) ───────────────────────────────────────────────────────────
+// WHY pinned (Destin, rounds 1, 8, 10: "a single deck that… keeps my earlier responses"; open topics on top,
+// answered ones sink to a list with their round, one summary line of a topic's past): real files end to end.
+// Round 1 is built, answered (a submitted answers file), then the SAME spec is edited and rebuilt, and `serve`
+// moves the answers aside, exactly as the author's routine does.
+test('a deck that grows: previously answered cards, finished stages, a steady header, rows that stand alone', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-grows-'));
+  const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); q1, q2 = raw['steps'][0], raw['steps'][1]
+q1 = {**q1, 'options': q1['options'] + [{'id': 'b', 'label': 'Elsewhere', 'summary': 'Somewhere else.', 'pros': ['Quiet.'], 'cons': ['Hidden.']}]}
+def q(i, h, **kw): return {**q1, 'id': i, 'headline': h, **kw}
+raw['grows'] = True; raw['tag'] = 'feature'
+raw['rounds_before'] = 3
+# WHY round 1 is AT understanding (round 11): a deck is at one stage, so its only page is that stage's.
+raw['stage'] = 'understanding'
+raw['steps'] = [{'id': 'P-1', 'page': 'Understanding page', 'intro': 'What we understood.', 'stage': 'understanding'}, q('Q-1', 'First topic?'), q('Q-2', 'Second topic?'), q('Q-3', 'Third topic?'), q('Q-5', 'Fifth topic?')]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  const out = join(dirname(spec), 'questions.html');
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  // round 1 (labelled Round 4) as he answered it: Q-2 with a LONG note, Q-3 with a note; submitted, with the build stamp he saw
+  const at = /"built":\s*\{[^}]*"at":\s*"([^"]+)"/.exec(readFileSync(out, 'utf8'))[1];
+  const LONG = 'a very long comment that must never be cut short '.repeat(12).trim();
+  writeFileSync(join(dirname(spec), 'questions.answers.json'), JSON.stringify({ deck: 'questions-fixture', submitted: '2026-11-01T10:00:00Z', built: { at }, answers: {
+    'Q-1': { v: 'pick', pick: 'a' }, 'Q-2': { v: 'pick', pick: 'a', note: LONG }, 'Q-3': { v: 'other', note: 'make it bigger please, why is it so small?' }, 'Q-5': { v: 'pick', pick: 'a' } }, pageNotes: { 'P-2': 'this page line is unclear to me' } }));
+  const edit = `import json; p = ${JSON.stringify(spec)}; raw = json.load(open(p))
+by = {s['id']: s for s in raw['steps']}
+by['Q-2']['resolved'] = 'Made quiet in the next build.'
+by['Q-3']['reopened'] = 'You asked for it bigger.'; by['Q-3']['reframed'] = 'Said what the size changes.'; by['Q-3']['trail'] = [{'round': 'Round 4', 'built': 'A small one.'}]
+# Q-5 was answered in an earlier, separate deck too: one topic, two rounds
+by['Q-5']['answered'] = [{'round': 'Round 2', 'answer': 'An older pick', 'notes': ['first thoughts']}]
+q4 = dict(by['Q-2'], id='Q-4', headline='Fourth topic?'); q4.pop('resolved')
+rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'calls': [{'id': 'r1', 'call': 'A row.', 'why': 'Because.', 'more': {'today': 'Where it came from: earlier.', 'change': 'Now it is different.', 'pros': ['Clear.']}}]}
+q6 = dict(by['Q-2'], id='Q-6', headline='Sixth topic?'); q6.pop('resolved'); q6['answered'] = {'round': 'Round 2', 'answer': 'Yes'}
+raw['stage'] = 'design'
+raw['notes_handled'] = {'P-2': 'Rewrote the page line.'}   # code review F3: his page comment is acknowledged, and shown on that page
+raw['steps'] = [by['P-1'], by['Q-1'], {'id': 'P-2', 'page': 'Design page', 'intro': 'Pick between the drawings.', 'stage': 'design'}, by['Q-2'], by['Q-5'], by['Q-3'], q4,
+                {'id': 'P-3', 'page': 'Rows page', 'intro': 'Tick what is fine.', 'stage': 'design'}, rows,
+                {'id': 'P-4', 'page': 'Settled page', 'intro': 'Nothing here needs you.', 'stage': 'design'}, q6]
+json.dump(raw, open(p, 'w'))`;
+  await sleep(1200);   // the build stamp has one-second precision: round 2 must be a different build from round 1, as it always is in practice
+  { const r = spawnSync('python3', ['-c', edit], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }   // a grows deck is rebuilt after he answered
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  // The header's boxes: they must be identical on every page (Destin, round 11: "the header still re-sizes/re-arranges itself when clicking between pages").
+  const HDR = "(()=>{const r=x=>{const b=document.querySelector(x).getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(Math.round).join()};return [r('.top'),r('#done'),r('#stages')].join('|')})()";
+  try {
+    // WHY poll (a fixed 900 ms failed in the full run when the machine was busy, though the test passes alone): wait up to 15 s for serve to move the file aside.
+    for (let i = 0; i < 75 && !readdirSync(dirname(spec)).some(f => /^questions\.answers\.\d+\.json$/.test(f)); i++) await sleep(200);
+    assert.ok(readdirSync(dirname(spec)).some(f => /^questions\.answers\.\d+\.json$/.test(f)), 'serve moved his round-1 answers aside as a dated file');
+    const c = await cdp(await freePort(), 1400, 1000);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c);
+      const q = e => c.evaluate(e);
+      const ids = async () => JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q:not(.prev)')].map(a => a.dataset.id))"));
+      // the page names itself with a real heading and ONE line; the header carries no title, no page count, no question numbers
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Design page', 'lands on the first page that has an open topic');
+      assert.equal(await q("document.querySelector('.pagehead .intro').textContent"), 'Pick between the drawings.');
+      assert.equal(await q("document.querySelectorAll('.page-head').length"), 0, 'no separate intro card');
+      assert.equal(await q("getComputedStyle(document.querySelector('.top .where')).display"), 'none', 'the page title is not in the header');
+      assert.equal(await q("parseFloat(getComputedStyle(document.querySelector('.ptitle')).fontSize) > parseFloat(getComputedStyle(document.querySelector('.qh')).fontSize)"), true, 'the title is bigger than a question title');
+      assert.ok(!/page\s+\d+\s+of/i.test(await q("document.querySelector('.top').innerText")), 'no "page N of M" in the header');
+      assert.ok(!/\d+\s+of\s+\d+/.test(await q("document.querySelector('.top').innerText + ' ' + document.querySelector('#cards').innerText")), 'no "N of N" numbering anywhere on the page');
+      // Submit feedback is one filled button
+      assert.equal(await q("document.querySelector('#done').textContent"), 'Submit feedback');
+      assert.equal(await q("(()=>{const t=document.createElement('i');t.style.background='var(--accent)';document.body.appendChild(t);const a=getComputedStyle(t).backgroundColor;t.remove();return getComputedStyle(document.querySelector('#done')).backgroundColor===a})()"), true, 'filled with the accent colour');
+      // Destin, 2026-11-18: the header reads "FEATURE: <title>" and a bare date; no "Round N", no word "built", no version code
+      assert.match(await q("document.querySelector('#deck-title').textContent"), /^FEATURE: /);
+      assert.equal(await q("document.querySelector('.chip .roundtag')"), null, 'no Round label in the header');
+      assert.ok(!/built|Round|[0-9a-f]{7,}/.test(await q("document.querySelector('.chip .built').textContent")), 'the date stands alone');
+      assert.match(await q("document.querySelector('.chip .built').title"), /Round 5/, 'the round stays in the hover text');
+      assert.equal(await q("document.querySelector('#histbtn').hidden"), true, 'no History button');
+      assert.deepEqual(await ids(), ['Q-3', 'Q-4']);
+      // Code review F3: his page comment from last round is shown on its page with what was done, in the quiet answered-card look
+      assert.match(await q("document.querySelector('.handledgrp').innerText"), /this page line is unclear to me[\s\S]*Rewrote the page line\./);
+      assert.equal(await q("document.querySelectorAll('.handledtopic').length"), 1);
+      // the past is one small plain line with a text link, not a box with a chevron
+      assert.match(await q("document.querySelector('.pasttext:not(.reframe)').firstChild.textContent"), /^You asked for it bigger\./);
+      // Destin, 2026-11-18: a topic he asked about returns reframed: his words and what is clearer now, quietly above the body (no bar, no dot)
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q[data-id=Q-3] .pastline .reframe')].map(e => e.innerText))")),
+        ['You asked: \u201cmake it bigger please, why is it so small?\u201d', 'Clearer now: Said what the size changes.']);
+      assert.equal(await q("document.querySelectorAll('article.q[data-id=Q-4] .reframe').length"), 0, 'a topic that was not reframed shows none');
+      assert.equal(await q("(()=>{const e=document.querySelector('article.q[data-id=Q-3] .reframe'),c=getComputedStyle(e);return c.borderLeftWidth+'|'+c.fontSize})()"), '0px|12px', 'quiet: no left bar, small text');
+      assert.equal(await q("document.querySelector('.pastline .revealbody').hidden"), true, 'the story opens on request');
+      assert.equal(await q("document.querySelector('.pastline .revealbtn').textContent"), 'More');
+      await q("document.querySelector('.pastline .revealbtn').click()"); await sleep(100);
+      const story = await q("document.querySelector('.pastline .revealbody').innerText");
+      assert.match(story, /Round 4 · built/); assert.match(story, /Round 4 · you/); assert.match(story, /make it bigger please/);
+      const hdr0 = await q(HDR);
+      // the stage line: finished stage = pressable with a check; current = highlighted; later = dimmed and NOT a button; no "Earlier stages" link
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#stages .stageflow li')].map(li => [li.textContent.trim(), li.className.replace(' viewing', ''), !!li.querySelector('button')]))")),
+        [['Understanding', 'done', true], ['Design', 'on', false], ['Before build', 'later', false], ['After build', 'later', false]]);
+      assert.equal(await q("document.querySelectorAll('#stages .stagebtn .stagetick').length"), 1, 'the finished stage carries a check');
+      assert.equal(await q("document.querySelectorAll('#stages .recordlink, .recordbanner').length + (/Earlier stages/.test(document.body.innerText) ? 1 : 0)"), 0, 'no "Earlier stages" link or banner');
+      // Previously answered: ONE folded row (title, count, chevron) at the foot of a page that has something for him; shut until pressed
+      assert.equal(await q("document.querySelector('.prevfold .foldtitle').textContent"), 'Previously answered');
+      assert.equal(await q("document.querySelector('.prevfold .fchip').textContent"), '2');
+      assert.equal(await q("document.querySelector('.prevfold .foldbody').hidden"), true, 'folded by default');
+      assert.equal(await q("document.querySelector('.prevfold .foldhead').getBoundingClientRect().height < 60"), true, 'a single row');
+      assert.equal(await q("document.querySelectorAll('.prevfold .foldhead .chev').length"), 1);
+      await q("document.querySelector('.prevfold .foldhead').click()"); await sleep(150);
+      assert.equal(await q("document.querySelector('.prevfold .foldbody').hidden"), false, 'it opens in place');
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('.prevtopic .anstitle')].map(e => e.textContent))")), ['Second topic?', 'Fifth topic?']);
+      const card = await q("document.querySelector('.prevtopic[data-id=Q-2]').innerText");
+      assert.match(card, /Second topic\?/); assert.match(card, /Round 4/); assert.match(card, /You answered/); assert.match(card, /Made quiet in the next build\./);
+      // a long comment is shown in full, never cut
+      const said = await q("document.querySelector('.prevtopic[data-id=Q-2] > .decided').textContent");
+      assert.ok(said.includes(LONG) && !said.includes('…'), 'the long comment is whole: ' + said.length);
+      // several rounds: both shown, oldest first
+      const multi = await q("document.querySelector('.prevtopic[data-id=Q-5]').innerText");
+      assert.ok(multi.includes('Round 2') && multi.includes('Round 4') && multi.indexOf('Round 2') < multi.indexOf('Round 4'), multi);
+      assert.match(multi, /An older pick/); assert.match(multi, /first thoughts/);
+      assert.equal(await q("document.querySelectorAll('.prevtopic .fchip, .prevtopic .qstate, .prevtopic .foldhead, .prevtopic .chev').length"), 0, 'no pills, dots or strip rows on an answered card');
+      // the full card: the original question, locked, with the option labels and his pick marked
+      assert.equal(await q("document.querySelector('.prevtopic[data-id=Q-2] .revealbody').hidden"), true, 'starts folded');
+      await q("document.querySelector('.prevtopic[data-id=Q-2] .revealbtn').click()"); await sleep(150);
+      assert.equal(await q("document.querySelector('.prevtopic[data-id=Q-2] .revealbody').hidden"), false);
+      assert.equal(await q("document.querySelectorAll('.prevtopic[data-id=Q-2] .card.variant').length >= 2"), true, 'the option cards are drawn');
+      assert.equal(await q("JSON.stringify([...document.querySelectorAll('.prevtopic[data-id=Q-2] .card.variant.on')].map(c => c.dataset.pick))"), '["a"]', 'his pick is the marked one');
+      assert.equal(await q("document.querySelector('.prevtopic[data-id=Q-2] textarea.note').value"), LONG, 'his note is in the note box');
+      assert.equal(await q("[...document.querySelectorAll('.prevtopic[data-id=Q-2] .ans, .prevtopic[data-id=Q-2] textarea')].filter(e => !e.disabled).length"), 0, 'nothing in it can be changed');
+      await q("document.querySelector('.prevtopic[data-id=Q-2] .card.variant:not(.on)').click()"); await sleep(100);
+      assert.equal(await q("JSON.stringify([...document.querySelectorAll('.prevtopic[data-id=Q-2] .card.variant.on')].map(c => c.dataset.pick))"), '["a"]', 'a press on a locked option changes nothing');
+      assert.equal(await q("[...document.querySelectorAll('#cards *')].filter(e => parseFloat(getComputedStyle(e).borderLeftWidth) > 1.5 && getComputedStyle(e).borderRightWidth !== getComputedStyle(e).borderLeftWidth).length"), 0, 'no coloured bar at the left edge of anything');
+      // pages (round 14): every page of the stage is its own bar. The page with nothing open comes FIRST and is green; the deck landed on the first page that needs him
+      assert.equal(await q("document.querySelectorAll('#steps span').length"), 3);
+      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#steps span')].map(s => s.className.trim()))")), ['done', 'on', ''], 'finished page: green; this page: current; the other: neutral');
+      assert.equal(await q("(()=>{const g=x=>getComputedStyle(document.querySelectorAll('#steps span')[x]).backgroundColor;const t=document.createElement('i');t.style.background='var(--yes)';document.body.appendChild(t);const yes=getComputedStyle(t).backgroundColor;t.remove();return [g(0)===yes,g(1)===yes,g(2)===yes].join()})()"), 'true,false,false', 'only the finished page is drawn green');
+      await q("document.querySelectorAll('#steps span')[2].click()"); await sleep(250);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Rows page');
+      assert.equal(await q(HDR), hdr0, 'the header is identical on the second page');
+      // a row stands alone: bold line, plain line, More reveals the background
+      assert.equal(await q("document.querySelector('.call .rowmore').hidden"), true);
+      assert.equal(await q("document.querySelector('.call .src .revealbtn').textContent"), 'More');
+      await q("document.querySelector('.call .src .revealbtn').click()"); await sleep(100);
+      assert.equal(await q("document.querySelector('.call .rowmore').hidden"), false);
+      assert.match(await q("document.querySelector('.call .rowmore').innerText"), /Where it came from: earlier\./);
+      // round 14: the structured More spans the row's full inner width, the same right edge as the row's own line (it used to stop short of the tick and pencil)
+      assert.equal(await q("(()=>{const r=document.querySelector('.call .rowmore').getBoundingClientRect().right, w=document.querySelector('.call .callrow').getBoundingClientRect().right; return Math.abs(r-w)<=1})()"), true, 'More reaches the right edge of the row');
+      assert.equal(await q("document.querySelector('.call .src .revealbtn').textContent"), 'Less');
+      // a finished stage: press its name; its page says Finished, topics are previously-answered cards with no Reopen, nothing waits
+      await q("document.querySelector('#stages .stagebtn').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Understanding page');
+      assert.equal(await q("document.querySelector('.fintag').textContent"), 'Finished');
+      assert.equal(await q(HDR), hdr0, 'the header is identical on a finished stage');
+      assert.equal(await q("document.querySelector('.prevgrp > .qh').textContent"), 'Previously answered');
+      assert.equal(await q("document.querySelectorAll('.prevtopic .reopenbtn').length"), 0, 'no Reopen in a finished stage');
+      assert.equal(await q("document.querySelectorAll('.prevfold').length"), 0, 'a finished stage shows its cards, not a folded row');
+      assert.equal(await q("document.querySelectorAll('#cards article.q:not(.prev), #cards .pagenote').length"), 0, 'nothing in it asks for an answer');
+      assert.equal(await q("document.querySelectorAll('#steps span').length"), 1, 'the bars show the viewed stage\'s pages');
+      assert.equal(await q("document.querySelector('#stages li.viewing').textContent.trim()"), 'Understanding');
+      assert.match(await q("document.querySelector('#count').textContent"), /0 of \d+ answered/, 'a finished stage never counts as waiting');
+      // the current stage's name leads back; a later stage is not pressable
+      assert.equal(await q("document.querySelectorAll('#stages .stagebtn').length"), 2, 'the finished stage and the way back: no other stage button');
+      await q("document.querySelector('#stages li.on .stagebtn').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Rows page', 'back where he was');
+      assert.equal(await q(HDR), hdr0);
+      await q("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Design page');
+      // Reopen: the topic moves up among the open ones, is answerable, and counts again
+      await q("document.querySelector('.reopenbtn[data-sid=Q-2]').click()"); await sleep(300);
+      assert.deepEqual(await ids(), ['Q-2', 'Q-3', 'Q-4']);
+      assert.equal(await q("document.querySelectorAll('.prevtopic').length"), 1);
+      assert.ok(await q("document.querySelectorAll('article.q[data-id=Q-2] .ans').length > 0"), 'a reopened topic can be answered');
+      assert.match(await q("document.querySelector('#count').textContent"), /0 of 4 answered/);
+      assert.equal(await q("JSON.parse(localStorage.getItem('deck:' + DECK.key)).reopened['Q-2']"), true, 'kept in the saved state');
+      assert.equal(await q("[...document.querySelectorAll('.leavebtn')].filter(b => b.offsetParent).length"), 1, 'a reopened topic he has not answered can be put back');
+      await q("document.querySelector('.leavebtn').click()"); await sleep(300);
+      assert.deepEqual(await ids(), ['Q-3', 'Q-4'], 'Leave as answered puts it back');
+      // Round 14: a finished page is its own page, before the pages that need him. Back from the landing page goes into it; it shows its answered cards
+      // directly (no folded row, no "Everything answered earlier"), with Reopen; reopening makes it need him again (its bar turns neutral).
+      assert.equal(await q("document.querySelectorAll('.earlierfold').length + (/Everything answered earlier/.test(document.body.innerText) ? 1 : 0)"), 0, 'that row is gone');
+      assert.equal(await q("document.querySelectorAll('.prevfold').length"), 1, 'this page has open topics AND answered ones: the one folded row');
+      assert.equal(await q("document.querySelector('#back').disabled"), false, 'Back leads into the finished page');
+      await q("document.querySelector('#back').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Settled page');
+      assert.equal(await q("document.querySelector('.fintag').textContent"), 'Finished');
+      assert.equal(await q("document.querySelectorAll('.prevfold').length"), 0, 'a finished page shows its cards directly');
+      assert.equal(await q("document.querySelectorAll('.prevtopic').length"), 1);
+      assert.equal(await q("document.querySelectorAll('.prevtopic .reopenbtn').length"), 1, 'Reopen is there on a finished page of the current stage');
+      assert.equal(await q(HDR), hdr0, 'the header is identical on the finished page');
+      assert.equal(await q("document.querySelector('#steps span').className.trim()"), 'done on', 'its bar is green and outlined while he is on it');
+      await q("document.querySelector('.reopenbtn').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('#steps span').classList.contains('done')"), false, 'reopened: the page needs him again, so its bar is neutral');
+      await q("document.querySelector('.leavebtn').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('#steps span').classList.contains('done')"), true, 'put back: green again');
+      await q("document.querySelector('#next').click()"); await sleep(300);
+      assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Design page', 'Next walks on to the pages that need him');
+      await q("document.querySelectorAll('#steps span')[2].click()"); await sleep(250);
+      assert.equal(await q("document.querySelector('#save').hidden"), true, 'the last page: the foot has no Submit feedback of its own');
+      assert.equal(await q("[...document.querySelectorAll('button')].filter(b => b.offsetParent && /Submit feedback/.test(b.textContent)).length"), 1, 'exactly one Submit feedback button is on screen');
+      assert.equal(await q("document.querySelector('#back').offsetParent !== null"), true, 'Back stays');
+      assert.equal(await q("document.querySelectorAll('#cards .rowmore .card.part').length"), 2, 'a row\'s More is labelled parts (today, change)');
+      assert.equal(await q("document.querySelectorAll('#cards .rowmore .pcbox').length"), 1, 'and its good points');
+      await q("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
+      // a phone: no sideways scroll, same header on every page, the finished stage fits too
+      const m = await cdp(await freePort(), 390, 800);
+      try {
+        await m.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(m);
+        const fit = "document.documentElement.scrollWidth <= window.innerWidth && document.body.scrollWidth <= window.innerWidth && document.querySelector('#cards').scrollWidth <= document.querySelector('#cards').clientWidth + 1";
+        assert.equal(await m.evaluate(fit), true, 'no sideways scrolling at 390px');
+        const h0 = await m.evaluate(HDR);
+        await m.evaluate("document.querySelectorAll('#steps span')[2].click()"); await sleep(250);
+        assert.equal(await m.evaluate(HDR), h0, 'the header is identical on the second page at 390px');
+        assert.equal(await m.evaluate(fit), true);
+        await m.evaluate("document.querySelector('#stages .stagebtn').click()"); await sleep(300);
+        assert.equal(await m.evaluate(HDR), h0, 'and on a finished stage');
+        assert.equal(await m.evaluate(fit), true, 'a finished stage fits a phone');
+        assert.equal(await m.evaluate("getComputedStyle(document.querySelector('.stagecompact')).display !== 'none' && getComputedStyle(document.querySelector('.stageflow')).display === 'none'"), true, 'a phone shows the current stage with "N/4"');
+        assert.match(await m.evaluate("document.querySelector('.stagecompact').innerText"), /\d\/4/);
+        // WHY (round 17): "After build" was cut to "After bu…" at 390px. The button now takes its name's width, so the name on screen must not be cut, and the button must still sit inside the one-row header.
+        assert.equal(await m.evaluate("(()=>{const n=document.querySelector('.stagecompact .scn.on');return n.scrollWidth<=n.clientWidth+0.5 && n.getBoundingClientRect().width>=n.scrollWidth-0.5})()"), true, 'a phone shows the whole stage name, none cut with an ellipsis');
+        assert.equal(await m.evaluate("(()=>{const t=document.querySelector('.top').getBoundingClientRect();return [...document.querySelectorAll('#stages,#steps,#done')].every(e=>{const b=e.getBoundingClientRect();return b.top>=t.top-1&&b.bottom<=t.bottom+1})})()"), true, 'one row at 390px: bars, stage and Submit all inside the header');
+        assert.deepEqual(m.errors, []);
+      } finally { m.close(); }
+      assert.deepEqual(c.errors, []);
+    } finally { c.close(); }
+    // Round 13 (Destin: the new round opened on page 9 full of last round's answers because the browser's old copy was restored): a copy saved by another
+    // build is dropped; a copy from THIS build is restored; and nothing that is not an open topic is ever saved or sent.
+    const stale = async (builtAt, pre) => {
+      const n = await cdp(await freePort(), 1400, 1000);
+      try {
+        await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+        await n.evaluate(`fetch('/answers').then(r => r.json()).then(d => {const at = ${JSON.stringify(builtAt)} || DECK.built.at; localStorage.setItem('deck:' + DECK.key, JSON.stringify({ deck: DECK.key, started: d.started || '2026-11-01T00:00:00Z', cur: 1, built: { at }, answers: ${JSON.stringify(pre)}, pageNotes: { 'P-9': 'old note', 'P-2': 'kept note' } })); return 1})`);
+        await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+        return n;
+      } catch (e) { n.close(); throw e; }
+    };
+    {
+      const n = await stale('2026-11-12T11:26:42Z', { 'Q-2': { v: 'pick', pick: 'a', t: 1 }, 'Q-1': { v: 'yes', t: 1 }, 'GONE-1': { v: 'yes', t: 1 }, 'Q-3': { v: 'pick', pick: 'a', t: 1 } });
+      try {
+        assert.notEqual(await n.evaluate("document.querySelector('.ptitle').textContent"), 'Settled page', 'he is never dropped on a page that needs nothing from him');
+        await n.evaluate("document.querySelectorAll('#steps span')[1].click()"); await sleep(300);
+        assert.equal(await n.evaluate("document.querySelectorAll('article.q[data-id=Q-3] .ans.on, article.q[data-id=Q-3] .card.variant.on').length"), 0, 'and none of its answers are put back');
+        assert.equal(await n.evaluate("document.querySelector('#pnote').value"), '', 'nor its page notes');
+      } finally { n.close(); }
+    }
+    {
+      const FUT = 9999999999999;   // newer than anything the first pass saved, so the browser's copy wins as it does after a real re-serve
+      const n = await stale('', { 'Q-2': { v: 'pick', pick: 'a', t: FUT }, 'GONE-1': { v: 'yes', t: FUT }, 'Q-3': { v: 'pick', pick: 'a', t: FUT } });
+      try {
+        assert.equal(await n.evaluate("document.querySelectorAll('article.q[data-id=Q-3] .card.variant.on').length"), 1, 'a copy from THIS build is restored (a re-serve keeps his answers)');
+        assert.equal(await n.evaluate("document.querySelector('#pnote').value"), 'kept note', 'its page note comes back too');
+        // the pruned state is what gets saved and sent: no settled topic, no id this deck does not have
+        await n.evaluate("(()=>{const p=document.querySelector('#pnote');p.value='hello';p.dispatchEvent(new Event('input',{bubbles:true}))})()"); await sleep(900);
+        const saved = JSON.parse(await n.evaluate("localStorage.getItem('deck:' + DECK.key)"));
+        assert.deepEqual(Object.keys(saved.answers).filter(k => !['Q-3', 'Q-4', 'L-1'].includes(k)), [], 'only open topics are kept: ' + Object.keys(saved.answers));
+        assert.equal(saved.answers['Q-3'].pick, 'a');
+        const disk = JSON.parse(await n.evaluate("fetch('/answers').then(r => r.text())"));
+        assert.deepEqual(Object.keys(disk.answers || {}).filter(k => !['Q-3', 'Q-4', 'L-1'].includes(k)), [], 'and only those are in the answers file');
+        assert.deepEqual(Object.keys(disk.pageNotes || {}), ['P-2'], 'page notes only for pages of this deck');
+        assert.equal(await n.evaluate("(window.__deckSummaryOf(JSON.parse(localStorage.getItem('deck:' + DECK.key)))).includes('Q-2 ')"), false, 'a settled topic is not in the summary');
+      } finally { n.close(); }
+    }
+    // Round 14 (Destin, round 13: a comment typed in the PREVIOUS round showed up in this round's box): an old tab of the old page had kept saving into the
+    // answers file, and the new page loaded it. Seed exactly that, both in the browser and in the file.
+    {
+      const live = join(dirname(spec), 'questions.answers.json');
+      const old = { deck: 'questions-fixture', started: '2026-11-12T11:29:08.899Z', cur: 2, built: { at: '2026-11-12T11:26:42Z' },
+        answers: { 'Q-3': { v: 'pick', pick: 'a', t: 9999999999999 }, 'Q-4': { v: 'yes', t: 9999999999999 } }, pageNotes: { 'P-2': 'LAST ROUND page comment', 'P-3': 'another old one', 'P-4': 'and one more' }, notes: 'old general note' };
+      writeFileSync(live, JSON.stringify(old));
+      const n = await cdp(await freePort(), 1400, 1000);
+      try {
+        await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+        await n.evaluate(`localStorage.setItem('deck:' + DECK.key, ${JSON.stringify(JSON.stringify(old))})`);   // and the browser holds the same old copy
+        await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+        assert.equal(await n.evaluate("document.querySelector('.ptitle').textContent"), 'Design page', 'lands on the first page that needs him, not where the old copy was');
+        const pages = await n.evaluate("document.querySelectorAll('#steps span').length");
+        for (let i = 0; i < pages; i++) {
+          await n.evaluate(`document.querySelectorAll('#steps span')[${i}].click()`); await sleep(250);
+          assert.equal(await n.evaluate("document.querySelector('#pnote').value"), '', 'page ' + i + ': the comment box is empty');
+        }
+        await n.evaluate("document.querySelectorAll('#steps span')[1].click()"); await sleep(250);
+        assert.equal(await n.evaluate("document.querySelectorAll('article.q[data-id=Q-3] .card.variant.on, article.q[data-id=Q-3] .ans.on').length"), 0, 'no old answer is put back');
+        // what this page saves is its own: the old file is kept aside, and the live one holds none of the old words
+        await n.evaluate("(()=>{const p=document.querySelector('#pnote');p.value='this round';p.dispatchEvent(new Event('input',{bubbles:true}))})()"); await sleep(1000);
+        const now = JSON.parse(readFileSync(live, 'utf8'));
+        assert.deepEqual(now.pageNotes, { 'P-2': 'this round' }); assert.equal(now.notes, undefined);
+        assert.equal(now.built.at, await n.evaluate("DECK.built.at"));
+        const kept = readdirSync(dirname(spec)).filter(f => f.includes('.unsent.'));
+        assert.equal(kept.length, 1, 'the old copy is kept, not lost');
+        assert.equal(JSON.parse(readFileSync(join(dirname(spec), kept[0]), 'utf8')).pageNotes['P-2'], 'LAST ROUND page comment');
+        // and an old tab still open is refused by the server, not folded in
+        const r = JSON.parse(await n.evaluate("fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ deck: DECK.key, built: { at: '2026-11-12T11:26:42Z' }, answers: {}, pageNotes: { 'P-2': 'from the old tab' } }) }).then(async r => JSON.stringify([r.status, (await r.json()).reason]))"));
+        assert.deepEqual(r, [409, 'old-build']);
+        assert.equal(JSON.parse(readFileSync(live, 'utf8')).pageNotes['P-2'], 'this round', 'nothing from the old tab was written');
+        // Code review F5: a tab of an OLD page that tries to save must not overwrite the browser backup the new page keeps.
+        await n.evaluate("DECK.built.at = '2026-11-12T11:26:42Z'");   // from here this tab behaves as a tab of the old page
+        await n.evaluate("(()=>{const p=document.querySelector('#pnote');p.value='typed in the old tab';p.dispatchEvent(new Event('input',{bubbles:true}))})()"); await sleep(1000);
+        assert.equal(JSON.parse(await n.evaluate("localStorage.getItem('deck:' + DECK.key)")).pageNotes['P-2'], 'this round', 'the old tab left the new page\'s browser backup alone');
+        assert.equal(JSON.parse(readFileSync(live, 'utf8')).pageNotes['P-2'], 'this round', 'and the file');
+      } finally { n.close(); }
+    }
+    // Code review F12: "Leave as answered" must hold when an older copy (browser backup or file) still says the topic is reopened. The control run
+    // (a copy that says reopened, nothing says it was left) shows the count really moves, so the assertion cannot pass by accident.
+    {
+      const live = join(dirname(spec), 'questions.answers.json');
+      const count = async (fileExtra, localExtra) => {
+        const n = await cdp(await freePort(), 1400, 1000);
+        try {
+          await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+          const at = await n.evaluate('DECK.built.at'), started = '2026-11-18T01:00:00Z';
+          writeFileSync(live, JSON.stringify({ deck: 'questions-fixture', started, built: { at }, answers: {}, ...fileExtra }));
+          await n.evaluate(`localStorage.setItem('deck:' + DECK.key, ${JSON.stringify(JSON.stringify({ deck: 'questions-fixture', started, built: { at }, answers: {}, ...localExtra }))})`);
+          await n.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(n);
+          return await n.evaluate("document.querySelector('#count').textContent");
+        } finally { n.close(); }
+      };
+      const base = await count({}, {}), reopened = await count({}, { reopened: { 'Q-2': true } }), left = await count({ left: { 'Q-2': 5 } }, { reopened: { 'Q-2': true } });
+      assert.notEqual(reopened, base, 'control: a reopened topic is counted as open again');
+      assert.equal(left, base, 'a topic he put back stays put when an older copy says reopened');
+    }
+  } finally { srv.kill(); }
+});
+
+// Round 14 (Destin, round 13: "just commenting on an image should count as a response/pencil/edit click"): an area drawn on a row's picture IS that row's
+// comment on a list he ticks or changes. Pencil pressed, tick off, counted as looked at, shown under the row, listed in the summary; removing it undoes it.
+test('a comment on a row\'s picture counts as his response to that row', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-markrow-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
+raw['steps'] = [{'id': 'L-2', 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': 'Calls I made', 'gallery': True,
+  'calls': [{'id': 'a', 'call': 'No sound.', 'why': 'None else.', 'picture': 'pic.png'}, {'id': 'b', 'call': 'Five rows.', 'why': 'Matches.'}]}]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1440, 1000);
+    const ev = e => c.evaluate(e);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      for (let i = 0; i < 40 && !(await ev("!!window.__deckReady").catch(() => false)); i++) await sleep(250);
+      const row = k => `(()=>{const li=document.querySelector('li.call[data-call=${k}]');return JSON.stringify([li.querySelector('.calledit').getAttribute('aria-pressed'), li.querySelector('.calltick').getAttribute('aria-pressed'), li.classList.contains('chg'), (li.querySelector('.markline')||{}).textContent||''])})()`;
+      const pill = "document.querySelector('article.q .qstate').textContent";
+      await ev("document.querySelector('li.call[data-call=b] .calltick').click()"); await sleep(100);
+      assert.equal(await ev(pill), '1 of 2 looked at');
+      await ev("document.querySelector('.atttile').click()"); await sleep(400);
+      const r = await ev("(()=>{const i=document.querySelector('.viewer .lbbox img').getBoundingClientRect();return {x:i.left,y:i.top,w:i.width,h:i.height}})()");
+      const x0 = r.x + r.w * 0.3, y0 = r.y + r.h * 0.3, x1 = r.x + r.w * 0.6, y1 = r.y + r.h * 0.6;
+      await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0, y: y0 });
+      await c.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: x0, y: y0, button: 'left', clickCount: 1 });
+      for (let i = 1; i <= 4; i++) await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0 + (x1 - x0) * i / 4, y: y0 + (y1 - y0) * i / 4, button: 'left', buttons: 1 });
+      await c.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x1, y: y1, button: 'left', clickCount: 1 }); await sleep(200);
+      await ev("(()=>{const t=document.querySelector('.viewer .markt');t.value='too quiet';t.dispatchEvent(new Event('input',{bubbles:true}))})()"); await sleep(200);
+      await ev("document.querySelector('.viewer .vclose').click()"); await sleep(150);
+      // the row is now changed, exactly as if he had typed a pencil comment
+      assert.deepEqual(JSON.parse(await ev(row('a'))), ['true', 'false', true, 'On the picture: “too quiet”'], 'pencil pressed, no tick, his words under the row');
+      assert.equal(await ev(pill), 'All looked at', 'it counts as looked at');
+      await ev("document.querySelector('li.call[data-call=a] .calltick').click()"); await sleep(100);
+      assert.equal(JSON.parse(await ev(row('a')))[1], 'false', 'a stray press of the tick does nothing to a commented row');
+      const st = JSON.parse(await ev("localStorage.getItem('deck:' + DECK.key)"));
+      assert.equal(st.answers['L-2'].v, 'other'); assert.deepEqual(st.answers['L-2'].ok, { b: true });
+      // the summary lists it as a comment on that row, and not as "not looked at"
+      const mine = await ev(`window.__deckSummaryOf(${JSON.stringify(st)})`);
+      assert.match(mine, /area 1 on row a \("No sound\."\)/); assert.doesNotMatch(mine, /not looked at/);
+      const theirs = spawnSync('python3', ['-c', `import sys, json; sys.path.insert(0, ${JSON.stringify(join(HERE, '..'))});
+from deck.spec import load_spec; from deck.serve import summary
+print(summary(load_spec(${JSON.stringify(spec)}), json.loads(sys.stdin.read())))`], { input: JSON.stringify(st), encoding: 'utf8' }).stdout;
+      for (const line of mine.split('\n').filter(l => /area 1|ticked/.test(l))) assert.ok(theirs.includes(line.trim()), 'the server prints it the same way: ' + line);
+      // taking the mark away undoes it: the row is not looked at again
+      await ev("document.querySelector('.atttile').click()"); await sleep(400);
+      await ev("document.querySelector('.viewer .markx').click()"); await sleep(200);
+      await ev("document.querySelector('.viewer .vclose').click()"); await sleep(150);
+      assert.deepEqual(JSON.parse(await ev(row('a'))), ['false', 'false', false, '']);
+      assert.equal(await ev(pill), '1 of 2 looked at');
+      assert.deepEqual(c.errors, []);
+    } finally { c.close(); }
+  } finally { srv.kill(); }
+});
+
+test('round 15: a pick between pictures in a growing deck shows its pictures once answered, with his pick and his marks, and the picture opens', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-pickpic-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); q1 = raw['steps'][0]
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+row = b'\\x00' + b'\\x40\\x60\\x80' * 400
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+for n in ('a.png', 'b.png'): open(os.path.join(os.path.dirname(p), n), 'wb').write(png)
+opts = [{'id': 'a', 'label': 'Hover', 'pros': ['Clean.'], 'cons': ['No phone.'], 'picture': 'a.png', 'caption': 'On hover.'},
+        {'id': 'b', 'label': 'Always', 'pros': ['Visible.'], 'cons': ['Busy.'], 'picture': 'b.png', 'caption': 'Always shown.'}]
+given = {'v': 'pick', 'pick': 'b', 'marks': [{'pic': 'option a', 'x': 10, 'y': 10, 'w': 30, 'h': 30, 'text': 'too busy'}]}
+old = {**q1, 'id': 'Q-1', 'headline': 'Which look do you want?', 'visual': True, 'options': opts, 'answered': [{'round': 'Round 1', 'given': given}]}
+new = {**q1, 'id': 'Q-2', 'headline': 'Another look?', 'visual': True, 'options': opts}
+raw['grows'] = True; raw['tag'] = 'feature'; raw['stage'] = 'design'
+raw['steps'] = [{'id': 'P-1', 'page': 'Looks', 'intro': 'Pick one.', 'stage': 'design'}, old, new]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const c = await cdp(await freePort(), 1440, 1000);
+    const ev = e => c.evaluate(e);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` });
+      for (let i = 0; i < 40 && !(await ev("!!window.__deckReady").catch(() => false)); i++) await sleep(250);
+      // the open question draws a picture in each option
+      assert.equal(await ev("document.querySelectorAll('article.q[data-id=\"Q-2\"] .card.variant .qpic img').length"), 2, 'an open pick between pictures shows both pictures');
+      // answered: fold open, full card open
+      await ev("[...document.querySelectorAll('button')].find(b => /Previously answered/.test(b.textContent)).click()"); await sleep(200);
+      await ev("[...document.querySelectorAll('button')].find(b => /Show the full card/.test(b.textContent)).click()"); await sleep(300);
+      assert.equal(await ev("document.querySelectorAll('article.q[data-id=\"Q-1\"] .card.variant .qpic img').length"), 2, 'the answered card still shows both pictures');
+      assert.equal(await ev("[...document.querySelectorAll('article.q[data-id=\"Q-1\"] .card.variant.on')].map(x => x.dataset.pick).join()"), 'b', 'his pick is marked');
+      assert.equal(await ev("document.querySelectorAll('article.q[data-id=\"Q-1\"] .markable .mark').length"), 1, 'the area he drew is on its picture');
+      // the picture opens (it threw before: a locked card has no headline element to read) with the question named and his area read-only
+      await ev("document.querySelector('article.q[data-id=\"Q-1\"] .card.variant[data-pick=a] .qpic > a').click()"); await sleep(400);
+      assert.equal(await ev("document.querySelector('.viewer .vabout').textContent"), 'Which look do you want?');
+      assert.equal(await ev("document.querySelectorAll('.viewer .mark').length"), 1);
+      assert.equal(await ev("(() => { const t = document.querySelector('.viewer .markt'); return t.value + '|' + t.disabled })()"), 'too busy|true');
+      assert.deepEqual(c.errors, []);
+    } finally { c.close(); }
+  } finally { srv.kill(); }
+});
+
+test('round 15: wide pictures fill their tile readably, one Submit feedback button, and a compact progress bar on a phone with many pages', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-r15-'));
+  const py = `import sys, json, zlib, struct, os; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); q1 = raw['steps'][0]
+def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+def png(name, w, h):
+    data = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress((b'\\x00' + b'\\x40\\x60\\x80' * w) * h)) + chunk(b'IEND', b'')
+    open(os.path.join(os.path.dirname(p), name), 'wb').write(data)
+png('strip.png', 1400, 300); png('normal.png', 400, 300)
+raw['grows'] = True; raw['tag'] = 'feature'; raw['rounds_before'] = 3; raw['stage'] = 'design'
+rows = {'id': 'L-1', 'words': True, 'surface': 'D', 'path': 'R', 'headline': 'Rows', 'gallery': True, 'calls': [{'id': 'a', 'call': 'A row.', 'why': 'Because.', 'picture': 'strip.png'}, {'id': 'b', 'call': 'Another.', 'why': 'Because.', 'picture': 'normal.png'}]}
+steps = []
+for i in range(1, 13):
+    steps.append({'id': 'P-%d' % i, 'page': 'Page %d' % i, 'intro': 'Intro.', 'stage': 'design'})
+    steps.append(rows if i == 1 else {**q1, 'id': 'Q-%d' % i, 'headline': 'Topic %d?' % i})
+raw['steps'] = steps
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(500); };
+  const HDR = "(()=>{const r=x=>{const b=document.querySelector(x).getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(Math.round).join()};return [r('.top'),r('#done'),r('.nav')].join('|')})()";
+  try {
+    await sleep(800);
+    // a laptop: the very wide picture's tile is cropped to fill (class wide); the ordinary one is left as it was
+    const c = await cdp(await freePort(), 1400, 900);
+    try {
+      await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(c);
+      assert.equal(await c.evaluate("document.querySelectorAll('#steps span').length"), 12);
+      assert.equal(await c.evaluate("document.querySelector('#stepsum').hidden"), true, 'a laptop has room for one bar per page');
+      await c.evaluate("document.querySelector('.atttile') && document.querySelector('.atttile').scrollIntoView()"); await sleep(1200);
+      assert.deepEqual(JSON.parse(await c.evaluate("JSON.stringify([...document.querySelectorAll('.tilepv')].map(t => t.classList.contains('wide')))")), [true, false], 'only the 1400x300 picture is a wide tile');
+      assert.equal(await c.evaluate("getComputedStyle(document.querySelector('.tilepv.wide img')).objectFit"), 'cover');
+      assert.equal(await c.evaluate("getComputedStyle(document.querySelector('.tilepv:not(.wide) img')).objectFit"), 'contain');
+      // the popup still shows the whole picture
+      await c.evaluate("document.querySelector('.atttile').click()"); await sleep(500);
+      assert.equal(await c.evaluate("(()=>{const i=document.querySelector('.viewer .lbbox img');return Math.abs(i.getBoundingClientRect().width / i.getBoundingClientRect().height - 1400 / 300) < 0.05})()"), true, 'the whole picture, uncropped, in the viewer');
+      await c.evaluate("document.querySelector('.viewer .vclose').click()"); await sleep(200);
+      // one Submit feedback button everywhere; the last page's foot has Back only
+      await c.evaluate("document.querySelectorAll('#steps span')[11].click()"); await sleep(400);
+      assert.equal(await c.evaluate("[...document.querySelectorAll('button')].filter(b => b.offsetParent && /Submit feedback/.test(b.textContent)).length"), 1, 'one Submit feedback on the last page');
+      assert.equal(await c.evaluate("document.querySelector('#save').hidden"), true);
+      assert.equal(await c.evaluate("document.querySelector('#back').offsetParent !== null"), true);
+      // the header button still submits: it opens the dialog, and after Submit it reads Submitted
+      await c.evaluate("document.querySelector('#done').click()"); await sleep(400);
+      assert.equal(await c.evaluate("document.querySelector('#veil').classList.contains('on')"), true, 'the header button opens the submit dialog');
+      assert.equal(await c.evaluate("getComputedStyle(document.querySelector('#unlooked')).display !== 'none' || getComputedStyle(document.querySelector('#skipped')).display !== 'none'"), true, 'the not-yet-answered warning still shows');
+      assert.deepEqual(c.errors, []);
+    } finally { c.close(); }
+    // a phone with 12 pages: one compact bar and "n/12" instead of hair-thin bars; same header on every page; no sideways scroll
+    const m = await cdp(await freePort(), 390, 800);
+    try {
+      await m.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html` }); await ready(m);
+      const fit = "document.documentElement.scrollWidth <= window.innerWidth && document.body.scrollWidth <= window.innerWidth";
+      assert.equal(await m.evaluate("document.querySelector('#stepsum').hidden"), false, 'compact progress shown');
+      assert.equal(await m.evaluate("document.querySelector('#steps').hidden"), true, 'the hair-thin bars are not');
+      assert.equal(await m.evaluate("document.querySelector('.sumbar').getBoundingClientRect().width >= 16"), true, 'the compact bar is wide enough to see');
+      assert.equal(await m.evaluate(fit), true, 'no sideways scrolling');
+      // (the page opens where the laptop left it, on the last page: press the bar's left end for page 1)
+      const press = x => m.evaluate(`(()=>{const r=document.querySelector('.sumbar').getBoundingClientRect();document.querySelector('.sumbar').dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:${x === 'left' ? 'r.left+1' : 'r.right-1'},clientY:r.top+3}))})()`);
+      await press('left'); await sleep(400);
+      const h0 = await m.evaluate(HDR);
+      assert.equal(await m.evaluate("document.querySelector('.sumtext').textContent"), '1/12');
+      assert.equal(await m.evaluate("document.querySelector('.summark').getBoundingClientRect().width > 0"), true, 'the page being viewed is outlined');
+      assert.match(await m.evaluate("document.querySelector('.sumbar').style.background"), /linear-gradient/);
+      // pressing the bar's right end jumps to the last page
+      await press('right'); await sleep(400);
+      assert.equal(await m.evaluate("document.querySelector('.sumtext').textContent"), '12/12', 'it jumped');
+      assert.equal(await m.evaluate(HDR), h0, 'the header is the same size on every page');
+      assert.equal(await m.evaluate(fit), true);
+      assert.equal(await m.evaluate("(()=>{const t=document.querySelector('.top').getBoundingClientRect();return [...document.querySelectorAll('#stages,#stepsum,#done')].every(e=>{const b=e.getBoundingClientRect();return b.top>=t.top-1&&b.bottom<=t.bottom+1})})()"), true, 'one row');
+      assert.equal(await m.evaluate("(()=>{const s=document.querySelector('#stepsum').getBoundingClientRect(),d=document.querySelector('#done').getBoundingClientRect();return s.right<=d.left+1})()"), true, 'the progress never runs under Submit feedback');
+      assert.deepEqual(m.errors, []);
+    } finally { m.close(); }
+  } finally { srv.kill(); }
+});
+
+// ── "New" tags on a growing deck, and an early mockup screen (round 16) ─────────────────────────
+// WHY pinned (Destin, round 15: "if a full page is new, a big NEW tag next to the title without tags on individual cards; if the page is carried
+// on with already-answered questions, only the new cards get the tag"): real files end to end, the last round's build recorded its topic ids.
+test('round 16: a wholly new page gets one big New tag by its title, an old page tags only its new cards, and a mockup can be a screen step', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-r16-'));
+  const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)})
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p)); q1 = raw['steps'][0]
+def q(i, h, **kw): return {**q1, 'id': i, 'headline': h, **kw}
+raw['grows'] = True; raw['tag'] = 'feature'; raw['stage'] = 'design'
+os.makedirs(os.path.join(os.path.dirname(p), 'mock'), exist_ok=True)
+open(os.path.join(os.path.dirname(p), 'mock', 'menu.html'), 'w').write('<!doctype html><html data-frozen="600x400"><head><meta charset="utf-8"></head><body><div><p>Pick a game</p></div></body></html>')
+mock = {'id': 'S-1', 'words': True, 'surface': 'Menu', 'path': 'Mockup', 'headline': 'The words on the menu mockup', 'screen': 'mock/menu.html'}
+raw['steps'] = [{'id': 'P-1', 'page': 'Old page', 'intro': 'Carried on.', 'stage': 'design'}, q('Q-1', 'Answered earlier?'), q('Q-2', 'Still open?'), q('Q-3', 'Added since?'),
+                {'id': 'P-2', 'page': 'Brand new page', 'intro': 'All of it is new.', 'stage': 'design'}, q('Q-4', 'Fresh one?'), mock]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  // the last round: submitted, answered only Q-1, and its build recorded the topics it showed
+  writeFileSync(join(dirname(spec), 'questions.answers.json'), JSON.stringify({ deck: 'questions-fixture', submitted: '2026-11-01T10:00:00Z', built: { at: '2026-11-01T09:00:00Z', ids: ['Q-1', 'Q-2'] }, answers: { 'Q-1': { v: 'pick', pick: 'a' } } }));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  try {
+    await sleep(900);
+    for (const [w, h] of [[1400, 900], [390, 800]]) {
+      const c = await cdp(await freePort(), w, h);
+      try {
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html?step=0` }); await ready(c);
+        const q = e => c.evaluate(e);
+        // the old page: one small tag, on the card that is new, none by the title
+        assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Old page');
+        assert.equal(await q("document.querySelectorAll('.pagehead .newtag').length"), 0, w + ': an old page has no tag by its title');
+        assert.equal(await q("[...document.querySelectorAll('article.q .newtag')].map(t => t.closest('article.q').dataset.id).join()"), 'Q-3', w + ': only the new card');
+        assert.equal(await q("document.querySelector('article.q[data-id=Q-3] .qhrow .newtag').textContent"), 'New');
+        assert.equal(await q("document.querySelector('article.q[data-id=Q-3] .qh').textContent"), 'Added since?', 'the title text is only the title');
+        assert.equal(await q("(() => { const t = document.querySelector('.newtag'), h = document.querySelector('article.q[data-id=Q-3] .qh'); return Math.abs((t.getBoundingClientRect().top + t.getBoundingClientRect().bottom) / 2 - (h.getBoundingClientRect().top + h.getBoundingClientRect().bottom) / 2) < 14 })()"), true, w + ': beside the title');
+        assert.equal(await q("document.documentElement.scrollWidth <= window.innerWidth"), true, w + ': no sideways scroll');
+        // the accent colour, sentence case, no dot or left bar
+        assert.equal(await q("(()=>{const i=document.createElement('i');i.style.color='var(--accent)';document.body.appendChild(i);const a=getComputedStyle(i).color;i.remove();return getComputedStyle(document.querySelector('.newtag')).color===a})()"), true, 'accent colour');
+        assert.equal(await q("getComputedStyle(document.querySelector('.newtag'),'::before').content"), 'none');
+        // the new page: one big tag beside its title, none on its cards
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html?step=2` }); await ready(c);
+        assert.equal(await q("document.querySelector('.ptitle').textContent"), 'Brand new page');
+        assert.equal(await q("document.querySelector('.ptitlerow .newtag.big').textContent"), 'New');
+        assert.equal(await q("document.querySelectorAll('article.q .newtag').length"), 0, w + ': no tags on the cards of a wholly new page');
+        assert.equal(await q("parseFloat(getComputedStyle(document.querySelector('.newtag.big')).fontSize) > 11"), true, 'the page tag is the bigger one');
+        // the mockup is an ordinary screen step: its words can be retyped
+        for (let i = 0; i < 30 && !(await q("(()=>{const f=document.querySelector('.screenframe');return !!(f && f._armed && f.contentDocument && f.contentDocument.querySelector('[data-w]'))})()")); i++) await sleep(250);
+        assert.equal(await q("[...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].map(e => e.dataset.k).join()"), 'Pick a game', 'the mockup frame shows its text, editable');
+        assert.deepEqual(c.errors, [], w + ' console');
+      } finally { c.close(); }
+    }
+  } finally { srv.kill(); }
+});
+
+// Destin, 2026-11-18: "It feels like it keeps resetting rows/questions on me with no clear indication of what (if anything) actually changed."
+test('a reopened list shows what changed and keeps the ticks he gave on unchanged rows; a reopened question shows what he picked', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-rd-'));
+  const py = `import sys, json, os, hashlib; sys.path.insert(0, ${JSON.stringify(HERE)})
+tmp = ${JSON.stringify(tmp)}
+def row(i, call, why='Because.'): return {'id': i, 'call': call, 'why': why}
+def lst(rows, **kw): return {'id': 'L-1', 'words': True, 'surface': 'S', 'path': 'P', 'headline': 'The list', 'calls': rows, **kw}
+def opt(i, label): return {'id': i, 'label': label, 'summary': 'About ' + label, 'pros': ['Good.'], 'cons': ['Bad.']}
+def qn(opts, **kw): return {'id': 'Q-1', 'words': True, 'surface': 'S', 'path': 'P', 'headline': 'Which one?', 'today': 't', 'problem': 'p', 'proposal': 'x', 'options': opts, **kw}
+def deck(steps): return {'title': 'RD', 'key': 'rd', 'out': 'rd.html', 'themes': ['midnight'], 'grows': True, 'tag': 'f', 'stage': 'design', 'steps': [{'id': 'P-1', 'page': 'Design', 'intro': 'Pick.', 'stage': 'design'}] + steps}
+old = deck([lst([row('keep', 'Kept row.'), row('edit', 'Old wording row.'), row('gone', 'Dropped row.')]), qn([opt('a', 'Alpha'), opt('b', 'Beta')])])
+raw = json.dumps(old).encode(); sha = hashlib.sha256(raw).hexdigest()
+open(os.path.join(tmp, 'rd.as-built.' + sha[:12] + '.json'), 'wb').write(raw)
+open(os.path.join(tmp, 'rd.answers.20261101.json'), 'w').write(json.dumps({'deck': 'rd', 'submitted': '2026-11-01T10:00:00Z', 'built': {'at': '2026-11-01T09:00:00Z', 'spec_sha256': sha},
+  'answers': {'L-1': {'v': 'other', 'ok': {'keep': True}, 'changes': {'edit': 'say it plainer'}}, 'Q-1': {'v': 'pick', 'pick': 'a', 'note': 'nearly'}}}))
+new = deck([lst([row('keep', 'Kept row.'), row('edit', 'New wording row.'), row('fresh', 'Fresh row.')], reopened='Two rows changed.'),
+            qn([opt('a', 'Alpha'), opt('c', 'Gamma')], reopened='A new option.')])
+p = os.path.join(tmp, 'rd.json'); json.dump(new, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('rd.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(500); };
+  const saved = () => { try { return JSON.parse(readFileSync(join(dirname(spec), 'rd.answers.json'), 'utf8')); } catch (e) { return {}; } };
+  try {
+    await sleep(900);
+    for (const [w, h] of [[1400, 900], [390, 800]]) {
+      const c = await cdp(await freePort(), w, h);
+      try {
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/rd.html?step=1` }); await ready(c);
+        const q = e => c.evaluate(e), L = 'article.q[data-id="L-1"]', R = id => `${L} li.call[data-call="${id}"]`;
+        assert.equal(await q(`${JSON.stringify(L)} && document.querySelector('${L} .pastline.diff .pasttext').textContent`), '1 new · 1 changed · 1 unchanged');
+        // the kept row starts ticked, with no label; the changed row says what it was and what he said; the new row is tagged New
+        assert.equal(await q(`document.querySelector('${R('keep')} .calltick').getAttribute('aria-pressed')`), 'true', w + ': carried tick is pressed');
+        assert.equal(await q(`document.querySelector('${R('edit')} .calltick').getAttribute('aria-pressed')`), 'false');
+        assert.equal(await q(`document.querySelector('${R('keep')}').textContent.includes('ticked this before')`), false, 'no label on a carried tick');
+        assert.equal(await q(`document.querySelector('${R('edit')} .callhead .fintag').textContent`), 'Changed');
+        assert.match(await q(`document.querySelector('${R('edit')}').textContent`), /Before: Old wording row\./);
+        assert.match(await q(`document.querySelector('${R('edit')}').textContent`), /You said: “say it plainer”/);
+        assert.equal(await q(`document.querySelector('${R('fresh')} .callhead .newtag').textContent`), 'New');
+        assert.equal(await q(`document.querySelector('${L}').textContent.includes('Taken out since you last saw it: Dropped row.')`), true);
+        // the tick is written into the answers (so the record and the done gate see it)
+        for (let i = 0; i < 20 && !((saved().answers || {})['L-1'] || {}).ok; i++) await sleep(250);
+        assert.deepEqual(((saved().answers || {})['L-1'] || {}).ok, { keep: true }, w + ': carried tick saved');
+        // the question: what he picked and noted, options tagged, nothing preselected
+        assert.deepEqual(await q(`[...document.querySelectorAll('article.q[data-id="Q-1"] .pastline.diff .pasttext')].map(p => p.textContent)`), ['You picked before: Alpha', 'You said: “nearly”']);
+        assert.deepEqual(await q(`[...document.querySelectorAll('article.q[data-id="Q-1"] .variant')].map(o => o.dataset.pick + ':' + [...o.querySelectorAll('.ohead .newtag, .ohead .fintag')].map(t => t.textContent).join('/'))`), ['a:Your pick before', 'c:New']);
+        assert.equal(await q(`document.querySelectorAll('article.q[data-id="Q-1"] .variant.on, article.q[data-id="Q-1"] .variant.picked').length`), 0, 'his old pick is not preselected');
+        // untick works and stays unticked after a reload (a tick he took off is never put back)
+        await q(`document.querySelector('${R('keep')} .calltick').click()`); await sleep(400);
+        assert.equal(await q(`document.querySelector('${R('keep')} .calltick').getAttribute('aria-pressed')`), 'false', w + ': untick works');
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/rd.html?step=1` }); await ready(c);
+        assert.equal(await q(`document.querySelector('${R('keep')} .calltick').getAttribute('aria-pressed')`), 'false', w + ': stays unticked after reload');
+        assert.equal(await q("document.documentElement.scrollWidth <= window.innerWidth"), true, w + ': no sideways scroll');
+        assert.deepEqual(c.errors, [], w + ' console');
+        // reset for the second size: put the carried tick back by clearing this round's saved state
+        if (w === 1400) { try { writeFileSync(join(dirname(spec), 'rd.answers.json'), '{}'); } catch (e) { /* none */ } await c.evaluate("localStorage.clear()"); }
+      } finally { c.close(); }
+    }
+  } finally { srv.kill(); }
+});
+
+// The hands-off route — Destin, 2026-11-18: "I just tell a session: do all of this without me ... I just want to see it at the very end."
+test('hands-off deck: his own words are quoted on the first page and the three earlier stages are shown skipped (dimmed, not buttons, no check)', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-handsoff-'));
+  const py = `import sys, json, os; sys.path.insert(0, ${JSON.stringify(HERE)})
+from fixture import words_spec
+p = words_spec(${JSON.stringify(tmp)})
+raw = json.load(open(p))
+def lst(i, h, kind, calls): return {'id': i, 'words': True, 'surface': 'App', 'path': 'Somewhere', 'headline': h, 'list': kind, 'calls': calls}
+raw['grows'] = True; raw['tag'] = 'feature'; raw['stage'] = 'after'; raw['hands_off'] = 'do all of this without me please'
+raw['steps'] = [{'id': 'P-1', 'page': 'What you asked for', 'intro': 'Your words, then what you asked for.', 'stage': 'after'},
+  lst('L-1', 'What you asked for', 'asked-for', [{'id': 'a1', 'call': 'Searches can be saved.', 'why': 'A star saves them.'}]),
+  {'id': 'P-2', 'page': 'Choices I made for you', 'intro': 'Everything I decided in your place.', 'stage': 'after'},
+  lst('L-2', 'Choices I made for you', 'choices-made', [{'id': 'c1', 'call': 'The star sits at the right.', 'why': 'It matches the other buttons.'}]),
+  {'id': 'P-3', 'page': 'What changed', 'intro': 'What moved, and what the review found.', 'stage': 'after'},
+  lst('L-3', 'What changed while building', 'changed-while-building', [{'id': 'b1', 'call': 'Star at the right.', 'why': 'As planned.', 'built': 'as planned'}]),
+  lst('L-4', 'Found in review', 'found-in-review', [{'id': 'f1', 'call': 'Nothing found.', 'why': 'Read every file.', 'none_found': True}])]
+json.dump(raw, open(p, 'w')); print(p)`;
+  const spec = spawnSync('python3', ['-c', py], { encoding: 'utf8' }).stdout.trim(); assert.ok(spec.endsWith('questions.json'));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ready = async c => { for (let i = 0; i < 40 && !(await c.evaluate("window.__deckReady === true").catch(() => false)); i++) await sleep(250); await sleep(300); };
+  try {
+    await sleep(900);
+    for (const [w, h] of [[1400, 900], [390, 800]]) {
+      const c = await cdp(await freePort(), w, h);
+      try {
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html?step=1` }); await ready(c);
+        const q = e => c.evaluate(e);
+        assert.equal(await q("document.querySelector('.handsoff p').textContent"), 'do all of this without me please', w + ': his words quoted on the first page');
+        assert.equal(await q("document.querySelector('.ptitle').textContent"), 'What you asked for');
+        // the stage line (always in the page; the phone shows its compact button, the list sits behind it)
+        assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('#stages .stageflow li')].map(li => [li.textContent.trim(), li.className.replace(' viewing', ''), !!li.querySelector('button'), li.title]))")),
+          [['Understanding', 'skipped', false, 'Skipped: you asked me to go ahead without you'], ['Design', 'skipped', false, 'Skipped: you asked me to go ahead without you'],
+           ['Before build', 'skipped', false, 'Skipped: you asked me to go ahead without you'], ['After build', 'on', false, '']], w + ': three skipped stages, After build current');
+        assert.equal(await q("document.querySelectorAll('#stages .stagetick').length"), 0, 'no check on a skipped stage');
+        // WHY (round 17): the After build deck on a phone cut its stage name to "After bu…"; the name must show whole, at both sizes.
+        assert.equal(await q("(()=>{const b=document.querySelector('.stagecompact');if(getComputedStyle(b).display==='none')return document.querySelector('#stages li.on').textContent.trim()==='After build';const n=b.querySelector('.scn.on');return n.textContent==='After build'&&n.scrollWidth<=n.clientWidth+0.5})()"), true, w + ': the stage name After build is shown whole');
+        assert.equal(await q("getComputedStyle(document.querySelector('#stages li.skipped')).opacity < 0.8"), true, 'dimmed');
+        assert.equal(await q("document.documentElement.scrollWidth <= window.innerWidth"), true, w + ': no sideways scroll');
+        // his words are quoted on the FIRST page only
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/questions.html?step=2` }); await ready(c);
+        assert.equal(await q("document.querySelectorAll('.handsoff').length"), 0, 'not repeated on the second page');
+        assert.deepEqual(c.errors, [], w + ' console');
+      } finally { c.close(); }
+    }
+  } finally { srv.kill(); }
 });

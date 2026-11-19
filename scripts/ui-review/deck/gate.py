@@ -1,0 +1,322 @@
+"""The done / not-done gate for the walkthrough flow (replaces the signed contract's gate).
+
+When the contract and acceptance decks were retired (rethink round 9, S-1 = "all"), four
+automatic checks went with them. This is the fourth: ONE command that refuses to call a
+feature finished while something is unfinished. It reads two walkthrough specs and their
+answers files and returns plain-language reasons.
+
+  before = <feature>.walkthrough.json         (shown before the build)
+  after  = <feature>.walkthrough.after.json   (shown after it)
+
+It refuses unless:
+  1. the before-walkthrough was SUBMITTED (he answered it);
+  2. every REQUEST row of it has a matching row in the after-walkthrough — a request row is
+     one that quotes him (`decided`) or that he commented on. The link is explicit: an after
+     row carries `"from": "<before step id>/<row id>"`, or the before row is named by an
+     after row `"dropped": "<why>"` (also `"from"`), so a dropped request is visible, not lost;
+  3. every check he left switched ON has a result row (pass / fail / unclear) in the after
+     walkthrough — never "not run";
+  4. the after-walkthrough was SUBMITTED and he asked for no changes.
+
+WHY a command and not memory: a session building under time pressure forgets the boring
+checks; a command that exits non-zero cannot. WHY rows link by id and not by wording:
+wording is rewritten during a build, ids are not."""
+import glob
+import hashlib
+import json
+import os
+import re
+
+from .grows import hands_off_errors, settled_ids, spec_at_commit, spec_bytes_at_commit
+from .spec import after_build_list_errors, strip_comments, unlooked_rows, tickable
+
+# Checks he can switch (before the build) carry one of these; after the build the row carries a
+# real outcome. `todo` is "left for him to try", which is not a check result.
+SWITCHES = ('run', 'skip')
+OUTCOMES = ('pass', 'fail', 'unclear')
+FROM_RE = re.compile(r'^[\w.-]+/[\w.-]+$')
+
+
+def _load(path):
+    with open(path) as f:
+        return strip_comments(json.load(f))
+
+
+def answers_file(path):
+    """`x.walkthrough.json` -> `x.walkthrough.answers.json` (the same name serve.py writes)."""
+    return os.path.splitext(path)[0] + '.answers.json'
+
+
+def after_path(before):
+    """The after-build spec's conventional name: `x.walkthrough.json` -> `x.walkthrough.after.json`."""
+    return os.path.splitext(before)[0] + '.after.json'
+
+
+def _read_answers(path):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+def rows(spec):
+    """Every list row of a walkthrough as {'step/row': (step, row)}, in order."""
+    out = {}
+    for st in spec.get('steps') or []:
+        if isinstance(st, dict) and isinstance(st.get('calls'), list):
+            for c in st['calls']:
+                if isinstance(c, dict) and c.get('id'):
+                    out[f'{st.get("id")}/{c["id"]}'] = (st, c)
+    return out
+
+
+def effective_result(row, step_id, answers):
+    """A row's status as it stands: what HE set (answers.results) wins over what the spec says."""
+    mine = ((((answers or {}).get('answers') or {}).get(step_id) or {}).get('results') or {})
+    return mine.get(row['id'], row.get('result'))
+
+
+def row_comments(answers):
+    """{'step/row': his words} for every list row he typed a change on."""
+    out = {}
+    for sid, a in ((answers or {}).get('answers') or {}).items():
+        for rid, text in ((a or {}).get('changes') or {}).items():
+            out[f'{sid}/{rid}'] = (text or '').strip()
+    return out
+
+
+def changes_requested(answers):
+    """What in an answers file means "I want something different". The page writes a change as an
+    entry in `changes` (a row he typed on), `edits` (words he retyped), `marks` (an area he dragged
+    on a picture) or `asks` (more context wanted); a status he set to fail / unclear; a No; or a
+    note he left on a step, a page or the deck. An empty list means he went through changing nothing.
+    WHY notes count: a note is him steering, and "he changed nothing" must not be true while a
+    sentence of his has gone unanswered."""
+    out = []
+    for sid, a in ((answers or {}).get('answers') or {}).items():
+        a = a or {}
+        for key in ('changes', 'edits'):
+            for rid, t in (a.get(key) or {}).items():
+                out.append(f'{sid}/{rid}: he asked for a change')
+        out += [f'{sid}: he marked an area on a picture' for _ in a.get('marks') or []]
+        out += [f'{sid}/{k}: he asked for more context' for k in a.get('asks') or []]
+        for rid, r in (a.get('results') or {}).items():
+            if r in ('fail', 'unclear'):
+                out.append(f'{sid}/{rid}: he set it to {r}')
+        if a.get('v') == 'no':
+            out.append(f'{sid}: he answered No')
+        if (a.get('note') or '').strip():
+            out.append(f'{sid}: he left a note')
+    for k, t in (answers.get('pageNotes') or {}).items() if answers else []:
+        if (t or '').strip():
+            out.append(f'page {k}: he left a note')
+    if answers and (answers.get('notes') or '').strip():
+        out.append('he left a general note')
+    return out
+
+
+def unlooked_in(spec, answers, skip=()):
+    """Rows of a "Yours to change" list in `spec` that he neither ticked nor changed, as
+    'step/row ("words")'. WHY (round 10, R-2): in the after-build walkthrough a row he never looked
+    at means he has not gone through it, so the deck is not finished. A list answered under the old
+    shape (accepted, no ticks) still reads as accepted - see spec.row_states."""
+    out = []
+    mine = (answers or {}).get('answers') or {}
+    for st in spec.get('steps') or []:
+        if isinstance(st, dict) and tickable(st) and st.get('id') not in skip:
+            for c in unlooked_rows(st, mine.get(st.get('id'))):
+                out.append(f'{st.get("id")}/{c.get("id")} ("{(c.get("call") or "")[:70]}")')
+    return out
+
+
+def request_rows(before, answers):
+    """Before-walkthrough rows the build must answer for: those quoting him, and any he commented on."""
+    comments = row_comments(answers)
+    return [key for key, (_, c) in rows(before).items() if c.get('decided') or key in comments]
+
+
+def checks(before, answers):
+    """{'step/row': 'run' | 'skip'} — the checks-menu rows and whether each ended up switched on."""
+    out = {}
+    for key, (st, c) in rows(before).items():
+        if c.get('result') in SWITCHES:
+            out[key] = effective_result(c, st.get('id'), answers)
+    return out
+
+
+def also_check(before, answers):
+    """His comments on the checks that are ON: passed to the checker as "also check this"."""
+    comments = row_comments(answers)
+    return {k: comments[k] for k, v in checks(before, answers).items() if v == 'run' and comments.get(k)}
+
+
+def _sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def as_he_saw_it(path, built):
+    """-> (spec or None, note, problem or None): the spec file `path` as it was when the build in `built` was shown to him.
+    WHY (code review F1/F2): the build stamp's commit alone names the file as COMMITTED, but a deck is normally served before its edits are
+    committed, so that older file is not what he saw. The stamp's `spec_sha256` is the fingerprint of what he saw; the version used is the one whose
+    fingerprint matches: the committed one at the stamp's commit, a copy kept at build time (`<stem>.as-built.<fingerprint>.json`), or the file
+    now. When none matches the answer is "cannot tell", which is a failure, never a pass. A stamp without a fingerprint (an older answers file)
+    falls back to the old reading and says it could not be checked."""
+    built = built if isinstance(built, dict) else {}
+    want, commit = built.get('spec_sha256'), built.get('commit')
+    if not want:
+        approved = spec_at_commit(path, commit) if commit else None
+        if isinstance(approved, dict):
+            return strip_comments(approved), f'compared against the before-build walkthrough as it was when he answered it (commit {commit}; his answers file has no fingerprint of what he saw, so this could not be checked)', None
+        try:
+            return _load(path), 'compared against the current before-build walkthrough file: ' + (
+                f'commit {commit} or the file at it is not available' if commit else 'his answers file records no build commit'), None
+        except (OSError, ValueError) as e:
+            return None, '', f'cannot read the before-build walkthrough {path}: {e}'
+    raw = spec_bytes_at_commit(path, commit) if commit else None
+    if raw is not None and _sha(raw) == want:
+        return strip_comments(json.loads(raw)), f'compared against the walkthrough as it was when he answered it (commit {commit}, fingerprint matches)', None
+    stem = os.path.splitext(path)[0]
+    for cand in [f'{stem}.as-built.{want[:12]}.json', path]:
+        try:
+            with open(cand, 'rb') as f:
+                raw = f.read()
+        except OSError:
+            continue
+        if _sha(raw) == want:
+            try:
+                return strip_comments(json.loads(raw)), f'compared against the walkthrough as it was when he answered it ({os.path.basename(cand)}, fingerprint matches)', None
+            except ValueError:
+                break
+    return None, '', (f'cannot tell what he saw: {os.path.basename(path)} has changed since he answered it, and neither commit {commit} nor a saved '
+                      f'as-built copy matches what he was shown (fingerprint {want[:12]}) — show him the current version again')
+
+
+def is_hands_off_file(path):
+    """True when the spec at `path` is a hands-off deck (it carries "hands_off")."""
+    try:
+        spec = _load(path)
+    except (OSError, ValueError):
+        return False
+    return isinstance(spec, dict) and 'hands_off' in spec
+
+
+def check_hands_off(path):
+    """-> (problems, notes) for a hands-off deck: the ONE after-build deck he sees when he told a session to do the work without him.
+    WHY (Destin, 2026-11-18: "I just want to see it at the very end"): there is no before-build deck to compare against, so "finished" means
+    he went through this deck with nothing left unlooked at and asked for nothing; the same rules as the after-build half of the usual gate.
+    It reads the spec exactly as he saw it (the build fingerprint), and a commented row means another round, so it fails until that round passes."""
+    problems, notes = [], []
+    ans = _read_answers(answers_file(path))
+    if not ans or not ans.get('submitted'):
+        return ['the hands-off deck has not been submitted - he has not gone through it yet'], notes
+    spec, note, bad = as_he_saw_it(path, ans.get('built'))
+    if bad:
+        return [bad], notes
+    notes.append(note)
+    want = (ans.get('built') or {}).get('spec_sha256') if isinstance(ans.get('built'), dict) else None
+    if want:
+        with open(path, 'rb') as f:
+            if _sha(f.read()) != want:
+                problems.append(f'the hands-off deck ({os.path.basename(path)}) was changed after he submitted his answers to it - show him the current version and have him go through it again')
+    else:
+        notes.append('his answers file has no fingerprint of what he saw, so edits since he submitted could not be checked')
+    for line in hands_off_errors(spec) + after_build_list_errors(spec):
+        problems.append(f'hands-off deck, not finished: {line}')
+    # Every check row carries a real result; a row still showing "Will run" / "Skip" is a suggestion, never a result.
+    for key, (st, c) in rows(spec).items():
+        if c.get('result') in SWITCHES:
+            problems.append(f'hands-off deck, not finished: check {key} still shows "{c["result"]}" - after the work every check shows pass / fail / unclear (never "not run")')
+    for line in changes_requested(ans):
+        problems.append(f'hands-off deck, not finished: {line}')
+    settled = settled_ids({**spec, '_base': os.path.dirname(os.path.abspath(path)), '_stem': os.path.basename(os.path.splitext(path)[0])}, ans)
+    for line in unlooked_in(spec, ans, settled):
+        problems.append(f'hands-off deck, not finished: row {line} was not looked at - he neither ticked it nor asked for a change')
+    if not problems:
+        notes.insert(0, 'he went through the hands-off deck (what he asked for, the choices made for him, what changed, the checks) changing nothing')
+    return problems, notes
+
+
+def check_gate(before_path, after=None):
+    """-> (problems, notes). `problems` non-empty means NOT finished."""
+    if after is None and is_hands_off_file(before_path):
+        return check_hands_off(before_path)
+    problems, notes = [], []
+    after = after or after_path(before_path)
+    b_ans = _read_answers(answers_file(before_path))
+    # WHY the before-walkthrough is read AS HE SAW IT (Destin, round 15): see as_he_saw_it. A later edit must not change what "his requests" were.
+    before, note, bad = as_he_saw_it(before_path, (b_ans or {}).get('built'))
+    if bad:
+        if not (b_ans or {}).get('submitted'):
+            return ['the before-build walkthrough has not been submitted — he has not answered it yet', bad], notes
+        return [bad], notes
+    notes.append(note)
+    if not b_ans or not b_ans.get('submitted'):
+        problems.append('the before-build walkthrough has not been submitted — he has not answered it yet')
+        b_ans = b_ans or {}
+    if not os.path.exists(after):
+        problems.append(f'no after-build walkthrough yet ({os.path.basename(after)}) — build it from the same pages and show it to him')
+        return problems, notes
+    try:
+        aft = _load(after)
+    except (OSError, ValueError) as e:
+        return problems + [f'cannot read the after-build walkthrough {after}: {e}'], notes
+    a_rows = rows(aft)
+    linked = {}   # before 'step/row' -> the after row that answers it
+    for key, (_, c) in a_rows.items():
+        src = c.get('from')
+        if src is None:
+            continue
+        if not isinstance(src, str) or not FROM_RE.match(src):
+            problems.append(f'after row {key}: "from" must look like "<before step id>/<row id>", not {src!r}')
+        else:
+            linked.setdefault(src, []).append((key, c))
+        if c.get('dropped') is not None and not (isinstance(c['dropped'], str) and c['dropped'].strip()):
+            problems.append(f'after row {key}: "dropped" needs the reason in words')
+    b_rows = rows(before)
+    for src in linked:
+        if src not in b_rows:
+            problems.append(f'after row {linked[src][0][0]} says it came from {src}, which is not a row of the before-build walkthrough')
+    # 2. requests
+    for key in request_rows(before, b_ans):
+        if key not in linked:
+            words = (b_rows[key][1].get('decided') or b_rows[key][1].get('call') or '')[:70]
+            problems.append(f'request {key} ("{words}") has no row in the after-build walkthrough — add one with "from": "{key}", or "dropped": "<why>"')
+    # 3. checks
+    on = {k for k, v in checks(before, b_ans).items() if v == 'run'}
+    for key in sorted(on):
+        results = [c.get('result') for _, c in linked.get(key, [])]
+        if not any(r in OUTCOMES for r in results):
+            shown = results[0] if results else 'missing'
+            problems.append(f'check {key} was switched on but has no result row (pass / fail / unclear) — it shows "{shown}"; a check is never reported as not run')
+    # 4. his review of the after-build deck
+    # WHY (feature-flow step 5): the two lists are part of "finished", so a deck without them is not, however the
+    # rest was answered. A row of either list he has not ticked or changed is caught below with every other row.
+    for line in after_build_list_errors(aft):
+        problems.append(f'after-build walkthrough, not finished: {line}')
+    a_ans = _read_answers(answers_file(after))
+    if not a_ans or not a_ans.get('submitted'):
+        problems.append('the after-build walkthrough has not been submitted — he has not gone through it yet')
+    else:
+        # WHY (code review F2): the after-build spec is judged only if it is the one he went through; a result, a check row or a list row edited after
+        # his submit would otherwise pass unseen. (An answers file with no fingerprint cannot be checked, and says so.)
+        want = (a_ans.get('built') or {}).get('spec_sha256') if isinstance(a_ans.get('built'), dict) else None
+        if want:
+            with open(after, 'rb') as f:
+                if _sha(f.read()) != want:
+                    problems.append(f'the after-build walkthrough ({os.path.basename(after)}) was changed after he submitted his answers to it — show him the current version and have him go through it again')
+        else:
+            notes.append('the after-build answers file has no fingerprint of what he saw, so edits since he submitted could not be checked')
+        for line in changes_requested(a_ans):
+            problems.append(f'after-build walkthrough, not finished: {line}')
+        # WHY (Destin, round 10): on a deck that grows, a list he settled in an earlier round is not asked
+        # again, so its rows have no ticks in THIS round's file; they are not "not looked at".
+        settled = settled_ids({**aft, '_base': os.path.dirname(os.path.abspath(after)),
+                               '_stem': os.path.basename(os.path.splitext(after)[0])}, a_ans)
+        for line in unlooked_in(aft, a_ans, settled):
+            problems.append(f'after-build walkthrough, not finished: row {line} was not looked at - he neither ticked it nor asked for a change')
+    for k, t in also_check(before, b_ans).items():
+        notes.append(f'also check ({k}): {t}')
+    if not problems:
+        notes.insert(0, f'{len(request_rows(before, b_ans))} requests and {len(on)} switched-on checks all answered; he went through the after-build walkthrough changing nothing')
+    return problems, notes

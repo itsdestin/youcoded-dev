@@ -20,7 +20,7 @@
   "_comment_no_pictures": "No \"images\" and no \"runs\": nothing here is photographed, so a deck of questions names neither.",
   "steps": [
     {
-      "_comment": "A YES / NO / DON'T KNOW question: no options, so the page offers those three answers. 'Don't know' is a real answer — it says the question is not ready.",
+      "_comment": "A YES / NO / OTHER question: no options, so the page offers those three answers; his words about anything else go in Other or the note box.",
       "id": "Q-1",
       "_comment_id": "id: your name for this question. It labels his answer, so keep it short and never reuse it.",
       "words": true,

@@ -1,0 +1,161 @@
+{
+ "_comment": [
+  "HANDS-OFF DECK: for when he says 'do all of this without me': no questions, no feedback rounds, no understanding / design / before-build decks. His instruction is the go-ahead. You explore, follow the design guide, build, run the code review, the grader and the done gate, then bring THIS ONE deck, at stage 'after', at the very end.",
+  "\"hands_off\" is his exact words (copy them, do not tidy them); the first page quotes them. The builder refuses: a stage other than after; any understanding / design / before page; no 'What you asked for' list on the first page; no 'Choices I made for you' list; missing 'What changed while building'; missing 'Found in review' once the code review ran.",
+  "'Choices I made for you' = every decision he would normally have made in the stages he skipped: layout, where things sit, defaults, phone layout, wording. One row each. A row about something he SEES sets \"visual\": true and carries a \"picture\" (and \"before\" when it changed). Truly none: ONE row with \"none_made\": true and a plain sentence.",
+  "The done gate: `review-cards.py walkthrough-check <this file>.json` passes only when he submitted, ticked or commented on every row, every check has a result and he changed nothing. A comment on a row means another round: rebuild THIS same deck as usual (reopened / resolved)."
+ ],
+ "title": "Saved searches",
+ "key": "saved-searches",
+ "out": "saved-searches.html",
+ "branch": "session/saved-searches",
+ "grows": true,
+ "tag": "feature",
+ "stage": "after",
+ "hands_off": "do all of this without me. I don't want to be asked anything, just show me at the end.",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "steps": [
+  {
+   "_comment": "The first page: his words are drawn from hands_off at the top, then the list of what he asked for.",
+   "id": "P-1",
+   "page": "What you asked for",
+   "intro": "Your own words, then each thing you asked for.",
+   "stage": "after"
+  },
+  {
+   "_comment": "One row per thing he asked for, in his terms. `list: asked-for` is required and must sit on the first page.",
+   "id": "L-1",
+   "words": true,
+   "surface": "Chat search",
+   "path": "The search box",
+   "headline": "What you asked for",
+   "list": "asked-for",
+   "calls": [
+    {
+     "id": "a1",
+     "call": "A search you run often can be saved by name.",
+     "why": "A star beside the search box saves what is typed."
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Choices I made for you",
+   "intro": "Everything I decided in your place.",
+   "stage": "after"
+  },
+  {
+   "_comment": "`list: choices-made`: every decision made in his place, one row each. visual:true needs a picture (a file beside this spec; add `before` if it changed). Nothing decided? ONE row {\"id\", \"call\", \"why\", \"none_made\": true}. Example: {\"visual\": true, \"picture\": \"star.png\"} (left off here because this template ships no pictures).",
+   "id": "L-2",
+   "words": true,
+   "surface": "Chat search",
+   "path": "The search box",
+   "headline": "Choices I made for you",
+   "list": "choices-made",
+   "calls": [
+    {
+     "id": "c1",
+     "call": "The star sits at the right end of the search box.",
+     "why": "It matches the other buttons in that row."
+    },
+    {
+     "id": "c2",
+     "call": "On a phone the saved list opens full width.",
+     "why": "A narrow list was too small to tap."
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "What changed",
+   "intro": "Every screen that changed, what moved from the plan, and what the review found.",
+   "stage": "after"
+  },
+  {
+   "_comment": "Changed screens with pictures, as in any after-build deck. Each row carries a \"picture\" (a file beside the spec); left off here because this template ships none.",
+   "id": "W-2",
+   "words": true,
+   "surface": "Chat search",
+   "path": "The search box",
+   "headline": "Every screen that changed",
+   "gallery": true,
+   "calls": [
+    {
+     "id": "box",
+     "call": "The search box",
+     "why": "Gains a star at its right edge."
+    }
+   ]
+  },
+  {
+   "_comment": "Required after-build list: each row `built` as planned or adjusted (with the reason in `why`).",
+   "id": "L-3",
+   "words": true,
+   "surface": "Chat search",
+   "path": "The search box",
+   "headline": "What changed while building",
+   "list": "changed-while-building",
+   "calls": [
+    {
+     "id": "b1",
+     "call": "The star saves the search.",
+     "why": "As planned.",
+     "built": "as planned"
+    },
+    {
+     "id": "b2",
+     "call": "The name box opens on first save.",
+     "why": "A nameless save looked broken, so I added it.",
+     "built": "adjusted"
+    }
+   ]
+  },
+  {
+   "_comment": "Required once the code review ran: one row per finding in plain words, or ONE row with none_found: true.",
+   "id": "L-4",
+   "words": true,
+   "surface": "Chat search",
+   "path": "The search box",
+   "headline": "Found in review",
+   "list": "found-in-review",
+   "calls": [
+    {
+     "id": "f1",
+     "call": "A search with an empty name could be saved.",
+     "why": "Fixed: the star asks for a name first."
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Checks",
+   "intro": "What each check showed, and what is left for you to try.",
+   "stage": "after"
+  },
+  {
+   "id": "L-5",
+   "words": true,
+   "surface": "Chat search",
+   "path": "The search box",
+   "headline": "Checks I ran, and what they showed",
+   "calls": [
+    {
+     "id": "r1",
+     "call": "The code review read every changed file.",
+     "why": "It found one thing, fixed above.",
+     "result": "pass",
+     "check": "code-review"
+    },
+    {
+     "id": "r2",
+     "call": "The done gate.",
+     "why": "Ran after your answers.",
+     "result": "pass"
+    }
+   ]
+  }
+ ]
+}

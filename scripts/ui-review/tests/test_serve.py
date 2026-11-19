@@ -153,6 +153,34 @@ class ServeTests(unittest.TestCase):
             self.assertEqual(json.load(open(answers_path(self.spec)))['answers']['S-1']['v'], 'other')
         finally:
             srv.shutdown(); srv.server_close()
+    def test_a_page_of_an_older_build_can_neither_save_nor_submit_and_its_file_is_set_aside(self):
+        # Round 13: a tab of the previous round's page kept autosaving into the answers file after the deck was rebuilt, and the new page loaded it.
+        # The server now knows the build it serves: a page stamped with any other build is refused (reason old-build), and a file an older build left is
+        # kept beside the deck (never deleted, never merged into the new round) when the new build first saves.
+        with open(os.path.join(self.spec['_base'], self.spec['out']), 'w') as f:
+            f.write('<script>const DECK = {"key": "deck", "built": {"at": "2026-11-15T00:43:57Z", "commit": "new"}};</script>')
+        old = {'deck': 'fixture', 'built': {'at': '2026-11-12T10:00:00Z'}, 'answers': {'S-1': {'v': 'yes'}}, 'pageNotes': {'P-1': 'last round comment'}}
+        new = {'deck': 'fixture', 'built': {'at': '2026-11-15T00:43:57Z'}, 'answers': {'S-9': {'v': 'no'}}}
+        srv, url = make_server(self.spec, 0, lambda state: None)
+        t = threading.Thread(target=srv.serve_forever, daemon=True); t.start()
+        try:
+            base = url.rsplit('/', 1)[0]
+            write_atomic(answers_path(self.spec), old)          # what the previous round's page left in the file
+            for route in ('/answers', '/submit'):
+                for body in (old, {'deck': 'fixture', 'answers': {'S-1': {'v': 'no'}}}):   # an old stamp, and no stamp at all
+                    with self.assertRaises(urllib.error.HTTPError) as cm:
+                        post(base + route, body)
+                    self.assertEqual(cm.exception.code, 409); self.assertIn(b'old-build', cm.exception.read())
+            self.assertEqual(json.load(open(answers_path(self.spec))), old)    # untouched, and not submitted
+            post(base + '/answers', new)                                       # the current page saves: the old file moves aside, kept
+            self.assertEqual(json.load(open(answers_path(self.spec))), new)
+            kept = [n for n in os.listdir(self.spec['_base']) if '.unsent.' in n]
+            self.assertEqual(len(kept), 1); self.assertEqual(json.load(open(os.path.join(self.spec['_base'], kept[0]))), old)
+            self.assertFalse(any(n.startswith('deck.answers.') and n != 'deck.answers.json' for n in os.listdir(self.spec['_base'])), 'a kept copy must not read as a round')
+            post(base + '/answers', {**new, 'answers': {'S-9': {'v': 'other'}}})   # same build again: normal saves still work
+            self.assertEqual(json.load(open(answers_path(self.spec)))['answers']['S-9']['v'], 'other')
+        finally:
+            srv.shutdown(); srv.server_close()
     def test_a_submitted_answers_file_is_kept_aside_and_the_review_starts_fresh(self):
         # Re-serving a deck after its submit must not load the old file: the page would see `submitted` and lock every control.
         self.assertIsNone(rotate_submitted(self.spec, log=lambda *a: None))                                   # no file: nothing to do
@@ -163,6 +191,20 @@ class ServeTests(unittest.TestCase):
         out = []; dest = rotate_submitted(self.spec, log=out.append)
         self.assertEqual(os.path.basename(dest), 'deck.answers.202608271010.json'); self.assertTrue(os.path.exists(dest))
         self.assertFalse(os.path.exists(answers_path(self.spec))); self.assertTrue(any('starting a fresh one' in l for l in out))
+        # Round 9, Q-3: the SAME build reopened keeps his answers, unlocked, and says when they were sent; the dated copy is still kept.
+        with open(os.path.join(self.spec['_base'], self.spec['out']), 'w') as f:
+            f.write('<script>const DECK = {"key": "deck", "built": {"at": "2026-11-11T22:25:05Z", "commit": "abc"}};</script>')
+        sent = {'submitted': '2026-11-12T03:33:59Z', 'built': {'at': '2026-11-11T22:25:05Z'}, 'answers': {'S-1': {'v': 'yes'}}}
+        write_atomic(answers_path(self.spec), sent)
+        out = []; dest = rotate_submitted(self.spec, log=out.append, resume=True)
+        self.assertEqual(json.load(open(dest))['submitted'], '2026-11-12T03:33:59Z')
+        again = json.load(open(answers_path(self.spec)))
+        self.assertNotIn('submitted', again); self.assertEqual(again['sent_before'], '2026-11-12T03:33:59Z'); self.assertEqual(again['answers'], sent['answers'])
+        self.assertTrue(any('still editable' in l for l in out))
+        # a deck rebuilt since he answered starts empty: its questions may have changed
+        write_atomic(answers_path(self.spec), {**sent, 'built': {'at': '2026-11-01T00:00:00Z'}})
+        rotate_submitted(self.spec, log=lambda *a: None, resume=True)
+        self.assertFalse(os.path.exists(answers_path(self.spec)))
         # and serve() does it before it starts (the lock check in test_second_serve_of_same_spec_refuses runs first)
         write_atomic(answers_path(self.spec), {'submitted': '2026-08-27T11:00:00Z', 'answers': {}})
         result = {}
@@ -173,7 +215,7 @@ class ServeTests(unittest.TestCase):
             time.sleep(0.1)
         self.assertFalse(os.path.exists(answers_path(self.spec))); self.assertTrue(os.path.exists(os.path.join(self.spec['_base'], 'deck.answers.202608271100.json')))
         url = next(l for l in out if l.startswith('[deck] http')).split(' ', 1)[1]
-        post(url.rsplit('/', 1)[0] + '/submit', {'deck': 'fixture', 'answers': {}}); t.join(5); self.assertEqual(result['code'], 0)
+        post(url.rsplit('/', 1)[0] + '/submit', {'deck': 'fixture', 'answers': {}, 'built': {'at': '2026-11-11T22:25:05Z'}}); t.join(5); self.assertEqual(result['code'], 0)
     def test_wait_returns_0_when_the_file_says_submitted_and_2_on_timeout(self):
         out = []
         self.assertEqual(wait_for_submit(self.spec, timeout_min=0.002, poll_s=0.05, log=out.append), 2)   # ~0.12 s, no file
