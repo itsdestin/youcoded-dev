@@ -11,6 +11,7 @@ import json, os, sys, urllib.request
 KEY = open(os.path.expanduser("~/.config/youcoded-campaign/elevenlabs.key")).read().strip()
 voice_id, name = sys.argv[1], sys.argv[2]
 stability = float(sys.argv[3]) if len(sys.argv) > 3 else 0.0  # v3: 0 = most expressive ("creative")
+speed = float(os.environ.get("SPEED", "1.0"))  # 0.7-1.2
 
 # (mp3_44100_128: higher bitrates need the Creator plan.)
 # WHY cues: one flat read was the problem with every earlier voice. The cues ask for a different
@@ -19,7 +20,7 @@ stability = float(sys.argv[3]) if len(sys.argv) > 3 else 0.0  # v3: 0 = most exp
 # "---" line is the text that gets recorded.
 SCRIPT = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "narration.md")).read().split("\n---\n", 1)[1].strip()
 
-body = {"text": SCRIPT, "model_id": "eleven_v3", "voice_settings": {"stability": stability}}
+body = {"text": SCRIPT, "model_id": "eleven_v3", "voice_settings": {"stability": stability, "speed": speed}}
 req = urllib.request.Request(f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}?output_format=mp3_44100_128",
                              data=json.dumps(body).encode(), headers={"xi-api-key": KEY, "Content-Type": "application/json"})
 try:
