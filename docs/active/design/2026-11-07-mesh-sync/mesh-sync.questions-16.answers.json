@@ -1,0 +1,22 @@
+{
+ "deck": "mesh-sync-questions-16",
+ "started": "2026-11-19T00:25:07.893Z",
+ "submitted": "2026-11-19T00:28:31Z",
+ "cur": 0,
+ "answers": {
+  "C-1": {
+   "v": "other",
+   "t": 1795048110991,
+   "note": "this is extremely confusing and seems to lose a lot of guidance/decisions/etc provided in earlier rounds. also lacking a ton of context. i thought the entire prermise of the current design was already basically 1 device controls a chat at a time. i really dont understand the difference of what you're proposing",
+   "seconds": 102,
+   "theme": "midnight"
+  },
+  "C-2": {
+   "note": "i'm not going to bother finishing reviewing this deck. i feel like you're missing far too much context for me to review, and you also need to evaluate all of my earlier messages and responses because i feel like some of these have already been answered at least in some capacity",
+   "t": 1795048110991,
+   "v": "skip",
+   "seconds": 102,
+   "theme": "midnight"
+  }
+ }
+}
