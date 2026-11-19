@@ -1550,3 +1550,12 @@ recurred — the repetition is the data.
 - My gitleaks call used a nonexistent `-q` flag and `&& git push` after `| tail` hid the failure; the pre-push hook scanned anyway → dropped: the hook is the executing guard; my slip.
 - Local-only branches seen in the sweep (not this session's): 8 workspace, 18 app, including `session/usage-visibility-20260929`, the usage-stats mockup card #231 points to → reported to Destin.
 - deleted/merged: overnight handoff file superseded by the card notes (left on session/overnight-2026-11-19).
+
+## 2026-11-18 — stuck queued message, root cause to merge (card #278, youcoded#781)
+- `desktop.log` said only "input-not-safe", which covers both an open question and a pop-up; I chased Claude Code's idle tidy-up (compaction) as the cause through a one-hour real-time reproduction plus failed clock-faking and binary-patch shortcuts (~40 calls) before the transcript of the stuck helper agent showed the real cause → card #282 (log the refusal's reason; `queueInputBlock` now has it).
+- Real cause, measured on CLI 2.1.327: a background helper's PermissionRequest carries `agent_id`, and while a hook holds it Claude Code draws no menu, but the app counted it as the chat's own question → applied (youcoded#781, pinned by tests, `cc-dependencies.md` updated with the live payload).
+- My probe resumed a COPY of a real conversation with `--dangerously-skip-permissions` in an isolated HOME; the copied history made the test chat resume the marketing work and run a command in Destin's real worktree (it rewrote two generated files byte-identically; no damage) → proposed one sentence for `.claude/rules/live-app-safety.md` ("a probe never resumes a copy of a real conversation with permissions bypassed: its history carries real paths"); rule edits wait for Destin's word.
+- I first told Destin the cause was "probably the tidy-up not signalling turn end" before verifying → my slip; the reproduction disproved it.
+- Fresh review caught a real safety window (a kept helper ask is drawn at once; foreground helpers unmeasured) and a stale note → applied in the same PR.
+- Filed from the session: the helper's question was visible only as a small "1 needs you" chip for 85 minutes → card #281.
+- deleted/merged: none found; looked at the throwaway reproduction rig (scratch only, deleted with its temp homes, which held a copied sign-in token).
