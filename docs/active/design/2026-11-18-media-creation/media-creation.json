@@ -872,8 +872,7 @@
             ]
           }
         }
-      ],
-      "reopened": "You wanted the small finished card from the earlier drawing, not the big frame."
+      ]
     },
     {
       "id": "Q-d-limit",
@@ -1026,9 +1025,266 @@
             "change": "Continue raises this chat's limit to the amount picked."
           }
         }
-      ],
-      "reopened": "You asked when this message shows instead of the ChatGPT one.",
-      "reframed": "The no-service row now says which chats see it, and its details explain how the app picks between it and the ChatGPT message."
+      ]
+    },
+    {
+      "id": "P-voice",
+      "page": "Read-aloud and recordings",
+      "stage": "design",
+      "intro": "Drawings of hearing a message, picking a voice, and sending a recording. Pick one each, or say what to change."
+    },
+    {
+      "id": "Q-d-read",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "A message being read aloud",
+      "headline": "How should a message show it is being read aloud, with a way to stop?",
+      "today": "Read aloud sits in every message's right-click menu, under Ask about this. Nothing shows a message is playing yet.",
+      "problem": "Without a visible Stop, the only way to end a long reading would be to wait.",
+      "proposal": "A small box under the message, like the picture and sound boxes, saying it is reading, with Stop.",
+      "checked": "Drawn on 2026-11-19 in the app's design workbench from the app's own parts.",
+      "options": [
+        {
+          "id": "playing-box",
+          "label": "Box under the message",
+          "recommended": true,
+          "picture": "pictures/design5-media-read-aloud-playing-box.png",
+          "summary": "The same box as pictures and sound: Reading aloud, the voice, and Stop.",
+          "pros": [
+            "Looks like every other made-thing box.",
+            "Clear which message is playing."
+          ],
+          "cons": [
+            "Adds a line under the message while it plays."
+          ],
+          "reuse": {
+            "from": [
+              "The picture and sound box",
+              "The app's Stop button"
+            ],
+            "new": [
+              "the reading line"
+            ]
+          }
+        },
+        {
+          "id": "playing-pinned",
+          "label": "Band above the message box",
+          "picture": "pictures/design5-media-read-aloud-playing-pinned.png",
+          "summary": "The band voice typing uses for Listening, showing the start of the message and Stop.",
+          "pros": [
+            "Stop stays in view even after scrolling away."
+          ],
+          "cons": [
+            "Less clear which message is being read."
+          ],
+          "reuse": {
+            "from": [
+              "Voice typing's Listening band",
+              "The app's Stop button"
+            ],
+            "new": [
+              "the reading text"
+            ]
+          }
+        },
+        {
+          "id": "playing-corner",
+          "label": "Quiet line in the message",
+          "picture": "pictures/design5-media-read-aloud-playing-corner.png",
+          "summary": "A small Reading aloud line at the foot of the message with a stop icon.",
+          "pros": [
+            "Takes the least room."
+          ],
+          "cons": [
+            "The stop icon is small and easy to miss."
+          ],
+          "reuse": {
+            "from": [
+              "The app's small icon buttons"
+            ],
+            "new": [
+              "the reading line"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-d-voice",
+      "words": true,
+      "visual": true,
+      "surface": "Settings",
+      "path": "Settings, choosing the read-aloud voice",
+      "headline": "Where should you choose between the built-in voice and an online one?",
+      "today": "Session naming in Settings already switches between a built-in way and a paid one, with a Built-in / Cloud strip.",
+      "problem": "The read-aloud voice needs the same switch, plus which service and which voice.",
+      "proposal": "A card beside Session naming, built the same way, with Service, Voice and Play a sample when Cloud is on.",
+      "checked": "Drawn on 2026-11-19 in the app's design workbench from the app's own parts.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Card beside Session naming",
+          "recommended": true,
+          "picture": "pictures/design5-media-voice-setting-card.png",
+          "summary": "Same card and strip as Session naming; the pickers appear when Cloud is on.",
+          "pros": [
+            "Matches the setting it sits next to.",
+            "Everything visible at once."
+          ],
+          "cons": [
+            "A taller card in Settings."
+          ],
+          "reuse": {
+            "from": [
+              "Session naming's card and strip",
+              "The app's pickers and buttons"
+            ],
+            "new": [
+              "the Play a sample button"
+            ]
+          }
+        },
+        {
+          "id": "row-popup",
+          "label": "Row that opens a popup",
+          "picture": "pictures/design5-media-voice-setting-row-popup.png",
+          "summary": "One Settings row showing the current voice; clicking opens the same choices in a popup.",
+          "pros": [
+            "Settings stays short."
+          ],
+          "cons": [
+            "One more click to change or hear the voice."
+          ],
+          "reuse": {
+            "from": [
+              "The Settings row",
+              "The app's popup",
+              "The app's pickers and buttons"
+            ],
+            "new": [
+              "the popup's arrangement"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-d-record",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "Speaking into the message box",
+      "headline": "How should you choose between typing by voice and sending the recording itself?",
+      "today": "The microphone in the message box turns your speech into typed words. Some models can hear sound; many cannot.",
+      "problem": "Sending a recording to a model that cannot hear it would lose what you said.",
+      "proposal": "Talk as today; when you stop, choose Type it out or Send recording. If the model cannot hear sound, it gets your typed words and the recording stays in your message for you.",
+      "checked": "Drawn on 2026-11-19 in the app's design workbench from the app's own parts.",
+      "options": [
+        {
+          "id": "choose-after",
+          "label": "Choose after you stop",
+          "recommended": true,
+          "picture": "pictures/design5-media-send-recording-choose-after.png",
+          "summary": "The microphone works as today; after Stop, a band offers both. The lower half shows a model that cannot hear sound.",
+          "pros": [
+            "Nothing new to learn before speaking.",
+            "Shows plainly what a deaf model will get."
+          ],
+          "cons": [
+            "One extra click every time you speak."
+          ],
+          "reuse": {
+            "from": [
+              "Voice typing's band",
+              "The approved sound box",
+              "The app's buttons"
+            ],
+            "new": [
+              "the two choices",
+              "the recording in your own message"
+            ]
+          }
+        },
+        {
+          "id": "hold-to-send",
+          "label": "Tap types, hold sends",
+          "picture": "pictures/design5-media-send-recording-hold-to-send.png",
+          "summary": "A tap on the microphone works as today; holding it records a message to send, like phone messaging apps.",
+          "pros": [
+            "No extra click for either."
+          ],
+          "cons": [
+            "Holding is hidden until someone tells you.",
+            "Awkward with a mouse."
+          ],
+          "reuse": {
+            "from": [
+              "Voice typing's band",
+              "The approved sound box"
+            ],
+            "new": [
+              "holding the microphone",
+              "the recording in your own message"
+            ]
+          }
+        },
+        {
+          "id": "mic-menu",
+          "label": "Menu on the microphone",
+          "picture": "pictures/design5-media-send-recording-mic-menu.png",
+          "summary": "Right-click or long-press the microphone for Type what I say or Send my recording; greyed out when the model cannot hear.",
+          "pros": [
+            "The microphone stays exactly as today."
+          ],
+          "cons": [
+            "Hard to discover.",
+            "A greyed choice explains less than the band."
+          ],
+          "reuse": {
+            "from": [
+              "The chat's right-click menu"
+            ],
+            "new": [
+              "the two menu choices"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "L-voice-states",
+      "words": true,
+      "surface": "Chat",
+      "path": "Other read-aloud moments",
+      "headline": "Other read-aloud moments",
+      "calls": [
+        {
+          "id": "V-menu",
+          "call": "Read aloud sits in every message's right-click menu, yours and the assistant's, under Ask about this.",
+          "why": "As agreed; on a phone a long press opens the same menu.",
+          "visual": true,
+          "picture": "pictures/design5-media-read-aloud-menu.png",
+          "more": {
+            "today": "The menu has Ask about this, Copy and Select all.",
+            "problem": "The menu had no speaker icon.",
+            "change": "A speaker icon is added, the same one the sound box uses."
+          }
+        },
+        {
+          "id": "V-first",
+          "call": "The first time, a card offers to download the built-in voice, then shows progress and starts reading when done.",
+          "why": "As agreed: download on first use, like voice typing.",
+          "visual": true,
+          "picture": "pictures/design5-media-read-aloud-first-time.png",
+          "more": {
+            "today": "Voice typing downloads its model the same way.",
+            "problem": "The download size is not known until the built-in voice is chosen.",
+            "change": "The real card will state the size; the drawing leaves it out rather than guess."
+          }
+        }
+      ]
     },
     {
       "id": "P-defaults",
@@ -1171,6 +1427,58 @@
             "today": "Nothing takes minutes today.",
             "problem": "Losing a paid video because the app closed would waste money.",
             "change": "The card shows \"still being made\" until it arrives."
+          }
+        }
+      ]
+    },
+    {
+      "id": "L-phone",
+      "words": true,
+      "surface": "Chat",
+      "path": "The new cards on a phone",
+      "headline": "The new cards at phone width",
+      "calls": [
+        {
+          "id": "F-approval",
+          "call": "Approval card: the maker picker moves under your request, full width.",
+          "why": "Beside the title it ran past the card's edge.",
+          "visual": true,
+          "picture": "pictures/design5-media-phone-adjusted.png",
+          "before": "pictures/design5-media-phone-as-is.png",
+          "more": {
+            "today": "Drawn for a computer-width chat.",
+            "problem": "On a phone the picker was cut off.",
+            "change": "Only on phones; computers keep it in the title line."
+          }
+        },
+        {
+          "id": "F-picture",
+          "call": "Picture and video boxes: the maker and cost go on a second line under the file name.",
+          "why": "On one line the file name was cut to a few letters.",
+          "more": {
+            "today": "Name, maker and cost share one line.",
+            "problem": "Two icon buttons leave little room on a phone.",
+            "change": "Only on phones; the video's first frame is also a little smaller."
+          }
+        },
+        {
+          "id": "F-sound",
+          "call": "Sound box: the wave has fewer bars so the time no longer sits on top of it.",
+          "why": "The full wave was wider than a phone's box.",
+          "more": {
+            "today": "The wave has a fixed number of bars.",
+            "problem": "On a phone the time covered the end of the wave.",
+            "change": "Only on phones."
+          }
+        },
+        {
+          "id": "F-limit",
+          "call": "Limit card: unchanged; the new-limit choice drops under Continue and Stop.",
+          "why": "It already fits.",
+          "more": {
+            "today": "One line of choices.",
+            "problem": "None found.",
+            "change": "Nothing."
           }
         }
       ]
