@@ -1,0 +1,117 @@
+{
+  "title": "Messages stuck at the bottom of the chat",
+  "key": "pinned-bubbles-review",
+  "out": "pinned-bubbles.review.html",
+  "images": "images/pinned-bubbles-review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "On this branch"
+  },
+  "crops": {
+    "picture-only": [
+      "chat",
+      "picture",
+      "2561x1523+0+0"
+    ],
+    "give-up": [
+      "chat",
+      "giveup",
+      "2561x1523+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Chat",
+      "path": "Paste a picture into the message box and send it with no words",
+      "crop": "picture-only",
+      "themes": [
+        "midnight"
+      ],
+      "headline": "A picture sent with no words now sits above the reply to it, instead of staying stuck under everything.",
+      "changed": "When a message had a picture or file but no words, the app threw away Claude Code's copy of it, so your bubble was never marked as sent. Now that copy is kept and the bubble settles into place like any other message.",
+      "measured": "Reproduced in a test copy of the app: stuck every time before, in place 2 out of 2 times after",
+      "notice": "Pictures and files sent on their own stop hugging the bottom of the chat. They also show up again when you reopen the chat; before, they were missing from it.",
+      "risk": "None seen. Messages with words are untouched, and a message with neither words nor files still shows nothing, as before.",
+      "highlight": {
+        "box": [
+          84,
+          63,
+          15,
+          16
+        ]
+      }
+    },
+    {
+      "id": "G-1",
+      "surface": "Chat",
+      "path": "Any message whose delivery the app never hears back about",
+      "crop": "give-up",
+      "themes": [
+        "midnight"
+      ],
+      "headline": "A message the app never hears back about stops waiting after a minute and says \"Not sure this was sent.\"",
+      "changed": "Left: a message with no sign it arrived stayed pinned at the bottom with the thinking dots running, forever. Right, after 60 seconds: the dots stop, the existing note appears with Send again and Dismiss, and later messages go below it instead of above.",
+      "measured": "60 seconds with no sign of it; 10 seconds when the computer knows Claude Code saved it but the screen missed it, in which case it is quietly put back in place with no note",
+      "notice": "Nothing in normal use: a message normally confirms within a second or two. You only see this when something actually went wrong, and if the message turns up late, the note clears by itself.",
+      "risk": "If a message is truly slow (over a minute) the note can appear before it lands; pressing Send again then would send it twice, so the note says \"not sure\" rather than \"failed\". Slash commands (like /compact) often get no reply by design, so they give up quietly with no note.",
+      "highlight": {
+        "box": [
+          1,
+          74,
+          98,
+          14
+        ]
+      }
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any message whose delivery the app never hears back about",
+      "headline": "How long should a message wait before the app says it is not sure it was sent?",
+      "today": "On this branch it waits 60 seconds, then shows \"Not sure this was sent.\" with Send again and Dismiss.",
+      "problem": "Too short and a slow but real delivery gets a doubtful note (and a tempting Send again that would duplicate it). Too long and a lost message sits pinned at the bottom with the thinking dots running.",
+      "proposal": "Keep 60 seconds unless you would rather it give up sooner or later. Every message in testing confirmed within about 2 seconds.",
+      "options": [
+        {
+          "id": "30s",
+          "label": "30 seconds",
+          "pros": [
+            "A lost message is flagged twice as fast.",
+            "The stuck thinking dots go away sooner."
+          ],
+          "cons": [
+            "More chance a slow delivery gets a wrong doubt note, and a Send again that duplicates it."
+          ]
+        },
+        {
+          "id": "60s",
+          "label": "60 seconds",
+          "recommended": true,
+          "pros": [
+            "About 30 times longer than any delivery seen in testing, so a wrong note should be very rare.",
+            "Still short enough that nothing is stuck for long."
+          ],
+          "cons": [
+            "A truly lost message shows the thinking dots for a full minute first."
+          ]
+        },
+        {
+          "id": "2min",
+          "label": "2 minutes",
+          "pros": [
+            "Almost no chance of a wrong note."
+          ],
+          "cons": [
+            "A lost message sits stuck at the bottom with the dots running for two minutes."
+          ]
+        }
+      ]
+    }
+  ]
+}
