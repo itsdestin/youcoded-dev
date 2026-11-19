@@ -115,90 +115,79 @@
       "words": true,
       "surface": "Visual kit",
       "path": "How you open it",
-      "headline": "Where do you open the kit: a link from chat, a file you open any time, or both?",
-      "today": "Decks reach you as a link an agent pastes in chat; the page only works while that agent's session has it running. Reports reach you as a file path you paste into YouCoded, which opens any time.",
-      "checked": "Checked 2026-11-18 against how this deck and the audit report reached you.",
-      "problem": "A link gives you everything live but only while an agent is running it. A file opens any time with no agent, but holds pictures, not the live pieces.",
-      "proposal": "Pick how you reach it. Either way agents copy the real code; this is only about how you look at it.",
+      "headline": "The kit is a YouCoded Page that updates itself. Should it be a new tab on the Work board, or its own page?",
+      "today": "The Work board is a YouCoded Page that redraws from the newest code each time you open it, and already has a Screens tab. Its screen pictures are from Oct 12 to 16 and have not refreshed since.",
+      "checked": "Read the Work board's page files and its Screens tab code 2026-11-18; the pictures were last committed 2026-10-16.",
+      "problem": "A Page cannot run the app's live pieces, so it shows pictures of them. Pictures go stale unless something retakes them, as the Screens tab shows.",
+      "proposal": "Either way: the page redraws from the newest code when opened, and its pictures, the kit's and the Screens tab's, are retaken automatically whenever a change to the app's look lands. Agents still copy the real code.",
       "options": [
         {
-          "id": "both",
-          "label": "File, with a live link when needed",
+          "id": "work-board-tab",
+          "label": "A tab on the Work board",
           "recommended": true,
-          "summary": "Everyday browsing is a file you open any time, with filters, search and pictures in your theme and at phone width. When you want another theme or to hover and click, ask and an agent gives you the live link.",
+          "summary": "A Design kit tab beside Screens. Each piece and example links straight to the screens that use it, in the same page.",
           "pros": [
-            "Opens any time, with no agent and nothing to start.",
-            "Live version still there for trying themes or interactions."
+            "One page for screens and pieces; \"where is this used\" is one click.",
+            "Uses the page you already open every day."
           ],
           "cons": [
-            "The file shows only the themes that were photographed.",
-            "A little more to build: the file is made from the live page automatically."
+            "The Work board gets one more tab.",
+            "Only on your devices, like the Work board; not something other users get."
           ]
         },
         {
-          "id": "link",
-          "label": "Link from chat only",
-          "summary": "Like a deck: an agent starts it and pastes the link. Every theme, phone width, hover and open menus.",
+          "id": "own-page",
+          "label": "Its own page",
+          "summary": "A separate Design kit page in your Pages, linking out to the Work board's Screens tab.",
           "pros": [
-            "Everything is live and current."
+            "Focused: nothing but design."
           ],
           "cons": [
-            "Only reachable while an agent is running it; no browsing on your own."
-          ]
-        },
-        {
-          "id": "file",
-          "label": "File only",
-          "summary": "Pictures with filters and search, rebuilt automatically when pieces change. No live version.",
-          "pros": [
-            "Simplest; opens any time."
-          ],
-          "cons": [
-            "No hover, no trying other themes, no clicking into a menu."
+            "\"Where is this used\" jumps between two pages."
           ]
         }
       ],
-      "reopened": "You were unsure how you would reach it and what having both buys you.",
-      "reframed": "Said how each one is opened, what each can and cannot show, and what both gives you over one."
+      "reopened": "You asked whether the kit could be a self-updating YouCoded page.",
+      "reframed": "Made the kit a self-updating YouCoded Page in both options, said what a page can and cannot show, and admitted the Screens tab's pictures are stale today."
     },
     {
       "id": "Q-2",
       "words": true,
       "surface": "Visual kit",
       "path": "What it holds",
-      "headline": "Pieces and examples come first, together. Should the kit also show every screen, to see where each piece is used?",
-      "today": "Screens exist only as about 183 names in the screenshot tool's list. A picture is taken only when an agent asks for one; nothing lets you browse them or see which screens use a given button or error box.",
-      "checked": "Checked 2026-11-18: the tool lists screens by name; no page shows them or links them to pieces.",
-      "problem": "You asked to see where a button or error type is used across the app. Without screen pictures, a piece can only list screen names.",
-      "proposal": "Pieces and examples are built together first. This decides what comes after them.",
+      "headline": "The Work board already shows every screen. Should the kit build on its Screens tab instead of a second gallery?",
+      "today": "The Work board's Screens tab shows every photographed screen, grouped by kind, with search, filters and click paths. It does not say which pieces each screen uses.",
+      "checked": "Read the Screens tab code 2026-11-18: it groups by screen kind and place, with no link to shared pieces.",
+      "problem": "A second screen gallery would duplicate it. But to see where a button or error box is used, screens need to know their pieces.",
+      "proposal": "Pieces and examples are built first, together. Then screens and pieces get linked both ways.",
       "options": [
         {
-          "id": "where-used",
-          "label": "Then add where it's used",
+          "id": "extend-screens",
+          "label": "Extend the Screens tab",
           "recommended": true,
-          "summary": "After pieces and examples, every screen gets a picture, grouped by kind. Each piece links to the screens that use it, and each screen lists its pieces.",
+          "summary": "Each screen gains its list of pieces and examples, worked out automatically when it is photographed; each piece links back. Its pictures start refreshing automatically too.",
           "pros": [
-            "Answers \"where is this error box used?\" in one click.",
-            "Filter screens by kind, area or never reviewed."
+            "No duplicate gallery.",
+            "Answers \"where is this used\" from either side."
           ],
           "cons": [
-            "The largest part to build; pictures refresh automatically but take a while to make."
+            "Touches the Work board's existing tab, so it comes back to you on a deck."
           ]
         },
         {
-          "id": "names-only",
-          "label": "Pieces and examples only",
-          "summary": "No screen pictures. Each piece lists the names of screens that use it.",
+          "id": "no-screens",
+          "label": "Leave screens out",
+          "summary": "The kit shows pieces and examples only; each lists screen names, not pictures.",
           "pros": [
-            "Smaller and done sooner."
+            "Smaller; the Work board is untouched."
           ],
           "cons": [
-            "You cannot see the screens, only their names."
+            "No pictures of where a piece is used, and the Screens tab stays stale."
           ]
         }
       ],
-      "reopened": "You chose examples first, wanted pieces alongside, and asked what the screen atlas meant.",
-      "reframed": "Pieces and examples are now one first step. The atlas is described as what it is: pictures of every screen, linked to the pieces each one uses."
+      "reopened": "You pointed out the Work board already shows screens and asked whether a screen atlas would duplicate it.",
+      "reframed": "Dropped the separate atlas. The choice is now whether to extend the existing Screens tab or leave screens out of this work."
     },
     {
       "id": "L-1",

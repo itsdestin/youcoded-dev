@@ -1,0 +1,49 @@
+{
+ "deck": "design-guidance",
+ "started": "2026-11-19T02:15:02.495Z",
+ "submitted": "2026-11-19T02:18:29Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "note": "could we make it a self-updating youcoded page?",
+   "t": 1795054708318,
+   "v": "other",
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  },
+  "Q-2": {
+   "note": "i think that's untrue. i can see screens in the work board screen page, right? wouldn;'t this just be duplicating that kinda? may make sense given slightly different purposes, but idk\n",
+   "t": 1795054708318,
+   "v": "other",
+   "seconds": 21,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-19T01:38:45Z",
+  "branch": "session/150-design-guidance-rebuild",
+  "commit": "131d14870f40980e3a4d50e3d45c2d05147e5df6",
+  "spec_sha256": "c3f1d41faf477bbae702f54dad03417c7e41725e3676d2510cc7f8a5a66389f1",
+  "spec_dirty": true,
+  "ids": [
+   "U-1",
+   "U-2",
+   "U-3",
+   "U-4",
+   "U-5",
+   "U-6",
+   "U-7",
+   "U-8",
+   "Q-1",
+   "Q-2",
+   "L-1",
+   "Q-3",
+   "Q-4",
+   "Q-5",
+   "Q-6",
+   "Q-7",
+   "Q-8",
+   "Q-9"
+  ]
+ }
+}
