@@ -1,0 +1,95 @@
+{
+  "title": "Messages stuck at the bottom of the chat \u2014 the card's colours",
+  "key": "pinned-bubbles-review-5",
+  "out": "pinned-bubbles.review-5.html",
+  "images": "images/pinned-bubbles.review-5",
+  "runs": {
+    "midnight": "runs/opt-midnight",
+    "light": "runs/opt-light"
+  },
+  "labels": {
+    "midnight": "Midnight theme",
+    "light": "Light theme"
+  },
+  "crops": {
+    "optA": [
+      "chat",
+      "optA",
+      "1561x560+1000+800"
+    ],
+    "optB": [
+      "chat",
+      "optB",
+      "1561x560+1000+800"
+    ],
+    "optC": [
+      "chat",
+      "optC",
+      "1561x560+1000+800"
+    ]
+  },
+  "steps": [
+    {
+      "id": "K-1",
+      "surface": "Chat",
+      "path": "Option A: the card exactly as on the round-4 deck (both notes shown, top amber, bottom red)",
+      "crop": "optA",
+      "themes": [
+        "midnight"
+      ],
+      "highlight": {
+        "box": [
+          38,
+          22,
+          61,
+          76
+        ]
+      },
+      "headline": "Option A, unchanged: the settings-page error card with its faint tint, which looks dark in a light bubble and pale in a dark one.",
+      "changed": "Nothing new. Why it looks off: the card takes the theme's own background, so in Midnight it is near-black inside a light-grey bubble, and in Light it is near-white inside a black bubble. Its tint is only 10% colour.",
+      "notice": "Pick this only if it looked fine after all."
+    },
+    {
+      "id": "K-2",
+      "surface": "Chat",
+      "path": "Option B: the chat's own error look (both notes shown, top amber, bottom red)",
+      "crop": "optB",
+      "themes": [
+        "midnight"
+      ],
+      "highlight": {
+        "box": [
+          38,
+          22,
+          61,
+          76
+        ]
+      },
+      "headline": "Option B: grey card with a solid amber or red outline, like the red-outlined error bubble the chat shows when a reply fails.",
+      "changed": "Grey card background (the same grey as Claude's reply bubbles) and a full-strength coloured outline instead of a faint tint.",
+      "notice": "Matches the chat's existing \"something went wrong\" bubble. The colour is only in the outline, so it is calmer.",
+      "risk": "Less colour overall; the amber outline is thin, so \"not sure\" reads quieter than it does now."
+    },
+    {
+      "id": "K-3",
+      "surface": "Chat",
+      "path": "Option C: the same card with twice the colour (both notes shown, top amber, bottom red)",
+      "crop": "optC",
+      "themes": [
+        "midnight"
+      ],
+      "highlight": {
+        "box": [
+          38,
+          22,
+          61,
+          76
+        ]
+      },
+      "headline": "Option C: the standard card with its tint about twice as strong, so it reads clearly amber or red in every theme.",
+      "changed": "Same card, same buttons, but the amber or red fill is about 22% instead of 10%, with a stronger border.",
+      "notice": "Clearly a warning or an error at a glance, in both dark and light themes.",
+      "risk": "Stronger than the same card on settings pages, so it is slightly louder than errors elsewhere."
+    }
+  ]
+}
