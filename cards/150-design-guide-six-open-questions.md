@@ -2,7 +2,7 @@
 id: 150
 title: Design guide: six open questions, and tooling so chats follow it
 stage: explore
-work: session/narrow-screen-proposals
+work: session/narrow-screen-proposals, session/150-design-guidance-rebuild
 priority: P3
 tags: user-interface, dev-workspace, housekeeping
 branch: 150-design-guide-six-open-questions
@@ -18,6 +18,7 @@ Next: Destin decides the open questions on the guide's list, then the tooling is
 Blocked: waiting on Destin's decisions.
 
 Chats
+- 2026-11-19 session/150-design-guidance-rebuild: chat started
 
 From the old roadmap (moved 2026-10-16)
 Design guide: 6 questions fresh builders raised that Destin has not ruled on (guide test,
