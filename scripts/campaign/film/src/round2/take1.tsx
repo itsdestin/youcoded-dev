@@ -1,18 +1,19 @@
 // Round two, take 1: "Once upon a time". See docs/active/design/2026-11-19-campaign-round2/takes.md.
-// A storybook in plum and purple: a few tall towers over a town where every window looks the same.
-// The towers take three things from the town; a purple light slips out of their tallest tower; window
-// by window the town turns into different youcodeds; the three things come back; the town ends brighter.
+// A storybook that travels from plum night to a light morning: a few crooked keeps over a town where every
+// window looks the same. The keeps take three things from the town; a purple light slips out of the
+// tallest; window by window the town turns into different youcodeds and takes their colours; the three
+// things come home; by morning the town is the brightest thing in the picture and the keeps are ghosts.
 //
-// WHY every time below is a word: cues are read from the narrator's word timings (take1-words.ts), so
-// pictures land on the syllable they illustrate. No hand-typed seconds except tiny offsets around a word.
+// WHY every time below is a phrase: cues are read from the narrator's word timings (take1-words.ts), so
+// pictures land on the syllable they illustrate, and a re-recorded script re-times the film by itself.
 import React from 'react';
 import { AbsoluteFill, Audio, Easing, interpolate, spring, staticFile, useCurrentFrame } from 'remotion';
 import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
 import { EndCard, useU } from '../kit';
-import { E, T, captions } from './take1-words';
+import { E, T, WORDS, captions, cueWord } from './take1-words';
 import {
-  ALL_WINS, CX, CY, Cam, Clouds, Defs, FarTowers, FRONT, Foreground, Hills, K, Moon, Row, SkyBack, Stars,
-  TOWERS, TOWN, Tower, Win, aim, layerTransform, project, towerGeo,
+  ALL_WINS, Birds, CX, Cam, Clouds, Defs, FarTowers, FRONT, Foreground, Hills, House, K, Moon, Row, SkyBack, Stars,
+  TOWERS, TOWN, Tower, Win, aim, layerTransform, mix, palette, project, towerGeo,
 } from './take1-scene';
 
 // ---------- small timing helpers ----------
@@ -24,25 +25,116 @@ const BACK_OUT = Easing.bezier(0.34, 1.56, 0.64, 1);
 const SMOOTH = Easing.bezier(0.45, 0, 0.25, 1);
 const seeded = (i: number) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 
-// ---------- the cues (all from the recording) ----------
-const END_WORDS = E('everything', 2);
-export const END_CARD = END_WORDS + 0.35;           // the end card arrives just after the last word
-const G1 = 1.1;                                      // how much taller the towers grow on "hubris"
+// ---------- the cues ----------
+// WHY one table, each with a name and a short phrase: when the owner's new recording arrives, any cue
+// whose phrase was reworded fails with its name in the error, and is fixed here in one line. Phrases are
+// chosen to survive edits (they avoid "what" / "and" / "the" counts, which an added line would shift).
+const Q = {
+  corporations: T('corporations', 'handful of *corporations'),
+  technology: T('technology', 'with your *technology'),
+  takeComputers: T('takeComputers', 'your *computers could do'),
+  takeCost: T('takeCost', 'would *cost'),
+  takeData: T('takeData', 'your personal *data'),
+  subscribe: T('subscribe', 'subscribe to everything'),
+  own: T('own', '*own nothing'),
+  nothing: T('nothing', 'own *nothing'),
+  nothingEnd: E('nothingEnd', 'own *nothing'),
+  however: T('however', 'however'),
+  something: T('something', '*something truly wonderful'),
+  wonderful: T('wonderful', 'truly *wonderful'),
+  happened: T('happened', 'wonderful *happened'),
+  happenedEnd: E('happenedEnd', 'wonderful *happened'),
+  blinded: T('blinded', 'blinded'),
+  hubris: T('hubris', 'hubris'),
+  hubrisEnd: E('hubrisEnd', 'hubris'),
+  created: T('created', 'corporations *created'),
+  newTech: T('newTech', 'kind of *technology'),
+  artificial: T('artificial', 'artificial intelligence'),
+  intelligenceEnd: E('intelligenceEnd', 'artificial *intelligence'),
+  great: T('great', 'a *great treasure'),
+  treasure: T('treasure', 'great *treasure'),
+  shareholder: T('shareholder', 'shareholder value'),
+  valueEnd: E('valueEnd', 'shareholder *value'),
+  excitement: T('excitement', 'their *excitement'),
+  excitementEnd: E('excitementEnd', 'their *excitement'),
+  beyond: T('beyond', 'far *beyond'),
+  control: T('control', 'own *control'),
+  tool: T('tool', 'a *tool that'),
+  make: T('make', 'can *make software'),
+  software: T('software', 'make *software'),
+  softwareEnd: E('softwareEnd', 'make *software'),
+  everScarce: T('everScarce', 'ever-scarce'),
+  foundation: T('foundation', 'foundation'),
+  monopolies1: T('monopolies1', 'these *monopolies'),
+  forAnyone: T('forAnyone', '*for anyone who'),
+  anyone: T('anyone', 'for *anyone'),
+  who: T('who', 'anyone *who'),
+  asks: T('asks', 'who *asks'),
+  asksEnd: E('asksEnd', 'who *asks'),
+  so: T('so', 'and *so'),
+  first: T('first', 'the *first time'),
+  firstTime: T('firstTime', 'first *time'),
+  very: T('very', '*very long'),
+  long1: T('long1', 'very *long'),
+  while: T('while', 'long *while'),
+  get: T('get', 'we *get to decide'),
+  decide: T('decide', 'get to *decide'),
+  decideEnd: E('decideEnd', 'get to *decide'),
+  release0: T('release0', '*what our computers'),
+  land0: T('land0', 'what our *computers'),
+  can: T('can', 'computers *can do'),
+  do: T('do', 'can *do'),
+  release1: T('release1', '*what it costs'),
+  land1: T('land1', 'what it *costs'),
+  release2: T('release2', 'and *what happens'),
+  happens: T('happens', 'what *happens'),
+  land2: T('land2', 'with our *data'),
+  land2End: E('land2End', 'with our *data'),
+  free: T('free', 'free ourselves'),
+  ourselves: T('ourselves', 'free *ourselves'),
+  monopolies2: T('monopolies2', 'tech *monopolies'),
+  pastEnd: E('pastEnd', 'the *past'),
+  timeLast: T('timeLast', "it's *time at long"),
+  long2: T('long2', 'at *long long'),
+  long3: T('long3', 'at long *long'),
+  last: T('last', 'long *last'),
+  open: T('open', '*open source everything'),
+  source: T('source', 'open *source everything'),
+  everything: T('everything', 'open source *everything'),
+  everythingEnd: E('everythingEnd', 'open source *everything'),
+};
+export const END_CARD = Q.everythingEnd + 0.35;      // the end card arrives just after the last word
+const G1 = 1.1;                                      // how much taller the keeps grow on "hubris"
+
+// ---------- night to morning ----------
+// WHY: the owner's direction for the second pass. Night until the turn; the turn lifts the sky; pre-dawn
+// by "we get to decide"; a light morning by "open source everything", so the light end card is inevitable.
+const DAWN_KEYS: [number, number][] = [
+  [0, 0], [Q.something, 0], [Q.happenedEnd + 0.9, 0.3], [Q.beyond, 0.32], [Q.asksEnd, 0.46],
+  [Q.decideEnd, 0.7], [Q.pastEnd, 0.86], [Q.everything, 1], [99, 1],
+];
+const dawnAt = (t: number) => {
+  let i = 0; while (i < DAWN_KEYS.length - 2 && t >= DAWN_KEYS[i + 1][0]) i++;
+  const [t0, a] = DAWN_KEYS[i], [t1, b] = DAWN_KEYS[i + 1];
+  return lerp(a, b, SMOOTH(Math.max(0, Math.min(1, (t - t0) / (t1 - t0)))));
+};
 
 // ---------- who lives where ----------
 const nearestFront = (x: number, skip: number[] = []) =>
   FRONT.houses.filter((h) => !skip.includes(h.id) && FRONT.wins.some((w) => w.house === h.id))
     .reduce((a, b) => (Math.abs(b.x + b.w / 2 - x) < Math.abs(a.x + a.w / 2 - x) ? b : a));
 // the window a house hands its thing out of: its upper, most central one
-const mainWin = (house: number) => FRONT.wins.filter((w) => w.house === house)
-  .sort((a, b) => a.y - b.y || Math.abs(a.x + a.w / 2 - (FRONT.houses[house].x + FRONT.houses[house].w / 2)) - Math.abs(b.x + b.w / 2 - (FRONT.houses[house].x + FRONT.houses[house].w / 2)))[0];
+const mainWin = (house: number) => {
+  const hc = FRONT.houses[house].x + FRONT.houses[house].w / 2;
+  return FRONT.wins.filter((w) => w.house === house).sort((a, b) => a.y - b.y || Math.abs(a.x + a.w / 2 - hc) - Math.abs(b.x + b.w / 2 - hc))[0];
+};
 
-// The three things the towers take, each by the tower whose arm hangs over that house.
+// The three things the keeps take, each by the keep whose arm hangs over that house.
 type Item = { kind: 'laptop' | 'tag' | 'letter'; tower: number; take: number; release: number; land: number; house: number; win: Win };
 const ITEM_DEFS: Omit<Item, 'house' | 'win'>[] = [
-  { kind: 'laptop', tower: 0, take: T('computers', 1), release: T('what', 4), land: T('computers', 2) },
-  { kind: 'tag', tower: 1, take: T('cost', 1), release: T('what', 5), land: T('costs', 1) },
-  { kind: 'letter', tower: 2, take: T('data', 1), release: T('what', 6), land: T('data', 2) },
+  { kind: 'laptop', tower: 0, take: Q.takeComputers, release: Q.release0, land: Q.land0 },
+  { kind: 'tag', tower: 1, take: Q.takeCost, release: Q.release1, land: Q.land1 },
+  { kind: 'letter', tower: 2, take: Q.takeData, release: Q.release2, land: Q.land2 },
 ];
 const ITEMS: Item[] = [];
 ITEM_DEFS.forEach((d) => {
@@ -59,59 +151,73 @@ const O = mainWin(O_HOUSE.id);
 // Windows nearest the first one go first (a ripple outwards); item houses wait for their thing to land.
 const FLIP = new Map<number, number>();
 (() => {
-  FLIP.set(O.id, T('software'));
+  FLIP.set(O.id, Q.software + 0.04);
   ITEMS.forEach((it) => FRONT.wins.filter((w) => w.house === it.house).forEach((w, j) => FLIP.set(w.id, it.land + 0.06 + j * 0.08)));
   const ox = O.x + O.w / 2;
   const queue = ALL_WINS.filter((w) => !FLIP.has(w.id))
     .map((w) => ({ w, d: Math.abs(w.x + w.w / 2 - ox) * (w.row === 'back' ? 1.2 : w.row === 'mid' ? 1.1 : 1) + seeded(w.id) * 90 }))
     .sort((a, b) => a.d - b.d).map((x) => x.w);
   const beats: [number, number][] = [
-    [T('ever-scarce'), 1], [T('foundation'), 1], [T('monopolies', 1), 2],
-    [T('anyone'), 3], [T('who'), 3], [T('asks'), 4],
-    [T('so'), 2], [T('first'), 3], [T('time', 1), 3], [T('very'), 3], [T('long', 1), 3], [T('while'), 4], [T('get'), 4], [T('decide'), 6],
-    [T('can', 2), 3], [T('do', 2), 3], [T('it', 3) + 0.05, 3], [T('happens'), 4], [T('free'), 5], [T('ourselves'), 4],
+    [Q.everScarce, 1], [Q.foundation, 1], [Q.monopolies1, 2],
+    [Q.anyone, 3], [Q.who, 3], [Q.asks, 4],
+    [Q.so, 2], [Q.first, 3], [Q.firstTime, 3], [Q.very, 3], [Q.long1, 3], [Q.while, 4], [Q.get, 4], [Q.decide, 6],
+    [Q.can, 3], [Q.do, 3], [Q.land1 - 0.3, 3], [Q.happens, 4], [Q.free, 5], [Q.ourselves, 4],
   ];
   let q = 0;
   beats.forEach(([at, n]) => { for (let j = 0; j < n && q < queue.length; j++) FLIP.set(queue[q++].id, at + j * 0.07); });
   // the finale: everything left, in three swells on "long, long last", each sweeping left to right
   const rest = queue.slice(q);
-  const swells = [T('long', 2), T('long', 3), T('last')];
+  const swells = [Q.long2, Q.long3, Q.last];
   rest.forEach((w, i) => {
-    const s = i % 3;
     const xs = Math.max(0, Math.min(1, (w.x + 300) / 2500));
-    FLIP.set(w.id, swells[s] + xs * 0.55 + seeded(w.id + 9) * 0.08);
+    FLIP.set(w.id, swells[i % 3] + xs * 0.55 + seeded(w.id + 9) * 0.08);
   });
 })();
+const HOUSE_FLIP = new Map<House, number>();
+(['back', 'mid', 'front'] as const).forEach((row) => TOWN[row].houses.forEach((h) => {
+  HOUSE_FLIP.set(h, Math.min(...TOWN[row].wins.filter((w) => w.house === h.id).map((w) => FLIP.get(w.id) ?? 999)));
+}));
 
 // ---------- the camera ----------
 // WHY keys at words: each move starts or settles on the phrase it serves. Between keys the camera eases;
 // a slow breathing drift on top keeps any held shot from freezing.
 const g1 = towerGeo(TOWERS[1], 1), g2 = towerGeo(TOWERS[1], G1);
+// WHY one medium frame for the taking and the returning: all three arms and all three houses fit, and at
+// this zoom each thing is about a tenth of the frame tall, unmistakable on a phone.
+const ITEM_FRAME: Cam = { cx: 1005, cy: 625, z: 1.3 };
+// WHY a close-up on a cluster of new windows: the apps must read as different little apps in different looks.
+const APPS_CLOSE = aim(1, O.x + O.w / 2 + 130, O.y - 60, 2.9);
 const CAM_KEYS: [number, Cam][] = [
-  [0, aim(K.towers, 1000, 330, 1.3)],
-  [T('technology', 1) + 0.5, { cx: CX, cy: 525, z: 1 }],
-  [T('data', 1) + 1.3, { cx: 960, cy: 535, z: 1.03 }],
-  [E('nothing') + 0.2, { cx: 940, cy: 720, z: 1.45 }],
-  [T('something') - 0.05, aim(K.towers, 1010, g1.lantern.y + 120, 1.55)],
-  [E('happened', 2) + 0.3, aim(K.towers, 1010, g1.lantern.y + 100, 1.85)],
-  [E('hubris') + 0.3, aim(K.towers, 1010, 330, 1.08)],
-  [E('intelligence'), aim(K.towers, 1010, g2.lantern.y + 20, 2.1)],
-  [T('treasure') + 0.1, aim(K.towers, g2.chest.x - 10, g2.chest.y - 30, 2.9)],
-  [E('value') + 0.3, aim(K.towers, g2.chest.x - 10, g2.chest.y - 46, 3.0)],
-  [T('beyond'), aim(K.towers, 1000, g2.lantern.y + 30, 1.9)],
-  // WHY a wide midpoint: following the falling light straight down at full zoom was a whip; easing out
-  // through a wider frame halves the on-screen speed and shows the light crossing from towers to town
-  [(T('control') + T('tool')) / 2, { cx: 1000, cy: 330, z: 1.15 }],
-  [T('tool') + 0.1, aim(1, O.x + O.w / 2, O.y - 110, 1.7)],
-  [E('software') + 0.4, aim(1, O.x + O.w / 2, O.y - 100, 1.8)],
-  [E('asks') + 0.2, aim(1, O.x + O.w / 2 - 60, O.y - 170, 1.32)],
-  [E('decide'), { cx: 960, cy: 640, z: 1.2 }],
-  [E('data', 2) + 0.3, { cx: 960, cy: 625, z: 1.18 }],
-  [E('past'), { cx: 960, cy: 620, z: 1.12 }],
-  [END_CARD, { cx: 960, cy: 670, z: 1.24 }],
-  [80, { cx: 960, cy: 680, z: 1.27 }],
+  [0, aim(K.towers, 1000, 360, 1.25)],
+  [Q.technology - 0.2, { cx: 980, cy: 560, z: 1.1 }],
+  [Q.takeComputers - 0.9, { ...ITEM_FRAME, cx: 985 }],
+  [Q.takeData + 1.6, { ...ITEM_FRAME, cx: 1025 }],
+  [Q.subscribe - 0.4, { cx: 960, cy: 545, z: 1.06 }],
+  [Q.nothingEnd + 0.2, { cx: 940, cy: 700, z: 1.42 }],
+  [Q.something - 0.05, aim(K.towers, 1010, g1.lantern.y + 40, 1.6)],
+  // the wonder: pull back wide so the colour can be seen arriving over the whole world
+  [Q.happenedEnd + 0.8, { cx: 980, cy: 520, z: 1.05 }],
+  [Q.hubrisEnd + 0.3, aim(K.towers, 1010, 330, 1.12)],
+  [Q.intelligenceEnd, aim(K.towers, 1010, g2.lantern.y + 20, 2.05)],
+  [Q.treasure + 0.1, aim(K.towers, g2.chest.x - 10, g2.chest.y - 30, 2.8)],
+  [Q.valueEnd + 0.3, aim(K.towers, g2.chest.x - 10, g2.chest.y - 46, 2.9)],
+  [Q.beyond, aim(K.towers, 1000, g2.lantern.y + 30, 1.85)],
+  // WHY a wide midpoint: following the falling light straight down at full zoom was a whip
+  [(Q.control + Q.tool) / 2, { cx: 1000, cy: 330, z: 1.15 }],
+  [Q.tool + 0.1, aim(1, O.x + O.w / 2, O.y - 110, 1.7)],
+  [Q.softwareEnd + 0.4, aim(1, O.x + O.w / 2, O.y - 100, 1.8)],
+  [Q.asksEnd + 0.2, aim(1, O.x + O.w / 2 + 40, O.y - 150, 1.45)],
+  [Q.first + 0.3, APPS_CLOSE],
+  [Q.long1, { ...APPS_CLOSE, cx: APPS_CLOSE.cx + 50, z: 3.0 }],
+  // WHY a long pull-back (about 2.5 s): from this close, a faster move read as a jump in the motion check
+  [Q.release0 + 0.1, ITEM_FRAME],
+  [Q.land2End + 0.4, { ...ITEM_FRAME, cx: 1020 }],
+  // the finale frames the town large: it is the brightest, most colourful thing on screen; the keeps are ghosts above
+  [Q.pastEnd, { cx: 960, cy: 680, z: 1.3 }],
+  [END_CARD, { cx: 960, cy: 740, z: 1.42 }],
+  [80, { cx: 960, cy: 750, z: 1.45 }],
 ];
-const camAt = (t: number): Cam => {
+export const camAt = (t: number): Cam => {
   let i = 0;
   while (i < CAM_KEYS.length - 2 && t >= CAM_KEYS[i + 1][0]) i++;
   const [t0, a] = CAM_KEYS[i], [t1, b] = CAM_KEYS[i + 1];
@@ -136,24 +242,28 @@ const Light: React.FC<{ x: number; y: number; s: number; t: number; squash?: num
   );
 };
 
-/** The three things, drawn as paper cut-outs. `size` is in screen pixels. */
+/** The three things, drawn as paper cut-outs with a plum ink line. `size` is in screen pixels. */
 const Thing: React.FC<{ kind: Item['kind']; x: number; y: number; size: number; rot: number; o: number }> = ({ kind, x, y, size, rot, o }) => {
   const s = size / 60;
+  const ink = { stroke: '#21152C', strokeWidth: 2, strokeLinejoin: 'round' as const };
   let art: React.ReactNode;
   if (kind === 'laptop') art = (<g>
-    <rect x={-24} y={-30} width={48} height={32} rx={4} fill="#EFE3F6" />
+    <rect x={-24} y={-30} width={48} height={32} rx={4} fill="#EFE3F6" {...ink} />
     <rect x={-19} y={-25} width={38} height={22} rx={2} fill="#9750AA" />
     <rect x={-13} y={-20} width={16} height={4} rx={2} fill="#F7F0FB" opacity={0.9} />
     <rect x={-13} y={-13} width={24} height={3} rx={1.5} fill="#F7F0FB" opacity={0.55} />
-    <path d="M-30 2 L30 2 L26 9 L-26 9 Z" fill="#C9B0DB" />
+    <path d="M-30 2 L30 2 L26 9 L-26 9 Z" fill="#C9B0DB" {...ink} />
   </g>);
   else if (kind === 'tag') art = (<g transform="rotate(-12)">
-    <path d="M-26 -16 L14 -16 L28 0 L14 16 L-26 16 Q-30 16 -30 12 L-30 -12 Q-30 -16 -26 -16 Z" fill="#EFE3F6" />
-    <circle cx={14} cy={0} r={4} fill="#21152C" />
-    <text x={-10} y={9} textAnchor="middle" fontFamily={DMSANS} fontWeight={900} fontSize={24} fill="#9750AA">$</text>
+    {/* WHY no currency sign: a plain price tag with its string reads as "cost" anywhere in the world */}
+    <path d="M-26 -16 L14 -16 L28 0 L14 16 L-26 16 Q-30 16 -30 12 L-30 -12 Q-30 -16 -26 -16 Z" fill="#EFE3F6" {...ink} />
+    <circle cx={14} cy={0} r={4} fill="#F7F0FB" {...ink} strokeWidth={1.6} />
+    <path d="M18 0 C30 -6 34 -18 26 -26" fill="none" stroke="#21152C" strokeWidth={1.6} />
+    <rect x={-22} y={-6} width={22} height={4} rx={2} fill="#9750AA" />
+    <rect x={-22} y={3} width={14} height={4} rx={2} fill="#C9B0DB" />
   </g>);
   else art = (<g>
-    <rect x={-28} y={-19} width={56} height={38} rx={3} fill="#EFE3F6" />
+    <rect x={-28} y={-19} width={56} height={38} rx={3} fill="#EFE3F6" {...ink} />
     <path d="M-28 -17 L0 4 L28 -17" fill="none" stroke="#C9B0DB" strokeWidth={3} strokeLinejoin="round" />
     <circle cx={0} cy={4} r={7} fill="#9750AA" />
     <path d="M-3 3 L-1 6 L3 1" fill="none" stroke="#F7F0FB" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
@@ -161,20 +271,21 @@ const Thing: React.FC<{ kind: Item['kind']; x: number; y: number; size: number; 
   return <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`} opacity={o} filter="url(#lift)">{art}</g>;
 };
 
-/** A hook on a line, hanging from a tower's arm. */
-const Hook: React.FC<{ ax: number; ay: number; hx: number; hy: number; s: number; o: number }> = ({ ax, ay, hx, hy, s, o }) => (
-  <g opacity={o} stroke="#B7A3C8" fill="none" strokeLinecap="round">
-    <line x1={ax} y1={ay} x2={hx} y2={hy} strokeWidth={1.4} strokeOpacity={0.8} />
+/** A hook on a rope, hanging from a keep's arm. */
+const Hook: React.FC<{ ax: number; ay: number; hx: number; hy: number; s: number; o: number; c: string }> = ({ ax, ay, hx, hy, s, o, c }) => (
+  <g opacity={o} stroke={c} fill="none" strokeLinecap="round">
+    <line x1={ax} y1={ay} x2={hx} y2={hy} strokeWidth={1.8} strokeOpacity={0.9} />
     {/* a weighted block and a curled hook: it should read as a crane's hook even when small */}
-    <rect x={hx - 4 * s} y={hy - 2 * s} width={8 * s} height={7 * s} rx={1.5 * s} fill="#B7A3C8" stroke="none" />
-    <path d={`M${hx} ${hy + 5 * s} l0 ${9 * s} a${6 * s} ${6 * s} 0 1 1 ${-11 * s} ${1 * s}`} strokeWidth={2.6 * Math.max(0.8, s)} />
+    <rect x={hx - 5 * s} y={hy - 2 * s} width={10 * s} height={9 * s} rx={2 * s} fill={c} stroke="none" />
+    <path d={`M${hx} ${hy + 7 * s} l0 ${10 * s} a${7 * s} ${7 * s} 0 1 1 ${-13 * s} ${1 * s}`} strokeWidth={3 * Math.max(0.8, s)} />
   </g>
 );
 
 // ---------- type ----------
 type HWord = { text: string; at: number; accent?: boolean };
-/** A headline whose words arrive exactly as they are spoken (DM Sans 900, lowercase, one purple word). */
-const Headline: React.FC<{ words: HWord[]; out: number; y: number; t: number; size?: number }> = ({ words, out, y, t, size = 5.4 }) => {
+/** A headline whose words arrive exactly as they are spoken (DM Sans 900, lowercase, one purple word).
+ *  `day` switches it to the light palette (plum on lavender) once morning has come. */
+const Headline: React.FC<{ words: HWord[]; out: number; y: number; t: number; day: boolean; size?: number }> = ({ words, out, y, t, day, size = 5.4 }) => {
   const u = useU();
   if (t < words[0].at - 0.1 || t > out + 0.05) return null;
   const exit = r(t, out - 0.4, out, EASE_IN);
@@ -183,14 +294,15 @@ const Headline: React.FC<{ words: HWord[]; out: number; y: number; t: number; si
       <div style={{
         position: 'absolute', top: `${y}%`, transform: `translateY(-50%) translateY(${-exit * 0.8 * u}px)`, opacity: 1 - exit,
         width: '84%', textAlign: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: size * u, letterSpacing: '-0.05em',
-        lineHeight: 1.04, color: C.nightText, textShadow: `0 ${0.2 * u}px ${2.4 * u}px rgba(10,4,16,0.85)`,
+        lineHeight: 1.04, color: day ? C.plum : C.nightText,
+        textShadow: day ? `0 0 ${2 * u}px rgba(251,246,253,0.9)` : `0 ${0.2 * u}px ${2.4 * u}px rgba(10,4,16,0.85)`,
       }}>
         {words.map((w, i) => {
           const p = r(t, w.at - 0.06, w.at + 0.42);
           return (
             <span key={i} style={{
               display: 'inline-block', marginRight: '0.24em', opacity: p, transform: `translateY(${(1 - p) * 0.3}em)`,
-              filter: p < 1 ? `blur(${(1 - p) * 0.1}em)` : undefined, color: w.accent ? C.purpleNight : undefined,
+              filter: p < 1 ? `blur(${(1 - p) * 0.1}em)` : undefined, color: w.accent ? (day ? C.purple : C.purpleNight) : undefined,
             }}>{w.text}</span>
           );
         })}
@@ -199,15 +311,18 @@ const Headline: React.FC<{ words: HWord[]; out: number; y: number; t: number; si
   );
 };
 
-const FINAL: HWord[] = [{ text: 'open', at: T('open') }, { text: 'source', at: T('source') }, { text: 'everything.', at: T('everything', 2), accent: true }];
+const FINAL: HWord[] = [{ text: 'open', at: Q.open }, { text: 'source', at: Q.source }, { text: 'everything.', at: Q.everything, accent: true }];
 const HEADLINES: { words: HWord[]; out: number; y: number }[] = [
-  { words: [{ text: 'own', at: T('own', 1) }, { text: 'nothing.', at: T('nothing'), accent: true }], out: T('however') - 0.1, y: 22 },
-  { words: [{ text: 'something', at: T('something') }, { text: 'wonderful', at: T('wonderful'), accent: true }, { text: 'happened.', at: T('happened', 2) }], out: T('blinded') + 0.5, y: 76 },
-  { words: [{ text: 'for', at: T('for', 2) }, { text: 'anyone', at: T('anyone'), accent: true }, { text: 'who', at: T('who') }, { text: 'asks.', at: T('asks') }], out: T('so') - 0.05, y: 20 },
+  { words: [{ text: 'own', at: Q.own }, { text: 'nothing.', at: Q.nothing, accent: true }], out: Q.however - 0.1, y: 20 },
+  { words: [{ text: 'something', at: Q.something }, { text: 'wonderful', at: Q.wonderful, accent: true }, { text: 'happened.', at: Q.happened }], out: Q.blinded + 0.5, y: 78 },
+  { words: [{ text: 'for', at: Q.forAnyone }, { text: 'anyone', at: Q.anyone, accent: true }, { text: 'who', at: Q.who }, { text: 'asks.', at: Q.asks }], out: Q.so - 0.05, y: 20 },
 ];
-const CAPS = captions(T('open') - 0.2);
+// the captions stop where the closing headline begins ("open source everything.")
+const CAPS = captions(WORDS.indexOf(cueWord('open', '*open source everything')), Q.open - 0.2);
 
-/** The muted version's captions: the whole script, one sentence at a time, sentence case. */
+/** The muted version's captions: the whole script, one sentence at a time, on a small storybook-paper card.
+ *  WHY a card at the top: over the picture the words fought the windows; the card is always clean, and the
+ *  top of the frame is sky in nearly every shot, so it hides nothing the story needs. */
 const Captions: React.FC<{ t: number }> = ({ t }) => {
   const u = useU();
   const c = CAPS.find((x) => t >= x.at - 0.05 && t <= x.out + 0.05);
@@ -216,19 +331,26 @@ const Captions: React.FC<{ t: number }> = ({ t }) => {
   return (
     <AbsoluteFill style={{ alignItems: 'center' }}>
       <div style={{
-        position: 'absolute', top: '9%', width: '72%', textAlign: 'center', opacity: o, transform: `translateY(${(1 - o) * 0.5 * u}px)`,
-        fontFamily: DMSANS, fontWeight: 500, fontSize: 2.75 * u, lineHeight: 1.28, letterSpacing: '-0.012em', color: C.nightText,
-        textShadow: `0 ${0.15 * u}px ${1.6 * u}px rgba(10,4,16,0.9)`, textWrap: 'balance',
+        position: 'absolute', top: '8%', maxWidth: '76%', padding: `${1.1 * u}px ${2.4 * u}px ${1.3 * u}px`, borderRadius: 1.4 * u,
+        background: 'rgba(250,245,253,0.95)', boxShadow: `0 ${0.5 * u}px ${2 * u}px rgba(40,14,60,0.28), 0 0 0 1px rgba(201,176,219,0.8)`,
+        opacity: o, transform: `translateY(${(1 - o) * 0.6 * u}px)`,
+        fontFamily: DMSANS, fontWeight: 700, fontSize: 2.75 * u, lineHeight: 1.22, letterSpacing: '-0.02em', color: C.plum,
+        textAlign: 'center', textWrap: 'balance',
       }}>{c.text}</div>
     </AbsoluteFill>
   );
 };
 
-/** Film grain and a gentle vignette, on top of everything: the paper and the lens. */
-const Grain: React.FC<{ frame: number }> = ({ frame }) => (
+/** Film grain, a paper texture and a gentle vignette, on top of everything: the paper and the lens. */
+const Grain: React.FC<{ frame: number; dawn: number }> = ({ frame, dawn }) => (
   <AbsoluteFill style={{ pointerEvents: 'none' }}>
-    <AbsoluteFill style={{ background: 'radial-gradient(ellipse 75% 70% at 50% 52%, transparent 55%, rgba(8,3,13,0.55) 100%)' }} />
-    <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0, mixBlendMode: 'overlay', opacity: 0.16 }}>
+    <AbsoluteFill style={{ background: 'radial-gradient(ellipse 75% 70% at 50% 52%, transparent 58%, rgba(30,8,44,0.5) 100%)', opacity: 1 - 0.7 * dawn }} />
+    <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0, mixBlendMode: 'multiply', opacity: 0.1 }}>
+      {/* paper fibres: long thin noise, still, so the picture looks printed on paper */}
+      <filter id="t1paper"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.35" numOctaves="3" seed="4" /><feColorMatrix type="matrix" values="0 0 0 0 0.55  0 0 0 0 0.45  0 0 0 0 0.6  0 0 0 1.2 -0.3" /></filter>
+      <rect width="100%" height="100%" filter="url(#t1paper)" />
+    </svg>
+    <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0, mixBlendMode: 'overlay', opacity: 0.14 }}>
       <filter id="t1grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed={Math.floor(frame / 2) % 50} /><feColorMatrix type="saturate" values="0" /></filter>
       <rect width="100%" height="100%" filter="url(#t1grain)" />
     </svg>
@@ -240,84 +362,85 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
   const frame = useCurrentFrame();
   const t = frame / FPS;
   const cam = camAt(t);
+  const dawn = dawnAt(t);
+  const pal = palette(dawn);
 
-  // --- the towers ---
-  const growth = 1 + (G1 - 1) * spring({ frame: frame - Math.round(T('hubris') * FPS), fps: FPS, config: { damping: 11, mass: 0.9, stiffness: 90 } });
-  const corp = T('corporations', 1);
-  const flare = Math.min(r(t, T('blinded'), T('blinded') + 0.5), 1 - r(t, E('hubris'), E('hubris') + 1.2, EASE_IN_OUT));
-  const excited = Math.min(r(t, T('excitement'), T('excitement') + 0.3), 1 - r(t, E('excitement') + 0.4, T('beyond'), EASE_IN_OUT));
-  const towerLit = (row: number, rows: number, col: number) => {
-    let L = 0.22 + 0.78 * r(t, corp + (row / rows) * 0.8, corp + (row / rows) * 0.8 + 0.35);
-    L += 0.65 * flare * (0.7 + 0.3 * seeded(row * 7 + col));
-    L *= 1 - 0.45 * excited * (0.5 + 0.5 * Math.sin(t * 11 + row * 0.8 + col * 2.3));
-    const off = T('monopolies', 2) + (1 - row / rows) * 1.2;
-    L *= 1 - 0.92 * r(t, off, off + 0.3);
+  // --- the keeps ---
+  const growth = 1 + (G1 - 1) * spring({ frame: frame - Math.round(Q.hubris * FPS), fps: FPS, config: { damping: 11, mass: 0.9, stiffness: 90 } });
+  const flare = Math.min(r(t, Q.blinded, Q.blinded + 0.5), 1 - r(t, Q.hubrisEnd, Q.hubrisEnd + 1.2, EASE_IN_OUT));
+  const excited = Math.min(r(t, Q.excitement, Q.excitement + 0.3), 1 - r(t, Q.excitementEnd + 0.4, Q.beyond, EASE_IN_OUT));
+  const towerLit = (v: number, i: number) => {
+    let L = 0.22 + 0.78 * r(t, Q.corporations + v * 0.8, Q.corporations + v * 0.8 + 0.35);
+    L += 0.65 * flare * (0.7 + 0.3 * seeded(i * 7));
+    L *= 1 - 0.45 * excited * (0.5 + 0.5 * Math.sin(t * 11 + i * 2.3));
+    const off = Q.monopolies2 + (1 - v) * 1.2;
+    L *= 1 - 0.95 * r(t, off, off + 0.3);
     return L;
   };
-  const recede = r(t, T('monopolies', 2), E('past') + 0.8, EASE_IN_OUT);
+  const recede = r(t, Q.monopolies2, Q.pastEnd + 0.8, EASE_IN_OUT);
 
-  // --- the light and the purple it brings ---
-  const kindle = r(t, T('something'), T('wonderful') + 0.25, EASE_OUT);
-  const purple = r(t, T('happened', 2), T('happened', 2) + 1.4, EASE_IN_OUT);
-  const brightAI = 1 + 0.25 * r(t, T('artificial'), E('intelligence'));
-  const field = 0.15 * purple + 0.85 * r(t, T('time', 3), E('everything', 2) + 0.4, EASE_IN_OUT);
-  const hush = Math.min(r(t, T('however'), T('however') + 0.6, EASE_IN_OUT), 1 - r(t, T('something'), T('wonderful'), EASE_IN_OUT));
+  // --- the light, and the colour it brings ---
+  const kindle = r(t, Q.something, Q.wonderful + 0.25, EASE_OUT);
+  const brightAI = 1 + 0.25 * r(t, Q.artificial, Q.intelligenceEnd);
+  // WHY the field grows with the dawn: the brand's colour field is what the morning sky becomes
+  const field = 0.12 + 0.88 * Math.max(0, (dawn - 0.25) / 0.75);
+  const hush = Math.min(r(t, Q.however, Q.however + 0.6, EASE_IN_OUT), 1 - r(t, Q.something, Q.wonderful, EASE_IN_OUT));
   const G = towerGeo(TOWERS[1], growth);
-  const escapeAt = T('beyond'), outAt = T('control'), landAt = T('software');
+  const escapeAt = Q.beyond, outAt = Q.control, landAt = Q.software;
 
   // --- the town's windows ---
-  const tech = T('technology', 1), nothing = T('nothing');
   const winState = (w: Win) => {
-    const on = r(t, tech + Math.max(0, (w.x + 300) / 2500) * 0.5, tech + Math.max(0, (w.x + 300) / 2500) * 0.5 + 0.25);
-    const dim = r(t, nothing + seeded(w.id) * 0.7, nothing + seeded(w.id) * 0.7 + 0.5, EASE_IN_OUT);
+    const xs = Math.max(0, (w.x + 300) / 2500) * 0.5;
+    const on = r(t, Q.technology + xs, Q.technology + xs + 0.25);
+    const dim = r(t, Q.nothing + seeded(w.id) * 0.7, Q.nothing + seeded(w.id) * 0.7 + 0.5, EASE_IN_OUT);
     const b = 0.1 + 0.75 * on - 0.5 * dim;
     const ft = FLIP.get(w.id) ?? 999;
     return { b, flip: Math.max(0, Math.min(1, (t - ft) / 0.42)) };
   };
-
-  // how much of the town has turned: drives the warm band of town light over the roofs
+  const houseLit = (h: House) => { const ft = HOUSE_FLIP.get(h) ?? 999; return r(t, ft, ft + 1.2, EASE_IN_OUT); };
   const townGlow = ALL_WINS.reduce((n, w) => n + (t >= (FLIP.get(w.id) ?? 999) ? 1 : 0), 0) / ALL_WINS.length;
 
-  // --- strings from every house to a tower ("subscribe to everything") ---
-  const subs = T('subscribe'), freeAt = T('free');
+  // --- strings from every house to a keep ("subscribe to everything") ---
   const strings: React.ReactNode[] = [];
+  const stringC = mix('#C2AED4', '#7E6098', dawn);
   [...TOWN.back.houses, ...TOWN.mid.houses, ...TOWN.front.houses].forEach((h, i) => {
     if (h.x < -500 || h.x > 2350 || (h.row !== 'front' && i % 2)) return;
     const tw = TOWERS.reduce((a, b) => (Math.abs(b.x - h.peak.x) < Math.abs(a.x - h.peak.x) ? b : a));
     const geo = towerGeo(tw, growth);
-    const ay = geo.top + (TOWER_SPAN(tw) * (0.25 + 0.4 * seeded(i + 3)));
-    const side = h.peak.x < tw.x ? -1 : 1;
-    const A = project(cam, K.towers, tw.x + side * geo.half(ay) * 0.9, ay + recede * 30);
+    const ay = geo.top + (geo.base - geo.top) * (0.25 + 0.4 * seeded(i + 3));
+    const side = h.peak.x < geo.cx(ay) ? -1 : 1;
+    const A = project(cam, K.towers, geo.cx(ay) + side * geo.half(ay) * 0.9, ay + recede * 30);
     const B = project(cam, K[h.row], h.peak.x, h.peak.y);
-    const d0 = subs + Math.min(1, Math.abs(h.peak.x - 960) / 1500) * 1.2;
+    const d0 = Q.subscribe + Math.min(1, Math.abs(h.peak.x - 960) / 1500) * 1.2;
     const grow = r(t, d0, d0 + 0.5, EASE_IN_OUT);
     if (grow <= 0) return;
-    const snapT = freeAt + seeded(i) * 0.45;
+    const snapT = Q.free + seeded(i) * 0.45;
     const snap = r(t, snapT, snapT + 0.7, EASE_OUT);
     if (snap >= 1) return;
-    // the line grows down from the tower; after "free" its lower end whips back up and fades
+    // the line grows down from the keep; after "free" its lower end whips back up and fades
     const reach = grow * (1 - snap);
     const bx = lerp(A.x, B.x, reach), by = lerp(A.y, B.y, reach);
-    const sag = 40 * (1 - snap) + snap * 60 * (side);
-    const mx = (A.x + bx) / 2 + snap * 30 * side, my = (A.y + by) / 2 + sag;
-    strings.push(<path key={i} d={`M${A.x} ${A.y} Q${mx} ${my} ${bx} ${by}`} fill="none" stroke="#B9A6CB" strokeWidth={1.1} strokeOpacity={0.32 * (1 - snap)} />);
+    const mx = (A.x + bx) / 2 + snap * 30 * side, my = (A.y + by) / 2 + 40 * (1 - snap) + snap * 60 * side;
+    strings.push(<path key={i} d={`M${A.x} ${A.y} Q${mx} ${my} ${bx} ${by}`} fill="none" stroke={stringC} strokeWidth={1.3} strokeOpacity={0.4 * (1 - snap)} />);
   });
 
   // --- hooks and the three things ---
   const hooks: React.ReactNode[] = [];
   const things: React.ReactNode[] = [];
+  const spins = [0, 0, 0];
+  const hookC = mix('#C9B6DA', '#5F4676', dawn);
   ITEMS.forEach((it, i) => {
     const tw = TOWERS[it.tower];
     const geo = towerGeo(tw, growth);
-    const A = project(cam, K.towers, geo.armTip.x, geo.armTip.y + 8 + recede * 30);
+    const A = project(cam, K.towers, geo.armTip.x, geo.armTip.y + 12 + recede * 30);
     const W = project(cam, K.front, it.win.x + it.win.w / 2, it.win.y + it.win.h / 2);
-    const sT = project(cam, K.towers, tw.x, geo.armTip.y + 40);
+    const sT = project(cam, K.towers, geo.cx(geo.armY), geo.armTip.y + 40);
     const s = lerp(A.s, W.s, 0.5);
-    const size = 60 * s;
-    const hang = { x: A.x, y: A.y + 54 * A.s };
+    const base = 92;                                   // WHY 92: about a tenth of the frame tall in the item shots
+    const size = base * s;
+    const hang = { x: A.x, y: A.y + 80 * A.s };
     const N = it.take;
-    const towersGone = 1 - recede;
-    let hook = { x: A.x, y: A.y + 12 * A.s };
+    let hook = { x: A.x, y: A.y + 14 * A.s };
     let thing: { x: number; y: number; sz: number; rot: number; o: number } | null = null;
     if (t < it.release) {
       const down = r(t, N - 1.0, N - 0.1, EASE_IN_OUT);
@@ -326,28 +449,30 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
       const stow = r(t, N + 1.5, N + 1.95, EASE_IN);
       const out = r(t, it.release - 0.7, it.release - 0.2, EASE_OUT);
       if (t < N + 1.5) {
-        const startY = W.y - 26 * W.s * pop;
+        const startY = W.y - 30 * W.s * pop;
         const px = lerp(W.x, hang.x, lift) + Math.sin(lift * Math.PI) * 26 * (i - 1);
         const py = lerp(startY, hang.y, lift);
-        hook = lift > 0 || pop > 0 ? { x: px, y: py - size * 0.42 } : { x: lerp(A.x, W.x, down), y: lerp(A.y + 12 * A.s, W.y - size * 0.3, down) };
+        hook = lift > 0 || pop > 0 ? { x: px, y: py - size * 0.45 } : { x: lerp(A.x, W.x, down), y: lerp(A.y + 14 * A.s, W.y - size * 0.35, down) };
         if (pop > 0) thing = { x: px, y: py, sz: size * pop * lerp(1, A.s / s, lift), rot: Math.sin(t * 3 + i) * 6 * lift, o: 1 };
       } else if (t < it.release - 0.7) {
-        // stowed: slides into the tower and is gone; the empty hook stays up there, waiting
-        thing = stow < 1 ? { x: lerp(hang.x, sT.x, stow), y: hang.y, sz: size * A.s / s * (1 - 0.5 * stow), rot: 0, o: 1 - stow } : null;
+        // stowed: slides into the keep and is gone; the empty hook stays up there, waiting
+        thing = stow < 1 ? { x: lerp(hang.x, sT.x, stow), y: hang.y, sz: base * A.s * (1 - 0.5 * stow), rot: 0, o: 1 - stow } : null;
+        hook = { x: hang.x, y: lerp(hang.y - base * A.s * 0.45, A.y + 14 * A.s, stow) };
       } else {
-        thing = { x: lerp(sT.x, hang.x, out), y: hang.y, sz: 60 * A.s, rot: 0, o: out };
-        hook = { x: hang.x, y: hang.y - 60 * A.s * 0.42 };
+        thing = { x: lerp(sT.x, hang.x, out), y: hang.y, sz: base * A.s, rot: 0, o: out };
+        hook = { x: hang.x, y: lerp(A.y + 14 * A.s, hang.y - base * A.s * 0.45, out) };
       }
     } else {
-      // released: the line lets go and the thing drifts home, swaying like a leaf, landing on its word
+      // released: the rope lets go and the thing drifts home, swaying like a leaf, landing on its word
       const p = r(t, it.release, it.land, EASE_IN_OUT);
       const into = r(t, it.land, it.land + 0.22, EASE_IN);
       const sway = Math.sin(p * Math.PI * 2) * 34 * (1 - p) * s;
-      thing = into < 1 ? { x: lerp(hang.x, W.x, p) + sway, y: lerp(hang.y, W.y, p), sz: lerp(60 * A.s, 60 * W.s * 0.8, p) * (1 - 0.7 * into), rot: sway * 0.5, o: 1 - into } : null;
+      thing = into < 1 ? { x: lerp(hang.x, W.x, p) + sway, y: lerp(hang.y, W.y, p), sz: lerp(base * A.s, base * W.s * 0.85, p) * (1 - 0.7 * into), rot: sway * 0.5, o: 1 - into } : null;
       const back = r(t, it.release, it.release + 0.5, EASE_OUT);
-      hook = { x: hang.x, y: lerp(hang.y - 25 * A.s, A.y + 12 * A.s, back) };
+      hook = { x: hang.x, y: lerp(hang.y - 30 * A.s, A.y + 14 * A.s, back) };
     }
-    hooks.push(<Hook key={i} ax={A.x} ay={A.y} hx={hook.x} hy={hook.y} s={A.s} o={towersGone} />);
+    spins[it.tower] = (hook.y - A.y) * 2.2;            // the pulley turns as the rope pays out
+    hooks.push(<Hook key={i} ax={A.x} ay={A.y} hx={hook.x} hy={hook.y} s={A.s * 1.2} o={1 - recede} c={hookC} />);
     if (thing) things.push(<Thing key={i} kind={it.kind} x={thing.x} y={thing.y} size={thing.sz} rot={thing.rot} o={thing.o} />);
   });
 
@@ -355,7 +480,7 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
   const L0 = G.lantern;
   let lightInTower: React.ReactNode = null;
   let lightFree: React.ReactNode = null;
-  if (t >= T('something') - 0.1 && t < escapeAt) {
+  if (t >= Q.something - 0.1 && t < escapeAt) {
     lightInTower = <Light x={L0.x} y={L0.y + 10} s={(0.2 + 1.3 * kindle) * (0.9 + 0.1 * brightAI)} t={t} halo={kindle * brightAI} />;
   } else if (t >= escapeAt && t < landAt + 0.4) {
     const exitPt = { x: L0.x - L0.w / 2 - 30, y: L0.y + 20 };
@@ -363,14 +488,13 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
     const outside = project(cam, K.towers, exitPt.x, exitPt.y);
     const W = project(cam, K.front, O.x + O.w / 2, O.y + O.h / 2);
     // free: it drifts down in a lazy S, hovers on "a tool", then darts into the window on "software"
-    const hover = T('tool');
     const path = (tj: number) => {
-      const p1 = r(tj, outAt, hover, SMOOTH) * 0.86;
-      const p2 = r(tj, T('make'), landAt, EASE_IN);
+      const p1 = r(tj, outAt, Q.tool, SMOOTH) * 0.86;
+      const p2 = r(tj, Q.make, landAt, EASE_IN);
       const p = p1 + 0.14 * p2;
       return {
         x: lerp(outside.x, W.x, p) + Math.sin(p * Math.PI * 2.2) * (1 - p) * 120,
-        y: lerp(outside.y, W.y - 40 * W.s * (1 - p2), p) + Math.sin(tj * 3.2) * 6 * (1 - p2) * r(tj, hover - 0.3, hover),
+        y: lerp(outside.y, W.y - 40 * W.s * (1 - p2), p) + Math.sin(tj * 3.2) * 6 * (1 - p2) * r(tj, Q.tool - 0.3, Q.tool),
         s: lerp(outside.s * 1.5, W.s * 0.9, p),
       };
     };
@@ -403,73 +527,91 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
     lightFree = (<g>{trail}<Light x={x} y={y} s={s * (1 - gone * 0.9)} t={t} squash={squash} halo={brightAI * (1 - gone)} /></g>);
   }
 
-  // --- the cage and the treasure chest on the tallest tower ---
+  // --- the wonder: a wave of warm colour rolls out from the lantern across the whole world ---
+  // WHY a widening ring and not a glow: the brand bans glowing orbs; a passing front of light reads as the
+  // world changing colour, and the sky behind it has really changed (the dawn palette starts here).
+  const waveP = r(t, Q.wonderful - 0.1, Q.happenedEnd + 1.1, Easing.bezier(0.3, 0.1, 0.4, 1));
+  const lanternScreen = project(cam, K.towers, L0.x, L0.y);
+  const wave = waveP > 0 && waveP < 1 ? (
+    <g style={{ mixBlendMode: 'screen' }}>
+      <defs>
+        <radialGradient id="t1wave">
+          <stop offset="0" stopColor="#F2A6D0" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#F2A6D0" stopOpacity="0" />
+          <stop offset="0.86" stopColor="#F6B8DA" stopOpacity="0.32" />
+          <stop offset="1" stopColor="#F2A6D0" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <circle cx={lanternScreen.x} cy={lanternScreen.y} r={60 + waveP * 2600} fill="url(#t1wave)" opacity={Math.sin(waveP * Math.PI) * 0.9} />
+    </g>
+  ) : null;
+
+  // --- the cage and the treasure chest on the tallest keep ---
   const bars = [-33, -11, 11, 33].map((dx, i) => {
-    const p = r(t, lerp(T('created', 1), T('technology', 2), i / 3), lerp(T('created', 1), T('technology', 2), i / 3) + 0.35, BACK_OUT);
-    return p > 0 ? <rect key={i} x={L0.x + dx - 2.5} y={L0.y - L0.h / 2} width={5} height={L0.h * p} rx={2} fill="#3D2849" stroke="#6E4E80" strokeWidth={0.8} /> : null;
+    const at = lerp(Q.created, Q.newTech, i / 3);
+    const p = r(t, at, at + 0.35, BACK_OUT);
+    return p > 0 ? <rect key={i} x={L0.x + dx - 2.5} y={L0.y - L0.h / 2} width={5} height={L0.h * p} rx={2} fill={pal.towerDark} stroke={pal.rim} strokeWidth={0.9} strokeOpacity={0.7} /> : null;
   });
-  const chestP = r(t, T('great'), T('great') + 0.45, BACK_OUT);
-  const lid = r(t, T('treasure') + 0.15, T('treasure') + 0.7, BACK_OUT);
-  const chart = r(t, T('shareholder') - 0.1, E('value'), EASE_OUT);
+  const chestP = r(t, Q.great, Q.great + 0.45, BACK_OUT);
+  const lid = r(t, Q.treasure + 0.15, Q.treasure + 0.7, BACK_OUT);
+  const chart = r(t, Q.shareholder - 0.1, Q.valueEnd, EASE_OUT);
   const ch = G.chest;
   const chest = chestP > 0 ? (
     <g transform={`translate(${ch.x} ${ch.y}) scale(${chestP * 1.45})`}>
       {/* WHY a tiny line chart instead of gold: the "great treasure" is shareholder value, and the joke lands when the lid opens on nothing but a graph */}
-      <path d={`M-14 -12 L-5 -30 L3 -23 L16 -54`} fill="none" stroke="#F3EAF9" strokeWidth={3.4} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={80} strokeDashoffset={80 * (1 - chart)} />
+      <path d="M-14 -12 L-5 -30 L3 -23 L16 -54" fill="none" stroke="#F3EAF9" strokeWidth={3.4} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={80} strokeDashoffset={80 * (1 - chart)} />
       {chart > 0.9 && <path d="M16 -54 l-9 3 M16 -54 l1 9" stroke="#F3EAF9" strokeWidth={3.4} strokeLinecap="round" />}
-      <rect x={-23} y={-26} width={46} height={26} rx={3} fill="#3B2449" stroke="#8E6AA3" strokeWidth={1.2} />
-      <rect x={-23} y={-16} width={46} height={4} fill="#8E6AA3" />
-      <rect x={-4} y={-18} width={8} height={9} rx={1.5} fill="#C9B0DB" />
+      <rect x={-23} y={-26} width={46} height={26} rx={3} fill="#4A2D5C" stroke="#21152C" strokeWidth={1.6} />
+      <rect x={-23} y={-16} width={46} height={4} fill="#B98ECB" />
+      <rect x={-4} y={-18} width={8} height={9} rx={1.5} fill="#E6D3F1" />
       <g transform={`translate(-23 -26) rotate(${-115 * lid})`}>
-        <path d="M0 0 L0 -6 Q23 -20 46 -6 L46 0 Z" fill="#432A52" stroke="#8E6AA3" strokeWidth={1.2} />
+        <path d="M0 0 L0 -6 Q23 -20 46 -6 L46 0 Z" fill="#573670" stroke="#21152C" strokeWidth={1.6} />
       </g>
     </g>
   ) : null;
 
-  const towerRecede = { opacity: 1 - 0.55 * recede, transform: `translate(0 ${recede * 30})` };
+  const towerRecede = { opacity: 1 - 0.5 * recede, transform: `translate(0 ${recede * 30})` };
+  const dayText = dawn > 0.55;
 
   return (
     <AbsoluteFill style={{ background: C.night }}>
       <Audio src={staticFile(narrator ? 'audio/take1-mix.wav' : 'audio/take1-type-mix.wav')} />
       <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{ position: 'absolute', inset: 0 }}>
-        <Defs />
+        <Defs frame={frame} />
         <defs>
-          <filter id="lift" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#05020A" floodOpacity="0.55" /></filter>
+          <filter id="lift" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#1A0826" floodOpacity="0.45" /></filter>
         </defs>
-        <g transform={layerTransform(cam, K.sky)}><SkyBack warm={purple * 0.5 + field * 0.5} field={field} /><Stars o={1 - field * 0.6} /><Moon /></g>
-        <g transform={layerTransform(cam, K.cloud)}><Clouds t={t} /></g>
-        <g transform={layerTransform(cam, K.hills2)}><Hills far /></g>
-        <g transform={layerTransform(cam, K.hills)}><Hills /></g>
-        <g transform={layerTransform(cam, K.far)}><g opacity={1 - 0.6 * recede}><FarTowers lit={r(t, corp, corp + 1) * (1 - recede)} /></g></g>
+        <g transform={layerTransform(cam, K.sky)}><SkyBack pal={pal} field={field} /><Stars o={pal.stars} /><Moon o={pal.moon} /></g>
+        <g transform={layerTransform(cam, K.cloud)}><Clouds t={t} pal={pal} /></g>
+        <g transform={layerTransform(cam, K.hills2)}><Hills far pal={pal} /></g>
+        <g transform={layerTransform(cam, K.hills)}><Hills pal={pal} /></g>
+        <g transform={layerTransform(cam, K.far)}><g opacity={1 - 0.5 * recede}><FarTowers lit={r(t, Q.corporations, Q.corporations + 1) * (1 - recede)} pal={pal} /></g></g>
         <g transform={layerTransform(cam, K.towers)}>
           <g opacity={towerRecede.opacity} transform={towerRecede.transform}>
             {TOWERS.map((d, i) => (
-              <Tower key={i} d={d} g={growth} lit={towerLit} purple={purple}
+              <Tower key={i} d={d} g={growth} t={t} pal={pal} lit={towerLit} spin={spins[i]}
                 front={d.crown === 'lantern' ? <>{bars}{chest}</> : undefined}>
                 {d.crown === 'lantern' ? lightInTower : null}
               </Tower>
             ))}
           </g>
         </g>
-        <g transform={layerTransform(cam, K.back)}><Row row="back" winState={winState} rim={purple} townGlow={townGlow} /></g>
-        <g transform={layerTransform(cam, K.mid)}><Row row="mid" winState={winState} rim={purple} /></g>
-        <g transform={layerTransform(cam, K.front)}><Row row="front" winState={winState} rim={purple} /></g>
+        <g transform={layerTransform(cam, K.back)}><Row row="back" t={t} pal={pal} dawn={dawn} winState={winState} lit={houseLit} townGlow={townGlow} /></g>
+        <g transform={layerTransform(cam, K.mid)}><Row row="mid" t={t} pal={pal} dawn={dawn} winState={winState} lit={houseLit} /></g>
+        <g transform={layerTransform(cam, K.front)}><Row row="front" t={t} pal={pal} dawn={dawn} winState={winState} lit={houseLit} /></g>
         <g>{strings}{hooks}{things}{lightFree}</g>
-        <g transform={layerTransform(cam, K.fore)}><Foreground /></g>
+        <g transform={layerTransform(cam, K.fore)}><Foreground pal={pal} /></g>
+        {wave}
+        <Birds t={t} from={Q.free} o={r(t, Q.free, Q.free + 1)} />
       </svg>
       {/* exposure: fade up from night at the start, and the hush on "However, recently…" */}
-      <AbsoluteFill style={{ background: '#07030C', opacity: Math.max(1 - r(t, 0, 1.4, EASE_IN_OUT), hush * 0.38) }} />
-      <Grain frame={frame} />
-      {!narrator && <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(10,5,16,0.55) 0%, rgba(10,5,16,0.28) 20%, transparent 32%)' }} />}
-      {narrator ? HEADLINES.map((h, i) => <Headline key={i} words={h.words} out={h.out} y={h.y} t={t} />) : <Captions t={t} />}
-      <Headline words={FINAL} out={END_CARD + 0.1} y={29} t={t} />
-      <AbsoluteFill style={{ opacity: r(t, END_CARD, END_CARD + 0.6, EASE_IN_OUT) }}>
+      <AbsoluteFill style={{ background: '#07030C', opacity: Math.max(1 - r(t, 0, 1.4, EASE_IN_OUT), hush * 0.3) }} />
+      <Grain frame={frame} dawn={dawn} />
+      {narrator ? HEADLINES.map((h, i) => <Headline key={i} words={h.words} out={h.out} y={h.y} t={t} day={false} />) : <Captions t={t} />}
+      <Headline words={FINAL} out={END_CARD + 0.1} y={24} t={t} day={dayText} />
+      <AbsoluteFill style={{ opacity: r(t, END_CARD, END_CARD + 0.7, EASE_IN_OUT) }}>
         <EndCard at={END_CARD + 0.2} tagline />
       </AbsoluteFill>
     </AbsoluteFill>
   );
 };
-
-/** How far a tower's shaft runs, for placing string anchors along it. */
-const TOWER_SPAN = (d: (typeof TOWERS)[number]) => d.h * 0.9;
-
