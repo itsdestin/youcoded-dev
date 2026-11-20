@@ -278,8 +278,12 @@ const LINES: { text: string; at: number }[] = [
 const AddLine: React.FC<{ text: string; at: number; next: number }> = ({ text, at, next }) => {
   const frame = useCurrentFrame();
   const inP = ramp(frame, at, at + 0.45, EASE_OUT);
-  const o = frame < at * FPS ? 0 : ramp(frame, at, at + 0.12, linear);
-  const settle = ramp(frame, next, next + 0.4, EASE_IN_OUT);
+  // WHY slower (Destin, 2026-11-20: "i don't love the color fade between the new 'own your' words. i think it
+  // could be smoother"): the old word used to drop to plum in 0.4 s exactly as the new one popped on, which
+  // read as a switch. Now the colour drains over 1.5 s, starting just before the next beat, and the new word
+  // fades up over a third of a second, so the accent is handed over instead of swapped.
+  const o = frame < at * FPS ? 0 : ramp(frame, at, at + 0.34, EASE_OUT);
+  const settle = ramp(frame, next - 0.3, next + 1.2, EASE_IN_OUT);
   return <div style={{ opacity: o, transform: `translateY(${(1 - inP) * 0.22}em)`, color: interpolateColors(settle, [0, 1], [C.purple, C.plum]) }}>{text}</div>;
 };
 /** The closer: "everything." letter by letter, each rising into place a little after the one before.
@@ -315,7 +319,8 @@ const OwnAll: React.FC = () => {
   return (
     <AbsoluteFill><Wash />
       <div style={{ position: 'absolute', left: m, right: m, top: mt, ...rowStyle(allSize, C.plum) }}>
-        <div style={{ opacity: onBeat(frame, T3.data) }}>own your</div>
+        {/* WHY the same soft fade as the noun under it: the two arrive together and must move alike */}
+        <div style={{ opacity: ramp(frame, T3.data, T3.data + 0.34, EASE_OUT) }}>own your</div>
         {LINES.map((l, i) => <AddLine key={l.text} text={l.text} at={l.at} next={LINES[i + 1]?.at ?? T3.everything} />)}
         <Closer text="everything." at={T3.everything} />
       </div>

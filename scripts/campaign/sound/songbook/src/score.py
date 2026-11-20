@@ -68,6 +68,10 @@ class Piece:
     land: Optional[float] = None     # when the name lands (default: length - logo tail)
     ending_start: Optional[float] = None  # pin the ending bar's start too (e.g. on a cut)
     rit: float = RIT                 # how much the ending bar slows (end tempo / start tempo)
+    # WHY (Destin, 2026-11-20, on "Own everything": "for this specific ad, the music should be a
+    # little more subtle"): a piece may sit below the usual -14 LUFS, so a thinner arrangement is
+    # not simply turned back up to full loudness by the final stage.
+    loudness: float = -14.0
 
     def land_time(self):
         return self.land if self.land is not None else self.length - (LOGO_LEN[self.logo] - LOGO_LAND)

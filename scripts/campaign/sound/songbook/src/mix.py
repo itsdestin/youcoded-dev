@@ -114,7 +114,7 @@ def finish_piece(x, piece, extra=None):
     effects, already placed and levelled) is added before it so the whole mix is measured."""
     if extra is not None:
         x = x + extra[: len(x)]
-    y = finish(x, -14.0)
+    y = finish(x, getattr(piece, "loudness", -14.0))  # WHY: see Piece.loudness
     n = int(round(piece.length * SR))
     y = y[:n]
     if len(y) < n:

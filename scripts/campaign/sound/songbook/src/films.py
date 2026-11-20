@@ -218,7 +218,34 @@ OWN_EVERYTHING = Film(
     copy_to=os.path.normpath(os.path.join(HERE, "..", "..", "..", "film", "public", "audio", "sb-take3-mix.wav")),
 )
 
-FILMS = {f.name: f for f in (OWN_EVERYTHING,)}
+# ---- quieter takes of the same film ----
+# WHY (Destin, 2026-11-20): "for this specific ad, the music should be a little more subtle".
+# Same song, same timings, same opening; only the statements are played smaller and the whole
+# file sits lower. Two strengths so he can pick by ear. Neither is copied into the film until
+# he picks (copy_to=None); the page muxes them for comparison.
+def _subtle(name, loudness, statements):
+    return Film(
+        name,
+        Piece(name, 24.0, land=19.2, ending_start=16.8, rit=0.92, seed=21, loudness=loudness,
+              notes="Own everything, played smaller: " + statements.label,
+              sections=[
+                  S("stark", 4, tune=["phrase1:3"], turn=True, bpm=100, span=1,
+                    label="deadpan, then the turn under 'everything.'"),
+                  statements,
+              ]),
+        hits=OWN_EVERYTHING.hits, picture=OWN_EVERYTHING.picture, copy_to=None)
+
+
+OWN_GENTLER = _subtle("own-everything-gentler", -17.0,
+                      # the warm rolling piano with far-off strings; still grows, but only a little
+                      S("hopeful", 3, tune="phrase2", start=9.6, bpm=100, dyn=0.8, lift=True,
+                        chords=[["Eb"], ["Cm7"], ["Fm7"]], label="the statements, a small build"))
+OWN_BAREST = _subtle("own-everything-barest", -19.0,
+                     # the piano nearly alone: no bass layer, no high strings, no build
+                     S("hopeful", 3, tune="phrase2", start=9.6, bpm=100, dyn=0.72, drop=("sub", "air"),
+                       chords=[["Eb"], ["Cm7"], ["Fm7"]], label="the statements, piano nearly alone"))
+
+FILMS = {f.name: f for f in (OWN_EVERYTHING, OWN_GENTLER, OWN_BAREST)}
 
 
 def render_film(film):
