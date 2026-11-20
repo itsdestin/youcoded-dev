@@ -2,6 +2,9 @@ import React from 'react';
 import { Composition, Still } from 'remotion';
 import { FPS } from './brand';
 import { Banner, Poster } from './posters';
+import { Take1 } from './round2/take1';
+import { Take2 } from './round2/take2';
+import { Take3 } from './round2/take3';
 import { Hero30, Hero60, ShortFounder, ShortHouse, ShortRent, ShortYours } from './films';
 
 // Poster sizes: name → pixels. Social 4:5 and 9:16 are the brand guide's two; the rest are the
@@ -23,6 +26,12 @@ export const Root: React.FC = () => (
     <Composition id="short-yours" component={ShortYours} fps={FPS} width={1080} height={1920} durationInFrames={15 * FPS} />
     <Composition id="short-rent" component={ShortRent} fps={FPS} width={1080} height={1920} durationInFrames={15 * FPS} />
     <Composition id="short-founder" component={ShortFounder} fps={FPS} width={1080} height={1920} durationInFrames={20 * FPS} />
+    {/* Round two (2026-11-20). Each take owns one file under src/round2; lengths are set there via the exported DURATION if it differs. */}
+    <Composition id="take1" component={Take1} fps={FPS} width={1920} height={1080} durationInFrames={77 * FPS} defaultProps={{ narrator: true }} />
+    <Composition id="take1-type" component={Take1} fps={FPS} width={1920} height={1080} durationInFrames={77 * FPS} defaultProps={{ narrator: false }} />
+    <Composition id="take2" component={Take2} fps={FPS} width={1920} height={1080} durationInFrames={60 * FPS} />
+    <Composition id="take3" component={Take3} fps={FPS} width={1080} height={1920} durationInFrames={24 * FPS} />
+    <Composition id="take3-wide" component={Take3} fps={FPS} width={1920} height={1080} durationInFrames={24 * FPS} />
     {IDEAS.flatMap((idea) => Object.entries(POSTER_SIZES).map(([name, [w, h]]) => (
       <Still key={`${idea}-${name}`} id={`poster-${idea}-${name}`} component={Poster} width={w} height={h} defaultProps={{ idea }} />
     )))}
