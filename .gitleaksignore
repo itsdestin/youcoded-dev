@@ -3,3 +3,5 @@
 0dbaf88f713232ddf82669726b31e320030f58db:docs/active/investigations/2026-11-08-local-model-speed-and-context-faults.md:generic-api-key:28
 # deck spec name field ("key": "campaign-round2-questions"), not a secret
 009dc5b31f1a56a5c2eb47bcd6c710e0853416a6:docs/active/design/2026-11-19-campaign-round2/campaign-round2.questions.json:generic-api-key:3
+# the comment above quotes that same deck name, which trips the scanner again
+d514d801bc1c7f1e93852773f34ff0afd67db59a:.gitleaksignore:generic-api-key:4
