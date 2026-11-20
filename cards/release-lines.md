@@ -117,3 +117,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#789 fixes | Fast mode, effort level, and a chat's tags and note now say so when they can't be saved, instead of silently not saving.
 - youcoded#789 fixes | If closing a chat can't save its tags or note, the chat stays open with Try again or Close anyway.
 - youcoded#790 behind | Nothing visible.
+- youcoded#788 behind | Nothing visible.
