@@ -1,0 +1,741 @@
+{
+ "title": "Campaign, round two: steering it before anything is made",
+ "key": "campaign-round2-questions",
+ "out": "campaign-round2.questions.html",
+ "themes": [
+  "light",
+  "midnight"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "S-1",
+   "words": true,
+   "surface": "Campaign",
+   "path": "What I took from your feedback in both sessions",
+   "headline": "The vision is what we sell. Anything the app does appears only as a passing example, never as a list.",
+   "changed": "You said the film was \"far too focused on a weird narrow subset of specific features\" and that you \"hate that this feels like a feature list\".",
+   "notice": "No scene exists to show off a feature. Every scene has to carry the idea of who technology belongs to.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "surface": "Campaign",
+   "path": "What I took from your feedback in both sessions",
+   "headline": "Words about code push the audience away, even when the sentence says they did not write any.",
+   "changed": "You said telling people \"you coded something\" makes them think the app is not for them, and that \"a line of what?\" means nothing to them.",
+   "notice": "My current founder short, quote poster and one poster line all say \"code\". Under this reading they change or go.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-3",
+   "words": true,
+   "surface": "Campaign",
+   "path": "What I took from your feedback in both sessions",
+   "headline": "The name reads first as slang: \"that's so you-coded\", meaning made to fit you. \"You coded it\" comes second.",
+   "changed": "You said both meanings are valid, but the slang one is how you picture everyday people reading it.",
+   "notice": "The campaign leans on things being shaped to one person, not on anyone having built or programmed anything.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-4",
+   "words": true,
+   "surface": "Campaign",
+   "path": "What I took from your feedback in both sessions",
+   "headline": "The feeling is hopeful and grand, with some fun in it. Quiet and minimal is the wrong register.",
+   "changed": "You asked for \"more hopeful and grandiose\", pictured a British fairytale narrator, and then asked for \"much quicker and more energetic\".",
+   "notice": "My current films are quiet piano and calm type. Under this reading the next round is bolder in voice, music and pace.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-5",
+   "words": true,
+   "surface": "Campaign",
+   "path": "What I took from your feedback in both sessions",
+   "headline": "Home and money stop being the default examples, and we say \"make youcoded do X\", never \"build a page\".",
+   "changed": "This is the rule you gave me yesterday, now in the brand guide. Neither thing ships in the app.",
+   "notice": "An example has to show the customising: what the person wants, and why nothing they already own does it.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "S-6",
+   "words": true,
+   "surface": "Campaign",
+   "path": "What I took from your feedback in both sessions",
+   "headline": "Both attempts looked and sounded unfinished to you. Picture, sound and timing must be right before you see a cut.",
+   "changed": "You called the other session's film \"underwhelming\", its visuals \"too basic/undercooked\", and its voice \"completely offbeat\".",
+   "notice": "I check that every spoken word lands on its picture, and get an outside review, before anything reaches you.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "P-2",
+   "page": "What the film is",
+   "intro": "Six choices about the idea, the words and how hard it hits."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "What should the main film be about?",
+   "today": "My films open on renting software, then show two requests being answered. The other session's script was a spoken story about who technology belongs to.",
+   "problem": "A film about requests reads as a feature tour. A film that is only a speech gives people nothing to picture themselves doing.",
+   "proposal": "Pick the spine. Everything else in the film serves it.",
+   "options": [
+    {
+     "id": "belongs",
+     "label": "Who technology belongs to",
+     "pros": [
+      "Closest to your vision and your own script.",
+      "Nothing in it can be mistaken for a feature."
+     ],
+     "cons": [
+      "Risks staying abstract: viewers may not see what they would do with it."
+     ]
+    },
+    {
+     "id": "yours",
+     "label": "One person making it theirs",
+     "pros": [
+      "Shows the customising, which no rival can show.",
+      "Easy to picture yourself in."
+     ],
+     "cons": [
+      "One example carries the whole film.",
+      "The bigger shift is only implied."
+     ]
+    },
+    {
+     "id": "both",
+     "label": "The story, proven by one person",
+     "pros": [
+      "The big idea leads; one person's back-and-forth is the proof in the middle.",
+      "Vision and evidence each get one clear job."
+     ],
+     "cons": [
+      "Needs tight writing to fit both in a minute."
+     ],
+     "recommended": true
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "Whose words should the script start from?",
+   "today": "You wrote the first half of a script yourself in the other session: the monopolies, the hubris, the technology that slipped their control. It runs about two minutes spoken.",
+   "problem": "It is your voice and your argument, but you also asked for it to be much quicker.",
+   "proposal": "Choose what I write from.",
+   "options": [
+    {
+     "id": "trim",
+     "label": "Your script, trimmed",
+     "pros": [
+      "Keeps your sentences and your argument.",
+      "Cut to the length we choose below."
+     ],
+     "cons": [
+      "Some lines you like will go."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "full",
+     "label": "Your script, in full",
+     "pros": [
+      "Nothing of yours is lost."
+     ],
+     "cons": [
+      "About two minutes; too long for a paid 30 or 60 second slot."
+     ]
+    },
+    {
+     "id": "fresh",
+     "label": "A fresh script on your ending",
+     "pros": [
+      "Written to the length and pace from the start."
+     ],
+     "cons": [
+      "Loses your phrasing, which is the most distinctive part."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "How directly should the film go at the big technology companies?",
+   "today": "Your script names \"software monopolies\" and says they were \"blinded by their own hubris\". The brand guide says never doom-y, and never insulting to people who use Apple, Google or Microsoft.",
+   "problem": "The direct version is the most stirring. It may also make someone who likes their iPhone feel accused, and the guide would need changing to allow it.",
+   "proposal": "Pick how sharp. I update the brand guide to match your answer.",
+   "options": [
+    {
+     "id": "direct",
+     "label": "Name them and their motives",
+     "pros": [
+      "The most defiant and memorable.",
+      "Exactly what you wrote."
+     ],
+     "cons": [
+      "Guesses at their motives, which a critic can call unfair.",
+      "Some viewers will feel told off for what they use."
+     ]
+    },
+    {
+     "id": "middle",
+     "label": "Name the monopolies, not motives",
+     "pros": [
+      "Keeps \"monopolies\" and \"it's time to free ourselves\".",
+      "Says what they did, which is hard to argue with."
+     ],
+     "cons": [
+      "Drops the hubris and shareholder lines."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "soft",
+     "label": "Only \"rent\" and \"own\"",
+     "pros": [
+      "Offends nobody.",
+      "Already inside the brand guide."
+     ],
+     "cons": [
+      "Much less fire; closer to the films you already found underwhelming."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "Should the script say \"Artificial General Intelligence\"?",
+   "today": "Your script says the companies created \"Artificial General Intelligence\".",
+   "problem": "Most people who know the term believe it has not been built yet, so it hands a skeptic an easy reason to dismiss the film.",
+   "proposal": "Yes keeps your wording. No changes it to \"artificial intelligence\", which I recommend."
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "All pieces",
+   "path": "The next round of the campaign",
+   "headline": "How should the campaign treat words about code?",
+   "today": "The brand guide calls your story (\"built by someone who has never written code\") our strongest material. You have also said code words turn the audience away.",
+   "problem": "Those two pull against each other, and my current founder short and quote poster sit right on the conflict.",
+   "proposal": "Pick the rule. I change the pieces and the brand guide to match.",
+   "options": [
+    {
+     "id": "none",
+     "label": "No code words anywhere",
+     "pros": [
+      "Nothing tells a non-technical viewer this is not for them.",
+      "Your story is told as \"built entirely by asking\"."
+     ],
+     "cons": [
+      "Loses the plainest way to say how unusual your story is."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "founder",
+     "label": "Only in your own story",
+     "pros": [
+      "Keeps the surprise of \"never written code\"."
+     ],
+     "cons": [
+      "The word still appears in public pieces."
+     ]
+    },
+    {
+     "id": "keep",
+     "label": "Leave as is",
+     "pros": [
+      "No rework."
+     ],
+     "cons": [
+      "Goes against what you said in the other session."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "All pieces",
+   "path": "The next round of the campaign",
+   "headline": "How should the name's slang meaning show up?",
+   "today": "Nothing in the campaign uses \"that's so you-coded\". The name appears only as the logo at the end.",
+   "problem": "The meaning you care most about is invisible. Said badly, though, slang in an advert can sound like a company trying too hard.",
+   "proposal": "Pick how openly to use it.",
+   "options": [
+    {
+     "id": "say",
+     "label": "Say it once, out loud",
+     "pros": [
+      "Nobody misses the meaning.",
+      "Gives the film a line people might repeat."
+     ],
+     "cons": [
+      "If the delivery is off, it is the cringe moment."
+     ]
+    },
+    {
+     "id": "show",
+     "label": "Show it, never say it",
+     "pros": [
+      "Every example is something made to fit one person, then the name lands.",
+      "No risk of sounding forced."
+     ],
+     "cons": [
+      "Some viewers will not make the link."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave",
+     "label": "Leave it out",
+     "pros": [
+      "Simplest."
+     ],
+     "cons": [
+      "Wastes the meaning you most want people to take."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "How it sounds and looks",
+   "intro": "Five choices about voice, length, pictures and music."
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "Should the main film have a narrator?",
+   "today": "My films have no voice: words on screen, footage and music. The other session's narrator was never heard properly, because a fault played the voice ten seconds early.",
+   "problem": "Words alone cannot be grand in the way you described. But most adverts online are first seen with the sound off.",
+   "proposal": "Pick how the words reach people.",
+   "options": [
+    {
+     "id": "both",
+     "label": "Narrator, key words on screen",
+     "pros": [
+      "Grand with sound on, still makes sense with it off.",
+      "Every cut is timed to the spoken words."
+     ],
+     "cons": [
+      "The most work to get right."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "voice",
+     "label": "Narrator only",
+     "pros": [
+      "Cleanest picture."
+     ],
+     "cons": [
+      "Says nothing to anyone watching muted."
+     ]
+    },
+    {
+     "id": "words",
+     "label": "Words on screen only",
+     "pros": [
+      "Simplest, and already built."
+     ],
+     "cons": [
+      "The register you found underwhelming."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-8",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "Which narrator?",
+   "today": "You upgraded ElevenLabs and liked the voice called Lily \"for now to test\", asked for more speed and energy, and earlier found the voices not fairytale enough and too echoey.",
+   "problem": "A voice heard alone is hard to judge. It may feel different once it sits over picture and music.",
+   "proposal": "Pick where to start. Either way you hear it against a rough cut before anything is final.",
+   "options": [
+    {
+     "id": "lily",
+     "label": "Lily, quick and playful",
+     "pros": [
+      "Your last pick.",
+      "Already tuned for pace."
+     ],
+     "cons": [
+      "May be less grand than the storybook voice you first imagined."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "grand",
+     "label": "A deeper storybook voice",
+     "pros": [
+      "Closest to \"British fairytale narrator\"."
+     ],
+     "cons": [
+      "The ones you heard did not convince you."
+     ]
+    },
+    {
+     "id": "two",
+     "label": "Two voices over a rough cut",
+     "pros": [
+      "You judge them in place, not in isolation."
+     ],
+     "cons": [
+      "One more round before the film is finished."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-9",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "How long should the main film be?",
+   "today": "My main film is 60 seconds with a 30 second cut. Your script runs about two minutes even read fast.",
+   "problem": "Paid television and most paid YouTube slots are 30 or 60 seconds. A longer film can only live on the website and as a normal YouTube video.",
+   "proposal": "Pick the length I write for first.",
+   "options": [
+    {
+     "id": "60",
+     "label": "60 seconds first",
+     "pros": [
+      "Fits paid slots.",
+      "Forces every line to earn its place, which suits \"quicker\"."
+     ],
+     "cons": [
+      "Your script loses more than half its words."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "90",
+     "label": "About 90 seconds",
+     "pros": [
+      "Room for your argument and one person's example."
+     ],
+     "cons": [
+      "Fits few paid slots; needs a separate short cut."
+     ]
+    },
+    {
+     "id": "120",
+     "label": "Two minutes, then cut down",
+     "pros": [
+      "Your whole script.",
+      "The 60 and 30 are cut from it."
+     ],
+     "cons": [
+      "The cut-downs are usually weaker than a film written short."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-10",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "What should fill the screen?",
+   "today": "My films are words and app footage in a small window on a plain background. Reviewers said there are no people or hands, and you called the other session's visuals undercooked.",
+   "problem": "The brand guide allows only filmed app footage for the app itself, and I cannot film people. Something still has to make the picture feel as big as the words.",
+   "proposal": "Pick the kind of picture.",
+   "options": [
+    {
+     "id": "motion",
+     "label": "Designed motion plus app footage",
+     "pros": [
+      "Drawn sequences carry the story (the rented world, the turn, the crowd); the app is only ever shown as filmed.",
+      "Can be made as polished as the type."
+     ],
+     "cons": [
+      "Takes the longest to design well."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "stock",
+     "label": "Add licensed footage of people",
+     "pros": [
+      "Real faces and homes."
+     ],
+     "cons": [
+      "Looks like every other advert.",
+      "Costs money per clip."
+     ]
+    },
+    {
+     "id": "type",
+     "label": "Words and app footage only",
+     "pros": [
+      "Fastest."
+     ],
+     "cons": [
+      "What you have already seen and found lacking."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-11",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "What should the music be?",
+   "today": "You asked to keep the music composed by me. My current score is a quiet piano.",
+   "problem": "A quiet piano under a grand storybook narrator will feel small.",
+   "proposal": "Pick the direction. Nobody has heard either yet, so you judge it by ear on the rough cut.",
+   "options": [
+    {
+     "id": "big",
+     "label": "A fuller storybook score",
+     "pros": [
+      "Strings and a build that match a grand narrator.",
+      "Still composed by me, so nothing to license."
+     ],
+     "cons": [
+      "Harder to make sound real; may need a second try."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "piano",
+     "label": "Keep the quiet piano",
+     "pros": [
+      "Already made and measured."
+     ],
+     "cons": [
+      "May undercut the voice."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Examples, and how we work",
+   "intro": "Six choices about what is shown, what is kept, and when you see things."
+  },
+  {
+   "id": "Q-12",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "How should examples appear?",
+   "today": "My films show one request and its finished result, twice. The other session listed four things in a row: a home, a budget, a game, a tool.",
+   "problem": "A result alone looks like a feature. A list sounds like a brochure. Neither shows the part only youcoded does: shaping a thing to one person.",
+   "proposal": "Pick the shape.",
+   "options": [
+    {
+     "id": "deep",
+     "label": "One person's back-and-forth",
+     "pros": [
+      "Shows the customising: ask, then \"not that, just my room\", then it changes.",
+      "The shape of the example you gave me."
+     ],
+     "cons": [
+      "About twelve seconds on one subject."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "flash",
+     "label": "Fast glimpses, never named",
+     "pros": [
+      "Breadth without a list.",
+      "Nothing stays long enough to read as a feature."
+     ],
+     "cons": [
+      "Shows results, not the shaping."
+     ]
+    },
+    {
+     "id": "people",
+     "label": "Several people, one wish each",
+     "pros": [
+      "Many lives in a few seconds."
+     ],
+     "cons": [
+      "Closest to the list you disliked."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-13",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "Should what follows a request be what the app really made?",
+   "today": "In my films the app's replies were scripted and the results were made ahead of time, with small print saying \"sped up, sample data\".",
+   "problem": "It looks clean, but it is not what a person would get, and the brand guide says claims must be true in today's download.",
+   "proposal": "Yes means I ask the real app, film what it makes, and shorten only the waiting. It will look less perfect. No keeps scripted results with small print."
+  },
+  {
+   "id": "Q-14",
+   "words": true,
+   "surface": "All pieces",
+   "path": "The next round of the campaign",
+   "headline": "What should happen to what is already made?",
+   "today": "There are six films, four poster designs and eight banners. Three films and one poster lean on the house example; one short and one poster lean on \"code\".",
+   "problem": "Reworking films built for a different idea usually shows. Posters with only the line \"software you own, not rent.\" may still be right.",
+   "proposal": "Pick what carries over.",
+   "options": [
+    {
+     "id": "films",
+     "label": "New films, keep the plain posters",
+     "pros": [
+      "Films are written fresh for the new idea.",
+      "The type-only poster and banners stay usable meanwhile."
+     ],
+     "cons": [
+      "The house poster and quote poster wait for a rethink."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "all",
+     "label": "Start everything over",
+     "pros": [
+      "One idea across every piece."
+     ],
+     "cons": [
+      "Throws away pieces that may be fine."
+     ]
+    },
+    {
+     "id": "rework",
+     "label": "Rework the existing films",
+     "pros": [
+      "Fastest."
+     ],
+     "cons": [
+      "They were built for a quieter, feature-led idea."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-15",
+   "words": true,
+   "surface": "Main film",
+   "path": "The next round of the campaign",
+   "headline": "How should the film end?",
+   "today": "My films end on \"software you own, not rent.\" You asked for an ending like \"it's time to free ourselves from the tech monopolies of the past. It's time, at last, to open source everything.\"",
+   "problem": "Your ending lands on the brand's own line. Mine is the plainer promise. Two endings in one film would blur both.",
+   "proposal": "Pick the last thing people hear and read.",
+   "options": [
+    {
+     "id": "open",
+     "label": "\"Open source everything\"",
+     "pros": [
+      "Your ending, and it is the official line under the logo.",
+      "Rousing."
+     ],
+     "cons": [
+      "\"Open source\" means little to someone who has never heard it."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "own",
+     "label": "\"Software you own, not rent.\"",
+     "pros": [
+      "Understood by anyone."
+     ],
+     "cons": [
+      "Quieter, and not the ending you asked for."
+     ]
+    },
+    {
+     "id": "split",
+     "label": "Yours spoken, mine on posters",
+     "pros": [
+      "The film ends your way; posters keep the plain promise."
+     ],
+     "cons": [
+      "Two lines to remember across the campaign."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-16",
+   "words": true,
+   "surface": "How we work",
+   "path": "The next round of the campaign",
+   "headline": "When do you want to see it?",
+   "today": "Both sessions worked alone for hours and showed you a finished film, and both missed.",
+   "problem": "A finished film is the most expensive place to find out the words were wrong.",
+   "proposal": "Pick how often I stop for you.",
+   "options": [
+    {
+     "id": "stages",
+     "label": "Words, voice, rough cut, final",
+     "pros": [
+      "You steer while changes are cheap.",
+      "Four short looks, each a few minutes."
+     ],
+     "cons": [
+      "Slower than running straight through."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "two",
+     "label": "Rough cut, then final",
+     "pros": [
+      "Two looks."
+     ],
+     "cons": [
+      "Words and voice are already fixed by the first one."
+     ]
+    },
+    {
+     "id": "done",
+     "label": "Only the finished film",
+     "pros": [
+      "No interruptions."
+     ],
+     "cons": [
+      "How the last two attempts went."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-17",
+   "words": true,
+   "surface": "All pieces",
+   "path": "The next round of the campaign",
+   "headline": "Is there anything else from the other session I should carry over, or leave behind?",
+   "today": "I read your messages there, your edited script and the assistant's replies. I did not hear the recordings or watch its film.",
+   "problem": "You said that feedback does not all apply here, and I may have weighed something wrongly.",
+   "proposal": "Tell me in your own words. Leave it empty if there is nothing.",
+   "answer": "words",
+   "prompt": "Carry over… / Leave behind…"
+  }
+ ]
+}
