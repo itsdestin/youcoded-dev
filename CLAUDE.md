@@ -109,7 +109,7 @@ Pictures of named screens: `node scripts/shoot/shoot.mjs <names|'globs'> [--them
 
 ### Demo clips and the landing page
 
-**Anything public — site, film, poster, ad, post, listing, README — follows the brand guide `docs/brand/README.md`** (name, tagline, logo, colours, type, voice, allowed claims; visual version `docs/brand/guide.html`). Use recordings of the running renderer, not drawings. **The pitch is "you make youcoded do what you want"; an example is evidence of that, never a feature, and the home and money dashboards are not in the app** (brand guide section 9, The pitch; Destin, 2026-11-18). Start at `scripts/ui-review/README.md` → Recording a loop, and `.claude/rules/landing-page.md`. The fact sheet is inventory, not copy.
+**Anything public — site, film, poster, ad, post, listing, README — follows the brand guide `docs/brand/README.md`** (name, tagline, logo, colours, type, voice, allowed claims; visual version `docs/brand/guide.html`). Use recordings of the running renderer, not drawings (ads may stage what a person makes inside the app; brand guide section 8). **The pitch is "you make youcoded do what you want"; an example is evidence of that, never a feature, and the home and money dashboards are not in the app** (brand guide section 9, The pitch; Destin, 2026-11-18). Start at `scripts/ui-review/README.md` → Recording a loop, and `.claude/rules/landing-page.md`. The fact sheet is inventory, not copy.
 
 ### Asking a page a question, and A/B-ing the answer
 

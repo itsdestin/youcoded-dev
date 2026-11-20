@@ -147,9 +147,16 @@ secondary text). Centred, on lavender, held at least 2.5 s.
 
 ## 8. Pictures and video
 
-- **Only real app footage**, filmed with `scripts/ui-review/README.md` → "Recording a loop" or
-  `scripts/shoot/`. Never draw or fake the interface; graphics around it are fine. Any theme can appear
-  in footage; everything around it uses the brand look. Practice data only.
+- **The app itself is always real**: its frame, layout and general look come from the actual
+  app, in an actual window, filmed with `scripts/ui-review/README.md` → "Recording a loop" or
+  `scripts/shoot/`. Never draw or fake the app's own interface; graphics around it are fine. Any
+  theme can appear in footage; everything around it uses the brand look. Practice data only.
+- **Ads only — what a person makes inside the app may be staged** (Destin, 2026-11-19: "the page
+  content itself does not need to actually be functional and the shown build process can be
+  GREATLY sped up and animated/pretty-ified"). The thing being made in an ad can be designed for
+  the camera and need not work, as long as it is something youcoded could plausibly make by being
+  asked; the making can be shortened and animated. The landing page keeps real recordings only
+  (`.claude/rules/landing-page.md`).
 - **Video** works muted: text stays up at least 1.2 s + 0.25 s per word. Vertical 1080×1920 first.
   Music composed in code (`scripts/promo/music/`), mixed to about −14 LUFS.
 - **Posters:** 4:5 and 9:16, with the icon + name lockup.
