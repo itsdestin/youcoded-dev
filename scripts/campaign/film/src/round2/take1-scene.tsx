@@ -42,34 +42,40 @@ const day4 = (c: [string, string, string, string], d: number) => {
 // lifted from the first cut (it was murky); morning values are the light palette (lavender sky, pink-purple
 // toward the horizon, like the posters' colour field), with the towers ending as pale ghosts.
 export const palette = (d: number) => ({
-  skyTop: day4(['#170C27', '#24123D', '#8A74BC', '#E8DBF5'], d),
-  skyMid: day4(['#2A1640', '#41215E', '#BB9DD6', '#F7F0FB'], d),
-  skyLow: day4(['#482657', '#74408A', '#E9B9DD', '#F6DCEE'], d),
-  horizon: day4(['#74397F', '#B9629F', '#F6C3D7', '#F1BCDC'], d),
-  cloud: day4(['#2C1A3B', '#43285A', '#D9C2E6', '#FFFFFF'], d),
-  cloudEdge: day4(['#6A4C80', '#9A62AE', '#F6E6F7', '#FFFFFF'], d),
-  hill2: day4(['#341E44', '#4E2C64', '#D2B5E2', '#EBDCF3'], d),
-  hill: day4(['#29173A', '#3F2453', '#C3A2D7', '#E2CCEE'], d),
-  far: day4(['#311D41', '#4A2D63', '#CDB3E0', '#EADDF3'], d),
-  // WHY the towers stay solid by morning: pale ghost towers read as "still standing"; they leave by folding
-  towerDark: day4(['#180C24', '#26143A', '#5E4A7A', '#6A5686'], d),
-  towerLit: day4(['#2E1C3F', '#43265D', '#7A6496', '#8670A2'], d),
-  rim: day4(['#8A68A3', '#F0A3D2', '#FFE6F4', '#FFFFFF'], d),
+  // WHY these night values (reviewer, round 3): the first act was "one value range", dark violet on dark
+  // violet. Now the sky is a deep near-black indigo with a clearly lighter glow along the horizon, the
+  // walls and roofs sit low, and only lamp-lit windows are bright, so every frame has a subject.
+  skyTop: day4(['#0A0620', '#1A1036', '#8A74BC', '#E8DBF5'], d),
+  skyMid: day4(['#130B2C', '#2C1A4C', '#BB9DD6', '#F7F0FB'], d),
+  skyLow: day4(['#2A1646', '#5A2E72', '#E9B9DD', '#F6DCEE'], d),
+  horizon: day4(['#83478C', '#B9629F', '#F6C3D7', '#F1BCDC'], d),
+  cloud: day4(['#1C1230', '#3A2552', '#D9C2E6', '#FFFFFF'], d),
+  cloudEdge: day4(['#5E4680', '#9A62AE', '#F6E6F7', '#FFFFFF'], d),
+  hill2: day4(['#25163D', '#45285E', '#D2B5E2', '#EBDCF3'], d),
+  hill: day4(['#1A0F2E', '#352049', '#C3A2D7', '#E2CCEE'], d),
+  far: day4(['#25163C', '#43295C', '#CDB3E0', '#EADDF3'], d),
+  // WHY the towers stay solid by morning: pale ghost towers read as "still standing"; they leave by sinking
+  towerDark: day4(['#0E0718', '#211233', '#5E4A7A', '#6A5686'], d),
+  towerLit: day4(['#21143A', '#3B2357', '#7A6496', '#8670A2'], d),
+  rim: day4(['#9C7BC0', '#F0A3D2', '#FFE6F4', '#FFFFFF'], d),
   // WHY the town's own colours stay deep at dawn while the sky goes light: the reviewer saw a milky lavender
   // wash flatten the houses at the emotional peak. Only the sky, hills and clouds lift to morning; ink lines,
   // unturned walls, roofs and ground keep their weight, so the coloured houses pop against them.
-  ink: day4(['#0B0512', '#150A22', '#2E1E40', '#2E1E40'], d),
-  wall: day4(['#352043', '#3F2650', '#7D6896', '#8F7BA8'], d),
-  roof: day4(['#1E1029', '#291638', '#4E3A66', '#5A4674'], d),
-  ground: day4(['#1E1029', '#2A1739', '#8C74A6', '#A891C0'], d),
-  fore: day4(['#140A1D', '#211130', '#5C4677', '#6A5486'], d),
-  smoke: day4(['#5E4873', '#7B5A92', '#F4ECF8', '#FFFFFF'], d),
-  winOff: day4(['#241632', '#2F1C42', '#6E5C86', '#7E6C96'], d),
+  ink: day4(['#07030E', '#120820', '#2E1E40', '#2E1E40'], d),
+  wall: day4(['#2A1A3C', '#3A2450', '#7D6896', '#8F7BA8'], d),
+  roof: day4(['#130A20', '#241433', '#4E3A66', '#5A4674'], d),
+  ground: day4(['#140B21', '#251536', '#8C74A6', '#A891C0'], d),
+  fore: day4(['#0A0513', '#1C0F2B', '#5C4677', '#6A5486'], d),
+  smoke: day4(['#4E3D66', '#7B5A92', '#F4ECF8', '#FFFFFF'], d),
+  winOff: day4(['#1A1028', '#2B1A40', '#6E5C86', '#7E6C96'], d),
   stars: 1 - Math.min(1, d / 0.55),
   moon: 1 - Math.min(0.85, Math.max(0, d - 0.3) * 1.3),
 });
 export type Pal = ReturnType<typeof palette>;
 export const COLD = '#DCD3EA';
+/** Lamp light in a window or an open door. WHY amber and bright: the reviewer found the old beige "dull";
+ *  the night town's only warm colour must be the people's light, so the eye goes straight to it. */
+export const LAMP = '#FFC468', LAMP_GLOW = '#FF9E3D';
 
 // ---------- towers: fairytale keeps, slightly crooked, with turrets, flags and hoisting contraptions ----------
 export type TowerDef = {
@@ -77,8 +83,10 @@ export type TowerDef = {
   turret: { v: number; side: -1 | 1 }; wins: [number, number][];
 };
 export const TOWER_BASE = 905;
+// WHY the left tower stands further out (590, was 690): in the "something wonderful" shot the headline's
+// lower-left corner must be open sky, and the old spacing put this tower's body right under the words.
 export const TOWERS: TowerDef[] = [
-  { x: 690, w: 120, h: 600, crook: 22, crown: 'cone', arm: -1, turret: { v: 0.56, side: 1 },
+  { x: 590, w: 120, h: 600, crook: 22, crown: 'cone', arm: -1, turret: { v: 0.56, side: 1 },
     wins: [[0.1, -0.2], [0.22, 0.25], [0.35, -0.3], [0.47, 0.1], [0.62, -0.15], [0.75, 0.3], [0.86, -0.05]] },
   { x: 1010, w: 150, h: 700, crook: -12, crown: 'lantern', arm: -1, turret: { v: 0.46, side: 1 },
     wins: [[0.08, 0.2], [0.18, -0.3], [0.29, 0.1], [0.4, -0.15], [0.52, 0.3], [0.63, -0.25], [0.74, 0.05], [0.86, 0.25]] },
@@ -236,7 +244,8 @@ export type Win = { id: number; row: RowId; house: number; x: number; y: number;
  *  flip  0→1 the card-turn into this person's own app,
  *  layout/theme  override which app and colours it turns into (a hand-me-down keeps the app, not the colours),
  *  sketch 0→1 the quill's ink outline of a fresh, empty app being drawn over the glass. */
-export type WinLook = { b: number; grey: number; flip: number; layout?: number; theme?: Theme; sketch?: number };
+export type WinLook = { b: number; grey: number; flip: number; layout?: number; theme?: Theme; sketch?: number; hole?: boolean };
+// `hole`: the window itself has been carried off (line 2, "your personal data"): only a dark opening is left.
 type RoofKind = 'gable' | 'witch' | 'gambrel' | 'steep';
 export type House = {
   id: number; row: RowId; x: number; w: number; wall: number; roof: number; base: number; kind: RoofKind; skew: number;
@@ -379,7 +388,7 @@ export const Row: React.FC<{
                 const arch = `M${dx - hw} ${h.base} l0 ${-ht} a${hw} ${hw} 0 0 1 ${2 * hw} 0 l0 ${ht} Z`;
                 return (
                   <g transform={`rotate(${h.doorTilt} ${dx} ${h.base})`}>
-                    <path d={arch} fill={op > 0 ? mix('#3A2448', '#F4D9B8', Math.min(1, op * 1.5)) : mix(roofC, pal.ink, 0.25)} stroke={pal.ink} strokeWidth={1.3} />
+                    <path d={arch} fill={op > 0 ? mix('#3A2448', '#E8963F', Math.min(1, op * 1.5)) : mix(roofC, pal.ink, 0.25)} stroke={pal.ink} strokeWidth={1.3} />
                     {op > 0 && <path d={`M${dx - hw} ${h.base} l0 ${-ht} a${hw} ${hw} 0 0 1 ${2 * hw * (1 - 0.82 * op)} ${-hw * 0.0} L${dx - hw + 2 * hw * (1 - 0.82 * op)} ${h.base} Z`} fill={mix(roofC, pal.ink, 0.25)} stroke={pal.ink} strokeWidth={1.3} />}
                     {op <= 0 && <circle cx={dx + hw * 0.5} cy={h.base - ht * 0.47} r={1.8 * (hw / 13)} fill={pal.rim} />}
                     {porch?.(h)}
@@ -409,7 +418,7 @@ export const Row: React.FC<{
           const pad = 14 * S.scale;
           return (
             <g key={w.id}>
-              {s.b > 0.02 && app < 1 && <rect x={w.x - pad / 2} y={w.y - pad / 2} width={w.w + pad} height={w.h + pad} fill="#F2D9BE" opacity={0.2 * s.b * (1 - Math.max(app, s.grey)) * glowK} />}
+              {s.b > 0.02 && app < 1 && !s.hole && <rect x={w.x - pad / 2} y={w.y - pad / 2} width={w.w + pad} height={w.h + pad} fill={LAMP_GLOW} opacity={0.42 * s.b * (1 - Math.max(app, s.grey * 0.7)) * glowK} />}
               {app > 0 && <rect x={w.x - pad} y={w.y - pad} width={w.w + pad * 2} height={w.h + pad * 3} fill={glowC} opacity={0.75 * app * glowK} />}
               {app > 0 && <ellipse cx={w.x + w.w / 2} cy={houses[w.house].base + 10 * S.scale} rx={w.w * 1.3} ry={12 * S.scale} fill={glowC} opacity={0.5 * app * glowK} />}
             </g>
@@ -427,6 +436,14 @@ export const Row: React.FC<{
 // between the glass and the cross bars, so the bars sit in front of them like a real window.
 const Window: React.FC<{ w: Win; look: WinLook; t: number; pal: Pal; shutterC: string; inside?: React.ReactNode }> = ({ w, look, t, pal, shutterC, inside }) => {
   const { b, grey, flip, sketch = 0 } = look;
+  if (look.hole) {
+    // WHY a dark hole with a torn edge: the window was lifted out of the wall and taken up to the tower
+    return (<g>
+      <rect x={w.x - 2.5} y={w.y - 2.5} width={w.w + 5} height={w.h + 5} rx={2.5} fill={pal.ink} />
+      <rect x={w.x + 3} y={w.y + 3} width={w.w - 6} height={w.h - 6} fill="#05020A" />
+      <path d={`M${w.x} ${w.y + w.h * 0.2} l${w.w * 0.1} ${-w.h * 0.06} l${w.w * 0.12} ${w.h * 0.05}`} stroke={pal.rim} strokeOpacity={0.35} strokeWidth={1.2} fill="none" />
+    </g>);
+  }
   const theme = look.theme ?? w.theme, layout = look.layout ?? w.layout;
   const cx = w.x + w.w / 2, cy = w.y + w.h / 2;
   // flip: 0..0.5 the old glass turns away, 0.5..1 the app turns toward us with a small overshoot
@@ -440,7 +457,7 @@ const Window: React.FC<{ w: Win; look: WinLook; t: number; pal: Pal; shutterC: s
   // black hole in the house for a few frames (it read as a glitch); now the card turns in front of lamp light
   const frame = (<>
     <rect x={w.x - 2.5} y={w.y - 2.5} width={w.w + 5} height={w.h + 5} rx={2.5} fill={pal.ink} />
-    {flip > 0 && flip < 1 && <rect x={w.x} y={w.y} width={w.w} height={w.h} rx={1.5} fill={mix('#F2D9BE', theme.glow, 0.5)} />}
+    {flip > 0 && flip < 1 && <rect x={w.x} y={w.y} width={w.w} height={w.h} rx={1.5} fill={mix(LAMP, theme.glow, 0.5)} />}
   </>);
   const extras = (<>
     <rect x={w.x - 4} y={w.y + w.h + 1} width={w.w + 8} height={4} rx={1} fill={pal.rim} opacity={0.55} />
@@ -448,7 +465,7 @@ const Window: React.FC<{ w: Win; look: WinLook; t: number; pal: Pal; shutterC: s
   </>);
   if (!turned) {
     // lamp light is warm (a home), not the old cold blue-white
-    const glass = mix(pal.winOff, '#F2D9BE', b);
+    const glass = mix(pal.winOff, LAMP, b);
     const bars = 1 - Math.min(1, grey * 1.5);
     return (
       <g>
@@ -536,7 +553,7 @@ const cloudPath = (x: number, y: number, s: number) =>
   `M${x} ${y} h${200 * s} a${26 * s} ${26 * s} 0 0 0 ${-30 * s} ${-30 * s} a${40 * s} ${40 * s} 0 0 0 ${-70 * s} ${-22 * s} a${30 * s} ${30 * s} 0 0 0 ${-55 * s} ${8 * s} a${28 * s} ${28 * s} 0 0 0 ${-45 * s} ${44 * s} Z`;
 export const Clouds: React.FC<{ t: number; pal: Pal }> = ({ t, pal }) => (
   <g>
-    {[{ x: 120, y: 330, s: 1.5, v: 7 }, { x: 1250, y: 250, s: 1.2, v: 5 }, { x: 1700, y: 420, s: 1.7, v: 6 }, { x: -500, y: 470, s: 1.3, v: 8 }, { x: 640, y: 120, s: 1.0, v: 4 }].map((c, i) => (
+    {[{ x: -260, y: 470, s: 1.5, v: 7 }, { x: 1250, y: 250, s: 1.2, v: 5 }, { x: 1700, y: 420, s: 1.7, v: 6 }, { x: -900, y: 400, s: 1.3, v: 8 }, { x: 640, y: 120, s: 1.0, v: 4 }].map((c, i) => (
       <g key={i} transform={`translate(${c.v * t} 0)`} filter="url(#cut)">
         <path d={cloudPath(c.x, c.y, c.s)} fill={pal.cloud} opacity={0.88} />
         <path d={cloudPath(c.x, c.y, c.s)} fill="none" stroke={pal.cloudEdge} strokeWidth={1.6} strokeOpacity={0.7} />

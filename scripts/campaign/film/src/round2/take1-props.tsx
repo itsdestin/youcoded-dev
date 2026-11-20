@@ -104,15 +104,14 @@ export const Villager: React.FC<{
       {armOut(-1, 0)}
       {/* body: a soft bell shape, wider at the hem */}
       <path d={`M-7 ${sh} Q-11 ${sh + 12} -10 0 L10 0 Q11 ${sh + 12} 7 ${sh} Q0 ${sh - 3} -7 ${sh} Z`} fill={coat} {...ink(1.5)} />
+      {/* hair: two styles so neighbours are different people. WHY the long style is drawn as one shape that
+          falls behind the head to the shoulder (no separate bun): the reviewer read the old bun as "an
+          unexplained blob stuck to the door". */}
+      {hair === 0 ? null : <path d={`M${head.x - 9.4} ${head.y + 8} Q${head.x - 10.4} ${head.y - 9} ${head.x} ${head.y - 9.2} Q${head.x + 8.6} ${head.y - 9} ${head.x + 7.8} ${head.y - 1} L${head.x + 1} ${head.y + 3} Q${head.x - 3} ${head.y + 8} ${head.x - 4} ${head.y + 9} Z`} fill={INK} />}
       <circle cx={head.x} cy={head.y} r={6.6} fill="#F1DCCB" {...ink(1.5)} />
-      {/* hair: a cap of ink, two styles so neighbours are different people */}
       {hair === 0
         ? <path d={`M${head.x - 6.8} ${head.y - 0.5} Q${head.x - 6} ${head.y - 8.5} ${head.x + 1} ${head.y - 7} Q${head.x + 7} ${head.y - 6} ${head.x + 6.8} ${head.y - 0.5} Q${head.x + 2} ${head.y - 4} ${head.x - 6.8} ${head.y - 0.5} Z`} fill={INK} />
-        : <g fill={INK}>
-            {/* longer hair: a cap with a bun, kept above the eyes so the face still reads */}
-            <path d={`M${head.x - 7} ${head.y + 1} Q${head.x - 7.5} ${head.y - 8.5} ${head.x} ${head.y - 7.6} Q${head.x + 7.5} ${head.y - 8.5} ${head.x + 7} ${head.y + 1} Q${head.x + 3} ${head.y - 4.5} ${head.x - 7} ${head.y + 1} Z`} />
-            <circle cx={head.x - 4.5} cy={head.y - 7.5} r={3.4} />
-          </g>}
+        : <path d={`M${head.x - 6.9} ${head.y + 2} Q${head.x - 6.4} ${head.y - 8} ${head.x + 0.5} ${head.y - 7.4} Q${head.x + 6.6} ${head.y - 6.8} ${head.x + 7} ${head.y - 1.2} Q${head.x + 3.4} ${head.y - 4.6} ${head.x - 0.6} ${head.y - 3.8} Q${head.x - 3.6} ${head.y - 1.6} ${head.x - 3.4} ${head.y + 2.4} Z`} fill={INK} />}
       <circle cx={head.x + 2.6} cy={head.y + 0.2} r={0.95} fill={INK} />
       {armOut(1, 1)}
     </g>
@@ -128,12 +127,16 @@ export const Quill: React.FC<{ x: number; y: number; angle: number; len: number;
   const b = flex * 6;
   return (
     <g transform={`translate(${x} ${y}) rotate(${angle + 180}) scale(${k})`} opacity={o} filter="url(#lift)">
-      {/* the vane, drawn back from the nib along +x (rotated 180° so the nib leads) */}
-      <path d={`M24 0 C40 ${-10 + b} 70 ${-20 + b} 100 ${-14 + b * 1.6} C88 ${-6 + b} 60 ${2 + b * 0.4} 24 3 Z`} fill="#9750AA" {...ink(1.6)} />
-      <path d={`M24 0 C42 ${10 + b * 0.6} 74 ${14 + b} 96 ${6 + b * 1.4} C80 ${2 + b} 56 ${1 + b * 0.3} 24 1 Z`} fill="#C387D3" {...ink(1.6)} />
-      {[38, 52, 66, 80].map((u, i) => <path key={i} d={`M${u} ${0.5 + b * (u / 100) * 0.4} L${u + 10} ${-9 - i * 1.6 + b}`} stroke="#E7C8F0" strokeWidth={1.3} strokeLinecap="round" />)}
-      <path d={`M6 0 L100 ${-4 + b * 1.6}`} stroke="#FBF6FD" strokeWidth={2.4} strokeLinecap="round" />
-      <path d="M0 0 L12 -3.2 L12 3.2 Z" fill={INK} />
+      {/* the vane, drawn back from the nib along +x (rotated 180° so the nib leads). WHY curved and starting
+          well back from the nib, with a slim split nib: the straight version read as an arrow. */}
+      <path d={`M30 -1 C46 ${-14 + b} 72 ${-26 + b} 104 ${-26 + b * 1.6} C92 ${-14 + b} 64 ${-2 + b * 0.4} 30 2 Z`} fill="#9750AA" {...ink(1.6)} />
+      <path d={`M30 1 C48 ${10 + b * 0.6} 76 ${8 + b} 100 ${-10 + b * 1.4} C82 ${-4 + b} 58 ${1 + b * 0.3} 30 1 Z`} fill="#C387D3" {...ink(1.6)} />
+      {[42, 56, 70, 84].map((u, i) => <path key={i} d={`M${u} ${-0.6 * (u - 30) / 10 + b * (u / 100) * 0.4} L${u + 10} ${-12 - i * 2.4 + b}`} stroke="#E7C8F0" strokeWidth={1.3} strokeLinecap="round" />)}
+      <path d={`M10 0 Q60 ${-4 + b * 0.5} 106 ${-20 + b * 1.6}`} fill="none" stroke="#FBF6FD" strokeWidth={2.2} strokeLinecap="round" />
+      {/* the barrel and a slim, split nib, dark only at the tip where the ink is */}
+      <path d="M0 0 L13 -2.2 Q16 0 13 2.2 Z" fill="#E9DCC8" {...ink(1.1)} />
+      <path d="M0 0 L5 -0.9 L5 0.9 Z" fill={INK} />
+      <path d="M2.5 0 L10 0" stroke={INK} strokeWidth={0.6} />
     </g>
   );
 };
@@ -199,7 +202,10 @@ export const FramedCopy: React.FC<{ x: number; y: number; w: number; h: number; 
 
 /** A spyglass, drawn big in screen space: three brass-ringed sections ending in a round lens.
  *  Pivot (the eyepiece end) at 0,0; it points along `angle`. `extend` 0..1 slides it out. */
-export const Spyglass: React.FC<{ x: number; y: number; angle: number; extend: number; s: number }> = ({ x, y, angle, extend, s }) => {
+export const Spyglass: React.FC<{ x: number; y: number; angle: number; extend: number; s: number; dark?: boolean }> = ({ x, y, angle, extend, s, dark }) => {
+  // WHY `dark`: in the privacy shot it is a sharp silhouette against her lit window (reviewer: the brass
+  // version read as clip-art); only a cold glint on the lens is left.
+  const body = dark ? '#0C0614' : '#5B4270', hi = dark ? '#2A1A3A' : '#8D72A6', brass = dark ? '#3A2C1A' : '#C9A35A';
   if (extend <= 0.01) return null;
   const L = 300 * extend;
   const segs: [number, number, number][] = [[-40, L * 0.42, 34], [L * 0.36, L * 0.74, 29], [L * 0.68, L, 25]];
@@ -207,14 +213,14 @@ export const Spyglass: React.FC<{ x: number; y: number; angle: number; extend: n
     <g transform={`translate(${x} ${y}) rotate(${angle}) scale(${s})`} filter="url(#lift)">
       {segs.map(([a, b, r], i) => (
         <g key={i}>
-          <rect x={a} y={-r} width={b - a} height={2 * r} rx={3} fill="#5B4270" {...ink(2.4)} />
-          <rect x={a + 2} y={-r + 3} width={b - a - 4} height={r * 0.55} rx={2} fill="#8D72A6" />
-          <rect x={b - 9} y={-r - 3} width={9} height={2 * r + 6} rx={2} fill="#C9A35A" {...ink(2)} />
+          <rect x={a} y={-r} width={b - a} height={2 * r} rx={3} fill={body} {...ink(2.4)} />
+          <rect x={a + 2} y={-r + 3} width={b - a - 4} height={r * 0.55} rx={2} fill={hi} />
+          <rect x={b - 9} y={-r - 3} width={9} height={2 * r + 6} rx={2} fill={brass} {...ink(2)} />
         </g>
       ))}
       {/* the lens end: a brass ring and glass catching the light */}
-      <ellipse cx={L + 4} cy={0} rx={10} ry={29} fill="#C9A35A" {...ink(2)} />
-      <ellipse cx={L + 6} cy={0} rx={6} ry={22} fill="#DCD6F2" />
+      <ellipse cx={L + 4} cy={0} rx={10} ry={29} fill={brass} {...ink(2)} />
+      <ellipse cx={L + 6} cy={0} rx={6} ry={22} fill={dark ? '#3A3352' : '#DCD6F2'} />
       <ellipse cx={L + 7} cy={-7} rx={2.4} ry={7} fill="#FFFFFF" opacity={0.8} />
     </g>
   );
