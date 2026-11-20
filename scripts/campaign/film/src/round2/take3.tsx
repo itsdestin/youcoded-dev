@@ -14,11 +14,13 @@ const linear = (x: number) => x;
 // ---------- the hit points (seconds; 100 BPM, beat 0.6 s, bar 2.4 s) ----------
 // WHY one table: the music is composed to exactly these, so every animation reads its times from here.
 export const T3 = {
-  youllOwn: 0.6, nothing: 1.8, andYoull: 3.6, beHappy: 4.2,     // the deadpan statement, one beat apart in pairs
-  strike1: [7.2, 7.43] as const,                                 // bar 4: the marker hits "nothing."
-  strike2: [7.47, 7.66] as const,                                // the second, quicker pass back the other way
-  reflow: [7.6, 7.95] as const,                                  // tall frame only: room opens for the correction
-  write: 7.88,                                                   // the hand starts "everything."
+  // WHY the first line at 0: an empty opening frame read as a slow start; the film now opens on the words.
+  youllOwn: 0.0, nothing: 1.8, andYoull: 3.6, beHappy: 4.2,     // the deadpan statement
+  // WHY a beat before bar 4 (coordinator, 2026-11-20): so the fully corrected poster holds ~1.4 s before 9.6.
+  strike1: [6.6, 6.83] as const,                                 // the marker hits "nothing."
+  strike2: [6.87, 7.06] as const,                                // the second, quicker pass back the other way
+  reflow: [7.0, 7.35] as const,                                  // tall frame only: room opens for the correction
+  write: 7.28,                                                   // the hand starts "everything."
   data: 9.6, intelligence: 12.0, software: 14.4, everything: 16.8,
   end: 19.2,
 };
@@ -308,6 +310,14 @@ export const Take3: React.FC<{ narrator?: boolean }> = () => (
     <Scene from={0} to={T3.data}><Nothing /></Scene>
     <Scene from={T3.data} to={T3.everything}><OwnYour /></Scene>
     <Scene from={T3.everything} to={T3.end}><OwnEverything /></Scene>
-    <Scene from={T3.end} to={24}><EndCard at={T3.end} /><Grain /></Scene>
+    {/* WHY the wrapper: the kit's EndCard paints flat lavender as its first layer. On the light colour field the
+        last cut lands on the same paper as the "own your" frames; the rule below makes only that first layer
+        transparent, so kit.tsx stays untouched and the card's own layout is unchanged. */}
+    <Scene from={T3.end} to={24}>
+      <Wash />
+      <style>{'.t3-end > div > div:first-child { background: transparent !important; }'}</style>
+      <AbsoluteFill className="t3-end"><EndCard at={T3.end} /></AbsoluteFill>
+      <Grain />
+    </Scene>
   </AbsoluteFill>
 );
