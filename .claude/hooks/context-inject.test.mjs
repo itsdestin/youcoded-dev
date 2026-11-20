@@ -472,3 +472,31 @@ test('all worktrees collapsing does not read as "(none)"', () => {
   fs.rmSync(ws, { recursive: true, force: true });
   fs.rmSync(remote, { recursive: true, force: true });
 });
+
+test('a repo marked archived in workspace-repos.json gets no "behind" warning, a normal repo still does', () => {
+  // WHY: youcoded-core is read-only on GitHub, so its stale-checkout warnings are permanent noise.
+  const { ws, repo, remote } = makeWorkspaceWithRemote();
+  // Make `youcoded` 1 commit behind its upstream (cached ref moves, local checkout does not).
+  const other = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-inject-other-'));
+  git(other, 'clone', '-q', remote, 'c');
+  const c = path.join(other, 'c');
+  git(c, 'config', 'user.email', 'test@example.com');
+  git(c, 'config', 'user.name', 'Test');
+  fs.writeFileSync(path.join(c, 'x.txt'), 'x\n');
+  git(c, 'add', '.');
+  git(c, 'commit', '-q', '-m', 'upstream');
+  git(c, 'push', '-q', 'origin', 'master');
+  git(repo, 'fetch', '-q');
+  fs.mkdirSync(path.join(ws, 'scripts'), { recursive: true });
+  const reposJson = (archived) => fs.writeFileSync(path.join(ws, 'scripts', 'workspace-repos.json'),
+    JSON.stringify({ youcoded: { repository: 'x/y', branch: 'master', ...(archived ? { archived: true } : {}) } }));
+  reposJson(false);
+  assert.match(runHook(ws), /1 commits behind its upstream/);
+  reposJson(true);
+  const out = runHook(ws);
+  assert.doesNotMatch(out, /commits behind its upstream/);
+  assert.match(out, /### youcoded \(archived on GitHub/);
+  fs.rmSync(ws, { recursive: true, force: true });
+  fs.rmSync(remote, { recursive: true, force: true });
+  fs.rmSync(other, { recursive: true, force: true });
+});
