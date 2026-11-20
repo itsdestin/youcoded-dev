@@ -328,7 +328,8 @@ def marker(rng, strokes, total):
         s = (body / (body.std() + 1e-9) + hiss / (hiss.std() + 1e-9) * 0.35 + res) * am * env * inten
         tick = np.zeros(k)
         tk = int(0.004 * SR)
-        tick[:tk] = dsp.bp(rng.standard_normal(tk + 512), 800, 4000)[:tk] * np.exp(-np.arange(tk) / (0.0012 * SR)) * 2.5
+        # WHY the 0.3 ms rise (round three): the tip's tick started at full level and measured as a digital click
+        tick[:tk] = dsp.bp(rng.standard_normal(tk + 512), 800, 4000)[:tk] * np.exp(-np.arange(tk) / (0.0012 * SR)) * 2.5 * np.minimum(1, np.arange(tk) / (0.0003 * SR))
         i = int(t0 * SR)
         j = min(n, i + k)
         out[i:j] += (s + tick * inten)[:j - i]
