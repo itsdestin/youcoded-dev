@@ -348,7 +348,7 @@ a journey or `explore start --params` passes them, a scene puts them in its `bas
 `open: ['<button label>']` and `shoot` clicks it before the picture (`scripts/shoot/README.md` →
 "Open this first"). A switch is for practice DATA (signed in, offline, ten friends), not clicks.
 
-Added 2026-10: `?autoInstall=off` (the update popup's auto-install switch starts off), `?gate=connecting|unreachable|tab|login` (the Android connection gate screen), `?refresh=fail` (the model-list refresh reports OpenRouter unreachable), `?slow=1` (the phone's "Waiting for your computer" strip), `?toast=password` (the saved-password-refused notice instead of the lost-send one).
+Added 2026-10: `?autoInstall=off` (the update popup's auto-install switch starts off), `?gate=connecting|unreachable|tab|login` (the Android connection gate screen), `?refresh=fail` (the model-list refresh reports OpenRouter unreachable), `?slow=1` (the phone's "Waiting for your computer" strip), `?toast=password` (the saved-password-refused notice instead of the lost-send one), `?statsFail=1` (the marketplace's votes/installs service answers 503, so the stats-unavailable notices show).
 
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
 providers data — the transcript never changes), `?stalled=1` (parks the native session's
