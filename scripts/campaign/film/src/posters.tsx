@@ -217,8 +217,9 @@ const Struck: React.FC<{ word: string; fix: string; size: number; anchorRight?: 
       <path d="M1,24 C18,14 40,27 62,17 S90,13 99,18" fill="none" stroke={C.purpleNight} strokeWidth={size * 0.075} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
       <path d="M3,30 C25,22 48,33 72,24 S92,23 98,26" fill="none" stroke={C.purpleNight} strokeWidth={size * 0.05} strokeLinecap="round" vectorEffect="non-scaling-stroke" opacity={0.85} />
     </svg>
-    <span style={{ position: 'absolute', ...(anchorRight ? { right: '-2%' } : { left: '1%' }), bottom: '80%', fontFamily: HAND, fontWeight: 700, fontSize: size * 1.2, letterSpacing: '-0.01em', lineHeight: 1,
-      color: C.purpleNight, transform: 'rotate(-5deg)', transformOrigin: '0% 100%', whiteSpace: 'nowrap' }}>{fix}</span>
+    <span style={{ position: 'absolute', ...(anchorRight ? { right: '-2%' } : { left: '1%' }), top: '84%', fontFamily: HAND, fontWeight: 700, fontSize: size * 1.2, letterSpacing: '-0.01em', lineHeight: 1,
+      // WHY below the struck word (Destin, 2026-11-20: "the new 'everything' should be below nothing"): a correction written under the line it fixes
+      color: C.purpleNight, transform: 'rotate(-5deg)', transformOrigin: '0% 0%', whiteSpace: 'nowrap' }}>{fix}</span>
   </span>
 );
 // WHY one size for the whole family (Destin, 2026-11-19: "posters should look consistent... why is data so
@@ -262,11 +263,11 @@ const Nothing: React.FC<{ fill?: PosterProps['fill'] }> = ({ fill }) => {
     <AbsoluteFill><BgNight /><Fill kind={fill} dark word="everything." />
       <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
         {wide ? (<>
-          <div style={{ ...row, marginTop: GAP * size }}>you'll own<span style={{ display: 'inline-block', width: 0.26 * size }} /><Struck word="nothing." fix="everything." size={size} anchorRight /></div>
+          <div style={{ ...row, marginBottom: GAP * size }}>you'll own<span style={{ display: 'inline-block', width: 0.26 * size }} /><Struck word="nothing." fix="everything." size={size} anchorRight /></div>
           <div style={row}>and you'll be happy.</div>
         </>) : (<>
           <div style={row}>you'll own</div>
-          <div style={{ ...row, marginTop: GAP * size }}><Struck word="nothing." fix="everything." size={size} /></div>
+          <div style={{ ...row, marginBottom: GAP * size }}><Struck word="nothing." fix="everything." size={size} /></div>
           <div style={row}>and you'll</div>
           <div style={row}>be happy.</div>
         </>)}
@@ -298,7 +299,7 @@ const OwnSet: React.FC<{ noun: string; fill?: PosterProps['fill'] }> = ({ noun, 
           </div>
         ) : (<>
           {/* On the wide shape the struck poster starts one handwriting-gap down; match it so the first lines sit level. */}
-          {wide && fill !== 'app' && <div style={{ height: GAP * size }} />}
+          {/* (the struck poster's first line now starts at the top edge too, so no spacer is needed to keep the first lines level) */}
           <Head text={`${first} / *${noun}.*`} size={size} dark={dark} />
         </>)}
         {fill === 'app' ? (
