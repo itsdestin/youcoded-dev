@@ -9,7 +9,7 @@
 //    lit window clean out of its wall and reels it up to hang in a tower ("personal data"). Each is undone
 //    on that same house in line 7, and the stolen window flies home and clicks back into its wall.
 //  - Inside the tallest tower's top room the lords (only long dark sleeves) set down an enchanted quill
-//    (the fable's AI). It writes by itself; they shove it aside and pile up treasure; they grab it; it
+//    (the fable's AI). It writes by itself; they shove it aside and hoist one framed chart; they grab it; it
 //    slips their grip and flies out over the rooftops (the film's one fast camera move) to one villager.
 //  - "For anyone who asks": she asks, the quill writes it, her string snaps, and the camera pulls back as
 //    neighbours follow. On "free ourselves" every string snaps and the towers sink away like stage flats.
@@ -23,7 +23,7 @@ import { EndCard, useU } from '../kit';
 import { E, T, WORDS, captions, cueWord } from './take1-words';
 import { APP, AppWin, THEMES } from './take1-apps';
 import { Bubble, CoinMeter, Coin, FramedCopy, Padlock, Pennant, Quill, Sitter, Spyglass, Villager } from './take1-props';
-import { HandPose, Pile, Room, RoomState, inkPt } from './take1-room';
+import { HandPose, Prize, Room, RoomState, inkPt } from './take1-room';
 import {
   ALL_WINS, Birds, CX, CY, Cam, Clouds, Defs, FRONT, Foreground, Hills, House, K, Moon, Row, SkyBack, Stars,
   TOWERS, TOWER_BASE, TOWN, Tower, Win, WinLook, aim, doorSize, layerTransform, mix, palette, project, towerGeo,
@@ -77,6 +77,7 @@ const Q = {
   wonderful: T('wonderful', 'truly *wonderful'),
   happened: T('happened', 'wonderful *happened'),
   blinded: T('blinded', 'blinded'),
+  ownHubris: T('ownHubris', 'their *own hubris'),
   hubris: T('hubris', 'hubris'),
   these: T('these', '*these corporations'),
   created: T('created', 'corporations *created'),
@@ -134,9 +135,15 @@ const Q = {
   open: T('open', '*open source everything'),
   source: T('source', 'open *source everything'),
   everything: T('everything', 'open source *everything'),
+  everythingEnd: E('everythingEnd', 'open source *everything'),
 };
-// WHY 72.5 s: the brand end card must hold at least 2.5 s and the film is exactly 75 s.
-export const END_CARD = 72.5;
+// The ending, all counted from the END of the spoken "everything." (reviewer, round 4: the headline was still
+// up when the card faded in, a double exposure at the brand moment). WHY these numbers: the headline holds
+// 0.45 s after the voice stops, fades over 8 frames, and the card starts 4 frames after it is fully gone, so
+// no frame ever shows both; that leaves the card about 2.6 s, and the film still ends at exactly 75 s.
+const FINAL_FADE = [Q.everythingEnd + 0.45, Q.everythingEnd + 0.45 + 8 / FPS] as const;
+const END_CARD = FINAL_FADE[1] + 4 / FPS;
+if (END_CARD > 72.5) throw new Error('take1: the end card would hold under 2.5 s; the narration ends too late');
 // WHY the dip starts on "everything" itself: the reviewer found the purple word hard to read over the busy
 // pastel houses, and a blank lilac frame after it looked like a rendering gap. Now the town dips to the
 // end card's own lavender as the word lands; the headline stays put on clean ground until the logo comes.
@@ -242,6 +249,9 @@ const DATA_WIDE: Cam = (() => { const f = frameAt(0); return frameTwo(K.towers, 
 // (with the easing on the key it travels to).
 type Key = [number, Cam, boolean?, ((x: number) => number)?];
 const AA: Cam = { cx: 980, cy: 690, z: 1.15 };           // "we get to decide": the whole town
+const AA_LOW: Cam = { cx: 980, cy: 850, z: 1.2 };        // the end of the pull-back, framed low (see below)
+// when "for anyone who asks." leaves: 1.2 s + 0.25 s a word after "asks" has landed, plus a breath
+const ASKS_OUT = Q.asks + 0.42 + 1.2 + 0.25 * 4 + 0.4;
 const OPEN_WIDE: Cam = { cx: 990, cy: 600, z: 1.12 };    // towers over the town: "dictated" plays here
 // WHY this framing for "something wonderful happened": lantern far upper right, so the headline's lower-left
 // corner is open sky and hills instead of a tower body (reviewer, round 3)
@@ -250,6 +260,10 @@ const WONDER: Cam = place(K.towers, L0.x, L0.y, 1.2, 1660, 330);
 const WONDER2: Cam = place(K.towers, L0.x, L0.y, 1.36, 1660, 330);
 const ESCAPE: Cam = place(K.towers, L0.x, L0.y, 1.18, 1180, 250);   // the quill breaks out, seen from the town
 const WHIP_AT = Q.aTool - 0.55;
+// WHY the cut to the towers waits for "own" (not "Blinded"): the headline "something wonderful happened." needs
+// its full hold, and it must leave WITH the lantern shot, never sit over the busy town (reviewer, round 4).
+// The towers' windows flare on "Blinded" inside the lantern shot, so the word still has its picture.
+const BLIND_CUT = Q.ownHubris;
 const CAM_KEYS: Key[] = [
   // 1. one move: from her lit window and face, back and up until the towers loom over the roofs
   [0, at(HERO, -34, -4, 4.4), true],
@@ -278,9 +292,9 @@ const CAM_KEYS: Key[] = [
   [Q.however, { cx: 980, cy: 560, z: 1.05 }, true],
   [Q.something - 0.01, { cx: 980, cy: 555, z: 1.07 }],
   [Q.something, WONDER, true],
-  [Q.blinded - 0.01, WONDER2],
+  [BLIND_CUT - 0.01, WONDER2],
   // hubris: a low look up at the towers as they swell
-  [Q.blinded, aim(K.towers, 1010, 600, 1.5), true],
+  [BLIND_CUT, aim(K.towers, 1010, 600, 1.5), true],
   [Q.these - 0.01, aim(K.towers, 1010, 560, 1.42)],
   // (the top room, inside, plays from "these corporations" to "far": see roomAt)
   [Q.far, ESCAPE, true],
@@ -294,8 +308,11 @@ const CAM_KEYS: Key[] = [
   // "for anyone who asks": close on her; from "anyone" one long dolly back and up as her street follows
   [Q.forAnyone, at(HERO, -90, 22, 2.9), true],
   [Q.anyone, at(HERO, -86, 20, 2.92)],
-  [Q.we, AA, false, SMOOTH],
-  [Q.what1 - 0.01, { ...AA, z: AA.z + 0.06 }],
+  // WHY the dolly ends low, then tilts up: while "for anyone who asks." is up, the roofs and doors must stay
+  // clear of the words (reviewer, round 4), so the pull-back keeps the street high in frame over calm ground;
+  // once the words are gone the camera lifts to the whole town and its towers for "we get to decide"
+  [ASKS_OUT + 0.1, AA_LOW, false, SMOOTH],
+  [Q.what1 - 0.01, { ...AA, z: AA.z + 0.06 }, false, SMOOTH],
   // 7. each decision undone on its own house
   [Q.what1, at(LOCK, 0, -36, 2.9), true],
   [Q.what2 - 0.01, at(LOCK, 0, -36, 3.1)],
@@ -312,9 +329,11 @@ const CAM_KEYS: Key[] = [
   [Q.itsTime2, at(DATA, -120, 12, 2.5), true],
   [Q.long3 - 0.01, at(DATA, -70, 12, 2.6)],
   [Q.long3, at(COIN, 40, 12, 2.5), true],
-  [Q.to, at(COIN, 75, 12, 2.6)],
-  [Q.everything + 0.6, { cx: 1000, cy: 700, z: 1.28 }],
-  [80, { cx: 1000, cy: 705, z: 1.3 }],
+  [Q.open - 0.01, at(COIN, 75, 12, 2.62)],
+  // WHY a hard cut ON "open", then one slow drift: the old eased pull-back crossed the frame mid-phrase and
+  // read as a jump under the building headline; now the last line builds over a single steady wide shot
+  [Q.open, { cx: 1000, cy: 690, z: 1.34 }, true],
+  [80, { cx: 1000, cy: 712, z: 1.24 }],
 ];
 export const camAt = (t: number): Cam => {
   let i = 0;
@@ -515,9 +534,9 @@ const quillFree = (t: number, cam: Cam): Pose | null => {
 // Six shots, each under 3 s (reviewer: "never hold one composition for more than 3 s here"):
 //  A "these corporations created a new kind of" — a sleeve sets the quill down on the lectern.
 //  B "technology: artificial intelligence" — close: a two-frame wind-up, it lifts by itself and writes.
-//  C "a technology they believed would bring about" — the sleeves creep in from both sides, fingers working.
-//  D "a great treasure:" — they shove the quill aside and drop treasure, stop-motion, one beat per stress.
-//  E "shareholder value" — four heavy stacks slam down on share / hold / va / lue; the quill trembles.
+//  C "a technology they believed would bring about" — the sleeves creep up from below, fingers working.
+//  D "a great treasure:" — the quill is knocked aside; two hands lift ONE gilt-framed chart into the light.
+//  E "shareholder value" — close on it: its line climbs on "shareholder"; a wax seal stamps it on "value".
 //  F "But in their excitement, they created something" — a sleeve grabs it; it wriggles, winds up and slips.
 type QPose = { x: number; y: number; angle: number; len: number };
 const QREST: QPose = { x: 868, y: 624, angle: 184, len: 300 };
@@ -527,7 +546,7 @@ const QSIDE: QPose = { x: 1000, y: 652, angle: 166, len: 300 };
 // vane pointing up along the arm vanished behind the sleeve
 const QHELD: QPose = { x: 860, y: 470, angle: 205, len: 300 };
 const mixQ = (a: QPose, b: QPose, p: number): QPose => ({ x: lerp(a.x, b.x, p), y: lerp(a.y, b.y, p), angle: lerp(a.angle, b.angle, p), len: lerp(a.len, b.len, p) });
-const R_FROM: P2 = { x: 2300, y: -200 }, L_FROM: P2 = { x: -380, y: -200 };
+const R_FROM: P2 = { x: 2300, y: -200 };
 /** A hand closed round the quill's shaft, its sleeve running back to `from`. */
 const handOn = (q: QPose, from: P2, grip: number, back = 0): HandPose => {
   const a = ((q.angle + 180) * Math.PI) / 180;
@@ -537,28 +556,43 @@ const handOn = (q: QPose, from: P2, grip: number, back = 0): HandPose => {
   const k = 112 + back;
   return { from, at: { x: M.x - (dx / L) * k, y: M.y - (dy / L) * k }, grip };
 };
-// The treasure: [beat time, x, floor y, kind, height]. WHY these beats: "great", "trea-sure", then one per
-// stressed syllable of "share-holder va-lue" (the word's own timing split by syllable).
-const shareMid = lerp(Q.shareholder, Q.shareholderEnd, 0.42), valueMid = lerp(Q.value, Q.valueEnd, 0.5);
-const PILES: [number, number, number, Pile['kind'], number][] = [
-  [Q.great, 690, 900, 'ledger', 4],
-  [Q.treasure, 1250, 902, 'coins', 9],
-  [Q.treasure + 0.55, 520, 908, 'coins', 7],
-  [Q.shareholder, 1420, 918, 'coins', 13],
-  [shareMid, 790, 926, 'ledger', 6],
-  [Q.value, 1130, 934, 'coins', 15],
-  [valueMid, 600, 944, 'coins', 16],
-];
-const stopMo = (t: number) => Math.floor(t * 15) / 15;      // WHY 15 fps for the treasure: stop-motion weight
+// The treasure: one gilt-framed chart, lifted into the lamplight. WHY (reviewer, round 4): coin piles and books
+// were the treasure-chest cliché with new props; "shareholder value" is one idea, a line going up, so it is
+// one object, and each word gets one precise action: "great" it rises, "treasure" the light slides across
+// it, "shareholder" its line climbs, "value" a seal stamps it.
+// WHY left of the lectern, not over it: held over the lectern the arms hid the quill, and the quill lying
+// ignored beside their treasure is the point of the shot
+const PRIZE_UP = { x: 690, y: 395, w: 400, h: 290 };
+const liftAt = (t: number) => {
+  // WHY a slight overshoot: a trophy hoisted with pride rises a touch too high, then settles
+  const up = r(t, Q.great - 0.05, Q.treasure + 0.3, Easing.bezier(0.25, 0.9, 0.35, 1.12));
+  const proud = 14 * Math.sin(Math.PI * r(t, Q.valueEnd, Q.but, EASE_IN_OUT));   // a little hoist after the stamp
+  return PRIZE_UP.y + 760 * (1 - up) - proud;
+};
+const SEAL_LAND = Q.value + 0.12;                         // the stamp lands inside "va-lue"
+const prizeAt = (t: number) => ({
+  ...PRIZE_UP, y: liftAt(t), rot: 0, o: 1,
+  line: 0.62 * r(t, Q.treasure + 0.2, Q.treasure + 1.0, EASE_IN_OUT) + 0.38 * r(t, Q.shareholder - 0.04, Q.shareholderEnd + 0.1, EASE_IN_OUT),
+  shine: r(t, Q.treasure + 0.25, Q.treasure + 1.15, EASE_IN_OUT),
+  seal: r(t, SEAL_LAND - 3 / FPS, SEAL_LAND, EASE_IN), squash: spring(t - SEAL_LAND),
+});
+/** The two hands holding the frame by its lower corners, sleeves running down out of frame. */
+const liftHands = (p: { x: number; y: number; w: number; h: number }): [HandPose, HandPose] => {
+  const hold = (from: P2, cx: number): HandPose => {
+    const c = { x: cx, y: p.y + p.h / 2 + 10 };
+    const dx = c.x - from.x, dy = c.y - from.y, L = Math.hypot(dx, dy);
+    return { from, at: { x: c.x - (dx / L) * 92, y: c.y - (dy / L) * 92 }, grip: 0.55 };
+  };
+  // the arms rise almost straight up from below, so the left sleeve stays clear of the barred window
+  return [hold({ x: p.x - 300, y: 1500 }, p.x - p.w / 2 + 44), hold({ x: p.x + 300, y: 1500 }, p.x + p.w / 2 - 44)];
+};
 const roomAt = (t: number): RoomState => {
-  const piles: Pile[] = PILES.map(([b, x, y, kind, n]) => {
-    const ts = stopMo(t);
-    return { x, y, kind, n, land: r(ts, b - 0.14, b, EASE_IN), squash: spring(ts - b) };
-  });
   let cam = { cx: 960, cy: 560, z: 1 };
   let quill: QPose = QREST; let flex = 0; let ink = 0; let left: HandPose | undefined; let right: HandPose | undefined;
+  let prize: Prize | undefined;
   if (t < Q.newTech) {
-    // A: a sleeve lowers the quill onto the lectern, lets go and withdraws; the other drums at the edge
+    // A: a sleeve lowers the quill onto the lectern, lets go and withdraws. WHY one hand only: a second one
+    // drumming at the left edge was cut off by the frame and overlapped the window (reviewer: "a stray limb")
     const p = r(t, Q.these, Q.newTech, LIN);
     cam = { cx: 1010, cy: 560, z: 1.3 + 0.08 * SMOOTH(p) };
     const set = r(t, Q.these, Q.created + 0.1, EASE_IN_OUT);
@@ -568,7 +602,6 @@ const roomAt = (t: number): RoomState => {
     const away = r(t, Q.created + 0.35, Q.newTech, EASE_IN_OUT);
     const h = handOn(quill, R_FROM, 1 - release, 40 * release);
     right = { ...h, at: { x: lerp(h.at.x, h.at.x + 520, away), y: lerp(h.at.y, h.at.y - 520, away) } };
-    left = { from: L_FROM, at: { x: lerp(-200, 330, r(t, Q.these + 0.2, Q.created + 0.4, EASE_OUT)), y: 520 }, grip: 0.15, wiggle: 0.5 };
   } else if (t < Q.aTechnology) {
     // B: close on the parchment; the quill wakes and writes one line by itself
     const p = r(t, Q.newTech, Q.aTechnology, LIN);
@@ -587,51 +620,39 @@ const roomAt = (t: number): RoomState => {
     quill = mixQ(quill, QHOVER, rise);
     ink = u;
   } else if (t < Q.great) {
-    // C: the sleeves creep in from both sides toward it, fingers working
+    // C: the sleeves creep up from below toward it, fingers working. WHY from below: from the upper left the
+    // sleeve crossed the barred window; low, both arms stay clear of it and set up the lift that follows
     const p = r(t, Q.aTechnology, Q.great, LIN);
     cam = { cx: 960, cy: 545, z: 1.12 + 0.12 * SMOOTH(p) };
     ink = 1;
     quill = { ...QHOVER, y: QHOVER.y + Math.sin(t * 2.6) * 6, angle: QHOVER.angle + Math.sin(t * 1.9) * 3 };
     const creep = r(t, Q.aTechnology + 0.1, Q.great - 0.05, EASE_IN_OUT);
-    left = { from: { x: -380, y: 40 }, at: { x: lerp(-120, 600, creep), y: lerp(330, 500, creep) }, grip: 0.1, wiggle: 0.9 };
-    right = { from: { x: 2300, y: 20 }, at: { x: lerp(2040, 1360, creep), y: lerp(300, 470, creep) }, grip: 0.1, wiggle: 0.9 };
+    left = { from: { x: 120, y: 1500 }, at: { x: lerp(560, 760, creep), y: lerp(1120, 640, creep) }, grip: 0.1, wiggle: 0.9 };
+    right = { from: { x: 1900, y: 1500 }, at: { x: lerp(1500, 1300, creep), y: lerp(1120, 600, creep) }, grip: 0.1, wiggle: 0.9 };
   } else {
     ink = 1;
-    // D/E: the quill is swatted aside on "great" and lies ignored, trembling more and more
-    const swat = r(t, Q.great - 0.04, Q.great + 0.16, EASE_OUT);
+    // D/E: on "great" the quill is knocked down onto the lectern and lies ignored, trembling more and more,
+    // while the hands lift their treasure up into the light (new shot: the hands now hold the frame)
+    const swat = r(t, Q.great - 0.04, Q.great + 0.2, EASE_OUT);
     quill = mixQ(QHOVER, QSIDE, swat);
-    quill.angle += 40 * Math.sin(Math.PI * swat) ;
-    quill.y -= 10 * spring(t - Q.great - 0.16);
+    quill.angle += 40 * Math.sin(Math.PI * swat);
+    quill.y -= 10 * spring(t - Q.great - 0.2);
     const trem = r(t, Q.treasure + 0.4, Q.but, EASE_IN) * 3.2;
     quill.angle += Math.sin(t * 52) * trem; flex = Math.sin(t * 37) * trem * 0.3;
-    // the hands fetch each pile and drop it (stop-motion): each side moves between its own drops
-    const ts = stopMo(t);
-    const handFor = (side: -1 | 1): HandPose => {
-      const mine = PILES.filter((p) => (side < 0 ? p[1] < 960 : p[1] >= 960));
-      let k = mine.findIndex((p) => p[0] + 0.25 > ts); if (k < 0) k = mine.length - 1;
-      const cur = mine[k], prev = mine[Math.max(0, k - 1)];
-      const pos = (p: typeof cur) => ({ x: p[1] - side * 70, y: p[2] - 470 - 20 * p[4] });
-      const go = k === 0 ? 1 : r(ts, prev[0] + 0.1, cur[0] - 0.16, EASE_IN_OUT);
-      const A = pos(prev), B = pos(cur);
-      const atp = { x: lerp(A.x, B.x, go), y: lerp(A.y, B.y, go) - 30 * Math.sin(Math.PI * go) };
-      const grip = 1 - r(ts, cur[0] - 0.14, cur[0] - 0.07, LIN) + r(ts, cur[0] + 0.12, cur[0] + 0.3, LIN) * 0.6;
-      // the swat on "great": the left hand sweeps through the quill's place first
-      if (side < 0 && t < Q.great + 0.3) {
-        const sw = r(t, Q.great - 0.25, Q.great + 0.1, EASE_IN_OUT);
-        return { from: { x: -380, y: 40 }, at: { x: lerp(600, 1080, sw), y: lerp(500, 590, sw) }, grip: 0.1 };
-      }
-      return { from: side < 0 ? { x: -380, y: -160 } : { x: 2300, y: -160 }, at: atp, grip: c01(grip) };
-    };
-    left = handFor(-1); right = handFor(1);
+    prize = prizeAt(t);
+    [left, right] = liftHands(prize);
     if (t < Q.shareholder) {
+      // D: wide enough to see the quill pushed aside below the treasure; a slow push in as it rises
       const p = r(t, Q.great, Q.shareholder, LIN);
-      cam = { cx: lerp(960, 990, p), cy: 610, z: 1.0 + 0.1 * SMOOTH(p) };
+      cam = { cx: 880, cy: lerp(600, 540, SMOOTH(p)), z: 1.0 + 0.1 * SMOOTH(p) };
     } else if (t < Q.but) {
-      // E: lower and tighter on the piles, the floor jumping with each slam
-      const kick = PILES.slice(3).reduce((n, p) => n + spring(stopMo(t) - p[0]), 0);
-      cam = { cx: 960, cy: 720 + 7 * kick, z: 1.3 };
+      // E: close on the frame; the floor jumps once when the seal lands
+      const p = r(t, Q.shareholder, Q.but, LIN);
+      cam = { cx: 770, cy: 450 + 6 * spring(t - SEAL_LAND), z: 1.5 + 0.08 * SMOOTH(p) };
     } else {
-      // F: a sleeve snatches it; it wriggles, winds up and slips the grip
+      // F: a sleeve snatches it; it wriggles, winds up and slips the grip. The treasure stands where they set
+      // it, leaning on the floor at the left, so it does not vanish across the cut
+      prize = { ...prizeAt(t), x: 560, y: 760, w: 300, h: 218, rot: -5, squash: 0 };
       const p = r(t, Q.but, Q.far, LIN);
       cam = { cx: lerp(990, 960, p), cy: lerp(620, 540, SMOOTH(p)), z: 1.8 + 0.12 * p };
       const grab = r(t, Q.excitement - 0.05, Q.excitement + 0.15, EASE_OUT);
@@ -656,7 +677,7 @@ const roomAt = (t: number): RoomState => {
       left = { from: { x: -380, y: 120 }, at: { x: lerp(-200, 640, r(t, Q.excitement + 0.2, Q.excitement + 0.7, EASE_OUT)) + 120 * slip, y: lerp(520, 470, up) - 60 * slip }, grip: 0.1 + 0.8 * slip, wiggle: 0.8 * (1 - slip) };
     }
   }
-  return { cam, quill: { ...quill, flex }, ink, left, right, piles, lamp: 1, t };
+  return { cam, quill: { ...quill, flex }, ink, left, right, prize, lamp: 1, t };
 };
 
 // ---------- type ----------
@@ -666,11 +687,13 @@ const SPOT = { left: '8%', bottom: '11%', width: '62%' } as const;
 const holdFull = (words: HWord[], wanted = 0) => Math.max(wanted, words[words.length - 1].at + 0.42 + 1.2 + 0.25 * words.length + 0.4);
 
 type HWord = { text: string; at: number; accent?: boolean };
-/** A headline whose words arrive exactly as they are spoken (DM Sans 900, lowercase, one purple word). */
-const Headline: React.FC<{ words: HWord[]; out: number; t: number; day: boolean }> = ({ words, out, t, day }) => {
+/** A headline whose words arrive exactly as they are spoken (DM Sans 900, lowercase, one purple word).
+ *  `from`: no frame of it before this time (WHY: a word that starts fading in 2 frames before a hard cut is
+ *  born in one shot and lands in the next, a smeared flash). `fade`: how long it takes to leave. */
+const Headline: React.FC<{ words: HWord[]; out: number; t: number; day: boolean; from?: number; fade?: number }> = ({ words, out, t, day, from = -1, fade = 0.4 }) => {
   const u = useU();
-  if (t < words[0].at - 0.1 || t > out + 0.05) return null;
-  const exit = r(t, out - 0.4, out, EASE_IN);
+  if (t < Math.max(from, words[0].at - 0.1) || t > out + 0.05) return null;
+  const exit = r(t, out - fade, out, EASE_IN);
   return (
     <AbsoluteFill>
       <div style={{
@@ -680,7 +703,8 @@ const Headline: React.FC<{ words: HWord[]; out: number; t: number; day: boolean 
         textShadow: day ? `0 0 ${1.6 * u}px rgba(251,246,253,0.9)` : `0 ${0.2 * u}px ${2 * u}px rgba(10,4,16,0.8)`,
       }}>
         {words.map((w, i) => {
-          const p = r(t, w.at - 0.06, w.at + 0.42);
+          const a = Math.max(from, w.at - 0.06);
+          const p = r(t, a, Math.max(a + 0.3, w.at + 0.42));
           return (
             <span key={i} style={{
               display: 'inline-block', marginRight: '0.24em', opacity: p, transform: `translateY(${(1 - p) * 0.3}em)`,
@@ -693,13 +717,15 @@ const Headline: React.FC<{ words: HWord[]; out: number; t: number; day: boolean 
   );
 };
 
-const FINAL_OUT = END_CARD + 0.45;                     // WHY: it leaves as the logo arrives, never before
 const FINAL: HWord[] = [{ text: 'open', at: Q.open }, { text: 'source', at: Q.source }, { text: 'everything.', at: Q.everything, accent: true }];
-const HEADLINES: { words: HWord[]; out: number }[] = [
+const HEADLINES: { words: HWord[]; out: number; from?: number }[] = [
   { words: [{ text: 'own', at: Q.own }, { text: 'nothing.', at: Q.nothing, accent: true }] },
-  { words: [{ text: 'something', at: Q.something }, { text: 'wonderful', at: Q.wonderful, accent: true }, { text: 'happened.', at: Q.happened }] },
-  { words: [{ text: 'for', at: Q.forAnyone }, { text: 'anyone', at: Q.anyone, accent: true }, { text: 'who', at: Q.who }, { text: 'asks.', at: Q.asks }] },
-].map((h) => ({ ...h, out: holdFull(h.words) }));
+  // WHY from the cut and out at the next cut: it belongs to the lantern shot only (see BLIND_CUT)
+  { words: [{ text: 'something', at: Q.something }, { text: 'wonderful', at: Q.wonderful, accent: true }, { text: 'happened.', at: Q.happened }], from: Q.something, out: BLIND_CUT },
+  { words: [{ text: 'for', at: Q.forAnyone }, { text: 'anyone', at: Q.anyone, accent: true }, { text: 'who', at: Q.who }, { text: 'asks.', at: Q.asks }], out: ASKS_OUT },
+].map((h) => ({ ...h, out: h.out ?? holdFull(h.words) }));
+// WHY checked: the brand guide's minimum (1.2 s + 0.25 s a word on screen) must survive any re-recording
+HEADLINES.forEach((h) => { if (h.out - (h.from ?? h.words[0].at) < 1.2 + 0.25 * h.words.length) throw new Error(`take1: headline "${h.words.map((w) => w.text).join(' ')}" is held too briefly`); });
 const CAPS = captions(WORDS.indexOf(cueWord('open', '*open source everything')), Q.open - 0.2);
 const FIRST_DAY_CAP = CAPS.find((c) => dawnAt(c.at) > 0.5)?.at ?? 99;
 const CAP_TONE = (t: number) => r(t, FIRST_DAY_CAP - 0.5, FIRST_DAY_CAP, EASE_IN_OUT);
@@ -713,7 +739,9 @@ const Scrim: React.FC<{ o: number; dawn: number; strong?: boolean }> = ({ o, daw
   // WHY deeper than before: the reviewer saw "own nothing." sit on the dark fence with little separation
   const background = strong
     ? `linear-gradient(0deg, ${a(0.9)} 0%, ${a(0.84)} 24%, ${a(0.5)} 36%, transparent 50%)`
-    : `radial-gradient(ellipse 80% 58% at 24% 100%, ${a(0.82)} 0%, ${a(0.5)} 46%, transparent 80%)`;
+    : `radial-gradient(ellipse 80% 58% at 24% 100%, ${a(0.82)} 0%, ${a(0.5)} 46%, transparent 80%), linear-gradient(0deg, ${a(0.5 * (1 - dawn))} 0%, ${a(0.32 * (1 - dawn))} 18%, transparent 34%)`;
+  // WHY the second, low band (night only): under "for anyone who asks." the pull-back slides doors and roofs
+  // under the words; a soft dark floor across the bottom third keeps them calm (reviewer, round 4)
   const mask = strong ? 'linear-gradient(90deg, #000 0%, #000 62%, transparent 92%)' : undefined;
   return <AbsoluteFill style={{ opacity: o, pointerEvents: 'none', background, WebkitMaskImage: mask, maskImage: mask }} />;
 };
@@ -1139,14 +1167,14 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
       </svg>
       <AbsoluteFill style={{ background: '#07030C', opacity: hush * 0.32 }} />
       <Grain frame={frame} dawn={dawn} />
-      <Scrim o={narrator ? Math.max(...HEADLINES.map((h) => Math.min(r(t, h.words[0].at - 0.4, h.words[0].at), 1 - r(t, h.out, h.out + 0.4))), Math.min(r(t, Q.open - 0.4, Q.open), 1 - r(t, DIP[0], DIP[1]))) : 1 - r(t, END_CARD - 0.4, END_CARD)} dawn={narrator ? dawn : CAP_TONE(t)} strong={!narrator} />
-      {narrator ? HEADLINES.map((h, i) => <Headline key={i} words={h.words} out={h.out} t={t} day={false} />) : <Captions t={t} />}
+      <Scrim o={narrator ? Math.max(...HEADLINES.map((h) => Math.min(h.from !== undefined ? r(t, h.from, h.from + 0.25) : r(t, h.words[0].at - 0.4, h.words[0].at), 1 - r(t, h.out - (h.from !== undefined ? 0.4 : 0), h.out + (h.from !== undefined ? 0 : 0.4)))), Math.min(r(t, Q.open - 0.4, Q.open), 1 - r(t, DIP[0], DIP[1]))) : 1 - r(t, END_CARD - 0.4, END_CARD)} dawn={narrator ? dawn : CAP_TONE(t)} strong={!narrator} />
+      {narrator ? HEADLINES.map((h, i) => <Headline key={i} words={h.words} out={h.out} from={h.from} t={t} day={false} />) : <Captions t={t} />}
       {/* WHY a veil, then the card: the town stays faintly visible under the last words (no empty frame), and
           the end card's own lavender completes the step when the logo arrives */}
       <AbsoluteFill style={{ background: C.lavender, opacity: narrator ? 0.84 * r(t, DIP[0], DIP[1], EASE_IN_OUT) + 0.16 * r(t, END_CARD - 0.3, END_CARD, EASE_IN_OUT) : r(t, END_CARD - 0.4, END_CARD, EASE_IN_OUT) }} />
       {t >= END_CARD && <EndCard at={END_CARD + 0.05} />}
-      {/* WHY after the end card: the last headline holds its place over the dip and steps aside as the logo builds */}
-      {narrator && <Headline words={FINAL} out={FINAL_OUT} t={t} day={dayText} />}
+      {/* the last headline sits on the clean lavender after the dip and is gone 4 frames before the card */}
+      {narrator && <Headline words={FINAL} out={FINAL_FADE[1]} fade={FINAL_FADE[1] - FINAL_FADE[0]} t={t} day={dayText} />}
     </AbsoluteFill>
   );
 };

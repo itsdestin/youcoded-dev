@@ -3,7 +3,7 @@
 // technology… shareholder value… far beyond their own control" ("a screensaver"). Inside, the tower lords are
 // only long dark sleeves reaching in from the frame edges (no faces, no company), the quill is the hero on a
 // lectern, and every beat of the line is a physical action: they set it down, it writes by itself, they
-// shove it aside and pile up treasure, they grab it, it slips their grip.
+// shove it aside and lift one framed chart (their treasure) into the light, they grab it, it slips their grip.
 // This file only draws. take1.tsx decides WHEN (from word times) and passes poses in.
 import React from 'react';
 import { Quill } from './take1-props';
@@ -11,17 +11,15 @@ import { Quill } from './take1-props';
 const INK = '#07030E';
 const FLAG = '#D25AA0';                   // the towers' colour: their cuffs match their flags
 const SLEEVE = '#1E1128', SLEEVE_HI = '#3A2349';
-const GOLD = '#F0C75E', GOLD_SIDE = '#B98A2E';
 
 export type Pt = { x: number; y: number };
 export type HandPose = { at: Pt; from: Pt; grip: number; o?: number; wiggle?: number };
-export type Pile = { x: number; y: number; kind: 'coins' | 'ledger'; n: number; land: number; squash: number };
 export type RoomState = {
   cam: { cx: number; cy: number; z: number };
   quill: { x: number; y: number; angle: number; len: number; flex: number };
   ink: number;                 // 0..1 how much of the quill's line has been written
   left?: HandPose; right?: HandPose;
-  piles: Pile[];
+  prize?: Prize;               // the treasure, when it is in the room
   lamp: number;                // 0..1 how warm the room is lit
   t: number;
 };
@@ -70,38 +68,56 @@ const Arm: React.FC<{ p: HandPose; t: number }> = ({ p, t }) => {
   );
 };
 
-/** A pile of treasure: a stack of coins or a stack of ledgers, dropping in with a squash on landing.
- *  `land` 0..1 is the fall (1 = on the floor), `squash` the landing's spring (0 at rest). */
-const PileDraw: React.FC<{ p: Pile }> = ({ p }) => {
-  if (p.land <= 0) return null;
-  // WHY drawn 1.5x: the treasure has to read at phone size as "a hoard", not a few coins on the floor
-  const fall = (1 - p.land) * 360;
-  const sx = 1.5 * (1 + 0.16 * p.squash), sy = 1.5 * (1 - 0.2 * p.squash);
-  const items: React.ReactNode[] = [];
-  if (p.kind === 'coins') {
-    for (let i = 0; i < p.n; i++) {
-      const y = -i * 13, x = Math.sin(i * 2.3 + p.x) * 3;
-      items.push(<g key={i}>
-        <path d={`M${x - 38} ${y} L${x - 38} ${y - 11} A38 11 0 0 1 ${x + 38} ${y - 11} L${x + 38} ${y} A38 11 0 0 1 ${x - 38} ${y} Z`} fill={GOLD_SIDE} stroke={INK} strokeWidth={2.4} strokeLinejoin="round" />
-        <ellipse cx={x} cy={y - 11} rx={38} ry={11} fill={GOLD} stroke={INK} strokeWidth={2.4} />
-        <ellipse cx={x} cy={y - 11} rx={24} ry={6.5} fill="none" stroke={GOLD_SIDE} strokeWidth={2} />
-      </g>);
-    }
-  } else {
-    const covers = ['#6E2C4C', '#3E2A5E', '#7A3A2E'];
-    for (let i = 0; i < p.n; i++) {
-      const y = -i * 30, x = Math.sin(i * 1.7 + p.x) * 8, w = 150 - (i % 2) * 14;
-      items.push(<g key={i}>
-        <rect x={x - w / 2} y={y - 28} width={w} height={28} rx={4} fill={covers[i % 3]} stroke={INK} strokeWidth={2.4} />
-        <rect x={x - w / 2 + 8} y={y - 22} width={w - 14} height={16} rx={2} fill="#F1E3C6" />
-        <rect x={x - w / 2} y={y - 28} width={16} height={28} fill={GOLD} stroke={INK} strokeWidth={2} />
-      </g>);
-    }
+/** The treasure: ONE gilt frame holding a ledger page whose line climbs. WHY one object, not a hoard: the
+ *  owner called the treasure chest "super poorly done" and the reviewer read the coin piles that replaced it
+ *  as the same cliché. "Shareholder value" is a number going up, so the treasure is exactly that: a framed
+ *  chart the lords lift into the light like a trophy. `line` 0..1 draws the line (the flat part first, the
+ *  climb last); `seal` 0..1 is the wax seal stamping onto the corner; `squash` the stamp's spring. */
+export type Prize = { x: number; y: number; w: number; h: number; rot: number; line: number; seal: number; squash: number; shine: number; o: number };
+const PRIZE_LINE: Pt[] = [[0.06, 0.8], [0.18, 0.74], [0.28, 0.78], [0.4, 0.7], [0.52, 0.73], [0.62, 0.62], [0.74, 0.46], [0.84, 0.28], [0.92, 0.12]].map(([x, y]) => ({ x, y }));
+const PrizeDraw: React.FC<{ p: Prize }> = ({ p }) => {
+  if (p.o <= 0) return null;
+  const { w, h } = p; const b = w * 0.085;               // the gilt border's width
+  const ix = -w / 2 + b, iy = -h / 2 + b, iw = w - 2 * b, ih = h - 2 * b;
+  // the line, cut to `line` of its length (by segment count: the climb is the last third, so it lands on "shareholder")
+  const n = PRIZE_LINE.length - 1, upto = p.line * n, k = Math.floor(upto);
+  const pts = PRIZE_LINE.slice(0, k + 1).map((q) => ({ x: ix + q.x * iw, y: iy + q.y * ih }));
+  if (k < n && upto > k) {
+    const a = PRIZE_LINE[k], c = PRIZE_LINE[k + 1], f = upto - k;
+    pts.push({ x: ix + (a.x + (c.x - a.x) * f) * iw, y: iy + (a.y + (c.y - a.y) * f) * ih });
   }
+  const tip = pts[pts.length - 1], prev = pts[Math.max(0, pts.length - 2)];
+  const ang = Math.atan2(tip.y - prev.y, tip.x - prev.x);
+  const head = (d: number, s: number) => `${tip.x + Math.cos(ang + d) * s} ${tip.y + Math.sin(ang + d) * s}`;
+  // WHY the top-left corner: the lower corners are under the hands, and the top right is the arrow's
+  const sealR = w * 0.11, sx = -w / 2 + b * 0.6, sy = -h / 2 + b * 0.6;
+  const drop = 1 - p.seal;                                // the seal falls the last little way and lands
   return (
-    <g transform={`translate(${p.x} ${p.y - fall}) scale(${sx} ${sy})`}>
-      <ellipse cx={0} cy={4} rx={p.kind === 'coins' ? 54 : 96} ry={10} fill={INK} opacity={0.35 * p.land} />
-      {items}
+    <g transform={`translate(${p.x} ${p.y}) rotate(${p.rot}) scale(${1 + 0.03 * p.squash} ${1 - 0.04 * p.squash})`} opacity={p.o}>
+      <defs>
+        <linearGradient id="rmgilt" x1="0" y1={-h / 2} x2="0" y2={h / 2} gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#F6D77E" /><stop offset="0.5" stopColor="#D9A944" /><stop offset="1" stopColor="#A77824" />
+        </linearGradient>
+        <clipPath id="rmglass"><rect x={ix} y={iy} width={iw} height={ih} /></clipPath>
+      </defs>
+      <rect x={-w / 2 + 6} y={-h / 2 + 14} width={w} height={h} rx={6} fill={INK} opacity={0.45} />
+      <rect x={-w / 2} y={-h / 2} width={w} height={h} rx={6} fill="url(#rmgilt)" stroke={INK} strokeWidth={4} />
+      <rect x={-w / 2 + b * 0.45} y={-h / 2 + b * 0.45} width={w - b * 0.9} height={h - b * 0.9} rx={3} fill="none" stroke="#8A5E1A" strokeWidth={2.5} />
+      <rect x={ix} y={iy} width={iw} height={ih} fill="#F6EAD0" stroke={INK} strokeWidth={3} />
+      {[0.25, 0.5, 0.75].map((f) => <line key={f} x1={ix + 10} x2={ix + iw - 10} y1={iy + ih * f} y2={iy + ih * f} stroke="#C9B48E" strokeWidth={2} />)}
+      <line x1={ix + iw * 0.06} y1={iy + 8} x2={ix + iw * 0.06} y2={iy + ih - 8} stroke="#A99572" strokeWidth={2.5} />
+      <line x1={ix + iw * 0.06} y1={iy + ih * 0.9} x2={ix + iw - 8} y2={iy + ih * 0.9} stroke="#A99572" strokeWidth={2.5} />
+      {pts.length > 1 && <path d={`M${pts.map((q) => `${q.x} ${q.y}`).join(' L')}`} fill="none" stroke={FLAG} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" />}
+      {p.line > 0.86 && <path d={`M${head(Math.PI * 0.8, 30)} L${tip.x} ${tip.y} L${head(-Math.PI * 0.8, 30)}`} fill="none" stroke={FLAG} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" />}
+      {/* the lamplight sliding across the glass on "treasure": one soft band, no sparkles */}
+      {p.shine > 0 && p.shine < 1 && <g clipPath="url(#rmglass)"><rect x={ix - iw * 0.4 + iw * 1.6 * p.shine} y={iy - ih} width={iw * 0.22} height={ih * 3} fill="#FFF7E2" opacity={0.4} transform={`rotate(22 ${ix + iw * 0.5} ${iy + ih * 0.5})`} /></g>}
+      {p.seal > 0 && (
+        <g transform={`translate(${sx} ${sy - drop * 60}) scale(${1 + 0.5 * drop}) rotate(-8)`} opacity={Math.min(1, p.seal * 3)}>
+          <path d={Array.from({ length: 14 }, (_, i) => { const a = (i / 14) * Math.PI * 2, rr = sealR * (i % 2 ? 0.92 : 1.04); return `${i ? 'L' : 'M'}${Math.cos(a) * rr} ${Math.sin(a) * rr}`; }).join(' ') + ' Z'} fill={FLAG} stroke={INK} strokeWidth={3.5} strokeLinejoin="round" />
+          <circle r={sealR * 0.7} fill="none" stroke="#A33C78" strokeWidth={3} />
+          <path d={`M${-sealR * 0.36} ${sealR * 0.02} L${-sealR * 0.08} ${sealR * 0.3} L${sealR * 0.4} ${-sealR * 0.3}`} fill="none" stroke="#FBF0F6" strokeWidth={sealR * 0.17} strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+      )}
     </g>
   );
 };
@@ -110,7 +126,7 @@ const PileDraw: React.FC<{ p: Pile }> = ({ p }) => {
  *  below (it says "high up, ruling them"), warm lamp light pooled on stone (the only warm thing in the
  *  first act, so the quill is lit like a jewel), one lectern, one parchment, one inkwell. Nothing else. */
 export const Room: React.FC<{ s: RoomState }> = ({ s }) => {
-  const { cam, quill, ink, piles, lamp, t } = s;
+  const { cam, quill, ink, prize, lamp, t } = s;
   const tf = `translate(960 540) scale(${cam.z}) translate(${-cam.cx} ${-cam.cy})`;
   const inkD: string[] = [];
   for (let k = 0; k <= 80 * ink; k++) { const p = inkPt(k / 80); inkD.push(`${p.x} ${p.y}`); }
@@ -159,8 +175,6 @@ export const Room: React.FC<{ s: RoomState }> = ({ s }) => {
       <rect x={-800} y={880} width={3520} height={700} fill="#120917" />
       <line x1={-800} y1={880} x2={2720} y2={880} stroke="#5A3A4E" strokeWidth={3} opacity={0.6} />
       <ellipse cx={LECTERN.x} cy={888} rx={520} ry={40} fill="#F2A85C" opacity={0.12 * lamp} />
-      {/* the treasure behind the lectern first, then the lectern, then the treasure in front */}
-      {piles.filter((p) => p.y < 900).map((p, i) => <PileDraw key={`b${i}`} p={p} />)}
       {/* the lectern: a carved pedestal and a slanted desk */}
       <g stroke={INK} strokeWidth={4} strokeLinejoin="round">
         <path d="M850 880 Q960 852 1070 880 Z" fill="#3A2224" />
@@ -176,8 +190,9 @@ export const Room: React.FC<{ s: RoomState }> = ({ s }) => {
         <rect x={1152} y={556} width={24} height={12} rx={3} fill="#2E2438" />
       </g>
       {inkD.length > 1 && <path d={`M${inkD.join(' L')}`} fill="none" stroke="#9750AA" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" />}
-      {piles.filter((p) => p.y >= 900).map((p, i) => <PileDraw key={`f${i}`} p={p} />)}
       <Quill x={quill.x} y={quill.y} angle={quill.angle} len={quill.len} flex={quill.flex} />
+      {/* WHY the treasure in front of the quill: when they lift it, it eclipses the thing that made it */}
+      {prize && <PrizeDraw p={prize} />}
       {s.left && <Arm p={s.left} t={t} />}
       {s.right && <Arm p={s.right} t={t} />}
     </g>
