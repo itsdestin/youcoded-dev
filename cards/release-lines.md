@@ -108,4 +108,5 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#782 fixes | A picture or file sent with no words no longer gets stuck at the bottom of the chat.
 - youcoded#782 fixes | A message the computer never confirms now shows a note inside its bubble after 30 seconds, with Send again and Dismiss or Discard.
 - youcoded#783 fixes | The voice custom-words setting no longer shows on the phone app, where it didn't work.
+- youcoded#784 fixes | Sign-in no longer says "No internet" on school or work networks that reach the internet through a proxy.
 - youcoded#784 fixes | Pictures in chats you keep using are no longer forgotten by the assistant after 90 days.
