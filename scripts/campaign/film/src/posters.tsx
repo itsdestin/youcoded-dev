@@ -237,7 +237,8 @@ const Fill: React.FC<{ kind?: PosterProps['fill']; dark?: boolean; word: string 
   if (!kind || kind === 'list' || kind === 'app') return null;   // those two are laid out inside the poster, not behind it
   if (kind === 'wash') return (    // a deeper colour field: the paper warms toward the bottom corner instead of staying flat
     <AbsoluteFill style={{ background: dark
-      ? `radial-gradient(120% 90% at 100% 100%, #6A2A78 0%, #3B1B55 38%, ${C.night} 78%)`
+      // wider and dimmer on night: the first try read as a glowing ball in the corner, which the brand guide rules out
+      ? `radial-gradient(170% 120% at 100% 100%, #55236A 0%, #3A1A52 30%, #24113A 58%, ${C.night} 90%)`
       : `radial-gradient(120% 90% at 100% 100%, #F1B9DC 0%, #E2C6F2 40%, #FBF6FD 82%)` }} />
   );
   if (kind === 'buddy') return (   // the mascot's tile, large, leaning in from the bottom-right corner
@@ -312,7 +313,8 @@ const OwnSet: React.FC<{ noun: string; fill?: PosterProps['fill'] }> = ({ noun, 
   );
 };
 
-export const Poster: React.FC<PosterProps> = ({ idea, fill }) => idea === 'nothing' ? <Nothing fill={fill} /> : idea.startsWith('own-') ? <OwnSet noun={idea.slice(4)} fill={fill} />
+// WHY 'wash' by default: Destin picked the colour field to fill the space under short headlines (2026-11-20).
+export const Poster: React.FC<PosterProps> = ({ idea, fill = 'wash' }) => idea === 'nothing' ? <Nothing fill={fill} /> : idea.startsWith('own-') ? <OwnSet noun={idea.slice(4)} fill={fill} />
   : idea === 'own' ? <Own /> : idea === 'ask' ? <Ask /> : idea === 'quote' ? <Quote /> : <Everyone />;
 
 // ---- web display adverts: the campaign line at the standard banner sizes ----
