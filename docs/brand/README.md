@@ -176,7 +176,7 @@ meaning, while making it more meaningful, useful and impactful?"* Final pass, as
 concise and punchy? Does every word, frame and page earn its value?"* Anything that doesn't, goes.
 
 **Never undersell, never blend in.** Sell the vision, not a soulless feature list. Don't make the pitch
-about what rivals also offer (section 10). **Test:** nobody should finish a piece asking "so… why
+about what the rivals *in that piece's comparison* also offer (section 10). **Test:** nobody should finish a piece asking "so… why
 not just use Claude Code or Hermes?"
 
 - **Show one concrete example** over a list of adjectives, written to the rules below.
@@ -228,8 +228,17 @@ Every claim must be true in today's download. Check the app's source, not the Au
 - **One home for your digital life:** chat, files, an Office editor, a browser, games with
   friends, on every device. The Android app runs the assistant on the phone itself.
 
-**Table stakes** (rivals have them; state briefly, never as the pitch): any AI model including free
-local ones · free and open source (MIT) · asks before acting · terminal and Claude Code support.
+**Table stakes against open rivals** (Hermes, OpenCode and the like have them; when a piece
+compares youcoded with the broader market, state these briefly, never as the pitch): any AI model
+including free local ones · free and open source (MIT) · asks before acting · terminal and Claude
+Code support.
+
+**Judge uniqueness in the context of the piece** (Destin, 2026-11-19: "all ads/marketing should
+consider broadly whether the feature is unique in the context its described"). The same fact can
+be table stakes in one piece and the whole pitch in another. Against the closed assistants (the
+Claude, ChatGPT and Gemini apps), "any AI model" is something they do not offer, so a piece aimed
+at their users may lead with it. Before leading with anything, ask: who is this piece measuring
+youcoded against, and do *they* have it?
 
 **Never claim:** an iPhone app (iPhones use it in the browser, through your computer), a big
 community (most add-ons are imported), developer-editor features, or that a smart-home or money
