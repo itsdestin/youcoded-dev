@@ -10,7 +10,7 @@ import { loadFont as loadCaveat } from '@remotion/google-fonts/Caveat';
 // in by a person over the printed line (Destin, 2026-11-19). It appears nowhere else.
 const HAND = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
 
-export type PosterProps = { idea: 'own' | 'ask' | 'quote' | 'everyone' | 'nothing' | 'own-data' | 'own-intelligence' | 'own-software' | 'own-everything' };
+export type PosterProps = { idea: 'own' | 'ask' | 'quote' | 'everyone' | 'nothing' | 'own-data' | 'own-intelligence' | 'own-software' | 'own-everything'; fill?: 'buddy' | 'ghost' | 'tile' };
 type Shape = 'tall' | 'square' | 'wide';
 const useFrame = () => {
   const { width: W, height: H } = useVideoConfig();
@@ -229,13 +229,31 @@ const NOTHING_LINES = (wide: boolean) => wide ? ["you'll own nothing.", "and you
 const familySize = (W: number, H: number, m: number, mt: number, mb: number, u: number, wide: boolean) => Math.min(
   fitLines(W, H, m, mt, mb, u, NOTHING_LINES(wide), GAP, wide ? 0.47 : 0.45),
   fitLines(W, H, m, mt, mb, u, ['own your', 'intelligence.'], GAP, 0.41));
-const Nothing: React.FC = () => {
+// Something for the empty space under a short headline (Destin, 2026-11-19). The SAME element, size and
+// place on every poster of a shape, so it adds to the family's look instead of breaking it.
+const Fill: React.FC<{ kind?: 'buddy' | 'ghost' | 'tile'; dark?: boolean; word: string }> = ({ kind, dark, word }) => {
+  const { width: W, height: H } = useVideoConfig();
+  const s = Math.min(W, H);
+  if (!kind) return null;
+  if (kind === 'buddy') return (   // the mascot's tile, large, leaning in from the bottom-right corner
+    <div style={{ position: 'absolute', right: -0.1 * s, bottom: -0.16 * s, width: 0.62 * s, height: 0.62 * s, transform: 'rotate(-10deg)' }}><Icon size={0.62 * s} /></div>
+  );
+  if (kind === 'tile') return (    // the icon's rounded-square shape in the logo gradient: the piece's one bold moment
+    <div style={{ position: 'absolute', right: -0.16 * s, bottom: -0.24 * s, width: 0.7 * s, height: 0.7 * s, borderRadius: 0.16 * s, background: GRADIENT_DIAG, transform: 'rotate(-12deg)', opacity: dark ? 0.9 : 1 }} />
+  );
+  return (                         // the poster's own word, very large and barely darker than the paper, running off the edge
+    <div style={{ position: 'absolute', left: -0.03 * W, bottom: -0.085 * s, fontFamily: DMSANS, fontWeight: 900, fontSize: 0.5 * s, letterSpacing: '-0.06em', lineHeight: 1, whiteSpace: 'nowrap',
+      color: dark ? '#1E122B' : '#EBDDF4' }}>{word}</div>
+  );
+};
+const GRADIENT_DIAG = `linear-gradient(135deg, ${C.gradA}, ${C.gradB})`;
+const Nothing: React.FC<{ fill?: PosterProps['fill'] }> = ({ fill }) => {
   const { W, H, shape, u, m, mt, mb } = useFrame();
   const wide = shape === 'wide';
   const size = familySize(W, H, m, mt, mb, u, wide);
   const row: React.CSSProperties = { fontFamily: DMSANS, fontWeight: 900, fontSize: size, letterSpacing: '-0.05em', lineHeight: 0.98, whiteSpace: 'nowrap', color: C.nightText };
   return (
-    <AbsoluteFill><BgNight />
+    <AbsoluteFill><BgNight /><Fill kind={fill} dark word="everything." />
       <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
         {wide ? (<>
           <div style={{ ...row, marginTop: GAP * size }}>you'll own<span style={{ display: 'inline-block', width: 0.26 * size }} /><Struck word="nothing." fix="everything." size={size} anchorRight /></div>
@@ -252,13 +270,13 @@ const Nothing: React.FC = () => {
     </AbsoluteFill>
   );
 };
-const OwnSet: React.FC<{ noun: string }> = ({ noun }) => {
+const OwnSet: React.FC<{ noun: string; fill?: PosterProps['fill'] }> = ({ noun, fill }) => {
   const { W, H, shape, u, m, mt, mb } = useFrame();
   const wide = shape === 'wide';
   const dark = noun === 'everything';               // WHY: the last of the four is the closer, so it alone is on night
   const size = familySize(W, H, m, mt, mb, u, wide);
   return (
-    <AbsoluteFill>{dark ? <BgNight /> : <BgDay />}
+    <AbsoluteFill>{dark ? <BgNight /> : <BgDay />}<Fill kind={fill} dark={dark} word={`${noun}.`} />
       <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
         {/* On the wide shape the struck poster starts one handwriting-gap down; match it so the first lines sit level. */}
         {wide && <div style={{ height: GAP * size }} />}
@@ -270,7 +288,7 @@ const OwnSet: React.FC<{ noun: string }> = ({ noun }) => {
   );
 };
 
-export const Poster: React.FC<PosterProps> = ({ idea }) => idea === 'nothing' ? <Nothing /> : idea.startsWith('own-') ? <OwnSet noun={idea.slice(4)} />
+export const Poster: React.FC<PosterProps> = ({ idea, fill }) => idea === 'nothing' ? <Nothing fill={fill} /> : idea.startsWith('own-') ? <OwnSet noun={idea.slice(4)} fill={fill} />
   : idea === 'own' ? <Own /> : idea === 'ask' ? <Ask /> : idea === 'quote' ? <Quote /> : <Everyone />;
 
 // ---- web display adverts: the campaign line at the standard banner sizes ----
