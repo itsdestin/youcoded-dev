@@ -93,3 +93,27 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#767 new | With no internet, the app says "No internet connection" right away, and sign-in buttons stop before opening a page that can't load.
 - youcoded#767 new | Settings shows when your Claude sign-in expires, and a signed-out Claude can now be signed in from Settings.
 - youcoded#768 fixes | Clicking a link to a file outside the chat's folder now opens it, even when a different file with the same name was opened before.
+- youcoded#771 new | Pasting a picture in the phone browser now attaches it, just like the paperclip.
+- youcoded#772 behind | Shrunk copies of big pictures are cleaned up after 90 days unused; in chats older than that, those pictures may show as no longer available.
+- youcoded#773 behind | Nothing visible.
+- youcoded#780 behind | Nothing visible.
+- youcoded#774 fixes | Dragging a file onto the message box attaches it again.
+- youcoded#775 fixes | On Android, the camera switches off when the QR scanner closes.
+- youcoded#776 fixes | In online games, you can accept a rematch your opponent asked for.
+- youcoded#777 fixes | A plugin install that fails partway cleans up, so trying again works.
+- youcoded#778 fixes | The phone switches to a new chat after reconnecting to a computer with no chats open.
+- youcoded#779 fixes | Deleting comments in a Word document no longer leaves markers that make Word ask to repair it.
+- youcoded#781 fixes | Messages you queue in a chat no longer get stuck while a background helper waits for your permission.
+- youcoded#781 fixes | Pressing Send now on a waiting message tells you why it can't send yet.
+- youcoded#782 fixes | A picture or file sent with no words no longer gets stuck at the bottom of the chat.
+- youcoded#782 fixes | A message the computer never confirms now shows a note inside its bubble after 30 seconds, with Send again and Dismiss or Discard.
+- youcoded#783 fixes | The voice custom-words setting no longer shows on the phone app, where it didn't work.
+- youcoded#784 fixes | Sign-in no longer says "No internet" on school or work networks that reach the internet through a proxy.
+- youcoded#784 fixes | Pictures in chats you keep using are no longer forgotten by the assistant after 90 days.
+- youcoded#769 behind | Nothing visible.
+- youcoded#770 behind | Nothing visible.
+- youcoded#787 behind | Closing a chat frees everything it held, and a backup lock left behind by a crash clears itself after about two hours.
+- youcoded#787 behind | If backups are skipped for over a day, Settings → Backup now says so.
+- youcoded#789 fixes | Fast mode, effort level, and a chat's tags and note now say so when they can't be saved, instead of silently not saving.
+- youcoded#789 fixes | If closing a chat can't save its tags or note, the chat stays open with Try again or Close anyway.
+- youcoded#790 behind | Nothing visible.

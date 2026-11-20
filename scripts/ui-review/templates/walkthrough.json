@@ -1,0 +1,96 @@
+{
+  "_comment": [
+    "WALKTHROUGH — the whole of one piece of work, end to end, as pages of LISTS he scrolls. Shown twice: before building (drawings, suggested checks) and after (screenshots, check results). Same pages both times, so the second read is quick.",
+    "A list row stands unless he opens its pencil and types. He can drag a rectangle on any picture. A list he leaves untouched is accepted when he moves to the next page — there is no button to press.",
+    "Pages, in this order (Destin, 2026-11-10): 1 What you asked for and what you got · 2 Every screen that changed · 3 Behind the scenes · 4 Choices I made · 5 Checks, ending with what is left for him to verify. Drop a page that would be empty; never add a sixth.",
+    "The work is FINISHED when he has gone through this deck after the build and changed nothing. There is no separate sign-off deck."
+  ],
+  "title": "Saved searches — walkthrough",
+  "key": "saved-searches-walkthrough",
+  "out": "saved-searches.walkthrough.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {"id": "p1", "page": "What you asked for, and what you got", "intro": "One row per thing you asked for, in your own words."},
+    {
+      "_comment": "One row per request. `decided` quotes him — the words the row came from. `picture` is a file beside this spec; `before` beside it makes the row a before/after pair. Every change he asked for must be a row here: this page is the checklist for the finish line.",
+      "id": "W-1", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "What you asked for, and what you got",
+      "calls": [
+        {"id": "save", "call": "A search can be saved by name and run again in one press.", "why": "A star at the right of the search box saves what is typed.", "decided": "i run the same search every monday",
+         "_comment_trail": "ROUND 2 ONWARD: `state` (new / changed / settled) puts a pill on the row; `trail` is an expander under it that walks round by round through his words (asked, said), what was built, and ends in Now. Leave both off in round 1. A list with `fold_settled: true` folds its settled rows into one Settled (n) line at the foot.",
+         "state": "changed",
+         "trail": [
+           {"round": "Round 1", "asked": "i run the same search every monday", "built": "A star that saves the words in the box.", "said": "make the star bigger and put the name field first"},
+           {"round": "Round 2", "built": "A larger star; the name field comes first."}
+         ]}
+      ]
+    },
+    {"id": "p2", "page": "Every screen that changed", "intro": "All the pictures in one place. Click one to open it large; drag on it to comment on a part."},
+    {
+      "_comment": "`gallery: true` lays the rows out as tiles, pictures first. A row with `before` is two pictures wide. One tile per screen or state that looks different after this work — nothing else.",
+      "id": "W-2", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Every screen that changed", "gallery": true,
+      "calls": [
+        {"id": "box", "call": "The search box", "why": "Gains a star at its right edge."}
+      ]
+    },
+    {"id": "p3", "page": "Behind the scenes", "intro": "What happens that has no screen, in order."},
+    {
+      "_comment": "`numbered: true` — the rows are steps in the order they happen. Plain words: what he would notice, or what it protects him from. No file names, no code words.",
+      "id": "W-3", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "What happens when you save a search", "numbered": true,
+      "calls": [
+        {"id": "s1", "call": "You press the star. The words in the box are stored on this computer under the name you give.", "why": "Nothing is sent anywhere."}
+      ]
+    },
+    {"id": "p4", "page": "Choices I made", "intro": "Things you could notice that I decided without asking."},
+    {
+      "_comment": "Anything he could notice by using the app that he was not asked about: what happens when something fails, defaults, sizes, order. NOT wording: before the build he steers by talking and wording is not asked (Destin, 2026-11-10). AFTER the build, add one step per popup or menu whose words he may want to change: {\"id\", \"words\": true, \"surface\", \"path\", \"headline\", \"screen\": \"<file>.html\"}, the file saved beside this spec by `node scripts/shoot/shoot.mjs <screen name> --page`. He retypes the words on the screen itself.",
+      "id": "W-4", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Choices I made",
+      "calls": [
+        {"id": "limit", "call": "You can save twenty searches.", "why": "More than that no longer fits the menu without scrolling."}
+      ]
+    },
+    {"id": "p5", "page": "Checks", "intro": "Before the build: checks I suggest. After: what each one showed."},
+    {
+      "_comment": "After the build every row carries `result` (pass / fail / unclear) and, where there is one, a picture as proof. Before the build, leave `result` off: the rows are the checks you SUGGEST, and he edits the list with the pencils. Never report a check you did not run.",
+      "id": "W-5", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Checks I ran, and what they showed",
+      "calls": [
+        {"id": "c1", "call": "A saved search survives closing and reopening the app.", "why": "Saved, closed the dev window, reopened it, pressed the search.", "result": "pass"},
+        {"_comment": "BEFORE the build a checks-menu row has result run (Will run) or skip, and MUST carry `more`: does (what it actually does, step by step), why (why it is or is not suggested for THIS build), and optionally returns (what comes back to him). Up to 120 words each.",
+         "_comment_check": "`check: code-review` marks this row as the code review. After the build, once its result is pass / fail / unclear, the builder REQUIRES the `found-in-review` list below.",
+         "id": "c2", "call": "A fresh reviewer reads the finished change.", "why": "Looks for anything that breaks a rule or could surprise you.", "result": "run", "check": "code-review",
+         "more": {"does": "A reviewer who has seen none of this conversation reads the changed files and the written design, then lists anything that breaks a rule or could surprise you.",
+                  "returns": "One status row here (passed, failed or unclear) and a short plain-words list of what it found.",
+                  "why": "Suggested on: saved searches are stored on this computer, so a mistake could lose your data."}}
+      ]
+    },
+    {
+      "_comment": "AFTER THE BUILD ONLY (delete both lists below in the before-build deck; the after-build deck is refused without the first). `list: changed-while-building` = what moved from the plan while building. One row per change; `built` is `as planned` or `adjusted`, and an adjusted row says why in `why` (his: \"what did you have to adjust\"). A deck that is the after-build one says so by `\"build\": \"after\"` at the top, by a growing deck at stage after, or by the file name <feature>.walkthrough.after.json.",
+      "id": "W-7", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "What changed while building", "list": "changed-while-building",
+      "calls": [
+        {"id": "b1", "call": "The star sits inside the box, at its right edge.", "why": "As drawn and approved.", "built": "as planned"},
+        {"id": "b2", "call": "The twenty-search limit is nineteen.", "why": "The twentieth row pushed the menu past the screen on a phone.", "built": "adjusted"}
+      ]
+    },
+    {
+      "_comment": "AFTER THE BUILD ONLY. `list: found-in-review` = each finding of the code review, one row each, in plain words (never the reviewer's raw report). If it found nothing, ONE row with `none_found: true` and a plain sentence. Required once the code-review check row has a result.",
+      "id": "W-8", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Found in review", "list": "found-in-review",
+      "calls": [
+        {"id": "f1", "call": "A saved search with an empty name could be saved.", "why": "Fixed: the star now asks for a name first."}
+      ]
+    },
+    {
+      "_comment": "What only he can judge: feel, motion, sound, his real data. One row each, saying exactly what to do and what he should see. `result: todo` gives the row the same status pill as a check (Not tried); he sets it himself — every status pill is his to change, yours included.",
+      "id": "W-6", "words": true, "surface": "Chat search", "path": "The search box above the session list",
+      "headline": "Left for you to try",
+      "calls": [
+        {"id": "v1", "call": "Save a search of your own and run it tomorrow.", "why": "I cannot see your real sessions.", "result": "todo"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "title": "Messages stuck at the bottom of the chat — the error card inside the bubble",
+  "key": "pinned-bubbles-review-4",
+  "out": "pinned-bubbles.review-4.html",
+  "images": "images/pinned-bubbles.review-4",
+  "runs": { "round2": "runs/round2", "round4": "runs/round4" },
+  "labels": { "round2": "Round 2", "round4": "Now" },
+  "crops": {
+    "note": ["chat", "note", "2561x1523+0+0"],
+    "note-notsent": ["chat", "note-notsent", "2561x1523+0+0"],
+    "light-unsure": ["chat", "light-unsure", "2561x1523+0+0"],
+    "light-notsent": ["chat", "light-notsent", "2561x1523+0+0"]
+  },
+  "steps": [
+    {
+      "id": "C-1", "surface": "Chat",
+      "path": "A message the app never hears back about, 30 seconds after sending",
+      "crop": "note", "themes": ["midnight"],
+      "highlight": { "box": [70, 74, 29, 16] },
+      "headline": "The same amber \"Not sure this was sent\" card from round 2 now sits inside the bottom of the message bubble.",
+      "changed": "Round 3's custom strip is gone. This is the app's standard warning card, unchanged, placed inside the bubble across its full width. Outlined Dismiss on the left, filled Send again on the right, no ✕.",
+      "notice": "The card looks exactly like every other warning in the app, just tucked into the message it is about.",
+      "risk": "None new. Round 3's two made-up button styles were removed; only the app's standard buttons are used."
+    },
+    {
+      "id": "C-2", "surface": "Chat",
+      "path": "A message the computer says it never received (a phone that lost its connection mid-send)",
+      "crop": "note-notsent", "themes": ["midnight"],
+      "highlight": { "box": [52, 74, 47, 16] },
+      "headline": "The red \"This didn't send\" card gets the same treatment: standard error card, inside the bubble.",
+      "changed": "Same standard red error card as round 2, now inside the bubble, with outlined Discard on the left and filled Send again on the right.",
+      "notice": "Amber means maybe, red means definitely not, both in the app's usual card."
+    },
+    {
+      "id": "C-3", "surface": "Chat",
+      "path": "The same amber card in the Light theme, where the message bubble is dark",
+      "crop": "light-unsure", "runs": ["round4"], "new": true, "themes": ["midnight"],
+      "highlight": { "box": [70, 74, 29, 16] },
+      "headline": "In the Light theme the card keeps its usual light look, and Send again is dark.",
+      "changed": "The card's colours always come from the theme, the same as the app's other cards, so in Light it is a pale amber with a dark Send again.",
+      "notice": "In Midnight, Send again is light grey because that is Midnight's normal filled button. It is not a special colour here."
+    }
+  ]
+}

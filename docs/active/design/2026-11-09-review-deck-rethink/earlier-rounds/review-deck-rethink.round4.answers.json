@@ -1,0 +1,75 @@
+{
+ "deck": "review-deck-rethink-round4",
+ "started": "2026-11-10T07:38:32.886Z",
+ "submitted": "2026-11-10T08:48:11Z",
+ "cur": 5,
+ "answers": {
+  "W-1": {
+   "t": 1794296502848,
+   "changes": {
+    "notes": "nah i wanted like an extra more visible input region at the bottom of each page",
+    "looks": "shallow interpretation i fear. like \"answered\" status could be a top-right status pill instead of plaintext and checkmark, buttons could be better themed to match prefered button fill/positioning guidance."
+   },
+   "v": "other",
+   "seconds": 190,
+   "theme": "midnight"
+  },
+  "W-2": {
+   "v": "yes",
+   "seconds": 126,
+   "theme": "midnight",
+   "t": 1794296628959
+  },
+  "W-3": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "midnight",
+   "t": 1794296641068
+  },
+  "W-4": {
+   "changes": {
+    "replace": "",
+    "close": "i think we can make a much better and more useful/intuitive surface for image comments to be edited/saved/viewed"
+   },
+   "v": "other",
+   "t": 1794300001425,
+   "seconds": 24,
+   "theme": "midnight"
+  },
+  "W-5": {
+   "t": 1794300144787,
+   "v": "yes",
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "W-6": {
+   "t": 1794300144787,
+   "v": "yes",
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "R-1": {
+   "changes": {
+    "never": "i still think this guidance is too vague. i'd like you to use agents to conduct a comprehensive analysis of major feature build conversations to look at the kinds of things i steer frequently vs infrequently in messages and deck responses. what are the things i complain about not being shown, the things i ask for elaboration on, the things i like to shape in detail, the things i ignore entirely, etc. we should shape the decks to match the way i actually build and work.",
+    "checks": "i want to weigh what exists against the proposal further. there may be some value in also retaining the existing reviewer for some kinds of workflows. dont want to lose prior decisions or effort here without thoughtful consideration."
+   },
+   "v": "other",
+   "t": 1794300490736,
+   "seconds": 173,
+   "theme": "midnight"
+  },
+  "N-1": {
+   "v": "pick",
+   "pick": "now",
+   "t": 1794300490736,
+   "seconds": 173,
+   "theme": "midnight"
+  }
+ },
+ "built": {
+  "at": "2026-11-10T05:27:50Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "275b6df59"
+ },
+ "notes": "i think this page (every screen that changed) and all of the other photo renderings on the last page are just rendered far too small to be useful. i think we need to 1) increase the zoom of whatever surface we're screenshotting/rendering by quite a lot, 2) figure out how to better embed these images, even if we mostly default to click-first popup menus with tiles or something. i just need to have more space and a better surface to actually leave/manage comments and such and quickly scan through all of the changes at once"
+}

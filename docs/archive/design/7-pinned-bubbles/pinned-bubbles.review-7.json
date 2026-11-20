@@ -1,0 +1,65 @@
+{
+  "title": "Messages stuck at the bottom of the chat — more colour options for the card",
+  "key": "pinned-bubbles-review-7",
+  "out": "pinned-bubbles.review-7.html",
+  "images": "images/pinned-bubbles.review-7",
+  "runs": { "tune": "runs/tune2" },
+  "labels": { "tune": "Six built-in themes" },
+  "crops": {
+    "tuneE": ["chat", "tuneE", "2522x1650+0+0"],
+    "tuneF": ["chat", "tuneF", "2522x1650+0+0"],
+    "tuneG": ["chat", "tuneG", "2522x1650+0+0"],
+    "tuneH": ["chat", "tuneH", "2522x1650+0+0"],
+    "tuneI": ["chat", "tuneI", "2522x1650+0+0"]
+  },
+  "steps": [
+    {
+      "id": "V-1", "surface": "Chat",
+      "path": "Last round's option E, the one you liked (amber = not sure, red = didn't send)",
+      "crop": "tuneE", "runs": ["tune"], "new": true, "themes": ["midnight"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Reference: option E unchanged. The bubble's colour blended two-fifths toward amber or red.",
+      "changed": "Nothing new, here to compare against.",
+      "notice": "On the purple YouCoded themes, amber comes out peach and red comes out pink, because they are mixed with purple."
+    },
+    {
+      "id": "V-2", "surface": "Chat",
+      "path": "E, but the bubble's tint is taken out before mixing",
+      "crop": "tuneF", "runs": ["tune"], "new": true, "themes": ["midnight"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Option F: same strength as E, but amber stays amber and red stays red in every theme.",
+      "changed": "Instead of mixing with the bubble colour itself, the colour is mixed with a plain grey exactly as light or dark as the bubble. The card still matches the bubble's brightness, but the bubble's own tint (purple, cream) no longer seeps in.",
+      "notice": "Grey and black themes look almost identical to E. The difference is on YouCoded and YouCoded Night: a true amber and a true red, easy to tell apart.",
+      "risk": "On purple bubbles the card no longer carries a hint of purple, so it sits slightly less 'inside' the bubble's colour."
+    },
+    {
+      "id": "V-3", "surface": "Chat",
+      "path": "E with a full-strength outline",
+      "crop": "tuneG", "runs": ["tune"], "new": true, "themes": ["midnight"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Option G: E's fill, with a slightly thicker outline in pure amber or pure red.",
+      "changed": "The outline is the plain status colour, not blended, and a touch thicker. The fill is unchanged from E.",
+      "notice": "The outline tells red from amber even where the fill is muddy (YouCoded).",
+      "risk": "The fill on purple themes is still peach and pink; only the edge is clear."
+    },
+    {
+      "id": "V-4", "surface": "Chat",
+      "path": "F and G together",
+      "crop": "tuneH", "runs": ["tune"], "new": true, "themes": ["midnight"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Option H: F's true-colour fill plus G's full-strength outline.",
+      "changed": "Fill as in F, outline as in G.",
+      "notice": "The clearest of the gentle-strength options: both the fill and the edge say amber or red."
+    },
+    {
+      "id": "V-5", "surface": "Chat",
+      "path": "H, stronger",
+      "crop": "tuneI", "runs": ["tune"], "new": true, "themes": ["midnight"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Option I: H with the fill pushed further, a little over half amber or red.",
+      "changed": "Fill blended about 55% toward amber or red (H is 40%). Outline as in H.",
+      "notice": "The loudest: reads as a warning from across the room in every theme.",
+      "risk": "On light-bubble themes (Midnight, Dark) the amber is quite saturated and may feel shouty for a 'not sure' note."
+    }
+  ]
+}

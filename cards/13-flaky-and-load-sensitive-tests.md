@@ -12,9 +12,9 @@ summary: Nine automatic checks fail at random or under load, and eight test left
 area: Workspace
 ---
 Progress
-Done: Stall-core flaky test diagnosed (3 load races) and fixed; 45 loaded runs clean
-Next: Destin reviews branch session/13-overnight-0 (no visible change)
-Blocked: nothing.
+Done: perf-lab stall-core flaky test fixed (youcoded-dev PR #389, 3684aa924)
+Next: Not decided
+Blocked: Nothing
 
 Chats
 - 2026-11-18 session/13-overnight-0: chat started
