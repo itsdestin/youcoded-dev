@@ -376,14 +376,26 @@ const HEADLINES: { words: HWord[]; out: number }[] = [
 // the captions stop where the closing headline begins ("open source everything.")
 const CAPS = captions(WORDS.indexOf(cueWord('open', '*open source everything')), Q.open - 0.2);
 
+// WHY the muted scrim follows the caption colour, not the sky: half-way through the dawn a sky-matched scrim
+// went mid-grey under white text. It stays plum while captions are light text and turns lavender in the
+// half-second before the first plum (daytime) caption.
+const FIRST_DAY_CAP = CAPS.find((c) => dawnAt(c.at) > 0.5)?.at ?? 99;
+const CAP_TONE = (t: number) => r(t, FIRST_DAY_CAP - 0.5, FIRST_DAY_CAP, EASE_IN_OUT);
+
 /** A soft scrim behind the type spot: plum at night, lavender by morning. Wide and feathered, so it reads
- *  as the corner of the page dimming, never as a box. */
-const Scrim: React.FC<{ o: number; dawn: number }> = ({ o, dawn }) => (o <= 0 ? null : (
-  <AbsoluteFill style={{
-    opacity: o, pointerEvents: 'none',
-    background: `radial-gradient(ellipse 72% 52% at 22% 100%, ${mix('#0E0616', '#FAF5FD', dawn).replace('rgb', 'rgba').replace(')', `,${0.62 + 0.16 * dawn})`)} 0%, ${mix('#0E0616', '#FAF5FD', dawn).replace('rgb', 'rgba').replace(')', ',0.32)')} 48%, transparent 78%)`,
-  }} />
-));
+ *  as the corner of the page dimming, never as a box. `strong` (the muted version, where words are always
+ *  up) is a deeper band across the lower left. WHY: by day plum captions crossed the colourful houses and
+ *  by night they crossed lit windows; the band quiets the picture under the words at phone size. */
+const Scrim: React.FC<{ o: number; dawn: number; strong?: boolean }> = ({ o, dawn, strong }) => {
+  if (o <= 0) return null;
+  const c = mix('#0E0616', '#FAF5FD', dawn);
+  const a = (k: number) => c.replace('rgb', 'rgba').replace(')', `,${k})`);
+  const background = strong
+    ? `linear-gradient(0deg, ${a(0.9)} 0%, ${a(0.84)} 24%, ${a(0.5)} 36%, transparent 50%)`
+    : `radial-gradient(ellipse 72% 52% at 22% 100%, ${a(0.62 + 0.16 * dawn)} 0%, ${a(0.32)} 48%, transparent 78%)`;
+  const mask = strong ? 'linear-gradient(90deg, #000 0%, #000 62%, transparent 92%)' : undefined;
+  return <AbsoluteFill style={{ opacity: o, pointerEvents: 'none', background, WebkitMaskImage: mask, maskImage: mask }} />;
+};
 
 /** The muted version's captions: the whole script, one sentence at a time, in the type spot. Each caption
  *  fades out over four frames and the next fades in over six, on a scrim that never moves, so the change
@@ -656,7 +668,7 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
       {/* the hush on "However, recently…" (no fade from black: the film opens on a full picture) */}
       <AbsoluteFill style={{ background: '#07030C', opacity: hush * 0.3 }} />
       <Grain frame={frame} dawn={dawn} />
-      <Scrim o={narrator ? Math.max(...[...HEADLINES, { words: FINAL, out: FINAL_OUT }].map((h) => Math.min(r(t, h.words[0].at - 0.4, h.words[0].at), 1 - r(t, h.out, h.out + 0.4)))) : 1 - r(t, FINAL_OUT, END_CARD)} dawn={dawn} />
+      <Scrim o={narrator ? Math.max(...[...HEADLINES, { words: FINAL, out: FINAL_OUT }].map((h) => Math.min(r(t, h.words[0].at - 0.4, h.words[0].at), 1 - r(t, h.out, h.out + 0.4)))) : 1 - r(t, FINAL_OUT, END_CARD)} dawn={narrator ? dawn : CAP_TONE(t)} strong={!narrator} />
       {narrator ? HEADLINES.map((h, i) => <Headline key={i} words={h.words} out={h.out} t={t} day={false} />) : <Captions t={t} />}
       <Headline words={FINAL} out={FINAL_OUT} t={t} day={dayText} />
       {/* WHY a dip to lavender and then the card: a cross-dissolve let the houses show through the logo;
