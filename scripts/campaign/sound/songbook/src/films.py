@@ -33,7 +33,44 @@ from score import Piece, Section as S
 HERE = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.normpath(os.path.join(HERE, "..", "..", "sfx-kit", "out"))
 OUT = os.path.join(HERE, "..", "out", "films")
-SFX_REL = -2.0     # dB: an effect's loudest 100 ms vs. the music's loudness around it
+SFX_REL = -8.0     # dB: an effect's loudest 100 ms vs. the music's loudness around it
+# WHY -8 (was -2): the owner on the first pen sounds: "annoying and too scratchy". Pen and
+# marker sounds must be soft and smooth, felt more than heard.
+
+# The versions of a film's effects layer the owner chooses between by ear:
+#   name suffix -> (level vs music in dB, low-pass in Hz for pen sounds, or None = no effects)
+VARIANTS = {"": (-8.0, 4500.0), "-softer": (-12.0, 3500.0), "-no-pen": None}
+PREVIOUS = {"marker-stroke-short-b": "marker-stroke-short-c", "handwriting-c": "handwriting-a"}
+
+
+def soften(x, lp_hz, dot=False):
+    """Make a pen sound soft and smooth: a gentle low-pass (nothing scratchy above ~4-5 kHz),
+    any sudden spike in the 2-8 kHz 'scratch' band held down to the sound's own running level,
+    and slower, rounder pen-down and lift-off. Zero-phase filters, so nothing smears in time."""
+    from scipy import signal as sg
+    sos = sg.butter(4, [2000, 8000], btype="bandpass", fs=SR, output="sos")
+    band = sg.sosfiltfilt(sos, x, axis=0)
+
+    def rms(z, ms):
+        w = max(1, int(ms / 1000 * SR))
+        return np.sqrt(np.convolve((z ** 2).mean(axis=1), np.ones(w) / w, mode="same")) + 1e-9
+    g = np.clip(1.4 * rms(band, 30) / rms(band, 2), 0, 1)        # spikes above 1.4x the 30 ms level
+    x = x - band + band * g[:, None]
+    sos = sg.butter(4, lp_hz * (0.7 if dot else 1.0), btype="lowpass", fs=SR, output="sos")
+    x = sg.sosfiltfilt(sos, x, axis=0)
+    a, r = int((0.008 if dot else 0.025) * SR), int((0.03 if dot else 0.05) * SR)
+    x = x.copy()
+    x[:a] *= _rc(a)[:, None]
+    x[-r:] *= _rc(r)[::-1, None]
+    return x
+
+
+def above_5k(x):
+    """Share of a sound's energy above 5 kHz, in dB (the 'scratch' measure)."""
+    m = x.mean(axis=1)
+    f = np.fft.rfftfreq(len(m), 1 / SR)
+    p = np.abs(np.fft.rfft(m)) ** 2
+    return round(float(10 * np.log10(p[f > 5000].sum() / (p.sum() + 1e-30) + 1e-20)), 1)
 
 
 @dataclass
@@ -113,29 +150,37 @@ def short_loud(x):
     return -0.691 + 10 * np.log10(ms.max() * 2 + 1e-12)
 
 
-def sfx_layer(film, music):
+def _prepare(h, sound):
+    x = _read(sound)
+    early = 0.0
+    if h.part:
+        x, early = handwriting_part(x, h.part, h.length)
+    elif h.length:
+        x = fit_stroke(x, h.length)
+    return x, early
+
+
+def sfx_layer(film, music, rel=SFX_REL, lp_hz=4500.0):
     """Place and level every hit against the (pre-limiter) music. Returns (audio, report)."""
     n = len(music)
     out = np.zeros((n, 2))
     tt, mv = M.momentary(music)
     rep = []
     for h in film.hits:
-        x = _read(h.sound)
-        early = 0.0
-        if h.part:
-            x, early = handwriting_part(x, h.part, h.length)
-        elif h.length:
-            x = fit_stroke(x, h.length)
+        x, early = _prepare(h, h.sound)
+        x = soften(x, lp_hz, dot=(h.part == "dot"))
+        prev = _prepare(h, PREVIOUS[h.sound])[0] if h.sound in PREVIOUS else None
         span = len(x) / SR
         sel = (tt >= h.t - 0.2) & (tt <= h.t + span + 0.2)
         music_l = float(np.median(mv[sel]))
-        g_db = music_l + SFX_REL + h.gain_db - short_loud(x)
+        g_db = music_l + rel + h.gain_db - short_loud(x)
         i = int(round((h.t - early) * SR))
         j = min(n, i + len(x))
         out[i:j] += x[: j - i] * 10 ** (g_db / 20)
         rep.append(dict(t=h.t, sound=h.sound + (f" ({h.part})" if h.part else ""), what=h.what,
                         length_s=round(span, 3), music_lufs_around=round(music_l, 1),
-                        effect_loudest_100ms=round(music_l + SFX_REL + h.gain_db, 1)))
+                        effect_loudest_100ms=round(music_l + rel + h.gain_db, 1), under_music_db=-rel - h.gain_db,
+                        above_5k_db=above_5k(x), previous_above_5k_db=(above_5k(prev) if prev is not None else None)))
     return out, rep
 
 
@@ -160,10 +205,11 @@ OWN_EVERYTHING = Film(
             # 16.8: the ending bar = "own everything." (the tune's high C), slowing into the logo
         ]),
     hits=[
-        Hit(6.60, "marker-stroke-short-c", length=0.23, what="first stroke through 'nothing.'"),
-        Hit(6.87, "marker-stroke-short-c", length=0.19, what="second stroke"),
-        Hit(7.28, "handwriting-a", part="writing", length=0.76, what="'everything.' written"),
-        Hit(8.16, "handwriting-a", part="dot", what="the full stop"),
+        # the kit's smoothest pens (marker-stroke b, handwriting c), softened (see soften)
+        Hit(6.60, "marker-stroke-short-b", length=0.23, what="first stroke through 'nothing.'"),
+        Hit(6.87, "marker-stroke-short-b", length=0.19, what="second stroke"),
+        Hit(7.28, "handwriting-c", part="writing", length=0.76, what="'everything.' written"),
+        Hit(8.16, "handwriting-c", part="dot", what="the full stop"),
     ],
     picture=[(0.0, "you'll own"), (1.8, "nothing."), (3.6, "and you'll"), (4.2, "be happy."),
              (6.60, "strike 1"), (6.87, "strike 2"), (7.28, "everything. (written)"), (8.16, "full stop"),
@@ -178,18 +224,29 @@ FILMS = {f.name: f for f in (OWN_EVERYTHING,)}
 def render_film(film):
     import build
     os.makedirs(OUT, exist_ok=True)
-    # the music alone first (all the music checks apply to it), then the mix with effects
-    _, music_st = build.one(film.piece, path=os.path.join(OUT, f"{film.name}-music.wav"))
-    rep = {}
+    # the music alone first (all the music checks apply to it: the "-no-pen" version), then one
+    # mix per effects version (VARIANTS); the music is the same render in every one
+    _, music_st = build.one(film.piece, path=os.path.join(OUT, f"{film.name}-no-pen.wav"))
+    st, versions = None, {}
+    for suffix, v in VARIANTS.items():
+        if v is None:
+            continue
+        rel, lp = v
+        rep = {}
 
-    def extra(xm, plans):
-        a, r = sfx_layer(film, xm)
-        rep["hits"] = r
-        return a
-    _, st = build.one(film.piece, extra_fn=extra, path=os.path.join(OUT, f"{film.name}.wav"))
+        def extra(xm, plans, rel=rel, lp=lp, rep=rep):
+            a, r = sfx_layer(film, xm, rel, lp)
+            rep["hits"] = r
+            return a
+        _, s = build.one(film.piece, extra_fn=extra, path=os.path.join(OUT, f"{film.name}{suffix}.wav"))
+        versions[suffix or "best"] = dict(hits=rep["hits"], lufs=s["lufs_integrated"], true_peak=s["true_peak_dbtp"],
+                                          clipped=s["clipped_samples"], low_pass_hz=lp)
+        if suffix == "":
+            st = s
+            st["hits"] = rep["hits"]
     st["music_only"] = {k: music_st[k] for k in ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total",
                                                "logo", "sections", "lufs_integrated", "true_peak_dbtp")}
-    st["hits"] = rep["hits"]
+    st["versions"] = versions
     st["picture"] = film.picture
     if film.copy_to:
         shutil.copyfile(os.path.join(OUT, f"{film.name}.wav"), film.copy_to)
@@ -217,9 +274,14 @@ def report(name, st):
         L.append(f"   join {j['join']} at {j['t']} s: level {j['level_before']} -> {j['level_after']}; 8-16k "
                  f"{j['bright_before']['8-16k']} -> {j['bright_after']['8-16k']}; biggest 1 s change {j['max_change_1s']} dB; "
                  f"tempo {j['tempo_per_beat']}")
-    for h in st["hits"]:
-        L.append(f"   hit {h['t']:>5} s  {h['sound']:<32} {h['what']:<34} {h['length_s']} s long, effect "
-                 f"{h['effect_loudest_100ms']} vs music {h['music_lufs_around']} LUFS")
+    for name_v, ver in st["versions"].items():
+        L.append(f"   effects version '{name_v}': whole file {ver['lufs']} LUFS, true peak {ver['true_peak']} dBTP, "
+                 f"clipped {ver['clipped']}, pen low-pass {ver['low_pass_hz']:.0f} Hz")
+        for h in ver["hits"]:
+            L.append(f"      hit {h['t']:>5} s  {h['sound']:<32} {h['length_s']} s, {h['under_music_db']} dB under the music "
+                     f"({h['effect_loudest_100ms']} vs {h['music_lufs_around']} LUFS); energy above 5 kHz "
+                     f"{h['above_5k_db']} dB (previous pen: {h['previous_above_5k_db']} dB)")
+    L.append("   no-pen version: the music alone (same render)")
     # the tail: how long the last chord stays audible
     y, _ = sf.read(os.path.join(OUT, f"{name}.wav"), dtype="float64", always_2d=True)
     tt, v = M.momentary(y)

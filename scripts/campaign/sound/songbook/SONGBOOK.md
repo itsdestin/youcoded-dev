@@ -183,21 +183,29 @@ Any section can add or drop single layers, swap the accompaniment, or set its ow
    set) with a gentle dip in the speech range, changing slowly at the section changes only.
    Under a voice, play just the signature, not the full tune.
 6. **Sound effects** go on their own layer, on the actions, from the brand's kit
-   (`../sfx-kit/`), each set a little under the music's own level at that moment so it reads
-   clearly but softly. The music never adds an accent for a word or an action.
+   (`../sfx-kit/`), each set about **8 dB under the music's own level at that moment**, so it
+   is felt more than heard. The music never adds an accent for a word or an action.
+   **Your ruling on the first film's pens: pen and marker sounds must be soft and smooth, never
+   scratchy ("annoying and too scratchy").** Use the kit's smoothest pens (marker-stroke b,
+   handwriting c), always through `films.soften`: a low-pass around 4-5 kHz, any spike in the
+   2-8 kHz scratch band held down, slower rounded pen-down and lift-off, and a soft round
+   full-stop tap.
 7. **The name** lands on the logo's third note; give it room after: the last chord rings on.
 
 ## The first film: "Own everything" (`out/films/own-everything.wav`, 24 s)
 
-Also copied to `scripts/campaign/film/public/audio/sb-take3-mix.wav`. The music alone is
-`out/films/own-everything-music.wav`. One song at 100 beats a minute, so a bar is 2.4 s and the
+Also copied to `scripts/campaign/film/public/audio/sb-take3-mix.wav`. Three versions to choose
+from by ear (the music is the identical render in all three):
+`own-everything.wav` (soft pens 8 dB under the music, low-passed at 4.5 kHz),
+`own-everything-softer.wav` (12 dB under, low-passed at 3.5 kHz) and
+`own-everything-no-pen.wav` (the music alone). One song at 100 beats a minute, so a bar is 2.4 s and the
 four statements fall one per bar.
 
 | Time | On screen | Music | Effects |
 |---|---|---|---|
 | 0.0-7.2 | "you'll own / nothing. / and you'll / be happy." | **Stark**: the tune's first three bars, plain, over the dark chords (C minor, A-flat, F minor), the slow pulse and a low string bed. No accents on the words. | |
-| 6.60, 6.87 | the two strikes through "nothing." | (carries on) | marker stroke c, fitted to 0.23 s and 0.19 s |
-| 7.2-9.6 | "everything." written 7.28-8.04, full stop 8.16 | **The turn**: the harmony rises (A-flat, B-flat) and, across this bar, the bright band (rocking piano, plucked strings, held strings) grows in underneath | handwriting a (the word cut to 0.76 s), its own pen-down at 8.16 |
+| 6.60, 6.87 | the two strikes through "nothing." | (carries on) | soft marker (marker-stroke b, softened), fitted to 0.23 s and 0.19 s |
+| 7.2-9.6 | "everything." written 7.28-8.04, full stop 8.16 | **The turn**: the harmony rises (A-flat, B-flat) and, across this bar, the bright band (rocking piano, plucked strings, held strings) grows in underneath | soft pen (handwriting c, softened; the word cut to 0.76 s), a soft round pen-down at 8.16 |
 | 9.6 / 12.0 / 14.4 | "own your data." / "...intelligence." / "...software." | **Bright, building**: the second phrase of the tune, violin and piano in octaves; the bass climbs E-flat, C, F; everyone grows in one straight line (a lift) | |
 | 16.8 | "own everything." | The peak: the tune's high C, over A-flat then B-flat, slowing gently | |
 | 19.2 | the youcoded name | The logo, played: B-flat, G, then **F lands on 19.2 s** (measured 19.2004 s) on E-flat; strings swell, the second piano answers low | |
@@ -291,8 +299,8 @@ larger than 1.4 % at any blended join (the deliberate pause in stark-to-bright s
 - **The marker and handwriting effects are fitted, not performed**: the strokes keep the real
   pen-down and lift-off and lose some of the middle; the written word is the kit's word cut to
   0.76 s with the pen lifting; the full stop is the kit's own pen-down.
-- **The effects' level is a rule** (2 dB under the music around each one); the owner has not yet
-  picked between the kit's alternatives.
+- **The effects' level is a rule** (8 dB under the music around each one, or 12 in the softer
+  version); the soft pens have not been heard yet.
 - **The journey's stark-to-hush join still moves 6.9 dB within a second** where the hush's first
   chord and signature note arrive after the stark's last, thinning bar; there is no dip in level
   either side.
