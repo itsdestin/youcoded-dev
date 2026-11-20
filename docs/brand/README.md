@@ -164,6 +164,10 @@ secondary text). Centred, on lavender, held at least 2.5 s.
   marketing materials types. posters should look consistent"). Every poster of one shape uses the
   same headline size, the same top edge, margins and foot; the headline never grows to fill a
   poster whose words happen to be short. The same holds within banners and within end cards.
+- **Poster background: the colour field** (Destin, 2026-11-20). Light posters fade from near-white
+  at the top to soft pink-purple in the bottom-right corner; dark posters from plum-black to deep
+  purple. Wide and dim enough to read as the paper warming, never as a glowing ball. Built in
+  `scripts/campaign/film/src/posters.tsx` (`Fill`, `wash`).
 - **Share image:** `youcoded/docs/og-image.png` from `youcoded/docs/tools/gen-og-image.mjs`; bump its
   `?v=` when it changes.
 
