@@ -10,7 +10,8 @@ drawn or scored.
 What your comments changed for every take:
 
 - **Typed requests sound like a real person.** Lower case, unsure, a few messages back and
-  forth with the app answering, never one polished command.
+  forth with the app answering, never one polished command. And worded so someone who has
+  never used the app understands them: no names for parts of the app.
 - **Lines to the viewer invite, they never report.** Nothing says "you asked" or "you made":
   the viewer hasn't yet. Lines say what they could do.
 - **No airy slogans.** A line has to say something concrete or it goes.
@@ -77,9 +78,9 @@ it changing in front of them. The same person throughout, refining as they go.
 
 **A look**
 
-> **them:** i want to make a new theme
+> **them:** can i change how this whole thing looks?
 >
-> **youcoded:** Nice. What are you picturing?
+> **youcoded:** Anything you like. What are you picturing?
 >
 > **them:** idk. kinda rainy tokyo at night type vibe? open to ideas
 
