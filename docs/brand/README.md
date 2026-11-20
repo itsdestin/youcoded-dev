@@ -160,6 +160,10 @@ secondary text). Centred, on lavender, held at least 2.5 s.
 - **Video** works muted: text stays up at least 1.2 s + 0.25 s per word. Vertical 1080×1920 first.
   Music composed in code (`scripts/promo/music/`), mixed to about −14 LUFS.
 - **Posters:** 4:5 and 9:16, with the icon + name lockup.
+- **One kind of material, one look** (Destin, 2026-11-19: "we need a consistent brand identity for
+  marketing materials types. posters should look consistent"). Every poster of one shape uses the
+  same headline size, the same top edge, margins and foot; the headline never grows to fill a
+  poster whose words happen to be short. The same holds within banners and within end cards.
 - **Share image:** `youcoded/docs/og-image.png` from `youcoded/docs/tools/gen-og-image.mjs`; bump its
   `?v=` when it changes.
 

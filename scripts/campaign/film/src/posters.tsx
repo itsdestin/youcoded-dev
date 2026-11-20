@@ -221,12 +221,18 @@ const Struck: React.FC<{ word: string; fix: string; size: number; anchorRight?: 
       color: C.purpleNight, transform: 'rotate(-5deg)', transformOrigin: '0% 100%', whiteSpace: 'nowrap' }}>{fix}</span>
   </span>
 );
+// WHY one size for the whole family (Destin, 2026-11-19: "posters should look consistent... why is data so
+// damn big"): every poster of one shape uses the SAME headline size, the same top edge, margins and foot.
+// The size is the largest at which the longest line of ANY poster in the family still fits that shape.
+const GAP = 0.98;                                    // room above the struck word for the handwriting, in em
+const NOTHING_LINES = (wide: boolean) => wide ? ["you'll own nothing.", "and you'll be happy."] : ["you'll own", 'nothing.', "and you'll", 'be happy.'];
+const familySize = (W: number, H: number, m: number, mt: number, mb: number, u: number, wide: boolean) => Math.min(
+  fitLines(W, H, m, mt, mb, u, NOTHING_LINES(wide), GAP, wide ? 0.47 : 0.45),
+  fitLines(W, H, m, mt, mb, u, ['own your', 'intelligence.'], GAP, 0.41));
 const Nothing: React.FC = () => {
   const { W, H, shape, u, m, mt, mb } = useFrame();
   const wide = shape === 'wide';
-  const lines = wide ? ["you'll own nothing.", "and you'll be happy."] : ["you'll own", 'nothing.', "and you'll", 'be happy.'];
-  const GAP = 0.98;                                  // room above the struck word for the handwriting, in em
-  const size = fitLines(W, H, m, mt, mb, u, lines, GAP, wide ? 0.47 : 0.45);
+  const size = familySize(W, H, m, mt, mb, u, wide);
   const row: React.CSSProperties = { fontFamily: DMSANS, fontWeight: 900, fontSize: size, letterSpacing: '-0.05em', lineHeight: 0.98, whiteSpace: 'nowrap', color: C.nightText };
   return (
     <AbsoluteFill><BgNight />
@@ -246,25 +252,18 @@ const Nothing: React.FC = () => {
     </AbsoluteFill>
   );
 };
-// Measured average letter width of each noun in DM Sans 900 (see fitLines).
-const NOUN_EM: Record<string, number> = { data: 0.45, intelligence: 0.41, software: 0.45, everything: 0.475 };
 const OwnSet: React.FC<{ noun: string }> = ({ noun }) => {
   const { W, H, shape, u, m, mt, mb } = useFrame();
+  const wide = shape === 'wide';
   const dark = noun === 'everything';               // WHY: the last of the four is the closer, so it alone is on night
-  const first = noun === 'everything' ? 'own' : 'own your';
-  // WHY the noun is sized to fill the width, not matched across the set: at one shared size the short
-  // nouns left most of the poster empty. The small first line is the same on all four, which ties them.
-  const availH = H - mt - mb - FOOT_H * u - 3 * u;
-  const big = Math.min((W - 2 * m) / ((noun.length + 1) * NOUN_EM[noun] * 1.03), availH * 0.5);
-  const small = Math.min(big * 0.5, (W - 2 * m) / 12);
+  const size = familySize(W, H, m, mt, mb, u, wide);
   return (
     <AbsoluteFill>{dark ? <BgNight /> : <BgDay />}
       <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <Head text={first} size={small} dark={dark} />
-          <div style={{ height: big * 0.04 }} />
-          <Head text={`*${noun}.*`} size={big} dark={dark} />
-        </div>
+        {/* On the wide shape the struck poster starts one handwriting-gap down; match it so the first lines sit level. */}
+        {wide && <div style={{ height: GAP * size }} />}
+        <Head text={`${noun === 'everything' ? 'own' : 'own your'} / *${noun}.*`} size={size} dark={dark} />
+        <div style={{ flex: 1, minHeight: 3 * u }} />
         <Foot u={u} dark={dark} row={shape !== 'tall'} tight={shape === 'square'} />
       </div>
     </AbsoluteFill>
