@@ -365,6 +365,13 @@ fi
 
 # ast-grep runs against the checkout being verified, NOT the main one — a
 # worktree's source is the whole point of passing a checkout argument.
+# Silent-failure check (R-1, Destin 2026-11-18): refuses any NEW catch that swallows a failure without a
+# written "// benign: <reason>"; the old ones sit on a list that may only shrink. Same check runs in the
+# vitest suite (tests/no-new-silent-catches.test.ts); this line names it in the summary. Skipped on a
+# checkout that predates the script.
+if [[ -f "$DESKTOP/scripts/silent-catch-check.mjs" ]]; then
+  start silentcatch "silent catches (R-1 frozen list)" node scripts/silent-catch-check.mjs "$DESKTOP/src"
+fi
 start invariants "invariants (ast-grep)" bash "$ROOT/scripts/ast-grep/check.sh" "$DESKTOP/src"
 
 # Screens: open every screen in the list once, in the photo-only build, and fail
@@ -408,7 +415,7 @@ fi
 
 FAILED=0
 FAILED_KEYS=()
-for key in types testtypes tests knip lint design invariants screens journeys; do
+for key in types testtypes tests knip lint design invariants silentcatch screens journeys; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
   [[ -n "$KEEP" ]] && cp "$LOGDIR/$key.log" "$KEEP/$key.log" 2>/dev/null
