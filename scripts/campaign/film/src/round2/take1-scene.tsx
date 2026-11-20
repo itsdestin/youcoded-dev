@@ -322,8 +322,8 @@ const roofPath = (h: House, ov: number) => {
  *  `lit(h)` is how far a house has turned into its own youcoded (it takes its colours by morning). */
 export const Row: React.FC<{
   row: RowId; t: number; pal: Pal; dawn: number; winState: (w: Win) => { b: number; flip: number };
-  lit: (h: House) => number; townGlow?: number;
-}> = ({ row, t, pal, dawn, winState, lit, townGlow = 0 }) => {
+  lit: (h: House) => number; townGlow?: number; inside?: (w: Win) => React.ReactNode;
+}> = ({ row, t, pal, dawn, winState, lit, townGlow = 0, inside }) => {
   const S = ROWS[row]; const { houses, wins } = TOWN[row];
   const haze = (c: string) => mix(c, pal.horizon, S.haze);
   const tones = [0, 0.05, -0.05, 0.09];
@@ -393,13 +393,15 @@ export const Row: React.FC<{
           );
         })}
       </g>
-      {wins.map((w) => <Window key={w.id} w={w} {...winState(w)} t={t} pal={pal} shutterC={mix(pal.roof, houses[w.house].theme.roof, lit(houses[w.house]) * dayK)} />)}
+      {wins.map((w) => <Window key={w.id} w={w} {...winState(w)} t={t} pal={pal} shutterC={mix(pal.roof, houses[w.house].theme.roof, lit(houses[w.house]) * dayK)} inside={inside?.(w)} />)}
     </g>
   );
 };
 
 /** One window: identical cold glass with a cross, which flips like a card into its own youcoded. */
-const Window: React.FC<{ w: Win; b: number; flip: number; t: number; pal: Pal; shutterC: string }> = ({ w, b, flip, t, pal, shutterC }) => {
+// WHY `inside`: one window shows a person at home behind the glass (the privacy beat); it is drawn
+// between the glass and the cross bars, so the bars sit in front of them like a real window.
+const Window: React.FC<{ w: Win; b: number; flip: number; t: number; pal: Pal; shutterC: string; inside?: React.ReactNode }> = ({ w, b, flip, t, pal, shutterC, inside }) => {
   const cx = w.x + w.w / 2, cy = w.y + w.h / 2;
   // flip: 0..0.5 the old glass turns away, 0.5..1 the app turns toward us with a small overshoot
   const turned = flip >= 0.5;
@@ -420,6 +422,7 @@ const Window: React.FC<{ w: Win; b: number; flip: number; t: number; pal: Pal; s
         {frame}
         <g transform={tf}>
           <rect x={w.x} y={w.y} width={w.w} height={w.h} rx={1.5} fill={glass} />
+          {inside}
           <rect x={cx - 1.3} y={w.y} width={2.6} height={w.h} fill={pal.ink} />
           <rect x={w.x} y={cy - 1.3} width={w.w} height={2.6} fill={pal.ink} />
         </g>
