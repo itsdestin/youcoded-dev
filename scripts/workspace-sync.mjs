@@ -3,6 +3,7 @@ import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { tryAcquireLock } from './lib/lock.mjs';
 
 const FETCH_TIMEOUT_MS = 15_000;
 const BRIEF_PATH_LIMIT = 12;
@@ -332,24 +333,9 @@ function writePrivate(target, contents) {
 }
 
 function acquireLock(root, beforeOwnerWrite = null) {
-  const lockPath = path.join(gitCommonDirectory(root), 'youcoded-sync.lock');
-  try {
-    fs.mkdirSync(lockPath, { mode: 0o700 });
-  } catch (error) {
-    if (error.code !== 'EEXIST') throw error;
-    let owner = null;
-    try { owner = JSON.parse(fs.readFileSync(path.join(lockPath, 'owner.json'), 'utf8')); } catch {}
-    return { acquired: false, path: lockPath, owner };
-  }
-  try {
-    beforeOwnerWrite?.(lockPath);
-    writePrivate(path.join(lockPath, 'owner.json'), `${JSON.stringify({ pid: process.pid, acquiredAt: new Date().toISOString() }, null, 2)}\n`);
-    return { acquired: true, path: lockPath };
-  } catch (error) {
-    // WHY: mkdir proves this invocation owns this new lock; remove it if owner metadata cannot make acquisition diagnosable.
-    fs.rmSync(lockPath, { recursive: true, force: true });
-    throw error;
-  }
+  // WHY shared helper: a crashed sync used to leave this lock behind and block every later
+  // sync/startup; the helper takes over a lock whose owner process is gone (scripts/lib/lock.mjs).
+  return tryAcquireLock(path.join(gitCommonDirectory(root), 'youcoded-sync.lock'), { beforeOwnerWrite });
 }
 
 function operationState(root) {
@@ -1089,8 +1075,8 @@ export function syncWorkspace(options) {
     const reportPath = persistReport(report, directory);
     return { report, reportPath, briefing: formatBriefing(report) };
   } finally {
-    // WHY: only this invocation's successful mkdir grants authority to remove the cooperative lock.
-    fs.rmSync(lock.path, { recursive: true, force: true });
+    // WHY: release() removes the lock only if it is still this invocation's (a takeover may have replaced it).
+    lock.release();
   }
 }
 
