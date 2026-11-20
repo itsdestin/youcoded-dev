@@ -32,6 +32,7 @@ export const Q = {
   // (4) the turn
   however: T('however', 'However, recently...'),
   recently: T('recently', 'However, *recently...'),
+  recentlyEnd: E('recentlyEnd', 'However, *recently...'),
   something: T('something', 'something truly wonderful'),
   wonderful: T('wonderful', 'truly *wonderful happened.'),
   happened: T('happened', 'wonderful *happened.'),
@@ -58,6 +59,7 @@ export const Q = {
   far: T('far', 'something *far beyond'),
   beyond: T('beyond', 'far *beyond their own control:'),
   control: T('control', 'own *control:'),
+  aTool: T('aTool', 'a tool that can'),
   tool: T('tool', 'a *tool that can'),
   makeSoftware: T('makeSoftware', 'can *make software,'),
   software: T('software', 'make *software,'),
@@ -97,6 +99,7 @@ export const Q = {
   last: T('last', 'long *last...'),
   toOpen: T('toOpen', 'to open source everything.'),
   open: T('open', 'to *open source'),
+  source: T('source', 'open *source everything'),
   everything2: T('everything2', 'source *everything.'),
   end: LAST_WORD_END,
 };
@@ -118,21 +121,38 @@ export const TURN = {
   // the stressed word, which is what gives it an editor's rhythm instead of one long camera move.
   nothing: onFrame(Q.weAccepted - 0.03),
   however: Q.convenienceEnd - 0.05,
-  treasure: Q.blinded - 0.4,
+  // WHY a hard cut on "hubris", not a page turn on "blinded" (review 2026-11-20): the headline "something
+  // wonderful happened." must stay up 1.95 s after "happened" is spoken, and the hats start growing on
+  // "hubris". The cut takes the headline and the old page away on the same frame, which is a clean edit.
+  treasure: onFrame(Q.hubris - 0.03),
   anyone: onFrame(Q.forAnyone - 0.03),
   // WHY a separate spread for section 7: it mirrors chapter ii's three pictures one for one
   ours: onFrame(Q.andSo - 0.03),
   free: Q.itsTime1 - 0.42,
   // the riffle: every page of the book flies past, each one somebody's own
-  riffle: [Q.itsTime2 - 0.55, Q.itsTime2 + 0.12, Q.atLong + 0.15, Q.atLong + 0.68, Q.last - 0.35, Q.last + 0.12],
+  // WHY four pages, not six: one per real theme, and each one now stays readable for ~0.8 s
+  riffle: [Q.itsTime2 - 0.55, Q.itsTime2 + 0.25, Q.atLong + 0.07, Q.last - 0.53],
   everything: Q.toOpen - 0.72,
   close: Q.end - 0.05,                     // the book shuts as the last word lands
 };
 /** Turns that are hard cuts (the new spread is simply there on the next frame). */
-export const CUT_TURNS = new Set<number>([TURN.nothing, TURN.anyone, TURN.ours]);
+export const CUT_TURNS = new Set<number>([TURN.nothing, TURN.treasure, TURN.anyone, TURN.ours]);
+/** Hard cuts inside a chapter that something on the page must change on, frame-exact.
+ *  WHY shared: the hats used to reset one frame after the camera cut away from them (a one-frame pop);
+ *  the camera and the drawing now read the same number, so both change on the same frame. */
+export const CUT = {
+  hubris: TURN.treasure,
+  these: onFrame(Q.these - 0.05),
+  // the quill escapes the men in one shot and is drawing the window in the next: cut on "a tool"
+  tool: onFrame(Q.aTool - 0.02),
+};
 /** When a spread's pictures are fully on the page (a cut lands at once, a turn after TURN_DUR). */
 export const land = (turnAt: number) => turnAt + (CUT_TURNS.has(turnAt) ? 0 : TURN_DUR);
 export const COVER_DUR = 1.1;
 export const CLOSE_DUR = 0.8;
-/** The frame the book lands shut: the film cuts (through a 6-frame dip) to the end card here. */
-export const END_CARD = TURN.close + CLOSE_DUR;
+/** How long the shut book rests before the dip, and the dip's two halves (to the felt's dark, then up). */
+export const SHUT_REST = 0.3, DIP_OUT = 8 / 30, DIP_IN = 16 / 30;
+/** The frame the end card starts to fade up from dark (the book has already dipped out to dark by here).
+ *  WHY a dip through dark, not a cross-fade: the 4-frame dissolve from the dark cover to the near-white card
+ *  read as a flash; dark to dark and then a slow rise keeps the brightness change gentle. */
+export const END_CARD = TURN.close + CLOSE_DUR + SHUT_REST + DIP_OUT;

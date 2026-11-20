@@ -49,6 +49,11 @@ const Entrance: React.FC<{ enter: Enter; a: number; dur: number; x: number; y: n
 };
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
+/** Mix two #rrggbb colours (k = 0 gives a, 1 gives b). */
+export const mixHex = (a: string, b: string, k: number) => {
+  const h = (c: string, i: number) => parseInt(c.slice(1 + i * 2, 3 + i * 2), 16);
+  return `#${[0, 1, 2].map((i) => Math.round(h(a, i) + (h(b, i) - h(a, i)) * k).toString(16).padStart(2, '0')).join('')}`;
+};
 /** Current film time in seconds. */
 export const useT = () => useCurrentFrame() / FPS;
 /** 0→1 between a and b (seconds), eased. */
@@ -127,7 +132,8 @@ export const InkDefs: React.FC = () => (
 );
 
 // ---------- the handful: tall, pompous, faceless ----------
-export type HatPose = 'sides' | 'bar' | 'key' | 'rub' | 'reach' | 'hold' | 'grab' | 'pat' | 'shove';
+// 'stretch': the right arm is left off, for a scene that draws its own long reaching arm from the shoulder
+export type HatPose = 'sides' | 'bar' | 'key' | 'rub' | 'reach' | 'hold' | 'grab' | 'pat' | 'shove' | 'stretch';
 type HatProps = {
   x: number; y: number; s?: number; a: number; b?: number;
   crown?: number;          // hat height (they grow with their hubris)
@@ -154,7 +160,11 @@ export const HatFigure: React.FC<HatProps> = (props) => {
 const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', fist = 0, pocket = false, hatSx = 1 }) => {
   const e = b ?? a + 1;
   const k = (i: number) => a + (e - a) * i;  // stagger inside the drawing window
-  const ink = P.ink;
+  // WHY a solid pale ink, not transparency (review 2026-11-20): drawn see-through, the faded handful let the
+  // watercolour behind show through their bodies like a double exposure. Now "fade" mixes the ink toward
+  // the paper, so a faded man is a solid, light pencil-grey figure.
+  const ink = fade > 0 ? mixHex(P.ink, P.paper, fade * 0.66) : P.ink;
+  const inner = fade > 0 ? mixHex(P.inkSoft, P.paper, fade * 0.66) : P.inkSoft;
   // WHY pear-shaped with a watch chain and a lifted chin: faceless, they still have to read as pompous at a glance
   const body = 'M -18 -178 C -30 -160 -47 -126 -45 -94 C -43 -66 -37 -50 -35 -38 L 35 -38 C 37 -50 43 -66 45 -94 C 47 -126 30 -160 18 -178 Q 0 -186 -18 -178 Z';
   const arms: Record<HatPose, string[]> = {
@@ -167,22 +177,22 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
     grab: ['M -20 -168 C -10 -200 20 -232 52 -250', 'M 20 -168 C 44 -190 70 -214 96 -224'],
     pat: ['M -20 -168 C -40 -140 -46 -114 -42 -92', 'M 20 -168 C 44 -150 44 -122 24 -110'],
     shove: ['M -20 -168 C -40 -140 -46 -114 -42 -92', 'M 20 -168 C 46 -140 66 -100 84 -60'],
+    stretch: ['M -20 -168 C -40 -140 -46 -114 -42 -92'],
   };
   const hands: Record<HatPose, [number, number][]> = {
     sides: [[-42, -90], [42, -90]], bar: [[-42, -90], [61, -134]], key: [[-42, -90], [73, -119]],
     rub: [[-4, -117], [4, -117]], reach: [[-42, -90], [106, -197]], hold: [[-33, -112], [33, -112]],
-    grab: [[54, -252], [98, -226]], pat: [[-42, -90], [22, -108]], shove: [[-42, -90], [86, -58]],
+    grab: [[54, -252], [98, -226]], pat: [[-42, -90], [22, -108]], shove: [[-42, -90], [86, -58]], stretch: [[-42, -90]],
   };
   const hatY = -212 + drop * 34;      // slides down over the faceless head
   return (
-    <g transform={`translate(${x} ${y + bob}) scale(${(flip ? -1 : 1) * s} ${s}) rotate(${lean})`} opacity={1 - fade * 0.72}
-      style={fade > 0 ? { filter: `saturate(${1 - fade})` } : undefined}>
-      <ellipse cx={0} cy={1} rx={44} ry={6} fill={P.ink} opacity={0.1} />
+    <g transform={`translate(${x} ${y + bob}) scale(${(flip ? -1 : 1) * s} ${s}) rotate(${lean})`}>
+      <ellipse cx={0} cy={1} rx={44} ry={6} fill={P.ink} opacity={0.1 * (1 - fade * 0.6)} />
       {/* legs and pointed shoes */}
-      <Ink d="M -12 -2 L -10 -40 M 12 -2 L 10 -40" a={k(0)} b={k(0.25)} w={5} ea={ea} />
-      <Ink d="M -9 -2 L -28 -1 M 9 -2 L 28 -1" a={k(0.15)} b={k(0.3)} w={6} ea={ea} />
+      <Ink d="M -12 -2 L -10 -40 M 12 -2 L 10 -40" a={k(0)} b={k(0.25)} w={5} c={ink} ea={ea} />
+      <Ink d="M -9 -2 L -28 -1 M 9 -2 L 28 -1" a={k(0.15)} b={k(0.3)} w={6} c={ink} ea={ea} />
       {/* the long coat, a starched shirt front, a bow tie and a watch chain across the belly */}
-      <Shape d={body} a={k(0.1)} b={k(0.55)} fill={ink} w={3} ea={ea} />
+      <Shape d={body} a={k(0.1)} b={k(0.55)} fill={ink} c={ink} w={3} ea={ea} />
       <Appear a={k(0.55)} out={ea}>
         <path d="M -9 -179 L 0 -136 L 9 -179 Z" fill={P.paper} />
         <path d="M -9 -178 L 0 -174 L 9 -178 L 9 -170 L 0 -174 L -9 -170 Z" fill={ink} stroke={P.paper} strokeWidth={1} />
@@ -192,22 +202,22 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
         {[-124, -108].map((cy) => <circle key={cy} cx={-4} cy={cy} r={2} fill={P.paper} opacity={0.8} />)}
       </Appear>
       {/* arms */}
-      {arms[pose].map((d, i) => <Ink key={i} d={d} a={k(0.45)} b={k(0.75)} w={8} ea={ea} />)}
+      {arms[pose].map((d, i) => <Ink key={i} d={d} a={k(0.45)} b={k(0.75)} w={8} c={ink} ea={ea} />)}
       <Appear a={k(0.7)} out={ea}>{hands[pose].map(([hx, hy], i) => (
         // an open hand is a ring; a hand closing on nothing shrinks to a small filled fist
         <circle key={i} cx={hx} cy={hy} r={5.5 + (1 - fist) * 2 - fist * 1.5} fill={fist > 0.5 ? ink : P.paper} stroke={ink} strokeWidth={2.4} />
       ))}</Appear>
       {/* neck + faceless head */}
-      <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} w={2.6} ea={ea} /></g>
+      <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} c={ink} w={2.6} ea={ea} /></g>
       {eyes === 'dots' && <Appear a={k(0.7)} out={ea}><circle cx={-4} cy={-199} r={2.4} fill={ink} /><circle cx={6} cy={-200} r={2.4} fill={ink} /></Appear>}
       {eyes === 'coins' && [[-5, -199], [7, -200]].map(([cx, cy], i) => (
         <g key={i}><circle cx={cx} cy={cy} r={6.4} fill={P.sun} stroke={ink} strokeWidth={1.6} /><circle cx={cx} cy={cy} r={3} fill="none" stroke={ink} strokeWidth={1} opacity={0.6} /></g>
       ))}
       {/* the tall hat */}
       <g transform={`translate(0 ${hatY}) scale(${hatSx} 1)`}>
-        <Shape d={`M -16 0 L -18.5 ${-crown} Q 0 ${-crown - 4} 18.5 ${-crown} L 16 0 Z`} a={k(0.6)} b={k(0.9)} fill={ink} w={3} ea={ea} />
-        <Wash d="M -16.4 -9 L -16.9 -19 L 16.9 -19 L 16.4 -9 Z" a={k(0.85)} fill={band ?? P.inkSoft} ea={ea} />
-        <Ink d="M -27 1 Q 0 -5 27 1" a={k(0.75)} b={k(0.95)} w={6} ea={ea} />
+        <Shape d={`M -16 0 L -18.5 ${-crown} Q 0 ${-crown - 4} 18.5 ${-crown} L 16 0 Z`} a={k(0.6)} b={k(0.9)} fill={ink} c={ink} w={3} ea={ea} />
+        <Wash d="M -16.4 -9 L -16.9 -19 L 16.9 -19 L 16.4 -9 Z" a={k(0.85)} fill={band ?? inner} ea={ea} />
+        <Ink d="M -27 1 Q 0 -5 27 1" a={k(0.75)} b={k(0.95)} w={6} c={ink} ea={ea} />
       </g>
     </g>
   );

@@ -6,9 +6,9 @@
 //  iii "we all just accepted it"                            a queue signing a scroll that never ends
 //      "subscribe to everything and own nothing"            tags on every thing in a room, then the things lifted away
 //      "privacy… the cost of convenience"                   a giant magnifying glass held over someone on their phone
-//  iv  "however, recently… something truly wonderful"       a blank page; one drop of purple ink lands with a splash
-//                                                            on "recently" and on "wonderful" runs into the nib of
-//                                                            a quill: the wonderful thing is the tool itself
+//  iv  "however, recently… something truly wonderful"       a blank page; one drop of purple ink falls through
+//                                                            "recently...", lands as it ends, and on "wonderful" runs
+//                                                            into the nib of a quill: the wonderful thing is the tool
 import React from 'react';
 import { DMSANS, EASE_IN, EASE_IN_OUT } from '../brand';
 import { Appear, blob, circle, Enter, HatFigure, Ink, jolt, KeepsakeIcon, Keepsake, Laptop, lin, NEUTRAL, P, Padlock, Person, pop, PriceTag, Quill, Shape, useT } from './take1c-ink';
@@ -223,8 +223,10 @@ const BargainArt: React.FC = () => {
         {/* the title on the lectern, big enough to read at film size */}
         <Appear a={L + 0.1}>
           {/* WHY above the gap beside the lectern: on the lectern itself it ran across the man's face */}
-          <text x={1236} y={470} textAnchor="end" fontFamily={DMSANS} fontWeight={800} fontSize={32} fill={P.ink} letterSpacing="-0.02em">terms of service</text>
-          <Ink d="M 1200 482 C 1230 500 1252 504 1266 522" a={L + 0.2} b={L + 0.5} w={2.4} />
+          {/* WHY moved in from x 1236 (review 2026-11-20): in the close-up on "accepted" it was cut off at the
+              frame's right edge ("terms of servic"); it now sits inside the close-up with room to spare */}
+          <text x={1190} y={482} textAnchor="end" fontFamily={DMSANS} fontWeight={800} fontSize={32} fill={P.ink} letterSpacing="-0.02em">terms of service</text>
+          <Ink d="M 1196 474 C 1230 486 1252 500 1266 522" a={L + 0.2} b={L + 0.5} w={2.4} />
         </Appear>
         {QUEUE.map((x, i) => {
           // the tick runs from the front of the queue to the back, as she says "accepted"
@@ -281,8 +283,9 @@ const THINGS: Thing[] = [
 
 const NothingArt: React.FC = () => {
   const t = useT();
-  // WHY from the cut: the room inks itself in on camera, starting on the frame the film cuts to it
-  const L = land(TURN.nothing) + 0.05;
+  // WHY finished before the cut (review 2026-11-20): inking itself in on camera, the room spent its first
+  // 0.8 s as stray dashes and half-drawn marks. The film now cuts to a finished room; the tags are what move.
+  const L = land(TURN.nothing) - 1.5;
   const glassIn = lin(t, Q.privacy - 0.2, Q.privacy + 0.55);
   const gx = (1 - glassIn) * 520, gy = (1 - glassIn) * -160;
   // WHY over her face only: lower, it hid the "easy" button she presses
@@ -301,7 +304,7 @@ const NothingArt: React.FC = () => {
   );
   return (
     <>
-      <Folio left={8} />
+      <Folio left={8} hideRight />
       <Sheet>
         <path d="M 150 840 Q 380 870 620 840 Q 380 812 150 840 Z" fill={P.paperShade} />
         {/* the room */}
@@ -361,14 +364,15 @@ const NothingArt: React.FC = () => {
 export const NOTHING: Spread = { id: 'nothing', Art: NothingArt };
 
 // ======================= iv · however =======================
-// WHY the drop becomes a quill: the reviewer found the sprouting flower a stock image in a different drawing
-// style. Here one drop of purple lands with a splash on "recently", and on "wonderful" it runs into the nib of
-// a quill that draws itself up out of it. The wonderful thing is literally the tool the film is about.
-export const DROP_LAND = Q.recently + 0.04;
+// WHY the drop becomes a quill: the wonderful thing is literally the tool the film is about. One drop of purple
+// falls through the whole of "recently..." (its shadow gathering on the empty page, so the hush has something
+// to wait for), lands as the word ends, and on "wonderful" runs into the nib of a quill that inks itself up.
+// WHY no spatter dots or rings (review 2026-11-20): the dots circling the blot read as a little particle orb.
+export const DROP_LAND = Q.recentlyEnd - 0.02;
+const DROP_FROM = Q.recently + 0.05;
 // WHY on the left page: the headline lands on the right page at this moment, and must sit on clean paper
 const DROP = { x: 400, y: 640 };
 const QS = 2.7;   // the quill's size on this page
-const SPATTER: [number, number, number][] = [[-70, -22, 6], [58, -40, 4.5], [84, 18, 6.5], [-46, 40, 4], [20, 62, 3.5], [-96, 8, 3]];
 const HoweverArt: React.FC = () => {
   const t = useT();
   const g = pop(t, DROP_LAND, 0.4);
@@ -380,23 +384,19 @@ const HoweverArt: React.FC = () => {
   return (
     <>
       <Heading n="iv" title="however" />
-      <Folio left={10} />
+      <Folio left={10} hideRight />
       <Sheet rough={false}>
         {t >= DROP_LAND && (
           <g>
-            {/* where it landed: a stain that stays, and the few spatters a real drop throws */}
+            {/* where it landed: a soft stain that stays, feathered into the paper */}
             <g filter="url(#c-bleed)">
               <path d={blob(DROP.x, DROP.y, 34 * Math.min(1.06, g), 3, 0.12, 14)} fill={P.purple} opacity={0.16 + 0.1 * (1 - run)} />
-              {SPATTER.map(([dx, dy, r], i) => {
-                const p = lin(t, DROP_LAND + 0.02, DROP_LAND + 0.22 + i * 0.02);
-                return p > 0 ? <circle key={i} cx={DROP.x + dx * p} cy={DROP.y + dy * p} r={r * Math.min(1, p * 1.4)} fill={P.purple} opacity={0.85} /> : null;
-              })}
             </g>
-            {/* the splash rings */}
-            {[0, 0.09].map((d, i) => {
-              const p = lin(t, DROP_LAND + d, DROP_LAND + d + 0.5);
-              return p > 0 && p < 1 ? <ellipse key={i} cx={DROP.x} cy={DROP.y} rx={30 + p * 110} ry={(30 + p * 110) * 0.8} fill="none" stroke={P.purple} strokeWidth={4 - 3 * p} opacity={0.6 * (1 - p)} /> : null;
-            })}
+            {/* one soft ripple as it lands, nothing more */}
+            {(() => {
+              const p = lin(t, DROP_LAND, DROP_LAND + 0.55);
+              return p > 0 && p < 1 ? <ellipse cx={DROP.x} cy={DROP.y} rx={30 + p * 70} ry={(30 + p * 70) * 0.8} fill="none" stroke={P.purple} strokeWidth={3 - 2 * p} opacity={0.4 * (1 - p)} /> : null;
+            })()}
             {/* the drop itself, until it runs into the nib */}
             {run < 1 && (
               <g transform={`translate(${DROP.x} ${DROP.y}) scale(${(1 - run * 0.6) * Math.min(1.08, g)} ${(1 + run * 0.5) * Math.min(1.08, g)}) translate(0 ${run * 10})`}>
@@ -421,18 +421,23 @@ const HoweverArt: React.FC = () => {
     </>
   );
 };
-/** The falling drop is a standing piece above the page: it has height, so it gets a real shadow. */
+/** The falling drop is a standing piece above the page: it has height, so it gets a real shadow.
+ *  It falls the whole length of "recently...": slow at the top, quickening, landing as the word ends. */
 const HoweverPop: React.FC = () => {
   const t = useT();
-  const a = DROP_LAND - 0.42;
-  const u = (t - a) / 0.42;
+  const u = (t - DROP_FROM) / (DROP_LAND - DROP_FROM);
   if (u <= 0 || u >= 1) return null;
-  const z = 900 * (1 - u * u);
+  // WHY u^2.2: a real drop accelerates; most of its height is lost in the last third
+  // WHY 700, not higher, and a fade-in: from higher up the perspective threw the drop into the frame's corner,
+  // where it read as a stray blob; from here it is seen falling toward its own shadow the whole way
+  const z = 700 * (1 - Math.pow(u, 2.2));
+  const near = 1 - z / 700;
+  const seen = Math.min(1, u / 0.12);
   return (
     <>
-      <div style={{ position: 'absolute', left: DROP.x - 36 + z * 0.1, top: DROP.y - 14 + z * 0.06, width: 72, height: 28, borderRadius: '50%',
-        background: 'rgba(40,14,48,0.5)', filter: `blur(${4 + z * 0.02}px)`, opacity: 0.25 + 0.6 * u, transform: 'translateZ(0.5px)' }} />
-      <div style={{ position: 'absolute', left: DROP.x - 22, top: DROP.y - 64, width: 44, height: 64, transform: `translateZ(${z}px) rotateX(-70deg)`, transformOrigin: '50% 100%' }}>
+      <div style={{ position: 'absolute', left: DROP.x - 40, top: DROP.y - 16, width: 80, height: 32, borderRadius: '50%',
+        background: 'rgba(40,14,48,0.5)', filter: `blur(${3 + (1 - near) * 14}px)`, opacity: 0.12 + 0.6 * near, transform: `translateZ(0.5px) scale(${1.9 - 0.9 * near})` }} />
+      <div style={{ position: 'absolute', left: DROP.x - 22, top: DROP.y - 64, width: 44, height: 64, transform: `translateZ(${z}px) rotateX(-70deg)`, transformOrigin: '50% 100%', opacity: seen }}>
         <div style={{ width: 44, height: 64, background: 'radial-gradient(circle at 38% 62%, #C88AD8 0%, #9750AA 45%, #6E3482 100%)',
           clipPath: 'path("M 22 0 C 28 18 44 32 44 45 A 22 19 0 0 1 0 45 C 0 32 16 18 22 0 Z")' }} />
       </div>

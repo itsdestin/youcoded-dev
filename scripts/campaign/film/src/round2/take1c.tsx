@@ -12,10 +12,10 @@ import { C, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
 import { Day, EndCard } from '../kit';
 import { Boards, BOARD, BasePage, cameraAt, coverArt, Edges, Face, Lamp, Leaf, LeafShadow, PH, PW, Shot, Spread, World } from './take1c-book';
 import { lin } from './take1c-ink';
-import { BARGAIN, HANDFUL, HOWEVER, NOTHING, RULES } from './take1c-spreads-a';
+import { BARGAIN, DROP_LAND, HANDFUL, HOWEVER, NOTHING, RULES } from './take1c-spreads-a';
 import { ANYONE, EVERYTHING, FREE, OURS, OURS_HAND, TREASURE, TREASURE_MARKS, VARIANTS } from './take1c-spreads-b';
 import { Headline } from './take1c-page';
-import { CLOSE_DUR, COVER_DUR, CUT_TURNS, END_CARD, Q, TURN, TURN_DUR } from './take1c-time';
+import { CLOSE_DUR, COVER_DUR, CUT, CUT_TURNS, DIP_IN, DIP_OUT, END_CARD, Q, TURN, TURN_DUR } from './take1c-time';
 
 // ---------- the order of the book ----------
 const SPREADS: Spread[] = [HANDFUL, RULES, BARGAIN, NOTHING, HOWEVER, TREASURE, ANYONE, OURS, FREE, ...VARIANTS, EVERYTHING];
@@ -60,25 +60,30 @@ const SHOTS: Shot[] = [
   cut(Q.data - 0.05, 1110, 610, 1.3), at(TURN.bargain, 1100, 600, 1.36),
   // iii: the queue; a cut in to the boxes ticking themselves on "accepted"
   at(L(2), 760, 560, 1.02), at(Q.accepted - 0.14, 745, 575, 1.08),
-  cut(Q.accepted - 0.12, 640, 735, 1.9), at(TURN.nothing - 0.01, 615, 735, 1.96),
+  // WHY 1.8 and a little right/lower (review 2026-11-20): at 1.9 the 'terms of service' label was cut off at the edge
+  cut(Q.accepted - 0.12, 660, 748, 1.8), at(TURN.nothing - 0.01, 640, 748, 1.86),
   // the room: a cut in to the price tags on "subscribe", back out for "own nothing", in to the glass
   cut(TURN.nothing, 740, 520, 1.06), at(Q.subscribe - 0.07, 750, 515, 1.1),
   cut(Q.subscribe - 0.05, 410, 540, 2.05, 15), at(Q.own - 0.08, 405, 545, 2.12, 15),
   cut(Q.own - 0.06, H.x, H.y, H.z), at(Q.costOf - 0.37, 770, 505, 1.03),
-  cut(Q.costOf - 0.35, 1090, 470, 1.75), at(TURN.however, 1095, 478, 1.85),
-  // iv: a full page, still, for the drop and the quill
-  at(L(4) + 0.1, 850, 520, 1.35), at(TURN.treasure, 845, 515, 1.38),
-  // v: hubris (hats out of the page), the inkwell, the quill rising, the ledger, the snatch
-  at(L(5), 300, 470, 1.4, 14), at(Q.hubris - 0.09, 295, 465, 1.44, 14),
-  cut(Q.hubris - 0.07, 270, 330, 1.45, 11), at(Q.these - 0.07, 270, 320, 1.4, 11),
-  cut(Q.these - 0.05, 440, 540, 1.55, 14), at(Q.artificial - 0.07, 450, 545, 1.6, 14),
+  cut(Q.costOf - 0.35, 1090, 470, 1.75), at(TURN.however - 0.02, 1095, 478, 1.85),
+  // iv: WHY a cut to a calm, nearly whole-book framing as the page turns (review 2026-11-20): the fast pull
+  // back during the turn smeared the falling page with motion blur. Then a slow push in while the drop falls.
+  cut(TURN.however, 800, 505, 1.1), at(DROP_LAND, 835, 515, 1.28), at(CUT.hubris - 0.01, 845, 518, 1.33),
+  // v: a hard cut on "hubris" (hats out of the page), the inkwell, the quill rising, the chart, the snatch
+  // WHY framed on the page, not on the desk (it was 30% bare felt): the men left of centre, their desk at right,
+  // and the frame's top free for the hats to grow out of
+  cut(CUT.hubris, 430, 420, 2.0, 11), at(CUT.these - 0.01, 430, 405, 1.95, 11),
+  cut(CUT.these, 440, 540, 1.55, 14), at(Q.artificial - 0.07, 450, 545, 1.6, 14),
   cut(Q.artificial - 0.05, TM.well.x + 10, 470, 2.6, 12), at(Q.aTechnology - 0.07, TM.well.x + 12, 465, 2.7, 12),
   cut(Q.aTechnology - 0.05, 420, 500, 1.45, 14), at(Q.greatTreasure - 0.07, 425, 500, 1.52, 14),
-  cut(Q.greatTreasure - 0.05, 245, 485, 2.6, 13), at(Q.but - 0.07, 250, 490, 2.7, 13),
+  // the chart close: the three men and their easel, with headroom above the hats (8% of the frame or more)
+  cut(Q.greatTreasure - 0.05, 382, 488, 2.55, 13), at(Q.but - 0.07, 386, 486, 2.62, 13),
   cut(Q.but - 0.05, 450, 520, 1.5), at(Q.far - 0.07, 470, 520, 1.6),
-  cut(Q.far - 0.05, TM.well.x + 20, 500, 3.3, 12), at(Q.control + 0.3, TM.well.x + 40, 495, 3.4, 12),
-  // the whip-pan: the camera chases the quill straight into the empty window
-  at(TM.winA - 0.05, TM.win.x, TM.win.y + 30, 1.75, 14), at(Q.scarce - 0.07, TM.win.x, TM.win.y + 35, 1.85, 14),
+  // the snatch: the men at the left of the same shot, the quill and the room it escapes into at the right
+  cut(Q.far - 0.05, 470, 500, 2.4, 12), at(CUT.tool - 0.01, 478, 498, 2.48, 12),
+  // a hard cut on "a tool": the quill is already at the empty window's corner
+  cut(CUT.tool, TM.win.x, TM.win.y + 10, 1.8, 14), at(Q.scarce - 0.07, TM.win.x, TM.win.y + 15, 1.9, 14),
   cut(Q.scarce - 0.05, 250, 650, 1.9), at(Q.foundation - 0.07, 252, 655, 1.98),
   cut(Q.foundation - 0.05, 780, 540, 1.04), at(TURN.anyone - 0.01, 790, 545, 1.08),
   // vi: anyone (a cut, then a slow settle to the wide for the headline)
@@ -94,10 +99,11 @@ const SHOTS: Shot[] = [
   at(L(8) - 0.1, 700, 620, 1.2), at(Q.free + 0.1, 560, 700, 1.45), at(Q.monopolies2 - 0.07, 580, 690, 1.45),
   cut(Q.monopolies2 - 0.05, 760, 420, 1.12), at(TURN.riffle[0] - 0.1, 760, 440, 1.1),
   // ix: pull back while every page flies past, then home for the last headline
-  at(TURN.riffle[1], 760, 500, 0.84, 24), at(TURN.riffle[5], 760, 500, 0.86, 24),
+  at(TURN.riffle[1], 760, 500, 0.84, 24), at(TURN.riffle[3], 760, 500, 0.86, 24),
   { t: L(SPREADS.length - 1) - 0.08, ...H }, { t: TURN.close, ...H },
   // the book shuts; the camera settles on its cover
-  at(TURN.close + CLOSE_DUR, 1150, 500, 1.18, 20), at(75, 1150, 500, 1.2, 20),
+  // WHY the camera stays home while it shuts: the closed book then lies exactly under the headline
+  at(TURN.close + CLOSE_DUR, 770, 500, 1.02, 16), at(75, 772, 500, 1.04, 16),
 ];
 // WHY checked: an out-of-order key would make the camera snap, and the keys are computed from word times.
 SHOTS.forEach((s, i) => { if (i && s.t <= SHOTS[i - 1].t) throw new Error(`take1c camera key ${i} (t=${s.t.toFixed(2)}) is not after key ${i - 1} (t=${SHOTS[i - 1].t.toFixed(2)})`); });
@@ -156,12 +162,23 @@ const Book: React.FC<{ t: number }> = ({ t }) => {
 const minUp = (text: string) => 1.2 + 0.25 * text.split(/[\s/]+/).filter(Boolean).length;
 const HEADLINES = [
   // WHY each 'out' is the next cut: a headline never straddles a hard cut
-  { text: 'own *nothing.', at: Q.own, out: Q.costOf - 0.4 },
-  { text: 'something *wonderful / happened.', at: Q.something, out: TURN.treasure - 0.05 },
+  { text: 'own *nothing.', at: Q.own, out: Q.costOf - 0.4, words: [Q.own, Q.nothing] },
+  // WHY each word on its own spoken start, and out on the hard cut at "hubris" (review 2026-11-20): it used to
+  // show "wonderful happened." a second before she said it, and leave while she was still saying it
+  { text: 'something *wonderful / happened.', at: Q.something, out: CUT.hubris, words: [Q.something, Q.wonderful, Q.happened], cutOut: true },
   { text: 'for *anyone / who asks.', at: Q.forAnyone, out: TURN.ours - 0.04 },
-  { text: 'open source / *everything.', at: Q.open, out: TURN.close + 0.3 },
+  // WHY held through the book closing (review 2026-11-20): "everything." used to appear 0.85 s before she said
+  // it, and to leave 1.4 s after. Now each word lands on its spoken start, and the line stays while the book
+  // shuts beneath it: the cover slides in under the words, which turn to the dark-mode colours as it does, so
+  // they end printed on the closed cover like its title, until the dip to dark takes them.
+  { text: 'open source / *everything.', at: Q.open, out: END_CARD, words: [Q.open, Q.source, Q.everything2], cutOut: true,
+    night: (t: number) => lin(t, TURN.close + CLOSE_DUR * 0.45, TURN.close + CLOSE_DUR * 0.95, EASE_IN_OUT) },
 ];
-HEADLINES.forEach((h) => { if (h.out - h.at < minUp(h.text)) throw new Error(`take1c headline "${h.text}" is up ${(h.out - h.at).toFixed(2)} s, under the brand minimum`); });
+// WHY measured from the LAST word's appearance: that is when the whole line is first readable
+HEADLINES.forEach((h) => {
+  const last = 'words' in h && h.words ? h.words[h.words.length - 1] : h.at;
+  if (h.out - last < minUp(h.text)) throw new Error(`take1c headline "${h.text}" is up ${(h.out - last).toFixed(2)} s after its last word, under the brand minimum`);
+});
 
 /** Motion blur for the whip-pan: a directional blur sized by how far the picture moves this frame.
  *  WHY measured from the camera, not hand-set: it then appears on any fast move and never on a hard cut. */
@@ -183,12 +200,13 @@ export const Take1C: React.FC = () => {
   // the edges of the frame darken for the whisper ("however, recently…") and lift again on "wonderful"
   const dim = Math.min(lin(t, Q.however, Q.recently + 0.3), 1 - lin(t, Q.wonderful - 0.1, Q.wonderful + 0.7));
   const warm = lin(t, Q.wonderful - 0.1, Q.wonderful + 1.2) + lin(t, Q.toOpen, Q.everything2 + 0.5) * 0.6;
-  // WHY a 6-frame dip through the card's own lavender, not a cross-dissolve: the old dissolve from the dark
-  // cover made a milky grey haze with the logo ghosted over the book
-  const dipIn = lin(t, END_CARD - 0.1, END_CARD, (v) => v);
-  const dipOut = lin(t, END_CARD, END_CARD + 0.1, (v) => v);
+  // WHY a dip through dark (review 2026-11-20): the 4-frame cross-fade from the dark cover to the near-white
+  // card read as a flash. The shut book now sinks into the plum dark over 8 frames, and the card rises out of
+  // that dark over 16, so the brightness climbs once, slowly, instead of jumping.
+  const toDark = lin(t, END_CARD - DIP_OUT, END_CARD, EASE_IN_OUT);
+  const fromDark = 1 - lin(t, END_CARD, END_CARD + DIP_IN, EASE_IN_OUT);
   const showBook = t < END_CARD;
-  const settle = 0.96 + 0.04 * lin(t, END_CARD, END_CARD + 0.6, EASE_OUT);
+  const settle = 0.97 + 0.03 * lin(t, END_CARD, END_CARD + 0.8, EASE_OUT);
   return (
     <AbsoluteFill style={{ background: C.night }}>
       <Audio src={staticFile('audio/take1-mix.wav')} />
@@ -207,8 +225,8 @@ export const Take1C: React.FC = () => {
         </>
       )}
       {/* the card settles from 96% to full size as the cut lands, over its own background so no edge shows */}
-      {!showBook && <><Day /><AbsoluteFill style={{ transform: `scale(${settle})` }}><EndCard at={END_CARD - 0.35} /></AbsoluteFill></>}
-      {(dipIn > 0 && dipOut < 1) && <AbsoluteFill style={{ background: '#FBF6FD', opacity: showBook ? dipIn : 1 - dipOut }} />}
+      {!showBook && <><Day /><AbsoluteFill style={{ transform: `scale(${settle})` }}><EndCard at={END_CARD + 0.12} /></AbsoluteFill></>}
+      {(showBook ? toDark : fromDark) > 0 && <AbsoluteFill style={{ background: C.night, opacity: showBook ? toDark : fromDark }} />}
     </AbsoluteFill>
   );
 };
