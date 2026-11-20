@@ -51,14 +51,14 @@ DEMOS = [
               "-> triumphant (the second phrase, broader, violin and piano in octaves, everyone "
               "in) -> the logo.",
         sections=[
+            # every join is a BLEND (the default between moods): the next feel grows in under the
+            # last bars, speed changes spread over two bars, common notes held through
             S("stark", 4, tune="phrase1", label="stark"),
-            S("hush", 2, tune="signature", start=12.0, bpm=88, chords=[["Abmaj7"], ["Bbsus"]], into="build",
+            S("hush", 2, tune="signature", start=12.0, chords=[["Abmaj7"], ["Bbsus"]], span=1,
               label="hush"),
-            S("hopeful", 4, tune="phrase1", start=17.5, bpm=80, add=("answer",), into="build",
-              label="hopeful (speeds up into the next)"),
-            S("playful", 8, tune=["phrase1", "phrase2"], start=29.0, add=("held",), into="hold",
-              hold=1.5, label="playful"),
-            S("triumphant", 4, tune="phrase2", start=45.5, bpm=100, add=("answer",), lift=True,
+            S("hopeful", 4, tune="phrase1", start=18.0, bpm=80, add=("answer",), label="hopeful"),
+            S("playful", 8, tune=["phrase1", "phrase2"], bpm=116, add=("held",), label="playful"),
+            S("triumphant", 4, tune="phrase2", bpm=100, add=("answer",), lift=True,
               label="triumphant"),
         ]),
     Piece(

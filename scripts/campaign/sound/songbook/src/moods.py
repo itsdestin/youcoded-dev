@@ -23,7 +23,8 @@ MOODS = {
                   swing=0.0, lead=0.86),
     # A quiet bridge between moods: the piano alone, nearly still, held strings far away.
     "hush": dict(form="bright", tempo=(66, 80, 100), accomp="still", voice="piano",
-                 layers={"held"}, dyn=0.74, tone=0.1, pedal=True, held=0.15, air=0.0, swing=0.0),
+                 layers={"held"}, dyn=0.74, tone=0.1, pedal=True, held=0.2, air=0.0, swing=0.0,
+                 lead=0.85),
     # Slow to medium, warm, builds: under a narrator, for a hopeful turn.
     "hopeful": dict(form="bright", tempo=(72, 84, 96), accomp="rolling", voice="piano",
                     layers={"held", "sub", "air"}, dyn=0.88, tone=0.35, pedal=True, held=0.15, air=0.05,

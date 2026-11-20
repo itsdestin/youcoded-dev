@@ -20,6 +20,8 @@ def canonical(canon):
     seg, b = canon
     if seg == "ending":
         return {x[0]: note(x[1]) for x in T.ENDING}[b]
+    if seg == "logo":
+        return {x[0]: note(x[1]) for x in T.LOGO_CELL}[b]
     notes = T.SEGMENTS[seg][0]
     return {x[0]: note(x[1]) for x in notes}[b]
 
@@ -131,7 +133,7 @@ def momentary(y, hop=0.1, win=0.4):
     return starts / SR + win / 2, -0.691 + 10 * np.log10(ms * 2 + 1e-12)
 
 
-def steadiness(y, plans, logo_start):
+def steadiness(y, plans, logo_start, piece=None):
     """Inside each section (0.5 s in from each edge): spread (90th - 10th percentile) and the
     largest change within 1 s. Over the whole piece (0.5 s to just before the logo): the
     largest change within any 1 s, and where."""
@@ -159,7 +161,85 @@ def steadiness(y, plans, logo_start):
                          spread=round(float(np.percentile(v[sel], 90) - np.percentile(v[sel], 10)), 1),
                          max_change_1s=max1s(lo, hi)[0]))
     g, at = max1s(0.5, logo_start - 0.4)
-    # the same, stopping where the ending's last chord starts giving way to the logo
-    end = plans[-1]
-    gb, atb = max1s(0.5, min(logo_start - 0.4, end.tm.seconds(end.beat0 + 2.0)))
-    return dict(sections=rows, whole_max_change_1s=g, at=at, before_ending_max_change_1s=gb, before_ending_at=atb)
+    return dict(sections=rows, whole_max_change_1s=g, at=at)
+
+
+# ------------------------------------------------------------------ the logo, played
+
+
+def landing(band, plans, piece):
+    """The logo played live: are its three notes the logo's (B-flat, G, F), and does the third
+    land on the requested time? Measured from the lead piano's own track: the moment its
+    energy above 200 Hz first reaches half of the landing note's peak."""
+    cell = sorted((t, m) for t, m, canon, bus in band.tune_log if canon and canon[0] == "logo")
+    x = butter(band.stems["lead"].mean(axis=1), "highpass", 200, 2)
+    want = piece.land_time()
+    i0, i1 = int((want - 0.08) * SR), int((want + 0.25) * SR)
+    w = int(0.002 * SR)
+    env = np.sqrt(np.convolve(x[i0:i1] ** 2, np.ones(w) / w, mode="same"))
+    # the previous note is still ringing: find the landing's own rise (the steepest 5 ms climb)
+    lag = int(0.005 * SR)
+    rise = env[lag:] - env[:-lag]
+    j = int(np.argmax(rise))
+    seg = env[max(0, j - lag): j + 4 * lag]
+    pk = seg.max()
+    k = max(0, j - lag) + int(np.argmax(seg > env[max(0, j - lag)] + 0.5 * (pk - env[max(0, j - lag)])))
+    heard = (i0 + k) / SR
+    names = "C Db D Eb E F Gb G Ab A Bb B".split()
+    return dict(notes=[names[m % 12] + str(m // 12 - 1) for _, m in cell],
+                pickup_gap_s=[round(cell[i + 1][0] - cell[i][0], 3) for i in range(len(cell) - 1)],
+                requested_s=round(want, 3), scheduled_s=round(cell[-1][0], 4) if cell else None,
+                heard_s=round(heard, 4), error_ms=round((heard - want) * 1000, 1))
+
+
+# ------------------------------------------------------------------ joins
+
+
+def _bands(seg):
+    m = seg.mean(axis=1)
+    f, p = signal.welch(m, SR, nperseg=4096)
+    tot = p[f >= 20].sum() + 1e-30
+    return {k: round(float(10 * np.log10(p[(f >= lo) & (f < hi)].sum() / tot + 1e-20)), 1)
+            for k, (lo, hi) in {"2-8k": (2000, 8000), "8-16k": (8000, 16000)}.items()}
+
+
+def join_report(y, plans, piece, t, label, beat=None):
+    """Level and brightness 1.3 s either side of a join, the tempo curve around it (one value
+    per beat from 8 beats before to 4 after) and the largest level change within 1 s, 3 s
+    either side."""
+    tt, v = momentary(y)
+    tm = plans[0].tm
+
+    def med(a, b):
+        sel = (tt >= a) & (tt <= b)
+        return round(float(np.median(v[sel])), 1)
+
+    def br(a, b):
+        return _bands(y[int(a * SR): int(b * SR)])
+
+    lo, hi = max(0.5, t - 3.0), min(piece.length - 1.1, t + 3.0)
+    sel = np.where((tt >= lo) & (tt <= hi))[0]
+    big, at = 0.0, t
+    for i in sel:
+        jj = sel[(tt[sel] > tt[i]) & (tt[sel] <= tt[i] + 1.0)]
+        if len(jj):
+            d = float(np.max(np.abs(v[jj] - v[i])))
+            if d > big:
+                big, at = d, float(tt[i])
+    curve = None
+    if beat is not None:
+        curve = [round(float(tm.bpm_at(beat + k)), 1) for k in range(-8, 5)]
+    return dict(join=label, t=round(t, 2), level_before=med(t - 1.5, t - 0.2), level_after=med(t + 0.2, min(t + 1.5, piece.length - 1.1)),
+                bright_before=br(t - 1.5, t - 0.2), bright_after=br(t + 0.2, min(t + 1.5, piece.length - 1.1)),
+                max_change_1s=round(big, 1), max_change_at=round(at, 1), tempo_per_beat=curve)
+
+
+def joins(y, plans, piece):
+    out = []
+    for k in range(1, len(plans)):
+        p = plans[k]
+        name = ("into the ending" if p.ending else f"{plans[k - 1].sec.label} -> {p.sec.label}")
+        out.append(join_report(y, plans, piece, p.t0, name, p.beat0))
+    ep = plans[-1]
+    out.append(join_report(y, plans, piece, piece.land_time(), "the logo lands", ep.beat0 + 4))
+    return out

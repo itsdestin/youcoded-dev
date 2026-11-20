@@ -29,6 +29,8 @@ from moods import MOODS
 
 LOGO_LAND = 0.5       # in both logo files the name lands 0.50 s after the file starts
 LOGO_LEN = {"blend": 3.0, "piano": 2.5}
+RIT = 0.85            # THE ENDING slows into the logo: its last bar ends at 85 % of the tempo
+BLEND_BARS = 2        # a mood change is prepared over this many bars (Section.span)
 
 
 @dataclass
@@ -46,7 +48,8 @@ class Section:
     form: Optional[str] = None       # override "bright" / "dark"
     turn: bool = False               # last bar becomes A-flat, B-flat sus (leads to brighter)
     lift: bool = False               # THE LIFT: the whole section grows (see blocks.lift)
-    into: str = "flow"               # transition into the NEXT section: flow|hold|breath|build
+    into: str = "auto"               # transition into the NEXT section: auto|blend|build|flow|hold|breath
+    span: int = BLEND_BARS           # bars a blend/build takes (the new mood grows in underneath)
     hold: Optional[float] = None     # beats of held chord for hold/breath
     narration: bool = False          # a voice talks here: level down, speech-range dip
     level_db: Optional[float] = None # hand-set music level for this section (dB)
@@ -63,6 +66,8 @@ class Piece:
     seed: int = 1
     notes: str = ""
     land: Optional[float] = None     # when the name lands (default: length - logo tail)
+    ending_start: Optional[float] = None  # pin the ending bar's start too (e.g. on a cut)
+    rit: float = RIT                 # how much the ending bar slows (end tempo / start tempo)
 
     def land_time(self):
         return self.land if self.land is not None else self.length - (LOGO_LEN[self.logo] - LOGO_LAND)
@@ -120,7 +125,11 @@ def _tune_bars(sec, form):
     bars = [Bar(0, None, []) for _ in range(sec.bars)]
     k = 0
     for s in segs:
+        # "phrase1:3" = only the first 3 bars of the first phrase (the rest of its 4 bars rest)
+        s, _, cut = s.partition(":")
         notes, nbars, p0 = T.SEGMENTS[s]
+        if cut:
+            notes = [x for x in notes if x[0] < 4 * int(cut)]
         for j in range(nbars):
             if k + j >= sec.bars:
                 break
@@ -160,13 +169,21 @@ def plan(piece):
         voice = s.voice or mood["voice"]
         if voice in ("violin", "both"):
             layers.add("violin")
-        hold = s.hold if s.hold is not None else {"hold": 2.0, "breath": 1.0}.get(s.into, 0.0)
+        into = s.into
+        if into == "auto":
+            # WHY the default: a change of mood is prepared over two bars (BLEND), the way a band
+            # moves into a new feel; the same mood carrying on simply flows
+            nxt = piece.sections[i + 1] if i + 1 < len(piece.sections) else None
+            into = "blend" if (nxt is not None and (nxt.mood != s.mood or (nxt.bpm or 0) != (s.bpm or 0))) else "flow"
+        hold = s.hold if s.hold is not None else {"hold": 2.0, "breath": 1.0}.get(into, 0.0)
         bars = _tune_bars(s, form)
         for j, b in enumerate(bars):
             b.beat = beat + 4 * j
         p = SecPlan(i, s, mood, form, voice, s.accomp or mood["accomp"], layers,
                     s.dyn if s.dyn is not None else mood["dyn"], beat, bars, hold)
         p.nominal_bpm = s.bpm or mood["tempo"][1]
+        p.into = into
+        p.span = max(1, min(s.span, len(bars)))
         plans.append(p)
         beat += p.beats
     # THE ENDING bar: same players as the last section, ending chords, ending tune
@@ -176,6 +193,10 @@ def plan(piece):
     ep = SecPlan(len(plans), last.sec, last.mood, "bright", last.voice, last.accomp, set(last.layers),
                  last.dyn, beat, [eb], 0.0, ending=True)
     ep.nominal_bpm = last.nominal_bpm
+    ep.into, ep.span = "end", 1
+    for b, nm, d in T.LOGO_CELL:        # the logo's pick-up notes belong to the ending bar
+        if b < 4:
+            eb.tune.append((b, note(nm), d, ("logo", b)))
     plans.append(ep)
     _fit_tempi(piece, plans)
     return plans
@@ -212,18 +233,26 @@ class TempoMap:
         return self.segs[-1][3]
 
 
-def _segments(plans, bpms):
+def _segments(plans, bpms, rit=RIT):
     segs = []
     for k, p in enumerate(plans):
         a = bpms[k]
-        nxt = bpms[k + 1] if k + 1 < len(plans) else a
-        ramp = (p.sec.into == "build" and not p.ending and abs(nxt / a - 1) > 0.03)
         body = 4 * len(p.bars)
+        if p.ending:
+            # THE ENDING: one bar slowing in a straight line into the logo's landing (a
+            # ritardando), then the final tempo holds for the logo's last notes and the tail
+            segs.append((p.beat0, body, a, a * rit))
+            segs.append((p.beat0 + body, 64, a * rit, a * rit))
+            continue
+        nxt = bpms[k + 1]
+        ramp = (p.into in ("blend", "build") and abs(nxt / a - 1) > 0.03)
         if ramp:
-            # WHY the ramp sits in the last bar: an accelerando (or ritardando) INTO the new
-            # section, the way players change speed, instead of a jump at the bar line
-            segs.append((p.beat0, body - 4, a, a))
-            segs.append((p.beat0 + body - 4, 4, a, nxt))
+            # WHY the change of speed spreads over the blend's bars: the players speed up (or
+            # broaden) gradually INTO the new section, while its pattern is already growing
+            # underneath, instead of a jump at the bar line
+            r = 4 * p.span
+            segs.append((p.beat0, body - r, a, a))
+            segs.append((p.beat0 + body - r, r, a, nxt))
         else:
             segs.append((p.beat0, body, a, a))
         if p.hold:
@@ -237,15 +266,17 @@ def _fit_tempi(piece, plans):
     for k, p in enumerate(plans[:-1]):
         if p.sec.start is not None and k > 0:
             anchors[k] = float(p.sec.start)
+    if piece.ending_start is not None:
+        anchors[len(plans) - 1] = float(piece.ending_start)
     anchors[len(plans)] = piece.land_time()          # the downbeat after the ending bar
     keys = sorted(anchors)
     bpms = [p.nominal_bpm for p in plans]
-    for _ in range(60):
-        tm = TempoMap(_segments(plans, bpms))
+    for _ in range(80):
+        tm = TempoMap(_segments(plans, bpms, piece.rit))
         worst = 0.0
         for a, b in zip(keys[:-1], keys[1:]):
             ta = tm.seconds(plans[a].beat0)
-            tb = tm.seconds(plans[b].beat0) if b < len(plans) else tm.seconds(plans[-1].beat1)
+            tb = tm.seconds(plans[b].beat0) if b < len(plans) else tm.seconds(plans[-1].beat0 + 4)
             want = anchors[b] - anchors[a]
             f = (tb - ta) / want
             worst = max(worst, abs(f - 1))
@@ -253,11 +284,12 @@ def _fit_tempi(piece, plans):
                 bpms[k] *= f
         if worst < 1e-10:
             break
-    tm = TempoMap(_segments(plans, bpms))
+    tm = TempoMap(_segments(plans, bpms, piece.rit))
     for k, p in enumerate(plans):
         p.bpm = bpms[k]
         p.t0 = tm.seconds(p.beat0)
         p.t1 = tm.seconds(p.beat1)
+    plans[-1].land_beat = plans[-1].beat0 + 4
     plans[0].tempo_map = tm
     for p in plans:
         p.tm = tm
@@ -329,9 +361,10 @@ class Band:
         self.onsets.append((t, bus))
 
     # ---- instruments
-    def piano(self, bus, beat, m, beats, vel, tone=0.0, pedal=False, p=0.0, jit=5.0, role="", canon=None):
+    def piano(self, bus, beat, m, beats, vel, tone=0.0, pedal=False, p=0.0, jit=5.0, role="", canon=None,
+              early=0.0):
         key = (bus, round(beat, 4), int(m))
-        t = self.when(beat, jit, key)
+        t = self.when(beat, jit, key) - early
         v = self.vary(vel, key)
         # WHY a tiny per-note tone wobble: the piano has only two recorded loudness layers, so
         # a repeated note would otherwise be the identical sound; a hair of brightness
@@ -355,12 +388,12 @@ class Band:
         self.onsets.append((t, bus))
 
     def bow(self, sec_, beat, m, beats, v0, v1, p=0.0, attack=0.3, release=0.35, bus="bowed",
-            role="", jit=6.0, canon=None):
+            role="", jit=6.0, canon=None, shape=None):
         key = (sec_, "bw", round(beat, 4), int(m))
         t = self.when(beat, jit, key)
         d = self.secs(beat, beats)
         x = self.S.bowed(sec_, int(m), d, v0, v1, attack=attack, release=release,
-                         rr=int(abs(_h("rr", key)) * 5))
+                         rr=int(abs(_h("rr", key)) * 5), shape=shape)
         if p:
             x = 0.6 * x + 0.4 * pan(x.mean(axis=1), p)
         if bus == "bowed":

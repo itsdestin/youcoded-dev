@@ -262,7 +262,7 @@ def pizz(sec, m, vel=0.5, rr=0):
     return string_note(sec, "pizz", m, vel, rr=rr), PRE
 
 
-def bowed(sec, m, dur_s, v0, v1, attack=0.25, release=0.3, rr=0):
+def bowed(sec, m, dur_s, v0, v1, attack=0.25, release=0.3, rr=0, shape=None):
     """A held bowed note whose level moves in one straight line from v0 to v1 (smooth by
     construction; no swell-and-dip). The soft and loud recordings crossfade as it grows, so
     it gets richer, not just louder; the bow's own start stays in (real bow detail), rounded
@@ -272,8 +272,14 @@ def bowed(sec, m, dur_s, v0, v1, attack=0.25, release=0.3, rr=0):
     n = min(len(soft), len(loud))
     t = np.arange(n) / SR
     c = np.clip(t / max(dur_s, 0.05), 0, 1)
-    lvl = v0 + (v1 - v0) * c
-    mix = np.clip((v0 + v1) / 2, 0, 1)        # richer recording when the line is louder
+    if shape:
+        # a shaped bow (the logo's swell): straight lines between (fraction, level) points
+        xs, ys = zip(*shape)
+        lvl = np.interp(c, xs, ys)
+        mix = float(np.clip(max(ys), 0, 1))
+    else:
+        lvl = v0 + (v1 - v0) * c
+        mix = np.clip((v0 + v1) / 2, 0, 1)    # richer recording when the line is louder
     soft_g, loud_g = 10 ** ((0.3 - 0.7) * 18 / 20), 10 ** ((0.8 - 0.7) * 18 / 20)
     x = soft[:n] / soft_g * (1 - mix) + loud[:n] / loud_g * mix
     x = x * (lvl * _rcos(t, attack))[:, None]

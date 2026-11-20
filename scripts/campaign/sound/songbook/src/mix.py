@@ -11,8 +11,10 @@ raised-cosine ramp centred on the boundary).
 
 MASTER: 25 Hz high-pass, everything below 140 Hz mono, an "air" shelf above 9 kHz, gentle glue
 compression, the level plan, then a true-peak limiter while the gain is searched so the whole
-file (logo included) measures -14 LUFS with true peak at or below -1 dB. The logo file is added
-after the limiter at a fixed +2 dB so it stays exactly itself.
+file measures -14 LUFS with true peak at or below -1 dB. The logo is PLAYED by the band as the
+piece's last phrase (blocks.play_logo), so there is nothing to paste; the file ends with a
+1-second equal-power fade to exact silence while the logo's chord is still ringing. (The logo
+FILES are used only when the logo plays alone: out/logo-alone.wav.)
 """
 import os
 
@@ -22,12 +24,12 @@ import soundfile as sf
 import sounds as S
 from dsp import SR, biquad, butter, convolve, fade, undb
 from master import finish, lufs, premaster
-from score import BUSES, LOGO_LAND
+from score import BUSES
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LOGO_FILES = {"blend": os.path.join(HERE, "..", "logo", "10-full-blend.wav"),
               "piano": os.path.join(HERE, "..", "logo", "02-piano-only.wav")}
-LOGO_GAIN_DB = 2.0     # RULES.md: inside a -14 LUFS piece the logo sits 2 dB above its own -16
+END_FADE = 1.0         # seconds: the last chord is faded to exact silence over the final second
 AIR_DB = 11.0          # the master's air shelf (the round-1 default was 2.5; chamber used 6)
 
 # loudness of each bus while it plays (LUFS). The tune is the loudest single thing.
@@ -46,8 +48,8 @@ def read_logo(kind):
 
 
 def mix(band, plans, piece, gains=None):
-    """Sum the buses at their set levels with the shared spaces; the music gives way to the
-    logo (equal-power fade from 0.35 s before the logo file starts to 0.35 s after)."""
+    """Sum the buses at their set levels with the shared spaces; the last second fades (equal
+    power) to exact silence."""
     stems = {}
     src = band.bus
     if gains is None:
@@ -63,8 +65,7 @@ def mix(band, plans, piece, gains=None):
     room = convolve(room_in, S.ir("room")) * 0.4
     out = sum(stems.values()) + hall + room
     t = np.arange(len(out)) / SR
-    ls = piece.land_time() - LOGO_LAND
-    g = np.clip((ls + 0.35 - t) / 0.7, 0, 1)
+    g = np.clip((piece.length - t) / END_FADE, 0, 1)
     out = out * (np.sin(0.5 * np.pi * g) ** 2)[:, None]
     band.stems = stems
     return fade(out, fin=0.002), gains
@@ -95,8 +96,8 @@ def level_plan(plans, n):
     return gain_db, dip_db
 
 
-def master(raw, plans, piece):
-    logo = read_logo(piece.logo)
+def premaster_music(raw, plans):
+    """Everything before the final limiter: master chain, hand-set levels, speech dip."""
     x = premaster(raw, air_db=AIR_DB)
     gain_db, dip_db = level_plan(plans, len(x))
     if dip_db.max() > 0:
@@ -105,12 +106,25 @@ def master(raw, plans, piece):
         dipped = biquad(x, "peak", 2500, 0.8, -3.0)
         w = (dip_db / 3.0)[:, None]
         x = x * (1 - w) + dipped * w
-    x = x * undb(gain_db)[:, None]
-    at = int(round((piece.land_time() - LOGO_LAND) * SR))
-    y = finish(x, -14.0, add=logo * undb(LOGO_GAIN_DB), add_at=at)
+    return x * undb(gain_db)[:, None]
+
+
+def finish_piece(x, piece, extra=None):
+    """Final limiter and loudness (-14 LUFS, true peak <= -1 dB); `extra` (e.g. a film's sound
+    effects, already placed and levelled) is added before it so the whole mix is measured."""
+    if extra is not None:
+        x = x + extra[: len(x)]
+    y = finish(x, -14.0)
     n = int(round(piece.length * SR))
     y = y[:n]
     if len(y) < n:
         y = np.vstack([y, np.zeros((n - len(y), 2))])
+    t = np.arange(n) / SR
+    g = np.clip((piece.length - t) / END_FADE, 0, 1)
+    y = y * (np.sin(0.5 * np.pi * g) ** 2)[:, None]     # the limiter's release cannot undo the fade
     y[-1] = 0.0
-    return fade(y, fin=0.002), logo, at
+    return fade(y, fin=0.002)
+
+
+def master(raw, plans, piece, extra=None):
+    return finish_piece(premaster_music(raw, plans), piece, extra)

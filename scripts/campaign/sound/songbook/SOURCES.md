@@ -10,7 +10,8 @@ mixing and mastering) is code in `src/`.
 | **Upright Piano KW** (FreePats), the "felt and pulse" piano | `../felt-and-pulse/samples/upright-kw/` (downloaded by `../felt-and-pulse/render.sh`; details in `../felt-and-pulse/SOURCES.md`) | CC0 1.0 | Every piano note: the tune, the answer, every accompaniment pattern |
 | **VSCO 2 Community Edition** (Versilian Studios): Violin, Viola and Cello Section pizzicato; Violin and Viola Section sustain | `../felt-and-pulse-playful/samples/vsco/Strings/` (downloaded by `../felt-and-pulse-playful/fetch-strings.sh`; see its `SOURCES.md`) | CC0 1.0 | Plucked strings, held strings, the high "air" line |
 | **VSCO 2 Community Edition**: Cello Section sustain, Solo Violin arco | `../playful-round2/chamber/samples/vsco/Strings/` (downloaded by `../playful-round2/chamber/fetch-extra.sh`; see its `SOURCES.md`) | CC0 1.0 | The solo violin taking the tune, the cellos singing it an octave lower, the low held cello |
-| `logo/02-piano-only.wav`, `logo/10-full-blend.wav` | Byte-for-byte copies of `../logo-alternatives/out/` (the two logos the owner chose, 2026-11-20) | our own | The endings; `out/logo-alone.wav` is a copy of the piano-only logo |
+| **Sound-effects kit** (`marker-stroke-short-c`, `handwriting-a`) | Read in place from `../sfx-kit/out/` (see `../sfx-kit/SOURCES.md` for each recording and its licence) | CC0 1.0 (Freesound: Torikari marker recording) | The film's sound-effects layer only (never the music) |
+| `logo/02-piano-only.wav`, `logo/10-full-blend.wav` | Byte-for-byte copies of `../logo-alternatives/out/` (the two logos the owner chose, 2026-11-20) | our own | `out/logo-alone.wav` (a copy of the piano-only logo). Inside pieces the logo is now played live with the same notes and instruments, so these files are not mixed in |
 
 The recording folders can be pointed elsewhere with the environment variables
 `SONGBOOK_PIANO`, `SONGBOOK_STRINGS_A` and `SONGBOOK_STRINGS_B` (see `src/engine/sounds.py`).

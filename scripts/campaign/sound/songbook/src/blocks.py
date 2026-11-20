@@ -18,6 +18,7 @@ V = T.V
 LIFT = 0.16      # how much harder everyone plays by the end of a lift (about +1.5 dB on the piano)
 BUILD = 0.10     # the crescendo of a one-bar build
 STRING_LIFT = 0.5  # held strings rise further in a lift: +50 % on top (about +3.5 dB in all)
+LAND_EARLY = 0.0062  # seconds the logo's piano notes are struck early (see play_logo)
 
 
 def m_(name):
@@ -28,7 +29,8 @@ def m_(name):
 
 class Dyn:
     """How hard everyone plays at each beat: the moods' levels joined by smooth ramps at the
-    section changes (the transition decides where the ramp sits), times THE LIFT."""
+    section changes (a blend or build ramps across its whole span, so a change of mood never
+    dips), times THE LIFT."""
 
     def __init__(self, plans):
         pts = []
@@ -38,28 +40,28 @@ class Dyn:
                 continue
             q = plans[k - 1]
             body_end = q.beat0 + 4 * len(q.bars)
-            into = q.sec.into if not q.ending else "flow"
-            if into == "build":
-                pts += [(body_end - 4, q.dyn), (p.beat0, p.dyn)]
-            elif into in ("hold", "breath"):
+            if q.into in ("blend", "build"):
+                pts += [(body_end - 4 * q.span, q.dyn), (p.beat0, p.dyn)]
+            elif q.into in ("hold", "breath"):
                 pts += [(body_end, q.dyn), (p.beat0, p.dyn)]
             else:
                 pts += [(p.beat0 - 1.0, q.dyn), (p.beat0 + 0.5, p.dyn)]
-        pts.append((plans[-1].beat1 + 8, plans[-1].dyn))
+        pts.append((plans[-1].beat1 + 64, plans[-1].dyn))
         self.b, self.d = map(np.array, zip(*pts))
         # growth curves (beats, gain): THE LIFT rises in one straight line across its section
         # and STAYS up through the next section (the big moment it led to); a BUILD rises over
-        # the last bar and settles back over the next bar (the next mood takes over)
+        # its span and settles back over the next bar (the next mood takes over)
         self.curves = []
         self.lift_spans = []
         for k, p in enumerate(plans):
             body_end = p.beat0 + 4 * len(p.bars)
             if p.sec.lift and not p.ending:
-                c = plans[k + 1].beat1 if k + 1 < len(plans) else body_end
+                c = plans[k + 1].beat1 + 64 if (k + 1 < len(plans) and plans[k + 1].ending) else \
+                    (plans[k + 1].beat1 if k + 1 < len(plans) else body_end)
                 self.curves.append(([p.beat0, body_end, c, c + 4], [1.0, 1.0 + LIFT, 1.0 + LIFT, 1.0]))
                 self.lift_spans.append((p.beat0, body_end, c))
-            if p.sec.into == "build" and not p.ending:
-                self.curves.append(([body_end - 4, body_end, body_end + 4], [1.0, 1.0 + BUILD, 1.0]))
+            if p.into == "build" and not p.ending:
+                self.curves.append(([body_end - 4 * p.span, body_end, body_end + 4], [1.0, 1.0 + BUILD, 1.0]))
 
     def base(self, beat):
         return float(np.interp(beat, self.b, self.d))
@@ -84,6 +86,24 @@ class Dyn:
         return self.base(beat) * self.lift(beat)
 
 
+class Scaled:
+    """The same dynamics times a curve: how a pattern fades out (or grows in) across a blend."""
+
+    def __init__(self, dyn, f):
+        self.dyn, self.f = dyn, f
+
+    def v(self, beat):
+        return self.dyn.v(beat) * self.f(beat)
+
+
+def _blend(plans, p):
+    """(next plan, first beat of the blend) if p blends into the next section, else (None, inf)."""
+    nxt = plans[p.i + 1] if p.i + 1 < len(plans) else None
+    if nxt is None or nxt.ending or p.into not in ("blend", "build"):
+        return None, float("inf")
+    return nxt, p.beat0 + 4 * len(p.bars) - 4 * p.span
+
+
 # ====================================================================== THE TUNE
 
 def phrase_shape(beat, beat0, d, bb):
@@ -98,6 +118,21 @@ def phrase_shape(beat, beat0, d, bb):
     return s
 
 
+def _violin(band, beat, m, d, vl, role, canon=None, solo_only=False):
+    """The tune sung by the strings (chamber-2): the solo violin, the violin section doubling it
+    quietly for body, the cellos an octave lower."""
+    dig = 1.15 if d <= 0.5 else 1.0       # a quick bowed note needs a firmer bow
+    vl = vl * dig
+    band.bow("solo", beat, m, d + 0.12, vl, vl, p=-0.1, bus="sing",
+             attack=0.03 if d <= 0.5 else 0.06, release=0.22, role=role, canon=canon)
+    if solo_only:
+        return
+    band.bow("vln", beat, m, d + 0.12, vl * 0.62, vl * 0.66, p=-0.3, bus="sing",
+             attack=0.05 if d <= 0.5 else 0.1, release=0.25, role="double")
+    band.bow("vc", beat, m - 12, d + 0.12, vl * 0.75, vl * 0.8, p=0.25, bus="double",
+             attack=0.05 if d <= 0.5 else 0.1, release=0.25, role="double")
+
+
 def play_tune(band, p, dyn, plans):
     body_end = p.beat0 + 4 * len(p.bars)
     tone = p.mood["tone"]
@@ -106,9 +141,17 @@ def play_tune(band, p, dyn, plans):
     # piano plays the first bar with the violin, softly, then lets go (a bowed note speaks
     # slowly; the piano's touch makes the first notes clear, and the hand-over is heard)
     handover = (p.voice == "violin" and p.i > 0 and plans[p.i - 1].voice in ("piano", "both"))
+    # THE JOIN: in a blend, the next section's voice joins the tune in the last bar before the
+    # change, so the tune itself is carried across the join (no voice appears from nowhere)
+    nxt, b0 = _blend(plans, p)
+    join_violin = nxt is not None and p.voice == "piano" and nxt.voice in ("violin", "both")
+    join_piano = nxt is not None and p.voice == "violin" and nxt.voice in ("piano", "both")
     for bar in p.bars:
+        last_bar = bar is p.bars[-1]
         for bb, m, d, canon in bar.tune:
             beat = bar.beat + bb
+            if canon[0] == "logo":
+                continue                              # the logo's pick-ups: play_logo
             if p.hold and abs(beat + d - body_end) < 1e-6:
                 d = d + p.hold                       # the tune holds through a fermata
             s = phrase_shape(beat, p.beat0, d, bb)
@@ -120,21 +163,14 @@ def play_tune(band, p, dyn, plans):
                 if octaves:
                     band.piano("double", beat + 0.003, m - 12, d, min(v, 0.69) * 0.74, tone=tone - 0.1,
                                pedal=p.mood["pedal"], p=-0.1, role="double")
-            if handover and bar is p.bars[0]:
+            if (handover and bar is p.bars[0]) or (join_piano and last_bar):
                 band.piano("double", beat, m, d, min(v, 0.69) * 0.7, tone=tone, pedal=False, p=-0.1,
                            role="double")
             if p.voice in ("violin", "both"):
-                # the solo violin sings the tune; the violin section doubles it quietly for body,
-                # the cellos sing it an octave lower (chamber-2)
-                dig = 1.15 if d <= 0.5 else 1.0       # a quick bowed note needs a firmer bow
-                vl = 0.62 * dyn.v(beat) * s * dig
-                band.bow("solo", beat, m, d + 0.12, vl, vl, p=-0.1, bus="sing",
-                         attack=0.03 if d <= 0.5 else 0.06, release=0.22,
-                         role=("double" if piano_on else "lead"), canon=canon)
-                band.bow("vln", beat, m, d + 0.12, vl * 0.62, vl * 0.66, p=-0.3, bus="sing",
-                         attack=0.05 if d <= 0.5 else 0.1, release=0.25, role="double")
-                band.bow("vc", beat, m - 12, d + 0.12, vl * 0.75, vl * 0.8, p=0.25, bus="double",
-                         attack=0.05 if d <= 0.5 else 0.1, release=0.25, role="double")
+                _violin(band, beat, m, d, 0.62 * dyn.v(beat) * s, role=("double" if piano_on else "lead"),
+                        canon=canon)
+            elif join_violin and last_bar:
+                _violin(band, beat, m, d, 0.62 * 0.7 * dyn.v(beat) * s, role="double")
 
 
 # ====================================================================== THE ANSWER
@@ -305,16 +341,24 @@ def play_accomp(band, p, dyn, piece, plans):
     pattern = ACCOMPANIMENTS[p.accomp]
     if p.ending and piece.logo == "piano" and p.accomp == "bounce":
         pattern = acc_still                 # the piano-only ending: the piano keeps the chords
-    nxt = plans[p.i + 1] if p.i + 1 < len(plans) else None
-    # THE LEAD-IN: a still or sparse section that BUILDS into a moving one starts the next
-    # section's pattern in its last bar, softly (the player sets the new motion going before
-    # the downbeat, so the new section arrives already moving instead of all at once)
-    lead_in = (p.sec.into == "build" and not p.ending and nxt is not None and
-               p.accomp in ("still", "sparse") and nxt.accomp not in ("still", "sparse"))
+    # THE BLEND: over the last `span` bars the next section's pattern grows in underneath
+    # (from 30 % to 90 % of its strength) while this one thins (to 45 %) and stops at the
+    # change, so the new feel is already moving when its section starts: no gap, no restart
+    nxt, b0 = _blend(plans, p)
+    cross = nxt is not None and nxt.accomp != p.accomp
+    L = 4.0 * p.span
+
+    def frac(beat):
+        return float(np.clip((beat - b0) / L, 0, 1))
+    out_dyn = Scaled(dyn, lambda beat: 1.0 - 0.55 * frac(beat)) if cross else dyn
+    in_dyn = Scaled(dyn, lambda beat: 0.3 + 0.6 * frac(beat))
     for bar in p.bars:
-        cut = 2.0 if p.ending else 4.0
-        pat = ACCOMPANIMENTS[nxt.accomp] if (lead_in and bar is p.bars[-1]) else pattern
-        fig = pat(band, p, bar, dyn, cut)
+        # the ending bar's pattern stops at beat 2 (the band holds the chord); in the piano-only
+        # ending the piano keeps its pattern going to beat 3, since nothing else holds the sound
+        cut = (3.0 if piece.logo == "piano" else 2.0) if p.ending else 4.0
+        fig = pattern(band, p, bar, out_dyn if bar.beat >= b0 - 1e-6 else dyn, cut)
+        if cross and bar.beat >= b0 - 1e-6:
+            ACCOMPANIMENTS[nxt.accomp](band, nxt, bar, in_dyn, cut)
         synth_on = "synth" in p.layers and not (p.ending and piece.logo == "piano")
         if synth_on and fig:
             # SOFT SYNTH DOUBLING: the pattern's moving line, quietly, its filter opening slowly
@@ -322,18 +366,19 @@ def play_accomp(band, p, dyn, piece, plans):
             for beat, m in fig:
                 while m < 48:
                     m += 12
-                frac = np.clip((beat - p.beat0) / max(p.beats, 1), 0, 1)
-                band.synth(beat, m, 0.40 * dyn.v(beat), 700 * 2 ** frac, p=(0.25 if int(beat * 2) % 2 else -0.25))
+                frac_s = np.clip((beat - p.beat0) / max(p.beats, 1), 0, 1)
+                band.synth(beat, m, 0.40 * dyn.v(beat), 700 * 2 ** frac_s, p=(0.25 if int(beat * 2) % 2 else -0.25))
     if p.ending:
-        # the ending's held chord (B-flat sus) from beat 2, as everything gives way to the logo
+        # the ending's held chord (B-flat sus) from beat 2: the band holds while the tune sighs
+        # and the logo's pick-up notes lead to the landing
         bar = p.bars[0]
         beat = bar.beat + 2.0
         for q, nm in enumerate(["Bb1", "Eb3", "Ab3"]):
-            band.piano("piano", beat + 0.015 * q, m_(nm), 2.6, (0.34 if q == 0 else 0.28) * dyn.v(beat), tone=-0.2, pedal=True)
-        if p.accomp in ("bounce", "rocking") or "pizz" in p.layers:
-            if piece.logo != "piano":
-                band.pizz("vc", beat, m_("Bb2"), 0.58 * dyn.v(beat), p=0.05)
-    elif p.hold and p.sec.into == "hold":
+            band.piano("piano", beat + 0.015 * q, m_(nm), 2.0, (0.34 if q == 0 else 0.28) * dyn.v(beat)
+                       * (1.2 if piece.logo == "piano" else 1.0), tone=-0.2, pedal=True)
+        if (p.accomp in ("bounce", "rocking") or "pizz" in p.layers) and piece.logo != "piano":
+            band.pizz("vc", beat, m_("Bb2"), 0.58 * dyn.v(beat), p=0.05)
+    elif p.hold and p.into == "hold":
         # THE HOLD: a fresh, soft, pedalled chord on the section's last chord, held (a fermata)
         beat = p.beat0 + 4 * len(p.bars)
         c = p.bars[-1].chords[-1]
@@ -352,7 +397,7 @@ def _segments(p):
             out.append([bar.beat + a, b - a, c])
     out[-1][1] += p.hold
     if p.ending:
-        out[-1][1] += 1.0           # ring on under the start of the logo; the mix fades it
+        out[-1][1] += 0.25          # overlap the logo's own string swell, which takes over
     return out
 
 
@@ -371,74 +416,202 @@ def _line(segs, pick):
     return notes
 
 
-def _had(plans, k, layer):
-    return k > 0 and layer in plans[k - 1].layers
+def _on(p, layer, piece):
+    piano_end = p.ending and piece.logo == "piano"
+    if layer == "held":
+        return "held" in p.layers
+    if layer == "low":
+        return ("low" in p.layers or p.sec.lift) and not piano_end
+    if layer == "air":
+        return ("air" in p.layers or p.sec.lift) and not piano_end
+    if layer == "sub":
+        return "sub" in p.layers and not piano_end
+    return False
+
+
+def _base(p, layer):
+    return {"held": p.mood["held"], "low": p.mood["held"] * 0.7 + 0.04,
+            "air": p.mood["air"] or 0.05}[layer]
+
+
+# held layers: (voices, note picker, section, pan, bus)
+HELD = {
+    "held": [(lambda c, v=v: V[c]["bow"][v], None, (-0.35, 0.35, 0.0)[v], "bowed") for v in range(3)],
+    "low": [(lambda c: V[c]["root"], "vc", 0.1, "bowed")],
+    "air": [(lambda c: V[c]["air"], "vln", -0.2, "air")],
+}
 
 
 def play_held(band, p, dyn, plans, k, piece):
-    """HELD STRINGS: three low bowed voices that move as little as possible; their level
-    follows the dynamics in straight lines (a lift = one long rise). A layer entering fades in
-    over about two seconds; nothing swells and dips."""
-    segs = _segments(p)
+    """HELD STRINGS, LOW CELLOS, AIR: long bowed lines that move as little as possible. Their
+    level follows the dynamics in straight lines (a lift is one long rise). In a BLEND they
+    move to the next section's level across the blend's bars: a layer the next section adds
+    enters there (from nothing), one it drops bows away there, so nothing appears or stops at
+    the join itself. A note common to both sides of a join is held straight through it (one
+    bow), carrying the sound across the bar line."""
+    segs_all = _segments(p)
     piano_end = p.ending and piece.logo == "piano"
-    end_beat = p.beat0 + 2.0 if piano_end else None
+    end_beat = p.beat0 + 3.5 if piano_end else None
+    nxt, b0 = _blend(plans, p)
+    body_end = p.beat0 + 4 * len(p.bars)
+    follow = plans[k + 1] if (k + 1 < len(plans)) else None
 
-    def lvl(beat, base):
-        v = base * dyn.v(beat) * (1.0 + STRING_LIFT * dyn.lift_progress(beat))
-        if p.voice in ("violin", "both"):
-            v *= 0.6           # WHY: the held strings step back when a violin carries the tune
-        if end_beat is not None:
-            v *= np.clip((end_beat - beat) / 2.0, 0, 1)    # strings bow away before the piano logo
-        return v
+    def factor(q, beat):
+        f = dyn.v(beat) * (1.0 + STRING_LIFT * dyn.lift_progress(beat))
+        if q.voice in ("violin", "both"):
+            f *= 0.6           # WHY: the held strings step back when a violin carries the tune
+        return f
 
-    if "held" in p.layers:
-        for voice in range(3):
-            line = _line(segs, lambda c: V[c]["bow"][voice])
+    for layer, voices in HELD.items():
+        here = _on(p, layer, piece)
+        there = nxt is not None and _on(nxt, layer, piece)
+        if not here and not there:
+            continue
+
+        def lvl(beat, layer=layer, here=here, there=there):
+            v_here = _base(p, layer) * factor(p, beat) if here else 0.0
+            if nxt is None or beat <= b0:
+                v = v_here
+            else:
+                v_next = _base(nxt, layer) * factor(nxt, beat) if there else 0.0
+                w = float(np.clip((beat - b0) / (body_end - b0), 0, 1))
+                v = v_here + (v_next - v_here) * w
+            if end_beat is not None:
+                v *= np.clip((end_beat - beat) / 3.5, 0, 1)    # strings bow away before the piano logo
+            return max(v, 0.0)
+
+        start = p.beat0
+        if layer == "air" and p.sec.lift and "air" not in p.layers:
+            start = p.beat0 + 2 * len(p.bars)                  # in a lift the air joins halfway
+        if not here:
+            start = b0                                         # entering during the blend
+        had = band.held_on.get((layer, k), False)
+        for vi, (pick, sec_, pan_, bus) in enumerate(voices):
+            line = [x for x in _line(segs_all, pick) if x[0] + x[2] > start + 1e-6]
+            # a note carried in from the previous section's last note: skip what it covers
+            carried = band.carry.get((layer, vi, k))
+            if carried is not None:
+                line = [x for x in line if x[0] + x[2] > carried + 1e-6]
+                if line and line[0][0] < carried:
+                    line[0][2] -= carried - line[0][0]
+                    line[0][0] = carried
+            # carry this section's last note through the join if the next section starts on it
+            if line and follow is not None and _on(follow, layer, piece) and not follow.ending \
+                    and (here or there):
+                fl = _line(_segments(follow), pick)
+                if fl and fl[0][1] == line[-1][1] and abs(fl[0][0] - (line[-1][0] + line[-1][2])) < 1e-6:
+                    line[-1][2] += fl[0][2]
+                    band.carry[(layer, vi, k + 1)] = fl[0][0] + fl[0][2]
             for j, (b, nm, d) in enumerate(line):
+                if b < start:
+                    d -= start - b
+                    b = start
                 m = m_(nm)
-                first = j == 0 and not _had(plans, k, "held")
-                band.bow("vla" if m < m_("D4") else "vln", b, m, d + 0.15, lvl(b, p.mood["held"]),
-                         lvl(b + d, p.mood["held"]), p=(-0.35, 0.35, 0.0)[voice],
-                         attack=(band.secs(b, 4) * 0.6 if first else 0.35), release=0.4)
-    if "low" in p.layers or p.sec.lift:
-        # REGISTER WIDENING: the cellos hold each chord's root low under everything
-        first = not (_had(plans, k, "low") or (k > 0 and plans[k - 1].sec.lift))
-        for j, (b, nm, d) in enumerate(_line(segs, lambda c: V[c]["root"])):
-            m = m_(nm)
-            band.bow("vc", b, m, d + 0.15, lvl(b, p.mood["held"] * 0.7 + 0.04), lvl(b + d, p.mood["held"] * 0.7 + 0.04),
-                     p=0.1, attack=(band.secs(b, 4) * 0.6 if (j == 0 and first) else 0.35), release=0.4)
-    air_on = ("air" in p.layers) or p.sec.lift
-    if air_on and not piano_end:
-        # AIR: one high held violin line (E-flat, D only on dominant chords): continuous and
-        # quiet, it carries the bow's own shimmer above 8 kHz; never an accent
-        level = p.mood["air"] or 0.05
-        first = not (_had(plans, k, "air") or (k > 0 and plans[k - 1].sec.lift))
-        start = p.beat0 + (4 * len(p.bars) / 2 if (p.sec.lift and "air" not in p.layers) else 0)
-        line = [x for x in _line(segs, lambda c: V[c]["air"]) if x[0] + x[2] > start]
-        for j, (b, nm, d) in enumerate(line):
-            if b < start:
-                d -= start - b
-                b = start
-            band.bow("vln", b, m_(nm), d + 0.2, lvl(b, level), lvl(b + d, level), p=-0.2, bus="air",
-                     attack=(band.secs(b, 4) * 0.8 if (j == 0 and first) else 0.5), release=0.6)
+                sec = sec_ or ("vla" if m < m_("D4") else "vln")
+                first = j == 0 and not had and carried is None
+                if first and not here:
+                    att = band.secs(b, 4.0 * p.span) * 0.8          # grows in across the blend
+                elif first:
+                    att = band.secs(b, 4) * (0.8 if layer == "air" else 0.6)
+                else:
+                    att = 0.5 if layer == "air" else 0.35
+                end = b + d
+                v1 = (_base(follow, layer) * factor(follow, end)) if (follow is not None and end > body_end + 1e-6
+                                                                   and not follow.ending) else lvl(end)
+                band.bow(sec, b, m, d + (0.2 if layer == "air" else 0.15), lvl(b), v1, p=pan_, bus=bus,
+                         attack=att, release=0.6 if layer == "air" else 0.4)
+        if here or there:
+            band.held_on[(layer, k + 1)] = there or (here and nxt is None and follow is not None
+                                                     and _on(follow, layer, piece))
 
 
 def play_sub(band, p, dyn, piece, plans, k):
-    """SOFT SUB: a round sine on each chord's root, held: weight only, no rhythm of its own."""
-    if "sub" not in p.layers:
+    """SOFT SUB: a round sine on each chord's root, held: weight only, no rhythm of its own.
+    It fades in over a bar when it first arrives, or across a blend's bars."""
+    here = _on(p, "sub", piece)
+    nxt, b0 = _blend(plans, p)
+    there = nxt is not None and _on(nxt, "sub", piece)
+    if not here and not there:
         return
-    if p.ending and piece.logo == "piano":
-        return
-    first = not _had(plans, k, "sub")
-    for j, (b, d, c) in enumerate(_segments(p)):
-        # WHY a one-bar fade-in when the sub first enters: weight should arrive, not appear
-        band.sub(b, m_(V[c]["sub"]), d - 0.05, 0.6 * min(1.15, dyn.v(b)),
-                 fin=(band.secs(b, 4) if (j == 0 and first and k > 0) else 0.0))
+    first = not band.held_on.get(("sub", k), False)
+    j0 = True
+    for b, d, c in _segments(p):
+        if not here and b + d <= b0:
+            continue
+        if not here and b < b0:
+            d -= b0 - b
+            b = b0
+        g = 1.0
+        if here and nxt is not None and not there and b >= b0:
+            g = 1.0 - (b - b0) / (4.0 * p.span)              # bows away across the blend
+        fin = 0.0
+        if j0 and first and (k > 0 or not here):
+            fin = band.secs(b, 4.0 * (p.span if not here else 1))
+        band.sub(b, m_(V[c]["sub"]), d - 0.05, 0.6 * min(1.15, dyn.v(b)) * g, fin=fin)
+        j0 = False
+    band.held_on[("sub", k + 1)] = there or here
+
+
+# ====================================================================== THE LOGO, PLAYED
+
+def play_logo(band, plans, piece):
+    """THE LOGO as the piece's own last phrase, played live by the same instruments in the
+    piece's own (slowing) tempo. Notes, velocities and instruments are those of the chosen
+    logo files: 10-full-blend (piano cell doubled by plucked violins, landing E-flat chord on
+    piano with plucked cello and sub, a string swell, the second piano answering low) or
+    02-piano-only (piano cell, open low E-flat chord). The third note (F) lands exactly on
+    the piece's landing time; everything then rings and resolves to the end of the file."""
+    ep = plans[-1]
+    land = ep.beat0 + 4.0
+    t_land = band.sec(land)
+    tail = piece.length - t_land
+    bpm_end = ep.tm.bpm_at(land)
+    blend = piece.logo == "blend"
+    tone = 0.0 if blend else -0.15
+    cell = [(ep.beat0 + b, m_(nm)) for b, nm, _ in T.LOGO_CELL]
+    for i, (beat, m) in enumerate(cell):
+        is_land = i == 2
+        dur = (tail - 1.2) * bpm_end / 60.0 if is_land else 0.5
+        # WHY 6 ms early: measured, this piano recording speaks about 6.5 ms after the sample
+        # starts (its rounded attack); struck early, the name's note is HEARD on the frame
+        band.piano("lead", beat, m, dur, T.LOGO_VEL[i], tone=tone, pedal=True, p=-0.1,
+                   jit=(0.0 if is_land else 2.0), role="lead", canon=("logo", beat - ep.beat0),
+                   early=LAND_EARLY)
+        if blend:
+            band.pizz("vln", beat, m, (0.38, 0.42, 0.48)[i], p=0.0, jit=(0.0 if is_land else 3.0))
+    ring = (tail - 1.0) * bpm_end / 60.0      # beats the landing chord rings (pedalled)
+    if blend:
+        for q, (nm, v) in enumerate((("Eb2", 0.38), ("Eb3", 0.28))):
+            band.piano("piano", land + q * 0.03 * bpm_end / 60, m_(nm), ring, v, tone=-0.1, pedal=True)
+        band.pizz("vc", land, m_("Eb2"), 0.55, p=0.05, jit=0.0)
+        band.sub(land, m_("Eb2"), min(2.2, tail - 0.5) * bpm_end / 60.0, 0.55, fin=0.03)
+        # the swell: the held strings open into the landing chord and settle with it
+        lvl = max(0.15, plans[-2].mood["held"]) * 1.25 * band.dyn.v(land)
+        t0 = band.sec(land) - 0.15
+        L = tail - 0.05
+        pk = min(1.0 / L, 0.4)
+        for q, nm in enumerate(("Eb3", "Bb3", "G4", "Eb5")):
+            m = m_(nm)
+            band.bow("vla" if m < m_("D4") else "vln", land - 0.15 * bpm_end / 60, m, L * bpm_end / 60, 0, 0,
+                     p=(-0.3, 0.3, -0.15, 0.15)[q], attack=0.2, release=0.3,
+                     shape=[(0, 0.0), (pk, lvl), (max(pk + 0.05, 0.55), lvl * 0.8), (1.0, 0.0)])
+        if _on(plans[-2], "air", piece):
+            band.bow("vln", land, m_("Eb6"), L * bpm_end / 60, 0, 0, p=-0.2, bus="air", attack=0.3, release=0.4,
+                     shape=[(0, (plans[-2].mood["air"] or 0.05) * band.dyn.v(land)), (1.0, 0.0)])
+        # the second piano answers low, a little slower (the logo's own echo)
+        for (off, nm, v) in ((1.0, "Bb3", 0.36), (1.6, "G4", 0.38), (2.2, "F4", 0.42)):
+            d = 0.6 if nm != "F4" else max(0.6, (tail - 2.0) * bpm_end / 60)
+            band.piano("answer", land + off, m_(nm), d, v, tone=-0.7, p=-0.25, pedal=True)
+    else:
+        for q, (nm, v) in enumerate((("Eb2", 0.42), ("Bb2", 0.30), ("G3", 0.27))):
+            band.piano("piano", land + q * 0.015 * bpm_end / 60, m_(nm), ring, v, tone=-0.15, pedal=True)
+    band.landing = (t_land, cell[2][1])
 
 
 def render(band, plans, piece):
     dyn = Dyn(plans)
     band.dyn = dyn
+    band.carry, band.held_on = {}, {}
     for k, p in enumerate(plans):
         band.swing = p.mood["swing"]
         play_tune(band, p, dyn, plans)
@@ -446,4 +619,6 @@ def render(band, plans, piece):
         play_accomp(band, p, dyn, piece, plans)
         play_held(band, p, dyn, plans, k, piece)
         play_sub(band, p, dyn, piece, plans, k)
+    band.swing = 0.0
+    play_logo(band, plans, piece)
     return dyn

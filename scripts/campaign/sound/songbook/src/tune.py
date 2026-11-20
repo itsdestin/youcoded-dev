@@ -15,7 +15,8 @@ start the same way, plus a one-bar ending that hands over to the sound logo:
     bars 5-6 = bars 1-2
     bar 7  C B-flat A-flat G        from the top
     bar 8  F G A-flat B-flat        climbs back up toward home
-    ending C (long) B-flat (long)   a sigh onto B-flat, the logo's own first note
+    ending C (long) B-flat (long), then the LOGO itself as the last phrase:
+           B-flat, G (quick) -> F lands on the downbeat (the name appears there)
 """
 from dsp import note
 
@@ -32,7 +33,13 @@ PHRASE_2 = [(b + 16, n, d) for b, n, d in PHRASE_1[:8]] + [
 ]
 TUNE = PHRASE_1 + PHRASE_2                     # the whole tune, bars 1-8 (beats 0-32)
 SIGNATURE = [(0, "Bb4", 1), (1, "G5", 1), (2, "F5", 2)]   # the three notes alone
-ENDING = [(0, "C6", 1.5), (1.5, "Bb5", 2.5)]   # the ending bar's tune (into the logo)
+ENDING = [(0, "C6", 1.5), (1.5, "Bb5", 1.5)]   # the ending bar's tune: a sigh, then...
+# ...THE LOGO, played by the band as the piece's own final phrase: "you-co-ded" as two quick
+# pick-up notes and a landing on the next downbeat (beat 4 of the ending bar = the name).
+# Same notes, rhythm, velocities and instruments as logo-alternatives/out/10-full-blend.wav
+# (and 02-piano-only.wav), but in the piece's own tempo, slowing into it (score.RIT).
+LOGO_CELL = [(3.0, "Bb4", 0.5), (3.5, "G5", 0.5), (4.0, "F5", None)]   # None = rings to the end
+LOGO_VEL = (0.50, 0.56, 0.72)    # the logo files' own velocities: the landing is the accent
 
 # A tune "segment" is what a section asks for. Each maps to (notes, bars, first progression
 # position). Positions 0-7 say which bar of the eight-bar progression sits under each bar.

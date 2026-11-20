@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# THE SONGBOOK: re-render every demonstration into out/ and print the checks (out/checks.txt;
-# every number in out/measurements.json). About 40 seconds; two runs give identical files.
+# THE SONGBOOK: re-render every demonstration, the join excerpts and the films into out/ and
+# print the checks (out/checks.txt, out/films/checks.txt; every number in the .json files next to
+# them). About 80 seconds; two runs give identical files. The film "Own everything" is also
+# copied to scripts/campaign/film/public/audio/sb-take3-mix.wav.
 #
 #   scripts/campaign/sound/songbook/render.sh                 # everything
 #   scripts/campaign/sound/songbook/render.sh demo-journey    # just one piece (by name)
+#   scripts/campaign/sound/songbook/render.sh own-everything  # just one film
 #
 # Needs: Python 3 with numpy, scipy, soundfile, pyloudnorm (requirements.txt). It uses
 # songbook/.venv if you made one, otherwise the "felt and pulse" environment next door.

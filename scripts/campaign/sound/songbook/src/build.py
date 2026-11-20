@@ -21,10 +21,11 @@ import soundfile as sf  # noqa: E402
 import blocks  # noqa: E402
 import measure as M  # noqa: E402
 import mix as X  # noqa: E402
+import films  # noqa: E402
 from demos import DEMOS  # noqa: E402
 from dsp import SR, db  # noqa: E402
-from master import logo_identity, lufs, measure, motif_check  # noqa: E402
-from score import Band, LOGO_LAND, plan  # noqa: E402
+from master import lufs, measure, motif_check  # noqa: E402
+from score import Band, plan  # noqa: E402
 
 OUT = os.path.join(HERE, "..", "out")
 
@@ -37,23 +38,27 @@ def render(piece, backing=False, gains=None):
     return raw, band, plans, gains
 
 
-def one(piece):
+def one(piece, extra_fn=None, path=None):
+    """Render, master, write and measure one piece. `extra_fn(x_premaster, plans)` may return
+    extra audio (a film's sound effects) to add before the final limiter."""
     raw, band, plans, gains = render(piece)
-    y, logo, at = X.master(raw, plans, piece)
-    path = os.path.join(OUT, f"{piece.name}.wav")
+    xm = X.premaster_music(raw, plans)
+    extra = extra_fn(xm, plans) if extra_fn else None
+    y = X.finish_piece(xm, piece, extra)
+    path = path or os.path.join(OUT, f"{piece.name}.wav")
     sf.write(path, y, SR, subtype="PCM_24")
     y, _ = sf.read(path, dtype="float64", always_2d=True)
     st = measure(y, os.path.basename(path))
-    st["logo"] = dict(file=os.path.basename(X.LOGO_FILES[piece.logo]), **logo_identity(y, logo, at),
-                      lands_at_s=round(at / SR + LOGO_LAND, 3))
+    st["logo"] = dict(kind=piece.logo, **M.landing(band, plans, piece))
     raw_b, _, _, _ = render(piece, backing=True, gains=gains)
     tv = motif_check(raw, raw_b, band.melody)
     each = [motif_check(raw, raw_b, [e])["min_db"] for e in band.melody]
     st["tune_on_top"] = dict(tv, each=[(round(t, 2), m, e) for (t, m), e in zip(band.melody, each)])
     st["tune_identity"] = M.tune_identity(band)
-    logo_start = at / SR
-    st["attacks"] = M.attacks(y, band.stems, band.onsets, band.held_spans, until=logo_start - 0.3)
-    st["steadiness"] = M.steadiness(y, plans, logo_start)
+    land = piece.land_time()
+    st["attacks"] = M.attacks(y, band.stems, band.onsets, band.held_spans, until=piece.length - 1.2)
+    st["steadiness"] = M.steadiness(y, plans, min(land + 1.9, piece.length - 0.7))
+    st["joins"] = M.joins(y, plans, piece)
     st["stem_lufs"] = {k: (round(lufs(s), 1) if np.abs(s).max() > 1e-9 else None) for k, s in band.stems.items()}
     st["last_100ms_rms_dbfs"] = round(float(db(np.sqrt((y[-int(0.1 * SR):] ** 2).mean()) + 1e-12)), 1)
     st["sections"] = [dict(label=("ending" if p.ending else p.sec.label), mood=p.sec.mood if not p.ending else "ending",
@@ -61,7 +66,7 @@ def one(piece):
                            bpm=round(p.bpm, 1), usual_bpm=p.nominal_bpm,
                            tempo_moved_pct=round(100 * (p.bpm / p.nominal_bpm - 1), 1),
                            chords=[b.chords for b in p.bars], accomp=p.accomp, voice=p.voice,
-                           layers=sorted(p.layers), into=p.sec.into)
+                           layers=sorted(p.layers), into=p.into)
                       for p in plans]
     st["notes"] = piece.notes
     return piece.name, st
@@ -78,7 +83,7 @@ def checks(name, v):
         ("mono fold loss < 1.5 LU", v["mono_fold_loss_lu"] > -1.5),
         ("every tune note on top at its pitch", tv["above_0db"] == tv["notes"]),
         ("tune notes = canonical tune", not v["tune_identity"]["mismatches"]),
-        ("logo identical (corr >= 0.95, +2 dB)", li["correlation"] >= 0.95 and abs(li["gain_db"] - X.LOGO_GAIN_DB) < 0.3),
+        ("logo played: B-flat G F, the name lands within 10 ms", li["notes"] == ["Bb4", "G5", "F5"] and abs(li["error_ms"]) <= 10),
         ("every attack in every instrument is a note", not any(at["per_instrument_not_on_a_note"].values())),
         ("no noise-like (drum-like) attack", at["noisiness_max"] is None or at["noisiness_max"] < 0.1),
         ("air: 8-16 kHz 18-32 dB below total", -32 <= b["8000-16000"] <= -18),
@@ -95,12 +100,12 @@ def checks(name, v):
              f"{tv['median_db']} dB, weakest at {tv['weakest']}")
     ti = v["tune_identity"]
     L.append(f"   tune identity: {ti['notes']} notes by segment {ti['by_segment']}, mismatches {len(ti['mismatches'])}")
-    L.append(f"   logo {li['file']}: correlation {li['correlation']}, level {li['gain_db']} dB, residual {li['residual_db']} dB, "
-             f"name lands {li['lands_at_s']} s")
+    L.append(f"   logo ({li['kind']}, played live): notes {li['notes']}, pick-up gaps {li['pickup_gap_s']} s, "
+             f"name requested {li['requested_s']} s, heard {li['heard_s']} s ({li['error_ms']:+} ms)")
     L.append(f"   attacks: per instrument not on a note {at['per_instrument_not_on_a_note']}; inside held notes "
              f"{ {k: len(x) for k, x in at['inside_held_notes'].items()} }; noisiness median {at['noisiness_median']} max {at['noisiness_max']}")
-    L.append(f"   steadiness: biggest change within any 1 s {sd['whole_max_change_1s']} dB (at {sd['at']} s); "
-             f"before the ending's last chord {sd['before_ending_max_change_1s']} dB (at {sd['before_ending_at']} s)")
+    L.append(f"   steadiness: biggest change within any 1 s {sd['whole_max_change_1s']} dB (at {sd['at']} s, "
+             f"measured to 1.5 s after the landing)")
     for r in sd["sections"]:
         L.append(f"      {r['section']:<40} {r['t0']:>6}-{r['t1']:<6} s  median {r['median']} LUFS  spread {r['spread']} dB  "
                  f"max 1 s change {r['max_change_1s']} dB")
@@ -108,16 +113,50 @@ def checks(name, v):
                                          + (" WARNING: tempo moved more than 8 %, change a bar count or add a hold"
                                             if abs(s['tempo_moved_pct']) > 8 else "")
                                          for s in v["sections"]))
+    for j in v.get("joins", []):
+        L.append(f"   JOIN {j['join']} at {j['t']} s: level {j['level_before']} -> {j['level_after']} LUFS; "
+                 f"2-8k {j['bright_before']['2-8k']} -> {j['bright_after']['2-8k']}, 8-16k {j['bright_before']['8-16k']} -> "
+                 f"{j['bright_after']['8-16k']} dB; biggest 1 s change nearby {j['max_change_1s']} dB (at {j['max_change_at']} s); "
+                 f"tempo per beat {j['tempo_per_beat']}")
     L.append(f"   bus loudness: {v['stem_lufs']}")
     return L
+
+
+JOIN_FILES = {   # quick re-listening: ~10 s centred on each reworked join
+    "join-journey-29.wav": ("demo-journey", "hopeful -> playful"),
+    "join-journey-45.wav": ("demo-journey", "playful -> triumphant"),
+    "join-journey-57.wav": ("demo-journey", "the logo lands"),
+    "join-playful-ending.wav": ("demo-playful", "the logo lands"),
+}
+
+
+def write_joins(res):
+    for fn, (piece, label) in JOIN_FILES.items():
+        if piece not in res:
+            continue
+        j = [x for x in res[piece]["joins"] if x["join"] == label][0]
+        y, _ = sf.read(os.path.join(OUT, piece + ".wav"), dtype="float64", always_2d=True)
+        n = len(y) / SR
+        a = min(max(0.0, j["t"] - 5.0), n - 10.0)
+        seg = y[int(a * SR): int((a + 10.0) * SR)].copy()
+        w = int(0.05 * SR)
+        r = 0.5 - 0.5 * np.cos(np.pi * np.arange(w) / w)
+        if a > 0:
+            seg[:w] *= r[:, None]
+        if a + 10.0 < n - 1e-6:
+            seg[-w:] *= r[::-1, None]
+        seg[-1] = 0.0
+        sf.write(os.path.join(OUT, fn), seg, SR, subtype="PCM_24")
 
 
 def main():
     os.makedirs(OUT, exist_ok=True)
     only = sys.argv[1:]
     todo = [p for p in DEMOS if not only or p.name in only]
-    with Pool(len(todo)) as pool:
-        res = dict(pool.map(one, todo))
+    res = {}
+    if todo:
+        with Pool(len(todo)) as pool:
+            res = dict(pool.map(one, todo))
     # the piano-only logo, unchanged, for reference (a byte copy)
     shutil.copyfile(X.LOGO_FILES["piano"], os.path.join(OUT, "logo-alone.wav"))
     path = os.path.join(OUT, "measurements.json")
@@ -132,7 +171,10 @@ def main():
         lines += checks(k, old[k])
     with open(os.path.join(OUT, "checks.txt"), "w") as f:
         f.write("\n".join(lines) + "\n")
+    write_joins(old)
     print("\n".join(lines))
+    if not only or any(f in only for f in films.FILMS):
+        films.main([f for f in only if f in films.FILMS] or None)
 
 
 if __name__ == "__main__":
