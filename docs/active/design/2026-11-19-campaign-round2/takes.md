@@ -181,9 +181,21 @@ The app snaps to green, the picker to the matching model.
 
 Blue, and its model.
 
-Then the last word spins like a wheel through more colours while the picker spins through
-every family of AI model youcoded can use, faster and faster, until the whole app settles
-into youcoded purple and the sentence drops away, leaving the youcoded name.
+Then the first word starts changing too, and the app's own colours follow it:
+
+> **pink** is the new blue.
+>
+> **teal** is the new orange.
+>
+> **gold** is the new green.
+
+Each is a different youcoded look, so the viewer sees that the colour of the app is theirs
+to choose as well as the AI model inside it. Both words speed up, the picker spinning
+through every family of AI model youcoded can use, until the sentence lands on:
+
+> **youcoded** is the new **everything**.
+
+The app is back in youcoded purple behind it.
 
 Small print: "youcoded is not affiliated with these companies." No logos; colour and mood
 only.
