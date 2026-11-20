@@ -31,7 +31,10 @@ const useLayout = () => {
   const { width: W, height: H } = useVideoConfig();
   const wide = W / H >= 1.35;
   const u = Math.min(W, H) / 60;
-  const m = Math.min(W, H) * 0.085;
+  // WHY 8.5% of the WIDTH (review, 2026-11-20): the posters' margin is 8.5% of the short side, which on the
+  // 16:9 film put the headline 5.3% from the left edge, inside the brand guide's 8% safe margin. On the tall
+  // frame the width is the short side, so this changes nothing there.
+  const m = W * 0.085;
   const story = H / W > 1.6;                         // 9:16: keep the top 12% and bottom 20% clear (brand §7)
   const mt = story ? H * 0.125 : m, mb = story ? H * 0.2 : m;
   const fit = (lines: string[], extraEm: number, em: number) =>
@@ -276,7 +279,7 @@ const OwnYour: React.FC = () => {
   return (
     <AbsoluteFill><Wash />
       <div style={{ position: 'absolute', left: m, right: m, top: mt + (wide ? GAP * size : 0), ...rowStyle(size, C.plum) }}>
-        <div>own <span style={{ display: 'inline-block', opacity: 1 - yourOut, transform: `translateY(${-yourOut * 0.05}em)` }}>your</span></div>
+        <div style={{ opacity: onBeat(frame, T3.data) }}>own <span style={{ display: 'inline-block', opacity: 1 - yourOut, transform: `translateY(${-yourOut * 0.05}em)` }}>your</span></div>
         {NOUNS.map((n, i) => <Noun key={n.word} word={n.word} at={n.at} out={NOUNS[i + 1]?.at ?? T3.everything} color={C.purple} />)}
       </div>
       <Grain />
@@ -284,11 +287,12 @@ const OwnYour: React.FC = () => {
   );
 };
 const OwnEverything: React.FC = () => {
+  const frame = useCurrentFrame();
   const { wide, m, mt, size } = useLayout();
   return (
     <AbsoluteFill><Wash dark />
       <div style={{ position: 'absolute', left: m, right: m, top: mt + (wide ? GAP * size : 0), ...rowStyle(size, C.nightText) }}>
-        <div>own</div>
+        <div style={{ opacity: onBeat(frame, T3.everything) }}>own</div>
         <Noun word="everything." at={T3.everything} out={T3.end + 1} color={C.purpleNight} />
       </div>
       <Grain dark />
@@ -298,22 +302,36 @@ const OwnEverything: React.FC = () => {
 
 // WHY Sequences carry absolute times (each child reads the film's frame via the `from` offset being undone):
 // every scene is written in film seconds, so the hit table above is the only place timing lives.
-const Scene: React.FC<{ from: number; to: number; children: React.ReactNode }> = ({ from, to, children }) => (
-  <Sequence from={Math.round(from * FPS)} durationInFrames={Math.round((to - from) * FPS)} layout="none">
-    <Sequence from={-Math.round(from * FPS)} layout="none">{children}</Sequence>
-  </Sequence>
-);
+// `dissolve`: the scene fades in over this many frames ENDING on `from`, over the scene before it.
+// WHY (review, 2026-11-20): a one-frame flip between plum-black and near-white flashed harshly on a phone at
+// night. The new scene's text is held back until `from` (see `onBeat`), so only the colour field dissolves
+// and the words still change exactly on the beat.
+const DISSOLVE = 5;
+const Scene: React.FC<{ from: number; to: number; dissolve?: boolean; children: React.ReactNode }> = ({ from, to, dissolve, children }) => {
+  const frame = useCurrentFrame();
+  const start = Math.round(from * FPS) - (dissolve ? DISSOLVE : 0);
+  const o = dissolve ? interpolate(frame, [start, start + DISSOLVE], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE_IN_OUT }) : 1;
+  return (
+    <Sequence from={start} durationInFrames={Math.round(to * FPS) - start} layout="none">
+      <AbsoluteFill style={{ opacity: o }}>
+        <Sequence from={-start} layout="none">{children}</Sequence>
+      </AbsoluteFill>
+    </Sequence>
+  );
+};
+/** 1 from the beat on, 0 during the dissolve before it. */
+const onBeat = (frame: number, at: number) => (frame >= Math.round(at * FPS) ? 1 : 0);
 
 export const Take3: React.FC<{ narrator?: boolean }> = () => (
   <AbsoluteFill style={{ background: C.night }}>
     <Audio src={staticFile('audio/take3-mix.wav')} />
     <Scene from={0} to={T3.data}><Nothing /></Scene>
-    <Scene from={T3.data} to={T3.everything}><OwnYour /></Scene>
-    <Scene from={T3.everything} to={T3.end}><OwnEverything /></Scene>
+    <Scene from={T3.data} to={T3.everything} dissolve><OwnYour /></Scene>
+    <Scene from={T3.everything} to={T3.end} dissolve><OwnEverything /></Scene>
     {/* WHY the wrapper: the kit's EndCard paints flat lavender as its first layer. On the light colour field the
         last cut lands on the same paper as the "own your" frames; the rule below makes only that first layer
         transparent, so kit.tsx stays untouched and the card's own layout is unchanged. */}
-    <Scene from={T3.end} to={24}>
+    <Scene from={T3.end} to={24} dissolve>
       <Wash />
       <style>{'.t3-end > div > div:first-child { background: transparent !important; }'}</style>
       <AbsoluteFill className="t3-end"><EndCard at={T3.end} /></AbsoluteFill>
