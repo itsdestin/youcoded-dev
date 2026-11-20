@@ -1542,3 +1542,14 @@ recurred — the repetition is the data.
 - Destin's words filed: error cards should follow real bubble rules → card #270; ChatGPT "expired" survives a restart → card #275 (awaiting his yes); "no internet is red" → design guide updated.
 - I ran `cat >> /dev/null` in a heredoc chain and hung a command for 2 minutes → dropped: my slip, not a workspace gap.
 - deleted/merged: the chat's red error card markup moved into one shared `ChatNoticeBubble` (SortedErrorCard and the new cards draw through it) and its two unused tones removed.
+
+## 2026-11-20 — release 1.3.4, review to publish (session/release-1-4-review; youcoded#762 #769 #784 #786 #791 #792, youcoded-admin#27 #29; v1.3.4 tagged from release/1.3.x)
+- The tag's Linux leg refused a stale built-in plugin pin (the marketplace publisher moved after the cut); the half-published release had to be deleted and re-tagged (~45 min) → applied: release skill runs `refresh-bundled-plugin-pins.mjs --check` before go/no-go (youcoded-admin `session/release-skill-lessons`, unmerged).
+- Master moved past the tested cut three times; tagging "on master" would have shipped untested merges → applied: release skill names the `release/X.Y.x` lane + paperwork PR back to master (same branch).
+- Destin, twice: the release notes buried the deliberate big changes (buddy rebuild) under small ones → applied: release skill ordering rule + pinning test (youcoded-admin#29, merged).
+- The daily Claude Code drift checks pinged his phone four days running over harmless changes → applied: youcoded#786 (alert only when users are affected; repeats say "day N since …"; broken check named).
+- The beta numbering bumped the middle number → applied earlier: youcoded#769 (betas preview the next patch).
+- The candidate worktree was made by hand with the SHARED checkout's stale node_modules, so site-assets failed on a missing dependency (~4 calls) → dropped: workspace-start already provisions the right ones; my shortcut, not a gap.
+- On the Mac VM, the monitor's `mouse_move` never moved the pointer, so a Gatekeeper prompt sat unanswered and the app looked hung (~6 calls) → dropped: one-off; `xattr -d com.apple.quarantine` after `spctl -a` passes is the quick route.
+- Website demo CodeQL alert (fake server matches the API by prefix) → card #284. Skip permissions switch shows without the Settings unlock → card #283 (Destin picked option A).
+- deleted/merged: release skill's stale PartyKit deploy step (youcoded-admin#27); `session/release-1-4-audit`'s anchor fix is superseded by youcoded#790.
