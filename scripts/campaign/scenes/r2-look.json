@@ -10,28 +10,98 @@
  "slow": 4,
  "boot": 3000,
  "actions": [
-  {"evalFile": "../footage/r2-tokyo.js"},
-  {"eval": "(()=>{const s=document.createElement('style');s.id='r2-hide';s.textContent=\"button[aria-label='Open Home'],button[aria-label='Open Finance']{display:none!important}\";document.head.appendChild(s);return 1})()"},
-  {"hold": 600, "mark": "open"},
-  {"click": "[placeholder^='Message']", "settle": 200},
-  {"typeSlow": "can i change how this whole thing looks?", "cps": 34, "mark": "type1"},
-  {"hold": 300},
-  {"key": "Enter", "mark": "send1"},
-  {"waitForText": "What are you picturing", "timeout": 20000, "mark": "reply1"},
-  {"hold": 1000},
-  {"typeSlow": "idk. kinda rainy tokyo at night type vibe? open to ideas", "cps": 36, "mark": "type2"},
-  {"hold": 300},
-  {"key": "Enter", "mark": "send2"},
-  {"waitForText": "2 files", "timeout": 20000, "mark": "built"},
-  {"hold": 500},
-  {"eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo'})", "mark": "swap1"},
-  {"hold": 3800},
-  {"click": "[placeholder^='Message']", "settle": 150},
-  {"typeSlow": "ok yeah. less pink tho", "cps": 30, "mark": "type3"},
-  {"hold": 300},
-  {"key": "Enter", "mark": "send3"},
-  {"hold": 1300, "mark": "built3"},
-  {"eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo-blue'})", "mark": "swap2"},
-  {"hold": 3500, "mark": "end"}
+  {
+   "evalFile": "../footage/r2-tokyo.js"
+  },
+  {
+   "eval": "(()=>{const s=document.createElement('style');s.id='r2-clean';s.textContent='.status-bar{display:none!important} div:has(> .scroll-mask--chips){display:none!important} [data-testid=thinking-indicator] span.text-fg-dim{display:none!important}';document.head.appendChild(s);window.__workbenchAppearanceSync({showTimestamps:false});return 1})()",
+   "_why": "hide the developer clutter (status row, quick chips, thinking word, message times) so the film shows the app as a newcomer would use it"
+  },
+  {
+   "eval": "(()=>{const s=document.createElement('style');s.id='r2-hide';s.textContent=\"button[aria-label='Open Home'],button[aria-label='Open Finance']{display:none!important}\";document.head.appendChild(s);return 1})()"
+  },
+  {
+   "hold": 600,
+   "mark": "open"
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "can i change how this whole thing looks?",
+   "cps": 34,
+   "mark": "type1"
+  },
+  {
+   "hold": 300
+  },
+  {
+   "key": "Enter",
+   "mark": "send1"
+  },
+  {
+   "waitForText": "What are you picturing",
+   "timeout": 20000,
+   "mark": "reply1"
+  },
+  {
+   "hold": 1000
+  },
+  {
+   "typeSlow": "idk. kinda rainy tokyo at night type vibe? open to ideas",
+   "cps": 36,
+   "mark": "type2"
+  },
+  {
+   "hold": 300
+  },
+  {
+   "key": "Enter",
+   "mark": "send2"
+  },
+  {
+   "waitForText": "2 files",
+   "timeout": 20000,
+   "mark": "built"
+  },
+  {
+   "hold": 500
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo'})",
+   "mark": "swap1"
+  },
+  {
+   "hold": 3800
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 150
+  },
+  {
+   "typeSlow": "ok yeah. less pink tho",
+   "cps": 30,
+   "mark": "type3"
+  },
+  {
+   "hold": 300
+  },
+  {
+   "key": "Enter",
+   "mark": "send3"
+  },
+  {
+   "hold": 1300,
+   "mark": "built3"
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo-blue'})",
+   "mark": "swap2"
+  },
+  {
+   "hold": 3500,
+   "mark": "end"
+  }
  ]
 }

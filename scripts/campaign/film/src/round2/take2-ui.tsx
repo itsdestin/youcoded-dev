@@ -107,7 +107,8 @@ export const HomeUI: React.FC<{ W: number; H: number; T: HomeTimes }> = ({ W, H,
   const frame = useCurrentFrame();
   const t = sec(frame);
   const pad = 16, gap = 12;
-  const re = sp(frame, T.rearrange, { damping: 18, stiffness: 120 });           // layout A → B
+  // WHY +0.12: the other rooms fade first (below), so the growing card never slides over them.
+  const re = sp(frame, T.rearrange + 0.12, { damping: 18, stiffness: 120 });    // layout A → B
   const big = sp(frame, T.bigger, { damping: 9, stiffness: 190, mass: 0.8 });   // slider growth, with overshoot
   const tabsIn = p01(frame, T.rearrange + 0.1, T.rearrange + 0.5);
   // layout A: a 3 × 2 grid of rooms
@@ -119,12 +120,14 @@ export const HomeUI: React.FC<{ W: number; H: number; T: HomeTimes }> = ({ W, H,
   const mix = (a: { x: number; y: number; w: number; h: number }, b: typeof a, k: number) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) });
 
   // the hero room's own state over time
-  const lampSweep = sp(frame, T.bigger + 0.55, { damping: 11, stiffness: 120 });
-  const lampVal = lerp(0.42, 0.9, lampSweep);
-  const ceilOn = sp(frame, T.bigger + 1.35, { damping: 10, stiffness: 260 });
+  // "punchier": each control shows off its new spring and then SETTLES BACK to where it was.
+  // WHY (review, 2026-11-20): turning a light on or the heat up read as "it changed my home without asking".
+  const wiggle = (at: number, back: number) => sp(frame, at, { damping: 9, stiffness: 200 }) - sp(frame, at + back, { damping: 9, stiffness: 200 });
+  const lampVal = 0.42 + 0.34 * wiggle(T.bigger + 0.55, 0.45);
   const ceilPop = t > T.bigger + 1.35 ? Math.max(0, Math.sin(Math.min(1, (t - T.bigger - 1.35) / 0.35) * Math.PI)) : 0;
-  const thermoUp = sp(frame, T.bigger + 2.2, { damping: 8, stiffness: 220 });
-  const temp = 70 + 2 * Math.min(1, thermoUp);
+  const ceilNudge = 0.22 * wiggle(T.bigger + 1.35, 0.2);
+  const temp = 70;
+  const thermoWig = wiggle(T.bigger + 2.2, 0.3);
   const thermoBounce = t > T.bigger + 2.2 ? Math.max(0, Math.sin(Math.min(1, (t - T.bigger - 2.2) / 0.3) * Math.PI)) : 0;
 
   return (
@@ -150,19 +153,20 @@ export const HomeUI: React.FC<{ W: number; H: number; T: HomeTimes }> = ({ W, H,
               <RoomHead name={room} sub="3 lights · thermostat" big={re} />
               {/* compact contents (layout A) fade as the card grows */}
               <div style={{ position: 'absolute', left: 16, right: 16, top: 62, opacity: 1 - p01(frame, T.rearrange, T.rearrange + 0.25) }}>
-                <MiniRow name="Desk lamp" on={1} value={0.42} />
-                <MiniRow name="Ceiling" on={0} value={0} />
-                <div style={{ marginTop: 10, fontSize: 13, color: TK.dim }}>Thermostat · heating to 70°</div>
+                {/* all three lights, so the card's "3 lights" is true */}
+                <MiniRow compact name="Desk lamp" on={1} value={0.42} />
+                <MiniRow compact name="Ceiling" on={0} value={0} />
+                <MiniRow compact name="LED strip" on={1} value={0.6} />
               </div>
               {/* full contents (layout B): the thermostat and every light in the room */}
               <div style={{ position: 'absolute', left: 0, right: 0, top: 70, bottom: 0, opacity: p01(frame, T.rearrange + 0.18, T.rearrange + 0.5), display: 'flex', padding: '0 26px 22px', gap: 28 }}>
                 <div style={{ flex: 'none', width: heroRect.h - 110, display: 'grid', placeItems: 'center', transform: `scale(${1 + 0.06 * thermoBounce})` }}>
-                  <Thermostat size={heroRect.h - 110} temp={temp} bounce={thermoBounce} arc={0.55 + 0.06 * Math.min(1, thermoUp)} />
+                  <Thermostat size={heroRect.h - 110} temp={temp} bounce={thermoBounce} arc={0.55 + 0.05 * thermoWig} />
                 </div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: lerp(18, 26, big) }}>
                   {[
                     { name: 'Desk lamp', on: 1, val: lampVal, pop: 0, col: TK.warm },
-                    { name: 'Ceiling', on: Math.min(1, ceilOn), val: lerp(0, 0.7, Math.min(1, ceilOn)), pop: ceilPop, col: TK.cyan },
+                    { name: 'Ceiling', on: Math.max(0, ceilNudge), val: 0, pop: ceilPop, col: TK.cyan },
                     { name: 'LED strip', on: 1, val: 0.6, pop: 0, col: TK.pink },
                   ].map((l, k) => {
                     const rowIn = p01(frame, T.rearrange + 0.22 + 0.08 * k, T.rearrange + 0.62 + 0.08 * k);
@@ -192,7 +196,7 @@ export const HomeUI: React.FC<{ W: number; H: number; T: HomeTimes }> = ({ W, H,
         const B = { x: tab2X + 20, y: tabY + 4, w: 80, h: 32 };
         const k = interpolate(re, [0, 1], [0, 1], clamp);
         const r = mix(A, B, k);
-        const fade = 1 - p01(frame, T.rearrange + 0.12, T.rearrange + 0.45);
+        const fade = 1 - p01(frame, T.rearrange, T.rearrange + 0.2);
         if (fade <= 0.001) return null;
         return (
           <Card key={room} style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: Math.min(1, appear * 1.4) * fade, transform: `scale(${0.92 + 0.08 * appear})` }}>
@@ -212,14 +216,14 @@ const RoomHead: React.FC<{ name: string; sub: string; big: number }> = ({ name, 
     <div style={{ fontSize: 13, color: TK.dim }}>{sub}</div>
   </div>
 );
-const MiniRow: React.FC<{ name: string; on: number; value: number }> = ({ name, on, value }) => (
-  <div style={{ marginTop: 8 }}>
+const MiniRow: React.FC<{ name: string; on: number; value: number; compact?: boolean }> = ({ name, on, value, compact }) => (
+  <div style={{ marginTop: compact ? 4 : 8 }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <Bulb size={28} on={on * 0.8} />
+      <Bulb size={compact ? 22 : 28} on={on * 0.8} />
       <div style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{name}</div>
-      <Toggle on={on} scale={0.8} />
+      <Toggle on={on} scale={compact ? 0.7 : 0.8} />
     </div>
-    <div style={{ marginTop: 8 }}><Slider value={value} track={6} width={230} /></div>
+    <div style={{ marginTop: compact ? 4 : 8 }}><Slider value={value} track={compact ? 5 : 6} width={230} /></div>
   </div>
 );
 

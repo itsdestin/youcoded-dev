@@ -36,7 +36,7 @@ const base = (slug, wallpaper, t) => ({
   // eye strain of a monospace for whole conversations; loaded the way any community theme loads its font.
   font: { family: "'Space Grotesk', system-ui, sans-serif", 'google-font-url': 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap', mono: "'Cascadia Mono', 'Cascadia Code', monospace" },
   shape: { radius: '10px', 'radius-sm': '8px', 'radius-md': '14px', 'radius-lg': '18px', 'radius-xl': '22px', 'radius-2xl': '28px', 'radius-full': '9999px' },
-  background: { 'average-color': t.canvas, type: 'image', value: wallpaper, opacity: 1, 'panels-blur': 18, 'panels-opacity': 0.7, 'bubble-blur': 12, 'bubble-opacity': 0.82 },
+  background: { 'average-color': t.canvas, type: 'image', value: wallpaper, opacity: 1, 'panels-blur': 18, 'panels-opacity': 0.88, 'bubble-blur': 12, 'bubble-opacity': 0.82 },
   layout: { 'chrome-style': 'floating', 'input-style': 'default', 'bubble-style': 'bordered', 'header-style': 'default', 'statusbar-style': 'default' },
   // WHY the app's own rain: the person asked for rain, and the theme engine already draws it, moving.
   effects: { particles: 'rain', 'particle-count': 110, 'particle-speed': 1.25, 'particle-drift': 0.25, vignette: 0.22 },

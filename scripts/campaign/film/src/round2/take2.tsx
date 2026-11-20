@@ -8,8 +8,9 @@
 // the person makes inside the page view (take2-ui.tsx) and the morning email.
 //
 // Music grid (scripts/campaign/music, composed to these numbers): 120 BPM, bar 2.0 s, beat 0.5 s.
-// Sections: look 0 · home 14 · money 30 · pull-back 46 · lines 50 · name 56. Every cut and every visible
-// change below sits on a beat.
+// Sections: look 0 · home 14 · money 30 · payoff 46 · lines 50 · name 56. Every cut and every visible
+// change below sits on a beat. Second pass (2026-11-20 review): faster opening, the look changes wash in,
+// the developer clutter is hidden at record time, the payoff shows everything they made.
 import React from 'react';
 import { AbsoluteFill, Audio, Freeze, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame } from 'remotion';
 import { C, EASE_IN, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
@@ -28,9 +29,6 @@ const FW = 2880, FH = 1802, CSS = 3.2;
 const BOX = { x: 28, y: 176, w: 2823, h: 1597, r: 30 };
 const CLIPS = manifest as unknown as Record<string, { file: string; duration: number }>;
 type Seg = { clip: string; from: number; at: number; out: number; rate?: number };
-// WHY: a mark is when the recorder ran the theme swap; the repaint lands a moment later. Starting the swap
-// shot this far AFTER the mark puts the first changed frame on the beat (measured frame by frame, 2026-11-20).
-const SWAP_LAG = 0.08;
 
 /** Shots back to back with hard cuts (cuts land on beats). A shot whose `rate` is above 1 is the build
  *  sped up (owner: "the shown build process can be GREATLY sped up"); typing and replies play at true speed. */
@@ -56,9 +54,53 @@ const Footage: React.FC<{ segs: Seg[] }> = ({ segs }) => {
   );
 };
 
+/** A look change washing across the window: `before` (the old look, held still) is masked away as the new
+ *  look (the footage underneath) arrives, with a band of neon light and rain riding the edge.
+ *  WHY not the app's own instant swap: on screen it was a hard cut with a two-frame repaint flash; the
+ *  person asked for a whole new world, so the change is shown arriving, like weather. Both looks are real
+ *  frames of the app; only the moment between them is drawn. */
+type Wash = { p: number; before: React.ReactNode; dir: 'down' | 'right'; tint: [string, string] };
+const WashOver: React.FC<{ w: Wash; W: number; H: number }> = ({ w, W, H }) => {
+  if (w.p >= 1) return null;
+  // WHY a narrow soft zone under a bright seam: the two looks lay the window out slightly differently, so a
+  // wide blend between them showed doubled text. The seam of light covers the join.
+  const edge = w.p * 1.12 - 0.06;           // edge position as a fraction; starts just off-window, ends past it
+  const soft = 0.035;
+  const ang = w.dir === 'down' ? '180deg' : '90deg';
+  const mask = `linear-gradient(${ang}, transparent ${edge * 100}%, #000 ${(edge + soft) * 100}%)`;
+  const along = w.dir === 'down' ? H : W;
+  const pos = (edge + soft * 0.5) * along;
+  const vis = Math.min(1, w.p * 8) * Math.min(1, (1 - w.p) * 8);
+  const band = (thick: number, blur: number, a: number, col: string): React.CSSProperties => ({
+    position: 'absolute', opacity: vis * a, filter: blur ? `blur(${blur}px)` : undefined,
+    ...(w.dir === 'down'
+      ? { left: -40, width: W + 80, top: pos - thick / 2, height: thick, background: `linear-gradient(180deg, transparent, ${col}, transparent)` }
+      : { top: -40, height: H + 80, left: pos - thick / 2, width: thick, background: `linear-gradient(90deg, transparent, ${col}, transparent)` }),
+  });
+  return (
+    <>
+      <div style={{ position: 'absolute', inset: 0, WebkitMaskImage: mask, maskImage: mask }}>{w.before}</div>
+      {/* the leading light: a wide neon glow, a bright core over the seam, and rain falling through it */}
+      <div style={band(along * 0.22, along * 0.02, 0.8, w.tint[0] + 'AA')} />
+      <div style={band(along * 0.07, along * 0.008, 1, w.tint[1])} />
+      <div style={band(along * 0.012, 1, 1, '#FFFFFF')} />
+      <svg width={W} height={H} style={{ position: 'absolute', inset: 0, opacity: vis }}>
+        {Array.from({ length: 70 }, (_, i) => {
+          // streaks scattered just behind the edge, each falling a little with the progress
+          const r1 = ((i * 7919) % 1000) / 1000, r2 = ((i * 104729) % 1000) / 1000;
+          const x = w.dir === 'down' ? r1 * W : pos - along * 0.12 + r1 * along * 0.12;
+          const y = w.dir === 'down' ? pos - along * 0.14 + r2 * along * 0.14 + w.p * along * 0.05 : r2 * H + w.p * H * 0.08;
+          const len = (40 + r2 * 110) * (H / 1080);
+          return <line key={i} x1={x} y1={y} x2={x - len * 0.16} y2={y + len} stroke={i % 3 ? w.tint[1] : '#ffffff'} strokeOpacity={0.3 + 0.5 * r1} strokeWidth={(2 + r2 * 3) * (H / 1080)} strokeLinecap="round" />;
+        })}
+      </svg>
+    </>
+  );
+};
+
 /** The app window: footage (plus anything staged inside its page view), rounded and lit, at a camera. */
-const AppWindow: React.FC<{ segs: Seg[]; content?: React.ReactNode; z: number; cx: number; cy: number; fx: number; fy: number; opacity?: number; glow?: number; light?: boolean }> =
-  ({ segs, content, z, cx, cy, fx, fy, opacity = 1, glow = 0, light }) => {
+const AppWindow: React.FC<{ segs: Seg[]; content?: React.ReactNode; z: number; cx: number; cy: number; fx?: number; fy?: number; opacity?: number; glow?: number; light?: boolean; wash?: Wash }> =
+  ({ segs, content, z, cx, cy, fx = 0.5, fy = 0.5, opacity = 1, glow = 0, light, wash }) => {
     const k = z * (1640 / FW);   // z = 1 draws the window 1640 film px wide
     return (
       <div style={{ position: 'absolute', left: 0, top: 0, width: FW, height: FH, transformOrigin: '0 0', opacity,
@@ -74,10 +116,15 @@ const AppWindow: React.FC<{ segs: Seg[]; content?: React.ReactNode; z: number; c
               <div style={{ position: 'absolute', left: 0, top: 0, width: BOX.w / CSS, height: BOX.h / CSS, transform: `scale(${CSS})`, transformOrigin: '0 0' }}>{content}</div>
             </div>
           )}
+          {wash && <WashOver w={wash} W={FW} H={FH} />}
         </div>
       </div>
     );
   };
+/** One still frame of a take (WHY Freeze: the shot's own clock is pinned, so it never moves). */
+const Still: React.FC<{ clip: string; at: number }> = ({ clip, at }) => (
+  <Freeze frame={0}><Footage segs={[{ clip, from: at, at: 0, out: 1 }]} /></Freeze>
+);
 
 // ------------------------------------------------------------------ camera
 // [time, zoom, focus x, focus y]: the window point (fx, fy) sits at the frame centre. Two keys at the same
@@ -95,76 +142,82 @@ const camAt = (keys: Key[], t: number) => {
   }
   return keys[keys.length - 1];
 };
-// framings. WHY one steady chat frame (z 1.1, whole window height in view) instead of panning between the
-// message box and the thread: a typed line and the reply above it are always in frame together, and the
-// header (which conversation this is) never gets cut. While typing, the camera leans in a little.
-const INPUT = (t: number): Key => [t, 1.13, 0.5, 0.505];
-const THREAD = (t: number): Key => [t, 1.1, 0.5, 0.5];
+// Framings. WHY the chat is always the WHOLE window (z 1.05 is 1077 px tall, inside the 1080 frame): the
+// header, the conversation and the message box are all in view, no bar is ever half cut, and chat text is
+// still ~25 px tall. Life comes from a slow drift between 1.0 and 1.05, not from cropping.
+const CHAT = (t: number, z = 1.05): Key => [t, z, 0.5, 0.5];
 const WIDE = (t: number, z = 0.9): Key => [t, z, 0.5, 0.5];
-const PAGE = (t: number, z = 1.0, fy = 0.52): Key => [t, z, 0.5, fy];
+// The page view: at z <= 1.0 the whole page content box sits inside the frame's 8% side margins.
+const PAGE = (t: number, z = 0.97): Key => [t, z, 0.5, 0.5];
 
 // ------------------------------------------------------------------ the timeline, built from the takes' marks
 const L = 'r2-look', HM = 'r2-home', MN = 'r2-money';
-const m = (clip: string, label: string) => mark(clip, label);
-/** A shot that plays from `from` until the footage reaches `until`, starting at film time `at`. */
-const play = (clip: string, from: number, at: number, until: number): Seg => ({ clip, from, at, out: at + (until - from) });
+const m = (clip: string, label: string, edge: 'start' | 'end' = 'start') => mark(clip, label, edge);
+/** A shot that plays from `from` until the footage reaches `until`, starting at film time `at` (rate 1). */
+const play = (clip: string, from: number, at: number, until: number, rate = 1): Seg => ({ clip, from, at, out: at + (until - from) / rate, rate });
 /** A sped-up shot that squeezes footage [from, until] into film [at, out]. */
 const squeeze = (clip: string, from: number, until: number, at: number, out: number): Seg => ({ clip, from, at, out, rate: (until - from) / (out - at) });
 
+// A LOOK (0-14). WHY this pace (review, 2026-11-20: "an empty chat for seven seconds"): the film opens on
+// the first question already being finished and sent; the answer lands in the first second; the neon
+// arrives at 4.5 s. Thinking pauses and the build are squeezed; a held message box is cut, never shown.
+const T_NEON = 4.5, T_NEON_END = 5.3, T_LESS = 10.0, T_LESS_END = 10.6;
 const lookSegs = (): Seg[] => {
-  const a = play(L, m(L, 'type1') - 0.5, 0, m(L, 'type1') + 4.0);                    // 0.5: "can i change how this whole thing looks?"
-  const b = play(L, m(L, 'type2') - 0.02, 4.5, m(L, 'send2'));                         // 4.5: "idk. kinda rainy tokyo…"
-  const c = squeeze(L, m(L, 'send2'), m(L, 'swap1') + SWAP_LAG, b.out, 8.0);          // the build, sped up
-  const d = play(L, m(L, 'swap1') + SWAP_LAG, 8.0, m(L, 'swap1') + SWAP_LAG + 2.0);              // 8.0: neon and rain
-  const e = play(L, m(L, 'type3') - 0.04, 10.0, m(L, 'send3'));                         // 10.0: "ok yeah. less pink tho"
-  const f = squeeze(L, m(L, 'send3'), m(L, 'swap2') + SWAP_LAG, e.out, 12.0);
-  const g = play(L, m(L, 'swap2') + SWAP_LAG, 12.0, m(L, 'swap2') + SWAP_LAG + 2.0);              // 12.0: it shifts
-  return [a, b, c, d, e, f, g];
+  const a = play(L, m(L, 'type1', 'end') - 0.4, 0, m(L, 'type1', 'end'));                       // 0.0: "…whole thing looks?" finishing
+  const b = squeeze(L, m(L, 'send1') - 0.04, m(L, 'reply1', 'end') + 0.05, a.out, 1.0);          // sent; the answer lands
+  const c = play(L, m(L, 'reply1', 'end') + 0.05, 1.0, m(L, 'reply1', 'end') + 0.55);             // a breath to read it
+  const d = play(L, m(L, 'type2') - 0.02, 1.5, m(L, 'type2', 'end'), 1.5);                       // 1.5: "idk. kinda rainy tokyo…" (typed 1.5x)
+  const e = squeeze(L, m(L, 'send2') - 0.03, m(L, 'swap1') - 0.05, d.out, T_NEON);               // sent; the build, sped up
+  const f = play(L, m(L, 'swap1') + 0.35, T_NEON, m(L, 'swap1') + 0.35 + 3.5);                   // 4.5: neon and rain wash in
+  const g = play(L, m(L, 'type3') - 0.04, 8.0, m(L, 'type3', 'end'));                             // 8.0: "ok yeah. less pink tho"
+  const h = squeeze(L, m(L, 'send3') - 0.03, m(L, 'swap2') - 0.05, g.out, T_LESS);
+  const i = play(L, m(L, 'swap2') + 0.35, T_LESS, CLIPS[L] ? CLIPS[L].duration - 0.2 : 20, 0.85); // 10.0: it shifts
+  return [a, b, c, d, e, f, g, h, { ...i, out: 14.0 }];
 };
 const homeSegs = (): Seg[] => {
-  const a = play(HM, m(HM, 'type1') - 0.1, 14.0, m(HM, 'send1') + 0.1);               // 14.1: "i want youcoded to manage my smart home"
-  const b = { clip: HM, from: m(HM, 'send1') + 0.1, at: a.out, out: 17.0, rate: 1.8 };   // the reply arrives (thinking pause shortened)
-  const c = play(HM, m(HM, 'type2') - 0.04, 17.0, m(HM, 'type2') + 2.96);              // 17.0: "epic. can we put my room on the front…"
+  const a = play(HM, m(HM, 'type1') - 0.1, 14.0, m(HM, 'send1') + 0.1);                         // 14.1: "i want youcoded to manage my smart home"
+  const b = { clip: HM, from: m(HM, 'send1') + 0.1, at: a.out, out: 17.0, rate: 1.8 };             // the reply arrives (thinking shortened)
+  const c = play(HM, m(HM, 'type2') - 0.04, 17.0, m(HM, 'type2') + 2.96);                        // 17.0: "epic. can we put my room on the front…"
   const page = (at: number, out: number, rate: number): Seg => ({ clip: HM, from: m(HM, 'pagehold'), at, out, rate });
-  const d = play(HM, m(HM, 'type3') - 0.04, 23.0, m(HM, 'type3') + 2.46);              // 23.0: "perfect. now make the sliders bigger…"
+  const d = play(HM, m(HM, 'type3') - 0.04, 23.0, m(HM, 'type3') + 2.46);                        // 23.0: "perfect. now make the sliders bigger…"
   return [a, b, c, page(20.0, 23.0, 0.75), d, page(25.5, 30.0, 0.85)];
 };
 const moneyPage = (at: number, out: number, rate: number): Seg => ({ clip: MN, from: m(MN, 'pagehold'), at, out, rate });
 const moneySegs = (): Seg[] => [
-  play(MN, m(MN, 'type1') - 0.1, 30.0, m(MN, 'type1') + 2.4),                         // 30.1: "can we connect my bank…"
+  play(MN, m(MN, 'type1') - 0.1, 30.0, m(MN, 'type1') + 2.4),                                   // 30.1: "can we connect my bank…"
   moneyPage(32.5, 35.0, 0.9),
-  play(MN, m(MN, 'type2') - 0.04, 35.0, m(MN, 'type2') + 4.46),                       // 35.0: "can it pull out my recurring bills…" → "Yes. Found eleven."
+  play(MN, m(MN, 'type2') - 0.04, 35.0, m(MN, 'type2') + 4.46),                                 // 35.0: "can it pull out my recurring bills…" → "Yes. Found eleven."
   moneyPage(39.5, 41.5, 0.9),
-  play(MN, m(MN, 'type3') - 0.04, 41.5, m(MN, 'type3') + 2.46),                       // 41.5: "send me those numbers every morning…"
-  moneyPage(44.0, 50.0, 0.6),
+  play(MN, m(MN, 'type3') - 0.04, 41.5, m(MN, 'type3') + 1.5),                                  // 41.5: "send me those numbers every morning…"
+  moneyPage(43.0, 46.0, 0.6),
 ];
 const HOME_T = { build: 20.0, rearrange: 21.0, bigger: 26.0 };
 const MONEY_T = { connect: 32.5, bills: 39.5 };
+const T_EMAIL = 43.0, T_BEFORE = 46.0, T_AFTER = 47.0;
 
 const CAM: Key[] = [
-  // a look: open wide on the starting look, settle into the conversation, pull back as it turns neon
-  WIDE(0, 0.92), INPUT(0.6), INPUT(2.4), THREAD(3.1), THREAD(4.2), INPUT(4.7), INPUT(6.8), THREAD(7.4),
-  WIDE(8.4, 0.84), WIDE(9.5, 0.88), INPUT(10.1), INPUT(11.4), WIDE(12.0, 0.86), WIDE(14.0, 0.95),
+  // a look: the whole window throughout; it eases back a touch as the neon arrives, then settles
+  CHAT(0, 1.02), CHAT(4.3, 1.05), WIDE(5.6, 0.94), CHAT(8.0, 1.03), CHAT(9.8, 1.05), WIDE(11.0, 0.95), CHAT(14.0, 1.0),
   // their home
-  INPUT(14.0), INPUT(15.7), THREAD(16.4), THREAD(16.7), INPUT(17.2), INPUT(19.3), THREAD(20.0),
-  PAGE(20.0, 0.98), PAGE(21.0, 1.0), PAGE(23.0, 1.06),
-  INPUT(23.0), INPUT(25.0), THREAD(25.5),
-  PAGE(25.5, 1.0), [26.4, 1.1, 0.54, 0.55], [30.0, 1.16, 0.55, 0.56],
+  CHAT(14.0, 1.02), CHAT(20.0, 1.05),
+  PAGE(20.0, 0.95), PAGE(23.0, 0.99),
+  CHAT(23.0, 1.02), CHAT(25.5, 1.05),
+  PAGE(25.5, 0.95), PAGE(30.0, 0.99),
   // their money
-  INPUT(30.0), INPUT(32.0), THREAD(32.5),
-  PAGE(32.5, 0.98), PAGE(35.0, 1.05),
-  INPUT(35.0), INPUT(37.0), THREAD(37.6), THREAD(39.5),
-  PAGE(39.5, 1.0, 0.54), PAGE(41.5, 1.06, 0.56),
-  INPUT(41.5), INPUT(43.6), THREAD(44.0),
-  PAGE(44.0, 0.92), PAGE(46.0, 0.9), WIDE(47.0, 0.6),
+  CHAT(30.0, 1.02), CHAT(32.5, 1.05),
+  PAGE(32.5, 0.95), PAGE(35.0, 0.99),
+  CHAT(35.0, 1.02), CHAT(39.5, 1.05),
+  PAGE(39.5, 0.95), PAGE(41.5, 0.98),
+  CHAT(41.5, 1.02), CHAT(43.0, 1.05),
+  PAGE(43.0, 0.9), PAGE(46.0, 0.92),
 ];
 
-// ------------------------------------------------------------------ backgrounds
-/** The field around the window: the brand's lavender while the app is in its first look, the brand's
- *  night once it goes neon (on the 8.0 downbeat), so the room around the screen changes with it. */
+// ------------------------------------------------------------------ the field around the window
+/** Lavender while the app wears its first look; the brand's night from the moment the neon washes in
+ *  (eased with the wash, so the surround never flashes); lavender again for the "before" at 46. */
 const Field: React.FC = () => {
   const frame = useCurrentFrame(); const t = frame / FPS;
-  const night = ease01(t, 8.0, 8.4, EASE_OUT);
+  const night = t < T_BEFORE ? ease01(t, T_NEON, T_NEON_END) : 0;
   return (
     <AbsoluteFill>
       <Day />
@@ -179,35 +232,24 @@ export const Take2: React.FC<{ narrator?: boolean }> = () => {
   const segs = React.useMemo(() => [...lookSegs(), ...homeSegs(), ...moneySegs()], []);
   const [, z, fx, fy] = camAt(CAM, t);
   const onPage = (a: number, b: number) => t >= a && t < b;
-  const content = onPage(20, 23) || onPage(25.5, 30) ? <HomeUI W={BOX.w / CSS} H={BOX.h / CSS} T={HOME_T} />
-    : onPage(32.5, 35) || onPage(39.5, 41.5) || onPage(44, 50) ? <MoneyUI W={BOX.w / CSS} H={BOX.h / CSS} T={MONEY_T} /> : undefined;
-  const glow = ease01(t, 8.0, 8.6);
-
-  // 47.0-50.0: the pull-back. The window moves right and the very first look of the app slides out from
-  // behind it to the left: the same app, where it started and where it is now.
-  const split = spring({ frame: frame - s2f(47.0), fps: FPS, config: { damping: 20, stiffness: 90 } });
-  const outro = ease01(t, 49.45, 49.95, EASE_IN);
-  const inPull = t >= 46.95;
-  const afterZ = inPull ? interpolate(split, [0, 1], [0.6, 0.5]) * (1 + 0.02 * ease01(t, 47.5, 50)) : z;
-  const afterCx = inPull ? interpolate(split, [0, 1], [960, 1390]) : 960;
+  const W = BOX.w / CSS, H = BOX.h / CSS;
+  const content = onPage(20, 23) || onPage(25.5, 30) ? <HomeUI W={W} H={H} T={HOME_T} />
+    : onPage(32.5, 35) || onPage(39.5, 41.5) || onPage(43, 46) ? <MoneyUI W={W} H={H} T={MONEY_T} /> : undefined;
+  const glow = ease01(t, T_NEON, T_NEON + 0.8);
+  // the two look changes, each washing across the whole window
+  const wash: Wash | undefined =
+    t >= T_NEON && t < T_NEON_END ? { p: ease01(t, T_NEON, T_NEON_END, EASE_IN_OUT), before: <Still clip={L} at={m(L, 'swap1') - 0.05} />, dir: 'down', tint: ['#FF3FA4', '#2DE2FF'] }
+      : t >= T_LESS && t < T_LESS_END ? { p: ease01(t, T_LESS, T_LESS_END, EASE_IN_OUT), before: <Still clip={L} at={m(L, 'swap2') - 0.05} />, dir: 'right', tint: ['#2B7FFF', '#2DE2FF'] }
+        : undefined;
 
   return (
     <AbsoluteFill style={{ overflow: 'hidden' }}>
       <Audio src={staticFile('audio/take2-mix.wav')} />
-      {t < 50 && <Field />}
-      {t >= 50 && <AbsoluteFill style={{ background: C.night }} />}
-      {t < 50 && inPull && (
-        // the starting look, held on the film's very first frame (WHY Freeze: the shot's clock is pinned to 0)
-        <Freeze frame={0}>
-          <AppWindow light segs={[{ clip: L, from: m(L, 'type1') - 0.5, at: 0, out: 1 }]} z={afterZ} cx={interpolate(split, [0, 1], [960, 530])} cy={540} fx={0.5} fy={0.5}
-            opacity={Math.min(1, split * 1.6) * (1 - outro)} />
-        </Freeze>
-      )}
-      {t < 50 && (
-        <AppWindow segs={segs} content={content} z={inPull ? afterZ : z} cx={afterCx} cy={540} fx={inPull ? 0.5 : fx} fy={inPull ? 0.5 : fy} glow={glow} light={t < 8.0} opacity={1 - outro} />
-      )}
-      {/* 44.0: the morning email arrives over the money page */}
+      {t < T_BEFORE && <Field />}
+      {t < T_BEFORE && <AppWindow segs={segs} content={content} z={z} cx={960} cy={540} fx={fx} fy={fy} glow={glow} light={t < T_NEON} wash={wash} />}
       <Email />
+      {t >= T_BEFORE && <AbsoluteFill style={{ background: C.night }} />}
+      {t >= T_BEFORE && t < 50 && <Payoff />}
       {/* 50-56: the two lines, then the name */}
       <Line dark text="stop waiting for *updates.*" at={50.1} out={52.4} size={6.4} />
       <Line dark text="make anything you can imagine, / just by *asking.*" at={52.5} out={55.95} size={5.6} />
@@ -216,20 +258,77 @@ export const Take2: React.FC<{ narrator?: boolean }> = () => {
   );
 };
 
-/** The kawaii email: springs up from below on the 44.0 downbeat, holds, and drops away as the camera pulls back. */
+/** The kawaii email: springs up over the money page on the 43.0 downbeat and holds three seconds. */
 const Email: React.FC = () => {
   const frame = useCurrentFrame(); const t = frame / FPS;
-  if (t < 43.9 || t > 47.0) return null;
-  const inn = spring({ frame: frame - s2f(44.0), fps: FPS, config: { damping: 13, stiffness: 120, mass: 0.9 } });
-  const out = ease01(t, 46.0, 46.6, EASE_IN);
-  const dim = Math.min(inn, 1) * (1 - out);
+  if (t < T_EMAIL || t >= T_BEFORE) return null;
+  const inn = spring({ frame: frame - s2f(T_EMAIL), fps: FPS, config: { damping: 13, stiffness: 120, mass: 0.9 } });
   return (
     <AbsoluteFill>
-      <AbsoluteFill style={{ background: 'rgba(6,4,16,0.55)', opacity: dim }} />
+      <AbsoluteFill style={{ background: 'rgba(6,4,16,0.55)', opacity: Math.min(inn, 1) }} />
       <div style={{ position: 'absolute', left: 960 - 320, top: 70, width: 640,
-        transform: `translateY(${(1 - inn) * 900 + out * 1000}px) rotate(${(1 - inn) * 8 - 1.5 + out * 6}deg)` }}>
-        <KawaiiEmail w={640} at={44.0} />
+        transform: `translateY(${(1 - inn) * 900}px) rotate(${(1 - inn) * 8 - 1.5}deg)` }}>
+        <KawaiiEmail w={640} at={T_EMAIL} />
       </div>
     </AbsoluteFill>
   );
 };
+
+/** 46-50: the payoff. The app exactly as it started (46.0), then the same neon wash sweeps the whole frame
+ *  (47.0) and leaves everything the person made, at once, in their look: the conversation, their room,
+ *  their money and the morning email. WHY the wash again: it is the film's own sign for "it changed",
+ *  so the viewer reads the second picture as the first one, transformed, with no label needed. */
+const Payoff: React.FC = () => {
+  const frame = useCurrentFrame(); const t = frame / FPS;
+  const p = ease01(t, T_AFTER, T_AFTER + 0.8, EASE_IN_OUT);
+  const outro = ease01(t, 49.5, 49.95, EASE_IN);
+  const settle = (d: number) => spring({ frame: frame - s2f(T_AFTER + 0.15 + d), fps: FPS, config: { damping: 16, stiffness: 110 } });
+  const drift = ease01(t, T_AFTER, 50, (x) => x);
+  const W = BOX.w / CSS, H = BOX.h / CSS;
+  const before = (
+    <AbsoluteFill>
+      <Day />
+      <AppWindowStill z={1.0 + 0.03 * ease01(t, T_BEFORE, T_AFTER)} />
+    </AbsoluteFill>
+  );
+  // where each made thing sits (inside the 8% safe margins), and how it rises into place
+  const item = (d: number) => {
+    const s = settle(d);
+    return { opacity: Math.min(1, s * 1.4), dy: (1 - s) * 60, ds: 0.94 + 0.06 * s };
+  };
+  const home = item(0), money = item(0.08), chat = item(0.16), mail = item(0.3);
+  const after = (
+    <AbsoluteFill style={{ background: `radial-gradient(ellipse 80% 70% at 50% 55%, #1A1236 0%, ${C.night} 70%)` }}>
+      <div style={{ position: 'absolute', inset: 0, opacity: home.opacity, transform: `translateY(${home.dy}px)` }}>
+        <AppWindow segs={[{ clip: HM, from: m(HM, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<HomeUI W={W} H={H} T={HOME_T} />} z={0.5 * home.ds * (1 + 0.02 * drift)} cx={570} cy={345} glow={0.6} />
+      </div>
+      <div style={{ position: 'absolute', inset: 0, opacity: money.opacity, transform: `translateY(${money.dy}px)` }}>
+        <AppWindow segs={[{ clip: MN, from: m(MN, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<MoneyUI W={W} H={H} T={MONEY_T} />} z={0.5 * money.ds * (1 + 0.02 * drift)} cx={1350} cy={345} glow={0.6} />
+      </div>
+      <div style={{ position: 'absolute', inset: 0, opacity: chat.opacity, transform: `translateY(${chat.dy}px)` }}>
+        <AppWindow segs={[{ clip: L, from: m(L, 'swap2') + 1.2, at: T_BEFORE, out: 50, rate: 0.6 }]} z={0.58 * chat.ds * (1 + 0.02 * drift)} cx={900} cy={690} glow={1} />
+      </div>
+      <div style={{ position: 'absolute', left: 1590 - 165, top: 610, width: 330, opacity: mail.opacity, transform: `translateY(${mail.dy}px) rotate(-2deg) scale(${mail.ds})` }}>
+        <KawaiiEmail w={330} at={T_EMAIL} />
+      </div>
+    </AbsoluteFill>
+  );
+  return (
+    <AbsoluteFill style={{ opacity: 1 - outro }}>
+      {after}
+      {/* the "before" is wiped away top to bottom by the same neon light */}
+      <FrameWash p={p}>{before}</FrameWash>
+    </AbsoluteFill>
+  );
+};
+/** The starting look as the film first showed it: the light app with the first exchange, frozen. */
+const AppWindowStill: React.FC<{ z: number }> = ({ z }) => (
+  <Freeze frame={0}>
+    <AppWindow light segs={[{ clip: L, from: m(L, 'reply1', 'end') + 0.4, at: 0, out: 1 }]} z={z} cx={960} cy={540} />
+  </Freeze>
+);
+const FrameWash: React.FC<{ p: number; children: React.ReactNode }> = ({ p, children }) => (
+  <AbsoluteFill>
+    <WashOver w={{ p, before: children, dir: 'down', tint: ['#FF3FA4', '#2DE2FF'] }} W={1920} H={1080} />
+  </AbsoluteFill>
+);

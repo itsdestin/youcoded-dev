@@ -14,6 +14,10 @@
    "evalFile": "../footage/r2-tokyo.js"
   },
   {
+   "eval": "(()=>{const s=document.createElement('style');s.id='r2-clean';s.textContent='.status-bar{display:none!important} div:has(> .scroll-mask--chips){display:none!important} [data-testid=thinking-indicator] span.text-fg-dim{display:none!important}';document.head.appendChild(s);window.__workbenchAppearanceSync({showTimestamps:false});return 1})()",
+   "_why": "hide the developer clutter (status row, quick chips, thinking word, message times) so the film shows the app as a newcomer would use it"
+  },
+  {
    "eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo-blue'})"
   },
   {
