@@ -10,7 +10,7 @@ import { loadFont as loadCaveat } from '@remotion/google-fonts/Caveat';
 // in by a person over the printed line (Destin, 2026-11-19). It appears nowhere else.
 const HAND = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
 
-export type PosterProps = { idea: 'own' | 'ask' | 'quote' | 'everyone' | 'nothing' | 'own-data' | 'own-intelligence' | 'own-software' | 'own-everything'; fill?: 'buddy' | 'ghost' | 'tile' | 'list' | 'app' | 'wash' };
+export type PosterProps = { idea: 'own' | 'ask' | 'quote' | 'everyone' | 'nothing' | 'own-data' | 'own-intelligence' | 'own-software' | 'own-everything' | 'own-all'; fill?: 'buddy' | 'ghost' | 'tile' | 'list' | 'app' | 'wash' };
 type Shape = 'tall' | 'square' | 'wide';
 const useFrame = () => {
   const { width: W, height: H } = useVideoConfig();
@@ -313,8 +313,26 @@ const OwnSet: React.FC<{ noun: string; fill?: PosterProps['fill'] }> = ({ noun, 
   );
 };
 
+// ONE poster for the whole "own your ..." idea (Destin, 2026-11-20: "i didn't want to create 5 different posters...
+// the various 'own your x/y/z' should just be a single poster"). Same headline size, edges and foot as the
+// crossed-out poster it hangs beside; five lines is exactly that poster's headline height.
+const OwnAll: React.FC = () => {
+  const { W, H, shape, u, m, mt, mb } = useFrame();
+  const wide = shape === 'wide';
+  const size = wide ? Math.min(familySize(W, H, m, mt, mb, u, wide), (H - mt - mb - FOOT_H * u - 3 * u) / 4.95) : familySize(W, H, m, mt, mb, u, wide);
+  return (
+    <AbsoluteFill><BgDay /><Fill kind="wash" word="" />
+      <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
+        <Head text="own your / data. / intelligence. / software. / *everything.*" size={size} />
+        <div style={{ flex: 1, minHeight: 3 * u }} />
+        <Foot u={u} row={shape !== 'tall'} tight={shape === 'square'} />
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 // WHY 'wash' by default: Destin picked the colour field to fill the space under short headlines (2026-11-20).
-export const Poster: React.FC<PosterProps> = ({ idea, fill = 'wash' }) => idea === 'nothing' ? <Nothing fill={fill} /> : idea.startsWith('own-') ? <OwnSet noun={idea.slice(4)} fill={fill} />
+export const Poster: React.FC<PosterProps> = ({ idea, fill = 'wash' }) => idea === 'own-all' ? <OwnAll /> : idea === 'nothing' ? <Nothing fill={fill} /> : idea.startsWith('own-') ? <OwnSet noun={idea.slice(4)} fill={fill} />
   : idea === 'own' ? <Own /> : idea === 'ask' ? <Ask /> : idea === 'quote' ? <Quote /> : <Everyone />;
 
 // ---- web display adverts: the campaign line at the standard banner sizes ----

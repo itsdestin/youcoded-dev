@@ -157,6 +157,11 @@ secondary text). Centred, on lavender, held at least 2.5 s.
   the camera and need not work, as long as it is something youcoded could plausibly make by being
   asked; the making can be shortened and animated. The landing page keeps real recordings only
   (`.claude/rules/landing-page.md`).
+- **Never hide, strip or restyle parts of the app's own interface for the camera** (Destin, 2026-11-20,
+  on a film that hid the row of shortcut buttons and the status row under the message box: "you
+  completely faked the whole app window. that input bar is very clearly not ours"). Film the window
+  as it ships. To keep a shot clean, choose what is IN the app (a friendly conversation, plain
+  replies, a suitable model in the picker), never remove pieces of it.
 - **Video** works muted: text stays up at least 1.2 s + 0.25 s per word. Vertical 1080×1920 first.
   Music composed in code (`scripts/promo/music/`), mixed to about −14 LUFS.
 - **Posters:** 4:5 and 9:16, with the icon + name lockup.
