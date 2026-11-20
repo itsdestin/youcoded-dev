@@ -32,6 +32,15 @@ const seeded = (i: number) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.54
 const Q = {
   corporations: T('corporations', 'handful of *corporations'),
   technology: T('technology', 'with your *technology'),
+  haveDictated: T('haveDictated', 'corporations *have dictated'),
+  theyDecided: T('theyDecided', '*they decided'),
+  whatItWould: T('whatItWould', '*what it would cost'),
+  happenedWith: T('happenedWith', '*happened with your personal'),
+  andWeAll: T('andWeAll', '*and we all'),
+  weAccepted: T('weAccepted', '*we accepted that'),
+  aTechnology: T('aTechnology', '*a technology they'),
+  butIn: T('butIn', '*but in their'),
+  createdSomething: T('createdSomething', 'they *created something'),
   takeComputers: T('takeComputers', 'your *computers could do'),
   takeCost: T('takeCost', 'would *cost'),
   takeData: T('takeData', 'your personal *data'),
@@ -186,29 +195,69 @@ const g1 = towerGeo(TOWERS[1], 1), g2 = towerGeo(TOWERS[1], G1);
 // this zoom each thing is about a tenth of the frame tall, unmistakable on a phone.
 const ITEM_FRAME: Cam = { cx: 1005, cy: 625, z: 1.3 };
 // WHY a close-up on a cluster of new windows: the apps must read as different little apps in different looks.
-const APPS_CLOSE = aim(1, O.x + O.w / 2 + 130, O.y - 60, 2.9);
-const CAM_KEYS: [number, Cam][] = [
-  [0, aim(K.towers, 1000, 360, 1.25)],
-  [Q.technology - 0.2, { cx: 980, cy: 560, z: 1.1 }],
-  [Q.takeComputers - 0.9, { ...ITEM_FRAME, cx: 985 }],
-  [Q.takeData + 1.6, { ...ITEM_FRAME, cx: 1025 }],
-  [Q.subscribe - 0.4, { cx: 960, cy: 545, z: 1.06 }],
-  [Q.nothingEnd + 0.2, { cx: 940, cy: 700, z: 1.42 }],
-  [Q.something - 0.05, aim(K.towers, 1010, g1.lantern.y + 40, 1.6)],
+const APPS_CLOSE = aim(1, O.x + O.w / 2 + 150, O.y - 30, 2.4);
+// The three things, each in its own close shot: low on the window as the hook comes down and the thing
+// pops out, then tilting up after it toward the keep's arm. WHY: the reviewer named "the three things
+// taken" the film's strongest idea; at this zoom each thing is about a sixth of the frame tall.
+const itemLow = (i: number): Cam => { const w = ITEMS[i].win; return aim(1, w.x + w.w / 2, w.y - 50, 2.15); };
+const itemUp = (i: number): Cam => {
+  const w = ITEMS[i].win, tip = towerGeo(TOWERS[ITEMS[i].tower], 1).armTip;
+  return aim(0.8, (w.x + w.w / 2 + tip.x) / 2, (w.y + tip.y) / 2 + 30, 1.55);
+};
+const LANTERN1 = aim(K.towers, 1010, g1.lantern.y + 40, 1.6);
+// [time, camera, cut?]. A key marked cut is a hard cut: the shot before holds its last framing and the
+// picture jumps on that word. WHY cuts in the opening: every clause of the first 20 s gets its own
+// framing (towers / identical windows / each thing taken / the keeps / the strings / own nothing),
+// where one slow push left the first third looking the same at 0, 4, 8, 12, 16 and 20 s.
+type Key = [number, Cam, boolean?];
+const CAM_KEYS: Key[] = [
+  // the keeps loom, their windows igniting on "corporations"
+  [0, aim(K.towers, 985, 300, 1.62), true],
+  [Q.haveDictated - 0.01, aim(K.towers, 1000, 335, 1.48)],
+  // a lateral glide over a town of identical windows, which switch on together on "technology"
+  [Q.haveDictated, { cx: 880, cy: 790, z: 1.65 }, true],
+  [Q.theyDecided - 0.01, { cx: 1040, cy: 770, z: 1.75 }],
+  [Q.theyDecided, itemLow(0), true],
+  [ITEMS[0].take + 0.3, itemLow(0)],
+  [Q.whatItWould - 0.01, itemUp(0)],
+  [Q.whatItWould, itemLow(1), true],
+  [ITEMS[1].take + 0.3, itemLow(1)],
+  [Q.happenedWith - 0.01, itemUp(1)],
+  [Q.happenedWith, itemLow(2), true],
+  [ITEMS[2].take + 0.3, itemLow(2)],
+  [Q.andWeAll - 0.01, itemUp(2)],
+  // the keeps, now holding what they took
+  [Q.andWeAll, aim(K.towers, 1010, 380, 1.22), true],
+  [Q.weAccepted - 0.01, aim(K.towers, 1010, 400, 1.12)],
+  // from the rooftops: the strings grow down to every house
+  [Q.weAccepted, { cx: 960, cy: 615, z: 1.28 }, true],
+  [Q.own - 0.13, { cx: 990, cy: 595, z: 1.2 }],
+  // close on the identical windows as they dim on "nothing"
+  [Q.own - 0.12, aim(1, 930, 905, 2.35), true],
+  [Q.however - 0.01, aim(1, 960, 905, 2.45)],
+  // the hush: the whole night town, then up to the lantern
+  [Q.however, { cx: 980, cy: 520, z: 1.06 }, true],
+  [Q.something - 0.05, LANTERN1],
   // the wonder: pull back wide so the colour can be seen arriving over the whole world
   [Q.happenedEnd + 0.8, { cx: 980, cy: 520, z: 1.05 }],
   [Q.hubrisEnd + 0.3, aim(K.towers, 1010, 330, 1.12)],
-  [Q.intelligenceEnd, aim(K.towers, 1010, g2.lantern.y + 20, 2.05)],
-  [Q.treasure + 0.1, aim(K.towers, g2.chest.x - 10, g2.chest.y - 30, 2.8)],
-  [Q.valueEnd + 0.3, aim(K.towers, g2.chest.x - 10, g2.chest.y - 46, 2.9)],
+  [Q.aTechnology - 0.01, aim(K.towers, 1010, g2.lantern.y + 20, 2.05)],
+  // cutaway: the town below, still dim under its strings, while the keeps dream of treasure
+  [Q.aTechnology, { cx: 840, cy: 770, z: 1.7 }, true],
+  [Q.great - 0.26, { cx: 1120, cy: 755, z: 1.78 }],
+  [Q.great - 0.25, aim(K.towers, g2.chest.x - 10, g2.chest.y - 30, 2.8), true],
+  [Q.butIn - 0.01, aim(K.towers, g2.chest.x - 10, g2.chest.y - 46, 2.95)],
+  // the keeps twinkling in their excitement, then in to the lantern for the escape
+  [Q.butIn, aim(K.towers, 1000, 390, 1.15), true],
+  [Q.createdSomething, aim(K.towers, 1000, 370, 1.2)],
   [Q.beyond, aim(K.towers, 1000, g2.lantern.y + 30, 1.85)],
   // WHY a wide midpoint: following the falling light straight down at full zoom was a whip
   [(Q.control + Q.tool) / 2, { cx: 1000, cy: 330, z: 1.15 }],
   [Q.tool + 0.1, aim(1, O.x + O.w / 2, O.y - 110, 1.7)],
-  [Q.softwareEnd + 0.4, aim(1, O.x + O.w / 2, O.y - 100, 1.8)],
+  [Q.softwareEnd + 0.4, aim(1, O.x + O.w / 2, O.y - 90, 1.85)],
   [Q.asksEnd + 0.2, aim(1, O.x + O.w / 2 + 40, O.y - 150, 1.45)],
   [Q.first + 0.3, APPS_CLOSE],
-  [Q.long1, { ...APPS_CLOSE, cx: APPS_CLOSE.cx + 50, z: 3.0 }],
+  [Q.long1, { ...APPS_CLOSE, cx: APPS_CLOSE.cx + 50, z: APPS_CLOSE.z + 0.1 }],
   // WHY a long pull-back (about 2.5 s): from this close, a faster move read as a jump in the motion check
   [Q.release0 + 0.1, ITEM_FRAME],
   [Q.land2End + 0.4, { ...ITEM_FRAME, cx: 1020 }],
@@ -220,8 +269,8 @@ const CAM_KEYS: [number, Cam][] = [
 export const camAt = (t: number): Cam => {
   let i = 0;
   while (i < CAM_KEYS.length - 2 && t >= CAM_KEYS[i + 1][0]) i++;
-  const [t0, a] = CAM_KEYS[i], [t1, b] = CAM_KEYS[i + 1];
-  const p = SMOOTH(Math.max(0, Math.min(1, (t - t0) / (t1 - t0))));
+  const [t0, a] = CAM_KEYS[i], [t1, b, cut] = CAM_KEYS[i + 1];
+  const p = cut ? 0 : SMOOTH(Math.max(0, Math.min(1, (t - t0) / (t1 - t0))));
   return {
     cx: lerp(a.cx, b.cx, p) + Math.sin(t * 0.21) * 7,
     cy: lerp(a.cy, b.cy, p) + Math.sin(t * 0.15 + 1) * 5,
@@ -282,20 +331,26 @@ const Hook: React.FC<{ ax: number; ay: number; hx: number; hy: number; s: number
 );
 
 // ---------- type ----------
+// WHY one place for every word on screen, in both versions: the reviewer saw the headlines jump around the
+// frame and sit on busy tower shapes, and the boxed captions read as auto-subtitles. All type now sits in
+// one spot (lower left, on the 8% margins, fixed width), set in the scene in DM Sans, over a soft scrim.
+const SPOT = { left: '8%', bottom: '11%', width: '62%' } as const;
+const holdOut = (at: number, words: number, wanted: number) => Math.max(wanted, at + 1.2 + 0.25 * words);
+
 type HWord = { text: string; at: number; accent?: boolean };
 /** A headline whose words arrive exactly as they are spoken (DM Sans 900, lowercase, one purple word).
- *  `day` switches it to the light palette (plum on lavender) once morning has come. */
-const Headline: React.FC<{ words: HWord[]; out: number; y: number; t: number; day: boolean; size?: number }> = ({ words, out, y, t, day, size = 5.4 }) => {
+ *  `day` switches it to the light palette (plum) once morning has come. */
+const Headline: React.FC<{ words: HWord[]; out: number; t: number; day: boolean }> = ({ words, out, t, day }) => {
   const u = useU();
   if (t < words[0].at - 0.1 || t > out + 0.05) return null;
   const exit = r(t, out - 0.4, out, EASE_IN);
   return (
-    <AbsoluteFill style={{ alignItems: 'center' }}>
+    <AbsoluteFill>
       <div style={{
-        position: 'absolute', top: `${y}%`, transform: `translateY(-50%) translateY(${-exit * 0.8 * u}px)`, opacity: 1 - exit,
-        width: '84%', textAlign: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: size * u, letterSpacing: '-0.05em',
-        lineHeight: 1.04, color: day ? C.plum : C.nightText,
-        textShadow: day ? `0 0 ${2 * u}px rgba(251,246,253,0.9)` : `0 ${0.2 * u}px ${2.4 * u}px rgba(10,4,16,0.85)`,
+        position: 'absolute', ...SPOT, opacity: 1 - exit, transform: `translateY(${-exit * 0.6 * u}px)`,
+        fontFamily: DMSANS, fontWeight: 900, fontSize: 5 * u, letterSpacing: '-0.05em', lineHeight: 1.04,
+        color: day ? C.plum : C.nightText,
+        textShadow: day ? `0 0 ${1.6 * u}px rgba(251,246,253,0.9)` : `0 ${0.2 * u}px ${2 * u}px rgba(10,4,16,0.8)`,
       }}>
         {words.map((w, i) => {
           const p = r(t, w.at - 0.06, w.at + 0.42);
@@ -311,32 +366,46 @@ const Headline: React.FC<{ words: HWord[]; out: number; y: number; t: number; da
   );
 };
 
+const FINAL_OUT = END_CARD - 0.35;                   // gone before the dip to the end card
 const FINAL: HWord[] = [{ text: 'open', at: Q.open }, { text: 'source', at: Q.source }, { text: 'everything.', at: Q.everything, accent: true }];
-const HEADLINES: { words: HWord[]; out: number; y: number }[] = [
-  { words: [{ text: 'own', at: Q.own }, { text: 'nothing.', at: Q.nothing, accent: true }], out: Q.however - 0.1, y: 20 },
-  { words: [{ text: 'something', at: Q.something }, { text: 'wonderful', at: Q.wonderful, accent: true }, { text: 'happened.', at: Q.happened }], out: Q.blinded + 0.5, y: 78 },
-  { words: [{ text: 'for', at: Q.forAnyone }, { text: 'anyone', at: Q.anyone, accent: true }, { text: 'who', at: Q.who }, { text: 'asks.', at: Q.asks }], out: Q.so - 0.05, y: 20 },
-];
+const HEADLINES: { words: HWord[]; out: number }[] = [
+  { words: [{ text: 'own', at: Q.own }, { text: 'nothing.', at: Q.nothing, accent: true }], out: Q.however - 0.1 },
+  { words: [{ text: 'something', at: Q.something }, { text: 'wonderful', at: Q.wonderful, accent: true }, { text: 'happened.', at: Q.happened }], out: Q.blinded + 0.5 },
+  { words: [{ text: 'for', at: Q.forAnyone }, { text: 'anyone', at: Q.anyone, accent: true }, { text: 'who', at: Q.who }, { text: 'asks.', at: Q.asks }], out: Q.so - 0.05 },
+].map((h) => ({ ...h, out: holdOut(h.words[0].at, h.words.length, h.out) }));
 // the captions stop where the closing headline begins ("open source everything.")
 const CAPS = captions(WORDS.indexOf(cueWord('open', '*open source everything')), Q.open - 0.2);
 
-/** The muted version's captions: the whole script, one sentence at a time, on a small storybook-paper card.
- *  WHY a card at the top: over the picture the words fought the windows; the card is always clean, and the
- *  top of the frame is sky in nearly every shot, so it hides nothing the story needs. */
+/** A soft scrim behind the type spot: plum at night, lavender by morning. Wide and feathered, so it reads
+ *  as the corner of the page dimming, never as a box. */
+const Scrim: React.FC<{ o: number; dawn: number }> = ({ o, dawn }) => (o <= 0 ? null : (
+  <AbsoluteFill style={{
+    opacity: o, pointerEvents: 'none',
+    background: `radial-gradient(ellipse 72% 52% at 22% 100%, ${mix('#0E0616', '#FAF5FD', dawn).replace('rgb', 'rgba').replace(')', `,${0.62 + 0.16 * dawn})`)} 0%, ${mix('#0E0616', '#FAF5FD', dawn).replace('rgb', 'rgba').replace(')', ',0.32)')} 48%, transparent 78%)`,
+  }} />
+));
+
+/** The muted version's captions: the whole script, one sentence at a time, in the type spot. Each caption
+ *  fades out over four frames and the next fades in over six, on a scrim that never moves, so the change
+ *  reads as a soft breath, never a flicker (a cross-dissolve smeared one sentence over the other).
+ *  Bottom-anchored so a one-line caption sits where a two-line one ends. */
 const Captions: React.FC<{ t: number }> = ({ t }) => {
   const u = useU();
-  const c = CAPS.find((x) => t >= x.at - 0.05 && t <= x.out + 0.05);
-  if (!c) return null;
-  const o = Math.min(r(t, c.at, c.at + 0.3), 1 - r(t, c.out - 0.25, c.out, EASE_IN));
   return (
-    <AbsoluteFill style={{ alignItems: 'center' }}>
-      <div style={{
-        position: 'absolute', top: '8%', maxWidth: '76%', padding: `${1.1 * u}px ${2.4 * u}px ${1.3 * u}px`, borderRadius: 1.4 * u,
-        background: 'rgba(250,245,253,0.95)', boxShadow: `0 ${0.5 * u}px ${2 * u}px rgba(40,14,60,0.28), 0 0 0 1px rgba(201,176,219,0.8)`,
-        opacity: o, transform: `translateY(${(1 - o) * 0.6 * u}px)`,
-        fontFamily: DMSANS, fontWeight: 700, fontSize: 2.75 * u, lineHeight: 1.22, letterSpacing: '-0.02em', color: C.plum,
-        textAlign: 'center', textWrap: 'balance',
-      }}>{c.text}</div>
+    <AbsoluteFill>
+      {CAPS.map((c, i) => {
+        const o = Math.min(r(t, c.at - 0.01, c.at + 0.2), 1 - r(t, c.out - 0.14, c.out - 0.01, EASE_IN));
+        if (o <= 0) return null;
+        const day = dawnAt(c.at) > 0.5;
+        return (
+          <div key={i} style={{
+            position: 'absolute', ...SPOT, opacity: o, transform: `translateY(${(1 - o) * 0.4 * u}px)`,
+            fontFamily: DMSANS, fontWeight: 700, fontSize: 2.75 * u, lineHeight: 1.24, letterSpacing: '-0.02em',
+            color: day ? C.plum : C.nightText, textWrap: 'balance',
+            textShadow: day ? `0 0 ${1.2 * u}px rgba(251,246,253,0.95)` : `0 ${0.15 * u}px ${1.4 * u}px rgba(10,4,16,0.85)`,
+          }}>{c.text}</div>
+        );
+      })}
     </AbsoluteFill>
   );
 };
@@ -370,7 +439,7 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
   const flare = Math.min(r(t, Q.blinded, Q.blinded + 0.5), 1 - r(t, Q.hubrisEnd, Q.hubrisEnd + 1.2, EASE_IN_OUT));
   const excited = Math.min(r(t, Q.excitement, Q.excitement + 0.3), 1 - r(t, Q.excitementEnd + 0.4, Q.beyond, EASE_IN_OUT));
   const towerLit = (v: number, i: number) => {
-    let L = 0.22 + 0.78 * r(t, Q.corporations + v * 0.8, Q.corporations + v * 0.8 + 0.35);
+    let L = 0.45 + 0.55 * r(t, Q.corporations + v * 0.8, Q.corporations + v * 0.8 + 0.35);
     L += 0.65 * flare * (0.7 + 0.3 * seeded(i * 7));
     L *= 1 - 0.45 * excited * (0.5 + 0.5 * Math.sin(t * 11 + i * 2.3));
     const off = Q.monopolies2 + (1 - v) * 1.2;
@@ -421,7 +490,7 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
     const reach = grow * (1 - snap);
     const bx = lerp(A.x, B.x, reach), by = lerp(A.y, B.y, reach);
     const mx = (A.x + bx) / 2 + snap * 30 * side, my = (A.y + by) / 2 + 40 * (1 - snap) + snap * 60 * side;
-    strings.push(<path key={i} d={`M${A.x} ${A.y} Q${mx} ${my} ${bx} ${by}`} fill="none" stroke={stringC} strokeWidth={1.3} strokeOpacity={0.4 * (1 - snap)} />);
+    strings.push(<path key={i} d={`M${A.x} ${A.y} Q${mx} ${my} ${bx} ${by}`} fill="none" stroke={stringC} strokeWidth={1.7} strokeOpacity={0.58 * (1 - snap)} />);
   });
 
   // --- hooks and the three things ---
@@ -527,25 +596,6 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
     lightFree = (<g>{trail}<Light x={x} y={y} s={s * (1 - gone * 0.9)} t={t} squash={squash} halo={brightAI * (1 - gone)} /></g>);
   }
 
-  // --- the wonder: a wave of warm colour rolls out from the lantern across the whole world ---
-  // WHY a widening ring and not a glow: the brand bans glowing orbs; a passing front of light reads as the
-  // world changing colour, and the sky behind it has really changed (the dawn palette starts here).
-  const waveP = r(t, Q.wonderful - 0.1, Q.happenedEnd + 1.1, Easing.bezier(0.3, 0.1, 0.4, 1));
-  const lanternScreen = project(cam, K.towers, L0.x, L0.y);
-  const wave = waveP > 0 && waveP < 1 ? (
-    <g style={{ mixBlendMode: 'screen' }}>
-      <defs>
-        <radialGradient id="t1wave">
-          <stop offset="0" stopColor="#F2A6D0" stopOpacity="0" />
-          <stop offset="0.5" stopColor="#F2A6D0" stopOpacity="0" />
-          <stop offset="0.86" stopColor="#F6B8DA" stopOpacity="0.32" />
-          <stop offset="1" stopColor="#F2A6D0" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle cx={lanternScreen.x} cy={lanternScreen.y} r={60 + waveP * 2600} fill="url(#t1wave)" opacity={Math.sin(waveP * Math.PI) * 0.9} />
-    </g>
-  ) : null;
-
   // --- the cage and the treasure chest on the tallest keep ---
   const bars = [-33, -11, 11, 33].map((dx, i) => {
     const at = lerp(Q.created, Q.newTech, i / 3);
@@ -601,17 +651,18 @@ export const Take1: React.FC<{ narrator?: boolean }> = ({ narrator = true }) => 
         <g transform={layerTransform(cam, K.front)}><Row row="front" t={t} pal={pal} dawn={dawn} winState={winState} lit={houseLit} /></g>
         <g>{strings}{hooks}{things}{lightFree}</g>
         <g transform={layerTransform(cam, K.fore)}><Foreground pal={pal} /></g>
-        {wave}
         <Birds t={t} from={Q.free} o={r(t, Q.free, Q.free + 1)} />
       </svg>
-      {/* exposure: fade up from night at the start, and the hush on "However, recently…" */}
-      <AbsoluteFill style={{ background: '#07030C', opacity: Math.max(1 - r(t, 0, 1.4, EASE_IN_OUT), hush * 0.3) }} />
+      {/* the hush on "However, recently…" (no fade from black: the film opens on a full picture) */}
+      <AbsoluteFill style={{ background: '#07030C', opacity: hush * 0.3 }} />
       <Grain frame={frame} dawn={dawn} />
-      {narrator ? HEADLINES.map((h, i) => <Headline key={i} words={h.words} out={h.out} y={h.y} t={t} day={false} />) : <Captions t={t} />}
-      <Headline words={FINAL} out={END_CARD + 0.1} y={24} t={t} day={dayText} />
-      <AbsoluteFill style={{ opacity: r(t, END_CARD, END_CARD + 0.7, EASE_IN_OUT) }}>
-        <EndCard at={END_CARD + 0.2} tagline />
-      </AbsoluteFill>
+      <Scrim o={narrator ? Math.max(...[...HEADLINES, { words: FINAL, out: FINAL_OUT }].map((h) => Math.min(r(t, h.words[0].at - 0.4, h.words[0].at), 1 - r(t, h.out, h.out + 0.4)))) : 1 - r(t, FINAL_OUT, END_CARD)} dawn={dawn} />
+      {narrator ? HEADLINES.map((h, i) => <Headline key={i} words={h.words} out={h.out} t={t} day={false} />) : <Captions t={t} />}
+      <Headline words={FINAL} out={FINAL_OUT} t={t} day={dayText} />
+      {/* WHY a dip to lavender and then the card: a cross-dissolve let the houses show through the logo;
+          the morning sky is already this colour, so the dip is barely a step */}
+      <AbsoluteFill style={{ background: C.lavender, opacity: r(t, END_CARD - 0.35, END_CARD, EASE_IN_OUT) }} />
+      {t >= END_CARD && <EndCard at={END_CARD + 0.05} />}
     </AbsoluteFill>
   );
 };

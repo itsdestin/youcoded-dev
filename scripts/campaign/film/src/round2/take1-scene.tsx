@@ -239,7 +239,7 @@ export type Win = { id: number; row: RowId; house: number; x: number; y: number;
 type RoofKind = 'gable' | 'witch' | 'gambrel' | 'steep';
 export type House = {
   id: number; row: RowId; x: number; w: number; wall: number; roof: number; base: number; kind: RoofKind; skew: number;
-  chimney: number | null; smoke: boolean; door: boolean; doorTilt: number; peak: { x: number; y: number }; tone: number; theme: Theme;
+  chimney: number | null; smoke: boolean; door: boolean; doorX: number; doorTilt: number; peak: { x: number; y: number }; tone: number; theme: Theme;
 };
 type RowSpec = { seed: number; base: number; scale: number; k: number; haze: number };
 export const ROWS: Record<RowId, RowSpec> = {
@@ -265,11 +265,21 @@ const genRow = (row: RowId) => {
     const chimney = R() < 0.62 ? 0.16 + R() * 0.6 : null;
     const h: House = {
       id, row, x, w, wall, roof, base: S.base + (R() - 0.5) * 10 * sc, kind, skew: (R() - 0.5) * 0.16,
-      chimney, smoke: chimney != null && row !== 'back' && R() < 0.45, door: R() < 0.75, doorTilt: (R() - 0.5) * 8,
+      chimney, smoke: chimney != null && row !== 'back' && R() < 0.45, door: R() < 0.75, doorX: 0, doorTilt: (R() - 0.5) * 8,
       peak: { x: 0, y: 0 }, tone: Math.floor(R() * 4), theme: THEMES[0],
     };
     h.peak = { x: x + w * (0.5 + h.skew), y: h.base - wall - roof };
+    h.doorX = h.peak.x;
     houses.push(h);
+    // WHY picture windows in the middle of the front row: the camera's close look at the new youcodeds
+    // lands here, and one big window per house lets a stranger read "everyone's own little app".
+    if (row === 'front' && x + w / 2 > 900 && x + w / 2 < 1750) {
+      const pw = Math.min(78, w * 0.58), ph = pw * 0.74;
+      h.door = true; h.doorX = x + w * 0.17;
+      wins.push({ id: -1, row, house: id, x: x + w * 0.33 + (w * 0.62 - pw) / 2, y: h.base - wall + Math.max(10, (wall - ph) * 0.3), w: pw, h: ph, theme: THEMES[0], layout: 0, shutters: false });
+      x += w + (8 + R() * 34) * sc;
+      continue;
+    }
     const ww = 46 * sc, wh = 36 * sc;
     const floors = wall > 138 * sc ? 2 : 1;
     const across = Math.max(1, Math.min(3, Math.floor((w - 16 * sc) / (ww + 24 * sc))));
@@ -292,8 +302,11 @@ export const ALL_WINS: Win[] = [...TOWN.back.wins, ...TOWN.mid.wins, ...TOWN.fro
 ALL_WINS.forEach((w, i) => {
   w.id = i;
   // WHY this mixing: neighbours should never share a look, and the pattern should not repeat visibly.
-  w.theme = THEMES[(i * 5 + w.house * 7 + (w.row === 'front' ? 3 : w.row === 'mid' ? 8 : 0)) % THEMES.length];
-  w.layout = (i * 7 + w.house * 3) % LAYOUTS;
+  // (golden-ratio stepping: the old "i*5 + house*7" stepped by 12 when every house had one window, so a
+  // whole street of picture windows came out in the same theme)
+  const g = (i * 0.6180339 + (w.row === 'front' ? 0.13 : w.row === 'mid' ? 0.47 : 0.81)) % 1;
+  w.theme = THEMES[Math.floor(g * THEMES.length)];
+  w.layout = Math.floor(((i * 0.7548777 + 0.29) % 1) * LAYOUTS);
 });
 // each house wears the look of its first window once morning comes
 (['back', 'mid', 'front'] as RowId[]).forEach((r) => TOWN[r].houses.forEach((h) => { h.theme = TOWN[r].wins.find((w) => w.house === h.id)?.theme ?? THEMES[0]; }));
@@ -315,6 +328,7 @@ export const Row: React.FC<{
   const haze = (c: string) => mix(c, pal.horizon, S.haze);
   const tones = [0, 0.05, -0.05, 0.09];
   const glowK = 1 - 0.55 * dawn;           // window light matters less in daylight
+  const dayK = Math.min(1, dawn / 0.45);
   return (
     <g>
       {/* WHY: as the town lights up at night, its light lifts the sky above the roofs (a band, not a ball) */}
@@ -327,12 +341,14 @@ export const Row: React.FC<{
         {houses.map((h) => {
           const top = h.base - h.wall;
           const ov = 9 * S.scale;
-          const L = lit(h) * dawn;     // night keeps every house plum; by morning a turned house wears its app's colours
+          // night keeps every house plum; a turned house wears its app's colours fully by pre-dawn (WHY early:
+          // mixed half-way into the plum they read muddy through the middle of the dawn)
+          const L = lit(h) * dayK;
           const tone = tones[h.tone];
           const wallC = haze(mix(tone > 0 ? mix(pal.wall, '#FFFFFF', tone) : mix(pal.wall, '#000000', -tone), h.theme.wall, L));
           const roofC = haze(mix(pal.roof, h.theme.roof, L));
           const rp = roofPath(h, ov);
-          const dx = h.peak.x, dw = 13 * S.scale;
+          const dx = h.doorX, dw = 13 * S.scale;
           return (
             <g key={h.id}>
               {h.chimney != null && <rect x={h.x + h.w * h.chimney} y={top - h.roof * 0.78} width={15 * S.scale} height={h.roof * 0.62} fill={roofC} stroke={pal.ink} strokeWidth={1.3} />}
@@ -377,7 +393,7 @@ export const Row: React.FC<{
           );
         })}
       </g>
-      {wins.map((w) => <Window key={w.id} w={w} {...winState(w)} t={t} pal={pal} shutterC={mix(pal.roof, houses[w.house].theme.roof, lit(houses[w.house]) * dawn)} />)}
+      {wins.map((w) => <Window key={w.id} w={w} {...winState(w)} t={t} pal={pal} shutterC={mix(pal.roof, houses[w.house].theme.roof, lit(houses[w.house]) * dayK)} />)}
     </g>
   );
 };

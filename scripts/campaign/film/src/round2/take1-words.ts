@@ -65,7 +65,12 @@ export const captions = (finalFrom: number, finalIn: number): Caption[] => {
   for (let i = 0; i < blocks.length - 1; i++) {
     if (blocks[i].length < 5) { blocks[i + 1] = [...blocks[i], ...blocks[i + 1]]; blocks.splice(i, 1); i--; }
   }
-  const out: Caption[] = blocks.map((ws) => ({ text: ws.map((x) => x.w).join(' '), at: ws[0].start - 0.12, out: 0, words: ws.length }));
+  // WHY the ellipsis: a caption that continues the previous sentence ("a tool that can…") would otherwise
+  // start in lower case, which reads as a mistake; the leading "…" shows the thought carries on.
+  const out: Caption[] = blocks.map((ws) => {
+    const text = ws.map((x) => x.w).join(' ');
+    return { text: /^[a-z]/.test(text) ? `…${text}` : text, at: ws[0].start - 0.12, out: 0, words: ws.length };
+  });
   for (let i = 0; i < out.length; i++) {
     const c = out[i];
     const nextIn = i + 1 < out.length ? out[i + 1].at : finalIn;
