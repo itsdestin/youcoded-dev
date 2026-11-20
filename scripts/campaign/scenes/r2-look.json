@@ -2,7 +2,7 @@
  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=1&reply=campaign-r2-look&replyClock=now&title=my%20look&model=anthropic%2Fclaude-sonnet-4-6",
  "theme": "youcoded",
  "width": 2880,
- "height": 1800,
+ "height": 1960,
  "zoom": 3.2,
  "fps": 30,
  "master": true,
@@ -10,6 +10,9 @@
  "slow": 4,
  "boot": 3000,
  "actions": [
+  {
+   "eval": "(()=>{const D=Date,t=new D();t.setHours(21,12,0,0);const off=t.getTime()-D.now();const N=()=>D.now()+off;globalThis.Date=new Proxy(D,{get(a,p,r){return p==='now'?N:Reflect.get(a,p,r)},construct(a,g,n){return Reflect.construct(a,g.length?g:[N()],n)},apply(a){return new a(N()).toString()}});return 1})()"
+  },
   {
    "eval": "(()=>{const s=document.createElement('style');s.id='r2-hide';s.textContent=\"button[aria-label='Open Home'],button[aria-label='Open Finance']{display:none!important}\";document.head.appendChild(s);return 1})()"
   },
@@ -97,5 +100,5 @@
    "mark": "end"
   }
  ],
- "_why": "Filmed on the app exactly as it ships (brand guide section 8): nothing of its own interface is hidden or restyled. The two looks are real community themes that ship for the app (Cotton Candy Sky, then Meadow Mist), applied through the app's own theme switch exactly as an installed theme is. The only record-time change is a story one: the Home and $ header buttons stay hidden because the person has not made those things yet. model= picks a well-known model for the picker instead of hiding it."
+ "_why": "Filmed on the app exactly as it ships (brand guide section 8): nothing of its own interface is hidden or restyled. The two looks are real community themes that ship for the app (Cotton Candy Sky, then Meadow Mist), applied through the app's own theme switch exactly as an installed theme is. The only record-time change is a story one: the Home and $ header buttons stay hidden because the person has not made those things yet. model= picks a well-known model for the picker instead of hiding it. Recorded 1960 tall so no bubble is ever half cut off at the top; the first action sets the page clock to the evening this conversation happens (look 9:12 PM, home 6:24 PM, money 9:38 PM) so the app's own message times read true instead of a frozen 8:00 AM."
 }

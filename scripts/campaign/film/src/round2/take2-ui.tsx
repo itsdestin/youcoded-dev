@@ -197,6 +197,8 @@ export const HomeUI: React.FC<{ W: number; H: number; T: HomeTimes }> = ({ W, H,
     { name: 'LED strip', val: 0.4 + 0.18 * show(T.bigger + 1.15, 0.5), on: true, palette: true },
   ];
   const onCount = LIGHTS.filter((l) => l.on).length;
+  // WHY one house-wide count that never changes (review 2026-11-20: the chip read "6 on" over five lit
+  // lights, then silently became a room count): my room's 2 + living room 1 + kitchen pendants + porch lantern.
   const thermoBounce = Math.max(0, Math.sin(Math.min(1, Math.max(0, t - T.bigger - 1.6) / 0.32) * Math.PI)) * (t > T.bigger + 1.6 ? 1 : 0);
 
   return (
@@ -220,7 +222,7 @@ export const HomeUI: React.FC<{ W: number; H: number; T: HomeTimes }> = ({ W, H,
             <span style={{ fontSize: 11, fontWeight: 800, padding: '1px 7px', borderRadius: 10, background: MM.accent, color: '#fff', transform: `scale(${0.6 + 0.4 * sp(frame, T.rearrange + 0.45, { damping: 9 })})` }}>4</span>
           </div>
         </div>
-        <div style={rise(built(0.04))}><Chip icon="bulb" dot={MM.warmSoft} ic="#5B2E0C" text={`${Math.round(lerp(6, onCount, re))} on`} /></div>
+        <div style={rise(built(0.04))}><Chip icon="bulb" dot={MM.warmSoft} ic="#5B2E0C" text={`${onCount + OTHERS_ON} on`} /></div>
         <div style={rise(built(0.08))}><Chip icon="moon" dot={MM.lime} ic="#24410A" text="58° out · 72° in" /></div>
         <div style={{ ...rise(built(0.12)), opacity: Math.min(1, built(0.12) * 1.4) * (1 - re), display: re > 0.98 ? 'none' : 'block' }}><Chip icon="tv" dot={MM.accent} ic="#fff" text="1 playing" /></div>
         <div style={rise(built(0.16))}><Chip icon="lock" dot="#BFE3CF" ic={MM.accentDeep} text="All locked" /></div>
@@ -331,6 +333,7 @@ const OTHER_ROOMS: Room[] = [
   { name: 'Hallway', light: 'Ceiling', sub: 'Off', on: 0, extra: ['activity', 'Motion · 4 min ago'] },
   { name: 'Porch', light: 'Lantern', sub: 'On at sunset', on: 1, extra: ['lock', 'Front door · locked'] },
 ];
+const OTHERS_ON = 3;   // living room (1 of 2), kitchen pendants, porch lantern: the lit lights outside my room
 const RoomBody: React.FC<{ room: Room; w: number }> = ({ room, w }) => (
   <>
     <div style={{ position: 'absolute', left: 16, top: 13, fontSize: 16, fontWeight: 800 }}>{room.name}</div>
@@ -508,6 +511,9 @@ const BillsView: React.FC<{ frame: number; T: MoneyTimes; w: number; h: number; 
   const sum = BILLS_TOTAL * p01(frame, T.bills + 0.3, T.bills + 1.2);
   const stripX = 20, stripW = w - 40, dayX = (d: number) => stripX + ((d - 1) / 29) * stripW;
   const colW = (w - 40 - 16) / 2;
+  // WHY rows sized to the card: the 2026-11-20 re-film made the page view taller, and fixed 32 px rows left
+  // a blank band under the list. The eleven now fill the card, as a real list of bills would.
+  const rowH = Math.max(32, Math.min(46, (h - 190 - 18) / 6));
   return (
     <div style={{ position: 'absolute', inset: 0, opacity: k, transform: `translateX(${(1 - k) * 24}px)` }}>
       <div style={{ position: 'absolute', left: 18, top: 54, fontSize: 10.5, fontWeight: 800, letterSpacing: '0.12em', color: MM.muted }}>RECURRING · EVERY MONTH</div>
@@ -542,7 +548,7 @@ const BillsView: React.FC<{ frame: number; T: MoneyTimes; w: number; h: number; 
               const r = sp(frame, T.bills + 0.35 + 0.05 * i, { damping: 14, stiffness: 210 });
               const soon = b.day >= TODAY && b.day < TODAY + 7;
               return (
-                <div key={b.name} style={{ height: 32, display: 'flex', alignItems: 'center', gap: 9, borderBottom: `1px solid rgba(100,130,100,0.16)`, ...rise(r, 0), transform: `translateX(${(1 - r) * 22}px)` }}>
+                <div key={b.name} style={{ height: rowH, display: 'flex', alignItems: 'center', gap: 9, borderBottom: `1px solid rgba(100,130,100,0.16)`, ...rise(r, 0), transform: `translateX(${(1 - r) * 22}px)` }}>
                   <div style={{ width: 22, height: 22, borderRadius: 7, flex: 'none', display: 'grid', placeItems: 'center', fontSize: 11, fontWeight: 800, color: '#fff', background: KIND[b.kind].col }}>{b.name[0]}</div>
                   <div style={{ flex: 1, fontSize: 12.5, fontWeight: 800, whiteSpace: 'nowrap' }}>{b.name}</div>
                   {soon && <div style={{ fontSize: 10, fontWeight: 800, padding: '1px 7px', borderRadius: 10, background: MM.warmSoft, color: '#5B2E0C', whiteSpace: 'nowrap' }}>this week</div>}
