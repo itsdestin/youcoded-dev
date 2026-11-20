@@ -2,7 +2,7 @@
 // drawn. Nothing here knows about the script: take1.tsx decides WHEN things happen and passes plain
 // numbers (how far night has turned to morning, how lit, which windows have turned) into these drawings.
 import React from 'react';
-import { AppWin, LAYOUTS, THEMES, Theme } from './take1-apps';
+import { AppWin, GreyWin, LAYOUTS, THEMES, Theme } from './take1-apps';
 
 // ---------- camera ----------
 // WHY a parallax camera: the world is a stack of cut-paper layers at different depths (k = 0 far away,
@@ -51,16 +51,20 @@ export const palette = (d: number) => ({
   hill2: day4(['#341E44', '#4E2C64', '#D2B5E2', '#EBDCF3'], d),
   hill: day4(['#29173A', '#3F2453', '#C3A2D7', '#E2CCEE'], d),
   far: day4(['#311D41', '#4A2D63', '#CDB3E0', '#EADDF3'], d),
-  towerDark: day4(['#180C24', '#26143A', '#9E86B8', '#DED0EA'], d),
-  towerLit: day4(['#2E1C3F', '#43265D', '#B8A0CF', '#ECE2F4'], d),
+  // WHY the towers stay solid by morning: pale ghost towers read as "still standing"; they leave by folding
+  towerDark: day4(['#180C24', '#26143A', '#5E4A7A', '#6A5686'], d),
+  towerLit: day4(['#2E1C3F', '#43265D', '#7A6496', '#8670A2'], d),
   rim: day4(['#8A68A3', '#F0A3D2', '#FFE6F4', '#FFFFFF'], d),
-  ink: day4(['#0B0512', '#150A22', '#5F4676', '#9A82B2'], d),
-  wall: day4(['#352043', '#3F2650', '#AE96C3', '#D2C1DF'], d),
-  roof: day4(['#1E1029', '#291638', '#7E6098', '#9E85B6'], d),
-  ground: day4(['#1E1029', '#2A1739', '#BBA0CE', '#E8D4EE'], d),
-  fore: day4(['#140A1D', '#211130', '#957AB0', '#C2A4D6'], d),
+  // WHY the town's own colours stay deep at dawn while the sky goes light: the reviewer saw a milky lavender
+  // wash flatten the houses at the emotional peak. Only the sky, hills and clouds lift to morning; ink lines,
+  // unturned walls, roofs and ground keep their weight, so the coloured houses pop against them.
+  ink: day4(['#0B0512', '#150A22', '#2E1E40', '#2E1E40'], d),
+  wall: day4(['#352043', '#3F2650', '#7D6896', '#8F7BA8'], d),
+  roof: day4(['#1E1029', '#291638', '#4E3A66', '#5A4674'], d),
+  ground: day4(['#1E1029', '#2A1739', '#8C74A6', '#A891C0'], d),
+  fore: day4(['#140A1D', '#211130', '#5C4677', '#6A5486'], d),
   smoke: day4(['#5E4873', '#7B5A92', '#F4ECF8', '#FFFFFF'], d),
-  winOff: day4(['#241632', '#2F1C42', '#9C86B2', '#D9CCE5'], d),
+  winOff: day4(['#241632', '#2F1C42', '#6E5C86', '#7E6C96'], d),
   stars: 1 - Math.min(1, d / 0.55),
   moon: 1 - Math.min(0.85, Math.max(0, d - 0.3) * 1.3),
 });
@@ -107,9 +111,11 @@ const Flag: React.FC<{ x: number; y: number; t: number; c: string; dir?: number;
 /** One keep: a tapering, slightly crooked stone body with a lit face, a turret, a few arched windows, its
  *  crown, a flag and a hoisting arm (beam, brace and a pulley wheel that turns when the hook moves). */
 export const Tower: React.FC<{
-  d: TowerDef; g: number; t: number; pal: Pal; lit: (v: number, i: number) => number; spin: number;
-  children?: React.ReactNode; front?: React.ReactNode;
-}> = ({ d, g, t, pal, lit, spin, children, front }) => {
+  d: TowerDef; g: number; t: number; pal: Pal; lit: (v: number, i: number) => number; crack: number;
+  children?: React.ReactNode; front?: React.ReactNode; room?: string; gold?: number; flagC?: string;
+}> = ({ d, g, t, pal, lit, crack, children, front, room, gold = 0, flagC }) => {
+  // WHY one flag colour for the towers and the pennants they plant on roofs: it is how a viewer reads "theirs"
+  const fc = flagC ?? pal.rim;
   const G = towerGeo(d, g);
   const { top, cx, half } = G;
   const b = TOWER_BASE + 40;
@@ -129,7 +135,9 @@ export const Tower: React.FC<{
   const arch = (x: number, y: number, w: number, h: number, fill: string, key: string | number, op = 1) => (
     <path key={key} d={`M${x - w / 2} ${y + h / 2} V${y - h / 2 + w / 2} A${w / 2} ${w / 2} 0 0 1 ${x + w / 2} ${y - h / 2 + w / 2} V${y + h / 2} Z`} fill={fill} stroke={pal.ink} strokeWidth={1.6} opacity={op} />
   );
-  const winFill = (L: number) => (L <= 1 ? mix(pal.winOff, COLD, L) : mix(COLD, '#FFFFFF', L - 1));
+  // WHY `gold`: on "shareholder value" every tower window turns coin-gold, so the three rising towers read
+  // as bars of a chart against the night sky
+  const winFill = (L: number) => mix(L <= 1 ? mix(pal.winOff, COLD, L) : mix(COLD, '#FFFFFF', L - 1), '#F2C55C', gold);
   const wins = d.wins.map(([v, u], i) => {
     const y = b - 40 - (b - 40 - top - 30) * v; const L = lit(v, i);
     return arch(cx(y) + u * half(y), y, 15, 26, winFill(L), i);
@@ -145,7 +153,7 @@ export const Tower: React.FC<{
       {arch(tx + 3, ty - 36, 11, 20, winFill(lit(d.turret.v, 99)), 't')}
       <path d={`M${tx - 30} ${ty - 72} Q${tx - 8} ${ty - 100} ${tx + ts * 4} ${ty - 140} Q${tx + 8} ${ty - 100} ${tx + 30} ${ty - 72} Z`} fill={pal.towerDark} stroke={pal.ink} strokeWidth={1.6} />
       <path d={`M${tx - 30} ${ty - 72} Q${tx - 8} ${ty - 100} ${tx + ts * 4} ${ty - 140} L${tx - 4} ${ty - 72} Z`} fill={pal.towerLit} />
-      <Flag x={tx + ts * 4} y={ty - 138} t={t} c={pal.rim} dir={ts} s={0.7} />
+      <Flag x={tx + ts * 4} y={ty - 138} t={t} c={fc} dir={ts} s={0.7} />
     </g>
   );
   // crown
@@ -160,14 +168,14 @@ export const Tower: React.FC<{
       {arch(hx + 6, top - 30, 12, 20, winFill(lit(1, 98)), 'c')}
       <path d={`M${hx - hw * 1.08} ${top - 50} Q${hx - hw * 0.3} ${top - 130} ${tip.x} ${tip.y} Q${hx + hw * 0.32} ${top - 130} ${hx + hw * 1.08} ${top - 50} Z`} fill={pal.towerDark} stroke={pal.ink} strokeWidth={1.8} />
       <path d={`M${hx - hw * 1.08} ${top - 50} Q${hx - hw * 0.3} ${top - 130} ${tip.x} ${tip.y} Q${hx - hw * 0.1} ${top - 120} ${hx - hw * 0.2} ${top - 50} Z`} fill={pal.towerLit} />
-      <Flag x={tip.x} y={tip.y} t={t} c={pal.rim} />
+      <Flag x={tip.x} y={tip.y} t={t} c={fc} />
     </g>);
   } else if (d.crown === 'battlement') {
     crown = (<g>
       <path d={`M${hx - hw * 1.12} ${top + 2} L${hx - hw * 1.12} ${top - 34} L${hx + hw * 1.12} ${top - 34} L${hx + hw * 1.12} ${top + 2} Z`} fill={pal.towerDark} stroke={pal.ink} strokeWidth={1.6} />
       <rect x={hx - hw * 1.12} y={top - 34} width={hw * 0.75} height={36} fill={pal.towerLit} />
       {[-1, -0.5, 0, 0.5, 1].map((u, i) => <rect key={i} x={hx + u * hw * 0.92 - 9} y={top - 52} width={18} height={20} fill={pal.towerDark} stroke={pal.ink} strokeWidth={1.4} />)}
-      <Flag x={hx} y={top - 52} t={t} c={pal.rim} s={1.2} />
+      <Flag x={hx} y={top - 52} t={t} c={fc} s={1.2} />
     </g>);
   } else {
     // the lantern room: open arches where the purple light will be kindled, under a tall cone roof
@@ -176,28 +184,29 @@ export const Tower: React.FC<{
       <rect x={hx - hw - 62} y={top - 12} width={2 * hw + 124} height={14} rx={3} fill={pal.towerDark} stroke={pal.ink} strokeWidth={1.6} />
       {[-1, -0.5, 0, 0.5, 1].map((u, i) => <rect key={i} x={hx + u * (hw + 52) - 2} y={top - 30} width={4} height={18} fill={pal.towerDark} />)}
       <rect x={hx - hw - 62} y={top - 32} width={2 * hw + 124} height={4} rx={2} fill={pal.towerDark} />
-      <rect x={L.x - L.w / 2} y={L.y - L.h / 2} width={L.w} height={L.h} fill={mix(pal.ink, pal.towerDark, 0.3)} />
+      {/* WHY `room`: the top room is dark until the quill wakes, then lamp-lit so its writing can be seen */}
+      <rect x={L.x - L.w / 2} y={L.y - L.h / 2} width={L.w} height={L.h} fill={room ?? mix(pal.ink, pal.towerDark, 0.3)} />
       {children}
       {[-1, 1].map((s) => <rect key={s} x={L.x + s * (L.w / 2) - 8} y={L.y - L.h / 2} width={16} height={L.h} fill={pal.towerDark} stroke={pal.ink} strokeWidth={1.4} />)}
       <path d={`M${L.x - L.w / 2 - 18} ${L.y - L.h / 2 + 2} Q${L.x - 18} ${L.y - L.h / 2 - 60} ${L.x} ${L.y - L.h / 2 - 130} Q${L.x + 18} ${L.y - L.h / 2 - 60} ${L.x + L.w / 2 + 18} ${L.y - L.h / 2 + 2} Z`} fill={pal.towerDark} stroke={pal.ink} strokeWidth={1.8} />
       <path d={`M${L.x - L.w / 2 - 18} ${L.y - L.h / 2 + 2} Q${L.x - 18} ${L.y - L.h / 2 - 60} ${L.x} ${L.y - L.h / 2 - 130} L${L.x - 8} ${L.y - L.h / 2 + 2} Z`} fill={pal.towerLit} />
-      <Flag x={L.x} y={L.y - L.h / 2 - 128} t={t} c={pal.rim} s={1.2} />
+      <Flag x={L.x} y={L.y - L.h / 2 - 128} t={t} c={fc} s={1.2} />
       {front}
     </g>);
   }
-  // the hoisting contraption: a beam, a brace, a rope drum at the wall and a spoked pulley at the tip
-  const a = G.armTip; const sx = cx(G.armY) + d.arm * half(G.armY);
-  const arm = (<g strokeLinecap="round">
-    <line x1={sx} y1={G.armY} x2={a.x} y2={a.y} strokeWidth={8} stroke={pal.ink} />
-    <line x1={sx} y1={G.armY - 2.5} x2={a.x} y2={a.y - 2.5} strokeWidth={2} stroke={pal.rim} strokeOpacity={0.7} />
-    <line x1={sx} y1={G.armY + 44} x2={a.x - d.arm * 22} y2={a.y} strokeWidth={4} stroke={pal.ink} />
-    <circle cx={sx + d.arm * 12} cy={G.armY - 10} r={8} fill={pal.towerLit} stroke={pal.ink} strokeWidth={2} />
-    <g transform={`translate(${a.x} ${a.y + 4}) rotate(${spin})`}>
-      <circle r={11} fill={pal.towerDark} stroke={pal.ink} strokeWidth={2.2} />
-      {[0, 45, 90, 135].map((r) => <line key={r} x1={-9} y1={0} x2={9} y2={0} stroke={pal.rim} strokeWidth={1.4} transform={`rotate(${r})`} />)}
-      <circle r={2.5} fill={pal.rim} />
-    </g>
-  </g>);
+  // WHY no hoisting arm any more: the owner called the hooks "completely random"; the towers now act on the
+  // town only through things a viewer can name (a padlock, a coin meter, a pennant, a framed window).
+  // The crack: "the ever-scarce foundation of these monopolies" splits the stone at the tower's foot,
+  // a jagged line that climbs as `crack` goes 0 → 1, foreshadowing the fall.
+  const R2 = rng(Math.round(d.x) + 5);
+  const crackPts: string[] = [];
+  if (crack > 0) {
+    let y = TOWER_BASE + 30; let u = -0.15 + R2() * 0.3;
+    const stop = TOWER_BASE + 30 - (TOWER_BASE - top) * 0.78 * crack;
+    crackPts.push(`${cx(y) + u * half(y)} ${y}`);
+    while (y > stop) { y -= 16 + R2() * 14; u += (R2() - 0.5) * 0.35; crackPts.push(`${cx(Math.max(y, stop)) + u * half(y)} ${Math.max(y, stop)}`); }
+  }
+  const arm = crackPts.length > 1 ? <path d={`M${crackPts.join(' L')}`} fill="none" stroke={pal.ink} strokeWidth={6} strokeLinejoin="miter" strokeLinecap="round" /> : null;
   return (
     <g>
       <g filter="url(#cut)">
@@ -216,30 +225,28 @@ export const Tower: React.FC<{
   );
 };
 
-/** Three thin keeps further back: depth, and "a small handful" rather than three. */
-export const FarTowers: React.FC<{ lit: number; pal: Pal }> = ({ lit, pal }) => (
-  <g filter="url(#cut)">
-    {[{ x: 430, w: 64, h: 440, c: -10 }, { x: 1600, w: 72, h: 500, c: 12 }, { x: 860, w: 52, h: 340, c: 6 }].map((t, i) => (
-      <g key={i}>
-        <path d={`M${t.x - t.w / 2} 930 L${t.x - t.w * 0.36 + t.c} ${900 - t.h} L${t.x + t.w * 0.36 + t.c} ${900 - t.h} L${t.x + t.w / 2} 930 Z`} fill={pal.far} />
-        <path d={`M${t.x - t.w * 0.55 + t.c} ${902 - t.h} Q${t.x + t.c - 6} ${860 - t.h} ${t.x + t.c + 8} ${780 - t.h} Q${t.x + t.c + 8} ${860 - t.h} ${t.x + t.w * 0.55 + t.c} ${902 - t.h} Z`} fill={pal.far} />
-        {[0.2, 0.45, 0.7].map((v, r) => (
-          <rect key={r} x={t.x + t.c * v * v - 3} y={900 - t.h * v} width={6} height={10} rx={3} fill={COLD} opacity={(0.12 + 0.3 * lit) * pal.stars} />
-        ))}
-      </g>
-    ))}
-  </g>
-);
-
 // ---------- the town ----------
 // WHY three rows climbing a gentle slope: one strip of houses left the bottom of the frame empty and gave
 // the finale too few windows to set "ablaze". Three rows give depth and a town that fills the frame.
 export type RowId = 'back' | 'mid' | 'front';
 export type Win = { id: number; row: RowId; house: number; x: number; y: number; w: number; h: number; theme: Theme; layout: number; shutters: boolean };
+/** What a window shows on this frame (decided by the film):
+ *  b     how lit the glass is (0 dark, 1 lamp-lit),
+ *  grey  how far it has been switched to the towers' identical dull panel,
+ *  flip  0→1 the card-turn into this person's own app,
+ *  layout/theme  override which app and colours it turns into (a hand-me-down keeps the app, not the colours),
+ *  sketch 0→1 the quill's ink outline of a fresh, empty app being drawn over the glass. */
+export type WinLook = { b: number; grey: number; flip: number; layout?: number; theme?: Theme; sketch?: number };
 type RoofKind = 'gable' | 'witch' | 'gambrel' | 'steep';
 export type House = {
   id: number; row: RowId; x: number; w: number; wall: number; roof: number; base: number; kind: RoofKind; skew: number;
   chimney: number | null; smoke: boolean; door: boolean; doorX: number; doorTilt: number; peak: { x: number; y: number }; tone: number; theme: Theme;
+  big?: boolean;
+};
+/** A door's size: picture houses get a taller door, so the villager standing in it reads on a phone. */
+export const doorSize = (h: House) => {
+  const sc = ROWS[h.row].scale;
+  return h.big ? { hw: 17, ht: 40 } : { hw: 13 * sc, ht: 30 * sc };
 };
 type RowSpec = { seed: number; base: number; scale: number; k: number; haze: number };
 export const ROWS: Record<RowId, RowSpec> = {
@@ -273,9 +280,11 @@ const genRow = (row: RowId) => {
     houses.push(h);
     // WHY picture windows in the middle of the front row: the camera's close look at the new youcodeds
     // lands here, and one big window per house lets a stranger read "everyone's own little app".
-    if (row === 'front' && x + w / 2 > 900 && x + w / 2 < 1750) {
-      const pw = Math.min(78, w * 0.58), ph = pw * 0.74;
-      h.door = true; h.doorX = x + w * 0.17;
+    // WHY six of them now, and bigger: the fable's cast lives here (the one who asks, the neighbour, the
+    // padlocked house, the coin-meter house, the watched house), and each app must be readable on a phone.
+    if (row === 'front' && x + w / 2 > 600 && x + w / 2 < 1850) {
+      const pw = Math.min(92, w * 0.6), ph = pw * 0.74;
+      h.door = true; h.doorX = x + w * 0.17; h.big = true; h.doorTilt = 0;
       wins.push({ id: -1, row, house: id, x: x + w * 0.33 + (w * 0.62 - pw) / 2, y: h.base - wall + Math.max(10, (wall - ph) * 0.3), w: pw, h: ph, theme: THEMES[0], layout: 0, shutters: false });
       x += w + (8 + R() * 34) * sc;
       continue;
@@ -321,14 +330,18 @@ const roofPath = (h: House, ov: number) => {
 /** A row of houses: ground, bodies, chimney smoke, the light the windows throw, then the windows.
  *  `lit(h)` is how far a house has turned into its own youcoded (it takes its colours by morning). */
 export const Row: React.FC<{
-  row: RowId; t: number; pal: Pal; dawn: number; winState: (w: Win) => { b: number; flip: number };
+  row: RowId; t: number; pal: Pal; dawn: number; winState: (w: Win) => WinLook;
   lit: (h: House) => number; townGlow?: number; inside?: (w: Win) => React.ReactNode;
-}> = ({ row, t, pal, dawn, winState, lit, townGlow = 0, inside }) => {
+  door?: (h: House) => number; porch?: (h: House) => React.ReactNode; wall?: (h: House) => React.ReactNode;
+}> = ({ row, t, pal, dawn, winState, lit, townGlow = 0, inside, door, porch, wall }) => {
   const S = ROWS[row]; const { houses, wins } = TOWN[row];
-  const haze = (c: string) => mix(c, pal.horizon, S.haze);
+  // WHY less haze by morning: the pale horizon washed the back rows out at the payoff
+  const haze = (c: string) => mix(c, pal.horizon, S.haze * (1 - 0.6 * dawn));
   const tones = [0, 0.05, -0.05, 0.09];
   const glowK = 1 - 0.55 * dawn;           // window light matters less in daylight
-  const dayK = Math.min(1, dawn / 0.45);
+  // WHY colour at night too: a house that has turned should show it the moment it turns (the reviewer's
+  // favourite beat), then warm fully with the morning
+  const dayK = Math.min(1, 0.6 + dawn);
   return (
     <g>
       {/* WHY: as the town lights up at night, its light lifts the sky above the roofs (a band, not a ball) */}
@@ -359,12 +372,21 @@ export const Row: React.FC<{
               {[0.4, 0.7].map((f) => <line key={f} x1={h.x + h.w * 0.12 * (1 - f)} y1={h.peak.y + h.roof * f} x2={h.x + h.w - h.w * 0.12 * (1 - f)} y2={h.peak.y + h.roof * f} stroke={pal.ink} strokeOpacity={0.18} strokeWidth={1.1} />)}
               {/* rim light on the roof: moonlight at night, warm once the light is free */}
               <path d={rp} fill="none" stroke={pal.rim} strokeWidth={2 * S.scale + 0.4} strokeOpacity={0.55} strokeLinejoin="round" />
-              {h.door && (
-                <g transform={`rotate(${h.doorTilt} ${dx} ${h.base})`}>
-                  <path d={`M${dx - dw} ${h.base} l0 ${-30 * S.scale} a${dw} ${dw} 0 0 1 ${2 * dw} 0 l0 ${30 * S.scale} Z`} fill={mix(roofC, pal.ink, 0.25)} stroke={pal.ink} strokeWidth={1.3} />
-                  <circle cx={dx + dw * 0.5} cy={h.base - 14 * S.scale} r={1.8 * S.scale} fill={pal.rim} />
-                </g>
-              )}
+              {h.door && (() => {
+                // WHY an open door shows a warm lit hall: it is how a villager steps into the story
+                const { hw, ht } = doorSize(h);
+                const op = door?.(h) ?? 0;
+                const arch = `M${dx - hw} ${h.base} l0 ${-ht} a${hw} ${hw} 0 0 1 ${2 * hw} 0 l0 ${ht} Z`;
+                return (
+                  <g transform={`rotate(${h.doorTilt} ${dx} ${h.base})`}>
+                    <path d={arch} fill={op > 0 ? mix('#3A2448', '#F4D9B8', Math.min(1, op * 1.5)) : mix(roofC, pal.ink, 0.25)} stroke={pal.ink} strokeWidth={1.3} />
+                    {op > 0 && <path d={`M${dx - hw} ${h.base} l0 ${-ht} a${hw} ${hw} 0 0 1 ${2 * hw * (1 - 0.82 * op)} ${-hw * 0.0} L${dx - hw + 2 * hw * (1 - 0.82 * op)} ${h.base} Z`} fill={mix(roofC, pal.ink, 0.25)} stroke={pal.ink} strokeWidth={1.3} />}
+                    {op <= 0 && <circle cx={dx + hw * 0.5} cy={h.base - ht * 0.47} r={1.8 * (hw / 13)} fill={pal.rim} />}
+                    {porch?.(h)}
+                  </g>
+                );
+              })()}
+              {wall?.(h)}
             </g>
           );
         })}
@@ -383,25 +405,29 @@ export const Row: React.FC<{
         {wins.map((w) => {
           const s = winState(w);
           const app = Math.min(1, s.flip * 2);
+          const glowC = (s.theme ?? w.theme).glow;
           const pad = 14 * S.scale;
           return (
             <g key={w.id}>
-              {s.b > 0.02 && app < 1 && <rect x={w.x - pad / 2} y={w.y - pad / 2} width={w.w + pad} height={w.h + pad} fill={COLD} opacity={0.2 * s.b * (1 - app) * glowK} />}
-              {app > 0 && <rect x={w.x - pad} y={w.y - pad} width={w.w + pad * 2} height={w.h + pad * 3} fill={w.theme.glow} opacity={0.75 * app * glowK} />}
-              {app > 0 && <ellipse cx={w.x + w.w / 2} cy={houses[w.house].base + 10 * S.scale} rx={w.w * 1.3} ry={12 * S.scale} fill={w.theme.glow} opacity={0.5 * app * glowK} />}
+              {s.b > 0.02 && app < 1 && <rect x={w.x - pad / 2} y={w.y - pad / 2} width={w.w + pad} height={w.h + pad} fill="#F2D9BE" opacity={0.2 * s.b * (1 - Math.max(app, s.grey)) * glowK} />}
+              {app > 0 && <rect x={w.x - pad} y={w.y - pad} width={w.w + pad * 2} height={w.h + pad * 3} fill={glowC} opacity={0.75 * app * glowK} />}
+              {app > 0 && <ellipse cx={w.x + w.w / 2} cy={houses[w.house].base + 10 * S.scale} rx={w.w * 1.3} ry={12 * S.scale} fill={glowC} opacity={0.5 * app * glowK} />}
             </g>
           );
         })}
       </g>
-      {wins.map((w) => <Window key={w.id} w={w} {...winState(w)} t={t} pal={pal} shutterC={mix(pal.roof, houses[w.house].theme.roof, lit(houses[w.house]) * dayK)} inside={inside?.(w)} />)}
+      {wins.map((w) => <Window key={w.id} w={w} look={winState(w)} t={t} pal={pal} shutterC={mix(pal.roof, houses[w.house].theme.roof, lit(houses[w.house]) * dayK)} inside={inside?.(w)} />)}
     </g>
   );
 };
 
-/** One window: identical cold glass with a cross, which flips like a card into its own youcoded. */
-// WHY `inside`: one window shows a person at home behind the glass (the privacy beat); it is drawn
+/** One window: lamp-lit glass with a cross, which the towers switch to their identical dull panel, and
+ *  which later flips like a card into this person's own app. */
+// WHY `inside`: one window shows a person at home behind the glass (the watched house); it is drawn
 // between the glass and the cross bars, so the bars sit in front of them like a real window.
-const Window: React.FC<{ w: Win; b: number; flip: number; t: number; pal: Pal; shutterC: string; inside?: React.ReactNode }> = ({ w, b, flip, t, pal, shutterC, inside }) => {
+const Window: React.FC<{ w: Win; look: WinLook; t: number; pal: Pal; shutterC: string; inside?: React.ReactNode }> = ({ w, look, t, pal, shutterC, inside }) => {
+  const { b, grey, flip, sketch = 0 } = look;
+  const theme = look.theme ?? w.theme, layout = look.layout ?? w.layout;
   const cx = w.x + w.w / 2, cy = w.y + w.h / 2;
   // flip: 0..0.5 the old glass turns away, 0.5..1 the app turns toward us with a small overshoot
   const turned = flip >= 0.5;
@@ -410,21 +436,32 @@ const Window: React.FC<{ w: Win; b: number; flip: number; t: number; pal: Pal; s
   const pop = turned ? 1 + 0.1 * Math.sin(q * Math.PI) : 1;
   const flash = turned ? Math.max(0, 1 - q * 2.2) : 0;
   const tf = `translate(${cx} ${cy}) scale(${sx * pop} ${pop}) translate(${-cx} ${-cy})`;
-  const frame = <rect x={w.x - 2.5} y={w.y - 2.5} width={w.w + 5} height={w.h + 5} rx={2.5} fill={pal.ink} />;
+  // WHY a lit opening behind a turning card: with only the dark frame behind it, the half-turned card left a
+  // black hole in the house for a few frames (it read as a glitch); now the card turns in front of lamp light
+  const frame = (<>
+    <rect x={w.x - 2.5} y={w.y - 2.5} width={w.w + 5} height={w.h + 5} rx={2.5} fill={pal.ink} />
+    {flip > 0 && flip < 1 && <rect x={w.x} y={w.y} width={w.w} height={w.h} rx={1.5} fill={mix('#F2D9BE', theme.glow, 0.5)} />}
+  </>);
   const extras = (<>
     <rect x={w.x - 4} y={w.y + w.h + 1} width={w.w + 8} height={4} rx={1} fill={pal.rim} opacity={0.55} />
     {w.shutters && [-1, 1].map((s) => <rect key={s} x={s < 0 ? w.x - w.w * 0.36 - 3 : w.x + w.w + 3} y={w.y - 1} width={w.w * 0.36} height={w.h + 2} rx={1.5} fill={shutterC} stroke={pal.ink} strokeWidth={1.2} />)}
   </>);
   if (!turned) {
-    const glass = mix(pal.winOff, COLD, b);
+    // lamp light is warm (a home), not the old cold blue-white
+    const glass = mix(pal.winOff, '#F2D9BE', b);
+    const bars = 1 - Math.min(1, grey * 1.5);
     return (
       <g>
         {frame}
         <g transform={tf}>
           <rect x={w.x} y={w.y} width={w.w} height={w.h} rx={1.5} fill={glass} />
+          {grey > 0 && <g opacity={grey}><GreyWin x={w.x} y={w.y} w={w.w} h={w.h} /><rect x={w.x} y={w.y} width={w.w} height={w.h} fill="#1A0F24" opacity={0.78 * (1 - b)} /></g>}
+          {sketch > 0 && <Sketch w={w} p={sketch} />}
           {inside}
-          <rect x={cx - 1.3} y={w.y} width={2.6} height={w.h} fill={pal.ink} />
-          <rect x={w.x} y={cy - 1.3} width={w.w} height={2.6} fill={pal.ink} />
+          {bars > 0 && <g opacity={bars}>
+            <rect x={cx - 1.3} y={w.y} width={2.6} height={w.h} fill={pal.ink} />
+            <rect x={w.x} y={cy - 1.3} width={w.w} height={2.6} fill={pal.ink} />
+          </g>}
         </g>
         {extras}
       </g>
@@ -434,10 +471,31 @@ const Window: React.FC<{ w: Win; b: number; flip: number; t: number; pal: Pal; s
     <g>
       {frame}
       <g transform={tf}>
-        <AppWin x={w.x} y={w.y} w={w.w} h={w.h} theme={w.theme} layout={w.layout} t={t} seed={w.id} />
+        <AppWin x={w.x} y={w.y} w={w.w} h={w.h} theme={theme} layout={layout} t={t} seed={w.id} />
         {flash > 0 && <rect x={w.x} y={w.y} width={w.w} height={w.h} fill="#FFFFFF" opacity={flash * 0.7} />}
       </g>
       {extras}
+    </g>
+  );
+};
+
+/** The quill's first stroke in a window: white paper wiping over the grey, then an ink outline of an empty
+ *  app (a title strip, a side column, a few blank lines). WHY: "a tool that can make software" needs a
+ *  picture of making, before the villager says what they want. */
+const Sketch: React.FC<{ w: Win; p: number }> = ({ w, p }) => {
+  const paper = Math.min(1, p * 2.2);
+  const lines = Math.max(0, (p - 0.3) / 0.7);
+  const sw = w.h * 0.035;
+  const L = (k: number) => Math.max(0, Math.min(1, lines * 4 - k));
+  const pl = (d: string, k: number) => <path d={d} fill="none" stroke="#2A1B36" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={`${L(k)} 1`} />;
+  const X = (f: number) => w.x + f * w.w, Y = (f: number) => w.y + f * w.h;
+  return (
+    <g>
+      <rect x={w.x} y={w.y} width={w.w * paper} height={w.h} rx={1.5} fill="#FBF6EE" />
+      {pl(`M${X(0.06)} ${Y(0.22)} L${X(0.94)} ${Y(0.22)}`, 0)}
+      {pl(`M${X(0.32)} ${Y(0.22)} L${X(0.32)} ${Y(0.9)}`, 1)}
+      {pl(`M${X(0.42)} ${Y(0.4)} L${X(0.86)} ${Y(0.4)} M${X(0.42)} ${Y(0.56)} L${X(0.78)} ${Y(0.56)}`, 2)}
+      {pl(`M${X(0.42)} ${Y(0.72)} L${X(0.7)} ${Y(0.72)} M${X(0.1)} ${Y(0.38)} L${X(0.24)} ${Y(0.38)}`, 3)}
     </g>
   );
 };
@@ -524,8 +582,9 @@ export const Foreground: React.FC<{ pal: Pal }> = ({ pal }) => {
       {posts.map((p, i) => <rect key={i} x={p.x} y={hillY(p.x) - p.h} width={7} height={p.h + 6} rx={2} fill={pal.fore} transform={`rotate(${p.tilt} ${p.x} ${hillY(p.x)})`} />)}
       {posts.slice(0, -1).map((p, i) => <line key={`r${i}`} x1={p.x} y1={hillY(p.x) - p.h * 0.7} x2={posts[i + 1].x} y2={hillY(posts[i + 1].x) - posts[i + 1].h * 0.7} stroke={pal.fore} strokeWidth={4} />)}
       {bushes.map((b, i) => <g key={`b${i}`} fill={pal.fore}><circle cx={b.x} cy={hillY(b.x) + 6} r={b.r} /><circle cx={b.x + b.r * 0.9} cy={hillY(b.x) + 10} r={b.r * 0.75} /></g>)}
-      {tree(-30, 1)}
-      {tree(1950, -1)}
+      {/* WHY pushed out to the edges: in close shots of the end houses the right tree stood in front of the action */}
+      {tree(-520, 1)}
+      {tree(2480, -1)}
     </g>
   );
 };
