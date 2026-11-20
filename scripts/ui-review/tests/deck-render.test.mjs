@@ -1766,12 +1766,11 @@ json.dump(raw, open(p, 'w'))`;
       assert.match(await q("document.querySelector('.handledgrp').innerText"), /this page line is unclear to me[\s\S]*Rewrote the page line\./);
       assert.equal(await q("document.querySelectorAll('.handledtopic').length"), 1);
       // the past is one small plain line with a text link, not a box with a chevron
-      assert.match(await q("document.querySelector('.pasttext:not(.reframe)').firstChild.textContent"), /^You asked for it bigger\./);
-      // Destin, 2026-11-18: a topic he asked about returns reframed: his words and what is clearer now, quietly above the body (no bar, no dot)
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q[data-id=Q-3] .pastline .reframe')].map(e => e.innerText))")),
-        ['You asked: \u201cmake it bigger please, why is it so small?\u201d', 'Clearer now: Said what the size changes.']);
-      assert.equal(await q("document.querySelectorAll('article.q[data-id=Q-4] .reframe').length"), 0, 'a topic that was not reframed shows none');
-      assert.equal(await q("(()=>{const e=document.querySelector('article.q[data-id=Q-3] .reframe'),c=getComputedStyle(e);return c.borderLeftWidth+'|'+c.fontSize})()"), '0px|12px', 'quiet: no left bar, small text');
+      assert.match(await q("document.querySelector('.pasttext').firstChild.textContent"), /^You asked for it bigger\./);
+      // Destin, 2026-11-18 ("i hate this new section… confusing as fuck visually"): a reframed topic shows ONE past line above it, never
+      // "You asked: / Clearer now:" lines; the clearer question is the answer, his words sit under More.
+      assert.equal(await q("document.querySelectorAll('article.q[data-id=Q-3] .pastline .pasttext').length"), 1, 'one line above a reframed question');
+      assert.equal(await q("/Clearer now|You asked:/.test(document.querySelector('article.q[data-id=Q-3]').innerText)"), false, 'no note about the reframe');
       assert.equal(await q("document.querySelector('.pastline .revealbody').hidden"), true, 'the story opens on request');
       assert.equal(await q("document.querySelector('.pastline .revealbtn').textContent"), 'More');
       await q("document.querySelector('.pastline .revealbtn').click()"); await sleep(100);
@@ -2297,7 +2296,8 @@ p = os.path.join(tmp, 'rd.json'); json.dump(new, open(p, 'w')); print(p)`;
         for (let i = 0; i < 20 && !((saved().answers || {})['L-1'] || {}).ok; i++) await sleep(250);
         assert.deepEqual(((saved().answers || {})['L-1'] || {}).ok, { keep: true }, w + ': carried tick saved');
         // the question: what he picked and noted, options tagged, nothing preselected
-        assert.deepEqual(await q(`[...document.querySelectorAll('article.q[data-id="Q-1"] .pastline.diff .pasttext')].map(p => p.textContent)`), ['You picked before: Alpha', 'You said: “nearly”']);
+        // Destin, 2026-11-18: no "You picked before / You said" block above a question; the option tags carry it
+        assert.equal(await q(`document.querySelectorAll('article.q[data-id="Q-1"] .pastline.diff').length`), 0, 'no repeat block above the question');
         assert.deepEqual(await q(`[...document.querySelectorAll('article.q[data-id="Q-1"] .variant')].map(o => o.dataset.pick + ':' + [...o.querySelectorAll('.ohead .newtag, .ohead .fintag')].map(t => t.textContent).join('/'))`), ['a:Your pick before', 'c:New']);
         assert.equal(await q(`document.querySelectorAll('article.q[data-id="Q-1"] .variant.on, article.q[data-id="Q-1"] .variant.picked').length`), 0, 'his old pick is not preselected');
         // untick works and stays unticked after a reload (a tick he took off is never put back)

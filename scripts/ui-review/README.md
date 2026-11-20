@@ -436,7 +436,21 @@ quit warning), `?switchFit=summary|working|error` (every model switch asks first
 runs forever; or it fails — default: fits), `?adminPasswordFail=1` (the admin-password card's
 "ask expired" state), `?docCommentsFail=<code>` (every new document comment fails with that
 real error code, e.g. `file-open-elsewhere`), `?docCommentsDetached=1` (one comment whose
-quoted text is no longer in its file).
+quoted text is no longer in its file), `?statsFail=1` (the marketplace's install and like
+counts fail to load, for the "could not load" notice with Try again; card #134 — read in
+`fixtures/marketplace/worker-api-mock.ts`, not the shim).
+
+Added since (documented 2026-11-19; the anchors check found them undocumented):
+`?signIn=waiting` (a started Claude sign-in stays on "finish in your browser"; unset it finishes
+after 2.5 s), `?online=0` (the app's connection check says offline; on the first-run sign-in step,
+a sign-in pressed with no internet; card #236), `?mpRefresh=fail` (the marketplace list loads once,
+then every refresh fails over the older list), `?turnedOff=1` (the turned-off practice plugin, Tab
+Tidy, appears), `?pastedPicture=1` (a picture lands in the message box, for the phone-paste review
+screen; card #134), `?buddySession=<id>` (with `?view=buddy-chat`: which session the buddy chat
+shows — default the first), `?phoneBrowser=site|final|handoff` (the Browser's open card as a phone
+receives it; card #205; read in `seed-chat.ts`). `?variant=` is not a switch of its own: it is the
+example name in `WorkbenchFrame.tsx`'s note that every unknown URL setting is passed through to
+the screen being compared.
 
 Added by the UI consistency round (documented 2026-10-13; same file):
 `?friends=none|many|requests|lots` (with `?signedIn=1`: no friends, four friends showing every

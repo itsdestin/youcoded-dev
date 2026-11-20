@@ -81,7 +81,10 @@ def shared_key_specs(spec):
     twins = []
     try:
         for name in sorted(os.listdir(spec['_base'])):
-            if not name.endswith('.json') or name == spec['_stem'] + '.json' or '.answers' in name:
+            # WHY skip `<stem>.as-built.*.json` (2026-11-18): those are this deck's own kept copies of the version Destin saw, and they
+            # carry its key on purpose; counting them warned on every build of every growing deck, so real twins were lost in the noise.
+            if (not name.endswith('.json') or name == spec['_stem'] + '.json' or '.answers' in name
+                    or name.startswith(spec['_stem'] + '.as-built.')):
                 continue
             try:
                 with open(os.path.join(spec['_base'], name)) as f:
