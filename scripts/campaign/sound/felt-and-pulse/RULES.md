@@ -166,3 +166,15 @@ kind of thing"). This replaces "the song carries on unchanged":
   slapstick). Individual actions belong to the sound-effects layer.
 - **The voice always wins.** Under a narrator the music stays out of the way of speech and its
   level is set by hand section by section, not by an automatic dip on every word.
+
+After the second round of playful versions and the sound-logo alternatives (Destin, 2026-11-20):
+
+- **The songbook is built from the three versions he said yes to**: "One becomes many"
+  (playful-round2/blend, blend-1), "Pizzicato bounce" (playful-round2/chamber, chamber-1) and
+  "Rocking piano, singing strings" (chamber-2). "i think elements of all 3 could be reused/
+  recombined in different ways for different videos/scenes and such". He said no to both
+  two-piano versions and to "Mirror".
+- **Two sound logos, by situation.** "piano only if we're ever using the logo sound by itself
+  without other music, but the full blend if at the end of an ad with our other music":
+  logo-alternatives 02-piano-only when the logo plays alone; 10-full-blend when it closes a piece
+  that has music. The earlier logo (with the glassy echo, thump and air rush) is retired.
