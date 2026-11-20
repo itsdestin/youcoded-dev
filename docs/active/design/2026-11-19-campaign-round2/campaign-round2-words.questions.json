@@ -1,0 +1,366 @@
+{
+  "title": "Campaign round two: the words",
+  "key": "campaign-round2-words",
+  "out": "campaign-round2-words.questions.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "T-1",
+      "words": true,
+      "surface": "Take 1",
+      "path": "Campaign round two, the words",
+      "headline": "\"Once upon a time\": your script as a fairytale, for people already uneasy about big tech. Go ahead?",
+      "today": "Your own first half, nearly word for word, read by a quick British storybook voice over a drawn town whose identical windows each turn into a different youcoded.",
+      "problem": "It is the only take that tells the whole story of why this matters. It is also the one most likely to feel like a lecture if the voice or pictures are off.",
+      "proposal": "The full script is in the file. Pick what happens to this take.",
+      "options": [
+        {
+          "id": "make",
+          "label": "Take it to voice and rough cut",
+          "pros": [
+            "You see and hear it before deciding anything final.",
+            "It is your writing and your argument."
+          ],
+          "cons": [
+            "The most work to get right: voice, drawing and timing all have to land."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "change",
+          "label": "Right idea, wrong words",
+          "pros": [
+            "I rewrite it from your comment before spending time on pictures."
+          ],
+          "cons": [
+            "One more round of reading before anything moves."
+          ]
+        },
+        {
+          "id": "drop",
+          "label": "Drop it",
+          "pros": [
+            "Time goes to the takes you like more."
+          ],
+          "cons": [
+            "That audience gets no film of its own this round."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T-2",
+      "words": true,
+      "surface": "Take 2",
+      "path": "Campaign round two, the words",
+      "headline": "\"Make it mine\": one person changing their youcoded by asking, six requests, no narrator. Go ahead?",
+      "today": "Six typed requests, each a different kind of thing: a look, their lights, a rearrangement, a tweak, a cute daily email, a frog game for a niece. The app changes each time.",
+      "problem": "It shows the customising, which no rival can show. Without care it could slide back into a feature tour.",
+      "proposal": "The full list is in the file. Pick what happens to this take.",
+      "options": [
+        {
+          "id": "make",
+          "label": "Take it to voice and rough cut",
+          "pros": [
+            "You see and hear it before deciding anything final.",
+            "Easiest to picture yourself doing."
+          ],
+          "cons": [
+            "Every request shown has to be made for real once before I film it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "change",
+          "label": "Right idea, wrong words",
+          "pros": [
+            "I rewrite it from your comment before spending time on pictures."
+          ],
+          "cons": [
+            "One more round of reading before anything moves."
+          ]
+        },
+        {
+          "id": "drop",
+          "label": "Drop it",
+          "pros": [
+            "Time goes to the takes you like more."
+          ],
+          "cons": [
+            "That audience gets no film of its own this round."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T-3",
+      "words": true,
+      "surface": "Take 3",
+      "path": "Campaign round two, the words",
+      "headline": "\"Own everything\": \"you'll own nothing\" crossed out to \"everything\", type only, 20 to 30 seconds. Go ahead?",
+      "today": "Words only: the phrase, the hand-drawn cross-out, then own your data, intelligence, software, everything. It doubles as a poster set.",
+      "problem": "It is the cheapest to make and the most shareable. On its own it never shows what youcoded is.",
+      "proposal": "Pick what happens to this take.",
+      "options": [
+        {
+          "id": "make",
+          "label": "Take it to voice and rough cut",
+          "pros": [
+            "You see and hear it before deciding anything final.",
+            "Quick to make; posters come out of the same work."
+          ],
+          "cons": [
+            "Someone who has never heard of youcoded learns little from it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "change",
+          "label": "Right idea, wrong words",
+          "pros": [
+            "I rewrite it from your comment before spending time on pictures."
+          ],
+          "cons": [
+            "One more round of reading before anything moves."
+          ]
+        },
+        {
+          "id": "drop",
+          "label": "Drop it",
+          "pros": [
+            "Time goes to the takes you like more."
+          ],
+          "cons": [
+            "That audience gets no film of its own this round."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T-4",
+      "words": true,
+      "surface": "Take 4",
+      "path": "Campaign round two, the words",
+      "headline": "\"Purple is the new orange\": every AI model in one app, for people paying for one assistant. Go ahead?",
+      "today": "Your idea: looks that feel like each big assistant by colour and mood only, with the matching model named in the app's own picker, then a wheel of every model family.",
+      "problem": "It is the clearest reason for someone on one assistant to switch. It also leans on other companies' recognisable colours.",
+      "proposal": "I use no logos, names only as the real model picker shows them, and a \"not affiliated\" line. Before paying to place it, a lawyer should look.",
+      "options": [
+        {
+          "id": "make",
+          "label": "Take it to voice and rough cut",
+          "pros": [
+            "You see and hear it before deciding anything final.",
+            "Aims at the biggest audience: people already paying for one assistant."
+          ],
+          "cons": [
+            "Needs three new looks made for real, and carries some legal risk if placed as a paid ad."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "change",
+          "label": "Right idea, wrong words",
+          "pros": [
+            "I rewrite it from your comment before spending time on pictures."
+          ],
+          "cons": [
+            "One more round of reading before anything moves."
+          ]
+        },
+        {
+          "id": "drop",
+          "label": "Drop it",
+          "pros": [
+            "Time goes to the takes you like more."
+          ],
+          "cons": [
+            "That audience gets no film of its own this round."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T-5",
+      "words": true,
+      "surface": "Take 5",
+      "path": "Campaign round two, the words",
+      "headline": "\"Everyone's is different\": five people, one wish each, then a screen full of different youcodeds. Go ahead?",
+      "today": "Five invented first names, each with one plain wish and a youcoded that looks nothing like the others. It ends on anything one person makes, everyone can use.",
+      "problem": "It is the only take that says youcoded is made by its users. The people are invented, which is weaker than real ones.",
+      "proposal": "Pick what happens to this take.",
+      "options": [
+        {
+          "id": "make",
+          "label": "Take it to voice and rough cut",
+          "pros": [
+            "You see and hear it before deciding anything final.",
+            "Speaks to people who would never call themselves technical."
+          ],
+          "cons": [
+            "Invented people; stronger later with real requests from real users."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "change",
+          "label": "Right idea, wrong words",
+          "pros": [
+            "I rewrite it from your comment before spending time on pictures."
+          ],
+          "cons": [
+            "One more round of reading before anything moves."
+          ]
+        },
+        {
+          "id": "drop",
+          "label": "Drop it",
+          "pros": [
+            "Time goes to the takes you like more."
+          ],
+          "cons": [
+            "That audience gets no film of its own this round."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Three things to settle before I draw anything",
+      "intro": "Each of these changes what you would see in every take."
+    },
+    {
+      "id": "W-1",
+      "words": true,
+      "surface": "Take 1",
+      "path": "Campaign round two, the words",
+      "headline": "In the fairytale, which wording about the big companies should I record first?",
+      "today": "The file has both. A is yours: \"blinded by their own hubris\" and \"maximize shareholder value\". B says they were \"racing each other\" and drops the motives.",
+      "problem": "You asked to see both before choosing. Recording both doubles the voice work for that take.",
+      "proposal": "Pick what I record for the voice checkpoint.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Record both",
+          "pros": [
+            "You hear each one before deciding, as you asked."
+          ],
+          "cons": [
+            "Twice the voice work for this take."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "a",
+          "label": "A only: their motives",
+          "pros": [
+            "The sharpest, and exactly your words."
+          ],
+          "cons": [
+            "Guesses at motives; some viewers will feel told off for what they use."
+          ]
+        },
+        {
+          "id": "b",
+          "label": "B only: the race",
+          "pros": [
+            "Hard to argue with."
+          ],
+          "cons": [
+            "Less bite."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "W-2",
+      "words": true,
+      "surface": "All takes",
+      "path": "Campaign round two, the words",
+      "headline": "How far may the app pictures in ads depart from the real app?",
+      "today": "The brand guide says ads use only recordings of the real app, and claim only what today's download does. You said cleaner, animated, made-up versions are fine because the app can make anything.",
+      "problem": "Made-up screens look better. But an ad showing something a viewer then cannot get is the thing advertising rules punish, and it is what would cost trust.",
+      "proposal": "Pick the rule. I change the brand guide to match your answer.",
+      "options": [
+        {
+          "id": "proven",
+          "label": "Redrawn, but made for real first",
+          "pros": [
+            "Every example is made in youcoded once, then redrawn cleaner and animated.",
+            "Looks as good as invention, and every claim can be proven if challenged."
+          ],
+          "cons": [
+            "Each example costs extra time to make for real first."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "free",
+          "label": "Anything the app could plausibly make",
+          "pros": [
+            "Fastest, and no limit on what we show."
+          ],
+          "cons": [
+            "If a shown example turns out not to work, the ad is misleading and we find out in public."
+          ]
+        },
+        {
+          "id": "real",
+          "label": "Real recordings only",
+          "pros": [
+            "Nothing to defend."
+          ],
+          "cons": [
+            "The plainer look you already found underwhelming."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "W-3",
+      "words": true,
+      "surface": "Take 3 and posters",
+      "path": "Campaign round two, the words",
+      "headline": "\"You'll own nothing and be happy\" is tied online to a political conspiracy theory. Still use it?",
+      "today": "You want the phrase on posters with \"nothing\" crossed out. It began as a World Economic Forum video and is now a slogan in arguments about a supposed plot by global elites.",
+      "problem": "Most people will read it as a joke about subscriptions. Some will read youcoded as taking a political side, and a few news or ad outlets may refuse it.",
+      "proposal": "Pick how to use it.",
+      "options": [
+        {
+          "id": "use",
+          "label": "Use it as you described",
+          "pros": [
+            "Instantly recognisable, and the cross-out is a strong image."
+          ],
+          "cons": [
+            "Some viewers attach politics to it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "soft",
+          "label": "Use \"subscribe to everything, own nothing\"",
+          "pros": [
+            "Your own line from your script; no outside baggage."
+          ],
+          "cons": [
+            "Less instantly recognisable."
+          ]
+        },
+        {
+          "id": "posts",
+          "label": "Social posts only, not paid ads",
+          "pros": [
+            "Keeps it where the joke is understood."
+          ],
+          "cons": [
+            "Fewer people see the strongest image."
+          ]
+        }
+      ]
+    }
+  ]
+}
