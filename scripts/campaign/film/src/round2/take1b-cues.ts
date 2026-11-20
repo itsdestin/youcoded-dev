@@ -62,6 +62,7 @@ export const Q = {
   however: at('*However, recently'),
   recently: at('*recently... something'),
   something: at('*something truly'),
+  truly: at('something *truly'),
   wonderful: at('truly *wonderful'),
   happenedEnd: end('wonderful *happened.'),
   // (5) Blinded by their own hubris, these corporations created a new kind of technology: artificial intelligence. ...

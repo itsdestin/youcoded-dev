@@ -10,6 +10,7 @@
 import React from 'react';
 import { Img, staticFile } from 'remotion';
 import { DMSANS, OUTFIT } from '../brand';
+import { WORLD } from './take1b-world';
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
 const smooth = (x: number) => { const t = cl(x); return t * t * (3 - 2 * t); };
@@ -131,13 +132,13 @@ export type SameProps = {
   lock?: number | number[]; unlock?: number;
   /** 0..1 "Terms have changed" dialog; `accept` 0..1 its button pressed and the dialog gone */
   dialog?: number; accept?: number;
-  /** 0..1 the companies' new paid "ask…" bar stamped onto the screen */
-  ai?: number;
+  /** 0..1 the companies' new "ask…" bar stamped onto the screen; `price` 0..1 its $20/mo chip popping on */
+  ai?: number; price?: number;
   /** 0..1 the "something wonderful" glimpse: the screen hushes and one purple caret blinks; `caret` is the blink */
   glimpse?: { o: number; caret: boolean };
 };
 
-export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, glimpse }) => {
+export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, price = 0, glimpse }) => {
   const k = Math.min(w, h) / 100;
   const L = sameLayout(w, h, lay);
   const P = L.portrait;
@@ -179,7 +180,10 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
       {/* their machine's bar, stamped on top of everything, with its price on it (the same one as on the big screen) */}
       {ai > 0 && <div style={{ position: 'absolute', left: '50%', bottom: (P ? 0.03 : 0.05) * h, transform: `translateX(-50%) scale(${0.6 + 0.4 * smooth(ai)})`, opacity: smooth(ai * 1.5),
         height: 10 * k, width: (P ? 0.84 : 0.56) * w, boxSizing: 'border-box', padding: `0 ${1.6 * k}px 0 ${4 * k}px`, borderRadius: 10 * k, background: '#1C1424', color: '#F3EAF9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 4.2 * k, fontWeight: 500, whiteSpace: 'nowrap',
-        boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)` }}>ask…<span style={{ height: 7 * k, padding: `0 ${2.2 * k}px`, borderRadius: 7 * k, background: '#FBF5EA', color: '#21152C', fontWeight: 900, fontSize: 3.8 * k, display: 'flex', alignItems: 'center' }}>$20/mo</span></div>}
+        boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)` }}>ask…
+        {/* WHY the price arrives separately, on "value" (reviewer 2026-11-20): the treasure is that every screen gets charged at once */}
+        <span style={{ height: 7 * k, padding: `0 ${2.2 * k}px`, borderRadius: 7 * k, background: '#FBF5EA', color: '#21152C', fontWeight: 900, fontSize: 3.8 * k, display: 'flex', alignItems: 'center',
+          opacity: smooth(price * 2), transform: `scale(${price <= 0 ? 0.4 : 0.4 + 0.6 * smooth(price) + 0.18 * Math.sin(Math.PI * cl(price))})` }}>$20/mo</span></div>}
       {glimpse && glimpse.o > 0 && <>
         {/* WHY a hush and a caret, not an input bar: something new is waiting here, and nothing of the real app is drawn */}
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(250,247,252,0.82)', opacity: glimpse.o }} />
@@ -446,40 +450,67 @@ export const APPS = [Recipes, Chores, Birds, Tides, Setlist, Knit, Bus, Garden, 
 export const APP_BG = ['#FBF3E6', '#1F4E8C', '#173A2B', '#0E2A3A', '#17111C', '#C2456A', '#F5C431', '#EADFC8', '#E8483B'];
 
 // ---------------------------------------------------------------------------------------------------
-// The real app, as frames of recordings (take1b-stills.mjs). Phones get the phone recording, everything
-// wider gets the desktop window. Five real themes, chosen to differ boldly: a rainy rooftop photo, a dark
-// halftone, plain dark Midnight, a desert, and youcoded's own lavender. (Cotton Candy Sky and Meadow Mist
-// are out: the owner did not like them.)
+// The real app, photographed (take1b-themes.mjs) in six looks people asked for: a sunset (answering "make it
+// feel like sunset"), a loud poster, a dark late-edition magazine, paper and ink, a swimming pool, and the
+// community Halftone pack; each on a phone and on a desktop window, each busy and fresh. WHY these (reviewer and
+// owner, 2026-11-20): the cartoon desert, the painted city and the plain lilac read as clip art, and the window
+// that asked for a sunset showed a blue midday city. Every one of these is the real renderer wearing a real
+// theme pack, so nothing of the app is drawn here.
 // ---------------------------------------------------------------------------------------------------
-const PHONE_STILLS = ['golden', 'halftone', 'midnight', 'youcoded'].map((n) => `stills/take1b-phone-${n}.png`);
-const WIDE_STILLS = ['stills/chat--golden-sunbreak.png', 'stills/chat--halftone-dimension.png', 'stills/take1b-wide-desert.png', 'stills/chat--midnight.png', 'stills/chat--youcoded.png'];
-// the colour each theme throws onto its shelf at night (sampled by eye from the frames)
-const STILL_GLOW: Record<string, string> = { golden: '#C9B27A', halftone: '#B0335A', midnight: '#5B6B86', youcoded: '#C9A6E0', desert: '#E59A5C' };
-export const PHONE_EMPTY = 'stills/take1b-phone-empty.png';
+const THEMES = ['sunset', 'poster', 'editorial', 'paper', 'pool', 'halftone-dimension'];
+const STILL_GLOW: Record<string, string> = { sunset: '#EE8A5C', poster: '#3B55E6', editorial: '#8A5A44', paper: '#D9C9A6', pool: '#3BB4CE', 'halftone-dimension': '#B0335A', youcoded: '#C9A6E0' };
+const still = (theme: string, kind: 'phone' | 'wide', fresh: boolean) => `stills/take1b-th-${theme}-${kind}${fresh ? '-new' : ''}.png`;
+/** The phone's untouched app (youcoded's own look, nothing asked yet): the frame the request is typed into. */
+export const PHONE_EMPTY = 'stills/take1b-req-00.png';
 
-export type Look = { still: string; glow: string } | { app: number; glow: string };
+export type Look = { still: string; glow: string; key: string; theme: string } | { app: number; glow: string; key: string; theme: string };
 const hex = (c: string) => { const n = parseInt(c.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},1)`; };
-const glowOfStill = (src: string) => hex(STILL_GLOW[Object.keys(STILL_GLOW).find((k) => src.includes(k)) ?? 'youcoded']);
-/** What a device shows once it is someone's own. WHY a fixed rule on the device's number (not random): the
- *  finished wall must be a designed mosaic, and the story's three devices must get the looks the film needs. */
-export const lookFor = (d: { id: string; kind: string; app: number; cx: number; row: number }): Look => {
-  if (d.id === 'hero') return { app: 0, glow: hex(APP_BG[0]) };
-  if (d.id === 'lockLaptop') return { still: WIDE_STILLS[0], glow: glowOfStill(WIDE_STILLS[0]) };   // "what our computers can do"
-  if (d.id === 'tagTablet') return { still: WIDE_STILLS[2], glow: glowOfStill(WIDE_STILLS[2]) };    // "what it costs": the desert
-  if (d.kind === 'phone') {
-    // half the phones show the real app in a theme, half show a thing someone made in it
-    if (d.app % 2 === 0) { const src = PHONE_STILLS[(d.app / 2) % PHONE_STILLS.length]; return { still: src, glow: glowOfStill(src) }; }
-    return { app: d.app, glow: hex(APP_BG[d.app]) };
-  }
-  if (d.app % 3 === 0) {
-    // WHY spread over four made things by position: one app on every such screen (the loud yellow bus) repeated
-    // across the light wall like a pattern instead of reading as different people's things
-    const a = [3, 4, 7, 6][Math.abs(Math.round(d.cx / 300) + d.row * 3) % 4];
-    return { app: a, glow: hex(APP_BG[a]) };
-  }
-  const src = WIDE_STILLS[d.app % WIDE_STILLS.length];
-  return { still: src, glow: glowOfStill(src) };
+const stillLook = (theme: string, kind: 'phone' | 'wide', fresh: boolean): Look => ({ still: still(theme, kind, fresh), glow: hex(STILL_GLOW[theme]), key: still(theme, kind, fresh), theme });
+const appLook = (a: number): Look => ({ app: a, glow: hex(APP_BG[a]), key: `app${a}`, theme: `app${a}` });
+
+// The story's own devices get the looks their lines need.
+const FIXED: Record<string, Look> = {
+  hero: appLook(0),                                   // grandma's recipes: the thing that was asked for
+  lockLaptop: stillLook('sunset', 'wide', false),    // "what our computers can do": it asked for a sunset, and got one
+  tagTablet: stillLook('poster', 'wide', false),     // "what it costs": now free, in a loud look of its own
+  tv: stillLook('paper', 'wide', true),
 };
+
+/** A small seeded random generator. WHY seeded: the wall must come out the same on every render. */
+const rng = (seed: number) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+
+/** Every device's look, decided once for the whole wall. WHY this way (reviewer 2026-11-20: about 8 tiles
+ *  copied over and over, the same desert 15 times, in a visible pattern): each device draws from 32 different
+ *  screens (12 phone pictures, 12 window pictures, 8 made things), never repeats a screen anywhere on its own
+ *  shelf, never sits next to the same look (same theme or same made thing) on its shelf or the shelves above and
+ *  below, and prefers whatever has been used least, so the wall is a mosaic with no stripes or repeats in reach. */
+const LOOKS: Map<string, Look> = (() => {
+  const out = new Map<string, Look>();
+  const r = rng(20261120);
+  const used = new Map<string, number>();
+  const devs = [...WORLD.devs].sort((a, b) => a.row - b.row || a.cx - b.cx);
+  for (const d of devs) {
+    if (FIXED[d.id]) { out.set(d.id, FIXED[d.id]); used.set(FIXED[d.id].key, (used.get(FIXED[d.id].key) ?? 0) + 1); }
+  }
+  for (const d of devs) {
+    if (out.has(d.id)) continue;
+    const kind = d.kind === 'phone' ? 'phone' : 'wide';
+    const cands: Look[] = [...THEMES.flatMap((th) => [stillLook(th, kind, false), stillLook(th, kind, true)]), ...[1, 2, 3, 4, 5, 6, 7, 8].map(appLook)];
+    // neighbours already decided: the same shelf (all of it, for screens) and nearby on the shelves above and below
+    const shelf = WORLD.devs.filter((o) => o.row === d.row && out.has(o.id));
+    const near = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < (o.w + d.w) / 2 + 700);   // WHY 700: about two devices either way, so a close-up of three never shows one look twice
+    const ok = (c: Look) => !shelf.some((o) => out.get(o.id)!.key === c.key) && !near.some((o) => out.get(o.id)!.theme === c.theme);
+    const order = cands.map((c) => ({ c, k: (used.get(c.key) ?? 0) + r() * 0.9 })).sort((a, b) => a.k - b.k).map((x) => x.c);
+    const pick = order.find(ok) ?? order.find((c) => !near.some((o) => out.get(o.id)!.theme === c.theme)) ?? order[0];
+    out.set(d.id, pick);
+    used.set(pick.key, (used.get(pick.key) ?? 0) + 1);
+  }
+  return out;
+})();
+/** What a device shows once it is someone's own. */
+export const lookFor = (d: { id: string }): Look => LOOKS.get(d.id)!;
+/** For the render check: how many different screens the wall uses. */
+export const WALL_VARIETY = new Set([...LOOKS.values()].map((l) => l.key)).size;
 
 /** One frame of the real app, filling a screen. */
 export const RealApp: React.FC<{ src: string; w: number; h: number }> = ({ src, w, h }) => (

@@ -79,7 +79,7 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
           <div style={{ position: 'absolute', left: BZ, top: BZ, width: PW, height: PH, borderRadius: 50, overflow: 'hidden' }}>
             {mode === 'print'
               ? <SameScreen w={PW} h={PH} lay={lay} lock={1} />
-              : <OwnScreen look={{ app: 0, glow: APP_BG[0] }} w={PW} h={PH} p={1} />}
+              : <OwnScreen look={{ app: 0, glow: APP_BG[0], key: 'app0', theme: 'app0' }} w={PW} h={PH} p={1} />}
             {/* each thing on the screen is outlined the moment its line prints: copied out, still in place */}
             {mode === 'print' && PRINT_LINES.map((l, i) => {
               if (!l.item) return null;
