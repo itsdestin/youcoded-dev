@@ -53,7 +53,7 @@ Desktop, Android and a remote browser render the SAME React UI over the SAME JSO
 - **Transcript parser:** `desktop/src/main/transcript-watcher.ts` is the only one (the Kotlin mirror was deleted with the old Android app).
 
 ## Settings → Development — guard: `ipc-channels.test.ts`
-- **`ipc-channels.test.ts` derives the `dev:*` list from `IPC` in `shared/backend-contract.ts` — TEN types today** (`log-tail`, `diagnostics`, `summarize-issue`, `submit-issue`, `install-workspace`, `install-progress`, `setup-workspace`, `setup-status`, `setup-clear`, `open-session-in`), entries in `main/ipc/dev.ts`. Parity across `preload.ts` and `remote-shim.ts`; `setup-*` are `desktopOnly` (refused, not missing, on a phone).
+- **`ipc-channels.test.ts` derives the `dev:*` list from `IPC` in `shared/backend-contract.ts` — TEN types today** (`log-tail`, `diagnostics`, `summarize-issue`, `submit-issue`, `install-workspace`, `install-progress`, `setup-workspace`, `setup-status`, `setup-clear`, `open-session-in`), entries in `main/ipc/dev.ts`. Parity across `preload.ts` and `remote-shim.ts`; `setup-*`, `install-workspace` and `open-session-in` are `desktopOnly` in `ipc/dev.ts` (the parity test's DESKTOP_ONLY set lists only `setup-*`) (refused, not missing, on a phone).
 - **`submitIssue` payload is `{kind, title, summary, description, log?, label}` — NOT `{title, body, label}`.** The body is assembled in main by `buildIssueBody()`. The renderer must NOT format the environment line (`navigator.userAgent` drops the YouCoded version).
 - **GitHub labels (`bug`, `enhancement`, `youcoded-app:reported`) must exist on `itsdestin/youcoded`** — never strip one from `gh issue create`.
 - **An existing `~/youcoded-dev` gets `git pull` + `bash setup.sh`, not a clone.**
