@@ -147,3 +147,22 @@ films, but the music needs to feel consistent across all of our marketing materi
   section change that the film's big moments are timed to.
 - **One small kit of sound effects for the whole brand**, reused everywhere, so the effects are as
   consistent as the music. Nothing in it may be a thwip, zip, sweep or whoosh, or a clap or clack.
+
+Clarified again (Destin: "we should also be able to go more like upbeat/downbeat depending on what
+happens on screen maybe? like this should match industry best practices in sound design for this
+kind of thing"). This replaces "the song carries on unchanged":
+
+- **The music follows the story's feeling, the way film and advert scores normally do.** The same
+  tune can turn darker, sparser and slower-feeling for a problem, and brighter, fuller and more
+  upbeat for a hopeful turn or a payoff. What must not change is the identity: it is always the
+  songbook's tune, chords and instruments, re-dressed (the standard practice of one theme with
+  variations), never a different piece of music.
+- **Mood changes happen at story beats, a few per film.** Before scoring, the film is "spotted":
+  the handful of moments where the feeling genuinely turns are chosen, and the music changes
+  there, through a musical transition (a held chord, a breath, a build in the playing), never a
+  jolt and never a whoosh.
+- **Music answers feelings; sound effects answer actions.** The music does not imitate each thing
+  that happens on screen (scoring every action is known as "mickey-mousing" and is avoided outside
+  slapstick). Individual actions belong to the sound-effects layer.
+- **The voice always wins.** Under a narrator the music stays out of the way of speech and its
+  level is set by hand section by section, not by an automatic dip on every word.
