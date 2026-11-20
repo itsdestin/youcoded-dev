@@ -111,3 +111,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#784 fixes | Sign-in no longer says "No internet" on school or work networks that reach the internet through a proxy.
 - youcoded#784 fixes | Pictures in chats you keep using are no longer forgotten by the assistant after 90 days.
 - youcoded#769 behind | Nothing visible.
+- youcoded#770 behind | Nothing visible.
