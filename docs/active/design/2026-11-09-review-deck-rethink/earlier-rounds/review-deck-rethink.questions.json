@@ -1,0 +1,544 @@
+{
+ "title": "Rethinking the review decks",
+ "key": "review-deck-rethink-questions",
+ "out": "review-deck-rethink.questions.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "What the decks are for",
+   "intro": "I read two months of your comments about decks and about 350 decks you answered. One question to pin down the goal before the details."
+  },
+  {
+   "id": "Q-1",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Is this the right job description for the decks?",
+   "today": "Decks ask you things and record your answers. Nothing written down says what they are for.",
+   "problem": "Each chat guesses. Some ask you to approve build details; others quietly decide things you wanted to decide.",
+   "proposal": "One rule for every deck: you decide how the app looks, behaves and how its parts fit together. I decide how to build it, and show you those calls so you can overrule them. Yes makes this the rule."
+  },
+  {
+   "id": "P-2",
+   "page": "Answering a question",
+   "intro": "The two faults you named are already fixed in this deck, so you can check them as you go. Then two new ideas."
+  },
+  {
+   "id": "Q-2",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "The green circle behind \"answered\" is gone.",
+   "changed": "The circle was the big tick from the \"submitted\" screen leaking onto every answered question and stretching the card.",
+   "notice": "Press an answer here and look at the top of this card: a small green \"answered\" beside the question number, nothing else.",
+   "yes": "Yes, fixed",
+   "no": "No, still wrong"
+  },
+  {
+   "id": "Q-3",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "A question you answer by typing now has one box, not two.",
+   "changed": "A typed-answer question used to show its own box and the usual note box side by side. The note box is now left off those questions.",
+   "notice": "The very last question in this deck is a typed one. It has a single box.",
+   "yes": "Yes, keep it",
+   "no": "No, undo it"
+  },
+  {
+   "id": "Q-4",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should every question get three one-tap replies for when no option fits?",
+   "today": "Your only escapes are Other and Don't know. You used Other on 1 question in 5, and Don't know mostly to say the question itself was wrong.",
+   "problem": "I then have to guess from your note whether you mean \"outdated\", \"explain more\" or \"just handle it\".",
+   "proposal": "Add three buttons beside Something else: You decide, I need more context, That's not right. Each tells me exactly what to do next. Don't know goes away.",
+   "options": [
+    {
+     "id": "all",
+     "label": "All three",
+     "pros": [
+      "One tap instead of a typed explanation.",
+      "A wrong or outdated question gets fixed, not argued in a note."
+     ],
+     "cons": [
+      "Four small buttons under every question instead of one or two."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "two",
+     "label": "Only \"more context\" and \"not right\"",
+     "pros": [
+      "Fewer buttons."
+     ],
+     "cons": [
+      "No quick way to hand a small choice back to me."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing new to learn."
+     ],
+     "cons": [
+      "I keep guessing what an Other note means."
+     ]
+    }
+   ],
+   "picture": "pictures/answers.png",
+   "caption": "A drawing of the proposal, not built yet."
+  },
+  {
+   "id": "Q-5",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should you be able to click a spot on a picture and comment on exactly that spot?",
+   "today": "A picture step gives you Yes, No, Other and one note box for the whole picture.",
+   "problem": "You end up describing where things are: \"the card at the top\", \"the button on the right\". Some rounds repeated because I fixed the wrong part.",
+   "proposal": "Click anywhere on a picture to drop a numbered pin and type a comment for that spot. I get the exact place with each comment.",
+   "options": [
+    {
+     "id": "pins",
+     "label": "Add pins",
+     "pros": [
+      "Steer one small element without describing where it is.",
+      "Several separate comments on one picture stay separate."
+     ],
+     "cons": [
+      "One more thing on the page; the note box stays for general remarks."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Simpler page."
+     ],
+     "cons": [
+      "You keep describing locations in words."
+     ]
+    }
+   ],
+   "picture": "pictures/pins.png",
+   "caption": "A drawing of the proposal, not built yet."
+  },
+  {
+   "id": "P-3",
+   "page": "What every deck must tell you",
+   "intro": "Your most repeated complaints: not enough context, too many words, and questions built on facts that were out of date."
+  },
+  {
+   "id": "Q-6",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should every deck open with a short \"before you start\" page?",
+   "today": "A deck opens straight on its first question.",
+   "problem": "You have asked \"what is this deck?\" and \"what am I approving?\" more than once. Nothing says how long it is or what happens after.",
+   "proposal": "One opening page: what this is, how many decisions, roughly how long, what you will see, and what happens next.",
+   "options": [
+    {
+     "id": "cover",
+     "label": "Add the opening page",
+     "pros": [
+      "You know what you are in for before question one."
+     ],
+     "cons": [
+      "One extra click on every deck, even a two-question one."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "big",
+     "label": "Only on decks with 6 or more questions",
+     "pros": [
+      "Short decks stay instant."
+     ],
+     "cons": [
+      "A short deck can still be confusing."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "No extra page."
+     ],
+     "cons": [
+      "Decks keep opening cold."
+     ]
+    }
+   ],
+   "picture": "pictures/cover.png",
+   "caption": "A drawing of the proposal, not built yet."
+  },
+  {
+   "id": "Q-7",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should each question have to show how its \"Today\" fact was checked?",
+   "today": "Whoever writes a deck states what exists today from memory or old notes. Nothing makes them check.",
+   "problem": "Your worst decks asked about work that was already finished, already in progress, or never true. You then had to work out what was real.",
+   "proposal": "A deck is refused unless each question says how its Today was checked that day. You see it as one small line under the question.",
+   "options": [
+    {
+     "id": "show",
+     "label": "Check, and show the line",
+     "pros": [
+      "You can see at a glance the fact is fresh.",
+      "A lazy check is visible to you."
+     ],
+     "cons": [
+      "One more line of small text per question."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hide",
+     "label": "Check, but do not show it",
+     "pros": [
+      "Cleaner page."
+     ],
+     "cons": [
+      "You cannot tell a real check from a box-tick."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Decks are quicker to write."
+     ],
+     "cons": [
+      "Out-of-date questions keep reaching you."
+     ]
+    }
+   ],
+   "picture": "pictures/question.png",
+   "caption": "A drawing. The green \"Checked today\" line is the new part."
+  },
+  {
+   "id": "Q-8",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should a question about how something looks be refused without a picture?",
+   "today": "Written questions had no way to show a picture until today. This deck is the first that can.",
+   "problem": "On the phone-layout deck you answered Other on 7 of 10 written questions, mostly \"I need to see it\".",
+   "proposal": "Every question is marked as about looks, behaviour, wording or priorities. One about looks will not build without a picture or drawing.",
+   "options": [
+    {
+     "id": "refuse",
+     "label": "Refuse without a picture",
+     "pros": [
+      "You never have to imagine a layout from a paragraph."
+     ],
+     "cons": [
+      "Decks about looks take me longer to prepare."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "warn",
+     "label": "Allow it, but warn the writer",
+     "pros": [
+      "Faster decks."
+     ],
+     "cons": [
+      "Some picture-less look questions will still reach you."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-9",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should the builder cap how much text a question can carry?",
+   "today": "Headlines are capped at 25 words. The three explanation boxes are not; recent ones ran 60 to 150 words each.",
+   "problem": "You wrote \"wall of text\" and \"way too much copy\". Long boxes also hide two or three decisions inside one question.",
+   "proposal": "Each box is capped at 40 words and each question asks one thing. Longer is refused, so it must be split or cut.",
+   "options": [
+    {
+     "id": "cap",
+     "label": "Hard cap, refuse longer",
+     "pros": [
+      "Every question reads in seconds.",
+      "Bundled questions get split apart."
+     ],
+     "cons": [
+      "A complicated topic becomes more, smaller questions."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "warn",
+     "label": "Warn only",
+     "pros": [
+      "Room for the odd long explanation."
+     ],
+     "cons": [
+      "Warnings get ignored; text creeps back."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-10",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should decks list the small calls I made for you, instead of asking each one?",
+   "today": "Small choices are either asked as full questions or made silently.",
+   "problem": "Asked, they bury the real decisions (\"just show me what you are unsure about\"). Silent, you find surprises later.",
+   "proposal": "A \"Calls I made for you\" list at the end: one line each with my reason. Each is Fine unless you tap Change this.",
+   "options": [
+    {
+     "id": "list",
+     "label": "Add the list",
+     "pros": [
+      "Fewer questions, no silent decisions.",
+      "Overruling one is a single tap."
+     ],
+     "cons": [
+      "You must skim the list, or small calls stand by default."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "ask",
+     "label": "Ask everything as a question",
+     "pros": [
+      "Nothing stands without your answer."
+     ],
+     "cons": [
+      "Long decks; the big decisions get lost."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Shortest decks."
+     ],
+     "cons": [
+      "Silent calls keep surprising you."
+     ]
+    }
+   ],
+   "picture": "pictures/decided.png",
+   "caption": "A drawing of the proposal, not built yet."
+  },
+  {
+   "id": "P-4",
+   "page": "The final deck",
+   "intro": "You said the contract decks do not help. Every one of the last 15 was signed in under 90 seconds, most in under 10 — nobody could read 26 rows that fast."
+  },
+  {
+   "id": "Q-11",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "What should replace the contract deck?",
+   "today": "Before building, you sign a table of one-line \"done\" statements. After, the same table returns with pass or fail beside each.",
+   "problem": "It does not show what exists, how the parts fit, or how it is tested. You called it \"piss poor\" at helping you understand the build.",
+   "proposal": "A walkthrough in the normal deck style: what it is for, every screen with its picture and the decision behind it, behind the scenes in plain steps, calls I made, how it is tested, what is left. Every item can be changed.",
+   "options": [
+    {
+     "id": "twice",
+     "label": "Walkthrough before and after building",
+     "pros": [
+      "You steer the plan before work starts, then check the result against it.",
+      "Same shape both times, so the second is quick."
+     ],
+     "cons": [
+      "Two long decks per big feature. The first uses drawings for unbuilt screens."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "after",
+     "label": "Walkthrough only after building",
+     "pros": [
+      "One deck. Every picture is the finished screen."
+     ],
+     "cons": [
+      "A misunderstanding is found after the work is done."
+     ]
+    },
+    {
+     "id": "keep",
+     "label": "Keep the contract table",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "You keep signing something you do not read."
+     ],
+     "picture": "pictures/contract-today.png",
+     "caption": "The contract deck as it is today."
+    }
+   ],
+   "picture": "pictures/walkthrough.png",
+   "caption": "A drawing of two parts of a walkthrough: one screen, and one behind-the-scenes story."
+  },
+  {
+   "id": "Q-12",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "What should have to be true before a feature counts as finished?",
+   "today": "A check refuses to finish a feature until the contract is signed and a separate reviewer has graded every row.",
+   "problem": "You have told chats to skip the contract, the grader or both at least six times. The check guards a step you no longer want.",
+   "proposal": "Finished means: you submitted the walkthrough and nothing in it is still marked Change this.",
+   "options": [
+    {
+     "id": "walk",
+     "label": "Your walkthrough, nothing left to change",
+     "pros": [
+      "One clear finish line that you control."
+     ],
+     "cons": [
+      "No independent reviewer unless you ask for one."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "both",
+     "label": "Walkthrough plus a quiet independent check",
+     "pros": [
+      "A second pair of eyes tests each promise; you only hear about failures."
+     ],
+     "cons": [
+      "Slower and costs more per feature."
+     ]
+    },
+    {
+     "id": "none",
+     "label": "No check at all",
+     "pros": [
+      "Fastest."
+     ],
+     "cons": [
+      "A chat could call something finished that you never saw."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-5",
+   "page": "Fewer, sturdier decks",
+   "intro": "Last page: links that die, and too many separate decks."
+  },
+  {
+   "id": "Q-13",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should decks run from one always-on service so links stop dying?",
+   "today": "Each deck is run by the chat that made it. When that chat ends or restarts, the link dies. It also shuts down the moment you submit.",
+   "problem": "You have written \"deck died\" or \"relaunch deck\" at least 19 times, and sometimes could not tell whether your answers went through.",
+   "proposal": "One small deck service that starts when you log in to this computer. Every deck keeps a permanent link and can be reopened after submitting. This adds a login service to your system.",
+   "options": [
+    {
+     "id": "service",
+     "label": "Always-on service",
+     "pros": [
+      "Links never die; old decks stay readable.",
+      "I am told the moment you submit, whichever chat is open."
+     ],
+     "cons": [
+      "A small program always running in the background on this computer."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "restart",
+     "label": "Keep it per-chat, restart on demand",
+     "pros": [
+      "No system change."
+     ],
+     "cons": [
+      "Links still die; you still have to ask."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "\"Deck died\" continues."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-14",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should a feature have one link, with each round as a tab?",
+   "today": "Every round of review is a new deck with a new link. One cleanup grew to 108 decks.",
+   "problem": "You wrote \"way too many separate review decks and rounds\". Earlier answers are hard to find and each round starts cold.",
+   "proposal": "One link per feature. Each round is a tab, opening with \"since you last looked\": what I fixed from your comments and what is new.",
+   "options": [
+    {
+     "id": "one",
+     "label": "One link, rounds as tabs",
+     "pros": [
+      "Everything about a feature in one place.",
+      "Each round starts by showing what changed."
+     ],
+     "cons": [
+      "Needs the always-on service from the previous question."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "summary",
+     "label": "Separate links, but each opens with \"since last round\"",
+     "pros": [
+      "Works without the service."
+     ],
+     "cons": [
+      "Still many links to keep track of."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "Rounds stay scattered."
+     ]
+    }
+   ],
+   "picture": "pictures/binder.png",
+   "caption": "A drawing of the proposal, not built yet."
+  },
+  {
+   "id": "Q-15",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "What else about the decks still bothers you that I did not ask about?",
+   "today": "This deck covers answering, context, the final deck and reliability.",
+   "problem": "I only know the complaints you typed in chat or in a note.",
+   "proposal": "Anything you write here is added to the redesign. Looks, wording, speed, anything.",
+   "answer": "words",
+   "prompt": "Type anything, or leave it empty…"
+  }
+ ]
+}

@@ -2,7 +2,7 @@
 id: 150
 title: Design guide: six open questions, and tooling so chats follow it
 stage: explore
-work: session/narrow-screen-proposals
+work: session/narrow-screen-proposals, session/150-design-guidance-rebuild
 priority: P3
 tags: user-interface, dev-workspace, housekeeping
 branch: 150-design-guide-six-open-questions
@@ -13,11 +13,12 @@ area: Workspace
 side: behind
 ---
 Progress
-Done: nothing on the card's own list. The design guide has moved on: it now tracks 23 open questions, and some of the six original ones are answered as rules (where new features open, one filled button per row). Still open: how chat cards look (not covered yet), summary numbers and scores, and possibly the neutral info notice.
-Next: Destin decides the open questions on the guide's list, then the tooling is built.
+Done: Audit of all design guidance plus analysis of ~1,145 deck pushbacks; first deck answered (examples-first kit, short guide, checks, wording guide, open questions as needed, brand fixes included).
+Next: Reframe kit access and build order; then drawn designs of the kit page.
 Blocked: waiting on Destin's decisions.
 
 Chats
+- 2026-11-19 session/150-design-guidance-rebuild: chat started
 
 From the old roadmap (moved 2026-10-16)
 Design guide: 6 questions fresh builders raised that Destin has not ruled on (guide test,

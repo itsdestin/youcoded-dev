@@ -1,0 +1,33 @@
+{
+  "title": "Where the assistant's file search starts",
+  "key": "search-root-questions",
+  "out": "search-root.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Assistant file search",
+      "path": "Behind the scenes: the assistant's Grep and Glob tools in a chat",
+      "headline": "When a chat starts inside a subfolder of a project, should the assistant search the whole project?",
+      "today": "When the assistant looks for text in files or for file names without being told where, it searches only the folder the chat was opened in. If you opened the chat inside one subfolder of a project, it never looks at the rest of the project and can wrongly report that something does not exist.",
+      "problem": "The assistant can say \"nothing found\" about something sitting one folder up. It would not help the case of a chat opened in a folder with no project around it (like your home folder); that case behaves exactly as before.",
+      "proposal": "With no folder named, the assistant would search the whole project (the top folder of the project's version history). It would say so in its answer (\"Search scoped to the project root\") and file names in the results would be shown from that top folder. If the project top is your whole home folder, or there is no project, nothing changes. Naming a folder always wins. Yes keeps this; No reverts it.",
+      "options": [
+        {
+          "id": "whole-project",
+          "label": "Search the whole project",
+          "recommended": true,
+          "pros": ["The assistant stops missing things that live next to the folder it started in.", "It tells the assistant which folder it searched, so it can narrow down."],
+          "cons": ["A search can take longer in a very large project.", "File names in results are shown from the project top, not from the chat's folder, which can look different at first."]
+        },
+        {
+          "id": "keep-folder",
+          "label": "Keep searching only the chat's folder",
+          "pros": ["Nothing changes; results stay small and fast."],
+          "cons": ["The assistant keeps missing files elsewhere in the project unless it is told where to look."]
+        }
+      ]
+    }
+  ]
+}

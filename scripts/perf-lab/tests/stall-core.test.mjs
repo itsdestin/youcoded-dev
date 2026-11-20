@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { readProc, OwnedProcesses } from '../owned-processes.mjs';
+import { readProc, OwnedProcesses, boundedProcPids } from '../owned-processes.mjs';
 import { buildStallFixtures } from '../stall-fixtures.mjs';
 import { assessCoreResult, runCoreStallCase, runCoreStallCases, createLoopSampler, executeOwned } from '../stall-core.mjs';
 
@@ -92,7 +92,12 @@ test('owned real subprocess deadlines, RSS limit, malformed/empty output and exi
         : mode === 'memory' ? 'global.keep=Buffer.alloc(160*1024*1024,42);setInterval(()=>{},1000);'
         : `process.stdout.write(${JSON.stringify(mode === 'empty' ? '' : '{bad')}); process.send({type:'result-ready'});`;
       await writeFile(entry, `process.on('message',m=>{if(m.type==='go'){${body}}else if(m.type==='exit'){process.disconnect();}});process.send({type:'ready'});`);
-      const { result, observed: obs } = await executeOwned({ jobFile, jobDir, home, entry, timeoutMs: 1000, maxRssMb: 64 });
+      // WHY (card #13 flake): a 1 s wall deadline on every mode let a CPU-starved machine
+      // slow node's startup past it, so 'empty' was forced to 'timeout' instead of 'failed'
+      // (reproduced 5/25 under 32 busy loops). Only the mode that EXPECTS the deadline keeps
+      // a short one; the rest get a generous bound that is never the thing being tested.
+      const { result, observed: obs } = await executeOwned({ jobFile, jobDir, home, entry, timeoutMs: mode === 'timeout' ? 1000 : 60000, maxRssMb: 64,
+        cleanupBounds: { termWaitMs: 5000, killWaitMs: 10000 } });
       assert.equal(obs.cleanupConfirmed, true, JSON.stringify(obs));
       const verdict = assessCoreResult(result, obs);
       assert.equal(verdict.status, mode === 'timeout' ? 'timeout' : mode === 'memory' ? 'memory-limit' : 'failed', JSON.stringify(obs));
@@ -254,4 +259,12 @@ test('controller lifecycle fails closed and stops the matrix on uncertain cleanu
     assert.deepEqual(json.diagnostics.survivors, [{ pid: 123, starttime: '456', unreadable: true }]);
     assert.equal(json.diagnostics.containmentLimits, 'polling only');
   } finally { await rm(temp, { recursive: true, force: true }); }
+});
+
+test('a pid that vanishes while /proc is being listed is skipped, other read errors still fail', () => {
+  const dir = (steps) => { let i = 0; return { readSync() { const s = steps[i++]; if (s instanceof Error) throw s; return s ?? null; }, closeSync() {} }; };
+  const gone = Object.assign(new Error("ENOENT: no such file or directory, lstat '/proc/9'"), { code: 'ENOENT' });
+  assert.deepEqual([...boundedProcPids({ open: () => dir([{ name: '7' }, gone, { name: '8' }]) })], [7, 8]);
+  const denied = Object.assign(new Error('EACCES'), { code: 'EACCES' });
+  assert.throws(() => [...boundedProcPids({ open: () => dir([{ name: '7' }, denied]) })], /EACCES/);
 });

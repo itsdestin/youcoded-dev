@@ -1,0 +1,115 @@
+{
+ "title": "Review deck rethink, round 6",
+ "key": "review-deck-rethink-round6",
+ "out": "review-deck-rethink.round6.html",
+ "earlier": ["review-deck-rethink.round5.json", "review-deck-rethink.round4.json", "review-deck-rethink.round3.json", "review-deck-rethink.round2.json", "review-deck-rethink.questions.json"],
+ "steps": [
+  {"id": "P-1", "page": "Pictures inside lists", "intro": "Judge here: which layout should lists with pictures use? You said the viewer's arrows lose the question each picture belongs to, and the small pictures in rows feel tiny and uneven. These are drawings, not built. You can pick one and say what to borrow from another."},
+  {
+   "id": "Q-1", "surface": "Review decks", "path": "Any list row that carries a picture", "words": true,
+   "headline": "How should a list show its pictures?",
+   "today": "A row shows a small picture at its right. A click opens a full-window viewer with arrows to the next picture; the row's own words shrink to one line at the top.",
+   "checked": "Opened the round-5 deck today and stepped through the viewer.",
+   "problem": "Moving between pictures drops the row each belongs to, and the small pictures differ in size from row to row.",
+   "proposal": "Pick the layout. All three keep drag-to-comment on the picture.",
+   "options": [
+    {"id": "lead", "label": "A. The picture leads each row", "picture": "pictures/r6-a1.png", "pros": ["Every picture is large where it sits, beside its own words and comments.", "No separate viewer to open or close."], "cons": ["A page with many pictures gets long.", "Rows without a picture look different from rows with one."]},
+    {"id": "open", "label": "B. Even thumbnails; a row opens in place", "picture": "pictures/r6-a2.png", "pros": ["Rows stay short and every thumbnail is one size.", "The opened row keeps its words, quote and comments beside the large picture."], "cons": ["One click to see a picture large."], "recommended": true},
+    {"id": "pane", "label": "C. List at the left, one large picture pane at the right", "picture": "pictures/r6-a3.png", "pros": ["Words and picture are always side by side.", "Fast to scan: the picture follows the row you are on."], "cons": ["Needs a wide window; on a narrow one it falls back to B.", "The list column gets narrow, so rows wrap more."]}
+   ]
+  },
+  {"id": "P-2", "page": "History", "intro": "Judge here: how should a deck show how a feature evolved? You marked the History button Failed: you expected something woven into the deck that shows how each thing was refined over the rounds. These are drawings."},
+  {
+   "id": "Q-2", "surface": "Review decks", "path": "Any deck after its first round", "words": true,
+   "headline": "How should a deck show what came before?",
+   "today": "A History button opens a separate panel listing every earlier round's questions with your answers.",
+   "checked": "Opened the History panel in the round-5 deck today.",
+   "problem": "It is a log beside the deck. It does not show how one feature moved from your request to what exists now.",
+   "proposal": "Pick how history appears. The History button can stay as the full record behind any of them.",
+   "options": [
+    {"id": "trail", "label": "A. Each item carries its own trail", "picture": "pictures/r6-b1.png", "pros": ["Shows exactly how one thing was refined: your words, what was built, your reaction, round by round.", "Settled items fold shut."], "cons": ["I must keep each item linked to its earlier rounds, so a renamed item can lose its trail."], "recommended": true},
+    {"id": "since", "label": "B. The deck opens on what changed since last time", "picture": "pictures/r6-b2.png", "pros": ["Sorted by what needs your eyes: new, changed from your comments, settled.", "Each changed row quotes the comment that caused it."], "cons": ["Shows only the last step of the story, not the whole path."]},
+    {"id": "story", "label": "C. A \"how this got here\" page, round by round", "picture": "pictures/r6-b3.png", "pros": ["One page tells the whole story top to bottom."], "cons": ["Separate from the rows it describes, like the panel you disliked.", "Gets long on a topic with many rounds."]}
+   ]
+  },
+  {"id": "P-3", "page": "Editing words on real screens", "intro": "Judge here: how should dropdowns and folding parts work on a screen you are editing? One change is already made: only the popup's or menu's own words are editable now, not the chat behind it."},
+  {
+   "id": "Q-3", "surface": "Review decks", "path": "A wording page, after a build", "words": true,
+   "headline": "How should folding parts and dropdowns work while editing?",
+   "today": "The screen is a frozen copy. Nothing on it opens or folds, so the words inside a closed dropdown cannot be reached.",
+   "checked": "Tried the About popup's folding rows in the round-5 deck today.",
+   "problem": "You expected the About popup's dropdowns to still work.",
+   "proposal": "Pick how you reach words that are hidden until something is opened.",
+   "options": [
+    {"id": "switch", "label": "A switch above the screen: Use it / Edit words", "pros": ["The practice app runs for real in the frame: open any dropdown, then switch to Edit words and it freezes as it stands.", "One page covers every state of a screen."], "cons": ["The practice app must be running while the deck is open, so the deck takes longer to start.", "Edits made in one state are listed, but not shown again if you go back to Use it."], "recommended": true},
+    {"id": "states", "label": "I save each state as its own frozen copy", "pros": ["Starts instantly and cannot break.", "Every edit stays visible where you made it."], "cons": ["One page per state: a popup with four folding rows is five pages.", "A state I did not think to save cannot be edited."]}
+   ]
+  },
+  {"id": "P-4", "page": "A feature from start to finish", "intro": "Judge here: is this the order you want a feature to go in? You asked to discuss the whole flow. The first list is today's live procedure, for comparison. The second is what I propose, with your round-5 comments worked in. Change any step."},
+  {
+   "id": "C-1", "surface": "How chats work with you", "path": "The live rule files", "words": true, "context": true, "numbered": true,
+   "headline": "Today's flow, for comparison",
+   "calls": [
+    {"id": "t1", "call": "A deck of written questions.", "why": "Often about layout, which you cannot judge unseen."},
+    {"id": "t2", "call": "A fresh-eyes tester tries the idea before you see a design.", "why": "Fixed step."},
+    {"id": "t3", "call": "Design decks until you approve the pictures.", "why": "Works well when several designs are shown."},
+    {"id": "t4", "call": "A contract of numbered promises, which you sign.", "why": "Signed in seconds, never changed."},
+    {"id": "t5", "call": "The build, then a code review, the tester again and a grader.", "why": "Fixed steps."},
+    {"id": "t6", "call": "An acceptance deck.", "why": "Never changed an outcome."}
+   ]
+  },
+  {
+   "id": "S-1", "surface": "How chats work with you", "path": "The rule files every YouCoded chat reads", "words": true, "numbered": true,
+   "headline": "The flow I propose",
+   "calls": [
+    {"id": "explore", "call": "Before asking anything, the chat explores what exists: the screens, the code behind them, and what you decided before on this subject.", "why": "Your comment: a new session \"should always start with a model exploration of what exists\"."},
+    {"id": "understand", "call": "First deck, first page: \"Here is how I understand this\". Statements about what exists today and what you want, each marked Holds or Fails by you.", "why": "You like these: they let you check the chat's understanding at the start."},
+    {"id": "vent", "call": "Same deck: scope and hard-rule questions, then one large box inviting you to describe how you picture the screens and the path through them. Skippable.", "why": "Your comment: \"vent some general guidance for what my vision of ui/ux flows is\". If skipped, the chat designs freely."},
+    {"id": "reuse", "call": "The chat lists the kinds of parts each screen needs, finds existing YouCoded parts for each, and reuses them.", "why": "Every design then says which parts are reused and which are new, and why."},
+    {"id": "designs", "call": "Design decks: two to four drawn designs per screen. You pick or combine. Repeated until settled.", "why": "Choices are where you engage most."},
+    {"id": "before", "call": "A walkthrough before building: what will be built, choices I made with defaults and phone layout first, what happens behind the scenes, and the checks menu.", "why": "You said you still care about defaults and phone layout."},
+    {"id": "menu", "call": "The checks menu: every suggested check and reviewer with a Will run or Skip switch you flip. Chosen ones then run by themselves.", "why": "Your question: \"could i just request or enable our various agent-reviewers for a build from a single menu\". A working example is on the next page."},
+    {"id": "build", "call": "The build, drawing on a checklist of past speed and reliability lessons.", "why": "Your comment: builds should reuse what earlier speed fixes taught."},
+    {"id": "afterw", "call": "The same walkthrough after building, with real screenshots, check results, anything on screen you never saw before, and tests added or removed in plain words.", "why": "You asked to understand new and deleted tests better. Repeated until you change nothing."},
+    {"id": "wording", "call": "A wording pass on the real screens.", "why": "Only once the feature is mostly complete."},
+    {"id": "finish", "call": "Finished when you go through the walkthrough and change nothing. No contract; the grader is rethought or retired.", "why": "Your comment: \"we're gonna drop this\"."},
+    {"id": "flex", "call": "You can ask for a different order on any build, and small work can skip to the after-build walkthrough.", "why": "Your comment: \"i may sometimes request to change workflows\"."}
+   ]
+  },
+  {"id": "P-5", "page": "The checks menu, working", "intro": "Judge here: is this the single menu you meant? This is a working example for an imaginary build. Flip any switch; what you leave is what would run."},
+  {
+   "id": "M-1", "surface": "Review decks", "path": "The Checks page of a walkthrough, before a build", "words": true,
+   "headline": "Checks and reviewers for this build",
+   "calls": [
+    {"id": "code", "call": "Independent code review.", "why": "A fresh helper reads the changes for mistakes and security holes. Suggested on because this build touches saved data.", "result": "run"},
+    {"id": "tester", "call": "Fresh-eyes tester.", "why": "A helper with no background uses the new screens and reports where it got lost. Suggested on because there are three new screens.", "result": "run"},
+    {"id": "guide", "call": "Design-guide check.", "why": "Compares the new screens against the app's design guide and names the existing parts reused.", "result": "run"},
+    {"id": "phone", "call": "Phone-width pictures of every changed screen.", "why": "So phone layout is seen, not assumed.", "result": "run"},
+    {"id": "speed", "call": "Speed check against past lessons.", "why": "Suggested off: this build adds no lists or background work.", "result": "skip"},
+    {"id": "tests", "call": "Plain-words list of tests added and removed.", "why": "What each new test proves, and what protection a removed one gave.", "result": "run"}
+   ]
+  },
+  {"id": "P-6", "page": "Already changed, and what is next", "intro": "Judge here: anything wrong with the small changes, or with the order of what comes next?"},
+  {
+   "id": "W-1", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "Changed since round 5",
+   "calls": [
+    {"id": "scope", "call": "On a wording page, only the popup's or menu's own words are editable. The chat behind it is not.", "why": "Tested on the About popup: 0 editable pieces outside it.", "decided": "\"editable elements should be limited to menus/copy that all users will see the same\"", "result": "pass"},
+    {"id": "context", "call": "A list that is only background has dashed rows and no pencils. \"Today's flow\" on page 4 is one.", "why": "A correction goes in the page's comment box.", "decided": "\"was this supposed to be context or questions? it has edit arrows\"", "result": "pass"},
+    {"id": "switches", "call": "A check can carry a Will run or Skip switch.", "why": "Page 5 uses it.", "result": "pass"}
+   ]
+  },
+  {
+   "id": "N-1", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "Next, in this order",
+   "calls": [
+    {"id": "attach", "call": "Paste a picture or a file path into any comment box; it becomes a small labelled chip under the box, as in YouCoded.", "why": "Your comment: \"attach/paste images/filepaths in these input boxes and have them work as pills\"."},
+    {"id": "pics", "call": "Build the picture layout you pick on page 1.", "why": "Replaces the viewer's arrows."},
+    {"id": "hist", "call": "Build the history design you pick on page 2.", "why": "Replaces or backs the History button."},
+    {"id": "live", "call": "Build the dropdown answer you pick on page 3.", "why": "For wording pages."},
+    {"id": "rules", "call": "Write the flow from page 4 into the rule files, as you leave it.", "why": "None of it is written yet."},
+    {"id": "buttons", "call": "Restyle the Yes, No and Something else buttons to the design guide.", "why": "Still open from round 4."}
+   ]
+  }
+ ]
+}

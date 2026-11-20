@@ -7,7 +7,7 @@ paths:
   - "docs/active/design/**/*.json"
   - "scripts/ui-review/deck/**"
   - "scripts/ui-review/templates/**"
-last_verified: 2026-09-06
+last_verified: 2026-11-12
 verify:
   - path: scripts/ui-review/templates/questions.json
   - path: scripts/ui-review/deck/AUTHORING.md
@@ -18,68 +18,46 @@ verify:
 
 # Review deck — the one surface Destin answers on
 
-`python3 scripts/ui-review/review-cards.py <command> <spec.json>`. Every question, choice and
-sign-off is a slide.
+`python3 scripts/ui-review/review-cards.py <command> <spec.json>`; copy `scripts/ui-review/templates/<kind>.json`. Every field and refusal: `deck/AUTHORING.md`.
 
-## Pick the kind, copy `scripts/ui-review/templates/<kind>.json`
+## Pick the kind
 
-| You want Destin to… | Kind | He answers |
-|---|---|---|
-| approve a change he can see | **Approve** | Yes keep it / No revert it |
-| approve something unbuilt (`"new": true`: built, no before) | **Brief** | Yes build it / No leave it (`new`: keep/remove) |
-| pick between pictures of ONE thing | **Choice** | pick one / None of these |
-| pick between written options over a picture | **Decide** | pick one |
-| judge motion or a transition | **Clip** | Yes / No |
-| operate a design, or a real screen | **Live** | Yes / No, or pick one |
-| say whether it WORKS, in a dev window | **Try-it** | Yes it works / No |
-| ask anything answered in words — unbuilt, or already built | **Question** | Yes / No / Don't know, or pick one |
-| sign off the definition of done | **Contract** | Yes that is done / No |
-| accept the graded contract | **Acceptance** | Yes accept / No |
+| You want Destin to… | Kind |
+|---|---|
+| approve a change he can see | **Approve** |
+| approve something unbuilt (`"new": true` once built) | **Brief** |
+| pick between pictures of ONE thing | **Choice** |
+| pick between written options over a picture | **Decide** |
+| judge motion | **Clip** |
+| operate a design or real screen / say it WORKS in a dev window | **Live** / **Try-it** |
+| answer in words | **Question** |
+| see a whole piece of work, before and after | **Walkthrough** |
+| retype on-screen wording AFTER the build | a **screen** step |
 
-Other + a note is on every slide. Several designs of one thing are ONE Choice slide, never a
-yes/no each. A slide shot in one theme carries `themes`.
+Contract and Acceptance decks are retired. Several designs of one thing are ONE Choice slide.
 
-**A trade-off is a Question, even when the thing already works.** Hung off an Approve slide
-it reaches him as a picture he has seen and three ideas in one paragraph — on 2026-09-09 that
-came back as "confused". If "should it" fits your headline, it is a Question.
+## One growing deck per feature
+**Invariant:** `"grows": true`: one spec re-built each round, AT one `"stage"`; a change he asked for needs `reopened` or `resolved`; his question or confusion is never answered in chat: reopen it `reframed` (fuller today/problem, answer in the options; chat only says the round is ready); answered topics fold into "Previously answered"; reopening never resets settled rows and shows what changed; every current-stage page has a bar. A page is a heading + one line; a title, row or page line citing a round or step id is refused (use `more`). An open row's `more` is today/problem/change; `"visual": true` needs a `picture`. A page comment, general note or note on an unanswered step is never dropped: the next build is refused until `notes_handled` says what was done. After the build: lists "What changed while building", and "Found in review" once reviewed. A hands-off deck (`"hands_off": "<his words>"`, stage `after` only) adds "What you asked for" and "Choices I made for you".
+**Why:** "sticky note" (round 8). **Guard:** `test_grows.py`, `test_rethink.py`, `test_hands_off.py`, `deck-render.test.mjs`.
+
+## Lists: one kind of row per card
+**Invariant:** a words step with `calls` is ONE kind: facts (`context: true`), his to change (a tick and a pencil per row; a row neither ticked nor changed is "not looked at", never approved), or results (every row a `result`; run/skip checks carry `more`). Mixed lists are refused. `trail`, `more`, `reuse`, `picture`/`before` follow AUTHORING.md; no "Details" fold. Each page ends with a comment box.
+**Why:** "why is it the only row in this card that has the… chip?" (round 8). **Guard:** `test_rethink.py`, `test_serve.py`, `deck-render.test.mjs`.
+
+## Wording is edited on the real screen, after the build
+**Invariant:** no text box per label. A `screen` step edits `shoot --page`'s scrubbed still copy; `liveScreen` adds Use it / Edit words. Only if he asks earlier: a frozen mockup (`mock/<name>.html`).
+**Why:** boxes were "terrible". **Guard:** `deck-render.test.mjs`, `freeze.test.mjs`.
 
 ## A slide decides, not the deck
-**Invariant:** `runs`/`labels` (which pictures), `"pick": "several"` and `"answer": "words"` sit
-on the SLIDE, so one deck holds a "build it?" picture, a before/after pair and a typed answer.
-`"stage"` — ask/design/contract/review/accept — checks that stage's slide is there, and forbids
-nothing. **Why:** deck-level shapes split one ask across decks (2026-09-06).
-**Guard:** `test_spec.py`, `test_words.py`.
+**Invariant:** `runs`/`labels`, `"pick": "several"`, `"answer": "words"` sit on the SLIDE. **Guard:** `test_spec.py`, `test_words.py`.
 
-## A question deck is pages he scrolls
-**Invariant:** questions share one page until a marker (`{"id", "page", "intro"}`) starts the
-next; add one only where the thinking shifts. A contract deck is never paged. **Why:** "my mindset
-should stay in the same place for each set of questions" (2026-09-04). **Guard:** `test_words.py`.
-
-## A question carries its four parts as fields
-**Invariant:** `today`, `problem`, `proposal`, and `options[]` with `pros`, `cons`, at most one
-`recommended: true`. Inline "Today: … Pro: …" or "(recommended)" in a label is refused.
-**Why:** 28 of 28 options drifted in two days. **Guard:** `test_words.py`.
+## Questions have four fields
+**Invariant:** questions share a page until a marker (`{"id", "page", "intro"}`). Each carries `today`, `problem`, `proposal`, `options[]` (`pros`, `cons`, at most one `recommended`); inline "Today: …" is refused. Every Today says how it was checked (`checked`).
+**Guard:** `test_words.py`.
 
 ## Look at it before he does
-**Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve`; re-serve an answered
-deck with `--no-build`. **Why:** four defective decks in a day; rebuilding "fixes" a past
-decision. **Guard:** candidate.
+**Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve` (answered decks: `--no-build`); paste the printed link as the turn's last line. A change under `deck/` ships only after `selfie` shows him before and after.
+**Guard:** `test_cli.py`.
 
-## A change under `deck/` is reviewed on a deck
-**Invariant:** an edit to `page.css`, `page.js`, `page.html.tmpl` or `deck/fixture/` ships only
-after `selfie` has shown him before and after it. **Why:** five generated steps read as "no idea
-what i'm looking at". **Guard:** `test_cli.py`. Depth for every field: `deck/AUTHORING.md`.
-
-## The deck opens on the theme his app is on
-**Invariant:** never hand-order `themes` — `build`/`serve` read the app's; `--theme` overrides,
-`"theme": "fixed"` pins. **Why:** every deck opened on Midnight. **Guard:** `test_spec.py`.
-
-## One picture per step, live alongside
-**Invariant:** a picture step shows ONE full-window shot (several states = several steps), so it
-reads at full width; offer the matching live page as optional extra, never instead.
-**Why:** "this deck is hard to review cuz the images are small"; then "go back to screenshots…
-i also want to be able to test live alongside" (Destin, 2026-10-15). **Guard:** candidate.
-
-## The link goes in chat as the last line of the turn
-**Invariant:** `serve` prints `[deck] http://…` and opens nothing; paste it last, stop.
-**Why:** he opens it when ready. **Guard:** candidate.
+## Themes and pictures
+**Invariant:** never hand-order `themes` (the deck opens on his app's theme; `--theme` overrides, `"theme": "fixed"` pins). A picture step shows ONE full-window shot. **Guard:** `test_spec.py`.

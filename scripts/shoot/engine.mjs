@@ -303,7 +303,9 @@ async function makeTab(b, targetId) {
     browser: b, sessionId,
     /** Every protocol event for this tab (console messages, navigations…). Returns an unsubscribe. */
     on: (f) => { listeners.add(f); return () => listeners.delete(f); },
-    still: (cap) => evaluate(STILL(cap), cap + 5000).catch(() => -1),
+    // WHY cap + 35 s (2026-11-18): a page's hold (__shootHoldUntil) can extend the wait up to 30 s past the cap; the old
+    // cap + 5 s command limit gave up first, returned -1 and let the picture be taken while the page was still loading.
+    still: (cap) => evaluate(STILL(cap), cap + 35_000).catch(() => -1),
     takeErrors: () => { const e = errors; errors = []; return [...new Set(e)].slice(0, 5); },
     /** `reducedEffects`: turn on the app's own Reduce visual effects setting (its localStorage key)
      *  before the page loads — journeys only; pictures leave it alone so they keep showing the glass. */

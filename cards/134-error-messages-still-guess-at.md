@@ -14,8 +14,8 @@ side: both
 work: session/round4-silent-places, session/134-phone-paste
 ---
 Progress
-Done: Deck 2026-11-19 phone-paste: Destin said yes (branch session/134-phone-paste). He asked how paste works in the Android app and about paste previews; answered in chat
-Next: Merge on his word; Android app paste of pictures is a separate piece
+Done: Phone-browser picture paste merged (PR #771, de7cbe952)
+Next: Android app picture paste is a separate piece if wanted
 Blocked: Nothing
 
 Chats

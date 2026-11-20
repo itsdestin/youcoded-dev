@@ -1,0 +1,32 @@
+{
+ "deck": "pinned-bubbles-review",
+ "started": "2026-11-18T21:51:13.189Z",
+ "submitted": "2026-11-18T21:53:08Z",
+ "cur": 2,
+ "answers": {
+  "P-1": {
+   "v": "yes",
+   "t": 1795038694689,
+   "seconds": 21,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G-1": {
+   "note": "i think we should make this better reflect standard youcoded error/button styling",
+   "t": 1795038728811,
+   "v": "other",
+   "seconds": 34,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "t": 1795038787623,
+   "pick": "30s",
+   "note": "under what circumstances could this actually plausibly be triggered by a false positive? ",
+   "seconds": 59,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

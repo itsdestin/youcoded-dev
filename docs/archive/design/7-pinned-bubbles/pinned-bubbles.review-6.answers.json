@@ -1,0 +1,32 @@
+{
+ "deck": "pinned-bubbles-review-6",
+ "started": "2026-11-19T00:57:18.641Z",
+ "submitted": "2026-11-19T00:58:42Z",
+ "cur": 2,
+ "answers": {
+  "T-1": {
+   "note": "bad",
+   "t": 1795049856240,
+   "v": "other",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "T-2": {
+   "v": "other",
+   "t": 1795049892895,
+   "note": "better, but still not graet. in a theme like regular youcoded, i can barely tell the red/yellow apart",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "T-3": {
+   "v": "yes",
+   "t": 1795049921669,
+   "note": "better. not sure if i like this or the last one more. please give me a few more alternatives",
+   "seconds": 29,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

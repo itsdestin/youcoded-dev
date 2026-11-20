@@ -419,6 +419,215 @@ def is_dev(step):
     return is_words(step) and 'dev' in step
 
 
+def is_calls(step):
+    """A CALLS list: a words step whose body is `calls` — small choices the assistant made
+    itself, each `{id, call, why}`. Destin (2026-11-09, rethink Q-10) wanted these listed, not
+    asked one by one and not made silently; each stands unless he marks it for change."""
+    return is_words(step) and 'calls' in step
+
+
+CALL_WORDS_MAX = 40
+PART_WORDS_MAX = 60     # each of Today / The problem / Proposal
+BULLET_WORDS_MAX = 25   # each pro or con
+
+
+# ── round 7: a trail on a row or question, a fuller "More", and what a design reuses ────────────
+# WHY (Destin, 2026-11-10, round 7). History: he marked the History button Failed ("i was
+# expecting something that integrated a bit better and more clearly showed how the feature
+# kinda evolved/refined over time and deck rounds") and picked "Each item carries its own trail".
+# More: "i think these checks cards need to have more elaborate/expandable descriptiosn of what
+# they actually entail and why they are/aren't recommended for the specific build". Reuse: the
+# model should "adopt existing elements where possible and explain what styling/text/etc came
+# from scratch", recorded "possibly behind an (i)".
+STATES = ('new', 'changed', 'settled')
+TRAIL_PARTS = ('round', 'asked', 'built', 'said')
+TRAIL_WORDS_MAX = 60     # each part of one trail step
+MORE_WORDS_MAX = 120     # each part of a row's More
+MORE_PARTS = ('does', 'returns', 'why', 'today', 'problem', 'change', 'pros', 'cons')
+# WHY (Destin, round 12: a row's More should be "more similar to our existing context/pros/cons structure"): a row's More can carry the same labelled
+# parts a question has. today / problem / change are text; pros and cons are short lists. does / returns / why stay for the older check rows.
+MORE_LISTS = ('pros', 'cons')
+REUSE_ITEMS_MAX = 12
+
+
+def _validate_state_trail(x, where, errors):
+    """`state` and `trail` — on a list row or on a written question."""
+    if x.get('state') is not None and x['state'] not in STATES:
+        errors.append(f'{where}: state is new, changed or settled — what happened to this item since his last round')
+    trail = x.get('trail')
+    if trail is None:
+        return
+    if not isinstance(trail, list) or not trail:
+        errors.append(f'{where}: trail is a list of steps, one per round, each with any of round, asked, built, said')
+        return
+    for i, t in enumerate(trail, 1):
+        if not isinstance(t, dict) or not any(isinstance(t.get(k), str) and t[k].strip() for k in ('asked', 'built', 'said')):
+            errors.append(f'{where}: trail step {i} needs at least one of asked (his words), built (what was built) or said (his reaction), as text')
+            continue
+        for k in TRAIL_PARTS:
+            v = t.get(k)
+            if v is None:
+                continue
+            if not isinstance(v, str) or not v.strip():
+                errors.append(f'{where}: trail step {i}: {k} is plain text, or left out')
+            elif word_count(v) > TRAIL_WORDS_MAX:
+                errors.append(f'{where}: trail step {i}: {k} is {word_count(v)} words (max {TRAIL_WORDS_MAX}) — quote the part that matters')
+        for k in t:
+            if k not in TRAIL_PARTS:
+                errors.append(f'{where}: trail step {i} has "{k}" — a trail step holds round, asked, built, said')
+        # `built` is the assistant's own copy; `asked` and `said` are HIS words, quoted as he wrote them.
+        if isinstance(t.get('built'), str):
+            for w in banned_in(t['built']):
+                errors.append(f'{where}: trail step {i}: built uses banned word "{w}"')
+
+
+def _validate_more(c, where, errors):
+    """A row's fuller explanation: `{does, returns, why}` (any of them) or one plain string."""
+    more = c.get('more')
+    needs = c.get('result') in ('run', 'skip')
+    if more is None:
+        if needs:
+            errors.append(f'{where}: a check he switches on or off needs "more" with at least does (what it actually does, step by step) and why (why it is or is not suggested for this build) — a switch he cannot understand was his complaint')
+        return
+    parts = {'does': more} if isinstance(more, str) else more
+    if not isinstance(parts, dict) or not parts:
+        errors.append(f'{where}: more is a short text, or an object with {", ".join(MORE_PARTS)}')
+        return
+    for k, v in parts.items():
+        if k not in MORE_PARTS:
+            errors.append(f'{where}: more has "{k}" — it holds {", ".join(MORE_PARTS)}')
+        elif k in MORE_LISTS:
+            if not isinstance(v, list) or not v or not all(isinstance(x, str) and x.strip() for x in v):
+                errors.append(f'{where}: more.{k} is a short list of plain lines, or left out')
+            else:
+                for x in v:
+                    if word_count(x) > MORE_WORDS_MAX:
+                        errors.append(f'{where}: a line of more.{k} is {word_count(x)} words (max {MORE_WORDS_MAX})')
+                    for w in banned_in(x):
+                        errors.append(f'{where}: more.{k} uses banned word "{w}"')
+        elif not isinstance(v, str) or not v.strip():
+            errors.append(f'{where}: more.{k} is plain text, or left out')
+        else:
+            if word_count(v) > MORE_WORDS_MAX:
+                errors.append(f'{where}: more.{k} is {word_count(v)} words (max {MORE_WORDS_MAX}) — shorter, or split the row')
+            for w in banned_in(v):
+                errors.append(f'{where}: more.{k} uses banned word "{w}"')
+    if needs and (isinstance(more, str) or not all(isinstance(more.get(k), str) and more[k].strip() for k in ('does', 'why'))):
+        errors.append(f'{where}: a check he switches on or off needs more.does and more.why, not only some of it')
+
+
+def _validate_reuse(x, where, errors):
+    """`reuse` — what a design took from the app and what it made new: {from: [..], new: [..], note}."""
+    r = x.get('reuse')
+    if r is None:
+        return
+    if not isinstance(r, dict) or not r or any(k not in ('from', 'new', 'note') for k in r):
+        errors.append(f'{where}: reuse is {{"from": [parts of the app it reuses], "new": [parts made from scratch], "note": one sentence}}')
+        return
+    for k in ('from', 'new'):
+        v = r.get(k)
+        if v is None:
+            continue
+        if not isinstance(v, list) or not v or len(v) > REUSE_ITEMS_MAX or not all(isinstance(i, str) and i.strip() for i in v):
+            errors.append(f'{where}: reuse.{k} is a short list (up to {REUSE_ITEMS_MAX}) of plain names')
+        else:
+            for i in v:
+                for w in banned_in(i):
+                    errors.append(f'{where}: reuse.{k} uses banned word "{w}"')
+    if r.get('note') is not None and (not isinstance(r['note'], str) or not r['note'].strip() or word_count(r['note']) > PART_WORDS_MAX):
+        errors.append(f'{where}: reuse.note is one plain sentence (up to {PART_WORDS_MAX} words)')
+    if not r.get('from') and not r.get('new'):
+        errors.append(f'{where}: reuse names at least one reused part (from) or one new part (new)')
+
+
+def _picture_size(path):
+    """(width, height) of a picture file, or None when it cannot be read. Pillow when present,
+    otherwise the PNG header (the only format the shoot tools write)."""
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            return im.size
+    except Exception:
+        pass
+    try:
+        with open(path, 'rb') as f:
+            head = f.read(24)
+        if head[:8] == b'\x89PNG\r\n\x1a\n':
+            return int.from_bytes(head[16:20], 'big'), int.from_bytes(head[20:24], 'big')
+    except OSError:
+        pass
+    return None
+
+
+# WHY (Destin, round 14: a 1400x85 header strip was an unreadable line in its tile): past this
+# width-to-height ratio the tile can only show a thin strip, so the author is told to shoot a
+# taller area. A warning, never a refusal: some pictures really are that shape.
+WIDE_PICTURE_RATIO = 5
+
+
+def _validate_calls(st, sid, errors, warnings=None):
+    calls = st.get('calls')
+    if not isinstance(calls, list) or not calls:
+        errors.append(f'{sid}: calls is a non-empty list of {{id, call, why}}')
+        return
+    seen = set()
+    for c in calls:
+        if not isinstance(c, dict) or not all(isinstance(c.get(k), str) and c.get(k).strip() for k in ('id', 'call', 'why')):
+            errors.append(f'{sid}: every call needs id, call (what was chosen) and why (the reason), as text')
+            continue
+        if c['id'] in seen:
+            errors.append(f'{sid}: call id "{c["id"]}" is used twice')
+        seen.add(c['id'])
+        if c.get('result') is not None and c['result'] not in ('pass', 'fail', 'unclear', 'todo', 'run', 'skip'):
+            errors.append(f'{sid}/{c["id"]}: result is pass, fail, unclear, todo (left for him to try), or before a build run / skip (a check he may switch on or off)')
+        _validate_state_trail(c, f'{sid}/{c["id"]}', errors)
+        _validate_more(c, f'{sid}/{c["id"]}', errors)
+        _validate_reuse(c, f'{sid}/{c["id"]}', errors)
+        # `before` (round 3): the same screen before the change, so a row is a before/after pair.
+        for pk in ('picture', 'before'):
+            if c.get(pk) is None:
+                continue
+            pic = c[pk]
+            if not isinstance(pic, str) or os.path.isabs(pic) or '..' in pic.split('/'):
+                errors.append(f'{sid}/{c["id"]}: {pk} is a file path beside the spec (no leading slash, no "..")')
+            elif not os.path.exists(os.path.join(st.get('_base', ''), pic)):
+                errors.append(f'{sid}/{c["id"]}: {pk} {pic} does not exist beside the spec')
+            elif warnings is not None:
+                size = _picture_size(os.path.join(st.get('_base', ''), pic))
+                if size and size[1] and size[0] / size[1] > WIDE_PICTURE_RATIO:
+                    warnings.append(f'{sid}/{c["id"]}: {pk} {pic} is {size[0]}x{size[1]} — very wide and short, so it reads as a thin strip in its tile; shoot a taller area')
+        if c.get('before') and not c.get('picture'):
+            errors.append(f'{sid}/{c["id"]}: before needs a picture beside it — the after')
+        # `wording` rows (round 3: a text box per label beside a small picture) are refused.
+        # WHY (Destin, 2026-11-10): "this system is terrible… directly edit text on the real ui
+        # surface so i can see it in context" — that is a `screen` step, after the build.
+        if c.get('wording') is not None:
+            errors.append(f'{sid}/{c["id"]}: wording rows are retired — after the build, add a step with "screen": a file saved by `shoot <name> --page`, and he retypes the words on the screen itself; before the build, wording is not asked')
+        for k in ('call', 'why'):
+            if word_count(c[k]) > CALL_WORDS_MAX:
+                errors.append(f'{sid}/{c["id"]}: {k} is {word_count(c[k])} words (max {CALL_WORDS_MAX}) — one line he can skim')
+            for w in banned_in(c[k]):
+                errors.append(f'{sid}/{c["id"]}: {k} uses banned word "{w}"')
+    # WHY one kind of row per card (Destin, 2026-11-11, round 8: "why is it the only row in this card that
+    # has the unclear/etc dropdown chip?… i don't know how we're organizing information"; round 9, K-1:
+    # yes to three kinds, never mixed). A card is facts (`context`), rows that are his to change, or
+    # results — so he never has to work out which rows are waiting on him.
+    rows = [c for c in calls if isinstance(c, dict)]
+    with_result = [c for c in rows if c.get('result')]
+    if st.get('context') and with_result:
+        errors.append(f'{sid}: a "for your information" list (context) carries no result chips — put results in their own list')
+    elif with_result and len(with_result) != len(rows):
+        without = ', '.join(c.get('id', '?') for c in rows if not c.get('result'))
+        errors.append(f'{sid}: a card holds one kind of row — some rows have a result and some do not ({without}). Split it: results in one list, rows that are his to change in another, plain facts in a context list')
+    # Checks (run / skip) and finished results may share a list: after a build, a check he skipped sits
+    # beside the ones that ran, on the same Checks page.
+    if st.get('fold_settled') is not None and not isinstance(st['fold_settled'], bool):
+        errors.append(f'{sid}: fold_settled is true or false — true folds the rows marked settled into one line at the foot')
+    for k in ('options', 'rows', 'today', 'answer'):
+        if st.get(k):
+            errors.append(f'{sid}: a calls list has no {k} — a call he wants changed gets its own text box')
+
+
 def is_question(step):
     """A QUESTION step: a words step that asks something, keyed on `today` — the first of the
     three parts every question carries (what exists / what goes wrong / what would change).
@@ -427,7 +636,8 @@ def is_question(step):
     return is_words(step) and not is_contract(step) and 'today' in step
 
 
-PAGE_FIELDS = ('id', 'page', 'intro')
+# `stage` (growing decks): which of Understanding / Design / Before build / After build this page belongs to.
+PAGE_FIELDS = ('id', 'page', 'intro', 'stage')
 
 
 def is_page(step):
@@ -435,6 +645,48 @@ def is_page(step):
     starts a new page of a question deck. It asks nothing, so it gets no answer row, no line in
     the summary and no contract source — every reader of `steps` skips it (design 3.1)."""
     return 'page' in step
+
+
+def tickable(step):
+    """A "Yours to change" list: calls that are not background (`context`) and carry no `result`.
+    WHY (Destin, round 9, then round 10 R-1 "Tick or change"): "i want to eliminate the scenario where
+    a row gets accidentally taken as approved just because i didnt read or see it." Only this kind of
+    list has a tick on each row; background and results lists behave as they always did."""
+    return is_calls(step) and not step.get('context') and isinstance(step.get('calls'), list) \
+        and bool(step['calls']) and not any(c.get('result') for c in step['calls'])
+
+
+def row_of_pic(step, pic):
+    """The row of a "Yours to change" list that a mark's picture belongs to (`row <id>` or `row <id> before`), or None.
+    WHY (Destin, round 13): a comment left on a row's picture is that row's comment, exactly like a pencil comment."""
+    if not step or not tickable(step):
+        return None
+    m = re.match(r'^row (.+?)( before)?$', pic or '')
+    return next((c for c in step['calls'] if m and c.get('id') == m.group(1)), None)
+
+
+def row_states(step, a):
+    """{row id: 'changed' | 'ok' | 'unlooked'} for a tickable list, from its saved answer `a`.
+    WHY the legacy branch: a deck answered before round 10 carried `accepted: true` (or a list
+    with changes and no `ok` at all) and meant "the rows I did not touch are fine". Those files must
+    keep reading that way; only an answer written by the new page (it always writes `ok`, even
+    empty) can say a row was not looked at."""
+    a = a or {}
+    ch, ok = a.get('changes') or {}, a.get('ok') or {}
+    # WHY `not marks` (code review F4): an area dragged on a picture that is not one of this list's rows sets v='other' with no `ok`, and the new page
+    # also writes that; it must never turn every untouched row into "approved". Only the old shape (rows commented, no ticks, no marks) reads as legacy.
+    legacy = bool(a.get('accepted')) or ('ok' not in a and a.get('v') == 'other' and not a.get('marks') and bool(a.get('changes')))
+    out = {}
+    for c in step.get('calls') or []:
+        r = c.get('id')
+        out[r] = 'changed' if r in ch or any(row_of_pic(step, m.get('pic')) is c for m in a.get('marks') or []) else 'ok' if (ok.get(r) or legacy) else 'unlooked'
+    return out
+
+
+def unlooked_rows(step, a):
+    """The rows of a tickable list he neither ticked nor changed, as spec row dicts."""
+    st = row_states(step, a)
+    return [c for c in step.get('calls') or [] if st.get(c.get('id')) == 'unlooked']
 
 
 def words_only(spec):
@@ -467,7 +719,8 @@ def pages(spec):
     out = []
     for st in spec['steps']:
         if is_page(st):
-            out.append({'id': st['id'], 'title': st.get('page') or '', 'intro': st.get('intro') or '', 'steps': []})
+            out.append({'id': st['id'], 'title': st.get('page') or '', 'intro': st.get('intro') or '', 'steps': [],
+                        **({'stage': st['stage']} if st.get('stage') else {})})
             continue
         if not out:
             # No marker before the first question: the implicit first page, the deck's own title.
@@ -589,9 +842,109 @@ def box_errors(box, sid):
     return []
 
 
+def _validate_history(spec, errors):
+    """`earlier`: spec files of this topic's earlier rounds, beside this one, newest first.
+    `related`: other decks or documents on the same subject, each {title, path}. Both feed the
+    History panel (build.py _history)."""
+    base = spec.get('_base', '')
+    ok = lambda p: isinstance(p, str) and p and not os.path.isabs(p) and '..' not in p.split('/')
+    earlier = spec.get('earlier')
+    if earlier is not None:
+        if not isinstance(earlier, list) or not all(ok(p) and p.endswith('.json') for p in earlier):
+            errors.append('earlier is a list of spec files beside this one (the earlier rounds of this topic, newest first)')
+        else:
+            for p in earlier:
+                if not os.path.exists(os.path.join(base, p)):
+                    errors.append(f'earlier: {p} does not exist beside the spec')
+    related = spec.get('related')
+    if related is not None:
+        if not isinstance(related, list) or not all(isinstance(r, dict) and isinstance(r.get('title'), str) and r['title'].strip() and ok(r.get('path')) for r in related):
+            errors.append('related is a list of {title, path, how} — other decks or documents on this subject, paths beside the spec, and one line on how each relates')
+        else:
+            # `how` (round 7; round 2 asked for "a list at the top of a deck, with one line on how each relates")
+            for r in related:
+                if r.get('how') is not None and (not isinstance(r['how'], str) or not r['how'].strip() or word_count(r['how']) > CALL_WORDS_MAX):
+                    errors.append(f'related: {r["title"]}: how is one plain line (up to {CALL_WORDS_MAX} words) on how this deck relates')
+            for r in related:
+                if not os.path.exists(os.path.join(base, r['path'])):
+                    errors.append(f'related: {r["path"]} does not exist beside the spec')
+
+
+# ── the two lists an after-build deck must carry ─────────────────────────────────────────────────
+# WHY (Destin: "what did you have to adjust"; feature-flow step 5): after a build he must see, as rows he
+# can tick or answer, what changed from the plan while building and each code-review finding. These
+# were only a written rule, so a session could skip them. Now the builder refuses an after-build deck
+# without them and the done gate (gate.py) fails when they are missing or he has not answered a row.
+# Markers (all explicit, all in the spec): a list step says `"list": "changed-while-building"` or
+# `"list": "found-in-review"`; a check row says `"check": "code-review"`.
+# The last two belong to a hands-off deck (grows.hands_off_errors refuses them anywhere else).
+LIST_KINDS = ('changed-while-building', 'found-in-review', 'asked-for', 'choices-made')
+BUILT_VALUES = ('as planned', 'adjusted')
+ADJUSTED_WHY_MIN = 3     # words: a bare "ok" is not a reason
+
+
+def is_after_build(spec):
+    """True for the deck he reads AFTER the build: `"build": "after"`, a growing deck AT stage `after`,
+    or the walkthrough convention that the after-build file is named `<feature>.walkthrough.after.json`
+    (the name gate.py already looks for)."""
+    return (spec.get('build') == 'after'
+            or (spec.get('grows') is True and spec.get('stage') == 'after')
+            or str(spec.get('_stem') or '').endswith('.after'))
+
+
+def _list_steps(spec, kind):
+    return [st for st in spec.get('steps') or [] if isinstance(st, dict) and st.get('list') == kind]
+
+
+def after_build_list_errors(spec):
+    """Plain-language problems with the two required lists of an after-build deck (empty when fine)."""
+    errs = []
+    steps = [st for st in spec.get('steps') or [] if isinstance(st, dict)]
+    for st in steps:
+        if 'list' in st and st['list'] not in LIST_KINDS:
+            errs.append(f'{st.get("id")}: list must be one of {", ".join(LIST_KINDS)}')
+    changed = _list_steps(spec, 'changed-while-building')
+    rows = [c for st in changed for c in (st.get('calls') or []) if isinstance(c, dict)]
+    if not rows:
+        errs.append('an after-build deck needs a list "What changed while building" ({"list": "changed-while-building", "calls": [...]}) '
+                    'with at least one row: each row says "built": "as planned", or "built": "adjusted" with the reason in "why"')
+    for st in changed:
+        if st.get('context') or any(c.get('result') for c in st.get('calls') or [] if isinstance(c, dict)):
+            errs.append(f'{st.get("id")}: "What changed while building" is a list he ticks or changes — no context list, no result chips')
+        for c in st.get('calls') or []:
+            if not isinstance(c, dict):
+                continue
+            where = f'{st.get("id")}/{c.get("id")}'
+            if c.get('built') not in BUILT_VALUES:
+                errs.append(f'{where}: a "What changed while building" row says "built": "as planned" or "built": "adjusted"')
+            elif c['built'] == 'adjusted' and word_count(c.get('why')) < ADJUSTED_WHY_MIN:
+                errs.append(f'{where}: an adjusted row says why it was adjusted, in "why" (at least {ADJUSTED_WHY_MIN} words)')
+    reviewed = any(isinstance(c, dict) and c.get('check') == 'code-review' and c.get('result') in ('pass', 'fail', 'unclear')
+                   for st in steps for c in (st.get('calls') or []))
+    found = _list_steps(spec, 'found-in-review')
+    if reviewed and not found:
+        errs.append('the code review was run, so the deck needs a list "Found in review" ({"list": "found-in-review", "calls": [...]}): '
+                    'one row per finding, or one row with "none_found": true and a plain sentence when it found nothing')
+    for st in found:
+        frows = [c for c in st.get('calls') or [] if isinstance(c, dict)]
+        none = [c for c in frows if c.get('none_found') is True]
+        if st.get('context') or any(c.get('result') for c in frows):
+            errs.append(f'{st.get("id")}: "Found in review" is a list he ticks or changes — no context list, no result chips')
+        if none and len(frows) != 1:
+            errs.append(f'{st.get("id")}: "none_found" is the only row of a "Found in review" list that found nothing — drop it or the findings')
+        if not frows:
+            errs.append(f'{st.get("id")}: "Found in review" needs one row per finding, or one row with "none_found": true')
+    for st in steps:
+        for c in st.get('calls') or []:
+            if isinstance(c, dict) and 'check' in c and not (isinstance(c['check'], str) and c['check'].strip()):
+                errs.append(f'{st.get("id")}/{c.get("id")}: check names which check the row reports, e.g. "code-review"')
+    return errs
+
+
 def validate(spec):
     """Returns (errors, warnings) as 'step-id: message' lines. Errors block crop/build."""
     errors, warnings, ids = [], [], set()
+    _validate_history(spec, errors)
     for i, st in enumerate(spec['steps']):
         # A slide may show fewer captures than the deck holds, so "is this a before/after?" is
         # asked per slide rather than once for the whole deck.
@@ -616,6 +969,9 @@ def validate(spec):
             errors.append(f'{sid}: pick must be "one" or "several"')
         elif st.get('pick') == 'several' and not (st.get('options') or st.get('variants')):
             errors.append(f'{sid}: pick "several" needs options or variants to pick between')
+        if not is_calls(st):
+            _validate_state_trail(st, sid, errors)
+            _validate_reuse(st, sid, errors)
         if 'answer' in st and st['answer'] != 'words':
             errors.append(f'{sid}: answer must be "words" — the only shape whose answer is typed')
         if st.get('answer') == 'words' and (st.get('options') or st.get('variants')):
@@ -693,6 +1049,20 @@ def validate(spec):
             warnings.append(f'{sid}: measured has no number in it')
     _images_folder_warning(spec, warnings)
     _stage_checklist(spec, errors)
+    if 'build' in spec and spec['build'] not in ('before', 'after'):
+        errors.append('build is "before" or "after" (an after-build deck must carry the lists of what changed while building and what the review found)')
+    # WHY: only an after-build deck is held to the two lists; every other deck builds exactly as before.
+    if is_after_build(spec):
+        errors.extend(after_build_list_errors(spec))
+    # WHY (Destin, rounds 1, 8 and 10: one deck that grows each round and keeps what he said): a spec
+    # with "grows": true gets the extra checks in grows.py, including the refusal to lose an answer silently.
+    from . import grows
+    grows.validate_fields(spec, errors)
+    if grows.is_grows(spec):
+        if not words_only(spec) or has_contract(spec):
+            errors.append('grows: a deck that grows is a question deck (pages of questions and lists; a question or a row may carry a picture; no contract)')
+        else:
+            errors.extend(grows.problems(spec))
     return errors, warnings
 
 
@@ -787,6 +1157,8 @@ def _validate_options(st, sid, errors, warnings, minimum):
     seen = set()
     for i, o in enumerate(opts):
         oid = o.get('id') or f'option {i + 1}'
+        if isinstance(o, dict):
+            _validate_reuse(o, f'{sid}/{oid}', errors)
         if not o.get('id'):
             errors.append(f'{sid}: {oid} has no id')
         elif o['id'] in seen:
@@ -830,6 +1202,24 @@ def _validate_options(st, sid, errors, warnings, minimum):
             warnings.append(f'{sid}/{oid}: measured has no number in it')
 
 
+_LIVE_CODE = (
+    (re.compile(r'<\s*script', re.I), 'a <script>'),
+    (re.compile(r'<[a-z][^<>]*\son[a-z]+\s*=', re.I), 'an inline handler (on…=)'),
+    (re.compile(r'(?:java|vb)script\s*:', re.I), 'a javascript: address'),
+    (re.compile(r'<\s*(?:object|embed|iframe)\b', re.I), 'an object/embed/iframe'),
+    (re.compile(r'<meta[^>]+http-equiv\s*=\s*["\']?refresh', re.I), 'a meta refresh'),
+    (re.compile(r'@import', re.I), 'an @import'),
+)
+
+
+def live_code_in(text):
+    """What a "still" screen file carries that could run or load, in words; '' when it is clean."""
+    for rx, what in _LIVE_CODE:
+        if rx.search(text):
+            return what
+    return ''
+
+
 def _validate_words(spec, st, sid, errors, warnings):
     """No picture, so every picture field is refused rather than required — the same stance
     as _validate_live. The question shape is the existing one: `options` → pick one. A
@@ -845,10 +1235,46 @@ def _validate_words(spec, st, sid, errors, warnings):
         _validate_rows(spec, st, sid, errors)
     elif is_dev(st):
         _validate_dev(spec, st, sid, errors)
+    elif is_calls(st):
+        _validate_calls({**st, '_base': spec.get('_base', '')}, sid, errors, warnings)
+    elif st.get('screen') is not None or st.get('liveScreen') is not None:
+        # A SCREEN step (round 4): a still copy of an app screen (`shoot --page`) whose words he
+        # retypes in place. Only after the build — before it there is no real screen to copy.
+        f = st.get('screen')
+        if f is None:
+            pass   # a live-only step (`liveScreen` alone): the served deck runs the app and freezes it
+        elif not isinstance(f, str) or not f.endswith('.html') or os.path.isabs(f) or '..' in f.split('/'):
+            errors.append(f'{sid}: screen is an .html file beside the spec, saved by `shoot <name> --page` (no leading slash, no "..")')
+        elif not os.path.exists(os.path.join(spec.get('_base', ''), f)):
+            errors.append(f'{sid}: screen {f} does not exist beside the spec — save it with `node scripts/shoot/shoot.mjs <screen name> --page`')
+        else:
+            with open(os.path.join(spec.get('_base', ''), f), encoding='utf-8', errors='replace') as fh:
+                text = fh.read()
+            if 'data-frozen=' not in text[:4000]:
+                errors.append(f'{sid}: screen {f} was not saved by `shoot --page` — a page with its own code cannot be shown for editing')
+            elif live_code_in(text):
+                # WHY (review 2026-11-10): the marker alone is trivially copied onto a hand-made
+                # page. The file must also carry nothing that runs or loads from the network.
+                errors.append(f'{sid}: screen {f} holds {live_code_in(text)} — a page with its own code cannot be shown for editing; save it again with `shoot --page`')
+        # WHY `liveScreen` (Destin, 2026-11-10, on the frozen About popup: "i think the dropdown
+        # menus in that about popup should probably still work?" — he chose "a switch above the
+        # screen: Use it / Edit words"): the screen's name as `shoot --list` prints it. The served
+        # deck then runs the practice app opened on it, and freezes it as it stands when he
+        # switches to Edit words. `screen` stays as the picture shown when the app cannot run.
+        ls = st.get('liveScreen')
+        if ls is not None:
+            if not isinstance(ls, str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]*(/[a-z0-9-]+)*(#[a-z0-9-]+)?', ls):
+                errors.append(f'{sid}: liveScreen is a screen name as `node scripts/shoot/shoot.mjs --list` prints it, like "settings/about"')
+            elif not (spec.get('live') or {}).get('worktree'):
+                errors.append(f'{sid}: liveScreen runs the practice app, so the deck needs "live": {{"worktree": "<name>"}} (the checkout whose app to run)')
+        for k in ('options', 'rows', 'today', 'answer'):
+            if st.get(k):
+                errors.append(f'{sid}: a screen step has no {k} — he edits the words on the screen itself')
     # A words step with options is ALWAYS a question — there is no other reason to offer a
     # choice — so it owes the three parts even when its author forgot `today` entirely.
     elif is_question(st) or st.get('options'):
         _validate_question(st, sid, errors, warnings)
+        _validate_pictures(spec, st, sid, errors)
     else:
         for k in ('changed', 'notice'):
             if not st.get(k):
@@ -867,6 +1293,25 @@ def _validate_words(spec, st, sid, errors, warnings):
         warnings.append(f'{sid}: risk is {word_count(st["risk"])} words — keep it to one sentence')
 
 
+def _validate_pictures(spec, st, sid, errors):
+    """A written question, and each of its options, may carry `picture` — a file path relative
+    to the spec — and a short `caption`. WHY (Destin, 2026-11-04): written options about a
+    layout came back "need to see it"; refusing a missing file here keeps a broken-image icon
+    off a page he is asked to decide on."""
+    for where, x in [(sid, st)] + [(f'{sid}/{o.get("id")}', o) for o in (st.get('options') or []) if isinstance(o, dict)]:
+        pic = x.get('picture')
+        if pic is None:
+            if x.get('caption'):
+                errors.append(f'{where}: caption describes a picture — add "picture"')
+            continue
+        if not isinstance(pic, str) or os.path.isabs(pic) or '..' in pic.split('/'):
+            errors.append(f'{where}: picture is a file path beside the spec (no leading slash, no "..")')
+        elif not os.path.exists(os.path.join(spec.get('_base', ''), pic)):
+            errors.append(f'{where}: picture {pic} does not exist beside the spec')
+        for w in banned_in(x.get('caption')):
+            errors.append(f'{where}: caption uses banned word "{w}"')
+
+
 def _validate_question(st, sid, errors, warnings):
     """A words step that asks something (design §3.2). It says what exists, what goes wrong and
     what would change, each in its own field; its options carry their own pros and cons, and at
@@ -877,6 +1322,26 @@ def _validate_question(st, sid, errors, warnings):
                           f'and what would change — today / problem / proposal)')
         else:
             inline_label_errors(st[k], sid, k, errors)
+            # WHY a cap (Destin, 2026-11-09, rethink Q-9: a cap, "but … sufficient so as to
+            # actually allow for useful descriptions"): "wall of text" and "way too much copy"
+            # were repeated complaints. 97 in 100 past boxes already fit in 60 words; the ones
+            # that did not were the walls.
+            if word_count(st[k]) > PART_WORDS_MAX:
+                errors.append(f'{sid}: {k} is {word_count(st[k])} words (max {PART_WORDS_MAX}) — say it shorter, or split the question')
+    for o in st.get('options') or []:
+        for k in ('pros', 'cons'):
+            for b in (o.get(k) or []) if isinstance(o, dict) else []:
+                if word_count(b) > BULLET_WORDS_MAX:
+                    errors.append(f'{sid}/{o.get("id")}: a {k[:-1]} is {word_count(b)} words (max {BULLET_WORDS_MAX}) — one point per line')
+    # `checked`: how, and when, the Today claim was confirmed (rethink Q-7). Optional by his
+    # choice (Q-8: "clearer instructions rather than … additional automatic checks"), but when
+    # present it is copy he reads behind the (i), so it obeys the same word rules.
+    if st.get('checked') is not None:
+        if not isinstance(st['checked'], str) or not st['checked'].strip():
+            errors.append(f'{sid}: checked is one plain sentence — how and when Today was confirmed')
+        else:
+            for w in banned_in(st['checked']):
+                errors.append(f'{sid}: checked uses banned word "{w}"')
     if not st.get('options'):
         return
     _validate_options(st, sid, errors, warnings, minimum=1)
@@ -1086,7 +1551,9 @@ STAGES = {
 def _stage_checklist(spec, errors):
     """A deck that names its stage must carry that stage's slide. Nothing is forbidden."""
     stage = spec.get('stage')
-    if stage is None:
+    # WHY (round 11): on a deck that grows, "stage" means the stage the deck is AT (understanding, design, before, after;
+    # checked in grows.py), not one of these slide checklists. Every other deck keeps the old meaning.
+    if stage is None or spec.get('grows') is True:
         return
     if stage not in STAGES:
         errors.append(f'stage "{stage}" is not one of ' + ', '.join(STAGES))
