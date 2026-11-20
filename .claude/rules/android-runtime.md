@@ -2,7 +2,7 @@
 paths:
   - "**/app/**"
   - "**/desktop/src/main/headless/**"
-last_verified: 2026-10-14
+last_verified: 2026-11-19
 verify:
   - path: youcoded/app/runtime/ycshim.c
     contains: "io_uring_setup"

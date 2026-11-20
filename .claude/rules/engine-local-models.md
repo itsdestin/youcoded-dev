@@ -6,7 +6,7 @@ paths:
   - "**/desktop/scripts/generate-engine-pin.mjs"
   - "**/desktop/src/shared/engine-types.ts"
   - "**/desktop/src/main/providers/provider-registry.ts"
-last_verified: 2026-09-24
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/models/fit-estimator.ts
     contains: "Math.min[(]poolFree, input.availableBytes[)]"

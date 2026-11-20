@@ -18,7 +18,7 @@ paths:
   - "**/desktop/src/renderer/components/buddy/**"
   - "**/desktop/src/renderer/components/mascot/**"
   - "**/desktop/src/renderer/styles/buddy.css"
-last_verified: 2026-10-30
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/shared/buddy-geometry.ts
     contains: "BAR_TOOLTIP_ROOM"

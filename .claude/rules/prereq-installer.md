@@ -4,7 +4,7 @@ paths:
   - "**/desktop/src/main/first-run.ts"
   - "**/desktop/src/main/remote-config.ts"
   - "**/desktop/src/main/sync-setup-handlers.ts"
-last_verified: 2026-10-02
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/prerequisite-installer.ts
     contains: "runCommand"

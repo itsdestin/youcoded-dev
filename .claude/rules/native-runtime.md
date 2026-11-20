@@ -10,7 +10,7 @@ paths:
   - "**/desktop/src/main/providers/**"
   - "**/desktop/src/main/native-home.ts"
   - "**/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-09-24
+last_verified: 2026-11-19
 verify:
   # The floors under remembered grants (2026-09-23): a silent move of this check would
   # make the "Always-allow beats the deny list" line read as the whole story again.

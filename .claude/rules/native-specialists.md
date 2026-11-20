@@ -9,7 +9,7 @@ paths:
   - "**/desktop/src/renderer/components/Specialists*.tsx"
   - "**/desktop/src/renderer/components/specialists/**"
   - "**/desktop/src/renderer/hooks/useSpecialists.ts"
-last_verified: 2026-10-23
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/harness/specialists/registry.ts
   - path: youcoded/desktop/src/main/harness/specialists/child-ask-router.ts

@@ -7,7 +7,7 @@ paths:
   - "docs/active/design/**/*.json"
   - "scripts/ui-review/deck/**"
   - "scripts/ui-review/templates/**"
-last_verified: 2026-09-06
+last_verified: 2026-11-19
 verify:
   - path: scripts/ui-review/templates/questions.json
   - path: scripts/ui-review/deck/AUTHORING.md
