@@ -3,9 +3,12 @@
 //  2. The person's OWN things: small apps people made by asking (brand guide §8: in an ad, what a person
 //     makes may be staged). Each one is deliberately its own world, with its own colours and type, so the
 //     final wall reads as "everyone's copy is different" at a glance.
-// WHY no youcoded window chrome anywhere: the brand guide forbids drawing the app's own interface. The film
-// shows the THINGS people make and the request typed as plain words, never a fake app window.
+//  3. The REAL youcoded window, as single frames of recordings of the running app (take1b-stills.mjs),
+//     wearing real community themes. WHY: brand guide section 8 says the app's own interface is never drawn;
+//     the reviewer (2026-11-20) caught the old drawn pastel "ask" bar as exactly that, and the owner did not
+//     like the pastel themes. Nothing of the app is drawn in this file any more.
 import React from 'react';
+import { Img, staticFile } from 'remotion';
 import { DMSANS, OUTFIT } from '../brand';
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
@@ -22,7 +25,9 @@ const box = (r: R, w: number, h: number): React.CSSProperties => ({ position: 'a
 // =====================================================================================================
 // 1. The same screen
 // =====================================================================================================
-const S = { bg: '#E7E2EC', card: '#F5F2F7', tile: '#CFC7D8', tile2: '#BDB3C9', ink: '#5A5065', ink2: '#9B91A6', line: '#D9D2E0' };
+// WHY near-white: the reviewer measured the old grey-lavender screens as muddy on the dark wall; real screens
+// read as the brightest thing in a dark room, which is what makes the wall pop.
+const S = { bg: '#F6F3F9', card: '#FFFFFF', tile: '#DDD5E6', tile2: '#CBC0D8', ink: '#2A2034', ink2: '#8C8298', line: '#E3DCEA' };
 
 type Rects = { photo: R; msg: R; note: R; grid: R };
 // WHY three whole layouts (not a tile shuffle): "they dictated how you interact" has to be visible from across
@@ -116,28 +121,6 @@ const Lock: React.FC<{ s: number; p: number; off: number }> = ({ s, p, off }) =>
   );
 };
 
-/** Where the person's "ask" bar sits on any screen (fractions), so the film can aim the caret at it. */
-export const askRect = (w: number, h: number) => (h > w ? { x: 0.06, y: 0.885, w: 0.88, h: 0.08 } : { x: 0.25, y: 0.86, w: 0.5, h: 0.1 });
-
-/** The person's "ask" bar: the one thing every screen will share. A plain light field, nothing more.
- *  `text`/`n` type into it (it grows upward to fit), `caret` blinks, `fs` is the type size in px. */
-export const AskBar: React.FC<{ w: number; h: number; o?: number; text?: string; n?: number; caret?: boolean; fs?: number; dark?: boolean }> = ({ w, h, o = 1, text = '', n = 0, caret = false, fs, dark }) => {
-  const k = Math.min(w, h) / 100;
-  const r = askRect(w, h);
-  const size = fs ?? (h > w ? 4.6 : 4) * k;
-  return (
-    <div style={{ position: 'absolute', left: r.x * w, width: r.w * w, bottom: (1 - r.y - r.h) * h, minHeight: r.h * h, opacity: o, boxSizing: 'border-box',
-      padding: `${size * 0.42}px ${size * 0.8}px`, borderRadius: Math.min(r.h * h / 2, size * 1.6), background: dark ? '#2E2238' : '#FFFFFF',
-      boxShadow: `0 ${0.5 * k}px ${2 * k}px rgba(40,20,60,0.16), inset 0 0 0 ${Math.max(1, 0.3 * k)}px rgba(151,80,170,0.18)`,
-      display: 'flex', alignItems: 'center', fontFamily: DMSANS, fontSize: size, lineHeight: 1.2, fontWeight: n > 0 ? 700 : 500, letterSpacing: '-0.015em', color: n > 0 ? '#21152C' : '#8A7B96' }}>
-      <span>
-        {n > 0 ? text.slice(0, n) : 'ask…'}
-        <span style={{ display: 'inline-block', width: Math.max(1.5, size * 0.1), height: size * 1.05, marginLeft: size * 0.06, verticalAlign: '-0.18em', borderRadius: size, background: '#9750AA', opacity: caret ? 1 : 0 }} />
-      </span>
-    </div>
-  );
-};
-
 export type SameProps = {
   w: number; h: number;
   /** the layout, 0..2 (in between while every block slides to its new place) */
@@ -148,13 +131,13 @@ export type SameProps = {
   lock?: number | number[]; unlock?: number;
   /** 0..1 "Terms have changed" dialog; `accept` 0..1 its button pressed and the dialog gone */
   dialog?: number; accept?: number;
-  /** 0..1 the companies' new "Ask AI" button stuck onto the screen */
+  /** 0..1 the companies' new paid "ask…" bar stamped onto the screen */
   ai?: number;
-  /** the person's ask bar (only once it is theirs) */
-  ask?: { o: number; text?: string; n?: number; caret: boolean; fs?: number };
+  /** 0..1 the "something wonderful" glimpse: the screen hushes and one purple caret blinks; `caret` is the blink */
+  glimpse?: { o: number; caret: boolean };
 };
 
-export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, ask }) => {
+export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, glimpse }) => {
   const k = Math.min(w, h) / 100;
   const L = sameLayout(w, h, lay);
   const P = L.portrait;
@@ -162,7 +145,7 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
   const g = L.grid;
   const gx = 2.4 * k;
   const tw = (g.w * w - gx * (cols - 1)) / cols, th = (g.h * h - gx * (rows - 1)) / rows;
-  const tileHues = ['#CFC7D8', '#C6BDD1', '#D6CFDE', '#C2B8CE', '#CCC4D6', '#BFB5CB'];
+  const tileHues = ['#DCD3E6', '#D3C9DF', '#E2DBEA', '#CFC4DC', '#D9D0E4', '#CCC1D9'];
   const lockOf = (i: number) => (Array.isArray(lock) ? lock[i] ?? 0 : i % 3 !== 0 ? lock : 0);
   const dlg = smooth(dialog) * (1 - smooth((accept - 0.3) * 3));
   return (
@@ -171,7 +154,7 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
       <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: (P ? 0.065 : 0.09) * h, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${5 * k}px`, fontSize: 3.2 * k, fontWeight: 700, color: S.ink }}>
         <span>9:41</span><span style={{ display: 'flex', gap: 1 * k }}>{[0, 1, 2].map((i) => <span key={i} style={{ width: 2 * k, height: 2 * k, borderRadius: k, background: S.ink2 }} />)}</span>
       </div>
-      {!P && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 0.2 * w, background: '#DED8E5' }}>
+      {!P && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 0.2 * w, background: '#ECE6F2' }}>
         {[0, 1, 2, 3, 4].map((i) => <div key={i} style={{ position: 'absolute', left: 4 * k, top: (0.17 + i * 0.1) * h, width: 0.2 * w - 8 * k, height: 4 * k, borderRadius: 2 * k, background: i === 0 ? S.tile2 : S.tile }} />)}
       </div>}
       <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink }}>Good morning</div>
@@ -193,14 +176,14 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
       {/* the update banner that lands on every screen in the same frame */}
       {banner > 0 && <div style={{ position: 'absolute', left: '6%', right: '6%', top: (P ? 0.075 : 0.06) * h, height: (P ? 0.06 : 0.09) * h, borderRadius: 3 * k, background: '#43354E', color: '#F3EAF9',
         fontSize: 3.4 * k, fontWeight: 700, display: 'flex', alignItems: 'center', paddingLeft: 3 * k, transform: `translateY(${(smooth(banner * 4) - 1) * 6 * k}px)`, opacity: smooth(banner * 4) * (1 - smooth((banner - 0.8) * 5)), whiteSpace: 'nowrap', overflow: 'hidden' }}>Your layout has been updated</div>}
-      {/* the companies' new button, stuck on top of everything */}
-      {ai > 0 && <div style={{ position: 'absolute', left: '50%', bottom: (P ? 0.025 : 0.035) * h, transform: `translateX(-50%) scale(${0.7 + 0.3 * smooth(ai)})`, opacity: smooth(ai * 1.5) * (ask ? 1 - ask.o : 1),
-        height: 9 * k, padding: `0 ${4 * k}px`, borderRadius: 9 * k, background: '#2E2238', color: '#F3EAF9', display: 'flex', alignItems: 'center', gap: 1.6 * k, fontSize: 3.6 * k, fontWeight: 700, whiteSpace: 'nowrap',
-        boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)` }}>Ask AI<span style={{ opacity: 0.7, fontWeight: 500 }}>· new</span></div>}
-      {ask && ask.o > 0 && <>
-        {/* WHY a scrim behind a long request: the words being typed must win over the busy screen behind them */}
-        {(ask.n ?? 0) > 0 && <div style={{ position: 'absolute', inset: 0, background: 'rgba(231,226,236,0.72)', opacity: ask.o }} />}
-        <AskBar w={w} h={h} o={ask.o} text={ask.text} n={ask.n} caret={ask.caret} fs={ask.fs} />
+      {/* their machine's bar, stamped on top of everything, with its price on it (the same one as on the big screen) */}
+      {ai > 0 && <div style={{ position: 'absolute', left: '50%', bottom: (P ? 0.03 : 0.05) * h, transform: `translateX(-50%) scale(${0.6 + 0.4 * smooth(ai)})`, opacity: smooth(ai * 1.5),
+        height: 10 * k, width: (P ? 0.84 : 0.56) * w, boxSizing: 'border-box', padding: `0 ${1.6 * k}px 0 ${4 * k}px`, borderRadius: 10 * k, background: '#1C1424', color: '#F3EAF9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 4.2 * k, fontWeight: 500, whiteSpace: 'nowrap',
+        boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)` }}>ask…<span style={{ height: 7 * k, padding: `0 ${2.2 * k}px`, borderRadius: 7 * k, background: '#FBF5EA', color: '#21152C', fontWeight: 900, fontSize: 3.8 * k, display: 'flex', alignItems: 'center' }}>$20/mo</span></div>}
+      {glimpse && glimpse.o > 0 && <>
+        {/* WHY a hush and a caret, not an input bar: something new is waiting here, and nothing of the real app is drawn */}
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(250,247,252,0.82)', opacity: glimpse.o }} />
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 2.6 * k, height: 15 * k, marginLeft: -1.3 * k, marginTop: -7.5 * k, borderRadius: 3 * k, background: '#9750AA', opacity: glimpse.o * (glimpse.caret ? 1 : 0) }} />
       </>}
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
@@ -298,9 +281,9 @@ export const Chores: React.FC<AppProps> = ({ w, h, p }) => {
   const kids = [{ n: 'Mia', c: '#F28C7B', s: [1, 1, 1, 0] }, { n: 'Leo', c: '#5FA8E8', s: [1, 1, 0, 0] }];
   const jobs = ['Feed Biscuit', 'Make bed', 'Lunchbox', 'Read 20 min'];
   return (
-    <Frame bg="#E4F0FB">
+    <Frame bg="#1F4E8C">
       <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: OUTFIT, color: '#18324D', boxSizing: 'border-box' }}>
-        <div style={{ ...rise(p, 0, 5, k), fontSize: 9 * k, fontWeight: 600, letterSpacing: '-0.03em' }}>Jobs before the park</div>
+        <div style={{ ...rise(p, 0, 5, k), fontSize: 9 * k, fontWeight: 600, letterSpacing: '-0.03em', color: '#FFFFFF' }}>Jobs before the park</div>
         <div style={{ display: 'flex', flexDirection: P ? 'column' : 'row', gap: 4 * k, marginTop: 4 * k }}>
           {kids.map((kid, ki) => (
             <div key={ki} style={{ ...rise(p, 1 + ki, 5, k), flex: 1, background: '#fff', borderRadius: 4 * k, padding: 3.5 * k, boxShadow: `0 ${0.6 * k}px ${2 * k}px rgba(24,50,77,0.08)` }}>
@@ -325,19 +308,19 @@ export const Birds: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100, P = h > w;
   const rows: [string, number, string][] = [['Robin', 3, '#D9774E'], ['Blue tit', 2, '#4F86B8'], ['Wren', 1, '#9A7552'], ['Goldfinch', 4, '#D8B23A']];
   return (
-    <Frame bg="#E5EDDF">
-      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#22402A', boxSizing: 'border-box', display: 'flex', flexDirection: P ? 'column' : 'row', gap: 5 * k }}>
+    <Frame bg="#173A2B">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#EAF3E4', boxSizing: 'border-box', display: 'flex', flexDirection: P ? 'column' : 'row', gap: 5 * k }}>
         <div style={{ flex: P ? 'none' : 0.9 }}>
           <div style={{ ...rise(p, 0, 5, k), fontSize: 4 * k, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.7 }}>Kitchen window</div>
           <div style={{ ...rise(p, 1, 5, k), fontSize: 11 * k, fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1 }}>10 birds today</div>
           <svg style={{ ...rise(p, 2, 5, k), marginTop: 3 * k }} width={(P ? 0.86 : 0.4) * w} height={18 * k} viewBox="0 0 100 30" preserveAspectRatio="none">
-            <path d="M0 26 C 12 22, 18 10, 30 14 S 50 26, 62 12 S 85 4, 100 9" stroke="#3E7A4C" strokeWidth="2" fill="none" />
-            <path d="M0 26 C 12 22, 18 10, 30 14 S 50 26, 62 12 S 85 4, 100 9 V30 H0Z" fill="#3E7A4C" opacity="0.12" />
+            <path d="M0 26 C 12 22, 18 10, 30 14 S 50 26, 62 12 S 85 4, 100 9" stroke="#9FD67A" strokeWidth="2" fill="none" />
+            <path d="M0 26 C 12 22, 18 10, 30 14 S 50 26, 62 12 S 85 4, 100 9 V30 H0Z" fill="#9FD67A" opacity="0.18" />
           </svg>
         </div>
         <div style={{ flex: 1 }}>
           {rows.map(([n, c, col], i) => (
-            <div key={i} style={{ ...rise(p, 2.5 + i * 0.5, 5, k), display: 'flex', alignItems: 'center', gap: 3 * k, background: '#F4F8F1', borderRadius: 3 * k, padding: `${2.2 * k}px ${3 * k}px`, marginBottom: 2 * k }}>
+            <div key={i} style={{ ...rise(p, 2.5 + i * 0.5, 5, k), display: 'flex', alignItems: 'center', gap: 3 * k, background: 'rgba(255,255,255,0.08)', borderRadius: 3 * k, padding: `${2.2 * k}px ${3 * k}px`, marginBottom: 2 * k }}>
               <svg width={7 * k} height={7 * k} viewBox="0 0 24 24"><path d="M4 15c0-5 4-9 9-9 2.5 0 4 1.5 4.5 3L21 10l-3 1.5c0 4.5-3.5 7.5-8 7.5H4z" fill={col} /><circle cx="15" cy="9" r="1.1" fill="#fff" /></svg>
               <span style={{ fontSize: 5 * k, fontWeight: 700, flex: 1 }}>{n}</span><span style={{ fontSize: 5 * k, fontWeight: 900 }}>{c}</span>
             </div>
@@ -352,15 +335,15 @@ export const Birds: React.FC<AppProps> = ({ w, h, p }) => {
 export const Tides: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100, P = h > w;
   return (
-    <Frame bg="#DCEDF0">
-      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#12384A', boxSizing: 'border-box' }}>
-        <div style={{ ...rise(p, 0, 4, k), fontSize: 4 * k, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#2B7A8E' }}>Pier 9 · Saturday</div>
+    <Frame bg="#0E2A3A">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#E6F4F7', boxSizing: 'border-box' }}>
+        <div style={{ ...rise(p, 0, 4, k), fontSize: 4 * k, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#5FC7D9' }}>Pier 9 · Saturday</div>
         <div style={{ ...rise(p, 1, 4, k), fontSize: (P ? 14 : 12) * k, fontWeight: 900, letterSpacing: '-0.05em', marginTop: 1 * k }}>Go at 6:40</div>
         <div style={{ ...rise(p, 1.5, 4, k), fontSize: 4.6 * k, opacity: 0.75 }}>rising tide, light wind</div>
         <svg style={{ ...rise(p, 2.5, 4, k), position: 'absolute', left: 0, bottom: 0 }} width={w} height={h * (P ? 0.42 : 0.45)} viewBox="0 0 100 40" preserveAspectRatio="none">
-          <path d="M0 26 C 15 6, 30 6, 45 22 S 75 38, 100 12 V40 H0Z" fill="#A9D3DA" />
-          <path d="M0 30 C 15 12, 30 12, 45 27 S 75 42, 100 18 V40 H0Z" fill="#7FB9C4" opacity="0.8" />
-          <circle cx="30" cy="9" r="2.2" fill="#2B7A8E" />
+          <path d="M0 26 C 15 6, 30 6, 45 22 S 75 38, 100 12 V40 H0Z" fill="#1F5A6E" />
+          <path d="M0 30 C 15 12, 30 12, 45 27 S 75 42, 100 18 V40 H0Z" fill="#2B7A8E" opacity="0.9" />
+          <circle cx="30" cy="9" r="2.2" fill="#F5C431" />
         </svg>
       </div>
     </Frame>
@@ -372,13 +355,13 @@ export const Setlist: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100;
   const songs: [string, string][] = [['Paper Moon', 'G · 92'], ['Slow Train', 'E · 120'], ['Kitchen Light', 'C · 76'], ['Last Bus', 'A · 134']];
   return (
-    <Frame bg="#F1E8F5">
-      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: OUTFIT, color: '#2A1D33', boxSizing: 'border-box' }}>
-        <div style={{ ...rise(p, 0, 5, k), fontSize: 4 * k, fontWeight: 600, color: '#9750AA', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Thursday practice</div>
+    <Frame bg="#17111C">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: OUTFIT, color: '#F6EEF9', boxSizing: 'border-box' }}>
+        <div style={{ ...rise(p, 0, 5, k), fontSize: 4 * k, fontWeight: 600, color: '#FF7A59', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Thursday practice</div>
         <div style={{ ...rise(p, 0.6, 5, k), fontSize: 10 * k, fontWeight: 600, letterSpacing: '-0.04em', marginBottom: 2 * k }}>Setlist</div>
         {songs.map(([s, m], i) => (
-          <div key={i} style={{ ...rise(p, 1.4 + i * 0.6, 5, k), display: 'flex', alignItems: 'baseline', gap: 3 * k, padding: `${1.8 * k}px 0`, borderTop: `${0.3 * k}px solid #DCCDE6` }}>
-            <span style={{ fontSize: 4.4 * k, color: '#9750AA', width: 5 * k }}>{i + 1}</span>
+          <div key={i} style={{ ...rise(p, 1.4 + i * 0.6, 5, k), display: 'flex', alignItems: 'baseline', gap: 3 * k, padding: `${1.8 * k}px 0`, borderTop: `${0.3 * k}px solid #3A2F42` }}>
+            <span style={{ fontSize: 4.4 * k, color: '#FF7A59', width: 5 * k }}>{i + 1}</span>
             <span style={{ fontSize: 6 * k, flex: 1, fontWeight: 600 }}>{s}</span>
             <span style={{ fontSize: 4 * k, opacity: 0.6, fontFamily: DMSANS }}>{m}</span>
           </div>
@@ -392,13 +375,13 @@ export const Setlist: React.FC<AppProps> = ({ w, h, p }) => {
 export const Knit: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100;
   return (
-    <Frame bg="#F7E6EA">
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, color: '#6B2238' }}>
+    <Frame bg="#C2456A">
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, color: '#FFF1F4' }}>
         <div style={{ ...rise(p, 0, 4, k), fontSize: 4.6 * k, fontWeight: 700 }}>Gran's scarf · row</div>
         <div style={{ ...rise(p, 1, 4, k), fontSize: 30 * k, fontWeight: 900, letterSpacing: '-0.06em', lineHeight: 1 }}>112</div>
-        <div style={{ ...rise(p, 1.6, 4, k), width: '64%', height: 2.4 * k, borderRadius: 2 * k, background: '#EDB8C4', marginTop: 2 * k }}><div style={{ width: '80%', height: '100%', borderRadius: 2 * k, background: '#C2456A' }} /></div>
+        <div style={{ ...rise(p, 1.6, 4, k), width: '64%', height: 2.4 * k, borderRadius: 2 * k, background: 'rgba(255,241,244,0.3)', marginTop: 2 * k }}><div style={{ width: '80%', height: '100%', borderRadius: 2 * k, background: '#FFF1F4' }} /></div>
         <div style={{ ...rise(p, 2.4, 4, k), display: 'flex', gap: 4 * k, marginTop: 5 * k }}>
-          {['−', '+'].map((s) => <div key={s} style={{ width: 15 * k, height: 15 * k, borderRadius: 15 * k, background: s === '+' ? '#C2456A' : '#fff', color: s === '+' ? '#fff' : '#C2456A', fontSize: 9 * k, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s}</div>)}
+          {['−', '+'].map((s) => <div key={s} style={{ width: 15 * k, height: 15 * k, borderRadius: 15 * k, background: s === '+' ? '#FFF1F4' : 'rgba(255,241,244,0.18)', color: s === '+' ? '#C2456A' : '#FFF1F4', fontSize: 9 * k, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s}</div>)}
         </div>
       </div>
     </Frame>
@@ -409,8 +392,8 @@ export const Knit: React.FC<AppProps> = ({ w, h, p }) => {
 export const Bus: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100, P = h > w;
   return (
-    <Frame bg="#F6ECCB">
-      <div style={{ position: 'absolute', inset: 0, padding: 7 * k, fontFamily: DMSANS, color: '#3A2E0C', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <Frame bg="#F5C431">
+      <div style={{ position: 'absolute', inset: 0, padding: 7 * k, fontFamily: DMSANS, color: '#1E1A0A', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div style={{ ...rise(p, 0, 4, k), fontSize: 5 * k, fontWeight: 700 }}>The 22 · outside my door</div>
         <div style={{ ...rise(p, 1, 4, k), fontSize: (P ? 34 : 30) * k, fontWeight: 900, letterSpacing: '-0.06em', lineHeight: 0.9 }}>4<span style={{ fontSize: (P ? 10 : 9) * k, letterSpacing: '-0.02em' }}> min</span></div>
         <div style={{ ...rise(p, 2, 4, k), fontSize: 4.6 * k, fontWeight: 500 }}>then 19 min · leave now if you want a seat</div>
@@ -424,7 +407,7 @@ export const Garden: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100, P = h > w;
   const seeds: [string, string][] = [['Peas', '#7FB069'], ['Radish', '#D9566B'], ['Chard', '#E0A43A'], ['Basil', '#4F9A5B']];
   return (
-    <Frame bg="#F1E9DA">
+    <Frame bg="#EADFC8">
       <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: OUTFIT, color: '#3D2E1C', boxSizing: 'border-box' }}>
         <div style={{ ...rise(p, 0, 5, k), fontSize: 9 * k, fontWeight: 600, letterSpacing: '-0.03em' }}>Sow this week</div>
         <div style={{ ...rise(p, 0.5, 5, k), fontSize: 4.4 * k, fontFamily: DMSANS, opacity: 0.7, marginBottom: 3 * k }}>back bed · frost's gone</div>
@@ -445,9 +428,9 @@ export const Garden: React.FC<AppProps> = ({ w, h, p }) => {
 export const Spanish: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100;
   return (
-    <Frame bg="#EEE6FF">
+    <Frame bg="#E8483B">
       <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#2B1F55', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 * k }}>
-        <div style={{ ...rise(p, 0, 4, k), fontSize: 4.4 * k, fontWeight: 700, opacity: 0.7 }}>Seville in May · word 6 of 10</div>
+        <div style={{ ...rise(p, 0, 4, k), fontSize: 4.4 * k, fontWeight: 700, opacity: 0.85, color: '#FFFFFF' }}>Seville in May · word 6 of 10</div>
         <div style={{ ...rise(p, 1, 4, k), background: '#fff', borderRadius: 5 * k, padding: `${7 * k}px ${10 * k}px`, boxShadow: `0 ${1.5 * k}px ${4 * k}px rgba(43,31,85,0.15)`, transform: `${rise(p, 1, 4, k).transform} rotate(-2deg)`, textAlign: 'center' }}>
           <div style={{ fontSize: 13 * k, fontWeight: 900, letterSpacing: '-0.04em' }}>la cuenta</div>
           <div style={{ fontSize: 5 * k, opacity: 0.6 }}>the bill, please</div>
@@ -458,19 +441,58 @@ export const Spanish: React.FC<AppProps> = ({ w, h, p }) => {
 };
 
 export const APPS = [Recipes, Chores, Birds, Tides, Setlist, Knit, Bus, Garden, Spanish];
-// WHY one light family: the first cut's loud yellow, deep teal, hot pink and black read as random colour
-// blocks. Every person's copy still has its own colour, but all of them are soft and sit with the brand.
-export const APP_BG = ['#FBF3E6', '#E4F0FB', '#E5EDDF', '#DCEDF0', '#F1E8F5', '#F7E6EA', '#F6ECCB', '#F1E9DA', '#EEE6FF'];
+// WHY bold and unlike each other (reviewer 2026-11-20: the soft pastel family read as one stock UI kit, so
+// "every copy is different" did not land): dark ones, a loud yellow, a raspberry, each its own world.
+export const APP_BG = ['#FBF3E6', '#1F4E8C', '#173A2B', '#0E2A3A', '#17111C', '#C2456A', '#F5C431', '#EADFC8', '#E8483B'];
 
-/** A person's own screen: their thing on top, and the same ask bar underneath on every one of them.
- *  WHY the shared bar: it is what tells a stranger these are all copies of ONE app, each asked into shape. */
-export const OwnScreen: React.FC<{ app: number; w: number; h: number; p: number; frame: number; caret?: boolean }> = ({ app, w, h, p, frame, caret }) => {
-  const App = APPS[app];
-  const top = askRect(w, h).y - 0.02;
+// ---------------------------------------------------------------------------------------------------
+// The real app, as frames of recordings (take1b-stills.mjs). Phones get the phone recording, everything
+// wider gets the desktop window. Five real themes, chosen to differ boldly: a rainy rooftop photo, a dark
+// halftone, plain dark Midnight, a desert, and youcoded's own lavender. (Cotton Candy Sky and Meadow Mist
+// are out: the owner did not like them.)
+// ---------------------------------------------------------------------------------------------------
+const PHONE_STILLS = ['golden', 'halftone', 'midnight', 'youcoded'].map((n) => `stills/take1b-phone-${n}.png`);
+const WIDE_STILLS = ['stills/chat--golden-sunbreak.png', 'stills/chat--halftone-dimension.png', 'stills/take1b-wide-desert.png', 'stills/chat--midnight.png', 'stills/chat--youcoded.png'];
+// the colour each theme throws onto its shelf at night (sampled by eye from the frames)
+const STILL_GLOW: Record<string, string> = { golden: '#C9B27A', halftone: '#B0335A', midnight: '#5B6B86', youcoded: '#C9A6E0', desert: '#E59A5C' };
+export const PHONE_EMPTY = 'stills/take1b-phone-empty.png';
+
+export type Look = { still: string; glow: string } | { app: number; glow: string };
+const hex = (c: string) => { const n = parseInt(c.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},1)`; };
+const glowOfStill = (src: string) => hex(STILL_GLOW[Object.keys(STILL_GLOW).find((k) => src.includes(k)) ?? 'youcoded']);
+/** What a device shows once it is someone's own. WHY a fixed rule on the device's number (not random): the
+ *  finished wall must be a designed mosaic, and the story's three devices must get the looks the film needs. */
+export const lookFor = (d: { id: string; kind: string; app: number; cx: number; row: number }): Look => {
+  if (d.id === 'hero') return { app: 0, glow: hex(APP_BG[0]) };
+  if (d.id === 'lockLaptop') return { still: WIDE_STILLS[0], glow: glowOfStill(WIDE_STILLS[0]) };   // "what our computers can do"
+  if (d.id === 'tagTablet') return { still: WIDE_STILLS[2], glow: glowOfStill(WIDE_STILLS[2]) };    // "what it costs": the desert
+  if (d.kind === 'phone') {
+    // half the phones show the real app in a theme, half show a thing someone made in it
+    if (d.app % 2 === 0) { const src = PHONE_STILLS[(d.app / 2) % PHONE_STILLS.length]; return { still: src, glow: glowOfStill(src) }; }
+    return { app: d.app, glow: hex(APP_BG[d.app]) };
+  }
+  if (d.app % 3 === 0) {
+    // WHY spread over four made things by position: one app on every such screen (the loud yellow bus) repeated
+    // across the light wall like a pattern instead of reading as different people's things
+    const a = [3, 4, 7, 6][Math.abs(Math.round(d.cx / 300) + d.row * 3) % 4];
+    return { app: a, glow: hex(APP_BG[a]) };
+  }
+  const src = WIDE_STILLS[d.app % WIDE_STILLS.length];
+  return { still: src, glow: glowOfStill(src) };
+};
+
+/** One frame of the real app, filling a screen. */
+export const RealApp: React.FC<{ src: string; w: number; h: number }> = ({ src, w, h }) => (
+  <Img src={staticFile(src)} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h, objectFit: 'cover', objectPosition: '50% 50%' }} />
+);
+
+/** A person's own screen: either the real app in their theme, or a thing they made in it (staged, brand §8). */
+export const OwnScreen: React.FC<{ look: Look; w: number; h: number; p: number }> = ({ look, w, h, p }) => {
+  if ('still' in look) return <div style={{ position: 'absolute', inset: 0, background: '#120A19', overflow: 'hidden' }}><RealApp src={look.still} w={w} h={h} /></div>;
+  const App = APPS[look.app];
   return (
-    <div style={{ position: 'absolute', inset: 0, background: APP_BG[app], overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', left: 0, top: 0, width: w, height: h * top, overflow: 'hidden' }}><App w={w} h={h * top} p={p} /></div>
-      <AskBar w={w} h={h} o={smooth((p - 0.55) * 3)} caret={!!caret && Math.floor(frame / 15) % 2 === 0} />
+    <div style={{ position: 'absolute', inset: 0, background: APP_BG[look.app], overflow: 'hidden' }}>
+      <App w={w} h={h} p={p} />
     </div>
   );
 };
