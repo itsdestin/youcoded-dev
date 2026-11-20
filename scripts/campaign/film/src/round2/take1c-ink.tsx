@@ -17,6 +17,36 @@ export const P = {
   sun: '#E8A33D',             // the campaign's one extra colour (brand §5), used sparingly and only after the turn
   sunSoft: '#F3D29A', pinkSoft: '#F2C6DD', violetSoft: '#D9C2F0', purpleSoft: '#D7B6E0',
 };
+/** What ordinary people wear once colour arrives. WHY muted: the reviewer found the shirts and the app themes
+ *  shared one pastel set, so "a person" and "their app" blurred into confetti. Clothes stay quiet; each
+ *  person's app is what carries the colour. */
+export const NEUTRAL = ['#CDBBA7', '#9FAABB', '#BFA6AC', '#A9B39C', '#D6C6A8', '#A496A6', '#B7A99A', '#93A0A8', '#C4B4BC', '#B2B59E', '#CBB79F', '#A3A3B6'];
+
+/** How a figure arrives. 'draw' inks it stroke by stroke; 'pop' has it land whole with one soft overshoot;
+ *  'wipe' reveals the finished figure from the feet up. WHY the last two: half-drawn strokes in the opening
+ *  read as loose fragments floating in space (a rendering fault), never as drawing. */
+export type Enter = 'draw' | 'pop' | 'wipe';
+let clipSeq = 0;
+/** Wraps a finished figure (its own times pushed into the past) in its entrance. */
+const Entrance: React.FC<{ enter: Enter; a: number; dur: number; x: number; y: number; h: number; children: React.ReactNode }> = ({ enter, a, dur, x, y, h, children }) => {
+  const t = useT();
+  const [id] = React.useState(() => `c-wipe-${++clipSeq}`);
+  if (enter === 'pop') {
+    const p = pop(t, a, dur);
+    if (p <= 0) return null;
+    // squash and stretch from the feet: lands a touch wide and short, settles tall
+    const sy = p, sx = 1 + (1 - Math.min(1, p)) * 0.25;
+    return <g transform={`translate(${x} ${y}) scale(${sx} ${sy}) translate(${-x} ${-y})`}>{children}</g>;
+  }
+  const p = lin(t, a, a + dur, EASE_IN_OUT);
+  if (p <= 0) return null;
+  return (
+    <>
+      <defs><clipPath id={id}><rect x={x - 400} y={y + 20 - (h + 40) * p} width={800} height={(h + 40) * p} /></clipPath></defs>
+      <g clipPath={`url(#${id})`}>{children}</g>
+    </>
+  );
+};
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 /** Current film time in seconds. */
@@ -97,7 +127,7 @@ export const InkDefs: React.FC = () => (
 );
 
 // ---------- the handful: tall, pompous, faceless ----------
-export type HatPose = 'sides' | 'bar' | 'key' | 'rub' | 'reach' | 'hold' | 'grab' | 'pat';
+export type HatPose = 'sides' | 'bar' | 'key' | 'rub' | 'reach' | 'hold' | 'grab' | 'pat' | 'shove';
 type HatProps = {
   x: number; y: number; s?: number; a: number; b?: number;
   crown?: number;          // hat height (they grow with their hubris)
@@ -111,8 +141,17 @@ type HatProps = {
   eyes?: 'none' | 'dots' | 'coins';
   fist?: number;           // 0..1: open hands closing on nothing (the tool escapes them)
   pocket?: boolean;        // a waistcoat pocket, for the coin
+  enter?: Enter;
+  hatSx?: number;          // the hat's width (squash and stretch as it grows)
 };
-export const HatFigure: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', fist = 0, pocket = false }) => {
+export const HatFigure: React.FC<HatProps> = (props) => {
+  const { enter = 'draw', a, b, x, y, s = 1, crown = 78 } = props;
+  if (enter !== 'draw') {
+    return <Entrance enter={enter} a={a} dur={enter === 'pop' ? 0.36 : (b ?? a + 0.5) - a} x={x} y={y} h={(212 + crown + 10) * s}><HatFigureInk {...props} a={-10} b={-9} /></Entrance>;
+  }
+  return <HatFigureInk {...props} />;
+};
+const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', fist = 0, pocket = false, hatSx = 1 }) => {
   const e = b ?? a + 1;
   const k = (i: number) => a + (e - a) * i;  // stagger inside the drawing window
   const ink = P.ink;
@@ -127,11 +166,12 @@ export const HatFigure: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, d
     hold: ['M -20 -168 C -46 -152 -50 -126 -34 -114', 'M 20 -168 C 46 -152 50 -126 34 -114'],
     grab: ['M -20 -168 C -10 -200 20 -232 52 -250', 'M 20 -168 C 44 -190 70 -214 96 -224'],
     pat: ['M -20 -168 C -40 -140 -46 -114 -42 -92', 'M 20 -168 C 44 -150 44 -122 24 -110'],
+    shove: ['M -20 -168 C -40 -140 -46 -114 -42 -92', 'M 20 -168 C 46 -140 66 -100 84 -60'],
   };
   const hands: Record<HatPose, [number, number][]> = {
     sides: [[-42, -90], [42, -90]], bar: [[-42, -90], [61, -134]], key: [[-42, -90], [73, -119]],
     rub: [[-4, -117], [4, -117]], reach: [[-42, -90], [106, -197]], hold: [[-33, -112], [33, -112]],
-    grab: [[54, -252], [98, -226]], pat: [[-42, -90], [22, -108]],
+    grab: [[54, -252], [98, -226]], pat: [[-42, -90], [22, -108]], shove: [[-42, -90], [86, -58]],
   };
   const hatY = -212 + drop * 34;      // slides down over the faceless head
   return (
@@ -161,10 +201,10 @@ export const HatFigure: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, d
       <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} w={2.6} ea={ea} /></g>
       {eyes === 'dots' && <Appear a={k(0.7)} out={ea}><circle cx={-4} cy={-199} r={2.4} fill={ink} /><circle cx={6} cy={-200} r={2.4} fill={ink} /></Appear>}
       {eyes === 'coins' && [[-5, -199], [7, -200]].map(([cx, cy], i) => (
-        <g key={i}><circle cx={cx} cy={cy} r={5.6} fill={P.sun} stroke={ink} strokeWidth={1.6} /><circle cx={cx} cy={cy} r={2.6} fill="none" stroke={ink} strokeWidth={1} opacity={0.6} /></g>
+        <g key={i}><circle cx={cx} cy={cy} r={6.4} fill={P.sun} stroke={ink} strokeWidth={1.6} /><circle cx={cx} cy={cy} r={3} fill="none" stroke={ink} strokeWidth={1} opacity={0.6} /></g>
       ))}
       {/* the tall hat */}
-      <g transform={`translate(0 ${hatY})`}>
+      <g transform={`translate(0 ${hatY}) scale(${hatSx} 1)`}>
         <Shape d={`M -16 0 L -18.5 ${-crown} Q 0 ${-crown - 4} 18.5 ${-crown} L 16 0 Z`} a={k(0.6)} b={k(0.9)} fill={ink} w={3} ea={ea} />
         <Wash d="M -16.4 -9 L -16.9 -19 L 16.9 -19 L 16.4 -9 Z" a={k(0.85)} fill={band ?? P.inkSoft} ea={ea} />
         <Ink d="M -27 1 Q 0 -5 27 1" a={k(0.75)} b={k(0.95)} w={6} ea={ea} />
@@ -180,8 +220,16 @@ type PersonProps = {
   x: number; y: number; s?: number; a: number; b?: number; body?: string; hair?: Hair; pose?: PersonPose;
   mood?: 'smile' | 'flat' | 'o'; flip?: boolean; bob?: number; tilt?: number; ea?: number; device?: 'phone' | 'none';
   hairColor?: string;
+  enter?: Enter;
 };
-export const Person: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, hair = 'tuft', pose = 'down', mood = 'smile', flip, bob = 0, tilt = 0, ea, device = 'none', hairColor }) => {
+export const Person: React.FC<PersonProps> = (props) => {
+  const { enter = 'draw', a, b, x, y, s = 1, bob = 0 } = props;
+  if (enter !== 'draw') {
+    return <Entrance enter={enter} a={a} dur={enter === 'pop' ? 0.36 : (b ?? a + 0.5) - a} x={x} y={y + bob} h={110 * s}><PersonInk {...props} a={-10} b={-9} /></Entrance>;
+  }
+  return <PersonInk {...props} />;
+};
+const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, hair = 'tuft', pose = 'down', mood = 'smile', flip, bob = 0, tilt = 0, ea, device = 'none', hairColor }) => {
   const e = b ?? a + 0.7;
   const k = (i: number) => a + (e - a) * i;
   const hc = hairColor ?? P.ink;

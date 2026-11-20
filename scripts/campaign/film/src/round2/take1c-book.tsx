@@ -24,8 +24,10 @@ export type Face =
 const noise = (freq: number, alpha: number, seed: number, size = 260) => `url("data:image/svg+xml;utf8,${encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='${freq}' numOctaves='3' seed='${seed}' stitchTiles='stitch'/>` +
   `<feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.14  0 0 0 0 0.26  0 0 0 ${alpha} 0'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`)}")`;
-const GRAIN = noise(0.85, 0.08, 3);
-const MOTTLE = noise(0.012, 0.06, 11, 700);
+// WHY light: at 0.08/0.06 the grain and mottle multiplied the cream down to a dim grey-beige; paper should
+// read as clean warm white with just enough tooth to be paper
+const GRAIN = noise(0.85, 0.045, 3);
+const MOTTLE = noise(0.012, 0.025, 11, 700);
 const CLOTH = `${noise(0.6, 0.35, 5, 200)}, repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0 1px, transparent 1px 3px)`;
 
 /** Paper colour + grain + the page's curve into the gutter. Rendered over the art (multiply) so ink sits in the paper. */
@@ -35,7 +37,7 @@ const PaperOver: React.FC<{ side: 'L' | 'R' }> = ({ side }) => {
     <>
       <div style={{ position: 'absolute', inset: 0, backgroundImage: `${GRAIN}, ${MOTTLE}`, mixBlendMode: 'multiply', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: `linear-gradient(${dir}, rgba(58,28,52,0.34) 0%, rgba(58,28,52,0.12) 3.5%, rgba(58,28,52,0.02) 9%, rgba(255,250,240,0.10) 15%, rgba(255,250,240,0) 30%, rgba(58,28,52,0) 88%, rgba(58,28,52,0.07) 100%)` }} />
+        background: `linear-gradient(${dir}, rgba(58,28,52,0.30) 0%, rgba(58,28,52,0.10) 3%, rgba(58,28,52,0.0) 8%, rgba(255,252,246,0.12) 15%, rgba(255,252,246,0) 30%, rgba(58,28,52,0) 92%, rgba(58,28,52,0.04) 100%)` }} />
     </>
   );
 };
@@ -166,13 +168,15 @@ export const coverArt = (Emblem: React.FC): React.FC => () => (
 );
 
 // ---------- camera ----------
-export type Shot = { t: number; x: number; y: number; z: number; tilt?: number; roll?: number };
+/** `cut`: the camera holds the previous key and jumps to this one on its frame (a hard cut, no move). */
+export type Shot = { t: number; x: number; y: number; z: number; tilt?: number; roll?: number; cut?: boolean };
 /** Where the camera looks (book units), how close (1 = the home framing), its tilt and roll, eased between keys. */
 export const cameraAt = (keys: Shot[], t: number) => {
   let i = 0;
   while (i < keys.length - 1 && keys[i + 1].t <= t) i++;
   const A = keys[i], B = keys[Math.min(i + 1, keys.length - 1)];
-  const k = B.t === A.t ? 1 : interpolate(t, [A.t, B.t], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE_IN_OUT });
+  // WHY a cut key holds still until its frame: a hard cut must not be preceded by a drift toward the next shot
+  const k = B.cut && t < B.t ? 0 : B.t === A.t ? 1 : interpolate(t, [A.t, B.t], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE_IN_OUT });
   const mix = (a: number, b: number) => a + (b - a) * k;
   // WHY zoom is interpolated in log space: a push from 1x to 2x then feels as steady as 2x to 4x
   const z = Math.exp(mix(Math.log(A.z), Math.log(B.z)));
@@ -180,14 +184,17 @@ export const cameraAt = (keys: Shot[], t: number) => {
 };
 
 export const PERSPECTIVE = 3400;
+// WHY a lighter, richer purple felt: near-black felt swallowed the dark boards, so the book did not separate
+// from the desk; this sits clearly above the plum boards and still reads as dark.
+const FELT = '#4A2A5C';
 export const HOME_SCALE = 0.87;   // the open book at the home framing fills ~68% of the width
 /** Puts the book on the desk under the camera. Children are in book units (spine at x = PW). */
 export const World: React.FC<{ cam: ReturnType<typeof cameraAt>; children: React.ReactNode }> = ({ cam, children }) => (
-  <AbsoluteFill style={{ perspective: PERSPECTIVE, perspectiveOrigin: '50% 46%', overflow: 'hidden', background: '#1A0D22' }}>
+  <AbsoluteFill style={{ perspective: PERSPECTIVE, perspectiveOrigin: '50% 46%', overflow: 'hidden', background: FELT }}>
     <div style={{ position: 'absolute', left: 960 - PW, top: 540 - PH / 2, width: SW, height: PH, transformStyle: 'preserve-3d', transformOrigin: `${PW}px ${PH / 2}px`,
       transform: `scale(${HOME_SCALE * cam.z}) rotateX(${cam.tilt}deg) rotateZ(${cam.roll}deg) translate(${PW - cam.x}px, ${PH / 2 - cam.y}px)` }}>
       {/* the desk: dark plum linen that recedes under the lamp */}
-      <div style={{ position: 'absolute', left: -2400, top: -1800, width: SW + 4800, height: PH + 3600, background: '#24122D', backgroundImage: CLOTH, transform: 'translateZ(-14px)' }} />
+      <div style={{ position: 'absolute', left: -2400, top: -1800, width: SW + 4800, height: PH + 3600, background: FELT, backgroundImage: CLOTH, transform: 'translateZ(-14px)' }} />
       {children}
     </div>
   </AbsoluteFill>
@@ -196,9 +203,10 @@ export const World: React.FC<{ cam: ReturnType<typeof cameraAt>; children: React
 /** The lamp: one warm, wide pool of light from the upper left and soft falloff to the corners. `dim` 0..1 lowers it. */
 export const Lamp: React.FC<{ dim?: number; warm?: number }> = ({ dim = 0, warm = 0 }) => (
   <AbsoluteFill style={{ pointerEvents: 'none' }}>
-    <AbsoluteFill style={{ background: 'radial-gradient(ellipse 72% 78% at 44% 40%, rgba(20,8,28,0) 50%, rgba(20,8,28,0.34) 84%, rgba(16,6,22,0.62) 100%)' }} />
-    <AbsoluteFill style={{ background: `radial-gradient(ellipse 60% 60% at 36% 26%, rgba(255,226,190,${0.16 + warm * 0.1}) 0%, rgba(255,228,196,0) 70%)`, mixBlendMode: 'soft-light' }} />
+    {/* WHY a gentle falloff (~15%): the old 34-62% vignette made the whole film a dim photo of a book */}
+    <AbsoluteFill style={{ background: 'radial-gradient(ellipse 80% 85% at 48% 44%, rgba(20,8,28,0) 62%, rgba(20,8,28,0.08) 86%, rgba(16,6,22,0.16) 100%)' }} />
+    <AbsoluteFill style={{ background: `radial-gradient(ellipse 70% 70% at 36% 26%, rgba(255,240,220,${0.10 + warm * 0.08}) 0%, rgba(255,240,220,0) 70%)`, mixBlendMode: 'soft-light' }} />
     {/* WHY only the edges: a whole-frame dim turned the cream page grey, which read as a rendering fault */}
-    {dim > 0 && <AbsoluteFill style={{ background: `radial-gradient(ellipse 58% 62% at 52% 46%, rgba(18,8,26,0) 45%, rgba(18,8,26,${dim * 0.55}) 100%)` }} />}
+    {dim > 0 && <AbsoluteFill style={{ background: `radial-gradient(ellipse 62% 66% at 52% 46%, rgba(18,8,26,0) 50%, rgba(18,8,26,${dim * 0.3}) 100%)` }} />}
   </AbsoluteFill>
 );

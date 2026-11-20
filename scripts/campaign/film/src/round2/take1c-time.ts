@@ -28,6 +28,7 @@ export const Q = {
   privacy: T('privacy', 'our *privacy would'),
   costOf: T('costOf', 'the *cost of convenience.'),
   convenience: T('convenience', 'of *convenience.'),
+  convenienceEnd: E('convenienceEnd', 'of *convenience.'),
   // (4) the turn
   however: T('however', 'However, recently...'),
   recently: T('recently', 'However, *recently...'),
@@ -46,6 +47,7 @@ export const Q = {
   believed: T('believed', 'they *believed would'),
   greatTreasure: T('greatTreasure', 'a *great treasure:'),
   treasure: T('treasure', 'great *treasure:'),
+  these: T('these', 'these corporations created'),
   shareholder: T('shareholder', 'shareholder value.'),
   value: T('value', 'shareholder *value.'),
   valueEnd: E('valueEnd', 'shareholder *value.'),
@@ -53,6 +55,7 @@ export const Q = {
   but: T('but', 'But in their excitement,'),
   excitement: T('excitement', 'their *excitement,'),
   createdSomething: T('createdSomething', 'they *created something far'),
+  far: T('far', 'something *far beyond'),
   beyond: T('beyond', 'far *beyond their own control:'),
   control: T('control', 'own *control:'),
   tool: T('tool', 'a *tool that can'),
@@ -63,11 +66,14 @@ export const Q = {
   monopolies1: T('monopolies1', 'these *monopolies,'),
   monopolies1End: E('monopolies1End', 'these *monopolies,'),
   forAnyone: T('forAnyone', 'for anyone who asks.'),
+  so: T('so', 'And *so, for'),
+  veryLong: T('veryLong', 'a *very long while,'),
   anyone: T('anyone', 'for *anyone who'),
   who: T('who', 'anyone *who asks.'),
   asks: T('asks', 'who *asks.'),
   // (7) our turn
   andSo: T('andSo', 'And so, for the first'),
+  weGetStart: T('weGetStart', 'we get to decide.'),
   firstTime: T('firstTime', 'the *first time in'),
   longWhile: T('longWhile', 'very *long while,'),
   weGet: T('weGet', 'we get to decide.'),
@@ -100,24 +106,33 @@ export type CueName = keyof typeof Q;
 // WHY each turn starts a beat BEFORE its line: a page takes ~0.85 s to fall, so starting it early lands the
 // new picture on the first word of the line it illustrates instead of half a second late.
 export const TURN_DUR = 0.85;
+/** Snap a time to the frame grid, a hair early, so a hard cut always lands exactly on one frame. */
+const onFrame = (s: number) => Math.round(s * 30) / 30 - 0.001;
 export const TURN = {
-  cover: 0.0,                              // the cover swings open under the first words
+  // WHY the cover is already open at frame 0: a dark cover was a dim, slow first second; the film now opens
+  // straight on a bright page in close-up (the book is revealed by the pull-back).
+  cover: -1.5,
   rules: Q.they - 0.42,
   bargain: Q.andWeAll - 0.4,
-  nothing: Q.weAccepted - 0.42,
-  however: Q.however - 0.35,
+  // WHY cuts, not turns, inside a chapter: a page turn marks a new chapter; within one, the film cuts hard on
+  // the stressed word, which is what gives it an editor's rhythm instead of one long camera move.
+  nothing: onFrame(Q.weAccepted - 0.03),
+  however: Q.convenienceEnd - 0.05,
   treasure: Q.blinded - 0.4,
-  anyone: Q.monopolies1End - 0.12,
-  // WHY a separate spread for section 7: it mirrors chapter ii's three pictures one for one, so it needs
-  // the same layout on a fresh page rather than sharing a page with "anyone"
-  ours: Q.andSo - 0.25,
+  anyone: onFrame(Q.forAnyone - 0.03),
+  // WHY a separate spread for section 7: it mirrors chapter ii's three pictures one for one
+  ours: onFrame(Q.andSo - 0.03),
   free: Q.itsTime1 - 0.42,
   // the riffle: every page of the book flies past, each one somebody's own
   riffle: [Q.itsTime2 - 0.55, Q.itsTime2 + 0.12, Q.atLong + 0.15, Q.atLong + 0.68, Q.last - 0.35, Q.last + 0.12],
   everything: Q.toOpen - 0.72,
   close: Q.end - 0.05,                     // the book shuts as the last word lands
 };
+/** Turns that are hard cuts (the new spread is simply there on the next frame). */
+export const CUT_TURNS = new Set<number>([TURN.nothing, TURN.anyone, TURN.ours]);
+/** When a spread's pictures are fully on the page (a cut lands at once, a turn after TURN_DUR). */
+export const land = (turnAt: number) => turnAt + (CUT_TURNS.has(turnAt) ? 0 : TURN_DUR);
 export const COVER_DUR = 1.1;
 export const CLOSE_DUR = 0.8;
-/** When the end card is fully up: the guide wants it held at least 2.5 s before 75.0. */
-export const END_CARD = TURN.close + CLOSE_DUR - 0.1;
+/** The frame the book lands shut: the film cuts (through a 6-frame dip) to the end card here. */
+export const END_CARD = TURN.close + CLOSE_DUR;

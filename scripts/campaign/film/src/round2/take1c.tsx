@@ -8,93 +8,100 @@
 // without drawing the app: one book that each reader redraws for themselves, and passes on.
 import React from 'react';
 import { AbsoluteFill, Audio, interpolate, staticFile, useCurrentFrame } from 'remotion';
-import { C, EASE_IN_OUT, FPS } from '../brand';
-import { EndCard } from '../kit';
+import { C, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
+import { Day, EndCard } from '../kit';
 import { Boards, BOARD, BasePage, cameraAt, coverArt, Edges, Face, Lamp, Leaf, LeafShadow, PH, PW, Shot, Spread, World } from './take1c-book';
 import { lin } from './take1c-ink';
 import { BARGAIN, HANDFUL, HOWEVER, NOTHING, RULES } from './take1c-spreads-a';
-import { ANYONE, EVERYTHING, FREE, OURS, TREASURE, VARIANTS } from './take1c-spreads-b';
+import { ANYONE, EVERYTHING, FREE, OURS, OURS_HAND, TREASURE, TREASURE_MARKS, VARIANTS } from './take1c-spreads-b';
 import { Headline } from './take1c-page';
-import { CLOSE_DUR, COVER_DUR, END_CARD, Q, TURN, TURN_DUR } from './take1c-time';
+import { CLOSE_DUR, COVER_DUR, CUT_TURNS, END_CARD, Q, TURN, TURN_DUR } from './take1c-time';
 
 // ---------- the order of the book ----------
 const SPREADS: Spread[] = [HANDFUL, RULES, BARGAIN, NOTHING, HOWEVER, TREASURE, ANYONE, OURS, FREE, ...VARIANTS, EVERYTHING];
 const STARTS = [TURN.cover, TURN.rules, TURN.bargain, TURN.nothing, TURN.however, TURN.treasure, TURN.anyone, TURN.ours, TURN.free, ...TURN.riffle, TURN.everything];
 // WHY found by name, not a typed index: adding a spread before the riffle must not silently shift which turns are fast
 const RIFFLE_FROM = SPREADS.indexOf(VARIANTS[0]);
-const DURS = STARTS.map((_, k) => (k === 0 ? COVER_DUR : k >= RIFFLE_FROM ? 0.78 : TURN_DUR));
+// a cut turn takes no time at all: the next spread is simply there on the next frame
+const DURS = STARTS.map((s, k) => (k === 0 ? COVER_DUR : CUT_TURNS.has(s) ? 0 : k >= RIFFLE_FROM ? 0.78 : TURN_DUR));
 if (STARTS.length !== SPREADS.length) throw new Error('take1c: every spread needs exactly one turn into it (see TURN in take1c-time.ts)');
 
-// ---------- the cover ----------
+// ---------- the cover (seen only as the book shuts) ----------
 const FOIL = 'linear-gradient(160deg, #E3C6EC 0%, #B98BC9 38%, #8E5DA2 62%, #D7B3E2 100%)';
 /** Foil stamping: a flat shape filled with a soft metallic sheen, pressed slightly into the cloth. */
 const Foil: React.FC<{ d: string; w: number; h: number; vb: string }> = ({ d, w, h, vb }) => (
   <div style={{ width: w, height: h, background: FOIL, clipPath: `path("${d}")`, filter: 'drop-shadow(0 -1px 0 rgba(0,0,0,0.35))' }} data-vb={vb} />
-);
-const HatEmblem: React.FC = () => (
-  <div style={{ transform: 'translateY(-30px)' }}>
-    <Foil w={150} h={170} vb="0 0 150 170" d="M 45 10 L 105 10 L 102 120 L 140 128 Q 140 142 75 142 Q 10 142 10 128 L 48 120 Z" />
-  </div>
 );
 const QuillEmblem: React.FC = () => (
   <div style={{ transform: 'translateY(-30px) rotate(-8deg)' }}>
     <Foil w={150} h={190} vb="0 0 150 190" d="M 30 186 L 36 166 L 42 168 Z M 40 164 C 50 116 84 54 128 14 C 124 52 100 112 46 168 Z" />
   </div>
 );
-const COVER_START = coverArt(HatEmblem);
 const COVER_END = coverArt(QuillEmblem);
 
 // ---------- the camera ----------
+// WHY three shot sizes and hard cuts: one slow drift over one book for 75 s read as a template. The film now
+// uses a wide of the whole book (chapter openings and headlines), a full page (the book's edges leave the
+// frame) and an extreme close-up on one drawn detail, and it CUTS between them on the stressed word
+// (decided, cost, data, accepted, hubris, treasure, decide…). Page turns are kept for new chapters only.
 const H = { x: 760, y: 500, z: 1, tilt: 16 };
 const L = (k: number) => STARTS[k] + DURS[k];
+const cut = (t: number, x: number, y: number, z: number, tilt = 16): Shot => ({ t, x, y, z, tilt, cut: true });
+const at = (t: number, x: number, y: number, z: number, tilt = 16): Shot => ({ t, x, y, z, tilt });
+const TM = TREASURE_MARKS;
 const SHOTS: Shot[] = [
-  // i: from the stamped cover to the hats, then down the strings to everyone else
-  { t: 0, x: 1150, y: 520, z: 1.5, tilt: 28 },
-  { t: 1.7, x: 1080, y: 440, z: 1.24, tilt: 20 }, { t: 2.75, x: 1060, y: 445, z: 1.26, tilt: 20 },
-  { t: Q.interact, x: 700, y: 560, z: 1.0, tilt: 17 }, { t: TURN.rules - 0.3, x: 740, y: 520, z: 0.98, tilt: 16 },
-  // ii: one picture per thing they decided
-  { t: L(1) - 0.15, ...H }, { t: Q.computersDo + 0.05, x: 400, y: 340, z: 1.6, tilt: 18 }, { t: Q.cost - 0.42, x: 392, y: 348, z: 1.62, tilt: 18 },
-  { t: Q.cost + 0.08, x: 340, y: 720, z: 1.6, tilt: 18 }, { t: Q.data - 0.3, x: 348, y: 728, z: 1.62, tilt: 18 },
-  { t: Q.data + 0.3, x: 1110, y: 600, z: 1.12, tilt: 17 }, { t: TURN.bargain - 0.1, x: 1100, y: 590, z: 1.15, tilt: 17 },
-  // iii: along the queue as everyone ticks "I agree"
-  { t: L(2) - 0.1, x: 760, y: 560, z: 1.06, tilt: 16 }, { t: Q.accepted - 0.25, x: 800, y: 650, z: 1.3, tilt: 18 }, { t: Q.accepted + 0.12, x: 790, y: 650, z: 1.32, tilt: 18 },
-  { t: TURN.nothing + 0.35, x: 560, y: 600, z: 1.15, tilt: 17 },
-  // the room, then home for the headline, then the magnifying glass and the "easy" button
-  { t: L(3) + 0.05, ...H }, { t: Q.subscribe - 0.15, x: 400, y: 560, z: 1.38, tilt: 18 }, { t: Q.own - 0.62, x: 420, y: 560, z: 1.4, tilt: 18 },
-  { t: Q.own - 0.06, ...H }, { t: Q.privacy + 0.45, ...H },
-  { t: Q.costOf - 0.1, x: 1100, y: 470, z: 1.55, tilt: 18 }, { t: TURN.however - 0.25, x: 1095, y: 475, z: 1.6, tilt: 18 },
-  // iv: still, while the edges dim and the drop falls
-  { t: TURN.however + 0.3, ...H }, { t: TURN.treasure + 0.1, ...H },
-  // v: the hats slide down; the machine is made; the treasure; the coin
-  { t: L(5) - 0.05, x: 340, y: 600, z: 1.45, tilt: 18 }, { t: Q.created1 - 0.5, x: 345, y: 590, z: 1.48, tilt: 18 },
-  { t: Q.created1 + 0.3, x: 1020, y: 650, z: 1.75, tilt: 20 }, { t: Q.aTechnology - 0.1, x: 1020, y: 610, z: 1.8, tilt: 20 },
-  { t: Q.believed - 0.1, x: 680, y: 600, z: 1.08, tilt: 17 }, { t: Q.greatTreasure - 0.25, x: 680, y: 600, z: 1.1, tilt: 17 },
-  { t: Q.greatTreasure + 0.3, x: 300, y: 455, z: 2.3, tilt: 16 }, { t: Q.shareholder - 0.45, x: 300, y: 460, z: 2.25, tilt: 16 },
-  { t: Q.shareholder + 0.05, x: 680, y: 570, z: 1.3, tilt: 17 }, { t: Q.excitement - 0.2, x: 680, y: 590, z: 1.08, tilt: 17 },
-  // vi: it escapes over their heads; the window; their one padlocked stack; then stacks everywhere
-  { t: Q.control + 0.5, x: 700, y: 540, z: 1.05, tilt: 17 },
-  { t: Q.tool - 0.25, x: 1140, y: 320, z: 1.7, tilt: 18 }, { t: Q.scarce - 0.15, x: 1140, y: 320, z: 1.74, tilt: 18 },
-  { t: Q.scarce + 0.35, x: 330, y: 700, z: 1.6, tilt: 18 }, { t: Q.foundation - 0.05, x: 335, y: 700, z: 1.62, tilt: 18 },
-  { t: Q.foundation + 0.6, x: 760, y: 560, z: 1.0, tilt: 16 }, { t: TURN.anyone, ...H },
-  // vi (cont.): anyone, at home for the headline
-  { t: L(6) + 1.0, ...H },
-  // vii: chapter ii's three pictures in turn, each full frame for its clause
-  { t: L(7) - 0.1, ...H }, { t: Q.ourComputers - 0.35, x: 700, y: 520, z: 1.08, tilt: 17 },   // a slow push while she sets it up
-  { t: Q.ourComputers + 0.15, x: 370, y: 430, z: 1.85, tilt: 18 }, { t: Q.itCosts - 0.35, x: 368, y: 432, z: 1.88, tilt: 18 },
-  { t: Q.itCosts + 0.1, x: 330, y: 770, z: 1.85, tilt: 18 }, { t: Q.ourData - 0.15, x: 332, y: 768, z: 1.88, tilt: 18 },
-  { t: Q.ourData + 0.35, x: 1120, y: 610, z: 1.15, tilt: 17 }, { t: TURN.free - 0.1, x: 1110, y: 600, z: 1.18, tilt: 17 },
-  // viii: the strings snap; the handful fade into the past
-  // WHY no stop at home: the camera travels straight from the last panel down to the strings, so it is already there when they snap
-  { t: L(8) - 0.25, x: 700, y: 620, z: 1.2, tilt: 17 }, { t: Q.free + 0.1, x: 560, y: 700, z: 1.45, tilt: 17 }, { t: Q.monopolies2 - 0.2, x: 600, y: 680, z: 1.4, tilt: 17 },
-  { t: Q.past - 0.3, x: 1110, y: 430, z: 1.2, tilt: 17 }, { t: TURN.riffle[0] - 0.2, x: 1100, y: 440, z: 1.2, tilt: 17 },
+  // i: open close on one hat, the handful land beside it, and the camera pulls back to reveal the book
+  at(0, 380, 330, 2.5, 13), at(Q.handful + 0.3, 385, 336, 2.42, 13), at(Q.corporations1 - 0.12, 386, 338, 2.38, 13),
+  at(Q.dictated, 760, 520, 1.0), at(Q.technology1, 760, 530, 1.04), at(TURN.rules - 0.05, 760, 520, 1.0),
+  // ii: one picture per thing they decided, each a hard cut on its word
+  { t: L(1), ...H },
+  cut(Q.computersDo - 0.04, 375, 425, 2.3, 14), at(Q.cost - 0.07, 380, 428, 2.4, 14),
+  cut(Q.cost - 0.05, 290, 790, 2.45, 14), at(Q.data - 0.07, 292, 793, 2.55, 14),
+  cut(Q.data - 0.05, 1110, 610, 1.3), at(TURN.bargain, 1100, 600, 1.36),
+  // iii: the queue; a cut in to the boxes ticking themselves on "accepted"
+  at(L(2), 760, 560, 1.02), at(Q.accepted - 0.14, 745, 575, 1.08),
+  cut(Q.accepted - 0.12, 640, 735, 1.9), at(TURN.nothing - 0.01, 615, 735, 1.96),
+  // the room: a cut in to the price tags on "subscribe", back out for "own nothing", in to the glass
+  cut(TURN.nothing, 740, 520, 1.06), at(Q.subscribe - 0.07, 750, 515, 1.1),
+  cut(Q.subscribe - 0.05, 410, 540, 2.05, 15), at(Q.own - 0.08, 405, 545, 2.12, 15),
+  cut(Q.own - 0.06, H.x, H.y, H.z), at(Q.costOf - 0.37, 770, 505, 1.03),
+  cut(Q.costOf - 0.35, 1090, 470, 1.75), at(TURN.however, 1095, 478, 1.85),
+  // iv: a full page, still, for the drop and the quill
+  at(L(4) + 0.1, 850, 520, 1.35), at(TURN.treasure, 845, 515, 1.38),
+  // v: hubris (hats out of the page), the inkwell, the quill rising, the ledger, the snatch
+  at(L(5), 300, 470, 1.4, 14), at(Q.hubris - 0.09, 295, 465, 1.44, 14),
+  cut(Q.hubris - 0.07, 270, 330, 1.45, 11), at(Q.these - 0.07, 270, 320, 1.4, 11),
+  cut(Q.these - 0.05, 440, 540, 1.55, 14), at(Q.artificial - 0.07, 450, 545, 1.6, 14),
+  cut(Q.artificial - 0.05, TM.well.x + 10, 470, 2.6, 12), at(Q.aTechnology - 0.07, TM.well.x + 12, 465, 2.7, 12),
+  cut(Q.aTechnology - 0.05, 420, 500, 1.45, 14), at(Q.greatTreasure - 0.07, 425, 500, 1.52, 14),
+  cut(Q.greatTreasure - 0.05, 245, 485, 2.6, 13), at(Q.but - 0.07, 250, 490, 2.7, 13),
+  cut(Q.but - 0.05, 450, 520, 1.5), at(Q.far - 0.07, 470, 520, 1.6),
+  cut(Q.far - 0.05, TM.well.x + 20, 500, 3.3, 12), at(Q.control + 0.3, TM.well.x + 40, 495, 3.4, 12),
+  // the whip-pan: the camera chases the quill straight into the empty window
+  at(TM.winA - 0.05, TM.win.x, TM.win.y + 30, 1.75, 14), at(Q.scarce - 0.07, TM.win.x, TM.win.y + 35, 1.85, 14),
+  cut(Q.scarce - 0.05, 250, 650, 1.9), at(Q.foundation - 0.07, 252, 655, 1.98),
+  cut(Q.foundation - 0.05, 780, 540, 1.04), at(TURN.anyone - 0.01, 790, 545, 1.08),
+  // vi: anyone (a cut, then a slow settle to the wide for the headline)
+  cut(TURN.anyone, 760, 460, 1.2), at(Q.asks + 0.3, 760, 490, 1.06), at(TURN.ours - 0.01, 760, 492, 1.05),
+  // vii: her hand closing on the key ("and so"), the full page ("a very long while"), the wide on "decide"
+  cut(TURN.ours, OURS_HAND.x + 14, OURS_HAND.y - 6, 5.0, 10), at(Q.veryLong - 0.1, OURS_HAND.x + 22, OURS_HAND.y, 4.6, 10),
+  at(Q.weGetStart - 0.1, 390, 520, 1.42, 15), at(Q.decide - 0.07, 392, 522, 1.45, 15),
+  cut(Q.decide - 0.05, H.x, H.y, H.z), at(Q.ourComputers - 0.07, 760, 505, 1.03),
+  cut(Q.ourComputers - 0.05, 375, 425, 2.3, 14), at(Q.itCosts - 0.07, 380, 428, 2.4, 14),
+  cut(Q.itCosts - 0.05, 290, 790, 2.45, 14), at(Q.ourData - 0.07, 292, 793, 2.55, 14),
+  cut(Q.ourData - 0.05, 1110, 610, 1.3), at(TURN.free, 1100, 600, 1.36),
+  // viii: down to the strings as they snap, then a cut to the handful fading
+  at(L(8) - 0.1, 700, 620, 1.2), at(Q.free + 0.1, 560, 700, 1.45), at(Q.monopolies2 - 0.07, 580, 690, 1.45),
+  cut(Q.monopolies2 - 0.05, 760, 420, 1.12), at(TURN.riffle[0] - 0.1, 760, 440, 1.1),
   // ix: pull back while every page flies past, then home for the last headline
-  { t: TURN.riffle[1], x: 760, y: 500, z: 0.84, tilt: 24 }, { t: TURN.riffle[5], x: 760, y: 500, z: 0.86, tilt: 24 },
+  at(TURN.riffle[1], 760, 500, 0.84, 24), at(TURN.riffle[5], 760, 500, 0.86, 24),
   { t: L(SPREADS.length - 1) - 0.08, ...H }, { t: TURN.close, ...H },
   // the book shuts; the camera settles on its cover
-  { t: TURN.close + CLOSE_DUR, x: 1150, y: 500, z: 1.18, tilt: 20 }, { t: 75, x: 1150, y: 500, z: 1.26, tilt: 20 },
+  at(TURN.close + CLOSE_DUR, 1150, 500, 1.18, 20), at(75, 1150, 500, 1.2, 20),
 ];
 // WHY checked: an out-of-order key would make the camera snap, and the keys are computed from word times.
-SHOTS.forEach((s, i) => { if (i && s.t < SHOTS[i - 1].t) throw new Error(`take1c camera key ${i} (t=${s.t.toFixed(2)}) comes before key ${i - 1} (t=${SHOTS[i - 1].t.toFixed(2)})`); });
+SHOTS.forEach((s, i) => { if (i && s.t <= SHOTS[i - 1].t) throw new Error(`take1c camera key ${i} (t=${s.t.toFixed(2)}) is not after key ${i - 1} (t=${SHOTS[i - 1].t.toFixed(2)})`); });
+const cutBetween = (t0: number, t1: number) => SHOTS.some((s) => s.cut && s.t > t0 && s.t <= t1) || STARTS.some((s, k) => DURS[k] === 0 && s > t0 && s <= t1);
 
 // ---------- the book at time t ----------
 const page = (k: number, side: 'L' | 'R'): Face => ({ kind: 'page', spread: SPREADS[k], side });
@@ -120,7 +127,7 @@ const Book: React.FC<{ t: number }> = ({ t }) => {
   for (let k = Math.max(0, landed + 1); k <= Math.max(0, started); k++) {
     const p = progress(t, k);
     if (k === 0) {
-      leaves.push(<Leaf key={k} front={{ kind: 'cover', Art: COVER_START }} back={{ kind: 'board', spread: SPREADS[0] }} p={p} n={1} bend={0} w={PW + BOARD} h={PH + BOARD * 2} dy={-BOARD} lift={2} />);
+      leaves.push(<Leaf key={k} front={{ kind: 'cover', Art: COVER_END }} back={{ kind: 'board', spread: SPREADS[0] }} p={p} n={1} bend={0} w={PW + BOARD} h={PH + BOARD * 2} dy={-BOARD} lift={2} />);
     } else {
       const riffle = k >= RIFFLE_FROM;
       leaves.push(<Leaf key={k} front={page(k - 1, 'R')} back={page(k, 'L')} p={p} n={riffle ? 6 : 10} bend={riffle ? 70 : 58} lift={0.8 + (k - landed) * 0.4} />);
@@ -132,9 +139,9 @@ const Book: React.FC<{ t: number }> = ({ t }) => {
   return (
     <>
       <Boards left={landed >= 0} right />
-      <Edges left={landed >= 1} right />
-      {landed >= 1 && <BasePage face={page(landed, 'L')} side="L" />}
-      {landed === 0 && <BasePage face={{ kind: 'board', spread: SPREADS[0] }} side="L" />}
+      <Edges left={landed >= 0} right />
+      {/* WHY a plain page on the left from the start: the film opens on the open book, never on its board */}
+      {landed >= 0 && <BasePage face={page(landed, 'L')} side="L" />}
       <BasePage face={page(Math.max(0, started), 'R')} side="R" />
       {turning && pArr.map((p, i) => <React.Fragment key={i}><LeafShadow p={p} side="R" /><LeafShadow p={p} side="L" /></React.Fragment>)}
       {Pop && <Pop />}
@@ -147,34 +154,61 @@ const Book: React.FC<{ t: number }> = ({ t }) => {
 // WHY all in one list on the screen layer: they share one position and one style, and each is held at least
 // 1.2 s + 0.25 s per word (the brand's muted-video rule) after its last word has inked in.
 const minUp = (text: string) => 1.2 + 0.25 * text.split(/[\s/]+/).filter(Boolean).length;
-const hold = (text: string) => minUp(text) + 0.4;
 const HEADLINES = [
-  { text: 'own *nothing.', at: Q.own, out: Math.max(Q.own + hold('own nothing.'), Q.privacy + 0.45) },
-  { text: 'something / *wonderful / happened.', at: Q.something, out: TURN.treasure - 0.05 },
-  { text: 'for *anyone / who asks.', at: Q.forAnyone, out: Math.max(Q.forAnyone + hold('for anyone who asks.'), Q.asks + 0.9) },
+  // WHY each 'out' is the next cut: a headline never straddles a hard cut
+  { text: 'own *nothing.', at: Q.own, out: Q.costOf - 0.4 },
+  { text: 'something *wonderful / happened.', at: Q.something, out: TURN.treasure - 0.05 },
+  { text: 'for *anyone / who asks.', at: Q.forAnyone, out: TURN.ours - 0.04 },
   { text: 'open source / *everything.', at: Q.open, out: TURN.close + 0.3 },
 ];
 HEADLINES.forEach((h) => { if (h.out - h.at < minUp(h.text)) throw new Error(`take1c headline "${h.text}" is up ${(h.out - h.at).toFixed(2)} s, under the brand minimum`); });
+
+/** Motion blur for the whip-pan: a directional blur sized by how far the picture moves this frame.
+ *  WHY measured from the camera, not hand-set: it then appears on any fast move and never on a hard cut. */
+const useWhip = (t: number) => {
+  const dt = 1 / FPS;
+  if (cutBetween(t - dt, t)) return { bx: 0, by: 0 };
+  const a = cameraAt(SHOTS, t - dt), b = cameraAt(SHOTS, t);
+  const k = 0.87 * (a.z + b.z) / 2;
+  const vx = Math.abs(b.x - a.x) * k, vy = Math.abs(b.y - a.y) * k;
+  const bx = vx > 24 ? Math.min(40, (vx - 24) * 0.26) : 0, by = vy > 24 ? Math.min(40, (vy - 24) * 0.26) : 0;
+  return { bx, by };
+};
 
 export const Take1C: React.FC = () => {
   const frame = useCurrentFrame();
   const t = frame / FPS;
   const cam = cameraAt(SHOTS, t);
+  const whip = useWhip(t);
   // the edges of the frame darken for the whisper ("however, recently…") and lift again on "wonderful"
   const dim = Math.min(lin(t, Q.however, Q.recently + 0.3), 1 - lin(t, Q.wonderful - 0.1, Q.wonderful + 0.7));
   const warm = lin(t, Q.wonderful - 0.1, Q.wonderful + 1.2) + lin(t, Q.toOpen, Q.everything2 + 0.5) * 0.6;
-  const card = lin(t, END_CARD, END_CARD + 0.3);
+  // WHY a 6-frame dip through the card's own lavender, not a cross-dissolve: the old dissolve from the dark
+  // cover made a milky grey haze with the logo ghosted over the book
+  const dipIn = lin(t, END_CARD - 0.1, END_CARD, (v) => v);
+  const dipOut = lin(t, END_CARD, END_CARD + 0.1, (v) => v);
+  const showBook = t < END_CARD;
+  const settle = 0.96 + 0.04 * lin(t, END_CARD, END_CARD + 0.6, EASE_OUT);
   return (
     <AbsoluteFill style={{ background: C.night }}>
       <Audio src={staticFile('audio/take1-mix.wav')} />
-      {card < 1 && (
+      {showBook && (
         <>
-          <World cam={cam}><Book t={t} /></World>
-          <Lamp dim={dim} warm={warm} />
+          {(whip.bx > 0 || whip.by > 0) && (
+            <svg width={0} height={0} style={{ position: 'absolute' }}>
+              <filter id={`c-whip-${frame}`} x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation={`${whip.bx.toFixed(1)} ${whip.by.toFixed(1)}`} /></filter>
+            </svg>
+          )}
+          <AbsoluteFill style={{ filter: whip.bx > 0 || whip.by > 0 ? `url(#c-whip-${frame})` : undefined }}>
+            <World cam={cam}><Book t={t} /></World>
+            <Lamp dim={dim} warm={warm} />
+          </AbsoluteFill>
           {HEADLINES.map((h) => <Headline key={h.text} {...h} />)}
         </>
       )}
-      {card > 0 && <AbsoluteFill style={{ opacity: card }}><EndCard at={END_CARD} /></AbsoluteFill>}
+      {/* the card settles from 96% to full size as the cut lands, over its own background so no edge shows */}
+      {!showBook && <><Day /><AbsoluteFill style={{ transform: `scale(${settle})` }}><EndCard at={END_CARD - 0.35} /></AbsoluteFill></>}
+      {(dipIn > 0 && dipOut < 1) && <AbsoluteFill style={{ background: '#FBF6FD', opacity: showBook ? dipIn : 1 - dipOut }} />}
     </AbsoluteFill>
   );
 };

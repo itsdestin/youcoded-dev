@@ -6,15 +6,17 @@
 //  iii "we all just accepted it"                            a queue signing a scroll that never ends
 //      "subscribe to everything and own nothing"            tags on every thing in a room, then the things lifted away
 //      "privacy… the cost of convenience"                   a giant magnifying glass held over someone on their phone
-//  iv  "however, recently… something truly wonderful"       a blank page, one drop of purple ink, and it blooms
+//  iv  "however, recently… something truly wonderful"       a blank page; one drop of purple ink lands with a splash
+//                                                            on "recently" and on "wonderful" runs into the nib of
+//                                                            a quill: the wonderful thing is the tool itself
 import React from 'react';
 import { DMSANS, EASE_IN, EASE_IN_OUT } from '../brand';
-import { Appear, blob, circle, WashBg, HatFigure, Ink, jolt, KeepsakeIcon, Keepsake, Laptop, lin, P, Padlock, Person, PriceTag, Quill, Shape, useT } from './take1c-ink';
+import { Appear, blob, circle, Enter, HatFigure, Ink, jolt, KeepsakeIcon, Keepsake, Laptop, lin, NEUTRAL, P, Padlock, Person, pop, PriceTag, Quill, Shape, useT } from './take1c-ink';
 import { Folio, Heading, Sheet } from './take1c-page';
-import { Q, TURN, TURN_DUR } from './take1c-time';
+import { land, Q, TURN } from './take1c-time';
 import type { Spread } from './take1c-book';
-
-const land = (turnAt: number) => turnAt + TURN_DUR;
+// WHY no watercolour blobs on these spreads: behind every drawing they read as wallpaper; they now appear only
+// once colour comes back (chapters vi, vii and ix), where they mean something.
 
 // ======================= i · the handful =======================
 // Six of them on two high ledges, one per page; each works two people below on strings.
@@ -31,27 +33,32 @@ export const yankAt = (t: number, beats: number[]) => beats.reduce((s, b) => s +
 /** The puppet-master composition, shared by chapter i and its callback in chapter vii. */
 export const Strings: React.FC<{
   figA: number; peopleA: number; stringsA: number; beats: number[]; colourful?: boolean; snapAt?: number; fadeFrom?: number; fadeTo?: number;
-}> = ({ figA, peopleA, stringsA, beats, colourful, snapAt, fadeFrom, fadeTo }) => {
+  figAt?: number[]; figEnter?: Enter[]; peopleEnter?: Enter; ledgeAt?: [number, number];
+}> = ({ figA, peopleA, stringsA, beats, colourful, snapAt, fadeFrom, fadeTo, figAt, figEnter, peopleEnter = 'draw', ledgeAt }) => {
   const t = useT();
   const y = yankAt(t, beats);
   const fade = fadeFrom == null ? 0 : lin(t, fadeFrom, fadeTo ?? fadeFrom + 1, EASE_IN_OUT);
-  const bodies = [P.violet, P.pink, P.sun, P.purple, P.lilac, P.violetSoft, P.pinkSoft, P.purple, P.sunSoft, P.violet, P.pink, P.lilac];
+  const bodies = NEUTRAL;
   const hairCol = [P.ink, P.purple, P.ink, P.pink, P.ink, P.violet];
   const by = BAR_Y - y * 14;
   return (
     <>
       {/* the two ledges the handful stand on, high above everyone else */}
       <g opacity={1 - fade * 0.75}>
-        {[[90, 690], [830, 1430]].map(([x0, x1], i) => (
-          <g key={i}>
-            <Shape d={`M ${x0} ${LEDGE_Y} L ${x1} ${LEDGE_Y} L ${x1 - 8} ${LEDGE_Y + 34} L ${x0 + 8} ${LEDGE_Y + 34} Z`} a={figA - 0.2 + i * 0.1} b={figA + 0.45 + i * 0.1} fill="url(#c-hatch)" w={3} />
-            <Ink d={`M ${x0 - 10} ${LEDGE_Y} L ${x1 + 10} ${LEDGE_Y}`} a={figA - 0.25 + i * 0.1} b={figA + 0.35 + i * 0.1} w={4.5} />
-          </g>
-        ))}
+        {[[90, 690], [830, 1430]].map(([x0, x1], i) => {
+          const la = ledgeAt ? ledgeAt[i] : figA - 0.25 + i * 0.1;
+          return (
+            <g key={i}>
+              <Shape d={`M ${x0} ${LEDGE_Y} L ${x1} ${LEDGE_Y} L ${x1 - 8} ${LEDGE_Y + 34} L ${x0 + 8} ${LEDGE_Y + 34} Z`} a={la + 0.05} b={la + 0.7} fill="url(#c-hatch)" w={3} />
+              <Ink d={`M ${x0 - 10} ${LEDGE_Y} L ${x1 + 10} ${LEDGE_Y}`} a={la} b={la + 0.6} w={4.5} />
+            </g>
+          );
+        })}
       </g>
       {HANDFUL_FIGS.map((f, j) => (
         <g key={j}>
-          <HatFigure x={f.x} y={LEDGE_Y} s={FIG_S} crown={f.c} a={figA + j * 0.14} b={figA + j * 0.14 + 1.0} pose="hold" fade={fade} bob={-y * 4} />
+          <HatFigure x={f.x} y={LEDGE_Y} s={FIG_S} crown={f.c} a={figAt ? figAt[j] : figA + j * 0.14} b={(figAt ? figAt[j] : figA + j * 0.14) + (figEnter?.[j] === 'wipe' ? 0.5 : 1.0)}
+            pose="hold" fade={fade} bob={-y * 4} enter={figEnter?.[j] ?? 'draw'} />
           <g opacity={1 - fade * 0.72}>
             {/* the puppet control: a crossbar in both gloved hands */}
             <Ink d={`M ${f.x - 54} ${by} L ${f.x + 54} ${by} M ${f.x} ${by - 12} L ${f.x} ${by + 12}`} a={stringsA - 0.4 + j * 0.05} b={stringsA - 0.1 + j * 0.05} w={5} />
@@ -74,7 +81,7 @@ export const Strings: React.FC<{
           <g key={i}>
             {snapT < 0 || t < snapT ? <Ink d={`M ${hx} ${hy} L ${px} ${ty}`} a={stringsA + i * 0.035} b={stringsA + i * 0.035 + 0.4} w={1.8} c={P.ink} o={0.8} />
               : <g opacity={(1 - sp * 0.85) * 0.8}><path d={top} stroke={P.ink} strokeWidth={1.8} fill="none" /><path d={bot} stroke={P.ink} strokeWidth={1.8} fill="none" /></g>}
-            <Person x={px} y={880} s={0.92} a={peopleA + i * 0.05} b={peopleA + i * 0.05 + 0.6} pose={free ? 'bothUp' : 'hold'} device={colourful ? 'none' : 'phone'}
+            <Person x={px} y={880} s={0.92} a={peopleA + i * 0.05} b={peopleA + i * 0.05 + 0.6} pose={free ? 'bothUp' : 'hold'} device={colourful ? 'none' : 'phone'} enter={peopleEnter}
               hair={HAIR[i % HAIR.length]} mood={colourful ? 'smile' : 'flat'} bob={-y * 12 + hop} body={colourful ? bodies[i] : P.wash} hairColor={colourful ? hairCol[i % hairCol.length] : undefined} />
             {/* in the callback everyone already holds a quill: that is what cuts the strings */}
             {colourful && <g transform={`translate(${px + (free ? 21 : 8)} ${880 + hop - (free ? 86 : 38)})`}><Quill x={0} y={0} s={0.3} r={free ? 20 : 0} /></g>}
@@ -90,12 +97,11 @@ const HandfulArt: React.FC = () => (
     <Heading n="i" title="the handful" />
     <Folio left={2} />
     <Sheet>
-      {/* soft washes: a dusky sky behind the handful, the ground beneath everyone else */}
-      <WashBg x={390} y={330} r={200} sx={1.5} a={1.0} seed={2} />
-      <WashBg x={1130} y={330} r={200} sx={1.5} a={0.8} seed={5} />
-      <WashBg x={385} y={850} r={62} sx={4.6} a={Q.corporations1 - 0.4} seed={8} />
-      <WashBg x={1135} y={850} r={62} sx={4.6} a={Q.corporations1 - 0.3} seed={9} />
-      <Strings figA={0.3} peopleA={Q.corporations1 - 0.1} stringsA={Q.dictated} beats={[Q.interact, Q.interact + 0.66, Q.technology1]} />
+      {/* WHY this order: the film opens close on ONE hat, wiped in whole on "For"; two more land beside it on
+          "small handful"; the other three land on "corporations" as the camera pulls back to show the book */}
+      <Strings figA={0} peopleA={Q.corporations1 + 0.15} stringsA={Q.dictated} beats={[Q.interact, Q.interact + 0.66, Q.technology1]}
+        figAt={[Q.handful - 0.2, -0.12, Q.handful - 0.08, Q.corporations1 + 0.25, Q.corporations1 + 0.35, Q.corporations1 + 0.45]}
+        figEnter={['pop', 'wipe', 'pop', 'pop', 'pop', 'pop']} peopleEnter="pop" ledgeAt={[-1.5, Q.corporations1 - 0.3]} />
     </Sheet>
   </>
 );
@@ -137,9 +143,6 @@ const RulesArt: React.FC = () => {
       <Heading n="ii" title="the rules" />
       <Folio left={4} />
       <Sheet>
-        <WashBg x={390} y={420} r={150} sx={1.75} a={L + 0.6} seed={3} />
-        <WashBg x={390} y={770} r={140} sx={1.75} a={L + 0.9} seed={6} />
-        <WashBg x={1130} y={620} r={290} a={L + 1.1} seed={11} />
         {/* A: what your computers could do: a padlock snapped onto the laptop, the key kept by a hat */}
         <Ink d="M 140 500 L 660 500" a={L - 0.2} b={L + 0.3} w={2} c={P.inkSoft} />
         <Ink d="M 270 420 L 470 420 M 290 420 L 290 500 M 450 420 L 450 500" a={L - 0.1} b={L + 0.35} w={3.4} />
@@ -155,7 +158,8 @@ const RulesArt: React.FC = () => {
         <Ink d="M 140 860 L 660 860" a={L + 0.1} b={L + 0.5} w={2} c={P.inkSoft} />
         <Ink d="M 140 760 L 330 760 M 160 760 L 160 860 M 310 760 L 310 860" a={L + 0.1} b={L + 0.45} w={3.4} />
         <Laptop x={236} y={758} s={1.3} a={L + 0.2} b={L + 0.6} />
-        <PriceTag x={281} y={728} s={0.72} at={Q.cost - 0.12} swing={-14}
+        {/* WHY 0.85: the camera cuts in on "cost", and at this size the price reads at ~38 px on a 1080p frame */}
+        <PriceTag x={281} y={728} s={0.85} at={Q.cost - 0.12} swing={-10}
           prices={[{ v: '4.99/mo', at: Q.cost - 0.05 }, { v: '9.99/mo', at: Q.costWord }, { v: '14.99/mo', at: Q.costWord + 0.36 }, { v: '19.99/mo', at: Q.costWord + 0.72 }]} />
         <Person x={480} y={860} s={1.12} a={L + 0.25} b={L + 0.8} mood={t > Q.costWord + 0.3 ? 'o' : 'flat'} hair="curly" flip />
 
@@ -193,7 +197,6 @@ const BargainArt: React.FC = () => {
       <Heading n="iii" title="the bargain" />
       <Folio left={6} />
       <Sheet>
-        <WashBg x={700} y={600} r={130} sx={5} a={L + 0.5} seed={4} />
         <Ink d="M 70 700 L 1450 700" a={L - 0.3} b={L + 0.3} w={2} c={P.inkSoft} />
         <HatFigure x={1330} y={700} s={1.35} crown={100} a={L - 0.3} b={L + 0.6} pose="rub" bob={jolt(t, Q.accepted + 0.6, 6, 0.8)} />
         {/* the lectern, drawn over the hat's coat */}
@@ -259,9 +262,10 @@ const SmallTag: React.FC<{ x: number; y: number; at: number; text: string; lift:
   const sway = Math.sin((t - at) * 5) * 10 * Math.exp(-(t - at) * 1.5);
   return (
     <g transform={`translate(${x} ${y - lift}) rotate(${sway - 8})`} opacity={Math.min(1, p * 2)}>
+      {/* WHY this size: the camera cuts in on "subscribe"; the prices must read on a phone */}
       <path d="M 0 0 L 0 18" stroke={P.ink} strokeWidth={1.6} />
-      <path d={`M -44 18 L 44 18 L 44 46 L -44 46 Z`} fill={P.paper} stroke={P.ink} strokeWidth={2.4} transform={`scale(${0.6 + 0.4 * p})`} />
-      <text x={0} y={39} textAnchor="middle" fontSize={17} fontWeight={700} fill={P.ink} fontFamily={DMSANS} letterSpacing="-0.02em">{text}</text>
+      <path d={`M -54 18 L 54 18 L 54 52 L -54 52 Z`} fill={P.paper} stroke={P.ink} strokeWidth={2.4} transform={`scale(${0.6 + 0.4 * p})`} />
+      <text x={0} y={43} textAnchor="middle" fontSize={21} fontWeight={800} fill={P.ink} fontFamily={DMSANS} letterSpacing="-0.02em">{text}</text>
     </g>
   );
 };
@@ -277,7 +281,8 @@ const THINGS: Thing[] = [
 
 const NothingArt: React.FC = () => {
   const t = useT();
-  const L = land(TURN.nothing) - 0.3;
+  // WHY from the cut: the room inks itself in on camera, starting on the frame the film cuts to it
+  const L = land(TURN.nothing) + 0.05;
   const glassIn = lin(t, Q.privacy - 0.2, Q.privacy + 0.55);
   const gx = (1 - glassIn) * 520, gy = (1 - glassIn) * -160;
   // WHY over her face only: lower, it hid the "easy" button she presses
@@ -298,8 +303,6 @@ const NothingArt: React.FC = () => {
     <>
       <Folio left={8} />
       <Sheet>
-        <WashBg x={385} y={540} r={300} a={L + 0.5} seed={12} />
-        <WashBg x={1100} y={470} r={170} sx={1.3} a={L + 0.8} seed={13} />
         <path d="M 150 840 Q 380 870 620 840 Q 380 812 150 840 Z" fill={P.paperShade} />
         {/* the room */}
         <Ink d="M 70 820 L 690 820" a={L - 0.3} b={L + 0.2} w={2.4} />
@@ -358,53 +361,60 @@ const NothingArt: React.FC = () => {
 export const NOTHING: Spread = { id: 'nothing', Art: NothingArt };
 
 // ======================= iv · however =======================
-// WHY one small tidy drop and a sprig: a big spreading blot reads as a spill or a mistake. A single drop that
-// lands on "something" and grows into a living sprig on "wonderful" reads as a beginning. It is the same purple
-// ink the corporations bottle in chapter v, so the viewer can follow where it came from.
-export const DROP_LAND = Q.something + 0.05;
-const DROP = { x: 1140, y: 470 };
+// WHY the drop becomes a quill: the reviewer found the sprouting flower a stock image in a different drawing
+// style. Here one drop of purple lands with a splash on "recently", and on "wonderful" it runs into the nib of
+// a quill that draws itself up out of it. The wonderful thing is literally the tool the film is about.
+export const DROP_LAND = Q.recently + 0.04;
+// WHY on the left page: the headline lands on the right page at this moment, and must sit on clean paper
+const DROP = { x: 400, y: 640 };
+const QS = 2.7;   // the quill's size on this page
+const SPATTER: [number, number, number][] = [[-70, -22, 6], [58, -40, 4.5], [84, 18, 6.5], [-46, 40, 4], [20, 62, 3.5], [-96, 8, 3]];
 const HoweverArt: React.FC = () => {
   const t = useT();
-  const g = lin(t, DROP_LAND, DROP_LAND + 0.4);
-  const r = 9 + g * 13;
-  const stems = [
-    'M 1140 458 C 1134 410 1160 370 1150 312 C 1142 262 1170 230 1198 222',
-    'M 1145 392 C 1110 372 1090 342 1096 304 C 1100 280 1082 266 1062 272',
-    'M 1151 340 C 1190 332 1222 304 1216 270',
-  ];
-  const leaves: [number, number, number, string][] = [[1140, 428, 200, P.violet], [1146, 380, -24, P.pink], [1098, 330, 205, P.violet], [1186, 318, -50, P.pink], [1160, 268, -70, P.violet]];
+  const g = pop(t, DROP_LAND, 0.4);
+  // "wonderful": the drop runs down into a nib, and the feather inks itself up out of it
+  const run = lin(t, Q.wonderful - 0.2, Q.wonderful + 0.2);
+  const qa = Q.wonderful - 0.05;
+  const lift = lin(t, Q.happened, Q.happened + 1.2) * 1;
+  const bob = Math.sin((t - Q.happened) * 2.4) * 6 * lift;
   return (
     <>
       <Heading n="iv" title="however" />
       <Folio left={10} />
       <Sheet rough={false}>
         {t >= DROP_LAND && (
-          // WHY scaled up around the drop: at film size the sprig was a small thing in a big empty spread
-          <g transform={`translate(${DROP.x} ${DROP.y}) scale(1.4) translate(${-DROP.x} ${-DROP.y})`}>
+          <g>
+            {/* where it landed: a stain that stays, and the few spatters a real drop throws */}
             <g filter="url(#c-bleed)">
-              <path d={blob(DROP.x, DROP.y, r * 1.25, 3, 0.12, 14)} fill={P.purple} opacity={0.18} />
-              <path d={blob(DROP.x, DROP.y, r, 7, 0.1, 14)} fill={P.purple} opacity={0.9} />
+              <path d={blob(DROP.x, DROP.y, 34 * Math.min(1.06, g), 3, 0.12, 14)} fill={P.purple} opacity={0.16 + 0.1 * (1 - run)} />
+              {SPATTER.map(([dx, dy, r], i) => {
+                const p = lin(t, DROP_LAND + 0.02, DROP_LAND + 0.22 + i * 0.02);
+                return p > 0 ? <circle key={i} cx={DROP.x + dx * p} cy={DROP.y + dy * p} r={r * Math.min(1, p * 1.4)} fill={P.purple} opacity={0.85} /> : null;
+              })}
             </g>
-            {t < DROP_LAND + 0.4 && <circle cx={DROP.x} cy={DROP.y} r={14 + lin(t, DROP_LAND, DROP_LAND + 0.4) * 40} fill="none" stroke={P.purple} strokeWidth={2} opacity={0.5 * (1 - lin(t, DROP_LAND, DROP_LAND + 0.4))} />}
-            {stems.map((d, k) => <Ink key={k} d={d} a={Q.wonderful - 0.2 + k * 0.18} b={Q.wonderful + 0.7 + k * 0.18} w={3.4} c={P.purple} />)}
-            {leaves.map(([x, y, rot, col], k) => {
-              const p = lin(t, Q.wonderful + 0.25 + k * 0.1, Q.wonderful + 0.7 + k * 0.1);
-              return p > 0 ? (
-                <g key={k} transform={`translate(${x} ${y}) rotate(${rot}) scale(${p})`}>
-                  <path d="M 0 0 C 10 -15 28 -15 34 0 C 28 15 10 15 0 0 Z" fill={col} stroke={P.ink} strokeWidth={2} />
-                  <path d="M 3 0 L 28 0" stroke={P.ink} strokeWidth={1.4} opacity={0.6} />
-                </g>
-              ) : null;
+            {/* the splash rings */}
+            {[0, 0.09].map((d, i) => {
+              const p = lin(t, DROP_LAND + d, DROP_LAND + d + 0.5);
+              return p > 0 && p < 1 ? <ellipse key={i} cx={DROP.x} cy={DROP.y} rx={30 + p * 110} ry={(30 + p * 110) * 0.8} fill="none" stroke={P.purple} strokeWidth={4 - 3 * p} opacity={0.6 * (1 - p)} /> : null;
             })}
-            {[[1198, 222, P.pink], [1062, 272, P.sun], [1216, 270, P.violet]].map(([x, y, col], k) => {
-              const p = lin(t, Q.happened + 0.05 + k * 0.12, Q.happened + 0.5 + k * 0.12);
-              return p > 0 ? (
-                <g key={k} transform={`translate(${x} ${y}) scale(${p})`}>
-                  {[0, 72, 144, 216, 288].map((a) => <ellipse key={a} cx={0} cy={-11} rx={7} ry={11} transform={`rotate(${a})`} fill={col as string} stroke={P.ink} strokeWidth={1.8} />)}
-                  <circle cx={0} cy={0} r={5} fill={P.sunSoft} stroke={P.ink} strokeWidth={1.6} />
-                </g>
-              ) : null;
-            })}
+            {/* the drop itself, until it runs into the nib */}
+            {run < 1 && (
+              <g transform={`translate(${DROP.x} ${DROP.y}) scale(${(1 - run * 0.6) * Math.min(1.08, g)} ${(1 + run * 0.5) * Math.min(1.08, g)}) translate(0 ${run * 10})`}>
+                <path d={blob(0, 0, 26, 7, 0.08, 14)} fill={P.purple} />
+                <ellipse cx={-8} cy={-9} rx={7} ry={4} fill="#fff" opacity={0.35} transform="rotate(-30 -8 -9)" />
+              </g>
+            )}
+            {/* the quill, nib at the drop */}
+            {t > qa && (
+              <g transform={`translate(${DROP.x} ${DROP.y - 14 * lift + bob}) rotate(${-14 - 4 * lift}) scale(${QS})`}>
+                <g transform={`scale(${Math.min(1.1, pop(t, qa, 0.35))})`}><path d="M 0 0 L 6 -16 L 12 -14 Z" fill={P.ink} /></g>
+                <Shape d="M 8 -15 C 18 -60 52 -118 96 -150 C 92 -118 70 -64 14 -12 Z" a={qa + 0.08} b={qa + 0.62} fill={P.purple} w={2.4 / QS * 2.2} />
+                <Ink d="M 10 -14 C 34 -56 62 -104 92 -146" a={qa + 0.3} b={qa + 0.75} w={2} />
+                <Appear a={qa + 0.6}>
+                  <path d="M 40 -62 L 52 -58 M 54 -86 L 66 -84 M 66 -106 L 78 -106 M 30 -58 L 22 -46 M 46 -84 L 36 -74" stroke={P.ink} strokeWidth={1.8} strokeLinecap="round" opacity={0.7} />
+                </Appear>
+              </g>
+            )}
           </g>
         )}
       </Sheet>
@@ -414,20 +424,19 @@ const HoweverArt: React.FC = () => {
 /** The falling drop is a standing piece above the page: it has height, so it gets a real shadow. */
 const HoweverPop: React.FC = () => {
   const t = useT();
-  const a = DROP_LAND - 0.62;
-  const u = (t - a) / 0.62;
+  const a = DROP_LAND - 0.42;
+  const u = (t - a) / 0.42;
   if (u <= 0 || u >= 1) return null;
   const z = 900 * (1 - u * u);
   return (
     <>
-      <div style={{ position: 'absolute', left: DROP.x - 30 + z * 0.1, top: DROP.y - 12 + z * 0.06, width: 60, height: 24, borderRadius: '50%',
+      <div style={{ position: 'absolute', left: DROP.x - 36 + z * 0.1, top: DROP.y - 14 + z * 0.06, width: 72, height: 28, borderRadius: '50%',
         background: 'rgba(40,14,48,0.5)', filter: `blur(${4 + z * 0.02}px)`, opacity: 0.25 + 0.6 * u, transform: 'translateZ(0.5px)' }} />
-      <div style={{ position: 'absolute', left: DROP.x - 14, top: DROP.y - 40, width: 28, height: 40, transform: `translateZ(${z}px) rotateX(-70deg)`, transformOrigin: '50% 100%' }}>
-        <div style={{ width: 28, height: 40, background: 'radial-gradient(circle at 38% 62%, #C88AD8 0%, #9750AA 45%, #6E3482 100%)', borderRadius: '50% 50% 50% 50% / 64% 64% 40% 40%',
-          clipPath: 'path("M 14 0 C 18 12 28 20 28 28 A 14 12 0 0 1 0 28 C 0 20 10 12 14 0 Z")' }} />
+      <div style={{ position: 'absolute', left: DROP.x - 22, top: DROP.y - 64, width: 44, height: 64, transform: `translateZ(${z}px) rotateX(-70deg)`, transformOrigin: '50% 100%' }}>
+        <div style={{ width: 44, height: 64, background: 'radial-gradient(circle at 38% 62%, #C88AD8 0%, #9750AA 45%, #6E3482 100%)',
+          clipPath: 'path("M 22 0 C 28 18 44 32 44 45 A 22 19 0 0 1 0 45 C 0 32 16 18 22 0 Z")' }} />
       </div>
     </>
   );
 };
 export const HOWEVER: Spread = { id: 'however', Art: HoweverArt, Pop: HoweverPop };
-
