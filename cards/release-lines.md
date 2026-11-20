@@ -112,3 +112,5 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#784 fixes | Pictures in chats you keep using are no longer forgotten by the assistant after 90 days.
 - youcoded#769 behind | Nothing visible.
 - youcoded#770 behind | Nothing visible.
+- youcoded#787 behind | Closing a chat frees everything it held, and a backup lock left behind by a crash clears itself after about two hours.
+- youcoded#787 behind | If backups are skipped for over a day, Settings → Backup now says so.
