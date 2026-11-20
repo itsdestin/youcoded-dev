@@ -93,13 +93,23 @@ different kind of thing: a look, a connection to something they own, a daily job
 **What you see and read** (each line is typed by the person; the app answers by changing):
 
 1. "make this feel like a rainy night in tokyo" — the whole app turns to neon and rain.
-2. "can you run my lights from here?" — a set of light sliders appears.
-3. "epic. my room on the front, the rest of the house on another tab" — it rearranges.
-4. "bigger sliders. punchier." — they grow and bounce.
-5. "every morning, email me what's on today. make it cute." — a small, very cute email
+2. "i want youcoded to manage my smart home" — light and thermostat controls appear.
+3. "epic. can we put my room on the front and everything else on a separate tab?" — it
+   rearranges.
+4. "perfect. now make the sliders bigger and the animations punchier." — they grow and
+   bounce.
+5. A one-second flash: the same home shown five completely different ways, as five other
+   people arranged theirs.
+6. "can we connect my bank and show my balances?" — balances appear.
+7. "can it pull out my recurring bills? is that possible?" — it does.
+8. "send me those numbers every morning. make the email kawaii." — a very cute email
    slides in.
-6. "my niece likes frogs. make her a game." — a frog game, being played.
-7. Pull back: the finished app looks nothing like where it started.
+9. "my niece likes frogs. make her a game." — a frog game, being played.
+10. Pull back: the finished app looks nothing like where it started.
+
+Requests 2 to 4 and 6 to 8 are your own examples from the deck, nearly word for word. If
+ten beats is too many for a minute, the first cut drops either the home run or the money
+run, not the back-and-forth inside it.
 
 Then three cards of type:
 
@@ -109,9 +119,9 @@ Then three cards of type:
 >
 > open source everything.
 
-**Why these examples:** none is "a page for X". Each one is something a ready-made app
-would not do the way this person wants it. The lights are there once, as one request among
-six, and the point is the back-and-forth, as in your own example.
+**Why these examples:** the point of each run is the back-and-forth and how easily it
+changes, not the home or money screen itself. The five-ways flash is there because you
+asked that home or money never appear as one fixed design.
 
 ---
 
