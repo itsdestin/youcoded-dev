@@ -1,0 +1,169 @@
+{
+ "deck": "campaign-round2-questions",
+ "started": "2026-11-20T04:27:17.341Z",
+ "submitted": "2026-11-20T05:37:04Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1795149519450,
+   "note": "it is acceptable to have \"feature ads\" of sorts, but these should not be the primary basis of our marketing strategy and should still frame features in the broader context/purpose/strategy.",
+   "seconds": 114,
+   "theme": "light"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1795149519450,
+   "note": "yeah. again we may have some additional ads later that speak to developers or focus specifically on coding/software/self-hosting in that terminaology for marketing to communities like reddit r/selfhosting and such, but this is not a primary marketing strategy. the same is also more broadly true of \"building\" and such. while user can build their own app, hearing \"build software\" without adidional context leads people to assume some degree of difficulty/complexity outside their wheelhouse. \"customize\" is typically the better framing. \"build\" should clearly suggest to users that most 'building' happens via conversation instead of code.",
+   "seconds": 114,
+   "theme": "light"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1795149519450,
+   "seconds": 114,
+   "theme": "light"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1795149519450,
+   "seconds": 114,
+   "theme": "light"
+  },
+  "S-5": {
+   "v": "yes",
+   "t": 1795149519450,
+   "note": "home and money are still interesting examples, but it should moreso be the broader function/customizability that is the emphasis, not the two specific page variants i made for myself. when we reference something like home/money, we should show 5 different ways to organize/arrange/display your information/money/house/other connections. like \"i want to make a page that lets youcoded manage my smarthome\". \"epic, can we put my room/devices on the front page and everything else on a separate tab?\". \"perfect, now i want to make the sliders bigger and the animations punchier.\" or \"can we connect my bank data and show my balances in a page in youcoded?\" \"can we make the page automatically extract my recurring expenses and bills and such? is that possible?\" \"can we add some topline numbers that aggregate my net worth and such?\". \"set up an automation to send me a daily email with those numbers. make the email kawaii type shit\". that kind of thing. we should focus much more on the ease of personalization and customizability and fully-from-scratch functionality.",
+   "seconds": 114,
+   "theme": "light"
+  },
+  "S-6": {
+   "v": "yes",
+   "t": 1795149519450,
+   "seconds": 114,
+   "theme": "light"
+  },
+  "Q-1": {
+   "v": "other",
+   "t": 1795152058629,
+   "note": "idk. i think i'd need a better idea of what each of these would actually look like in practice. i also think i kinda want multiple takes/approaches, but each approach should be truly unique/independent and fit a target audience.",
+   "seconds": 423,
+   "theme": "light"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1795152058629,
+   "note": "idek if i want to keep the script at all. i think i may still like to see what one of our approaches with that script might look like, but, as mentioned earlier, i largely abandoned that earlier attempt. i do think the script is useful though? so maybe one of our takes/approaches should still use it or a slightly cut version of it. note that the latter half-ish was AI generated and i still don't love it, but i'm very proud of the first half-ish.",
+   "seconds": 423,
+   "theme": "light"
+  },
+  "Q-3": {
+   "note": "unsure. i think i'd be interested to see both A and B before strongly deciding between them",
+   "t": 1795152058629,
+   "v": "other",
+   "seconds": 423,
+   "theme": "light"
+  },
+  "Q-4": {
+   "v": "no",
+   "t": 1795152058629,
+   "seconds": 423,
+   "theme": "light"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "none",
+   "t": 1795152058629,
+   "seconds": 423,
+   "theme": "light"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "show",
+   "t": 1795152058629,
+   "seconds": 423,
+   "theme": "light"
+  },
+  "Q-7": {
+   "v": "other",
+   "t": 1795152307049,
+   "note": "kinda inclined to test versions with/without narrator. still haven't decided whether i like the narration.",
+   "seconds": 50,
+   "theme": "light"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "lily",
+   "t": 1795152307049,
+   "note": "fine for testing. may want to refine voices further later. i think i was initially kinda envisioning the voice from kanye west's \"dark fantasy\"? so may want to try to get closer to that.",
+   "seconds": 50,
+   "theme": "light"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "60",
+   "t": 1795152307049,
+   "seconds": 50,
+   "theme": "light"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "motion",
+   "t": 1795152307049,
+   "note": "also \"faked\" app footage. like, for the earlier scenes i outlined where someone is building their home/money features, we'd want to kinda fake and animate this to make it more punchy/clean/cool.",
+   "seconds": 50,
+   "theme": "light"
+  },
+  "Q-11": {
+   "v": "other",
+   "t": 1795152307049,
+   "note": "i think i liked the piano, but i'm definitely open to hearing additional alternatives.",
+   "seconds": 50,
+   "theme": "light"
+  },
+  "Q-12": {
+   "v": "other",
+   "t": 1795153023548,
+   "note": "somewhere between a/c? definitely want a few entirely different use cases and classes of feature to be shown.",
+   "seconds": 119,
+   "theme": "light"
+  },
+  "Q-13": {
+   "note": "the real app can theoretically make literally anyhthing, so i feel like we can kinda fake whatever we want for advertising purposes? like the money/home pages in the last round were definitely real (i use them myself) but we can make more visually interesting fake versions and animations between them as the user builds/changes things. not everything needs to be functional for the ad clips, the underlying capacity to build those functionalities exists and that means we're still being honest about what's possible.",
+   "t": 1795153023548,
+   "v": "other",
+   "dk": true,
+   "seconds": 119,
+   "theme": "light"
+  },
+  "Q-14": {
+   "v": "other",
+   "t": 1795153023548,
+   "note": "unsure. i think probably new films? the posters definitely need at least a bit of refinement as well? they're decent (pretty damn good actually) but i think we can make a wider variety with some more interesting/powerful messages/themes",
+   "seconds": 119,
+   "theme": "light"
+  },
+  "Q-15": {
+   "v": "pick",
+   "pick": "open",
+   "t": 1795153023548,
+   "note": "i don't love the \"software you own, not rent\" thing. i really prefer to keep \"own nothing, be happy\" kinda framing. i think a poster or two with that exact phrase would be awesome, but with a cool styled cross-out of \"nothing\" and insert/overlay of \"everything\". also a poster or video that has an \"own your [data/intelligence/software/everything]\" style ad could be cool.",
+   "seconds": 119,
+   "theme": "light"
+  },
+  "Q-16": {
+   "v": "pick",
+   "pick": "stages",
+   "t": 1795153023548,
+   "seconds": 119,
+   "theme": "light"
+  },
+  "Q-17": {
+   "v": "other",
+   "dk": true,
+   "t": 1795153023548,
+   "seconds": 119,
+   "theme": "light"
+  }
+ }
+}
