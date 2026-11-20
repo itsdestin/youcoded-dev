@@ -9,7 +9,7 @@ Everything under the line is what gets recorded. Source of the words: `docs/acti
 
 [dry wit, quick] They decided what your computers could do, what it would cost, and what happened with your personal data.
 
-[conspiratorial, quick] And we all... we all just accepted it. We accepted that we would subscribe to everything and own nothing.
+[conspiratorial, quick] And we all... we all just accepted it. We accepted that we would subscribe to everything and own nothing, and that our privacy would be the cost of convenience.
 
 [quick whisper] However, recently... [bright, rising wonder] something truly wonderful happened.
 

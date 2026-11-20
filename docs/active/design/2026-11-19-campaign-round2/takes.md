@@ -42,7 +42,7 @@ different youcoded. The town ends up brighter than the towers.
 > your personal data.
 >
 > And we all... we all just accepted it. We accepted that we would subscribe to everything
-> and own nothing.
+> and own nothing, and that our privacy would be the cost of convenience.
 >
 > However, recently... something truly wonderful happened.
 >
