@@ -206,6 +206,18 @@ evidence towards that end."
   when it is the best one for that piece, never by default, and never both.
 - **Test:** could the example be answered with "there is already an app for that"? Then it has
   not shown the customising, and it is not ready.
+- **Requests shown on screen sound like a real person** (Destin, 2026-11-19: "this isn't how
+  any real person would ask for this... the fake prompts have honestly been one of the greatest
+  weaknesses of our marketing so far"). Lower case, unsure, a few messages back and forth with
+  the app answering, never one polished command: "can i change how this looks?", a reply, then
+  "idk. kinda rainy tokyo type vibe? open to ideas". Word them so someone who has never used
+  the app understands: no names for parts of the app.
+- **Invite, never report.** Never credit the viewer with something they have not done ("you
+  asked for it", "you made this"). Destin: "everything here exists with *potential* but has not
+  happened... we should implore rather than state when addressing users directly." Good: "make
+  anything you can imagine, just by asking", "stop waiting for updates".
+- **No airy slogans.** A line must say something the reader can picture or check. Destin on
+  "nobody can lock you out", "ask for it" and the like: "airy and lack meaning".
 - **Respect developers:** "you don't need to code", never "coders are obsolete".
 - **Destin's story** (no coding background; dropped Microsoft, Apple and Google) is our strongest
   material. Quote him from `docs/vision/2026-10-22-why-youcoded-voice-notes.md`; never paraphrase.
