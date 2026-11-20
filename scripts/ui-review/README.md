@@ -436,7 +436,9 @@ quit warning), `?switchFit=summary|working|error` (every model switch asks first
 runs forever; or it fails — default: fits), `?adminPasswordFail=1` (the admin-password card's
 "ask expired" state), `?docCommentsFail=<code>` (every new document comment fails with that
 real error code, e.g. `file-open-elsewhere`), `?docCommentsDetached=1` (one comment whose
-quoted text is no longer in its file).
+quoted text is no longer in its file), `?statsFail=1` (the marketplace's install and like
+counts fail to load, for the "could not load" notice with Try again; card #134 — read in
+`fixtures/marketplace/worker-api-mock.ts`, not the shim).
 
 Added by the UI consistency round (documented 2026-10-13; same file):
 `?friends=none|many|requests|lots` (with `?signedIn=1`: no friends, four friends showing every
