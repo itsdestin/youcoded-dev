@@ -114,3 +114,5 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#770 behind | Nothing visible.
 - youcoded#787 behind | Closing a chat frees everything it held, and a backup lock left behind by a crash clears itself after about two hours.
 - youcoded#787 behind | If backups are skipped for over a day, Settings → Backup now says so.
+- youcoded#789 fixes | Fast mode, effort level, and a chat's tags and note now say so when they can't be saved, instead of silently not saving.
+- youcoded#789 fixes | If closing a chat can't save its tags or note, the chat stays open with Try again or Close anyway.
