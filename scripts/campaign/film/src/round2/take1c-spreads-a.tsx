@@ -10,7 +10,7 @@
 import React from 'react';
 import { DMSANS, EASE_IN, EASE_IN_OUT } from '../brand';
 import { Appear, blob, circle, WashBg, HatFigure, Ink, jolt, KeepsakeIcon, Keepsake, Laptop, lin, P, Padlock, Person, PriceTag, Quill, Shape, useT } from './take1c-ink';
-import { Folio, Heading, Headline, Sheet } from './take1c-page';
+import { Folio, Heading, Sheet } from './take1c-page';
 import { Q, TURN, TURN_DUR } from './take1c-time';
 import type { Spread } from './take1c-book';
 
@@ -173,51 +173,75 @@ const RulesArt: React.FC = () => {
 export const RULES: Spread = { id: 'rules', Art: RulesArt };
 
 // ======================= iii · the bargain =======================
+// WHY a terms-of-service scroll with an "I agree" box in front of everyone: the old version was a rolled
+// scroll that read as a log at film size. A long page of small print and a box each person ticks is the
+// one picture of "we all just accepted it" that nobody needs explaining.
 const QUEUE = [130, 262, 394, 526, 658, 790, 922, 1054];
-const SIGN = 'M -24 6 c 6 -16 11 -16 9 -1 c -2 13 7 11 11 -4 c 4 -11 9 -7 7 2 c -1 7 6 5 11 -3 l 8 3';
+const BAND = { top: 716, h: 96 };
 const BargainArt: React.FC = () => {
   const t = useT();
   const L = land(TURN.bargain) - 0.3;
-  const unroll = lin(t, L - 0.2, Q.accepted - 0.25, EASE_IN_OUT);
-  const left = 1250 - unroll * 1170;
+  // the scroll spills off the lectern and unrolls leftwards along the floor, in front of everyone's feet
+  const unroll = lin(t, L - 0.2, Q.accepted - 0.45, EASE_IN_OUT);
+  const left = 1250 - unroll * 1190;
   const shuffle = lin(t, L, Q.accepted - 0.2, EASE_IN_OUT);
+  // a slightly wavering paper edge: right-to-left along the top, left-to-right along the bottom
+  const edge = (y: number, k0: number) => Array.from({ length: 30 }, (_, k) => { const x = 1262 - ((1262 - left) * (k + 1)) / 30; return `L ${x.toFixed(1)} ${(y + Math.sin(k * 1.3 + k0) * 2).toFixed(1)}`; }).join(' ');
+  const back = (y: number, k0: number) => Array.from({ length: 30 }, (_, k) => { const x = left + ((1262 - left) * (k + 1)) / 30; return `L ${x.toFixed(1)} ${(y + Math.sin(k * 1.7 + k0) * 2).toFixed(1)}`; }).join(' ');
   return (
     <>
       <Heading n="iii" title="the bargain" />
       <Folio left={6} />
       <Sheet>
-        <WashBg x={700} y={640} r={130} sx={5} a={L + 0.5} seed={4} />
+        <WashBg x={700} y={600} r={130} sx={5} a={L + 0.5} seed={4} />
         <Ink d="M 70 700 L 1450 700" a={L - 0.3} b={L + 0.3} w={2} c={P.inkSoft} />
-        {/* the terms: a scroll that runs off the lectern and across both pages */}
-        {unroll > 0 && (
-          <g>
-            <path d={`M ${left} 806 L 1262 806 L 1262 812 L ${left} 812 Z`} fill={P.ink} opacity={0.12} />
-            <path d={`M ${left} 718 ${Array.from({ length: 24 }, (_, k) => { const x = left + ((1262 - left) * (k + 1)) / 24; return `L ${x.toFixed(1)} ${(718 + Math.sin(k * 1.3) * 2.5).toFixed(1)}`; }).join(' ')} L 1262 800 ${Array.from({ length: 24 }, (_, k) => { const x = 1262 - ((1262 - left) * (k + 1)) / 24; return `L ${x.toFixed(1)} ${(800 + Math.sin(k * 1.7 + 1) * 2.5).toFixed(1)}`; }).join(' ')} Z`}
-              fill={P.paper} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
-            <text x={1236} y={746} textAnchor="end" fontFamily={DMSANS} fontWeight={700} fontSize={18} fill={P.ink} letterSpacing="0.06em">terms</text>
-            {Array.from({ length: 30 }).map((_, i) => {
-              const x = 1160 - i * 39;
-              if (x < left + 20) return null;
-              return <path key={i} d={`M ${x} 734 l -24 0 M ${x} 746 l -30 0 M ${x} 758 l -18 0`} stroke={P.inkSoft} strokeWidth={2} opacity={0.5} strokeLinecap="round" />;
-            })}
-            <ellipse cx={left} cy={759} rx={14} ry={42} fill={P.paper} stroke={P.ink} strokeWidth={3} />
-            <ellipse cx={left} cy={759} rx={5} ry={16} fill="none" stroke={P.ink} strokeWidth={2} />
-          </g>
-        )}
         <HatFigure x={1330} y={700} s={1.35} crown={100} a={L - 0.3} b={L + 0.6} pose="rub" bob={jolt(t, Q.accepted + 0.6, 6, 0.8)} />
         {/* the lectern, drawn over the hat's coat */}
         <Shape d="M 1252 700 L 1408 700 L 1392 530 L 1268 530 Z" a={L - 0.2} b={L + 0.3} fill={P.paper} w={3} />
         <Shape d="M 1240 534 L 1420 516 L 1420 500 L 1240 518 Z" a={L - 0.1} b={L + 0.35} fill={P.inkSoft} w={3} />
-        <Ink d="M 1262 528 Q 1250 600 1262 718" a={L} b={L + 0.3} w={3} />
+        {unroll > 0 && (
+          <g>
+            {/* down the front of the lectern... */}
+            <path d="M 1262 520 L 1300 520 L 1300 700 Q 1300 716 1262 716 Z" fill={P.paper} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+            {[548, 572, 596, 620, 644, 668].map((y) => <path key={y} d={`M 1270 ${y} l 22 0`} stroke={P.inkSoft} strokeWidth={2} opacity={0.5} />)}
+            {/* ...and along the floor */}
+            <path d={`M 1262 ${BAND.top} ${edge(BAND.top, 0)} L ${left} ${BAND.top + BAND.h} ${back(BAND.top + BAND.h, 1)} L 1262 ${BAND.top + BAND.h} Z`}
+              fill={P.paper} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+            {/* the small print: rows of it, all the way along */}
+            {Array.from({ length: 34 }).map((_, i) => {
+              const x = 1236 - i * 36;
+              if (x < left + 12) return null;
+              return <path key={i} d={`M ${x} ${BAND.top + 14} l -26 0 M ${x} ${BAND.top + 26} l -30 0 M ${x} ${BAND.top + 80} l -22 0`} stroke={P.inkSoft} strokeWidth={2} opacity={0.42} strokeLinecap="round" />;
+            })}
+            {/* the curl where it is still unrolling */}
+            <path d={`M ${left} ${BAND.top} q -16 4 -14 ${BAND.h / 2} q 2 ${BAND.h / 2 - 4} 14 ${BAND.h / 2}`} fill={P.paper} stroke={P.ink} strokeWidth={3} />
+          </g>
+        )}
+        {/* the title on the lectern, big enough to read at film size */}
+        <Appear a={L + 0.1}>
+          {/* WHY above the gap beside the lectern: on the lectern itself it ran across the man's face */}
+          <text x={1236} y={470} textAnchor="end" fontFamily={DMSANS} fontWeight={800} fontSize={32} fill={P.ink} letterSpacing="-0.02em">terms of service</text>
+          <Ink d="M 1200 482 C 1230 500 1252 504 1266 522" a={L + 0.2} b={L + 0.5} w={2.4} />
+        </Appear>
         {QUEUE.map((x, i) => {
-          const signAt = Q.accepted + (QUEUE.length - 1 - i) * 0.075;
+          // the tick runs from the front of the queue to the back, as she says "accepted"
+          const signAt = Q.accepted - 0.1 + (QUEUE.length - 1 - i) * 0.085;
           const nod = jolt(t, signAt, 9, 0.5);
           const walk = Math.abs(Math.sin((t - L) * 7 + i)) * 4 * (1 - shuffle) * (t > L ? 1 : 0);
+          const px = x + shuffle * 22;
+          const bx = px - 52;
+          const printed = left < bx - 6;
           return (
             <g key={i}>
-              <Person x={x + shuffle * 22} y={700} s={1} a={L - 0.15 + i * 0.05} b={L + 0.45 + i * 0.05} hair={HAIR[i % HAIR.length]} pose={t > signAt - 0.1 && t < signAt + 0.5 ? 'write' : 'down'}
+              <Person x={px} y={700} s={1} a={L - 0.15 + i * 0.05} b={L + 0.45 + i * 0.05} hair={HAIR[i % HAIR.length]} pose={t > signAt - 0.15 && t < signAt + 0.45 ? 'write' : 'down'}
                 mood="flat" tilt={nod} bob={-walk} />
-              <g transform={`translate(${x + shuffle * 22 + 18} 772)`}><Ink d={SIGN} a={signAt} b={signAt + 0.35} w={2.4} /></g>
+              {printed && (
+                <g>
+                  <rect x={bx} y={BAND.top + 38} width={30} height={30} rx={4} fill={P.paper} stroke={P.ink} strokeWidth={3} />
+                  <text x={bx + 40} y={BAND.top + 62} fontFamily={DMSANS} fontWeight={800} fontSize={24} fill={P.ink} letterSpacing="-0.02em">I agree</text>
+                  <Ink d={`M ${bx + 6} ${BAND.top + 53} L ${bx + 13} ${BAND.top + 61} L ${bx + 27} ${BAND.top + 41}`} a={signAt} b={signAt + 0.18} w={4.5} />
+                </g>
+              )}
             </g>
           );
         })}
@@ -256,9 +280,20 @@ const NothingArt: React.FC = () => {
   const L = land(TURN.nothing) - 0.3;
   const glassIn = lin(t, Q.privacy - 0.2, Q.privacy + 0.55);
   const gx = (1 - glassIn) * 520, gy = (1 - glassIn) * -160;
-  const lens = { x: 1080 + gx, y: 470 + gy, r: 88 };
-  const shrug = t > Q.convenience - 0.1;
-  const viewer = (k: number) => <Person x={1080} y={560} s={1.25} a={L + 0.3} b={L + 0.9} pose={shrug ? 'wave' : 'hold'} device="phone" hair="cap" mood="smile" key={k} />;
+  // WHY over her face only: lower, it hid the "easy" button she presses
+  const lens = { x: 1074 + gx, y: 438 + gy, r: 74 };
+  // WHY the button: "the cost of convenience" is a trade. She presses a big "easy" button at "cost", the glass
+  // is already over her, and her smile drains on "convenience": both sides of the bargain in one picture.
+  const press = t > Q.costOf - 0.2;
+  const pushed = lin(t, Q.costOf, Q.costOf + 0.12) * (1 - lin(t, Q.costOf + 0.35, Q.costOf + 0.5));
+  const viewer = (k: number) => <Person x={1080} y={560} s={1.25} a={L + 0.3} b={L + 0.9} pose={press ? 'write' : 'hold'} device={press ? 'none' : 'phone'} hair="cap" mood={t > Q.convenience + 0.1 ? 'flat' : 'smile'} key={k} />;
+  const button = (
+    <g>
+      <Shape d="M 1118 562 L 1184 562 L 1184 528 L 1118 528 Z" a={L + 0.4} b={L + 0.8} fill={P.wash} w={3} />
+      <path d={`M 1124 528 Q 1151 ${506 + pushed * 14} 1178 528 Z`} fill={P.inkSoft} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" opacity={lin(t, L + 0.6, L + 0.9)} />
+      <Appear a={L + 0.7}><text x={1151} y={552} textAnchor="middle" fontFamily={DMSANS} fontWeight={800} fontSize={18} fill={P.ink}>easy</text></Appear>
+    </g>
+  );
   return (
     <>
       <Folio left={8} />
@@ -298,6 +333,7 @@ const NothingArt: React.FC = () => {
 
         {/* the cost of convenience: a giant magnifying glass held over someone happily on their phone */}
         <Ink d="M 960 562 L 1200 562 M 975 562 L 975 600 M 1185 562 L 1185 600" a={L + 0.2} b={L + 0.6} w={3} />
+        {button}
         {viewer(0)}
         {glassIn > 0 && (
           <g>
@@ -316,47 +352,43 @@ const NothingArt: React.FC = () => {
           </g>
         )}
       </Sheet>
-      <Headline text="own *nothing." at={Q.own} out={Math.max(Q.own + 1.75, Q.privacy + 0.45)} />
     </>
   );
 };
 export const NOTHING: Spread = { id: 'nothing', Art: NothingArt };
 
 // ======================= iv · however =======================
-export const DROP_LAND = Q.recently + 0.72;
+// WHY one small tidy drop and a sprig: a big spreading blot reads as a spill or a mistake. A single drop that
+// lands on "something" and grows into a living sprig on "wonderful" reads as a beginning. It is the same purple
+// ink the corporations bottle in chapter v, so the viewer can follow where it came from.
+export const DROP_LAND = Q.something + 0.05;
+const DROP = { x: 1140, y: 470 };
 const HoweverArt: React.FC = () => {
   const t = useT();
-  const g = lin(t, DROP_LAND, DROP_LAND + 0.55);
-  const slow = lin(t, DROP_LAND + 0.55, Q.happened + 1.0, EASE_IN_OUT);
-  const r = 18 + g * 74 + slow * 30;
-  // "wonderful": the ink grows like something alive, curling out into leaves and two small flowers
-  const vines = [
-    'M 1180 356 C 1226 316 1252 266 1238 222 C 1228 190 1262 168 1290 184',
-    'M 1102 358 C 1062 316 1074 258 1042 230 C 1018 210 990 220 986 246',
-    'M 1200 426 C 1262 446 1312 426 1330 384 C 1340 360 1366 352 1382 366',
-    'M 1086 444 C 1032 474 996 462 972 430',
-    'M 1150 470 C 1160 520 1130 552 1150 590',
+  const g = lin(t, DROP_LAND, DROP_LAND + 0.4);
+  const r = 9 + g * 13;
+  const stems = [
+    'M 1140 458 C 1134 410 1160 370 1150 312 C 1142 262 1170 230 1198 222',
+    'M 1145 392 C 1110 372 1090 342 1096 304 C 1100 280 1082 266 1062 272',
+    'M 1151 340 C 1190 332 1222 304 1216 270',
   ];
-  const leaves: [number, number, number, string][] = [[1238, 252, -40, P.violet], [1056, 262, 210, P.pink], [1312, 404, 20, P.violet], [1004, 452, 160, P.pink], [1146, 540, 80, P.violet], [1210, 302, 30, P.pink]];
+  const leaves: [number, number, number, string][] = [[1140, 428, 200, P.violet], [1146, 380, -24, P.pink], [1098, 330, 205, P.violet], [1186, 318, -50, P.pink], [1160, 268, -70, P.violet]];
   return (
     <>
       <Heading n="iv" title="however" />
       <Folio left={10} />
       <Sheet rough={false}>
         {t >= DROP_LAND && (
-          <g>
-            {/* ink soaking into paper: layered translucent pools, each wandering a little, with a darker rim */}
+          // WHY scaled up around the drop: at film size the sprig was a small thing in a big empty spread
+          <g transform={`translate(${DROP.x} ${DROP.y}) scale(1.4) translate(${-DROP.x} ${-DROP.y})`}>
             <g filter="url(#c-bleed)">
-              <path d={blob(1140, 400, r * 1.28, 3, 0.18, 18)} fill={P.purple} opacity={0.13} />
-              <path d={blob(1146, 396, r * 1.08, 5, 0.16, 18)} fill={P.purple} opacity={0.32} />
-              <path d={blob(1138, 404, r, 7, 0.14, 18)} fill={P.purple} opacity={0.62} />
-              <path d={blob(1132, 392, r * 0.62, 2, 0.2, 14)} fill="#7A3A8C" opacity={0.35} />
-              <path d={blob(1138, 404, r, 7, 0.14, 18)} fill="none" stroke="#6E2F80" strokeWidth={4} opacity={0.4} />
+              <path d={blob(DROP.x, DROP.y, r * 1.25, 3, 0.12, 14)} fill={P.purple} opacity={0.18} />
+              <path d={blob(DROP.x, DROP.y, r, 7, 0.1, 14)} fill={P.purple} opacity={0.9} />
             </g>
-            {t < DROP_LAND + 0.45 && <circle cx={1140} cy={400} r={20 + lin(t, DROP_LAND, DROP_LAND + 0.45) * 130} fill="none" stroke={P.purple} strokeWidth={3} opacity={0.55 * (1 - lin(t, DROP_LAND, DROP_LAND + 0.45))} />}
-            {vines.map((d, k) => <Ink key={k} d={d} a={Q.wonderful - 0.15 + k * 0.1} b={Q.wonderful + 0.8 + k * 0.1} w={3.4} c={P.purple} />)}
+            {t < DROP_LAND + 0.4 && <circle cx={DROP.x} cy={DROP.y} r={14 + lin(t, DROP_LAND, DROP_LAND + 0.4) * 40} fill="none" stroke={P.purple} strokeWidth={2} opacity={0.5 * (1 - lin(t, DROP_LAND, DROP_LAND + 0.4))} />}
+            {stems.map((d, k) => <Ink key={k} d={d} a={Q.wonderful - 0.2 + k * 0.18} b={Q.wonderful + 0.7 + k * 0.18} w={3.4} c={P.purple} />)}
             {leaves.map(([x, y, rot, col], k) => {
-              const p = lin(t, Q.wonderful + 0.45 + k * 0.1, Q.wonderful + 0.95 + k * 0.1);
+              const p = lin(t, Q.wonderful + 0.25 + k * 0.1, Q.wonderful + 0.7 + k * 0.1);
               return p > 0 ? (
                 <g key={k} transform={`translate(${x} ${y}) rotate(${rot}) scale(${p})`}>
                   <path d="M 0 0 C 10 -15 28 -15 34 0 C 28 15 10 15 0 0 Z" fill={col} stroke={P.ink} strokeWidth={2} />
@@ -364,8 +396,8 @@ const HoweverArt: React.FC = () => {
                 </g>
               ) : null;
             })}
-            {[[1290, 184, P.pink], [986, 246, P.sun], [1382, 366, P.violet]].map(([x, y, col], k) => {
-              const p = lin(t, Q.happened + 0.1 + k * 0.12, Q.happened + 0.55 + k * 0.12);
+            {[[1198, 222, P.pink], [1062, 272, P.sun], [1216, 270, P.violet]].map(([x, y, col], k) => {
+              const p = lin(t, Q.happened + 0.05 + k * 0.12, Q.happened + 0.5 + k * 0.12);
               return p > 0 ? (
                 <g key={k} transform={`translate(${x} ${y}) scale(${p})`}>
                   {[0, 72, 144, 216, 288].map((a) => <ellipse key={a} cx={0} cy={-11} rx={7} ry={11} transform={`rotate(${a})`} fill={col as string} stroke={P.ink} strokeWidth={1.8} />)}
@@ -376,7 +408,6 @@ const HoweverArt: React.FC = () => {
           </g>
         )}
       </Sheet>
-      <Headline text="something / *wonderful / happened." at={Q.something} out={TURN.treasure - 0.05} />
     </>
   );
 };
@@ -389,9 +420,9 @@ const HoweverPop: React.FC = () => {
   const z = 900 * (1 - u * u);
   return (
     <>
-      <div style={{ position: 'absolute', left: 1140 - 30 + z * 0.1, top: 400 - 12 + z * 0.06, width: 60, height: 24, borderRadius: '50%',
+      <div style={{ position: 'absolute', left: DROP.x - 30 + z * 0.1, top: DROP.y - 12 + z * 0.06, width: 60, height: 24, borderRadius: '50%',
         background: 'rgba(40,14,48,0.5)', filter: `blur(${4 + z * 0.02}px)`, opacity: 0.25 + 0.6 * u, transform: 'translateZ(0.5px)' }} />
-      <div style={{ position: 'absolute', left: 1140 - 14, top: 400 - 40, width: 28, height: 40, transform: `translateZ(${z}px) rotateX(-70deg)`, transformOrigin: '50% 100%' }}>
+      <div style={{ position: 'absolute', left: DROP.x - 14, top: DROP.y - 40, width: 28, height: 40, transform: `translateZ(${z}px) rotateX(-70deg)`, transformOrigin: '50% 100%' }}>
         <div style={{ width: 28, height: 40, background: 'radial-gradient(circle at 38% 62%, #C88AD8 0%, #9750AA 45%, #6E3482 100%)', borderRadius: '50% 50% 50% 50% / 64% 64% 40% 40%',
           clipPath: 'path("M 14 0 C 18 12 28 20 28 28 A 14 12 0 0 1 0 28 C 0 20 10 12 14 0 Z")' }} />
       </div>

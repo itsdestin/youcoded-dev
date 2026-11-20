@@ -39,6 +39,7 @@ export const Q = {
   hubris: T('hubris', 'own *hubris,'),
   created1: T('created1', 'corporations *created a new'),
   newKind: T('newKind', 'a *new kind of technology:'),
+  technology2: T('technology2', 'of *technology: artificial'),
   artificial: T('artificial', 'artificial intelligence.'),
   intelligence: T('intelligence', 'artificial *intelligence.'),
   aTechnology: T('aTechnology', 'A technology they believed'),
@@ -63,6 +64,7 @@ export const Q = {
   monopolies1End: E('monopolies1End', 'these *monopolies,'),
   forAnyone: T('forAnyone', 'for anyone who asks.'),
   anyone: T('anyone', 'for *anyone who'),
+  who: T('who', 'anyone *who asks.'),
   asks: T('asks', 'who *asks.'),
   // (7) our turn
   andSo: T('andSo', 'And so, for the first'),
@@ -106,6 +108,9 @@ export const TURN = {
   however: Q.however - 0.35,
   treasure: Q.blinded - 0.4,
   anyone: Q.monopolies1End - 0.12,
+  // WHY a separate spread for section 7: it mirrors chapter ii's three pictures one for one, so it needs
+  // the same layout on a fresh page rather than sharing a page with "anyone"
+  ours: Q.andSo - 0.25,
   free: Q.itsTime1 - 0.42,
   // the riffle: every page of the book flies past, each one somebody's own
   riffle: [Q.itsTime2 - 0.55, Q.itsTime2 + 0.12, Q.atLong + 0.15, Q.atLong + 0.68, Q.last - 0.35, Q.last + 0.12],

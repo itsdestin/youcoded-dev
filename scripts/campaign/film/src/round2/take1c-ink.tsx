@@ -97,7 +97,7 @@ export const InkDefs: React.FC = () => (
 );
 
 // ---------- the handful: tall, pompous, faceless ----------
-export type HatPose = 'sides' | 'bar' | 'key' | 'rub' | 'reach' | 'hold';
+export type HatPose = 'sides' | 'bar' | 'key' | 'rub' | 'reach' | 'hold' | 'grab' | 'pat';
 type HatProps = {
   x: number; y: number; s?: number; a: number; b?: number;
   crown?: number;          // hat height (they grow with their hubris)
@@ -106,8 +106,13 @@ type HatProps = {
   fade?: number;           // 0..1: drained to a pale pencil ghost (the past)
   ea?: number;
   band?: string;
+  // WHY eyes only where the story needs them (chapter v): the hats slide down over them ("blinded"), and
+  // they turn into coins when the men dream of treasure. Everywhere else the handful stay faceless.
+  eyes?: 'none' | 'dots' | 'coins';
+  fist?: number;           // 0..1: open hands closing on nothing (the tool escapes them)
+  pocket?: boolean;        // a waistcoat pocket, for the coin
 };
-export const HatFigure: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band }) => {
+export const HatFigure: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', fist = 0, pocket = false }) => {
   const e = b ?? a + 1;
   const k = (i: number) => a + (e - a) * i;  // stagger inside the drawing window
   const ink = P.ink;
@@ -120,10 +125,13 @@ export const HatFigure: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, d
     rub: ['M -20 -168 C -40 -146 -30 -122 -6 -118', 'M 20 -168 C 40 -146 30 -122 6 -118'],
     reach: ['M -20 -168 C -40 -140 -46 -114 -42 -92', 'M 20 -168 C 50 -176 78 -186 104 -196'],
     hold: ['M -20 -168 C -46 -152 -50 -126 -34 -114', 'M 20 -168 C 46 -152 50 -126 34 -114'],
+    grab: ['M -20 -168 C -10 -200 20 -232 52 -250', 'M 20 -168 C 44 -190 70 -214 96 -224'],
+    pat: ['M -20 -168 C -40 -140 -46 -114 -42 -92', 'M 20 -168 C 44 -150 44 -122 24 -110'],
   };
   const hands: Record<HatPose, [number, number][]> = {
     sides: [[-42, -90], [42, -90]], bar: [[-42, -90], [61, -134]], key: [[-42, -90], [73, -119]],
     rub: [[-4, -117], [4, -117]], reach: [[-42, -90], [106, -197]], hold: [[-33, -112], [33, -112]],
+    grab: [[54, -252], [98, -226]], pat: [[-42, -90], [22, -108]],
   };
   const hatY = -212 + drop * 34;      // slides down over the faceless head
   return (
@@ -138,16 +146,23 @@ export const HatFigure: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, d
       <Appear a={k(0.55)} out={ea}>
         <path d="M -9 -179 L 0 -136 L 9 -179 Z" fill={P.paper} />
         <path d="M -9 -178 L 0 -174 L 9 -178 L 9 -170 L 0 -174 L -9 -170 Z" fill={ink} stroke={P.paper} strokeWidth={1} />
-        <path d="M -31 -96 Q -10 -80 14 -98" stroke={P.paperShade} strokeWidth={2} fill="none" strokeDasharray="3 3" />
-        <circle cx={14} cy={-98} r={3.6} fill={P.paperShade} />
+        {/* WHY no watch chain: with it they read as the board-game mascot; without, as any suited institution */}
+        {pocket && <path d="M 12 -112 L 32 -114" stroke={P.paperShade} strokeWidth={2.4} fill="none" strokeLinecap="round" />}
         <path d="M 0 -38 L 0 -66" stroke={P.paper} strokeWidth={2} fill="none" strokeLinecap="round" opacity={0.6} />
         {[-124, -108].map((cy) => <circle key={cy} cx={-4} cy={cy} r={2} fill={P.paper} opacity={0.8} />)}
       </Appear>
       {/* arms */}
       {arms[pose].map((d, i) => <Ink key={i} d={d} a={k(0.45)} b={k(0.75)} w={8} ea={ea} />)}
-      <Appear a={k(0.7)} out={ea}>{hands[pose].map(([hx, hy], i) => <circle key={i} cx={hx} cy={hy} r={5.5} fill={P.paper} stroke={ink} strokeWidth={2.4} />)}</Appear>
+      <Appear a={k(0.7)} out={ea}>{hands[pose].map(([hx, hy], i) => (
+        // an open hand is a ring; a hand closing on nothing shrinks to a small filled fist
+        <circle key={i} cx={hx} cy={hy} r={5.5 + (1 - fist) * 2 - fist * 1.5} fill={fist > 0.5 ? ink : P.paper} stroke={ink} strokeWidth={2.4} />
+      ))}</Appear>
       {/* neck + faceless head */}
       <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} w={2.6} ea={ea} /></g>
+      {eyes === 'dots' && <Appear a={k(0.7)} out={ea}><circle cx={-4} cy={-199} r={2.4} fill={ink} /><circle cx={6} cy={-200} r={2.4} fill={ink} /></Appear>}
+      {eyes === 'coins' && [[-5, -199], [7, -200]].map(([cx, cy], i) => (
+        <g key={i}><circle cx={cx} cy={cy} r={5.6} fill={P.sun} stroke={ink} strokeWidth={1.6} /><circle cx={cx} cy={cy} r={2.6} fill="none" stroke={ink} strokeWidth={1} opacity={0.6} /></g>
+      ))}
       {/* the tall hat */}
       <g transform={`translate(0 ${hatY})`}>
         <Shape d={`M -16 0 L -18.5 ${-crown} Q 0 ${-crown - 4} 18.5 ${-crown} L 16 0 Z`} a={k(0.6)} b={k(0.9)} fill={ink} w={3} ea={ea} />

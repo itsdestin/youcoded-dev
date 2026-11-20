@@ -198,6 +198,7 @@ export const Lamp: React.FC<{ dim?: number; warm?: number }> = ({ dim = 0, warm 
   <AbsoluteFill style={{ pointerEvents: 'none' }}>
     <AbsoluteFill style={{ background: 'radial-gradient(ellipse 72% 78% at 44% 40%, rgba(20,8,28,0) 50%, rgba(20,8,28,0.34) 84%, rgba(16,6,22,0.62) 100%)' }} />
     <AbsoluteFill style={{ background: `radial-gradient(ellipse 60% 60% at 36% 26%, rgba(255,226,190,${0.16 + warm * 0.1}) 0%, rgba(255,228,196,0) 70%)`, mixBlendMode: 'soft-light' }} />
-    {dim > 0 && <AbsoluteFill style={{ background: `rgba(18,8,26,${dim * 0.5})` }} />}
+    {/* WHY only the edges: a whole-frame dim turned the cream page grey, which read as a rendering fault */}
+    {dim > 0 && <AbsoluteFill style={{ background: `radial-gradient(ellipse 58% 62% at 52% 46%, rgba(18,8,26,0) 45%, rgba(18,8,26,${dim * 0.55}) 100%)` }} />}
   </AbsoluteFill>
 );

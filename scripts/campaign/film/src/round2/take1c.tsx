@@ -13,13 +13,16 @@ import { EndCard } from '../kit';
 import { Boards, BOARD, BasePage, cameraAt, coverArt, Edges, Face, Lamp, Leaf, LeafShadow, PH, PW, Shot, Spread, World } from './take1c-book';
 import { lin } from './take1c-ink';
 import { BARGAIN, HANDFUL, HOWEVER, NOTHING, RULES } from './take1c-spreads-a';
-import { ANYONE, EVERYTHING, FREE, TREASURE, VARIANTS } from './take1c-spreads-b';
+import { ANYONE, EVERYTHING, FREE, OURS, TREASURE, VARIANTS } from './take1c-spreads-b';
+import { Headline } from './take1c-page';
 import { CLOSE_DUR, COVER_DUR, END_CARD, Q, TURN, TURN_DUR } from './take1c-time';
 
 // ---------- the order of the book ----------
-const SPREADS: Spread[] = [HANDFUL, RULES, BARGAIN, NOTHING, HOWEVER, TREASURE, ANYONE, FREE, ...VARIANTS, EVERYTHING];
-const STARTS = [TURN.cover, TURN.rules, TURN.bargain, TURN.nothing, TURN.however, TURN.treasure, TURN.anyone, TURN.free, ...TURN.riffle, TURN.everything];
-const DURS = STARTS.map((_, k) => (k === 0 ? COVER_DUR : k >= 8 && k < 8 + VARIANTS.length + 1 ? 0.78 : TURN_DUR));
+const SPREADS: Spread[] = [HANDFUL, RULES, BARGAIN, NOTHING, HOWEVER, TREASURE, ANYONE, OURS, FREE, ...VARIANTS, EVERYTHING];
+const STARTS = [TURN.cover, TURN.rules, TURN.bargain, TURN.nothing, TURN.however, TURN.treasure, TURN.anyone, TURN.ours, TURN.free, ...TURN.riffle, TURN.everything];
+// WHY found by name, not a typed index: adding a spread before the riffle must not silently shift which turns are fast
+const RIFFLE_FROM = SPREADS.indexOf(VARIANTS[0]);
+const DURS = STARTS.map((_, k) => (k === 0 ? COVER_DUR : k >= RIFFLE_FROM ? 0.78 : TURN_DUR));
 if (STARTS.length !== SPREADS.length) throw new Error('take1c: every spread needs exactly one turn into it (see TURN in take1c-time.ts)');
 
 // ---------- the cover ----------
@@ -53,34 +56,36 @@ const SHOTS: Shot[] = [
   { t: L(1) - 0.15, ...H }, { t: Q.computersDo + 0.05, x: 400, y: 340, z: 1.6, tilt: 18 }, { t: Q.cost - 0.42, x: 392, y: 348, z: 1.62, tilt: 18 },
   { t: Q.cost + 0.08, x: 340, y: 720, z: 1.6, tilt: 18 }, { t: Q.data - 0.3, x: 348, y: 728, z: 1.62, tilt: 18 },
   { t: Q.data + 0.3, x: 1110, y: 600, z: 1.12, tilt: 17 }, { t: TURN.bargain - 0.1, x: 1100, y: 590, z: 1.15, tilt: 17 },
-  // iii: along the queue as everyone signs
-  { t: L(2) - 0.1, x: 760, y: 560, z: 1.06, tilt: 16 }, { t: Q.accepted - 0.2, x: 1000, y: 620, z: 1.32, tilt: 18 }, { t: Q.accepted + 0.12, x: 990, y: 620, z: 1.32, tilt: 18 },
+  // iii: along the queue as everyone ticks "I agree"
+  { t: L(2) - 0.1, x: 760, y: 560, z: 1.06, tilt: 16 }, { t: Q.accepted - 0.25, x: 800, y: 650, z: 1.3, tilt: 18 }, { t: Q.accepted + 0.12, x: 790, y: 650, z: 1.32, tilt: 18 },
   { t: TURN.nothing + 0.35, x: 560, y: 600, z: 1.15, tilt: 17 },
-  // the room, then home for the headline, then the magnifying glass
+  // the room, then home for the headline, then the magnifying glass and the "easy" button
   { t: L(3) + 0.05, ...H }, { t: Q.subscribe - 0.15, x: 400, y: 560, z: 1.38, tilt: 18 }, { t: Q.own - 0.62, x: 420, y: 560, z: 1.4, tilt: 18 },
   { t: Q.own - 0.06, ...H }, { t: Q.privacy + 0.45, ...H },
-  { t: Q.costOf + 0.15, x: 1100, y: 460, z: 1.55, tilt: 18 }, { t: TURN.however - 0.25, x: 1095, y: 465, z: 1.6, tilt: 18 },
-  // iv: still, while the lamp dims and the drop falls
+  { t: Q.costOf - 0.1, x: 1100, y: 470, z: 1.55, tilt: 18 }, { t: TURN.however - 0.25, x: 1095, y: 475, z: 1.6, tilt: 18 },
+  // iv: still, while the edges dim and the drop falls
   { t: TURN.however + 0.3, ...H }, { t: TURN.treasure + 0.1, ...H },
-  // v: the hats, the jar, the dream, the deflating punchline
-  { t: L(5) - 0.05, x: 390, y: 470, z: 1.3, tilt: 18 }, { t: Q.created1 - 0.65, x: 390, y: 440, z: 1.3, tilt: 18 },
-  { t: Q.created1 + 0.1, x: 1140, y: 560, z: 1.35, tilt: 24 }, { t: Q.artificial - 0.15, x: 1140, y: 570, z: 1.42, tilt: 24 },
-  { t: Q.intelligence + 0.4, x: 1140, y: 560, z: 1.72, tilt: 24 }, { t: Q.aTechnology - 0.1, x: 1140, y: 560, z: 1.74, tilt: 24 },
-  { t: Q.believed + 0.2, x: 960, y: 340, z: 1.12, tilt: 18 }, { t: Q.shareholder - 0.3, x: 1000, y: 330, z: 1.18, tilt: 18 },
-  { t: Q.shareholder + 0.25, x: 1140, y: 200, z: 1.9, tilt: 16 }, { t: Q.but - 0.05, x: 1140, y: 205, z: 1.95, tilt: 16 },
-  // vi: the jar breaks, the quill rises, it makes things; their foundation wobbles
-  { t: Q.excitement + 0.5, ...H }, { t: Q.control - 0.35, x: 880, y: 540, z: 1.08, tilt: 17 }, { t: Q.control + 0.1, x: 1000, y: 560, z: 1.14, tilt: 18 },
-  { t: Q.makeSoftware - 0.1, x: 1140, y: 560, z: 1.42, tilt: 22 }, { t: Q.scarce - 0.15, x: 1140, y: 520, z: 1.3, tilt: 20 },
-  { t: Q.foundation - 0.1, x: 400, y: 700, z: 1.4, tilt: 18 }, { t: TURN.anyone - 0.1, x: 390, y: 690, z: 1.45, tilt: 18 },
-  // vii: anyone; the quill goes round the panels, then the three things we decide now
-  { t: L(6) - 0.1, ...H }, { t: L(6) + 2.2, ...H },
-  { t: Q.firstTime - 0.1, x: 380, y: 520, z: 1.22, tilt: 17 }, { t: Q.decide, x: 380, y: 520, z: 1.2, tilt: 17 },
-  { t: Q.ourComputers + 0.4, x: 225, y: 265, z: 3.3, tilt: 16 }, { t: Q.itCosts - 0.1, x: 229, y: 268, z: 3.36, tilt: 16 },
-  { t: Q.itCosts + 0.35, x: 535, y: 265, z: 3.3, tilt: 16 }, { t: Q.ourData - 0.12, x: 538, y: 268, z: 3.36, tilt: 16 },
-  { t: Q.ourData + 0.4, x: 225, y: 515, z: 3.3, tilt: 16 }, { t: TURN.free - 0.15, x: 228, y: 518, z: 3.36, tilt: 16 },
+  // v: the hats slide down; the machine is made; the treasure; the coin
+  { t: L(5) - 0.05, x: 340, y: 600, z: 1.45, tilt: 18 }, { t: Q.created1 - 0.5, x: 345, y: 590, z: 1.48, tilt: 18 },
+  { t: Q.created1 + 0.3, x: 1020, y: 650, z: 1.75, tilt: 20 }, { t: Q.aTechnology - 0.1, x: 1020, y: 610, z: 1.8, tilt: 20 },
+  { t: Q.believed - 0.1, x: 680, y: 600, z: 1.08, tilt: 17 }, { t: Q.greatTreasure - 0.25, x: 680, y: 600, z: 1.1, tilt: 17 },
+  { t: Q.greatTreasure + 0.3, x: 300, y: 455, z: 2.3, tilt: 16 }, { t: Q.shareholder - 0.45, x: 300, y: 460, z: 2.25, tilt: 16 },
+  { t: Q.shareholder + 0.05, x: 680, y: 570, z: 1.3, tilt: 17 }, { t: Q.excitement - 0.2, x: 680, y: 590, z: 1.08, tilt: 17 },
+  // vi: it escapes over their heads; the window; their one padlocked stack; then stacks everywhere
+  { t: Q.control + 0.5, x: 700, y: 540, z: 1.05, tilt: 17 },
+  { t: Q.tool - 0.25, x: 1140, y: 320, z: 1.7, tilt: 18 }, { t: Q.scarce - 0.15, x: 1140, y: 320, z: 1.74, tilt: 18 },
+  { t: Q.scarce + 0.35, x: 330, y: 700, z: 1.6, tilt: 18 }, { t: Q.foundation - 0.05, x: 335, y: 700, z: 1.62, tilt: 18 },
+  { t: Q.foundation + 0.6, x: 760, y: 560, z: 1.0, tilt: 16 }, { t: TURN.anyone, ...H },
+  // vi (cont.): anyone, at home for the headline
+  { t: L(6) + 1.0, ...H },
+  // vii: chapter ii's three pictures in turn, each full frame for its clause
+  { t: L(7) - 0.1, ...H }, { t: Q.ourComputers - 0.35, x: 700, y: 520, z: 1.08, tilt: 17 },   // a slow push while she sets it up
+  { t: Q.ourComputers + 0.15, x: 370, y: 430, z: 1.85, tilt: 18 }, { t: Q.itCosts - 0.35, x: 368, y: 432, z: 1.88, tilt: 18 },
+  { t: Q.itCosts + 0.1, x: 330, y: 770, z: 1.85, tilt: 18 }, { t: Q.ourData - 0.15, x: 332, y: 768, z: 1.88, tilt: 18 },
+  { t: Q.ourData + 0.35, x: 1120, y: 610, z: 1.15, tilt: 17 }, { t: TURN.free - 0.1, x: 1110, y: 600, z: 1.18, tilt: 17 },
   // viii: the strings snap; the handful fade into the past
   // WHY no stop at home: the camera travels straight from the last panel down to the strings, so it is already there when they snap
-  { t: L(7) - 0.25, x: 700, y: 620, z: 1.2, tilt: 17 }, { t: Q.free + 0.1, x: 560, y: 700, z: 1.45, tilt: 17 }, { t: Q.monopolies2 - 0.2, x: 600, y: 680, z: 1.4, tilt: 17 },
+  { t: L(8) - 0.25, x: 700, y: 620, z: 1.2, tilt: 17 }, { t: Q.free + 0.1, x: 560, y: 700, z: 1.45, tilt: 17 }, { t: Q.monopolies2 - 0.2, x: 600, y: 680, z: 1.4, tilt: 17 },
   { t: Q.past - 0.3, x: 1110, y: 430, z: 1.2, tilt: 17 }, { t: TURN.riffle[0] - 0.2, x: 1100, y: 440, z: 1.2, tilt: 17 },
   // ix: pull back while every page flies past, then home for the last headline
   { t: TURN.riffle[1], x: 760, y: 500, z: 0.84, tilt: 24 }, { t: TURN.riffle[5], x: 760, y: 500, z: 0.86, tilt: 24 },
@@ -117,7 +122,7 @@ const Book: React.FC<{ t: number }> = ({ t }) => {
     if (k === 0) {
       leaves.push(<Leaf key={k} front={{ kind: 'cover', Art: COVER_START }} back={{ kind: 'board', spread: SPREADS[0] }} p={p} n={1} bend={0} w={PW + BOARD} h={PH + BOARD * 2} dy={-BOARD} lift={2} />);
     } else {
-      const riffle = k >= 8;
+      const riffle = k >= RIFFLE_FROM;
       leaves.push(<Leaf key={k} front={page(k - 1, 'R')} back={page(k, 'L')} p={p} n={riffle ? 6 : 10} bend={riffle ? 70 : 58} lift={0.8 + (k - landed) * 0.4} />);
     }
   }
@@ -138,12 +143,25 @@ const Book: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+// ---------- the four headlines ----------
+// WHY all in one list on the screen layer: they share one position and one style, and each is held at least
+// 1.2 s + 0.25 s per word (the brand's muted-video rule) after its last word has inked in.
+const minUp = (text: string) => 1.2 + 0.25 * text.split(/[\s/]+/).filter(Boolean).length;
+const hold = (text: string) => minUp(text) + 0.4;
+const HEADLINES = [
+  { text: 'own *nothing.', at: Q.own, out: Math.max(Q.own + hold('own nothing.'), Q.privacy + 0.45) },
+  { text: 'something / *wonderful / happened.', at: Q.something, out: TURN.treasure - 0.05 },
+  { text: 'for *anyone / who asks.', at: Q.forAnyone, out: Math.max(Q.forAnyone + hold('for anyone who asks.'), Q.asks + 0.9) },
+  { text: 'open source / *everything.', at: Q.open, out: TURN.close + 0.3 },
+];
+HEADLINES.forEach((h) => { if (h.out - h.at < minUp(h.text)) throw new Error(`take1c headline "${h.text}" is up ${(h.out - h.at).toFixed(2)} s, under the brand minimum`); });
+
 export const Take1C: React.FC = () => {
   const frame = useCurrentFrame();
   const t = frame / FPS;
   const cam = cameraAt(SHOTS, t);
-  // the lamp dims for the whisper ("however, recently…") and comes back warmer on "wonderful"
-  const dim = Math.min(lin(t, Q.however, Q.recently + 0.3), 1 - lin(t, Q.wonderful - 0.1, Q.wonderful + 0.7)) * 0.55;
+  // the edges of the frame darken for the whisper ("however, recently…") and lift again on "wonderful"
+  const dim = Math.min(lin(t, Q.however, Q.recently + 0.3), 1 - lin(t, Q.wonderful - 0.1, Q.wonderful + 0.7));
   const warm = lin(t, Q.wonderful - 0.1, Q.wonderful + 1.2) + lin(t, Q.toOpen, Q.everything2 + 0.5) * 0.6;
   const card = lin(t, END_CARD, END_CARD + 0.3);
   return (
@@ -153,6 +171,7 @@ export const Take1C: React.FC = () => {
         <>
           <World cam={cam}><Book t={t} /></World>
           <Lamp dim={dim} warm={warm} />
+          {HEADLINES.map((h) => <Headline key={h.text} {...h} />)}
         </>
       )}
       {card > 0 && <AbsoluteFill style={{ opacity: card }}><EndCard at={END_CARD} /></AbsoluteFill>}

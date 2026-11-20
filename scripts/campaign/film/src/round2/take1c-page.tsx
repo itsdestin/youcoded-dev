@@ -1,8 +1,5 @@
 // Take 1C's page furniture: the printed parts of every spread (chapter headings, page numbers, the headline
 // block) and the SVG sheet the ink is drawn on.
-// WHY the headline always sits in the same block on the right-hand page: the brand asks for one consistent
-// headline position, and the camera returns to its home framing whenever a headline is up, so the block
-// lands on the same spot of the screen every time.
 import React from 'react';
 import { C, DMSANS, EASE_IN, EASE_OUT } from '../brand';
 import { InkDefs, lin, P, useT } from './take1c-ink';
@@ -34,18 +31,20 @@ export const Folio: React.FC<{ left: number }> = ({ left }) => (
   </>
 );
 
-export const HEADLINE_BOX = { x: PW + 60, y: 640, w: PW - 120, h: 250 };
-/** A headline printed into the page word by word, as if the ink were arriving. *word* is the purple one. */
+// WHY on the screen, not on the page: printed on the page, each headline moved with the camera and landed in
+// a different place every time. Fixed in screen space, all four land on exactly the same spot (over the lower
+// right-hand page at the home framing, which every spread keeps clear while a headline is up).
+export const HEADLINE_SCREEN = { cx: 1290, cy: 818, w: 640 };
+/** A headline that inks in word by word at one fixed spot on screen. *word* is the purple one; "/" breaks a line. */
 export const Headline: React.FC<{ text: string; at: number; out: number; stagger?: number }> = ({ text, at, out, stagger = 0.11 }) => {
   const t = useT();
   if (t < at - 0.05 || t > out + 0.05) return null;
   const exit = lin(t, out - 0.35, out, EASE_IN);
-  // "/" forces a line break, so each headline breaks where it reads best ("for anyone / who asks.")
   const rows = text.split('/').map((r) => r.trim().split(/\s+/));
   let n = 0;
   return (
-    <div style={{ position: 'absolute', left: HEADLINE_BOX.x, top: HEADLINE_BOX.y, width: HEADLINE_BOX.w, height: HEADLINE_BOX.h, display: 'flex', alignItems: 'center',
-      justifyContent: 'center', textAlign: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: 88, letterSpacing: '-0.05em', lineHeight: 1.0, color: P.ink, opacity: 1 - exit }}>
+    <div style={{ position: 'absolute', left: HEADLINE_SCREEN.cx - HEADLINE_SCREEN.w / 2, top: HEADLINE_SCREEN.cy - 200, width: HEADLINE_SCREEN.w, height: 400, display: 'flex', alignItems: 'center',
+      justifyContent: 'center', textAlign: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: 80, letterSpacing: '-0.05em', lineHeight: 1.0, color: P.ink, opacity: 1 - exit, pointerEvents: 'none' }}>
       <div>
         {rows.map((row, r) => (
           <div key={r} style={{ whiteSpace: 'nowrap' }}>
@@ -55,7 +54,7 @@ export const Headline: React.FC<{ text: string; at: number; out: number; stagger
               const accent = raw.startsWith('*');
               return (
                 <span key={i} style={{ display: 'inline-block', margin: '0 0.11em', opacity: p, filter: p < 1 ? `blur(${(1 - p) * 3}px)` : undefined,
-                  transform: `scale(${1.06 - 0.06 * p})`, color: accent ? C.purple : undefined }}>{raw.replace(/\*/g, '')}</span>
+                  transform: `translateY(${(1 - p) * 10}px)`, color: accent ? C.purple : undefined }}>{raw.replace(/\*/g, '')}</span>
               );
             })}
           </div>
