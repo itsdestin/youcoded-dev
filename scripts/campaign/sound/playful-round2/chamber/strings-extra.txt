@@ -1,0 +1,57 @@
+Strings/Cello Section/susvib/susvib_A2_v1_1.wav
+Strings/Cello Section/susvib/susvib_A2_v3_1.wav
+Strings/Cello Section/susvib/susvib_B1_v1_1.wav
+Strings/Cello Section/susvib/susvib_B1_v3_1.wav
+Strings/Cello Section/susvib/susvib_B3_v1_1.wav
+Strings/Cello Section/susvib/susvib_B3_v3_1.wav
+Strings/Cello Section/susvib/susvib_C1_v1_1.wav
+Strings/Cello Section/susvib/susvib_C1_v3_1.wav
+Strings/Cello Section/susvib/susvib_C3_v1_1.wav
+Strings/Cello Section/susvib/susvib_C3_v3_1.wav
+Strings/Cello Section/susvib/susvib_D2_v1_1.wav
+Strings/Cello Section/susvib/susvib_D2_v3_1.wav
+Strings/Cello Section/susvib/susvib_D4_v1_1.wav
+Strings/Cello Section/susvib/susvib_D4_v3_1.wav
+Strings/Cello Section/susvib/susvib_E1_v1_1.wav
+Strings/Cello Section/susvib/susvib_E1_v1_2.wav
+Strings/Cello Section/susvib/susvib_E1_v3_1.wav
+Strings/Cello Section/susvib/susvib_E3_v1_1.wav
+Strings/Cello Section/susvib/susvib_E3_v3_1.wav
+Strings/Cello Section/susvib/susvib_F2_v1_1.wav
+Strings/Cello Section/susvib/susvib_F2_v3_1.wav
+Strings/Cello Section/susvib/susvib_F4_v1_1.wav
+Strings/Cello Section/susvib/susvib_F4_v3_1.wav
+Strings/Cello Section/susvib/susvib_G1_v1_1.wav
+Strings/Cello Section/susvib/susvib_G1_v3_1.wav
+Strings/Cello Section/susvib/susvib_G3_v1_1.wav
+Strings/Cello Section/susvib/susvib_G3_v3_1.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A3_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A3_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A4_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A4_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A5_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A5_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A6_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A6_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C4_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C4_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C5_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C5_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C6_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C6_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C7_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C7_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E4_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E4_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E5_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E5_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E6_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E6_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G3_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G3_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G4_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G4_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G5_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G5_p.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G6_f.wav
+Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G6_p.wav

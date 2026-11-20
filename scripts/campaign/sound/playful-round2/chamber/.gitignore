@@ -1,0 +1,4 @@
+samples/
+__pycache__/
+# rendered audio is re-made by render.sh
+out/*.wav
