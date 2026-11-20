@@ -16,11 +16,14 @@ const useFrame = () => {
   const { width: W, height: H } = useVideoConfig();
   const r = W / H;
   const shape: Shape = r < 0.9 ? 'tall' : r < 1.35 ? 'square' : 'wide';
-  const m = Math.min(W, H) * 0.085;
+  const base = Math.min(W, H) * 0.085;
+  // WHY wider side margins on wide shapes: 8.5% of the SHORT side left wide posters' text only 4.8% from the
+  // left edge, inside the brand guide's 8% rule (and 71 px off the film that ends as this poster).
+  const m = shape === 'wide' ? W * 0.085 : base;
   // WHY mt/mb: a 9:16 story is shown under the phone app's own buttons, so the guide keeps the top 12% and
   // bottom 20% clear there. Every other shape uses the ordinary margin top and bottom.
   const story = H / W > 1.6;
-  return { W, H, r, shape, u: Math.min(W, H) / 60, m, mt: story ? H * 0.125 : m, mb: story ? H * 0.2 : m };
+  return { W, H, r, shape, u: Math.min(W, H) / 60, m, mt: story ? H * 0.125 : base, mb: story ? H * 0.2 : base };
 };
 /** A headline: "/" breaks lines, *word* is the purple one. */
 const Head: React.FC<{ text: string; size: number; dark?: boolean }> = ({ text, size, dark }) => (

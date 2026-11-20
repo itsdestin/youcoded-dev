@@ -5,8 +5,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AbsoluteFill, Audio, Sequence, continueRender, delayRender, interpolate, interpolateColors, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { loadFont as loadCaveat } from '@remotion/google-fonts/Caveat';
-import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
-import { EndCard, ramp } from '../kit';
+import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT, FPS, OUTFIT } from '../brand';
+import { Lockup, ramp } from '../kit';
 
 const HAND = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
 const linear = (x: number) => x;
@@ -19,10 +19,10 @@ export const T3 = {
   // WHY a beat before bar 4 (coordinator, 2026-11-20): so the fully corrected poster holds ~1.4 s before 9.6.
   strike1: [6.6, 6.83] as const,                                 // the marker hits "nothing."
   strike2: [6.87, 7.06] as const,                                // the second, quicker pass back the other way
-  reflow: [7.0, 7.35] as const,                                  // tall frame only: room opens for the correction
+  reflow: [7.0, 7.35] as const,                                  // the lines below the struck one ease down to make room
   write: 7.28,                                                   // the hand starts "everything."
   data: 9.6, intelligence: 12.0, software: 14.4, everything: 16.8,
-  end: 19.2,
+  end: 19.2,                                                     // the poster's foot (logo, address) arrives with the logo sound
 };
 
 // ---------- layout, copied from posters.tsx (useFrame, fitLines, familySize) ----------
@@ -34,15 +34,21 @@ const useLayout = () => {
   // WHY 8.5% of the WIDTH (review, 2026-11-20): the posters' margin is 8.5% of the short side, which on the
   // 16:9 film put the headline 5.3% from the left edge, inside the brand guide's 8% safe margin. On the tall
   // frame the width is the short side, so this changes nothing there.
+  // Only the SIDE margins use the width; top and bottom keep the posters' short-side margin, so the wide
+  // page has the posters' vertical layout and headline height.
   const m = W * 0.085;
   const story = H / W > 1.6;                         // 9:16: keep the top 12% and bottom 20% clear (brand §7)
-  const mt = story ? H * 0.125 : m, mb = story ? H * 0.2 : m;
+  const mv = Math.min(W, H) * 0.085;
+  const mt = story ? H * 0.125 : mv, mb = story ? H * 0.2 : mv;
   const fit = (lines: string[], extraEm: number, em: number) =>
     Math.min((W - 2 * m) / (Math.max(...lines.map((l) => l.length)) * em * 1.04), (H - mt - mb - FOOT_H * u - 3 * u) / (lines.length * 0.98 + extraEm));
   const nothingLines = wide ? ["you'll own nothing.", "and you'll be happy."] : ["you'll own", 'nothing.', "and you'll", 'be happy.'];
   // WHY the family size: one headline size for every line of the film, exactly as on the posters (Destin, 2026-11-19).
   const size = Math.min(fit(nothingLines, GAP, wide ? 0.47 : 0.45), fit(['own your', 'intelligence.'], GAP, 0.41));
-  return { W, H, wide, u, m, mt, mb, size };
+  // The one-page "own your ..." poster (posters.tsx `OwnAll`): five lines; the wide shape shrinks them so the
+  // five lines and the foot still fit its height.
+  const allSize = wide ? Math.min(size, (H - mt - mb - FOOT_H * u - 3 * u) / 4.95) : size;
+  return { W, H, wide, u, m, mt, mb, size, allSize };
 };
 const rowStyle = (size: number, color: string): React.CSSProperties => ({
   fontFamily: DMSANS, fontWeight: 900, fontSize: size, letterSpacing: '-0.05em', lineHeight: 0.98, whiteSpace: 'nowrap', color,
@@ -194,7 +200,9 @@ const Hand: React.FC<{ text: string; size: number; at: number; anchorRight?: boo
     <>
       {/* the measurer: same text, never transformed, never seen */}
       <span ref={ref} style={{ ...textStyle, position: 'absolute', left: 0, top: 0, visibility: 'hidden' }}>{text}</span>
-      <span style={{ position: 'absolute', ...(anchorRight ? { right: '-2%' } : { left: '1%' }), bottom: '80%', transform: 'rotate(-5deg)', transformOrigin: '0% 100%' }}>
+      {/* WHY below the struck word, tilted from its top-left (Destin, 2026-11-20: "the new 'everything' should be
+          below nothing"): a correction written under the line it fixes, placed exactly as posters.tsx `Struck`. */}
+      <span style={{ position: 'absolute', ...(anchorRight ? { right: '-2%' } : { left: '1%' }), top: '84%', transform: 'rotate(-5deg)', transformOrigin: '0% 0%' }}>
         <span style={{ ...textStyle, visibility: 'hidden', display: 'inline-block' }}>{text}</span>
         {mz && t > 0 && (
           // WHY the skew pair: the wipe's edge leans with the handwriting's slant (outer layer skewed, text
@@ -209,7 +217,7 @@ const Hand: React.FC<{ text: string; size: number; at: number; anchorRight?: boo
   );
 };
 
-/** "nothing." as printed, then struck twice by the marker and corrected above in handwriting (posters.tsx `Struck`). */
+/** "nothing." as printed, then struck twice by the marker and corrected below in handwriting (posters.tsx `Struck`). */
 const Struck: React.FC<{ size: number; anchorRight?: boolean }> = ({ size, anchorRight }) => {
   const frame = useCurrentFrame();
   const p1 = penCurve(ramp(frame, T3.strike1[0], T3.strike1[1], linear));
@@ -234,21 +242,21 @@ const Nothing: React.FC = () => {
   const frame = useCurrentFrame();
   const { wide, m, mt, size } = useLayout();
   const row = rowStyle(size, C.nightText);
-  // WHY the tall frame opens a line for the correction only after the strike: before it, an empty line between
-  // "you'll own" and "nothing." would read as a layout mistake. Wide has the room above the line already.
-  const open = wide ? 1 : ramp(frame, T3.reflow[0], T3.reflow[1], EASE_IN_OUT);
+  // WHY the room under the struck line opens only after the strike, just before the hand writes into it: an
+  // empty line there beforehand would read as a layout mistake. Only the lines below move, as on the poster.
+  const open = ramp(frame, T3.reflow[0], T3.reflow[1], EASE_IN_OUT);
   return (
     <AbsoluteFill><Wash dark />
       <div style={{ position: 'absolute', left: m, right: m, top: mt }}>
         {wide ? (<>
-          <div style={{ ...row, marginTop: GAP * size }}>
+          <div style={{ ...row, marginBottom: GAP * size * open }}>
             <Arrive at={T3.youllOwn}>you'll own</Arrive><span style={{ display: 'inline-block', width: 0.26 * size }} />
             <Arrive at={T3.nothing}><Struck size={size} anchorRight /></Arrive>
           </div>
           <div style={row}><Arrive at={T3.andYoull}>and you'll</Arrive> <Arrive at={T3.beHappy}>be happy.</Arrive></div>
         </>) : (<>
           <div style={row}><Arrive at={T3.youllOwn}>you'll own</Arrive></div>
-          <div style={{ ...row, marginTop: GAP * size * open }}><Arrive at={T3.nothing}><Struck size={size} /></Arrive></div>
+          <div style={{ ...row, marginBottom: GAP * size * open }}><Arrive at={T3.nothing}><Struck size={size} /></Arrive></div>
           <div style={row}><Arrive at={T3.andYoull}>and you'll</Arrive></div>
           <div style={row}><Arrive at={T3.beHappy}>be happy.</Arrive></div>
         </>)}
@@ -258,44 +266,64 @@ const Nothing: React.FC = () => {
   );
 };
 
-// ---------- scene 2 and 3: "own your data / intelligence / software." then "own everything." ----------
-const NOUNS: { word: string; at: number }[] = [
-  { word: 'data.', at: T3.data }, { word: 'intelligence.', at: T3.intelligence }, { word: 'software.', at: T3.software },
+// ---------- scene 2: one page that builds into the `OwnAll` poster ----------
+// WHY one page (Destin, 2026-11-20: "the multiple pages should be a single page, like the poster"): each bar
+// adds a line under the last and nothing leaves, so the film ends as exactly the poster.
+const LINES: { text: string; at: number }[] = [
+  { text: 'data.', at: T3.data }, { text: 'intelligence.', at: T3.intelligence }, { text: 'software.', at: T3.software },
 ];
-/** One noun on its bar: rises in on the downbeat, lifts away in the four frames before the next one.
- *  WHY "own your" never moves: only the noun changes, so the eye stays put and the swap is the rhythm. */
-const Noun: React.FC<{ word: string; at: number; out: number; color: string }> = ({ word, at, out, color }) => {
+/** A noun line: rises in on its beat in purple, then settles to plum when the next line takes the beat.
+ *  WHY the hand-over of colour: the newest word always carries the accent, and the page ends with only
+ *  "everything." purple, as on the poster. */
+const AddLine: React.FC<{ text: string; at: number; next: number }> = ({ text, at, next }) => {
   const frame = useCurrentFrame();
-  if (frame < at * FPS || frame >= out * FPS) return null;
-  const inP = ramp(frame, at, at + 0.42, EASE_OUT);
-  const o = ramp(frame, at, at + 0.12, linear);
-  const x = ramp(frame, out - 0.14, out, EASE_IN);
-  return <div style={{ color, opacity: o * (1 - x), transform: `translateY(${(1 - inP) * 0.2 - x * 0.06}em)` }}>{word}</div>;
+  const inP = ramp(frame, at, at + 0.45, EASE_OUT);
+  const o = frame < at * FPS ? 0 : ramp(frame, at, at + 0.12, linear);
+  const settle = ramp(frame, next, next + 0.4, EASE_IN_OUT);
+  return <div style={{ opacity: o, transform: `translateY(${(1 - inP) * 0.22}em)`, color: interpolateColors(settle, [0, 1], [C.purple, C.plum]) }}>{text}</div>;
 };
-const OwnYour: React.FC = () => {
+/** The closer: "everything." letter by letter, each rising into place a little after the one before.
+ *  WHY inline spans moved with `top` rather than transforms: the letters stay one shaped run, so the settled
+ *  word is pixel-for-pixel the poster's (inline-block letters would lose the font's kerning). */
+const Closer: React.FC<{ text: string; at: number }> = ({ text, at }) => {
   const frame = useCurrentFrame();
-  const { wide, m, mt, size } = useLayout();
-  const yourOut = ramp(frame, T3.everything - 0.14, T3.everything, EASE_IN);   // "your" steps out for the closer
+  if (frame < at * FPS) return <div style={{ opacity: 0 }}>{text}</div>;
   return (
-    <AbsoluteFill><Wash />
-      <div style={{ position: 'absolute', left: m, right: m, top: mt + (wide ? GAP * size : 0), ...rowStyle(size, C.plum) }}>
-        <div style={{ opacity: onBeat(frame, T3.data) }}>own <span style={{ display: 'inline-block', opacity: 1 - yourOut, transform: `translateY(${-yourOut * 0.05}em)` }}>your</span></div>
-        {NOUNS.map((n, i) => <Noun key={n.word} word={n.word} at={n.at} out={NOUNS[i + 1]?.at ?? T3.everything} color={C.purple} />)}
-      </div>
-      <Grain />
-    </AbsoluteFill>
+    <div style={{ color: C.purple }}>
+      {text.split('').map((ch, i) => {
+        const t0 = at + i * 0.035;
+        const p = ramp(frame, t0, t0 + 0.6, EASE_OUT);
+        return <span key={i} style={{ position: 'relative', top: `${(1 - p) * 0.42}em`, opacity: ramp(frame, t0, t0 + 0.16, linear) }}>{ch}</span>;
+      })}
+    </div>
   );
 };
-const OwnEverything: React.FC = () => {
+/** The poster's foot (posters.tsx `Foot`, light): icon + name, then the address and platforms. */
+const Foot: React.FC<{ u: number; row: boolean }> = ({ u, row }) => (
+  <div style={{ display: 'flex', flexDirection: row ? 'row' : 'column', alignItems: row ? 'center' : 'flex-start', gap: row ? 3 * u : 1.5 * u }}>
+    <Lockup icon={5.2 * u} />
+    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline', gap: 1.4 * u, whiteSpace: 'nowrap' }}>
+      <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: 2.1 * u, color: C.plum, letterSpacing: '-0.01em' }}>youcoded.ai</span>
+      <span style={{ fontFamily: DMSANS, fontWeight: 500, fontSize: 1.45 * u, color: C.plum2 }}>Free · Windows · Mac · Linux · Android</span>
+    </div>
+  </div>
+);
+const OwnAll: React.FC = () => {
   const frame = useCurrentFrame();
-  const { wide, m, mt, size } = useLayout();
+  const { wide, u, m, mt, mb, allSize } = useLayout();
+  const foot = ramp(frame, T3.end, T3.end + 0.7, EASE_OUT);
   return (
-    <AbsoluteFill><Wash dark />
-      <div style={{ position: 'absolute', left: m, right: m, top: mt + (wide ? GAP * size : 0), ...rowStyle(size, C.nightText) }}>
-        <div style={{ opacity: onBeat(frame, T3.everything) }}>own</div>
-        <Noun word="everything." at={T3.everything} out={T3.end + 1} color={C.purpleNight} />
+    <AbsoluteFill><Wash />
+      <div style={{ position: 'absolute', left: m, right: m, top: mt, ...rowStyle(allSize, C.plum) }}>
+        <div style={{ opacity: onBeat(frame, T3.data) }}>own your</div>
+        {LINES.map((l, i) => <AddLine key={l.text} text={l.text} at={l.at} next={LINES[i + 1]?.at ?? T3.everything} />)}
+        <Closer text="everything." at={T3.everything} />
       </div>
-      <Grain dark />
+      {/* WHY a gentle arrival on the logo sound: the page becomes the finished poster without a cut */}
+      <div style={{ position: 'absolute', left: m, bottom: mb, opacity: ramp(frame, T3.end, T3.end + 0.45, linear), transform: `translateY(${(1 - foot) * 1.2 * u}px)` }}>
+        <Foot u={u} row={wide} />
+      </div>
+      <Grain />
     </AbsoluteFill>
   );
 };
@@ -324,18 +352,8 @@ const onBeat = (frame: number, at: number) => (frame >= Math.round(at * FPS) ? 1
 
 export const Take3: React.FC<{ narrator?: boolean }> = () => (
   <AbsoluteFill style={{ background: C.night }}>
-    <Audio src={staticFile('audio/take3-mix.wav')} />
+    <Audio src={staticFile('audio/sb-take3-mix.wav')} />
     <Scene from={0} to={T3.data}><Nothing /></Scene>
-    <Scene from={T3.data} to={T3.everything} dissolve><OwnYour /></Scene>
-    <Scene from={T3.everything} to={T3.end} dissolve><OwnEverything /></Scene>
-    {/* WHY the wrapper: the kit's EndCard paints flat lavender as its first layer. On the light colour field the
-        last cut lands on the same paper as the "own your" frames; the rule below makes only that first layer
-        transparent, so kit.tsx stays untouched and the card's own layout is unchanged. */}
-    <Scene from={T3.end} to={24} dissolve>
-      <Wash />
-      <style>{'.t3-end > div > div:first-child { background: transparent !important; }'}</style>
-      <AbsoluteFill className="t3-end"><EndCard at={T3.end} /></AbsoluteFill>
-      <Grain />
-    </Scene>
+    <Scene from={T3.data} to={24} dissolve><OwnAll /></Scene>
   </AbsoluteFill>
 );
