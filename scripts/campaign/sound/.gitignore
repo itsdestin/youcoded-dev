@@ -1,0 +1,5 @@
+# Rendered audio and pictures are re-made by each folder's render script; only the code and notes are kept.
+*/out/**/*.wav
+*/out/*.wav
+*/out/plots/
+*/out/*.npy

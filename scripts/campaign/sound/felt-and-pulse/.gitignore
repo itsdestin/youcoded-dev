@@ -1,0 +1,5 @@
+# re-created by render.sh
+.venv/
+samples/
+out/plots/
+__pycache__/
