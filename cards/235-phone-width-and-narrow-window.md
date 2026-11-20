@@ -10,9 +10,9 @@ why: Four rounds of live decks answered 2026-11-04/05 (docs/active/design/2026-1
 work: session/narrow-screen-proposals
 ---
 Progress
-Done: Design finished 2026-11-14 after nine deck rounds; final decisions in docs/active/design/2026-11-04-narrow-screens/README.md. Workbench-only on branch session/narrow-screen-proposals (app tip 8c6bb291f); the real app is unchanged except a 340px window minimum on the branch.
-Next: Rebase both branches onto master (far behind), then build the decided layout for real, delete the practice switches, run verify.sh, show a final deck. Short route: no automatic reviewers. Waiting on Destin to say start.
-Blocked: nothing
+Done: Design finished 2026-11-14 after nine deck rounds; final decisions in docs/active/design/2026-11-04-narrow-screens/README.md (+ status page and answered decks there = the contract). Workbench-only on session/narrow-screen-proposals (app tip 8c6bb291f, workspace branch too), far behind master.
+Next: New single branch per repo off master; bring decided work over by cherry-pick/re-apply (not a blind merge); build it in the real app at phone width and narrow desktop window; delete the practice switches; normal-width desktop unchanged; shoot before/after at narrow widths in several themes; Before/After deck. Android native build out of scope (say unverified). Check no live session is using the old branches first.
+Blocked: Nothing; Destin parked it 2026-11-19 to pick up later
 
 Chats
 - 2026-11-15 session/narrow-screen-proposals: chat started

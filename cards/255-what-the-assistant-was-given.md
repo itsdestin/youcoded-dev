@@ -11,8 +11,8 @@ created: 2026-11-12
 why: Destin, 2026-11-12: 'just put them in a single card along with anything else that makes sense to complete in the same session/workstream'. Left over from #251: project commands, rules folders and helpers are not listed; a project skill sharing a name with an installed one shows on both tabs in Claude Code chats. Not part of this: YouCoded's own engine skipping the every-project rules file (that is on #57).
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Scoped 2026-11-19. Pop-up look is fixed by the approved decks in docs/archive/design/2026-11-12-context-popup-tabs/; reuse Group/Note/row patterns in desktop/src/renderer/components/SessionContextPopup.tsx. Skill 'scope' is set where commit c48048bab added it.
+Next: (a) list project .claude/commands, .claude/rules folders, .claude/agents on Project context and the ~/.claude ones on Global, both engines, by extending the main-process collector; (b) duplicate-named skill shows once on the right tab and opens the right file; (c) 'Show all' stays open across tabs. Tests for collectors and tabs; check against a real chat of each engine in a run-dev copy only; Before/After deck. Not #57's rules-file gap.
+Blocked: Nothing; Destin parked it 2026-11-19 to pick up later
 
 Chats
