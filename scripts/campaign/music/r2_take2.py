@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Round two, Film 2 "Make it mine" (60.0 s, no narrator, picture cuts on the beat). 120 BPM, beat 0.5 s, bar 2.0 s,
 first downbeat at 0.000. Bar b starts at 2*b seconds.
-  bars 0-6   0-14 s   a look: playful, curious; the look-change BLOOM at 10.0 s (bar 5), a smaller shift at 12.0 s
-  bars 7-14  14-30 s  their home: the groove arrives; a small accent every bar (rising xylophone note + stab)
-  bars 15-22 30-46 s  their money: fuller; 42-44 s a light, cute moment (kawaii email); 44-46 s build
+  Times below are from the cut picture (2026-11-20).
+  bars 0-6   0-14 s   a look: playful, curious; the look-change BLOOM at 8.0 s (bar 4), a smaller shift at 12.0 s
+  bars 7-14  14-30 s  their home: groove; accents 20.0 (rooms build in), 21.0 (rearrange), 26.0/26.5/27.4/28.2 (sliders)
+  bars 15-22 30-46 s  their money: fuller; 32.5 count-up, 39.5 eleven bills ripple, 44.0-46.0 the cute email
+  typing pockets (band thins, soft key ticks): 0.5-2, 4.5-6, 10-10.7, 14.1-15.2, 17-18.8, 23-24.5, 30.1-31.4, 35-36.5, 41.5-42.9
   bars 23-24 46-50 s  pull-back: the widest moment lands on 46.0 s
   bars 25-27 50-56 s  two closing lines: half-time, spacious, still moving
   bars 28-29 56-60 s  logo: resolved button on 56.0 s, silent by 59.6 s
@@ -18,9 +20,9 @@ import dsp
 
 LENGTH, BPM = 60.0, 120
 END = 59.6
-CHORDS = ['C', 'G', 'Am', 'F', 'G', 'C', 'F',                    # look (bar 4 builds, 5 = bloom, 6 = shift)
+CHORDS = ['C', 'G', 'Am', 'G', 'C', 'G', 'F',                    # look (bar 3 builds, 4 = bloom, 6 = shift)
           'C', 'G', 'Am', 'F', 'C', 'G', 'Am', 'F',              # home
-          'C', 'G', 'Am', 'F', 'C', 'G', 'Am', 'G',              # money (21 = kawaii, 22 = build)
+          'C', 'G', 'Am', 'F', 'C', 'G', 'Am', 'F',              # money (22 = the cute email, 44-46 s)
           'C', 'F',                                              # pull-back peak
           'Am', 'F', 'G',                                        # closing lines
           'C', 'C']                                              # logo
@@ -33,6 +35,10 @@ MOTIF = {'C': [(0, 'E5', 1.5), (1.5, 'G5', .5), (2, 'A5', 1), (3, 'G5', 1)],
          'G': [(0, 'D5', 1.5), (1.5, 'G5', .5), (2, 'B5', 1), (3, 'A5', 1)],
          'Am': [(0, 'E5', 1.5), (1.5, 'D5', .5), (2, 'C5', 1), (3, 'D5', 1)],
          'F': [(0, 'A5', 1.5), (1.5, 'G5', .5), (2, 'F5', 1), (3, 'G5', 1)]}
+
+
+POCKETS = [(0.5, 2.0), (4.5, 6.0), (10.0, 10.7), (14.1, 15.2), (17.0, 18.8), (23.0, 24.5), (30.1, 31.4), (35.0, 36.5),
+           (41.5, 42.9)]
 
 
 def r(c, octv=0):
@@ -137,48 +143,49 @@ def compose(alt=False):
 
     # ============================================================ a look (bars 0-6)
     # bars 0-1: curious start: hook + pizzicato tiptoe + finger-click on 2 and 4
-    for bar in range(0, 4):
+    # ============================================================ a look (bars 0-6)
+    # bars 0-2: curious start: hook + pizzicato tiptoe + finger-click on 2 and 4; kick and bass from bar 1
+    for bar in range(0, 3):
         c = CHORDS[bar]
         motif(bar, c, 88, octave_double=False, stacc=0.6)
         for bt in range(4):
             pizz.n(4 * bar + bt, 0.4, r(c, 1) if bt % 2 == 0 else r(c, 1) + 7, 100)
         kit.n(4 * bar + 1, 0.1, 37 if not alt else CL, 90); kit.n(4 * bar + 3, 0.1, 37 if not alt else CL, 95)
-        if bar >= 2:
+        if bar >= 1:
             kit.n(4 * bar, 0.2, K, 105); kit.n(4 * bar + 2, 0.2, K, 95)
             for k in range(8):
                 kit.n(4 * bar + k / 2, 0.1, SHK, 70 if k % 2 else 50)
             bassline(bar, c, 92, busy=False)
         if bar % 2 == 1:
             glock.n(4 * bar + 3.5, 0.5, 'G6', 80)
-    # bar 4 (8-10 s): the build into the bloom
-    motif(4, 'G', 92, octave_double=False, stacc=0.6)
+    # bar 3 (6-8 s): the build into the bloom
+    motif(3, 'G', 92, octave_double=False, stacc=0.6)
     for k in range(4):
-        kit.n(16 + k, 0.2, K, 100 + 5 * k)
-    for k in range(16):
-        kit.n(16 + k / 4, 0.1, SN, 45 + 4 * k)
-    bassline(4, 'G', 96, busy=False)
-    strg.n(16, 3.9, PAD['G'], 90); strg.ramp(8.0, 9.9, 20, 120, curve=1.5); strg.ramp(9.92, 9.95, 120, 127)
-    s.add_audio('riser', E.riser(1.95, rng), 10.0 - 2.0, gain_db=-22.0, send=0.2)
-    # bar 5 (10.0 s) THE BLOOM: crash, sub, full chord, sparkle, the groove switches on
-    for bar in (5, 6):
+        kit.n(12 + k, 0.2, K, 100 + 5 * k)
+    for k in range(15):   # WHY 15: the last 16th is a breath so the bloom (8.0) has a clean edge
+        kit.n(12 + k / 4, 0.1, SN, 45 + 4 * k)
+    bassline(3, 'G', 96, busy=False)
+    strg.n(12, 3.85, PAD['G'], 90); strg.ramp(6.0, 7.9, 20, 120, curve=1.5); strg.ramp(7.92, 7.95, 120, 127)
+    s.add_audio('riser', E.riser(1.88, rng), 8.0 - 2.0, gain_db=-22.0, send=0.2)
+    # bars 4-6: 8.0 s THE BLOOM (the app turns neon): crash, sub, full chord, sparkle, the groove switches on
+    for bar in (4, 5, 6):
         c = CHORDS[bar]
         drums(bar, 1.0)
         bassline(bar, c, 104)
         motif(bar, c, 100)
         stabs(bar, c, 80)
         strg.n(4 * bar, 3.9, PAD[c], 105)
-    kit.n(20, 2.0, CR, 120); kit.n(20, 2.0, CR2, 100)
-    s.add_audio('boom', E.boom(rng), 10.0, gain_db=-17.0, send=0.0)
-    s.add_audio('sparkle', E.sparkle(rng, ms('C6 E6 G6 C7 E7 G7')), 10.0, gain_db=-20.0, send=0.3)
-    brass.n(20, 1.0, 'C4 E4 G4 C5', 112)
-    # bar 6 (12.0 s) the smaller shift ("less pink"): splash + xylophone ping + brass stab on a new colour (Fadd9)
+    kit.n(16, 2.0, CR, 120); kit.n(16, 2.0, CR2, 100)
+    s.add_audio('boom', E.boom(rng), 8.0, gain_db=-17.0, send=0.0)
+    s.add_audio('sparkle', E.sparkle(rng, ms('C6 E6 G6 C7 E7 G7')), 8.0, gain_db=-20.0, send=0.3)
+    brass.n(16, 1.0, 'C4 E4 G4 C5', 112)
+    # 12.0 s the smaller shift ("less pink"): splash + xylophone ping + brass stab on a new colour (Fadd9)
     kit.n(24, 1.0, SPL, 110)
     bell.n(24, 0.5, 'G6', 110); bell.n(24.5, 0.5, 'C7', 100)
     brass.n(24, 0.6, 'F4 A4 C5 G5', 105)
     kit.n(27, 0.1, SN, 90); kit.n(27.5, 0.1, SN, 100)
 
     # ============================================================ their home (bars 7-14)
-    scale = ms('C6 D6 E6 F6 G6 A6 B6 C7')
     for i, bar in enumerate(range(7, 15)):
         c = CHORDS[bar]
         drums(bar, 0.95 + 0.01 * i, fill=(bar == 14), open_hats=(bar >= 11))
@@ -188,19 +195,30 @@ def compose(alt=False):
         else:
             stabs(bar, c, 76 + i)
         motif(bar, c, 96, octave_double=(bar >= 11))
-        # WHY: a small accent on every downbeat, pitched one step higher each bar, reads as "it keeps growing"
-        bell.n(4 * bar, 0.5, scale[i], 112)
-        brass.n(4 * bar, 0.35, MID[c], 96)
+        brass.n(4 * bar, 0.35, MID[c], 90)
         if bar >= 11:
             kit.n(4 * bar + 0.25, 0.1, TAMB, 60); kit.n(4 * bar + 2.25, 0.1, TAMB, 60)
-        # WHY strings from bar 7 (were from bar 11): the home section dipped ~4 LU below the bloom it follows
+        # WHY strings from bar 7: the home section dipped ~4 LU below the bloom it follows
         strg.n(4 * bar, 3.9, PAD[c], 80 if bar >= 11 else 70)
     kit.n(28, 1.5, CR, 105)
+    # 20.0 s the rooms build in: splash, rising glock chord, a bigger brass stab
+    kit.n(40, 1.0, SPL, 112); brass.n(40, 0.5, 'F4 A4 C5 F5', 112)
+    for k, nn in enumerate(ms('C6 F6 A6 C7')):
+        glock.n(40 + k * 0.125, 0.8, nn, 96)
+    # 21.0 s rearrange: a woodblock/tom "pop" and a two-note xylophone flip (things swapping places)
+    kit.n(42, 0.2, T1, 105); kit.n(42, 0.2, 76, 100)
+    bell.n(42, 0.25, 'C7', 108); bell.n(42.25, 0.3, 'G6', 104)
+    # 26.0 / 26.5 / 27.4 / 28.2 s sliders get bigger, animations punchier: four playful ascending pops
+    for t_, nn, tom in [(26.0, 'C6', T2), (26.5, 'E6', T2), (27.4, 'G6', T1), (28.2, 'C7', T1)]:
+        bell.ns(t_, 0.3, nn, 120); pizz.ns(t_, 0.3, m(nn) - 24, 100); kit.ns(t_, 0.2, tom, 100)
+        if t_ > 27:   # WHY: the off-beat pops sit under ringing open hats; a clap gives them a clean edge
+            kit.ns(t_, 0.2, CL, 112)
+    s.add_audio('sparkle', E.sparkle(rng, ms('C7 E7 G7')), 28.2, gain_db=-24.0, send=0.3)
 
-    # ============================================================ their money (bars 15-22)
-    for i, bar in enumerate(range(15, 21)):
+    # ============================================================ their money (bars 15-21)
+    for i, bar in enumerate(range(15, 22)):
         c = CHORDS[bar]
-        drums(bar, 1.0, open_hats=True, four=(i >= 2), fill=(bar == 18))
+        drums(bar, 1.0 if bar < 21 else 0.9, open_hats=True, four=(2 <= i < 6), fill=(bar == 18))
         bassline(bar, c, 108)
         motif(bar, c, 104)
         if alt:
@@ -211,37 +229,41 @@ def compose(alt=False):
         pc = ms(MID[c])
         for k in range(8):
             ost.n(4 * bar + k / 2, 0.3, pc[k % 3] + 12, 92 if k % 2 == 0 else 78)
-        brass.n(4 * bar, 0.4, MID[c], 108); brass.n(4 * bar + 1.5, 0.3, MID[c], 100); brass.n(4 * bar + 3.5, 0.3, MID[c], 104)
+        if bar < 21:
+            brass.n(4 * bar, 0.4, MID[c], 108); brass.n(4 * bar + 1.5, 0.3, MID[c], 100); brass.n(4 * bar + 3.5, 0.3, MID[c], 104)
         strg.n(4 * bar, 3.9, PAD[c], 88)
         if bar == 19:
             choir.n(4 * bar, 7.9, 'C4 E4 G4 C5', 80)
     kit.n(60, 1.5, CR, 115)
-    # bar 21 (42-44 s) the kawaii moment: drums drop to a shaker and claps, music box + celesta, pizzicato, sparkle
-    c = 'Am'
-    for k in range(8):
-        kit.n(84 + k / 2, 0.1, SHK, 72 if k % 2 else 55)
-    kit.n(85, 0.1, CL, 85); kit.n(87, 0.1, CL, 90)
-    for bt, nn, d in [(0, 'E6', .5), (0.5, 'A6', .5), (1, 'G6', .25), (1.25, 'A6', .25), (1.5, 'C7', .5), (2, 'B6', .5),
-                      (2.5, 'A6', .5), (3, 'E6', .5), (3.5, 'G6', .5)]:
-        cute.n(84 + bt, d, nn, 100)
-        cute2.n(84 + bt, d, m(nn) - 12, 80)
-    for bt in range(4):
-        pizz.n(84 + bt, 0.4, ms('A3 E4 A4 C5')[bt], 90)
-    bass.n(84, 1.0, r('Am', 1), 80)
-    s.add_audio('sparkle', E.sparkle(rng, ms('E6 A6 C7 E7')), 42.0, gain_db=-21.0, send=0.3)
-    s.add_audio('sparkle', E.sparkle(rng, ms('G6 B6 D7')), 43.5, gain_db=-24.0, send=0.3)
-    # bar 22 (44-46 s) the build: snare 16ths swelling, kick quarters, strings rising, riser
-    kit.n(88, 0.2, CL, 110)   # WHY: a clear edge on 44.0 after the soft kawaii bar
-    for k in range(15):   # WHY 15 not 16: the last 16th is left empty so 46.0 lands on a clean edge
-        kit.n(88 + k / 4, 0.1, SN, 50 + 4 * k)
-    for k in range(4):
-        kit.n(88 + k, 0.2, K, 100 + 6 * k)
-    bassline(22, 'G', 100, busy=False)
-    strg.n(88, 3.85, PAD['G'], 100); strg.ramp(44.0, 45.9, 30, 127, curve=1.5)
-    # WHY the run stops a 16th early: a breath before 46.0 so the widest moment has a clean, cuttable edge
-    for k, nn in enumerate(ms('G4 A4 B4 C5 D5 E5 F5')):
-        hook.n(88 + 2 + k / 4, 0.2, [nn, nn + 12], 80 + 4 * k)
-    s.add_audio('riser', E.riser(1.88, rng), 46.0 - 2.0, gain_db=-20.0, send=0.2)
+    # 32.5 s balances appear and count up: a quick rising tick-run that lands on a "ding" at 33.0
+    for k, nn in enumerate(ms('C6 D6 E6 F6 G6 A6 B6 C7')):
+        bell.ns(32.5 + k * 0.0625, 0.1, nn, 80 + 3 * k)
+    glock.n(66, 1.0, 'C7 E7', 104)
+    # 39.5 s eleven bills ripple in: eleven quick notes, alternating xylophone and glockenspiel
+    rip = ms('C6 E6 G6 A6 C7 A6 G6 E6 G6 A6 C7')
+    kit.n(80, 0.2, CL, 105)   # WHY: the bar after the ripple (40.0) keeps a clear edge
+    for k, nn in enumerate(rip):
+        (bell if k % 2 == 0 else glock).ns(39.5 + k * 0.042, 0.15, nn, 96)   # WHY 42 ms: done before the 40.0 downbeat
+    # bar 22 (44-46 s) the cute email springs up: drums drop to a shaker and claps, music box + celesta, pizzicato,
+    # sparkle on 44.0; a quick fill in the last half-beat into the peak
+    kit.n(88, 0.2, CL, 108)   # WHY: a clear edge on 44.0 when the email springs up
+    for k in range(7):
+        kit.n(88 + k / 2, 0.1, SHK, 72 if k % 2 else 55)
+    kit.n(89, 0.1, CL, 85); kit.n(91, 0.1, CL, 90)
+    for bt, nn, d in [(0, 'A6', .5), (0.5, 'C7', .5), (1, 'G6', .25), (1.25, 'A6', .25), (1.5, 'F6', .5), (2, 'E6', .5),
+                      (2.5, 'G6', .5), (3, 'C7', .45)]:
+        cute.n(88 + bt, d, nn, 100)
+        cute2.n(88 + bt, d, m(nn) - 12, 80)
+    for bt in range(3):
+        pizz.n(88 + bt, 0.4, ms('F3 C4 A4')[bt], 90)
+    bass.n(88, 1.0, r('F', 1), 80); bass.n(91.5, 0.4, r('G', 1), 96)
+    s.add_audio('sparkle', E.sparkle(rng, ms('A6 C7 F7 A7')), 44.0, gain_db=-20.0, send=0.3)
+    s.add_audio('sparkle', E.sparkle(rng, ms('G6 B6 D7')), 45.0, gain_db=-24.0, send=0.3)
+    for k in range(3):    # WHY 3 of 4 sixteenths: the last one is a breath so 46.0 lands on a clean edge
+        kit.n(91.5 + k / 8, 0.1, SN, 90 + 10 * k)
+    kit.n(91.5, 0.2, K, 105)
+    strg.n(90, 1.85, PAD['G'], 90); strg.ramp(45.0, 45.9, 30, 127, curve=1.5)
+    s.add_audio('riser', E.riser(0.88, rng), 46.0 - 1.0, gain_db=-21.0, send=0.2)
 
     # ============================================================ pull-back peak (bars 23-24, 46-50 s)
     for i, bar in enumerate((23, 24)):
@@ -253,10 +275,12 @@ def compose(alt=False):
         strg.n(4 * bar, 3.95, PAD[c], 118)
         for bt, nn, d in MOTIF[c]:       # strings take the motif in octaves too: the widest moment
             strg.n(4 * bar + bt, d, [m(nn), m(nn) - 12], 112)
-        brass.n(4 * bar, 3.8, MID[c], 112)
+        brass.n(4 * bar, 1.85, MID[c], 112); brass.n(4 * bar + 2, 1.8, MID[c], 108)   # re-struck on 47.0 / 49.0
         choir.n(4 * bar, 3.9, ms(PAD[c])[1:], 100)
         glock.n(4 * bar, 1.0, m(MOTIF[c][0][1]) + 12, 100)
     kit.n(92, 2.0, CR, 125); kit.n(92, 2.0, CR2, 115); kit.n(96, 2.0, CR, 110)
+    # 47.0 s before/after side by side: a splash, a bright brass stab and a glockenspiel pair
+    kit.n(94, 1.0, SPL, 112); kit.n(94, 1.5, CR2, 118); kit.n(94, 0.2, K, 118); kit.n(94, 0.2, CL, 115); kit.n(94, 0.2, SN, 100); brass.n(94, 0.5, 'G4 C5 E5', 110); glock.n(94, 0.8, 'E7', 96); glock.n(94.25, 0.8, 'G7', 92)
     for b_ in (92, 96, 100):
         kit.n(b_, 0.2, CL, 115); kit.n(b_, 0.2, SN, 100)
     s.add_audio('boom', E.boom(rng), 46.0, gain_db=-15.0, send=0.0)
@@ -275,7 +299,7 @@ def compose(alt=False):
         comp.n(b0, 3.8, [r(c, 2)] + ms(MID[c]), 82) if not alt else comp.n(b0, 3.8, ms(MID[c]), 60)
         strg.n(b0, 3.9, PAD[c], 92)
     kit.n(100, 2.0, CR, 105)
-    kit.n(104, 1.5, SPL, 105)   # WHY: the second closing line (52 s) gets its own edge to cut on
+    kit.n(105, 1.5, SPL, 105); kit.n(105, 0.2, 37, 110); glock.n(105, 1.0, 'E7', 100)   # WHY: the second closing line lands at 52.5 s
     for k in range(4):
         kit.n(108 + 2 + k / 2, 0.2, T1 if k < 2 else T2, 95 + 5 * k)
 
@@ -287,6 +311,16 @@ def compose(alt=False):
     strg.n(112, 5.0, PAD['C'], 105); strg.ramp(56.0, 59.0, 127, 40)
     bass.n(112, 3.5, 'C2', 110)
     glock.n(113, 1.5, 'G6', 90); glock.n(113.5, 2.0, 'C7', 95)
+
+    # WHY pockets: while someone types on screen the band steps back (hook, chords, riffs, brass, bells and the
+    # bright cymbals ~20% softer) but the kick and bass keep the groove going
+    thin = {'hook', 'comp', 'ost', 'brass', 'bell', 'glock'}
+    soft_drums = {HH, OH, CL, SN, SHK, TAMB, 37}
+    inp = lambda t: any(a_ <= t < b_ for a_, b_ in POCKETS)
+    for name, tr in s.tracks.items():
+        if name in thin or name == 'kit':
+            tr.notes = [(t, d, mm, int(v * 0.8) if inp(t) and (name != 'kit' or mm in soft_drums) else v)
+                        for t, d, mm, v in tr.notes]
     s.add_audio('boom', E.boom(rng, f=42), 56.0, gain_db=-17.0, send=0.0)
     return s
 
@@ -294,6 +328,20 @@ def compose(alt=False):
 def build(alt=False):
     s = compose(alt)
     stems = s.render_stems()
+    # soft key ticks in the typing pockets. WHY: mix.expand humanises timing (+-28%), level and the odd pause,
+    # and sfx.key picks pitch and brightness per press, so it reads as fingers, not a machine gun.
+    import mix as mixmod, sfx
+    dry_peak = np.abs(sum(x_ for x_, _ in stems.values())).max()
+    ref = dry_peak * dsp.db(-12.0)   # WHY -12: at -24 the ticks measured 21-28 LU under the music (inaudible)
+    kr = np.random.default_rng(2002)
+    ticks = np.zeros((s.n, 2))
+    for t, typ, g, p in mixmod.expand([dict(t0=a_ + 0.05, t1=b_ - 0.05, type='typing', cps=8) for a_, b_ in POCKETS], 2002):
+        w = sfx.key(kr) * ref * dsp.db(g)
+        i = int(round(t * dsp.SR))
+        if 0 <= i < s.n:
+            st = dsp.pan(w, p) * np.sqrt(2)
+            j = min(s.n, i + len(st)); ticks[i:j] += st[:j - i]
+    stems['keys'] = (ticks, 0.05)
     x = E.mixdown(s, stems, rt60=1.6, wet_db=-11.0, air_db=4.0, fade_end=END, fade_len=1.8)
     name = 'take2-mix' + ('-alt' if alt else '')
     path = os.path.join(E.OUT, name + '.wav')

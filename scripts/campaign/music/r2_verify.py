@@ -16,12 +16,14 @@ WORDS1 = os.path.join(HERE, '..', 'film', 'src', 'round2', 'take1-words-lily.jso
 
 # expected lengths, clean-end deadlines and hit times per mix
 B2 = 2.0
+T2_ACC = [20.0, 21.0, 26.0, 26.5, 27.4, 28.2, 32.5, 33.0, 39.5, 44.0, 47.0, 52.5]
 SPEC = {
     'take1-mix':      dict(L=77.0, end=76.5, hits=[3.71, 23.55, 24.9, 37.4, 38.9, 50.9, 62.1, 66.1, 70.32]),
     'take1-type-mix': dict(L=77.0, end=76.5, hits=[3.71, 23.55, 24.9, 37.4, 38.9, 50.9, 62.1, 66.1, 70.32]),
     'take1-mix-alt':  dict(L=77.0, end=76.5, hits=[3.71, 23.55, 24.9, 37.4, 38.9, 50.9, 62.1, 66.1, 70.32]),
-    'take2-mix':      dict(L=60.0, end=59.6, hits=[i * B2 for i in range(29)]),
-    'take2-mix-alt':  dict(L=60.0, end=59.6, hits=[i * B2 for i in range(29)]),
+    # film 2: every bar downbeat plus the picture's accents (cut 2026-11-20)
+    'take2-mix':      dict(L=60.0, end=59.6, hits=sorted(set([i * B2 for i in range(29)] + T2_ACC))),
+    'take2-mix-alt':  dict(L=60.0, end=59.6, hits=sorted(set([i * B2 for i in range(29)] + T2_ACC))),
     'take3-mix':      dict(L=24.0, end=23.6, hits=[0.0, 9.6, 12.0, 14.4, 16.8, 19.2]),
     'take3-mix-alt':  dict(L=24.0, end=23.6, hits=[0.0, 9.6, 12.0, 14.4, 16.8, 19.2]),
 }
