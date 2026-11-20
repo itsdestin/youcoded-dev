@@ -5,8 +5,12 @@ import React from 'react';
 import { AbsoluteFill, Img, staticFile, useVideoConfig } from 'remotion';
 import { C, DMSANS, MONO, OUTFIT } from './brand';
 import { Icon, Lockup, Wordmark } from './kit';
+import { loadFont as loadCaveat } from '@remotion/google-fonts/Caveat';
+// WHY a handwriting face here only: the "everything" on the crossed-out poster has to read as written
+// in by a person over the printed line (Destin, 2026-11-19). It appears nowhere else.
+const HAND = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
 
-export type PosterProps = { idea: 'own' | 'ask' | 'quote' | 'everyone' };
+export type PosterProps = { idea: 'own' | 'ask' | 'quote' | 'everyone' | 'nothing' | 'own-data' | 'own-intelligence' | 'own-software' | 'own-everything' };
 type Shape = 'tall' | 'square' | 'wide';
 const useFrame = () => {
   const { width: W, height: H } = useVideoConfig();
@@ -196,7 +200,79 @@ const Everyone: React.FC = () => {
   );
 };
 
-export const Poster: React.FC<PosterProps> = ({ idea }) => idea === 'own' ? <Own /> : idea === 'ask' ? <Ask /> : idea === 'quote' ? <Quote /> : <Everyone />;
+
+// ---- round two: "you'll own nothing" corrected by hand, and the "own your ..." set ----
+// WHY sized from the longest line AND the height left over: the same four lines must fit a tall
+// poster, a square and a wide advert without re-wrapping (the earlier posters overflowed when guessed).
+// `em` is the measured average letter width of that text (narrow letters like l and i pull it down).
+const fitLines = (W: number, H: number, m: number, mt: number, mb: number, u: number, lines: string[], extraEm: number, em = EM) =>
+  Math.min((W - 2 * m) / (Math.max(...lines.map((l) => l.length)) * em * 1.04), (H - mt - mb - FOOT_H * u - 3 * u) / (lines.length * 0.98 + extraEm));
+
+/** The printed word, faded and struck through twice with a marker, with the correction written above it. */
+// `anchorRight`: on the wide shape the struck word ends the line, so handwriting starting at its left edge ran off the poster.
+const Struck: React.FC<{ word: string; fix: string; size: number; anchorRight?: boolean }> = ({ word, fix, size, anchorRight }) => (
+  <span style={{ position: 'relative', display: 'inline-block' }}>
+    <span style={{ color: C.nightText2, opacity: 0.55 }}>{word}</span>
+    <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ position: 'absolute', left: '-4%', width: '106%', top: '34%', height: '44%', overflow: 'visible' }}>
+      <path d="M1,24 C18,14 40,27 62,17 S90,13 99,18" fill="none" stroke={C.purpleNight} strokeWidth={size * 0.075} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+      <path d="M3,30 C25,22 48,33 72,24 S92,23 98,26" fill="none" stroke={C.purpleNight} strokeWidth={size * 0.05} strokeLinecap="round" vectorEffect="non-scaling-stroke" opacity={0.85} />
+    </svg>
+    <span style={{ position: 'absolute', ...(anchorRight ? { right: '-2%' } : { left: '1%' }), bottom: '80%', fontFamily: HAND, fontWeight: 700, fontSize: size * 1.2, letterSpacing: '-0.01em', lineHeight: 1,
+      color: C.purpleNight, transform: 'rotate(-5deg)', transformOrigin: '0% 100%', whiteSpace: 'nowrap' }}>{fix}</span>
+  </span>
+);
+const Nothing: React.FC = () => {
+  const { W, H, shape, u, m, mt, mb } = useFrame();
+  const wide = shape === 'wide';
+  const lines = wide ? ["you'll own nothing.", "and you'll be happy."] : ["you'll own", 'nothing.', "and you'll", 'be happy.'];
+  const GAP = 0.98;                                  // room above the struck word for the handwriting, in em
+  const size = fitLines(W, H, m, mt, mb, u, lines, GAP, wide ? 0.47 : 0.45);
+  const row: React.CSSProperties = { fontFamily: DMSANS, fontWeight: 900, fontSize: size, letterSpacing: '-0.05em', lineHeight: 0.98, whiteSpace: 'nowrap', color: C.nightText };
+  return (
+    <AbsoluteFill><BgNight />
+      <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
+        {wide ? (<>
+          <div style={{ ...row, marginTop: GAP * size }}>you'll own<span style={{ display: 'inline-block', width: 0.26 * size }} /><Struck word="nothing." fix="everything." size={size} anchorRight /></div>
+          <div style={row}>and you'll be happy.</div>
+        </>) : (<>
+          <div style={row}>you'll own</div>
+          <div style={{ ...row, marginTop: GAP * size }}><Struck word="nothing." fix="everything." size={size} /></div>
+          <div style={row}>and you'll</div>
+          <div style={row}>be happy.</div>
+        </>)}
+        <div style={{ flex: 1, minHeight: 3 * u }} />
+        <Foot u={u} dark row={shape !== 'tall'} tight={shape === 'square'} />
+      </div>
+    </AbsoluteFill>
+  );
+};
+// Measured average letter width of each noun in DM Sans 900 (see fitLines).
+const NOUN_EM: Record<string, number> = { data: 0.45, intelligence: 0.41, software: 0.45, everything: 0.475 };
+const OwnSet: React.FC<{ noun: string }> = ({ noun }) => {
+  const { W, H, shape, u, m, mt, mb } = useFrame();
+  const dark = noun === 'everything';               // WHY: the last of the four is the closer, so it alone is on night
+  const first = noun === 'everything' ? 'own' : 'own your';
+  // WHY the noun is sized to fill the width, not matched across the set: at one shared size the short
+  // nouns left most of the poster empty. The small first line is the same on all four, which ties them.
+  const availH = H - mt - mb - FOOT_H * u - 3 * u;
+  const big = Math.min((W - 2 * m) / ((noun.length + 1) * NOUN_EM[noun] * 1.03), availH * 0.5);
+  const small = Math.min(big * 0.5, (W - 2 * m) / 12);
+  return (
+    <AbsoluteFill>{dark ? <BgNight /> : <BgDay />}
+      <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <Head text={first} size={small} dark={dark} />
+          <div style={{ height: big * 0.04 }} />
+          <Head text={`*${noun}.*`} size={big} dark={dark} />
+        </div>
+        <Foot u={u} dark={dark} row={shape !== 'tall'} tight={shape === 'square'} />
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+export const Poster: React.FC<PosterProps> = ({ idea }) => idea === 'nothing' ? <Nothing /> : idea.startsWith('own-') ? <OwnSet noun={idea.slice(4)} />
+  : idea === 'own' ? <Own /> : idea === 'ask' ? <Ask /> : idea === 'quote' ? <Quote /> : <Everyone />;
 
 // ---- web display adverts: the campaign line at the standard banner sizes ----
 /** One design for every standard slot: the line, the lockup, the address. Tiny slots drop the address. */

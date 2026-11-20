@@ -10,7 +10,7 @@ const POSTER_SIZES: Record<string, [number, number]> = {
   'social-4x5': [2160, 2700], 'story-9x16': [2160, 3840], 'print-24x36': [4800, 7200],
   'square': [2160, 2160], 'landscape-16x9': [3840, 2160], 'link-1200x628': [2400, 1256],
 };
-const IDEAS = ['own', 'ask', 'quote', 'everyone'] as const;
+const IDEAS = ['own', 'ask', 'quote', 'everyone', 'nothing', 'own-data', 'own-intelligence', 'own-software', 'own-everything'] as const;
 // Standard web advert slots, rendered at twice their size so they stay sharp on dense screens.
 const BANNERS: [number, number][] = [[300, 250], [336, 280], [300, 600], [160, 600], [728, 90], [970, 250], [320, 50], [320, 100]];
 

@@ -14,7 +14,7 @@ if [ "${1:-films}" = films ]; then
   done
 fi
 if [ "${1:-stills}" = stills ]; then
-  for idea in own ask quote everyone; do
+  for idea in own ask quote everyone nothing own-data own-intelligence own-software own-everything; do
     for size in social-4x5 story-9x16 print-24x36 square landscape-16x9 link-1200x628; do
       npx remotion still src/index.ts "poster-$idea-$size" "out/posters/youcoded-$idea-$size.png" --log=error || echo "FAILED poster-$idea-$size"
     done
