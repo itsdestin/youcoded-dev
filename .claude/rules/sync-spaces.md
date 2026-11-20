@@ -10,7 +10,7 @@ paths:
   - "**/desktop/src/main/github-connect.ts"
   - "**/desktop/src/main/github-client.ts"
   - "**/desktop/src/main/github-fork-publish.ts"
-last_verified: 2026-09-16
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/github-client.ts
     contains: "createGithubClient"
@@ -72,7 +72,7 @@ verify:
 ## Git transport (`sync-spaces/git-transport.ts`)
 - **`GIT_DIR` env, not `--separate-git-dir`; ignores/attributes in `$GIT_DIR/info/`; `info/attributes` = `* -text`, NOT `text=auto`.**
 - **Convergent conflicts: REMOTE wins the canonical name, LOCAL becomes a visible conflict copy**; `--allow-unrelated-histories` is load-bearing; conflict-copy content rides Buffer `showStage()`, never string `git()`.
-- **`sync-transport-contract.ts` is the compatibility boundary; `repoNameForSpace` (slug + LOWERCASED-id hash) IS the sync identity.**
+- **`tests/sync-transport-contract.ts` is the compatibility boundary; `repoNameForSpace` (slug + LOWERCASED-id hash) IS the sync identity.**
 - **Non-zero git exits are guilty until proven benign** (allowlist; corruption → coded `repo-corrupt`, else the REAL stderr) — never `{pushed:false}` on a failed commit.
 - **Zero-byte loose objects are POISON** — only `repair()` clears them, never writing outside `.youcoded/`; repair steps a damaged tip back and refetches the gap before ever re-initing. Every git call carries `DURABLE_WRITES` (fsync); fetches stop on silence (`fetchOrigin`), never a fixed clock.
 - **Never push an over-cap blob** (`dropOversizeFromOutgoing`); show them.
@@ -93,7 +93,7 @@ verify:
 - **Import MOVES the folder — never copy-and-keep-both.** The EXDEV branch re-checks the destination (async, under a per-destination claim) BEFORE copying; store remaps degrade to WARNINGS, never silent drops.
 
 ## Project UX + discovery
-- **Sync status comes ONLY from pure `sync-dot-state.ts`** (every dot's state/label); other status-coloured controls aren't sync.
+- **Sync status comes ONLY from pure `renderer/components/sync-dot-state.ts`** (every dot's state/label); other status-coloured controls aren't sync.
 - **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json`, NEVER under `.youcoded/`.** `state` = `stopped`-dominates (not LWW); **fold-on-read** blocks resurrection; schema stays 1.
 - **Per-field merge via `laterOf` `{v, at}` wrappers; `description` is LWW on its OWN `descriptionUpdatedAt`, never `updatedAt`** (associativity + shared-clock traps: depth doc).
 
