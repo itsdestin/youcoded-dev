@@ -179,7 +179,8 @@ class Piece:
         dly = np.zeros((n, 2))
         for b, amt in c["delay"].items():
             if amt:
-                dly += pingpong(stems[b], self.t(0.75), fb=0.42, n=6) * amt
+                # films run Piece in seconds (bpm=60), so they pass their own dotted-eighth as delay_s
+                dly += pingpong(stems[b], c.get("delay_s", self.t(0.75)), fb=0.42, n=6) * amt
         hall_in = hall_in + dly * 0.5
         hall = convolve(butter(hall_in, "highpass", 180, 2), ir("hall"))
         hall = biquad(hall, "lp", 12000, 0.7) * c["hall_return"]

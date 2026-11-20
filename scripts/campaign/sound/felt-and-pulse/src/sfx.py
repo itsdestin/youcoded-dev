@@ -51,21 +51,21 @@ def arrive():
     return fade(b, fin=0.001)
 
 
-def strike():
+def strike(dur=0.25, seed=0):
     """A marker stroke on paper (~0.25 s): filtered friction noise that rises then lifts off,
-    with a fine fibrous grain and the band sweeping as the pen travels."""
-    dur = 0.25
+    with a fine fibrous grain and the band sweeping as the pen travels. Films pass the stroke's
+    own length; seed varies the grain so two strokes are not identical."""
     n = int(dur * SR)
     t = np.arange(n) / SR
-    r = np.random.default_rng(42)
+    r = np.random.default_rng(42 + seed)
     # friction grain: noise amplitude-modulated by a jittery 70-110 Hz texture (paper fibres)
     grain = 0.5 + 0.5 * np.abs(butter(r.standard_normal(n), "bandpass", [60, 140], 2)) * 4
     grain = np.clip(grain, 0, 1.6)
     fc = 2600 + 2200 * (t / dur)                       # pen travels: the band rises a little
-    x = tv_biquad(noise(n, 9), "bp", fc, 0.9) * grain
-    x += butter(noise(n, 10), "highpass", 6000, 2) * 0.25 * grain    # felt tip hiss
+    x = tv_biquad(noise(n, 9 + 31 * seed), "bp", fc, 0.9) * grain
+    x += butter(noise(n, 10 + 31 * seed), "highpass", 6000, 2) * 0.25 * grain    # felt tip hiss
     # the faint squeak of a felt tip dragging: a narrow resonance that wavers upward
-    sq = tv_biquad(noise(n, 11), "bp", 1750 + 300 * (t / dur) + 60 * np.sin(2 * np.pi * 23 * t), 14)
+    sq = tv_biquad(noise(n, 11 + 31 * seed), "bp", 1750 + 300 * (t / dur) + 60 * np.sin(2 * np.pi * 23 * t), 14)
     x += sq * 0.5 * grain
     shape = np.clip(t / 0.018, 0, 1) ** 1.5 * np.clip((dur - t) / 0.06, 0, 1) ** 1.2
     shape *= 0.8 + 0.2 * np.sin(np.pi * t / dur)       # pressure swells mid-stroke

@@ -79,6 +79,11 @@ compressor, true-peak limiter). `src/instruments.py` holds the instruments. `src
 notes and the three arrangements. `src/sfx.py` holds the four interface sounds. `src/master.py` holds mastering and
 measurement, and `src/build.py` ties it together. `src/plots.py` draws optional spectrogram pictures into `out/plots/`.
 
+**Films** (first real use, 2026-11-20): `films/render.sh` re-renders the three film scores into
+`out/films/` (measurements in `out/films/report.json`) and copies the mixes to
+`scripts/campaign/film/public/audio/fp-take{1,2,3}-mix.wav`. Narration is levelled phrase by phrase
+(`films/fairytale.py`), typing span by span (`films/make_it_mine.py`, whose hit table is at the top).
+
 ## What is weak (honest)
 
 - **Nobody has listened to it.** I can't hear; the balance was set from measurements and stem loudness, not by ear. Expect to adjust levels after a first listen.

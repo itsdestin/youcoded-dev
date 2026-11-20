@@ -12,7 +12,7 @@ from scipy import signal  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "out")
 os.makedirs(os.path.join(OUT, "plots"), exist_ok=True)
-for f in sorted(glob.glob(os.path.join(OUT, "*.wav")) + glob.glob(os.path.join(OUT, "sfx", "*.wav"))):
+for f in sorted(glob.glob(os.path.join(OUT, "*.wav")) + glob.glob(os.path.join(OUT, "sfx", "*.wav")) + glob.glob(os.path.join(OUT, "films", "*.wav"))):
     x, sr = sf.read(f, always_2d=True)
     m = x.mean(axis=1)
     fig, ax = plt.subplots(2, 1, figsize=(14, 6), sharex=True, gridspec_kw=dict(height_ratios=[1, 2]))
