@@ -92,3 +92,58 @@ measurement, and `src/build.py` ties it together. `src/plots.py` draws optional 
 - **The snap and the marker stroke** are the least convincing sounds. The marker is filtered noise with a grain; it may read as "shh" rather than "pen".
 - **The logo is quicker than the hopeful piece** (eighth notes at 120 BPM after an 80 BPM film). The breath before it makes this deliberate, but it is a small gear change.
 - **Playful is busy:** its weakest motif note is only 2.6 dB above the rest.
+
+## The owner's rulings (Destin, 2026-11-20). These override anything above.
+
+After hearing sixteen versions of the playful piece:
+
+- **No clapping or clacking sounds, ever**: no snare, snap, clap, rimshot, woodblock, tick-tock or
+  any dry "clack" used as a beat. His words: "i definitely just hate whatever the
+  clapping/clacking sounds are (snare drum? etc)".
+- **No kick drum and no drum kit.** He said no to every version with a beat made of drum sounds
+  (kick, soft thump, deep bass note, clockwork, half-time) and yes to "no drums at all".
+- **Energy comes from instruments playing together**, not from drums: the piano, a second piano,
+  plucked strings, long string swells, and (lightly) a warm synth pattern. He said yes to "two
+  pianos", "strings, plucked", "strings, long swells"; maybe to a synth arp and to the piano
+  playing its own rhythm. So strings ARE allowed (real recorded ones, plucked or long; not short
+  bouncing bowed notes, which he rejected).
+- **Never a fake-out or a "thwip"**: no moment where the music stops dead and a little flourish,
+  zip, quick run, sweep or whoosh answers it, and no such sound as a transition anywhere. His
+  words: "i HATEEE the weird little thwip noise/fakeout thing at 13s and 17s. we should never use
+  that anywhere. it sounds like a 2005 browser demo switching pages."
+- **Tunes should be more interesting** than a three-note figure repeated: he asked for variants
+  that "better blend the various instruments and offer slightly more interesting tunes". The
+  three-note signature and the logo stay; melodies develop from them.
+
+After hearing the sound score three films ("the dna is there, arrangement is off"):
+
+- **One piece of music per film, not a string of reactions to the picture.** On the Make it mine
+  score: "this is just like completely all over the place. this sounds like a different song every
+  4-6 seconds. we cant *just* have notes, we need consistent tunes/strings/chords/etc." A film's
+  music is one song: one tune, one set of chords, one steady accompaniment that keeps going, in
+  clear sections. The picture is followed by how the arrangement grows at a few section changes,
+  never by a new sound for each thing that happens on screen.
+- **No scattered high jingles.** On the fairytale score: "lots of random high pitched jingles thrown
+  throughout (37s, 50s, lots more)". The glassy high plucks used as accents and echoes are out as
+  decoration; a high part may exist only as a continuous, sensible line in the arrangement.
+- **Volume must not bounce.** "the volume feels like it bounces up and down (11s-15s stretch
+  highlights this)". Under a narrator the music holds a steady level through a passage and changes
+  level only at section changes, slowly; no fast dipping and rising around each phrase.
+- **Building blocks.** "we need better rules and building blocks": the brand needs a small songbook
+  (one main tune with its chords, a few accompaniment patterns, a lift, an ending with the logo)
+  that every piece is assembled from, so all our music is recognisably the same song family.
+- **The sound logo is not final.** "may still want to somewhat refine sound logo or see an array of
+  alternatives as we add strings or whatever".
+
+Clarified the same day (Destin: "i do still want sound design that matches what happens in the
+films, but the music needs to feel consistent across all of our marketing materials/videos/etc"):
+
+- **Two layers, kept apart.** The MUSIC is the song from the songbook: it stays the same song for
+  the whole piece and is the same family across every film, advert and clip. The SOUND DESIGN is
+  a separate layer of small real-world sounds that match what happens on screen (typing, a pen
+  stroke, something appearing, something changing). Sound design is wanted.
+- **Sound design never becomes music.** An on-screen event gets a sound effect, not a new tune,
+  chord or melodic jingle. The song underneath carries on unchanged; at most it grows at a
+  section change that the film's big moments are timed to.
+- **One small kit of sound effects for the whole brand**, reused everywhere, so the effects are as
+  consistent as the music. Nothing in it may be a thwip, zip, sweep or whoosh, or a clap or clack.
