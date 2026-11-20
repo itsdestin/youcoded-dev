@@ -10,7 +10,7 @@ import { loadFont as loadCaveat } from '@remotion/google-fonts/Caveat';
 // in by a person over the printed line (Destin, 2026-11-19). It appears nowhere else.
 const HAND = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
 
-export type PosterProps = { idea: 'own' | 'ask' | 'quote' | 'everyone' | 'nothing' | 'own-data' | 'own-intelligence' | 'own-software' | 'own-everything'; fill?: 'buddy' | 'ghost' | 'tile' };
+export type PosterProps = { idea: 'own' | 'ask' | 'quote' | 'everyone' | 'nothing' | 'own-data' | 'own-intelligence' | 'own-software' | 'own-everything'; fill?: 'buddy' | 'ghost' | 'tile' | 'list' | 'app' | 'wash' };
 type Shape = 'tall' | 'square' | 'wide';
 const useFrame = () => {
   const { width: W, height: H } = useVideoConfig();
@@ -231,10 +231,15 @@ const familySize = (W: number, H: number, m: number, mt: number, mb: number, u: 
   fitLines(W, H, m, mt, mb, u, ['own your', 'intelligence.'], GAP, 0.41));
 // Something for the empty space under a short headline (Destin, 2026-11-19). The SAME element, size and
 // place on every poster of a shape, so it adds to the family's look instead of breaking it.
-const Fill: React.FC<{ kind?: 'buddy' | 'ghost' | 'tile'; dark?: boolean; word: string }> = ({ kind, dark, word }) => {
+const Fill: React.FC<{ kind?: PosterProps['fill']; dark?: boolean; word: string }> = ({ kind, dark, word }) => {
   const { width: W, height: H } = useVideoConfig();
   const s = Math.min(W, H);
-  if (!kind) return null;
+  if (!kind || kind === 'list' || kind === 'app') return null;   // those two are laid out inside the poster, not behind it
+  if (kind === 'wash') return (    // a deeper colour field: the paper warms toward the bottom corner instead of staying flat
+    <AbsoluteFill style={{ background: dark
+      ? `radial-gradient(120% 90% at 100% 100%, #6A2A78 0%, #3B1B55 38%, ${C.night} 78%)`
+      : `radial-gradient(120% 90% at 100% 100%, #F1B9DC 0%, #E2C6F2 40%, #FBF6FD 82%)` }} />
+  );
   if (kind === 'buddy') return (   // the mascot's tile, large, leaning in from the bottom-right corner
     <div style={{ position: 'absolute', right: -0.1 * s, bottom: -0.16 * s, width: 0.62 * s, height: 0.62 * s, transform: 'rotate(-10deg)' }}><Icon size={0.62 * s} /></div>
   );
@@ -270,18 +275,37 @@ const Nothing: React.FC<{ fill?: PosterProps['fill'] }> = ({ fill }) => {
     </AbsoluteFill>
   );
 };
+const NOUNS = ['data', 'intelligence', 'software', 'everything'];
+const APP_SHOT: Record<string, string> = { data: 'stills/chat--meadow-mist.png', intelligence: 'stills/chat--cotton-candy-sky.png', software: 'stills/chat--golden-sunbreak.png', everything: 'stills/chat--midnight.png' };
 const OwnSet: React.FC<{ noun: string; fill?: PosterProps['fill'] }> = ({ noun, fill }) => {
   const { W, H, shape, u, m, mt, mb } = useFrame();
   const wide = shape === 'wide';
   const dark = noun === 'everything';               // WHY: the last of the four is the closer, so it alone is on night
   const size = familySize(W, H, m, mt, mb, u, wide);
+  const first = noun === 'everything' ? 'own' : 'own your';
+  // 'list': all four words of the set on every poster, this poster's one in purple. Five lines is exactly the height
+  // of the crossed-out poster's headline, so the whole family lines up.
+  const listSize = wide ? Math.min(size, (H - mt - mb - FOOT_H * u - 3 * u) / 4.95) : size;
+  const pale = dark ? '#3A2A49' : '#DECDEB';
   return (
     <AbsoluteFill>{dark ? <BgNight /> : <BgDay />}<Fill kind={fill} dark={dark} word={`${noun}.`} />
       <div style={{ position: 'absolute', left: m, right: m, top: mt, bottom: mb, display: 'flex', flexDirection: 'column' }}>
-        {/* On the wide shape the struck poster starts one handwriting-gap down; match it so the first lines sit level. */}
-        {wide && <div style={{ height: GAP * size }} />}
-        <Head text={`${noun === 'everything' ? 'own' : 'own your'} / *${noun}.*`} size={size} dark={dark} />
-        <div style={{ flex: 1, minHeight: 3 * u }} />
+        {fill === 'list' ? (
+          <div style={{ fontFamily: DMSANS, fontWeight: 900, fontSize: listSize, letterSpacing: '-0.05em', lineHeight: 0.98, whiteSpace: 'nowrap', color: dark ? C.nightText : C.plum }}>
+            <div>{first}</div>
+            {NOUNS.map((n) => <div key={n} style={{ color: n === noun ? (dark ? C.purpleNight : C.purple) : pale }}>{n}.</div>)}
+          </div>
+        ) : (<>
+          {/* On the wide shape the struck poster starts one handwriting-gap down; match it so the first lines sit level. */}
+          {wide && fill !== 'app' && <div style={{ height: GAP * size }} />}
+          <Head text={`${first} / *${noun}.*`} size={size} dark={dark} />
+        </>)}
+        {fill === 'app' ? (
+          // the real app, in a different look on each poster, filling exactly the space between the words and the foot
+          <div style={{ flex: 1, position: 'relative', marginTop: 4 * u, marginBottom: 4 * u, minHeight: 3 * u }}>
+            <Shot src={APP_SHOT[noun]} u={u} style={{ left: 0, top: 0, right: wide ? '30%' : 0, bottom: 0 }} />
+          </div>
+        ) : <div style={{ flex: 1, minHeight: 3 * u }} />}
         <Foot u={u} dark={dark} row={shape !== 'tall'} tight={shape === 'square'} />
       </div>
     </AbsoluteFill>
