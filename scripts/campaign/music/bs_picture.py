@@ -70,9 +70,41 @@ def _to_film(seg, ft):
     return t if seg['at'] - 1e-6 <= t <= seg['out'] + 1e-6 else None
 
 
+# WHY (round five review): the 2026-11-20 re-cut stopped exporting T_AFTER, so `import bs_mine` died with a bare
+# KeyError and no film could be rebuilt. The payoff's times are still written in take2.tsx, just inline. Each
+# constant the score needs is now taken from an exported T_* if there is one, else read from the line of the
+# picture's code that does that job; if neither exists the build stops with a sentence naming what is missing.
+_FALLBACKS = {
+    # name: (regex on take2.tsx, what it is, in words)
+    'T_AFTER': (r'const r = t < ([\d.]+)\s*\?', 'when the "after" window rises in the payoff'),
+    'T_MONEY': (r'const money = t >= ([\d.]+)', 'when the payoff window switches to the money page'),
+    'T_LINE1': (r'<Line text="stop waiting[^>]*?at=\{([\d.]+)\}', 'when the first closing line appears'),
+    'T_LINE2': (r'<Line text="make anything[^>]*?at=\{([\d.]+)\}', 'when the second closing line appears'),
+    'T_END': (r'<EndCard at=\{([\d.]+)\}', 'when the end card lands'),
+}
+REQUIRED = ('T_LOOK1', 'T_LOOK2', 'T_EMAIL', 'T_BEFORE', 'T_AFTER', 'T_MONEY', 'T_LINE1', 'T_LINE2', 'T_END')
+
+
+def _fill_consts(consts):
+    code = open(SRC, encoding='utf8').read()
+    c = dict(consts)
+    for k, (pat, what) in _FALLBACKS.items():
+        if k not in c:
+            mm = re.search(pat, code)
+            if mm:
+                c[k] = float(mm.group(1))
+    missing = [k for k in REQUIRED if k not in c]
+    if missing:
+        raise SystemExit('The Make it mine score cannot find these picture times in film/src/round2/take2.tsx: '
+                         + '; '.join(f'{k} ({_FALLBACKS[k][1] if k in _FALLBACKS else "exported constant"})' for k in missing)
+                         + '. Export them from take2.tsx (for example `export const T_AFTER = 46.5`) and run mix-r2.sh again.')
+    return c
+
+
 def timeline():
     """{'consts': {T_*: s}, 'typing': [(t0, t1)], 'sends': [t], 'cuts': [t]} in film seconds, sorted."""
     d = _raw()
+    d['consts'] = _fill_consts(d['consts'])
     typing, sends, cuts = [], [], set()
     for s in d['segs']:
         cuts.add(round(s['at'], 3))

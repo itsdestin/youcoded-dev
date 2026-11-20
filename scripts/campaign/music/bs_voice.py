@@ -19,6 +19,57 @@ def load_words(path):
     return w if isinstance(w, list) else w['words']
 
 
+def silences(path, floor_db=-50.0, min_len=0.12):
+    """[(start, end)] of every stretch where the recording stays under floor_db (any channel) for min_len s or
+    more: the same test as ffmpeg silencedetect n=-50dB d=0.12, done here so the score needs no extra tool."""
+    v, sr = sf.read(path, dtype='float64', always_2d=True)
+    assert sr == SR
+    loud = (np.abs(v) > 10 ** (floor_db / 20)).any(axis=1)
+    edges = np.diff(np.concatenate([[1], loud.astype(int), [1]]))
+    starts, ends = np.where(edges == -1)[0], np.where(edges == 1)[0]
+    return [(a / SR, b / SR) for a, b in zip(starts, ends) if (b - a) / SR >= min_len]
+
+
+def snap_words(words, voice_path, max_shift=0.7):
+    """Correct the words file against the recording itself: every word that follows a real pause starts where
+    her voice actually comes back, and the word before it ends where her voice actually stopped.
+    WHY (round five review): the aligner that wrote the words file counts each pause as part of a neighbouring
+    word, so "shareholder" was filed 0.43 s late and "everything." 0.33 s early. Music hits keyed to those times
+    played over the punchline and landed in the breath before the last word. A pause cannot contain a word
+    starting, so the first word filed at or after a pause's start (less 0.1 s) is moved to the pause's end.
+    Run-on words (no pause before them) keep the file's time. Returns a corrected copy; the file is untouched."""
+    w = [dict(x) for x in words]
+    sil = silences(voice_path)
+    for a, b in sil:
+        k = next((i for i, x in enumerate(w) if x['start'] >= a - 0.1), None)
+        if k is None or abs(w[k]['start'] - b) > max_shift:
+            continue
+        if k + 1 < len(w) and b >= w[k + 1]['start']:
+            continue                     # would jump past the next word: leave this one alone
+        w[k]['start'] = round(b, 3)
+        w[k]['end'] = max(w[k]['end'], w[k]['start'] + 0.05)
+        if k > 0 and w[k - 1]['end'] > a:
+            w[k - 1]['end'] = round(max(w[k - 1]['start'] + 0.05, a), 3)
+    # the last word ends where the recording falls silent for good
+    # (or where the recording itself ends: this one stops 71.46 s in, mid-breath after "everything.")
+    if sil and sil[-1][0] > w[-1]['start']:
+        w[-1]['end'] = round(sil[-1][0], 3)
+    w[-1]['end'] = round(min(w[-1]['end'], sf.info(voice_path).duration), 3)
+    return w
+
+
+def onset_errors(words, voice_path, texts):
+    """For each named word: (word, filed start, nearest real voice onset, error s). The check behind the rule
+    'hits land on the voice's measured onset, not the timing file'."""
+    ons = [b for _, b in silences(voice_path)]
+    out = []
+    for t in texts:
+        s = word(words, *t) if isinstance(t, tuple) else word(words, t)
+        o = min(ons, key=lambda u: abs(u - s)) if ons else float('nan')
+        out.append((t if isinstance(t, str) else t[0], s, o, s - o))
+    return out
+
+
 def _clean(s):
     return ''.join(ch for ch in s.lower() if ch.isalnum() or ch == "'")
 
@@ -115,7 +166,16 @@ def duck(music, voice, words, margin_at, protect=(), att=0.035, rel=0.22, breath
     need = np.zeros(n)
     for a, b in ph:
         i, j = int(a * SR), int(b * SR)
-        if j - i < int(0.2 * SR):
+        # WHY no skip for very short phrases (round five): a lone short word ("to", split off before "open") was
+        # never ducked at all, and the swell under it measured 6.9 LU under her where the rule is 9. A short
+        # phrase is measured with 0.15 s of context either side, like the 0.2-0.45 s ones.
+        if j - i < int(0.45 * SR):
+            i0, j0 = max(0, i - int(0.15 * SR)), min(n, j + int(0.15 * SR))
+            lv = meter.integrated_loudness(np.stack([voice[i0:j0]] * 2, -1))
+            lm = meter.integrated_loudness(music[i0:j0])
+            d = min(0.0, (lv - margin_at(a)) - lm) if np.isfinite(lm) and np.isfinite(lv) else 0.0
+            need[max(0, i - int(0.06 * SR)):min(n, j + int(0.08 * SR))] = np.minimum(
+                need[max(0, i - int(0.06 * SR)):min(n, j + int(0.08 * SR))], d)
             continue
         lv = meter.integrated_loudness(np.stack([voice[i:j]] * 2, -1)) if j - i >= int(0.45 * SR) else \
             meter.integrated_loudness(np.stack([voice[max(0, i - int(0.15 * SR)):j + int(0.15 * SR)]] * 2, -1))
@@ -144,15 +204,14 @@ def duck(music, voice, words, margin_at, protect=(), att=0.035, rel=0.22, breath
         cur = a_att * cur + (1 - a_att) * w if w < cur else a_rel * cur + (1 - a_rel) * w
         g[i:i + 48] = cur
     # second pass: re-measure each phrase on the ducked result and correct DOWN only where still too loud
-    for _ in range(2):
+    for _ in range(3):
         pre = music * db(g)[:, None]
         corr = np.zeros(n)
         for a, b in ph:
             i, j = int(a * SR), int(b * SR)
-            if j - i < int(0.45 * SR):
-                continue
-            lv = meter.integrated_loudness(np.stack([voice[i:j]] * 2, -1))
-            lm = meter.integrated_loudness(pre[i:j])
+            i0, j0 = (i, j) if j - i >= int(0.45 * SR) else (max(0, i - int(0.15 * SR)), min(n, j + int(0.15 * SR)))
+            lv = meter.integrated_loudness(np.stack([voice[i0:j0]] * 2, -1))
+            lm = meter.integrated_loudness(pre[i0:j0])
             extra = (lv - margin_at(a)) - lm
             if np.isfinite(extra) and extra < 0:
                 corr[max(0, i - int(0.06 * SR)):min(n, j + int(0.08 * SR))] = extra

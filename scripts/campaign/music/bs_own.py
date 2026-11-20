@@ -43,9 +43,11 @@ def compose():
     # WHY the box's bell cut (round four): its notes (E6-C7, 1.3-2.1 kHz) stood 20 dB out of the spectrum, the
     # octave where ears and phone speakers are most sensitive: piercing and toy-like. -5 dB there, and 6 dB less
     # level overall (balance), keeps it a sparkle on top of the piano rather than the lead
-    for name, kw in dict(pno=dict(hall=0.35, room=0.2, pump=1.0, comp=(12, 2.5)), box=dict(hall=0.4, delay=0.3, eq=((1750, -5.0, 0.8),)),
+    # WHY (round five): no pump on the piano and at most 2 dB anywhere (pumping is the pop sound the owner turned
+    # down); the piano's 100 Hz dip keeps the sampled grand's real bass inside the 35-40% low-end rule
+    for name, kw in dict(pno=dict(hall=0.35, room=0.2, comp=(12, 2.5), eq=((100, -3.0, 0.7),)), box=dict(hall=0.4, delay=0.3, eq=((1750, -5.0, 0.8), (1319, -4.0, 8.0), (1568, -6.0, 8.0), (1760, -3.0, 8.0), (2093, -4.0, 8.0))),
                          lead=dict(hall=0.25, delay=0.2, pump=2.0), brass=dict(hall=0.25, pump=2.0),
-                         pad=dict(hall=0.4, pump=4.0), drone=dict(hall=0.3), pluck=dict(hall=0.15, delay=0.25, pump=3.0),
+                         pad=dict(hall=0.4, pump=2.0), drone=dict(hall=0.3), pluck=dict(hall=0.15, delay=0.25, pump=2.0),
                          b808=dict(), kick=dict(room=0.04), clap=dict(room=0.3, hall=0.15), hat=dict(room=0.08),
                          crash=dict(hall=0.2), fx=dict(hall=0.3), marker=dict(room=0.15)).items():
         M.stem(name, **kw)
@@ -177,10 +179,17 @@ def build():
     # the cleared room before the marker: every stem but the marker (and the short room) goes, tails included
     gate = B.gap_curve(M.n, CLEAR[0], CLEAR[1], -70.0, fade_in=0.4, fade_out=0.04)
     x, stems = M.render(hall_rt=2.0, hall_db=-10.0, piano_bright=56, piano_felt=10500, air_db=2.0, presence_db=1.0,
-                        air_layer=-26.0, gate=(gate, ('marker', 'room')),
-                        balance=dict(pno=0, box=-9, lead=-12, brass=-8, pad=-9, drone=-10, pluck=-13, b808=-5.5,
-                                     kick=-7, clap=-9, hat=-14, crash=-14, fx=-12, marker=-3))
+                        air_layer=-26.0, gate=(gate, ('marker', 'room')), low_trim_db=-3.5,
+                        # WHY the 808 2.5 dB and kick 1 dB lower (round five): 46% of the film sat under 160 Hz,
+                        # which a phone does not play; the rule is 35-40
+                        balance=dict(pno=0, box=-11, lead=-12, brass=-8, pad=-9, drone=-10, pluck=-13, b808=-8.0,
+                                     kick=-8, clap=-9, hat=-14, crash=-14, fx=-12, marker=-3))
     x = B.glue(x, thresh_db=-21, ratio=1.8)
+    # WHY these narrow dips (round five): the jingle repeats the same five music-box notes (E6 G6 A6 C7) and the
+    # piano doubles C6 / D6; each stacked into a tower 17-20 dB over the spectrum around it (rule: 15 at most).
+    # The box's own dips (above) take its notes down; these two take the piano's down on the whole bus
+    for f0, g in ((1045, -6.0), (1175, -4.5), (1569, -4.5), (4186, -4.5)):
+        x = dsp.peak_eq(x, f0, g, 10.0)
     # the held breath before the first hit (everything, reverb included)
     x = B.gap(x, BREATH[0] + 0.01, BREATH[1], -70.0, fade_in=0.03, fade_out=0.02)
     # four steps up: each hit bar a little louder than the last (20 ms ramps on the hits)
@@ -192,6 +201,8 @@ def build():
     x = x * B.db(lv)[:, None]
     x = B.pre_hit_dip(x, LOGO, 6.0, 0.15)
     x = B.pre_hit_dip(x, HITS[3], 4.0, 0.12)
+    # the breath before the first hit holds a faint high bed instead of digital silence (it measured -98 to -109)
+    x = B.breath_bed(x, BREATH[0] + 0.05, BREATH[1] - 0.03, final_lufs=-47.0, chord='G5 B5 D6')
     x = B.ending(x, END, 1.6)
     from bs_verify import stem_levels
     print('  stems (LUFS at final gain):', stem_levels(stems, B.db(-14 - dsp.lufs(x))))

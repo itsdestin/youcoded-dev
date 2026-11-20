@@ -7,17 +7,23 @@ typing pockets (every stretch of footage where a message is typed at true speed)
 fitted by hand to an older cut and its drop came 500 ms before the look changed. Re-cut the picture, re-run this,
 and the score refits itself. The owner has said he dislikes the looks (themes) in the window, so this WILL be
 re-run on a new cut.
-Form (times shown for the 2026-11-20 cut):
+Round five: the cut's payoff is now before (T_BEFORE 46.0) -> after rises (T_AFTER 46.5) -> money page (T_MONEY
+48.5), closing lines at T_LINE1 50.0 / T_LINE2 52.7, end card T_END 56.0, all read from take2.tsx. Home and most of
+money are half time (kick on 1 and 3), pads pump 2 dB at most and the piano not at all, typing pockets clear the
+2-4 kHz band for the ticks, the held breath has a faint bed instead of digital silence, and the piano is sampled.
+Form (times shown for the 2026-11-20 06:03 cut):
   look   0-14   light intro under the first question; a build; one beat of breath; THE DROP on the frame the new
                 look appears (T_LOOK1 5.0); a smaller breath + accent on the second look (T_LOOK2 10.5)
-  home   14-30  the motif in full, drums thinned to kick + shaker (quieter: about -16 LUFS short-term), claps and
-                hats return halfway; the arc climbs to about -14 by 30
-  money  30-46  full groove, climbing to about -13 by 42; T_EMAIL (43) a light, cute moment (music box, plucks,
-                snaps, no kick)
-  46-50  T_BEFORE an inhale: real near-silence on the cut back to the app as it started; T_AFTER THE PEAK (everything
-         they made is revealed), about 4-5 LU above the body; settle by 49.5, fade by 50.0
-  50-56  closing lines, half-time; 56 logo: resolved C, silent by 59.6
-Typing ticks only in the picture's typing pockets, 16.5 LU under the music (round two: 12.9; owner: "quieter").
+  home   14-30  the motif in full, half time: kick + shaker (about -16 LUFS short-term), claps, hats and plucks
+                return halfway; the arc climbs to about -14 by 30
+  money  30-46  half time to 38, four-on-the-floor only in the last four bars (38-43); T_EMAIL (43) a light, cute
+                moment (music box, plucks, snaps, no kick)
+  46-50  T_BEFORE a held breath (-47 LUFS bed) on the still 'before' window; T_AFTER THE PEAK, the 'after' window
+         rises, about 4-5 LU above the body; T_MONEY a smaller accent (Am, soft kick, glass); settle by 49.5
+  50-56  closing lines, half-time; a felt note on the second line; 56 logo: resolved C, silent by 59.6
+Typing ticks only in the picture's typing pockets, 15 LU under the music in each pocket (round two: 12.9; owner:
+"quieter"), with hats, shaker, claps, plucks and the music box 9-12 dB down and the pads' and piano's top 5 dB down
+around them so quiet ticks are still the loudest thing in their band.
 Usage: python bs_mine.py  -> out/take2-mix.wav"""
 import os
 import numpy as np
@@ -34,13 +40,16 @@ BAR = 4 * BEAT
 PIC = bs_picture.timeline()
 C_ = PIC['consts']
 G_ = PIC['groups']
-SECTIONS = dict(look=G_.get('look', 0.0), part2=G_['home'], part3=G_['money'], peak_bar=C_['T_BEFORE'], close=50.0, logo=56.0)
+SECTIONS = dict(look=G_.get('look', 0.0), part2=G_['home'], part3=G_['money'], peak_bar=C_['T_BEFORE'],
+                close=C_['T_LINE1'], logo=C_['T_END'])
 HITS = dict(look_change=C_['T_LOOK1'],      # the first new look appears: THE DROP
             look2=C_['T_LOOK2'],            # the second look: a smaller accent
             email=C_['T_EMAIL'], email_end=C_['T_BEFORE'],
-            inhale=C_['T_BEFORE'],          # cut back to the app as it started: near-silence
-            peak=C_['T_AFTER'],             # everything made is revealed: the biggest moment
-            settle=49.5, quiet=50.0, lines=(50.1, 52.5), logo=56.0, end=59.6)
+            inhale=C_['T_BEFORE'],          # cut back to the app as it started: a held breath
+            peak=C_['T_AFTER'],             # the app as it is now rises in front: the biggest moment
+            money=C_['T_MONEY'],            # that window switches to their money: a second, smaller accent
+            settle=C_['T_LINE1'] - 0.5, quiet=C_['T_LINE1'], lines=(C_['T_LINE1'], C_['T_LINE2']),
+            logo=C_['T_END'], end=C_['T_END'] + 3.6)
 # typing pockets: (start, end) of every typed stretch on screen, padded 40 ms each side for the first/last key
 POCKETS = [(max(0.0, a - 0.04), b + 0.04) for a, b in PIC['typing']]
 # picture accents (time, weight 2 = a real hit): the second look change
@@ -55,8 +64,16 @@ ARC = [(SECTIONS['look'] + 1.5, -18.0), (HITS['look_change'] + 1.5, -13.5), (SEC
        ((SECTIONS['part3'] + HITS['email']) / 2, -13.6), (HITS['email'] - 1.0, -13.0), (HITS['email'] + 1.5, -15.0),
        (HITS['peak'] + 1.5, -9.5), (HITS['settle'], -13.0),
        (SECTIONS['close'] + 1.5, -15.5), (HITS['logo'] - 0.5, -15.0), (HITS['logo'] + 1.2, -13.5)]
-KEYS_UNDER_MUSIC = 16.5       # LU under the music inside the pockets (round two 12.9, round three 20.9: too quiet)
+# LU under the music inside the pockets (round two 12.9: the owner said "quieter"; round three 20.9 vanished;
+# round four 16.5 was still lost, because the ticks sat in the same band as the hats and shaker). Round five keeps
+# them this quiet and instead makes room for them (POCKET_DUCK): see make_room().
+KEYS_UNDER_MUSIC = 15.0    # round five: 2.1 dB under round two's level, with the band cleared around them
+POCKET_DUCK = dict(hat=-12.0, shk=-12.0, clap=-12.0, pluck=-12.0, box=-12.0)   # dB inside each typing pocket
+POCKET_PAD_TOP = -5.0                    # dB above 3 kHz on the pads inside each pocket
 END = HITS['end']
+# near-silence from the cut back to the plain app, then the breath-in to the peak: at least 0.25 s of near-silence
+# (brand rule) but never more than half the time between the cut and the peak
+BREATH_IN = min(0.5 * (HITS['peak'] - HITS['inhale']) + 0.05, max(0.28, HITS['peak'] - HITS['inhale'] - 0.6))
 
 
 def bars(t0, t1):
@@ -74,12 +91,15 @@ def compose():
     rng = np.random.default_rng(222)
     hum = np.random.default_rng(322)
     jit = lambda: float(hum.uniform(-0.006, 0.006))
-    for name, kw in dict(pno=dict(hall=0.25, room=0.25, pump=1.0, comp=(12, 2.5)),
+    # WHY the pumps cut to 2 dB at most and none on the piano (round five review): 5 dB of pad 'breathing' on
+    # every kick is the dance-pop sound the owner rejected; the 100 Hz dip on the sampled grand keeps the low
+    # end inside the 35-40% rule
+    for name, kw in dict(pno=dict(hall=0.25, room=0.25, comp=(12, 2.5), eq=((100, -3.5, 0.7),)),
                          # WHY the box bell cut: music-box notes are pure tones in the 1.3-2.1 kHz octave, where
                          # ears and phone speakers are most sensitive; a static -4.5 dB there keeps them sweet, not piercing
                          box=dict(hall=0.4, delay=0.4, eq=((1750, -4.5, 0.8),)),
-                         pad=dict(hall=0.35, pump=5.0), hi=dict(hall=0.55, pump=3.0), sub=dict(pump=2.0),
-                         pluck=dict(hall=0.15, delay=0.3, pump=3.0), kick=dict(room=0.04), b808=dict(),
+                         pad=dict(hall=0.35, pump=2.0), hi=dict(hall=0.55, pump=1.5), sub=dict(pump=1.5),
+                         pluck=dict(hall=0.15, delay=0.3, pump=1.5), kick=dict(room=0.04), b808=dict(),
                          clap=dict(room=0.35, hall=0.1), hat=dict(room=0.08), shk=dict(room=0.2), fx=dict(hall=0.3),
                          crash=dict(hall=0.2)).items():
         M.stem(name, **kw)
@@ -197,9 +217,10 @@ def compose():
     for i, t0 in enumerate(home):
         c = prog[i % 4]
         piano_bar(t0, c, vel=64)
-        # WHY thinned to kick + shaker for the first half: the film's middle needs somewhere lower to climb from
+        # WHY half time (kick on 1 and 3) all through home (round five review: a kick on every beat from 15 to 45 s
+        # with pumping pads is a stock workout track): kick + shaker first, claps, hats and plucks join halfway
         full = i >= len(home) // 2
-        groove(t0, c, hats=full, claps=full, plucks=full, bells=False)
+        groove(t0, c, hats=full, claps=full, plucks=full, bells=False, four=False)
     for k in range(4):
         M.put('clap', B.clap(rng, tail=0.035), SECTIONS['part3'] - BEAT * 2 + k * BEAT / 2, -10 + 2 * k)
 
@@ -211,7 +232,9 @@ def compose():
             M.put('crash', B.crash(rng, 2.0), t0, -3)
         if t0 + BAR <= e0:
             piano_bar(t0, c, vel=64)
-            groove(t0, c, plucks=True, bells=(i % 4 == 3))
+            # WHY four-on-the-floor only in the last four bars before the payoff (round five review): the half-time
+            # feel carries on into money, and the full pulse is saved for the climb into the email and the peak
+            groove(t0, c, plucks=True, bells=(i % 4 == 3), four=(t0 >= SECTIONS['peak_bar'] - 4 * BAR - 1e-6))
         elif t0 < e0:
             # the bar the email interrupts: groove up to half a beat before it, a clean entrance
             kp = lambda t: t < e0 - BEAT / 2 - 1e-6
@@ -247,10 +270,10 @@ def compose():
 
     # ------------------------------------------------------------------ the inhale and THE PEAK
     pk, inh = HITS['peak'], HITS['inhale']
-    # WHY the breath-in starts 0.55 s after the cut: the first half of the inhale is near-silence (the picture cuts
-    # back to the app as it started), then a reverse piano and a swell breathe in, stopping 60 ms short of the peak
-    # so its attack lands clean
-    b0 = inh + 0.55
+    # WHY the breath-in starts BREATH_IN after the cut: the first part of the inhale is near-silence (the picture cuts
+    # back to the app as it started, still), then a reverse piano and a swell breathe in, stopping 60 ms short of
+    # the peak so its attack lands clean. (Round five: the 'after' window now rises 0.5 s after the cut, not 1 s.)
+    b0 = inh + BREATH_IN
     chP = B.render_piano([dict(t=0.0, midi=mm, vel=80, dur=2.0) for mm in notes('C2 G2 C3 E3 G3 C4 E4 G4 C5')], int(2.5 * SR))
     M.put('fx', B.reverse_tail(chP, pk - b0 - 0.06, rt60=2.6), b0, -2)
     M.put('fx', B.swell(pk - b0 - 0.06, rng, 300, 10000, 2.2), b0, -6)
@@ -278,6 +301,18 @@ def compose():
         tt = pk + 0.5 + k * BEAT / 2
         M.put('hat', B.hat(rng, decay=0.04), tt, -4 - 0.5 * k, p=0.25)
         M.put('shk', B.shaker(rng), tt + BEAT / 4, -6 - 0.5 * k, p=-0.3)
+    # the money page (T_MONEY): a smaller accent on the frame the window switches. WHY this shape (round five): the
+    # picture has a second beat inside the payoff now; it gets the motif's next chord (Am, the 'and also' step),
+    # a soft kick and two glass notes, well under the peak so the peak stays the film's biggest moment
+    mo = HITS['money']
+    M.piano('pno', mo, [m('A2'), m('A3')] + notes(PADV['Am'])[1:], 56, HITS['settle'] - mo + 0.6, roll=0.01)
+    M.piano('pno', mo, [m('E5'), m('E6')], 58, 1.0, p=0.12)   # on the frame: the ear locks the cut to its attack
+    M.put('kick', B.kick(decay=0.18, f0=50, sweep=110, rng=rng), mo, -2)
+    M.kick_at(mo)
+    M.put('clap', B.clap(rng, tail=0.12), mo, -5)
+    M.put('sub', B.sub('A1', HITS['settle'] - mo, rel=0.4), mo, -2)
+    for i, nn in enumerate(['A6', 'E7']):
+        M.put('box', B.bell(nn, 1.6), mo + 0.05 + i * 0.08, -8 - 2 * i, p=-0.2 + 0.4 * i)
 
     # ------------------------------------------------------------------ closing lines, half-time
     for i, (t0, c) in enumerate(zip(bars(SECTIONS['close'], SECTIONS['logo']), ['Am', 'F', 'G'])):
@@ -296,6 +331,11 @@ def compose():
         pool = sorted(notes(PADH[c]))
         for k in range(4):
             M.put('pluck', B.pluck(pool[[0, 2, 1, 3][k]] + 12, rng, tau=0.2), t0 + k * BEAT, -4, p=0.4 if k % 2 else -0.4)
+    # the second line (T_LINE2) lands between beats: one high glass note and a felt octave on its first frame, so
+    # the music answers the words without a hit
+    l2 = HITS['lines'][1]
+    M.piano('pno', l2, [m('G5'), m('G6')], 50, 1.2, p=0.15, felt=9000)
+    M.put('box', B.bell('D7', 1.6), l2 + 0.03, -10, p=0.3)
     M.put('fx', B.swell(BAR * 0.75 - 0.03, rng, 400, 9000), HITS['logo'] - BAR * 0.75, -5)
 
     # ------------------------------------------------------------------ logo: resolved C, silent by 59.6
@@ -340,21 +380,65 @@ def pocket_ratio(keys, music):
     return float(np.mean(r))
 
 
+def make_room(M):
+    """Inside every typing pocket: hats and shaker down POCKET_DUCK dB, the pads' top above 3 kHz down
+    POCKET_PAD_TOP dB, with 80 ms ramps. WHY (round five review): the key ticks sit at 2-4 kHz, the same band as
+    the hats and shaker, so at a quiet level they vanished (the band rose only 0-2 dB in the pockets) and the typing
+    on screen looked silent. Clearing that band lets them be both quiet and heard."""
+    u = np.zeros(M.n)
+    for a, b in POCKETS:
+        u[int(a * SR):int(b * SR)] = 1.0
+    u = np.clip(dsp.lp(dsp.lp(u, 6, 1)[::-1], 6, 1)[::-1], 0, 1)     # ~80 ms ramps either side, no lag
+    for name, g in POCKET_DUCK.items():
+        M.stems[name] *= db(g * u)[:, None]
+    # the piano is rendered inside render(), so its top is carved there through the stem's own time-varying shelf
+    M.cfg['pno']['shelf_curve'] = (3000, POCKET_PAD_TOP, u)
+    for name in ('pad', 'hi'):
+        x = M.stems[name]
+        M.stems[name] = x * (1 - u[:, None]) + dsp.high_shelf(x, 3000, POCKET_PAD_TOP) * u[:, None]
+
+
+def check_hits():
+    """Every musical hit sits on a picture cut or a picture constant read from take2.tsx (within 15 ms).
+    WHY (round five review): a hit typed in by hand is exactly what drifted from the picture last time."""
+    marks = list(PIC['cuts']) + list(C_.values())
+    bad = [t for t in HIT_TIMES() if min(abs(t - c) for c in marks) > 0.015]
+    if bad:
+        raise SystemExit(f'Make it mine: these hits are not on any picture cut or constant: {bad}')
+
+
 def build():
+    check_hits()
     M = compose()
+    make_room(M)
     x, stems = M.render(hall_rt=2.0, hall_db=-11.0, delay_t=0.375, piano_bright=58, piano_felt=10500, air_db=2.0,
-                        presence_db=1.0, air_layer=-26.0, low_cut=38,
-                        balance=dict(pno=0, box=-16, pad=-11, hi=-14, sub=-6, pluck=-12, kick=-6, b808=-8, clap=-10,
+                        presence_db=1.0, air_layer=-26.0, low_cut=38, low_trim_db=-2.0,
+                        balance=dict(pno=0, box=-16, pad=-11, hi=-14, sub=-8.5, pluck=-12, kick=-7, b808=-10.5, clap=-10,
                                      hat=-14, shk=-16, fx=-12, crash=-14))
     x = B.glue(x, thresh_db=-21, ratio=1.8)
+    # two narrow dips on the whole bus: the motif's D and G come round ~120 times, and the sampled grand's strong
+    # second harmonic, doubled by the plucks and the music box, stacked into two towers (D6 1175 Hz, G6 1568 Hz)
+    # 16-17 dB over the spectrum around them (brand rule: 15 at most, so no sound pierces)
+    for f0, g in ((1175, -5.0), (1569, -4.0)):
+        x = dsp.peak_eq(x, f0, g, 10.0)
     # the inhale: near-silence on the cut back to the app as it started (the breath-in rises out of it)
-    x = B.gap(x, HITS['inhale'] - 0.12, HITS['inhale'] + 0.5, depth_db=-45.0, fade_in=0.12, fade_out=0.06)
+    x = B.gap(x, HITS['inhale'] - 0.12, HITS['inhale'] + BREATH_IN + 0.08, depth_db=-45.0, fade_in=0.12, fade_out=0.06)
     x = B.fit_arc(x, ARC, skip=[(HITS['email'] + 1.6, HITS['peak'] + 1.4), (HITS['look_change'] - 2.0, HITS['look_change'] + 1.4)])
     x = B.pre_hit_dip(x, HITS['look_change'], 4.0, 0.12)
     # typing: scaled by measurement so it sits KEYS_UNDER_MUSIC LU under the music inside the pockets
     keys = typing(M.n)
-    keys *= db(-KEYS_UNDER_MUSIC - pocket_ratio(keys, x))
+    # WHY per pocket (round five): one gain for all pockets left the ticks 2-4 dB lower in the busier ones (the
+    # email climb at 41.5), where they then vanished; each pocket now sits KEYS_UNDER_MUSIC under its own music
+    import pyloudnorm as pyln
+    mt = pyln.Meter(SR, block_size=0.2)
+    for a, b in POCKETS:
+        i, j = int(a * SR), int(b * SR)
+        if j - i >= int(0.25 * SR):
+            r = mt.integrated_loudness(keys[i:j]) - mt.integrated_loudness(x[i:j])
+            keys[i:j] *= db(-KEYS_UNDER_MUSIC - r)
     x = x + keys
+    # the held breath: a faint high pad and air under the still 'before' window instead of digital silence
+    x = B.breath_bed(x, HITS['inhale'] - 0.05, HITS['inhale'] + BREATH_IN + 0.1, final_lufs=-47.0)
     x = B.ending(x, END, 1.6)
     from bs_verify import stem_levels
     print('  picture: looks', HITS['look_change'], HITS['look2'], '| parts', SECTIONS['part2'], SECTIONS['part3'],
@@ -362,10 +446,14 @@ def build():
     print('  typing pockets:', ' '.join(f'{a:.2f}-{b:.2f}' for a, b in POCKETS))
     print('  stems (LUFS at final gain):', stem_levels(stems, db(-14 - dsp.lufs(x))))
     print(f'  typing: {pocket_ratio(keys, x - keys):.1f} LU under the music inside the pockets (round two: -12.9)')
-    return B.finish(x, os.path.join(B.OUT, 'take2-mix.wav'), M.n)
+    y = B.finish(x, os.path.join(B.OUT, 'take2-mix.wav'), M.n)
+    # the ticks alone at the same final gain, for bs_measure's 'are they heard' test
+    g = np.sqrt((y ** 2).sum() / max(1e-12, (dsp.fit(x, M.n) ** 2).sum()))
+    B.write_float(os.path.join(B.OUT, '.take2-mix.keys.wav'), dsp.fit(keys * g, M.n))
+    return y
 
 
-HIT_TIMES = lambda: [HITS['look_change'], HITS['look2'], HITS['peak'], HITS['logo']]
+HIT_TIMES = lambda: [HITS['look_change'], HITS['look2'], HITS['peak'], HITS['money'], HITS['logo']]
 
 if __name__ == '__main__':
     build()

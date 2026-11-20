@@ -8,13 +8,18 @@
 # Round four (2026-11-20): a mix engineer's measured review fixed (score audible under the narrator on a phone, air on
 # top, Make it mine refitted from the film's own timeline by music/bs_picture.py, real near-silences, rising hits);
 # music/bs_measure.py prints the brand audio rules as PASS/FAIL numbers for each film.
-#   palette:                   out/palette/1..5-*.wav (20 s sketches of the motif, to choose a sound by ear; 5 = 2 faster)
+# Round five (2026-11-20): a second measured review. The brand piano is now the sampled Salamander Grand
+# (music/bs_piano.py; download once with `.venv/bin/python bs_piano.py fetch`), the fairytale's hits are keyed to the
+# narrator's REAL onsets (bs_voice.snap_words), Make it mine reads its payoff times from the re-cut picture again,
+# no score pumps more than 2 dB, breaths hold a faint bed instead of digital silence, delivery peak is -1.7 dBTP.
+#   palette:                   out/palette/1-3 (three tone-matched choices) + tempo-note-120bpm.wav (not a choice)
 #   film 1 "Once upon a time": take1-mix.wav (voice + score), take1-type-mix.wav (= take1-score.wav, score only)
 #   film 2 "Make it mine":     take2-mix.wav
 #   film 3 "Own everything":   take3-mix.wav
 set -euo pipefail
 cd "$(dirname "$0")/music"
 PY=.venv/bin/python
+$PY -c 'import bs_piano, sys; bs_piano.available() or sys.exit("piano sound bank missing: run .venv/bin/python bs_piano.py fetch")'
 $PY bs_palette.py
 $PY bs_fairytale.py
 $PY bs_mine.py

@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
-"""Brand sound palette: five 20-second sketches of the SAME piano motif, for the owner to choose a direction by ear.
-  1-piano-alone              round-one feel: intimate felt piano, nothing else (100 BPM)
+"""Brand sound palette: THREE 20-second choices of the SAME piano motif, for the owner to choose a direction by ear,
+plus one tempo note.
+  1-piano-alone              round-one feel: intimate piano, nothing else (100 BPM)
   2-piano-electronic         the piano motif + modern electronic production, mid energy (100 BPM)
   3-electronic-forward       the take-3 "electronic" feel he liked: motif on music box + soft saw lead, 808s (100 BPM)
-  4-piano-warm-pads          cinematic and hopeful: piano, slow-opening pads, sub, no drums (100 BPM)
-  5-piano-electronic-uptempo playful product-film energy at 120 BPM
+  tempo-note-120bpm          not a choice: choice 2 at product-film speed, to hear what 120 BPM does
+Round five (review): five sketches were really three (2 and 5 measured near-identical; 1 and 4 differed almost only
+in their bass), and the dull ones could lose to a brighter one just for being bright. So: three choices, and every
+one is MATCHED in tone (match_tone: 2.2% of its energy above 8 kHz, 37% below 160 Hz) so he judges character, not
+tone balance. Sketch 4 (warm pads) is kept in the code but no longer rendered.
 Same form in all five: 1 intro bar, the motif over C-G-Am-F, an answer that walks Am-F-G, a resolved C chord that
 rings out; silent by 19.85 s. Round four: every sketch now builds from quiet to full (SHAPE, about 6-8 LU of
 loudness range) so the owner hears how each palette grows, and all carry real top end (felt piano to 10 kHz, an
@@ -19,7 +23,9 @@ LENGTH = 20.0
 END = 19.85
 OUTDIR = os.path.join(B.OUT, 'palette')
 NAMES = {1: '1-piano-alone', 2: '2-piano-electronic', 3: '3-electronic-forward', 4: '4-piano-warm-pads',
-         5: '5-piano-electronic-uptempo'}
+         5: 'tempo-note-120bpm'}
+RENDER = [1, 2, 3, 5]
+TONE = dict(air=0.022, low=0.37)      # matched shares of energy: above 8 kHz, below 160 Hz
 # the form (bar -> chord). WHY one form for all: the owner compares production, not composition.
 FORM = ['C', 'C', 'G', 'Am', 'F', 'F', 'G']               # bar 0 intro, 1-4 motif, 5-6 answer (F held, G); final C at bar 7
 FORM_UP = ['C', 'C', 'G', 'Am', 'F', 'C', 'G', 'F']        # 120 BPM: one more motif pair; final C at bar 8 (16.0 s)
@@ -113,9 +119,9 @@ def sketch2():
     G = Grid(100)
     M = B.Mix(LENGTH, seed=2)
     rng = np.random.default_rng(22)
-    M.stem('pno', hall=0.35, room=0.2, gain_db=1.0, pump=1.0, comp=(12, 2.5))
-    M.stem('pad', hall=0.4, pump=4.0, gain_db=-17)
-    M.stem('sub', gain_db=-10, pump=3.0)
+    M.stem('pno', hall=0.35, room=0.2, gain_db=1.0, comp=(12, 2.5))
+    M.stem('pad', hall=0.4, pump=2.0, gain_db=-17)
+    M.stem('sub', gain_db=-10, pump=2.0)
     M.stem('pluck', hall=0.2, delay=0.5, gain_db=-20, pump=2.0)
     M.stem('kick', gain_db=-6, room=0.05)
     M.stem('clap', gain_db=-15, room=0.35, hall=0.15)
@@ -156,10 +162,11 @@ def sketch3():
     rng = np.random.default_rng(33)
     # WHY the bell cut: the music box's notes sit in 1.3-2.1 kHz, where ears and phones are most sensitive; with
     # the box carrying the tune that octave held 45% of the sketch's energy (piercing). -6 dB there, box 7 LU down
-    M.stem('box', hall=0.45, delay=0.35, gain_db=-12, eq=((1750, -6.0, 0.8),))
-    M.stem('lead', hall=0.3, delay=0.25, gain_db=-24, pump=3.0)
-    M.stem('brass', hall=0.3, gain_db=-21, pump=3.0)
-    M.stem('pad', hall=0.4, gain_db=-21, pump=5.0)
+    # round five: plus narrow dips on the jingle's own notes (E6 G6 A6 C7), as in the film (bs_own.py)
+    M.stem('box', hall=0.45, delay=0.35, gain_db=-12, eq=((1750, -6.0, 0.8), (1319, -4.0, 8.0), (1568, -6.0, 8.0), (1760, -4.0, 8.0), (2093, -4.0, 8.0)))
+    M.stem('lead', hall=0.3, delay=0.25, gain_db=-24, pump=2.0)
+    M.stem('brass', hall=0.3, gain_db=-21, pump=2.0)
+    M.stem('pad', hall=0.4, gain_db=-21, pump=2.0)
     M.stem('b808', gain_db=-6)
     M.stem('kick', gain_db=-8)
     M.stem('clap', gain_db=-13, room=0.3, hall=0.15)
@@ -207,7 +214,7 @@ def sketch3():
     for k, nn in enumerate(['C6', 'E6', 'G6', 'C7']):
         M.put('box', B.bell(nn, 2.5), tf + G.t(0, 1 + k * 0.5), -2 - k)
     x, _ = M.render(hall_rt=2.2, hall_db=-10.0, air_layer=-24.0,
-                    balance=dict(box=-7, b808=-5, kick=-9, clap=-10, pad=-9, lead=-8, brass=-9, hat=-13, fx=-14))
+                    balance=dict(box=-9, b808=-5, kick=-9, clap=-10, pad=-9, lead=-8, brass=-9, hat=-13, fx=-14))
     x = B.glue(x, thresh_db=-21, ratio=2.0)
     return x, M, [G.t(b) for b in range(1, 8)]
 
@@ -257,11 +264,11 @@ def sketch5():
     G = Grid(120)
     M = B.Mix(LENGTH, seed=5)
     rng = np.random.default_rng(55)
-    M.stem('pno', hall=0.25, room=0.25, gain_db=1.0, pump=1.0, comp=(12, 2.5))
+    M.stem('pno', hall=0.25, room=0.25, gain_db=1.0, comp=(12, 2.5))
     M.stem('box', hall=0.4, delay=0.4, gain_db=-16)
-    M.stem('pad', hall=0.35, gain_db=-20, pump=5.0)
+    M.stem('pad', hall=0.35, gain_db=-20, pump=2.0)
     M.stem('sub', gain_db=-10, pump=2.0)
-    M.stem('pluck', hall=0.15, delay=0.3, gain_db=-19, pump=3.0)
+    M.stem('pluck', hall=0.15, delay=0.3, gain_db=-19, pump=2.0)
     M.stem('kick', gain_db=-6, room=0.04)
     M.stem('clap', gain_db=-14, room=0.35, hall=0.1)
     M.stem('hat', gain_db=-15, room=0.08)
@@ -328,6 +335,33 @@ SKETCH = {1: sketch1, 2: sketch2, 3: sketch3, 4: sketch4, 5: sketch5}
 SHAPE = [(0, -12.0), (1, -10.0), (3, -6.0), (5, -2.0), ('final', 0.0)]
 
 
+def match_tone(x, air, low, rounds=3, limit_db=9.0):
+    """Turn the part of the sound below 160 Hz and the part above 8 kHz up or down so they carry exactly `low` and
+    `air` of the energy (as bs_measure.tone measures it). Zero-phase splits, so the three parts add back to the
+    original exactly. WHY: a fair comparison by ear needs equal brightness and equal weight; otherwise the brighter
+    sketch wins for being brighter (round five review). Gains are capped at +-limit_db."""
+    from scipy.signal import butter, sosfiltfilt
+    import bs_measure as Me
+    lo_sos = butter(4, 160, 'low', fs=B.SR, output='sos')
+    hi_sos = butter(4, 8000, 'high', fs=B.SR, output='sos')
+    gl = gh = 0.0
+    for _ in range(rounds):
+        lo_ = sosfiltfilt(lo_sos, x, axis=0)
+        hi_ = sosfiltfilt(hi_sos, x, axis=0)
+        mid = x - lo_ - hi_
+        t = Me.tone(x)
+        el, eh = t['low160'] / 100, t['air'] / 100
+        em = max(1e-6, 1 - el - eh)
+        # the energy each part needs, given the middle stays put: el' = low * em / (1 - low - air), likewise air
+        dl = 10 * np.log10((low * em / (1 - low - air)) / max(el, 1e-9))
+        dh = 10 * np.log10((air * em / (1 - low - air)) / max(eh, 1e-9))
+        dl, dh = np.clip(dl, -limit_db - gl, limit_db - gl), np.clip(dh, -limit_db - gh, limit_db - gh)
+        gl, gh = gl + dl, gh + dh
+        x = mid + lo_ * B.db(dl) + hi_ * B.db(dh)
+    print(f'  tone matched: below 160 Hz {gl:+.1f} dB, above 8 kHz {gh:+.1f} dB')
+    return x
+
+
 def build(k):
     os.makedirs(OUTDIR, exist_ok=True)
     x, M, downbeats = SKETCH[k]()
@@ -339,6 +373,7 @@ def build(k):
     pts = [((final if b_ == 'final' else b_ * bar), g * sc) for b_, g in SHAPE]
     tt = np.arange(M.n) / B.SR
     x = x * B.db(np.interp(tt, [a for a, _ in pts], [g for _, g in pts]))[:, None]
+    x = match_tone(x, **TONE)
     x = B.ending(x, END, 1.4)
     from bs_verify import stem_levels
     print('  stems (LUFS at final gain):', stem_levels(M.out, B.db(-14 - B.dsp.lufs(x))))
@@ -346,5 +381,5 @@ def build(k):
 
 
 if __name__ == '__main__':
-    for a in sys.argv[1:] or ['1', '2', '3', '4', '5']:
+    for a in sys.argv[1:] or [str(k) for k in RENDER]:
         build(int(a))

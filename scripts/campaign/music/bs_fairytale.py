@@ -13,7 +13,8 @@ Arc (brief, 2026-11-20):
   51.3    "And so...": warm and proud (motif in full, soft beat)
   62.0    "It's time to free ourselves": rousing (full beat, motif in octaves)
   65.9    "...at long, long last... to open source": the held breath, then THE biggest moment
-  70.4    "everything.": final C chord on the word; resolved tail (the motif settles on C); silent by 74.6
+  70.75   "everything.": final C chord on the word; it rings and decays steadily; silent by 74.6
+(times are the narrator's REAL onsets, snapped from the recording; round five)
 Outputs: out/take1-mix.wav (voice + score), out/take1-score.wav (score alone, also used as take1-type-mix.wav for
 the captions-only cut), hidden stems out/.take1-mix.voice.wav / .music.wav for measurement.
 Usage: python bs_fairytale.py"""
@@ -29,7 +30,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 VOICE = os.path.join(HERE, '..', 'film', 'public', 'audio', 'voice-take1-lily.wav')
 WORDS = os.path.join(HERE, '..', 'film', 'src', 'round2', 'take1-words-lily.json')
 LENGTH, END = 75.0, 74.6
-W = V.load_words(WORDS)
+# WHY snapped (round five review): the words file put "shareholder" 0.43 s late and "everything." 0.33 s early, so
+# the wink played over the punchline and the final chord landed in the breath before the last word. Every word that
+# follows a real pause now starts where the recording says it does (bs_voice.snap_words); the corrected table is
+# also written to out/take1-words-lily.snapped.json for the picture (the film reads the uncorrected file).
+W_FILE = V.load_words(WORDS)
+W = V.snap_words(W_FILE, VOICE)
 w = lambda text, after=0.0, edge='start': V.word(W, text, after, edge)
 
 # ----------------------------------------------------------------------------- the one table of story times
@@ -92,20 +98,26 @@ PROTECT = [(T['treasure_end'] + 0.02, T['shareholder'] - 0.03)]
 LEVELS = [(0.0, -3.0), (T['andwe'], -4.0), (T['however'] - 0.4, -7.0), (T['something'] - 0.05, -6.0),
           (T['something'], 0.0), (T['blinded'], -1.5), (T['treasure_end'], -1.5), (T['but'], -3.0),
           (T['anyone'], 0.0), (T['itstime1'], 0.5), (T['everything'], 1.5), (LENGTH, 1.5)]
-# how far (LU) the music sits under the narrator while she speaks; less at the climax, never under 10
-# WHY these numbers: they ARE the arc while she speaks — the opening sits under her (sly, quiet), the
-# near-silence further still, and the distance closes step by step to the climax, never under 10 LU.
-# Round four lowered them all (opening 18 -> 14 ...): measured on the final stems the score sat at -24 to -33 LUFS
-# under a -14 LUFS voice, which on a phone is no score at all. The 1-4 kHz carve still keeps her words clear.
-# From "open" the margin is already the climax's (11 LU as set, 10 LU as measured over whole lines), so part of the swell happens under her last words
-# instead of all of it arriving after "everything." (that measured as a 17 LU jump in half a second).
-MARGINS = [(0.0, 14.0), (T['andwe'] - 0.1, 15.0), (T['however'] - 0.1, 18.0), (T['something'] - 0.03, 13.0),
-           (T['blinded'] - 0.1, 13.5), (T['but'] - 0.1, 12.0), (T['anyone'] - 0.1, 11.5), (T['andso'] - 0.1, 11.0),
-           (T['itstime1'] - 0.1, 11.0), (T['itstime2'] - 0.1, 11.0), (T['open'] - 0.1, 11.0), (T['everything'] - 0.1, 11.0)]
-TAIL_RAMP = 1.0      # s: after "everything." the music rises to its full bloom over this long (was 0.22 s)
+# how far (LU) the music sits under the narrator while she speaks. WHY these numbers: they ARE the arc while she
+# speaks: the opening sits well under her (sly, quiet), the hush further still, and the distance closes step by step
+# to the climax. The 1-4 kHz carve keeps her words clear throughout.
+# Round five: the margins are spread wider, because ducking had flattened the story's rise to 3.5 LU over 70 s
+# (the score alone rises 19 LU). Opening 16, the hush 20, "something" 11 (the door opening: at least 4 LU up on
+# the hush), the lift 11 to 10, the last two lines 9 (brand rule: 10 LU under a narrator, 9 on the closing lines).
+MARGINS = [(0.0, 16.0), (T['andwe'] - 0.1, 16.5), (T['however'] - 0.1, 20.0), (T['something'] - 0.03, 11.0),
+           (T['blinded'] - 0.1, 12.0), (T['but'] - 0.1, 11.0), (T['anyone'] - 0.1, 10.5), (T['andso'] - 0.1, 10.7),
+           (T['itstime1'] - 0.1, 9.0), (T['itstime2'] - 0.1, 9.0), (T['open'] - 0.1, 9.2), (T['everything'] - 0.1, 9.6)]
+TAIL_RAMP = 0.6      # s: after "everything." the music rises to its full bloom over this long
+# WHY a decay from DECAY_AT (round five review: the music swelled -25 -> -13 then fell to -54 in 1.5 s, which
+# reads as a swell cut away): from here the whole score falls at a steady DECAY_DB_S, like a chord left to ring
+# in a hall, and only the last FADE s are a fade to true silence.
+DECAY_AT, DECAY_DB_S, FADE = T['last_end'] + 0.40, 11.5, 0.6
 TAIL_OVER_VOICE = -1.0  # LU: the bloom's loudest momentary level, relative to the narration's average
 SPLITS = [a for a, _ in MARGINS[1:]]
 HITS = [T['something'], WINK[0], T['but'], T['anyone'], T['andso'], T['itstime1'], T['everything']]
+
+
+MARGIN_HEADROOM = 0.6   # LU: the ducker aims this far past each rule, so a meter grouping words differently still passes
 
 
 def margin_at(t):
@@ -113,7 +125,7 @@ def margin_at(t):
     for a, b in MARGINS:
         if t >= a:
             v = b
-    return v
+    return v + MARGIN_HEADROOM
 
 
 def compose():
@@ -121,7 +133,9 @@ def compose():
     rng = np.random.default_rng(171)
     hum = np.random.default_rng(271)
     jit = lambda: float(hum.uniform(-0.010, 0.010))
-    for name, kw in dict(pno=dict(hall=0.45, room=0.15, pump=0.8, comp=(12, 2.5)), pad=dict(hall=0.45, pump=3.0), hi=dict(hall=0.65, pump=2.0),
+    # WHY the piano's 100 Hz dip and no pump (round five): the sampled grand carries far more real bass than the
+    # old soundfont (the stem measured 46% below 160 Hz, the rule is 30-40); and nothing pumps under a narrator
+    for name, kw in dict(pno=dict(hall=0.45, room=0.15, comp=(12, 2.5), eq=((100, -4.0, 0.7),)), pad=dict(hall=0.45, pump=2.0), hi=dict(hall=0.65, pump=2.0),
                          sub=dict(pump=2.0), pluck=dict(hall=0.25, delay=0.45, pump=2.0), box=dict(hall=0.5, delay=0.3),
                          kick=dict(room=0.05), b808=dict(), clap=dict(room=0.35, hall=0.15), hat=dict(room=0.1),
                          shk=dict(room=0.2), fx=dict(hall=0.3), crash=dict(hall=0.2), air=dict()).items():
@@ -392,8 +406,12 @@ def compose():
         M.put('box', B.bell(nn, 2.6), T['last_end'] + 0.05 + k * 0.11, -3 - 1.5 * k, p=-0.5 + 0.25 * k)
     # the resolved tail: the motif's falling shape (E D C), now landing home on C
     tt = T['last_end'] + 0.25
-    for dt, nn, d, v in ((0.0, 'E5', 0.95, 50), (0.95, 'D5', 0.33, 44), (1.28, 'C5', ring, 46)):
-        P(tt + dt, nn, v, d if d < ring else END - tt - dt, p=0.15)
+    # WHY every note held to the end (round five), as with the sustain pedal down: a note let go mid-ring made the
+    # level step down 2.3 dB in 100 ms at 73.2 s, a small 'cut' in what should be one long, even decay
+    # and the last note (home, C) a touch softer than the two before it: a sampled grand's high note falls
+    # 2-3 dB per 100 ms just after it is struck, which on top of the score's own decay read as a step
+    for dt, nn, v, g in ((0.0, 'E5', 50, 0.0), (0.95, 'D5', 44, -1.0), (1.28, 'C5', 42, -3.0)):
+        P(tt + dt, nn, v, END - tt - dt, p=0.15, gdb=g)
     return M
 
 
@@ -432,12 +450,14 @@ def build():
     # layer and a 10 kHz shelf, for 1.5-3% of the energy above 8 kHz instead of 0.2%.
     x, stems = M.render(hall_rt=2.8, hall_db=-8.0, piano_bright=54, piano_felt=10500, delay_t=0.45, air_db=3.0,
                         presence_db=1.5, air_layer=-17.0, low_cut=34,
-                        balance=dict(pno=0, pad=-7, hi=-12, sub=-10.5, pluck=-15, box=-12, kick=-8, b808=-12.5, clap=-13,
+                        balance=dict(pno=0, pad=-7, hi=-12, sub=-12.5, pluck=-15, box=-12, kick=-8, b808=-14.5, clap=-13,
                                      hat=-17, shk=-20, fx=-12, crash=-16, air=-30))
     x = B.glue(x, thresh_db=-22, ratio=1.6)
     x = x * db(level_curve(M.n))[:, None]
     x = B.pre_hit_dip(x, T['everything'], 6.0, 0.15)
-    x = B.ending(x, END, 1.6)
+    tt = np.arange(M.n) / SR
+    x = x * db(-DECAY_DB_S * np.clip(tt - DECAY_AT, 0, None))[:, None]
+    x = B.ending(x, END, FADE)
     # score alone (the captions cut)
     y_score = B.finish(x, os.path.join(B.OUT, 'take1-score.wav'), M.n)
     # with the narrator
@@ -451,6 +471,8 @@ def build():
     mus_d, tail_db = tail_bloom(music, g, lv)
     vs = np.stack([voice, voice], -1)
     mix = B.ending(vs + mus_d, END, 0.05)
+    import json
+    json.dump(W, open(os.path.join(B.OUT, 'take1-words-lily.snapped.json'), 'w'), indent=1)
     path = os.path.join(B.OUT, 'take1-mix.wav')
     y = B.finish(mix, path, M.n)
     gain = np.sqrt((y ** 2).sum() / max(1e-12, (mix ** 2).sum()))

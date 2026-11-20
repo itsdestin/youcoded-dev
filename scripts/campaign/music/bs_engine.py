@@ -2,8 +2,8 @@
 
 WHY a new engine: the owner rejected round two's soundfont orchestra / toy band / disco-funk and asked for "the earlier
 piano-style music" with polished, premium sound design. So:
-  - the piano is the round-one felt grand (GeneralUser GS rendered note by note, played at a brighter velocity and
-    turned back down, then softened), which he liked;
+  - the piano: round five swaps the round-one soundfont grand for the multi-sampled Salamander Grand Piano
+    (bs_piano.py, CC BY 3.0), played at its written velocities and gently softened (render_piano);
   - everything electronic (sub bass, 808, kick, clap, hats, pads, plucks, music box, swells) is synthesised here in
     numpy instead of taken from General MIDI presets, so each sound is clean, controllable and few in number;
   - one mixer gives every sound a dry level, a hall send, a room send, a ping-pong delay send and a sidechain "pump"
@@ -347,8 +347,61 @@ def piano_tone(x, midi, vel, exc_db=-6.0):
     return y
 
 
+# Round five: the Salamander grand (bs_piano.py). Its level per velocity, measured (mean peak dB over C2-C6).
+SAL_LEVEL = ([1, 20, 41, 60, 80, 100, 120, 127], [-90.3, -59.7, -38.2, -28.1, -21.1, -14.9, -9.3, -7.2])
+PIANO = os.environ.get('BRAND_PIANO', 'salamander')    # 'gm' renders the round-four soundfont piano for comparison
+
+
 def render_piano(events, n, bright=40, felt=10000.0):
     """events: dicts t, midi, vel, dur, gdb, pan. Returns stereo (n,2).
+    Round five: with the Salamander grand each note is played AT ITS WRITTEN VELOCITY (its own recorded layer for
+    that touch: soft notes really are soft-hammered, which is the felt colour) and only its LEVEL is mapped onto the
+    loudness-per-velocity curve every score was balanced against (VEL_LEVEL). WHY the level map: this sound bank
+    spans 30 dB between velocity 41 and 100 where the old one spanned 13, so without it every quiet bass note and
+    off-beat chord written for the old piano would vanish. No added harmonics, no harder playing, no hammer tick:
+    those faked what this piano has. `bright` is ignored here."""
+    if PIANO == 'salamander':
+        return _render_salamander(events, n, felt)
+    return _render_gm(events, n, bright, felt)
+
+
+def _render_salamander(events, n, felt):
+    import bs_piano
+    reqs, prep = set(), []
+    for e in events:
+        d = round(max(0.3, e['dur']) / 0.1) * 0.1
+        v = int(np.clip(e['vel'], 1, 127))
+        comp = float(np.interp(v, *VEL_LEVEL) - np.interp(v, *SAL_LEVEL))
+        key = (int(e['midi']), v, round(d, 3))
+        reqs.add(key)
+        prep.append((e, key, comp))
+    cache = bs_piano.render(reqs) if reqs else {}
+    soft, out = {}, np.zeros((n, 2))
+    for e, key, comp in prep:
+        fc = e.get('felt', felt)
+        sk = key + (fc,)
+        if sk not in soft:
+            # WHY still a gentle low-pass (12 dB/oct, rising with pitch): a concert grand close-miked is brighter
+            # than the brand's soft, intimate piano; this takes the edge off the hammer without the muffled
+            # sound of the old one (the recording really has content up there to keep)
+            fcn = min(18000, fc + 60 * max(0, key[0] - 60))
+            y = lp(cache[key], fcn, 2)
+            f_ = int(0.0007 * SR)
+            y[:f_] *= np.linspace(0, 1, f_)[:, None]
+            soft[sk] = y
+        seg = soft[sk] * db(e.get('gdb', 0.0) + comp)
+        p = e.get('pan', 0.0) * float(np.clip((key[0] - 48) / 18, 0, 1))
+        seg = pan(seg, p)
+        i = int(round(e['t'] * SR))
+        if i >= n:
+            continue
+        j = min(n, i + len(seg))
+        out[i:j] += seg[:j - i]
+    return out
+
+
+def _render_gm(events, n, bright=40, felt=10000.0):
+    """The round-four soundfont piano (kept to compare against; BRAND_PIANO=gm).
     WHY bright: soft soundfont velocities are dull (no 2-4 kHz), so each note is played harder (+bright) for its
     tone and turned down by the measured level difference (round one's trick, which the owner liked).
     WHY felt: a gentle low-pass that softens the hammer: intimate, never muffled. Round four opens it from 6.5 to
@@ -450,7 +503,7 @@ class Mix:
 
     def render(self, hall_rt=2.6, hall_db=-8.0, room_db=-10.0, delay_t=0.45, delay_fb=0.38, delay_db=-10.0,
                piano_bright=40, piano_felt=10000.0, pump_rel=0.16, air_db=2.0, low_cut=30, balance=None,
-               presence_db=1.0, air_layer=None, gate=None):
+               presence_db=1.0, air_layer=None, gate=None, low_trim_db=0.0):
         """-> (bus, dict of processed dry stems incl. 'hall','room','delay'), unmastered.
         gate: (gain dB per sample, stems to leave alone): turns every other stem AND the hall / delay returns down
         by that curve. WHY: a 'clear the room' moment (take 3's marker alone on silence) cannot be made on the
@@ -468,6 +521,11 @@ class Mix:
             c = self.cfg[name]
             if not np.any(x):
                 continue
+            if c.get('shelf_curve') is not None:
+                # (f0, dB, weight per sample): a high shelf blended in only where weight > 0 (round five: Make it
+                # mine carves the piano's top inside typing pockets so quiet key ticks are heard)
+                f0, gdb, wgt = c['shelf_curve']
+                x = x * (1 - wgt[:, None]) + dsp.high_shelf(x, f0, gdb) * wgt[:, None]
             if c['hpf']: x = hp(x, c['hpf'], 2)
             if c['lpf']: x = lp(x, c['lpf'], 2)
             for f0, g, q in c['eq']:
@@ -512,7 +570,10 @@ class Mix:
         # +3 dB bump of side signal around the split, measured as a WIDER low end)
         from scipy.signal import butter, sosfiltfilt
         lo_ = sosfiltfilt(butter(4, 120, 'low', fs=SR, output='sos'), x, axis=0)
-        x = x - lo_ + lo_.mean(axis=1, keepdims=True)
+        # low_trim_db (round five): the same split also turns everything under ~120 Hz down by this much. WHY: the
+        # sampled grand carries more real bass than the old soundfont, and phones play none of it; the films must
+        # keep 35-40% of their energy below 160 Hz (two were at 44-46%)
+        x = x - lo_ + lo_.mean(axis=1, keepdims=True) * db(low_trim_db)
         x = dsp.peak_eq(x, 330, -1.5, 0.8)       # WHY: piano + pads pile up around 300 Hz (boxy); a small dip clears it
         x = dsp.high_shelf(x, 6000, presence_db)  # WHY: a little presence without a harsh peak
         x = dsp.high_shelf(x, 10000, air_db)      # WHY (round four): the air shelf moved up to 10 kHz, above the
@@ -590,6 +651,27 @@ def gap(x, t0, t1, depth_db=-45.0, fade_in=0.1, fade_out=0.06):
     return x * db(gap_curve(len(x), t0, t1, depth_db, fade_in, fade_out))[:, None]
 
 
+def breath_bed(x, t0, t1, final_lufs=-48.0, target=-14.0, seed=11, chord='G5 C6 D6'):
+    """Fill a planned near-silence (t0-t1) with a faint, still bed: a high, soft pad and a breath of air, landing at
+    final_lufs (momentary, in the mastered file) and fading in and out with the gap.
+    WHY (round five review): the planned breaths measured -91 to -109 LUFS, true digital silence, which on
+    headphones sounds like a dropout or a buffering glitch rather than a held breath. -45 to -50 is silence to the
+    ear in context but keeps the room 'on'."""
+    n = len(x)
+    rng = np.random.default_rng(seed)
+    dur = t1 - t0 + 0.3
+    bed = pad(chord, dur, rng, att=0.12, rel=0.15, lo=5200, voices=3, sheen=0.3) + air(dur + 0.15, rng, 4500, 12000) * 0.5
+    bed = hp(bed, 400, 2)
+    y = np.zeros((n, 2))
+    i = int((t0 - 0.15) * SR)
+    j = min(n, i + len(bed))
+    y[i:j] = bed[:j - i]
+    # the level it must have before mastering so it measures final_lufs after it: the master gain is target - lufs(x)
+    g_master = target - dsp.lufs(x)
+    lv = dsp.lufs(y[int(t0 * SR):int(t1 * SR)])
+    return x + y * db(final_lufs - g_master - lv)
+
+
 def fit_arc(x, arc, rounds=5, target=-14.0, dense=1.0, skip=()):
     """Turn the bus so its short-term loudness (3 s) meets the arc's targets [(t, LUFS)] once mastered to target.
     Gain is interpolated in dB between the arc's points, so the music's own dynamics inside a section survive.
@@ -620,11 +702,18 @@ def ending(x, end, fade=1.2):
     return E.fade_in_out(x, end, fade)
 
 
+TP_CEILING = 1.7    # dB under full scale
+
+
 def finish(x, path, n, target=-14.0):
     # WHY report the limiter's worst reduction: 'real dynamics' means the limiter only shaves stray peaks
     # (a few dB at most); more than ~4 dB means transients are being crushed and the mix needs rebalancing.
-    over = dsp.true_peak_db(x * db(target - dsp.lufs(x))) + 1.3
-    y = E.finish(x, path, n, target)
+    over = dsp.true_peak_db(x * db(target - dsp.lufs(x))) + TP_CEILING
+    # WHY -1.7 (round five): the films' delivery target is a true peak of -1.5 dB or lower (the director's spec);
+    # the old -1.3 ceiling measured -1.3. 0.2 dB under the target leaves room for the encoder's own overshoot.
+    y = dsp.fit(dsp.master(x, target=target, tp_ceiling=-TP_CEILING), n)
+    y[-1] = 0
+    sf.write(path, y, SR, subtype='PCM_24')
     # how long the limiter works hard: share of time the master is pulling more than 1 / 3 dB, and where the worst is
     g = 20 * np.log10(np.convolve(np.abs(y).max(1), np.ones(240) / 240, 'same') + 1e-9) - \
         20 * np.log10(np.convolve(np.abs(dsp.fit(x, n) * db(dsp.lufs(y) - dsp.lufs(dsp.fit(x, n)))).max(1), np.ones(240) / 240, 'same') + 1e-9)
