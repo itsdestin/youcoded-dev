@@ -24,12 +24,37 @@ const box = (r: R, w: number, h: number): React.CSSProperties => ({ position: 'a
 // =====================================================================================================
 const S = { bg: '#E7E2EC', card: '#F5F2F7', tile: '#CFC7D8', tile2: '#BDB3C9', ink: '#5A5065', ink2: '#9B91A6', line: '#D9D2E0' };
 
-/** Where the person's own things sit on the same screen (fractions), so the film can lift them off exactly. */
-export const sameLayout = (w: number, h: number) => {
+type Rects = { photo: R; msg: R; note: R; grid: R };
+// WHY three whole layouts (not a tile shuffle): "they dictated how you interact" has to be visible from across
+// the room. One synchronised click moves every block on every screen to the same new place at the same time.
+const LAYOUTS: { portrait: Rects[]; wide: Rects[] } = {
+  portrait: [
+    { photo: { x: 0.07, y: 0.15, w: 0.86, h: 0.19 }, msg: { x: 0.07, y: 0.37, w: 0.86, h: 0.1 }, note: { x: 0.07, y: 0.5, w: 0.86, h: 0.09 }, grid: { x: 0.07, y: 0.62, w: 0.86, h: 0.27 } },
+    { grid: { x: 0.07, y: 0.15, w: 0.86, h: 0.27 }, photo: { x: 0.07, y: 0.45, w: 0.86, h: 0.19 }, msg: { x: 0.07, y: 0.67, w: 0.86, h: 0.1 }, note: { x: 0.07, y: 0.8, w: 0.86, h: 0.09 } },
+    { msg: { x: 0.07, y: 0.15, w: 0.86, h: 0.1 }, grid: { x: 0.07, y: 0.28, w: 0.86, h: 0.27 }, note: { x: 0.07, y: 0.58, w: 0.86, h: 0.09 }, photo: { x: 0.07, y: 0.7, w: 0.86, h: 0.19 } },
+  ],
+  wide: [
+    { photo: { x: 0.25, y: 0.17, w: 0.37, h: 0.4 }, msg: { x: 0.65, y: 0.17, w: 0.31, h: 0.18 }, note: { x: 0.65, y: 0.39, w: 0.31, h: 0.18 }, grid: { x: 0.25, y: 0.63, w: 0.71, h: 0.24 } },
+    { grid: { x: 0.25, y: 0.17, w: 0.71, h: 0.24 }, photo: { x: 0.25, y: 0.47, w: 0.37, h: 0.4 }, msg: { x: 0.65, y: 0.47, w: 0.31, h: 0.18 }, note: { x: 0.65, y: 0.69, w: 0.31, h: 0.18 } },
+    { msg: { x: 0.25, y: 0.17, w: 0.31, h: 0.18 }, note: { x: 0.25, y: 0.39, w: 0.31, h: 0.18 }, photo: { x: 0.59, y: 0.17, w: 0.37, h: 0.4 }, grid: { x: 0.25, y: 0.63, w: 0.71, h: 0.24 } },
+  ],
+};
+const lerpR = (a: R, b: R, p: number): R => ({ x: a.x + (b.x - a.x) * p, y: a.y + (b.y - a.y) * p, w: a.w + (b.w - a.w) * p, h: a.h + (b.h - a.h) * p });
+/** Where every block sits for a layout value `lay` (0, 1, 2, or in between while it moves). */
+export const sameLayout = (w: number, h: number, lay = 0): Rects & { portrait: boolean } => {
   const portrait = h > w;
-  return portrait
-    ? { photo: { x: 0.07, y: 0.15, w: 0.86, h: 0.19 }, msg: { x: 0.07, y: 0.37, w: 0.86, h: 0.1 }, note: { x: 0.07, y: 0.5, w: 0.86, h: 0.09 }, portrait }
-    : { photo: { x: 0.25, y: 0.17, w: 0.37, h: 0.4 }, msg: { x: 0.65, y: 0.17, w: 0.31, h: 0.18 }, note: { x: 0.65, y: 0.39, w: 0.31, h: 0.18 }, portrait };
+  const L = portrait ? LAYOUTS.portrait : LAYOUTS.wide;
+  const i = Math.max(0, Math.min(1, Math.floor(lay))), p = smooth(lay - i);
+  const a = L[i], b = L[Math.min(2, i + 1)];
+  return { photo: lerpR(a.photo, b.photo, p), msg: lerpR(a.msg, b.msg, p), note: lerpR(a.note, b.note, p), grid: lerpR(a.grid, b.grid, p), portrait };
+};
+const gridDims = (w: number, h: number, portrait: boolean) => (portrait ? { cols: 3, rows: 2 } : { cols: 6, rows: 1 });
+/** Centre of tile `i` in screen pixels: the film aims a pointer at it. */
+export const tileCenter = (w: number, h: number, lay: number, i: number) => {
+  const L = sameLayout(w, h, lay); const g = L.grid; const { cols, rows } = gridDims(w, h, L.portrait);
+  const k = Math.min(w, h) / 100, gx = 2.4 * k;
+  const tw = (g.w * w - gx * (cols - 1)) / cols, th = (g.h * h - gx * (rows - 1)) / rows;
+  return { x: g.x * w + (i % cols) * (tw + gx) + tw / 2, y: g.y * h + Math.floor(i / cols) * (th + gx) + th / 2 };
 };
 
 /** A photo drawn as a soft little landscape: the person's own picture (no stock imagery). */
@@ -47,7 +72,7 @@ export const PhotoThumb: React.FC<{ w: number; h: number; v: number; r: number }
   );
 };
 
-/** The three personal things on the same screen. Exported so the film can draw the lifted copies identically. */
+/** The three personal things on the same screen. */
 export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: number; k: number }> = ({ kind, w, h, k }) => {
   const base: React.CSSProperties = { width: w, height: h, background: S.card, borderRadius: 3 * k, boxSizing: 'border-box', overflow: 'hidden', fontFamily: DMSANS };
   if (kind === 'photo') {
@@ -56,7 +81,7 @@ export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: n
       <div style={{ ...base, padding: g, display: 'flex', flexDirection: 'column', gap: g * 0.8 }}>
         <div style={{ fontSize: 4.2 * k, fontWeight: 700, color: S.ink }}>Photos</div>
         <div style={{ display: 'flex', gap: g, flex: 1 }}>
-          {[0, 1, 2].map((v) => <div key={v} style={{ width: tw, flex: 'none' }}><PhotoThumb w={tw} h={h - g * 3 - 5 * k} v={v} r={1.6 * k} /></div>)}
+          {[0, 1, 2].map((v) => <div key={v} style={{ width: tw, flex: 'none' }}><PhotoThumb w={tw} h={Math.max(1, h - g * 3 - 5 * k)} v={v} r={1.6 * k} /></div>)}
         </div>
       </div>
     );
@@ -78,44 +103,68 @@ export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: n
   );
 };
 
-const Lock: React.FC<{ s: number; o: number; dy?: number; rot?: number }> = ({ s, o, dy = 0, rot = 0 }) => (
-  <svg width={s} height={s} viewBox="0 0 24 24" style={{ opacity: o, transform: `translateY(${dy}px) rotate(${rot}deg) scale(${0.6 + 0.4 * o})`, filter: 'drop-shadow(0 1px 1px rgba(40,20,60,0.35))' }}>
-    <rect x="4.5" y="10.5" width="15" height="11" rx="2.6" fill="#43354E" />
-    <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="#43354E" strokeWidth="2.4" fill="none" />
-    <circle cx="12" cy="15.6" r="1.6" fill="#E7E2EC" />
-  </svg>
-);
+/** A padlock. `p` 0..1 is its arrival: it drops in a little large and shakes as it snaps shut. */
+const Lock: React.FC<{ s: number; p: number; off: number }> = ({ s, p, off }) => {
+  const a = smooth(p * 2.5);
+  const shake = p > 0.15 && p < 1 ? Math.sin((p - 0.15) * 46) * 9 * (1 - p) : 0;
+  return (
+    <svg width={s} height={s} viewBox="0 0 24 24" style={{ opacity: a * (1 - smooth(off * 1.6)), transform: `translateY(${off * s * 1.4}px) rotate(${shake + off * 50}deg) scale(${1.35 - 0.35 * a})`, filter: 'drop-shadow(0 1px 1px rgba(40,20,60,0.35))' }}>
+      <rect x="4.5" y="10.5" width="15" height="11" rx="2.6" fill="#43354E" />
+      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="#43354E" strokeWidth="2.4" fill="none" />
+      <circle cx="12" cy="15.6" r="1.6" fill="#E7E2EC" />
+    </svg>
+  );
+};
+
+/** Where the person's "ask" bar sits on any screen (fractions), so the film can aim the caret at it. */
+export const askRect = (w: number, h: number) => (h > w ? { x: 0.06, y: 0.885, w: 0.88, h: 0.08 } : { x: 0.25, y: 0.86, w: 0.5, h: 0.1 });
+
+/** The person's "ask" bar: the one thing every screen will share. A plain light field, nothing more.
+ *  `text`/`n` type into it (it grows upward to fit), `caret` blinks, `fs` is the type size in px. */
+export const AskBar: React.FC<{ w: number; h: number; o?: number; text?: string; n?: number; caret?: boolean; fs?: number; dark?: boolean }> = ({ w, h, o = 1, text = '', n = 0, caret = false, fs, dark }) => {
+  const k = Math.min(w, h) / 100;
+  const r = askRect(w, h);
+  const size = fs ?? (h > w ? 4.6 : 4) * k;
+  return (
+    <div style={{ position: 'absolute', left: r.x * w, width: r.w * w, bottom: (1 - r.y - r.h) * h, minHeight: r.h * h, opacity: o, boxSizing: 'border-box',
+      padding: `${size * 0.42}px ${size * 0.8}px`, borderRadius: Math.min(r.h * h / 2, size * 1.6), background: dark ? '#2E2238' : '#FFFFFF',
+      boxShadow: `0 ${0.5 * k}px ${2 * k}px rgba(40,20,60,0.16), inset 0 0 0 ${Math.max(1, 0.3 * k)}px rgba(151,80,170,0.18)`,
+      display: 'flex', alignItems: 'center', fontFamily: DMSANS, fontSize: size, lineHeight: 1.2, fontWeight: n > 0 ? 700 : 500, letterSpacing: '-0.015em', color: n > 0 ? '#21152C' : '#8A7B96' }}>
+      <span>
+        {n > 0 ? text.slice(0, n) : 'ask…'}
+        <span style={{ display: 'inline-block', width: Math.max(1.5, size * 0.1), height: size * 1.05, marginLeft: size * 0.06, verticalAlign: '-0.18em', borderRadius: size, background: '#9750AA', opacity: caret ? 1 : 0 }} />
+      </span>
+    </div>
+  );
+};
 
 export type SameProps = {
   w: number; h: number;
-  /** 0..1 the tiles rearrange themselves (the same "update" lands on every screen at once) */
-  shuffle?: number;
-  /** 0..1 padlocks land on what the device may not do; `unlock` 0..1 knocks them off again */
-  lock?: number; unlock?: number;
+  /** the layout, 0..2 (in between while every block slides to its new place) */
+  lay?: number;
+  /** 0..1 "Your layout has been updated" banner */
+  banner?: number;
+  /** padlocks: one arrival value for every locked tile, or one per tile; `unlock` 0..1 knocks them off */
+  lock?: number | number[]; unlock?: number;
   /** 0..1 "Terms have changed" dialog; `accept` 0..1 its button pressed and the dialog gone */
   dialog?: number; accept?: number;
   /** 0..1 the companies' new "Ask AI" button stuck onto the screen */
   ai?: number;
-  /** which personal things have been lifted off (left as empty outlines) */
-  gone?: { photo?: number; msg?: number; note?: number };
+  /** the person's ask bar (only once it is theirs) */
+  ask?: { o: number; text?: string; n?: number; caret: boolean; fs?: number };
 };
-const TILE_ORDER = [0, 1, 2, 3, 4, 5];
-const SHUFFLED = [4, 0, 5, 2, 1, 3];
 
-export const SameScreen: React.FC<SameProps> = ({ w, h, shuffle = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, gone = {} }) => {
+export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, ask }) => {
   const k = Math.min(w, h) / 100;
-  const L = sameLayout(w, h);
+  const L = sameLayout(w, h, lay);
   const P = L.portrait;
-  // tile slots: 3x2 on a phone, 6x1 on a wide screen
-  const grid = P ? { x: 0.07, y: 0.63, w: 0.86, h: 0.29, cols: 3, rows: 2 } : { x: 0.25, y: 0.63, w: 0.71, h: 0.27, cols: 6, rows: 1 };
+  const { cols, rows } = gridDims(w, h, P);
+  const g = L.grid;
   const gx = 2.4 * k;
-  const tw = (grid.w * w - gx * (grid.cols - 1)) / grid.cols, th = (grid.h * h - gx * (grid.rows - 1)) / grid.rows;
-  const slot = (i: number) => ({ x: grid.x * w + (i % grid.cols) * (tw + gx), y: grid.y * h + Math.floor(i / grid.cols) * (th + gx) });
-  const sh = smooth(shuffle);
+  const tw = (g.w * w - gx * (cols - 1)) / cols, th = (g.h * h - gx * (rows - 1)) / rows;
   const tileHues = ['#CFC7D8', '#C6BDD1', '#D6CFDE', '#C2B8CE', '#CCC4D6', '#BFB5CB'];
-  const banner = Math.min(smooth(shuffle * 3), 1 - smooth((shuffle - 0.7) * 4));
-  const lockO = smooth(lock) * (1 - smooth(unlock));
-  const dlg = smooth(dialog) * (1 - smooth((accept - 0.45) * 2.2));
+  const lockOf = (i: number) => (Array.isArray(lock) ? lock[i] ?? 0 : i % 3 !== 0 ? lock : 0);
+  const dlg = smooth(dialog) * (1 - smooth((accept - 0.3) * 3));
   return (
     <div style={{ position: 'absolute', inset: 0, background: S.bg, overflow: 'hidden', fontFamily: DMSANS }}>
       {/* status row */}
@@ -125,69 +174,83 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, shuffle = 0, lock = 0, u
       {!P && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 0.2 * w, background: '#DED8E5' }}>
         {[0, 1, 2, 3, 4].map((i) => <div key={i} style={{ position: 'absolute', left: 4 * k, top: (0.17 + i * 0.1) * h, width: 0.2 * w - 8 * k, height: 4 * k, borderRadius: 2 * k, background: i === 0 ? S.tile2 : S.tile }} />)}
       </div>}
-      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: (P ? 0.08 : 0.08) * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink }}>Good morning</div>
-      {(['photo', 'msg', 'note'] as const).map((kind) => {
-        const r = L[kind]; const g = gone[kind] ?? 0;
-        return (
-          <div key={kind} style={box(r, w, h)}>
-            {/* the hole a lifted thing leaves: a dashed outline, so you can see something was taken */}
-            <div style={{ position: 'absolute', inset: 0, borderRadius: 3 * k, border: `${0.6 * k}px dashed ${S.ink2}`, opacity: smooth(g * 3) * 0.7 }} />
-            <div style={{ position: 'absolute', inset: 0, opacity: g > 0 ? 0 : 1 }}><OwnCard kind={kind} w={r.w * w} h={r.h * h} k={k} /></div>
-          </div>
-        );
-      })}
-      {TILE_ORDER.map((i) => {
-        const a = slot(i), b = slot(SHUFFLED[i]);
-        const x = a.x + (b.x - a.x) * sh, y = a.y + (b.y - a.y) * sh;
+      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink }}>Good morning</div>
+      {(['photo', 'msg', 'note'] as const).map((kind) => (
+        <div key={kind} style={box(L[kind], w, h)}><OwnCard kind={kind} w={L[kind].w * w} h={L[kind].h * h} k={k} /></div>
+      ))}
+      {[0, 1, 2, 3, 4, 5].map((i) => {
+        const x = g.x * w + (i % cols) * (tw + gx), y = g.y * h + Math.floor(i / cols) * (th + gx);
+        const lk = lockOf(i);
+        const lo = smooth(lk * 2.5) * (1 - smooth(unlock));
         return (
           <div key={i} style={{ position: 'absolute', left: x, top: y, width: tw, height: th, borderRadius: 3 * k, background: tileHues[i], display: 'flex', alignItems: 'center', justifyContent: 'center',
-            filter: lockO > 0 && i % 3 !== 0 ? `saturate(${1 - lockO}) brightness(${1 - 0.08 * lockO})` : undefined }}>
-            <div style={{ width: tw * 0.36, height: tw * 0.36, borderRadius: tw * 0.12, background: 'rgba(255,255,255,0.55)' }} />
-            {i % 3 !== 0 && lockO > 0 && <div style={{ position: 'absolute' }}><Lock s={tw * 0.5} o={lockO} dy={-smooth(unlock) * tw * 0.6} rot={smooth(unlock) * 40} /></div>}
+            filter: lo > 0 ? `saturate(${1 - lo}) brightness(${1 - 0.1 * lo})` : undefined }}>
+            <div style={{ width: Math.min(tw, th) * 0.42, height: Math.min(tw, th) * 0.42, borderRadius: Math.min(tw, th) * 0.14, background: 'rgba(255,255,255,0.55)', opacity: 1 - 0.6 * lo }} />
+            {lk > 0 && <div style={{ position: 'absolute' }}><Lock s={Math.min(tw, th) * 0.62} p={lk} off={unlock} /></div>}
           </div>
         );
       })}
-      {/* the update banner that slid onto every screen at once */}
-      {banner > 0 && <div style={{ position: 'absolute', left: '6%', right: '6%', top: (P ? 0.075 : 0.1) * h, height: (P ? 0.06 : 0.1) * h, borderRadius: 3 * k, background: '#43354E', color: '#F3EAF9',
-        fontSize: 3.2 * k, fontWeight: 700, display: 'flex', alignItems: 'center', paddingLeft: 3 * k, transform: `translateY(${(banner - 1) * 10 * k}px)`, opacity: banner }}>Your layout has been updated</div>}
+      {/* the update banner that lands on every screen in the same frame */}
+      {banner > 0 && <div style={{ position: 'absolute', left: '6%', right: '6%', top: (P ? 0.075 : 0.06) * h, height: (P ? 0.06 : 0.09) * h, borderRadius: 3 * k, background: '#43354E', color: '#F3EAF9',
+        fontSize: 3.4 * k, fontWeight: 700, display: 'flex', alignItems: 'center', paddingLeft: 3 * k, transform: `translateY(${(smooth(banner * 4) - 1) * 6 * k}px)`, opacity: smooth(banner * 4) * (1 - smooth((banner - 0.8) * 5)), whiteSpace: 'nowrap', overflow: 'hidden' }}>Your layout has been updated</div>}
       {/* the companies' new button, stuck on top of everything */}
-      {ai > 0 && <div style={{ position: 'absolute', left: '50%', bottom: (P ? 0.025 : 0.04) * h, transform: `translateX(-50%) scale(${0.7 + 0.3 * smooth(ai)})`, opacity: smooth(ai * 1.5),
+      {ai > 0 && <div style={{ position: 'absolute', left: '50%', bottom: (P ? 0.025 : 0.035) * h, transform: `translateX(-50%) scale(${0.7 + 0.3 * smooth(ai)})`, opacity: smooth(ai * 1.5) * (ask ? 1 - ask.o : 1),
         height: 9 * k, padding: `0 ${4 * k}px`, borderRadius: 9 * k, background: '#2E2238', color: '#F3EAF9', display: 'flex', alignItems: 'center', gap: 1.6 * k, fontSize: 3.6 * k, fontWeight: 700, whiteSpace: 'nowrap',
-        boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)` }}>
-        <span style={{ width: 0.7 * k, height: 4.6 * k, background: '#C387D3', borderRadius: k }} />Ask AI<span style={{ opacity: 0.7, fontWeight: 500 }}>· new</span>
-      </div>}
+        boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)` }}>Ask AI<span style={{ opacity: 0.7, fontWeight: 500 }}>· new</span></div>}
+      {ask && ask.o > 0 && <>
+        {/* WHY a scrim behind a long request: the words being typed must win over the busy screen behind them */}
+        {(ask.n ?? 0) > 0 && <div style={{ position: 'absolute', inset: 0, background: 'rgba(231,226,236,0.72)', opacity: ask.o }} />}
+        <AskBar w={w} h={h} o={ask.o} text={ask.text} n={ask.n} caret={ask.caret} fs={ask.fs} />
+      </>}
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,28,52,0.38)', opacity: dlg }} />
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.8 : 0.46) * w, transform: `translate(-50%,-50%) scale(${0.9 + 0.1 * dlg})`, opacity: dlg,
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,28,52,0.42)', opacity: dlg }} />
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.56) * w, transform: `translate(-50%,-50%) scale(${0.9 + 0.1 * dlg})`, opacity: dlg,
           background: '#FBF9FC', borderRadius: 4 * k, padding: 4 * k, boxSizing: 'border-box', boxShadow: `0 ${2 * k}px ${6 * k}px rgba(40,20,60,0.3)` }}>
-          <div style={{ fontSize: 4.6 * k, fontWeight: 900, color: S.ink, letterSpacing: '-0.02em' }}>Our terms have changed</div>
-          {[0.95, 0.8, 0.9, 0.6].map((f, i) => <div key={i} style={{ height: 1.6 * k, width: `${f * 100}%`, background: S.line, borderRadius: k, marginTop: 1.6 * k }} />)}
-          <div style={{ marginTop: 3.5 * k, height: 8 * k, borderRadius: 8 * k, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 3.8 * k, fontWeight: 700,
-            background: accept > 0.05 ? '#2E2238' : '#5A5065', color: '#fff', transform: `scale(${1 - 0.06 * Math.sin(Math.PI * cl(accept * 2.5))})` }}>{accept > 0.2 ? 'Accepted' : 'Accept'}</div>
+          <div style={{ fontSize: (P ? 5.6 : 6.4) * k, fontWeight: 900, color: S.ink, letterSpacing: '-0.03em', lineHeight: 1.05 }}>Our terms have changed</div>
+          {[0.95, 0.8, 0.9].map((f, i) => <div key={i} style={{ height: 1.5 * k, width: `${f * 100}%`, background: S.line, borderRadius: k, marginTop: 1.5 * k }} />)}
+          <div style={{ marginTop: 3 * k, height: 8.5 * k, borderRadius: 8 * k, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 4.4 * k, fontWeight: 700,
+            background: accept > 0.02 ? '#2E2238' : '#5A5065', color: '#fff', transform: `scale(${1 - 0.07 * Math.sin(Math.PI * cl(accept * 3))})` }}>{accept > 0.12 ? 'Accepted' : 'Accept'}</div>
         </div>
       </>}
     </div>
   );
 };
 
-// =====================================================================================================
-// 2. A blank page with a text caret: the new thing. Words typed here are the person asking.
-// =====================================================================================================
-export const CaretScreen: React.FC<{ w: number; h: number; frame: number; text?: string; typed?: number; solid?: boolean; dark?: boolean; noCaret?: boolean; size?: number }> = ({ w, h, frame, text = '', typed = 0, solid, dark, noCaret, size = 9.6 }) => {
+/** "Share with partners": a switch on the phone that somebody else flips. `o` slides it in, `on` 0..1 flips it. */
+export const ShareSwitch: React.FC<{ w: number; h: number; o: number; on: number }> = ({ w, h, o, on }) => {
   const k = Math.min(w, h) / 100;
-  const n = Math.round(typed * text.length);
-  const on = !noCaret && (solid || n > 0 && n < text.length || Math.floor(frame / 15) % 2 === 0);
-  const fs = size * k;
+  if (o <= 0) return null;
   return (
-    <div style={{ position: 'absolute', inset: 0, background: dark ? '#1F1329' : '#F7F0FB', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', left: 9 * k, right: 9 * k, top: h > w ? 0.22 * h : 0.32 * h, fontFamily: DMSANS, fontWeight: 700, fontSize: fs, lineHeight: 1.18, letterSpacing: '-0.02em', color: '#21152C' }}>
-        <span>{text.slice(0, n)}</span>
-        <span style={{ display: 'inline-block', width: Math.max(1.5, fs * 0.09), height: fs * 1.02, marginLeft: fs * 0.04, verticalAlign: '-0.16em', borderRadius: fs, background: '#9750AA', opacity: on ? 1 : 0 }} />
-      </div>
+    <div style={{ position: 'absolute', left: '5%', right: '5%', top: 0.075 * h, height: 0.075 * h, borderRadius: 3 * k, background: '#FBF9FC', boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.25)`, fontFamily: DMSANS,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${3.5 * k}px`, fontSize: 4.4 * k, fontWeight: 700, color: S.ink, opacity: smooth(o), transform: `translateY(${(smooth(o) - 1) * 8 * k}px)` }}>
+      Share with partners
+      <span style={{ width: 11 * k, height: 6.4 * k, borderRadius: 6 * k, background: on > 0.5 ? '#9750AA' : '#CFC7D8', position: 'relative', flex: 'none' }}>
+        <span style={{ position: 'absolute', top: 0.7 * k, left: 0.7 * k + smooth(on) * 4.6 * k, width: 5 * k, height: 5 * k, borderRadius: 5 * k, background: '#fff' }} />
+      </span>
     </div>
   );
 };
+/** Where the switch's knob sits, so a pointer can be aimed at it. */
+export const shareKnob = (w: number, h: number) => { const k = Math.min(w, h) / 100; return { x: 0.95 * w - 3.5 * k - 5.5 * k, y: 0.1125 * h }; };
+
+/** The tablet-sized copy of the recipes that arrives on a neighbour's screen: what one person makes, others can use. */
+export const SharedRecipe: React.FC<{ w: number; h: number; k: number }> = ({ w, h, k }) => (
+  <div style={{ width: w, height: h, background: '#FBF3E6', borderRadius: 4 * k, overflow: 'hidden', boxShadow: `0 ${2 * k}px ${6 * k}px rgba(40,20,60,0.32)`, fontFamily: DMSANS, color: '#3B2418', boxSizing: 'border-box', padding: 4.5 * k, display: 'flex', flexDirection: 'column', gap: 2.2 * k }}>
+    <div style={{ alignSelf: 'flex-start', fontSize: 4.6 * k, fontWeight: 700, color: '#fff', background: '#9750AA', borderRadius: 4 * k, padding: `${0.8 * k}px ${2.6 * k}px` }}>shared with you</div>
+    <div style={{ fontSize: 4 * k, fontWeight: 700, letterSpacing: '0.04em', color: '#C4572E', textTransform: 'uppercase' }}>Grandma June's</div>
+    <div style={{ fontSize: 9.5 * k, fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 0.98 }}>Sunday lemon cake</div>
+    <div style={{ flex: 1, borderRadius: 3 * k, background: 'linear-gradient(160deg,#F4D9A6,#E9B86F)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: '22%', right: '22%', bottom: '14%', height: '34%', borderRadius: '50% / 30%', background: '#FFF8EC' }} />
+      <div style={{ position: 'absolute', left: '30%', right: '30%', bottom: '28%', height: '36%', borderRadius: `${2 * k}px ${2 * k}px ${k}px ${k}px`, background: 'linear-gradient(180deg,#FFF3C2 0 26%,#E8B35E 26% 100%)' }} />
+    </div>
+  </div>
+);
+
+// =====================================================================================================
+// 2. (retired) The blank page with a caret. WHY gone: the request is now typed into the ask bar on the
+//    phone's own screen, so the viewer learns where you type, and the phone is never a blank slab.
+// =====================================================================================================
 
 // =====================================================================================================
 // 3. People's own things. Every one has a person's reason in its title (brand §9: not "there's an app
@@ -289,15 +352,15 @@ export const Birds: React.FC<AppProps> = ({ w, h, p }) => {
 export const Tides: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100, P = h > w;
   return (
-    <Frame bg="#123049">
-      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#E6F2F7', boxSizing: 'border-box' }}>
-        <div style={{ ...rise(p, 0, 4, k), fontSize: 4 * k, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#7FD1C7' }}>Pier 9 · Saturday</div>
+    <Frame bg="#DCEDF0">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#12384A', boxSizing: 'border-box' }}>
+        <div style={{ ...rise(p, 0, 4, k), fontSize: 4 * k, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#2B7A8E' }}>Pier 9 · Saturday</div>
         <div style={{ ...rise(p, 1, 4, k), fontSize: (P ? 14 : 12) * k, fontWeight: 900, letterSpacing: '-0.05em', marginTop: 1 * k }}>Go at 6:40</div>
         <div style={{ ...rise(p, 1.5, 4, k), fontSize: 4.6 * k, opacity: 0.75 }}>rising tide, light wind</div>
         <svg style={{ ...rise(p, 2.5, 4, k), position: 'absolute', left: 0, bottom: 0 }} width={w} height={h * (P ? 0.42 : 0.45)} viewBox="0 0 100 40" preserveAspectRatio="none">
-          <path d="M0 26 C 15 6, 30 6, 45 22 S 75 38, 100 12 V40 H0Z" fill="#1E5A73" />
-          <path d="M0 30 C 15 12, 30 12, 45 27 S 75 42, 100 18 V40 H0Z" fill="#2B7A8E" opacity="0.8" />
-          <circle cx="30" cy="9" r="2.2" fill="#7FD1C7" />
+          <path d="M0 26 C 15 6, 30 6, 45 22 S 75 38, 100 12 V40 H0Z" fill="#A9D3DA" />
+          <path d="M0 30 C 15 12, 30 12, 45 27 S 75 42, 100 18 V40 H0Z" fill="#7FB9C4" opacity="0.8" />
+          <circle cx="30" cy="9" r="2.2" fill="#2B7A8E" />
         </svg>
       </div>
     </Frame>
@@ -309,13 +372,13 @@ export const Setlist: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100;
   const songs: [string, string][] = [['Paper Moon', 'G · 92'], ['Slow Train', 'E · 120'], ['Kitchen Light', 'C · 76'], ['Last Bus', 'A · 134']];
   return (
-    <Frame bg="#1E1A24">
-      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: OUTFIT, color: '#F6EDE6', boxSizing: 'border-box' }}>
-        <div style={{ ...rise(p, 0, 5, k), fontSize: 4 * k, fontWeight: 600, color: '#FF7A66', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Thursday practice</div>
+    <Frame bg="#F1E8F5">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: OUTFIT, color: '#2A1D33', boxSizing: 'border-box' }}>
+        <div style={{ ...rise(p, 0, 5, k), fontSize: 4 * k, fontWeight: 600, color: '#9750AA', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Thursday practice</div>
         <div style={{ ...rise(p, 0.6, 5, k), fontSize: 10 * k, fontWeight: 600, letterSpacing: '-0.04em', marginBottom: 2 * k }}>Setlist</div>
         {songs.map(([s, m], i) => (
-          <div key={i} style={{ ...rise(p, 1.4 + i * 0.6, 5, k), display: 'flex', alignItems: 'baseline', gap: 3 * k, padding: `${1.8 * k}px 0`, borderTop: `${0.3 * k}px solid #3A3342` }}>
-            <span style={{ fontSize: 4.4 * k, color: '#FF7A66', width: 5 * k }}>{i + 1}</span>
+          <div key={i} style={{ ...rise(p, 1.4 + i * 0.6, 5, k), display: 'flex', alignItems: 'baseline', gap: 3 * k, padding: `${1.8 * k}px 0`, borderTop: `${0.3 * k}px solid #DCCDE6` }}>
+            <span style={{ fontSize: 4.4 * k, color: '#9750AA', width: 5 * k }}>{i + 1}</span>
             <span style={{ fontSize: 6 * k, flex: 1, fontWeight: 600 }}>{s}</span>
             <span style={{ fontSize: 4 * k, opacity: 0.6, fontFamily: DMSANS }}>{m}</span>
           </div>
@@ -329,7 +392,7 @@ export const Setlist: React.FC<AppProps> = ({ w, h, p }) => {
 export const Knit: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100;
   return (
-    <Frame bg="#F8DCE2">
+    <Frame bg="#F7E6EA">
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, color: '#6B2238' }}>
         <div style={{ ...rise(p, 0, 4, k), fontSize: 4.6 * k, fontWeight: 700 }}>Gran's scarf · row</div>
         <div style={{ ...rise(p, 1, 4, k), fontSize: 30 * k, fontWeight: 900, letterSpacing: '-0.06em', lineHeight: 1 }}>112</div>
@@ -346,8 +409,8 @@ export const Knit: React.FC<AppProps> = ({ w, h, p }) => {
 export const Bus: React.FC<AppProps> = ({ w, h, p }) => {
   const k = Math.min(w, h) / 100, P = h > w;
   return (
-    <Frame bg="#FFD84D">
-      <div style={{ position: 'absolute', inset: 0, padding: 7 * k, fontFamily: DMSANS, color: '#231A05', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <Frame bg="#F6ECCB">
+      <div style={{ position: 'absolute', inset: 0, padding: 7 * k, fontFamily: DMSANS, color: '#3A2E0C', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div style={{ ...rise(p, 0, 4, k), fontSize: 5 * k, fontWeight: 700 }}>The 22 · outside my door</div>
         <div style={{ ...rise(p, 1, 4, k), fontSize: (P ? 34 : 30) * k, fontWeight: 900, letterSpacing: '-0.06em', lineHeight: 0.9 }}>4<span style={{ fontSize: (P ? 10 : 9) * k, letterSpacing: '-0.02em' }}> min</span></div>
         <div style={{ ...rise(p, 2, 4, k), fontSize: 4.6 * k, fontWeight: 500 }}>then 19 min · leave now if you want a seat</div>
@@ -395,3 +458,19 @@ export const Spanish: React.FC<AppProps> = ({ w, h, p }) => {
 };
 
 export const APPS = [Recipes, Chores, Birds, Tides, Setlist, Knit, Bus, Garden, Spanish];
+// WHY one light family: the first cut's loud yellow, deep teal, hot pink and black read as random colour
+// blocks. Every person's copy still has its own colour, but all of them are soft and sit with the brand.
+export const APP_BG = ['#FBF3E6', '#E4F0FB', '#E5EDDF', '#DCEDF0', '#F1E8F5', '#F7E6EA', '#F6ECCB', '#F1E9DA', '#EEE6FF'];
+
+/** A person's own screen: their thing on top, and the same ask bar underneath on every one of them.
+ *  WHY the shared bar: it is what tells a stranger these are all copies of ONE app, each asked into shape. */
+export const OwnScreen: React.FC<{ app: number; w: number; h: number; p: number; frame: number; caret?: boolean }> = ({ app, w, h, p, frame, caret }) => {
+  const App = APPS[app];
+  const top = askRect(w, h).y - 0.02;
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: APP_BG[app], overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: w, height: h * top, overflow: 'hidden' }}><App w={w} h={h * top} p={p} /></div>
+      <AskBar w={w} h={h} o={smooth((p - 0.55) * 3)} caret={!!caret && Math.floor(frame / 15) % 2 === 0} />
+    </div>
+  );
+};

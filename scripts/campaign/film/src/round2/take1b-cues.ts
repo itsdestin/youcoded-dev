@@ -38,6 +38,8 @@ export const Q = {
   technology1: at('your *technology.'),
   // (2) They decided what your computers could do, what it would cost, and what happened with your personal data.
   decided: at('*They decided'),
+  computers1: at('your *computers could'),
+  could: at('computers *could do,'),
   couldDo: at('could *do,'),
   cost: at('*what it would cost,'),
   costWord: at('would *cost,'),
@@ -46,6 +48,7 @@ export const Q = {
   dataEnd: end('personal *data.'),
   // (3) And we all... we all just accepted it. We accepted that we would subscribe to everything and own nothing, ...
   weAll: at('*And we all'),
+  weAll2: at('*we all just'),
   acceptedIt: at('just *accepted it.'),
   weAccepted: at('*We accepted that'),
   subscribe: at('would *subscribe'),
@@ -63,18 +66,21 @@ export const Q = {
   // (5) Blinded by their own hubris, these corporations created a new kind of technology: artificial intelligence. ...
   blinded: at('*Blinded by'),
   hubris: at('own *hubris,'),
+  these: at('*these corporations created'),
   created1: at('corporations *created a new'),
   newKind: at('a *new kind'),
   technology2: at('of *technology: artificial'),
   ai: at('*artificial intelligence.'),
   aTechnology: at('*A technology they'),
   believed: at('they *believed'),
+  great: at('a *great treasure:'),
   treasure: at('great *treasure:'),
   shareholder: at('*shareholder value.'),
   // (6) But in their excitement, they created something far beyond their own control: a tool that can make software, ...
   but: at('*But in their'),
   excitement: at('their *excitement,'),
   created2: at('they *created something'),
+  far: at('something *far beyond'),
   beyond: at('far *beyond'),
   control: at('own *control:'),
   aTool: at('*a tool that'),
@@ -93,6 +99,7 @@ export const Q = {
   ourDataEnd: end('our *data.'),
   // (8) It's time to free ourselves from the tech monopolies of the past.
   free: at("*It's time to free"),
+  freeWord: at('to *free ourselves'),
   tech: at('the *tech monopolies'),
   past: at('the *past.'),
   // (9) It's time, at long, long last... to open source everything.

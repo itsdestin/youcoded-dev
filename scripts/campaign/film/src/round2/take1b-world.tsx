@@ -142,20 +142,22 @@ export const Shelves: React.FC<{ night: number }> = ({ night }) => (
 );
 
 // =====================================================================================================
-// The few who decide: five arrow pointers. WHY pointers: an arrow pointer is the universal picture of
-// "someone is clicking for you". The new thing, later, is a text caret: it does nothing until you ask.
+// The few who decide: five arrow pointers. WHY dark and identical: a plain white arrow is everyone's
+// own cursor ("me, using my computer"), so the first cut read as ordinary users. Near-black, oversized,
+// with a hard (unblurred) shadow and moving in perfect lockstep, they read as one outside power that clicks
+// for everyone. The new thing, later, is a purple text caret: it does nothing until a person asks.
 // =====================================================================================================
 export type Pointer = { x: number; y: number; press: number; o: number; rot?: number };
 export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }) => {
   if (p.o <= 0) return null;
-  const sc = 1 - 0.14 * p.press;
+  const sc = 1 - 0.12 * p.press;
   return (
     <div style={{ position: 'absolute', left: p.x, top: p.y, width: size, height: size, opacity: p.o, transform: `rotate(${p.rot ?? 0}deg) scale(${sc})`, transformOrigin: '0 0' }}>
-      {/* a click leaves a brief ring at the tip */}
-      {p.press > 0.05 && <div style={{ position: 'absolute', left: -size * 0.35 * p.press, top: -size * 0.35 * p.press, width: size * 0.7 * p.press, height: size * 0.7 * p.press,
-        borderRadius: '50%', border: `${size * 0.03}px solid rgba(243,234,249,${0.7 * (1 - p.press)})` }} />}
-      <svg width={size} height={size} viewBox="0 0 24 24" style={{ overflow: 'visible', filter: `drop-shadow(${size * 0.05}px ${size * 0.12}px ${size * 0.1}px rgba(10,4,18,0.55))` }}>
-        <path d="M1 1 L1 19.5 L6 15 L9.6 22.6 L13 21 L9.5 13.6 L16.2 13.4 Z" fill="#F3EAF9" stroke="#21152C" strokeWidth="1.4" strokeLinejoin="round" />
+      {/* a click leaves a brief ring at the tip, in the night purple so it reads on light and dark screens alike */}
+      {p.press > 0.05 && <div style={{ position: 'absolute', left: -size * 0.32 * p.press, top: -size * 0.32 * p.press, width: size * 0.64 * p.press, height: size * 0.64 * p.press,
+        borderRadius: '50%', border: `${size * 0.035}px solid rgba(195,135,211,${0.85 * (1 - p.press)})` }} />}
+      <svg width={size} height={size} viewBox="0 0 24 24" style={{ overflow: 'visible', filter: `drop-shadow(${size * 0.05}px ${size * 0.07}px 0 rgba(8,3,14,0.55))` }}>
+        <path d="M1 1 L1 19.5 L6 15 L9.6 22.6 L13 21 L9.5 13.6 L16.2 13.4 Z" fill="#120A19" stroke="#E9DDF1" strokeWidth="0.9" strokeLinejoin="round" />
       </svg>
     </div>
   );
@@ -164,7 +166,7 @@ export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }
 // =====================================================================================================
 // A price tag on a string, swinging after it drops. Text can change (the price ticks).
 // =====================================================================================================
-export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean }> = ({ x, y, t, drop, text, scale = 1, fall = 0 }) => {
+export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0 }) => {
   if (t < drop) return null;
   const dt = t - drop;
   const enter = Math.min(1, dt / 0.35);
@@ -182,7 +184,12 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
           <circle cx="95" cy="12" r="5" fill="#2A1F33" />
         </svg>
         <div style={{ position: 'absolute', left: 0, right: 0, top: 22 * scale, height: 70 * scale, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: DMSANS, fontWeight: 900, fontSize: 38 * scale, letterSpacing: '-0.04em', color: C.plum, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{text}</div>
+          fontFamily: DMSANS, fontWeight: 900, fontSize: 38 * scale, letterSpacing: '-0.04em', color: C.plum, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+          <span style={{ position: 'relative' }}>{text}
+            {/* WHY a strike drawn left to right: "what it costs" is decided by us now; the old price is crossed out before it becomes "free" */}
+            {strike > 0 && <span style={{ position: 'absolute', left: '-6%', top: '52%', height: 6 * scale, borderRadius: 6 * scale, width: `${112 * strike}%`, background: C.purple }} />}
+          </span>
+        </div>
       </div>
     </div>
   );
