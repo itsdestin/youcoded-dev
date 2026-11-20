@@ -17,7 +17,7 @@
 // frame at the real scale, in Devil's Garden's own colours and font (wecoded-themes/themes/devils-garden):
 // the look the person settled on in the look conversation, and what the real app paints its pages in.
 import React from 'react';
-import { interpolate, spring, useCurrentFrame } from 'remotion';
+import { Img, interpolate, spring, staticFile, useCurrentFrame } from 'remotion';
 import { loadFont as loadGrotesk } from '@remotion/google-fonts/SpaceGrotesk';
 import { loadFont as loadFredoka } from '@remotion/google-fonts/Fredoka';
 import { EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
@@ -99,12 +99,20 @@ const Ico: React.FC<{ n: string; s: number; c?: string; w?: number; fill?: strin
 );
 
 // ---------------------------------------------------------------- shared pieces
-/** The page's own background: the theme's canvas with a faint wine glow, like the practice pages in this theme. */
+/** The page's own background: Devil's Garden's own wallpaper (wecoded-themes/themes/devils-garden/assets/
+ *  wallpaper.jpg, copied to public/footage/r2-devils-garden.jpg) seen through the theme's dark canvas.
+ *  WHY (review 2026-11-20: "every chat-to-page cut feels like a different app"): the chat wears the bright
+ *  desert, so the page the person made wears it too, as a soft glow at the top behind its cards, and the
+ *  cut from chat to page carries the same sky and rock colours across. */
 const PageBg: React.FC = () => (
-  <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(110% 80% at 80% -10%, #2A0F22 0%, ${DG.page} 55%)` }} />
+  <div style={{ position: 'absolute', inset: 0, background: DG.page, overflow: 'hidden' }}>
+    <Img src={staticFile('footage/r2-devils-garden.jpg')} style={{ position: 'absolute', left: -12, top: -12, width: 'calc(100% + 24px)', height: 'calc(100% + 24px)', objectFit: 'cover', objectPosition: '50% 40%', filter: 'blur(3px) saturate(1.15)' }} />
+    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(180deg, rgba(19,7,15,0.40) 0%, rgba(19,7,15,0.72) 30%, rgba(19,7,15,0.87) 65%, rgba(19,7,15,0.93) 100%)` }} />
+  </div>
 );
+// WHY translucent panels: the glass look the theme gives its chat bubbles, so a little of the desert reads through the cards.
 const Panel: React.FC<{ r: R; style?: React.CSSProperties; children?: React.ReactNode; tint?: string }> = ({ r, style, children, tint }) => (
-  <div style={{ position: 'absolute', left: r.x, top: r.y, width: r.w, height: r.h, borderRadius: 16, background: tint ?? `linear-gradient(180deg, ${DG.panel}, #1B0C19)`,
+  <div style={{ position: 'absolute', left: r.x, top: r.y, width: r.w, height: r.h, borderRadius: 16, background: tint ?? 'linear-gradient(180deg, rgba(34,16,32,0.84), rgba(27,12,25,0.90))',
     border: `1px solid ${DG.edgeSoft}`, boxShadow: '0 10px 26px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,230,200,0.05)', overflow: 'hidden', ...style }}>{children}</div>
 );
 /** A status pill from the page's top row: a coloured round icon, then a few words (owner's Home page). */
@@ -562,7 +570,11 @@ export const MoneyUI: React.FC<{ W: number; H: number; T: MoneyTimes }> = ({ W, 
   const a = (d: number) => sp(frame, T.connect + 0.3 + d, { damping: 16, stiffness: 180 });
   const count = p01(frame, T.connect + 0.4, T.connect + 1.4, EASE_OUT);
   const tab = p01(frame, T.bills, T.bills + 0.35, EASE_IN_OUT);            // the selected tab slides to "Bills & subscriptions"
-  const swap = p01(frame, T.bills + 0.12, T.bills + 0.4, EASE_IN_OUT);     // the card's content changes under it
+  // WHY the bills arrive WITH the swap (review 2026-11-20: '$735' counted up over an empty half card for a beat):
+  // the net worth slides out while the first bill rows are already sliding in, so the card is never empty.
+  // WHY out-then-in, not a cross-fade: cross-fading printed '$1,087' over '$24,812' for a few frames.
+  const swapOut = p01(frame, T.bills, T.bills + 0.1, EASE_IN_OUT);
+  const swap = p01(frame, T.bills + 0.09, T.bills + 0.3, EASE_OUT);     // the card's new content arriving
   const left: R = { x: pad, y: top, w: 548, h: H - top - pad };
   const sideX = left.x + left.w + gap, sideW = W - pad - sideX, sideH = (left.h - gap * 2) / 3;
   const TABS = ['Net worth', 'One account', 'Spending', 'Bills & subscriptions', 'Debt'];
@@ -602,7 +614,7 @@ export const MoneyUI: React.FC<{ W: number; H: number; T: MoneyTimes }> = ({ W, 
           ))}
         </div>
         {/* net worth */}
-        <div style={{ position: 'absolute', inset: 0, opacity: 1 - swap, transform: `translateX(${-swap * 24}px)` }}>
+        <div style={{ position: 'absolute', inset: 0, opacity: 1 - swapOut, transform: `translateX(${-swapOut * 24}px)` }}>
           <div style={{ position: 'absolute', left: 18, top: 54, fontSize: 10.5, fontWeight: 600, letterSpacing: '0.12em', color: DG.muted }}>NET WORTH</div>
           <div style={{ position: 'absolute', left: 16, top: 66, fontSize: 44, fontWeight: 600, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#F6E2B8' }}>{usd(NET * count)}</div>
           <div style={{ position: 'absolute', left: 18, top: 122, height: 22, padding: '0 9px', borderRadius: 22, display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600,
@@ -723,7 +735,7 @@ const NetChart: React.FC<{ x: number; y: number; w: number; h: number; draw: num
 
 /** "Bills & subscriptions": eleven found, a month strip showing when each lands, and the list. */
 const BillsView: React.FC<{ frame: number; T: MoneyTimes; w: number; h: number; k: number }> = ({ frame, T, w, h, k }) => {
-  const sum = BILLS_TOTAL * p01(frame, T.bills + 0.3, T.bills + 1.2);
+  const sum = BILLS_TOTAL * p01(frame, T.bills + 0.08, T.bills + 0.9);
   const stripX = 24, stripW = w - 48, dayX = (d: number) => stripX + ((d - 1) / 29) * stripW;
   const colW = (w - 40 - 16) / 2;
   // WHY rows sized to the card: the eleven fill the card, as a real list of bills would.
@@ -736,7 +748,7 @@ const BillsView: React.FC<{ frame: number; T: MoneyTimes; w: number; h: number; 
         <span style={{ fontSize: 14, fontWeight: 500, color: DG.muted }}>a month</span>
       </div>
       <div style={{ position: 'absolute', right: 18, top: 62, height: 26, padding: '0 11px', borderRadius: 26, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700,
-        color: DG.onAccent, background: DG.accent, boxShadow: '0 4px 14px rgba(255,198,39,0.3)', transform: `scale(${sp(frame, T.bills + 0.35, { damping: 9, stiffness: 200 })})` }}>
+        color: DG.onAccent, background: DG.accent, boxShadow: '0 4px 14px rgba(255,198,39,0.3)', transform: `scale(${sp(frame, T.bills + 0.2, { damping: 9, stiffness: 200 })})` }}>
         <Ico n="check" s={13} c={DG.onAccent} w={3} />11 found
       </div>
       {/* the month strip: a dot on each bill's own day, in its badge's colour, with the day under it; today marked.
@@ -747,7 +759,7 @@ const BillsView: React.FC<{ frame: number; T: MoneyTimes; w: number; h: number; 
         <div style={{ position: 'absolute', left: stripX, width: dayX(TODAY) - stripX, top: 22, height: 5, borderRadius: 5, background: 'rgba(255,198,39,0.35)' }} />
         <div style={{ position: 'absolute', left: dayX(TODAY) - 1, top: 13, width: 2, height: 22, borderRadius: 2, background: DG.fg2 }} />
         {BILLS.map((b, i) => {
-          const p = sp(frame, T.bills + 0.4 + 0.045 * i, { damping: 9, stiffness: 220 });
+          const p = sp(frame, T.bills + 0.15 + 0.035 * i, { damping: 9, stiffness: 220 });
           const s = 12;
           return (
             <React.Fragment key={b.name}>
@@ -764,7 +776,7 @@ const BillsView: React.FC<{ frame: number; T: MoneyTimes; w: number; h: number; 
           <div key={c} style={{ width: colW }}>
             {BILLS.slice(c * 6, c * 6 + 6).map((b, j) => {
               const i = c * 6 + j;
-              const r = sp(frame, T.bills + 0.35 + 0.05 * i, { damping: 14, stiffness: 210 });
+              const r = sp(frame, T.bills + 0.06 + 0.035 * i, { damping: 14, stiffness: 210 });
               const soon = b.day >= TODAY && b.day < TODAY + 7;
               return (
                 <div key={b.name} style={{ height: rowH, display: 'flex', alignItems: 'center', gap: 9, borderBottom: `1px solid ${DG.edgeFaint}`, ...rise(r, 0), transform: `translateX(${(1 - r) * 22}px)` }}>
@@ -845,14 +857,15 @@ export const KawaiiEmail: React.FC<{ w: number; at: number }> = ({ w, at }) => {
         {/* this week's bills, as little stickers */}
         <div style={{ marginTop: 14 * u, padding: `${12 * u}px ${16 * u}px`, borderRadius: 22 * u, background: '#fff', border: `${2 * u}px dashed #FFC2DB` }}>
           <div style={{ fontSize: 15 * u, fontWeight: 600, color: '#FF7FB5', marginBottom: 6 * u }}>due this week (just {due.length}!)</div>
-          <div style={{ display: 'flex', gap: 10 * u }}>
+          {/* WHY smaller sticker type (2026-11-20): at the card's new 500 px width the two stickers' words ran into each other */}
+          <div style={{ display: 'flex', gap: 8 * u }}>
             {due.map((b, i) => {
               const k = sp(frame, at + 0.6 + 0.12 * i, { damping: 9, stiffness: 200 });
               return (
-                <div key={b.name} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 * u, padding: `${7 * u}px ${12 * u}px`, borderRadius: 16 * u, background: i ? '#FFE0CC' : '#DDF0FF',
+                <div key={b.name} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 * u, padding: `${7 * u}px ${10 * u}px`, borderRadius: 16 * u, background: i ? '#FFE0CC' : '#DDF0FF',
                   transform: `scale(${0.5 + 0.5 * k}) rotate(${(i ? 1.5 : -1.5) * k}deg)`, opacity: Math.min(1, k * 1.5) }}>
-                  <div style={{ flex: 1, fontSize: 16 * u, fontWeight: 500 }}>{b.name.toLowerCase()} · {ordinal(b.day)}</div>
-                  <div style={{ fontSize: 17 * u, fontWeight: 600 }}>{usd(b.amt, true)}</div>
+                  <div style={{ flex: 1, fontSize: 14.5 * u, fontWeight: 500, whiteSpace: 'nowrap' }}>{b.name.toLowerCase()} · {ordinal(b.day)}</div>
+                  <div style={{ fontSize: 15 * u, fontWeight: 600 }}>{usd(b.amt, true)}</div>
                 </div>
               );
             })}
