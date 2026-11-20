@@ -118,3 +118,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#789 fixes | If closing a chat can't save its tags or note, the chat stays open with Try again or Close anyway.
 - youcoded#790 behind | Nothing visible.
 - youcoded#788 behind | Nothing visible.
+- youcoded#791 behind | Website: demo recordings rebuilt from 1.3.4; privacy policy corrected for the phone app.
