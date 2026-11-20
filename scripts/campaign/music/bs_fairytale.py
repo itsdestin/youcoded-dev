@@ -93,11 +93,17 @@ LEVELS = [(0.0, -3.0), (T['andwe'], -4.0), (T['however'] - 0.4, -7.0), (T['somet
           (T['something'], 0.0), (T['blinded'], -1.5), (T['treasure_end'], -1.5), (T['but'], -3.0),
           (T['anyone'], 0.0), (T['itstime1'], 0.5), (T['everything'], 1.5), (LENGTH, 1.5)]
 # how far (LU) the music sits under the narrator while she speaks; less at the climax, never under 10
-# WHY these numbers: they ARE the arc while she speaks — the opening sits well under her (sly, quiet), the
+# WHY these numbers: they ARE the arc while she speaks — the opening sits under her (sly, quiet), the
 # near-silence further still, and the distance closes step by step to the climax, never under 10 LU.
-MARGINS = [(0.0, 18.0), (T['andwe'] - 0.1, 19.0), (T['however'] - 0.1, 22.0), (T['something'] - 0.03, 14.0),
-           (T['blinded'] - 0.1, 16.0), (T['but'] - 0.1, 15.0), (T['anyone'] - 0.1, 13.0), (T['andso'] - 0.1, 13.5),
-           (T['itstime1'] - 0.1, 12.0), (T['itstime2'] - 0.1, 11.0), (T['everything'] - 0.1, 10.0)]
+# Round four lowered them all (opening 18 -> 14 ...): measured on the final stems the score sat at -24 to -33 LUFS
+# under a -14 LUFS voice, which on a phone is no score at all. The 1-4 kHz carve still keeps her words clear.
+# From "open" the margin is already the climax's (11 LU as set, 10 LU as measured over whole lines), so part of the swell happens under her last words
+# instead of all of it arriving after "everything." (that measured as a 17 LU jump in half a second).
+MARGINS = [(0.0, 14.0), (T['andwe'] - 0.1, 15.0), (T['however'] - 0.1, 18.0), (T['something'] - 0.03, 13.0),
+           (T['blinded'] - 0.1, 13.5), (T['but'] - 0.1, 12.0), (T['anyone'] - 0.1, 11.5), (T['andso'] - 0.1, 11.0),
+           (T['itstime1'] - 0.1, 11.0), (T['itstime2'] - 0.1, 11.0), (T['open'] - 0.1, 11.0), (T['everything'] - 0.1, 11.0)]
+TAIL_RAMP = 1.0      # s: after "everything." the music rises to its full bloom over this long (was 0.22 s)
+TAIL_OVER_VOICE = -1.0  # LU: the bloom's loudest momentary level, relative to the narration's average
 SPLITS = [a for a, _ in MARGINS[1:]]
 HITS = [T['something'], WINK[0], T['but'], T['anyone'], T['andso'], T['itstime1'], T['everything']]
 
@@ -396,13 +402,38 @@ def level_curve(n):
     return np.interp(t, [a for a, _ in LEVELS], [b for _, b in LEVELS])
 
 
+def tail_bloom(music, g, lv_voice):
+    """After the last word, let the ducked music rise to its bloom over TAIL_RAMP s (not the duck's 0.22 s
+    release), and cap the bloom's loudest momentary level at TAIL_OVER_VOICE LU over the narration's average.
+    WHY: round three's music went from -26 to -9 LUFS momentary in half a second right after "everything." and
+    ended 4-5 LU louder than the narrator had been: it read as someone turning the volume up, not a climax."""
+    n = len(music)
+    i0 = int(T['last_end'] * SR)
+    k = int(TAIL_RAMP * SR)
+    u = np.zeros(n)
+    u[i0:i0 + k] = np.sin(np.linspace(0, np.pi / 2, k)) ** 2
+    u[i0 + k:] = 1.0
+    g_end = g[i0]
+    # the cap: how much the un-ducked bloom must come down to sit TAIL_OVER_VOICE LU over the voice
+    loud = V.short_loudness(music, win=0.4, hop=0.02)[i0:].max()
+    cap = min(0.0, (lv_voice + TAIL_OVER_VOICE) - loud)
+    gg = g.copy()
+    gg[i0:] = g_end * (1 - u[i0:]) + cap * u[i0:]
+    return music * db(gg)[:, None], cap
+
+
 def build():
     M = compose()
     # WHY these balances (LU vs the piano): the piano is the voice of the brand; the sub and beat support it from
     # underneath; glass and plucks are seasoning
-    x, stems = M.render(hall_rt=2.8, hall_db=-8.0, piano_bright=54, piano_felt=7500, delay_t=0.45, air_db=3.0,
-                        balance=dict(pno=0, pad=-7, hi=-13, sub=-6, pluck=-15, box=-10, kick=-8, b808=-8, clap=-13,
-                                     hat=-19, shk=-22, fx=-11, crash=-17, air=-34))
+    # WHY (round four): the music bus is high-passed at 32 Hz (24 dB/oct) and the sub / 808 sit 4.5 dB lower
+    # than before: 54% of the score's energy was below 160 Hz and 12% below 40 Hz, which a phone does not play at
+    # all. The piano's felt opens to 10.5 kHz and the pads carry a little of their own top (sheen) plus an air
+    # layer and a 10 kHz shelf, for 1.5-3% of the energy above 8 kHz instead of 0.2%.
+    x, stems = M.render(hall_rt=2.8, hall_db=-8.0, piano_bright=54, piano_felt=10500, delay_t=0.45, air_db=3.0,
+                        presence_db=1.5, air_layer=-17.0, low_cut=34,
+                        balance=dict(pno=0, pad=-7, hi=-12, sub=-10.5, pluck=-15, box=-12, kick=-8, b808=-12.5, clap=-13,
+                                     hat=-17, shk=-20, fx=-12, crash=-16, air=-30))
     x = B.glue(x, thresh_db=-22, ratio=1.6)
     x = x * db(level_curve(M.n))[:, None]
     x = B.pre_hit_dip(x, T['everything'], 6.0, 0.15)
@@ -417,6 +448,7 @@ def build():
     # clearly the biggest moment, and every quieter section keeps its composed distance below it
     music = x * db(lv + 4.0 - V.short_loudness(x, win=3.0, hop=0.1).max())
     mus_d, g, mk = V.duck(music, voice, W, margin_at, protect=PROTECT, splits=SPLITS)
+    mus_d, tail_db = tail_bloom(music, g, lv)
     vs = np.stack([voice, voice], -1)
     mix = B.ending(vs + mus_d, END, 0.05)
     path = os.path.join(B.OUT, 'take1-mix.wav')
@@ -428,6 +460,7 @@ def build():
                                                                       (S0, S1, S3, S4, S5, S6, S7, S8, S9))))
     print('  stems (LUFS, score alone):', stem_levels(stems, db(-14 - dsp.lufs(x))))
     print('  hits:', ' '.join(f'{h:.2f}' for h in HITS))
+    print(f'  tail: bloom capped by {tail_db:.1f} dB, rising over {TAIL_RAMP} s after the last word')
     return path
 
 

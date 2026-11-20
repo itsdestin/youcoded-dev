@@ -115,7 +115,7 @@ def drift(L, rng, cents=3.0, rate=0.25):
 
 # ----------------------------------------------------------------------------- instruments
 def pad(chord, dur, rng, att=0.9, rel=1.8, lo=900.0, hi=None, curve=None, voices=5, detune=11.0, width=0.85,
-        shimmer=0.0):
+        shimmer=0.0, sheen=0.15):
     """Warm detuned-saw pad. lo = filter cutoff (Hz). If hi is given the filter 'opens' from lo to hi following
     curve(u) (u = 0..1 over dur; default a slow rise) — done by crossfading a dark and a bright copy, which is
     click-free and cheap. shimmer adds a quiet octave-up sine layer for air."""
@@ -139,6 +139,11 @@ def pad(chord, dur, rng, att=0.9, rel=1.8, lo=900.0, hi=None, curve=None, voices
         u = np.clip(np.arange(L) / (dur * SR), 0, 1)
         g = curve(u) if curve else u ** 1.5
         y = y * (1 - g)[:, None] + br * g[:, None]
+    if sheen:
+        # WHY (round four): a pad filtered at 600-4500 Hz has no top at all, so a whole film measured 0-2% of its
+        # energy above 8 kHz (closed-in, 'bedroom'). sheen blends back the SAME saws' own 7 kHz+ band, quietly: the
+        # breathy top of a real analogue pad, moving with its chord, not a separate hiss
+        y = y + hp(out, 7000, 2) * sheen
     y = hp(y, 90, 2)
     return y * _ar(L, att, dur - att, rel)[:, None]
 
@@ -267,9 +272,10 @@ def bell(midi, dur=2.2, bright=1.0, rng=None):
     return _edge(w / (np.abs(w).max() + 1e-9), 0.2, 30)
 
 
-def lead(chord, dur, rng, att=0.01, rel=0.25, lo=1400.0, hi=5200.0, env_t=0.18, voices=5, detune=14.0, width=0.6):
+def lead(chord, dur, rng, att=0.01, rel=0.25, lo=1400.0, hi=8000.0, env_t=0.18, voices=5, detune=14.0, width=0.6):
     """Synth brass / saw lead: detuned saws whose filter starts bright and closes to lo over env_t (the 'bwah' of
-    synth brass). Stereo."""
+    synth brass). Stereo. WHY hi 8 kHz (round four, was 5.2): the opening 'bwah' needs its top to sound expensive
+    rather than boxed in; it closes to lo within env_t, so it never stays bright."""
     L = int((dur + rel) * SR)
     out = np.zeros((L, 2))
     ns_ = notes(chord)
@@ -341,11 +347,12 @@ def piano_tone(x, midi, vel, exc_db=-6.0):
     return y
 
 
-def render_piano(events, n, bright=40, felt=6500.0):
+def render_piano(events, n, bright=40, felt=10000.0):
     """events: dicts t, midi, vel, dur, gdb, pan. Returns stereo (n,2).
     WHY bright: soft soundfont velocities are dull (no 2-4 kHz), so each note is played harder (+bright) for its
     tone and turned down by the measured level difference (round one's trick, which the owner liked).
-    WHY felt: a gentle low-pass that softens the hammer: intimate, never muffled."""
+    WHY felt: a gentle low-pass that softens the hammer: intimate, never muffled. Round four opens it from 6.5 to
+    10 kHz: at 6.5 the piano measured 0.00% of its energy above 8 kHz, which is what made every mix sound dull."""
     reqs, prep = set(), []
     for e in events:
         d = round(max(0.3, e['dur']) / 0.1) * 0.1
@@ -381,6 +388,10 @@ def render_piano(events, n, bright=40, felt=6500.0):
 
 
 # ----------------------------------------------------------------------------- mixer
+def _env(x, ms_):
+    return np.sqrt(lp((x ** 2).mean(axis=1), 1000.0 / (2 * np.pi * ms_), 1).clip(0))
+
+
 class Mix:
     """Stems with sends. put() drops a one-shot at an exact time; piano() queues a piano note."""
 
@@ -438,8 +449,13 @@ class Mix:
         return db(g)
 
     def render(self, hall_rt=2.6, hall_db=-8.0, room_db=-10.0, delay_t=0.45, delay_fb=0.38, delay_db=-10.0,
-               piano_bright=40, piano_felt=6500.0, pump_rel=0.16, air_db=2.0, low_cut=30, balance=None):
+               piano_bright=40, piano_felt=10000.0, pump_rel=0.16, air_db=2.0, low_cut=30, balance=None,
+               presence_db=1.0, air_layer=None, gate=None):
         """-> (bus, dict of processed dry stems incl. 'hall','room','delay'), unmastered.
+        gate: (gain dB per sample, stems to leave alone): turns every other stem AND the hall / delay returns down
+        by that curve. WHY: a 'clear the room' moment (take 3's marker alone on silence) cannot be made on the
+        finished bus without also silencing the one sound that should stay; and gating only the dry stems left the
+        reverb tails ringing through it.
         balance: {stem: LU} sets each named stem's own integrated loudness to -20 + LU (so {'pno': 0, 'sub': -6}
         puts the sub 6 LU under the piano). WHY: levels set by measurement, not by guessing dB per synth — a
         hand-set gain of a synth whose raw level nobody knows buried the piano 18 LU under the sub on the
@@ -467,15 +483,28 @@ class Mix:
                 x = x * db(c['gain_db'])
             if c['pump'] and self.kicks:
                 x = x * self.pump_curve(c['pump'], pump_rel)[:, None]
+            if gate is not None and name not in gate[1]:
+                x = x * db(gate[0])[:, None]
             out[name] = x
             dry += x
             hs += x * c['hall']; rs += x * c['room']; ds += x * c['delay']
-        ir_h = dsp.make_ir(rt60=hall_rt, predelay=0.028, damp_hz=8500, seed=5)
+        ir_h = dsp.make_ir(rt60=hall_rt, predelay=0.028, damp_hz=10000, seed=5)
         ir_r = dsp.make_ir(rt60=0.7, predelay=0.006, damp_hz=9000, seed=9)
-        out['hall'] = dsp.reverb(lp(hp(hs, 220), 9500), ir_h, self.n) * db(hall_db) if np.any(hs) else np.zeros((self.n, 2))
+        # WHY the hall is fed up to 12 kHz and damps at 10 kHz (round four, was 9.5 / 8.5): the reverb tail is where
+        # 'air' lives in a real room; cutting it at 9.5 kHz made every tail sound like it was behind a curtain
+        out['hall'] = dsp.reverb(lp(hp(hs, 220), 12000), ir_h, self.n) * db(hall_db) if np.any(hs) else np.zeros((self.n, 2))
         out['room'] = dsp.reverb(lp(hp(rs, 180), 10000), ir_r, self.n) * db(room_db) if np.any(rs) else np.zeros((self.n, 2))
         out['delay'] = pingpong(ds, delay_t, delay_fb, self.n) * db(delay_db) if np.any(ds) else np.zeros((self.n, 2))
+        if gate is not None:
+            for k in ('hall', 'delay'):
+                if k not in gate[1]:
+                    out[k] = out[k] * db(gate[0])[:, None]
         x = dry + out['hall'] + out['room'] + out['delay']
+        if air_layer is not None:
+            out['airlayer'] = self.air_layer(x, air_layer)
+            x = x + out['airlayer']
+        # WHY 4th order (24 dB/oct): below ~30 Hz is energy no speaker plays and the limiter still has to carry;
+        # the fairytale measured 12% of its music below 40 Hz before this was raised
         x = hp(x, low_cut, 4)
         # WHY mono below 110 Hz: the soundfont piano's low notes and the reverb are recorded wide; a mono low end
         # is a brand rule (it survives phone speakers and never sounds lopsided)
@@ -485,9 +514,23 @@ class Mix:
         lo_ = sosfiltfilt(butter(4, 120, 'low', fs=SR, output='sos'), x, axis=0)
         x = x - lo_ + lo_.mean(axis=1, keepdims=True)
         x = dsp.peak_eq(x, 330, -1.5, 0.8)       # WHY: piano + pads pile up around 300 Hz (boxy); a small dip clears it
-        x = dsp.high_shelf(x, 6000, air_db)       # WHY: 'air on top' without a harsh presence peak
+        x = dsp.high_shelf(x, 6000, presence_db)  # WHY: a little presence without a harsh peak
+        x = dsp.high_shelf(x, 10000, air_db)      # WHY (round four): the air shelf moved up to 10 kHz, above the
+        #                                           ear's harsh zone, so it opens the top without making it shrill
         self.out = out
         return x, out
+
+
+    def air_layer(self, bus, lu):
+        """An 8-14 kHz breath that follows the music's own envelope (80 ms), lu LU under the bus.
+        WHY: real rooms, tape and good synths all carry a faint top that rises and falls with the playing. Keyed to
+        the bus, it is silent in silences (never a hiss bed) and swells with the music."""
+        rng = np.random.default_rng(8)
+        nz = bp(rng.standard_normal((self.n, 2)), 8000, 14000, 2)
+        e = _env(bus, 80.0)
+        y = nz * e[:, None]
+        lb, ly = dsp.lufs(bus), dsp.lufs(y)
+        return y * db(lb + lu - ly) if np.isfinite(ly) and np.isfinite(lb) else y * 0
 
 
 def pingpong(x, d, fb, n, taps=6, cutoff=4500):
@@ -527,6 +570,49 @@ def pre_hit_dip(x, t, depth_db=6.0, length=0.15):
     g[i0:i1 - r] = -depth_db * np.sin(np.pi / 2 * u) ** 2
     g[i1 - r:i1] = np.linspace(-depth_db, 0, r)
     return x * db(g)[:, None]
+
+
+def gap_curve(n, t0, t1, depth_db=-45.0, fade_in=0.1, fade_out=0.06):
+    """Gain (dB per sample): 0, falling to depth_db over fade_in from t0, held, back to 0 at t1."""
+    g = np.zeros(n)
+    a, b = int(t0 * SR), int((t0 + fade_in) * SR)
+    c, d = int((t1 - fade_out) * SR), int(t1 * SR)
+    g[a:b] = depth_db * np.sin(np.linspace(0, np.pi / 2, b - a)) ** 2
+    g[b:c] = depth_db
+    g[c:d] = depth_db * np.cos(np.linspace(0, np.pi / 2, d - c)) ** 2
+    return g
+
+
+def gap(x, t0, t1, depth_db=-45.0, fade_in=0.1, fade_out=0.06):
+    """Near-silence on purpose: the whole bus falls to depth_db over fade_in from t0, holds, and is back to 0 dB at
+    t1. WHY (round four): the brand rule 'silence used on purpose' is measured (<= -30 LUFS momentary); a quieter
+    arrangement alone never got there because reverb and delay tails kept the room full."""
+    return x * db(gap_curve(len(x), t0, t1, depth_db, fade_in, fade_out))[:, None]
+
+
+def fit_arc(x, arc, rounds=5, target=-14.0, dense=1.0, skip=()):
+    """Turn the bus so its short-term loudness (3 s) meets the arc's targets [(t, LUFS)] once mastered to target.
+    Gain is interpolated in dB between the arc's points, so the music's own dynamics inside a section survive.
+    WHY: hand-set dB offsets left round three's whole middle within 1 LU (stock-music flatness); targets are what
+    the rules promise, so they are what is set."""
+    import bs_voice as V
+    # WHY dense points (every `dense` s, targets interpolated between the arc's own points): measured only at the
+    # arc's points, a busier bar between two of them still came out 2 LU hot. skip: windows (an inhale, a gap)
+    # where the arc must not try to 'fix' a silence that is there on purpose.
+    a0, a1 = arc[0][0], arc[-1][0]
+    grid = [t for t in np.arange(a0, a1, dense) if not any(s0 <= t <= s1 for s0, s1 in skip)]
+    ts = np.array(sorted(set([a for a, _ in arc] + grid)))
+    tg = np.interp(ts, [a for a, _ in arc], [b for _, b in arc])
+    corr = np.zeros(len(ts))
+    tt = np.arange(len(x)) / SR
+    y = x
+    for _ in range(rounds):
+        y = x * db(np.interp(tt, ts, corr))[:, None]
+        yn = y * db(target - dsp.lufs(y))
+        st = V.short_loudness(yn, win=3.0, hop=0.1)
+        got = st[(ts * SR).astype(int).clip(0, len(x) - 1)]
+        corr += 0.8 * (tg - got)
+    return x * db(np.interp(tt, ts, corr))[:, None]
 
 
 def ending(x, end, fade=1.2):

@@ -40,11 +40,17 @@ def de_ess(v, f_lo=5500, thresh_db=-6.0, max_red_db=6.0):
     eb = np.sqrt(lp(band ** 2, 60, 1).clip(0)) + 1e-9
     ev = np.sqrt(lp(v ** 2, 60, 1).clip(0)) + 1e-9
     red = -np.clip(20 * np.log10(eb / ev) - thresh_db, 0, max_red_db)
+    # WHY smoothed (round four): the raw reduction can swing several dB within a millisecond on a sharp 't';
+    # that fast gain change on a loud 5.5-10 kHz band made a tick above 17 kHz at 'technology' (30.31 s).
+    # Two 30 Hz smoothing passes keep the de-essing (an 's' lasts 60+ ms) without the tick.
+    red = lp(lp(red, 30, 1)[::-1], 30, 1)[::-1]
     return v - band + band * db(red)
 
 
-def compress(v, thresh_db=-26.0, ratio=2.5, att=0.008, rel=0.15):
-    """Mild RMS compressor so no word of the narration drops under the music."""
+def compress(v, thresh_db=-26.0, ratio=2.5, att=0.014, rel=0.15):
+    """Mild RMS compressor so no word of the narration drops under the music.
+    WHY 14 ms attack (round four, was 8): the fast attack clamped onto consonant starts and, with the presence EQ,
+    sharpened the 't' of 'technology' (30.31 s) into a tick the click scan caught."""
     e = lp(v ** 2, 1 / (2 * np.pi * att), 1).clip(1e-12)
     gr = np.minimum(0, (thresh_db - 10 * np.log10(e)) * (1 - 1 / ratio))
     a = np.exp(-1 / (rel * SR))

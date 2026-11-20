@@ -6,7 +6,9 @@
   4-piano-warm-pads          cinematic and hopeful: piano, slow-opening pads, sub, no drums (100 BPM)
   5-piano-electronic-uptempo playful product-film energy at 120 BPM
 Same form in all five: 1 intro bar, the motif over C-G-Am-F, an answer that walks Am-F-G, a resolved C chord that
-rings out; silent by 19.85 s.
+rings out; silent by 19.85 s. Round four: every sketch now builds from quiet to full (SHAPE, about 6-8 LU of
+loudness range) so the owner hears how each palette grows, and all carry real top end (felt piano to 10 kHz, an
+air layer, a 10 kHz shelf). 2 and 5 are ONE sound at two speeds (5 = 2 at product-film speed).
 Usage: python bs_palette.py [1 2 3 4 5]  -> out/palette/<n>-<name>.wav"""
 import os, sys
 import numpy as np
@@ -84,7 +86,7 @@ def sketch1():
     M.stem('pno', hall=0.55, room=0.25, comp=(12, 2.5))
     tf = piano_part(M, G, FORM, vel=54, lh_vel=40)
     # WHY nothing else: this is the reference for "the earlier piano music" — the motif on its own, close and soft
-    x, _ = M.render(hall_rt=3.0, hall_db=-7.0, piano_bright=52, piano_felt=7000, air_db=3.0)
+    x, _ = M.render(hall_rt=3.0, hall_db=-7.0, piano_bright=52, air_db=3.0, air_layer=-20.0)
     # WHY a slow, gentle compressor: a solo piano at -14 LUFS otherwise needs ~4 dB of fast limiting on its
     # attacks; this evens the phrase instead so the limiter only shaves stray peaks
     x = B.glue(x, thresh_db=-26, ratio=2.2, att=0.012, rel=0.3)
@@ -141,8 +143,8 @@ def sketch2():
     M.put('sub', B.sub('C2', 2.6, rel=1.0), tf, -2)
     M.put('pad', B.pad(PADV['C'] + ' ' + PADH['C'], LENGTH - tf - 0.3, rng, att=0.05, rel=0.25, lo=2600, hi=1200, curve=lambda u: u ** 0.7), tf, -2)
     # WHY these levels (LU vs the piano): the piano carries the motif; sub and kick sit under it, never over it
-    x, _ = M.render(hall_rt=2.4, hall_db=-9.0, piano_bright=56, piano_felt=7500,
-                    balance=dict(pno=0, sub=-6, kick=-7, pad=-9, pluck=-13, clap=-12, hat=-17, fx=-14))
+    x, _ = M.render(hall_rt=2.4, hall_db=-9.0, piano_bright=56, air_layer=-20.0, low_cut=38,
+                    balance=dict(pno=0, sub=-6, kick=-7, pad=-9, pluck=-13, clap=-12, hat=-15, fx=-14))
     x = B.glue(x, thresh_db=-22)
     return x, M, [G.t(b) for b in range(1, 8)]
 
@@ -152,7 +154,9 @@ def sketch3():
     G = Grid(100)
     M = B.Mix(LENGTH, seed=3)
     rng = np.random.default_rng(33)
-    M.stem('box', hall=0.45, delay=0.35, gain_db=-12)
+    # WHY the bell cut: the music box's notes sit in 1.3-2.1 kHz, where ears and phones are most sensitive; with
+    # the box carrying the tune that octave held 45% of the sketch's energy (piercing). -6 dB there, box 7 LU down
+    M.stem('box', hall=0.45, delay=0.35, gain_db=-12, eq=((1750, -6.0, 0.8),))
     M.stem('lead', hall=0.3, delay=0.25, gain_db=-24, pump=3.0)
     M.stem('brass', hall=0.3, gain_db=-21, pump=3.0)
     M.stem('pad', hall=0.4, gain_db=-21, pump=5.0)
@@ -202,8 +206,8 @@ def sketch3():
     M.put('pad', B.pad('C4 G4 C5 E5', LENGTH - tf - 0.4, rng, att=0.02, rel=0.3, lo=3000, hi=1200, curve=lambda u: u ** 0.6), tf)
     for k, nn in enumerate(['C6', 'E6', 'G6', 'C7']):
         M.put('box', B.bell(nn, 2.5), tf + G.t(0, 1 + k * 0.5), -2 - k)
-    x, _ = M.render(hall_rt=2.2, hall_db=-10.0,
-                    balance=dict(box=0, b808=-5, kick=-9, clap=-10, pad=-10, lead=-9, brass=-10, hat=-15, fx=-14))
+    x, _ = M.render(hall_rt=2.2, hall_db=-10.0, air_layer=-24.0,
+                    balance=dict(box=-7, b808=-5, kick=-9, clap=-10, pad=-9, lead=-8, brass=-9, hat=-13, fx=-14))
     x = B.glue(x, thresh_db=-21, ratio=2.0)
     return x, M, [G.t(b) for b in range(1, 8)]
 
@@ -242,7 +246,7 @@ def sketch4():
     M.put('hi', B.pad('E5 G5 C6 D6', LENGTH - tf - 0.6, rng, att=0.3, rel=0.5, lo=3500, voices=3, shimmer=0.2), tf)
     M.put('sub', B.sub('C2', 3.0, att=0.02, rel=1.2), tf, 1)
     M.put('pulse', B.k808('C2', decay=1.0, punch=0.8, drive=1.2), tf, 2)
-    x, _ = M.render(hall_rt=3.2, hall_db=-7.5, piano_bright=54, piano_felt=7500, air_db=4.0,
+    x, _ = M.render(hall_rt=3.2, hall_db=-7.5, piano_bright=54, air_db=3.0, air_layer=-19.0,
                     balance=dict(pno=0, pad=-6, hi=-12, sub=-8, pulse=-10, fx=-10, air=-30))
     x = B.glue(x, thresh_db=-24, ratio=1.5)
     return x, M, [G.t(b) for b in range(1, 8)]
@@ -312,18 +316,29 @@ def sketch5():
     M.put('pad', B.pad(PADH['C'], LENGTH - tf - 0.5, rng, att=0.02, rel=0.4, lo=2800, hi=1200, curve=lambda u: u ** 0.6), tf, 2)
     for k, nn in enumerate(['G6', 'C7', 'E7']):
         M.put('box', B.bell(nn, 2.0), tf + 0.25 + k * 0.125, -3 - 2 * k, p=-0.3 + 0.3 * k)
-    x, _ = M.render(hall_rt=2.0, hall_db=-11.0, delay_t=0.375, piano_bright=58, piano_felt=8500,
-                    balance=dict(pno=0, box=-9, pad=-11, sub=-6, pluck=-12, kick=-6, clap=-10, hat=-15, shk=-17, fx=-14))
+    x, _ = M.render(hall_rt=2.0, hall_db=-11.0, delay_t=0.375, piano_bright=58, air_layer=-22.0, low_cut=38,
+                    balance=dict(pno=0, box=-13, pad=-11, sub=-6, pluck=-12, kick=-6, clap=-10, hat=-14, shk=-16, fx=-14))
     x = B.glue(x, thresh_db=-21, ratio=2.0)
     return x, M, [G.t(b) for b in range(1, 9)]
 
 
 SKETCH = {1: sketch1, 2: sketch2, 3: sketch3, 4: sketch4, 5: sketch5}
+# the quiet-to-loud shape every sketch gets (bus dB at bar starts; the final chord's bar is 0 dB). WHY: round three's
+# sketches were flat (4.5-7.8 dB spread over 20 s); a palette is judged by how it builds as much as how it sounds
+SHAPE = [(0, -12.0), (1, -10.0), (3, -6.0), (5, -2.0), ('final', 0.0)]
 
 
 def build(k):
     os.makedirs(OUTDIR, exist_ok=True)
-    x, M, _ = SKETCH[k]()
+    x, M, downbeats = SKETCH[k]()
+    bar = downbeats[1] - downbeats[0]
+    final = downbeats[-1] + bar if k != 5 else 16.0
+    # WHY sketch 3 gets two-thirds of the shape: it already opens on a lone music box, so the full shape over-did it
+    # (10.4 LU of range against the 6-8 asked for)
+    sc = 0.65 if k == 3 else 1.0
+    pts = [((final if b_ == 'final' else b_ * bar), g * sc) for b_, g in SHAPE]
+    tt = np.arange(M.n) / B.SR
+    x = x * B.db(np.interp(tt, [a for a, _ in pts], [g for _, g in pts]))[:, None]
     x = B.ending(x, END, 1.4)
     from bs_verify import stem_levels
     print('  stems (LUFS at final gain):', stem_levels(M.out, B.db(-14 - B.dsp.lufs(x))))
