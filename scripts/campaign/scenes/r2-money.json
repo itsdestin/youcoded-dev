@@ -1,0 +1,118 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=1&reply=campaign-r2-money&replyClock=now&title=my%20money",
+ "theme": "youcoded",
+ "width": 2880,
+ "height": 1800,
+ "zoom": 3.2,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 3000,
+ "actions": [
+  {
+   "evalFile": "../footage/r2-tokyo.js"
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo-blue'})"
+  },
+  {
+   "eval": "(()=>{const s=document.createElement('style');s.id='r2-hide';s.textContent=\"button[aria-label='Open Finance']{display:none!important}\";document.head.appendChild(s);return 1})()"
+  },
+  {
+   "hold": 1500,
+   "mark": "open"
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "can we connect my bank and show my balances in here?",
+   "cps": 40,
+   "mark": "type1"
+  },
+  {
+   "hold": 300
+  },
+  {
+   "key": "Enter",
+   "mark": "send1"
+  },
+  {
+   "waitForText": "2 files",
+   "timeout": 20000,
+   "mark": "built"
+  },
+  {
+   "eval": "(()=>{document.getElementById('r2-hide').textContent='';return 1})()",
+   "mark": "pinned"
+  },
+  {
+   "hold": 1200
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 150
+  },
+  {
+   "typeSlow": "can it pull out my recurring bills and stuff? is that possible?",
+   "cps": 42,
+   "mark": "type2"
+  },
+  {
+   "hold": 300
+  },
+  {
+   "key": "Enter",
+   "mark": "send2"
+  },
+  {
+   "waitForText": "Found eleven",
+   "timeout": 20000,
+   "mark": "reply2"
+  },
+  {
+   "hold": 1200
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 150
+  },
+  {
+   "typeSlow": "send me those numbers every morning. make the email kawaii",
+   "cps": 42,
+   "mark": "type3"
+  },
+  {
+   "hold": 300
+  },
+  {
+   "key": "Enter",
+   "mark": "send3"
+  },
+  {
+   "hold": 1500,
+   "mark": "built3"
+  },
+  {
+   "eval": "(()=>{const s=document.createElement('style');s.textContent='iframe[srcdoc]{visibility:hidden!important}';document.head.appendChild(s);return 1})()"
+  },
+  {
+   "eval": "(()=>{const fix=()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){if(n.nodeValue.trim()==='Finance')n.nodeValue=n.nodeValue.replace('Finance','Money')}};fix();new MutationObserver(fix).observe(document.body,{subtree:true,childList:true,characterData:true});return 1})()"
+  },
+  {
+   "click": "button[aria-label='Open Finance']",
+   "settle": 300,
+   "mark": "page"
+  },
+  {
+   "moveTo": "js:document.querySelector('iframe[srcdoc]')",
+   "ms": 250
+  },
+  {
+   "hold": 4000,
+   "mark": "pagehold"
+  }
+ ]
+}

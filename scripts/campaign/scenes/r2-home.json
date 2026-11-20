@@ -1,0 +1,111 @@
+{
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=1&reply=campaign-r2-home&replyClock=now&title=my%20home",
+ "theme": "youcoded",
+ "width": 2880,
+ "height": 1800,
+ "zoom": 3.2,
+ "fps": 30,
+ "master": true,
+ "screencast": "jpeg",
+ "slow": 4,
+ "boot": 3000,
+ "actions": [
+  {
+   "evalFile": "../footage/r2-tokyo.js"
+  },
+  {
+   "eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo-blue'})"
+  },
+  {
+   "eval": "(()=>{let s=document.getElementById('r2-hide');if(!s){s=document.createElement('style');s.id='r2-hide';document.head.appendChild(s)}s.textContent=\"button[aria-label='Open Home'],button[aria-label='Open Finance']{display:none!important}\";return 1})()"
+  },
+  {
+   "hold": 1500,
+   "mark": "open"
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 200
+  },
+  {
+   "typeSlow": "i want youcoded to manage my smart home",
+   "cps": 36,
+   "mark": "type1"
+  },
+  {
+   "hold": 300
+  },
+  {
+   "key": "Enter",
+   "mark": "send1"
+  },
+  {
+   "waitForText": "All on one screen",
+   "timeout": 20000,
+   "mark": "reply1"
+  },
+  {
+   "hold": 900
+  },
+  {
+   "typeSlow": "epic. can we put my room on the front and everything else on a separate tab?",
+   "cps": 44,
+   "mark": "type2"
+  },
+  {
+   "hold": 300
+  },
+  {
+   "key": "Enter",
+   "mark": "send2"
+  },
+  {
+   "waitForText": "2 files",
+   "timeout": 20000,
+   "mark": "built"
+  },
+  {
+   "eval": "(()=>{document.getElementById('r2-hide').textContent=\"button[aria-label='Open Finance']{display:none!important}\";return 1})()",
+   "mark": "pinned"
+  },
+  {
+   "hold": 1500
+  },
+  {
+   "click": "[placeholder^='Message']",
+   "settle": 150
+  },
+  {
+   "typeSlow": "perfect. now make the sliders bigger and the animations punchier",
+   "cps": 42,
+   "mark": "type3"
+  },
+  {
+   "hold": 300
+  },
+  {
+   "key": "Enter",
+   "mark": "send3"
+  },
+  {
+   "hold": 1500,
+   "mark": "built3"
+  },
+  {
+   "eval": "(()=>{const s=document.createElement('style');s.textContent='iframe[srcdoc]{visibility:hidden!important}';document.head.appendChild(s);return 1})()"
+  },
+  {
+   "click": "button[aria-label='Open Home']",
+   "settle": 300,
+   "mark": "page"
+  },
+  {
+   "moveTo": "js:document.querySelector('iframe[srcdoc]')",
+   "ms": 250
+  },
+  {
+   "hold": 4000,
+   "mark": "pagehold"
+  }
+ ]
+}

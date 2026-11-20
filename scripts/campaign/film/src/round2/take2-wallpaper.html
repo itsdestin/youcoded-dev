@@ -1,0 +1,93 @@
+<!doctype html>
+<!-- Take 2's "rainy tokyo at night" wallpaper: the picture the person's new look is painted on.
+     WHY a hand-built page and not a stock photo: the theme is something youcoded makes when asked, so
+     the picture has to be one we can make and own; drawn in layers it also gives us a "less pink" twin
+     with the identical street, only the neon re-lit (#cool). Rendered to JPEG by Chrome headless:
+       google-chrome-stable --headless --screenshot=out.png --window-size=1920,1200 'file://…/take2-wallpaper.html#pink'
+-->
+<html><head><meta charset="utf-8"><style>
+  :root { --n1: #ff3fa4; --n2: #ff6ad5; --n3: #7b5cff; --n4: #2de2ff; --sky1: #0b0618; --sky2: #2a0b3d; --haze: #c2309a; }
+  :root.cool { --n1: #2de2ff; --n2: #5a8bff; --n3: #8a5cff; --n4: #ff4fa8; --sky1: #050a1a; --sky2: #0c1d3d; --haze: #2a6fb8; }
+  html, body { margin: 0; width: 1920px; height: 1200px; overflow: hidden; background: var(--sky1); }
+  #c { position: absolute; inset: 0; }
+</style></head><body><canvas id="c" width="1920" height="1200"></canvas>
+<script>
+// WHY a seeded random: both twins must draw the same buildings, windows and puddles; only colour changes.
+if (location.hash === '#cool') document.documentElement.classList.add('cool');
+let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const N = [css('--n1'), css('--n2'), css('--n3'), css('--n4')];
+const c = document.getElementById('c'), g = c.getContext('2d'); const W = 1920, H = 1200, HOR = 760;
+// sky: deep night into a coloured haze over the city
+let s = g.createLinearGradient(0, 0, 0, HOR); s.addColorStop(0, css('--sky1')); s.addColorStop(0.65, css('--sky2')); s.addColorStop(1, css('--haze'));
+g.fillStyle = s; g.fillRect(0, 0, W, H);
+// the city's light on the low cloud: two broad glows above the skyline
+[[560, 520, 700], [1450, 480, 640]].forEach(([x, y, r], i) => { const gr = g.createRadialGradient(x, y, 0, x, y, r);
+  gr.addColorStop(0, (i ? N[3] : N[0]) + '38'); gr.addColorStop(1, '#00000000'); g.fillStyle = gr; g.fillRect(0, 0, W, HOR); });
+// three rows of towers, far to near: each nearer row darker and taller, with lit windows
+const rows = [{ n: 34, hmin: 120, hmax: 330, col: '#1d0f33', win: 0.10, a: 0.55 }, { n: 22, hmin: 200, hmax: 520, col: '#120822', win: 0.16, a: 0.8 }, { n: 12, hmin: 330, hmax: 700, col: '#07030f', win: 0.22, a: 1 }];
+const signs = [];
+rows.forEach((r, ri) => {
+  let x = -40;
+  while (x < W + 40) {
+    const w = 60 + rnd() * (ri === 2 ? 190 : 120), h = r.hmin + rnd() * (r.hmax - r.hmin), top = HOR - h;
+    g.fillStyle = r.col; g.fillRect(x, top, w, h + 2);
+    // windows: a grid, most dark, a few warm or cool
+    for (let wy = top + 14; wy < HOR - 10; wy += 15 + ri * 3) for (let wx = x + 8; wx < x + w - 10; wx += 12 + ri * 4) {
+      if (rnd() < r.win) { g.globalAlpha = r.a * (0.35 + rnd() * 0.65); g.fillStyle = rnd() < 0.7 ? '#ffd9a8' : '#bfe9ff'; g.fillRect(wx, wy, 4 + ri, 6 + ri); g.globalAlpha = 1; }
+    }
+    if (ri === 2 && rnd() < 0.75) signs.push({ x: x + w * (0.15 + rnd() * 0.5), y: top + 40 + rnd() * 160, ri });
+    x += w + (ri === 2 ? 30 + rnd() * 60 : 4 + rnd() * 14);
+  }
+});
+// vertical neon signs on the near towers, glowing (text inside a scene, so a Japanese face is fine)
+const words = ['ラーメン', '夜', 'カラオケ', '雨', '東京', 'バー', '喫茶', '本屋'];
+const glow = (col, blur, fn) => { g.save(); g.shadowColor = col; g.shadowBlur = blur; fn(); g.restore(); };
+signs.forEach((sg, i) => {
+  const col = N[i % 3 === 2 ? 3 : i % 2], word = words[i % words.length], fs = 34 + (i % 3) * 6, bh = word.length * (fs + 6) + 24;
+  g.fillStyle = 'rgba(10,4,18,0.85)'; g.fillRect(sg.x, sg.y, fs + 22, bh);
+  glow(col, 30, () => { g.strokeStyle = col; g.lineWidth = 3; g.strokeRect(sg.x, sg.y, fs + 22, bh); });
+  glow(col, 24, () => { g.fillStyle = col; g.font = `700 ${fs}px "Noto Sans CJK JP"`; g.textAlign = 'center';
+    [...word].forEach((ch, k) => g.fillText(ch, sg.x + (fs + 22) / 2, sg.y + 14 + fs + k * (fs + 6))); });
+});
+// a few wide horizontal signs and a lit crosswalk banner, low in the frame
+[[180, 640, 280, 0], [760, 600, 220, 1], [1380, 660, 300, 3], [1640, 560, 200, 2]].forEach(([x, y, w, k]) => {
+  const col = N[k]; g.fillStyle = 'rgba(8,3,16,0.9)'; g.fillRect(x, y, w, 46);
+  glow(col, 34, () => { g.strokeStyle = col; g.lineWidth = 3; g.strokeRect(x, y, w, 46); g.fillStyle = col; g.font = '700 28px "Noto Sans CJK JP"'; g.textAlign = 'center'; g.fillText(['居酒屋 OPEN', 'NIGHT 24h', 'ゲームセンター', 'HOTEL'][k], x + w / 2, y + 33); });
+});
+// street: wet tarmac, darker toward the camera
+s = g.createLinearGradient(0, HOR, 0, H); s.addColorStop(0, '#120a20'); s.addColorStop(1, '#040208'); g.fillStyle = s; g.fillRect(0, HOR, W, H - HOR);
+// reflections: the city mirrored into the wet road, smeared vertically
+// WHY a copy first: drawing a canvas onto itself while transformed reads pixels it is writing.
+const city = document.createElement('canvas'); city.width = W; city.height = H; city.getContext('2d').drawImage(c, 0, 0);
+g.save(); g.globalAlpha = 0.62; g.translate(0, HOR * 2); g.scale(1, -1); g.filter = 'blur(4px)';
+g.drawImage(city, 0, HOR - 440, W, 440, 0, HOR - 440, W, 440); g.restore();
+// ripples: thin dark bands across the reflection so it reads as water, not a mirror
+g.save(); for (let y = HOR + 4; y < H; y += 6 + rnd() * 10) { g.fillStyle = `rgba(4,2,10,${0.25 + rnd() * 0.3})`; g.fillRect(0, y, W, 1 + rnd() * 2.5); } g.restore();
+// neon smeared down the wet road: soft, tapered, blurred streaks under each sign
+g.save(); g.globalCompositeOperation = 'lighter'; g.filter = 'blur(14px)';
+signs.forEach((sg, i) => { const col = N[i % 3 === 2 ? 3 : i % 2]; const gr = g.createLinearGradient(0, HOR, 0, H);
+  gr.addColorStop(0, col + '70'); gr.addColorStop(0.5, col + '30'); gr.addColorStop(1, col + '00'); g.fillStyle = gr;
+  g.beginPath(); g.ellipse(sg.x + 26, HOR + 230, 26, 260, 0, 0, 7); g.fill(); });
+g.restore();
+// haze where the street meets the city, so the layers sit in air, not on paper
+s = g.createLinearGradient(0, HOR - 160, 0, HOR + 60); s.addColorStop(0, 'rgba(0,0,0,0)'); s.addColorStop(0.7, css('--haze') + '55'); s.addColorStop(1, 'rgba(0,0,0,0)');
+g.fillStyle = s; g.fillRect(0, HOR - 160, W, 220);
+// bokeh: out-of-focus lights in front of the lens
+g.save(); g.globalCompositeOperation = 'lighter';
+for (let i = 0; i < 55; i++) { const x = rnd() * W, y = 300 + rnd() * 900, r = 8 + rnd() * 34, col = N[Math.floor(rnd() * 4)];
+  const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, col + '40'); gr.addColorStop(0.7, col + '22'); gr.addColorStop(1, col + '00');
+  g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+g.restore();
+// rain: thin slanted streaks, more of them close to the lens
+g.save(); g.strokeStyle = 'rgba(200,220,255,0.16)'; g.lineWidth = 1.2;
+for (let i = 0; i < 900; i++) { const x = rnd() * W, y = rnd() * H, l = 20 + rnd() * 40; g.beginPath(); g.moveTo(x, y); g.lineTo(x - l * 0.18, y + l); g.stroke(); }
+g.restore();
+// bloom: the picture's own light, blurred and added back, so neon glows into the rain
+const sharp = document.createElement('canvas'); sharp.width = W; sharp.height = H; sharp.getContext('2d').drawImage(c, 0, 0);
+g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.45; g.filter = 'blur(22px)'; g.drawImage(sharp, 0, 0); g.restore();
+// vignette: the edges fall away so bubbles and the message box always sit on calm dark
+s = g.createRadialGradient(W / 2, H * 0.45, H * 0.3, W / 2, H * 0.5, W * 0.75); s.addColorStop(0, 'rgba(0,0,0,0)'); s.addColorStop(1, 'rgba(2,0,8,0.7)');
+g.fillStyle = s; g.fillRect(0, 0, W, H);
+document.title = 'done';
+</script></body></html>
