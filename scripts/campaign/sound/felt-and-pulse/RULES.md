@@ -178,3 +178,13 @@ After the second round of playful versions and the sound-logo alternatives (Dest
   without other music, but the full blend if at the end of an ad with our other music":
   logo-alternatives 02-piano-only when the logo plays alone; 10-full-blend when it closes a piece
   that has music. The earlier logo (with the glassy echo, thump and air rush) is retired.
+
+Later the same day (Destin: "for sound effects, i think that should kinda be made up on the fly for
+now. i dont really want a kit for that yet"). This withdraws "one small kit of sound effects for
+the whole brand":
+
+- **No sound-effects kit for now.** Sound effects are made for each film as it needs them. The
+  trial kit in `../sfx-kit/` is not a standard; it is a parts bin a film may borrow from.
+- **The rulings on what effects may sound like still apply to every film**: no thwip, zip, sweep,
+  whoosh or riser; no clap or clack; pen and marker sounds soft and smooth, never scratchy;
+  typing quiet; effects answer actions and never become tunes or jingles.
