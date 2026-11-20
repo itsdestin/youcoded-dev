@@ -13,6 +13,7 @@
 //   shoot --all                                       everything
 //   shoot --check                                     open every screen once (one theme), press Escape once; exit 1 on any failure
 //
+//   shoot settings/about --page                       also save the screen as one still web page (words editable on a deck)
 // Options: --worktree <name|branch|path> (default: the checkout this script sits in, else
 // the main one) · --themes a,b | all · --width N [--height N] · --contrast · --collect <classes.json> · --out <dir>
 //
@@ -31,6 +32,7 @@ import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
 import { mergeManifest, readManifest } from './manifest.mjs';
 import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
 import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES } from './themes.mjs';
+import { FREEZE } from './freeze.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -45,7 +47,7 @@ const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false };
+const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false, page: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
   if (a === '--tag') opt.tags.push(next());
@@ -62,6 +64,7 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--list') opt.list = true;
   else if (a === '--all') opt.all = true;
   else if (a === '--check') opt.check = true;
+  else if (a === '--page') opt.page = true;
   else if (a === '-h' || a === '--help') { console.log(readHelp()); process.exit(0); }
   else if (a.startsWith('--')) die(`unknown option ${a} (see shoot --help)`);
   // WHY (submit-ticket friction, proposal 17): a zsh variable holding several names arrives as
@@ -134,6 +137,13 @@ async function side(checkout, outDir, pick, which = null) {
     return { screens, results, server };
   } finally { pool?.close(); server.close(); editor?.stop(); }
 }
+
+// WHY (2026-11-18, load-flaky-tests): the mark probe used to be a bare 5 s evaluate that THREW on a timeout. At load
+// 60-150 a busy page needs longer than 5 s to answer a one-line query (office/presentation failed "Runtime.evaluate
+// timed out after 5s" while opening in seconds alone). A probe that gets no answer is "not showing yet", not a failure:
+// the loops that poll it already have their own deadlines, and a screen that never shows still fails with the reason.
+const MARK_PROBE_MS = 20_000;
+const markNow = (tab, screen) => tab.evaluate(MARK_CHECK(markOf(screen)), MARK_PROBE_MS).catch((e) => `the page gave no answer: ${e.message}`);
 
 async function waitFor(tab, expr, ms) {
   for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 50))) {
@@ -233,7 +243,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       if (!opened?.ok) throw new Error(opened?.reason ?? 'open failed');
       for (const t1 = Date.now(); Date.now() - t1 < 2500;) {
         await tab.still(1500);
-        why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);   // a #state is marked as its plain screen, unless it names its own `mark`
+        why = await markNow(tab, screen);   // a #state is marked as its plain screen, unless it names its own `mark`
         if (why?.panel) break;
       }
     }
@@ -244,7 +254,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // screen that is truly missing still fails, just later; one that shows is unaffected.
     for (const t2 = Date.now(); !why?.panel && Date.now() - t2 < 12_000;) {
       await tab.still(1500);
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
     }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
     // "Open this first" (screen list `open`): clicks replayed like a journey once the screen
@@ -260,7 +270,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       // picture (submit-ticket friction, proposal 14) — move it off the page. A `hover` step
       // ending the list is kept: that hover is what the picture is for.
       if (pointerRestsOnClick(steps)) { await driver.pointerAway(); await tab.still(1000); }
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
       if (!why?.panel) throw new Error(`not showing after its open steps: ${why}`);
     }
     // `waitMs` (screen list): a state that changes by itself is photographed LATER, on purpose —
@@ -270,7 +280,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     if (screen.waitMs) {
       await new Promise((res) => setTimeout(res, screen.waitMs));
       await tab.still(1500);
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
       if (!why?.panel) throw new Error(`not showing after its ${screen.waitMs} ms wait: ${why}`);
     }
     // WHY (frameReady): the mark above is the app's; a Page's own content is drawn by its iframe a moment later (under load, a
@@ -294,6 +304,19 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
     r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
+    // --page: the same screen as one still web page beside its picture, for a deck's
+    // edit-the-words-in-place step (freeze.mjs says why). A failure here is reported on the
+    // record and does not cost the picture.
+    if (opt.page) {
+      try {
+        // Where the screen's own panel sits (the popup, the menu) rides in the file, so the
+        // deck can open zoomed on it instead of showing a small popup in a large window.
+        const box = r.panel ? ` data-frozen-panel="${[r.panel.x, r.panel.y, r.panel.w, r.panel.h].map(Math.round).join(',')}"` : '';
+        r.page = join(dir, `${theme}.html`);
+        writeFileSync(r.page, (await tab.evaluate(FREEZE, 60_000)).replace(' data-frozen="', `${box} data-frozen="`));
+      }
+      catch (e) { r.page = null; r.pageError = String(e.message || e); }
+    }
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));

@@ -1533,6 +1533,14 @@ recurred — the repetition is the data.
 - Left for Destin (each visible, listed in the guide's "Known gaps"): website + app themes to purple C, setup-screen tagline, README casing and repo links, logo files, trademark; telling the live marketing-videos session about the new rules.
 - deleted/merged: the guide itself cut from ~4,500 to ~1,900 words; `~/Documents/youcoded-brand-inventory-2026-11-18.md` is superseded (left for Destin to delete).
 
+## 2026-11-18 — card #7: messages stuck at the bottom of the chat, and the "didn't send" note (session/7-pinned-bubbles, youcoded PR #782)
+- Round 3 misread "put it inside the bubble" as a new custom strip with new buttons; Destin wanted the app's existing error card unchanged, only moved ("that looks nothing like any other errors in the app") → dropped as a new rule: the design guide and Callout.tsx already say every notice is the one box; the lesson is to move the existing piece first and restyle only when asked.
+- Four colour rounds (4–7) followed because no notice box had ever sat on an accent-coloured surface, so the page tint read too dark/too pale inside the bubble → applied: `Callout surface="on-accent"`, Button `on-accent-outline`/`on-accent-solid`, `styles/send-note.css`, each with WHY comments citing the deck answers, pinned in `send-note-discard-dismiss.test.tsx` and `hover-press-ladder.test.ts`.
+- Destin asked how similar notices are handled "in settings menus and such"; my answer proposed moving the card outside the bubble, which he had already ruled out → dropped: one-off, but noted here so the next round on this card doesn't re-propose it.
+- RECURRED (brand-guide session today, here ×4): photographing one injected chat state across all six themes was rebuilt from the transcript each round → card #280.
+- globals.css went over its line budget by 16 → applied: the new rules live in their own file, like the other split-out styles.
+- deleted/merged: the round-3 custom button variants (removed in round 4); the active design folder moved to `docs/archive/design/7-pinned-bubbles/`.
+
 ## 2026-11-18 — card #236 sign-in expiry and no internet, investigation to merge (session/236-working-offline-sign-in-expiry, youcoded#767, youcoded-dev#383)
 - Why #236 sat unbuilt for two months: the 2026-09-14 session hit Destin's weekly usage limit mid-mockups and its answers sat on a side branch until the 11-09 inventory; found by grepping transcripts for the deck name (~6 calls) → dropped: the 11-09 "record-only changes land without asking" rule already covers stranded answers.
 - CLI 2.1.327 `claude auth status` exits 1 when logged out (it used to exit 0), so every signed-out install read "Signed-in state couldn't be read" with no way to sign in; only Destin's hands-on test in a dev copy caught it → applied: fixed in ClaudeAccount + detectAuth, pinned by `claude-account.test.ts` ("exits 1"), seen red.
@@ -1542,6 +1550,23 @@ recurred — the repetition is the data.
 - Destin's words filed: error cards should follow real bubble rules → card #270; ChatGPT "expired" survives a restart → card #275 (awaiting his yes); "no internet is red" → design guide updated.
 - I ran `cat >> /dev/null` in a heredoc chain and hung a command for 2 minutes → dropped: my slip, not a workspace gap.
 - deleted/merged: the chat's red error card markup moved into one shared `ChatNoticeBubble` (SortedErrorCard and the new cards draw through it) and its two unused tones removed.
+
+## 2026-11-18 — overnight card sweep, deck answers, landing (youcoded#771 #772 #773 #780, youcoded-dev#389 #390)
+- Overnight build: 6 branches from ~160 open cards; Destin approved 2 (phone paste #134, image-cache 90-day sweep #66), rejected 2 (queue-edit Replace/Append #62: "the refusal was fine. this is overcomplicated"; search-root #66: "in what world would i ever be starting the assistant in a subfolder") → filed on the cards. Both rejects were Claude-written specs nobody had checked against a real user path → dropped as a rule: the triage step already scores value; noted here so the next overnight sweep asks "which real menu or flow reaches this?" before building a Claude-only spec.
+- Handoff facts (file locations, decisions, scope) lived only in a handoff file on a side branch; Destin asked whether the cards were self-contained → applied: copied into the progress notes of #92 #114 #235 #231 #255. Proposed (guidance edit waits for Destin): handoffs write their facts into the card's progress note, the file is optional.
+- Six tests failed only under heavy load (load 58–200) → fixed (CPU budgets instead of wall time, beforeAll fixture, shoot probe/hold), independently reviewed, landed #780/#390.
+- My gitleaks call used a nonexistent `-q` flag and `&& git push` after `| tail` hid the failure; the pre-push hook scanned anyway → dropped: the hook is the executing guard; my slip.
+- Local-only branches seen in the sweep (not this session's): 8 workspace, 18 app, including `session/usage-visibility-20260929`, the usage-stats mockup card #231 points to → reported to Destin.
+- deleted/merged: overnight handoff file superseded by the card notes (left on session/overnight-2026-11-19).
+
+## 2026-11-18 — stuck queued message, root cause to merge (card #278, youcoded#781)
+- `desktop.log` said only "input-not-safe", which covers both an open question and a pop-up; I chased Claude Code's idle tidy-up (compaction) as the cause through a one-hour real-time reproduction plus failed clock-faking and binary-patch shortcuts (~40 calls) before the transcript of the stuck helper agent showed the real cause → card #282 (log the refusal's reason; `queueInputBlock` now has it).
+- Real cause, measured on CLI 2.1.327: a background helper's PermissionRequest carries `agent_id`, and while a hook holds it Claude Code draws no menu, but the app counted it as the chat's own question → applied (youcoded#781, pinned by tests, `cc-dependencies.md` updated with the live payload).
+- My probe resumed a COPY of a real conversation with `--dangerously-skip-permissions` in an isolated HOME; the copied history made the test chat resume the marketing work and run a command in Destin's real worktree (it rewrote two generated files byte-identically; no damage) → proposed one sentence for `.claude/rules/live-app-safety.md` ("a probe never resumes a copy of a real conversation with permissions bypassed: its history carries real paths"); rule edits wait for Destin's word.
+- I first told Destin the cause was "probably the tidy-up not signalling turn end" before verifying → my slip; the reproduction disproved it.
+- Fresh review caught a real safety window (a kept helper ask is drawn at once; foreground helpers unmeasured) and a stale note → applied in the same PR.
+- Filed from the session: the helper's question was visible only as a small "1 needs you" chip for 85 minutes → card #281.
+- deleted/merged: none found; looked at the throwaway reproduction rig (scratch only, deleted with its temp homes, which held a copied sign-in token).
 
 ## 2026-11-20 — release 1.3.4, review to publish (session/release-1-4-review; youcoded#762 #769 #784 #786 #791 #792, youcoded-admin#27 #29; v1.3.4 tagged from release/1.3.x)
 - The tag's Linux leg refused a stale built-in plugin pin (the marketplace publisher moved after the cut); the half-published release had to be deleted and re-tagged (~45 min) → applied: release skill runs `refresh-bundled-plugin-pins.mjs --check` before go/no-go (youcoded-admin `session/release-skill-lessons`, unmerged).

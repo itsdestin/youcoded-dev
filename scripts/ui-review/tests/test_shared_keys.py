@@ -52,6 +52,7 @@ class SharedKeyTests(unittest.TestCase):
         # answers file carries the same key and steps; a non-spec json has the key but no steps
         self.other('questions.answers.json', self.spec['key'])
         self.other('notes.json', self.spec['key'], steps=False)
+        self.other(self.spec['_stem'] + '.as-built.0123abcd4567.json', self.spec['key'])   # its own kept copy of what he saw
         write(self.folder, 'broken.json', {})
         with open(os.path.join(self.folder, 'bad.json'), 'w') as f:
             f.write('{not json')

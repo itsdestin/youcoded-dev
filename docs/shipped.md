@@ -922,3 +922,5 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-11-18 #269 Website copy guide points at a deleted 2026-08-31 handoff (youcoded-dev PR #382)
 - [x] 2026-11-18 #236 Working offline, sign-in expiry and the startup menu: the decided behaviour (youcoded#767, youcoded-dev#383)
 - [x] 2026-11-18 #266 A helper report can be delivered twice if the app quits mid-delivery (youcoded#773)
+- [x] 2026-11-19 #278 Queued messages refused while a background agent waits on a question (youcoded#781)
+- [x] 2026-11-19 #7 Chat view glitches: vanishing, stuck or misdrawn messages (youcoded#782)

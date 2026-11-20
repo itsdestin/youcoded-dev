@@ -54,6 +54,10 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .nav{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;min-width:0}
 .steps{display:flex;gap:3px;align-items:center;flex:1;max-width:360px;min-width:90px} .steps span{flex:1;height:7px;border-radius:3px;background:var(--inset);cursor:pointer;transition:transform .15s}
 .steps span:hover{transform:scaleY(1.4)} .steps span.on{box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--fg)}
+/* WHY green finished bars (Destin, round 13: "we used to have colored bars to indicate whether a page was finished or not at the top, but those seem
+   to have gone away?"): the page script has always marked a finished page `done`, but nothing in this file ever drew it. On a deck that grows a page
+   with nothing left for him (and one he has now dealt with) is green; pages still needing him stay the neutral grey. */
+body[data-grows] .steps span.done{background:var(--yes)}
 .steps span.yes,.steps span.pick{background:var(--yes)} .steps span.no{background:var(--no)} .steps span.other{background:var(--other)} .steps span.skip{background:var(--fg-faint)}
 .count{font-size:11px;color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 /* Save status (page.js showSaved): visible at every width, unlike .count — a failed save is the one
@@ -89,18 +93,8 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .card.part h3{color:var(--fg-dim)}
 .frame.pickable{cursor:pointer;border-radius:var(--radius-md);padding:4px;margin:-4px} .frame.pickable.on{outline:2px solid var(--mark);outline-offset:2px} .frame.pickable figcaption .key{margin-right:6px}
 .ans{border-color:var(--edge)}
-/* Yes and No carry their meaning in the RESTING state — a tinted border and a tinted label,
-   the same quiet-colour idiom `.card.risk` already uses for amber. Destin (2026-09-01) wanted
-   green/red back but not as a status dot, and it has to live here rather than in the chosen
-   state: amber-when-picked is now the single signal for "this is the one I picked", shared
-   with the lettered cards, and two colours competing for that job is what the dots were.
-   Mixed toward the theme's own edge/text rather than used neat, so it reads on light themes
-   too — #2E9B57 on #F2F2F2 is not enough contrast for 13px text on its own.
-   The chosen rule below is deliberately LAST: it takes the border, and leaves the label its
-   colour, so a picked answer still says which one it was. */
-.ans[data-v="yes"]{border-color:color-mix(in srgb,var(--yes) 50%,var(--edge));color:color-mix(in srgb,var(--yes) 72%,var(--fg))}
-.ans[data-v="no"]{border-color:color-mix(in srgb,var(--no) 50%,var(--edge));color:color-mix(in srgb,var(--no) 72%,var(--fg))}
-.ans.on{background:var(--inset);border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)}
+/* The resting and chosen looks of an answer button are in the round 7 block at the foot of this file
+   (design guide -> Buttons): a full-strength outline, an accent outline + tick when chosen. */
 main{flex:1;min-height:0;display:flex;justify-content:center;padding:14px 20px 16px;overflow:auto}
 .step{position:relative;display:flex;width:min(var(--content),100%);flex-direction:column;gap:10px;min-height:0}
 .thumbs{position:absolute;left:calc(100% + 16px);top:0;display:flex;flex-direction:column;gap:10px}
@@ -138,9 +132,18 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
    two of them is bigger than any gap inside one, and an answered question says so where the
    number is rather than only by a border tint you have to hunt for. */
 .pages article.q .qnum{margin:0 0 -4px;display:flex;align-items:center;gap:8px;font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-faint)}
-.pages article.q .qnum .tick{display:none;color:var(--yes);letter-spacing:.06em}
-.pages article.q .qnum .tick::before{content:"✓ ";font-weight:700}
-.pages article.q.done .qnum .tick{display:inline}
+/* WHY (Destin, 2026-11-09): this mark was class `tick`, which is also the finish screen's
+   56px green circle further down — so every answered question drew that circle behind the
+   word and pushed the card out of shape. It has its own name now. */
+/* A picture inside a written question or one of its options (page.js pictureFig). */
+.qpic{margin:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+/* WHY no height cap (Destin, rounds 4, 5, 8: "far too small and zoomed out"): a cap shrank tall
+   pictures until their words were unreadable; the page scrolls instead. */
+.qpic img{display:block;max-width:100%;height:auto;border:1px solid var(--edge);border-radius:var(--radius-md);cursor:zoom-in}
+.qpic.opt{margin:6px 0 8px}
+/* The caption sits ABOVE: a drawing of a deck inside a deck reads as a second question until
+   something says it is a picture. */
+.qpic figcaption{order:-1;font-size:12px;color:var(--fg-muted)}
 .pages article.q.done .qnum .n{color:var(--fg-muted)}
 .pages .qbody{display:flex;flex-direction:column;gap:10px}
 /* Fix (Destin, 2026-09-06): "difficult to differentiate the different explanations section
@@ -392,7 +395,7 @@ body[data-served="1"] .opendev{display:inline-flex}
 .card.dev{grid-column:1/-1}
 /* The command on a TRY-IT slide. Monospace and selectable, on the marked edge, because it is
    the one thing on the card that has to be copied exactly rather than read. */
-.card.dev .cmd{margin:8px 0 0;padding:9px 11px;border:1px solid var(--edge);border-left:3px solid var(--mark);border-radius:var(--radius-md);background:var(--well);overflow-x:auto}
+.card.dev .cmd{margin:8px 0 0;padding:9px 11px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);overflow-x:auto}
 .card.dev .cmd code{font:inherit;font-size:12px;color:var(--fg);white-space:pre;user-select:all}
 .card.dev .cmd{margin-top:10px}
 .card.dev .src{margin-top:8px}
@@ -449,3 +452,608 @@ body[data-served="1"] .opendev{display:inline-flex}
 .frame.gone .pic{display:grid;place-items:center;min-height:120px;padding:16px;border:1px dashed var(--edge);border-radius:var(--radius-md);font-size:12px;line-height:1.5;color:var(--fg-muted);text-align:center}
 
 /* WHY pre-line on card text (2026-10-15): a field listing many items (the roadmap-move deck, one line per item) ran together into one wall; a line break the author wrote now shows. Ordinary prose has none, so it is unchanged. */
+
+/* ── VOICE: a microphone on every text box (page.js "VOICE"). The button is a sibling laid over
+   the box's right end with a negative margin, so it takes no room of its own and no layout
+   has to make space for it. Hidden unless the deck is served: a plain file has no helper. */
+.mic{display:none;flex:0 0 32px;width:32px;height:32px;margin:0 2px 0 -42px;align-self:center;position:relative;z-index:1;place-items:center;border:0;border-radius:50%;background:transparent;color:var(--fg-muted);cursor:pointer;padding:0}
+body[data-served] .mic:not([hidden]){display:grid}
+.mic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media (hover:hover){.mic:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 10%,transparent)}}
+.mic.rec{color:#fff;background:var(--no);animation:micpulse 1.2s ease-in-out infinite}
+.mic.wait{color:var(--mark);animation:micpulse .7s ease-in-out infinite}
+@keyframes micpulse{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.mic.rec,.mic.wait{animation:none}}
+body[data-served] .note,body[data-served] .ans-write{padding-right:44px}
+.micerr{flex:1 1 100%;margin:0;font-size:12px;color:var(--no)}
+/* A note on a question page grows with what is said into it instead of scrolling sideways. */
+.pages .qrow textarea.note{height:auto;min-height:clamp(34px,4.4vh,52px);padding:9px 12px;line-height:1.4;resize:none;overflow:hidden}
+body[data-served] .pages .qrow textarea.note{padding-right:44px}
+/* The narrow one-step layout is a three-column grid; the microphone shares the note's cell. */
+.compact .controls .mic{grid-column:2;justify-self:end;margin:0 8px 0 0}
+/* ── rethink, 2026-11-09 ─────────────────────────────────────────────────────────────── */
+/* The (i) beside "Today": how and when that claim was checked, on hover or keyboard focus. */
+.how{position:relative;display:inline-grid;place-items:center;width:15px;height:15px;margin-left:6px;border:1px solid var(--fg-faint);border-radius:50%;vertical-align:-2px;cursor:help;text-transform:none;letter-spacing:0}
+.how i{font:italic 600 10px/1 Georgia,serif;color:var(--fg-muted)}
+.how .tip{display:none;position:absolute;left:-8px;top:calc(100% + 8px);z-index:20;width:max-content;max-width:min(320px,70vw);padding:8px 10px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--panel);color:var(--fg-2);font:400 12px/1.45 var(--font);box-shadow:0 8px 24px rgba(0,0,0,.35);text-align:left;white-space:normal}
+.how:hover .tip,.how:focus .tip{display:block}
+.how:focus{outline:2px solid var(--accent);outline-offset:1px}
+/* When the deck was built, quietly, in the chip. */
+.chip .built{margin-left:10px;padding-left:10px;border-left:1px solid var(--edge);color:var(--fg-faint);font-size:11px;white-space:nowrap}
+@media (max-width:760px){.chip .built{display:none}}
+/* Calls I made for you: one line each, its own pencil, its own box underneath. */
+.card.calls ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.card.calls .call{padding:10px 0;border-top:1px solid var(--edge)} .card.calls .call:first-child{border-top:0;padding-top:0}
+.callrow{display:flex;align-items:flex-start;gap:14px} .calltext{flex:1 1 auto;min-width:0}
+.callwhat{margin:0 0 3px;color:var(--fg)} .calltext .src{margin:0}
+.call.chg .callwhat{text-decoration:line-through;text-decoration-color:var(--fg-faint)}
+.callbox{display:flex;align-items:flex-start;margin-top:8px} .callbox[hidden]{display:none}
+.callt,.markt{flex:1 1 auto;min-width:0;font:inherit;font-size:clamp(12px,0.85vw,14px);min-height:36px;padding:8px 12px;line-height:1.4;resize:none;overflow:hidden;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)}
+.callt::placeholder,.markt::placeholder{color:var(--fg-muted)}
+body[data-served] .callt,body[data-served] .markt{padding-right:44px}
+/* Areas dragged on a picture. */
+.markable{position:relative} .qpic>a.markable{display:inline-block;line-height:0;max-width:100%}
+.markable img{cursor:crosshair!important;user-select:none;-webkit-user-drag:none}
+.mark{position:absolute;box-sizing:border-box;border:2px solid var(--link);border-radius:4px;background:color-mix(in srgb,var(--link) 16%,transparent);box-shadow:0 0 0 1px rgba(0,0,0,.45);pointer-events:none;line-height:1}
+.mark b,.markrow>b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--link);color:#fff;font:700 11px/1 var(--font)}
+.mark b{position:absolute;left:-10px;top:-10px;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.marklist{display:flex;flex-direction:column;gap:6px} .marklist:empty{display:none}
+.markrow{display:flex;align-items:flex-start;gap:8px} .markrow>b{flex:none;margin-top:8px}
+.markx{flex:none;width:32px;height:36px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg-muted);font-size:18px;cursor:pointer} .markx:hover{color:var(--no)}
+.markhint{margin:0;font-size:12px;color:var(--fg-faint)}
+/* The microphone, like the app's: accent while listening, a ring that follows the sound. */
+.mic.rec{color:var(--on-accent);background:var(--accent);animation:none;transition:box-shadow 90ms steps(3)}
+.micerr.quiet{color:var(--fg-muted)}
+.callbox .mic,.markrow .mic{align-self:flex-start;margin-top:2px}
+.calltext .src{font-size:12px;color:var(--fg-muted)}
+.chip .built{color:inherit;opacity:.7;border-left-color:currentColor}
+.responses td.when{white-space:nowrap}
+/* round 2: rows that carry a picture, a source quote and a check result */
+/* WHY no bar (Destin, 2026-11-12, round 10: he marked every short coloured bar at the left edge of a quote or a
+   story and wrote "fingernail"; round 9: "i hateeee the fingernail styling"). His words are set apart by being
+   quoted and italic, nothing else. No element on a deck carries a coloured left-edge bar. */
+.decided{margin:6px 0 0;font-size:12px;font-style:italic;color:var(--fg-2)}
+/* A row's status: a small tinted pill (design guide: a status is a Pill, sentence case). As a
+   button it opens the four statuses — he can set any of them (round 4). */
+.result{display:inline-block;padding:2px 9px;border-radius:999px;font:600 11px/1.5 var(--font);border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent);white-space:nowrap}
+.result.run{color:var(--yes)} .result.skip{color:var(--fg-muted)}
+.card.calls.context .call{background:transparent;border-style:dashed}
+.iconbtn[hidden]{display:none}
+.result.pass{color:var(--yes)} .result.fail{color:var(--no)} .result.unclear{color:var(--mark)} .result.todo{color:var(--fg-muted)}
+.result.pillbtn{flex:none;align-self:flex-start;margin-top:3px;cursor:pointer;font-family:var(--font)} .result.pillbtn::after{content:" ▾";opacity:.7} .result.pillbtn:disabled{cursor:default} .result.pillbtn:disabled::after{content:""}
+.result.pillbtn.yours{border-style:solid;border-color:currentColor;box-shadow:0 0 0 1px currentColor}
+.resultmenu{position:absolute;z-index:80;display:flex;flex-direction:column;gap:2px;min-width:170px;padding:4px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--panel);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.resultmenu button{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 8px;border:0;border-radius:var(--radius-sm);background:none;color:var(--fg);font:inherit;cursor:pointer;text-align:left}
+.resultmenu button:hover,.resultmenu button[aria-checked="true"]{background:var(--inset)} .resultmenu .mine{font-size:11px;color:var(--fg-muted)}
+/* A card's own status, top right (round 4): Not answered / Answered 12:47 / Accepted / 2 changes. */
+.pages article.q{position:relative}
+.qstate{position:absolute;top:12px;right:14px;padding:2px 9px;border-radius:999px;font:600 11px/1.5 var(--font);white-space:nowrap;border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent)}
+.qstate.none{color:var(--fg-faint)} .qstate.ok{color:var(--yes)} .qstate.chg{color:var(--mark)}
+.pages article.q .qh{padding-right:150px}
+/* WHY the title and its "New" tag share a row (the tag sits beside the title, never inside the heading text): the row keeps the room the state pill needs. */
+.pages article.q .qhrow{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;padding-right:150px}
+.pages article.q .qhrow .qh{padding-right:0}
+/* The comment box at the foot of every page (round 4). */
+.pagenote{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--panel)}
+.pagenote label{font:600 13px/1.2 var(--font);color:var(--fg)}
+.pnotebox{display:flex;align-items:flex-start}
+.pnote{flex:1 1 auto;min-width:0;box-sizing:border-box;min-height:64px;padding:10px 12px;font:inherit;font-size:14px;line-height:1.4;resize:none;overflow:hidden;color:var(--fg);border:1px solid color-mix(in srgb,var(--edge) 60%,transparent);border-radius:var(--radius-lg);background:var(--well)}
+.pnote:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+body[data-served] .pnote{padding-right:44px}
+/* The header Notes button stays only on picture decks, which have no page foot. */
+body[data-layout="pages"] #notesbtn{display:none}
+.card.calls.numbered ul{counter-reset:stepn} .card.calls.numbered .calltext{position:relative;padding-left:32px}
+.card.calls.numbered .calltext::before{counter-increment:stepn;content:counter(stepn);position:absolute;left:0;top:0;display:grid;place-items:center;width:22px;height:22px;border:1px solid var(--edge);border-radius:50%;font:600 11px/1 var(--font);color:var(--fg-muted)}
+.callbox,.markrow{flex-wrap:wrap}
+@media (max-width:760px){.callrow{flex-wrap:wrap}}
+/* ── round 3, 2026-11-10 ─────────────────────────────────────────────────────────────── */
+/* WHY boxed rows (Destin, round 3: "these can be smarter and better utilize youcoded design
+   principles"; design guide → Lists and menus, Card levels): a list's rows are soft boxes with
+   a small gap, never lines across the full width of the card; a row's quick action sits at
+   its top right. The list card itself loses its own box so the rows are not a box in a box. */
+.card.calls{background:transparent;border:0;padding:0}
+.card.calls ul{gap:6px}
+.card.calls .call,.card.calls .call:first-child{padding:10px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset)}
+.callrow{gap:12px}
+.call.chg .callwhat{text-decoration:none}
+.call.chg{border-color:color-mix(in srgb,var(--link) 55%,var(--edge))}
+/* The pencil: one quiet icon per row, lit while its comment box is open. */
+.iconbtn{flex:none;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg-muted);cursor:pointer}
+.iconbtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn.on{color:var(--link);background:color-mix(in srgb,var(--link) 14%,transparent)}
+.iconbtn:disabled{opacity:.4;cursor:default}
+@media (hover:hover){.iconbtn:hover:not(:disabled){color:var(--fg);background:color-mix(in srgb,var(--fg) 10%,transparent)}}
+/* A row's picture: a thumbnail at the right, opened large in the deck by a click. */
+/* Every text box: the app's message-box look — the inset colour, a soft corner, a faint
+   edge that turns to the theme colour while it is being typed in (design guide → The message box). */
+.callt,.markt,.pages .qrow textarea.note,.ans-write{border-color:color-mix(in srgb,var(--edge) 60%,transparent);border-radius:var(--radius-lg);background:var(--well)}
+.callt:focus,.markt:focus,.note:focus,.ans-write:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.callbox{margin-top:8px}
+/* Edit the words on the real screen (round 4): a still copy of the app screen in a frame. */
+.card.screen{padding:10px 12px}
+.screenbar{display:flex;align-items:center;gap:10px;margin:0 0 8px} .screenbar .hint{flex:1;margin:0;color:var(--fg-muted);font-size:13px}
+.screenwrap{position:relative;overflow:hidden;border:1px solid var(--edge);border-radius:var(--radius-md)}
+.screenframe{display:block;border:0;transform-origin:0 0;width:1440px;height:900px}
+/* The switch above the screen (Use it / Edit words): the design guide's contained SegmentedTabs —
+   a tinted trough, the chosen part in the accent. WHY (Destin, 2026-11-10): "a switch above the screen". */
+.seg{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset)} .seg[hidden]{display:none}
+.seg button{font:inherit;font-size:12px;font-weight:500;padding:5px 12px;border:0;border-radius:calc(var(--radius-md) - 2px);background:transparent;color:var(--fg-2);cursor:pointer}
+@media (hover:hover){.seg button:hover{background:var(--panel)}} .seg button.on,.seg button.on:hover{background:var(--accent);color:var(--on-accent)}
+.screennote{margin:0 0 8px;font-size:13px;color:var(--fg-muted)} .screennote[hidden]{display:none} .screennote.bad{color:var(--fg)}
+/* The running copy sits over the still one, in the same place and at the same zoom; the one not in use is
+   faded out and ignores the pointer (not display:none — a frame nobody can see could not be measured). */
+.liveframe{position:absolute;left:0;top:0;background:var(--well)}
+.card.screen[data-mode=use] .screenframe:not(.liveframe),.card.screen[data-mode=edit] .liveframe{opacity:0;pointer-events:none}
+/* the state line sits under the change on its own row, so the words keep their width */
+.screenedits li{flex-wrap:wrap} .screenedits .from{flex:1 1 40%} .screenedits .to{flex:1 1 40%} .screenedits .state{order:5;flex:1 0 100%;color:var(--fg-muted);font-size:12px} .screenedits li.away{opacity:.6}
+.screenedits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px} .screenedits:not(:empty){margin-top:10px}
+.screenedits li{display:flex;gap:10px;align-items:baseline;padding:8px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);font-size:13px}
+.screenedits .from{color:var(--fg-muted);text-decoration:line-through} .screenedits .arrow{color:var(--fg-muted)} .screenedits .to{flex:1} .screenedits .linkbtn{flex:none}
+/* Open large: the card covers the window, so the screen is shown at (or near) its real size. */
+.card.screen.big{position:fixed;inset:0;z-index:70;margin:0;border:0;border-radius:0;overflow:auto;background:var(--well)}
+.linkbtn{margin:0;background:none;font:inherit;cursor:pointer}
+/* Every screen that changed, side by side: tiles, pictures first. */
+/* A picture opened large, over the page. */
+/* Notes about anything else: a button in the header, a small panel under it. */
+#notesbtn{flex:none;position:relative} #notesbtn.has::after{content:"";position:absolute;top:5px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--link)}
+.notespanel{position:fixed;top:74px;right:24px;z-index:40;width:min(420px,calc(100vw - 32px));padding:12px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--panel);box-shadow:0 12px 36px rgba(0,0,0,.45)}
+.notespanel[hidden]{display:none}
+.notespanel h3{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px;font:600 13px/1.2 var(--font);color:var(--fg)}
+.notespanel h3 button{border:0;background:none;color:var(--fg-muted);font-size:18px;line-height:1;cursor:pointer}
+.notespanel .markt{min-height:72px}
+/* The microphone while it listens: four bars and a clock, as in the app. Wider, but it sits
+   inside the box's own right edge, so nothing around the box moves. */
+.mic.rec{width:66px;flex:0 0 66px;gap:6px;padding:0;justify-content:center;margin-left:-76px;border-radius:999px;box-shadow:none;display:inline-flex!important;align-items:center;font:500 11px/1 var(--font);font-variant-numeric:tabular-nums}
+.mic .bars{display:inline-flex;align-items:flex-end;gap:2px;height:14px} .mic .bars i{display:block;width:2px;height:4px;border-radius:1px;background:currentColor}
+textarea.hearing,input.hearing{padding-right:96px!important}
+/* Tidy-ups approved in round 2 (R-12), for decks of pages: the title is said once, in the
+   header; there is ONE way forward (the filled button at the foot) with Back directly left of
+   it (design guide → Buttons: filled on the right, outlined beside it); the header keeps
+   only the progress bar, the count, Notes and Done, so it is the same on every page. */
+body[data-layout="pages"] .top #prev,body[data-layout="pages"] .top #next{display:none}
+body[data-layout="pages"] .top .where{max-width:46%} body[data-layout="pages"] .top .where .id{max-width:none;flex:0 1 auto}
+body[data-layout="pages"] .top .where .sep,body[data-layout="pages"] .top .where .eyebrow{display:none}
+.pages .page-head .intro{margin:0;font-size:14px}
+.content.pages #controls{gap:8px} #back[hidden]{display:none}
+body:not([data-layout="pages"]) #back{display:none}
+.pages article.q .qnum .n:empty{display:none}
+/* Room for Notes in the header without squeezing the step bar under the title. */
+.top .where{max-width:34%}
+/* A before/after pair is two pictures wide, so its tile takes two columns. */
+/* Fix (round 3): the microphone sits over the box's right edge by a negative margin; its
+   margins used to add up to MORE than its own width, so the box beside it grew 8px wider than
+   the row that holds it. The sum is now exactly zero, resting or listening. */
+.mic{margin:0 10px 0 -42px}
+#back{height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);padding:0 clamp(14px,1.4vw,26px)}
+/* The picture viewer (round 4): the whole window — picture, its comments beside it, every
+   picture of the page in a strip underneath. */
+.viewer{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:var(--well);color:var(--fg)}
+.vbar{flex:none;display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--edge)}
+.vtitle{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vmain{flex:1;min-height:0;display:flex;align-items:stretch}
+/* WHY true size (round 9, V-1): the picture is no longer shrunk to fit the window's height — that made a tall
+   screenshot unreadable. It is drawn at its real size inside an area that scrolls both ways; `.fit` (the header's
+   Fit switch) squeezes it to the area's width. No centring grid: a centred box that overflows cannot be scrolled
+   to its top-left corner. */
+.vstage{flex:1;min-width:0;padding:14px;overflow:auto}
+.viewer .lbbox{position:relative;line-height:0;width:max-content;max-width:none;margin:0 auto} .viewer .lbbox img{display:block;max-width:none;border:1px solid var(--edge);border-radius:var(--radius-md)}
+.viewer.fit .lbbox{width:auto;max-width:100%} .viewer.fit .lbbox img{max-width:100%}
+.seg{flex:none;display:inline-flex;border:1px solid var(--edge);border-radius:var(--radius-md);overflow:hidden} .seg[hidden]{display:none}
+.segb{padding:5px 12px;border:0;background:transparent;color:var(--fg-2);font:inherit;font-size:12px;cursor:pointer} .segb+.segb{border-left:1px solid var(--edge)}
+.segb.on{background:var(--inset);color:var(--fg);font-weight:600}
+.varm.on{border-color:var(--link);color:var(--link)}
+.vside{flex:none;width:min(340px,26vw);display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-left:1px solid var(--edge);background:var(--panel);overflow:auto}
+.vside h3{margin:0;font:600 13px/1.2 var(--font)} .vcomments{display:flex;flex-direction:column;gap:8px} .vcomments .markt{flex:1 1 auto;min-width:0;min-height:56px}
+@media (max-width:900px){.vmain{flex-direction:column} .vside{width:auto;border-left:0;border-top:1px solid var(--edge);max-height:34vh}}
+/* History (round 4): earlier rounds of the topic and related decks, over the whole window. */
+#histbtn{flex:none} #histbtn[hidden]{display:none}
+.histpanel{position:fixed;inset:0;z-index:65;display:flex;flex-direction:column;background:var(--well);color:var(--fg)}
+.histbody{flex:1;overflow:auto;padding:18px max(16px,calc((100vw - 980px)/2)) 40px;display:flex;flex-direction:column;gap:22px}
+.histbody h3{margin:0 0 10px;font:600 13px/1.2 var(--font);text-transform:uppercase;letter-spacing:.07em;color:var(--fg-muted)}
+.histbody h4{margin:14px 0 6px;font:600 13px/1.3 var(--font);color:var(--fg-muted)}
+.histbody details{border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--panel);padding:0 14px;margin-bottom:10px}
+.histbody summary{display:flex;align-items:baseline;gap:12px;padding:12px 0;font:600 14px/1.3 var(--font);cursor:pointer} .histbody details[open]{padding-bottom:12px}
+.hwhen{font:400 12px/1 var(--font);color:var(--fg-muted)}
+.histrow{padding:10px 12px;margin-top:6px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset)}
+.histrow .hq{margin:0 0 4px} .histrow .decided{margin:6px 0 0}
+.hans{display:inline-block;padding:2px 9px;border-radius:999px;font:600 11px/1.5 var(--font);color:var(--link);border:1px solid color-mix(in srgb,currentColor 45%,transparent);background:color-mix(in srgb,currentColor 12%,transparent)}
+.histrel{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px} .histrel a{color:var(--link)}
+
+/* ── round 7, 2026-11-10 ─────────────────────────────────────────────────────────────── */
+/* Derived outline colour: the app's own `--edge-strong` (globals.css), which the deck's token set
+   does not carry. Design guide -> Buttons: outlined buttons use the FULL-STRENGTH outline. */
+:root{--edge-strong:color-mix(in srgb,var(--edge) 65%,var(--fg) 35%)}
+/* Attachments card (copies DeliverablesCard.tsx): a closed one-line row at the foot of a list row,
+   in the well colour with a hairline edge; opened, the pictures at full row width. */
+.attcard{margin-top:10px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well);overflow:hidden}
+.atthead{width:100%;display:flex;align-items:center;gap:8px;padding:6px 12px;border:0;background:transparent;color:var(--fg-2);font:inherit;text-align:left;cursor:pointer}
+@media (hover:hover){.atthead:hover{background:color-mix(in srgb,var(--inset) 50%,transparent)}}
+.attglyph{flex:none;width:14px;height:14px;color:var(--fg-dim)}
+.attbar{color:var(--fg-faint);font-size:12px;user-select:none}
+.attlabel{font-size:12px;font-weight:600;color:var(--fg-2)}
+.attn{font:11px var(--font);color:var(--fg-muted)}
+.attfill{flex:1 1 auto}
+.attbody{padding:4px 12px 12px} .attbody[hidden]{display:none}
+/* Pills in a comment box (round 7, Destin: "attach/paste images/filepaths in these input boxes and
+   have them work as pills like youcoded"). A picture is a small card with its thumbnail, name and
+   an x (the app's AttachmentChip, shrunk to a line); a path is the recessed file pill
+   (FilepathToken: --well fill, hairline edge, mono basename). They sit directly under their box. */
+.attpills{flex:1 1 100%;order:99;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;min-width:0}
+.attpills[hidden]{display:none}
+.markrow>.attpills{margin-left:28px}
+.attpills .micerr{margin:0;flex:1 1 100%}
+.attpill{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:2px 4px 2px 8px;border-radius:var(--radius-md);background:var(--well);border:1px solid var(--edge-strong);color:var(--fg);font:12px/1.4 var(--font)}
+.attpill .pg{flex:none;width:13px;height:13px;color:var(--fg-dim)}
+.attpill .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px}
+.attpill.img{padding-left:3px}
+.attpill .pthumb{position:relative;flex:none;width:28px;height:28px;border-radius:5px;overflow:hidden;background:var(--inset);border:1px solid var(--edge);display:grid;place-items:center}
+.attpill .pthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--inset)} .attpill .pthumb img.gone{display:none}
+.attpill .px{flex:none;width:20px;height:20px;padding:0;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--fg-muted);font-size:15px;line-height:1;cursor:pointer}
+@media (hover:hover){.attpill .px:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 12%,transparent)}}
+/* Answer buttons follow the design guide -> Buttons (round 7, Destin: "buttons could be better themed
+   to match prefered button fill/positioning guidance"):
+   - one FILLED button per view: the foot's Next / Done (`.btn.primary`); nothing else is filled;
+   - everything else is OUTLINED with the full-strength outline (`--edge-strong`), never the faint
+     divider colour and never a green or red outline (status colours go only in a tint, never on a
+     button the guide calls outlined);
+   - actions at the right: on a question the note box takes the left and the answer buttons sit at
+     the right of the same line (principle 6);
+   - the chosen answer is an accent outline with a faint accent tint and a tick, so it reads as
+     "picked" without becoming a second filled button that competes with Next. */
+.btn{border-color:var(--edge-strong)}
+.btn.ghost{border-color:transparent} .btn.primary{border-color:var(--accent)}
+.ans,.ans[data-v="yes"],.ans[data-v="no"]{border-color:var(--edge-strong);color:var(--fg)}
+.ans.on{background:color-mix(in srgb,var(--accent) 14%,transparent);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:700}
+.ans.on::before{content:"✓";flex:none;font-weight:700}
+.card.variant.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.pages .qrow{justify-content:flex-end}
+.pages .qrow .note,.pages .qrow .ans-write{order:1}
+.pages .qrow .ans{order:2}
+/* A card's state is a status, not a control (round 7, Destin: "this was an odd interactive 'not
+   reviewed' card i hadnt seen before?"). The old pill was an outlined, rounded shape in coloured
+   text, which is what a button looks like. Now it is the design guide's status Pill (Status and
+   notices): a tinted fill with a status dot, normal-colour words, no outline, and it cannot be
+   pointed at. */
+.qstate{border:0;color:var(--fg);padding:2px 10px 2px 9px;background:color-mix(in srgb,var(--st,var(--fg-faint)) 16%,transparent);pointer-events:none;cursor:default;user-select:none}
+.qstate::before{content:"";display:inline-block;width:6px;height:6px;margin-right:6px;border-radius:50%;background:var(--st,var(--fg-faint));vertical-align:1px}
+.qstate.none{--st:var(--fg-faint);color:var(--fg)} .qstate.ok{--st:var(--yes);color:var(--fg)} .qstate.chg{--st:var(--mark);color:var(--fg)}
+.pages article.q.nostate .qh,.pages article.q.nostate .qhrow{padding-right:0}
+/* A background-only list: dashed rows from the FIRST row down. `.card.calls .call:first-child`
+   (one class more than `.call`) used to win for row one and draw it solid. */
+.card.calls.context .call,.card.calls.context .call:first-child{background:transparent;border-style:dashed}
+.card.calls.context .call{cursor:default}
+.pages .qrow .mic,.pages .qrow .micerr{order:1}
+/* ── round 7: state pill, trail, More, Settled fold, Built from, since-last-round ───────────────
+   WHY (Destin, 2026-11-10: the History button was "not at all what i imagined… i was expecting
+   something that integrated a bit better"; he picked "Each item carries its own trail" and asked
+   for it refined). The look copies pieces the deck already has: the status pill of a row
+   (.result), his-words quote (.decided), the Attachments card's closed line (.atthead), and the
+   (i) tip (.how). Nothing here is a new kind of control. */
+.callflags{flex:none;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:46%}
+.callflags:empty{display:none}
+/* One labelled line per part: the label in a narrow left column so a long story scans down its left edge. */
+.tlines{margin:0;display:flex;flex-direction:column;gap:6px}
+.tline{display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:baseline}
+.tline dt{font:600 11px/1.5 var(--font);color:var(--fg-faint);text-transform:none}
+.tline dd{margin:0;font-size:12px;line-height:1.5;color:var(--fg-2)}
+.tline dd.decided{margin:0}
+@media (max-width:760px){.tline{grid-template-columns:1fr;gap:1px}.callflags{max-width:none}}
+.tip .tiph{display:block;margin:6px 0 2px;font:600 11px/1.4 var(--font);color:var(--fg)} .tip .tiph:first-child{margin-top:0}
+.tip .tipl{margin:0 0 2px;padding-left:16px;list-style:disc;font-size:12px;line-height:1.45;color:var(--fg-2)}
+.card .tip p.tipnote{margin:6px 0 0;font-size:12px;color:var(--fg-muted)}
+/* The line at the top of the first page. */
+.topnotes{display:flex;flex-direction:column;gap:10px;margin:0 0 4px;padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--panel)}
+.since{margin:0;font-size:13px;color:var(--fg-2)} .since b{color:var(--fg);font-weight:600}
+.reltop ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.reltop li{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;font-size:13px;color:var(--fg-2)} .relhow{color:var(--fg-muted);font-size:12px}
+
+/* ── review fixes, 2026-11-10 ─────────────────────────────────────────────────────────────
+   WHY each (reviews of the deck): a picture is drawn on with a finger, so the browser must not take
+   the gesture to scroll; a status pill must read as a control; a picked option must not look like
+   the Recommended tint; and the header and the state pill must not squash the title on a phone. */
+/* WHY (round 9, Q-4): with a mouse any drag draws, so the browser must not also pan. With a finger a drag scrolls
+   the picture unless he tapped "Comment on an area" first. */
+@media (pointer:fine){.markable img{touch-action:none}}
+.markable.armed img{touch-action:none}
+.result.pillbtn{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:4px 12px;font-size:12px}
+.result.pillbtn::after{content:"\25BE";font-size:14px;line-height:1;opacity:.9}
+.result.pillbtn:disabled::after{content:""}
+.callrow .callflags{align-self:flex-start}
+li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.reswas{margin:4px 0 0;font-size:11px;color:var(--accent)}
+.reswas[hidden]{display:none}
+.card.variant{position:relative}
+.card.variant.on,.pages .card.variant.on{background:color-mix(in srgb,var(--accent) 14%,var(--inset));border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.card.variant.on::after{content:"\2713";position:absolute;right:10px;bottom:10px;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--on-accent);font:700 13px/1 var(--font)}
+.editcount{margin:8px 0 0;font-size:13px}
+.editcount[hidden]{display:none}
+.callbox .markx.callx{align-self:flex-start}
+@media (max-width:700px){
+  /* header: the title gets its own row so the progress bar can no longer sit on top of it */
+  .top{height:auto;min-height:56px;padding:14px 12px 8px}
+  .wrap{flex-wrap:wrap;gap:6px 10px}
+  .top .where,body[data-layout="pages"] .top .where{max-width:100%;flex:1 1 100%}
+  .top .where .id{max-width:100%}
+  .nav{flex:1 1 90px}
+  /* the state pill moves into the flow above the heading instead of squeezing it */
+  .qstate{position:static;display:inline-block;margin:0 0 6px}
+  .pages article.q .qh,.pages article.q .qhrow{padding-right:0}
+  /* every small control is at least 32px tall */
+  .linkbtn,#histbtn,.btn.sm,.thumb,.atthead,.foldhead{min-height:32px}
+  .attpill .px,.markx{min-width:32px;min-height:32px}
+  .iconbtn{min-width:32px;min-height:32px}
+}
+
+/* ── round 8: the deck drawn from the app's own parts ─────────────────────────────────────────
+   WHY (Destin, 2026-11-10, round 7: "this has suddently become VERYY busy and confusing… barely
+   any of this looks like youcoded native ui elements. like we don't use the bare > dropdowns
+   anywhere, nor the linked underline text at the top of the page… i wanted these too look like
+   'deliverables' which meant a single card for each image"). Each rule below names the app part it
+   copies; sizes are that part's own (youcoded/desktop/src/renderer/components). */
+
+/* Group headings inside a list (app: ui/SectionLabel — small, muted, sentence case, a count beside
+   it). A row's state is WHERE it sits, so no row carries a coloured state badge. */
+.card.calls{display:flex;flex-direction:column;gap:16px}
+.grp{display:flex;flex-direction:column;gap:8px;min-width:0}
+.grph{margin:0;display:flex;align-items:center;gap:8px;font:600 12px/1.4 var(--font);color:var(--fg-muted);text-transform:none;letter-spacing:0}
+.grpn,.fchip{padding:0 7px;border-radius:999px;background:color-mix(in srgb,var(--fg) 8%,transparent);font:500 11px/1.7 var(--font);color:var(--fg-2);white-space:nowrap}
+
+/* The fold row (app: ui/FoldRow and the Deliverables header): a boxed line in the well colour, its
+   label at the left, small plain chips saying what is inside, the chevron at the RIGHT, turning
+   when open. Used for a row's Details, the "Already settled" group and a round in History. */
+.fold{margin-top:10px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well);overflow:hidden}
+.grp>.fold{margin-top:0}
+.foldhead{width:100%;box-sizing:border-box;display:flex;align-items:center;gap:8px;padding:6px 12px;border:0;background:transparent;color:var(--fg-2);font:inherit;text-align:left;cursor:pointer;list-style:none}
+.foldhead::-webkit-details-marker{display:none}
+@media (hover:hover){.foldhead:hover,.atthead:hover{background:color-mix(in srgb,var(--inset) 50%,transparent)}}
+.foldhead:focus-visible,.atthead:focus-visible,.atttile:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.foldtitle{font-size:12px;font-weight:600;color:var(--fg-2)}
+.foldchips{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.foldfill{flex:1 1 auto}
+.chev{flex:none;width:14px;height:14px;color:var(--fg-muted);transition:transform .15s}
+.fold.open>.foldhead .chev,details.fold[open]>.foldhead .chev,.attcard.open .chev{transform:rotate(180deg)}
+.foldbody{padding:4px 12px 12px;display:flex;flex-direction:column;gap:12px} .foldbody[hidden]{display:none}
+.settledfold>.foldbody{padding:4px 8px 8px}
+/* Inside Details: plain sections with a small heading each (no rail, no dots). */
+.dpart{display:flex;flex-direction:column;gap:6px;min-width:0}
+.dh{margin:0;font:600 11px/1.4 var(--font);color:var(--fg-muted);text-transform:none;letter-spacing:0}
+.card .dpart p,.card .foldbody p{margin:0;font-size:12px;line-height:1.5;color:var(--fg-2)}
+.round{display:flex;flex-direction:column;gap:4px;padding:8px 10px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset)}
+.card .round p.roundname{font-weight:600;color:var(--fg)}
+.card .dpart p.tnow b{margin-right:8px;color:var(--fg)}
+.card .dpart p.dsub{font-weight:600;color:var(--fg-2)} .dlist{margin:0;padding-left:16px;list-style:disc;font-size:12px;line-height:1.5;color:var(--fg-2)}
+.card .dpart p.dnote{color:var(--fg-muted)}
+
+/* Attachments (app: DeliverablesCard). Closed: one line. Open: a sideways strip of tiles, each
+   224px wide (the app's w-56; 176px on a phone, its w-44): the preview 112px tall on top (h-28),
+   then the name and a small outlined open-arrow. The whole tile is the button. */
+.attbody{padding:0 8px 8px}
+.attstrip{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.atttile{flex:none;width:224px;display:flex;flex-direction:column;padding:0;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);color:var(--fg);font:inherit;text-align:left;overflow:hidden;cursor:pointer;transition:border-color .15s}
+@media (hover:hover){.atttile:hover{border-color:var(--fg-muted)} .atttile:hover .tileopen{border-color:var(--fg-muted)}}
+.tilepv{position:relative;display:block;width:100%;height:112px;border-bottom:1px solid var(--edge);background:var(--well);overflow:hidden}
+/* WHY: a wide, short picture (a header strip) cropped to fill the tile showed only blank page; fitting the whole picture keeps every thumbnail recognisable (round 13). */
+.tilepv img,.tilepv video{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+/* WHY (round 14): a very wide, short picture is cropped to fill the tile from its top-left corner, so the start of the strip is legible instead of a thin line. */
+.tilepv.wide img{object-fit:cover;object-position:left top}
+/* How many comments he has left on this picture: the app's count badge, on the preview's corner. */
+.tilecm{position:absolute;right:6px;top:6px;padding:1px 8px;border-radius:999px;background:var(--accent);color:var(--on-accent);font:600 11px/1.6 var(--font)} .tilecm[hidden]{display:none}
+.tilefoot{display:flex;align-items:center;gap:8px;padding:8px 10px;min-width:0}
+.tiletext{flex:1 1 auto;min-width:0} .tilename{display:block;font-size:13px;font-weight:600;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tileopen{flex:none;display:inline-flex;padding:4px;border:1px solid var(--edge);border-radius:var(--radius-sm);color:var(--fg-2);transition:border-color .15s}
+@media (max-width:700px){.atttile{width:176px} .tilepv{height:64px}}
+
+/* The picture window shows a clip the same way it shows a picture. */
+.viewer .lbbox video{display:block;max-width:100%;max-height:calc(100vh - 140px);border:1px solid var(--edge);border-radius:var(--radius-md);background:#000}
+/* A bin, not an ×, takes a comment away (design guide: × means close). */
+.markx{display:grid;place-items:center} .markx .bin{width:16px;height:16px}
+
+/* The top of the first page: a plain sentence, then related decks as small outlined buttons. No
+   underlined links anywhere on a deck (the app has none). */
+.since{color:var(--fg-2)}
+.reltop{display:flex;flex-direction:column;gap:6px}
+.linkbtn{height:28px;padding:0 10px;border:1px solid var(--edge-strong);border-radius:var(--radius-md);color:var(--fg);font-size:12px;text-decoration:none;display:inline-flex;align-items:center}
+@media (hover:hover){.linkbtn:hover{background:var(--inset)}}
+.histrel{flex-direction:row;flex-wrap:wrap} a.btn{text-decoration:none}
+/* History: each round is the same fold row. */
+.histbody details.fold{padding:0;margin:0 0 10px;background:var(--panel)} .histbody details.fold[open]{padding-bottom:12px}
+.histbody details.fold>.foldhead{padding:10px 14px;font-weight:400} .histbody details.fold>.foldhead .foldtitle{font-size:14px;color:var(--fg)}
+.histbody details.fold>:not(summary){margin-left:14px;margin-right:14px}
+
+/* ROUND 9: what the "Details" fold used to hide, in the open.
+   The story sits above a row's words as plain lines: a narrow label column (round · who), then the words; his
+   own words in the normal text colour, what was built a step quieter. No box, no fold. */
+.story{margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:4px}
+.sline{display:grid;grid-template-columns:118px 1fr;gap:12px;font-size:12.5px;line-height:1.5}
+.sline dt{color:var(--fg-muted)} .sline dd{margin:0;color:var(--fg-2)} .sline.you dd{color:var(--fg)}
+.morelines{margin:8px 0 0;display:flex;flex-direction:column;gap:4px}
+.mline{display:grid;grid-template-columns:118px 1fr;gap:12px;font-size:12.5px;line-height:1.5}
+.mline dt{color:var(--fg-muted)} .mline dd{margin:0;color:var(--fg-2)}
+@media (max-width:600px){.sline,.mline{grid-template-columns:1fr;gap:0}}
+/* The (i) sits beside the row's words, not inside their paragraph (its pop-up holds lists). */
+.callhead .callwhat{display:inline}
+.builtfrom{margin:8px 0 0;font-size:12px;color:var(--fg-muted)}
+/* The kind line at the head of every list: which of the three kinds of card this is, and what it wants from him. */
+/* WHY one quiet label and no sentence (round 10: "this is confusing and can certainly be more clear/concise";
+   "less is always more… not duplicative text re-explaining each menu"). The kind is the small label above the
+   list's title, in the same spot a question shows "Question 1 of 7". */
+.pages article.q .qnum .kindline{font:inherit;color:inherit}
+/* A row's words lead; its reason is one step quieter. Two levels, no more. */
+.callwhat{font-weight:600}
+/* WHY a card (round 10: "bare text with no card gets ignored easily as ai clutter"): the page's opening line —
+   what he is judging here — sits in the same kind of box as everything else he is meant to read. */
+.pages .page-head{padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--panel)}
+.pages .page-head .intro{color:var(--fg)}
+/* The popup: the picture's short name is the title; the row it belongs to is described once, at the head of the strip. */
+.vabout{margin:0;padding:10px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);font-size:13px;line-height:1.45;color:var(--fg-2)} .vabout:empty{display:none}
+/* The line on a reopened deck saying when its answers were sent (round 9, Q-3). */
+.sentline{margin:0 0 12px;padding:8px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--panel);font-size:13px;color:var(--fg-2)}
+/* Design guide: sentence case, no spaced-out capitals. The small label above a card's title follows it. */
+.pages article.q .qnum{text-transform:none;letter-spacing:0;font-size:12px}
+
+/* ── Tick or change (round 10) ──────────────────────────────────────────────────────────────
+   WHY (Destin, round 10, R-1, on the drawing: "i definitely dont like the weird new blue change
+   asked/fine/not looked at indicator things you added"): a "Yours to change" row shows its state ONLY in
+   its two buttons — no words, no dots, no edge bar. A lit button wears the same accent outline the answer
+   buttons (.ans.on) wear. An untouched row has neither lit. */
+.card.tickable .callrow{align-items:flex-start}
+.card.tickable .iconbtn{width:32px;height:32px;min-width:32px;min-height:32px;border:1px solid var(--edge);background:transparent}
+.card.tickable .iconbtn.on,.card.tickable .iconbtn[aria-pressed="true"]{color:var(--fg);background:color-mix(in srgb,var(--accent) 14%,transparent);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.card.tickable .calltick:disabled,.card.tickable .calledit:disabled{opacity:.6}
+.dlg .warn ul{margin:6px 0 0;padding-left:18px} .dlg .warn ul ul{margin:2px 0 6px;padding-left:16px}
+.dlg #unlooked{max-height:30vh;overflow:auto}
+
+/* ── A deck that grows (round 10) ──────────────────────────────────────────────────────────
+   WHY (Destin, round 10, on the drawings: open topics on top, answered ones sink to a list with their round; an
+   open topic shows ONE line of its past; "a waste of text" for any count said twice; no coloured bar at any left
+   edge; the deck's own yellow chip stays): every part below is a part the deck already has. The answered topics are
+   the existing fold row (headline at the left; quiet text "Round 4" and the chevron at the right, no pill, no dot);
+   the stage control is the picture popup's segmented control; the one number in it is the only place the count of
+   open topics is said. */
+/* Round 11 (Destin: "it doesn't look like a traditional card that I've answered"; "what is that little dropdown section at the top of
+   the questions?"; "What section of the deck is this on?"). An answered topic is a compact, quiet card; a topic's past is one plain
+   muted line with a text link; the stage is a plain progress indicator, not tabs. All on the deck's own colours and type. */
+.answeredgrp{gap:10px}
+.prevtopic,.handledtopic{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--edge);border-radius:var(--radius-lg);background:var(--well)}
+.anshead{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
+.anstitle{margin:0;font:500 13px/1.35 var(--font);color:var(--fg)}
+.ansround{flex:none;font-size:12px;color:var(--fg-muted);white-space:nowrap}
+.ansline,.prevtopic p,.handledtopic p{margin:0;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
+.youlabel{color:var(--fg-muted)} .ansval{color:var(--fg)}
+.prevtopic .decided{margin:0;font-size:12.5px;line-height:1.5;font-style:italic;color:var(--fg-2)}
+.prevtopic .plainrows{margin:0;padding-left:18px;font-size:12px;line-height:1.5;color:var(--fg-2)}
+.ansacts{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px}
+.revealbody{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid var(--edge)} .revealbody[hidden]{display:none}
+.tlink{margin:0;padding:2px 0;border:0;background:none;font:inherit;font-size:12px;color:var(--link);font-weight:500;cursor:pointer;min-height:24px}   /* WHY no underline: round 7, "we don't use… the linked underline text" (pinned by test_rethink); the link colour and pointer say it is pressable */
+.tlink:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.pastline{margin:0 0 8px}
+.pasttext{margin:0;font-size:12px;line-height:1.5;color:var(--fg-muted)}
+
+.pastline .revealbody{margin-top:6px;padding:0;border:0;gap:4px} .pastline .story{margin:0}
+.growact{display:flex;justify-content:flex-end}
+.growact[hidden]{display:none}
+/* The stage indicator: plain words, no box, nothing to press except the quiet link. */
+/* Round 13: the stage names live in the header's one row, at the left (the strip that used to sit under it is gone). */
+.stagebar{position:relative;flex:0 0 auto;display:flex;align-items:center;gap:12px;min-width:0} .stagebar[hidden]{display:none}
+.stagecompact{display:none}
+.stageflow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0;padding:0;list-style:none;font-size:12px}
+.stageflow li{color:var(--fg-muted);white-space:nowrap}
+.stageflow li>span,.stageflow li>.stagebtn{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px}
+/* WHY (Destin, round 11: "i should be able to just click back into understanding/earlier stages, with clearer indications that things are
+   resolved already"): a finished stage has a small check and is pressable; the stage the deck is at is bold; later ones are dimmed and dead. */
+.stageflow li.done{color:var(--fg-2)}
+.stageflow li.on{color:var(--fg);font-weight:600}
+.stageflow li.viewing>*{background:var(--inset);color:var(--fg)}
+.stageflow li.later{opacity:.5}
+/* A stage he skipped by asking me to go ahead without him: dimmed like a later stage, no check, nothing to press. */
+.stageflow li.skipped{opacity:.4;cursor:default}
+.handsoff{margin:0 0 4px;padding:12px 16px;border-left:3px solid var(--accent);background:var(--inset);border-radius:var(--radius-lg)}
+.handsoff .hoby{display:block;font-size:12px;color:var(--fg-muted);margin-bottom:4px}
+.handsoff p{margin:0;font-size:15px;line-height:1.45;color:var(--fg);white-space:pre-wrap;overflow-wrap:anywhere}
+.stagebtn{font:inherit;border:0;background:none;color:inherit;font-weight:inherit;cursor:pointer;min-height:24px}
+.stagebtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+@media (hover:hover){.stagebtn:hover{background:var(--inset);color:var(--fg)}}
+.stagetick{width:12px;height:12px;flex:none;color:var(--fg-muted)}
+@media (max-width:700px){.stagebtn{min-height:32px}}
+.chip .roundtag{margin-left:10px;padding-left:10px;border-left:1px solid currentColor;color:inherit;opacity:.7;font-size:11px;white-space:nowrap}
+
+/* ── Round 12 (Destin's round-11 answers) ───────────────────────────────────────────────────
+   Header: "the header still re-sizes/re-arranges itself when clicking between pages, i think we should drop 'page 3 of 3'". On a deck of pages the
+   page names itself below, so the header has only the bars at the left and the filled Submit button at the right; the saved note keeps its space
+   even when empty so nothing slides when it appears. */
+body[data-layout="pages"] .top .where{display:none}
+body[data-layout="pages"] .nav{justify-content:flex-start}
+body[data-grows] #count{display:none}
+body[data-grows] .saved{min-width:64px;text-align:right}
+body[data-grows] .saved[hidden]{display:inline-block;visibility:hidden}
+/* The page's own heading: a real title, then ONE plain line saying what he is deciding here. No box. */
+.pagehead{display:flex;flex-direction:column;gap:6px;margin-bottom:-10px}
+.ptitlerow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ptitle{margin:0;font:600 22px/1.25 var(--font);color:var(--fg);letter-spacing:0}
+.newtag{padding:2px 9px;border-radius:999px;font:600 11px/1.5 var(--font);white-space:nowrap;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+/* WHY a bigger one on a page heading (Destin, round 15): a whole new page says so once, beside its title, and its cards carry no tag of their own. */
+.newtag.big{padding:3px 12px;font-size:14px;line-height:1.5}
+.fintag{padding:2px 9px;border-radius:999px;font:500 11px/1.5 var(--font);color:var(--fg-2);background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.pagehead .intro{margin:0;font-size:14px;line-height:1.5;color:var(--fg-2)}
+/* Previously answered: a top-level card headed like a "Yours to change" list (small label, title, count at the right). */
+.pages .prevgrp{position:relative;display:flex;flex-direction:column;gap:12px;padding:14px 16px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg)}
+.pages .prevgrp>.qnum{margin:0 0 -4px;display:flex;font:500 12px/1 var(--font);color:var(--fg-faint)}
+.pages .prevgrp>.qh{margin:0;font-size:15px;font-weight:500;line-height:1.35}
+.prevn{position:absolute;top:12px;right:14px}
+.prevlist{display:flex;flex-direction:column;gap:10px}
+.prevtopic,.handledtopic{gap:8px}
+.prevtopic .anshead,.handledtopic .anshead{align-items:flex-start}
+.prevround{display:flex;flex-direction:column;gap:4px} .prevround+.prevround{padding-top:8px;border-top:1px solid var(--edge)}
+.roundlabel{font-weight:600;color:var(--fg-muted)}
+.bodynote{font-size:12px;color:var(--fg-muted)}
+/* The opened card is the live card, locked: same pieces, nothing to press or type. */
+.prevbody{gap:10px}
+.pages article.q.prev{background:none;border:0;padding:0;gap:10px}
+.prev .ans,.prev .iconbtn,.prev .card.variant,.prev .note,.prev .callt,.prev .ans-write,.prev .markx{pointer-events:none;cursor:default}
+.prev .card.variant{cursor:default}
+.prev .qrow{justify-content:flex-start}
+/* A row's extra lines, behind its More link. */
+.revealbody.rowmore{padding-top:4px;border-top:0;gap:4px}
+.rowmore p{margin:0;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
+.rowref{display:block;font-style:normal;font-size:12px;color:var(--fg-muted)}
+/* A phone: the four stage names fit one line (smaller type, tighter pills). */
+@media (max-width:700px){.stageflow{font-size:11px;gap:0} .stageflow li>span,.stageflow li>.stagebtn{padding:3px 6px;gap:3px}}
+
+/* ── Round 13 (Destin's round-12 answers): one header row, folded rows, structured More, pictures on answered cards ───────────────────────────
+   "the progress bars in the middle, with understanding/design/before build/etc in the same single header row on the lefthand side". The bars are
+   the middle (`.nav` is flexible and centred); Submit feedback is filled at the right. */
+body[data-grows] .nav{justify-content:center}
+body[data-grows] .top .wrap{flex-wrap:nowrap}
+/* A phone: the line is the stage on screen with a small "2 of 4"; pressing it opens the names. The saved note takes no room (a failed save still shows, under the header). */
+@media (max-width:700px){
+  body[data-grows] .top{padding:14px 12px 8px}
+  body[data-grows] .top .wrap{gap:8px}
+  .stagecompact{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 8px;border:0;border-radius:999px;background:var(--inset);color:var(--fg);font:600 12px/1 var(--font);cursor:pointer;white-space:nowrap}
+  /* WHY (round 17): the button was a fixed 150px (128px on the narrowest phones) and cut "After build" to "After bu…". All four stage names now share one grid cell, three hidden, so the button is as wide as the LONGEST name in the deck's own type: the current name is never cut, and the header does not change size when he views another stage. */
+  .stagecompact{flex:none;box-sizing:border-box} .stagecompact .scname{display:grid;justify-items:start} .stagecompact .scname>.scn{grid-area:1/1;visibility:hidden;white-space:nowrap} .stagecompact .scname>.scn.on{visibility:visible}
+  .stagecompact small{font:400 11px/1 var(--font);color:var(--fg-muted)}
+  .stagecompact .chev{width:12px;height:12px}
+  .stageflow{display:none;position:absolute;z-index:30;left:0;top:calc(100% + 6px);flex-direction:column;align-items:stretch;gap:2px;padding:6px;margin:0;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,.25);min-width:170px;font-size:13px}
+  .stagebar.open .stageflow{display:flex}
+  .stageflow li>span,.stageflow li>.stagebtn{width:100%;box-sizing:border-box;padding:6px 10px;gap:8px}
+  body[data-grows] .nav{flex:1 1 40px;min-width:0}
+  body[data-grows] .steps{min-width:40px}
+  /* WHY (round 13: every page is a bar again, so a stage can have ten or more): thinner gaps on a phone leave the bars room to be seen. */
+  body[data-grows] .steps{gap:1px}
+  body[data-grows] #done{padding:0 10px}
+  body[data-grows] .saved{min-width:0;width:0;overflow:visible;position:relative;flex:none}
+  body[data-grows] .saved[hidden],body[data-grows] .saved[data-ok="1"]{display:none}
+  body[data-grows] .saved[data-ok="0"]{position:fixed;top:60px;right:12px;z-index:40}
+}
+/* A page's folded rows: the same fold the app uses, one row, shut until pressed. */
+.prevfoldwrap{display:block}
+.pages .prevfoldwrap{padding:0;background:none;border:0;gap:0}
+.prevfold{margin-top:0}
+.prevfold>.foldhead{min-height:40px}
+.prevfold>.foldhead .foldtitle{font-size:13px;font-weight:500;color:var(--fg)}
+.prevfold>.foldbody{padding:6px 12px 12px}
+/* A row's More, drawn like a question's Today / Problem / Proposal (the same cards), one under the other: the row is narrow. */
+.rowmore .parts{grid-template-columns:1fr;gap:8px}
+.rowmore .proscons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:700px){.rowmore .proscons{grid-template-columns:1fr}}
+.rowmore .pcbox{padding:10px 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well)}
+.rowmore .pcbox h3{margin:0 0 4px;font:600 11px/1.3 var(--font);color:var(--fg-muted);letter-spacing:.04em;text-transform:uppercase}
+.rowmore .pcbox{display:block} .rowmore .pcbox h3{display:block} .rowmore .pcbox ul{list-style:disc;margin:0;padding-left:18px;font-size:12.5px;line-height:1.5;color:var(--fg-2)}
+/* A picture on a question inside an answered card is the same picture, with the areas he drew on it. */
+.prev .qpic img{max-width:100%}
+
+/* Round 14: the compact progress (a phone, many pages). One bar split in proportion plus "3/11"; the outlined box is the page being viewed. */
+.stepsum{display:flex;align-items:center;gap:5px;flex:1;min-width:0;max-width:360px;overflow:hidden}
+.sumbar{position:relative;flex:1;min-width:16px;height:7px;border-radius:3px;background:var(--inset);cursor:pointer}
+.summark{position:absolute;top:-3px;height:13px;min-width:8px;box-sizing:border-box;border:1.5px solid var(--fg);border-radius:3px;pointer-events:none}
+.sumtext{flex:none;text-align:right;font:500 11px/1 var(--font);color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+/* WHY (round 14, still true): on the narrowest phones the progress bar beside the stage button gives up some room. The button itself takes its name's width (round 17), so it needs no width rule here. */
+@media (max-width:420px){.stagecompact{gap:3px;padding:0 6px;font-size:11px} .stagecompact small{font-size:10px} .summark{min-width:6px}}
+/* WHY: "Go to first skipped" outlines the card or row it lands on for a moment, so his eye finds it (Destin, 2026-11-18). */
+.seekflash{outline:2px solid var(--accent);outline-offset:-2px}
+.seekflash:focus{outline:2px solid var(--accent)}
+
+/* WHY (Destin, 2026-11-18: "no clear indication of what actually changed"): what changed on a reopened row or option is quiet muted text; a tag beside the bold line. */
+.calltext .difline{margin:0 0 2px;font-size:12px;line-height:1.5;color:var(--fg-muted)}
+.callhead .newtag,.callhead .fintag,.ohead .newtag,.ohead .fintag{margin-left:6px;vertical-align:middle}
+.pastline.diff{margin:0 0 8px} p.pasttext.diff{margin:8px 0 0}

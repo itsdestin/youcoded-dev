@@ -44,6 +44,10 @@ general error puts its buttons on their own line at the bottom right. This repla
 `error-notices-1`; `tests/error-state.test.tsx` pins that ErrorState's box is exactly the
 notice box. A one-line problem with nothing to press is `FieldError`, the box in miniature.
 
+## Never swallow a failure silently (R-1, Destin 2026-11-18)
+
+A `catch {}` or `.catch(() => {})` that ignores a failure is allowed only with a one-line written reason beside it: `// benign: <why ignoring this is harmless>`. The check is real, not advice: `youcoded/desktop/scripts/silent-catch-check.mjs` (run by `verify.sh` and the desktop test suite) fails on any NEW one, and the ~1,270 that existed on 2026-11-18 sit on `silent-catch-baseline.json`, which may only shrink (fix one, lower its count with `--write`). Harmless failures a user could not act on get no message (log them with `reportFailure(..., show: 'log-only')`). Failures where the user loses work or a screen would lie get a message: a small pop-up (`show: 'toast'`, "Couldn't save Fast mode.") for minor things, the red `<ErrorState>`/`Callout` box with Try again when work could be lost. On/off settings snap back to the real value with the message; typed text stays on screen marked not saved, with Try again. Helpers: `renderer/utils/report-failure.ts`, `main/report-failure.ts`.
+
 ## The same rule, applied to what the app SAYS IT KNOWS
 
 Errors were the first place this bit, but the rule is not about errors — it is about

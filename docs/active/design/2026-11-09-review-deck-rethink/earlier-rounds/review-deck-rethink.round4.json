@@ -1,0 +1,108 @@
+{
+ "title": "Review deck rethink, round 4",
+ "key": "review-deck-rethink-round4",
+ "out": "review-deck-rethink.round4.html",
+ "stage": "ask",
+ "steps": [
+  {"id": "P-1", "page": "What you asked for, and what you got", "intro": "Everything from your round-3 answers, built. Each row stands unless you open its pencil. Click a picture to open it large; drag on it to comment on a part."},
+  {
+   "id": "W-1", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "What you asked for, and what you got",
+   "calls": [
+    {"id": "pencil", "call": "Every list row has one pencil. It opens one box for a change, a question or a stray thought.", "why": "\"Change this\" and \"More context\" are gone.", "picture": "pictures/r3-rows-after.png", "before": "pictures/built-calls.png", "decided": "\"simplify down to a single pencil/edit icon on each of these rows that opens the comment box\""},
+    {"id": "allfine", "call": "\"All fine\" is gone. A list you leave untouched is accepted when you press Next page.", "why": "A list on a page you never opened stays unanswered.", "decided": "\"i honestly dont even know if we need it, could probably integrate with the next page button\""},
+    {"id": "pics", "call": "Row pictures are small, sit at the right, and open large inside the deck.", "why": "No more empty space beside a tall picture, and no new browser tab.", "picture": "pictures/r3-large.png", "decided": "\"introduces a lot of deadspace … opens it in a separate tab, which is strange\""},
+    {"id": "notes", "call": "A Notes button in the header, on every page, for comments tied to no question.", "why": "A blue dot shows when it holds something. It reaches me first, above your answers.", "picture": "pictures/r3-gallery-notes.png", "decided": "\"there is no additional/separate notes button for me to leave misc/unrelated comments\""},
+    {"id": "voice", "call": "Voice now follows YouCoded's own method: words appear about three times a second, and it stops by itself after two seconds of quiet.", "why": "Four bars and a clock show inside the box while it listens.", "picture": "pictures/r3-voice-wording.png", "decided": "\"make this work much more like how it actually works in youcoded, including showing my words as i speak\""},
+    {"id": "wording", "call": "A row can be an editable box of on-screen wording, already filled in, with a picture of where it appears.", "why": "Page 4 of this deck has real ones to try.", "decided": "\"should be pre-filled with the suggested or existing copy\""},
+    {"id": "gallery", "call": "A page showing every changed screen together, before beside after.", "why": "It is the next page of this deck.", "decided": "\"a way to see all new screens and visual changes together is still useful\""},
+    {"id": "looks", "call": "Rows are soft boxes with a small gap, and text boxes look like YouCoded's message box.", "why": "Taken from the app's design guide: boxed rows, no lines across a card, quick action at the top right.", "decided": "\"can be smarter and better utilize youcoded design principles\""}
+   ]
+  },
+  {"id": "P-2", "page": "Every screen that changed", "intro": "All the pictures in one place."},
+  {
+   "id": "W-2", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "Every screen that changed", "gallery": true,
+   "calls": [
+    {"id": "g-rows", "call": "List rows", "why": "Two buttons per row became one pencil; pictures moved right and shrank.", "before": "pictures/built-calls.png", "picture": "pictures/r3-rows-after.png"},
+    {"id": "g-header", "call": "Header and page foot", "why": "Title said once, no Prev/Next in the header, Back beside Next at the foot, Notes added.", "before": "pictures/r3-header-before.png", "picture": "pictures/r3-gallery-notes.png"},
+    {"id": "g-voice", "call": "Speaking into a box", "why": "Bars and a clock inside the box's right edge. Wording boxes are at the bottom.", "picture": "pictures/r3-voice-wording.png"},
+    {"id": "g-large", "call": "A picture opened large", "why": "Sits over the page. Your earlier rectangles show on it.", "picture": "pictures/r3-large.png"}
+   ]
+  },
+  {"id": "P-3", "page": "Behind the scenes", "intro": "What changed that has no screen."},
+  {
+   "id": "W-3", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "How voice works now", "numbered": true,
+   "calls": [
+    {"id": "v1", "call": "While you talk, the helper listens only to the sentence still in progress, about three times a second.", "why": "Before, it re-listened to the whole recording once a second, so words came in slow lumps and got slower."},
+    {"id": "v2", "call": "After a pause of about a second, once you have spoken five seconds, that sentence is closed and never re-heard.", "why": "This keeps it fast however long you talk. YouCoded uses the same numbers."},
+    {"id": "v3", "call": "If you talk fifteen seconds without a pause, it closes the sentence at the quietest recent moment.", "why": "A cut in the middle of a word would be heard as two wrong words."},
+    {"id": "v4", "call": "Two seconds of quiet after you have said something stops the microphone.", "why": "A microphone opened in a silent room does not close at once."},
+    {"id": "v5", "call": "Leaving a page saves every untouched list on it as accepted.", "why": "This replaces the \"All fine\" button."}
+   ]
+  },
+  {"id": "P-4", "page": "Choices I made", "intro": "Things you could notice that I decided without asking. The boxes are real deck wording: retype any."},
+  {
+   "id": "W-4", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "Choices I made",
+   "calls": [
+    {"id": "replace", "call": "Speaking into an untouched wording box replaces its text. Everywhere else, speech is added after what is typed.", "why": "Adding to my suggested wording would rarely be what you want."},
+    {"id": "close", "call": "Drawing a rectangle on a large picture closes the large view and puts you in that rectangle's comment box.", "why": "The comment boxes live on the page, under the list."},
+    {"id": "nolabel", "call": "Lists no longer say \"List 1 of 3\" above their title.", "why": "You approved dropping \"Question\" from things that are not questions."},
+    {"id": "old", "call": "Old picture decks (one screenshot per step) keep their Prev and Next in the header.", "why": "Only decks of scrolling pages got the new foot buttons, to avoid changing two layouts at once."},
+    {"id": "t-notes", "call": "Title of the Notes panel", "why": "Shown when you press Notes.", "wording": "Notes about anything else", "picture": "pictures/r3-gallery-notes.png"},
+    {"id": "t-notesph", "call": "Grey hint inside the Notes box", "why": "Shown until you type.", "wording": "Anything not tied to one question — about this deck, or the work as a whole"},
+    {"id": "t-pencil", "call": "Grey hint inside a row's comment box", "why": "Shown after you press a pencil.", "wording": "Your comment, or what it should be instead"},
+    {"id": "t-undo", "call": "Link under a wording box you changed", "why": "Puts my text back.", "wording": "Put back the original"},
+    {"id": "t-large", "call": "Line under a picture opened large", "why": "Shown at the bottom of the screen.", "wording": "Drag across any part to comment on it · click anywhere or press Esc to close", "picture": "pictures/r3-large.png"}
+   ]
+  },
+  {"id": "P-5", "page": "Checks", "intro": "What I ran, what it showed, and what only you can judge."},
+  {
+   "id": "W-5", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "Checks I ran, and what they showed",
+   "calls": [
+    {"id": "c1", "call": "All 354 automatic checks of the deck tool.", "why": "Run after the last change. One old check was unreliable and is fixed.", "result": "pass"},
+    {"id": "c2", "call": "A test browser pressed a pencil, retyped a wording box, opened and closed a large picture, and wrote a note. The saved file held all of it.", "why": "Now a permanent automatic check.", "result": "pass"},
+    {"id": "c3", "call": "Voice, fed a recording in place of the microphone: words reached the box as they were spoken, and it stopped by itself after the quiet.", "why": "The picture shows it mid-sentence.", "result": "pass", "picture": "pictures/r3-voice-wording.png"},
+    {"id": "c4", "call": "Voice with your real voice and microphone.", "why": "I do not record your microphone. A recording is not the same as a person pausing and restarting.", "result": "unclear"},
+    {"id": "c5", "call": "The text box changing shape while listening.", "why": "I found one real cause: the box was 8 pixels wider than its row. Fixed, but I never saw what you saw.", "result": "unclear"}
+   ]
+  },
+  {
+   "id": "W-6", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "Left for you to try",
+   "calls": [
+    {"id": "y1", "call": "Press a pencil, press the microphone, say two sentences with a pause, then stay quiet.", "why": "You should see words as you speak, bars moving, and it stopping by itself."},
+    {"id": "y2", "call": "Open a picture large and drag a rectangle on it.", "why": "It should close and put you in a numbered comment box."},
+    {"id": "y3", "call": "Retype one wording box on page 4, then press \"Put back the original\".", "why": "The box should return to my text."}
+   ]
+  },
+  {"id": "P-6", "page": "Rules and what is next", "intro": "The instructions every future chat will follow, as I have now written them, and one question."},
+  {
+   "id": "R-1", "surface": "How chats work with you", "path": "The rule files every YouCoded chat reads", "words": true,
+   "headline": "The rules I wrote from your answers",
+   "calls": [
+    {"id": "asked", "call": "Asked as questions, early: the main paths a person takes, a screen's big-picture layout, how parts affect each other, anything removed, money, privacy.", "why": "Your round-2 words, nearly verbatim."},
+    {"id": "listed", "call": "Listed for you to change, in the walkthrough: everything else you could notice. Wording, what happens when something fails, defaults, sizes, order.", "why": "When unsure, a chat lists it rather than deciding silently."},
+    {"id": "never", "call": "Never shown: only what cannot be detected by using the app.", "why": "Your objection was that \"build details\" was too vague."},
+    {"id": "pages", "call": "A walkthrough has five pages: what you asked for, every changed screen, behind the scenes, choices I made, checks.", "why": "Shown before building with drawings, and again after with screenshots."},
+    {"id": "finish", "call": "Work is finished when you go through the after-walkthrough and change nothing. Contract and acceptance decks are retired.", "why": "Work already under a signed contract finishes under it."},
+    {"id": "checks", "call": "Outside reviewers are no longer fixed steps. A chat suggests checks before building, you edit the list, and each result comes back with proof.", "why": "Your answer: you steer the checks."}
+   ]
+  },
+  {
+   "id": "N-1", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "Should I build the single growing deck next?",
+   "today": "Each round is still a new link. You chose one deck per topic that grows and keeps its history, grouped by topic, with a Related list linking other decks.",
+   "checked": "Nothing of the growing deck exists in the deck tool today; this is the fourth separate link.",
+   "problem": "It is the largest remaining piece. Built now, it delays trying everything else in real work.",
+   "proposal": "Pick the order.",
+   "options": [
+    {"id": "now", "label": "Build it next", "pros": ["One link per topic from then on.", "History of earlier rounds in one place."], "cons": ["Another round of deck work before any feature uses the new decks."]},
+    {"id": "later", "label": "Use the new decks on real work first, build it after", "pros": ["Real use will show what the growing deck needs.", "This work can be finished and merged sooner."], "cons": ["Each round stays a separate link for now."], "recommended": true}
+   ]
+  }
+ ]
+}
