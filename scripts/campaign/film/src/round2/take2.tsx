@@ -1,16 +1,20 @@
 // Round two, take 2: "Make it mine". See docs/active/design/2026-11-19-campaign-round2/takes.md.
 // One person, three short conversations with their youcoded, and it changing in front of them.
 //
-// WHAT IS REAL: every frame of the app window (its frame, chat, typed messages, replies, the theme
-// changing, the rain, the page view) is footage of the real renderer, filmed by scripts/ui-review/record.mjs
-// from scenes/r2-look.json, r2-home.json and r2-money.json. The "Rainy Tokyo" look is a real theme handed to
-// the app's own theme engine (take2-make-theme.mjs). WHAT IS STAGED (brand guide section 8, ads only): what
-// the person makes inside the page view (take2-ui.tsx) and the morning email.
+// WHAT IS REAL: every frame of the app window (its frame, header, chat, the shortcut buttons, the message
+// box and the status row under it, typed messages, replies, thinking words, message times, the theme
+// changing, the page view's frame) is footage of the real renderer as it ships, filmed by
+// scripts/ui-review/record.mjs from scenes/r2-look.json, r2-home.json and r2-money.json. Nothing of the app's
+// own interface is hidden or restyled (brand guide section 8). The two looks are real community themes
+// that ship for the app, Cotton Candy Sky and then Meadow Mist, switched by the app's own theme engine.
+// (take2-make-theme.mjs and take2-wallpaper.html, the drawn "Rainy Tokyo" look, are no longer used: the
+// owner did not like it.) WHAT IS STAGED (brand guide section 8, ads only): what the person makes inside
+// the page view (take2-ui.tsx) and the morning email.
 //
 // Music grid (scripts/campaign/music, composed to these numbers): 120 BPM, bar 2.0 s, beat 0.5 s.
 // Sections: look 0 · home 14 · money 30 · payoff 46 · lines 50 · name 56. Every cut and every visible
-// change below sits on a beat. Second pass (2026-11-20 review): faster opening, the look changes wash in,
-// the developer clutter is hidden at record time, the payoff shows everything they made.
+// change below sits on a beat. Third pass (2026-11-20): the window is filmed untouched, the looks are real
+// themes, and the home and money screens are built from the owner's own pages' cards.
 import React from 'react';
 import { AbsoluteFill, Audio, Freeze, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame } from 'remotion';
 import { C, EASE_IN, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
@@ -24,9 +28,9 @@ const ease01 = (t: number, a: number, b: number, e = EASE_IN_OUT) => interpolate
 
 // ------------------------------------------------------------------ the footage
 // All three takes are 2880 x 1802 at zoom 3.2 (CSS 900 x 563). The page view's content box, measured from
-// the filmed frame (its 1px border sits at x 27 / 2852 and y 174 / 1774): staged things are drawn inside it.
+// the 2026-11-20 footage (its border sits at x 30 / 2849 and y 126 / 1771): staged things are drawn inside it.
 const FW = 2880, FH = 1802, CSS = 3.2;
-const BOX = { x: 28, y: 176, w: 2823, h: 1597, r: 30 };
+const BOX = { x: 33, y: 129, w: 2813, h: 1639, r: 42 };
 const CLIPS = manifest as unknown as Record<string, { file: string; duration: number }>;
 type Seg = { clip: string; from: number; at: number; out: number; rate?: number };
 
@@ -55,7 +59,7 @@ const Footage: React.FC<{ segs: Seg[] }> = ({ segs }) => {
 };
 
 /** A look change washing across the window: `before` (the old look, held still) is masked away as the new
- *  look (the footage underneath) arrives, with a band of neon light and rain riding the edge.
+ *  look (the footage underneath) arrives, with a band of light in the new look's colours riding the edge.
  *  WHY not the app's own instant swap: on screen it was a hard cut with a two-frame repaint flash; the
  *  person asked for a whole new world, so the change is shown arriving, like weather. Both looks are real
  *  frames of the app; only the moment between them is drawn. */
@@ -80,20 +84,11 @@ const WashOver: React.FC<{ w: Wash; W: number; H: number }> = ({ w, W, H }) => {
   return (
     <>
       <div style={{ position: 'absolute', inset: 0, WebkitMaskImage: mask, maskImage: mask }}>{w.before}</div>
-      {/* the leading light: a wide neon glow, a bright core over the seam, and rain falling through it */}
+      {/* the leading light: a wide glow and a bright core over the seam. WHY no rain any more: the looks are a
+          sunset and a misty dawn, not a rainy city, and brand guide section 5 rules out particles. */}
       <div style={band(along * 0.22, along * 0.02, 0.8, w.tint[0] + 'AA')} />
       <div style={band(along * 0.07, along * 0.008, 1, w.tint[1])} />
       <div style={band(along * 0.012, 1, 1, '#FFFFFF')} />
-      <svg width={W} height={H} style={{ position: 'absolute', inset: 0, opacity: vis }}>
-        {Array.from({ length: 70 }, (_, i) => {
-          // streaks scattered just behind the edge, each falling a little with the progress
-          const r1 = ((i * 7919) % 1000) / 1000, r2 = ((i * 104729) % 1000) / 1000;
-          const x = w.dir === 'down' ? r1 * W : pos - along * 0.12 + r1 * along * 0.12;
-          const y = w.dir === 'down' ? pos - along * 0.14 + r2 * along * 0.14 + w.p * along * 0.05 : r2 * H + w.p * H * 0.08;
-          const len = (40 + r2 * 110) * (H / 1080);
-          return <line key={i} x1={x} y1={y} x2={x - len * 0.16} y2={y + len} stroke={i % 3 ? w.tint[1] : '#ffffff'} strokeOpacity={0.3 + 0.5 * r1} strokeWidth={(2 + r2 * 3) * (H / 1080)} strokeLinecap="round" />;
-        })}
-      </svg>
     </>
   );
 };
@@ -162,13 +157,20 @@ const squeeze = (clip: string, from: number, until: number, at: number, out: num
 // the first question already being finished and sent; the answer lands in the first second; the neon
 // arrives at 4.5 s. Thinking pauses and the build are squeezed; a held message box is cut, never shown.
 const T_NEON = 4.5, T_NEON_END = 5.3, T_LESS = 10.0, T_LESS_END = 10.6;
+// The light riding each wash takes the colours of the look it brings: Cotton Candy Sky's pink-gold sunset,
+// then Meadow Mist's dawn blue and mint (WHY: the seam reads as the new world arriving, not a generic flash).
+const SUNSET: [string, string] = ['#FF8FC8', '#FFD9A8'];
+const MEADOW: [string, string] = ['#7FB8E8', '#BFE8D2'];
 const lookSegs = (): Seg[] => {
   const a = play(L, m(L, 'type1', 'end') - 0.4, 0, m(L, 'type1', 'end'));                       // 0.0: "…whole thing looks?" finishing
   const b = squeeze(L, m(L, 'send1') - 0.04, m(L, 'reply1', 'end') + 0.05, a.out, 1.0);          // sent; the answer lands
   const c = play(L, m(L, 'reply1', 'end') + 0.05, 1.0, m(L, 'reply1', 'end') + 0.55);             // a breath to read it
-  const d = play(L, m(L, 'type2') - 0.02, 1.5, m(L, 'type2', 'end'), 1.5);                       // 1.5: "idk. kinda rainy tokyo…" (typed 1.5x)
-  const e = squeeze(L, m(L, 'send2') - 0.03, m(L, 'swap1') - 0.05, d.out, T_NEON);               // sent; the build, sped up
-  const f = play(L, m(L, 'swap1') + 0.35, T_NEON, m(L, 'swap1') + 0.35 + 3.5);                   // 4.5: neon and rain wash in
+  const d = play(L, m(L, 'type2') - 0.02, 1.5, m(L, 'type2', 'end'));                            // 1.5: "idk. kinda dreamy sunset…" (true speed)
+  // WHY true speed and backed off from the swap: the real build now takes 1.3 s, so squeezing send→swap into
+  // the gap would play it in slow motion. Instead the shot runs at 1x and starts just far enough before the
+  // look change to fill the gap (it opens on the last 0.4 s of the typed message waiting to be sent).
+  const e: Seg = { clip: L, from: m(L, 'swap1') - 0.05 - (T_NEON - d.out), at: d.out, out: T_NEON };
+  const f = play(L, m(L, 'swap1') + 0.35, T_NEON, m(L, 'swap1') + 0.35 + 3.5);                   // 4.5: Cotton Candy Sky washes in
   const g = play(L, m(L, 'type3') - 0.04, 8.0, m(L, 'type3', 'end'));                             // 8.0: "ok yeah. less pink tho"
   const h = squeeze(L, m(L, 'send3') - 0.03, m(L, 'swap2') - 0.05, g.out, T_LESS);
   const i = play(L, m(L, 'swap2') + 0.35, T_LESS, CLIPS[L] ? CLIPS[L].duration - 0.2 : 20, 0.85); // 10.0: it shifts
@@ -213,18 +215,9 @@ const CAM: Key[] = [
 ];
 
 // ------------------------------------------------------------------ the field around the window
-/** Lavender while the app wears its first look; the brand's night from the moment the neon washes in
- *  (eased with the wash, so the surround never flashes); lavender again for the "before" at 46. */
-const Field: React.FC = () => {
-  const frame = useCurrentFrame(); const t = frame / FPS;
-  const night = t < T_BEFORE ? ease01(t, T_NEON, T_NEON_END) : 0;
-  return (
-    <AbsoluteFill>
-      <Day />
-      <AbsoluteFill style={{ opacity: night, background: `radial-gradient(ellipse 80% 70% at 50% 55%, #1A1236 0%, ${C.night} 70%)` }} />
-    </AbsoluteFill>
-  );
-};
+/** The brand's lavender around the window throughout. WHY no night field any more: both real looks the
+ *  person tries are daylight themes, so a dark surround would fight the window instead of framing it. */
+const Field: React.FC = () => <AbsoluteFill><Day /></AbsoluteFill>;
 
 // ------------------------------------------------------------------ the film
 export const Take2: React.FC<{ narrator?: boolean }> = () => {
@@ -235,24 +228,24 @@ export const Take2: React.FC<{ narrator?: boolean }> = () => {
   const W = BOX.w / CSS, H = BOX.h / CSS;
   const content = onPage(20, 23) || onPage(25.5, 30) ? <HomeUI W={W} H={H} T={HOME_T} />
     : onPage(32.5, 35) || onPage(39.5, 41.5) || onPage(43, 46) ? <MoneyUI W={W} H={H} T={MONEY_T} /> : undefined;
-  const glow = ease01(t, T_NEON, T_NEON + 0.8);
   // the two look changes, each washing across the whole window
   const wash: Wash | undefined =
-    t >= T_NEON && t < T_NEON_END ? { p: ease01(t, T_NEON, T_NEON_END, EASE_IN_OUT), before: <Still clip={L} at={m(L, 'swap1') - 0.05} />, dir: 'down', tint: ['#FF3FA4', '#2DE2FF'] }
-      : t >= T_LESS && t < T_LESS_END ? { p: ease01(t, T_LESS, T_LESS_END, EASE_IN_OUT), before: <Still clip={L} at={m(L, 'swap2') - 0.05} />, dir: 'right', tint: ['#2B7FFF', '#2DE2FF'] }
+    t >= T_NEON && t < T_NEON_END ? { p: ease01(t, T_NEON, T_NEON_END, EASE_IN_OUT), before: <Still clip={L} at={m(L, 'swap1') - 0.05} />, dir: 'down', tint: SUNSET }
+      : t >= T_LESS && t < T_LESS_END ? { p: ease01(t, T_LESS, T_LESS_END, EASE_IN_OUT), before: <Still clip={L} at={m(L, 'swap2') - 0.05} />, dir: 'right', tint: MEADOW }
         : undefined;
 
   return (
     <AbsoluteFill style={{ overflow: 'hidden' }}>
       <Audio src={staticFile('audio/take2-mix.wav')} />
       {t < T_BEFORE && <Field />}
-      {t < T_BEFORE && <AppWindow segs={segs} content={content} z={z} cx={960} cy={540} fx={fx} fy={fy} glow={glow} light={t < T_NEON} wash={wash} />}
+      {t < T_BEFORE && <AppWindow segs={segs} content={content} z={z} cx={960} cy={540} fx={fx} fy={fy} light wash={wash} />}
       <Email />
-      {t >= T_BEFORE && <AbsoluteFill style={{ background: C.night }} />}
+      {/* WHY lavender, not night, behind the payoff and the lines: the whole film now lives in daylight */}
+      {t >= T_BEFORE && <AbsoluteFill><Day /></AbsoluteFill>}
       {t >= T_BEFORE && t < 50 && <Payoff />}
       {/* 50-56: the two lines, then the name */}
-      <Line dark text="stop waiting for *updates.*" at={50.1} out={52.4} size={6.4} />
-      <Line dark text="make anything you can imagine, / just by *asking.*" at={52.5} out={55.95} size={5.6} />
+      <Line text="stop waiting for *updates.*" at={50.1} out={52.4} size={6.4} />
+      <Line text="make anything you can imagine, / just by *asking.*" at={52.5} out={55.95} size={5.6} />
       <EndCard at={56.0} />
     </AbsoluteFill>
   );
@@ -265,7 +258,7 @@ const Email: React.FC = () => {
   const inn = spring({ frame: frame - s2f(T_EMAIL), fps: FPS, config: { damping: 13, stiffness: 120, mass: 0.9 } });
   return (
     <AbsoluteFill>
-      <AbsoluteFill style={{ background: 'rgba(6,4,16,0.55)', opacity: Math.min(inn, 1) }} />
+      <AbsoluteFill style={{ background: 'rgba(33,21,44,0.38)', opacity: Math.min(inn, 1) }} />
       <div style={{ position: 'absolute', left: 960 - 320, top: 70, width: 640,
         transform: `translateY(${(1 - inn) * 900}px) rotate(${(1 - inn) * 8 - 1.5}deg)` }}>
         <KawaiiEmail w={640} at={T_EMAIL} />
@@ -297,19 +290,24 @@ const Payoff: React.FC = () => {
     return { opacity: Math.min(1, s * 1.4), dy: (1 - s) * 60, ds: 0.94 + 0.06 * s };
   };
   const home = item(0), money = item(0.08), chat = item(0.16), mail = item(0.3);
+  // WHY a 2 × 2 grid inside the 8% safe margins, nothing overlapping (owner's rule for the payoff: nothing
+  // important covered): their room, their money, the conversation that made it all, and the morning email.
+  // Each window is 705 px wide (z 0.43); the cells sit 39 px apart across, 25 px down, inside 86-994 vertically.
+  const Z = 0.43, X0 = 588, X1 = 1332, Y0 = 307, Y1 = 773;
   const after = (
-    <AbsoluteFill style={{ background: `radial-gradient(ellipse 80% 70% at 50% 55%, #1A1236 0%, ${C.night} 70%)` }}>
+    <AbsoluteFill>
+      <Day />
       <div style={{ position: 'absolute', inset: 0, opacity: home.opacity, transform: `translateY(${home.dy}px)` }}>
-        <AppWindow segs={[{ clip: HM, from: m(HM, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<HomeUI W={W} H={H} T={HOME_T} />} z={0.5 * home.ds * (1 + 0.02 * drift)} cx={570} cy={345} glow={0.6} />
+        <AppWindow light segs={[{ clip: HM, from: m(HM, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<HomeUI W={W} H={H} T={HOME_T} />} z={Z * home.ds * (1 + 0.015 * drift)} cx={X0} cy={Y0} />
       </div>
       <div style={{ position: 'absolute', inset: 0, opacity: money.opacity, transform: `translateY(${money.dy}px)` }}>
-        <AppWindow segs={[{ clip: MN, from: m(MN, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<MoneyUI W={W} H={H} T={MONEY_T} />} z={0.5 * money.ds * (1 + 0.02 * drift)} cx={1350} cy={345} glow={0.6} />
+        <AppWindow light segs={[{ clip: MN, from: m(MN, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<MoneyUI W={W} H={H} T={MONEY_T} />} z={Z * money.ds * (1 + 0.015 * drift)} cx={X1} cy={Y0} />
       </div>
       <div style={{ position: 'absolute', inset: 0, opacity: chat.opacity, transform: `translateY(${chat.dy}px)` }}>
-        <AppWindow segs={[{ clip: L, from: m(L, 'swap2') + 1.2, at: T_BEFORE, out: 50, rate: 0.6 }]} z={0.58 * chat.ds * (1 + 0.02 * drift)} cx={900} cy={690} glow={1} />
+        <AppWindow light segs={[{ clip: L, from: m(L, 'swap2') + 1.2, at: T_BEFORE, out: 50, rate: 0.6 }]} z={Z * chat.ds * (1 + 0.015 * drift)} cx={X0} cy={Y1} />
       </div>
-      <div style={{ position: 'absolute', left: 1590 - 165, top: 610, width: 330, opacity: mail.opacity, transform: `translateY(${mail.dy}px) rotate(-2deg) scale(${mail.ds})` }}>
-        <KawaiiEmail w={330} at={T_EMAIL} />
+      <div style={{ position: 'absolute', left: X1 - 210, top: Y1 - 205, width: 420, opacity: mail.opacity, transform: `translateY(${mail.dy}px) rotate(-1.5deg) scale(${mail.ds})` }}>
+        <KawaiiEmail w={420} at={T_EMAIL} />
       </div>
     </AbsoluteFill>
   );
@@ -329,6 +327,6 @@ const AppWindowStill: React.FC<{ z: number }> = ({ z }) => (
 );
 const FrameWash: React.FC<{ p: number; children: React.ReactNode }> = ({ p, children }) => (
   <AbsoluteFill>
-    <WashOver w={{ p, before: children, dir: 'down', tint: ['#FF3FA4', '#2DE2FF'] }} W={1920} H={1080} />
+    <WashOver w={{ p, before: children, dir: 'down', tint: SUNSET }} W={1920} H={1080} />
   </AbsoluteFill>
 );

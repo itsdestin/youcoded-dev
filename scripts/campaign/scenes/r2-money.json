@@ -1,6 +1,6 @@
 {
- "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=1&reply=campaign-r2-money&replyClock=now&title=my%20money",
- "theme": "youcoded",
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=1&reply=campaign-r2-money&replyClock=now&title=my%20money&model=anthropic%2Fclaude-sonnet-4-6",
+ "theme": "meadow-mist",
  "width": 2880,
  "height": 1800,
  "zoom": 3.2,
@@ -11,14 +11,7 @@
  "boot": 3000,
  "actions": [
   {
-   "evalFile": "../footage/r2-tokyo.js"
-  },
-  {
-   "eval": "(()=>{const s=document.createElement('style');s.id='r2-clean';s.textContent='.status-bar{display:none!important} div:has(> .scroll-mask--chips){display:none!important} [data-testid=thinking-indicator] span.text-fg-dim{display:none!important}';document.head.appendChild(s);window.__workbenchAppearanceSync({showTimestamps:false});return 1})()",
-   "_why": "hide the developer clutter (status row, quick chips, thinking word, message times) so the film shows the app as a newcomer would use it"
-  },
-  {
-   "eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo-blue'})"
+   "eval": "window.__workbenchAppearanceSync({theme:'meadow-mist'})"
   },
   {
    "eval": "(()=>{const s=document.createElement('style');s.id='r2-hide';s.textContent=\"button[aria-label='Open Finance']{display:none!important}\";document.head.appendChild(s);return 1})()"
@@ -103,9 +96,6 @@
    "eval": "(()=>{const s=document.createElement('style');s.textContent='iframe[srcdoc]{visibility:hidden!important}';document.head.appendChild(s);return 1})()"
   },
   {
-   "eval": "(()=>{const fix=()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){if(n.nodeValue.trim()==='Finance')n.nodeValue=n.nodeValue.replace('Finance','Money')}};fix();new MutationObserver(fix).observe(document.body,{subtree:true,childList:true,characterData:true});return 1})()"
-  },
-  {
    "click": "button[aria-label='Open Finance']",
    "settle": 300,
    "mark": "page"
@@ -118,5 +108,6 @@
    "hold": 4000,
    "mark": "pagehold"
   }
- ]
+ ],
+ "_why": "Filmed on the app exactly as it ships (brand guide section 8): nothing of its own interface is hidden or restyled, and the window wears Meadow Mist, the real theme the person settled on in the look conversation. The only record-time changes are story ones: the Home and $ header buttons stay hidden until the person has made those things, and the page view's content is left empty (the page's iframe made invisible) so the staged page can be composited into the real page frame. model= picks a well-known model for the picker instead of hiding it."
 }

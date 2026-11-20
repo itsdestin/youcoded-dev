@@ -1,5 +1,5 @@
 {
- "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=1&reply=campaign-r2-look&replyClock=now&title=my%20look",
+ "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&seed=none&replySpeed=1&reply=campaign-r2-look&replyClock=now&title=my%20look&model=anthropic%2Fclaude-sonnet-4-6",
  "theme": "youcoded",
  "width": 2880,
  "height": 1800,
@@ -10,13 +10,6 @@
  "slow": 4,
  "boot": 3000,
  "actions": [
-  {
-   "evalFile": "../footage/r2-tokyo.js"
-  },
-  {
-   "eval": "(()=>{const s=document.createElement('style');s.id='r2-clean';s.textContent='.status-bar{display:none!important} div:has(> .scroll-mask--chips){display:none!important} [data-testid=thinking-indicator] span.text-fg-dim{display:none!important}';document.head.appendChild(s);window.__workbenchAppearanceSync({showTimestamps:false});return 1})()",
-   "_why": "hide the developer clutter (status row, quick chips, thinking word, message times) so the film shows the app as a newcomer would use it"
-  },
   {
    "eval": "(()=>{const s=document.createElement('style');s.id='r2-hide';s.textContent=\"button[aria-label='Open Home'],button[aria-label='Open Finance']{display:none!important}\";document.head.appendChild(s);return 1})()"
   },
@@ -49,7 +42,7 @@
    "hold": 1000
   },
   {
-   "typeSlow": "idk. kinda rainy tokyo at night type vibe? open to ideas",
+   "typeSlow": "idk. kinda dreamy sunset type vibe? open to ideas",
    "cps": 36,
    "mark": "type2"
   },
@@ -69,7 +62,7 @@
    "hold": 500
   },
   {
-   "eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo'})",
+   "eval": "window.__workbenchAppearanceSync({theme:'cotton-candy-sky'})",
    "mark": "swap1"
   },
   {
@@ -96,12 +89,13 @@
    "mark": "built3"
   },
   {
-   "eval": "window.__workbenchAppearanceSync({theme:'rainy-tokyo-blue'})",
+   "eval": "window.__workbenchAppearanceSync({theme:'meadow-mist'})",
    "mark": "swap2"
   },
   {
    "hold": 3500,
    "mark": "end"
   }
- ]
+ ],
+ "_why": "Filmed on the app exactly as it ships (brand guide section 8): nothing of its own interface is hidden or restyled. The two looks are real community themes that ship for the app (Cotton Candy Sky, then Meadow Mist), applied through the app's own theme switch exactly as an installed theme is. The only record-time change is a story one: the Home and $ header buttons stay hidden because the person has not made those things yet. model= picks a well-known model for the picker instead of hiding it."
 }
