@@ -6,9 +6,10 @@
 // changing, the page view's frame) is footage of the real renderer as it ships, filmed by
 // scripts/ui-review/record.mjs from scenes/r2-look.json, r2-home.json and r2-money.json. Nothing of the app's
 // own interface is hidden, restyled or drawn over (brand guide section 8). The two looks are real community
-// themes that ship for the app, Cotton Candy Sky and then Meadow Mist, switched by the app's own theme engine.
-// (take2-make-theme.mjs and take2-wallpaper.html, the drawn "Rainy Tokyo" look, are no longer used: the
-// owner did not like it.) WHAT IS STAGED (brand guide section 8, ads only): what the person makes inside
+// themes that ship for the app, Golden Sunbreak (a rainy Tokyo rooftop under god rays) and then Devil's
+// Garden (a sunlit desert), switched by the app's own theme engine. (The owner, 2026-11-20, did not like the
+// drawn "Rainy Tokyo" looks of take2-make-theme.mjs / take2-wallpaper.html, nor Cotton Candy Sky / Meadow
+// Mist in this window; those files are kept but unused.) WHAT IS STAGED (brand guide section 8, ads only): what the person makes inside
 // the page view (take2-ui.tsx) and the morning email.
 //
 // Music grid (scripts/campaign/music, composed to these numbers): 120 BPM, bar 2.0 s, beat 0.5 s.
@@ -22,11 +23,11 @@
 // file cards (developer words like "manifest.json") appear. The takes were re-filmed 1960 px tall (no
 // bubble ever cut off at the top) with evening clocks (9:12 PM, 6:24 PM, 9:38 PM) instead of a frozen 8:00 AM.
 import React from 'react';
-import { AbsoluteFill, Audio, Freeze, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Audio, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame } from 'remotion';
 import { EASE_IN, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
 import { Day, EndCard, Line, mark } from '../kit';
 import manifest from '../footage.json';
-import { HomeUI, KawaiiEmail, MoneyUI } from './take2-ui';
+import { FREDOKA, HomeUI, KawaiiEmail, MoneyUI } from './take2-ui';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 const s2f = (s: number) => Math.round(s * FPS);
@@ -128,21 +129,21 @@ const playTo = (clip: string, until: number, at: number, out: number): Seg => ({
 const SENT = { look: 0.24, home: 0.22, money: 0.2 };
 
 // A LOOK (0-14). Opens close on "can i change how this whole thing looks?" being typed; it is sent, the answer
-// lands, "idk. kinda dreamy sunset type vibe?" is typed and sent, and on the 5.0 downbeat the window is
-// Cotton Candy Sky. "ok yeah. less pink tho" is sent, and on 10.5 it is Meadow Mist.
+// lands, "idk. kinda rainy tokyo type vibe? open to ideas" is typed and sent, and on the 5.0 downbeat the
+// window is Golden Sunbreak. "ok yeah. less gloomy tho" is sent, and on 10.5 it is Devil's Garden.
 const T_LOOK1 = 5.0, T_LOOK2 = 10.5;
 const lookSegs = (): Seg[] => {
   const a = play(L, m(L, 'type1') - 0.05, 0, m(L, 'type1', 'end'));                              // 0.0: first question typed
   const b = squeeze(L, m(L, 'send1') - 0.04, m(L, 'reply1', 'end') + 0.05, a.out, 2.0);          // sent; the answer lands
   const c = play(L, m(L, 'reply1', 'end') + 0.05, 2.0, m(L, 'reply1', 'end') + 0.65);           // a breath to read it
   const e = playTo(L, m(L, 'send2') + SENT.look, T_LOOK1 - (m(L, 'send2') + SENT.look - m(L, 'type2', 'end')), T_LOOK1);
-  const d = playTo(L, m(L, 'type2', 'end'), c.out, e.at);                                        // "idk. kinda dreamy sunset…" (true speed)
+  const d = playTo(L, m(L, 'type2', 'end'), c.out, e.at);                                        // "idk. kinda rainy tokyo…" (true speed)
   // WHY +0.35 s after the switch: the app repaints in a fallback font for a few frames while the theme's
   // own font loads; the shot starts once the new look is fully itself.
-  const f = play(L, m(L, 'swap1') + 0.35, T_LOOK1, m(L, 'swap1') + 0.35 + 3.8);                  // 5.0: Cotton Candy Sky
+  const f = play(L, m(L, 'swap1') + 0.35, T_LOOK1, m(L, 'swap1') + 0.35 + 3.8);                  // 5.0: Golden Sunbreak
   const h = playTo(L, m(L, 'send3') + SENT.look, T_LOOK2 - (m(L, 'send3') + SENT.look - m(L, 'type3', 'end')), T_LOOK2);
-  const g = playTo(L, m(L, 'type3', 'end'), f.out, h.at);                                        // "ok yeah. less pink tho"
-  const i = play(L, m(L, 'swap2') + 0.35, T_LOOK2, m(L, 'swap2') + 0.35 + 3.5);                   // 10.5: Meadow Mist
+  const g = playTo(L, m(L, 'type3', 'end'), f.out, h.at);                                        // "ok yeah. less gloomy tho"
+  const i = play(L, m(L, 'swap2') + 0.35, T_LOOK2, m(L, 'swap2') + 0.35 + 3.5);                   // 10.5: Devil's Garden
   return [a, b, c, d, e, f, g, h, { ...i, out: 14.0 }];
 };
 // THEIR HOME (14-30)
@@ -153,23 +154,30 @@ const homeSegs = (): Seg[] => {
   const d = playTo(HM, m(HM, 'type2', 'end'), e.at - (m(HM, 'type2', 'end') - m(HM, 'type2') + 0.04), e.at); // "epic. can we put my room on the front…"
   const c = play(HM, m(HM, 'reply1', 'end') + 0.1, 16.5, m(HM, 'reply1', 'end') + 0.1 + (d.at - 16.5)); // a breath to read "All on one screen?"
   const page = (at: number, out: number, rate: number): Seg => ({ clip: HM, from: m(HM, 'pagehold'), at, out, rate });
-  const g = playTo(HM, m(HM, 'send3') + SENT.home, 25.5 - (m(HM, 'send3') + SENT.home - m(HM, 'type3', 'end')), 25.5);
-  const f = playTo(HM, m(HM, 'type3', 'end'), 23.0, g.at);                                         // 23.0: "perfect. now make the sliders bigger…"
-  return [a, b, c, d, e, page(20.0, 23.0, 0.75), f, g, page(25.5, 30.0, 0.85)];
+  // WHY the page now holds 20.0-24.0 (review 2026-11-20): it opens straight on what was asked for (my room on
+  // the front) and has time to show the second half of the request: "Everything else" is tapped on 22.0,
+  // the rest of the house slides in and is readable for a second and a half, and "My room" comes back on 23.5.
+  const g = playTo(HM, m(HM, 'send3') + SENT.home, 26.5 - (m(HM, 'send3') + SENT.home - m(HM, 'type3', 'end')), 26.5);
+  const f = playTo(HM, m(HM, 'type3', 'end'), 24.0, g.at);                                         // 24.0: "perfect. now make the sliders bigger…"
+  return [a, b, c, d, e, page(20.0, 24.0, 0.75), f, g, page(26.5, 30.0, 0.85)];
 };
 // THEIR MONEY (30-46)
 const moneyPage = (at: number, out: number, rate: number): Seg => ({ clip: MN, from: m(MN, 'pagehold'), at, out, rate });
 const moneySegs = (): Seg[] => [
-  playTo(MN, m(MN, 'send1') + SENT.money, 30.0, 32.5),                                             // 30.0: "can we connect my bank…" typed and sent
+  // WHY a squeeze at 0.9x rather than true speed: at true speed the shot had to start 0.3 s before the first
+  // letter, on the empty box's placeholder line; slowed by a tenth the typing fills the whole 2.5 s, unnoticed.
+  squeeze(MN, m(MN, 'type1') - 0.03, m(MN, 'send1') + SENT.money, 30.0, 32.5),                    // 30.0: "can we connect my bank…" typed and sent
   moneyPage(32.5, 35.5, 0.9),
   playTo(MN, m(MN, 'reply2', 'end') + 1.04, 35.5, 39.5),                                           // 35.5: "can it pull out my recurring bills…" → "Yes. Found eleven."
   moneyPage(39.5, 41.5, 0.9),
   playTo(MN, m(MN, 'type3', 'end') + 0.05, 41.5, 43.0),                                            // 41.5: "send me those numbers every morning…"
   moneyPage(43.0, 46.0, 0.6),
 ];
-const HOME_T = { build: 20.0, rearrange: 21.0, bigger: 26.0 };
+// "punchier", one change per beat after the sliders grow (review 2026-11-20: the page sat still for 2.4 s):
+// 27.0 the sliders grow · 28.0 the ceiling light is switched on · 28.5 the thermostat nudged down · 29.0 "Wind down".
+const HOME_T = { build: 20.0, tabOut: 22.0, tabBack: 23.5, bigger: 27.0, ceiling: 28.0, thermo: 28.5, scene: 29.0 };
 const MONEY_T = { connect: 32.5, bills: 39.5 };
-const T_EMAIL = 43.0, T_BEFORE = 46.0, T_AFTER = 47.0;
+const T_EMAIL = 43.0, T_BEFORE = 46.0;
 
 const CAM: Key[] = [
   // a look: close on the first words, out to the whole window as they are sent, a slow push while they talk;
@@ -179,9 +187,9 @@ const CAM: Key[] = [
   CHAT(T_LOOK2, 0.962), CHAT(11.8, 0.9, 'out'), CHAT(14.0, 0.915),
   // their home
   TYPE(14.0), TYPE(15.35), CHAT(16.2, 0.93), CHAT(20.0, 0.955),
-  PAGE(20.0, 0.91), PAGE(23.0, 0.945),
-  CHAT(23.0, 0.93), CHAT(25.5, 0.955),
-  PAGE(25.5, 0.91), PAGE(30.0, 0.95),
+  PAGE(20.0, 0.91), PAGE(24.0, 0.945),
+  CHAT(24.0, 0.93), CHAT(26.5, 0.955),
+  PAGE(26.5, 0.91), PAGE(30.0, 0.95),
   // their money: close on the box until the send, then straight to the page it made. WHY no pull back here:
   // pulling out before the message is sent showed the empty chat's placeholder line for half a second.
   TYPE(30.0), TYPE(32.5),
@@ -189,8 +197,9 @@ const CAM: Key[] = [
   CHAT(35.5, 0.93), CHAT(39.5, 0.955),
   PAGE(39.5, 0.91), PAGE(41.5, 0.935),
   CHAT(41.5, 0.93), CHAT(43.0, 0.95),
-  // the email: the camera backs off the money page so the card has room
-  PAGE(43.0, 0.92), PAGE(46.0, 0.84, 'out'),
+  // the email: the window steps back to the left so the morning email can arrive beside it, outside the app
+  // (review 2026-11-20: a card laid over the window's title bar read as pasted onto the app)
+  PAGE(43.0, 0.92), [43.55, 0.68, 0.772, 0.5, 'out'], [46.0, 0.665, 0.772, 0.5],
 ];
 
 // ------------------------------------------------------------------ the film
@@ -200,13 +209,13 @@ export const Take2: React.FC<{ narrator?: boolean }> = () => {
   const [, z, fx, fy] = camAt(CAM, t);
   const onPage = (a: number, b: number) => t >= a && t < b;
   const W = BOX.w / CSS, H = BOX.h / CSS;
-  const content = onPage(20, 23) || onPage(25.5, 30) ? <HomeUI W={W} H={H} T={HOME_T} />
+  const content = onPage(20, 24) || onPage(26.5, 30) ? <HomeUI W={W} H={H} T={HOME_T} />
     : onPage(32.5, 35.5) || onPage(39.5, 41.5) || onPage(43, 46) ? <MoneyUI W={W} H={H} T={MONEY_T} /> : undefined;
 
   return (
     <AbsoluteFill style={{ overflow: 'hidden' }}>
       <Audio src={staticFile('audio/take2-mix.wav')} />
-      {/* WHY lavender throughout: both real looks the person tries are daylight themes */}
+      {/* WHY lavender around the window: brand guide section 8, everything around the app wears the brand look */}
       <AbsoluteFill><Day /></AbsoluteFill>
       {t < T_BEFORE && <AppWindow segs={segs} content={content} z={z} cx={960} cy={540} fx={fx} fy={fy} />}
       <Email />
@@ -219,70 +228,82 @@ export const Take2: React.FC<{ narrator?: boolean }> = () => {
   );
 };
 
-/** The kawaii email: springs up over the money page on the 43.0 downbeat and holds three seconds.
- *  WHY only a light veil (review 2026-11-20: a 38% grey veil turned the real page muddy): the money page
- *  keeps its colour; the card stands off it by its own shadow and the camera backing away. */
+/** The kawaii email (43-46). WHY it arrives OUTSIDE the window (review 2026-11-20: laid over the money page
+ *  it crossed the app's title bar and read as pasted on): the window steps back to the left, a "7:00 am ·
+ *  every morning" notification slides in at the bottom right of the screen on the 43.0 downbeat, and on
+ *  43.5 it opens into the email card beside the window. The card itself is unchanged. */
 const Email: React.FC = () => {
   const frame = useCurrentFrame(); const t = frame / FPS;
   if (t < T_EMAIL || t >= T_BEFORE) return null;
-  const inn = spring({ frame: frame - s2f(T_EMAIL), fps: FPS, config: { damping: 15, stiffness: 120, mass: 0.9 } });
+  const toast = spring({ frame: frame - s2f(T_EMAIL), fps: FPS, config: { damping: 18, stiffness: 150 } });
+  const open = t < T_EMAIL + 0.5 ? 0 : spring({ frame: frame - s2f(T_EMAIL + 0.5), fps: FPS, config: { damping: 14, stiffness: 120, mass: 0.9 } });
+  const CW = 540, RIGHT = 1920 - 110;   // the card's width and right edge (inside the 8% safe margin)
   return (
     <AbsoluteFill>
-      <AbsoluteFill style={{ background: 'rgba(40,52,44,0.16)', opacity: Math.min(inn, 1) }} />
-      <div style={{ position: 'absolute', left: 960 - 320, top: 62, width: 640,
-        transform: `translateY(${(1 - inn) * 900}px) rotate(${(1 - inn) * 6 - 1.2}deg)` }}>
-        <KawaiiEmail w={640} at={T_EMAIL} />
+      {/* the notification */}
+      <div style={{ position: 'absolute', left: RIGHT - 430, top: 1080 - 110 - 84, width: 430, height: 84, borderRadius: 22, background: 'rgba(255,248,252,0.97)',
+        boxShadow: '0 20px 50px rgba(60,30,80,0.25), 0 0 0 2px #FFD3E6', fontFamily: FREDOKA, color: '#6B3E6E', display: 'flex', alignItems: 'center', gap: 14, padding: '0 18px',
+        opacity: Math.min(1, toast * 1.3) * (1 - Math.min(1, open * 1.6)), transform: `translateX(${(1 - toast) * 520}px) translateY(${-open * 30}px) scale(${1 - 0.06 * open})` }}>
+        <div style={{ width: 46, height: 46, borderRadius: 46, flex: 'none', background: 'linear-gradient(135deg,#B69CFF,#FF9CC8)', display: 'grid', placeItems: 'center', color: '#fff', fontWeight: 600, fontSize: 22 }}>y</div>
+        <div style={{ flex: 1, lineHeight: 1.3 }}>
+          <div style={{ fontSize: 16, opacity: 0.75 }}>youcoded · 7:00 am</div>
+          <div style={{ fontSize: 20, fontWeight: 600, color: '#5B3A5E' }}>your money, this morning ☀︎</div>
+        </div>
+        <div style={{ fontSize: 14, fontWeight: 600, padding: '4px 12px', borderRadius: 20, background: '#FFE3EF', color: '#FF7FB5', whiteSpace: 'nowrap' }}>every morning ♡</div>
       </div>
+      {/* the email, opening out of the notification (it grows from the bottom-right corner where the notification sat) */}
+      {open > 0.001 && (
+        <div style={{ position: 'absolute', left: RIGHT - CW, top: 540, width: CW, transformOrigin: '100% 100%',
+          transform: `translateY(-50%) scale(${0.35 + 0.65 * open})`, opacity: Math.min(1, open * 2) }}>
+          <KawaiiEmail w={CW} at={T_EMAIL + 0.5} />
+        </div>
+      )}
     </AbsoluteFill>
   );
 };
 
-/** 46-50: the payoff. The app exactly as it started (46.0: the first exchange, in its first look). On 47.0
- *  that same window shrinks into the corner of a grid and, as it travels, becomes the window as it is now
- *  (Meadow Mist, the whole look conversation); around it rise everything the person made: their room, their
- *  money and the morning email. WHY a move instead of a wipe: the viewer follows ONE window and sees it
- *  changed, with nothing drawn over the app (the old neon scan line was the cliché the review flagged). */
+/** 46-50: the payoff, a travelling camera (review 2026-11-20: the old static wall of small tiles undersold
+ *  it). Everything the person made sits side by side at near full size and the camera glides past it, one
+ *  stop per beat: the new look (46.0), their room (47.0), their bills (47.5), the morning email (48.0). On
+ *  48.5 it pulls back and the four gather into a 2 × 2, held until the lines come in. WHY a camera move and
+ *  not cuts: the viewer feels one continuous place that has all of this in it, the app as it is now. */
 const Payoff: React.FC = () => {
   const frame = useCurrentFrame(); const t = frame / FPS;
   const outro = ease01(t, 49.5, 49.95, EASE_IN);
-  const settle = (d: number) => spring({ frame: frame - s2f(T_AFTER + d), fps: FPS, config: { damping: 16, stiffness: 110 } });
-  const drift = ease01(t, T_AFTER, 50, (x) => x);
   const W = BOX.w / CSS, H = BOX.h / CSS;
+  // the camera's stop along the row (0 look · 1 home · 2 bills · 3 email): each glide ends on its beat
+  const stops: [number, number, number][] = [[46.62, 47.0, 1], [47.18, 47.5, 2], [47.68, 48.0, 3]];
+  let c = 0;
+  for (const [a, b] of stops) c += ease01(t, a, b, EASE_IN_OUT);
+  // a slight dolly-out while travelling (WHY: a pure sideways pan reads as a slideshow; the dip gives it depth)
+  const dip = stops.reduce((s, [a, b]) => s + Math.sin(Math.PI * ease01(t, a, b, (x) => x)), 0);
+  const zRow = 0.86 * (1 - 0.06 * dip) * (1 + 0.012 * ease01(t, T_BEFORE, 48.5, (x) => x));
+  // WHY 1760 apart: neighbours sit fully off screen at each stop (at 1560 a sliver of the next window showed at the edge)
+  const SPACE = 1760 * (zRow / 0.86);
+  // the pull back into the grid
+  const k = ease01(t, 48.5, 49.05, EASE_IN_OUT);
+  const drift = 1 + 0.015 * ease01(t, 49.05, 50, (x) => x);
   // WHY these numbers: a 2 × 2 grid inside the 8% safe margins (86-994 tall), nothing overlapping. Each
   // window is 649 px wide and 441 tall (z 0.395); cells sit 40 px apart across and 26 px apart down.
   const Z = 0.395, X0 = 616, X1 = 1304, Y0 = 307, Y1 = 773;
-  // the travelling window: from the full frame into the bottom-left cell
-  const mv = ease01(t, T_AFTER, T_AFTER + 0.75, EASE_IN_OUT);
-  const zMv = interpolate(mv, [0, 1], [0.93 + 0.02 * ease01(t, T_BEFORE, T_AFTER), Z]);
-  const cxMv = interpolate(mv, [0, 1], [960, X0]), cyMv = interpolate(mv, [0, 1], [540, Y1]);
-  // the "before" gives way to the "now" early in the move, while the window is still large enough to read
-  // as the same window but already moving (WHY: a fade on a still frame reads as a slide transition)
-  const becomes = ease01(t, T_AFTER + 0.08, T_AFTER + 0.38, EASE_IN_OUT);
-  const item = (d: number) => {
-    const s = settle(d);
-    return { opacity: Math.min(1, s * 1.4), dy: (1 - s) * 60, ds: 0.94 + 0.06 * s };
+  const GRID: [number, number][] = [[X0, Y1], [X0, Y0], [X1, Y0], [X1, Y1]];   // look bottom-left, home, money, email
+  const place = (i: number) => {
+    const rx = 960 + (i - c) * SPACE;
+    return { x: interpolate(k, [0, 1], [rx, GRID[i][0]]), y: interpolate(k, [0, 1], [540, GRID[i][1]]), z: interpolate(k, [0, 1], [zRow, Z * drift]) };
   };
-  const home = item(0.3), money = item(0.4), mail = item(0.55);
-  const grow = 1 + 0.015 * drift;
+  const seen = (x: number) => x > -900 && x < 2820;   // WHY: windows far off screen are not drawn (four videos are heavy)
+  const look = place(0), home = place(1), money = place(2), mail = place(3);
+  // WHY 760 wide in the row: at 600 the email sat small in a big empty frame next to 1400-wide windows
+  const mailW = interpolate(k, [0, 1], [760 * (zRow / 0.86), 400 * drift]);
   return (
     <AbsoluteFill style={{ opacity: 1 - outro }}>
-      <div style={{ position: 'absolute', inset: 0, opacity: home.opacity, transform: `translateY(${home.dy}px)` }}>
-        <AppWindow segs={[{ clip: HM, from: m(HM, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<HomeUI W={W} H={H} T={HOME_T} />} z={Z * home.ds * grow} cx={X0} cy={Y0} />
-      </div>
-      <div style={{ position: 'absolute', inset: 0, opacity: money.opacity, transform: `translateY(${money.dy}px)` }}>
-        <AppWindow segs={[{ clip: MN, from: m(MN, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<MoneyUI W={W} H={H} T={MONEY_T} />} z={Z * money.ds * grow} cx={X1} cy={Y0} />
-      </div>
-      <div style={{ position: 'absolute', left: X1 - 200, top: Y1 - 218, width: 400, opacity: mail.opacity, transform: `translateY(${mail.dy}px) rotate(-1.5deg) scale(${mail.ds})` }}>
-        <KawaiiEmail w={400} at={T_EMAIL} />
-      </div>
-      {/* the conversation as it is now (whole: every bubble in view, the top one included). WHY fully opaque
-          under the fading "before": two half-transparent windows would let the lavender show through mid-fade. */}
-      <AppWindow segs={[{ clip: L, from: m(L, 'swap2') + 1.2, at: T_BEFORE, out: 50, rate: 0.6 }]} z={zMv * (mv >= 1 ? grow : 1)} cx={cxMv} cy={cyMv} />
-      {/* the app as it started, frozen on its first exchange, travelling with it until it has become the now */}
-      {becomes < 1 && (
-        <Freeze frame={0}>
-          <AppWindow segs={[{ clip: L, from: m(L, 'reply1', 'end') + 0.4, at: 0, out: 1 }]} z={zMv} cx={cxMv} cy={cyMv} opacity={1 - becomes} />
-        </Freeze>
+      {seen(home.x) && <AppWindow segs={[{ clip: HM, from: m(HM, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<HomeUI W={W} H={H} T={HOME_T} />} z={home.z} cx={home.x} cy={home.y} />}
+      {seen(money.x) && <AppWindow segs={[{ clip: MN, from: m(MN, 'pagehold'), at: T_BEFORE, out: 50, rate: 0.5 }]} content={<MoneyUI W={W} H={H} T={MONEY_T} />} z={money.z} cx={money.x} cy={money.y} />}
+      {seen(look.x) && <AppWindow segs={[{ clip: L, from: m(L, 'swap2') + 0.6, at: T_BEFORE, out: 50, rate: 0.6 }]} z={look.z} cx={look.x} cy={look.y} />}
+      {seen(mail.x) && (
+        <div style={{ position: 'absolute', left: mail.x, top: mail.y, width: mailW, transform: `translate(-50%, -50%) rotate(${-1.5 * k}deg)` }}>
+          <KawaiiEmail w={mailW} at={T_EMAIL + 0.5} />
+        </div>
       )}
     </AbsoluteFill>
   );

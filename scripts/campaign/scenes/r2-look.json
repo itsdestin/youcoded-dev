@@ -45,7 +45,7 @@
    "hold": 1000
   },
   {
-   "typeSlow": "idk. kinda dreamy sunset type vibe? open to ideas",
+   "typeSlow": "idk. kinda rainy tokyo type vibe? open to ideas",
    "cps": 36,
    "mark": "type2"
   },
@@ -65,7 +65,7 @@
    "hold": 500
   },
   {
-   "eval": "window.__workbenchAppearanceSync({theme:'cotton-candy-sky'})",
+   "eval": "window.__workbenchAppearanceSync({theme:'golden-sunbreak'})",
    "mark": "swap1"
   },
   {
@@ -76,7 +76,7 @@
    "settle": 150
   },
   {
-   "typeSlow": "ok yeah. less pink tho",
+   "typeSlow": "ok yeah. less gloomy tho",
    "cps": 30,
    "mark": "type3"
   },
@@ -92,7 +92,7 @@
    "mark": "built3"
   },
   {
-   "eval": "window.__workbenchAppearanceSync({theme:'meadow-mist'})",
+   "eval": "window.__workbenchAppearanceSync({theme:'devils-garden'})",
    "mark": "swap2"
   },
   {
@@ -100,5 +100,5 @@
    "mark": "end"
   }
  ],
- "_why": "Filmed on the app exactly as it ships (brand guide section 8): nothing of its own interface is hidden or restyled. The two looks are real community themes that ship for the app (Cotton Candy Sky, then Meadow Mist), applied through the app's own theme switch exactly as an installed theme is. The only record-time change is a story one: the Home and $ header buttons stay hidden because the person has not made those things yet. model= picks a well-known model for the picker instead of hiding it. Recorded 1960 tall so no bubble is ever half cut off at the top; the first action sets the page clock to the evening this conversation happens (look 9:12 PM, home 6:24 PM, money 9:38 PM) so the app's own message times read true instead of a frozen 8:00 AM."
+ "_why": "Filmed on the app exactly as it ships (brand guide section 8): nothing of its own interface is hidden or restyled. The two looks are real community themes that ship for the app (Golden Sunbreak, a rainy Tokyo rooftop under god rays, then Devil's Garden, a sunlit desert; owner 2026-11-20 did not like Cotton Candy Sky / Meadow Mist in this window), applied through the app's own theme switch exactly as an installed theme is. The only record-time change is a story one: the Home and $ header buttons stay hidden because the person has not made those things yet. model= picks a well-known model for the picker instead of hiding it. Recorded 1960 tall so no bubble is ever half cut off at the top; the first action sets the page clock to the evening this conversation happens (look 9:12 PM, home 6:24 PM, money 9:38 PM) so the app's own message times read true instead of a frozen 8:00 AM."
 }
