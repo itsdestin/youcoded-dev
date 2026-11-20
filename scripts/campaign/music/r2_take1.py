@@ -27,6 +27,26 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 VOICE = os.path.join(HERE, '..', 'film', 'public', 'audio', 'voice-take1-lily.wav')
 WORDS = os.path.join(HERE, '..', 'film', 'src', 'round2', 'take1-words-lily.json')
 LENGTH, END = 77.0, 76.5
+YOU = 45.0          # picture: the first youcoded appears (key hit)
+# WHY a level plan: the film must GROW — quiet, sparse opening; the first real opening-up at the bloom; steps at
+# "But in their excitement", the first youcoded, "And so", "It's time"; the last line the biggest by a clear margin.
+# (time s, dB) points, linear in between; applied to the whole score before ducking/mastering.
+LEVELS = [(0.0, -12.0), (12.9, -12.0), (13.1, -13.0), (20.8, -14.0), (23.45, -14.0), (23.6, -4.0), (24.70, -4.0),
+          (24.82, -7.0), (38.8, -7.0), (38.95, -5.0), (44.9, -5.0), (45.05, -3.0), (50.8, -3.0), (50.95, -2.0),
+          (62.0, -2.0), (62.15, 0.0), (66.0, 0.0), (66.15, 1.0), (70.28, 3.0), (70.33, 4.0), (77.0, 4.0)]
+# how far under the voice the music sits while she speaks (dB), by section — also grows toward the end
+# (section start minus ~0.1 s, so a phrase that begins right on the section line gets that section's margin)
+MARGINS = [(0.0, 20.0), (20.9, 16.0), (24.8, 18.0), (38.8, 16.0), (44.9, 14.5), (50.8, 13.5), (62.0, 12.5), (66.0, 12.0)]
+
+
+def margin_at(t):
+    return [mg for t0, mg in MARGINS if t >= t0][-1]
+
+
+def level_curve(n):
+    t = np.arange(n) / SR
+    g = np.interp(t, [a for a, _ in LEVELS], [b for _, b in LEVELS])
+    return lp(g, 25.0, 1)
 
 
 def load_words():
@@ -54,11 +74,12 @@ def time_map(words):
     t_free = round(W("It's", 61.9) + 0.02, 2)         # 62.08 -> 62.1 rousing (F)
     t_last = round(W("It's", 65.9) + 0.02, 2)         # 66.08 -> 66.1 the build (G)
     t_every = W('everything.', 70.0)                  # 70.32 the final cadence
-    return E.TimeMap([(0, 0.0), (28, round(t_we + 0.05, 2)), (44, t_how), (52, t_blinded), (80, t_but),
+    # WHY (92, 45.0): the first youcoded appears in the picture at 45.0 s; that bar line is pinned to it
+    return E.TimeMap([(0, 0.0), (28, round(t_we + 0.05, 2)), (44, t_how), (52, t_blinded), (80, t_but), (92, YOU),
                       (104, t_andso), (124, t_free), (132, t_last), (140, t_every), (156, t_every + 16 * 0.6)]), \
         dict(we=t_we, how=t_how, blinded=t_blinded, but=t_but, andso=t_andso, free=t_free, last=t_last, every=t_every,
              wonderful=W('wonderful'), something=W('something', 22.0), treasure_end=W('treasure', 35.0, 'end'),
-             shareholder=W('shareholder'))
+             shareholder=W('shareholder'), every_end=W('everything.', 70.0, 'end'))
 
 
 # palette roles -> (program, options). WHY roles: the alternative is the same score re-orchestrated, so both
@@ -161,11 +182,9 @@ def compose(alt=False):
     line(clar, 16, [(0, 'A4', .5), (0.5, 'C5', .5), (1, 'D5', .5), (2, 'F5', .5), (2.5, 'E5', .5), (3, 'D5', .5)], 90, 0.7)
     line(clar, 20, [(0, 'G#4', .5), (0.5, 'B4', .5), (1, 'D5', .5), (1.5, 'B4', .5), (2, 'G#4', .5), (3, 'E4', .9)], 88, 0.7)
     line(bsn, 20, [(0, 'G#3', .5), (0.5, 'B3', .5), (1, 'D4', .5), (1.5, 'B3', .5), (2, 'G#3', .5), (3, 'E3', .9)], 86, 0.7)
-    for bar, c in [(3, 'Am'), (4, 'Dm'), (5, 'E'), (6, 'Am')]:
-        for bt in (1.5, 3.5):
-            comp.n(4 * bar + bt, 0.25, [x + 12 for x in ms(MID[c])], 62)
-    for b in range(12, 24):
-        kit.n(b, 0.1, WB1 if b % 2 == 0 else WB2, 58)      # tick-tock: "for more than a decade"
+    # WHY thin: the opening leaves room to grow — no piano chords here, just pizzicato, two woodwinds, a clock
+    for b in range(12, 20):
+        kit.n(b, 0.1, WB1 if b % 2 == 0 else WB2, 50)      # tick-tock: "for more than a decade"
     cel.n(14.5, 0.5, 'E6', 66)                           # fills the little gap after "technology."
     pizz.n(27, 0.3, 'E2', 96); bsn.n(27, 0.3, 'E3', 90); bsn.n(27.5, 0.3, 'A2', 96)   # sly "dum-dum" cadence
 
@@ -197,9 +216,10 @@ def compose(alt=False):
         harp.ns(t0 + k * (t1 - t0) / len(gl), 1.6, nn, 70 + k)
     s.add_audio('swell', E.riser(t1 - t0 + 0.02, rng, f0=1500, f1=11000, shape=1.6), t0, gain_db=-30.0, send=0.4)
     tw = H['wonderful']
-    strings.ns(tw, 24.85 - tw, 'C3 G3 E4 G4 D5', 96)
-    strings.ramp(tw, tw + 0.5, 60, 118); strings.ramp(24.3, 24.85, 118, 70)
-    horn.ns(tw, 1.25, 'C4 E4 G4', 92)
+    # WHY ends at 24.72: the bloom must not ring over the playful downbeat at 24.9
+    strings.ns(tw, 24.72 - tw, 'C3 G3 E4 G4 D5', 96)
+    strings.ramp(tw, tw + 0.5, 60, 118); strings.ramp(24.3, 24.72, 118, 70)
+    horn.ns(tw, 1.1, 'C4 E4 G4', 92)
     mel.ns(tw, 1.3, 'C2', 80)
     for k, nn in enumerate(ms('G2 E3 C4 G4 E5')):
         mel.ns(tw + 0.012 * (k + 1), 1.3, nn, 84)
@@ -207,6 +227,11 @@ def compose(alt=False):
         cel.ns(tw + k * 0.07, 0.8, nn, 80)
     glock.ns(tw, 1.0, 'E6', 84)
     cb.ns(tw, 1.3, 'C2', 72)
+    # WHY: the first moment the music opens up — choir, flute and a soft cymbal join, spread wide
+    choir.ns(tw, 1.3, 'C4 G4 C5 E5', 100); choir.ramp(tw, tw + 0.4, 60, 120); choir.ramp(24.3, 24.72, 120, 30)
+    flute.ns(tw + 0.1, 1.1, 'G6', 84)
+    orch.ns(tw, 1.5, CY2, 78)
+    s.add_audio('sparkle', E.sparkle(rng, ms('C6 E6 G6 C7 E7')), tw, gain_db=-24.0, send=0.35)
 
     # ================================================================ C: wry, playful (beats 52-79, 24.9-38.9 s)
     play = ['C', 'G7', 'C', 'Am', 'F', 'D7', 'G7']
@@ -267,6 +292,11 @@ def compose(alt=False):
             for k in range(8):
                 orch.n(b0 + k / 2, 0.1, SN, 50 + 6 * (i - 3) + (12 if k % 2 == 0 else 0))
     fstr.ramp(H['but'], H['andso'] - 0.05, 80, 124, curve=1.3)
+    # 45.0 s the first youcoded appears: a cymbal, bass drum, a rising celesta/glock sparkle and a horn swell
+    orch.n(92, 2.0, CY1, 100); orch.n(92, 0.5, BD, 100); timp.n(92, 1.0, 'F2', 100)
+    for k, nn in enumerate(ms('F6 A6 C7 F7')):
+        cel.n(92 + k * 0.25, 1.0, nn, 90); glock.n(92 + k * 0.25, 1.0, nn, 80)
+    s.add_audio('sparkle', E.sparkle(rng, ms('F6 A6 C7 F7 A7')), YOU, gain_db=-22.0, send=0.35)
     line(clar, 80, [(0, 'C5', .5), (0.5, 'F5', .5), (1, 'A5', 1.5)], 92)
     line(clar, 84, [(0, 'D5', .5), (0.5, 'G5', .5), (1, 'B5', 1.5)], 96)
     line(clar, 88, [(0, 'E5', .5), (0.5, 'A5', .5), (1, 'C6', 1.5)], 100)
@@ -357,24 +387,36 @@ def compose(alt=False):
 
     # ================================================================ "everything.": the cadence (beat 140 = 70.32 s)
     te = H['every']
-    tpt.n(140, 3, 'C5 E5 G5', 112); horn.n(140, 3, 'E4 G4 C5', 108); tbn.n(140, 3, 'C3 G3 C4', 104); tuba.n(140, 3, 'C2', 104)
+    # WHY the swell: the chord lands ON "everything" (ducked under her voice), keeps growing, and peaks just after
+    # her last word (~71.3 s) with a timpani roll, a crash and a sub — so the loudest moment of the film is heard
+    # in the clear — then holds to ~73 s and gives way to the gentle piano tag.
+    tsw = H['every_end'] + 0.08
+    for tr_, notes, v in [(tpt, 'C5 E5 G5', 112), (horn, 'E4 G4 C5', 108), (tbn, 'C3 G3 C4', 104), (tuba, 'C2', 104),
+                          (choir, 'C4 E4 G4 C5', 110)]:
+        tr_.n(140, 4.6, notes, v)
+        tr_.ramp(te + 0.01, tsw, 88, 127, curve=1.5); tr_.ramp(72.7, 73.45, 127, 30)
     strings.n(140, 9, 'C2 C3 G3 E4 G4 C5 E5', 112)
-    strings.ramp(te + 0.02, te + 1.4, 127, 118); strings.ramp(te + 1.4, te + 5.0, 118, 50)
+    strings.ramp(te + 0.02, tsw, 104, 127, curve=1.5); strings.ramp(72.8, 75.2, 127, 45)
     cb.n(140, 6, 'C2', 96); cello.n(140, 6, 'C2 C3', 92)
     mel.n(140, 5, 'C1 C2', 108)
     comp.roll(140, 5, 'C3 G3 C4 E4 G4 C5', 104, 0.01)
-    timp.n(140, 2, 'C3', 122); orch.n(140, 1, BD, 120); orch.n(140, 3, CY1, 118); orch.n(140, 3, CY2, 110)
+    timp.n(140, 1, 'C3', 122); orch.n(140, 1, BD, 120); orch.n(140, 3, CY1, 110)
+    s.add_audio('boom', E.boom(rng, f=40, dur=1.5), te, gain_db=-18.0, send=0.0)
+    for k in range(int((tsw - 0.14 - (te + 0.35)) / 0.06)):   # WHY: stops ~0.1 s early, a breath before the peak
+        timp.ns(te + 0.35 + k * 0.06, 0.06, 'C3', int(60 + 50 * k / 12))
+    timp.ns(tsw, 1.0, 'C3', 124); timp.ns(tsw, 1.0, 'G2', 110)
+    orch.ns(tsw, 0.5, BD, 124); orch.ns(tsw, 2.5, CY1, 124); orch.ns(tsw, 2.5, CY2, 116)
+    s.add_audio('boom', E.boom(rng, f=38, dur=2.0), tsw, gain_db=-15.0, send=0.0)
+    s.add_audio('cymswell2', E.riser(tsw - 0.10 - (te + 0.3), rng, f0=2500, f1=12000, shape=2.0), te + 0.3, gain_db=-26.0, send=0.35)
     for k, nn in enumerate(ms('C6 E6 G6 C7')):
-        glock.n(140 + k * 0.25, 1.5, nn, 92)
-    choir.n(140, 4, 'C4 E4 G4 C5', 110); choir.ramp(te + 0.02, te + 3.0, 120, 50)
-    s.add_audio('boom', E.boom(rng, f=40, dur=2.0), te, gain_db=-16.0, send=0.0)
+        glock.ns(tsw + k * 0.12, 1.5, nn, 96)
     # the tail: the motif's last phrase, gently, then a final soft C with celesta, ringing out under the end card
-    line(mel, 143, [(0, 'E5', 1), (1, 'G5', .5), (1.5, 'A5', .5), (2, 'G5', 1)], 74)
-    mel.n(146, 4.5, 'C4 E4 G4 C5', 70)
-    comp.n(146, 4.5, 'C2 G2', 62)
+    line(mel, 144, [(0, 'E5', 1), (1, 'G5', .5), (1.5, 'A5', .5), (2, 'G5', 1)], 76)
+    mel.n(147, 4.0, 'C4 E4 G4 C5', 70)
+    comp.n(147, 4.0, 'C2 G2', 62)
     for k, nn in enumerate(ms('C6 E6 G6 C7')):
-        cel.n(146 + k * 0.25, 2.0, nn, 66)
-    harp.roll(146, 4.5, 'C3 G3 E4 G4 C5', 62, 0.05)
+        cel.n(147 + k * 0.25, 2.0, nn, 66)
+    harp.roll(147, 4.0, 'C3 G3 E4 G4 C5', 62, 0.05)
     return s, H
 
 
@@ -469,12 +511,18 @@ def short_loudness(x, win=0.4, hop=0.05):
 
 def duck(music, voice, words, below_db=16.0):
     """Sidechain-style ducking keyed to the narration: while she speaks, the music's short-term loudness is held
-    `below_db` under the voice's phrase loudness; in gaps it rises back (attack 60 ms, release 350 ms). A gentle
+    a section-dependent margin (MARGINS: 20 dB at the start down to 12 dB for the last line) under the voice's
+    phrase loudness; in gaps it rises back (attack 60 ms, release 350 ms). A gentle
     1-4 kHz dip is blended in only while she speaks, carving room for consonants.
     WHY adaptive (not a fixed dip): the score swings from a near-silent hush to a full orchestra, so a fixed
     number of dB would either bury the voice under the climax or over-duck the quiet storybook passages."""
     n = len(music)
     mk, ph = speech_mask(words, n)
+    # WHY carve first: the 1-4 kHz dip lowers the music's loudness a little; doing it before the level passes
+    # means the measured margins are the ones the listener hears
+    carve_amt = lp(mk, 8, 1)
+    carved = dsp.peak_eq(music, 2400, -4.0, 0.7)
+    music = music * (1 - carve_amt[:, None]) + carved * carve_amt[:, None]
     Lm = short_loudness(music)
     Lv = np.full(n, -70.0)
     import pyloudnorm as pyln
@@ -487,42 +535,46 @@ def duck(music, voice, words, below_db=16.0):
             lv = -24.0
         Lv[max(0, i - int(0.06 * SR)):min(n, j + int(0.1 * SR))] = lv
     # WHY a little less ducking for the last two lines: the climax should feel bigger, but stay >= 14 dB under
-    margin = np.where(np.arange(n) / SR > 62.0, below_db - 2.0, below_db)
+    margin = np.array([margin_at(t) for t in (np.arange(0, n, 480) / SR)]).repeat(480)[:n]
     want = np.where(mk > 0, np.minimum(0.0, (Lv - margin) - Lm), 0.0)
     # smoothing: fast attack (gain goes down quickly), slow release
     from scipy.ndimage import minimum_filter1d
     want = minimum_filter1d(want, size=int(0.06 * SR))      # look-ahead so the dip is in place when the word starts
-    a_att, a_rel = np.exp(-1 / (0.06 * SR)), np.exp(-1 / (0.35 * SR))
+    # WHY per-step coefficients: the loop below runs once per 1 ms (48 samples); per-sample coefficients made the
+    # attack/release 48x slower (release ~17 s), so the music never came back up between lines
+    a_att, a_rel = np.exp(-1 / (0.06 * SR / 48)), np.exp(-1 / (0.35 * SR / 48))
+    # WHY a fast release after the very last word: the score's biggest swell peaks right as she finishes
+    # "everything.", and a slow release would let her last syllable steal that moment by ~0.4 s
+    t_last = ph[-1][1]
+    mk[int((t_last + 0.02) * SR):] = 0.0       # no extra hold after the final syllable
+    want[int((t_last + 0.02) * SR):] = 0.0
+    a_fast = np.exp(-1 / (0.06 * SR / 48))
     g = np.empty(n)
     cur = 0.0
     for i in range(0, n, 48):                                # 1 ms control rate
         w = want[i]
-        cur = a_att * cur + (1 - a_att) * w if w < cur else a_rel * cur + (1 - a_rel) * w
+        ar = a_fast if i / SR > t_last else a_rel
+        cur = a_att * cur + (1 - a_att) * w if w < cur else ar * cur + (1 - ar) * w
         g[i:i + 48] = cur
-    # pass 2 — WHY: the curve above follows the music's short-term level, but plucks and hits make the music
-    # peaky, so its power-based (LUFS) level per phrase came out ~4 dB hotter than intended. Measure each phrase
-    # the way a loudness meter does and trim the music by the remaining difference, so every phrase sits at the
-    # target (16 dB under the voice; 14 dB for the last two lines).
-    pre = music * db(g)[:, None]
-    corr = np.zeros(n)
-    for a, b in ph:
-        i, j = int(a * SR), int(b * SR)
-        if j - i < int(0.45 * SR):
-            continue
-        lv = meter.integrated_loudness(np.stack([voice[i:j]] * 2, -1))
-        lm = meter.integrated_loudness(pre[i:j])
-        tgt = (below_db - 2.0) if a > 62.0 else below_db
-        extra = min(0.0, (lv - tgt) - lm)
-        if np.isfinite(extra):
-            corr[max(0, i - int(0.08 * SR)):min(n, j + int(0.08 * SR))] = np.minimum(corr[max(0, i - int(0.08 * SR)):min(n, j + int(0.08 * SR))], extra)
-    corr = minimum_filter1d(corr, size=int(0.1 * SR))
-    corr = lp(corr, 4.0, 1)
-    g = g + corr
-    gl = db(g)
-    carve_amt = lp(mk, 8, 1)
-    carved = dsp.peak_eq(music, 2400, -4.0, 0.7)
-    mus = music * (1 - carve_amt[:, None]) + carved * carve_amt[:, None]
-    return mus * gl[:, None], g, mk
+    # pass 2 — WHY: the curve above follows the music's short-term level, which over- or under-ducks depending on
+    # how peaky the music is (plucks and hits vs sustained strings). Measure each phrase the way a loudness meter
+    # does and correct the music BOTH ways to its section target (MARGINS), never above the un-ducked score.
+    # Three rounds, because a phrase's measured level shifts slightly once the correction is smoothed.
+    for _ in range(3):
+        pre = music * db(g)[:, None]
+        corr = np.zeros(n)
+        for a, b in ph:
+            i, j = int(a * SR), int(b * SR)
+            if j - i < int(0.45 * SR):
+                continue
+            lv = meter.integrated_loudness(np.stack([voice[i:j]] * 2, -1))
+            lm = meter.integrated_loudness(pre[i:j])
+            extra = (lv - margin_at(a)) - lm
+            if np.isfinite(extra):
+                corr[max(0, i - int(0.06 * SR)):min(n, j + int(0.08 * SR))] = extra
+        corr = lp(corr, 4.0, 1)
+        g = np.minimum(0.0, g + corr)
+    return music * db(g)[:, None], g, mk
 
 
 def build(which):
@@ -530,8 +582,9 @@ def build(which):
     s, H = compose(alt)
     stems = s.render_stems()
     # WHY air +6 dB from 3.2 kHz: soundfont strings/brass are dark; the score-only cut measured 0.6% above 4 kHz at +2.5/5k
-    music = E.mixdown(s, stems, rt60=1.9, wet_db=-9.0, air_db=6.0, air_hz=3200, fade_end=END, fade_len=1.6)
+    music = E.mixdown(s, stems, rt60=1.9, wet_db=-9.0, air_db=6.0, air_hz=3200, fade_end=END, fade_len=1.4)
     music = excite(music)
+    music = music * db(level_curve(s.n))[:, None]
     name = {'primary': 'take1-mix', 'type': 'take1-type-mix', 'alt': 'take1-mix-alt'}[which]
     path = os.path.join(E.OUT, name + '.wav')
     if which == 'type':
@@ -540,7 +593,12 @@ def build(which):
         words = load_words()
         voice = process_voice(s.n)
         # normalise the music bus to a fixed reference first so ducking targets are absolute
-        music = music * db(-20.0 - dsp.lufs(music))
+        # WHY: set the score so its loudest 3-second stretch (the final chord, after "everything.") sits 5 LU above
+        # the narration: clearly the biggest moment. Much hotter and the master limiter crushes that chord;
+        # this still leaves every section loud enough for its ducking margin (MARGINS) to decide its level.
+        lv_all = dsp.lufs(np.stack([voice, voice], -1))
+        lmax = short_loudness(music, win=3.0, hop=0.1).max()
+        music = music * db(lv_all + 5.0 - lmax)
         mus_d, g, mk = duck(music, voice, words)
         vs = np.stack([voice, voice], -1)
         mix = vs + mus_d
