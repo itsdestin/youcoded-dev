@@ -127,7 +127,9 @@ const CHART = { x0: 446, x1: 600, y0: 486, y1: 628 };
 // WHY smaller steps than before, and no reset after "these" (review): four big jumps made stovepipes that ran off
 // the top of the page and then snapped back to a smaller size at the next cut. Now the tallest hat still ends
 // inside the page (top at about y 140), and the hats simply stay that tall: it is how these men look from here on.
-const GROW = [36, 48, 62, 80];                   // each step of a hat's growth on "hubris"
+// WHY two steps (review BLOCKER: four steps made 3x pillars that read as a render fault): one clear overshoot-and-settle, the
+// hats end about twice their old height and the camera keeps them whole
+const GROW = [40, 34];                           // each step of a hat's growth on "hubris"
 const HAT_K = [0.88, 1, 0.94];                   // each man's hat grows to a slightly different height
 // WHY drawn well before the cut: the film cuts straight into this spread on "hubris", so it must already be finished
 const DRAWN = TURN.treasure - 3;

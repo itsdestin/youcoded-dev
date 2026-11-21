@@ -57,13 +57,14 @@ export const Heading: React.FC<{ n: string; title: string; color?: string }> = (
       </div>
     );
   }
-  // a: WHY left-aligned at the left page's inner margin on every spread, and no diamond rule: a bigger title plus
-  // a rule crowded the drawings below; the label and title alone keep the block short and the gap to the art wide.
+  // a: WHY the brand's own face at weight 900, lower case, bigger, with the chapter number as a plum pill (owner: "the
+  // style/text of the headers"; review: tiny grey italics were unreadable and unrelated to the headlines). Same
+  // left margin on every spread; the plum number echoes the one purple word of the headlines.
   const spoken = SPOKEN[title] ?? title;
   return (
-    <div style={{ position: 'absolute', left: 84, top: 22, width: PW - 168, textAlign: 'left', color }}>
-      <div style={{ fontFamily: DMSANS, fontWeight: 700, fontSize: 19, letterSpacing: '0.3em', textTransform: 'uppercase', color: P.ink, opacity: 0.7 }}>chapter {WORD[num]}</div>
-      <div style={{ fontFamily: FRAUNCES, fontWeight: 600, fontSize: 52, lineHeight: 1.05, marginTop: 4, letterSpacing: '-0.015em' }}>{spoken}</div>
+    <div style={{ position: 'absolute', left: 84, top: 26, width: PW - 168, textAlign: 'left', color, fontFamily: DMSANS }}>
+      <div style={{ display: 'inline-block', fontWeight: 900, fontSize: 22, letterSpacing: '0.02em', lineHeight: 1, padding: '7px 16px', borderRadius: 999, background: C.purple, color: '#fff' }}>chapter {WORD[num]}</div>
+      <div style={{ fontWeight: 900, fontSize: 68, lineHeight: 1.0, marginTop: 12, letterSpacing: '-0.05em', color: P.ink, textTransform: 'lowercase' }}>{spoken}</div>
     </div>
   );
 };
@@ -107,7 +108,9 @@ export const Headline: React.FC<{ text: string; at: number; out: number; stagger
   return (
     <div style={{ position: 'absolute', left: HEADLINE_SCREEN.cx - HEADLINE_SCREEN.w / 2, top: HEADLINE_SCREEN.cy - 200, width: HEADLINE_SCREEN.w, height: 400, display: 'flex', alignItems: 'center',
       justifyContent: 'center', textAlign: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: 80, letterSpacing: '-0.05em', lineHeight: 1.0, color: nt > 0 ? mixHex(P.ink, C.nightText, nt) : P.ink, opacity: 1 - exit, pointerEvents: 'none' }}>
-      <div>
+      {/* WHY a soft paper plate under the type (review BLOCKER: headlines read as captions and crossed art): it keeps the
+          words legible over any drawing, and it arrives with the first word, never empty */}
+      <div style={{ position: 'relative', padding: '24px 44px 24px', borderRadius: 26, opacity: lin(t, (words ? words[0] : at) - 0.05, (words ? words[0] : at) + 0.3, EASE_OUT), background: 'rgba(255,250,241,0.93)', boxShadow: '0 10px 34px rgba(20,10,4,0.32), 0 1px 0 rgba(255,255,255,0.6) inset' }}>
         {rows.map((row, r) => (
           <div key={r} style={{ whiteSpace: 'nowrap' }}>
             {row.map((raw, i) => {

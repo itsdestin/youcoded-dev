@@ -5,7 +5,8 @@
 import React from 'react';
 import { AbsoluteFill, interpolate } from 'remotion';
 import { EASE_IN_OUT } from '../brand';
-import { P } from './take1c-ink';
+import { P, lin, useT } from './take1c-ink';
+import { Q } from './take1c-time';
 
 export const PW = 760, PH = 980, SW = PW * 2;   // one page, and the open spread, in book units
 export const BOARD = 18;                          // how far the cloth boards stick out past the paper
@@ -53,8 +54,8 @@ const MOTTLE = noise(0.012, 0.025, 11, 700);
 const LOOKS: Record<'a' | 'b' | 'c', Look> = {
   // a: lamp-lit desk, paper warm and soft, a little fibre
   // WHY the extra 0.3-frequency layer: ~3 px fibre at 4-5% opacity holds up at full size without becoming the b weave
-  a: { tint: 'rgb(255,243,224)', layers: [GRAIN, noise(0.32, 0.05, 29, 320), noise('0.018 0.6', 0.05, 21, 400), noise('0.7 0.02', 0.03, 23, 400)],
-    edge: 'inset 0 0 46px rgba(120,76,50,0.20), inset 0 0 8px rgba(90,56,40,0.18)', gutter: 1.5, deckle: 0, cloth: '#3A2145', felt: '#2A1830' },
+  a: { tint: 'rgb(255,250,240)', layers: [noise(0.9, 0.035, 3), noise(0.5, 0.03, 29, 320)],
+    edge: 'inset 0 0 40px rgba(120,84,56,0.12), inset 0 0 6px rgba(90,60,40,0.14)', gutter: 0.8, deckle: 0, cloth: '#33261F', felt: '#2B1E16' },
   // b: clean studio, brighter paper with plainly visible fibre and torn edges
   b: { tint: 'rgb(255,250,243)', layers: [noise(0.9, 0.04, 3), noise('0.02 0.55', 0.10, 31, 420, '0.34 0.26 0.30'), noise('0.55 0.02', 0.09, 33, 420, '0.34 0.26 0.30'),
     noise('0.05', 0.05, 37, 300, '0.55 0.45 0.4')],
@@ -182,10 +183,10 @@ const PageEdges: React.FC<{ side: 'L' | 'R'; thick: number }> = ({ side, thick }
 export const Boards: React.FC<{ left: boolean; right: boolean }> = ({ left, right }) => (
   <>
     {left && <div style={{ position: 'absolute', left: -BOARD, top: -BOARD, width: PW + BOARD, height: PH + BOARD * 2, background: T.cloth, backgroundImage: CLOTH,
-      borderRadius: '8px 0 0 8px', boxShadow: '0 9px 0 #22122B' }} />}
+      borderRadius: '8px 0 0 8px', boxShadow: '0 9px 0 #1A120D' }} />}
     {right && <div style={{ position: 'absolute', left: PW, top: -BOARD, width: PW + BOARD, height: PH + BOARD * 2, background: T.cloth, backgroundImage: CLOTH,
       // WHY 9 px on the bottom AND right: the cover is a board with real thickness, not a line
-      borderRadius: '0 8px 8px 0', boxShadow: '0 9px 0 #22122B, 9px 0 0 #2E1838, 9px 9px 0 #22122B' }} />}
+      borderRadius: '0 8px 8px 0', boxShadow: '0 9px 0 #1A120D, 9px 0 0 #241811, 9px 9px 0 #1A120D' }} />}
   </>
 );
 export const Edges: React.FC<{ left: boolean; right: boolean }> = ({ left, right }) => (
@@ -240,18 +241,26 @@ const CastShadow: React.FC<{ dx: number; dy: number; blur: number; a: number }> 
   <div style={{ position: 'absolute', left: -BOARD + dx, top: -BOARD + dy, width: SW + BOARD * 2, height: PH + BOARD * 2, background: `rgba(8,2,12,${a})`, borderRadius: 14,
     filter: `blur(${blur}px)`, transform: 'translateZ(-13px)' }} />
 );
+/** WHY: the desk stays neutral brown through the bargain and takes a soft plum light only from "wonderful" on, so
+ *  purple is something that arrives in the room, not a colour that was always there. */
+const PlumGlow: React.FC = () => {
+  const t = useT();
+  const a = lin(t, Q.wonderful - 0.1, Q.wonderful + 1.8) * 0.5;
+  return <div style={{ ...PLANE, opacity: a, background: 'radial-gradient(ellipse 1700px 1300px at 3160px 2200px, rgba(150,80,190,0.38), rgba(150,80,190,0) 100%)', mixBlendMode: 'soft-light' }} />;
+};
 const Surface: React.FC = () => {
   if (LOOK === 'a') {
-    // WHY a plain deep-plum felt (judge's graft): wood and a cup pulled the eye off the ink. One hue, a gentle
-    // top-to-bottom shift so it is not flat, a soft light pool behind the book and dark corners; never purple-to-blue.
-    // The plane's centre is the book's centre (3160, 2290).
-    const felt = 'radial-gradient(ellipse 1500px 1250px at 3160px 2150px, rgba(200,140,225,0.26), rgba(200,140,225,0.08) 55%, rgba(200,140,225,0) 100%), radial-gradient(ellipse 2900px 2200px at 3160px 2290px, rgba(14,5,20,0) 28%, rgba(14,5,20,0.74) 100%), linear-gradient(180deg, #4D2D5C 0%, #3E2249 50%, #2F1A3A 100%)';
-    // WHY two grains: a fine felt nap plus a very faint lengthwise fibre, both barely visible
-    const nap = `${noise(0.95, 0.07, 91, 300, '0.85 0.7 0.9')}, ${noise('0.5 0.04', 0.05, 93, 400, '0.1 0.03 0.14')}`;
+    // WHY a dark walnut desk with a long plank grain (review BLOCKER + owner: the plum felt was flat, matched the ink and
+    // gave "something wonderful" nothing to arrive against): warm brown now, so the purple ink and the page glow
+    // are a real change. Planks run across the frame, a light pool sits behind the book, corners fall off darker.
+    const wood = 'radial-gradient(ellipse 1500px 1200px at 3160px 2150px, rgba(255,196,130,0.22), rgba(255,196,130,0.06) 55%, rgba(255,196,130,0) 100%), radial-gradient(ellipse 2900px 2200px at 3160px 2290px, rgba(12,7,4,0) 30%, rgba(12,7,4,0.66) 100%), linear-gradient(180deg, #4A3526 0%, #3B2A1F 50%, #2E2018 100%)';
+    // WHY plank seams every ~340 px: a stretched noise alone read as fabric; seams say "table"
+    const planks = 'repeating-linear-gradient(0deg, rgba(10,5,2,0) 0 336px, rgba(10,5,2,0.5) 336px 340px, rgba(255,220,170,0.05) 340px 342px)';
+    const grain = `${noise('0.003 0.09', 0.5, 95, 1400, '0.07 0.04 0.02')}, ${noise('0.004 0.2', 0.3, 97, 900, '0.9 0.7 0.5')}`;
     return (
       <>
-        <div style={{ ...PLANE, background: '#3E2249', backgroundImage: `${felt}, ${nap}` }} />
-        {/* WHY two shadows: a wide soft one thrown down and to the right, plus a tight dark one right under the board edge */}
+        <div style={{ ...PLANE, background: '#3B2A1F', backgroundImage: `${planks}, ${wood}, ${grain}` }} />
+        <PlumGlow />
         <CastShadow dx={34} dy={62} blur={58} a={0.55} />
         <CastShadow dx={6} dy={12} blur={7} a={0.62} />
       </>
@@ -303,7 +312,7 @@ export const Lamp: React.FC<{ dim?: number; warm?: number }> = ({ dim = 0, warm 
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       {/* WHY a gentle falloff: a heavy vignette made the whole film a dim photo of a book */}
-      <AbsoluteFill style={{ background: `radial-gradient(ellipse 80% 85% at 48% 44%, rgba(20,8,28,0) 58%, rgba(20,8,28,${L.fall * 0.5}) 84%, rgba(16,6,22,${L.fall}) 100%)` }} />
+      <AbsoluteFill style={{ background: `radial-gradient(ellipse 80% 85% at 48% 44%, rgba(16,9,5,0) 58%, rgba(16,9,5,${L.fall * 0.5}) 84%, rgba(12,7,4,${L.fall}) 100%)` }} />
       <AbsoluteFill style={{ background: `radial-gradient(ellipse 70% 70% at 36% 26%, rgba(255,236,208,${L.glow + warm * 0.08}) 0%, rgba(255,236,208,0) 70%)`, mixBlendMode: 'soft-light' }} />
       {/* WHY only the edges: a whole-frame dim turned the cream page grey, which read as a rendering fault */}
       {dim > 0 && <AbsoluteFill style={{ background: `radial-gradient(ellipse 62% 66% at 52% 46%, rgba(18,8,26,0) 50%, rgba(18,8,26,${dim * 0.3}) 100%)` }} />}
