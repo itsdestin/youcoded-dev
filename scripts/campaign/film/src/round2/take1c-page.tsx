@@ -13,6 +13,8 @@ const FRAUNCES = loadFraunces('italic', { weights: ['400', '600'], subsets: ['la
 const CORMORANT = loadCormorant('normal', { weights: ['500', '600'], subsets: ['latin'] }).fontFamily;
 const CORMORANT_I = loadCormorant('italic', { weights: ['500', '600'], subsets: ['latin'] }).fontFamily;
 const ROMAN: Record<string, number> = { i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8, ix: 9 };
+// WHY the spoken chapter words (max 3, lower case): the headings now echo what the narrator says, not invented labels
+const SPOKEN: Record<string, string> = { 'what they decided': 'the rules', 'what we accepted': 'the bargain', 'then, quietly': 'however...', 'so long, old kings': 'so long, kings', 'at long, long last': 'at long last' };
 const WORD = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 
 /** The drawing surface for a spread: 1520×980 book units, ink defs included. */
@@ -55,14 +57,13 @@ export const Heading: React.FC<{ n: string; title: string; color?: string }> = (
       </div>
     );
   }
-  // a: a quiet chapter-number line over an italic title with a small diamond rule, centred
+  // a: WHY left-aligned at the left page's inner margin on every spread, and no diamond rule: a bigger title plus
+  // a rule crowded the drawings below; the label and title alone keep the block short and the gap to the art wide.
+  const spoken = SPOKEN[title] ?? title;
   return (
-    <div style={{ position: 'absolute', left: 0, top: 30, width: PW, textAlign: 'center', color }}>
-      <div style={{ fontFamily: DMSANS, fontWeight: 700, fontSize: 14, letterSpacing: '0.34em', paddingLeft: '0.34em', textTransform: 'uppercase', color: P.inkSoft }}>chapter {WORD[num]}</div>
-      <div style={{ fontFamily: FRAUNCES, fontWeight: 600, fontSize: 42, lineHeight: 1.1, marginTop: 6, letterSpacing: '-0.01em' }}>{title}</div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 8, opacity: 0.55 }}>
-        <div style={{ width: 70, height: 1.5, background: color }} /><div style={{ width: 8, height: 8, transform: 'rotate(45deg)', background: color }} /><div style={{ width: 70, height: 1.5, background: color }} />
-      </div>
+    <div style={{ position: 'absolute', left: 84, top: 22, width: PW - 168, textAlign: 'left', color }}>
+      <div style={{ fontFamily: DMSANS, fontWeight: 700, fontSize: 19, letterSpacing: '0.3em', textTransform: 'uppercase', color: P.ink, opacity: 0.7 }}>chapter {WORD[num]}</div>
+      <div style={{ fontFamily: FRAUNCES, fontWeight: 600, fontSize: 52, lineHeight: 1.05, marginTop: 4, letterSpacing: '-0.015em' }}>{spoken}</div>
     </div>
   );
 };
@@ -79,8 +80,8 @@ export const Folio: React.FC<{ left: number; hideRight?: boolean }> = ({ left, h
           fontFamily: DMSANS, fontWeight: 700, fontSize: 18, color: P.inkSoft, opacity: 0.75 }}>{String(num).padStart(2, '0')}</div>
       );
       return (
-        <div key={i} style={{ position: 'absolute', left: i * PW, top: PH - 78, width: PW, textAlign: 'center', color: P.inkSoft, opacity: 0.85,
-          fontFamily: LOOK === 'a' ? FRAUNCES : CORMORANT_I, fontWeight: 600, fontSize: LOOK === 'a' ? 22 : 30 }}>
+        <div key={i} style={{ position: 'absolute', left: i * PW, top: PH - 78, width: PW, textAlign: 'center', color: LOOK === 'a' ? P.ink : P.inkSoft, opacity: LOOK === 'a' ? 0.6 : 0.85,
+          fontFamily: LOOK === 'a' ? FRAUNCES : CORMORANT_I, fontWeight: 600, fontSize: LOOK === 'a' ? 21 : 30 }}>
           {LOOK === 'a' ? `\u2014 ${num} \u2014` : `\u00b7 ${num} \u00b7`}
         </div>
       );

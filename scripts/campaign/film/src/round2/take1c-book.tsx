@@ -52,8 +52,9 @@ const GRAIN = noise(0.85, 0.045, 3);
 const MOTTLE = noise(0.012, 0.025, 11, 700);
 const LOOKS: Record<'a' | 'b' | 'c', Look> = {
   // a: lamp-lit desk, paper warm and soft, a little fibre
-  a: { tint: 'rgb(255,243,224)', layers: [GRAIN, noise('0.018 0.6', 0.07, 21, 400), noise('0.7 0.02', 0.035, 23, 400), MOTTLE],
-    edge: 'inset 0 0 46px rgba(120,76,50,0.20), inset 0 0 8px rgba(90,56,40,0.18)', gutter: 1, deckle: 0, cloth: '#3A2145', felt: '#2A1830' },
+  // WHY the extra 0.3-frequency layer: ~3 px fibre at 4-5% opacity holds up at full size without becoming the b weave
+  a: { tint: 'rgb(255,243,224)', layers: [GRAIN, noise(0.32, 0.05, 29, 320), noise('0.018 0.6', 0.05, 21, 400), noise('0.7 0.02', 0.03, 23, 400)],
+    edge: 'inset 0 0 46px rgba(120,76,50,0.20), inset 0 0 8px rgba(90,56,40,0.18)', gutter: 1.5, deckle: 0, cloth: '#3A2145', felt: '#2A1830' },
   // b: clean studio, brighter paper with plainly visible fibre and torn edges
   b: { tint: 'rgb(255,250,243)', layers: [noise(0.9, 0.04, 3), noise('0.02 0.55', 0.10, 31, 420, '0.34 0.26 0.30'), noise('0.55 0.02', 0.09, 33, 420, '0.34 0.26 0.30'),
     noise('0.05', 0.05, 37, 300, '0.55 0.45 0.4')],
@@ -75,8 +76,10 @@ const PaperOver: React.FC<{ side: 'L' | 'R' }> = ({ side }) => {
       <div style={{ position: 'absolute', inset: 0, backgroundImage: T.layers.join(','), mixBlendMode: 'multiply', pointerEvents: 'none' }} />
       {/* WHY a lit face and a toned rim: paper is brightest where the lamp hits its middle and browns at the edges */}
       <div style={{ position: 'absolute', inset: 0, boxShadow: T.edge, pointerEvents: 'none' }} />
+      {/* WHY three stacked gradients: a deep soft fold down into the spine, a lighter highlight on the curl just
+          outside that shadow, and a faint fall-off toward the outer edge as the page curves away from the lamp */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: `linear-gradient(${dir}, rgba(58,28,52,${0.30 * g}) 0%, rgba(58,28,52,${0.10 * g}) 3%, rgba(58,28,52,0.0) ${8 * g}%, rgba(255,252,246,0.12) 15%, rgba(255,252,246,0) 30%, rgba(58,28,52,0) 92%, rgba(58,28,52,0.04) 100%)` }} />
+        background: `linear-gradient(${dir}, rgba(58,28,52,${0.34 * g}) 0%, rgba(58,28,52,${0.16 * g}) 3%, rgba(58,28,52,${0.06 * g}) 7%, rgba(58,28,52,0) ${11 * g}%, rgba(255,252,246,0.16) ${13 * g}%, rgba(255,252,246,0) ${24 * g}%, rgba(58,28,52,0) 78%, rgba(58,28,52,0.07) 100%)` }} />
     </>
   );
 };
@@ -172,20 +175,21 @@ export const LeafShadow: React.FC<{ p: number; side: 'L' | 'R' }> = ({ p, side }
 /** The page block's visible edges: thin stacked lines past the page's outer edge. */
 const PageEdges: React.FC<{ side: 'L' | 'R'; thick: number }> = ({ side, thick }) => (
   <div style={{ position: 'absolute', left: side === 'L' ? -thick : PW, top: 2, width: PW + thick, height: PH + thick * 0.7,
-    background: `repeating-linear-gradient(${side === 'L' ? 90 : 270}deg, #E4D7C9 0 1px, #F1E7DB 1px 2.4px)`, borderRadius: side === 'L' ? '4px 0 0 4px' : '0 4px 4px 0',
+    background: `repeating-linear-gradient(${side === 'L' ? 90 : 270}deg, #D9CBB6 0 1px, #F1E7DB 1px 2.6px)`, borderRadius: side === 'L' ? '4px 0 0 4px' : '0 4px 4px 0',
     boxShadow: 'inset 0 -2px 3px rgba(60,30,50,0.25)' }} />
 );
 
 export const Boards: React.FC<{ left: boolean; right: boolean }> = ({ left, right }) => (
   <>
     {left && <div style={{ position: 'absolute', left: -BOARD, top: -BOARD, width: PW + BOARD, height: PH + BOARD * 2, background: T.cloth, backgroundImage: CLOTH,
-      borderRadius: '8px 0 0 8px', boxShadow: '0 7px 0 #22122B, 0 40px 70px rgba(10,3,16,0.55), 0 12px 24px rgba(10,3,16,0.4)' }} />}
+      borderRadius: '8px 0 0 8px', boxShadow: '0 9px 0 #22122B' }} />}
     {right && <div style={{ position: 'absolute', left: PW, top: -BOARD, width: PW + BOARD, height: PH + BOARD * 2, background: T.cloth, backgroundImage: CLOTH,
-      borderRadius: '0 8px 8px 0', boxShadow: '0 7px 0 #22122B, 0 40px 70px rgba(10,3,16,0.55), 0 12px 24px rgba(10,3,16,0.4)' }} />}
+      // WHY 9 px on the bottom AND right: the cover is a board with real thickness, not a line
+      borderRadius: '0 8px 8px 0', boxShadow: '0 9px 0 #22122B, 9px 0 0 #2E1838, 9px 9px 0 #22122B' }} />}
   </>
 );
 export const Edges: React.FC<{ left: boolean; right: boolean }> = ({ left, right }) => (
-  <>{left && <PageEdges side="L" thick={7} />}{right && <PageEdges side="R" thick={9} />}</>
+  <>{left && <PageEdges side="L" thick={8} />}{right && <PageEdges side="R" thick={9} />}</>
 );
 
 /** A flat page lying on its side of the spine. */
@@ -236,38 +240,20 @@ const CastShadow: React.FC<{ dx: number; dy: number; blur: number; a: number }> 
   <div style={{ position: 'absolute', left: -BOARD + dx, top: -BOARD + dy, width: SW + BOARD * 2, height: PH + BOARD * 2, background: `rgba(8,2,12,${a})`, borderRadius: 14,
     filter: `blur(${blur}px)`, transform: 'translateZ(-13px)' }} />
 );
-/** Out-of-focus things on the desk, in book units around the book: a cup, a pencil and the corner of a closed notebook. */
-const DeskObjects: React.FC = () => (
-  <div style={{ position: 'absolute', left: 0, top: 0, width: SW, height: PH, transform: 'translateZ(-12px)', filter: 'blur(7px)' }}>
-    {/* the notebook: a plum cloth corner at the far left, its pages showing along one edge */}
-    <div style={{ position: 'absolute', left: -430, top: 90, width: 330, height: 470, transform: 'rotate(-7deg)', background: '#4B2B5C', backgroundImage: CLOTH, borderRadius: 8,
-      boxShadow: 'inset -14px 0 0 #E4D7C9, 16px 22px 40px rgba(6,2,10,0.6)' }} />
-    {/* the cup: seen from above, cream ceramic with dark tea, handle to the right */}
-    <div style={{ position: 'absolute', left: 1650, top: 700, width: 190, height: 190, borderRadius: '50%', background: 'radial-gradient(circle at 38% 34%, #F3E8DA, #CDBBA9)',
-      boxShadow: '26px 34px 46px rgba(6,2,10,0.6)' }}>
-      <div style={{ position: 'absolute', left: 20, top: 20, width: 150, height: 150, borderRadius: '50%', background: 'radial-gradient(circle at 40% 36%, #6A4430, #2C1A1A)', boxShadow: 'inset 0 4px 10px rgba(0,0,0,0.5)' }} />
-      <div style={{ position: 'absolute', left: 170, top: 66, width: 54, height: 56, borderRadius: '0 40px 40px 0', border: '16px solid #DCCDBB', borderLeft: 'none' }} />
-    </div>
-    {/* the pencil, lying across the lower left */}
-    <div style={{ position: 'absolute', left: -300, top: 840, width: 520, height: 24, transform: 'rotate(-17deg)', background: 'linear-gradient(180deg, #A06ABB, #6F3F86 55%, #52296A)',
-      borderRadius: '3px 0 0 3px', boxShadow: '12px 16px 22px rgba(6,2,10,0.55)' }}>
-      <div style={{ position: 'absolute', right: -44, top: 0, width: 0, height: 0, borderTop: '12px solid transparent', borderBottom: '12px solid transparent', borderLeft: '44px solid #E9D3B2' }} />
-    </div>
-  </div>
-);
-
 const Surface: React.FC = () => {
   if (LOOK === 'a') {
-    // a night desk: walnut-brown planks with grain, one warm pool of lamp light falling from the upper left
-    const wood = `${noise('0.16 0.0035', 0.55, 61, 1200, '0.06 0.02 0.07')}, ${noise('0.05 0.002', 0.22, 63, 1200, '0.55 0.34 0.22')}`;
-    const seams = 'repeating-linear-gradient(90deg, transparent 0 636px, rgba(8,2,10,0.7) 636px 640px, rgba(255,225,190,0.07) 640px 642px, transparent 642px 700px)';
-    const pool = 'radial-gradient(ellipse 1500px 1200px at 2780px 1700px, rgba(255,205,140,0.34), rgba(255,205,140,0.10) 55%, rgba(255,205,140,0) 100%), radial-gradient(ellipse 2600px 2000px at 2900px 1900px, rgba(18,6,24,0) 25%, rgba(18,6,24,0.72) 100%)';
+    // WHY a plain deep-plum felt (judge's graft): wood and a cup pulled the eye off the ink. One hue, a gentle
+    // top-to-bottom shift so it is not flat, a soft light pool behind the book and dark corners; never purple-to-blue.
+    // The plane's centre is the book's centre (3160, 2290).
+    const felt = 'radial-gradient(ellipse 1500px 1250px at 3160px 2150px, rgba(200,140,225,0.26), rgba(200,140,225,0.08) 55%, rgba(200,140,225,0) 100%), radial-gradient(ellipse 2900px 2200px at 3160px 2290px, rgba(14,5,20,0) 28%, rgba(14,5,20,0.74) 100%), linear-gradient(180deg, #4D2D5C 0%, #3E2249 50%, #2F1A3A 100%)';
+    // WHY two grains: a fine felt nap plus a very faint lengthwise fibre, both barely visible
+    const nap = `${noise(0.95, 0.07, 91, 300, '0.85 0.7 0.9')}, ${noise('0.5 0.04', 0.05, 93, 400, '0.1 0.03 0.14')}`;
     return (
       <>
-        <div style={{ ...PLANE, background: '#4A2C36', backgroundImage: `${pool}, ${seams}, ${wood}` }} />
-        <CastShadow dx={22} dy={46} blur={44} a={0.62} />
-        <CastShadow dx={4} dy={10} blur={10} a={0.45} />
-        <DeskObjects />
+        <div style={{ ...PLANE, background: '#3E2249', backgroundImage: `${felt}, ${nap}` }} />
+        {/* WHY two shadows: a wide soft one thrown down and to the right, plus a tight dark one right under the board edge */}
+        <CastShadow dx={34} dy={62} blur={58} a={0.55} />
+        <CastShadow dx={6} dy={12} blur={7} a={0.62} />
       </>
     );
   }

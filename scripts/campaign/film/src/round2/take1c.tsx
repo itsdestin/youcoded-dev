@@ -15,7 +15,7 @@ import { lin } from './take1c-ink';
 import { BARGAIN, DROP_LAND, HANDFUL, HOWEVER, NOTHING, RULES } from './take1c-spreads-a';
 import { ANYONE, EVERYTHING, FREE, OURS, OURS_HAND, TREASURE, TREASURE_MARKS, VARIANTS } from './take1c-spreads-b';
 import { Headline } from './take1c-page';
-import { CLOSE_DUR, COVER_DUR, CUT, CUT_TURNS, DIP_IN, DIP_OUT, END_CARD, Q, TURN, TURN_DUR } from './take1c-time';
+import { CLOSE_DUR, COVER_DUR, CUT, CUT_TURNS, DIP_OUT, END_CARD, Q, TURN, TURN_DUR } from './take1c-time';
 
 // ---------- the order of the book ----------
 const SPREADS: Spread[] = [HANDFUL, RULES, BARGAIN, NOTHING, HOWEVER, TREASURE, ANYONE, OURS, FREE, ...VARIANTS, EVERYTHING];
@@ -200,18 +200,19 @@ export const Take1C: React.FC = () => {
   // the edges of the frame darken for the whisper ("however, recently…") and lift again on "wonderful"
   const dim = Math.min(lin(t, Q.however, Q.recently + 0.3), 1 - lin(t, Q.wonderful - 0.1, Q.wonderful + 0.7));
   const warm = lin(t, Q.wonderful - 0.1, Q.wonderful + 1.2) + lin(t, Q.toOpen, Q.everything2 + 0.5) * 0.6;
-  // WHY a dip through dark (review 2026-11-20): the 4-frame cross-fade from the dark cover to the near-white
-  // card read as a flash. The shut book now sinks into the plum dark over 8 frames, and the card rises out of
-  // that dark over 16, so the brightness climbs once, slowly, instead of jumping.
-  const toDark = lin(t, END_CARD - DIP_OUT, END_CARD, EASE_IN_OUT);
-  const fromDark = 1 - lin(t, END_CARD, END_CARD + DIP_IN, EASE_IN_OUT);
+  // WHY a short straight cross-fade, no dip (review: "a dark flash before the end card"): the old fade down to
+  // dark and back up read as a flicker. The card now sits under the book from the start of the fade, and the
+  // book layer (headline included) fades out over the last DIP_OUT seconds, so brightness only rises, once.
+  const bookOpacity = 1 - lin(t, END_CARD - DIP_OUT, END_CARD, EASE_IN_OUT);
   const showBook = t < END_CARD;
-  const settle = 0.97 + 0.03 * lin(t, END_CARD, END_CARD + 0.8, EASE_OUT);
+  const showCard = t >= END_CARD - DIP_OUT;
+  const settle = 0.97 + 0.03 * lin(t, END_CARD - DIP_OUT, END_CARD + 0.8, EASE_OUT);
   return (
     <AbsoluteFill style={{ background: C.night }}>
       <Audio src={staticFile('audio/voice-take1-lily.wav')} />
+      {showCard && <><Day /><AbsoluteFill style={{ transform: `scale(${settle})` }}><EndCard at={END_CARD + 0.12} /></AbsoluteFill></>}
       {showBook && (
-        <>
+        <AbsoluteFill style={{ opacity: bookOpacity }}>
           {(whip.bx > 0 || whip.by > 0) && (
             <svg width={0} height={0} style={{ position: 'absolute' }}>
               <filter id={`c-whip-${frame}`} x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation={`${whip.bx.toFixed(1)} ${whip.by.toFixed(1)}`} /></filter>
@@ -222,11 +223,8 @@ export const Take1C: React.FC = () => {
             <Lamp dim={dim} warm={warm} />
           </AbsoluteFill>
           {HEADLINES.map((h) => <Headline key={h.text} {...h} />)}
-        </>
+        </AbsoluteFill>
       )}
-      {/* the card settles from 96% to full size as the cut lands, over its own background so no edge shows */}
-      {!showBook && <><Day /><AbsoluteFill style={{ transform: `scale(${settle})` }}><EndCard at={END_CARD + 0.12} /></AbsoluteFill></>}
-      {(showBook ? toDark : fromDark) > 0 && <AbsoluteFill style={{ background: C.night, opacity: showBook ? toDark : fromDark }} />}
     </AbsoluteFill>
   );
 };
