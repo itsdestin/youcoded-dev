@@ -31,7 +31,9 @@ export const LAST_WORD_END = WORDS[WORDS.length - 1].end;
 export const Q = {
   // (1) For more than a decade, a small handful of corporations have dictated how you interact with your technology.
   start: 0,
-  handful: at('a *small handful'),
+  decade: at('a *decade,'),
+  small: at('a *small handful'),
+  handful: at('small *handful of'),
   corporations: at('handful of *corporations'),
   dictated: at('have *dictated'),
   interact: at('you *interact'),

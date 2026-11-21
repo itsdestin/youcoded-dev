@@ -157,16 +157,25 @@ export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }
   if (p.o <= 0) return null;
   // a click squeezes the arrow a little about its tip, as the real thing is pressed
   const sc = 1 - 0.1 * p.press;
-  const ring = size * 0.5;
+  const ring = size * 0.62;
+  const rw = Math.max(1.5, size * 0.03);
   return (
     <div style={{ position: 'absolute', left: p.x, top: p.y, width: 0, height: 0, opacity: p.o }}>
-      {/* the click ring, centred on the tip, widening and fading as press falls back to 0 */}
-      {p.press > 0.04 && <div style={{ position: 'absolute', left: -ring * p.press, top: -ring * p.press, width: ring * 2 * p.press, height: ring * 2 * p.press, borderRadius: '50%',
-        border: `${Math.max(1.5, size * 0.035)}px solid rgba(255,255,255,${0.75 * (1 - p.press * 0.6)})`, boxShadow: '0 0 0 1px rgba(20,8,32,0.35)' }} />}
+      {/* WHY two rings, dark outside and white inside (reviewer 2026-11-20: the old white-only ring vanished on the near-white screens):
+          the click is seen on a dark wall and on a bright screen alike */}
+      {p.press > 0.04 && <>
+        <div style={{ position: 'absolute', left: -ring * p.press, top: -ring * p.press, width: ring * 2 * p.press, height: ring * 2 * p.press, borderRadius: '50%',
+          border: `${rw}px solid rgba(34,20,46,${0.7 * (1 - p.press * 0.55)})` }} />
+        <div style={{ position: 'absolute', left: -ring * p.press + rw, top: -ring * p.press + rw, width: ring * 2 * p.press - rw * 2, height: ring * 2 * p.press - rw * 2, borderRadius: '50%',
+          border: `${rw}px solid rgba(255,255,255,${0.85 * (1 - p.press * 0.55)})` }} />
+      </>}
+      {/* WHY a thinner edge, a softer contact shadow and a faint grey toward the tail (reviewer: the thick flat outline read as clip art):
+          it is now the ordinary system cursor shape, drawn the way an operating system draws it */}
       <svg width={size * 0.64} height={size} viewBox="0 0 16 25" style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', transform: `scale(${sc})`, transformOrigin: '0 0',
-        filter: `drop-shadow(${size * 0.02}px ${size * 0.05}px ${size * 0.04}px rgba(8,3,14,0.5))` }}>
+        filter: `drop-shadow(${size * 0.012}px ${size * 0.04}px ${size * 0.05}px rgba(8,3,14,0.45))` }}>
+        <defs><linearGradient id="ptrFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#FFFFFF" /><stop offset="1" stopColor="#E4DEEA" /></linearGradient></defs>
         {/* the classic arrow: tip at (1,1), a straight left edge, a notched tail */}
-        <path d="M1.2 1 L1.2 20.4 L5.6 16.2 L8.6 23.2 L11.6 21.9 L8.7 15.1 L14.8 15.1 Z" fill="#FFFFFF" stroke="#14091D" strokeWidth="1.5" strokeLinejoin="round" />
+        <path d="M1.2 1 L1.2 20.4 L5.6 16.2 L8.6 23.2 L11.6 21.9 L8.7 15.1 L14.8 15.1 Z" fill="url(#ptrFill)" stroke="#1B1024" strokeWidth="0.85" strokeLinejoin="round" />
       </svg>
     </div>
   );
@@ -175,8 +184,9 @@ export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }
 // =====================================================================================================
 // A price tag on a string, swinging after it drops. Text can change (the price ticks).
 // =====================================================================================================
-export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; sub?: string }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, sub }) => {
+export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; sub?: string; slap?: boolean }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, sub, slap = false }) => {
   if (t < drop) return null;
+  if (slap) return <SlapTag x={x} y={y} t={t} drop={drop} text={text} scale={scale} fall={fall} strike={strike} sub={sub} />;
   const dt = t - drop;
   const enter = Math.min(1, dt / 0.35);
   const ease = 1 - Math.pow(1 - enter, 3);
@@ -203,6 +213,35 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
             {strike > 0 && <span style={{ position: 'absolute', left: '-6%', top: '52%', height: 6 * scale, borderRadius: 6 * scale, width: `${112 * strike}%`, background: C.purple }} />}
           </span>
         </div>
+      </div>
+    </div>
+  );
+};
+
+/** WHY a tag that is slapped on instead of hung from a string (reviewer 2026-11-20: the dangling string and tag fell off the bottom
+ *  edge of the frame): it lands centred on (x, y) on the device's own corner, a little large, overshoots and settles at a slight
+ *  tilt, so the price is clearly "stuck on" that screen and sits well inside the frame. */
+const SlapTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale: number; fall: number; strike: number; sub?: string }> = ({ x, y, t, drop, text, scale, fall, strike, sub }) => {
+  const dt = t - drop;
+  const p = Math.min(1, dt / 0.16);
+  // falls in from 1.9x to 1x on an ease-in, overshoots under 1x for two frames, settles
+  const sz = dt < 0.16 ? 1.9 - 0.95 * p * p : 0.95 + 0.05 * Math.cos(Math.min(1, (dt - 0.16) / 0.3) * Math.PI * 2.5) * Math.exp(-(dt - 0.16) * 9);
+  const tilt = -7 + 4 * Math.exp(-dt * 7) * Math.sin(dt * 30);
+  const fy = fall > 0 ? fall * fall * 40 : 0;
+  const W = 190 * scale * 1.15, H = 92 * scale * 1.15;
+  return (
+    <div style={{ position: 'absolute', left: x - W / 2, top: y - H / 2 + fy, width: W, height: H, transform: `rotate(${tilt + fall * 5}deg) scale(${sz})`, transformOrigin: '50% 50%', opacity: (fall > 0 ? 1 - fall : 1) * Math.min(1, dt / 0.04),
+      filter: `drop-shadow(0 ${8 * scale}px ${12 * scale}px rgba(20,8,32,0.5))` }}>
+      <svg width={W} height={H} viewBox="0 0 190 92" style={{ position: 'absolute' }}>
+        <path d="M95 0 L120 16 H182 a8 8 0 0 1 8 8 V84 a8 8 0 0 1 -8 8 H8 a8 8 0 0 1 -8 -8 V24 a8 8 0 0 1 8 -8 H70 Z" fill="#FBF5EA" />
+        <circle cx="95" cy="12" r="5" fill="#2A1F33" />
+      </svg>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 22 * scale * 1.15, height: 70 * scale * 1.15, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: DMSANS, fontWeight: 900, fontSize: 38 * scale * 1.15, letterSpacing: '-0.04em', color: C.plum, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+        <span style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>{text}
+          {sub && <span style={{ fontSize: 14 * scale * 1.15, fontWeight: 700, letterSpacing: 0, color: C.plum2, marginTop: 2 * scale }}>{sub}</span>}
+          {strike > 0 && <span style={{ position: 'absolute', left: '-6%', top: '52%', height: 6 * scale, borderRadius: 6 * scale, width: `${112 * strike}%`, background: C.purple }} />}
+        </span>
       </div>
     </div>
   );

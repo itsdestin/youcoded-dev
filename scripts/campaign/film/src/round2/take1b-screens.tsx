@@ -108,15 +108,21 @@ export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: n
   );
 };
 
-/** A padlock. `p` 0..1 is its arrival: it drops in a little large and shakes as it snaps shut. */
+/** A padlock. `p` 0..1 is its arrival. WHY brass and chunky (reviewer 2026-11-20: a small grey lock read as a disabled web control):
+ *  a solid brass lock that drops in large, overshoots under full size for a frame or two and shakes 3 px as it snaps shut. */
 const Lock: React.FC<{ s: number; p: number; off: number }> = ({ s, p, off }) => {
-  const a = smooth(p * 2.5);
-  const shake = p > 0.15 && p < 1 ? Math.sin((p - 0.15) * 46) * 9 * (1 - p) : 0;
+  const a = smooth(p * 3);
+  const land = cl((p - 0.12) / 0.25);
+  // 1.5x -> 0.92x -> 1x : the snap
+  const sc = p < 0.12 ? 1.5 - 4 * p : 1 + (land < 1 ? -0.08 * Math.sin(land * Math.PI) : 0);
+  const shake = p > 0.2 && p < 0.7 ? Math.sin((p - 0.2) * 70) * 3 * (1 - (p - 0.2) / 0.5) : 0;
   return (
-    <svg width={s} height={s} viewBox="0 0 24 24" style={{ opacity: a * (1 - smooth(off * 1.6)), transform: `translateY(${off * s * 1.4}px) rotate(${shake + off * 50}deg) scale(${1.35 - 0.35 * a})`, filter: 'drop-shadow(0 1px 1px rgba(40,20,60,0.35))' }}>
-      <rect x="4.5" y="10.5" width="15" height="11" rx="2.6" fill="#43354E" />
-      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="#43354E" strokeWidth="2.4" fill="none" />
-      <circle cx="12" cy="15.6" r="1.6" fill="#E7E2EC" />
+    <svg width={s} height={s} viewBox="0 0 24 24" style={{ opacity: a * (1 - smooth(off * 1.6)), transform: `translate(${shake}px, ${off * s * 1.4}px) rotate(${off * 50}deg) scale(${sc})`, filter: 'drop-shadow(0 1.5px 1.5px rgba(30,14,44,0.5))' }}>
+      <path d="M7.4 11V8a4.6 4.6 0 0 1 9.2 0v3" stroke="#4A3B57" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+      <rect x="3.5" y="10" width="17" height="12.5" rx="3" fill="#D9AE4F" />
+      <rect x="3.5" y="10" width="17" height="5" rx="3" fill="#EBC672" />
+      <circle cx="12" cy="16" r="1.9" fill="#4A3B57" />
+      <rect x="11.2" y="16" width="1.6" height="3.4" rx="0.8" fill="#4A3B57" />
     </svg>
   );
 };
@@ -146,13 +152,11 @@ export type SameProps = {
   dialog?: number; accept?: number;
   /** 0..1 the companies' new "AI" tile stamped onto the screen; `price` 0..1 its $20/mo chip popping on */
   ai?: number; price?: number;
-  /** 0..1 the "something wonderful" glimpse: the screen hushes and one purple caret blinks; `caret` is the blink */
-  glimpse?: { o: number; caret: boolean; truly?: number; dark?: number };
   /** 0..1 hides the title (a banner or switch is using its row) */
   hideTitle?: number;
 };
 
-export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, price = 0, glimpse, hideTitle = 0 }) => {
+export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, price = 0, hideTitle = 0 }) => {
   const k = Math.min(w, h) / 100;
   const L = sameLayout(w, h, lay);
   const P = L.portrait;
@@ -161,7 +165,14 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
   const gx = 2.4 * k;
   const tw = (g.w * w - gx * (cols - 1)) / cols, th = (g.h * h - gx * (rows - 1)) / rows;
   // WHY mid-tone, saturated tiles (reviewer: the generic app read as a grey wireframe): a product people are stuck with needs solid colour for the locks to land on
-  const tileHues = ['#E9A98C', '#8FB2DA', '#9CC9A6', '#C9A2DC', '#E8CC83', '#8FC4C8'];
+  // WHY the whole colour set swaps with every layout change (reviewer 2026-11-20: tiles hopping was too subtle to see across the wall):
+  // one click now changes the layout AND the colours, on every screen in the same frame
+  const HUE_SETS = [
+    ['#E9A98C', '#8FB2DA', '#9CC9A6', '#C9A2DC', '#E8CC83', '#8FC4C8'],
+    ['#6FA6E6', '#E88AA6', '#F0C25E', '#78CBAA', '#AD92E8', '#EE9877'],
+    ['#EF8A6A', '#62B6CB', '#B5CC6C', '#D68BD2', '#F2C85A', '#7C98E8'],
+  ];
+  const tileHues = HUE_SETS[lay >= 1.5 ? 2 : lay >= 0.5 ? 1 : 0];
   const lockOf = (i: number) => (Array.isArray(lock) ? lock[i] ?? 0 : i % 3 !== 0 ? lock : 0);
   const dlg = smooth(dialog) * (1 - smooth((accept - 0.3) * 3));
   return (
@@ -185,15 +196,15 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
         const lo = smooth(lk * 2.5) * (1 - smooth(unlock));
         return (
           <div key={i} style={{ position: 'absolute', left: x, top: y, width: tw, height: th, borderRadius: 3 * k, background: tileHues[i], display: 'flex', alignItems: 'center', justifyContent: 'center',
-            filter: lo > 0 ? `saturate(${1 - lo}) brightness(${1 - 0.1 * lo})` : undefined }}>
+            filter: lo > 0 ? `saturate(${1 - 0.55 * lo}) brightness(${1 - 0.14 * lo})` : undefined }}>
             <div style={{ width: Math.min(tw, th) * 0.42, height: Math.min(tw, th) * 0.42, borderRadius: Math.min(tw, th) * 0.14, background: 'rgba(255,255,255,0.55)', opacity: 1 - 0.6 * lo }} />
-            {lk > 0 && <div style={{ position: 'absolute' }}><Lock s={Math.min(tw, th) * 0.62} p={lk} off={unlock} /></div>}
+            {lk > 0 && <div style={{ position: 'absolute' }}><Lock s={Math.min(tw, th) * 0.82} p={lk} off={unlock} /></div>}
           </div>
         );
       })}
       {/* the update banner that lands on every screen in the same frame */}
       {banner > 0 && <div style={{ position: 'absolute', left: '6%', right: '6%', top: (P ? 0.075 : 0.06) * h, height: (P ? 0.06 : 0.09) * h, borderRadius: 3 * k, background: '#43354E', color: '#F3EAF9',
-        fontSize: 3.4 * k, fontWeight: 700, display: 'flex', alignItems: 'center', paddingLeft: 3 * k, transform: `translateY(${(smooth(banner * 4) - 1) * 6 * k}px)`, opacity: smooth(banner * 6) * (1 - smooth((banner - 0.85) * 6)), whiteSpace: 'nowrap', overflow: 'hidden' }}>Your layout has been updated</div>}
+        fontSize: 5 * k, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `translateY(${(smooth(banner * 4) - 1) * 6 * k}px)`, opacity: smooth(banner * 6) * (1 - smooth((banner - 0.85) * 6)), whiteSpace: 'nowrap', overflow: 'hidden' }}>Layout updated</div>}
       {/* their machine's tile, stamped on top of everything, with its price beside it (the same tile as on the big screen).
           WHY a plain tile and no bar: the corporations' AI is theirs, not youcoded, and not somewhere you type */}
       {ai > 0 && <div style={{ position: 'absolute', right: (P ? 0.07 : 0.05) * w, bottom: (P ? 0.04 : 0.07) * h, display: 'flex', alignItems: 'center', gap: 2 * k, flexDirection: P ? 'column-reverse' : 'row-reverse',
@@ -202,23 +213,14 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
         {/* WHY the price arrives separately, on "value" (reviewer 2026-11-20): the treasure is that every screen gets charged at once */}
         <span style={{ height: 7 * k, padding: `0 ${2.2 * k}px`, borderRadius: 7 * k, background: '#FBF5EA', color: '#21152C', fontWeight: 900, fontSize: 3.8 * k, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap',
           boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)`, opacity: smooth(price * 2), transform: `scale(${price <= 0 ? 0.4 : 0.4 + 0.6 * smooth(price) + 0.18 * Math.sin(Math.PI * cl(price))})` }}>$20/mo</span></div>}
-      {glimpse && glimpse.o > 0 && <>
-        {/* WHY (reviewer: the old 82% white wash left a blank phone and a caret too small to see): the app stays visible but quiet,
-            the title stays, and a big purple caret blinks in a cleared space. On "truly" a thin line grows under it (somewhere to
-            type); on "wonderful" the lock tiles go dark around it. Nothing of the real app is drawn. */}
-        <div style={{ position: 'absolute', left: 0, right: 0, top: 0.15 * h, bottom: 0, background: S.bg, opacity: glimpse.o * 0.9 }} />
-        <div style={{ position: 'absolute', left: '50%', top: '47%', width: 4.2 * k, height: 26 * k, marginLeft: -2.1 * k, marginTop: -13 * k, borderRadius: 3 * k, background: '#9750AA', opacity: glimpse.o * (glimpse.caret ? 1 : 0) }} />
-        <div style={{ position: 'absolute', left: '50%', top: '47%', marginTop: 16 * k, height: 1.1 * k, width: (P ? 0.62 : 0.4) * w * (glimpse.truly ?? 0), marginLeft: -(P ? 0.31 : 0.2) * w * (glimpse.truly ?? 0), borderRadius: k, background: '#9750AA', opacity: 0.8 * glimpse.o }} />
-        <div style={{ position: 'absolute', inset: 0, background: '#1B1224', opacity: 0.55 * (glimpse.dark ?? 0) }} />
-      </>}
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,28,52,0.42)', opacity: dlg }} />
         <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.56) * w, transform: `translate(-50%,-50%) scale(${0.9 + 0.1 * dlg})`, opacity: dlg,
           background: '#FBF9FC', borderRadius: 4 * k, padding: 4 * k, boxSizing: 'border-box', boxShadow: `0 ${2 * k}px ${6 * k}px rgba(40,20,60,0.3)` }}>
-          <div style={{ fontSize: (P ? 5.6 : 6.4) * k, fontWeight: 900, color: S.ink, letterSpacing: '-0.03em', lineHeight: 1.05 }}>Our terms have changed</div>
+          <div style={{ fontSize: (P ? 8.4 : 8.8) * k, fontWeight: 900, color: S.ink, letterSpacing: '-0.03em', lineHeight: 1.05 }}>Our terms have changed</div>
           {[0.95, 0.8, 0.9].map((f, i) => <div key={i} style={{ height: 1.5 * k, width: `${f * 100}%`, background: S.line, borderRadius: k, marginTop: 1.5 * k }} />)}
-          <div style={{ marginTop: 3 * k, height: 8.5 * k, borderRadius: 8 * k, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 4.4 * k, fontWeight: 700,
+          <div style={{ marginTop: 3.5 * k, height: 12 * k, borderRadius: 8 * k, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 6.6 * k, fontWeight: 700,
             background: accept > 0.02 ? '#2E2238' : '#5A5065', color: '#fff', transform: `scale(${1 - 0.07 * Math.sin(Math.PI * cl(accept * 3))})` }}>{accept > 0.12 ? 'Accepted' : 'Accept'}</div>
         </div>
       </>}
@@ -226,22 +228,25 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
   );
 };
 
-/** "Share with partners": a switch on the phone that somebody else flips. `o` slides it in, `on` 0..1 flips it. */
+/** "Share with partners": a switch on the phone that somebody else flips. `o` slides it in, `on` 0..1 flips it.
+ *  WHY bigger, and the one saturated thing on the phone (reviewer 2026-11-20: a small grey-on-white row read as another stray control):
+ *  a tall row with a large label, and a purple switch whose knob snaps across with a small overshoot. */
 export const ShareSwitch: React.FC<{ w: number; h: number; o: number; on: number }> = ({ w, h, o, on }) => {
   const k = Math.min(w, h) / 100;
   if (o <= 0) return null;
+  const snap = smooth(on) + 0.12 * Math.sin(Math.PI * cl(on));
   return (
-    <div style={{ position: 'absolute', left: '5%', right: '5%', top: 0.075 * h, height: 0.075 * h, borderRadius: 3 * k, background: '#FBF9FC', boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.25)`, fontFamily: DMSANS,
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${3.5 * k}px`, fontSize: 4.4 * k, fontWeight: 700, color: S.ink, opacity: smooth(o), transform: `translateY(${(smooth(o) - 1) * 8 * k}px)` }}>
+    <div style={{ position: 'absolute', left: '4%', right: '4%', top: 0.075 * h, height: 0.1 * h, borderRadius: 3.4 * k, background: '#FFFFFF', boxShadow: `0 ${k}px ${3.5 * k}px rgba(40,20,60,0.3)`, fontFamily: DMSANS,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${3.5 * k}px`, fontSize: 5.8 * k, fontWeight: 800, color: S.ink, opacity: smooth(o), transform: `translateY(${(smooth(o) - 1) * 8 * k}px)` }}>
       Share with partners
-      <span style={{ width: 11 * k, height: 6.4 * k, borderRadius: 6 * k, background: on > 0.5 ? '#9750AA' : '#CFC7D8', position: 'relative', flex: 'none' }}>
-        <span style={{ position: 'absolute', top: 0.7 * k, left: 0.7 * k + smooth(on) * 4.6 * k, width: 5 * k, height: 5 * k, borderRadius: 5 * k, background: '#fff' }} />
+      <span style={{ width: 15 * k, height: 8.6 * k, borderRadius: 8.6 * k, background: on > 0.5 ? '#8B3FA6' : '#CFC7D8', position: 'relative', flex: 'none' }}>
+        <span style={{ position: 'absolute', top: 0.8 * k, left: 0.8 * k + snap * 6.4 * k, width: 7 * k, height: 7 * k, borderRadius: 7 * k, background: '#fff', boxShadow: `0 ${0.4 * k}px ${k}px rgba(30,10,40,0.35)` }} />
       </span>
     </div>
   );
 };
 /** Where the switch's knob sits, so a pointer can be aimed at it. */
-export const shareKnob = (w: number, h: number) => { const k = Math.min(w, h) / 100; return { x: 0.95 * w - 3.5 * k - 5.5 * k, y: 0.1125 * h }; };
+export const shareKnob = (w: number, h: number) => { const k = Math.min(w, h) / 100; return { x: 0.96 * w - 3.5 * k - 7.5 * k, y: 0.125 * h }; };
 
 /** The tablet-sized copy of the recipes that arrives on a neighbour's screen: what one person makes, others can use. */
 export const SharedRecipe: React.FC<{ w: number; h: number; k: number }> = ({ w, h, k }) => (
