@@ -52,11 +52,17 @@ const TM = TREASURE_MARKS;
 const SHOTS: Shot[] = [
   // i: open close on one hat, the handful land beside it, and the camera pulls back to reveal the book
   at(0, 380, 330, 2.5, 13), at(Q.handful + 0.3, 385, 336, 2.42, 13), at(Q.corporations1 - 0.12, 386, 338, 2.38, 13),
-  at(Q.dictated, 760, 520, 1.0), at(Q.technology1, 760, 530, 1.04), at(TURN.rules - 0.05, 760, 520, 1.0),
+  // WHY the pull-back ends before "dictated" and the wide is held only briefly (review): the wide of twelve tiny
+  // people was a dead plateau; it now shows for ~0.6 s, then pushes in on one man and his two puppets while the
+  // strings go taut, and returns to the wide only for "technology" and the turn.
+  at(Q.dictated - 0.4, 760, 520, 1.0), at(Q.dictated - 0.05, 760, 520, 1.0),
+  cut(Q.dictated, 950, 500, 1.3), at(Q.interact + 0.5, 950, 520, 1.45),
+  cut(Q.technology1 - 0.1, 760, 530, 1.04), at(TURN.rules - 0.05, 760, 520, 1.0),
   // ii: one picture per thing they decided, each a hard cut on its word
   { t: L(1), ...H },
   cut(Q.computersDo - 0.04, 375, 425, 2.3, 14), at(Q.cost - 0.07, 380, 428, 2.4, 14),
-  cut(Q.cost - 0.05, 290, 790, 2.45, 14), at(Q.data - 0.07, 292, 793, 2.55, 14),
+  // WHY centred right of the laptop: the tag now hangs clear of it, beside the man who sets the price
+  cut(Q.cost - 0.05, 335, 760, 2.2, 14), at(Q.data - 0.07, 340, 765, 2.3, 14),
   cut(Q.data - 0.05, 1110, 610, 1.3), at(TURN.bargain, 1100, 600, 1.36),
   // iii: the queue; a cut in to the boxes ticking themselves on "accepted"
   at(L(2), 760, 560, 1.02), at(Q.accepted - 0.14, 745, 575, 1.08),
@@ -66,7 +72,8 @@ const SHOTS: Shot[] = [
   cut(TURN.nothing, 740, 520, 1.06), at(Q.subscribe - 0.07, 750, 515, 1.1),
   cut(Q.subscribe - 0.05, 410, 540, 2.05, 15), at(Q.own - 0.08, 405, 545, 2.12, 15),
   cut(Q.own - 0.06, H.x, H.y, H.z), at(Q.costOf - 0.37, 770, 505, 1.03),
-  cut(Q.costOf - 0.35, 1090, 470, 1.75), at(TURN.however - 0.02, 1095, 478, 1.85),
+  // WHY wider (was 1.75 on her face): her things now float up and out of the page to a hat in the corner
+  cut(Q.costOf - 0.35, 1170, 400, 1.3), at(TURN.however - 0.02, 1175, 395, 1.4),
   // iv: WHY a cut to a calm, nearly whole-book framing as the page turns (review 2026-11-20): the fast pull
   // back during the turn smeared the falling page with motion blur. Then a slow push in while the drop falls.
   cut(TURN.however, 800, 505, 1.1), at(DROP_LAND, 835, 515, 1.28), at(CUT.hubris - 0.01, 845, 518, 1.33),

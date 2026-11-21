@@ -58,7 +58,8 @@ export const Strings: React.FC<{
       {HANDFUL_FIGS.map((f, j) => (
         <g key={j}>
           <HatFigure x={f.x} y={LEDGE_Y} s={FIG_S} crown={f.c} a={figAt ? figAt[j] : figA + j * 0.14} b={(figAt ? figAt[j] : figA + j * 0.14) + (figEnter?.[j] === 'wipe' ? 0.5 : 1.0)}
-            pose="hold" fade={fade} bob={-y * 4} enter={figEnter?.[j] ?? 'draw'} />
+            pose="hold" fade={fade} bob={-y * 4 - Math.abs(Math.sin(t * 1.9 + j * 1.3)) * 1.6} lean={Math.sin(t * 1.5 + j * 2.1) * 1.1} enter={figEnter?.[j] ?? 'draw'} />
+          {/* WHY a slow sway and breath on every man (review: one stood rigid for 1.4 s while she talked) */}
           <g opacity={1 - fade * 0.72}>
             {/* the puppet control: a crossbar in both gloved hands */}
             <Ink d={`M ${f.x - 54} ${by} L ${f.x + 54} ${by} M ${f.x} ${by - 12} L ${f.x} ${by + 12}`} a={stringsA - 0.4 + j * 0.05} b={stringsA - 0.1 + j * 0.05} w={5} />
@@ -79,8 +80,8 @@ export const Strings: React.FC<{
         const hop = free ? -Math.abs(Math.sin((t - snapT) * 7)) * 18 * Math.exp(-(t - snapT) * 1.4) : 0;
         return (
           <g key={i}>
-            {snapT < 0 || t < snapT ? <Ink d={`M ${hx} ${hy} L ${px} ${ty}`} a={stringsA + i * 0.035} b={stringsA + i * 0.035 + 0.4} w={1.8} c={P.ink} o={0.8} />
-              : <g opacity={(1 - sp * 0.85) * 0.8}><path d={top} stroke={P.ink} strokeWidth={1.8} fill="none" /><path d={bot} stroke={P.ink} strokeWidth={1.8} fill="none" /></g>}
+            {snapT < 0 || t < snapT ? <Ink d={`M ${hx} ${hy} L ${px} ${ty}`} a={stringsA + i * 0.035} b={stringsA + i * 0.035 + 0.4} w={3} c={P.ink} o={0.85} />
+              : <g opacity={(1 - sp * 0.85) * 0.8}><path d={top} stroke={P.ink} strokeWidth={3} fill="none" /><path d={bot} stroke={P.ink} strokeWidth={3} fill="none" /></g>}
             <Person x={px} y={880} s={0.92} a={peopleA + i * 0.05} b={peopleA + i * 0.05 + 0.6} pose={free ? 'bothUp' : 'hold'} device={colourful ? 'none' : 'phone'} enter={peopleEnter}
               hair={HAIR[i % HAIR.length]} mood={colourful ? 'smile' : 'flat'} bob={-y * 12 + hop} body={colourful ? bodies[i] : P.wash} hairColor={colourful ? hairCol[i % hairCol.length] : undefined} />
             {/* in the callback everyone already holds a quill: that is what cuts the strings */}
@@ -92,10 +93,14 @@ export const Strings: React.FC<{
   );
 };
 
-const HandfulArt: React.FC = () => (
+const HandfulArt: React.FC = () => {
+  const t = useT();
+  // WHY the heading and folio ink in after the pull-back (review BLOCKER): the opening close-up sliced the title
+  // at the frame's top edge; now the first shot holds only the hat, the ledge and the desk edge.
+  const furniture = lin(t, Q.dictated - 0.45, Q.dictated - 0.05);
+  return (
   <>
-    <Heading n="i" title="a small handful" />
-    <Folio left={2} />
+    <div style={{ opacity: furniture }}><Heading n="i" title="a small handful" /><Folio left={2} /></div>
     <Sheet>
       {/* WHY this order: the film opens close on ONE hat, wiped in whole on "For"; two more land beside it on
           "small handful"; the other three land on "corporations" as the camera pulls back to show the book */}
@@ -104,7 +109,8 @@ const HandfulArt: React.FC = () => (
         figEnter={['pop', 'wipe', 'pop', 'pop', 'pop', 'pop']} peopleEnter="pop" ledgeAt={[-1.5, Q.corporations1 - 0.3]} />
     </Sheet>
   </>
-);
+  );
+};
 export const HANDFUL: Spread = { id: 'handful', Art: HandfulArt };
 
 // ======================= ii · the rules =======================
@@ -148,28 +154,29 @@ const RulesArt: React.FC = () => {
         <Ink d="M 270 420 L 470 420 M 290 420 L 290 500 M 450 420 L 450 500" a={L - 0.1} b={L + 0.35} w={3.4} />
         <g transform={`translate(${shake} 0)`}><Laptop x={370} y={418} s={1.15} a={L} b={L + 0.4} /></g>
         <Person x={208} y={500} s={1.1} a={L - 0.05} b={L + 0.55} pose="write" mood={t > Q.computersDo + 0.3 ? 'o' : 'smile'} hair="bun" />
-        <HatFigure x={592} y={500} s={1} crown={92} a={L - 0.2} b={L + 0.7} pose="key" flip />
+        <HatFigure x={592} y={500} s={1} crown={92} a={L - 0.1} b={L + 0.7} pose="key" flip enter="pop" bob={Math.sin(t * 2.2) * 1.5} />
         <Appear a={L + 0.6}><g transform={`translate(521 382) rotate(${-20 + Math.sin(t * 4) * 6})`}>
           <path d="M 0 0 L 0 26 M 0 18 L 7 18 M 0 24 L 6 24" stroke={P.ink} strokeWidth={3} fill="none" strokeLinecap="round" />
           <circle cx={0} cy={-5} r={6} fill="none" stroke={P.ink} strokeWidth={3} /></g></Appear>
-        <Padlock x={370} y={398} s={1.25} at={Q.computersDo} />
+        {/* WHY inkSoft: the heavy black block read as pasted on; a softer lock lets the laptop show through */}
+        <Padlock x={370} y={398} s={1.25} at={Q.computersDo} color={P.inkSoft} />
 
         {/* B: what it would cost: a price on a string, re-inked higher each time she says it */}
         <Ink d="M 140 860 L 660 860" a={L + 0.1} b={L + 0.5} w={2} c={P.inkSoft} />
         <Ink d="M 140 760 L 330 760 M 160 760 L 160 860 M 310 760 L 310 860" a={L + 0.1} b={L + 0.45} w={3.4} />
         <Laptop x={236} y={758} s={1.3} a={L + 0.2} b={L + 0.6} />
         {/* WHY 0.85: the camera cuts in on "cost", and at this size the price reads at ~38 px on a 1080p frame */}
-        <PriceTag x={281} y={728} s={0.85} at={Q.cost - 0.12} swing={-10}
+        <PriceTag x={392} y={640} s={1.0} at={Q.cost - 0.12} swing={-10}
           prices={[{ v: '4.99/mo', at: Q.cost - 0.05 }, { v: '9.99/mo', at: Q.costWord }, { v: '14.99/mo', at: Q.costWord + 0.36 }, { v: '19.99/mo', at: Q.costWord + 0.72 }]} />
-        <Person x={480} y={860} s={1.12} a={L + 0.25} b={L + 0.8} mood={t > Q.costWord + 0.3 ? 'o' : 'flat'} hair="curly" flip />
+        <Person x={545} y={860} s={1.12} a={L + 0.25} b={L + 0.8} mood={t > Q.costWord + 0.3 ? 'o' : 'flat'} hair="curly" flip />
 
         {/* C: what happened with your personal data: your things stream out of your phone into a top hat */}
         <Ink d="M 820 880 L 1450 880" a={L + 0.2} b={L + 0.6} w={2} c={P.inkSoft} />
         <Person x={905} y={880} s={1.35} a={L + 0.3} b={L + 0.9} pose="hold" device="phone" hair="long" mood={t > Q.personalData ? 'o' : 'smile'} />
-        <HatFigure x={1330} y={880} s={1.5} crown={120} a={L + 0.2} b={L + 1.2} pose="sides" />
+        <HatFigure x={1330} y={880} s={1.5} crown={120} a={L + 0.2} b={L + 1.2} pose="sides" enter="pop" bob={Math.sin(t * 2) * 1.5 + Math.max(0, jolt(t, Q.personalData - 0.1, 5, 0.6)) * -1} />
         <Appear a={L + 1.1}><ellipse cx={1330} cy={880 - (212 + 120) * 1.5 + 2} rx={27} ry={6} fill={P.inkSoft} stroke={P.paper} strokeWidth={1.5} /></Appear>
-        <Ink d="M 905 790 Q 1050 230 1330 372" a={Q.data - 0.05} b={Q.data + 0.5} w={2} c={P.inkSoft} o={0.6} />
-        <Stream from={Q.data + 0.2} p0={[905, 790]} p1={[1050, 230]} p2={[1330, 380]} count={11} gap={0.19} />
+        {/* WHY fewer, much bigger keepsakes and no hairline arc (review): at 22 px they read as specks on a thread */}
+        <Stream from={Q.data + 0.15} p0={[905, 790]} p1={[1050, 230]} p2={[1330, 380]} count={7} gap={0.24} dur={1.2} s={2.1} />
       </Sheet>
     </>
   );
@@ -263,7 +270,7 @@ const SmallTag: React.FC<{ x: number; y: number; at: number; text: string; lift:
   if (p <= 0) return null;
   const sway = Math.sin((t - at) * 5) * 10 * Math.exp(-(t - at) * 1.5);
   return (
-    <g transform={`translate(${x} ${y - lift}) rotate(${sway - 8})`} opacity={Math.min(1, p * 2)}>
+    <g transform={`translate(${x} ${y - lift}) rotate(${sway - 4}) scale(1.3)`} opacity={Math.min(1, p * 2)}>
       {/* WHY this size: the camera cuts in on "subscribe"; the prices must read on a phone */}
       <path d="M 0 0 L 0 18" stroke={P.ink} strokeWidth={1.6} />
       <path d={`M -54 18 L 54 18 L 54 52 L -54 52 Z`} fill={P.paper} stroke={P.ink} strokeWidth={2.4} transform={`scale(${0.6 + 0.4 * p})`} />
@@ -274,7 +281,7 @@ const SmallTag: React.FC<{ x: number; y: number; at: number; text: string; lift:
 
 type Thing = { id: string; d: string; fill: string; tag: [number, number]; price: string; top: [number, number] };
 const THINGS: Thing[] = [
-  { id: 'bike', d: `${circle(132, 776, 42)} ${circle(246, 776, 42)} M 132 776 L 172 730 L 230 730 L 246 776 M 172 730 L 196 776 L 132 776 M 230 730 L 222 712 M 196 776 L 166 716 L 150 716`, fill: 'none', tag: [196, 700], price: '14.99/mo', top: [196, 700] },
+  { id: 'bike', d: `${circle(132, 776, 42)} ${circle(246, 776, 42)} M 132 776 L 172 730 L 230 730 L 246 776 M 172 730 L 196 776 L 132 776 M 230 730 L 222 712 M 196 776 L 166 716 L 150 716`, fill: 'none', tag: [196, 648], price: '14.99/mo', top: [196, 648] },
   { id: 'picture', d: 'M 305 200 L 415 200 L 415 284 L 305 284 Z M 318 270 L 345 238 L 365 258 L 380 244 L 402 270', fill: P.paper, tag: [360, 296], price: '3.99/mo', top: [360, 200] },
   { id: 'books', d: 'M 432 420 L 432 362 L 452 362 L 452 420 M 454 420 L 454 352 L 476 352 L 476 420 M 478 420 L 482 368 L 500 370 L 497 420 M 502 420 L 502 358 L 522 358 L 522 420', fill: P.wash, tag: [478, 432], price: '2.99/mo', top: [478, 352] },
   { id: 'camera', d: 'M 572 420 L 572 384 L 588 384 L 594 374 L 616 374 L 622 384 L 640 384 L 640 420 Z M 594 402 a 12 12 0 1 0 24 0 a 12 12 0 1 0 -24 0', fill: P.wash, tag: [606, 432], price: '9.99/mo', top: [606, 374] },
@@ -286,10 +293,6 @@ const NothingArt: React.FC = () => {
   // WHY finished before the cut (review 2026-11-20): inking itself in on camera, the room spent its first
   // 0.8 s as stray dashes and half-drawn marks. The film now cuts to a finished room; the tags are what move.
   const L = land(TURN.nothing) - 1.5;
-  const glassIn = lin(t, Q.privacy - 0.2, Q.privacy + 0.55);
-  const gx = (1 - glassIn) * 520, gy = (1 - glassIn) * -160;
-  // WHY over her face only: lower, it hid the "easy" button she presses
-  const lens = { x: 1074 + gx, y: 438 + gy, r: 74 };
   // WHY the button: "the cost of convenience" is a trade. She presses a big "easy" button at "cost", the glass
   // is already over her, and her smile drains on "convenience": both sides of the bargain in one picture.
   const press = t > Q.costOf - 0.2;
@@ -341,22 +344,14 @@ const NothingArt: React.FC = () => {
         <Ink d="M 960 562 L 1200 562 M 975 562 L 975 600 M 1185 562 L 1185 600" a={L + 0.2} b={L + 0.6} w={3} />
         {button}
         {viewer(0)}
-        {glassIn > 0 && (
-          <g>
-            <clipPath id="c-lens"><circle cx={lens.x} cy={lens.y} r={lens.r} /></clipPath>
-            <g clipPath="url(#c-lens)">
-              <rect x={lens.x - lens.r} y={lens.y - lens.r} width={lens.r * 2} height={lens.r * 2} fill={P.paper} />
-              <g transform={`translate(${lens.x} ${lens.y}) scale(1.75) translate(${-lens.x} ${-lens.y})`}>{viewer(1)}</g>
-              <circle cx={lens.x} cy={lens.y} r={lens.r} fill="rgba(194,170,214,0.18)" />
-            </g>
-            <path d={`M ${lens.x - 52} ${lens.y - 48} A 70 70 0 0 1 ${lens.x + 18} ${lens.y - 70}`} stroke="#fff" strokeWidth={6} fill="none" opacity={0.7} strokeLinecap="round" />
-            <circle cx={lens.x} cy={lens.y} r={lens.r} fill="none" stroke={P.ink} strokeWidth={9} />
-            <path d={`M ${lens.x + 62} ${lens.y - 62} L ${lens.x + 150} ${lens.y - 150}`} stroke={P.ink} strokeWidth={16} strokeLinecap="round" />
-            {/* the sleeve of whoever is holding it, reaching in from the edge of the book */}
-            <path d={`M ${lens.x + 150} ${lens.y - 150} L 1540 ${180 + gy}`} stroke={P.ink} strokeWidth={34} strokeLinecap="round" />
-            <circle cx={lens.x + 150} cy={lens.y - 150} r={15} fill={P.paper} stroke={P.ink} strokeWidth={3} />
-          </g>
-        )}
+        {/* WHY the glass is gone (review BLOCKER: a surveillance cliche that never showed anything being taken):
+            on "privacy" small pieces of HER (a face, a pin, a heart, a letter) lift off her, smiling as she is,
+            and float up out of the page into the hand of a top-hatted man waiting in the corner. The cost is
+            paid silently, which is the point. */}
+        <Appear a={Q.privacy - 0.35}>
+          <HatFigure x={1440} y={330} s={0.95} crown={96} a={-10} b={-9} pose="reach" flip enter="pop" bob={Math.sin(t * 2.3) * 1.5} />
+        </Appear>
+        <Stream from={Q.privacy + 0.1} p0={[1080, 500]} p1={[1230, 130]} p2={[1335, 150]} count={5} gap={0.3} dur={1.15} s={1.9} />
       </Sheet>
     </>
   );
@@ -372,7 +367,7 @@ export const DROP_LAND = Q.recentlyEnd - 0.02;
 const DROP_FROM = Q.recently + 0.05;
 // WHY on the left page: the headline lands on the right page at this moment, and must sit on clean paper
 const DROP = { x: 400, y: 640 };
-const QS = 2.7;   // the quill's size on this page
+const QS = 3.1;   // the quill's size on this page
 const HoweverArt: React.FC = () => {
   const t = useT();
   const g = pop(t, DROP_LAND, 0.4);
@@ -380,12 +375,18 @@ const HoweverArt: React.FC = () => {
   const run = lin(t, Q.wonderful - 0.2, Q.wonderful + 0.2);
   const qa = Q.wonderful - 0.05;
   const lift = lin(t, Q.happened, Q.happened + 1.2) * 1;
-  const bob = Math.sin((t - Q.happened) * 2.4) * 6 * lift;
+  // WHY a constant float once it exists (review: the quill froze for ~1 s while she kept talking)
+  const bob = Math.sin((t - qa) * 2.4) * 7 * Math.max(0.45, lift);
   return (
     <>
       <Heading n="iv" title="then, quietly" />
       <Folio left={10} hideRight />
       <Sheet rough={false}>
+        {/* WHY an inkwell on the empty page (review BLOCKER: ~4 s of blank paper): the hush now has a source for
+            the drop and something to wait on. It inks in on "However" and a nib rests on its rim. */}
+        <Shape d="M 205 620 L 305 620 L 318 700 Q 318 722 296 722 L 214 722 Q 192 722 192 700 Z" a={Q.however + 0.1} b={Q.however + 0.7} fill={P.wash} w={3} />
+        <Ink d="M 224 620 L 224 604 L 286 604 L 286 620" a={Q.however + 0.5} b={Q.however + 0.9} w={3} />
+        <Ink d="M 246 604 Q 246 540 300 470 L 324 456" a={Q.recently - 0.3} b={Q.recently + 0.3} w={3} />
         {t >= DROP_LAND && (
           <g>
             {/* where it landed: a soft stain that stays, feathered into the paper */}
@@ -404,6 +405,8 @@ const HoweverArt: React.FC = () => {
                 <ellipse cx={-8} cy={-9} rx={7} ry={4} fill="#fff" opacity={0.35} transform="rotate(-30 -8 -9)" />
               </g>
             )}
+            {/* the first stroke the quill writes on "happened", sweeping toward the headline (replaces the stray arc) */}
+            <Ink d={`M ${DROP.x} ${DROP.y} C ${DROP.x + 140} ${DROP.y + 40} ${DROP.x + 260} ${DROP.y - 70} ${DROP.x + 380} ${DROP.y - 20}`} a={Q.happened} b={Q.happened + 0.9} w={7} c={P.purple} o={0.8} />
             {/* the quill, nib at the drop */}
             {t > qa && (
               <g transform={`translate(${DROP.x} ${DROP.y - 14 * lift + bob}) rotate(${-14 - 4 * lift}) scale(${QS})`}>
@@ -437,7 +440,7 @@ const HoweverPop: React.FC = () => {
     <>
       <div style={{ position: 'absolute', left: DROP.x - 40, top: DROP.y - 16, width: 80, height: 32, borderRadius: '50%',
         background: 'rgba(40,14,48,0.5)', filter: `blur(${3 + (1 - near) * 14}px)`, opacity: 0.12 + 0.6 * near, transform: `translateZ(0.5px) scale(${1.9 - 0.9 * near})` }} />
-      <div style={{ position: 'absolute', left: DROP.x - 22, top: DROP.y - 64, width: 44, height: 64, transform: `translateZ(${z}px) rotateX(-70deg)`, transformOrigin: '50% 100%', opacity: seen }}>
+      <div style={{ position: 'absolute', left: DROP.x - 22, top: DROP.y - 64, width: 44, height: 64, transform: `translateZ(${z}px) rotateX(-70deg) scale(1.5)`, transformOrigin: '50% 100%', opacity: seen }}>
         <div style={{ width: 44, height: 64, background: 'radial-gradient(circle at 38% 62%, #C88AD8 0%, #9750AA 45%, #6E3482 100%)',
           clipPath: 'path("M 22 0 C 28 18 44 32 44 45 A 22 19 0 0 1 0 45 C 0 32 16 18 22 0 Z")' }} />
       </div>
