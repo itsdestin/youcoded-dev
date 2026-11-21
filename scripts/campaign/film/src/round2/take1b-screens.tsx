@@ -158,6 +158,42 @@ const MARKS: Map<string, number> = (() => {
 })();
 export const markFor = (id: string) => MARKS.get(id) ?? 0;
 
+// WHY a new tile in their OWN app instead of an "AI" app icon (round 8 reviewer BLOCKER: white "AI" letters on a squircle was the most
+// literal stock picture of artificial intelligence, and it broke the film's own language): their new technology is simply one more card
+// in the same locked, same-everywhere app the opening taught, with the same rounded white card style. It is labelled only "assistant",
+// it has an empty text field with a caret (the caret is what later escapes), a padlock like every other locked thing, and a price.
+/** The big card's place on a wide (TV) screen, as fractions of the screen: it covers the photo / message / note blocks of layout 2. */
+export const NT = { x: 0.25, y: 0.17, w: 0.71, h: 0.4 };
+/** Its text field, as fractions of the card. The caret sits CARET_X into the card, centred in the field. */
+export const NT_FIELD = { x: 0.055, y: 0.47, w: 0.56, h: 0.36 };
+export const NT_CARET_X = NT_FIELD.x + 0.035;
+/** One step of a build: 0 before `a`, eased to 1 over `d` seconds. */
+const step01 = (t: number, a: number, d = 0.28) => smooth((t - a) / d);
+/** The big new card on the TV, building itself in steps: card, then field (with its caret), then padlock.
+ *  `t` is the film time; the step times come from the film's phrase cues. `caretOn` blinks the field's caret. */
+export const NewTile: React.FC<{ w: number; h: number; t: number; card: number; field: number; lock: number; caretOn: boolean; caretGone: boolean }> = ({ w, h, t, card, field, lock, caretOn, caretGone }) => {
+  const c = step01(t, card, 0.3), f = step01(t, field, 0.3);
+  if (c <= 0) return null;
+  const k = Math.min(w, h) / 100;
+  const fx = NT_FIELD.x * w, fy = NT_FIELD.y * h, fw = NT_FIELD.w * w, fh = NT_FIELD.h * h;
+  // WHY a slight overshoot on the card only: it "arrives" like the other blocks do when the layout is dictated, then the
+  // field and padlock land on it one after another, each on its own spoken word
+  const pop = 0.94 + 0.06 * c + 0.025 * Math.sin(Math.PI * c);
+  return (
+    <div style={{ position: 'absolute', inset: 0, opacity: Math.min(1, c * 1.6), transform: `scale(${pop})`, transformOrigin: '50% 60%', background: S.card, borderRadius: 3.2 * k,
+      boxShadow: `0 ${1.4 * k}px ${4 * k}px rgba(40,20,60,${0.22 * c})`, fontFamily: DMSANS, overflow: 'visible' }}>
+      <div style={{ position: 'absolute', left: NT_FIELD.x * w, top: 0.1 * h, fontSize: 21 * k, fontWeight: 800, letterSpacing: '-0.035em', color: S.ink }}>assistant</div>
+      <div style={{ position: 'absolute', left: fx, top: fy, width: fw, height: fh, borderRadius: fh / 2, background: S.bg, border: `${0.5 * k}px solid ${S.line}`, boxSizing: 'border-box',
+        opacity: f, transform: `translateY(${(1 - f) * 3 * k}px)` }}>
+        {/* the caret: a thin solid text cursor, the one thing on this card that will get away from them */}
+        {!caretGone && <div style={{ position: 'absolute', left: (NT_CARET_X - NT_FIELD.x) * w - 0.8 * k, top: fh * 0.19 - 0.5 * k, width: 1.6 * k, height: fh * 0.62, borderRadius: 0.8 * k, background: '#9750AA', opacity: caretOn ? 1 : 0 }} />}
+      </div>
+      {/* the padlock sits at the field's end, like a locked input */}
+      {lock > 0 && <div style={{ position: 'absolute', left: fx + fw + 3 * k, top: fy + fh / 2 - 7.5 * k }}><Lock s={15 * k} p={lock} off={0} /></div>}
+    </div>
+  );
+};
+
 /** The corporations' AI: one plain, heavy, near-black tile. WHY so plain: it is theirs (invented, not youcoded) and the
  *  whole point of it is the price hung on it; the second letter is a bare bar so it can lift off as the caret. */
 export const AiTile: React.FC<{ s: number; caret?: number; bar?: boolean }> = ({ s, caret = 1, bar = true }) => (
@@ -265,12 +301,24 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
         transform: `translate(-50%, ${(smooth(banner / 0.28) - 1) * 12 * k}px)`, opacity: 1 - smooth((banner - 0.85) * 6) }}>Layout updated</div>}
       {/* their machine's tile, stamped on top of everything, with its price beside it (the same tile as on the big screen).
           WHY a plain tile and no bar: the corporations' AI is theirs, not youcoded, and not somewhere you type */}
-      {ai > 0 && <div style={{ position: 'absolute', right: (P ? 0.07 : 0.05) * w, bottom: (P ? 0.04 : 0.07) * h, display: 'flex', alignItems: 'center', gap: 2 * k, flexDirection: P ? 'column-reverse' : 'row-reverse',
-        transform: `scale(${0.6 + 0.4 * smooth(ai)})`, transformOrigin: '100% 100%', opacity: smooth(ai * 1.5) }}>
-        <AiTile s={(P ? 30 : 27) * k} bar={false} />
-        {/* WHY the price arrives separately, on "value" (reviewer 2026-11-20): the treasure is that every screen gets charged at once */}
-        <span style={{ height: 7 * k, padding: `0 ${2.2 * k}px`, borderRadius: 7 * k, background: '#FBF5EA', color: '#21152C', fontWeight: 900, fontSize: 3.8 * k, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap',
-          boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)`, opacity: smooth(price * 2), transform: `scale(${price <= 0 ? 0.4 : 0.4 + 0.6 * smooth(price) + 0.18 * Math.sin(Math.PI * cl(price))})` }}>$20/mo</span></div>}
+      {/* WHY in place, never a sticker (round 8 reviewer: dark "AI" badges pasted on every screen read as clip art and cluttered the
+          payoff shots): their new card simply replaces the note card on every screen, same size, same card style, with a padlock, so
+          the whole wall changes in a ripple without anything being pasted on top. `price` is no longer drawn here (the TV carries it). */}
+      {ai > 0 && (() => {
+        const r = L.note;
+        const e = smooth(ai);
+        const fs = (P ? 3.4 : 3.3) * k;
+        return (
+          <div style={{ ...box(r, w, h), background: S.card, borderRadius: 3 * k, overflow: 'hidden', opacity: Math.min(1, e * 1.4), transform: `scale(${0.9 + 0.1 * e + 0.04 * Math.sin(Math.PI * e)})`,
+            boxShadow: `0 0 0 ${0.4 * k}px ${S.line}`, padding: `${1.4 * k}px ${2.2 * k}px`, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0.9 * k }}>
+            <div style={{ fontSize: fs, fontWeight: 800, color: S.ink, lineHeight: 1 }}>assistant</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 1.2 * k }}>
+              <div style={{ flex: 1, height: 2.6 * k, borderRadius: 2 * k, background: S.bg, boxShadow: `inset 0 0 0 ${0.3 * k}px ${S.line}` }} />
+              <div style={{ width: 2.8 * k, height: 2.8 * k, borderRadius: 0.8 * k, background: '#2A2034', flex: 'none' }} />
+            </div>
+          </div>
+        );
+      })()}
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,28,52,0.42)', opacity: dlg }} />
@@ -354,6 +402,8 @@ export const lookOf = (file: string): Look => {
 export const PHONE_EMPTY = R4('golden-sunbreak-phone-clean.png');
 export const PHONE_FOCUS = R4('golden-sunbreak-phone-cleanfocus.png');
 export const PHONE_CLEAN = R4('golden-sunbreak-phone-clean.png');
+// WHY (round 8): the same window a moment after the request was really sent: its own bubble and its own working line
+export const PHONE_WORKING = R4('golden-sunbreak-phone-working.png');
 
 // The story's own devices get the looks their lines need. WHY these: the phone asked for "a page for my home" and
 // gets the loud Halftone pack with exactly that page; the laptop that was locked gets a warm golden look (the
@@ -366,8 +416,15 @@ const FIXED: Record<string, Look> = {
   // WHY a big thermostat page (round 5 reviewer: the desert chat's words were unreadable at a glance): a page that reads from across the room
   tagTablet: lookOf('halftone-dimension-tablet-paint.png'),
   tv: lookOf('morning-rounds-tv-money.png'),   // WHY (reviewer BLOCKER): the biggest tile in every wide shot was a licensed character look; this is a plain community theme
+  // WHY fixed (round 8 reviewer BLOCKER: on "for anyone who asks" nobody but the phone was seen asking): the phone's two nearest
+  // neighbours are seen asking too, each in its own light look, and each gets the page it asked for (their "working" pictures match)
+  '0:l1': lookOf('light-phone-lights.png'),
+  '-1:l1': lookOf('creme-tablet-paint.png'),
 };
 export const HERO_LOOK = FIXED.hero;
+/** WHY one holdout (round 8 reviewer: nothing on screen answered "the tech monopolies of the past"): one monitor near the middle of the
+ *  daylight wall keeps the old locked, priced app until the word "past", and is the last screen on the wall to become someone's own. */
+export const HOLDOUT = '-1:r1';
 
 /** A small seeded random generator. WHY seeded: the wall must come out the same on every render. */
 const rng = (seed: number) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
@@ -385,7 +442,7 @@ const LOOKS: Map<string, Look> = (() => {
     if (out.has(d.id)) continue;
     const shape = d.kind === 'monitor' ? 'tv' : d.kind;
     // WHY no Kuromi / Strawberry Kitty (reviewer BLOCKER): they are real licensed characters; a public film must not show them
-    const cands = ROWS.filter((x) => x.shape === shape && !x.theme.startsWith('YouCoded (default)') && !/Kuromi|Strawberry Kitty/.test(x.theme) && !/-(phone|laptop|tablet|tv)-(empty|wake|typing|clean|cleanfocus|typed)\.png$/.test(x.file)).map((x) => lookOf(x.file));
+    const cands = ROWS.filter((x) => x.shape === shape && !x.theme.startsWith('YouCoded (default)') && !/Kuromi|Strawberry Kitty/.test(x.theme) && !/-(phone|laptop|tablet|tv)-(empty|wake|typing|clean|cleanfocus|typed|working)\.png$/.test(x.file)).map((x) => lookOf(x.file));
     const shelf = WORLD.devs.filter((o) => o.row === d.row && out.has(o.id));
     const near = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < (o.w + d.w) / 2 + 700);   // WHY 700: about two devices either way, so a close-up of three never shows one theme twice
     const ok = (c: Look) => !shelf.some((o) => out.get(o.id)!.key === c.key) && !near.some((o) => out.get(o.id)!.theme === c.theme);
@@ -397,6 +454,20 @@ const LOOKS: Map<string, Look> = (() => {
   }
   return out;
 })();
+/** The same Home page in a given look's own theme, for a page that is shared to that device. WHY per theme (round 8 reviewer
+ *  BLOCKER: the shared page replaced the neighbour's whole theme): what one person makes, another opens in THEIR own look. */
+export const homeIn = (look: Look, kind: string): Look | null => {
+  const shape = kind === 'monitor' ? 'tv' : kind;
+  const slug = look.key.replace(/-(phone|tablet|laptop|tv)-.*$/, '');
+  const f = `${slug}-${shape}-home.png`;
+  return ROWS.some((x) => x.file === f) ? lookOf(f) : null;
+};
+/** The "working" picture for a look (its own sent bubble and working line), if one was shot. */
+export const workingIn = (look: Look, kind: string): Look | null => {
+  const shape = kind === 'monitor' ? 'tv' : kind;
+  const f = `${look.key.replace(/-(phone|tablet|laptop|tv)-.*$/, '')}-${shape}-working.png`;
+  return ROWS.some((x) => x.file === f) ? lookOf(f) : null;
+};
 /** What a device shows once it is someone's own. */
 export const lookFor = (d: { id: string }): Look => LOOKS.get(d.id)!;
 /** For the render check: how many different screens the wall uses. */
@@ -431,6 +502,9 @@ const MONO = "'Cascadia Mono', 'Noto Sans Mono', monospace";   // WHY: the app's
 /** The phone's window with its message box in one of three states: waiting, focused-and-blinking, or being typed in. */
 export const PhoneAsk: React.FC<{ w: number; h: number; text: string; caretOn: boolean; typing: boolean; sent?: number; sentText?: string }> = ({ w, h, text, caretOn, typing, sent = 0, sentText = '' }) => {
   const s = w / STILL_W;
+  // WHY the real picture once the bubble has landed (round 8 reviewer BLOCKER: no sign of the app working): the drawn lift ends exactly on
+  // the real bubble's place and size, and the real capture takes over, with the app's own working line under it
+  if (sent >= 1) return <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#10101A' }}><RealApp src={PHONE_WORKING} w={w} h={h} /></div>;
   // WHY real pictures while nobody is typing: the app's own blinking caret is a real capture, not something we draw
   const src = typing || sent > 0 ? PHONE_CLEAN : caretOn ? PHONE_FOCUS : PHONE_EMPTY;
   return (
@@ -442,12 +516,12 @@ export const PhoneAsk: React.FC<{ w: number; h: number; text: string; caretOn: b
               as in the real chat capture) so "ask, then get" is seen: it rises from the box to the top of the chat */}
           {(() => {
             const e = 1 - Math.pow(1 - cl(sent), 3);
-            const bw = 590, bh = 196;   // WHY: one short line in the theme's mono face
+            const bw = 562, bh = 156;   // WHY: the real sent bubble's own size and place (golden-sunbreak-phone-working.png), so the hand-over is seamless
             return (
-              <div style={{ position: 'absolute', left: 1116 - bw, top: 132 + (1 - e) * 2000, width: bw, height: bh, borderRadius: 52, boxSizing: 'border-box', padding: '36px 56px', opacity: Math.min(1, sent * 5),
+              <div style={{ position: 'absolute', left: 1114 - bw, top: 133 + (1 - e) * 1960, width: bw, height: bh, borderRadius: 60, boxSizing: 'border-box', padding: '22px 44px', opacity: Math.min(1, sent * 5),
                 background: 'linear-gradient(160deg,#E1AA34,#F3B93F)', boxShadow: '0 12px 36px rgba(20,10,0,0.35)', fontFamily: MONO, color: '#14100A', transform: `scale(${0.92 + 0.08 * e})`, transformOrigin: '100% 100%' }}>
-                <div style={{ fontSize: 46, lineHeight: '64px', whiteSpace: 'nowrap' }}>{sentText}</div>
-                <div style={{ fontSize: 32, textAlign: 'right', color: 'rgba(80,50,0,0.7)', marginTop: 10 }}>7:40 AM</div>
+                <div style={{ fontSize: 46, lineHeight: '64px', whiteSpace: 'nowrap', textAlign: 'right' }}>{sentText}</div>
+                <div style={{ fontSize: 30, textAlign: 'right', color: 'rgba(80,50,0,0.7)', marginTop: 0 }}>8:00 AM</div>
               </div>
             );
           })()}
@@ -478,12 +552,14 @@ export const askKit = (slug: string, shape: 'laptop' | 'tablet') => {
   const f = (k: string) => `${slug}-${shape}-${k}.png`;
   const row = ROWS.find((x) => x.file === f('typed'));
   if (!row?.typed) throw new Error(`take1b: no typed picture ${f('typed')} (run take1b-library.mjs)`);
-  return { clean: R4(f('clean')), focus: R4(f('cleanfocus')), typed: R4(f('typed')), info: row.typed, text: row.typed.text };
+  return { clean: R4(f('clean')), focus: R4(f('cleanfocus')), typed: R4(f('typed')), working: R4(f('working')), info: row.typed, text: row.typed.text };
 };
 export type AskKit = ReturnType<typeof askKit>;
 const STILL_PX = { laptop: [2240, 1400], tablet: [2000, 1388] } as const;
-export const ShapeAsk: React.FC<{ kit: AskKit; shape: 'laptop' | 'tablet'; w: number; h: number; n: number; caretOn: boolean; caretColor: string }> = ({ kit, shape, w, h, n, caretOn, caretColor }) => {
+export const ShapeAsk: React.FC<{ kit: AskKit; shape: 'laptop' | 'tablet'; w: number; h: number; n: number; caretOn: boolean; caretColor: string; sent?: boolean }> = ({ kit, shape, w, h, n, caretOn, caretColor, sent = false }) => {
   const [SW, SH] = STILL_PX[shape];
+  // WHY (round 8 reviewer BLOCKER: the page arrived 0.1 s after the last key): once sent, the real window shows its own sent bubble and working line
+  if (sent) return <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#10101A' }}><RealApp src={kit.working} w={w} h={h} /></div>;
   const { prefix, rect, dpr } = kit.info;
   const top = (rect[1] - 7) * dpr, bot = (rect[1] + rect[3] + 7) * dpr, left = rect[0] * dpr;
   const x = prefix[Math.min(n, prefix.length - 1)] * dpr;

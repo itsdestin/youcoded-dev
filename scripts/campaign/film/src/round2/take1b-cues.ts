@@ -94,6 +94,9 @@ export const Q = {
   aTool: at('*a tool that'),
   software: at('make *software,'),
   scarce: at('the *ever-scarce'),
+  foundation: at('ever-scarce *foundation'),
+  about: at('bring *about'),
+  anyone: at('for *anyone who'),
   monopoliesEnd: end('these *monopolies,'),
   monopolies1: at('these *monopolies,'),
   forAnyone: at('*for anyone who'),
@@ -110,6 +113,10 @@ export const Q = {
   canWord: at('computers *can do.'),
   doWord: at('can *do.'),
   costsWord: at('it *costs.'),
+  happensWord: at('what *happens with'),
+  withWord: at('happens *with our'),
+  ourWord: at('with *our data.'),
+  dataWord: at('our *data.'),
   ourDataEnd: end('our *data.'),
   // (8) It's time to free ourselves from the tech monopolies of the past.
   free: at("*It's time to free"),
@@ -120,6 +127,7 @@ export const Q = {
   itsTime: at("*It's time, at"),
   long1: at('*long, long last...'),
   longLast: at('long, *long last...'),
+  long2End: end('long, *long last...'),
   open: at('to *open source'),
   everythingEnd: end('source *everything.'),
 } as const;

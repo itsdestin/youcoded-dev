@@ -141,7 +141,7 @@ export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: numb
 };
 
 /** The shelves: lilac-lit planks with a highlight on the front edge and a shadow below. */
-export const Shelves: React.FC<{ night: number }> = ({ night }) => (
+export const Shelves: React.FC<{ night: number; dayLen?: number }> = ({ night, dayLen = 0 }) => (
   <>
     {WORLD.shelves.map((s, i) => {
       const segs: [number, number][] = [];
@@ -153,8 +153,10 @@ export const Shelves: React.FC<{ night: number }> = ({ night }) => (
           <div style={{ position: 'absolute', left: a, width: b - a, top: s.y, height: 16,
             background: night > 0.5 ? 'linear-gradient(180deg,#4B3A58,#2A1F33)' : 'linear-gradient(180deg,#FFFFFF,#E6D8EF)',
             boxShadow: night > 0.5 ? 'inset 0 1px 0 rgba(255,255,255,0.18)' : 'inset 0 1px 0 #fff' }} />
-          <div style={{ position: 'absolute', left: a, width: b - a, top: s.y + 16, height: 46,
-            background: `linear-gradient(180deg, rgba(${night > 0.5 ? '6,2,12,0.55' : '74,38,110,0.16'}), transparent)` }} />
+          {/* WHY dayLen (round 8 reviewer: the daylight read as a flat backdrop with no direction): as the day comes up the shadow under
+              each shelf grows longer and a little warmer, as if the sun were rising behind the viewer's left shoulder */}
+          <div style={{ position: 'absolute', left: a, width: b - a, top: s.y + 16, height: night > 0.5 ? 46 : 46 + 70 * dayLen,
+            background: `linear-gradient(${night > 0.5 ? 180 : 172}deg, rgba(${night > 0.5 ? '6,2,12,0.55' : `74,38,96,${0.16 + 0.08 * dayLen}`}), transparent)` }} />
         </React.Fragment>
       ));
     })}
@@ -200,7 +202,7 @@ export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }
 // =====================================================================================================
 // A price tag on a string, swinging after it drops. Text can change (the price ticks).
 // =====================================================================================================
-export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; sub?: string; slap?: boolean; flipFrom?: string; flipAt?: number }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, sub, slap = false, flipFrom, flipAt }) => {
+export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; sub?: string; slap?: boolean; flipFrom?: string; flipAt?: number; kicks?: number[] }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, sub, slap = false, flipFrom, flipAt, kicks = [] }) => {
   if (t < drop) return null;
   if (slap) return <SlapTag x={x} y={y} t={t} drop={drop} text={text} scale={scale} fall={fall} strike={strike} sub={sub} flipFrom={flipFrom} flipAt={flipAt} />;
   const dt = t - drop;
@@ -208,7 +210,12 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
   const ease = 1 - Math.pow(1 - enter, 3);
   // a damped swing: big first arc, settling within ~2 s, like a real tag on a string
   // WHY a pendulum (reviewer: the tag landed stiffly): about 9 degrees, two clear swings, then rest
-  const swing = 9 * Math.exp(-dt * 1.6) * Math.sin(dt * 7);
+  // WHY kicks (round 8 reviewer: "make the excitement about the price"): each time the number ticks up the tag gets a fresh small swing on
+  // its string and the number pops, so greed is acted by the price itself while the camera holds still
+  const kickSwing = kicks.reduce((a, k) => (t >= k ? a + 6 * Math.exp(-(t - k) * 2.6) * Math.sin((t - k) * 9) : a), 0);
+  const lastKick = kicks.filter((k) => t >= k).pop();
+  const numPop = lastKick !== undefined ? 1 + 0.14 * Math.exp(-(t - lastKick) * 10) * (t - lastKick < 0.5 ? 1 : 0) : 1;
+  const swing = 9 * Math.exp(-dt * 1.6) * Math.sin(dt * 7) + kickSwing;
   // WHY a short drop and a fade (reviewer: the tag fell out of frame like a glitch): it lets go, sinks a few pixels and dissolves
   const fy = fall > 0 ? fall * fall * 50 : 0;
   const len = 70 * scale;
@@ -223,7 +230,7 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
         <div style={{ position: 'absolute', left: 0, right: 0, top: 22 * scale, height: 70 * scale, display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: DMSANS, fontWeight: 900, fontSize: 38 * scale, letterSpacing: '-0.04em', color: C.plum, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
           {/* WHY a small "per month" (reviewer): a tag on a device reads as the device's price; this says it is what using it costs */}
-          <span style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>{text}
+          <span style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, transform: `scale(${numPop})` }}>{text}
             {sub && <span style={{ fontSize: 14 * scale, fontWeight: 700, letterSpacing: 0, color: C.plum2, marginTop: 2 * scale }}>{sub}</span>}
             {/* WHY a strike drawn left to right: "what it costs" is decided by us now; the old price is crossed out before it becomes "free" */}
             {strike > 0 && <span style={{ position: 'absolute', left: '-6%', top: '52%', height: 6 * scale, borderRadius: 6 * scale, width: `${112 * strike}%`, background: C.purple }} />}
@@ -247,7 +254,11 @@ const SlapTag: React.FC<{ x: number; y: number; t: number; drop: number; text: s
   const squash = dt >= LAND && dt < LAND + SETTLE * 2 ? Math.sin(Math.PI * (dt - LAND) / (SETTLE * 2)) : 0;
   const tilt = -6 + (dt < LAND ? 3 * (1 - pin) : 0);
   const lift = dt < LAND ? (1 - pin) * 30 * scale : 0;
-  const fy = fall > 0 ? fall * fall * 40 : 0;
+  // WHY a swing then a drop, never a fade (round 8 reviewer: the fading tag sat over the new page like smudged grey glass): over the first
+  // 40% of `fall` it swings about 8 degrees on its corner as if knocked; then it drops out of frame on an ease-in, fully opaque
+  const knock = Math.min(1, fall / 0.4), drop2 = Math.max(0, (fall - 0.4) / 0.6);
+  const fy = fall > 0 ? drop2 * drop2 * 900 * scale : 0;
+  const fallRot = fall > 0 ? 8 * Math.sin(Math.PI * 0.5 * knock) + 14 * drop2 : 0;
   const W = 190 * scale * 1.15, H = 92 * scale * 1.15;
   // WHY a split-flap turn for a price change (round 7 reviewer: four prices flickered past in 0.7 s): the old price folds away on its top
   // half's hinge and the new one folds down into place, 4 frames each way, so one change is seen and read
@@ -256,7 +267,7 @@ const SlapTag: React.FC<{ x: number; y: number; t: number; drop: number; text: s
   const shown = fp < 0.5 && flipFrom !== undefined ? flipFrom : text;
   const rx = fp < 1 ? (fp < 0.5 ? fp * 2 * 90 : (1 - (fp - 0.5) * 2) * -90) : 0;
   return (
-    <div style={{ position: 'absolute', left: x - W / 2, top: y - H / 2 + fy - lift, width: W, height: H, transform: `rotate(${tilt + fall * 5}deg) scale(${sz * (1 + 0.012 * squash)}, ${sz * (1 - 0.03 * squash)})`, transformOrigin: '50% 100%', opacity: fall > 0 ? 1 - fall : 1,
+    <div style={{ position: 'absolute', left: x - W / 2, top: y - H / 2 + fy - lift, width: W, height: H, transform: `rotate(${tilt + fallRot}deg) scale(${sz * (1 + 0.012 * squash)}, ${sz * (1 - 0.03 * squash)})`, transformOrigin: '50% 100%', opacity: 1,
       filter: `drop-shadow(0 ${(8 + lift * 0.4) * scale}px ${(12 + lift * 0.5) * scale}px rgba(20,8,32,0.5))` }}>
       <svg width={W} height={H} viewBox="0 0 190 92" style={{ position: 'absolute' }}>
         <path d="M95 0 L120 16 H182 a8 8 0 0 1 8 8 V84 a8 8 0 0 1 -8 8 H8 a8 8 0 0 1 -8 -8 V24 a8 8 0 0 1 8 -8 H70 Z" fill="#FBF5EA" />

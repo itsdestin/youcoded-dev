@@ -14,7 +14,7 @@ import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
 import { Q } from './take1b-cues';
-import { HERO_LOOK, OwnScreen, SameScreen, ShareSwitch, markFor, sameLayout } from './take1b-screens';
+import { HERO_LOOK, HOLDOUT, OwnScreen, SameScreen, ShareSwitch, lookFor, markFor, sameLayout } from './take1b-screens';
 import { Device, Shelves, WORLD, dev } from './take1b-world';
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
@@ -28,19 +28,22 @@ type Cam = { cx: number; cy: number; s: number };
 const GW: Cam = { cx: 0, cy: -430, s: 0.7 };
 const camDevs = (c: Cam, skip: string[] = []) => WORLD.devs.filter((d) => !skip.includes(d.id) && Math.abs(d.cx - c.cx) < 960 / c.s + d.w && Math.abs(d.cy - c.cy) < 540 / c.s + d.h);
 const GW_DEVS = camDevs(GW);
-const GhostWall: React.FC<{ soft?: boolean; cam?: Cam; skip?: string[]; dy?: number }> = ({ soft = false, cam = GW, skip = [], dy = 0 }) => (
+const GhostWall: React.FC<{ soft?: boolean; cam?: Cam; skip?: string[]; dy?: number; own?: boolean }> = ({ soft = false, cam = GW, skip = [], dy = 0, own = false }) => (
   // WHY softer in the rewind (round 5 reviewer: flat grey boxes read as a placeholder): less blur and a lighter veil, so the real shelves and screens read as the room
   <AbsoluteFill style={{ filter: `blur(${soft ? 6 : 13}px)` }}>
     <div style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, transform: `translate(${960 - cam.cx * cam.s}px, ${540 - cam.cy * cam.s + dy}px) scale(${cam.s})`, transformOrigin: '0 0' }}>
       <Shelves night={1} />
-      {(cam === GW ? GW_DEVS : camDevs(cam, skip)).map((d) => <Device key={d.id} d={d} night={1} glow="rgba(236,230,244,1)"><SameScreen w={d.w} h={d.h} lay={2} lock={d.id === 'lockLaptop' ? 1 : 0} /></Device>)}
+      {/* WHY `own` (round 8 reviewer BLOCKER: the rewind sat on the OLD locked wall after every screen had become someone's own): in line 7
+          the room behind the phone is the personalised wall, each device in its own real look (the one holdout still generic) */}
+      {(cam === GW ? GW_DEVS : camDevs(cam, skip)).map((d) => <Device key={d.id} d={d} night={1} glow={own && d.id !== HOLDOUT ? lookFor(d).glow : 'rgba(236,230,244,1)'}>
+        {own && d.id !== HOLDOUT ? <OwnScreen look={lookFor(d)} w={d.w} h={d.h} /> : <SameScreen w={d.w} h={d.h} lay={2} lock={d.id === 'lockLaptop' ? 1 : 0} ai={own ? 1 : 0} />}</Device>)}
     </div>
     <AbsoluteFill style={{ background: `rgba(11,6,17,${soft ? 0.48 : 0.66})` }} />
   </AbsoluteFill>
 );
-const Room: React.FC<{ ghosts?: boolean; soft?: boolean; cam?: Cam; skip?: string[]; dy?: number }> = ({ ghosts = true, soft = false, cam, skip, dy }) => (
+const Room: React.FC<{ ghosts?: boolean; soft?: boolean; cam?: Cam; skip?: string[]; dy?: number; own?: boolean }> = ({ ghosts = true, soft = false, cam, skip, dy, own }) => (
   <AbsoluteFill style={{ background: 'radial-gradient(ellipse 90% 80% at 50% 30%, #22142D 0%, #120A1B 60%, #0B0611 100%)' }}>
-    {ghosts && <GhostWall soft={soft} cam={cam} skip={skip} dy={dy} />}
+    {ghosts && <GhostWall soft={soft} cam={cam} skip={skip} dy={dy} own={own} />}
     <AbsoluteFill style={{ background: 'radial-gradient(ellipse 80% 75% at 50% 45%, transparent 55%, rgba(8,3,14,0.55) 100%)' }} />
   </AbsoluteFill>
 );
@@ -72,8 +75,13 @@ const SHARE_IN = Q.data + 0.08, FLIP = Q.personal - 0.46, PRINT0 = Q.personal, P
 // WHY from "what happens" (not "And"): the tablet before it needs its own 1.2 s once its new screen is up
 // WHY the rewind starts ON "what" and ends on "data" (round 5 reviewer: the paper sat finished while the words went by): the data goes back into the phone
 // one row at a time, a tick per spoken word; then the phone itself dissolves into the wall behind it so the cut to the next shot matches
-const UNFLIP = Q.whatHappens + 0.1, REWIND0 = Q.whatHappens, REWIND1 = Q.ourDataEnd + 0.1;
-const GONE0 = Q.ourDataEnd + 0.25, GONE1 = Q.free - 0.05;
+// WHY round 8 (reviewer BLOCKER: the lines just scrolled away with their ticks still on, and a one-frame empty wall showed before the cut):
+// the receipt is TAKEN BACK. The cut into this shot comes mid-"what" (the tablet's page needs its moment first); then on "happens",
+// "with" and "our" two lines at a time are struck through and pulled back into the phone, and on "data." the header goes too. The
+// scene ends on a straight cut on "It's", with no dissolve.
+export const RW_CUT = Q.whatHappens + 0.15;
+const UNFLIP = Q.whatHappens + 0.1;
+const RW_GROUP = [Q.dataWord, Q.ourWord, Q.ourWord, Q.withWord, Q.withWord, Q.happensWord, Q.happensWord];   // per row: header, then lines 1..6
 if (PRINT1 - PRINT0 < 1.1) throw new Error('take1b: the receipt would print too fast to read');
 
 export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, mode }) => {
@@ -82,16 +90,18 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
   const rows = [HEAD, ...PRINT_LINES.map((_, i) => LINE + (i === PRINT_LINES.length - 1 ? 30 : 0))];
   const pu = lin(t, PRINT0, PRINT1) * rows.length;
   const ratchet = rows.reduce((a, h, i) => a + h * ez(pu, i, i + 0.7), 0);
-  // WHY the same ratchet run backwards: the rewind is the print in reverse, row by row
-  const pr = lin(t, REWIND0, REWIND1) * rows.length;
-  const back = rows.reduce((a, h, i) => a + h * ez(pr, i, i + 0.7, EASE_IN_OUT), 0);
+  // the rewind: each row is struck on its word, then pulled back into the phone a beat later
+  const strikeOf = (i: number) => (mode === 'rewind' ? ez(t, RW_GROUP[i] - 0.02, RW_GROUP[i] + 0.14, EASE_IN_OUT) : 0);
+  const pullOf = (i: number) => (mode === 'rewind' ? ez(t, RW_GROUP[i] + 0.16, RW_GROUP[i] + 0.42, EASE_IN_OUT) : 0);
+  const back = rows.reduce((a, h, i) => a + h * pullOf(i), 0);
   const len = mode === 'print' ? ratchet : Math.max(0, FULL - back);
-  // after the paper is home the phone settles 3 px and dissolves into the wall (rewind only)
-  const gone = mode === 'rewind' ? ez(t, GONE0, GONE1, EASE_IN_OUT) : 0;
-  const settle = mode === 'rewind' ? -3 * bump(t, REWIND1 - 0.1, 0.25) : 0;
+  const gone = 0;
+  const settle = mode === 'rewind' ? -3 * bump(t, Q.dataWord + 0.4, 0.25) : 0;
   // WHY the camera holds the phone whole until the header and the first line are out (round 7 reviewer: the switch, the cause, left the
   // frame just as the receipt, the effect, began); after that it follows the paper so the newest line is always in view
-  const follow = Math.max(0, len - HEAD - LINE);
+  // WHY no follow in the rewind (round 8 reviewer: the phone's top was cut off): the whole scene is drawn smaller instead (below), so the
+  // phone sits whole near the top of the frame with the full receipt under it
+  const follow = mode === 'rewind' ? 0 : Math.max(0, len - HEAD - LINE);
   const lay = 2;
   const L = sameLayout(PW, PH, lay);
   // WHY the knob crosses in 6 frames (round 7 reviewer), with no hand doing it: it is switched on for you, somewhere else
@@ -101,8 +111,9 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
   const phoneTop = PY + PH + BZ;
   return (
     <AbsoluteFill>
-      {mode === 'print' ? <Room cam={RCAM} skip={['hero']} dy={-follow} /> : <Room soft />}
-      <div style={{ position: 'absolute', left: 0, top: -follow + settle, width: 1920, height: 1080, opacity: 1 - gone }}>
+      {mode === 'print' ? <Room cam={RCAM} skip={['hero']} dy={-follow} /> : <Room soft own />}
+      <div style={{ position: 'absolute', left: 0, top: -follow + settle, width: 1920, height: 1080, opacity: 1 - gone,
+        transform: mode === 'rewind' ? 'translateY(34px) scale(0.75)' : undefined, transformOrigin: '50% 0' }}>
         {/* the paper, behind the phone, coming out of its bottom edge */}
         <div style={{ position: 'absolute', left: 960 - PAPER / 2, top: phoneTop - 8, width: PAPER, height: Math.max(0, len), overflow: 'hidden',
           background: 'linear-gradient(180deg,#E3D8C5 0px,#FBF6EC 14px,#F3EADB 100%)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',
@@ -112,7 +123,10 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
             <div style={{ height: HEAD - 24, fontSize: 34, fontWeight: 900, letterSpacing: '-0.035em' }}>shared with partners:</div>
             {PRINT_LINES.map((l, i) => (
               <div key={i} style={{ height: LINE, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px dashed #E2D4C0', fontSize: 27, fontWeight: 600, letterSpacing: '-0.02em', color: C.plum2 }}>
-                <span>{l.text}</span><span style={{ fontWeight: 800, color: C.plum }}>✓</span>
+                <span style={{ position: 'relative' }}>{l.text}
+                  {/* WHY a strike drawn left to right before the line is pulled back (round 8 reviewer): it reads as "taken back", not "scrolled away" */}
+                  {strikeOf(i + 1) > 0 && <span style={{ position: 'absolute', left: -4, top: '52%', height: 4, borderRadius: 4, width: `calc(${strikeOf(i + 1) * 100}% + 8px)`, background: C.purple }} />}
+                </span><span style={{ fontWeight: 800, color: C.plum, opacity: 1 - strikeOf(i + 1) }}>✓</span>
               </div>
             ))}
           </div>

@@ -72,6 +72,10 @@ const FOCI = {
   // WHY "typed" (round 6): the film types a request into a real laptop / tablet window. This picture has the whole sentence typed into
   // the app's own message box (real font, size, colour); the film reveals it letter by letter, and the measured x of every letter's end is kept in rows.json
   typed:      { screen: null, what: 'empty conversation, request typed in the message box (film reveals it)', empty: true, clean: true, typed: true },
+  // WHY "working" (round 8 reviewers BLOCKER: the page came back 0.6 s after send with no sign of the app making it): the same window
+  // a moment after the request is SENT, really sent through the app's own box, so its own sent bubble and its own working line are
+  // on screen. The reply is slowed right down (replySpeed) so the picture is taken while the app is still working on it.
+  working:    { screen: null, what: 'request just sent: its own sent bubble and the app working on it', empty: true, clean: true, working: true },
   home:    { screen: 'pages/focus/page-home#site', what: 'Page: Home (lights, media, climate)', pages: true },
   money:   { screen: 'pages/focus/page-money#site', what: 'Page: Finance', pages: true },
   paint:   { screen: 'pages/focus/page-paint', what: 'Page: Paint studio', pages: true, scenario: 'default' },
@@ -99,6 +103,26 @@ const PLAN = {
 
 // the sentences typed into the real boxes (what a person asks for; the page that arrives matches)
 const TYPED = { laptop: 'a page to run my lights', tablet: 'a paint studio' };
+// what each "working" picture was asked (its own sent bubble shows it). WHY per look: every person asks for something of their own
+const WORKING = {
+  'golden-sunbreak-phone': 'a page for my flat?',
+  'devils-garden-laptop': 'a page to run my lights',
+  'halftone-dimension-tablet': 'a paint studio',
+  'light-phone': 'something for my lamps',
+  'creme-tablet': 'a paint page for the kids?',
+};
+// WHY round 8 additions (reviewers: the wall after the turn was "a few dark dashboards" repeated; the shared page wiped the
+// neighbour's own theme; asks came back with no sign of work): more pages in more light looks, a Home page in the two share
+// targets' own looks, and a "working" picture for every device that is seen asking. Shot with --files so nothing old changes.
+const PLAN8 = {
+  'golden-sunbreak':    [['phone', 'working'], ['laptop', 'paint'], ['tablet', 'climate']],
+  'devils-garden':      [['laptop', 'working'], ['tablet', 'paint'], ['phone', 'lights']],
+  'halftone-dimension': [['tablet', 'working'], ['tablet', 'home'], ['phone', 'paint']],
+  light:                [['phone', 'working'], ['laptop', 'paint'], ['tablet', 'climate'], ['tv', 'media']],
+  creme:                [['tablet', 'working'], ['tablet', 'paint'], ['phone', 'lights'], ['laptop', 'home']],
+  'morning-rounds':     [['laptop', 'home'], ['phone', 'home'], ['laptop', 'paint'], ['tablet', 'media']],
+};
+for (const [k, v] of Object.entries(PLAN8)) PLAN[k] = [...PLAN[k], ...v];
 const dist = await ensureBuild(join(WORKTREE, 'youcoded'), (m) => console.error('[build]', m));
 const srv = await serve(dist);
 const base = `http://127.0.0.1:${srv.port}/`;
@@ -118,6 +142,7 @@ async function shoot(look, shapeKey, focusKey) {
     await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(slug)})}catch{}` });
     const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: f.scenario ?? 'site', theme: slug, ...(z.platform ? { platform: z.platform } : {}), ...(f.params ?? {}) });
     if (f.empty) { q.set('seed', 'none'); q.set('title', 'new chat'); }
+    if (f.working) q.set('replySpeed', '0.02');   // WHY: the reply crawls, so the app is caught mid-work, never mid-answer
     if (f.model) q.set('model', f.model);
     else if (f.seed) { q.set('replyClock', 'now'); }
     await tab.navigate(`${base}?${q}`);
@@ -147,6 +172,15 @@ async function shoot(look, shapeKey, focusKey) {
         const r = m.getBoundingClientRect(); const pl = parseFloat(c.paddingLeft) + parseFloat(c.borderLeftWidth); const ls = parseFloat(c.letterSpacing) || 0;
         const prefix = []; for (let i = 0; i <= text.length; i++) prefix.push(r.left + pl + ctx.measureText(text.slice(0, i)).width + ls * i);
         return { text, prefix, ink: c.color, rect: [r.left, r.top, r.width, r.height], fs: parseFloat(c.fontSize), font: c.fontFamily, tag: m.tagName }; })()`, 10000);
+    }
+    if (f.working) {
+      // type the request into the real box and press Enter, exactly as a person would; then wait just long enough for the app's
+      // own bubble and working line to draw (the reply itself is held back by replySpeed, set on the address below)
+      const text = WORKING[`${slug}-${shapeKey}`] ?? TYPED[shapeKey] ?? 'a page for my flat?';
+      await tab.evaluate(`(() => { const m = document.querySelector("[placeholder^='Message']"); m.focus();
+        const set = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(m), 'value').set; set.call(m, ${JSON.stringify(text)}); m.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+      await sleep(300);
+      await tab.evaluate(`(() => { const m = document.querySelector("[placeholder^='Message']"); m.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true, cancelable: true })); })()`);
     }
     if (f.focusBox && !f.typed) await tab.evaluate(`document.querySelector("[placeholder^='Message']").focus()`);
     // WHY wait on the theme font: a late web font would change the picture's typeface between shots
