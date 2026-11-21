@@ -133,7 +133,7 @@ const SENT = { look: 0.24, home: 0.22, money: 0.2 };
 // the answer lands, "idk. kinda rainy anime tokyo type vibe? open to ideas" is typed close up (readable), and
 // as it is sent the camera follows the bubble up the chat. On the 5.0 downbeat the window is Golden Sunbreak
 // AT THE SAME FRAMING (the purple bubble is now gold, the lilac behind it is a rainy city) and the camera
-// pulls out over a second to show the whole new look. "ok yeah. less gloomy tho" gets the same move into
+// pulls out over a second to show the whole new look. "actuallyyy gimme desert. i'm an ASU boy" gets the same move into
 // Devil's Garden on 10.5. WHY (review 2026-11-20): the change was a one-frame cut seen in a wide shot, small
 // and weightless; seen close on the very bubble the person sent, the change is the subject of the frame.
 const T_LOOK1 = 5.0, T_LOOK2 = 10.5;
@@ -149,8 +149,12 @@ const lookSegs = (): Seg[] => {
   const e = playTo(L, m(L, 'send2') + (T_LOOK1 - d.out) - 0.06, d.out, T_LOOK1);                  // sent; the camera follows it up
   // WHY +0.35 s after the switch: the app repaints in a fallback font for a few frames while the theme's
   // own font loads; the shot starts once the new look is fully itself.
-  const f = play(L, m(L, 'swap1') + 0.35, T_LOOK1, m(L, 'swap1') + 0.35 + 3.6);                  // 5.0: Golden Sunbreak
-  const g = playTo(L, m(L, 'type3', 'end'), f.out, f.out + 0.3 + (m(L, 'type3', 'end') - m(L, 'type3')));   // "ok yeah. less gloomy tho"
+  // WHY 3.3 s (was 3.6) and a squeeze for the third line (owner 2026-11-20: the line is now "actuallyyy gimme
+  // desert. i'm an ASU boy", 1.25 s of typing instead of 0.78): Golden Sunbreak gives up 0.3 s and the line is
+  // typed at the same 1.15x as the other two, so the camera still has ~0.8 s to follow the sent bubble up
+  // before the 10.5 beat, exactly as before.
+  const f = play(L, m(L, 'swap1') + 0.35, T_LOOK1, m(L, 'swap1') + 0.35 + 3.3);                  // 5.0: Golden Sunbreak
+  const g = squeeze(L, m(L, 'type3') - 0.3, m(L, 'type3', 'end'), f.out, f.out + (m(L, 'type3', 'end') - m(L, 'type3') + 0.3) / TYPE_RATE);   // "actuallyyy gimme desert. i'm an ASU boy"
   const h = playTo(L, m(L, 'send3') + (T_LOOK2 - g.out) - 0.06, g.out, T_LOOK2);
   const i = play(L, m(L, 'swap2') + 0.35, T_LOOK2, m(L, 'swap2') + 0.35 + 3.5);                   // 10.5: Devil's Garden
   return [a0, a1, b, c, d, e, f, g, h, { ...i, out: 14.0 }];
@@ -191,8 +195,9 @@ const MONEY_T = { connect: 32.5, bills: 39.35 };
 const T_EMAIL = 43.0, T_BEFORE = 46.0;
 
 // The sent look lines, measured in the 2026-11-20 re-film (fractions of the window): "idk. kinda rainy anime
-// tokyo…" sits at x 0.57-0.98 / y 0.36 in lilac and x 0.45-0.98 / y 0.35 in Golden Sunbreak; "ok yeah. less
-// gloomy tho" at x 0.71-0.98 / y 0.58 in Golden Sunbreak and x 0.74-0.98 / y 0.56 in Devil's Garden. WHY
+// tokyo…" sits at x 0.57-0.98 / y 0.36 in lilac and x 0.45-0.98 / y 0.35 in Golden Sunbreak; the third line
+// "actuallyyy gimme desert. i'm an ASU boy" (longer, so wider; re-measured 2026-11-20) at x 0.575-0.98 / y 0.58
+// in Golden Sunbreak and x 0.625-0.98 / y 0.56 in Devil's Garden. WHY
 // these framings: the same window point is on screen either side of each cut, so the bubble stays put while
 // everything about it changes; fx is kept so the window's own right edge just stays in frame.
 const BUB2 = (t: number, z = 1.7, c?: 'out'): Key => [t, z, 0.655, 0.36, c];
@@ -206,9 +211,9 @@ const CAM: Key[] = [
   // the message is sent and the camera follows it up the chat; a slow push into it until the beat
   BUB2(4.85), BUB2(T_LOOK1, 1.76),
   // 5.0: the same framing in the new look, then out to the whole window over a second (decelerating)
-  BUB2(T_LOOK1, 1.76), CHAT(6.4, 0.95, 'out'), CHAT(8.15, 0.925),
-  // "ok yeah. less gloomy tho", close; sent, followed up; 10.5 the same move into Devil's Garden
-  TYPE(8.65), TYPE(9.7), BUB3(10.25), BUB3(T_LOOK2, 1.96),
+  BUB2(T_LOOK1, 1.76), CHAT(6.4, 0.95, 'out'), CHAT(7.85, 0.925),
+  // "actuallyyy gimme desert. i'm an ASU boy", close; sent, followed up; 10.5 the same move into Devil's Garden
+  TYPE(8.35), TYPE(9.7), BUB3(10.25), BUB3(T_LOOK2, 1.96),
   BUB3(T_LOOK2, 1.96), CHAT(11.9, 0.95, 'out'), CHAT(14.0, 0.92),
   // their home
   TYPE(14.0), TYPE(15.35), CHAT(16.2, 0.93), CHAT(20.0, 0.955),
