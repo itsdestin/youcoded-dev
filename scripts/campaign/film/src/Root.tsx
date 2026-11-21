@@ -6,7 +6,7 @@ import { Take1 } from './round2/take1';
 import { Take1B } from './round2/take1b';
 import { Take1C } from './round2/take1c';
 import { Take2 } from './round2/take2';
-import { Take3 } from './round2/take3';
+import { Take3, T3_FRAMES } from './round2/take3';
 import { Hero30, Hero60, ShortFounder, ShortHouse, ShortRent, ShortYours } from './films';
 
 // Poster sizes: name → pixels. Social 4:5 and 9:16 are the brand guide's two; the rest are the
@@ -35,8 +35,8 @@ export const Root: React.FC = () => (
     <Composition id="take1b" component={Take1B} fps={FPS} width={1920} height={1080} durationInFrames={75 * FPS} />
     <Composition id="take1c" component={Take1C} fps={FPS} width={1920} height={1080} durationInFrames={75 * FPS} />
     <Composition id="take2" component={Take2} fps={FPS} width={1920} height={1080} durationInFrames={60 * FPS} />
-    <Composition id="take3" component={Take3} fps={FPS} width={1080} height={1920} durationInFrames={24 * FPS} />
-    <Composition id="take3-wide" component={Take3} fps={FPS} width={1920} height={1080} durationInFrames={24 * FPS} />
+    <Composition id="take3" component={Take3} fps={FPS} width={1080} height={1920} durationInFrames={T3_FRAMES} />
+    <Composition id="take3-wide" component={Take3} fps={FPS} width={1920} height={1080} durationInFrames={T3_FRAMES} />
     {IDEAS.flatMap((idea) => Object.entries(POSTER_SIZES).map(([name, [w, h]]) => (
       <Still key={`${idea}-${name}`} id={`poster-${idea}-${name}`} component={Poster} width={w} height={h} defaultProps={{ idea }} />
     )))}

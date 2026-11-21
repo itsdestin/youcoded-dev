@@ -11,19 +11,28 @@ import { Lockup, ramp } from '../kit';
 const HAND = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
 const linear = (x: number) => x;
 
-// ---------- the hit points (seconds; 100 BPM, beat 0.6 s, bar 2.4 s) ----------
-// WHY one table: the music is composed to exactly these, so every animation reads its times from here.
+// ---------- the hit points (seconds; 130 BPM, beat 0.4615 s, bar 1.846 s) ----------
+// WHY one table and one speed (Destin, 2026-11-20: "speed own everything up a bit, try 15-20s"): the film
+// was composed at 100 BPM (24 s). Every time below is that original hit time x K, so picture and music
+// (the songbook's own-everything-fast films, bpm 130) stay locked; change K and the songbook's bpm together.
+export const K = 100 / 130;
+const k = (x: number) => Math.round(x * K * 1000) / 1000;
+// WHY the strike and write come 0.37 s (under a beat) earlier than a plain scale: at the new speed the
+// corrected poster would otherwise be held only ~0.9 s before the page changes; this restores ~1.4 s.
+const EARLY = 0.37;
 export const T3 = {
-  // WHY the first line at 0: an empty opening frame read as a slow start; the film now opens on the words.
-  youllOwn: 0.0, nothing: 1.8, andYoull: 3.6, beHappy: 4.2,     // the deadpan statement
-  // WHY a beat before bar 4 (coordinator, 2026-11-20): so the fully corrected poster holds ~1.4 s before 9.6.
-  strike1: [6.6, 6.83] as const,                                 // the marker hits "nothing."
-  strike2: [6.87, 7.06] as const,                                // the second, quicker pass back the other way
-  reflow: [7.0, 7.35] as const,                                  // the lines below the struck one ease down to make room
-  write: 7.28,                                                   // the hand starts "everything."
-  data: 9.6, intelligence: 12.0, software: 14.4, everything: 16.8,
-  end: 19.2,                                                     // the poster's foot (logo, address) arrives with the logo sound
+  // WHY the first line at 0: an empty opening frame read as a slow start; the film opens on the words.
+  youllOwn: 0.0, nothing: k(1.8), andYoull: k(3.6), beHappy: k(4.2),   // the deadpan statement
+  strike1: [k(6.6) - EARLY, k(6.83) - EARLY] as const,           // the marker hits "nothing."
+  strike2: [k(6.87) - EARLY, k(7.06) - EARLY] as const,          // the second, quicker pass back the other way
+  reflow: [k(7.0) - EARLY, k(7.35) - EARLY] as const,            // the lines below the struck one ease down to make room
+  write: k(7.28) - EARLY,                                        // the hand starts "everything."
+  data: k(9.6), intelligence: k(12.0), software: k(14.4), everything: k(16.8),
+  end: k(19.2),                                                  // the poster's foot (logo, address) arrives with the logo sound
+  // WHY 3.4 s of finished poster after the foot arrives (the brief asks for at least 3 s, logo ringing out)
+  total: k(19.2) + 3.4,
 };
+export const T3_FRAMES = Math.round(T3.total * FPS);
 
 // ---------- layout, copied from posters.tsx (useFrame, fitLines, familySize) ----------
 const EM = 0.535; const FOOT_H = 10.2; const GAP = 0.98;
@@ -141,8 +150,8 @@ const penCurve = (x: number) => {
 // ---------- the handwriting ----------
 // Relative time each letter takes the hand (loops and descenders are slower than a straight v or r).
 const LETTER_TIME: Record<string, number> = { e: 1, v: 0.85, r: 0.75, y: 1.35, t: 0.9, h: 1.2, i: 0.55, n: 1, g: 1.45 };
-const SWEEP = 0.76;            // seconds for "everything" without the full stop
-const STOP_AFTER = 0.12;       // the pen lifts, then taps the full stop (Caveat's bold i has no dot to add)
+const SWEEP = 0.76 * 0.8;            // seconds for "everything" without the full stop
+const STOP_AFTER = 0.1;       // the pen lifts, then taps the full stop (Caveat's bold i has no dot to add)
 type Measure = { w: number; xs: number[] };   // text width and each letter's left edge, in unrotated px
 /** "everything." written on in Caveat, exactly where and how the poster sets it. The real text is revealed by a
  *  soft-edged, slanted wipe that follows a hand's rhythm letter by letter, and the full stop is tapped last.
@@ -283,7 +292,7 @@ const AddLine: React.FC<{ text: string; at: number; next: number }> = ({ text, a
   // read as a switch. Now the colour drains over 1.5 s, starting just before the next beat, and the new word
   // fades up over a third of a second, so the accent is handed over instead of swapped.
   const o = frame < at * FPS ? 0 : ramp(frame, at, at + 0.34, EASE_OUT);
-  const settle = ramp(frame, next - 0.3, next + 1.2, EASE_IN_OUT);
+  const settle = ramp(frame, next - 0.3 * K, next + 1.2 * K, EASE_IN_OUT);
   return <div style={{ opacity: o, transform: `translateY(${(1 - inP) * 0.22}em)`, color: interpolateColors(settle, [0, 1], [C.purple, C.plum]) }}>{text}</div>;
 };
 /** The closer: "everything." letter by letter, each rising into place a little after the one before.
@@ -359,6 +368,6 @@ export const Take3: React.FC<{ narrator?: boolean }> = () => (
   <AbsoluteFill style={{ background: C.night }}>
     <Audio src={staticFile('audio/sb-take3-mix.wav')} />
     <Scene from={0} to={T3.data}><Nothing /></Scene>
-    <Scene from={T3.data} to={24} dissolve><OwnAll /></Scene>
+    <Scene from={T3.data} to={T3.total} dissolve><OwnAll /></Scene>
   </AbsoluteFill>
 );

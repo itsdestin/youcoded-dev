@@ -245,7 +245,55 @@ OWN_BAREST = _subtle("own-everything-barest", -19.0,
                      S("hopeful", 3, tune="phrase2", start=9.6, bpm=100, dyn=0.72, drop=("sub", "air"),
                        chords=[["Eb"], ["Cm7"], ["Fm7"]], label="the statements, piano nearly alone"))
 
-FILMS = {f.name: f for f in (OWN_EVERYTHING, OWN_GENTLER, OWN_BAREST)}
+# ---- the faster cut (Destin, 2026-11-20: "speed own everything up a bit, try 15-20 s") ----
+# WHY the same bars at 130 beats a minute instead of 100: every bar, every hit and the logo scale
+# together by K = 100/130, so picture and music stay locked. Must match K in film/src/round2/take3.tsx.
+# The strike and the handwriting come EARLY seconds sooner than a plain scale (see take3.tsx) so the
+# corrected poster is held long enough to read; the pen sounds follow the picture exactly.
+_K = 100 / 130
+_EARLY = 0.37
+_FAST_BPM = 130
+_FAST_LEN = round(19.2 * _K + 3.4, 3)       # 3.4 s of finished poster after the logo lands
+_k = lambda x: round(x * _K, 3)
+_SWEEP = 0.76 * 0.8
+_w = _k(7.28) - _EARLY
+_FAST_HITS = [
+    Hit(round(_k(6.60) - _EARLY, 3), "marker-stroke-short-b", length=round(0.23 * _K, 3), what="first stroke through 'nothing.'"),
+    Hit(round(_k(6.87) - _EARLY, 3), "marker-stroke-short-b", length=round(0.19 * _K, 3), what="second stroke"),
+    Hit(round(_w, 3), "handwriting-c", part="writing", length=round(_SWEEP, 3), what="'everything.' written"),
+    Hit(round(_w + _SWEEP + 0.1, 3), "handwriting-c", part="dot", what="the full stop"),
+]
+_FAST_PICTURE = [(0.0, "you'll own"), (_k(1.8), "nothing."), (_k(3.6), "and you'll"), (_k(4.2), "be happy."),
+                 (_FAST_HITS[0].t, "strike 1"), (_FAST_HITS[1].t, "strike 2"), (_FAST_HITS[2].t, "everything. (written)"),
+                 (_FAST_HITS[3].t, "full stop"),
+                 (_k(9.6), "own your data."), (_k(12.0), "own your intelligence."), (_k(14.4), "own your software."),
+                 (_k(16.8), "own everything."), (_k(19.2), "youcoded (name)"), (_FAST_LEN, "end")]
+
+
+def _fast(name, loudness, statements_dyn, **kw):
+    # the opening is the same in all three; only the statements differ
+    chords = [["Eb"], ["Cm7"], ["Fm7"]]
+    if statements_dyn is None:   # the full-strength version
+        stm = S("triumphant", 3, tune="phrase2", start=_k(9.6), bpm=_FAST_BPM, dyn=0.9, lift=True, chords=chords,
+                label="the statements, building")
+    else:
+        stm = S("hopeful", 3, tune="phrase2", start=_k(9.6), bpm=_FAST_BPM, dyn=statements_dyn, chords=chords,
+                label="the statements", **kw)
+    extra = {} if loudness is None else dict(loudness=loudness)
+    return Film(
+        name,
+        Piece(name, _FAST_LEN, land=_k(19.2), ending_start=_k(16.8), rit=0.92, seed=21,
+              notes="Own everything, faster cut (about 18 s).",
+              sections=[S("stark", 4, tune=["phrase1:3"], turn=True, bpm=_FAST_BPM, span=1,
+                          label="deadpan, then the turn under 'everything.'"), stm], **extra),
+        hits=_FAST_HITS, picture=_FAST_PICTURE, copy_to=None)
+
+
+OWN_FAST = _fast("own-everything-fast", None, None)
+OWN_FAST_GENTLER = _fast("own-everything-fast-gentler", -17.0, 0.8, lift=True)
+OWN_FAST_BAREST = _fast("own-everything-fast-barest", -19.0, 0.72, drop=("sub", "air"))
+
+FILMS = {f.name: f for f in (OWN_EVERYTHING, OWN_GENTLER, OWN_BAREST, OWN_FAST, OWN_FAST_GENTLER, OWN_FAST_BAREST)}
 
 
 def render_film(film):
