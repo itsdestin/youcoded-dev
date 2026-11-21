@@ -92,7 +92,8 @@ const SHOTS: Shot[] = [
   // and the frame's top free for the hats to grow out of
   // WHY wider than before (review: the hats ran off the top of the frame): the tallest hat now ends at about y 140
   // on the page, and every shot with the men keeps at least 8% of the frame above it
-  cut(CUT.hubris, 430, 450, 1.38, 11), at(CUT.these - 0.01, 430, 445, 1.36, 11),
+  // WHY x 490 (merge check): the men stood against the first letters of the held headline; they now sit clear to its left
+  cut(CUT.hubris, 490, 450, 1.38, 11), at(CUT.these - 0.01, 490, 445, 1.36, 11),
   cut(CUT.these, 440, 470, 1.5, 14), at(Q.artificial - 0.07, 445, 470, 1.55, 14),
   // WHY 2.0 and centred between the men and the well (review: the 2.6 close-up cropped the men out, so nothing
   // reacted to the quill): now the men's hands rubbing and the quill rising are in one frame
@@ -113,7 +114,11 @@ const SHOTS: Shot[] = [
   // vii: the key falls into her hand with the padlock in the same frame ("and so"), a slow push as she carries it
   // to the lock ("a very long while"), the wide on "decide" while the other two scenes ink in
   // WHY a medium shot, not an extreme close-up on empty paper (review): the figure, key and lock stay together
-  cut(TURN.ours, 290, 340, 2.6, 12), at(Q.veryLong, 320, 400, 2.3, 13), at(Q.veryLong + 0.9, 350, 400, 2.3, 13), at(Q.decide - 0.07, 350, 405, 2.3, 13),
+  // WHY a wide, clear-lower-right framing until the headline "for anyone who asks." has gone (merge check): the close
+  // shot put the laptop and padlock straight under the held headline for ~1 s after the cut on "And so". The close
+  // shot now cuts in as the headline finishes fading, so its words never sit on a drawing.
+  cut(TURN.ours, 760, 505, 1.03), at(Q.asks + 2.25, 760, 505, 1.03),
+  cut(Q.asks + 2.3, 290, 340, 2.6, 12), at(Q.veryLong, 320, 400, 2.3, 13), at(Q.veryLong + 0.9, 350, 400, 2.3, 13), at(Q.decide - 0.07, 350, 405, 2.3, 13),
   cut(Q.decide - 0.05, H.x, H.y, H.z), at(Q.ourComputers - 0.07, 760, 505, 1.03),
   cut(Q.ourComputers - 0.05, 375, 425, 2.3, 14), at(Q.canDo + 0.2, 380, 428, 2.4, 14),
   // WHY the cut to the price tag waits a hair past "what it costs" begins (review: the screen filled and the cut came

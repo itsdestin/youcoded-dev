@@ -131,6 +131,9 @@ const GROW = [36, 48, 62, 80];                   // each step of a hat's growth 
 const HAT_K = [0.88, 1, 0.94];                   // each man's hat grows to a slightly different height
 // WHY drawn well before the cut: the film cuts straight into this spread on "hubris", so it must already be finished
 const DRAWN = TURN.treasure - 3;
+// WHY the desk inks in just after "hubris" (merge check): drawn earlier, its edge stood under the headline "something
+// wonderful happened." for the first second after the cut. The headline leaves on "hubris"; the desk arrives with it.
+const DESK_A = Q.hubris + 0.05;
 
 /** How tall each man's hat is: four comic jumps on "hubris", each landing with an overshoot, then it stays. */
 const crownAt = (t: number, j: number) =>
@@ -373,8 +376,8 @@ const TreasureArt: React.FC = () => {
             it now hangs off the side of the slab, clear of every icon, on "ever-scarce": theirs is the only stack */}
         <Padlock x={STACK.cx - STACK.w / 2 - 2} y={782} s={1.15} at={Q.scarce} />
         {/* their desk */}
-        <Shape d={`M ${DESK.x0} ${DESK.y} L ${DESK.x1} ${DESK.y} L ${DESK.x1} ${DESK.y + 16} L ${DESK.x0} ${DESK.y + 16} Z`} a={DRAWN + 0.4} b={DRAWN + 0.8} fill={P.inkSoft} w={3} />
-        <Ink d={`M ${DESK.x0 + 20} ${DESK.y + 16} L ${DESK.x0 + 26} 880 M ${DESK.x1 - 20} ${DESK.y + 16} L ${DESK.x1 - 26} 880`} a={DRAWN + 0.5} b={DRAWN + 0.9} w={5} />
+        <Shape d={`M ${DESK.x0} ${DESK.y} L ${DESK.x1} ${DESK.y} L ${DESK.x1} ${DESK.y + 16} L ${DESK.x0} ${DESK.y + 16} Z`} a={DESK_A} b={DESK_A + 0.4} fill={P.inkSoft} w={3} />
+        <Ink d={`M ${DESK.x0 + 20} ${DESK.y + 16} L ${DESK.x0 + 26} 880 M ${DESK.x1 - 20} ${DESK.y + 16} L ${DESK.x1 - 26} 880`} a={DESK_A + 0.1} b={DESK_A + 0.5} w={5} />
         <Chart t={t} />
         <Coins t={t} />
         {wellIn > 0 && <g transform={`translate(${wellX} ${TOP}) scale(${Math.min(1.1, wellIn)}) translate(${-wellX} ${-TOP})`}><Inkwell x={wellX} rock={rock} /></g>}
