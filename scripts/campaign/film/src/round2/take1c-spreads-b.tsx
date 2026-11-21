@@ -149,16 +149,27 @@ const manAt = (t: number, j: number) => {
   if (t > Q.far - 0.06 && t < Q.control + 1.1) pose = j === 2 ? 'stretch' : 'reach';
   // chins up on "hubris"; greed on "treasure": all three lean in toward the chart together,
   // then on "value" they lean back with their chins up, following the arrow; a lean toward the quill on "excitement"
-  const hub = -7 * lin(t, Q.hubris - 0.1, Q.hubris + 0.3);
+  // WHY a per-man beat for everything below (review BLOCKER: three clones swayed in phase for 14 s): each man has his
+  // own sway speed and size, his own idle gesture, and reacts a few frames after his neighbour
+  const spike = (a: number, b: number) => lin(t, a, a + 0.12) * (1 - lin(t, b, b + 0.25));
+  if (pose === 'sides' && t < Q.far - 0.06) {
+    const phase = Math.floor((t + j * 0.55) / 1.1) % 3;
+    pose = ([['sides', 'pat', 'sides'], ['sides', 'bar', 'sides'], ['pat', 'sides', 'bar']] as HatPose[][])[j][phase];
+  }
+  // on "artificial" they lean in toward the quill, then jerk back as it rises; on "control" it throws them off balance
+  const peer = 8 * spike(Q.artificial + j * 0.05, Q.intelligence) - 9 * spike(Q.intelligence + 0.25 + j * 0.05, Q.intelligence + 0.5);
+  const tumble = [-15, 11, -9][j] * spike(Q.control + 0.28 + j * 0.05, Q.control + 0.55);
+  const hub = -7 * lin(t, Q.hubris - 0.1 + j * 0.05, Q.hubris + 0.3 + j * 0.05);
   const greed = 9 * lin(t, Q.treasure - 0.1, Q.treasure + 0.35) * (1 - lin(t, Q.value + 0.05, Q.value + 0.4));
   const chin = -6 * lin(t, Q.value + 0.05, Q.value + 0.4) * (1 - lin(t, Q.but - 0.1, Q.but + 0.25));
   const grab = 9 * lin(t, Q.excitement - 0.1, Q.excitement + 0.3) * (1 - lin(t, Q.control + 0.8, Q.control + 1.2));
   // WHY an idle sway, a breath and bounces (review: the men stood rigid for seconds while she spoke the film's turn):
   // each man shifts his weight on his own beat, and all three hop on "excitement" and again on "created"
-  const sway = Math.sin(t * 2.1 + j * 1.7) * 1.2;
+  const sway = Math.sin(t * (1.7 + j * 0.45) + j * 2.3) * (1.0 + j * 0.5);
   const breath = 1 + 0.012 * Math.sin(t * 2.7 + j * 1.1);
-  const bob = jolt(t, Q.excitement - 0.02 + j * 0.06, -16, 0.55) + jolt(t, Q.createdSomething + j * 0.06, -10, 0.5);
-  return { pose, lean: hub + greed + chin + grab + sway, breath, bob };
+  const bob = jolt(t, Q.excitement - 0.02 + j * 0.06, -16, 0.55) + jolt(t, Q.createdSomething + j * 0.06, -10, 0.5)
+    + jolt(t, Q.hubris + 0.3 + j * 0.11, -9, 0.45) + jolt(t, Q.created1 + 0.3 + j * 0.1, -7, 0.45);
+  return { pose, lean: hub + greed + chin + grab + sway + peer + tumble, breath, bob };
 };
 /** Where a point on a man (in his own drawing units) lands on the page, with his lean. */
 const onMan = (fx: number, lean: number, px: number, py: number) => {
@@ -209,17 +220,19 @@ const Inkwell: React.FC<{ x: number; rock?: number }> = ({ x, rock = 0 }) => (
 /** The chart on its easel: one line climbs on "shareholder value" and its tip becomes an arrow pointing up. */
 const Chart: React.FC<{ t: number }> = ({ t }) => {
   // WHY it fades away rather than rolling up: shrinking, it dragged its line across the men's bodies
-  const o = lin(t, Q.treasure - 0.15, Q.treasure + 0.2) * (1 - lin(t, Q.but + 0.05, Q.but + 0.4));
+  // WHY it is knocked over by their excitement (review: it just vanished for no reason): it tips about its foot, then goes
+  const o = lin(t, Q.treasure - 0.15, Q.treasure + 0.2) * (1 - lin(t, Q.but + 0.3, Q.but + 0.5));
   if (o <= 0.001) return null;
+  const tip = lin(t, Q.but + 0.0, Q.but + 0.4, EASE_IN);
   const rise = (1 - lin(t, Q.treasure - 0.15, Q.treasure + 0.3)) * 24;
   const { x0, x1, y0, y1 } = CHART;
   const pts: [number, number][] = [[x0 + 16, y1 - 20], [x0 + 44, y1 - 38], [x0 + 64, y1 - 30], [x0 + 92, y1 - 62], [x0 + 108, y1 - 54], [x1 - 22, y0 + 26]];
   const line = pts.map(([x, y], i) => `${i ? 'L' : 'M'} ${x} ${y}`).join(' ');
-  const tip = pts[pts.length - 1], prev = pts[pts.length - 2];
-  const ang = (Math.atan2(tip[1] - prev[1], tip[0] - prev[0]) * 180) / Math.PI;
+  const tipPt = pts[pts.length - 1], prev = pts[pts.length - 2];
+  const ang = (Math.atan2(tipPt[1] - prev[1], tipPt[0] - prev[0]) * 180) / Math.PI;
   const head = pop(t, Q.value + 0.28, 0.35);
   return (
-    <g opacity={o} transform={`translate(0 ${rise})`}>
+    <g opacity={o} transform={`translate(0 ${rise}) rotate(${tip * 78} ${x1 - 22} ${TOP})`}>
       <defs><clipPath id="c-chart"><rect x={x0 + 4} y={y0 + 4} width={x1 - x0 - 8} height={y1 - y0 - 8} /></clipPath></defs>
       {/* the easel's legs, standing on the desk */}
       <path d={`M ${x0 + 30} ${y1} L ${x0 + 22} ${TOP} M ${x1 - 30} ${y1} L ${x1 - 22} ${TOP}`} stroke={P.ink} strokeWidth={4} strokeLinecap="round" />
@@ -228,7 +241,7 @@ const Chart: React.FC<{ t: number }> = ({ t }) => {
         {[1, 2, 3, 4].map((i) => <path key={i} d={`M ${x0 + 8} ${y0 + i * 28} L ${x1 - 8} ${y0 + i * 28}`} stroke={P.inkSoft} strokeWidth={1.3} opacity={0.3} />)}
         <Ink d={line} a={Q.shareholder - 0.05} b={Q.value + 0.3} w={6} />
         {/* the arrowhead: stays inside the board's edge */}
-        {head > 0 && <g transform={`translate(${tip[0]} ${tip[1]}) rotate(${ang}) scale(${Math.min(1.1, head)})`}><path d="M 4 0 L -14 -10 L -14 10 Z" fill={P.ink} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" /></g>}
+        {head > 0 && <g transform={`translate(${tipPt[0]} ${tipPt[1]}) rotate(${ang}) scale(${Math.min(1.1, head)})`}><path d="M 4 0 L -14 -10 L -14 10 Z" fill={P.ink} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" /></g>}
       </g>
     </g>
   );
@@ -262,6 +275,27 @@ const writeKeys = (): Key[] => Array.from({ length: 9 }).map((_, i) => {
   const f = i / 8;
   return { t: NOTE_A + (NOTE_B - NOTE_A) * f, x: NOTE.x0 + (NOTE.x1 - NOTE.x0) * f, y: NOTE.y + 4 + (i % 2 ? -9 : 7), r: -14, s: 1.05, ease: (v: number) => v };
 });
+
+/** The treasure itself (review SHOULD: "great treasure" had nothing on screen for 1.6 s): two stacks of gold coins pile
+ *  up on their desk beside the inkwell on the word, one coin at a time, and glint once. */
+const Coins: React.FC<{ t: number }> = ({ t }) => {
+  if (t < Q.treasure - 0.05) return null;
+  const glint = Math.max(0, 1 - Math.abs(t - (Q.treasure + 0.75)) / 0.12);
+  const fall = lin(t, Q.but + 0.15, Q.but + 0.5, EASE_IN);
+  const stacks: [number, number][] = [[712, 6], [686, 3]];
+  return (
+    <g transform={`translate(0 ${fall * 120}) rotate(${fall * 14} 700 ${TOP})`} opacity={1 - lin(t, Q.but + 0.3, Q.but + 0.5)}>
+      {stacks.map(([cx, n], si) => Array.from({ length: n }).map((_, i) => {
+        const k = pop(t, Q.treasure + (si * n + i) * 0.07, 0.2);
+        if (k <= 0) return null;
+        const y = TOP - 6 - i * 9 - (1 - Math.min(1, k)) * 40;
+        return <g key={`${si}-${i}`}><ellipse cx={cx} cy={y} rx={22} ry={7} fill="#F2C04A" stroke={P.ink} strokeWidth={3} />
+          <path d={`M ${cx - 14} ${y} Q ${cx} ${y + 4} ${cx + 14} ${y}`} stroke={P.ink} strokeWidth={1.6} fill="none" opacity={0.5} /></g>;
+      }))}
+      {glint > 0 && <path d={`M 712 ${TOP - 70} l 5 -16 l 5 16 l 16 5 l -16 5 l -5 16 l -5 -16 l -16 -5 Z`} fill="#FFF6D0" opacity={glint} />}
+    </g>
+  );
+};
 
 const TreasureArt: React.FC = () => {
   const t = useT();
@@ -342,6 +376,7 @@ const TreasureArt: React.FC = () => {
         <Shape d={`M ${DESK.x0} ${DESK.y} L ${DESK.x1} ${DESK.y} L ${DESK.x1} ${DESK.y + 16} L ${DESK.x0} ${DESK.y + 16} Z`} a={DRAWN + 0.4} b={DRAWN + 0.8} fill={P.inkSoft} w={3} />
         <Ink d={`M ${DESK.x0 + 20} ${DESK.y + 16} L ${DESK.x0 + 26} 880 M ${DESK.x1 - 20} ${DESK.y + 16} L ${DESK.x1 - 26} 880`} a={DRAWN + 0.5} b={DRAWN + 0.9} w={5} />
         <Chart t={t} />
+        <Coins t={t} />
         {wellIn > 0 && <g transform={`translate(${wellX} ${TOP}) scale(${Math.min(1.1, wellIn)}) translate(${-wellX} ${-TOP})`}><Inkwell x={wellX} rock={rock} /></g>}
 
         {/* "far beyond their own control": his arm shoots out, and his hand closes on the air where it was */}
@@ -391,7 +426,7 @@ const AnyoneArt: React.FC = () => {
   const foot = ASK_Y + windowHeight(ASK_W) / 2;
   return (
     <>
-      <Heading n="vi" title="theirs to make" />
+      {/* WHY no chapter heading on my spreads (owner: dislikes the headers; reviewers: unreadable serif italic) */}
       <Folio left={14} hideRight />
       <Sheet>
         <WashBg x={380} y={420} r={230} sx={1.4} a={-10} seed={16} color={P.lilac} o={0.55} />
@@ -434,7 +469,7 @@ const Furniture: React.FC<{ n: string; title: string; left: number; from: number
   const t = useT();
   const o = lin(t, from, from + 0.25) * (to == null ? 1 : 1 - lin(t, to - 0.12, to));
   if (o <= 0.01) return null;
-  return <div style={{ position: 'absolute', left: 0, top: 0, opacity: o }}><Heading n={n} title={title} /><Folio left={left} hideRight={hideRight} /></div>;
+  return <div style={{ position: 'absolute', left: 0, top: 0, opacity: o }}><Folio left={left} hideRight={hideRight} /></div>;
 };
 
 // ======================= vii · ours: chapter ii, undone =======================
@@ -444,13 +479,33 @@ const Scissors: React.FC<{ x: number; y: number; r: number; open: number }> = ({
   <g transform={`translate(${x} ${y}) rotate(${r})`}>
     {[1, -1].map((s) => (
       <g key={s} transform={`rotate(${s * open * 16})`}>
-        <path d={`M 0 0 L 46 ${s * -3} L 0 ${s * 6} Z`} fill={P.paperShade} stroke={P.ink} strokeWidth={2.4} strokeLinejoin="round" />
-        <circle cx={-16} cy={s * 10} r={9} fill={P.pink} stroke={P.ink} strokeWidth={2.4} />
+        <path d={`M -6 ${s * 2} L 58 ${s * -2} Q 60 ${s * 1} 56 ${s * 3} L -6 ${s * 7} Z`} fill="#F4F0F6" stroke={P.ink} strokeWidth={2.6} strokeLinejoin="round" />
+        <path d={`M -6 ${s * 5} L -22 ${s * 12}`} stroke={P.ink} strokeWidth={5} strokeLinecap="round" />
+        <ellipse cx={-30} cy={s * 14} rx={11} ry={8} fill="none" stroke={P.pink} strokeWidth={5} /><ellipse cx={-30} cy={s * 14} rx={11} ry={8} fill="none" stroke={P.ink} strokeWidth={1.6} />
       </g>
     ))}
-    <circle r={2.6} fill={P.ink} />
+    <circle r={4} fill={P.sun} stroke={P.ink} strokeWidth={2} />
   </g>
 );
+/** A handwritten wish above her laptop: her words, written on "computers", and the screen builds itself on "can do".
+ *  WHY (review SHOULD: the product idea, asking and getting, was never shown in this stretch): a person's own
+ *  handwriting on paper, never a drawn app interface. */
+const WISH = { x0: 120, x1: 372, y: 300, text: 'show me the sky' };
+const WishScrap: React.FC<{ t: number }> = ({ t }) => {
+  const a = Q.ourComputers + 0.05, b = Q.canDo - 0.1;
+  if (t < a - 0.05 || t > Q.ourComputers + 1.1) return null;
+  const u = lin(t, a, b);
+  const w = WISH.x1 - WISH.x0;
+  const pts = `M ${WISH.x0 - 22} ${WISH.y - 60} L ${WISH.x1 + 22} ${WISH.y - 64} L ${WISH.x1 + 18} ${WISH.y + 34} L ${WISH.x0 - 20} ${WISH.y + 38} Z`;
+  return (
+    <g opacity={1 - lin(t, Q.ourComputers + 0.9, Q.ourComputers + 1.1)} transform={`rotate(-2 ${WISH.x0 + w / 2} ${WISH.y})`}>
+      <defs><clipPath id="c-wish"><rect x={WISH.x0 - 10} y={WISH.y - 70} width={(w + 20) * u} height={110} /></clipPath></defs>
+      <path d={pts} fill="rgba(42,26,53,0.18)" transform="translate(4 6)" />
+      <path d={pts} fill="#FFFDF8" stroke={P.ink} strokeWidth={2.4} strokeLinejoin="round" />
+      <g clipPath="url(#c-wish)"><text x={WISH.x0} y={WISH.y} textLength={w} lengthAdjust="spacingAndGlyphs" fontFamily={CAVEAT} fontWeight={700} fontSize={50} fill={P.ink}>{WISH.text}</text></g>
+    </g>
+  );
+};
 /** Her raised hand (pose "up", scale 1.1, at 200,500): where the key drops on "and so". */
 export const OURS_HAND = { x: 200 + 24 * 1.1, y: 500 - 96 * 1.1 };
 const OursArt: React.FC = () => {
@@ -502,8 +557,13 @@ const OursArt: React.FC = () => {
         <Ink d="M 250 420 L 490 420 M 270 420 L 270 500 M 470 420 L 470 500" a={L - 0.1} b={L + 0.35} w={3.4} />
         <Laptop x={370} y={418} s={1.5} a={L} b={L + 0.4} />
         {screenP > 0 && <g transform={`translate(370 ${418 - 36}) scale(${screenP}) translate(-370 ${-(418 - 36)})`}><ThemedWindow theme="sunbreak" x={370} y={418 - 36} w={112} compact bare /></g>}
+        <WishScrap t={t} />
         <Person x={200} y={500} s={1.1} a={L - 0.05} b={L + 0.55} pose={t > Q.veryLong + 0.05 && t < Q.ourComputers + 1.1 ? 'write' : 'up'} mood="smile" hair="bun" body={NEUTRAL[2]} bob={bob(0)} />
-        <HatFigure x={592} y={500} s={1} crown={84} a={L - 0.2} b={L + 0.7} pose="sides" flip fade={0.75} lean={Math.sin(t * 1.4) * 1.3} />
+        {/* WHY he moves (review SHOULD: a grey statue for 6 s): he tips his hat and breathes, then his shoulders sag and he sways
+            back as the lock opens on "decide"; less drained than before so he reads as a beaten rival, not half-erased */}
+        <HatFigure x={592 + 14 * lin(t, Q.decide, Q.decide + 0.5, EASE_OUT)} y={500} s={1} crown={84} a={L - 0.2} b={L + 0.7}
+          pose={t < Q.decide ? (Math.floor(t * 0.7) % 2 ? 'pat' : 'sides') : 'sides'} flip fade={0.6}
+          lean={Math.sin(t * 1.4) * 1.3 + 9 * lin(t, Q.decide, Q.decide + 0.4) + jolt(t, Q.firstTime, 3, 0.6)} bob={jolt(t, Q.longWhile, -5, 0.5)} />
         <g transform={`rotate(${rattle} 370 398)`}><Padlock x={370} y={384} s={1.25} at={L} openAt={Q.ourComputers + 0.85} fallAt={Q.ourComputers + 1.05} color={P.inkSoft} /></g>
         {t > Q.andSo && t < Q.ourComputers + 1.05 && (
           <g transform={`translate(${carrying ? keyX : held.x} ${carrying ? keyY : held.y + bob(0)}) rotate(${carrying ? -90 + kTurn * 90 + rattle : 0})`}>
@@ -525,6 +585,8 @@ const OursArt: React.FC = () => {
         {snip >= 1 && <path d="M 284 700 Q 292 690 300 688" stroke={P.ink} strokeWidth={2.4} fill="none" strokeLinecap="round" />}
         <g transform={`translate(${fall * 60} ${fall * 260}) rotate(${fall * 60} 326 722)`} opacity={1 - lin(t, Q.costs + 0.5, Q.costs + 0.8)}>
           <PriceTag x={326} y={722} s={1.1} at={LB + 0.2} swing={-6} prices={[{ v: '19.99/mo', at: LB + 0.3 }]} />
+          {/* WHY a thick purple X once it is cut (review: the tag just sat there with its price intact) */}
+          {snip >= 1 && <path d="M 296 740 L 356 800 M 356 740 L 296 800" stroke={P.purple} strokeWidth={9} strokeLinecap="round" opacity={lin(t, Q.costs + 0.05, Q.costs + 0.2)} />}
         </g>
         {/* once the tag is gone, the screen it hung from says what it costs now */}
         {t > Q.costs + 0.3 && (
@@ -539,7 +601,12 @@ const OursArt: React.FC = () => {
         <Person x={920} y={880} s={1.35} a={LB + 0.2} b={LB + 0.8} pose={t > Q.ourData + 0.3 ? 'bothUp' : 'down'} hair="long" mood="smile" body={NEUTRAL[5]} hairColor={P.purple} bob={bob(2)} />
         <g transform={`translate(0 ${boxHop}) rotate(${boxHop * 0.8} 1060 880)`}>
           <Shape d="M 1010 880 L 1110 880 L 1110 820 L 1010 820 Z" a={LB + 0.3} b={LB + 0.7} fill={P.sun} w={3} />
-          <Shape d="M 1010 820 L 1110 820 L 1130 780 L 1030 780 Z" a={LB + 0.4} b={LB + 0.8} fill={P.sunSoft} w={3} />
+          {/* WHY a lid that swings open for her things and slams shut on "data" (review SHOULD: the box had no lid or lock, so
+              nothing said "ours"): it ends shut with a small key-hole, and the king's hand-off is over */}
+          <g transform={`rotate(${-62 * lin(t, Q.ourData, DATA_FROM) * (1 - lin(t, Q.data2 - 0.05, Q.data2 + 0.1, EASE_IN))} 1010 820)`}>
+            <Shape d="M 1010 820 L 1110 820 L 1130 780 L 1030 780 Z" a={LB + 0.4} b={LB + 0.8} fill={P.sunSoft} w={3} />
+          </g>
+          {t > Q.data2 + 0.05 && <circle cx={1060} cy={850} r={5} fill={P.ink} />}
         </g>
         {/* WHY smaller and paler than before (review: a second grey king crowded a stretch with one idea) */}
         <HatFigure x={1340} y={880} s={1.3} crown={90} a={LB + 0.1} b={LB + 1.0} pose="sides" fade={0.8} lean={kingTug} />
@@ -559,7 +626,6 @@ const FreeArt: React.FC = () => {
   const L = land(TURN.free);
   return (
     <>
-      <Heading n="viii" title="so long, old kings" />
       <Folio left={18} />
       <Sheet>
         <Strings figA={L - 1.6} peopleA={L - 1.4} stringsA={L - 1.0} beats={[]} colourful snapAt={Q.free} fadeFrom={Q.monopolies2} fadeTo={Q.pastEnd} />
@@ -602,11 +668,12 @@ const ownSpread = (k: number): Spread => {
     return (
       <>
         <Sheet rough={false}>
-          <rect x={0} y={0} width={1520} height={980} fill={look.page} />
+          {/* WHY the theme's paper lightened toward cream (review: muddy mauve and grey-brown pages) */}
+          <rect x={0} y={0} width={1520} height={980} fill={mixHex(look.page, '#FFFAF0', 0.45)} />
           <path d={blob(380, 560, 240, k + 1, 0.16)} fill="#fff" opacity={0.45} />
-          <Person x={380} y={820} s={3.1} a={a} b={a + 0.5} body={NEUTRAL[k * 3 + 1]} hair={HAIRS[k]} hairColor={P.ink} pose={OWN_POSE[k]} mood="smile" />
-          <OwnProp k={k} x={560} y={820} />
-          <ThemedWindow theme={theme} x={1140} y={470} w={600} r={[-2, 1.5, -1, 2][k]} bare />
+          <Person x={[380, 330, 400, 360][k]} y={820} s={3.1} a={a} b={a + 0.5} body={NEUTRAL[k * 3 + 1]} hair={HAIRS[k]} hairColor={P.ink} pose={OWN_POSE[k]} mood="smile" />
+          <OwnProp k={k} x={[560, 520, 590, 560][k]} y={820} />
+          <ThemedWindow theme={theme} x={[1140, 1110, 1150, 1130][k]} y={470} w={[600, 680, 520, 640][k]} r={[-2, 1.5, -1, 2][k]} bare />
         </Sheet>
         <Folio left={20 + k * 2} />
       </>
@@ -623,23 +690,27 @@ export const VARIANTS: Spread[] = THEMES.map((_, k) => ownSpread(k));
 // place; on "everything" it is redrawn in his theme. Two cards and one copy, never overlapping, all still by
 // the time the narrator says "everything".
 // WHY her page is the cat and not the plants (review: the riffle's first page and this one repeated each other)
-const A = { x: 360, y: 880, win: { x: 380, y: 500, w: 380 } };
-const B = { x: 1125, y: 660, win: { x: 1300, y: 352, w: 300 } };
-const SLOT = { x: 952, y: 352, w: 300 };
-const LIFT = Q.open + 0.02, FLY = LIFT + 0.12, LAND = FLY + 0.45, SKIN = LAND + 0.03, SKIN_END = SKIN + 0.4;
+// WHY cards about a third bigger (review BLOCKER: two small cards a stranger could not read as "take it and make it yours")
+const A = { x: 360, y: 880, win: { x: 380, y: 480, w: 440 } };
+const B = { x: 1125, y: 700, win: { x: 1310, y: 340, w: 340 } };
+const SLOT = { x: 950, y: 340, w: 340 };
+const LIFT = Q.open + 0.02, FLY = LIFT + 0.14, LAND = FLY + 0.38, SKIN = LAND, SKIN_END = Q.everything2;
 if (SKIN_END > Q.everything2 + 0.02) throw new Error(`take1c: the shared copy must be settled by "everything" (${SKIN_END.toFixed(2)} > ${Q.everything2.toFixed(2)})`);
 const EverythingArt: React.FC = () => {
   const t = useT();
   const lift = lin(t, LIFT, FLY, EASE_OUT);
   const u = lin(t, FLY, LAND, EASE_IN_OUT);
   const settle = jolt(t, LAND, 1, 0.4);
+  // WHY a small dip before the lift (anticipation) and a redraw in three beats, colour then words then icon, one on each
+  // spoken word (review BLOCKER: the card swapped skins in a blink): his hand visibly makes it his
+  const dip = lin(t, Q.open - 0.1, Q.open + 0.02) * (1 - lin(t, Q.open + 0.02, Q.open + 0.1)) * 12;
+  const skinP = 0.34 * lin(t, SKIN, SKIN + 0.12, EASE_OUT) + 0.33 * lin(t, Q.source + 0.02, Q.source + 0.16, EASE_OUT) + 0.33 * lin(t, Q.everything2 - 0.1, Q.everything2 + 0.04, EASE_OUT);
   // the copy: lifts a little off her card, arcs over to his empty place, and shrinks to his size
-  const cx = A.win.x + (SLOT.x - A.win.x) * u, cy = A.win.y + (SLOT.y - A.win.y) * u - Math.sin(u * Math.PI) * 120 - lift * 14 * (1 - u);
+  const cx = A.win.x + (SLOT.x - A.win.x) * u, cy = A.win.y + (SLOT.y - A.win.y) * u - Math.sin(u * Math.PI) * 150 - lift * 14 * (1 - u) + dip;
   const cw = A.win.w + (SLOT.w - A.win.w) * u;
   const carried = lift * (1 - lin(t, LAND - 0.08, LAND + 0.1));
   return (
     <>
-      <Heading n="ix" title="at long, long last" />
       <Folio left={32} hideRight />
       <Sheet>
         <WashBg x={380} y={600} r={240} sx={1.3} a={-10} seed={21} color={LOOK.cotton.page} o={0.8} />
@@ -649,7 +720,7 @@ const EverythingArt: React.FC = () => {
         {/* WHY it dims to 60% while its copy is away (review: the copy briefly looked like a double exposure) */}
         <g opacity={1 - 0.4 * carried}><ThemedWindow theme="cotton" x={A.win.x} y={A.win.y} w={A.win.w} r={-1.5} bare /></g>
         {/* him, under his own page and the empty place beside it */}
-        <Person x={B.x} y={B.y} s={1.45} a={-10} b={-9} body={NEUTRAL[7]} hair="curly" hairColor={P.ink} pose={t > LAND ? 'bothUp' : 'down'} mood="smile"
+        <Person x={B.x} y={B.y} s={1.45} a={-10} b={-9} body={NEUTRAL[7]} hair="curly" hairColor={P.ink} pose={t > Q.everything2 ? 'bothUp' : t > LAND ? 'write' : 'down'} mood="smile"
           bob={jolt(t, LAND + 0.05, -10, 0.5)} />
         <Ink d={`M 860 ${B.y} L 1440 ${B.y}`} a={-10} b={-9} w={2} c={P.inkSoft} />
         <ThemedWindow theme="sunbreak" x={B.win.x} y={B.win.y} w={B.win.w} r={1.5} bare />
@@ -658,7 +729,7 @@ const EverythingArt: React.FC = () => {
         {/* the one copy */}
         {t >= LIFT && (
           <ThemedWindow theme="cotton" x={cx} y={cy + settle * 4} w={cw} r={-1.5 * (1 - u) + Math.sin(u * Math.PI) * 6} s={1 + carried * 0.06} shadow={carried} bare
-            reskin={{ to: 'sunbreak', p: lin(t, SKIN, SKIN_END, EASE_IN_OUT) }} />
+            reskin={{ to: 'sunbreak', p: skinP }} />
         )}
       </Sheet>
     </>
