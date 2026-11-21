@@ -110,7 +110,7 @@ export const Headline: React.FC<{ text: string; at: number; out: number; stagger
       justifyContent: 'center', textAlign: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: 80, letterSpacing: '-0.05em', lineHeight: 1.0, color: nt > 0 ? mixHex(P.ink, C.nightText, nt) : P.ink, opacity: 1 - exit, pointerEvents: 'none' }}>
       {/* WHY a soft paper plate under the type (review BLOCKER: headlines read as captions and crossed art): it keeps the
           words legible over any drawing, and it arrives with the first word, never empty */}
-      <div style={{ position: 'relative', padding: '24px 44px 24px', borderRadius: 26, opacity: lin(t, (words ? words[0] : at) - 0.05, (words ? words[0] : at) + 0.3, EASE_OUT), background: 'rgba(255,250,241,0.93)', boxShadow: '0 10px 34px rgba(20,10,4,0.32), 0 1px 0 rgba(255,255,255,0.6) inset' }}>
+      <div style={{ position: 'relative', padding: '24px 44px 24px', borderRadius: 26, /* WHY trailing the first word by two frames (integrator review: starting 0.05 s early it showed as an empty pale box before the word inked in) */ opacity: lin(t, (words ? words[0] : at) + 0.06, (words ? words[0] : at) + 0.4, EASE_OUT), background: 'rgba(255,250,241,0.93)', boxShadow: '0 10px 34px rgba(20,10,4,0.32), 0 1px 0 rgba(255,255,255,0.6) inset' }}>
         {rows.map((row, r) => (
           <div key={r} style={{ whiteSpace: 'nowrap' }}>
             {row.map((raw, i) => {
