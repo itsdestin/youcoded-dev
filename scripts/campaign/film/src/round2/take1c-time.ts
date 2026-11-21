@@ -43,6 +43,8 @@ export const Q = {
   happened: T('happened', 'wonderful *happened.'),
   // (5) the treasure
   blinded: T('blinded', 'Blinded by their'),
+  byTheir: T('byTheir', 'Blinded *by their'),
+  ownHubris: T('ownHubris', 'their *own hubris,'),
   hubris: T('hubris', 'own *hubris,'),
   created1: T('created1', 'corporations *created a new'),
   newKind: T('newKind', 'a *new kind of technology:'),
@@ -51,6 +53,7 @@ export const Q = {
   intelligence: T('intelligence', 'artificial *intelligence.'),
   aTechnology: T('aTechnology', 'A technology they believed'),
   believed: T('believed', 'they *believed would'),
+  bringAbout: T('bringAbout', 'bring *about a great'),
   greatTreasure: T('greatTreasure', 'a *great treasure:'),
   treasure: T('treasure', 'great *treasure:'),
   these: T('these', 'these corporations created'),
@@ -61,6 +64,7 @@ export const Q = {
   but: T('but', 'But in their excitement,'),
   excitement: T('excitement', 'their *excitement,'),
   createdSomething: T('createdSomething', 'they *created something far'),
+  somethingFar: T('somethingFar', 'something far beyond'),
   far: T('far', 'something *far beyond'),
   beyond: T('beyond', 'far *beyond their own control:'),
   control: T('control', 'own *control:'),
@@ -136,13 +140,17 @@ export const TURN = {
   treasure: onFrame(Q.blinded - 0.03),
   anyone: onFrame(Q.forAnyone - 0.03),
   // WHY a separate spread for section 7: it mirrors chapter ii's three pictures one for one
-  ours: onFrame(Q.andSo - 0.03),
+  // WHY after "And so" (review SHOULD: the "for anyone who asks." headline sat over the next chapter's wide for 1.1 s):
+  // the anyone spread now holds until that headline has had its brand minimum (2.2 s after "asks") and faded, then
+  // the film cuts straight into the close shot of her and the padlock
+  ours: onFrame(Q.asks + 2.25),
   free: Q.itsTime1 - 0.42,
   // the riffle: every page of the book flies past, each one somebody's own
   // WHY four pages, not six: one per real theme, and each one now stays readable for ~0.8 s
   // WHY the gaps shrink (0.8, 0.7, 0.55 s; review: four equal turns read as a template): the pages accelerate into
   // "at long, long last"; the take1c.tsx RIFFLE_DUR list shortens each turn to match
-  riffle: [Q.itsTime2 - 0.55, Q.itsTime2 + 0.25, Q.itsTime2 + 0.95, Q.itsTime2 + 1.5],
+  // WHY the first leaf lifts on "past" (review SHOULD): the book literally turns the old kings into the past
+  riffle: [Q.pastEnd - 0.3, Q.itsTime2 + 0.25, Q.itsTime2 + 0.95, Q.itsTime2 + 1.5],
   everything: Q.toOpen - 0.72,
   close: Q.end - 0.05,                     // the book shuts as the last word lands
 };
@@ -157,6 +165,15 @@ export const CUT = {
   // the quill escapes the men in one shot and is writing the wish in the next: cut as it leaves the frame, a
   // beat before "a tool" (review: the cut used to land 0.3 s after the quill was gone, on an empty frame)
   tool: onFrame(Q.aTool - 0.3),
+  // WHY these cuts are shared (round five): chapter v-vi is one spread shot from very different distances, and a few
+  // drawings (the asker's head and shoulders, the scrap) belong to one shot only, so both read the same frame
+  artificial: onFrame(Q.artificial - 0.05),
+  believe: onFrame(Q.aTechnology - 0.05),
+  cage: onFrame(Q.greatTreasure - 0.05),
+  value: onFrame(Q.value - 0.05),
+  escape: onFrame(Q.createdSomething - 0.05),
+  scarce: onFrame(Q.scarce - 0.05),
+  anyWide: onFrame(Q.asks + 0.3),
 };
 /** When a spread's pictures are fully on the page (a cut lands at once, a turn after TURN_DUR). */
 export const land = (turnAt: number) => turnAt + (CUT_TURNS.has(turnAt) ? 0 : TURN_DUR);

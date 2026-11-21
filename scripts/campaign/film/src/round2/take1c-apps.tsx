@@ -218,3 +218,191 @@ export const ThemedWindow: React.FC<WinProps> = ({ theme, x, y, w, a = -10, draw
 
 /** A window's height for a given width (they all share one shape). */
 export const windowHeight = (w: number) => (w / W) * H;
+
+// ======================= the made card (round five) =======================
+// WHY a second, simpler card (review BLOCKER: the windows' two rows of small text, 'water in 2 days · basil ·
+// tomorrow', could not be read at phone size, and the four cards looked like generic widget templates): each
+// thing a person makes is now ONE big drawing and at most ONE line of large type, on the same taped card. The
+// frame, tape and type size never change from card to card, so a stranger sees one object that each person's
+// asking re-dresses, which is the film's whole claim. The colours and title font are still copied from four real
+// community themes (LOOK above).
+export type Made = 'plants' | 'bus' | 'game' | 'cat' | 'photos' | 'chores' | 'quiz' | 'shifts';
+const MADE_LINE: Record<Made, string> = {
+  plants: 'water friday', bus: '3 min', game: 'your move', cat: 'biscuit',
+  photos: 'grandma', chores: 'chores', quiz: 'quiz night', shifts: 'mon · wed · fri',
+};
+const HERO_C = { x: W / 2, y: 140 };
+const LINE_Y = 298;
+const ink = (w = 3) => ({ stroke: P.ink, strokeWidth: w, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const });
+
+/** The one drawing on a made card, centred in its upper three quarters. `t` drives the small idle motions. */
+const MadeHero: React.FC<{ what: Made; L: Look; t: number; name?: string }> = ({ what, L, t }) => {
+  const { x, y } = HERO_C;
+  if (what === 'plants') {
+    // the Monstera: the quality bar the reviewers named (heavy outline, simple leaves, pale pot)
+    const leaf = (rot: number, len: number, k: number) => (
+      <g key={k} transform={`rotate(${rot + Math.sin(t * 1.3 + k) * 1.5})`}>
+        <path d={`M 0 0 C ${len * 0.2} ${-len * 0.25} ${len * 0.15} ${-len * 0.8} 0 ${-len} C ${-len * 0.55} ${-len * 0.8} ${-len * 0.6} ${-len * 0.25} 0 0 Z`} fill={L.accent} {...ink(3)} />
+        <path d={`M 0 -4 L 0 ${-len * 0.9}`} stroke={L.inset} strokeWidth={2.6} fill="none" strokeLinecap="round" />
+      </g>
+    );
+    return (
+      <g transform={`translate(${x} ${y + 58}) scale(0.84)`}>
+        {[[-40, 104], [-8, 128], [28, 112], [-68, 80], [54, 84]].map(([r, l], k) => leaf(r, l, k))}
+        <path d="M -42 0 L 42 0 L 33 58 L -33 58 Z" fill={L.edge} {...ink(3)} />
+        <path d="M -48 -8 L 48 -8 L 48 8 L -48 8 Z" fill={L.inset} {...ink(3)} />
+      </g>
+    );
+  }
+  if (what === 'bus') {
+    // a big, friendly bus side-on with its route number: "when's my bus. big numbers"
+    const roll = Math.sin(t * 9) * 0.8;
+    return (
+      <g transform={`translate(${x} ${y + 4 + roll})`}>
+        <path d={rr(-136, -70, 272, 124, 22)} fill={L.accent} {...ink(3.4)} />
+        {[-108, -54, 0].map((wx) => <path key={wx} d={rr(wx, -52, 44, 40, 7)} fill={L.canvas} {...ink(2.6)} />)}
+        <path d={rr(66, -52, 48, 92, 7)} fill={L.inset} {...ink(2.6)} />
+        <path d="M 90 -52 L 90 40" {...ink(2.2)} />
+        <path d={rr(-118, 6, 64, 30, 6)} fill={L.canvas} {...ink(2.4)} />
+        <text x={-86} y={30} textAnchor="middle" fontFamily={DMSANS} fontWeight={900} fontSize={26} fill={L.fg === L.canvas ? P.ink : (L.dark ? L.canvas : L.fg)} letterSpacing="-0.04em">14</text>
+        {[-80, 84].map((wx) => <g key={wx}><circle cx={wx} cy={56} r={22} fill={P.ink} /><circle cx={wx} cy={56} r={8} fill={L.inset} /></g>)}
+      </g>
+    );
+  }
+  if (what === 'game') {
+    const s = 44;
+    const pieces: [number, number, boolean][] = [[0, 0, true], [2, 0, true], [1, 1, true], [3, 1, true], [0, 2, false], [2, 2, false], [1, 3, false]];
+    const hop = lin(t % 3, 1.0, 1.45, EASE_IN_OUT);
+    return (
+      <g transform={`translate(${x - 2 * s} ${y - 2 * s + 4})`}>
+        <rect x={-8} y={-8} width={4 * s + 16} height={4 * s + 16} rx={9} fill={L.edge} {...ink(3)} />
+        {Array.from({ length: 16 }).map((_, i) => <rect key={i} x={(i % 4) * s} y={Math.floor(i / 4) * s} width={s} height={s} fill={(i + Math.floor(i / 4)) % 2 ? L.inset : L.fg} />)}
+        {pieces.map(([cx, cy, mine], i) => {
+          const h = i === 5 ? hop : 0;
+          return <circle key={i} cx={(cx + 0.5 + h) * s} cy={(cy + 0.5 - h) * s - Math.sin(h * Math.PI) * 14} r={15} fill={mine ? L.accent : L.edge} {...ink(2.6)} />;
+        })}
+      </g>
+    );
+  }
+  if (what === 'cat') {
+    return (
+      <g transform={`translate(${x} ${y + 2}) scale(0.98)`}>
+        <circle r={86} fill={L.inset} />
+        <path d="M -50 34 C -58 -14 -50 -38 -40 -46 Q -46 -70 -38 -80 Q -22 -66 -12 -56 C -4 -59 4 -59 12 -56 Q 22 -66 38 -80 Q 46 -70 40 -46 C 50 -38 58 -14 50 34 Q 0 62 -50 34 Z"
+          fill={L.canvas} {...ink(3.2)} />
+        <path d="M -8 -54 L -5 -38 M 0 -56 L 0 -40 M 8 -54 L 5 -38" stroke={L.accent} strokeWidth={5} strokeLinecap="round" />
+        <g transform={`translate(0 -4) scale(1 ${Math.abs(Math.sin(t * 0.9)) > 0.97 ? 0.15 : 1})`}>
+          <ellipse cx={-19} cy={0} rx={5.5} ry={7.5} fill={P.ink} /><ellipse cx={19} cy={0} rx={5.5} ry={7.5} fill={P.ink} />
+        </g>
+        <path d="M -6 14 L 6 14 L 0 20 Z" fill={L.accent} /><path d="M 0 20 Q -8 28 -14 24 M 0 20 Q 8 28 14 24" {...ink(2.4)} fill="none" />
+        <path d="M -24 14 L -52 8 M -24 20 L -50 24 M 24 14 L 52 8 M 24 20 L 50 24" stroke={P.ink} strokeWidth={1.8} strokeLinecap="round" opacity={0.7} />
+      </g>
+    );
+  }
+  if (what === 'photos') {
+    // grandma's photo, as big as the card allows: "grandma's photos, huge"
+    return (
+      <g transform={`translate(${x} ${y + 2})`}>
+        <path d={rr(-118, -96, 236, 192, 8)} fill={L.panel} {...ink(3.2)} />
+        <path d={rr(-102, -80, 204, 160, 4)} fill={L.inset} {...ink(2)} />
+        <path d="M -70 80 C -66 30 -34 18 0 18 C 34 18 66 30 70 80 Z" fill={L.accent} {...ink(2.6)} />
+        <circle cx={0} cy={-18} r={34} fill="#F6E9DE" {...ink(2.6)} />
+        <path d="M -34 -22 C -36 -56 36 -56 34 -22 C 26 -42 -26 -42 -34 -22 Z" fill="#E4DDE6" {...ink(2.2)} />
+        <circle cx={0} cy={-58} r={13} fill="#E4DDE6" {...ink(2.2)} />
+        <circle cx={-12} cy={-16} r={8} fill="none" {...ink(2.2)} /><circle cx={12} cy={-16} r={8} fill="none" {...ink(2.2)} />
+        <path d="M -4 -16 L 4 -16" {...ink(2)} />
+        <path d="M -9 0 Q 0 7 9 0" fill="none" {...ink(2.2)} />
+      </g>
+    );
+  }
+  if (what === 'chores') {
+    // a sticker chart: three rows of the week, the done days stuck with the theme's own colour
+    const done = [5, 3, 4];
+    return (
+      <g transform={`translate(${x - 130} ${y - 72})`}>
+        {[0, 1, 2].map((r) => Array.from({ length: 5 }).map((_, c) => (
+          <circle key={`${r}${c}`} cx={c * 65} cy={r * 62} r={22} fill={c < done[r] ? L.accent : 'none'} stroke={c < done[r] ? P.ink : L.edge} strokeWidth={c < done[r] ? 2.8 : 2.6} strokeDasharray={c < done[r] ? undefined : '6 6'} />
+        )))}
+        {[0, 1, 2].map((r) => <path key={r} d={`M ${-6} ${r * 62 + 2} l 5 6 l 9 -12`} transform={`translate(${(done[r] - 1) * 65} 0)`} fill="none" stroke={L.canvas} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />)}
+      </g>
+    );
+  }
+  if (what === 'quiz') {
+    // a ringed planet with a question on it: a quiz for a class
+    return (
+      <g transform={`translate(${x} ${y + 2}) rotate(-14)`}>
+        <path d="M -128 6 C -128 -24 128 -24 128 6" fill="none" stroke={L.fg} strokeWidth={9} strokeLinecap="round" />
+        <circle r={72} fill={L.accent} {...ink(3.2)} />
+        <path d="M -128 6 C -128 36 128 36 128 6" fill="none" stroke={L.fg} strokeWidth={9} strokeLinecap="round" />
+        <text x={0} y={30} transform="rotate(14)" textAnchor="middle" fontFamily={DMSANS} fontWeight={900} fontSize={92} fill={L.canvas}>?</text>
+      </g>
+    );
+  }
+  // shifts: one week, the working days filled in
+  const on = [true, false, true, false, true, false, false];
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <path d={rr(-140, -86, 280, 172, 14)} fill={L.panel} {...ink(3)} />
+      <path d={`M -140 -46 L 140 -46`} {...ink(2.4)} />
+      <path d={rr(-140, -86, 280, 40, 14)} fill={L.accent} stroke="none" />
+      <path d={rr(-140, -86, 280, 172, 14)} fill="none" {...ink(3)} />
+      {on.map((v, i) => <path key={i} d={rr(-128 + i * 37, -30, 30, 100, 6)} fill={v ? L.accent : L.inset} {...ink(2.2)} />)}
+    </g>
+  );
+};
+
+/** One side of a made card (its fill, drawing and line) in one look. */
+const MadeFace: React.FC<{ look: Theme; what: Made; t: number; wipe: number; hero: number; name?: string; clip: string }> = ({ look, what, t, wipe, hero, name, clip }) => {
+  const L = LOOK[look];
+  return (
+    <>
+      <rect x={0} y={0} width={W} height={H} fill={L.canvas} />
+      {wipe > 0 && (
+        <g clipPath={`url(#${clip})`}>
+          <g transform={`translate(${HERO_C.x} ${HERO_C.y}) scale(${hero}) translate(${-HERO_C.x} ${-HERO_C.y})`}><MadeHero what={what} L={L} t={t} /></g>
+          <text x={W / 2} y={LINE_Y} textAnchor="middle" fontFamily={L.font} fontWeight={L.font === DMSANS ? 900 : 800} fontSize={46} fill={L.fg} letterSpacing="-0.03em">{name ?? MADE_LINE[what]}</text>
+        </g>
+      )}
+    </>
+  );
+};
+
+let madeSeq = 0;
+/** A card a person made by asking: same frame and tape every time; `next` re-dresses it with a wipe from the left
+ *  (a new look, a new thing, or just a new name), led by a thin ink edge so it reads as being redrawn. */
+export const MadeCard: React.FC<{
+  look: Theme; what: Made; x: number; y: number; w: number; r?: number; s?: number;
+  a?: number; draw?: number; contentAt?: number; name?: string; shadow?: number; o?: number;
+  next?: { look: Theme; what: Made; p: number; name?: string };
+}> = ({ look, what, x, y, w, r = 0, s = 1, a = -10, draw = 0.45, contentAt, name, shadow = 0, o = 1, next }) => {
+  const t = useT();
+  const [uid] = React.useState(() => ++madeSeq);
+  if (t < a) return null;
+  const k = (w / W) * s;
+  const c = contentAt ?? a + draw * 0.8;
+  // WHY the fill follows the nib closely (review: a blank card sat drawn for frames before anything arrived)
+  const fill = lin(t, a + draw * 0.35, a + draw * 0.8);
+  const wipe = lin(t, c, c + 0.3, EASE_IN_OUT);
+  const hero = Math.min(1.06, pop(t, c + 0.06, 0.45));
+  const id = `c-made-${uid}`;
+  const rs = next ? Math.max(0, Math.min(1, next.p)) : 0;
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${r}) scale(${k}) translate(${-W / 2} ${-H / 2})`} opacity={o}>
+      <defs>
+        <clipPath id={id}><path d={rr(0, 0, W, H, R)} /></clipPath>
+        <clipPath id={`${id}-w`}><rect x={0} y={0} width={W} height={H * wipe} /></clipPath>
+        {next && <clipPath id={`${id}-r`}><rect x={0} y={0} width={W * rs} height={H} /></clipPath>}
+      </defs>
+      <path d={rr(6 + shadow * 10, 10 + shadow * 18, W, H, R)} fill={P.ink} opacity={(0.14 + shadow * 0.08) * fill} />
+      <g clipPath={`url(#${id})`} opacity={fill}>
+        <MadeFace look={look} what={what} t={t} wipe={wipe} hero={hero} name={name} clip={`${id}-w`} />
+        {next && rs > 0 && <g clipPath={`url(#${id}-r)`}><MadeFace look={next.look} what={next.what} t={t} wipe={1} hero={1} name={next.name} clip={`${id}-w`} /></g>}
+      </g>
+      {next && rs > 0 && rs < 1 && <path d={`M ${W * rs} 0 L ${W * rs} ${H}`} stroke={P.ink} strokeWidth={3.4} />}
+      <Ink d={rr(0, 0, W, H, R)} a={a} b={a + draw} w={4} />
+      <rect x={W / 2 - 50} y={-11} width={100} height={24} fill="#E8C9D8" opacity={0.8 * fill} transform={`rotate(-2 ${W / 2} 0)`} />
+    </g>
+  );
+};
+/** The screen-space point on a made card's top edge where a reskin's leading edge is (for the quill to ride). */
+export const madeEdge = (x: number, y: number, w: number, p: number) => ({ x: x - w / 2 + w * p, y: y - windowHeight(w) / 2 });

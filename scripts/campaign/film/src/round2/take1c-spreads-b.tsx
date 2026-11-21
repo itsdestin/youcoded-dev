@@ -1,36 +1,35 @@
-// Take 1C, chapters v–ix: the handful make a quill that escapes them and makes little apps for whoever asks,
-// the three things they decided are undone one by one, the strings snap, and the book ends on two friends
-// passing what they made back and forth.
-//  v    "blinded by their own hubris"                 chins up; their hats grow, in comic steps, out of the page
-//       "created a new kind of technology"            they shove an inkwell onto their desk (nothing else)
-//       "artificial intelligence"                     close: a purple quill rises out of that inkwell by itself
-//       "a great treasure: shareholder value"         close on the three: a chart on an easel on their desk; they
-//                                                      lean in together; on "value" its line climbs to an up-arrow
-//                                                      and they lean back, chins up, following it
-//       "far beyond their own control"                the nearest one's arm shoots out for the quill; it pulls back,
-//                                                      darts out of reach, and the film cuts on "a tool"
-//  vi   "a tool that can make software"               the quill draws an app window; someone's request types
-//                                                      itself in; a plant journal fills it
-//       "the ever-scarce foundation of these monopolies" their stack, padlocked; then the quill writes more stacks
-//       "for anyone who asks"                         four people, each with the same window in a theme of their own
-//  vii  "we get to decide. what our computers can do…" chapter ii's three pictures, undone by the people
-//  viii "free ourselves… monopolies of the past"      the strings from chapter i snap; the hats fade to pencil
-//  ix   "at long, long last… open source everything"  every page riffles past, each one someone's own app; then one
-//                                                      friend's page is copied across to the other and redrawn in his theme
+// Take 1C, chapters v–ix (rebuilt in review round five).
+//  v    "Blinded by their own hubris"        close on three faces: their too-big hats slide down over their eyes, they
+//                                             shove them back up, and on "hubris" the hats shoot up out of the frame
+//       "created a new kind of technology"   wide: across both pages, their desk with something under a cloth; one
+//                                             yanks the cloth away on "technology" (an unveiling)
+//       "artificial intelligence"            extreme close: a purple quill rises from the inkwell and wakes like a bird
+//       "they believed would bring about"    the three huddle and scheme while the quill leans out, curious; a cage drops on it
+//       "a great treasure: shareholder value" over the tall one's shoulder: a padlock on the cage, coins pile up, coin eyes;
+//                                             then close on them puffing out their chests, and leaping on "excitement"
+//       "far beyond their own control"       wide: the quill squeezes out of the top of its cage, the tall one's arm
+//                                             stretches across the desk and closes on air; it zips out of the frame
+//  vi   "a tool that can make software"      someone's hand writes "my plants keep dying"; the quill draws them a card
+//       "the ever-scarce foundation…"        their stack of software, padlocked, cracks; a slab slides out; they windmill
+//       "for anyone who asks"                one card, close, re-drawn for each new person who asks; then three people,
+//                                             each holding their own copy of that one card, in their own look
+//  vii  "we get to decide…"                  chapter ii's three pictures, undone one by one by the people they were done to
+//  viii "free ourselves… monopolies of the past" the strings snap; the people get the quill; the old kings' hats topple
+//  ix   "at long, long last… open source everything" the riffle: one card, re-dressed on every page by whoever asks;
+//                                             then she passes a copy of hers to him, and he asks for it to be his
 import React from 'react';
-import { DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
+import { EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
 import { loadFont as loadCaveat } from '@remotion/google-fonts/Caveat';
-import { blob, WashBg, HatFigure, HatPose, Ink, jolt, Laptop, lin, mixHex, NEUTRAL, P, Padlock, Person, pop, PriceTag, Quill, Shape, useT } from './take1c-ink';
-import { LOOK, rr, Theme, ThemedWindow, THEMES, windowHeight } from './take1c-apps';
-import { Folio, Heading, Sheet } from './take1c-page';
-import { Stream, Strings } from './take1c-spreads-a';
+import { HatFigure, HatPose, Ink, jolt, KeepsakeIcon, Laptop, lin, mixHex, P, Padlock, Person, PersonPose, pop, PriceTag, Quill, Shape, useT, WashBg } from './take1c-ink';
+import { LOOK, Made, MadeCard, madeEdge, rr, Theme, ThemedWindow, windowHeight } from './take1c-apps';
+import { Folio, Sheet } from './take1c-page';
 import { CUT, land, Q, TURN } from './take1c-time';
 import type { Spread } from './take1c-book';
-// WHY a handwriting face for the one wish: it is a person's note on paper, not the book's printed type
+// WHY a handwriting face for every wish: it is a person's note on paper, not the book's printed type
 const CAVEAT = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
 
 // ---------- small motion helpers ----------
-type Key = { t: number; x: number; y: number; z?: number; r?: number; s?: number; ease?: (v: number) => number };
+type Key = { t: number; x: number; y: number; r?: number; s?: number; ease?: (v: number) => number };
 /** Eased position along a list of keys (for the quill). A key's `ease` shapes the move INTO it. */
 const track = (keys: Key[], t: number) => {
   let i = 0;
@@ -38,416 +37,797 @@ const track = (keys: Key[], t: number) => {
   const A = keys[i], B = keys[Math.min(i + 1, keys.length - 1)];
   const k = B.t === A.t ? 1 : (B.ease ?? EASE_IN_OUT)(Math.min(1, Math.max(0, (t - A.t) / (B.t - A.t))));
   const m = (a: number, b: number) => a + (b - a) * k;
-  return { x: m(A.x, B.x), y: m(A.y, B.y), z: m(A.z ?? 0, B.z ?? 0), r: m(A.r ?? 0, B.r ?? 0), s: m(A.s ?? 1, B.s ?? 1) };
+  return { x: m(A.x, B.x), y: m(A.y, B.y), r: m(A.r ?? 0, B.r ?? 0), s: m(A.s ?? 1, B.s ?? 1) };
 };
 // WHY checked: the quill's keys are computed from word times; one out of order would make it jump.
 const checked = (name: string, keys: Key[]) => {
   keys.forEach((k, i) => { if (i && k.t < keys[i - 1].t) throw new Error(`take1c ${name} quill key ${i} (t=${k.t.toFixed(2)}) comes before key ${i - 1}`); });
   return keys;
 };
-/** Overshoot then settle (a back-ease): for the quill's escape twist. */
-const BACK = (v: number) => { const c = 1.9; return 1 + (c + 1) * Math.pow(v - 1, 3) + c * Math.pow(v - 1, 2); };
+/** 0→1→0: up over [a, a+up], held, down over [b, b+down]. */
+const held = (t: number, a: number, b: number, up = 0.12, down = 0.2) => lin(t, a, a + up) * (1 - lin(t, b, b + down));
+const within = (t: number, a: number, b: number) => t >= a && t < b;
 
-/** The quill standing above the page, with a soft shadow on the paper beneath it (chapter vi). */
-const FlyingQuill: React.FC<{ q: ReturnType<typeof track>; o?: number }> = ({ q, o = 1 }) => {
-  const t = useT();
-  if (q.s <= 0.01 || o <= 0.01) return null;
-  const z = Math.max(0, q.z + Math.sin(t * 3.1) * 8);
-  return (
-    <>
-      <div style={{ position: 'absolute', left: q.x - 40 + z * 0.18, top: q.y - 14 + z * 0.1, width: 80 * q.s, height: 26 * q.s, borderRadius: '50%',
-        background: 'rgba(40,14,48,0.55)', filter: `blur(${5 + z * 0.04}px)`, opacity: o * Math.max(0.12, 0.5 - z * 0.0012), transform: 'translateZ(0.6px)' }} />
-      <div style={{ position: 'absolute', left: q.x, top: q.y - 170, width: 130, height: 170, transformOrigin: '0 100%', opacity: o,
-        transform: `translateZ(${z}px) rotateX(-30deg) rotateZ(${q.r}deg) scale(${q.s * 1.5})` }}>
-        <svg width={130} height={170} viewBox="0 -165 130 170" style={{ overflow: 'visible' }}><Quill x={0} y={0} s={1.05} /></svg>
-      </div>
-    </>
-  );
-};
+// ---------- people: one figure spec for the whole stretch ----------
+// WHY one shirt colour per look (review SHOULD: four clones in one olive fill; figures changed style from spread to
+// spread): every ordinary person wears a warm, distinct colour taken from the look of the thing they made, so a
+// person and their card visibly belong together, and the same person keeps the same colours wherever they appear.
+const SHIRT: Record<Theme, string> = { meadow: '#93B795', cotton: '#C7A2D8', sunbreak: '#E2B45A', devils: '#C46A7E' };
+const HAIR: Record<Theme, 'bun' | 'curly' | 'bob' | 'cap'> = { meadow: 'bun', cotton: 'curly', sunbreak: 'bob', devils: 'cap' };
 
-// ---------- the made things the stacks are built from ----------
-const ICONS = ['calendar', 'note', 'game', 'map', 'chat'] as const;
-const ICON_D: Record<typeof ICONS[number], string> = {
-  calendar: 'M -18 -12 h 36 v 30 h -36 Z M -18 -2 h 36 M -8 -16 v 8 M 8 -16 v 8',
-  note: 'M -6 14 L -6 -16 L 16 -20 L 16 8 M -6 14 a 6 5 0 1 1 -1 -1 M 16 8 a 6 5 0 1 1 -1 -1',
-  game: 'M -18 -18 h 36 v 36 h -36 Z M -6 -18 v 36 M 6 -18 v 36 M -18 -6 h 36 M -18 6 h 36',
-  map: 'M 0 18 C -16 2 -14 -18 0 -18 C 14 -18 16 2 0 18 Z M 0 -9 a 5 5 0 1 0 0.1 0',
-  chat: 'M -20 -14 h 40 v 24 h -26 l -10 8 v -8 h -4 Z',
-};
-/** A stack of slabs, each stamped with an app icon: the software the handful's power rests on. */
-const Stack: React.FC<{ cx: number; w: number; n: number; a: number; dur?: number; fill?: string; wobble?: number }> = ({ cx, w, n, a, dur = 0.5, fill = P.wash, wobble = 0 }) => {
+/** A scrap of paper with a person's handwritten wish, written left to right. `a`..`b` is the writing. */
+const Scrap: React.FC<{ x0: number; y: number; text: string | string[]; a: number; b: number; size?: number; o?: number; rot?: number; outlineAt?: number; pen?: boolean }> = ({ x0, y, text, a, b, size = 56, o = 1, rot = -1.4, outlineAt, pen }) => {
   const t = useT();
+  const lines = Array.isArray(text) ? text : [text];
+  const oa = outlineAt ?? a - 0.12;
+  if (t < oa || o <= 0.01) return null;
+  // WHY a width from the text itself: stretched to a fixed width, short wishes looked typed, not handwritten
+  const lw = lines.map((l) => l.length * size * 0.4);
+  const w = Math.max(...lw);
+  const h = lines.length * size * 0.95;
+  const box = `M ${x0 - 28} ${y - size * 0.95} L ${x0 + w + 30} ${y - size * 0.98} L ${x0 + w + 26} ${y - size * 0.95 + h + 26} L ${x0 - 26} ${y - size * 0.95 + h + 30} Z`;
+  // the outline draws itself (never a finished blank scrap), then the words write, line after line
+  const u = lin(t, a, b, (v) => v);
+  const total = lw.reduce((s, v) => s + v, 0);
+  let acc = 0;
+  const id = `c-scrap-${Math.round(x0)}-${Math.round(y)}-${Math.round(a * 100)}`;
   return (
-    <>
-      {Array.from({ length: n }).map((_, i) => {
-        const y0 = 880 - (i + 1) * 44;
-        const jit = [0, 10, -6, 12, 4][i % 5] * (w / 300);
-        const x0 = cx - w / 2 + jit, x1 = cx + w / 2 + jit;
-        const k = a + (i / n) * dur;
+    <g opacity={o} transform={`rotate(${rot} ${x0 + w / 2} ${y})`}>
+      <path d={box} fill="rgba(42,26,53,0.18)" transform="translate(5 7)" opacity={lin(t, oa + 0.06, oa + 0.14)} />
+      <path d={box} fill="#FFFDF8" opacity={lin(t, oa + 0.04, oa + 0.12)} />
+      <Ink d={box} a={oa} b={oa + 0.12} w={2.6} />
+      {lines.map((l, i) => {
+        const share = lw[i] / total, start = acc; acc += share;
+        const p = Math.max(0, Math.min(1, (u - start) / share));
+        if (p <= 0) return null;
         return (
-          <g key={i} transform={`translate(${jolt(t, wobble, 6 - i, 0.7)} 0)`}>
-            <Shape d={`M ${x0} ${y0 + 44} L ${x1} ${y0 + 44} L ${x1} ${y0} L ${x0} ${y0} Z`} a={k} b={k + 0.25} fill={fill} w={3} />
-            <g transform={`translate(${(x0 + x1) / 2} ${y0 + 22}) scale(0.5)`}><Ink d={ICON_D[ICONS[i % 5]]} a={k + 0.1} b={k + 0.35} w={4} /></g>
+          <g key={i}>
+            <defs><clipPath id={`${id}-${i}`}><rect x={x0 - 6} y={y + i * size * 0.95 - size} width={(lw[i] + 16) * p} height={size * 1.3} /></clipPath></defs>
+            <text x={x0} y={y + i * size * 0.95} clipPath={`url(#${id}-${i})`} fontFamily={CAVEAT} fontWeight={700} fontSize={size} fill={P.ink}>{l}</text>
           </g>
         );
       })}
-    </>
+      {pen && u > 0 && u < 1 && (() => {
+        // the nib rides the end of the ink
+        let a2 = 0, li = 0;
+        for (; li < lines.length; li++) { const s2 = lw[li] / total; if (u <= a2 + s2 || li === lines.length - 1) break; a2 += s2; }
+        const p = Math.min(1, (u - a2) / (lw[li] / total));
+        return <Pencil x={x0 + lw[li] * p} y={y + li * size * 0.95 - size * 0.1 + Math.sin(u * 40) * 4} />;
+      })()}
+    </g>
   );
 };
+/** A plain pencil, nib at (x, y), held by a hand reaching in from below the frame. */
+const Pencil: React.FC<{ x: number; y: number; arm?: boolean; sleeve?: string }> = ({ x, y, arm = true, sleeve = SHIRT.meadow }) => (
+  <g>
+    {arm && <>
+      <path d={`M ${x + 60} ${y + 56} C ${x + 100} ${y + 120} ${x + 130} ${y + 220} ${x + 150} ${y + 520}`} stroke={P.ink} strokeWidth={46} fill="none" strokeLinecap="round" />
+      <path d={`M ${x + 60} ${y + 56} C ${x + 100} ${y + 120} ${x + 130} ${y + 220} ${x + 150} ${y + 520}`} stroke={sleeve} strokeWidth={39} fill="none" strokeLinecap="round" />
+    </>}
+    <g transform={`translate(${x} ${y}) rotate(-38)`}>
+      <path d="M 0 0 L 10 -6 L 10 6 Z" fill={P.ink} />
+      <path d="M 10 -7 L 26 -9 L 26 9 L 10 7 Z" fill="#F3D9B8" stroke={P.ink} strokeWidth={2.4} strokeLinejoin="round" />
+      <path d="M 26 -9 L 110 -9 L 110 9 L 26 9 Z" fill={P.sun} stroke={P.ink} strokeWidth={2.6} strokeLinejoin="round" />
+    </g>
+    {arm && <ellipse cx={x + 52} cy={y + 42} rx={26} ry={22} fill="#F6E4D4" stroke={P.ink} strokeWidth={3.4} />}
+  </g>
+);
 
-// ======================= v · the treasure, and vi · the tool =======================
-const STACK = { cx: 245, w: 300, n: 5 };
-const TOP = 880 - STACK.n * 44;                 // the top of their stack, where they stand
-const MEN = [150, 245, 340];
-const DESK = { x0: 440, x1: 740, y: TOP };      // their desk, level with the stack
-const WELL = { x: 650, from: 462 };             // where the inkwell comes to rest, and where it is shoved from
-const MOUTH = TOP - 68;                          // the inkwell's mouth: the quill is hidden below it
-const REST = { x: WELL.x, y: MOUTH + 8, r: -18, s: 1.6 };
-const COPIES = [900, 1110, 1320];
-// WHY taller than theirs and of different heights: the point is that anyone can build what they had, so the
-// new stacks must visibly outgrow the monopoly's five slabs, and not look like colour-swapped copies of it
-const COPY_N = [6, 7, 6];
-const copyTop = (i: number) => 880 - COPY_N[i] * 44;
-// The window the quill makes for a plant journal: a bare card, no window chrome (brand: never draw the app itself)
-const WIN = { x: 1120, y: 505, w: 440 };
-const WIN_H = windowHeight(WIN.w);
-// WHY a handwritten scrap instead of a typed speech bubble (review BLOCKER): the bubble was a drawn chat box, a
-// faked app interface. The person's wish is now written by the quill itself, in ink, onto a scrap of paper
-// above the card: it is the book's own handwriting, and it makes the quill (the film's tool) visibly do the asking.
-const NOTE = { x0: 925, x1: 1305, y: 238, text: 'my plants keep dying' };
-const NOTE_A = CUT.tool + 0.08, NOTE_B = NOTE_A + 0.62;
-// WHY the card draws right after the note: the quill needs ~0.16 s to swoop from the note's end to the card's corner
-const SWOOP = NOTE_B + 0.12, WIN_A = NOTE_B + 0.14, WIN_DRAW = 0.42;
-const PLANTS_AT = Q.software;
-if (WIN_A + WIN_DRAW > PLANTS_AT + 0.02) throw new Error(`take1c: the card must be drawn by "software" (${(WIN_A + WIN_DRAW).toFixed(2)} > ${PLANTS_AT.toFixed(2)})`);
-// The chart they dream over: a small easel board standing on their desk, between them and the inkwell.
-// WHY on the desk, not a roller blind in front of them (review 2026-11-20): the blind hid their bodies, and
-// its chart line poked out of the top and across their faces. This board never crosses a figure.
-const CHART = { x0: 446, x1: 600, y0: 486, y1: 628 };
-// WHY smaller steps than before, and no reset after "these" (review): four big jumps made stovepipes that ran off
-// the top of the page and then snapped back to a smaller size at the next cut. Now the tallest hat still ends
-// inside the page (top at about y 140), and the hats simply stay that tall: it is how these men look from here on.
-// WHY two steps (review BLOCKER: four steps made 3x pillars that read as a render fault): one clear overshoot-and-settle, the
-// hats end about twice their old height and the camera keeps them whole
-const GROW = [40, 34];                           // each step of a hat's growth on "hubris"
-const HAT_K = [0.88, 1, 0.94];                   // each man's hat grows to a slightly different height
-// WHY drawn well before the cut: the film cuts straight into this spread on "hubris", so it must already be finished
+// ======================= v · the handful: three characters, not three clones =======================
+// WHY three silhouettes (review BLOCKER: three identical cut-outs with dot eyes, frozen for seconds at a time): a short
+// round one, a middle one with a monocle, and a tall thin one, each with eyes and a mouth that change on the words
+// (slits to scheme, coins for greed, wide circles for shock, a grin), and a run of big, readable poses on their words.
+const S = 1.3;
+const CH = [{ sx: 1.2, sy: 0.84 }, { sx: 1, sy: 1 }, { sx: 0.84, sy: 1.17 }];
+type Eyes = 'dots' | 'slit' | 'wide' | 'coins' | 'down';
+type Mouth = 'none' | 'grin' | 'o' | 'smug';
+type ManState = { pose: HatPose; lean: number; bob: number; crown: number; hatSx: number; drop: number; eyes: Eyes; mouth: Mouth; px: number; py: number; fist: number; fade?: number };
+/** Their eyes and mouth, in the hat figure's own drawing units (its head sits at 0,-197). */
+const ManFace: React.FC<{ eyes: Eyes; mouth: Mouth; monocle?: boolean; ink?: string }> = ({ eyes, mouth, monocle, ink = P.ink }) => (
+  <g transform="rotate(-10 0 -197)">
+    {eyes === 'dots' && <><circle cx={-5} cy={-199} r={2.4} fill={ink} /><circle cx={6} cy={-199} r={2.4} fill={ink} /></>}
+    {eyes === 'down' && <><circle cx={-5} cy={-196} r={2.4} fill={ink} /><circle cx={6} cy={-196} r={2.4} fill={ink} /></>}
+    {eyes === 'slit' && <path d="M -9 -199 L -1 -198 M 2 -198 L 10 -199" stroke={ink} strokeWidth={2.4} strokeLinecap="round" />}
+    {eyes === 'wide' && [-5, 6].map((cx) => <g key={cx}><circle cx={cx} cy={-200} r={4.6} fill={P.paper} stroke={ink} strokeWidth={1.4} /><circle cx={cx} cy={-200} r={1.9} fill={ink} /></g>)}
+    {eyes === 'coins' && [-5, 6].map((cx) => <g key={cx}><circle cx={cx} cy={-200} r={5.4} fill={P.sun} stroke={ink} strokeWidth={1.4} /><circle cx={cx} cy={-200} r={2.4} fill="none" stroke={ink} strokeWidth={0.9} opacity={0.6} /></g>)}
+    {mouth === 'grin' && <path d="M -7 -190 Q 1 -183 9 -190 Q 1 -186.5 -7 -190 Z" fill={ink} stroke={ink} strokeWidth={1.6} strokeLinejoin="round" />}
+    {mouth === 'o' && <ellipse cx={1} cy={-188} rx={2.6} ry={3.2} fill={ink} />}
+    {mouth === 'smug' && <path d="M -3 -189 Q 3 -187 8 -191" stroke={ink} strokeWidth={1.8} fill="none" strokeLinecap="round" />}
+    {/* WHY gold: the monocle and its chain are the one bit of the campaign's warm accent on them, and it says "money" */}
+    {monocle && <><circle cx={6} cy={-200} r={6.2} fill="none" stroke={P.sun} strokeWidth={1.8} /><path d="M 12 -198 C 16 -186 14 -170 20 -152" stroke={P.sun} strokeWidth={1.2} fill="none" /></>}
+  </g>
+);
+/** One of the handful at (x, y): his own proportions, his face drawn over the shared hat figure. */
+const Man: React.FC<{ j: number; x: number; y: number; st: ManState; a: number; b: number }> = ({ j, x, y, st, a, b }) => (
+  <g transform={`translate(${x} ${y}) scale(${S * CH[j].sx * st.px} ${S * CH[j].sy * st.py})`}>
+    <HatFigure x={0} y={0} s={1} a={a} b={b} crown={st.crown} hatSx={st.hatSx} drop={st.drop} pose={st.pose} lean={st.lean} bob={st.bob} eyes="none" fist={st.fist} fade={st.fade ?? 0} />
+    {/* WHY hidden while the hat covers the head: the face must not draw over the hat ("blinded") */}
+    {st.drop < 0.35 && <g transform={`translate(0 ${st.bob}) rotate(${st.lean})`}><ManFace eyes={st.eyes} mouth={st.mouth} monocle={j === 1} ink={st.fade ? mixHex(P.ink, P.paper, st.fade * 0.66) : P.ink} /></g>}
+  </g>
+);
+/** Where a point on man j (in his drawing units) lands on the page. */
+const manPt = (j: number, x: number, y: number, st: ManState, lx: number, ly: number): [number, number] => {
+  const r = (st.lean * Math.PI) / 180;
+  const qx = lx * Math.cos(r) - ly * Math.sin(r), qy = lx * Math.sin(r) + ly * Math.cos(r) + st.bob;
+  return [x + qx * S * CH[j].sx * st.px, y + qy * S * CH[j].sy * st.py];
+};
+
+// ---------- the layout of the treasure spread ----------
+// WHY across both pages (review BLOCKER: 23 s of the men in the left third and an empty right page): their stack on
+// the left page, a long desk running over the gutter, the inkwell (and later its cage) on the right page, and the
+// card the quill makes above the desk's far end. Every shot then has something on both sides of the frame.
+const STACK = { cx: 420, w: 380, n: 5, h: 50 };
+const TOP = 880 - STACK.n * STACK.h;            // 630: the top of their stack, and of their desk
+const MEN = [300, 420, 540];
+const DESK = { x0: 610, x1: 1250 };
+const WELL = 900;
+const MOUTH = TOP - 68;
+const REST = { x: WELL, y: MOUTH + 8, r: -18, s: 1.3 };
+const CAGE = { x: WELL, w: 140, top: 352, band: 448 };
+// WHY drawn before the cut: the film cuts straight into this spread on "Blinded"; nothing may still be inking in
 const DRAWN = TURN.treasure - 3;
-// WHY the desk inks in just after "hubris" (merge check): drawn earlier, its edge stood under the headline "something
-// wonderful happened." for the first second after the cut. The headline leaves on "hubris"; the desk arrives with it.
-const DESK_A = Q.hubris + 0.05;
+const BASE_CROWN = 100;                          // a little too big from the start: it is what makes "blinded" possible
+const GROW = [44, 36];
+const HAT_K = [0.9, 1, 0.95];
+const CAGE_AT = Q.bringAbout + 0.12;              // the cage starts to fall
+const CAGE_LAND = CAGE_AT + 0.3;
 
-/** How tall each man's hat is: four comic jumps on "hubris", each landing with an overshoot, then it stays. */
+/** How tall each man's hat is: two comic jumps on "hubris", each landing with an overshoot, then it stays. */
 const crownAt = (t: number, j: number) =>
-  GROW.reduce((c, g, i) => c + g * HAT_K[j] * Math.min(1.14, pop(t, Q.hubris + i * 0.2 + j * 0.04, 0.26)), 84);
-/** The hat squashes thin while it jumps up, and settles wide. */
+  GROW.reduce((c, g, i) => c + g * HAT_K[j] * Math.min(1.14, pop(t, Q.hubris + i * 0.2 + j * 0.04, 0.26)), BASE_CROWN);
 const hatSxAt = (t: number, j: number) =>
   GROW.reduce((sx, _, i) => { const x = (t - (Q.hubris + i * 0.2 + j * 0.04)) / 0.24; return x > 0 && x < 1 ? sx - 0.28 * Math.sin(x * Math.PI) : sx; }, 1);
-const manAt = (t: number, j: number) => {
-  let pose: HatPose = 'sides';
-  // WHY rubbing hands from "artificial intelligence": they turn to the new thing and rub their hands, so the
-  // quill rising out of the inkwell has an audience that reacts to it
-  if (t > Q.artificial + 0.3 && t < Q.aTechnology + 0.2) pose = 'rub';
-  if (t > Q.believed && t < Q.shareholder) pose = 'rub';
-  if (j === 2 && t > Q.created1 - 0.2 && t < Q.created1 + 0.6) pose = 'shove';
-  // in the snatch the nearest one throws one long arm at the quill; the other two reach after it
-  if (t > Q.far - 0.06 && t < Q.control + 1.1) pose = j === 2 ? 'stretch' : 'reach';
-  // chins up on "hubris"; greed on "treasure": all three lean in toward the chart together,
-  // then on "value" they lean back with their chins up, following the arrow; a lean toward the quill on "excitement"
-  // WHY a per-man beat for everything below (review BLOCKER: three clones swayed in phase for 14 s): each man has his
-  // own sway speed and size, his own idle gesture, and reacts a few frames after his neighbour
-  const spike = (a: number, b: number) => lin(t, a, a + 0.12) * (1 - lin(t, b, b + 0.25));
-  if (pose === 'sides' && t < Q.far - 0.06) {
-    const phase = Math.floor((t + j * 0.55) / 1.1) % 3;
-    pose = ([['sides', 'pat', 'sides'], ['sides', 'bar', 'sides'], ['pat', 'sides', 'bar']] as HatPose[][])[j][phase];
+
+/** Everything each man does in chapters v and vi, beat by beat on the narrator's words. */
+const manAt = (t: number, j: number): ManState => {
+  const d = j * 0.07;                                 // WHY: each reacts a couple of frames after his neighbour
+  let pose: HatPose = 'sides', eyes: Eyes = 'dots', mouth: Mouth = 'none';
+  let lean = Math.sin(t * (1.6 + j * 0.4) + j * 2.3) * (0.8 + j * 0.4);   // idle weight shift
+  let bob = 0, px = 1, py = 1 + 0.012 * Math.sin(t * 2.7 + j * 1.1), fist = 0;
+  // "Blinded": the too-big hats slide down over their eyes; they stagger blind, then shove them back up on "their own"
+  const drop = lin(t, Q.blinded + 0.04 + d, Q.blinded + 0.24 + d, EASE_IN) * (1 - lin(t, Q.ownHubris - 0.12 + d, Q.ownHubris + 0.08 + d, EASE_OUT));
+  lean += Math.sin(t * 13 + j * 2) * 4 * drop;
+  if (within(t, Q.byTheir + 0.1 + d, Q.ownHubris + 0.2 + d)) pose = 'grab';
+  // "hubris": chins up, chests out, grins, as the hats shoot up
+  if (t >= Q.ownHubris + 0.1) { mouth = 'smug'; }
+  lean += -7 * held(t, Q.hubris - 0.05 + d, Q.these - 0.2, 0.25, 0.3);
+  px += 0.06 * held(t, Q.hubris + d, Q.these - 0.2, 0.2, 0.3);
+  bob += jolt(t, Q.hubris + 0.3 + j * 0.1, -9, 0.45);
+  // "created": the two at the sides fling their arms up, ta-da; the middle one holds the cord to the cloth
+  if (within(t, Q.created1 - 0.05 + d, Q.newKind + 0.1)) { if (j !== 1) pose = 'grab'; mouth = 'grin'; }
+  bob += jolt(t, Q.created1 + d, -12, 0.5);
+  if (j === 1 && within(t, Q.these, Q.technology2 + 0.45)) pose = 'bar';
+  // "a new kind of": they lean in, scheming; "technology": he yanks the cord, and they gape at what is under it
+  if (within(t, Q.newKind, Q.technology2)) { eyes = 'slit'; mouth = 'smug'; lean += 7 * lin(t, Q.newKind, Q.newKind + 0.3); }
+  if (j === 1) { lean += -16 * held(t, Q.technology2 - 0.06, Q.technology2 + 0.25, 0.08, 0.3); if (within(t, Q.technology2 - 0.06, Q.technology2 + 0.4)) pose = 'key'; }
+  if (within(t, Q.technology2 + 0.1, CUT.believe)) { eyes = 'wide'; mouth = 'grin'; if (j !== 1 && t > Q.technology2 + 0.45) pose = 'rub'; }
+  // "A technology they": all three lean in toward the quill, the short one on tiptoe
+  if (within(t, CUT.believe, Q.believed)) { eyes = 'wide'; mouth = 'o'; lean += 8 * lin(t, Q.aTechnology + d, Q.aTechnology + 0.3 + d); }
+  if (j === 0) { const tip = held(t, Q.aTechnology + 0.1, Q.believed, 0.2, 0.2); bob -= 12 * tip; py += 0.06 * tip; }
+  // "believed": they huddle, heads together, whispering
+  if (within(t, Q.believed, CAGE_LAND)) {
+    eyes = 'slit'; mouth = 'smug';
+    // WHY modest angles: at 12 degrees their tall hats crossed into one blob
+    lean += [8, 2, -7][j] * lin(t, Q.believed + d, Q.believed + 0.25 + d);
+    bob += [0, 5, 0][j] * lin(t, Q.believed, Q.believed + 0.25);
+    pose = j === 1 ? 'pat' : 'rub';
   }
-  // on "artificial" they lean in toward the quill, then jerk back as it rises; on "control" it throws them off balance
-  const peer = 8 * spike(Q.artificial + j * 0.05, Q.intelligence) - 9 * spike(Q.intelligence + 0.25 + j * 0.05, Q.intelligence + 0.5);
-  const tumble = [-15, 11, -9][j] * spike(Q.control + 0.28 + j * 0.05, Q.control + 0.55);
-  const hub = -7 * lin(t, Q.hubris - 0.1 + j * 0.05, Q.hubris + 0.3 + j * 0.05);
-  const greed = 9 * lin(t, Q.treasure - 0.1, Q.treasure + 0.35) * (1 - lin(t, Q.value + 0.05, Q.value + 0.4));
-  const chin = -6 * lin(t, Q.value + 0.05, Q.value + 0.4) * (1 - lin(t, Q.but - 0.1, Q.but + 0.25));
-  const grab = 9 * lin(t, Q.excitement - 0.1, Q.excitement + 0.3) * (1 - lin(t, Q.control + 0.8, Q.control + 1.2));
-  // WHY an idle sway, a breath and bounces (review: the men stood rigid for seconds while she spoke the film's turn):
-  // each man shifts his weight on his own beat, and all three hop on "excitement" and again on "created"
-  const sway = Math.sin(t * (1.7 + j * 0.45) + j * 2.3) * (1.0 + j * 0.5);
-  const breath = 1 + 0.012 * Math.sin(t * 2.7 + j * 1.1);
-  const bob = jolt(t, Q.excitement - 0.02 + j * 0.06, -16, 0.55) + jolt(t, Q.createdSomething + j * 0.06, -10, 0.5)
-    + jolt(t, Q.hubris + 0.3 + j * 0.11, -9, 0.45) + jolt(t, Q.created1 + 0.3 + j * 0.1, -7, 0.45);
-  return { pose, lean: hub + greed + chin + grab + sway + peer + tumble, breath, bob };
-};
-/** Where a point on a man (in his own drawing units) lands on the page, with his lean. */
-const onMan = (fx: number, lean: number, px: number, py: number) => {
-  const a = (lean * Math.PI) / 180;
-  return [fx + px * Math.cos(a) - py * Math.sin(a), TOP + px * Math.sin(a) + py * Math.cos(a)];
+  // the cage lands: they straighten up, smug; the tall one pats his coat
+  if (within(t, CAGE_LAND, Q.treasure)) { eyes = 'dots'; mouth = 'smug'; pose = j === 2 ? 'pat' : j === 0 ? 'bar' : 'sides'; }
+  bob += jolt(t, CAGE_LAND + d, -8, 0.4);
+  // "treasure": coin eyes, rubbing hands, leaning toward the cage
+  if (within(t, Q.treasure, Q.createdSomething)) { eyes = 'coins'; mouth = 'grin'; pose = 'rub'; }
+  lean += 6 * held(t, Q.treasure + d, Q.value, 0.3, 0.2);
+  // "value": chests puffed out, chins up, each a few frames apart and to his own angle
+  const puff = held(t, Q.value + j * 0.12, Q.excitement - 0.05, 0.22, 0.2);
+  px += 0.12 * puff; py -= 0.03 * puff; lean += [-4, -8, -6][j] * puff;
+  if (puff > 0.5) pose = 'pat';
+  // "excitement": they leap, arms up
+  const leap = Math.max(0, Math.sin(Math.min(1, Math.max(0, (t - (Q.excitement + j * 0.11)) / 0.42)) * Math.PI));
+  bob -= 40 * leap;
+  if (leap > 0.05) { pose = 'grab'; eyes = 'wide'; }
+  // "created something": they turn to the cage; on "something" the quill stirs and they freeze, aghast
+  if (within(t, Q.createdSomething, Q.somethingFar)) { eyes = 'dots'; mouth = 'none'; lean += 4; pose = 'sides'; }
+  if (within(t, Q.somethingFar, Q.control + 0.15)) { eyes = 'wide'; mouth = 'o'; if (j < 2) pose = 'hold'; }
+  // "far beyond their own control": the tall one throws his long arm (drawn by the spread) at the quill
+  if (j === 2 && within(t, Q.far - 0.06, Q.control + 0.42)) { pose = 'stretch'; lean += 10 * lin(t, Q.far - 0.06, Q.far + 0.2); }
+  if (j === 2 && t >= Q.control + 0.02) fist = 1;
+  // the tumble: the short one falls back, the middle one sits down hard, the tall one recoils staring at his empty fist
+  if (t > Q.control + 0.1) {
+    const k = lin(t, Q.control + 0.12 + d, Q.control + 0.3 + d, EASE_OUT);
+    if (j === 0) { lean += -26 * k; bob += 6 * k; eyes = 'wide'; }
+    if (j === 1) { py -= 0.2 * k; bob += 10 * k; eyes = 'wide'; mouth = 'o'; }
+    if (j === 2) { if (t > Q.control + 0.42) pose = 'key'; lean += jolt(t, Q.control + 0.42, -9, 0.45); eyes = 'wide'; mouth = 'o'; }
+  }
+  // chapter vi, "ever-scarce": smug again on their padlocked stack; "foundation": they look down at the crack
+  if (t >= CUT.scarce) {
+    lean = Math.sin(t * (1.6 + j * 0.4) + j * 2.3) * (0.8 + j * 0.4); px = 1; py = 1; fist = 0;
+    eyes = 'dots'; mouth = 'smug'; pose = j === 1 ? 'pat' : 'sides';
+    if (t > Q.foundation) { eyes = 'down'; mouth = 'o'; }
+    // "monopolies": a slab slides out from under them and they windmill to keep their balance
+    if (t > Q.monopolies1 + 0.15) {
+      eyes = 'wide';
+      // WHY two arm positions swapped at a readable pace, and leans out of step (render: a pose every 3 frames read as a glitch,
+      // and in-phase leans merged them into one blob)
+      pose = (['grab', 'reach'] as HatPose[])[(Math.floor(t * 5.5) + j) % 2];
+      lean = Math.sin(t * 11 + j * 2.6) * 7;
+    }
+  }
+  return { pose, lean, bob, crown: crownAt(t, j), hatSx: hatSxAt(t, j), drop, eyes, mouth, px, py, fist };
 };
 
-/** The long reaching arm: a coat sleeve in the men's own ink line, ending in a plain drawn hand.
- *  WHY drawn like their own arms (review 2026-11-20): the white cartoon gloves on black bars from off-frame were
- *  a stock cliché, out of style with the book's thin line art. */
+/** The long reaching arm: a coat sleeve in the men's own ink, ending in a hand that closes on nothing. */
 const Reach: React.FC<{ from: [number, number]; to: [number, number]; p: number; fist: number }> = ({ from, to, p, fist }) => {
   if (p <= 0.001) return null;
   const hx = from[0] + (to[0] - from[0]) * p, hy = from[1] + (to[1] - from[1]) * p;
-  const mx = (from[0] + hx) / 2, my = Math.min(from[1], hy) - 30 * p;
+  const mx = (from[0] + hx) / 2, my = Math.min(from[1], hy) - 50 * p;
   const ang = Math.atan2(hy - my, hx - mx);
-  // an open hand: a round palm with four short fingers fanned toward the quill, and a thumb; they fold away
-  // into a small solid fist when it closes on nothing
   const fingers = [-0.62, -0.2, 0.2, 0.62].map((d) => {
-    const len = 12 * (1 - fist * 0.85);
-    return `M ${hx + Math.cos(ang + d) * 8} ${hy + Math.sin(ang + d) * 8} l ${Math.cos(ang + d * 0.5) * len} ${Math.sin(ang + d * 0.5) * len}`;
-  }).join(' ') + ` M ${hx + Math.cos(ang - 1.5) * 8} ${hy + Math.sin(ang - 1.5) * 8} l ${Math.cos(ang - 0.9) * 9 * (1 - fist * 0.85)} ${Math.sin(ang - 0.9) * 9 * (1 - fist * 0.85)}`;
+    const len = 14 * (1 - fist * 0.85);
+    return `M ${hx + Math.cos(ang + d) * 9} ${hy + Math.sin(ang + d) * 9} l ${Math.cos(ang + d * 0.5) * len} ${Math.sin(ang + d * 0.5) * len}`;
+  }).join(' ');
   const arm = `M ${from[0]} ${from[1]} Q ${mx} ${my} ${hx} ${hy}`;
   return (
     <g>
-      {/* WHY two widths (review: the arm read as a noodle): a heavy sleeve from the shoulder over its first
-          half, the lighter forearm carrying on to the hand */}
-      <path d={arm} stroke={P.ink} strokeWidth={9} fill="none" strokeLinecap="round" />
-      <path d={arm} pathLength={1} stroke={P.ink} strokeWidth={15} fill="none" strokeLinecap="round" strokeDasharray="0.5 2" />
-      <path d={fingers} stroke={P.ink} strokeWidth={5.5} fill="none" strokeLinecap="round" />
-      <path d={fingers} stroke={P.paper} strokeWidth={2} fill="none" strokeLinecap="round" />
-      <circle cx={hx} cy={hy} r={fist > 0.5 ? 7 : 9.5} fill={fist > 0.5 ? P.ink : P.paper} stroke={P.ink} strokeWidth={2.6} />
+      <path d={arm} stroke={P.ink} strokeWidth={11} fill="none" strokeLinecap="round" />
+      <path d={arm} pathLength={1} stroke={P.ink} strokeWidth={17} fill="none" strokeLinecap="round" strokeDasharray="0.45 2" />
+      <path d={fingers} stroke={P.ink} strokeWidth={6} fill="none" strokeLinecap="round" />
+      <path d={fingers} stroke={P.paper} strokeWidth={2.2} fill="none" strokeLinecap="round" />
+      <circle cx={hx} cy={hy} r={fist > 0.5 ? 8 : 11} fill={fist > 0.5 ? P.ink : P.paper} stroke={P.ink} strokeWidth={3} />
     </g>
   );
 };
 
-/** The inkwell they shove onto the desk. Its mouth is at MOUTH. */
-const Inkwell: React.FC<{ x: number; rock?: number }> = ({ x, rock = 0 }) => (
-  <g transform={`rotate(${rock} ${x} ${TOP})`}>
-    <ellipse cx={x} cy={TOP + 2} rx={44} ry={6} fill={P.ink} opacity={0.12} />
+/** The inkwell. Its mouth is at MOUTH. */
+const Inkwell: React.FC<{ x: number; glow: number }> = ({ x, glow }) => (
+  <g>
+    <ellipse cx={x} cy={TOP + 2} rx={46} ry={6} fill={P.ink} opacity={0.12} />
     <path d={`M ${x - 38} ${TOP} L ${x - 38} ${TOP - 42} Q ${x - 38} ${TOP - 56} ${x - 22} ${TOP - 56} L ${x + 22} ${TOP - 56} Q ${x + 38} ${TOP - 56} ${x + 38} ${TOP - 42} L ${x + 38} ${TOP} Z`}
       fill={P.ink} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
     <path d={`M ${x - 18} ${TOP - 56} L ${x - 18} ${MOUTH} L ${x + 18} ${MOUTH} L ${x + 18} ${TOP - 56} Z`} fill={P.inkSoft} stroke={P.ink} strokeWidth={3} />
     <path d={`M ${x - 27} ${TOP - 10} L ${x - 27} ${TOP - 40} Q ${x - 27} ${TOP - 47} ${x - 20} ${TOP - 48}`} stroke="#fff" strokeWidth={4} opacity={0.3} fill="none" strokeLinecap="round" />
-    <ellipse cx={x} cy={MOUTH} rx={16} ry={3.4} fill={P.purple} />
+    {/* WHY a ring of purple that swells once when the cloth comes off: the reveal says "something is alive in here" without a sparkle */}
+    <ellipse cx={x} cy={MOUTH} rx={16 + glow * 6} ry={3.4 + glow * 1.4} fill={P.purple} />
   </g>
 );
 
-/** The chart on its easel: one line climbs on "shareholder value" and its tip becomes an arrow pointing up. */
-const Chart: React.FC<{ t: number }> = ({ t }) => {
-  // WHY it fades away rather than rolling up: shrinking, it dragged its line across the men's bodies
-  // WHY it is knocked over by their excitement (review: it just vanished for no reason): it tips about its foot, then goes
-  const o = lin(t, Q.treasure - 0.15, Q.treasure + 0.2) * (1 - lin(t, Q.but + 0.3, Q.but + 0.5));
-  if (o <= 0.001) return null;
-  const tip = lin(t, Q.but + 0.0, Q.but + 0.4, EASE_IN);
-  const rise = (1 - lin(t, Q.treasure - 0.15, Q.treasure + 0.3)) * 24;
-  const { x0, x1, y0, y1 } = CHART;
-  const pts: [number, number][] = [[x0 + 16, y1 - 20], [x0 + 44, y1 - 38], [x0 + 64, y1 - 30], [x0 + 92, y1 - 62], [x0 + 108, y1 - 54], [x1 - 22, y0 + 26]];
-  const line = pts.map(([x, y], i) => `${i ? 'L' : 'M'} ${x} ${y}`).join(' ');
-  const tipPt = pts[pts.length - 1], prev = pts[pts.length - 2];
-  const ang = (Math.atan2(tipPt[1] - prev[1], tipPt[0] - prev[0]) * 180) / Math.PI;
-  const head = pop(t, Q.value + 0.28, 0.35);
+/** The birdcage they lower over the quill: drawn bars, a domed top, and a padlock on the door. */
+const Cage: React.FC<{ t: number }> = ({ t }) => {
+  if (t < CAGE_AT) return null;
+  const fall = lin(t, CAGE_AT, CAGE_LAND, EASE_IN);
+  const dy = -560 * (1 - fall);
+  const sq = jolt(t, CAGE_LAND, 0.07, 0.35);
+  const rattle = jolt(t, Q.treasure + 0.02, 2.4, 0.4) + (within(t, Q.somethingFar, Q.beyond + 0.3) ? Math.sin(t * 40) * 1.4 : 0);
+  const { x, w, top, band } = CAGE;
+  const x0 = x - w / 2, x1 = x + w / 2;
+  const bars = [0, 1, 2, 3, 4, 5, 6].map((i) => x0 + 8 + i * ((w - 16) / 6));
+  const st = { stroke: P.ink, strokeWidth: 3.6, fill: 'none', strokeLinecap: 'round' as const };
   return (
-    <g opacity={o} transform={`translate(0 ${rise}) rotate(${tip * 78} ${x1 - 22} ${TOP})`}>
-      <defs><clipPath id="c-chart"><rect x={x0 + 4} y={y0 + 4} width={x1 - x0 - 8} height={y1 - y0 - 8} /></clipPath></defs>
-      {/* the easel's legs, standing on the desk */}
-      <path d={`M ${x0 + 30} ${y1} L ${x0 + 22} ${TOP} M ${x1 - 30} ${y1} L ${x1 - 22} ${TOP}`} stroke={P.ink} strokeWidth={4} strokeLinecap="round" />
-      <rect x={x0} y={y0} width={x1 - x0} height={y1 - y0} rx={4} fill="#FFFDF8" stroke={P.ink} strokeWidth={3} />
-      <g clipPath="url(#c-chart)">
-        {[1, 2, 3, 4].map((i) => <path key={i} d={`M ${x0 + 8} ${y0 + i * 28} L ${x1 - 8} ${y0 + i * 28}`} stroke={P.inkSoft} strokeWidth={1.3} opacity={0.3} />)}
-        <Ink d={line} a={Q.shareholder - 0.05} b={Q.value + 0.3} w={6} />
-        {/* the arrowhead: stays inside the board's edge */}
-        {head > 0 && <g transform={`translate(${tipPt[0]} ${tipPt[1]}) rotate(${ang}) scale(${Math.min(1.1, head)})`}><path d="M 4 0 L -14 -10 L -14 10 Z" fill={P.ink} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" /></g>}
-      </g>
+    <g transform={`translate(${rattle} ${dy}) translate(${x} ${TOP}) scale(${1 + sq} ${1 - sq}) translate(${-x} ${-TOP})`}>
+      {bars.map((bx, i) => <path key={i} d={`M ${bx} ${TOP - 10} L ${bx} ${band} Q ${bx} ${top + 6} ${x} ${top}`} {...st} />)}
+      <path d={`M ${x0} ${band} Q ${x0} ${top - 10} ${x} ${top - 12} Q ${x1} ${top - 10} ${x1} ${band}`} {...st} strokeWidth={4.4} />
+      <path d={`M ${x0 - 4} ${band} L ${x1 + 4} ${band} M ${x0 - 4} ${band + 80} L ${x1 + 4} ${band + 80}`} {...st} strokeWidth={4} />
+      <path d={rr(x0 - 10, TOP - 14, w + 20, 14, 4)} fill={P.inkSoft} stroke={P.ink} strokeWidth={3} />
+      <circle cx={x} cy={top - 24} r={11} {...st} strokeWidth={4} />
+      {/* WHY big and on its own beat (review: a 1.5% padlock): it slams shut on "treasure" */}
+      <Padlock x={x1 + 4} y={band + 70} s={1.9} at={Q.treasure} />
     </g>
   );
 };
 
-/** The scrap of paper the quill writes the wish on: written left to right, the nib riding the end of the word. */
-const noteU = (t: number) => lin(t, NOTE_A, NOTE_B, (v) => v);
-const Note: React.FC<{ t: number }> = ({ t }) => {
-  // WHY only from the cut: the framing before it never shows this side of the page, and it should arrive with the shot
-  if (t < CUT.tool - 0.02) return null;
-  const u = noteU(t);
-  // WHY it leaves on the very frame of the cut to the stacks (the next shot still has this edge of the page in it)
-  const fade = t < Q.scarce - 0.06 ? 1 : 0;
-  if (fade <= 0.01) return null;
-  const w = NOTE.x1 - NOTE.x0;
-  return (
-    <g opacity={fade} transform={`rotate(-1.4 ${NOTE.x0 + w / 2} ${NOTE.y - 30})`}>
-      <defs><clipPath id="c-note"><rect x={NOTE.x0 - 20} y={NOTE.y - 70} width={(w + 40) * u} height={110} /></clipPath></defs>
-      <path d={`M ${NOTE.x0 - 34} ${NOTE.y - 72} L ${NOTE.x1 + 36} ${NOTE.y - 76} L ${NOTE.x1 + 30} ${NOTE.y + 36} L ${NOTE.x0 - 30} ${NOTE.y + 40} Z`}
-        fill="rgba(42,26,53,0.18)" transform="translate(5 8)" />
-      <path d={`M ${NOTE.x0 - 34} ${NOTE.y - 72} L ${NOTE.x1 + 36} ${NOTE.y - 76} L ${NOTE.x1 + 30} ${NOTE.y + 36} L ${NOTE.x0 - 30} ${NOTE.y + 40} Z`}
-        fill="#FFFDF8" stroke={P.ink} strokeWidth={2.4} strokeLinejoin="round" />
-      <g clipPath="url(#c-note)">
-        <text x={NOTE.x0} y={NOTE.y} textLength={w} lengthAdjust="spacingAndGlyphs" fontFamily={CAVEAT} fontWeight={700} fontSize={64} fill={P.ink}>{NOTE.text}</text>
-      </g>
-    </g>
-  );
-};
-/** The quill's keys while it writes the note: its nib rides the end of the ink, wobbling like a hand. */
-const writeKeys = (): Key[] => Array.from({ length: 9 }).map((_, i) => {
-  const f = i / 8;
-  return { t: NOTE_A + (NOTE_B - NOTE_A) * f, x: NOTE.x0 + (NOTE.x1 - NOTE.x0) * f, y: NOTE.y + 4 + (i % 2 ? -9 : 7), r: -14, s: 1.05, ease: (v: number) => v };
-});
-
-/** The treasure itself (review SHOULD: "great treasure" had nothing on screen for 1.6 s): two stacks of gold coins pile
- *  up on their desk beside the inkwell on the word, one coin at a time, and glint once. */
+/** The treasure: three stacks of gold coins clinking up beside the cage on "treasure". */
 const Coins: React.FC<{ t: number }> = ({ t }) => {
-  if (t < Q.treasure - 0.05) return null;
-  const glint = Math.max(0, 1 - Math.abs(t - (Q.treasure + 0.75)) / 0.12);
-  const fall = lin(t, Q.but + 0.15, Q.but + 0.5, EASE_IN);
-  const stacks: [number, number][] = [[712, 6], [686, 3]];
+  if (t < Q.treasure) return null;
+  const stacks: [number, number][] = [[700, 6], [748, 9], [796, 5]];
+  let n = 0;
   return (
-    <g transform={`translate(0 ${fall * 120}) rotate(${fall * 14} 700 ${TOP})`} opacity={1 - lin(t, Q.but + 0.3, Q.but + 0.5)}>
-      {stacks.map(([cx, n], si) => Array.from({ length: n }).map((_, i) => {
-        const k = pop(t, Q.treasure + (si * n + i) * 0.07, 0.2);
+    <g>
+      {stacks.map(([cx, cnt], si) => Array.from({ length: cnt }).map((_, i) => {
+        const k = pop(t, Q.treasure + 0.08 + (n++) * 0.05, 0.2);
         if (k <= 0) return null;
-        const y = TOP - 6 - i * 9 - (1 - Math.min(1, k)) * 40;
-        return <g key={`${si}-${i}`}><ellipse cx={cx} cy={y} rx={22} ry={7} fill="#F2C04A" stroke={P.ink} strokeWidth={3} />
-          <path d={`M ${cx - 14} ${y} Q ${cx} ${y + 4} ${cx + 14} ${y}`} stroke={P.ink} strokeWidth={1.6} fill="none" opacity={0.5} /></g>;
+        const y = TOP - 7 - i * 10 - (1 - Math.min(1, k)) * 50;
+        return <g key={`${si}-${i}`}><ellipse cx={cx} cy={y} rx={24} ry={7.5} fill="#F2C04A" stroke={P.ink} strokeWidth={3} />
+          <path d={`M ${cx - 15} ${y} Q ${cx} ${y + 4} ${cx + 15} ${y}`} stroke={P.ink} strokeWidth={1.6} fill="none" opacity={0.5} /></g>;
       }))}
-      {glint > 0 && <path d={`M 712 ${TOP - 70} l 5 -16 l 5 16 l 16 5 l -16 5 l -5 16 l -5 -16 l -16 -5 Z`} fill="#FFF6D0" opacity={glint} />}
     </g>
+  );
+};
+
+/** The cloth over the inkwell, and the cord to the middle man's hand; yanked away on "technology". */
+const Cloth: React.FC<{ t: number; hand: [number, number] }> = ({ t, hand }) => {
+  const u = lin(t, Q.technology2 - 0.02, Q.technology2 + 0.4, EASE_IN);
+  if (u >= 1) return null;
+  // WHY straight up and out of the frame (first render: flying left over the men it read as a butterfly net)
+  const dx = -70 * u, dy = -760 * u;
+  const top: [number, number] = [WELL + dx, TOP - 96 + dy];
+  // WHY the cord sags while slack and snaps straight as he pulls: the yank needs anticipation to read
+  const taut = lin(t, Q.technology2 - 0.12, Q.technology2 - 0.02);
+  const sag = 50 * (1 - taut);
+  const cm = [(hand[0] + top[0]) / 2, (hand[1] + top[1]) / 2 + sag];
+  const flap = Math.sin(u * 14) * 10 * u;
+  return (
+    <g>
+      {t > Q.these - 0.5 && u < 0.35 && <path d={`M ${hand[0]} ${hand[1]} Q ${cm[0]} ${cm[1]} ${top[0]} ${top[1]}`} stroke={P.ink} strokeWidth={2.6} fill="none" />}
+      <g transform={`translate(${dx} ${dy}) rotate(${-25 * u} ${WELL} ${TOP - 50}) scale(${1 + 0.25 * u} ${1 - 0.25 * u})`}>
+        <path d={`M ${WELL - 64} ${TOP} C ${WELL - 60} ${TOP - 50} ${WELL - 40} ${TOP - 96} ${WELL} ${TOP - 96} C ${WELL + 40} ${TOP - 96} ${WELL + 60} ${TOP - 50} ${WELL + 64 + flap} ${TOP} Q ${WELL + 30} ${TOP - 8} ${WELL} ${TOP} Q ${WELL - 32} ${TOP - 8} ${WELL - 64} ${TOP} Z`}
+          fill="#CDBFCB" stroke={P.ink} strokeWidth={3.2} strokeLinejoin="round" />
+        <path d={`M ${WELL - 20} ${TOP - 80} Q ${WELL - 26} ${TOP - 40} ${WELL - 34} ${TOP - 6} M ${WELL + 18} ${TOP - 78} Q ${WELL + 22} ${TOP - 40} ${WELL + 30} ${TOP - 6}`} stroke={P.inkSoft} strokeWidth={2} fill="none" opacity={0.7} />
+      </g>
+    </g>
+  );
+};
+
+// ---------- chapter vi: the wish and the card ----------
+const CARD = { x: 1160, y: 300, w: 360 };
+const CARD_H = windowHeight(CARD.w);
+const WISH_A = CUT.tool + 0.05, WISH_B = WISH_A + 0.68;
+const WISH_TXT = { x0: 1040, y: 556 };
+const SWOOP = WISH_B + 0.05, CARD_A = SWOOP + 0.14, CARD_DRAW = 0.42;
+if (CARD_A + CARD_DRAW > Q.software + 0.02) throw new Error(`take1c: the card must be drawn by "software" (${(CARD_A + CARD_DRAW).toFixed(2)} > ${Q.software.toFixed(2)})`);
+
+/** The stack of slabs they stand on, each stamped with an app's icon: the software their power rests on. */
+const ICON_D = [
+  'M -18 -12 h 36 v 30 h -36 Z M -18 -2 h 36 M -8 -16 v 8 M 8 -16 v 8',
+  'M -6 14 L -6 -16 L 16 -20 L 16 8 M -6 14 a 6 5 0 1 1 -1 -1 M 16 8 a 6 5 0 1 1 -1 -1',
+  'M -18 -18 h 36 v 36 h -36 Z M -6 -18 v 36 M 6 -18 v 36 M -18 -6 h 36 M -18 6 h 36',
+  'M 0 18 C -16 2 -14 -18 0 -18 C 14 -18 16 2 0 18 Z M 0 -9 a 5 5 0 1 0 0.1 0',
+  'M -20 -14 h 40 v 24 h -26 l -10 8 v -8 h -4 Z',
+];
+const OUT_SLAB = 2;                                  // the slab that slides out on "monopolies"
+const slideAt = (t: number) => lin(t, Q.monopolies1 + 0.05, Q.monopolies1 + 0.4, EASE_IN);
+const sinkAt = (t: number) => lin(t, Q.monopolies1 + 0.28, Q.monopolies1 + 0.4, EASE_IN) * STACK.h + jolt(t, Q.monopolies1 + 0.4, -10, 0.4);
+const Stack: React.FC<{ t: number }> = ({ t }) => {
+  const grey = lin(t, Q.scarce, Q.scarce + 0.4);
+  const fill = mixHex(P.wash, '#A79CA9', grey);
+  const wob = (i: number) => jolt(t, Q.these + 0.4 + i * 0.03, 5, 0.5) + jolt(t, Q.monopolies1, 4, 0.5);
+  const slide = slideAt(t), sink = sinkAt(t);
+  return (
+    <>
+      {Array.from({ length: STACK.n }).map((_, i) => {
+        const y0 = 880 - (i + 1) * STACK.h;
+        const jit = [0, 10, -6, 12, 4][i];
+        const x0 = STACK.cx - STACK.w / 2 + jit, x1 = STACK.cx + STACK.w / 2 + jit;
+        const out = i === OUT_SLAB;
+        const dx = out ? 300 * slide : wob(i), dy = out ? 260 * Math.max(0, slide - 0.55) * 2 : i > OUT_SLAB ? sink : 0;
+        const rot = out ? 40 * Math.max(0, slide - 0.5) : 0;
+        if (out && slide >= 1) return null;
+        return (
+          <g key={i} transform={`translate(${dx} ${dy}) rotate(${rot} ${x1} ${y0 + STACK.h})`}>
+            <Shape d={`M ${x0} ${y0 + STACK.h} L ${x1} ${y0 + STACK.h} L ${x1} ${y0} L ${x0} ${y0} Z`} a={DRAWN + i * 0.1} b={DRAWN + i * 0.1 + 0.25} fill={fill} w={3.4} />
+            <g transform={`translate(${(x0 + x1) / 2} ${y0 + STACK.h / 2}) scale(0.62)`}><Ink d={ICON_D[i]} a={DRAWN + i * 0.1 + 0.1} b={DRAWN + i * 0.1 + 0.35} w={4} /></g>
+          </g>
+        );
+      })}
+      {/* "foundation": a crack runs up the stack from the desk */}
+      <Ink d={`M 470 880 L 452 846 L 476 812 L 448 780 L 470 744 L 444 712 L 466 676 L 448 640`} a={Q.foundation} b={Q.foundation + 0.35} w={4.5} />
+    </>
   );
 };
 
 const TreasureArt: React.FC = () => {
   const t = useT();
-  // the shove: the inkwell lands at the stack's edge on "created" and skids along the desk
-  const shoved = lin(t, Q.created1 + 0.05, Q.created1 + 0.55, EASE_OUT);
-  const wellX = WELL.from + (WELL.x - WELL.from) * shoved;
-  const wellIn = pop(t, Q.created1 - 0.12, 0.3);
-  const rock = jolt(t, Q.created1 + 0.5, 5, 0.5);
-  // the snatch: the nearest man's arm stretches out through "far beyond their own", closes on "control"
-  const reach = lin(t, Q.far - 0.02, Q.control - 0.06, EASE_OUT);
-  const fist = lin(t, Q.control + 0.02, Q.control + 0.1);
-  // WHY back before the cut (review): the cut now lands at control + 0.77, and the arm must be home by then
-  const back = lin(t, Q.control + 0.4, Q.control + 0.7, EASE_IN);
-  // the quill: rises out of its inkwell on "artificial intelligence", and escapes on "control"
-  // WHY it escapes sideways and stays low (review 2026-11-20): rising, it left the top of the frame for half a
-  // second. It now darts out of reach to the right and out of the shot, and the film cuts to the page it lands on.
+  const men = MEN.map((x, j) => ({ x, j, st: manAt(t, j), y: TOP + (t > Q.monopolies1 ? sinkAt(t) : 0) }));
+  const tall = men[2];
+  const handPt = (pose: HatPose): [number, number] => (pose === 'key' ? [73, -119] : [61, -134]);
+  const midHand = manPt(1, men[1].x, men[1].y, men[1].st, ...handPt(men[1].st.pose));
+  // the snatch: his arm stretches out through "far beyond their own", closes on air on "control", and snaps home
+  // WHY ease in-out: it must still be reaching as the quill slips out, and arrive just as it is gone
+  const reachP = lin(t, Q.far - 0.02, Q.control - 0.02, EASE_IN_OUT) * (1 - lin(t, Q.control + 0.22, Q.control + 0.42, EASE_IN));
+  const shoulder = manPt(2, tall.x, tall.y, tall.st, 20, -168);
+  const target: [number, number] = [WELL + 8, CAGE.top - 50];
+  // ---------- the quill ----------
+  const ZIP = Q.control + 0.02;
   const q = track(checked('treasure', [
-    { t: Q.artificial + 0.05, x: REST.x, y: REST.y + 260, r: REST.r, s: REST.s },
-    { t: Q.intelligence + 0.3, x: REST.x, y: REST.y - 10, r: REST.r - 4, s: REST.s, ease: EASE_OUT },
-    { t: Q.intelligence + 0.7, ...REST },
-    { t: Q.control - 0.22, ...REST },
-    // WHY a 6-frame pull back first: the anticipation is what makes the escape read as the quill's own choice
-    { t: Q.control - 0.02, x: REST.x - 10, y: REST.y + 6, r: REST.r - 16, s: REST.s, ease: EASE_IN_OUT },
-    { t: Q.control + 0.3, x: 815, y: 616, r: -30, s: REST.s, ease: BACK },
-    // WHY it keeps going out of frame before the cut (review: an empty beat after it left): the cut now lands
-    // as it is gone, and in the next shot it is already at the note
-    { t: CUT.tool - 0.03, x: 1230, y: 590, r: -30, s: REST.s, ease: EASE_IN },
-    { t: CUT.tool, x: NOTE.x0 - 10, y: NOTE.y + 4, r: -14, s: 1.05 },
-    { t: NOTE_A, x: NOTE.x0 - 10, y: NOTE.y + 4, r: -14, s: 1.05 },
-    ...writeKeys().slice(1),
-    // then it swoops to the card's corner and draws the card round, clockwise from the top-left
-    // WHY it arrives a hair before the outline starts: the line must never be drawn ahead of the nib
-    { t: SWOOP, x: WIN.x - WIN.w / 2, y: WIN.y - WIN_H / 2, r: -12, s: 1.0, ease: EASE_IN_OUT },
-    { t: WIN_A, x: WIN.x - WIN.w / 2, y: WIN.y - WIN_H / 2, r: -12, s: 1.0 },
-    { t: WIN_A + WIN_DRAW * 0.3, x: WIN.x + WIN.w / 2, y: WIN.y - WIN_H / 2, r: -12, s: 1.0 },
-    { t: WIN_A + WIN_DRAW * 0.5, x: WIN.x + WIN.w / 2, y: WIN.y + WIN_H / 2, r: -12, s: 1.0 },
-    { t: WIN_A + WIN_DRAW * 0.8, x: WIN.x - WIN.w / 2, y: WIN.y + WIN_H / 2, r: -12, s: 1.0 },
-    { t: WIN_A + WIN_DRAW, x: WIN.x - WIN.w / 2, y: WIN.y - WIN_H / 2 + 40, r: -12, s: 1.0 },
-    { t: PLANTS_AT, x: WIN.x + WIN.w / 2 + 30, y: WIN.y + 20, r: 8, s: 0.9 },
-    { t: Q.foundation - 0.2, x: WIN.x + WIN.w / 2 + 30, y: WIN.y + 30, r: 8, s: 0.9 },
-    // then the stacks, one after another: its nib rides the top of each as it is written
-    ...COPIES.map((cx, i) => ({ t: Q.foundation + i * 0.22 + 0.2, x: cx + 40, y: copyTop(i) + 12, r: -8, s: 1.0 })),
-    { t: TURN.anyone, x: 1460, y: 560, r: 0, s: 1.0 },
+    { t: Q.artificial, x: REST.x, y: REST.y + 260, r: REST.r, s: REST.s },
+    { t: Q.artificial + 0.42, x: REST.x, y: REST.y - 14, r: REST.r - 4, s: REST.s, ease: EASE_OUT },
+    { t: Q.intelligence - 0.05, ...REST },
+    { t: Q.believed + 0.05, ...REST },
+    // "believed": it leans right out toward them, curious
+    { t: Q.believed + 0.55, x: REST.x - 8, y: REST.y - 6, r: REST.r - 34, s: REST.s },
+    { t: CAGE_LAND - 0.02, x: REST.x - 8, y: REST.y - 6, r: REST.r - 30, s: REST.s },
+    // the cage lands: it ducks back
+    { t: CAGE_LAND + 0.12, x: REST.x + 4, y: REST.y + 10, r: REST.r + 8, s: REST.s, ease: EASE_OUT },
+    { t: Q.somethingFar, x: REST.x + 4, y: REST.y + 8, r: REST.r + 6, s: REST.s },
+    // "beyond": it squeezes up and out through the top of the cage
+    { t: Q.beyond - 0.05, x: REST.x, y: REST.y, r: REST.r - 4, s: REST.s },
+    { t: Q.beyond + 0.42, x: REST.x - 6, y: CAGE.top - 30, r: -8, s: REST.s * 0.9, ease: EASE_IN_OUT },
+    { t: ZIP - 0.04, x: REST.x - 2, y: CAGE.top - 40, r: -4, s: REST.s * 0.9 },
+    // "control": it zips up and right, loops once, and leaves the frame, nib trailing
+    { t: ZIP + 0.1, x: 1100, y: 230, r: 30, s: 1.15, ease: EASE_OUT },
+    { t: ZIP + 0.17, x: 1190, y: 170, r: 70, s: 1.15, ease: (v) => v },
+    { t: ZIP + 0.23, x: 1150, y: 120, r: 160, s: 1.15, ease: (v) => v },
+    { t: ZIP + 0.29, x: 1230, y: 130, r: 300, s: 1.15, ease: (v) => v },
+    { t: ZIP + 0.45, x: 1720, y: 40, r: 390, s: 1.15, ease: EASE_IN },
+    // the next shot: it flies in from the right, after the wish is written, and draws the card round
+    { t: SWOOP - 0.2, x: 1700, y: 200, r: -12, s: 1.0 },
+    { t: CARD_A, x: CARD.x - CARD.w / 2, y: CARD.y - CARD_H / 2, r: -12, s: 1.0, ease: EASE_OUT },
+    { t: CARD_A + CARD_DRAW * 0.3, x: CARD.x + CARD.w / 2, y: CARD.y - CARD_H / 2, r: -12, s: 1.0, ease: (v) => v },
+    { t: CARD_A + CARD_DRAW * 0.5, x: CARD.x + CARD.w / 2, y: CARD.y + CARD_H / 2, r: -12, s: 1.0, ease: (v) => v },
+    { t: CARD_A + CARD_DRAW * 0.8, x: CARD.x - CARD.w / 2, y: CARD.y + CARD_H / 2, r: -12, s: 1.0, ease: (v) => v },
+    { t: CARD_A + CARD_DRAW, x: CARD.x - CARD.w / 2, y: CARD.y - CARD_H / 2 + 30, r: -12, s: 1.0, ease: (v) => v },
+    { t: Q.software + 0.1, x: CARD.x + CARD.w / 2 + 40, y: CARD.y + 10, r: 8, s: 0.95 },
   ]), t);
-  const idle = t > Q.intelligence + 0.7 && t < Q.control - 0.22 ? Math.sin(t * 1.7) * 2.5 + jolt(t, Q.createdSomething, 6, 0.6) : 0;
-  // WHY the nib taps and the quill sways while the finished card is held (review: nothing new on screen for ~1 s)
-  const hover = t > PLANTS_AT && t < Q.foundation - 0.2 ? Math.sin((t - PLANTS_AT) * 7) * 4 : 0;
-  const inWell = t < Q.control + 0.2;
-  const men = MEN.map((fx, j) => ({ fx, j, ...manAt(t, j) }));
-  const stretch = men[2];
-  // the arm leaves his shoulder and reaches for the feather's middle, where the quill stood a moment ago
-  const shoulder = onMan(stretch.fx, stretch.lean, 20, -168) as [number, number];
-  const target: [number, number] = [REST.x + 6, REST.y - 92];
-  // "ever-scarce": their stack greys; "foundation": it settles heavily; "monopolies": it shakes and shrinks a little
-  // while the new stacks rise taller beside it, so the balance of power visibly tips
-  const grey = lin(t, Q.scarce, Q.scarce + 0.4);
-  const settle = jolt(t, Q.foundation, 7, 0.55);
-  const shrink = 1 - 0.07 * lin(t, Q.monopolies1, Q.monopolies1 + 0.5, EASE_IN_OUT);
-  const gone = t < Q.scarce - 0.06 ? 1 : 0;
+  // WHY character beats on the quill itself (review SHOULD: it stood still for 5 s, so "beyond their control" had no
+  // set-up): on "intelligence" it stretches and shakes itself awake like a bird, spattering three drops of ink
+  const wake = held(t, Q.intelligence, Q.intelligence + 0.4, 0.06, 0.12);
+  const shake = wake * Math.sin((t - Q.intelligence) * 38) * 13;
+  const stretch = 1 + 0.14 * held(t, Q.intelligence - 0.05, Q.intelligence + 0.1, 0.08, 0.15);
+  const idle = within(t, Q.intelligence + 0.5, Q.control) ? Math.sin(t * 1.9) * 2.5 : 0;
+  const wriggle = within(t, Q.somethingFar, Q.beyond + 0.42) ? Math.sin(t * 30) * 9 : 0;
+  const hover = within(t, Q.software + 0.1, CUT.scarce) ? Math.sin((t - Q.software) * 6) * 5 : 0;
+  const showQuill = t > Q.artificial && t < CUT.scarce && !(t > ZIP + 0.45 && t < SWOOP - 0.2);
+  const inWell = t < Q.beyond + 0.15;
+  // a short ink flick behind it while it zips away
+  const trail = within(t, ZIP + 0.05, ZIP + 0.5) ? [0.03, 0.06, 0.09, 0.12].map((dt) => track([
+    { t: ZIP - 0.04, x: REST.x - 2, y: CAGE.top - 40 }, { t: ZIP + 0.1, x: 1100, y: 230, ease: EASE_OUT }, { t: ZIP + 0.17, x: 1190, y: 170, ease: (v) => v },
+    { t: ZIP + 0.23, x: 1150, y: 120, ease: (v) => v }, { t: ZIP + 0.29, x: 1230, y: 130, ease: (v) => v }, { t: ZIP + 0.45, x: 1720, y: 40, ease: EASE_IN },
+  ], t - dt)) : [];
+  // WHY they land on the desk as splats (first render: left hanging on the page they read as flies round the cage)
+  const drops = [[1000, TOP - 2, 0.0], [1060, TOP - 2, 0.05], [800, TOP - 2, 0.09]] as const;
+  // the wish: written by someone's hand reaching in from below
+  const wishO = t >= CUT.tool && t < CUT.scarce ? 1 : 0;
+  const armOut = lin(t, WISH_B + 0.05, WISH_B + 0.35, EASE_IN);
+  return (
+    <Sheet>
+      <defs><clipPath id="c-well-mouth"><rect x={-200} y={-400} width={2400} height={MOUTH + 400} /></clipPath></defs>
+      {/* their stack, and them on it */}
+      <g transform={`translate(0 ${jolt(t, Q.foundation, 5, 0.5)})`}><Stack t={t} /></g>
+      {men.map(({ x, j, st, y }) => <Man key={j} j={j} x={x} y={y} st={st} a={DRAWN + 0.3 + j * 0.08} b={DRAWN + 1.1 + j * 0.08} />)}
+      {/* WHY big and hung on the stack's face (review: a tiny padlock): theirs is locked; it slams on "ever-scarce" */}
+      {t > CUT.scarce - 0.02 && <Padlock x={318} y={790} s={2.5} at={Q.scarce} />}
+      {/* their desk, running across the gutter */}
+      <Shape d={`M ${DESK.x0} ${TOP} L ${DESK.x1} ${TOP} L ${DESK.x1} ${TOP + 18} L ${DESK.x0} ${TOP + 18} Z`} a={DRAWN} b={DRAWN + 0.4} fill={P.inkSoft} w={3.4} />
+      <Ink d={`M ${DESK.x0 + 22} ${TOP + 18} L ${DESK.x0 + 28} 880 M ${DESK.x1 - 22} ${TOP + 18} L ${DESK.x1 - 28} 880`} a={DRAWN + 0.1} b={DRAWN + 0.5} w={6} />
+      <Coins t={t} />
+      <Inkwell x={WELL} glow={held(t, Q.technology2 + 0.3, Q.technology2 + 0.6, 0.15, 0.4)} />
+      {/* the ink the quill shakes off as it wakes: it stays on the page */}
+      {drops.map(([x, y, dt], i) => {
+        const k = lin(t, Q.intelligence + 0.12 + dt, Q.intelligence + 0.3 + dt, EASE_OUT);
+        if (k <= 0) return null;
+        const sx = REST.x + 40, sy = REST.y - 150;
+        return k < 1 ? <circle key={i} cx={sx + (x - sx) * k} cy={sy + (y - sy) * k - Math.sin(k * Math.PI) * 60} r={[7, 5, 6][i] * 0.8} fill={P.ink} />
+          : <ellipse key={i} cx={x} cy={y} rx={[11, 8, 9][i]} ry={3} fill={P.ink} />;
+      })}
+      {trail.length > 0 && <path d={`M ${trail.map((p) => `${p.x} ${p.y}`).join(' L ')}`} stroke={P.ink} strokeWidth={5} fill="none" strokeLinecap="round" opacity={0.55 * (1 - lin(t, ZIP + 0.35, ZIP + 0.5))} />}
+      {showQuill && (
+        <g clipPath={inWell ? 'url(#c-well-mouth)' : undefined}>
+          <g transform={`translate(${q.x} ${q.y + Math.abs(hover) * 0.6}) scale(1 ${stretch}) translate(${-q.x} ${-q.y})`}>
+            <Quill x={q.x} y={q.y + Math.abs(hover) * 0.6} s={q.s} r={q.r + idle + hover + shake + wriggle} />
+          </g>
+        </g>
+      )}
+      <Cage t={t} />
+      <Cloth t={t} hand={midHand} />
+      {/* "far beyond their own control": his arm shoots out, and his hand closes on the air where it was */}
+      {tall.st.pose === 'stretch' && <Reach from={shoulder} to={target} p={reachP} fist={tall.st.fist} />}
+      {/* "a tool that can make software": someone writes their wish, and the quill draws them a card */}
+      {wishO > 0 && <Scrap x0={WISH_TXT.x0} y={WISH_TXT.y} text="my plants keep dying" a={WISH_A} b={WISH_B} size={58} outlineAt={CUT.tool - 0.06} rot={-1.6} />}
+      {wishO > 0 && armOut < 1 && (() => {
+        const u = lin(t, WISH_A, WISH_B, (v) => v);
+        const nx = WISH_TXT.x0 + 20 * 0.4 * 58 * u;
+        return <g transform={`translate(0 ${armOut * 520})`}><Pencil x={nx} y={WISH_TXT.y - 6 + Math.sin(u * 44) * 4} /></g>;
+      })()}
+      {t >= CUT.tool && t < CUT.scarce && <MadeCard look="meadow" what="plants" x={CARD.x} y={CARD.y} w={CARD.w} r={-1} a={CARD_A} draw={CARD_DRAW} contentAt={Q.software} />}
+    </Sheet>
+  );
+};
+export const TREASURE: Spread = { id: 'treasure', Art: TreasureArt };
+/** Kept for take1c.tsx's import. */
+export const TREASURE_MARKS = { well: { x: WELL, y: MOUTH }, men: { x: MEN[1], y: TOP }, card: CARD };
+
+// ======================= vi · anyone =======================
+// WHY one card, re-drawn for each person who asks (review BLOCKER: four tiny people in a row, each with an unreadable
+// card, read as "four people, four gadgets" and leaned on the banned crowd idea): close on ONE card while three different
+// people lean in and write what they want; the quill redraws the same card for each. Then, on "asks", the film pulls
+// out to show each of them holding their own copy of that one card, every copy in its owner's own look.
+const ANY = { x: 1125, y: 400, w: 260 };
+// WHY two short lines beside the card, not one long one above it: the close shot is tight enough for the card to read
+// at phone size, so the wish sits in the space to its left
+const ASKERS: { look: Theme; what: Made; text: string[]; at: number; x: number }[] = [
+  { look: 'meadow', what: 'plants', text: ['my plants', 'keep dying'], at: TURN.anyone - 1, x: 860 },
+  { look: 'cotton', what: 'bus', text: ["when's", 'my bus??'], at: Q.anyone - 0.03, x: 850 },
+  { look: 'devils', what: 'game', text: ['a game for', 'me & jo'], at: Q.who - 0.06, x: 870 },
+];
+const SKIN_DUR = 0.24;
+const skinAt = (k: number) => ASKERS[k].at + 0.24;
+if (skinAt(2) + SKIN_DUR > CUT.anyWide - 0.2) throw new Error('take1c: the last card must be redrawn well before the pull-out on "asks"');
+// the wide: each person holding their copy (page units)
+const OWNERS = [
+  // WHY about half as big again as the first render (they were an eighth of the frame): near, middle and far, never a row
+  { look: 'meadow' as Theme, what: 'plants' as Made, px: 230, py: 900, s: 3.0, card: { x: 470, y: 600, w: 320 }, flip: false },
+  { look: 'cotton' as Theme, what: 'bus' as Made, px: 610, py: 480, s: 2.1, card: { x: 815, y: 280, w: 300 }, flip: false },
+  { look: 'devils' as Theme, what: 'game' as Made, px: 1330, py: 600, s: 2.3, card: ANY, flip: true },
+];
+const AnyoneArt: React.FC = () => {
+  const t = useT();
+  const close = t < CUT.anyWide;
+  // which asker is in the shot, and how far the card has been redrawn for them
+  const k = t < ASKERS[1].at ? 0 : t < ASKERS[2].at ? 1 : 2;
+  const p1 = lin(t, skinAt(1), skinAt(1) + SKIN_DUR, EASE_IN_OUT), p2 = lin(t, skinAt(2), skinAt(2) + SKIN_DUR, EASE_IN_OUT);
+  const cur = p1 < 1 ? { base: 0, p: p1 } : { base: 1, p: p2 };
+  const edge = madeEdge(ANY.x, ANY.y, ANY.w, cur.p);
+  const skinning = (p1 > 0 && p1 < 1) || (p2 > 0 && p2 < 1);
+  return (
+    <Sheet>
+      {close ? (
+        <>
+          {/* the asker: head and shoulders leaning in from the bottom of the frame, pointing up at the card */}
+          {ASKERS.map((a, i) => {
+            const inn = i === 0 ? 1 : lin(t, a.at - 0.04, a.at + 0.14, EASE_OUT);
+            const out = i < 2 ? lin(t, ASKERS[i + 1].at - 0.06, ASKERS[i + 1].at + 0.08, EASE_IN) : 0;
+            if (inn <= 0 || out >= 1) return null;
+            return <Person key={i} x={a.x - out * 120} y={790 + (1 - inn) * 200 + out * 220} s={2.6} a={-10} b={-9} pose="up" hair={HAIR[a.look]} hairColor={P.ink}
+              body={SHIRT[a.look]} mood={i === k && t > skinAt(i) + SKIN_DUR ? 'o' : 'smile'} bob={jolt(t, skinAt(i) + SKIN_DUR, -10, 0.4)} />;
+          })}
+          {/* their wish: each new one replaces the last on a fresh scrap */}
+          {ASKERS.map((a, i) => {
+            const gone = i < 2 ? lin(t, ASKERS[i + 1].at - 0.05, ASKERS[i + 1].at + 0.03) : 0;
+            if (gone >= 1) return null;
+            return <Scrap key={i} x0={722} y={ANY.y - 82} text={a.text} a={i === 0 ? -10 : a.at} b={i === 0 ? -9.5 : a.at + 0.26} size={52} outlineAt={i === 0 ? -11 : a.at - 0.08} o={1 - gone} rot={[-1.4, 1.2, -0.8][i]} />;
+          })}
+          <MadeCard look={ASKERS[cur.base].look} what={ASKERS[cur.base].what} x={ANY.x} y={ANY.y} w={ANY.w} r={-1}
+            next={{ look: ASKERS[cur.base + 1].look, what: ASKERS[cur.base + 1].what, p: cur.p }} />
+          {/* the quill rides the leading edge of each redraw, and waits at the card's corner in between */}
+          <Quill x={skinning ? edge.x : ANY.x + ANY.w / 2 + 20} y={skinning ? edge.y + 6 : ANY.y - 40 + Math.sin(t * 6) * 5} s={0.85} r={skinning ? -14 : 6} />
+        </>
+      ) : (
+        <>
+          {OWNERS.map((o, i) => {
+            // WHY a small cheer each, a beat apart (review: nothing moved while she said the film's key line)
+            const hop = jolt(t, CUT.anyWide + 0.1 + i * 0.12, -12, 0.5) + jolt(t, Q.so + i * 0.1, -8, 0.5);
+            return (
+              <g key={i}>
+                <Ink d={`M ${o.px - 40 * o.s} ${o.py} L ${o.px + 40 * o.s} ${o.py}`} a={-10} b={-9} w={2.4} c={P.inkSoft} />
+                <Person x={o.px} y={o.py} s={o.s} a={-10} b={-9} pose="up" flip={o.flip} hair={HAIR[o.look]} hairColor={P.ink} body={SHIRT[o.look]} mood="smile" bob={hop} />
+                <g transform={`translate(0 ${hop})`}><MadeCard look={o.look} what={o.what} x={o.card.x} y={o.card.y} w={o.card.w} r={[-2, 1.5, -1][i]} /></g>
+              </g>
+            );
+          })}
+          <Quill x={1000 + Math.sin(t * 2.2) * 30} y={230 + Math.sin(t * 3.1) * 12} s={0.8} r={8 + Math.sin(t * 2.2) * 8} />
+        </>
+      )}
+    </Sheet>
+  );
+};
+export const ANYONE: Spread = { id: 'anyone', Art: AnyoneArt };
+
+// ======================= vii · ours: chapter ii, undone =======================
+// WHY the exact layout of chapter ii: the narrator repeats that line's three clauses word for word, so the
+// pictures repeat too, in colour, and each is undone by the person it was done to, on its own clause.
+const Scissors: React.FC<{ x: number; y: number; r: number; open: number; s?: number }> = ({ x, y, r, open, s = 1 }) => (
+  <g transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>
+    {[1, -1].map((sg) => (
+      <g key={sg} transform={`rotate(${sg * open * 16})`}>
+        <path d={`M -6 ${sg * 2} L 58 ${sg * -2} Q 60 ${sg * 1} 56 ${sg * 3} L -6 ${sg * 7} Z`} fill="#F4F0F6" stroke={P.ink} strokeWidth={2.6} strokeLinejoin="round" />
+        <path d={`M -6 ${sg * 5} L -22 ${sg * 12}`} stroke={P.ink} strokeWidth={5} strokeLinecap="round" />
+        <ellipse cx={-30} cy={sg * 14} rx={11} ry={8} fill="none" stroke={P.pink} strokeWidth={5} /><ellipse cx={-30} cy={sg * 14} rx={11} ry={8} fill="none" stroke={P.ink} strokeWidth={1.6} />
+      </g>
+    ))}
+    <circle r={4} fill={P.sun} stroke={P.ink} strokeWidth={2} />
+  </g>
+);
+/** A handwritten wish above her laptop: written on "computers", and the screen builds itself on "can do". */
+const WISH = { x0: 120, y: 300, text: 'show me the sky' };
+/** Her raised hand (pose "up", scale 1.1, at 200,500): where the key drops. */
+export const OURS_HAND = { x: 200 + 24 * 1.1, y: 500 - 96 * 1.1 };
+/** Her things, flying back out of his hat into her own box: her night-sky card, her cat's photo, a note. */
+const DataItem: React.FC<{ k: number; x: number; y: number; s: number; r: number }> = ({ k, x, y, s, r }) => {
+  if (k === 0) return <ThemedWindow theme="sunbreak" x={x} y={y} w={30 * s} r={r} compact bare />;
+  if (k === 1) return <KeepsakeIcon kind="photo" x={x} y={y} s={s} r={r} color={SHIRT.cotton} />;
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>
+      <path d="M -18 -13 L 18 -14 L 17 13 L -17 14 Z" fill="#FFFDF8" stroke={P.ink} strokeWidth={2.2} strokeLinejoin="round" />
+      <path d="M -11 -5 q 4 -3 8 0 t 8 0 t 6 0 M -11 4 q 4 -3 8 0 t 8 0" stroke={P.ink} strokeWidth={1.6} fill="none" strokeLinecap="round" />
+    </g>
+  );
+};
+const OursArt: React.FC = () => {
+  const t = useT();
+  // WHY drawn well before the cut: the film cuts straight into a close shot here, which must show finished drawings
+  const L = land(TURN.ours) - 1.6;
+  const LB = Q.decide - 0.03;
+  const T0 = TURN.ours;
+  // the key drops into her raised hand just after the cut, on "first"; she hops with it on "time" and "long while"
+  const keyFall = lin(t, T0 + 0.02, T0 + 0.3, EASE_IN);
+  const grip = lin(t, T0 + 0.28, T0 + 0.38);
+  const hop = jolt(t, Q.firstTime + 0.25, -14, 0.5) + jolt(t, Q.longWhile - 0.1, -14, 0.5);
+  const bob = (k: number) => jolt(t, Q.decide + 0.2 + k * 0.08, -10, 0.5) + (k === 0 ? hop : 0);
+  const H0 = OURS_HAND;
+  const heldKey = { x: H0.x, y: H0.y - 260 * (1 - keyFall) + jolt(t, T0 + 0.3, 5, 0.3) };
+  // she carries it to the padlock over "a very long while"; it pushes in on "get"; on "decide" it turns and the lock pops
+  const kGo = lin(t, Q.veryLong - 0.1, Q.longWhile + 0.4, EASE_IN_OUT);
+  const push = 4 * lin(t, Q.weGet + 0.6, Q.weGet + 0.75);
+  const rattle = jolt(t, Q.weGet + 0.6, 2, 0.4);
+  const kTurn = lin(t, Q.decide, Q.decide + 0.16, EASE_IN_OUT);
+  const keyX = heldKey.x + (370 - push - heldKey.x) * kGo, keyY = heldKey.y + (382 - heldKey.y) * kGo;
+  const screenP = pop(t, Q.canDo - 0.05, 0.5);
+  const carrying = t > Q.veryLong - 0.1;
+  // B: he walks to the tag with his scissors, leaps on "costs" and snips it; it falls; "free" is written on the screen
+  const walk = lin(t, Q.itCosts - 0.1, Q.costs - 0.12, EASE_IN_OUT);
+  const leap = Math.max(0, Math.sin(Math.min(1, Math.max(0, (t - (Q.costs - 0.12)) / 0.42)) * Math.PI));
+  // WHY he stops beside the tag, not on it (render: his body covered the tag as he cut it)
+  const bx = 480 + (368 - 480) * walk, by = 860 - 40 * leap;
+  const snip = lin(t, Q.costs + 0.06, Q.costs + 0.1);
+  const fall = lin(t, Q.costs + 0.1, Q.costs + 0.45, EASE_IN);
+  // his raised hand (pose "up", flipped, s 1.12) holds the scissors
+  const hand = { x: bx - 24 * 1.12, y: by - 96 * 1.12 };
+  // C: her things come back out of his hat, one at a time, into her box; the lid snaps shut on "data"
+  // WHY from just after the cut to this shot (it now lands 0.3 s into "And what happens", so "free" is seen first)
+  const DATA_FROM = Q.ourData + 0.42, DATA_GAP = 0.27, DATA_DUR = 0.55;
+  const ITEM_LAND = (i: number) => DATA_FROM + i * DATA_GAP + DATA_DUR;
+  const boxHop = [0, 1, 2].reduce((a, i) => a + jolt(t, ITEM_LAND(i), -6, 0.35), 0);
+  const tug = [0, 1, 2].reduce((a, i) => a + held(t, DATA_FROM + i * DATA_GAP - 0.04, DATA_FROM + i * DATA_GAP + 0.08, 0.04, 0.15), 0);
+  const shut = lin(t, Q.data2 - 0.02, Q.data2 + 0.08, EASE_IN);
+  const clack = jolt(t, Q.data2 + 0.08, 0.08, 0.2);
+  const p0: [number, number] = [1340, 880 - (212 + 90) * 1.3 + 20], p1: [number, number] = [1210, 400], p2: [number, number] = [1062, 806];
   return (
     <>
-      {/* WHY no chapter heading or folio on this spread (review BLOCKER): every shot here is a close-up, and the
-          heading sat across the frame's top edge as a torn sliver of italic text */}
       <Sheet>
-        <defs><clipPath id="c-well-mouth"><rect x={-200} y={-400} width={2000} height={MOUTH + 400} /></clipPath></defs>
-        {/* their stack, and them on it */}
-        <g transform={`translate(0 ${settle}) translate(${STACK.cx} 880) scale(${shrink}) translate(${-STACK.cx} -880) rotate(${jolt(t, Q.monopolies1 - 0.1, 2, 0.9)} ${STACK.cx} 880)`}>
-          <Stack cx={STACK.cx} w={STACK.w} n={STACK.n} a={DRAWN} wobble={Q.monopolies1} fill={mixHex(P.wash, '#9A8F9C', grey)} />
-          {men.map(({ fx, j, pose, lean, breath, bob }) => (
-            <HatFigure key={j} x={fx} y={TOP} s={breath} crown={crownAt(t, j)} hatSx={hatSxAt(t, j)} a={DRAWN + 0.3 + j * 0.08} b={DRAWN + 1.1 + j * 0.08} pose={pose}
-              lean={lean} bob={bob} eyes="dots" fist={j < 2 ? fist * (1 - back) : 0} />
-          ))}
-        </g>
-        {/* WHY the padlock on the stack's left edge (review: it sat on the icons and read as "secure", not "scarce"):
-            it now hangs off the side of the slab, clear of every icon, on "ever-scarce": theirs is the only stack */}
-        <Padlock x={STACK.cx - STACK.w / 2 - 2} y={782} s={1.15} at={Q.scarce} />
-        {/* their desk */}
-        <Shape d={`M ${DESK.x0} ${DESK.y} L ${DESK.x1} ${DESK.y} L ${DESK.x1} ${DESK.y + 16} L ${DESK.x0} ${DESK.y + 16} Z`} a={DESK_A} b={DESK_A + 0.4} fill={P.inkSoft} w={3} />
-        <Ink d={`M ${DESK.x0 + 20} ${DESK.y + 16} L ${DESK.x0 + 26} 880 M ${DESK.x1 - 20} ${DESK.y + 16} L ${DESK.x1 - 26} 880`} a={DESK_A + 0.1} b={DESK_A + 0.5} w={5} />
-        <Chart t={t} />
-        <Coins t={t} />
-        {wellIn > 0 && <g transform={`translate(${wellX} ${TOP}) scale(${Math.min(1.1, wellIn)}) translate(${-wellX} ${-TOP})`}><Inkwell x={wellX} rock={rock} /></g>}
-
-        {/* "far beyond their own control": his arm shoots out, and his hand closes on the air where it was */}
-        {stretch.pose === 'stretch' && <Reach from={shoulder} to={target} p={reach * (1 - back)} fist={fist} />}
-
-        {/* "a tool that can make software": the quill writes the wish, draws a card, and it fills */}
-        <Note t={t} />
-        <g opacity={gone}>
-          <ThemedWindow theme="meadow" x={WIN.x} y={WIN.y} w={WIN.w} a={WIN_A} draw={WIN_DRAW} contentAt={PLANTS_AT} bare />
-        </g>
-        {/* "foundation": the same stack, written again and again, taller than theirs, so theirs is no longer special */}
-        {COPIES.map((cx, i) => {
-          const L = LOOK[THEMES[i]];
-          return <Stack key={i} cx={cx} w={180} n={COPY_N[i]} a={Q.foundation - 0.05 + i * 0.22} dur={0.3} fill={mixHex(L.page, L.accent, 0.4)} />;
-        })}
-        {/* the quill: hidden below the inkwell's mouth while it lives in it. WHY drawn last: its nib rides the ink of the
-            note, the card and the stacks, so it must be in front of all of them (the scrap used to cover it) */}
-        {t > Q.artificial && (
-          <g clipPath={inWell ? 'url(#c-well-mouth)' : undefined}>
-            <Quill x={q.x} y={q.y + Math.abs(hover) * 0.6} s={q.s} r={q.r + idle + hover} />
+        <WashBg x={390} y={420} r={150} sx={1.75} a={L} seed={3} color={P.pinkSoft} o={0.6} />
+        <WashBg x={390} y={770} r={140} sx={1.75} a={LB} seed={6} color={P.sunSoft} o={0.6} />
+        <WashBg x={1130} y={620} r={290} a={LB + 0.15} seed={11} color={P.lilac} o={0.6} />
+        {/* A: what our computers can do */}
+        <Ink d="M 140 500 L 660 500" a={L - 0.2} b={L + 0.3} w={2} c={P.inkSoft} />
+        <Ink d="M 250 420 L 490 420 M 270 420 L 270 500 M 470 420 L 470 500" a={L - 0.1} b={L + 0.35} w={3.4} />
+        <Laptop x={370} y={418} s={1.5} a={L} b={L + 0.4} />
+        {screenP > 0 && <g transform={`translate(370 ${418 - 36}) scale(${screenP}) translate(-370 ${-(418 - 36)})`}><ThemedWindow theme="sunbreak" x={370} y={418 - 36} w={112} compact bare /></g>}
+        {/* WHY it stays until the cut to the price tag (pre-existing fault: it faded out before it had finished writing) */}
+        {t < Q.itCosts + 0.2 && <Scrap x0={WISH.x0} y={WISH.y} text={WISH.text} a={Q.ourComputers + 0.05} b={Q.canDo - 0.15} size={46} outlineAt={Q.ourComputers - 0.05} rot={-2} />}
+        <Person x={200} y={500} s={1.1} a={L - 0.05} b={L + 0.55} pose={carrying && t < Q.ourComputers + 1.1 ? 'write' : 'up'} mood="smile" hair="bun" body={SHIRT.sunbreak} bob={bob(0)} />
+        {/* WHY he acts (review SHOULD: a 60%-faded statue): he bends in to watch on "first time", recoils on "decide" with
+            his hat jumping off his head, and his arms drop. Solid plum-grey, not see-through. */}
+        <HatFigure x={592 + 26 * lin(t, Q.decide + 0.1, Q.decide + 0.35, EASE_OUT)} y={500} s={1} crown={84} a={L - 0.2} b={L + 0.7}
+          pose={t < Q.decide + 0.1 ? 'pat' : t < Q.decide + 0.6 ? 'grab' : 'sides'} flip fade={0.28}
+          drop={-1.4 * held(t, Q.decide + 0.12, Q.decide + 0.3, 0.1, 0.3)}
+          lean={Math.sin(t * 1.4) * 1.3 + 14 * held(t, Q.firstTime, Q.decide + 0.05, 0.4, 0.15) - 12 * held(t, Q.decide + 0.1, Q.ourComputers, 0.15, 0.6)} bob={jolt(t, Q.longWhile, -5, 0.5)} />
+        <g transform={`rotate(${rattle} 370 398)`}><Padlock x={370} y={384} s={1.25} at={L} openAt={Q.decide + 0.14} fallAt={Q.decide + 0.55} color={P.inkSoft} /></g>
+        {t > T0 && t < Q.decide + 0.55 && (
+          <g transform={`translate(${carrying ? keyX : heldKey.x} ${carrying ? keyY : heldKey.y + bob(0)}) rotate(${carrying ? -90 + kTurn * 90 + rattle : 0}) scale(1.5)`}>
+            <path d="M 0 -4 L 0 22 M 0 14 L 7 14 M 0 20 L 6 20" stroke={P.ink} strokeWidth={3.4} fill="none" strokeLinecap="round" />
+            <circle cx={0} cy={-11} r={7} fill={P.sun} stroke={P.ink} strokeWidth={3} />
           </g>
         )}
+        {!carrying && <circle cx={H0.x} cy={H0.y + 2 + bob(0)} r={6.2 - grip * 0.6} fill={grip > 0.5 ? SHIRT.sunbreak : P.paper} stroke={P.ink} strokeWidth={2.6} />}
+
+        {/* B: what it costs */}
+        <Ink d="M 140 860 L 660 860" a={LB} b={LB + 0.4} w={2} c={P.inkSoft} />
+        <Ink d="M 140 760 L 330 760 M 160 760 L 160 860 M 310 760 L 310 860" a={LB} b={LB + 0.35} w={3.4} />
+        <Laptop x={236} y={758} s={1.3} a={LB + 0.1} b={LB + 0.5} />
+        {snip < 1 && <Ink d="M 284 700 Q 306 676 326 690" a={LB + 0.2} b={LB + 0.4} w={2.4} />}
+        {snip >= 1 && <path d="M 284 700 Q 292 690 300 688" stroke={P.ink} strokeWidth={2.4} fill="none" strokeLinecap="round" />}
+        {/* WHY it falls away to the left, behind the desk (first render: it fell across him) */}
+        <g transform={`translate(${-fall * 70} ${fall * 240}) rotate(${-fall * 70} 326 722)`} opacity={1 - lin(t, Q.costs + 0.3, Q.costs + 0.45)}>
+          <PriceTag x={326} y={722} s={1.1} at={LB + 0.2} swing={-6} prices={[{ v: '19.99/mo', at: LB + 0.3 }]} />
+        </g>
+        {/* WHY only after the tag is clear, in her handwriting, in the one purple (review: three signals piled up in 0.6 s) */}
+        {t > Q.costs + 0.42 && (() => {
+          const u = lin(t, Q.costs + 0.42, Q.costs + 0.66, (v) => v);
+          return <g><defs><clipPath id="c-free-w"><rect x={200} y={700} width={80 * u} height={60} /></clipPath></defs>
+            <text x={204} y={744} clipPath="url(#c-free-w)" fontFamily={CAVEAT} fontWeight={700} fontSize={46} fill={P.purple}>free</text></g>;
+        })()}
+        <Person x={bx} y={by} s={1.12} a={LB + 0.1} b={LB + 0.6} pose={t > Q.itCosts - 0.1 && t < Q.costs + 0.6 ? 'up' : 'down'} mood={leap > 0 ? 'o' : 'smile'} hair="curly" body={SHIRT.cotton} flip
+          bob={bob(1) + jolt(t, Q.costs + 0.3, 6, 0.3)} />
+        {/* WHY in his hand (review SHOULD: the scissors floated by themselves) */}
+        {t > LB + 0.5 && (t > Q.itCosts - 0.1 && t < Q.costs + 0.6
+          ? <Scissors x={hand.x} y={hand.y + bob(1)} r={235} open={1 - snip} s={0.9} />
+          : <Scissors x={bx - 28} y={by - 30} r={200} open={0.2} s={0.9} />)}
+
+        {/* C: what happens with our data: her things come back out of his hat, into a box of her own */}
+        <Ink d="M 820 880 L 1450 880" a={LB + 0.1} b={LB + 0.5} w={2} c={P.inkSoft} />
+        <Person x={920} y={880} s={1.35} a={LB + 0.2} b={LB + 0.8} pose={t > Q.data2 + 0.15 ? 'hold' : t > Q.ourData + 0.1 ? 'bothUp' : 'down'} hair="long" mood="smile" body={SHIRT.meadow} hairColor={P.purple}
+          bob={bob(2)} tilt={9 * lin(t, Q.data2 + 0.15, Q.data2 + 0.45, EASE_OUT)} />
+        <g transform={`translate(0 ${boxHop}) translate(1060 880) scale(${1 + clack} ${1 - clack}) translate(-1060 -880)`}>
+          <Shape d="M 1000 880 L 1120 880 L 1120 808 L 1000 808 Z" a={LB + 0.3} b={LB + 0.7} fill={P.sun} w={3.4} />
+          <Ink d="M 1000 840 L 1120 840" a={LB + 0.5} b={LB + 0.7} w={2} c={P.inkSoft} />
+          {/* WHY an ink lid with a clasp that snaps shut on "data" (review SHOULD: it closed with no weight) */}
+          <g transform={`rotate(${-70 * lin(t, Q.ourData - 0.1, Q.ourData + 0.15) * (1 - shut)} 1000 808)`}>
+            <Shape d="M 1000 808 L 1120 808 L 1132 790 L 1012 790 Z" a={LB + 0.4} b={LB + 0.8} fill={P.sunSoft} w={3.4} />
+            <path d="M 1052 800 L 1068 800 L 1068 818 L 1052 818 Z" fill={P.ink} opacity={lin(t, LB + 0.6, LB + 0.8)} />
+          </g>
+        </g>
+        <HatFigure x={1340} y={880} s={1.3} crown={90} a={LB + 0.1} b={LB + 1.0} pose={tug > 0.3 ? 'grab' : 'sides'} fade={0.28} drop={-0.5 * tug} lean={-4 * tug} />
+        {[0, 1, 2].map((i) => {
+          let u = (t - (DATA_FROM + i * DATA_GAP)) / DATA_DUR;
+          if (u <= 0 || u >= 1) return null;
+          u = EASE_IN_OUT(u);
+          const v = 1 - u;
+          const x = v * v * p0[0] + 2 * v * u * p1[0] + u * u * p2[0], y = v * v * p0[1] + 2 * v * u * p1[1] + u * u * p2[1] - i * 6;
+          return <DataItem key={i} k={i} x={x} y={y} s={3.2 * (1 - 0.4 * Math.max(0, (u - 0.8) / 0.2))} r={Math.sin(i * 2.1 + t * 3) * 12} />;
+        })}
       </Sheet>
     </>
   );
 };
-export const TREASURE: Spread = { id: 'treasure', Art: TreasureArt };
-/** Where the quill and the window are, for the camera. */
-export const TREASURE_MARKS = { well: { x: WELL.x, y: MOUTH }, men: { x: MEN[1], y: TOP }, win: WIN, winH: WIN_H, winA: WIN_A, stack: { x: STACK.cx, y: 760 }, copies: COPIES };
+export const OURS: Spread = { id: 'ours', Art: OursArt };
 
-// ======================= vi · anyone =======================
-// WHY each raised hand gets its own card in its own theme: the line says the tool makes software "for anyone
-// who asks", and the product idea is that every person's copy looks and works differently. Four people, four
-// real themes, one card shape: the same thing, made theirs.
-// WHY the card beside each person, held up at hand height (review: the windows sat on the heads like signs):
-// each person shows what they made, and their face stays clear.
-const ASKERS = [90, 450, 810, 1170];
-const HAIRS4 = ['bob', 'curly', 'bun', 'cap'] as const;
-const GROUND = 600;
-const ASK_W = 230;
-const ASK_Y = 452;
-const ASK_DX = 159;
-const winAt = (i: number) => land(TURN.anyone) + 0.12 + i * 0.2;
-const AnyoneArt: React.FC = () => {
+// ======================= viii · the past: the strings snap =======================
+// WHY rebuilt (review SHOULD: six identical men in a symmetric row, and 3 s of nothing after the snap): two old kings far
+// back on a high ledge and one big near one, the people in the foreground at four depths. On "free" every string snaps
+// with a whip, the people stagger, and only THEN does each get the quill. On "monopolies" the kings wobble and their hats
+// topple off; on "past" they drain to a pale engraving, and the book's next leaf lifts.
+const KINGS = [{ x: 470, y: 372, s: 1.0 }, { x: 905, y: 356, s: 0.92 }, { x: 1235, y: 450, s: 1.4 }];
+const FOLK = [
+  // WHY big, at four depths (review: people 80 px high in a row): the people are the story here, the kings are the past
+  { x: 250, y: 950, s: 2.9, look: 'meadow' as Theme, king: 0 }, { x: 610, y: 880, s: 2.25, look: 'cotton' as Theme, king: 0 },
+  { x: 960, y: 930, s: 2.65, look: 'sunbreak' as Theme, king: 1 }, { x: 1320, y: 968, s: 3.1, look: 'devils' as Theme, king: 2 },
+];
+const FreeArt: React.FC = () => {
   const t = useT();
-  const L = land(TURN.anyone);
-  const foot = ASK_Y + windowHeight(ASK_W) / 2;
+  const L = land(TURN.free) - 1.4;
+  const fade = lin(t, Q.past - 0.2, Q.pastEnd, EASE_IN_OUT);
+  const kingFade = 0.78 * fade;
   return (
     <>
-      {/* WHY no chapter heading on my spreads (owner: dislikes the headers; reviewers: unreadable serif italic) */}
-      <Folio left={14} hideRight />
+      <Folio left={18} />
       <Sheet>
-        <WashBg x={380} y={420} r={230} sx={1.4} a={-10} seed={16} color={P.lilac} o={0.55} />
-        <WashBg x={1140} y={420} r={230} sx={1.4} a={-10} seed={17} color={P.pinkSoft} o={0.45} />
-        <Ink d={`M 70 ${GROUND} L 1450 ${GROUND}`} a={-10} b={-9} w={2} c={P.inkSoft} />
-        {ASKERS.map((x, i) => {
-          const up = t > winAt(i) - 0.15;
-          const p = pop(t, winAt(i), 0.45);
-          // WHY a second cheer on "asks", staggered (review: the pictures showed nothing new while she says the
-          // film's most important line): each person hops again, holding their card up with them
-          const hop = (up ? jolt(t, winAt(i) - 0.15, -8, 0.5) : 0) + jolt(t, Q.asks - 0.1 + i * 0.09, -12, 0.55);
+        {/* the ledges the kings stand on */}
+        <g opacity={1 - fade * 0.6}>
+          <Shape d="M 330 372 L 1020 356 L 1012 388 L 338 404 Z" a={L} b={L + 0.5} fill="url(#c-hatch)" w={3.4} />
+          <Shape d="M 1060 450 L 1460 450 L 1452 486 L 1068 486 Z" a={L + 0.1} b={L + 0.6} fill="url(#c-hatch)" w={3.4} />
+        </g>
+        {KINGS.map((k, j) => {
+          const wob = jolt(t, Q.monopolies2 + j * 0.1, 9, 0.8);
+          const off = t > Q.monopolies2 + 0.05 + j * 0.12;
+          const hu = lin(t, Q.monopolies2 + 0.05 + j * 0.12, Q.monopolies2 + 0.7 + j * 0.12, EASE_IN);
+          const bar = { y: k.y - 112 * k.s, x0: k.x - 60 * k.s, x1: k.x + 60 * k.s };
+          const ink = mixHex(P.ink, P.paper, kingFade * 0.66);
+          return (
+            <g key={j}>
+              <HatFigure x={k.x} y={k.y} s={k.s} crown={90} a={L + 0.1 + j * 0.1} b={L + 0.9 + j * 0.1} pose="hold" fade={kingFade} drop={off ? -40 : 0}
+                lean={Math.sin(t * 1.5 + j * 2.1) * 1.2 + wob + (t > Q.free ? -6 * jolt(t, Q.free, 1, 0.6) : 0)} bob={jolt(t, Q.free + 0.02, -6, 0.4)} />
+              {/* the hat, toppling off backwards */}
+              {off && hu < 1 && (
+                <g transform={`translate(${k.x + (j === 2 ? 1 : -1) * 120 * hu * k.s} ${k.y - 212 * k.s - 20 * Math.sin(hu * Math.PI) * k.s + hu * hu * 520}) rotate(${(j === 2 ? 1 : -1) * 200 * hu}) scale(${k.s})`}>
+                  <path d="M -16 0 L -18.5 -90 Q 0 -94 18.5 -90 L 16 0 Z" fill={ink} stroke={ink} strokeWidth={3} />
+                  <path d="M -27 1 Q 0 -5 27 1" stroke={ink} strokeWidth={6} fill="none" strokeLinecap="round" />
+                </g>
+              )}
+              {/* the puppet bar in his hands */}
+              <path d={`M ${bar.x0} ${bar.y} L ${bar.x1} ${bar.y} M ${k.x} ${bar.y - 12 * k.s} L ${k.x} ${bar.y + 12 * k.s}`} stroke={ink} strokeWidth={5} strokeLinecap="round"
+                opacity={lin(t, L + 0.6, L + 0.9)} />
+            </g>
+          );
+        })}
+        {FOLK.map((f, i) => {
+          const k = KINGS[f.king];
+          const snapT = Q.free + i * 0.04;
+          const snapped = t >= snapT;
+          const su = lin(t, snapT, snapT + 0.35, EASE_OUT);
+          // WHY they stagger first and get the quill after (review: they held quills while still on strings)
+          const stagger = jolt(t, snapT + 0.02, [10, -12, 9, -10][i], 0.6);
+          const freeNow = t > snapT + 0.32 + i * 0.05;
+          const qp = Math.min(1.1, pop(t, snapT + 0.32 + i * 0.05, 0.35));
+          const dangle = snapped ? 0 : Math.sin(t * 2.3 + i) * 3;
+          const pose: PersonPose = freeNow ? (i % 2 ? 'quill' : 'bothUp') : 'bothUp';
+          const hands = [-24, 24].map((hx) => [f.x + hx * f.s + dangle, f.y - 96 * f.s] as [number, number]);
+          const barY = k.y - 112 * k.s;
+          const tops = [k.x - 46 * k.s + i * 6, k.x + 46 * k.s - i * 6].map((x) => [x, barY] as [number, number]);
           return (
             <g key={i}>
-              <Person x={x} y={GROUND} s={1.3} a={L - 2} b={L - 1.5} pose={up ? (i % 2 ? 'up' : 'wave') : 'down'} hair={HAIRS4[i]}
-                body={NEUTRAL[i * 3]} mood="smile" bob={hop} />
-              {p > 0 && <g transform={`translate(0 ${hop}) translate(${x + ASK_DX} ${foot}) scale(${p}) translate(${-(x + ASK_DX)} ${-foot})`}><ThemedWindow theme={THEMES[i]} x={x + ASK_DX} y={ASK_Y} w={ASK_W} compact bare /></g>}
+              {[0, 1].map((h) => {
+                const [ax, ay] = tops[h], [bx2, by2] = hands[h];
+                if (!snapped) return <Ink key={h} d={`M ${ax} ${ay} L ${bx2} ${by2}`} a={L + 0.7 + i * 0.05} b={L + 1.0 + i * 0.05} w={2.2} c={mixHex(P.ink, P.paper, kingFade * 0.66)} />;
+                // the snap: the top half whips back up toward the bar and curls; the bottom half drops slack and fades
+                const mx = (ax + bx2) / 2, my = (ay + by2) / 2;
+                const ux = mx + (ax - mx) * 0.7 * su, uy = my + (ay - my) * 0.7 * su;
+                const curl = Math.sin(su * Math.PI) * 40 * (h ? 1 : -1);
+                const lo = 1 - lin(t, snapT + 0.1, snapT + 0.5);
+                return (
+                  <g key={h}>
+                    <path d={`M ${ax} ${ay} Q ${(ax + ux) / 2 + curl} ${(ay + uy) / 2} ${ux} ${uy}`} stroke={mixHex(P.ink, P.paper, kingFade * 0.66)} strokeWidth={2.2} fill="none" strokeLinecap="round" />
+                    {lo > 0 && <path d={`M ${bx2} ${by2} Q ${bx2 + (h ? 20 : -20)} ${by2 - 40 + 120 * su} ${mx} ${my + 160 * su}`} stroke={P.ink} strokeWidth={2.2} fill="none" strokeLinecap="round" opacity={lo} />}
+                  </g>
+                );
+              })}
+              <Ink d={`M ${f.x - 34 * f.s} ${f.y} L ${f.x + 34 * f.s} ${f.y}`} a={L + 0.3} b={L + 0.5} w={2.2} c={P.inkSoft} />
+              <Person x={f.x} y={f.y} s={f.s} a={L + 0.2 + i * 0.08} b={L + 0.8 + i * 0.08} pose={pose} hair={HAIR[f.look]} hairColor={P.ink} body={SHIRT[f.look]}
+                mood={snapped && !freeNow ? 'o' : 'smile'} tilt={stagger} bob={jolt(t, snapT + 0.04, 8, 0.5) + (freeNow ? jolt(t, Q.free + 0.35 + i * 0.06, -10, 0.5) : 0)} />
+              {freeNow && i % 2 === 1 && (
+                <g transform={`translate(${f.x} ${f.y}) rotate(${stagger}) scale(${f.s})`}><Quill x={32} y={-78} s={0.36 * qp} r={12} /></g>
+              )}
+              {freeNow && i % 2 === 0 && (
+                <g transform={`translate(${f.x} ${f.y}) rotate(${stagger}) scale(${f.s})`}><Quill x={22} y={-96} s={0.36 * qp} r={-6} /></g>
+              )}
             </g>
           );
         })}
@@ -455,230 +835,37 @@ const AnyoneArt: React.FC = () => {
     </>
   );
 };
-const AnyonePop: React.FC = () => {
-  const t = useT();
-  const L = land(TURN.anyone);
-  const q = track(checked('anyone', [
-    { t: L, x: 40, y: 260, z: 600, s: 0.8, r: 10 },
-    ...ASKERS.map((x, i) => ({ t: winAt(i) + 0.05, x: x + ASK_DX + 120, y: ASK_Y - 70, z: 70, s: 0.75, r: -10 + i * 4 })),
-    { t: Q.asks + 0.5, x: 1460, y: 200, z: 260, s: 0.75, r: 0 },
-    { t: TURN.ours, x: 1500, y: 120, z: 900, s: 0.75, r: 0 },
-  ]), t);
-  return <FlyingQuill q={q} o={t < TURN.ours ? 1 : 0} />;
-};
-export const ANYONE: Spread = { id: 'anyone', Art: AnyoneArt, Pop: AnyonePop };
-
-/** Chapter heading and page numbers that show only while the camera is wide enough to hold them whole.
- *  WHY (review BLOCKER): in close-ups the heading sat across the top edge of the frame as a torn sliver. */
-const Furniture: React.FC<{ n: string; title: string; left: number; from: number; to?: number; hideRight?: boolean }> = ({ n, title, left, from, to, hideRight }) => {
-  const t = useT();
-  const o = lin(t, from, from + 0.25) * (to == null ? 1 : 1 - lin(t, to - 0.12, to));
-  if (o <= 0.01) return null;
-  return <div style={{ position: 'absolute', left: 0, top: 0, opacity: o }}><Folio left={left} hideRight={hideRight} /></div>;
-};
-
-// ======================= vii · ours: chapter ii, undone =======================
-// WHY the exact layout of chapter ii: the narrator repeats that line's three clauses word for word, so the
-// pictures repeat too, in colour, and each is undone by the person it was done to, on its own clause.
-const Scissors: React.FC<{ x: number; y: number; r: number; open: number }> = ({ x, y, r, open }) => (
-  <g transform={`translate(${x} ${y}) rotate(${r})`}>
-    {[1, -1].map((s) => (
-      <g key={s} transform={`rotate(${s * open * 16})`}>
-        <path d={`M -6 ${s * 2} L 58 ${s * -2} Q 60 ${s * 1} 56 ${s * 3} L -6 ${s * 7} Z`} fill="#F4F0F6" stroke={P.ink} strokeWidth={2.6} strokeLinejoin="round" />
-        <path d={`M -6 ${s * 5} L -22 ${s * 12}`} stroke={P.ink} strokeWidth={5} strokeLinecap="round" />
-        <ellipse cx={-30} cy={s * 14} rx={11} ry={8} fill="none" stroke={P.pink} strokeWidth={5} /><ellipse cx={-30} cy={s * 14} rx={11} ry={8} fill="none" stroke={P.ink} strokeWidth={1.6} />
-      </g>
-    ))}
-    <circle r={4} fill={P.sun} stroke={P.ink} strokeWidth={2} />
-  </g>
-);
-/** A handwritten wish above her laptop: her words, written on "computers", and the screen builds itself on "can do".
- *  WHY (review SHOULD: the product idea, asking and getting, was never shown in this stretch): a person's own
- *  handwriting on paper, never a drawn app interface. */
-const WISH = { x0: 120, x1: 372, y: 300, text: 'show me the sky' };
-const WishScrap: React.FC<{ t: number }> = ({ t }) => {
-  const a = Q.ourComputers + 0.05, b = Q.canDo - 0.1;
-  if (t < a - 0.05 || t > Q.ourComputers + 1.1) return null;
-  const u = lin(t, a, b);
-  const w = WISH.x1 - WISH.x0;
-  const pts = `M ${WISH.x0 - 22} ${WISH.y - 60} L ${WISH.x1 + 22} ${WISH.y - 64} L ${WISH.x1 + 18} ${WISH.y + 34} L ${WISH.x0 - 20} ${WISH.y + 38} Z`;
-  return (
-    <g opacity={1 - lin(t, Q.ourComputers + 0.9, Q.ourComputers + 1.1)} transform={`rotate(-2 ${WISH.x0 + w / 2} ${WISH.y})`}>
-      <defs><clipPath id="c-wish"><rect x={WISH.x0 - 10} y={WISH.y - 70} width={(w + 20) * u} height={110} /></clipPath></defs>
-      <path d={pts} fill="rgba(42,26,53,0.18)" transform="translate(4 6)" />
-      <path d={pts} fill="#FFFDF8" stroke={P.ink} strokeWidth={2.4} strokeLinejoin="round" />
-      <g clipPath="url(#c-wish)"><text x={WISH.x0} y={WISH.y} textLength={w} lengthAdjust="spacingAndGlyphs" fontFamily={CAVEAT} fontWeight={700} fontSize={50} fill={P.ink}>{WISH.text}</text></g>
-    </g>
-  );
-};
-/** Her raised hand (pose "up", scale 1.1, at 200,500): where the key drops on "and so". */
-export const OURS_HAND = { x: 200 + 24 * 1.1, y: 500 - 96 * 1.1 };
-const OursArt: React.FC = () => {
-  const t = useT();
-  // WHY drawn well before the cut: the film cuts straight into an extreme close-up here, which must show
-  // finished drawings, not strokes in progress
-  const L = land(TURN.ours) - 1.6;
-  // WHY the lower two scenes ink in on "decide", in the wide shot (review: they were all on the page from the start,
-  // which spoiled "what it costs" and "our data"): the page fills as she says the three things we get to decide
-  const LB = Q.decide - 0.03;
-  // WHY she hops on "first time" and again on "very long while" (review: one small figure stood still for 5.8 s):
-  // the key in her fist makes her bounce with excitement, and the padlock beside her answers with a small shake
-  const hop = jolt(t, Q.firstTime - 0.03, -14, 0.5) + jolt(t, Q.longWhile - 0.12, -14, 0.5);
-  const bob = (k: number) => jolt(t, Q.decide + k * 0.08, -10, 0.5) + (k === 0 ? hop : 0);
-  // "and so": a key drops into her raised hand and her hand closes on it
-  const keyFall = lin(t, Q.andSo + 0.02, Q.so + 0.02, EASE_IN);
-  const grip = lin(t, Q.so, Q.so + 0.1);
-  const H0 = OURS_HAND;
-  const held = { x: H0.x, y: H0.y - 260 * (1 - keyFall) + jolt(t, Q.so + 0.02, 5, 0.3) };
-  // then she carries it to the padlock over "a very long while" (review: it only set off 3 s later, so the long
-  // opening line had one small figure standing still); it rattles in the lock on "decide", and turns on "computers"
-  const kGo = lin(t, Q.veryLong + 0.05, Q.veryLong + 0.95, EASE_IN_OUT);
-  const rattle = jolt(t, Q.firstTime - 0.03, 2.5, 0.5) + jolt(t, Q.weGet, 3.5, 0.55) + jolt(t, Q.decide, 3.5, 0.55);
-  const kTurn = lin(t, Q.ourComputers + 0.72, Q.ourComputers + 0.88);
-  const keyX = held.x + (370 - held.x) * kGo, keyY = held.y + (382 - held.y) * kGo;
-  const screenP = pop(t, Q.canDo - 0.05, 0.5);
-  // B: he snips the price tag
-  const sGo = lin(t, Q.itCosts + 0.1, Q.costs - 0.05, EASE_IN_OUT);
-  const snip = lin(t, Q.costs - 0.05, Q.costs + 0.05);
-  const fall = lin(t, Q.costs + 0.05, Q.costs + 0.75, EASE_IN);
-  // WHY the blades close on the string itself (review: they snipped at nothing): the pivot sits 25 px right of the
-  // tag's string, which now hangs off the laptop's top-right corner so the tag no longer covers the screen
-  const scX = 432 + (351 - 432) * sGo, scY = 812 + (712 - 812) * sGo;
-  const carrying = t > Q.veryLong + 0.05;
-  // WHY the cards start lifting at the start of "our data" and travel until its last word (review: nothing moved for
-  // 0.9 s, and the last 0.4 s was empty): each one tugs the king as it leaves, and the box hops as each lands
-  const DATA_FROM = Q.ourData + 0.3, DATA_GAP = 0.25, DATA_DUR = Q.data2 - (Q.ourData + 0.3) - 0.5;
-  const boxHop = [0, 1, 2].reduce((a, i) => a + jolt(t, DATA_FROM + i * DATA_GAP + DATA_DUR, -6, 0.4), 0);
-  const kingTug = [0, 1, 2].reduce((a, i) => a + jolt(t, DATA_FROM + i * DATA_GAP, 3, 0.45), 0);
-  return (
-    <>
-      <Furniture n="vii" title="ours to decide" left={16} from={Q.decide - 0.1} to={Q.ourComputers - 0.05} />
-      <Sheet>
-        <WashBg x={390} y={420} r={150} sx={1.75} a={L} seed={3} color={P.pinkSoft} o={0.7} />
-        <WashBg x={390} y={770} r={140} sx={1.75} a={LB} seed={6} color={P.sunSoft} o={0.7} />
-        <WashBg x={1130} y={620} r={290} a={LB + 0.15} seed={11} color={P.lilac} o={0.7} />
-        {/* A: what our computers can do */}
-        <Ink d="M 140 500 L 660 500" a={L - 0.2} b={L + 0.3} w={2} c={P.inkSoft} />
-        <Ink d="M 250 420 L 490 420 M 270 420 L 270 500 M 470 420 L 470 500" a={L - 0.1} b={L + 0.35} w={3.4} />
-        <Laptop x={370} y={418} s={1.5} a={L} b={L + 0.4} />
-        {screenP > 0 && <g transform={`translate(370 ${418 - 36}) scale(${screenP}) translate(-370 ${-(418 - 36)})`}><ThemedWindow theme="sunbreak" x={370} y={418 - 36} w={112} compact bare /></g>}
-        <WishScrap t={t} />
-        <Person x={200} y={500} s={1.1} a={L - 0.05} b={L + 0.55} pose={t > Q.veryLong + 0.05 && t < Q.ourComputers + 1.1 ? 'write' : 'up'} mood="smile" hair="bun" body={NEUTRAL[2]} bob={bob(0)} />
-        {/* WHY he moves (review SHOULD: a grey statue for 6 s): he tips his hat and breathes, then his shoulders sag and he sways
-            back as the lock opens on "decide"; less drained than before so he reads as a beaten rival, not half-erased */}
-        <HatFigure x={592 + 14 * lin(t, Q.decide, Q.decide + 0.5, EASE_OUT)} y={500} s={1} crown={84} a={L - 0.2} b={L + 0.7}
-          pose={t < Q.decide ? (Math.floor(t * 0.7) % 2 ? 'pat' : 'sides') : 'sides'} flip fade={0.6}
-          lean={Math.sin(t * 1.4) * 1.3 + 9 * lin(t, Q.decide, Q.decide + 0.4) + jolt(t, Q.firstTime, 3, 0.6)} bob={jolt(t, Q.longWhile, -5, 0.5)} />
-        <g transform={`rotate(${rattle} 370 398)`}><Padlock x={370} y={384} s={1.25} at={L} openAt={Q.ourComputers + 0.85} fallAt={Q.ourComputers + 1.05} color={P.inkSoft} /></g>
-        {t > Q.andSo && t < Q.ourComputers + 1.05 && (
-          <g transform={`translate(${carrying ? keyX : held.x} ${carrying ? keyY : held.y + bob(0)}) rotate(${carrying ? -90 + kTurn * 90 + rattle : 0})`}>
-            <path d="M 0 -4 L 0 22 M 0 14 L 7 14 M 0 20 L 6 20" stroke={P.ink} strokeWidth={3.4} fill="none" strokeLinecap="round" />
-            <circle cx={0} cy={-11} r={7} fill={P.sun} stroke={P.ink} strokeWidth={3} />
-          </g>
-        )}
-        {/* her hand: open to catch, then a fist round the key */}
-        {!carrying && <circle cx={H0.x} cy={H0.y + 2 + bob(0)} r={6.2 - grip * 0.6} fill={grip > 0.5 ? NEUTRAL[2] : P.paper} stroke={P.ink} strokeWidth={2.6} />}
-
-        {/* B: what it costs */}
-        <Ink d="M 140 860 L 660 860" a={LB} b={LB + 0.4} w={2} c={P.inkSoft} />
-        <Ink d="M 140 760 L 330 760 M 160 760 L 160 860 M 310 760 L 310 860" a={LB} b={LB + 0.35} w={3.4} />
-        <Laptop x={236} y={758} s={1.3} a={LB + 0.1} b={LB + 0.5} />
-        {/* WHY the string is the tag's own and ends at the laptop's top edge (review: it hung from nothing); once the
-            blades close on it only a short stub is left on the laptop, and the tag falls away to the right, clear of the new word */}
-        {/* the cord loops from the laptop's corner up to the tag's own string; the blades close on it, and a short stub stays */}
-        {snip < 1 && <Ink d="M 284 700 Q 306 676 326 690" a={LB + 0.2} b={LB + 0.4} w={2.4} />}
-        {snip >= 1 && <path d="M 284 700 Q 292 690 300 688" stroke={P.ink} strokeWidth={2.4} fill="none" strokeLinecap="round" />}
-        <g transform={`translate(${fall * 60} ${fall * 260}) rotate(${fall * 60} 326 722)`} opacity={1 - lin(t, Q.costs + 0.5, Q.costs + 0.8)}>
-          <PriceTag x={326} y={722} s={1.1} at={LB + 0.2} swing={-6} prices={[{ v: '19.99/mo', at: LB + 0.3 }]} />
-          {/* WHY a thick purple X once it is cut (review: the tag just sat there with its price intact) */}
-          {snip >= 1 && <path d="M 296 740 L 356 800 M 356 740 L 296 800" stroke={P.purple} strokeWidth={9} strokeLinecap="round" opacity={lin(t, Q.costs + 0.05, Q.costs + 0.2)} />}
-        </g>
-        {/* once the tag is gone, the screen it hung from says what it costs now */}
-        {t > Q.costs + 0.3 && (
-          <text x={232} y={742} textAnchor="middle" fontFamily={DMSANS} fontWeight={900} fontSize={40} fill={P.purple} letterSpacing="-0.04em"
-            opacity={lin(t, Q.costs + 0.3, Q.costs + 0.55)}>free</text>
-        )}
-        <Person x={480} y={860} s={1.12} a={LB + 0.1} b={LB + 0.6} pose={t > Q.itCosts && t < Q.costs + 0.5 ? 'write' : 'down'} mood="smile" hair="curly" body={NEUTRAL[4]} flip bob={bob(1)} />
-        {t > LB + 0.5 && <Scissors x={t > Q.itCosts + 0.05 ? scX : 432} y={t > Q.itCosts + 0.05 ? scY : 812} r={t > Q.itCosts + 0.05 ? 190 : 200} open={1 - snip} />}
-
-        {/* C: what happens with our data: her things fly back out of the hat, into a box of her own */}
-        <Ink d="M 820 880 L 1450 880" a={LB + 0.1} b={LB + 0.5} w={2} c={P.inkSoft} />
-        <Person x={920} y={880} s={1.35} a={LB + 0.2} b={LB + 0.8} pose={t > Q.ourData + 0.3 ? 'bothUp' : 'down'} hair="long" mood="smile" body={NEUTRAL[5]} hairColor={P.purple} bob={bob(2)} />
-        <g transform={`translate(0 ${boxHop}) rotate(${boxHop * 0.8} 1060 880)`}>
-          <Shape d="M 1010 880 L 1110 880 L 1110 820 L 1010 820 Z" a={LB + 0.3} b={LB + 0.7} fill={P.sun} w={3} />
-          {/* WHY a lid that swings open for her things and slams shut on "data" (review SHOULD: the box had no lid or lock, so
-              nothing said "ours"): it ends shut with a small key-hole, and the king's hand-off is over */}
-          <g transform={`rotate(${-62 * lin(t, Q.ourData, DATA_FROM) * (1 - lin(t, Q.data2 - 0.05, Q.data2 + 0.1, EASE_IN))} 1010 820)`}>
-            <Shape d="M 1010 820 L 1110 820 L 1130 780 L 1030 780 Z" a={LB + 0.4} b={LB + 0.8} fill={P.sunSoft} w={3} />
-          </g>
-          {t > Q.data2 + 0.05 && <circle cx={1060} cy={850} r={5} fill={P.ink} />}
-        </g>
-        {/* WHY smaller and paler than before (review: a second grey king crowded a stretch with one idea) */}
-        <HatFigure x={1340} y={880} s={1.3} crown={90} a={LB + 0.1} b={LB + 1.0} pose="sides" fade={0.8} lean={kingTug} />
-        {/* WHY three things in one arc (review 2026-11-20): eight drifting icons read as random, like last round's
-            hooks. Three of her things lift off the hat and drop into her box, landing on "our data". */}
-        {/* WHY about 2.2 times bigger, from the king's hat into her hands' reach, over a shorter distance (review: the
-            icons were 14 px specks drifting across empty paper): three keepsake cards, one after another, landing on "our data" */}
-        <Stream from={DATA_FROM} p0={[1340, 880 - (212 + 90) * 1.3 + 20]} p1={[1230, 330]} p2={[1070, 806]} count={3} gap={DATA_GAP} dur={DATA_DUR} s={2.3} />
-      </Sheet>
-    </>
-  );
-};
-export const OURS: Spread = { id: 'ours', Art: OursArt };
-
-// ======================= viii · the past =======================
-const FreeArt: React.FC = () => {
-  const L = land(TURN.free);
-  return (
-    <>
-      <Folio left={18} />
-      <Sheet>
-        <Strings figA={L - 1.6} peopleA={L - 1.4} stringsA={L - 1.0} beats={[]} colourful snapAt={Q.free} fadeFrom={Q.monopolies2} fadeTo={Q.pastEnd} />
-      </Sheet>
-    </>
-  );
-};
 export const FREE: Spread = { id: 'free', Art: FreeArt };
 
-// ======================= ix · everyone's own (the riffle) =======================
-// WHY each riffled page belongs to one person and one theme: "every copy is different" has to read in under a
-// second a page. The page takes that theme's own colour (from its manifest tokens), the person wears plain
-// clothes, and the card, big on the right, is the same card as everyone else's, made theirs.
-// WHY a different action and a small prop on every page (review: four identical stick figures with only a hair
-// and shirt swap): the person is doing the thing their own copy is for, so each page tells a different small story.
-const HAIRS = ['curly', 'bob', 'cap', 'long', 'bun', 'tuft'] as const;
-const OWN_POSE = ['write', 'up', 'hold', 'bothUp'] as const;
-/** A small drawn thing beside each person, at the person's feet (page units, drawn at the person's scale). */
-const OwnProp: React.FC<{ k: number; x: number; y: number }> = ({ k, x, y }) => {
-  const ink = { stroke: P.ink, strokeWidth: 5, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const };
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      {/* a pot with a small plant */}
-      {k === 0 && <><path d="M -34 -70 L 34 -70 L 26 0 L -26 0 Z" fill="#B98B6C" {...ink} /><path d="M 0 -70 C -4 -110 -30 -130 -50 -134 M 0 -70 C 6 -120 30 -140 52 -140 M 0 -70 L 0 -150" fill="none" {...ink} stroke={P.ink} /><path d="M -50 -134 C -30 -150 -14 -134 -14 -118 M 52 -140 C 34 -158 14 -144 16 -126" fill="#7DB28B" {...ink} /></>}
-      {/* a crescent moon on a stick-star */}
-      {k === 1 && <><path d="M -10 -130 C -52 -118 -52 -66 -10 -54 C -34 -78 -30 -106 -10 -130 Z" fill="#F6C84C" {...ink} /><path d="M 40 -150 l 6 14 l 15 1 l -12 10 l 4 15 l -13 -8 l -13 8 l 4 -15 l -12 -10 l 15 -1 Z" fill="#F6C84C" {...ink} strokeWidth={4} /></>}
-      {/* a small cat sitting up */}
-      {k === 2 && <><path d="M -30 0 C -40 -40 -32 -64 -18 -70 C -30 -78 -28 -100 -18 -108 L -6 -98 L 10 -98 L 22 -108 C 32 -100 32 -78 20 -70 C 34 -64 40 -40 30 0 Z" fill="#F3EEE8" {...ink} /><circle cx={-8} cy={-82} r={3} fill={P.ink} /><circle cx={12} cy={-82} r={3} fill={P.ink} /></>}
-      {/* a chequers piece, a stack of three */}
-      {k === 3 && [0, 1, 2].map((i) => <g key={i}><ellipse cx={0} cy={-18 - i * 24} rx={42} ry={14} fill={i % 2 ? '#7A3048' : '#FFC627'} {...ink} /></g>)}
-    </g>
-  );
-};
+// ======================= ix · the riffle: one card, re-dressed on every page =======================
+// WHY rebuilt (review BLOCKER: four strangers with four reruns of the plant, moon, cat and chequers cards read as
+// "different people, different apps"): the card sits at exactly the same place on every page, so each page-turn reads as
+// the same card re-dressed; each page's person has written what they wanted above their head, and the card answers it.
+// None of these four things has appeared before.
+const RIFFLE: { look: Theme; what: Made; ask: string[]; pose: PersonPose; hair: 'bun' | 'curly' | 'bob' | 'cap' | 'long' | 'tuft' }[] = [
+  { look: 'cotton', what: 'photos', ask: ["grandma's photos", 'but HUGE'], pose: 'up', hair: 'long' },
+  { look: 'meadow', what: 'chores', ask: ['chores chart', 'for the kids?'], pose: 'wave', hair: 'tuft' },
+  { look: 'sunbreak', what: 'quiz', ask: ['a quiz for', 'my class'], pose: 'bothUp', hair: 'bob' },
+  { look: 'devils', what: 'shifts', ask: ['just my shifts', 'pls'], pose: 'up', hair: 'cap' },
+];
+const RIFFLE_CARD = { x: 1140, y: 470, w: 600 };
 const ownSpread = (k: number): Spread => {
-  const theme: Theme = THEMES[k];
-  const look = LOOK[theme];
+  const R = RIFFLE[k];
+  const look = LOOK[R.look];
   const Art: React.FC = () => {
-    // WHY drawn complete (a far in the past): these pages fly by in under a second each; they must arrive finished
-    const a = -10;
+    const t = useT();
+    // a small action as the page lands
+    const acted = t > TURN.riffle[k] + 0.15;
     return (
       <>
         <Sheet rough={false}>
-          {/* WHY the theme's paper lightened toward cream (review: muddy mauve and grey-brown pages) */}
-          <rect x={0} y={0} width={1520} height={980} fill={mixHex(look.page, '#FFFAF0', 0.45)} />
-          <path d={blob(380, 560, 240, k + 1, 0.16)} fill="#fff" opacity={0.45} />
-          <Person x={[380, 330, 400, 360][k]} y={820} s={3.1} a={a} b={a + 0.5} body={NEUTRAL[k * 3 + 1]} hair={HAIRS[k]} hairColor={P.ink} pose={OWN_POSE[k]} mood="smile" />
-          <OwnProp k={k} x={[560, 520, 590, 560][k]} y={820} />
-          <ThemedWindow theme={theme} x={[1140, 1110, 1150, 1130][k]} y={470} w={[600, 680, 520, 640][k]} r={[-2, 1.5, -1, 2][k]} bare />
+          {/* WHY the theme's own paper lightened toward cream (review: muddy grey-green and beige pages) */}
+          <rect x={0} y={0} width={1520} height={980} fill={mixHex(look.page, '#FFFAF0', 0.6)} />
+          <Scrap x0={150} y={290} text={R.ask} a={-10} b={-9.5} outlineAt={-11} size={60} rot={[-2, 1.5, -1, 2][k]} />
+          <Ink d="M 220 840 L 560 840" a={-10} b={-9} w={2.4} c={P.inkSoft} />
+          <Person x={390} y={840} s={2.6} a={-10} b={-9.5} body={SHIRT[R.look]} hair={R.hair} hairColor={P.ink} pose={acted ? R.pose : 'down'} mood="smile"
+            bob={jolt(t, TURN.riffle[k] + 0.15, -12, 0.4)} />
+          <MadeCard look={R.look} what={R.what} x={RIFFLE_CARD.x} y={RIFFLE_CARD.y} w={RIFFLE_CARD.w} />
         </Sheet>
         <Folio left={20 + k * 2} />
       </>
@@ -686,55 +873,55 @@ const ownSpread = (k: number): Spread => {
   };
   return { id: `own-${k}`, Art };
 };
-export const VARIANTS: Spread[] = THEMES.map((_, k) => ownSpread(k));
+export const VARIANTS: Spread[] = RIFFLE.map((_, k) => ownSpread(k));
 
-// ======================= ix · everything =======================
-// WHY one clear move (review 2026-11-20): copies of both windows flying back and forth landed on top of the
-// full-size ones and read as a double exposure. Now she has her cat page; he has his night-sky page in his
-// own theme, and an empty place beside it. On "open source" a copy of hers lifts off and travels into that
-// place; on "everything" it is redrawn in his theme. Two cards and one copy, never overlapping, all still by
-// the time the narrator says "everything".
-// WHY her page is the cat and not the plants (review: the riffle's first page and this one repeated each other)
-// WHY cards about a third bigger (review BLOCKER: two small cards a stranger could not read as "take it and make it yours")
-const A = { x: 360, y: 880, win: { x: 380, y: 480, w: 440 } };
-const B = { x: 1125, y: 700, win: { x: 1310, y: 340, w: 340 } };
-const SLOT = { x: 950, y: 340, w: 340 };
-const LIFT = Q.open + 0.02, FLY = LIFT + 0.14, LAND = FLY + 0.38, SKIN = LAND, SKIN_END = Q.everything2;
-if (SKIN_END > Q.everything2 + 0.02) throw new Error(`take1c: the shared copy must be settled by "everything" (${SKIN_END.toFixed(2)} > ${Q.everything2.toFixed(2)})`);
+// ======================= ix · everything: she shares it, he asks for it to be his =======================
+// WHY re-staged (review BLOCKER: the headline sat on his legs, the copy turned into a near-black card, and nothing showed
+// that asking was the cause): the bottom right, where the headline lands, is empty paper. She has her cat's card; he has
+// an empty place. On "open" a copy of hers lifts and flies into his place; on "source" he writes what he wants on a scrap
+// ("call him mochi / and make him green"); on "everything" the copy is redrawn: his cat's name, his colours.
+const A = { x: 300, y: 860, s: 2.1, card: { x: 520, y: 450, w: 400 } };
+const B = { x: 1370, y: 640, s: 2.05 };
+const SLOT = { x: 1090, y: 300, w: 380 };
+const LIFT = Q.open + 0.02, FLY = LIFT + 0.12, LAND = FLY + 0.36;
+const ASK_A = Q.source + 0.02, ASK_B = ASK_A + 0.5;
+const SKIN_A = Q.everything2, SKIN_B = SKIN_A + 0.32;
+if (LAND > Q.source + 0.06) throw new Error(`take1c: the shared copy must land by "source" (${LAND.toFixed(2)} > ${Q.source.toFixed(2)})`);
 const EverythingArt: React.FC = () => {
   const t = useT();
   const lift = lin(t, LIFT, FLY, EASE_OUT);
   const u = lin(t, FLY, LAND, EASE_IN_OUT);
   const settle = jolt(t, LAND, 1, 0.4);
-  // WHY a small dip before the lift (anticipation) and a redraw in three beats, colour then words then icon, one on each
-  // spoken word (review BLOCKER: the card swapped skins in a blink): his hand visibly makes it his
   const dip = lin(t, Q.open - 0.1, Q.open + 0.02) * (1 - lin(t, Q.open + 0.02, Q.open + 0.1)) * 12;
-  const skinP = 0.34 * lin(t, SKIN, SKIN + 0.12, EASE_OUT) + 0.33 * lin(t, Q.source + 0.02, Q.source + 0.16, EASE_OUT) + 0.33 * lin(t, Q.everything2 - 0.1, Q.everything2 + 0.04, EASE_OUT);
-  // the copy: lifts a little off her card, arcs over to his empty place, and shrinks to his size
-  const cx = A.win.x + (SLOT.x - A.win.x) * u, cy = A.win.y + (SLOT.y - A.win.y) * u - Math.sin(u * Math.PI) * 150 - lift * 14 * (1 - u) + dip;
-  const cw = A.win.w + (SLOT.w - A.win.w) * u;
+  const cx = A.card.x + (SLOT.x - A.card.x) * u, cy = A.card.y + (SLOT.y - A.card.y) * u - Math.sin(u * Math.PI) * 170 - lift * 14 * (1 - u) + dip;
+  const cw = A.card.w + (SLOT.w - A.card.w) * u;
   const carried = lift * (1 - lin(t, LAND - 0.08, LAND + 0.1));
+  const skin = lin(t, SKIN_A, SKIN_B, EASE_IN_OUT);
+  // her: she waves the quill as the copy leaves, and nods as it lands
+  const wave = held(t, LIFT - 0.05, LAND, 0.1, 0.2);
+  const nod = jolt(t, LAND + 0.04, 6, 0.4);
   return (
     <>
       <Folio left={32} hideRight />
       <Sheet>
-        <WashBg x={380} y={600} r={240} sx={1.3} a={-10} seed={21} color={LOOK.cotton.page} o={0.8} />
-        {/* her, with the quill she made it with, and her cat page */}
-        <Person x={A.x} y={A.y} s={1.75} a={-10} b={-9} body={NEUTRAL[3]} hair="bob" hairColor={P.ink} pose="quill" mood="smile" />
-        <g transform={`translate(${A.x + 51} ${A.y - 119})`}><Quill x={0} y={0} s={0.4} r={10} /></g>
-        {/* WHY it dims to 60% while its copy is away (review: the copy briefly looked like a double exposure) */}
-        <g opacity={1 - 0.4 * carried}><ThemedWindow theme="cotton" x={A.win.x} y={A.win.y} w={A.win.w} r={-1.5} bare /></g>
-        {/* him, under his own page and the empty place beside it */}
-        <Person x={B.x} y={B.y} s={1.45} a={-10} b={-9} body={NEUTRAL[7]} hair="curly" hairColor={P.ink} pose={t > Q.everything2 ? 'bothUp' : t > LAND ? 'write' : 'down'} mood="smile"
-          bob={jolt(t, LAND + 0.05, -10, 0.5)} />
-        <Ink d={`M 860 ${B.y} L 1440 ${B.y}`} a={-10} b={-9} w={2} c={P.inkSoft} />
-        <ThemedWindow theme="sunbreak" x={B.win.x} y={B.win.y} w={B.win.w} r={1.5} bare />
-        {t < LAND && <path d={rr(SLOT.x - SLOT.w / 2, SLOT.y - windowHeight(SLOT.w) / 2, SLOT.w, windowHeight(SLOT.w), 14)} fill="none" stroke={P.inkSoft} strokeWidth={2.4}
-          strokeDasharray="10 10" opacity={0.5 * (1 - lin(t, LAND - 0.2, LAND))} />}
+        <Ink d={`M ${A.x - 110} ${A.y} L ${A.x + 130} ${A.y}`} a={-10} b={-9} w={2.4} c={P.inkSoft} />
+        <Person x={A.x} y={A.y} s={A.s} a={-10} b={-9} body={SHIRT.cotton} hair="bob" hairColor={P.ink} pose="quill" mood="smile" tilt={nod + wave * Math.sin((t - LIFT) * 16) * 4} />
+        <g transform={`translate(${A.x} ${A.y}) rotate(${nod + wave * Math.sin((t - LIFT) * 16) * 4}) scale(${A.s})`}><Quill x={32} y={-78} s={0.36} r={10 + wave * Math.sin((t - LIFT) * 16) * 18} /></g>
+        {/* WHY it dims while its copy is away (review: the copy briefly looked like a double exposure) */}
+        <MadeCard look="cotton" what="cat" x={A.card.x} y={A.card.y} w={A.card.w} r={-1.5} o={1 - 0.35 * carried} />
+        {/* him, under his empty place */}
+        <Ink d={`M ${B.x - 90} ${B.y} L ${B.x + 90} ${B.y}`} a={-10} b={-9} w={2.4} c={P.inkSoft} />
+        <Person x={B.x} y={B.y} s={B.s} a={-10} b={-9} body={SHIRT.meadow} hair="curly" hairColor={P.ink} flip
+          pose={t > SKIN_B ? 'bothUp' : t > ASK_A - 0.05 && t < ASK_B + 0.1 ? 'write' : t > LAND ? 'up' : 'down'} mood={t > SKIN_B ? 'o' : 'smile'}
+          bob={jolt(t, LAND + 0.05, -10, 0.5) + jolt(t, SKIN_B, -16, 0.55)} />
+        {t < LAND && <path d={rr(SLOT.x - SLOT.w / 2, SLOT.y - windowHeight(SLOT.w) / 2, SLOT.w, windowHeight(SLOT.w), 18)} fill="none" stroke={P.inkSoft} strokeWidth={3}
+          strokeDasharray="12 12" opacity={0.55 * (1 - lin(t, LAND - 0.2, LAND))} />}
+        {/* his wish, in his own hand: the cause of the change, visibly */}
+        <Scrap x0={915} y={540} text={['call him mochi', 'and make him green']} a={ASK_A} b={ASK_B} size={46} outlineAt={ASK_A - 0.1} rot={1.4} />
         {/* the one copy */}
         {t >= LIFT && (
-          <ThemedWindow theme="cotton" x={cx} y={cy + settle * 4} w={cw} r={-1.5 * (1 - u) + Math.sin(u * Math.PI) * 6} s={1 + carried * 0.06} shadow={carried} bare
-            reskin={{ to: 'sunbreak', p: skinP }} />
+          <MadeCard look="cotton" what="cat" x={cx} y={cy + settle * 4} w={cw} r={-1.5 * (1 - u) + Math.sin(u * Math.PI) * 6} s={1 + carried * 0.06} shadow={carried}
+            next={{ look: 'meadow', what: 'cat', p: skin, name: 'mochi' }} />
         )}
       </Sheet>
     </>
