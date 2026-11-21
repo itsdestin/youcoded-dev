@@ -221,14 +221,27 @@ export type SameProps = {
   ai?: number; price?: number;
   /** 0..1 hides the title (a banner or switch is using its row) */
   hideTitle?: number;
-  /** 0 = the same app's ten-year-old skin (glossy, gradients), 1 = today's flat one. WHY: "for more than a decade" is acted out:
-   *  every screen jumps a decade in the same frame and is still identical everywhere */
-  era?: number;
-  /** which of the five corporations' marks replaces the "Standard" chip (-1: the chip); `markPop` 0..1 its arrival, `markPulse` 0..1 a shared beat */
-  mark?: number; markPop?: number; markPulse?: number;
+  /** Round 9 (lines 1-4 reviewer BLOCKER: the decade skin jump and the tiny corner marks were invisible): the opening is a boot.
+   *  `splash` 1 = a full-screen start-up screen showing ONE big corporation mark (`mark`, 0..4) on black; 0 = the app. */
+  splash?: number; mark?: number;
+  /** one person's own arrangement (line 1, "how you interact"): tile `swap.a` lifts and trades places with tile `swap.b`;
+   *  `swap.p` 0..1 is how far they have traded, `swap.lift` 0..1 how high tile a is held */
+  swap?: { a: number; b: number; p: number; lift: number };
+  /** the words in the notice that drops in with `banner` */
+  bannerText?: string;
 };
+/** WHY simple generic line icons on the tiles (lines 1-4 reviewer: blank squares made "what your computers could do" unreadable):
+ *  camera, music, pencil, map pin, game pad, download, so a padlock on one reads as "you may not do this". Drawn on a 24 grid. */
+const TILE_ICONS: string[] = [
+  'M4 8.5h3l1.6-2.2h6.8L17 8.5h3v10H4z M12 16.2a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  'M9 17.5V6l10-2v11.5 M9 17.5a2.2 2.2 0 1 1-4.4 0 2.2 2.2 0 0 1 4.4 0z M19 15.5a2.2 2.2 0 1 1-4.4 0 2.2 2.2 0 0 1 4.4 0z',
+  'M5 19l1-4 9.5-9.5 3 3L9 18z M13.5 7.5l3 3',
+  'M12 20.5s-6-5.6-6-10.3a6 6 0 0 1 12 0c0 4.7-6 10.3-6 10.3z M12 12.4a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z',
+  'M7.5 8h9a4.5 4.5 0 0 1 0 9c-1.6 0-2.4-1.5-4.5-1.5S9.1 17 7.5 17a4.5 4.5 0 0 1 0-9z M8 11v3 M6.5 12.5h3 M15.5 11.6h.01 M17.3 13.4h.01',
+  'M12 4.5v10 M7.8 10.6l4.2 4.2 4.2-4.2 M5 19.5h14',
+];
 
-export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, price = 0, hideTitle = 0, era = 1, mark = -1, markPop = 0, markPulse = 0 }) => {
+export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, hideTitle = 0, splash = 0, mark = 0, swap, bannerText = 'Layout updated' }) => {
   const k = Math.min(w, h) / 100;
   const L = sameLayout(w, h, lay);
   const P = L.portrait;
@@ -239,9 +252,11 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
   // WHY three colour sets that each click blends into (round 7 reviewer: a 2-frame hop of a few pixels was invisible across the room):
   // warm pastels first; "dictated" turns every screen's tiles cool and grey-blue in the same 6 frames as the blocks move; the second
   // order turns them again. One click, every screen, the same new look.
+  // WHY round 9: the film now opens straight into layout 1 (the boot splash replaced the first reorder), so set 1 is the warm one the
+  // viewer first sees, and the single order on "technology" turns every screen cool and grey-blue
   const HUE_SETS = [
     ['#EFA98B', '#F2C57C', '#E89AA8', '#F0B98E', '#E7A3C4', '#F4D08A'],
-    ['#8FAFD6', '#9DB8C9', '#A9A6D6', '#8EC2C0', '#B4BFD0', '#93A7E0'],
+    ['#EFA98B', '#F2C57C', '#E89AA8', '#F0B98E', '#E7A3C4', '#F4D08A'],
     ['#7FA6CF', '#B9A3D8', '#86B8AE', '#A7B5C6', '#9C9FD9', '#8DB9D3'],
   ];
   const seg = Math.max(0, Math.min(1, Math.floor(lay)));
@@ -251,46 +266,47 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
   // sinks in its first 2 frames, holds pressed, then the whole dialog drops 12 px and fades
   const pressed = accept > 0 ? 1 : 0;
   const sink = cl(accept / 0.13);
-  const leave = smooth((accept - 0.3) / 0.5);
+  // WHY a press-and-dismiss in 4 frames (round 9 reviewer: the 5-frame cross-fade left "Our terms have changed" as a double exposure over
+  // the page): once pressed, the dialog shrinks to 0.94 and drops a little while it goes, like a real sheet being dismissed
+  const leave = smooth((accept - 0.3) / 0.24);
   const dlg = smooth(dialog) * (1 - leave);
-  const old = era < 0.5;
   const titleO = 1 - smooth(Math.max(hideTitle, 0) * 5);
-  // the corporations' mark, or the plain plan chip before they are named
-  const mk = mark >= 0 && markPop > 0;
-  const markS = (P ? 9 : 8.5) * k;
   return (
-    <div style={{ position: 'absolute', inset: 0, background: old ? 'linear-gradient(180deg,#EEF0F3,#D9DDE3)' : S.bg, overflow: 'hidden', fontFamily: DMSANS }}>
-      {/* WHY a glossy title bar in the old skin: the 2014 look (gradients, gloss, bevels), so the jump to today is seen across the wall */}
-      {old && <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: (P ? 0.14 : 0.16) * h, background: 'linear-gradient(180deg,#7C8A99 0%,#55626F 52%,#4A5663 53%,#5C6977 100%)', boxShadow: `inset 0 ${0.4 * k}px 0 rgba(255,255,255,0.45), 0 ${0.6 * k}px ${1.6 * k}px rgba(0,0,0,0.3)` }} />}
+    <div style={{ position: 'absolute', inset: 0, background: S.bg, overflow: 'hidden', fontFamily: DMSANS }}>
       {/* status row */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: (P ? 0.065 : 0.09) * h, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${5 * k}px`, fontSize: 3.2 * k, fontWeight: 700, color: old ? '#F4F6F8' : S.ink }}>
-        <span>9:41</span><span style={{ display: 'flex', gap: 1 * k }}>{[0, 1, 2].map((i) => <span key={i} style={{ width: 2 * k, height: 2 * k, borderRadius: k, background: old ? '#DDE2E7' : S.ink2 }} />)}</span>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: (P ? 0.065 : 0.09) * h, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${5 * k}px`, fontSize: 3.2 * k, fontWeight: 700, color: S.ink }}>
+        <span>9:41</span><span style={{ display: 'flex', gap: 1 * k }}>{[0, 1, 2].map((i) => <span key={i} style={{ width: 2 * k, height: 2 * k, borderRadius: k, background: S.ink2 }} />)}</span>
       </div>
       {/* WHY real words in the sidebar (round 7 reviewer: five grey bars read as a wireframe, not a product) */}
-      {!P && <div style={{ position: 'absolute', left: 0, top: old ? 0.16 * h : 0, bottom: 0, width: 0.2 * w, background: old ? 'linear-gradient(90deg,#E3E7EC,#D3D8DF)' : '#ECE6F2' }}>
-        {['Home', 'Photos', 'Messages', 'Settings'].map((l, i) => <div key={l} style={{ position: 'absolute', left: 4 * k, top: (old ? 0.06 : 0.19) * h + i * 0.1 * h, fontSize: 3.4 * k, fontWeight: i === 0 ? 800 : 600, color: S.ink, opacity: i === 0 ? 0.62 : 0.35, whiteSpace: 'nowrap' }}>{l}</div>)}
+      {!P && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 0.2 * w, background: '#ECE6F2' }}>
+        {['Home', 'Photos', 'Messages', 'Settings'].map((l, i) => <div key={l} style={{ position: 'absolute', left: 4 * k, top: 0.19 * h + i * 0.1 * h, fontSize: 3.4 * k, fontWeight: i === 0 ? 800 : 600, color: S.ink, opacity: i === 0 ? 0.62 : 0.35, whiteSpace: 'nowrap' }}>{l}</div>)}
       </div>}
-      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: (old ? 0.072 : 0.075) * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: old ? '#FFFFFF' : S.ink, textShadow: old ? `0 ${-0.3 * k}px 0 rgba(0,0,0,0.35)` : undefined, opacity: titleO }}>Good morning</div>
-      {/* WHY the "Standard" chip becomes one of five plain marks on "a small handful" (round 7 reviewer: five stray cursors did not read as
-          corporations): who decides is printed on every screen, dealt out so that neighbours differ, and all five pulse together on "dictated" */}
-      {!mk && <div style={{ position: 'absolute', right: (P ? 0.07 : 0.05) * w, top: (P ? 0.085 : 0.1) * h, padding: `${0.6 * k}px ${2 * k}px`, borderRadius: 4 * k, background: old ? 'linear-gradient(180deg,#F5F7F9,#C9D0D8)' : S.tile, color: S.ink, fontSize: 2.8 * k, fontWeight: 700, opacity: titleO }}>Standard</div>}
-      {mk && <div style={{ position: 'absolute', right: (P ? 0.07 : 0.05) * w, top: (P ? 0.078 : 0.085) * h, opacity: titleO * smooth(markPop * 2), transform: `scale(${(0.4 + 0.6 * smooth(markPop) + 0.25 * Math.sin(Math.PI * cl(markPop))) * (1 + 0.15 * Math.sin(Math.PI * cl(markPulse)))})`, transformOrigin: '50% 50%' }}>
-        <CorpMark i={mark} s={markS} color="#2A2034" />
-      </div>}
+      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink, opacity: titleO }}>Good morning</div>
+      {/* WHY a neutral plan chip and no corporation mark in the app (round 9 reviewer BLOCKER: small black triangles and rings in every
+          corner read as warning and radio icons); who decides is shown once, big, on the boot splash */}
+      <div style={{ position: 'absolute', right: (P ? 0.07 : 0.05) * w, top: (P ? 0.085 : 0.1) * h, padding: `${0.6 * k}px ${2 * k}px`, borderRadius: 4 * k, background: S.tile, color: S.ink, fontSize: 2.8 * k, fontWeight: 700, opacity: titleO }}>Standard</div>
       {(['photo', 'msg', 'note'] as const).map((kind) => (
-        <div key={kind} style={box(L[kind], w, h)}><OwnCard kind={kind} w={L[kind].w * w} h={L[kind].h * h} k={k} old={old} /></div>
+        <div key={kind} style={box(L[kind], w, h)}><OwnCard kind={kind} w={L[kind].w * w} h={L[kind].h * h} k={k} /></div>
       ))}
       {[0, 1, 2, 3, 4, 5].map((i) => {
-        const x = g.x * w + (i % cols) * (tw + gx), y = g.y * h + Math.floor(i / cols) * (th + gx);
+        let x = g.x * w + (i % cols) * (tw + gx);
+        const y = g.y * h + Math.floor(i / cols) * (th + gx);
         const lk = lockOf(i);
         const lo = smooth(lk * 2.5) * (1 - smooth(unlock));
+        // one person's own arrangement: tile a is picked up and trades places with tile b (line 1, "how you interact")
+        const held = swap && i === swap.a ? swap.lift : 0;
+        if (swap && i === swap.a) x += (swap.b - swap.a) * (tw + gx) * swap.p;
+        if (swap && i === swap.b) x += (swap.a - swap.b) * (tw + gx) * swap.p;
+        const s = Math.min(tw, th);
         // WHY a locked tile keeps its own colour at 30% saturation and its icon dims (round 7 reviewer: the old lock turned tiles to mud)
         return (
-          <div key={i} style={{ position: 'absolute', left: x, top: y, width: tw, height: th, borderRadius: (old ? 4 : 3) * k, background: tileHues[i], display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: old ? `inset 0 ${0.5 * k}px 0 rgba(255,255,255,0.7), inset 0 ${-0.6 * k}px 0 rgba(0,0,0,0.18), 0 ${0.4 * k}px ${0.8 * k}px rgba(0,0,0,0.25)` : undefined,
-            filter: lo > 0 ? `saturate(${1 - 0.7 * lo}) brightness(${1 - 0.04 * lo})` : undefined, overflow: 'visible' }}>
-            {old && <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: '50%', borderRadius: `${4 * k}px ${4 * k}px 0 0`, background: 'linear-gradient(180deg,rgba(255,255,255,0.55),rgba(255,255,255,0.12))' }} />}
-            <div style={{ width: Math.min(tw, th) * 0.42, height: Math.min(tw, th) * 0.42, borderRadius: Math.min(tw, th) * 0.14, background: 'rgba(255,255,255,0.55)', opacity: 1 - 0.6 * lo }} />
+          <div key={i} style={{ position: 'absolute', left: x, top: y, width: tw, height: th, borderRadius: 3 * k, background: tileHues[i], display: 'flex', alignItems: 'center', justifyContent: 'center',
+            filter: lo > 0 ? `saturate(${1 - 0.7 * lo}) brightness(${1 - 0.04 * lo})` : undefined, overflow: 'visible', zIndex: held > 0 ? 2 : undefined,
+            transform: held > 0 ? `translateY(${-held * 1.2 * k}px) scale(${1 + 0.06 * held})` : undefined,
+            boxShadow: held > 0 ? `0 ${held * 2.4 * k}px ${held * 4 * k}px rgba(40,20,60,${0.35 * held})` : undefined }}>
+            <svg width={s * 0.46} height={s * 0.46} viewBox="0 0 24 24" style={{ opacity: 0.95 - 0.55 * lo }}>
+              <path d={TILE_ICONS[i]} fill="none" stroke="#FFFFFF" strokeWidth={2.1} strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
             {lk > 0 && <div style={{ position: 'absolute', right: -tw * 0.06, top: -tw * 0.06 }}><Lock s={Math.max(tw, th) * 0.3} p={lk} off={unlock} /></div>}
           </div>
         );
@@ -298,7 +314,7 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
       {/* WHY a small notice that drops in from the top edge (round 7 reviewer: the old dark pill covered the title row): "Good morning" stays readable under it */}
       {banner > 0 && <div style={{ position: 'absolute', left: '50%', top: 0.008 * h, height: (P ? 0.045 : 0.06) * h, padding: `0 ${4 * k}px`, borderRadius: 4 * k, background: '#43354E', color: '#F3EAF9',
         fontSize: 3.2 * k, fontWeight: 800, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', boxShadow: `0 ${k}px ${3 * k}px rgba(30,14,44,0.35)`,
-        transform: `translate(-50%, ${(smooth(banner / 0.28) - 1) * 12 * k}px)`, opacity: 1 - smooth((banner - 0.85) * 6) }}>Layout updated</div>}
+        transform: `translate(-50%, ${(smooth(banner / 0.28) - 1) * 12 * k}px)`, opacity: 1 - smooth((banner - 0.85) * 6) }}>{bannerText}</div>}
       {/* their machine's tile, stamped on top of everything, with its price beside it (the same tile as on the big screen).
           WHY a plain tile and no bar: the corporations' AI is theirs, not youcoded, and not somewhere you type */}
       {/* WHY in place, never a sticker (round 8 reviewer: dark "AI" badges pasted on every screen read as clip art and cluttered the
@@ -322,7 +338,7 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,28,52,0.42)', opacity: dlg }} />
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.56) * w, transform: `translate(-50%,calc(-50% + ${leave * 4 * k}px)) scale(${0.9 + 0.1 * smooth(dialog)})`, opacity: dlg,
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.56) * w, transform: `translate(-50%,calc(-50% + ${leave * 3 * k}px)) scale(${(0.9 + 0.1 * smooth(dialog)) * (1 - 0.06 * leave)})`, opacity: dlg,
           background: '#FBF9FC', borderRadius: 4 * k, padding: 4 * k, boxSizing: 'border-box', boxShadow: `0 ${2 * k}px ${6 * k}px rgba(40,20,60,0.3)` }}>
           <div style={{ fontSize: (P ? 8.4 : 8.8) * k, fontWeight: 900, color: S.ink, letterSpacing: '-0.03em', lineHeight: 1.05 }}>Our terms have changed</div>
           {[0.95, 0.8, 0.9].map((f, i) => <div key={i} style={{ height: 1.5 * k, width: `${f * 100}%`, background: S.line, borderRadius: k, marginTop: 1.5 * k }} />)}
@@ -331,6 +347,12 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
             boxShadow: pressed ? `inset 0 ${0.6 * k}px ${1.2 * k}px rgba(0,0,0,0.45)` : `0 ${0.9 * k}px 0 #3A3043` }}>Accept</div>
         </div>
       </>}
+      {/* WHY a boot splash (round 9 reviewer BLOCKER: nothing on screen said "a small handful of corporations"): every screen starts up
+          showing one big plain mark on black, the picture everyone knows from switching a device on; five marks are dealt across the
+          wall. On "dictated" every splash gives way to the identical app in the same frame. */}
+      {splash > 0.001 && <div style={{ position: 'absolute', inset: 0, background: '#0E0A13', opacity: Math.min(1, splash * 1.4), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ transform: `scale(${0.9 + 0.1 * splash})`, opacity: splash }}><CorpMark i={mark} s={Math.min(w, h) * 0.42} color="#F4EFF8" /></div>
+      </div>}
     </div>
   );
 };
@@ -345,13 +367,18 @@ export const ShareSwitch: React.FC<{ w: number; h: number; o: number; on: number
   // the row drops 12 px into place; the knob crosses in 6 frames and the track fills purple behind it
   const slide = smooth(o);
   const snap = smooth(on);
+  // WHY round 9 (reviewer: the label touched the switch, the card ran edge to edge and "off" was a pale lilac): a card inset 4.5% from
+  // the glass, a label three quarters the old size with clear room before the switch, a plain grey track for off and the brand purple
+  // for on, and the knob squashes for one frame as it lands
+  const squash = on > 0.85 && on < 1 ? Math.sin(Math.PI * (on - 0.85) / 0.15) : 0;
   return (
-    <div style={{ position: 'absolute', left: '4%', right: '4%', top: 0.052 * h, height: 0.088 * h, borderRadius: 3.6 * k, background: '#FFFFFF', boxShadow: `0 ${k}px ${3.5 * k}px rgba(40,20,60,0.3)`, fontFamily: DMSANS,
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${3.5 * k}px`, fontSize: 7.4 * k, fontWeight: 800, letterSpacing: '-0.02em', color: '#21152C', whiteSpace: 'nowrap',
+    <div style={{ position: 'absolute', left: '4.5%', right: '4.5%', top: 0.055 * h, height: 0.078 * h, borderRadius: 3.6 * k, background: '#FFFFFF', boxShadow: `0 ${k}px ${3.5 * k}px rgba(40,20,60,0.24)`, fontFamily: DMSANS,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 * k, padding: `0 ${3.6 * k}px 0 ${4.4 * k}px`, boxSizing: 'border-box', fontSize: 5.6 * k, fontWeight: 800, letterSpacing: '-0.02em', color: '#21152C', whiteSpace: 'nowrap',
       opacity: Math.min(1, o * 4), transform: `translateY(${(slide - 1) * 3 * k}px)` }}>
       Share with partners
-      <span style={{ width: 17.5 * k, height: 10 * k, borderRadius: 10 * k, background: mixHex('#CFC7D8', '#9750AA', snap), position: 'relative', flex: 'none' }}>
-        <span style={{ position: 'absolute', top: 1 * k, left: 1 * k + snap * 7.5 * k, width: 8 * k, height: 8 * k, borderRadius: 8 * k, background: '#fff', boxShadow: `0 ${0.4 * k}px ${k}px rgba(30,10,40,0.35)` }} />
+      <span style={{ width: 15 * k, height: 8.6 * k, borderRadius: 10 * k, background: mixHex('#B9B3BF', '#9750AA', snap), position: 'relative', flex: 'none' }}>
+        <span style={{ position: 'absolute', top: 0.9 * k, left: 0.9 * k + snap * 6.4 * k, width: 6.8 * k, height: 6.8 * k, borderRadius: 8 * k, background: '#fff', boxShadow: `0 ${0.4 * k}px ${k}px rgba(30,10,40,0.35)`,
+          transform: `scale(${1 + 0.12 * squash}, ${1 - 0.12 * squash})` }} />
       </span>
     </div>
   );

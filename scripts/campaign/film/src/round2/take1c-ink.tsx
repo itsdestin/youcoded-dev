@@ -156,6 +156,9 @@ type HatProps = {
   face?: Face;
   hands?: [number, number][];
   hat?: boolean;
+  // WHY (round 2 review: the men were only ever seen side-on, facing us): `back` draws him from behind, with no shirt
+  // front and the back of his head in the soft ink, so a scene can stage a huddle seen over their shoulders
+  back?: boolean;
 };
 export type Face = 'smug' | 'monocle' | 'cigar' | 'moustache' | 'grin';
 /** One line-weight system for chapters i-iv (review: floors, tables, ledges and tags were each a different weight). */
@@ -167,7 +170,7 @@ export const HatFigure: React.FC<HatProps> = (props) => {
   }
   return <HatFigureInk {...props} />;
 };
-const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', fist = 0, pocket = false, hatSx = 1, face, hands: handsAt, hat = true }) => {
+const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', fist = 0, pocket = false, hatSx = 1, face, hands: handsAt, hat = true, back = false }) => {
   const e = b ?? a + 1;
   const k = (i: number) => a + (e - a) * i;  // stagger inside the drawing window
   // WHY a solid pale ink, not transparency (review 2026-11-20): drawn see-through, the faded handful let the
@@ -212,14 +215,15 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
       <Ink d="M -9 -2 L -28 -1 M 9 -2 L 28 -1" a={k(0.15)} b={k(0.3)} w={6} c={ink} ea={ea} />
       {/* the long coat, a starched shirt front, a bow tie and a watch chain across the belly */}
       <Shape d={body} a={k(0.1)} b={k(0.55)} fill={ink} c={ink} w={3} ea={ea} />
-      <Appear a={k(0.55)} out={ea}>
+      {back && <Appear a={k(0.55)} out={ea}><path d="M 0 -38 L 0 -150" stroke={inner} strokeWidth={2.4} fill="none" strokeLinecap="round" /><path d="M -30 -150 Q 0 -140 30 -150" stroke={inner} strokeWidth={2} fill="none" /></Appear>}
+      {!back && <Appear a={k(0.55)} out={ea}>
         <path d="M -9 -179 L 0 -136 L 9 -179 Z" fill={P.paper} />
         <path d="M -9 -178 L 0 -174 L 9 -178 L 9 -170 L 0 -174 L -9 -170 Z" fill={ink} stroke={P.paper} strokeWidth={1} />
         {/* WHY no watch chain: with it they read as the board-game mascot; without, as any suited institution */}
         {pocket && <path d="M 12 -112 L 32 -114" stroke={P.paperShade} strokeWidth={2.4} fill="none" strokeLinecap="round" />}
         <path d="M 0 -38 L 0 -66" stroke={P.paper} strokeWidth={2} fill="none" strokeLinecap="round" opacity={0.6} />
         {[-124, -108].map((cy) => <circle key={cy} cx={-4} cy={cy} r={2} fill={P.paper} opacity={0.8} />)}
-      </Appear>
+      </Appear>}
       {/* arms */}
       {arms[pose].map((d, i) => <Ink key={i} d={d} a={k(0.45)} b={k(0.75)} w={8} c={ink} ea={ea} />)}
       <Appear a={k(0.7)} out={ea}>{hands[pose].map(([hx, hy], i) => (
@@ -227,7 +231,7 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
         <circle key={i} cx={hx} cy={hy} r={5.5 + (1 - fist) * 2 - fist * 1.5} fill={fist > 0.5 ? ink : P.paper} stroke={ink} strokeWidth={2.4} />
       ))}</Appear>
       {/* neck + faceless head */}
-      <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} c={ink} w={2.6} ea={ea} /></g>
+      <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={back ? inner : P.paper} c={ink} w={2.6} ea={ea} /></g>
       {eyes === 'dots' && <Appear a={k(0.7)} out={ea}><circle cx={-4} cy={-199} r={2.4} fill={ink} /><circle cx={6} cy={-200} r={2.4} fill={ink} /></Appear>}
       {eyes === 'coins' && [[-5, -199], [7, -200]].map(([cx, cy], i) => (
         <g key={i}><circle cx={cx} cy={cy} r={6.4} fill={P.sun} stroke={ink} strokeWidth={1.6} /><circle cx={cx} cy={cy} r={3} fill="none" stroke={ink} strokeWidth={1} opacity={0.6} /></g>
@@ -344,15 +348,17 @@ export const Laptop: React.FC<{ x: number; y: number; s?: number; a: number; b?:
     </g>
   );
 };
-export const Padlock: React.FC<{ x: number; y: number; s?: number; at: number; openAt?: number; fallAt?: number; color?: string }> = ({ x, y, s = 1, at, openAt, fallAt, color = P.ink }) => {
+export const Padlock: React.FC<{ x: number; y: number; s?: number; at: number; openAt?: number; fallAt?: number; color?: string; fallTo?: number }> = ({ x, y, s = 1, at, openAt, fallAt, color = P.ink, fallTo }) => {
   const t = useT();
   const p = pop(t, at, 0.5);
   if (p <= 0) return null;
   const open = openAt == null ? 0 : lin(t, openAt, openAt + 0.18);
-  const fall = fallAt == null ? 0 : lin(t, fallAt, fallAt + 0.45, (v) => v * v);
-  const drop = (1 - Math.min(1, p)) * -60 + fall * 220;
+  // WHY optional `fallTo` (round 2 review: the lock vanished in mid-fall): it drops that far, bounces once and stays
+  const fall = fallAt == null ? 0 : lin(t, fallAt, fallAt + (fallTo ? 0.32 : 0.45), (v) => v * v);
+  const bounce = fallTo && fallAt != null ? jolt(t, fallAt + 0.32, -14, 0.45) : 0;
+  const drop = (1 - Math.min(1, p)) * -60 + fall * (fallTo ?? 220) + bounce;
   return (
-    <g transform={`translate(${x} ${y + drop}) rotate(${fall * 50}) scale(${s})`} opacity={1 - lin(t, (fallAt ?? 1e9) + 0.35, (fallAt ?? 1e9) + 0.6)}>
+    <g transform={`translate(${x} ${y + drop}) rotate(${fall * (fallTo ? 80 : 50)}) scale(${s})`} opacity={fallTo ? 1 : 1 - lin(t, (fallAt ?? 1e9) + 0.35, (fallAt ?? 1e9) + 0.6)}>
       <path d={`M -11 -14 L -11 ${-26 - open * 10} a 11 11 0 0 1 22 0 L 11 ${-14 - open * 10}`} transform={`translate(${open * 12} ${-open * 4})`} fill="none" stroke={color} strokeWidth={5} strokeLinecap="round" />
       <rect x={-17} y={-16} width={34} height={28} rx={5} fill={color} />
       <circle cx={0} cy={-4} r={3.4} fill={P.paper} /><path d="M 0 -3 L 0 4" stroke={P.paper} strokeWidth={2.6} strokeLinecap="round" />

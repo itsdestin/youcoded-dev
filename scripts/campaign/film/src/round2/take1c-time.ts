@@ -44,6 +44,7 @@ export const Q = {
   // (5) the treasure
   blinded: T('blinded', 'Blinded by their'),
   byTheir: T('byTheir', 'Blinded *by their'),
+  their: T('their', 'by *their own hubris'),
   ownHubris: T('ownHubris', 'their *own hubris,'),
   hubris: T('hubris', 'own *hubris,'),
   created1: T('created1', 'corporations *created a new'),
@@ -99,6 +100,7 @@ export const Q = {
   // (8) free
   itsTime1: T('itsTime1', "It's time to free"),
   free: T('free', 'to *free ourselves'),
+  tech: T('tech', 'the *tech monopolies'),
   monopolies2: T('monopolies2', 'tech *monopolies of the past.'),
   past: T('past', 'the *past.'),
   pastEnd: E('pastEnd', 'the *past.'),
@@ -127,7 +129,8 @@ export const TURN = {
   // WHY 0.55 (was 0.42; round 5 review BLOCKER: "They decided" was spoken over a near-blank falling page): the leaf
   // now lifts in the breath after "technology." and has landed, fully printed, as she says "decided"
   rules: Q.they - 0.55,
-  bargain: Q.andWeAll - 0.4,
+  // WHY 0.2 (round 6): the shopkeeper pops his full hat back on after "data" and needs a beat on screen before the leaf lifts
+  bargain: Q.andWeAll - 0.2,
   // WHY cuts, not turns, inside a chapter: a page turn marks a new chapter; within one, the film cuts hard on
   // the stressed word, which is what gives it an editor's rhythm instead of one long camera move.
   nothing: onFrame(Q.weAccepted - 0.03),
@@ -137,7 +140,11 @@ export const TURN = {
   // "hubris". The cut takes the headline and the old page away on the same frame, which is a clean edit.
   // WHY on "Blinded", not "hubris" (review SHOULD: the first four words of the line had no picture, and the old headline
   // contradicted them): the men stand small and plain first, and their hats grow on "hubris"
-  treasure: onFrame(Q.blinded - 0.03),
+  // WHY back on "hubris" (review round 2 BLOCKER: cutting on "Blinded" put the villains under the fading "something
+  // wonderful happened." plate for 1.2 s): the wonderful page holds until the plate has had its brand hold, the men
+  // barge into its top corner on "Blinded" (BLINDED_POP in take1c-spreads-b.tsx), and the film cuts to them, clear of
+  // type, as the hats shoot up
+  treasure: onFrame(Q.hubris - 0.03),
   anyone: onFrame(Q.forAnyone - 0.03),
   // WHY a separate spread for section 7: it mirrors chapter ii's three pictures one for one
   // WHY after "And so" (review SHOULD: the "for anyone who asks." headline sat over the next chapter's wide for 1.1 s):
@@ -172,6 +179,9 @@ export const CUT = {
   cage: onFrame(Q.greatTreasure - 0.05),
   value: onFrame(Q.value - 0.05),
   escape: onFrame(Q.createdSomething - 0.05),
+  // WHY a second cut inside the escape (review round 2): the wide sets out where everything is, then the film cuts in
+  // close on the cage top for the squeeze and the grab, so the line's key action is big enough to read
+  beyond: onFrame(Q.beyond - 0.03),
   scarce: onFrame(Q.scarce - 0.05),
   anyWide: onFrame(Q.asks + 0.3),
 };

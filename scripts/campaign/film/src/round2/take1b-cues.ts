@@ -31,6 +31,7 @@ export const LAST_WORD_END = WORDS[WORDS.length - 1].end;
 export const Q = {
   // (1) For more than a decade, a small handful of corporations have dictated how you interact with your technology.
   start: 0,
+  for1: at('*For more than'),
   decade: at('a *decade,'),
   small: at('a *small handful'),
   handful: at('small *handful of'),
@@ -40,6 +41,7 @@ export const Q = {
   technology1: at('your *technology.'),
   // (2) They decided what your computers could do, what it would cost, and what happened with your personal data.
   decided: at('*They decided'),
+  decidedWord: at('They *decided'),
   computers1: at('your *computers could'),
   could: at('computers *could do,'),
   couldDo: at('could *do,'),
@@ -66,6 +68,7 @@ export const Q = {
   something: at('*something truly'),
   truly: at('something *truly'),
   wonderful: at('truly *wonderful'),
+  happened: at('wonderful *happened.'),
   happenedEnd: end('wonderful *happened.'),
   // (5) Blinded by their own hubris, these corporations created a new kind of technology: artificial intelligence. ...
   blinded: at('*Blinded by'),

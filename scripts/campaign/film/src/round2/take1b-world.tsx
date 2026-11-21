@@ -202,9 +202,9 @@ export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }
 // =====================================================================================================
 // A price tag on a string, swinging after it drops. Text can change (the price ticks).
 // =====================================================================================================
-export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; sub?: string; slap?: boolean; flipFrom?: string; flipAt?: number; kicks?: number[] }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, sub, slap = false, flipFrom, flipAt, kicks = [] }) => {
+export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; sub?: string; slap?: boolean; over?: Over; kicks?: number[] }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, sub, slap = false, over, kicks = [] }) => {
   if (t < drop) return null;
-  if (slap) return <SlapTag x={x} y={y} t={t} drop={drop} text={text} scale={scale} fall={fall} strike={strike} sub={sub} flipFrom={flipFrom} flipAt={flipAt} />;
+  if (slap) return <SlapTag x={x} y={y} t={t} drop={drop} text={text} scale={scale} fall={fall} strike={strike} sub={sub} over={over} />;
   const dt = t - drop;
   const enter = Math.min(1, dt / 0.35);
   const ease = 1 - Math.pow(1 - enter, 3);
@@ -244,7 +244,7 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
 /** WHY a tag that is slapped on instead of hung from a string (reviewer 2026-11-20: the dangling string and tag fell off the bottom
  *  edge of the frame): it lands centred on (x, y) on the device's own corner, a little large, overshoots and settles at a slight
  *  tilt, so the price is clearly "stuck on" that screen and sits well inside the frame. */
-const SlapTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale: number; fall: number; strike: number; sub?: string; flipFrom?: string; flipAt?: number }> = ({ x, y, t, drop, text, scale, fall, strike, sub, flipFrom, flipAt }) => {
+const SlapTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale: number; fall: number; strike: number; sub?: string; over?: Over }> = ({ x, y, t, drop, text, scale, fall, strike, sub, over }) => {
   const dt = t - drop;
   // WHY solid from its first frame and only a little large (round 7 reviewer BLOCKER: it arrived as a giant see-through ghost bigger than
   // the tablet, which read as a compositing error): it starts at 1.12x, 30 px up, lands in 5 frames, squashes 3% and settles in 2
@@ -260,12 +260,13 @@ const SlapTag: React.FC<{ x: number; y: number; t: number; drop: number; text: s
   const fy = fall > 0 ? drop2 * drop2 * 900 * scale : 0;
   const fallRot = fall > 0 ? 8 * Math.sin(Math.PI * 0.5 * knock) + 14 * drop2 : 0;
   const W = 190 * scale * 1.15, H = 92 * scale * 1.15;
-  // WHY a split-flap turn for a price change (round 7 reviewer: four prices flickered past in 0.7 s): the old price folds away on its top
-  // half's hinge and the new one folds down into place, 4 frames each way, so one change is seen and read
-  const FLIP = 0.13;
-  const fp = flipFrom !== undefined && flipAt !== undefined ? Math.max(0, Math.min(1, (t - flipAt) / FLIP)) : 1;
-  const shown = fp < 0.5 && flipFrom !== undefined ? flipFrom : text;
-  const rx = fp < 1 ? (fp < 0.5 ? fp * 2 * 90 : (1 - (fp - 0.5) * 2) * -90) : 0;
+  // WHY a second sticker slapped over the old price (round 9 reviewer BLOCKER: the split-flap turn on a paper tag mixed two metaphors and
+  // was readable for a quarter second): the supermarket gesture everyone knows. It drops from 1.25x onto the tag in 4 frames, overshoots
+  // for 2 and sits a degree off true, covering the old price but leaving its edge showing
+  const od = over && t >= over.at ? t - over.at : -1;
+  const op = od >= 0 ? Math.min(1, od / (4 / 30)) : 0;
+  const oSettle = od >= 4 / 30 && od < 8 / 30 ? Math.sin(Math.PI * (od - 4 / 30) / (4 / 30)) : 0;
+  const oScale = od < 0 ? 0 : 1.25 - 0.25 * op * op - 0.04 * oSettle;
   return (
     <div style={{ position: 'absolute', left: x - W / 2, top: y - H / 2 + fy - lift, width: W, height: H, transform: `rotate(${tilt + fallRot}deg) scale(${sz * (1 + 0.012 * squash)}, ${sz * (1 - 0.03 * squash)})`, transformOrigin: '50% 100%', opacity: 1,
       filter: `drop-shadow(0 ${(8 + lift * 0.4) * scale}px ${(12 + lift * 0.5) * scale}px rgba(20,8,32,0.5))` }}>
@@ -276,11 +277,16 @@ const SlapTag: React.FC<{ x: number; y: number; t: number; drop: number; text: s
       <div style={{ position: 'absolute', left: 0, right: 0, top: 22 * scale * 1.15, height: 70 * scale * 1.15, display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: 300 * scale,
         fontFamily: DMSANS, fontWeight: 900, fontSize: 38 * scale * 1.15, letterSpacing: '-0.04em', color: C.plum, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
         <span style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>
-          <span style={{ display: 'inline-block', transform: rx ? `rotateX(${rx}deg)` : undefined, transformOrigin: '50% 55%' }}>{shown}</span>
+          <span style={{ display: 'inline-block' }}>{text}</span>
           {sub && <span style={{ fontSize: 14 * scale * 1.15, fontWeight: 700, letterSpacing: 0, color: C.plum2, marginTop: 2 * scale }}>{sub}</span>}
           {strike > 0 && <span style={{ position: 'absolute', left: '-6%', top: '52%', height: 6 * scale, borderRadius: 6 * scale, width: `${112 * strike}%`, background: C.purple }} />}
         </span>
       </div>
+      {over && od >= 0 && <div style={{ position: 'absolute', left: W * 0.2, top: H * 0.3, width: W * 0.72, height: H * 0.58, borderRadius: 9 * scale, background: '#FFFDF7',
+        boxShadow: `0 ${3 * scale}px ${7 * scale}px rgba(40,20,50,0.32), inset 0 0 0 ${1.5 * scale}px rgba(151,80,170,0.55)`, transform: `rotate(${3 + 1 * (1 - op)}deg) scale(${oScale})`, transformOrigin: '50% 50%',
+        opacity: Math.min(1, op * 3), display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: 38 * scale * 1.1, letterSpacing: '-0.04em', color: C.purple, fontVariantNumeric: 'tabular-nums' }}>{over.text}</div>}
     </div>
   );
 };
+/** A second price sticker that is slapped over the first at `at`. */
+export type Over = { text: string; at: number };

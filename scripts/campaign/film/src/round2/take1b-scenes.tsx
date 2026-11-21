@@ -14,7 +14,7 @@ import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
 import { Q } from './take1b-cues';
-import { HERO_LOOK, HOLDOUT, OwnScreen, SameScreen, ShareSwitch, lookFor, markFor, sameLayout } from './take1b-screens';
+import { HERO_LOOK, HOLDOUT, OwnScreen, SameScreen, ShareSwitch, lookFor, sameLayout } from './take1b-screens';
 import { Device, Shelves, WORLD, dev } from './take1b-world';
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
@@ -59,19 +59,18 @@ const PX = 960 - PW / 2, PY = 66;                        // screen's top-left be
 // WHY the backdrop is the real wall framed on the phone's own spot (round 7 reviewer: "your phone, the same one from the wall"): the phone
 // sits where the wall's phone would sit at this zoom, and its neighbours (the tablet just seen among them) are out of focus around it
 const HERO_D = dev('hero');
-const RCAM: Cam = { cx: HERO_D.cx, cy: HERO_D.cy + (540 - (PY + PH / 2)) / K, s: K };
 const PRINT_LINES: { text: string; item?: 'photo' | 'msg' | 'note' }[] = [
   { text: 'your photos', item: 'photo' }, { text: 'Sam: running late!', item: 'msg' }, { text: 'pick up Mia at 3:15', item: 'note' },
   { text: 'where you were today' }, { text: 'who you message most' }, { text: 'what you looked at' },
 ];
-// WHY a paper narrower than the phone (round 7 reviewer: paper twice the phone's width read as a sign hung under it): it is plainly
-// coming out of the phone; the type is set to fit, and the paper runs long with the camera following it
-const PAPER = 372;
-const HEAD = 72, LINE = 60;
+// WHY the paper is the phone's own width (round 9 reviewer: a narrower strip did not look like something the phone produced), with
+// smaller type (30 px header, 24 px lines) and a fixed column for the ticks so no tick ever touches its words
+const PAPER = PW;
+const HEAD = 62, LINE = 52;
 const FULL = HEAD + PRINT_LINES.length * LINE + 30;
 // the moments, all from the narrator's words
 // WHY the print starts on "personal" (reviewer 2026-11-20), after the switch has been held for 0.4 s, and its last line lands 0.35 s before the cut
-const SHARE_IN = Q.data + 0.08, FLIP = Q.personal - 0.46, PRINT0 = Q.personal, PRINT1 = Q.weAll - 0.35;
+const SHARE_IN = Q.data - 0.3, FLIP = Q.personal - 0.46, PRINT0 = Q.personal, PRINT1 = Q.weAll - 0.35;
 // WHY from "what happens" (not "And"): the tablet before it needs its own 1.2 s once its new screen is up
 // WHY the rewind starts ON "what" and ends on "data" (round 5 reviewer: the paper sat finished while the words went by): the data goes back into the phone
 // one row at a time, a tick per spoken word; then the phone itself dissolves into the wall behind it so the cut to the next shot matches
@@ -101,7 +100,12 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
   // frame just as the receipt, the effect, began); after that it follows the paper so the newest line is always in view
   // WHY no follow in the rewind (round 8 reviewer: the phone's top was cut off): the whole scene is drawn smaller instead (below), so the
   // phone sits whole near the top of the frame with the full receipt under it
-  const follow = mode === 'rewind' ? 0 : Math.max(0, len - HEAD - LINE);
+  // WHY round 9 (reviewer: the camera follow pushed the switch, the cause, off the top of the frame): no follow at all. The scene opens
+  // with the phone large (0.92) and pulls back in one eased move while the paper prints, ending at exactly the framing the rewind in
+  // line 7 uses (0.75), so the switch row and the whole receipt are both in frame by "data."
+  const follow = 0;
+  const z = mode === 'rewind' ? 0.75 : 0.92 - 0.17 * EASE_IN_OUT(lin(t, PRINT0 - 0.2, PRINT1 + 0.1));
+  const cam: Cam = { cx: HERO_D.cx, cy: HERO_D.cy + (540 - (34 + z * (PY + PH / 2))) / (K * z), s: K * z };
   const lay = 2;
   const L = sameLayout(PW, PH, lay);
   // WHY the knob crosses in 6 frames (round 7 reviewer), with no hand doing it: it is switched on for you, somewhere else
@@ -111,22 +115,22 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
   const phoneTop = PY + PH + BZ;
   return (
     <AbsoluteFill>
-      {mode === 'print' ? <Room cam={RCAM} skip={['hero']} dy={-follow} /> : <Room soft own />}
+      {mode === 'print' ? <Room cam={cam} skip={['hero']} /> : <Room soft own />}
       <div style={{ position: 'absolute', left: 0, top: -follow + settle, width: 1920, height: 1080, opacity: 1 - gone,
-        transform: mode === 'rewind' ? 'translateY(34px) scale(0.75)' : undefined, transformOrigin: '50% 0' }}>
+        transform: `translateY(34px) scale(${z})`, transformOrigin: '50% 0' }}>
         {/* the paper, behind the phone, coming out of its bottom edge */}
         <div style={{ position: 'absolute', left: 960 - PAPER / 2, top: phoneTop - 8, width: PAPER, height: Math.max(0, len), overflow: 'hidden',
           background: 'linear-gradient(180deg,#E3D8C5 0px,#FBF6EC 14px,#F3EADB 100%)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',
           clipPath: 'polygon(0 0,100% 0,100% calc(100% - 10px),95% 100%,90% calc(100% - 10px),85% 100%,80% calc(100% - 10px),75% 100%,70% calc(100% - 10px),65% 100%,60% calc(100% - 10px),55% 100%,50% calc(100% - 10px),45% 100%,40% calc(100% - 10px),35% 100%,30% calc(100% - 10px),25% 100%,20% calc(100% - 10px),15% 100%,10% calc(100% - 10px),5% 100%,0 calc(100% - 10px))' }}>
           {/* WHY read top-down as it unrolls (like the "free*" receipt): each new line appears as it leaves the phone */}
-          <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: FULL, padding: '24px 22px 0', boxSizing: 'border-box', fontFamily: DMSANS, color: C.plum, whiteSpace: 'nowrap' }}>
-            <div style={{ height: HEAD - 24, fontSize: 34, fontWeight: 900, letterSpacing: '-0.035em' }}>shared with partners:</div>
+          <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: FULL, padding: '22px 26px 0', boxSizing: 'border-box', fontFamily: DMSANS, color: C.plum, whiteSpace: 'nowrap' }}>
+            <div style={{ height: HEAD - 22, fontSize: 30, fontWeight: 900, letterSpacing: '-0.03em' }}>shared with partners:</div>
             {PRINT_LINES.map((l, i) => (
-              <div key={i} style={{ height: LINE, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px dashed #E2D4C0', fontSize: 27, fontWeight: 600, letterSpacing: '-0.02em', color: C.plum2 }}>
+              <div key={i} style={{ height: LINE, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px dashed #E2D4C0', fontSize: 24, fontWeight: 600, letterSpacing: '-0.01em', color: C.plum2 }}>
                 <span style={{ position: 'relative' }}>{l.text}
                   {/* WHY a strike drawn left to right before the line is pulled back (round 8 reviewer): it reads as "taken back", not "scrolled away" */}
                   {strikeOf(i + 1) > 0 && <span style={{ position: 'absolute', left: -4, top: '52%', height: 4, borderRadius: 4, width: `calc(${strikeOf(i + 1) * 100}% + 8px)`, background: C.purple }} />}
-                </span><span style={{ fontWeight: 800, color: C.plum, opacity: 1 - strikeOf(i + 1) }}>✓</span>
+                </span><span style={{ width: 28, flex: 'none', textAlign: 'right', fontWeight: 800, color: C.plum, opacity: 1 - strikeOf(i + 1) }}>✓</span>
               </div>
             ))}
           </div>
@@ -136,7 +140,7 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
           boxShadow: '0 30px 60px rgba(6,2,12,0.6), inset 0 2px 0 rgba(255,255,255,0.16), inset 0 -3px 0 rgba(0,0,0,0.35)' }}>
           <div style={{ position: 'absolute', left: BZ, top: BZ, width: PW, height: PH, borderRadius: PR, overflow: 'hidden', background: '#000' }}>
             {mode === 'print'
-              ? <SameScreen w={PW} h={PH} lay={lay} lock={1} hideTitle={shareO} mark={markFor('hero')} markPop={1} />
+              ? <SameScreen w={PW} h={PH} lay={lay} lock={1} hideTitle={shareO} />
               : <OwnScreen look={HERO_LOOK} w={PW} h={PH} />}
             {/* WHY each thing is outlined 0.15 s BEFORE its line prints (round 7 reviewer: the outlines fired after the camera had left them):
                 the item lights up on the phone, then its line comes out of the bottom, so the link is seen */}
@@ -218,7 +222,10 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
   // WHY a pile that never leaves the frame (round 7 reviewer: the top card ran under the frame edge and the bottom one was sliced above the
   // headline): the newest charge always lands in the same place, level with the total; the one before sits whole beneath it; every older
   // one is pushed down into a pile of 12 px slivers, so eleven charges still end above 70% of the frame height, clear of the headline
-  const CARD_H = 120, TOPY = 380, NEXT = 140, SLIVER = 12;
+  // WHY round 9 (reviewer: the pile only ever showed two cards and thin slivers, so "everything" never looked like more and more): the
+  // slivers are 20 px and the whole pile creeps 14 px higher with every charge that lands, so by "own" the stack is plainly tall
+  const CARD_H = 120, NEXT = 140, SLIVER = 20;
+  const TOPY = 380 - 14 * lines.reduce((a, _, i) => a + (drop(i) < 0 ? 1 : ez(t, drop(i) + FALL, drop(i) + FALL + 0.2)), 0);
   const slotY = (sl: number) => (sl < 0 ? TOPY + sl * (TOPY + 300) : sl <= 1 ? TOPY + NEXT * sl : TOPY + NEXT + SLIVER * (sl - 1));
   const arrive = (i: number) => { const d = drop(i); return d < 0 ? 1 : ez(t, d, d + FALL, EASE_IN); };
   const count = lines.reduce((a, _, i) => a + arrive(i), 0);
@@ -228,11 +235,14 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
   const t0 = reprise ? Q.great : Q.weAccepted, t1 = reprise ? Q.but : Q.privacy + 0.1;
   const push = 1 + 0.07 * lin(t, t0, t1);
   const dollars = Math.floor(total), cents = total.toFixed(2).slice(-2);
+  const back = reprise ? 0 : ez(t, Q.own, Q.own + 0.3, EASE_IN_OUT);
   return (
     <AbsoluteFill>
       <Room />
       <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: '30% 45%' }}>
-        <div style={{ position: 'absolute', left: 150, top: 290, fontFamily: DMSANS, color: C.nightText, opacity: scene }}>
+        {/* WHY the total steps back on "own" (round 9 reviewer: at 176 px it out-shouted the "own nothing." headline): it shrinks to 60% and
+            dims to 70% over 0.3 s, so the headline is the main type for its whole hold */}
+        <div style={{ position: 'absolute', left: 150, top: 290, fontFamily: DMSANS, color: C.nightText, opacity: scene * (1 - 0.3 * back), transform: `scale(${1 - 0.4 * back})`, transformOrigin: '0 100%' }}>
           <div style={{ fontSize: 48, fontWeight: 500, color: C.nightText2, letterSpacing: '-0.01em' }}>every month</div>
           <div style={{ fontSize: 176, fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1, fontVariantNumeric: 'tabular-nums', transform: `scale(${1 + thump * 0.035 + lockThump * 0.05})`, transformOrigin: '0 60%',
             color: reprise && rp > 0 && rp < 1 ? C.purpleNight : undefined }}>
@@ -288,7 +298,8 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
 const PRINT: [string, number][] = [['where you go', Q.wouldBe - 0.25], ['who you talk to', Q.costOf - 0.25], ['what you watch at 2 am', Q.convenience - 0.2], ['how you feel', Q.convenience + 0.3]];
 
 /** When the tag leaves: it is pulled up out of the top of the frame across "However" (exported so the film can show the wall under it). */
-export const FREE_EXIT0 = Q.however - 0.1, FREE_EXIT1 = Q.however + 0.25;
+// WHY round 9 (reviewer: it whipped out in 5 frames right over the cut): it is already moving 0.25 s before "However" and is gone 0.1 s after
+export const FREE_EXIT0 = Q.however - 0.25, FREE_EXIT1 = Q.however + 0.1;
 export const FreeTag: React.FC<{ t: number; bare?: boolean }> = ({ t, bare = false }) => {
   const t0 = Q.privacy + 0.1;   // the scene itself starts here (the "own nothing." headline needs its full hold first)
   const dt = t - t0;
@@ -337,7 +348,8 @@ export const FreeTag: React.FC<{ t: number; bare?: boolean }> = ({ t, bare = fal
               <circle cx="95" cy="12" r="5" fill="#2A1F33" />
             </svg>
             <div style={{ position: 'absolute', left: 0, right: 0, top: 70, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: 190, letterSpacing: '-0.05em', color: C.plum }}>
-              free<span style={{ color: C.purple, transform: 'translateY(-44px)', fontSize: 140 }}>*</span>
+              {/* WHY the asterisk pulses once on "convenience" (round 9 reviewer): the joke gets its punch on the word */}
+              free<span style={{ color: C.purple, transform: `translateY(-44px) scale(${1 + 0.35 * bump(t, Q.convenience + 0.05, 0.35)})`, fontSize: 140, display: 'inline-block', transformOrigin: '50% 60%' }}>*</span>
             </div>
           </div>
         </div>

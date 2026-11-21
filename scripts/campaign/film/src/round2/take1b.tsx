@@ -33,10 +33,11 @@ const MAXD = Math.max(...WORLD.devs.map((d) => d.dist));
 const jit = (d: Dev) => ((Math.abs(Math.sin(d.cx * 0.013 + d.cy * 0.007)) * 1000) % 1);
 const top = (d: Dev) => d.cy - d.h / 2;
 const hy = HERO.cy;
-// WHY no pointers at all in lines 1-4 (round 7 reviewer BLOCKER, owner: "the mouse pointers are kinda strange"): stray arrows on random
-// tiles never read as "a small handful of corporations". Who is in charge is printed on every screen instead: on "a small handful" each
-// screen's "Standard" chip becomes one of five plain marks, dealt out so neighbours differ (take1b-screens markFor), and on "dictated"
-// all five pulse together as every screen rearranges in the same frame.
+// WHY no pointers at all in lines 1-4 (round 7 reviewer BLOCKER, owner: "the mouse pointers are kinda strange"). WHY a boot (round 9
+// reviewer BLOCKER: the decade skin jump and the tiny corner marks were invisible, so line 1 read as wallpaper): the wall opens dark;
+// on "For" every screen switches on in the same frame to a start-up splash with ONE big plain mark, five marks dealt across the wall
+// (take1b-screens markFor); the camera pushes in until a dozen splashes fill the frame on "handful"; on "dictated" every splash gives
+// way to the identical app in the same frame.
 
 // ---------- the timeline's derived moments ----------
 const CUT_PRIVACY = Q.privacy + 0.1;                 // the "own nothing." headline has had its minimum hold by here
@@ -44,10 +45,13 @@ const CUT_PRIVACY = Q.privacy + 0.1;                 // the "own nothing." headl
 // words leave completely; then the wall fades to the end card's own background in 8 frames, and only then does the card build.
 const END_FADE = Math.max(LAST_WORD_END + 0.2, Q.open + 2.3);    // the headline is gone by here
 const END_CARD = END_FADE + 0.27;                                // the wall has faded to the card's background by here
-// (1) the two synchronised clicks that rearrange every screen
-const DICT = Q.dictated + 0.06, TECH = Q.technology1 + 0.06;
+// (1) the boot, the order on "dictated", one person's own arrangement on "interact" and the order taking it back on "technology"
+const BOOT = Q.for1, DICT = Q.dictated, TECH = Q.technology1 + 0.06;
+const SWAP0 = Q.interact + 0.05;
 // (2) the padlocks and the terms
 const LOCK0 = Q.could + 0.04;
+// WHY the first padlock lands on "decided" (round 9 reviewer: 1.2 s of a slow push with nothing happening): one lock, then the rest on "could"
+const LOCK_FIRST = Q.decidedWord + 0.08;
 // WHY on "accepted" itself and in one frame everywhere (round 7 reviewer: the line is "we ALL"; the old 0.3 s ripple blurred the beat)
 const ACCEPT = Q.acceptedIt + 0.03;
 // WHY the laptop shot cuts in on "They" (round 7 reviewer: the old cut fell in the silence before it and opened on a stray arrow)
@@ -55,12 +59,11 @@ const CUT_LL = Q.decided;
 // WHY a cut on "However" (round 7 reviewer: the 0.3 s cross-fade laid the free* list over the wall like a double exposure): the tag is
 // already being pulled up out of the frame, and the cut to the dimmed wall happens on that movement
 const HOW0 = Q.however;
-// (1) the decade jump and the corporations' marks
-const ERA = Q.decade;                                 // every screen jumps from its old skin to today's, in one frame
-const MARK_AT = Q.handful;                            // the five marks are dealt out over the wall
 // (4) the turn: the real window wakes in the phone from "truly" and is at full brightness by "wonderful"
 const WAKE = Q.truly;
-const WAKE_LOOK = lookOf('morning-rounds-phone-wake.png');
+// WHY Golden Sunbreak (round 9 reviewer BLOCKER: a cartoon doctor-dog read as "a vet app opened", and the same phone wore Golden Sunbreak
+// when it is asked in line 6): sunlight breaking through rain clouds is the picture for "something wonderful", and it is the same person's phone
+const WAKE_LOOK = lookOf('golden-sunbreak-phone-wake.png');
 // (5) their new technology. WHY (round 8 reviewer BLOCKER: a stand-alone "AI" app icon was the most literal stock picture of AI, held
 // for 11 s, with a lone pointer clicking nothing): no pointer and no "AI" letters anywhere. Their machine is one more card in their own
 // locked app (the language the opening taught), and it builds itself on the big screen, each step on its spoken word: the card on
@@ -161,10 +164,13 @@ const SHARE_AT = [Q.long1, Q.longLast], FLY = 0.55;
 // WHY the pull-back starts after the second "long" and lasts a full second (round 8 reviewer: a 0.25 s whip with no story reason)
 const SHARE_HOLD = Q.long2End + 0.2;
 
-const HEADS = [
-  { text: 'own *nothing.', at: Q.own, out: CUT_PRIVACY },
-  // WHY from "truly" (reviewer): it used to be whole two seconds before "happened" was said
-  { text: 'something *wonderful happened.', at: Q.truly, out: Q.blinded - 0.04 },
+type Head = { text: string; at: number; out: number; fade?: number; times?: number[] };
+const HEADS: Head[] = [
+  // WHY a 0.15 s fade (round 9 reviewer: with the usual 0.35 s fade "nothing." was fully readable for only 1.4 s before the cut)
+  { text: 'own *nothing.', at: Q.own, out: CUT_PRIVACY, fade: 0.15 },
+  // WHY each word on its own spoken start (round 9 reviewer: all three cascaded in 0.2 s, "happened." a second before it was said), so the
+  // purple "wonderful" lands as the phone reaches full brightness
+  { text: 'something *wonderful happened.', at: Q.something, out: Q.blinded - 0.04, times: [Q.something, Q.wonderful, Q.happened] },
   { text: 'for *anyone who asks.', at: Q.forAnyone, out: Q.andSo - 0.04 },
   { text: 'open source *everything.', at: Q.open, out: END_FADE },
 ];
@@ -173,6 +179,9 @@ const HEADS = [
 for (const h of HEADS) {
   const words = h.text.split(/\s+/).length;
   if (h.out - h.at < 1.2 + 0.25 * words) throw new Error(`take1b: headline "${h.text}" is up ${(h.out - h.at).toFixed(2)} s, needs ${1.2 + 0.25 * words} s`);
+  // WHY (round 9 reviewer): the time a plate is whole and at full strength, from its last word landing to the start of its fade
+  const whole = h.out - (h.fade ?? 0.35) - ((h.times ? h.times[h.times.length - 1] : h.at + 0.055 * (words - 1)) + 0.3);
+  if (whole < (h.times ? 0.3 : 1.2)) throw new Error(`take1b: headline "${h.text}" is whole for only ${whole.toFixed(2)} s`);
 }
 if (END_CARD + 2.5 > 75) throw new Error('take1b: the end card would be held under 2.5 s');
 if (WALL_VARIETY < 20) throw new Error(`take1b: the wall uses only ${WALL_VARIETY} different screens, needs 20`);
@@ -252,8 +261,9 @@ const TAG_PT = { x: TT.cx + TT.w / 2 - 28, y: TT.cy + TT.h / 2 - 16 };
 const TAG_S = 0.85;
 // WHY the upper-right corner in line 7 (round 8 reviewer: the tag covered the message box exactly where the request was being typed)
 const TAG_PT7 = { x: TT.cx + TT.w / 2 - 8, y: top(TT) + 8 };
-// the price changes once, on a split-flap turn, after "cost" has been heard with $9.99 on it
-const PRICE_FLIP = Q.costWord + 0.42;
+// WHY round 9 (reviewer BLOCKER: the rise to $14.99 was readable for 0.25 s): $9.99 is slapped on as the shot opens on "what", and a
+// $14.99 sticker is slapped over it on "cost," itself, then held 0.7 s to the cut
+const TAG_DROP = Q.cost + 0.06, PRICE_FLIP = Q.costWord;
 // their new card on the big screen, in world pixels, and the caret in its text field
 const TVL = TV.cx - TV.w / 2, TVT = top(TV);
 const NT_W = { x: TVL + NT.x * TV.w, y: TVT + NT.y * TV.h, w: NT.w * TV.w, h: NT.h * TV.h };
@@ -275,38 +285,48 @@ const LL_BOX = { x: LL.cx - LL.w / 2 + LL.w * 0.24, y: top(LL) + LL.h * 0.9 };
 type Cam = [number, number, number, number?, number?];
 type Scene = 'print' | 'rewind' | 'stack' | 'free';
 // dof: a real lens's depth of field on a wide of the wall: the shelves near the frame's middle are sharp, the rows above and below go soft and dim
-type Shot = { at: number; keys: [number, Cam][]; focus?: string[]; scene?: Scene; linear?: boolean; out?: boolean; rack?: [number, number, number]; follow?: boolean; dof?: boolean };
+// band: half-height of the sharp band in world px (default 120); lit: devices kept bright in a close-up although they are out of focus
+type Shot = { at: number; keys: [number, Cam][]; focus?: string[]; scene?: Scene; linear?: boolean; out?: boolean; rack?: [number, number, number]; follow?: boolean; dof?: boolean; band?: number; lit?: string[] };
 const TWO_X = (HERO.cx - HERO.w / 2 + TT.cx + TT.w / 2) / 2;          // the phone and the tablet, side by side
 const TRIO_X = (L0.cx - L0.w / 2 + TT.cx + TT.w / 2) / 2;            // laptop, phone, tablet
 const TRIO = ['0:l0', 'hero', 'tagTablet'];
+// the cut from the close-up of the press to the wide: as every dialog starts to leave
+const ACCEPT_WIDE = ACCEPT + 0.15;
 // the laptop's tile row, for the padlock macro
 const LL_GRID = (() => { const a = tileCenter(LL.w, LL.h, 2, 0), b = tileCenter(LL.w, LL.h, 2, 5); return { x: LL.cx - LL.w / 2 + (a.x + b.x) / 2, y: top(LL) + a.y }; })();
 const SHOTS: Shot[] = [
   // (1) WHY a low three-quarter dolly that never stops (round 7 reviewer BLOCKER: a flat, evenly lit grid held still for 4 s read as
   // wallpaper): the camera looks up at the wall and slides along it while it pushes in, with depth of field, so the rows pass at different
   // speeds and the eye has a middle to rest on. On "interact" a straight cut lands on the phone and the tablet
-  { at: Q.start, linear: true, dof: true, keys: [[0, [-950, -560, 0.74, 7, 0]], [Q.interact, [120, -330, 1.18, 4, 0]]] },
-  // WHY the pair framed lower (round 7 reviewer: the bottom quarter of the frame was empty shelf): their shelf edge sits near 85% of the height
-  { at: Q.interact, keys: [[Q.interact, [TWO_X, hy - 4, 2.28]], [CUT_LL, [TWO_X, hy - 6, 2.45]]], focus: ['hero', 'tagTablet'] },
+  // WHY round 9: the push brings a dozen boot splashes to fill the frame by "handful" (two shelves, both in the sharp band), and keeps
+  // drifting right so the cut on "interact" carries on in the same direction
+  { at: Q.start, linear: true, dof: true, band: 330, keys: [[0, [-560, -318, 0.9, 6, 0]], [Q.handful, [-330, -318, 1.2, 5, 0]], [Q.interact, [-150, -312, 1.36, 4, 0]]] },
+  // WHY the pair drifts right with an easing-out (round 9 reviewer: the moving dolly cut to a dead-still medium): the motion carries over the cut
+  { at: Q.interact, out: true, keys: [[Q.interact, [TWO_X - 30, hy - 20, 2.3]], [CUT_LL, [TWO_X + 14, hy - 22, 2.44]]], focus: ['hero', 'tagTablet'] },
   // (2) "what your computers could do": a cut on "They" to the laptop seen from a little above, keyboard deck in view, so it reads as a
   // computer and not as the tablet again; a slow push while the padlocks spread from the middle tile outwards
   { at: CUT_LL, keys: [[CUT_LL, [LL_GRID.x - 30, LL.cy + 34, 2.0, -5, 0]], [Q.could, [LL_GRID.x, LL.cy + 28, 2.5, -4, 0]], [Q.cost, [LL_GRID.x + 10, LL.cy + 26, 2.62, -4, 0]]], focus: ['lockLaptop'] },
-  // "what it would cost": tight and straight-on, the tablet in the middle of the frame, its price tag hanging off the corner
-  { at: Q.cost, keys: [[Q.cost, [TT.cx + 28, TT.cy + 20, 2.3]], [Q.data, [TT.cx + 28, TT.cy + 20, 2.46]]], focus: ['tagTablet'] },
+  // "what it would cost": WHY a macro of the price tag from a little above and rolled (round 9 reviewer BLOCKER: a third straight-on
+  // medium of the same layout read as a jump cut): the tablet's locked tiles are only soft colour behind the tag; it eases back a little
+  { at: Q.cost, out: true, keys: [[Q.cost, [TAG_PT.x - 70, TAG_PT.y - 46, 3.5, -6, -2]], [Q.data, [TAG_PT.x - 100, TAG_PT.y - 60, 3.0, -6, -2]]], focus: [], lit: ['tagTablet'] },
   { at: Q.data, keys: [[Q.data, [0, 0, 1]]], scene: 'print' },
   // (3) WHY a slow slide along two shelves from a little above (round 7 reviewer: the "overhead" read as a fourth flat wide): a distinct
   // shot, the same dialog sweeping across the screens left to right through the pause of "all...", no dialog cut by the frame
-  { at: Q.weAll, dof: true, linear: true, keys: [[Q.weAll, [-760, -300, 1.0, -5, 0]], [Q.weAll2 - 0.3, [-330, -310, 1.04, -5, 0]]] },
-  // WHY the trio framed whole (round 7 reviewer: the two big devices were cut by both edges): laptop, phone and tablet as one unit with
-  // margins, the shelf at about 78% of the height; the camera nudges in 4% on the press
-  { at: Q.weAll2 - 0.3, dof: true, keys: [[Q.weAll2 - 0.3, [TRIO_X, -216, 1.34]], [ACCEPT, [TRIO_X, -216, 1.4]], [ACCEPT + 0.22, [TRIO_X, -218, 1.46]], [Q.weAccepted, [TRIO_X, -218, 1.47]]], focus: TRIO },
+  // WHY held to "we" (round 9 reviewer: the cut came before the sweep had crossed the frame)
+  { at: Q.weAll, dof: true, linear: true, keys: [[Q.weAll, [-760, -300, 1.0, -5, 0]], [Q.weAll2, [-280, -312, 1.05, -5, 0]]] },
+  // WHY a close-up for the "just" and a wide for the "all" (round 9 reviewer: the trio was a fourth flat wide of identical screens): one
+  // phone big enough to read its dialog, its press seen up close; then a cut wide just as every dialog on the wall is dismissed at once
+  { at: Q.weAll2, keys: [[Q.weAll2, [HERO.cx, hy - 6, 2.6]], [ACCEPT_WIDE, [HERO.cx, hy - 8, 2.7]]], focus: ['hero'] },
+  { at: ACCEPT_WIDE, dof: true, band: 260, keys: [[ACCEPT_WIDE, [-120, -300, 0.92, 6, 0]], [Q.weAccepted, [-110, -302, 0.96, 6, 0]]] },
   { at: Q.weAccepted, keys: [[Q.weAccepted, [0, 0, 1]]], scene: 'stack' },
   { at: CUT_PRIVACY, keys: [[CUT_PRIVACY, [0, 0, 1]]], scene: 'free' },
   // (4) "however, recently...": the wall goes dark and the camera finds one phone
   // WHY one continuous push from the wide to the phone, still settling at the cut to "Blinded" (round 7 reviewer: it raced, then held dead
   // still for 0.9 s): a single eased move that reaches about 2x on "wonderful" and drifts on; the phone stays high so the headline band
   // under it only ever lies over dark shelf
-  { at: HOW0, keys: [[HOW0, [0, -300, 0.7, 0, 0]], [Q.blinded, [0, hy + 58, 2.22]]], focus: ['hero'] },
+  // WHY round 9: it starts closer (0.85, so the phone is a subject from the first second) and ends tighter (2.35, so only the inner edges
+  // of the switched-off neighbours show)
+  { at: HOW0, keys: [[HOW0, [0, -260, 0.85, 0, 0]], [Q.blinded, [0, hy + 70, 2.35]]], focus: ['hero'] },
   // (5) WHY one direction of travel (round 8 reviewer BLOCKER: wide, tight, wide, tight on the same TV in 17 s, with the TV and its tag
   // cropped off the top): a hard cut on "Blinded" to the low-angle dark wall at normal brightness, and from there ONE slow push in to
   // the big screen through "created ... intelligence", ending with the whole screen inside the margins (scale 1.25)
@@ -389,12 +409,15 @@ const flipNode = (f: number, a: React.ReactNode, b: React.ReactNode, at = '50% 5
   if (mode === 'rise') return <>{a}<div style={{ position: 'absolute', inset: 0, transform: `translateY(${(1 - e) * 100}%)`, boxShadow: '0 -20px 40px rgba(10,4,18,0.3)' }}>{b}</div></>;
   return <>{a}<div style={{ position: 'absolute', inset: 0, clipPath: `inset(${(1 - e) * 100}% 0 0 0)` }}><div style={{ position: 'absolute', inset: 0, transform: `scale(${1 + 0.04 * (1 - e)})` }}>{b}</div></div></>;
 };
-// WHY a 6-frame reflow (round 7 reviewer: the old 2-frame snap was a flicker nobody saw across the room): the blocks move and the tile
-// colours blend to a new set together, on every screen in exactly the same frames; the sync is the point
-const layAt = (t: number) => ez(t, DICT, DICT + 0.2, EASE_IN_OUT) + ez(t, TECH, TECH + 0.2, EASE_IN_OUT);
-// WHY 0.9 s (reviewer: it lingered 1.5 s over the title); SameScreen also hides the title while it is up
-// WHY only the close-up's click (reviewer: the dark toast was unreadable at wall scale): the wide shot shows the change as layout + colour, the close-up as one big pill
+// WHY one 6-frame reflow, on "technology" (round 9): the app first appears on "dictated" already in its order (layout 1, warm tiles);
+// on "technology" the blocks move and the tiles turn cool on every screen in exactly the same frames; the sync is the point
+const layAt = (t: number) => 1 + ez(t, TECH, TECH + 0.2, EASE_IN_OUT);
+// WHY only on the tablet, worded "Layout restored" (round 9 reviewer): it explains the snap-back of the tile its owner had moved
 const bannerAt = (t: number) => (t >= TECH && t < TECH + 0.9 ? lin(t, TECH, TECH + 0.9) : 0);
+// the boot: every screen is off until "For", then shows its splash; on "dictated" every splash gives way to the app in one frame
+const splashAt = (t: number) => (t >= DICT ? 0 : Math.max(0.002, ez(t, BOOT, BOOT + 0.2, EASE_IN_OUT)));
+// the tablet owner's own arrangement: tile 2 is picked up on "interact" and trades places with tile 3, then is yanked back on "technology"
+const swapAt = (t: number) => ({ a: 2, b: 3, p: ez(t, SWAP0 + 0.12, SWAP0 + 0.55, EASE_IN_OUT) * (1 - ez(t, TECH, TECH + 0.15, EASE_IN)), lift: ez(t, SWAP0, SWAP0 + 0.12) * (1 - ez(t, SWAP0 + 0.55, SWAP0 + 0.68)) });
 // the laptop's padlocks land one tile after another, starting from the tile under the frame's centre (tile 2) and spreading outwards
 const LL_LOCK_ORDER = [4, 2, 0, 1, 3, 5];
 const blink = (frame: number) => Math.floor(frame / 15) % 2 === 0;
@@ -420,24 +443,23 @@ const screenOf = (d: Dev, t: number, frame: number): { node: React.ReactNode; gl
   // (round 8 reviewer: too small to see at wall scale); the holdout's own turn on "past" gets a bigger lift: it is the last one
   const lift = bump(t, fa, 0.7) * 0.9 * (d.id === HOLDOUT ? 1.8 : 1) + bump(t, Q.freeWord + 0.05 + (d.dist / MAXD) * 0.9, 0.6) * 1.6;
   const lockS = Q.could - 0.05 + (d.dist / MAXD) * 0.45 + jit(d) * 0.15;
-  const lock: number | number[] = d.id === 'lockLaptop' ? LL_LOCK_ORDER.map((r) => lin(t, LOCK0 + r * 0.08, LOCK0 + r * 0.08 + 0.4)) : lin(t, lockS, lockS + 0.45);
+  const lock: number | number[] = d.id === 'lockLaptop' ? LL_LOCK_ORDER.map((r) => (r === 0 ? lin(t, LOCK_FIRST, LOCK_FIRST + 0.4) : lin(t, LOCK0 + (r - 1) * 0.08, LOCK0 + (r - 1) * 0.08 + 0.4))) : lin(t, lockS, lockS + 0.45);
   // their new card arrives on every screen in place, rippling out from the big screen (which builds its own, larger one)
   const aiAt = RIPPLE + Math.hypot(d.cx - TV.cx, d.cy - TV.cy) / 3800 * 1.4;
   // WHY the terms dialog sweeps across the wall left to right through the pause of "all..." (round 7 reviewer: a random stagger left a messy
   // half-state): the hesitation is animated; every Accept is then pressed in the same frame
   const dlgAt = Q.weAll + 0.08 + Math.max(0, Math.min(1, (d.cx + 1700) / 2600)) * 0.75;
-  // the dealt-out mark arrives with a small stagger by position, like cards being dealt
-  const dealAt = MARK_AT + jit(d) * 0.28;
+  const tt = d.id === 'tagTablet';
   const same = (
-    <SameScreen w={d.w} h={d.h} lay={layAt(t)} banner={bannerAt(t)} era={t < ERA ? 0 : 1}
-      mark={markFor(d.id)} markPop={lin(t, dealAt, dealAt + 0.3)} markPulse={lin(t, DICT, DICT + 0.2)}
+    <SameScreen w={d.w} h={d.h} lay={layAt(t)} banner={tt ? bannerAt(t) : 0} bannerText="Layout restored"
+      splash={splashAt(t)} mark={markFor(d.id)} swap={tt && t < TECH + 0.3 ? swapAt(t) : undefined}
       lock={lock} unlock={d.id === 'lockLaptop' ? lin(t, UNLOCK, UNLOCK + 0.4) : 0}
       dialog={lin(t, dlgAt, dlgAt + 0.22)}
       accept={lin(t, ACCEPT, ACCEPT + 0.5)}
       ai={d.id === 'tv' ? 0 : lin(t, aiAt, aiAt + 0.35)} />
   );
-  // WHY every screen dips 3 px on "dictated" in the same frame (round 7 reviewer): a small shared physical beat for the order
-  const dip = -0.22 * bump(t, DICT, 0.27);
+  // WHY the old shared dip is gone (round 9 reviewer: invisible); the order now lands as the splash-to-app snap with its own overshoot
+  const dip = 0;
   if (isHero) {
     // the phone becomes the real app the moment the caret lands in it (opening from its message box, held at medium size); then the
     // request is typed into that box, sent, the app is seen working, and the page asked for rises in the person's own look
@@ -453,13 +475,18 @@ const screenOf = (d: Dev, t: number, frame: number): { node: React.ReactNode; gl
     // community theme on its empty chat, a friendly model in its picker) rises up the glass from the bottom edge, starts a touch dim and is
     // brighter than the page it replaced by "wonderful". At "Blinded" the film cuts away, and on the wall this phone is the corporations' again
     const turn = t >= WAKE && t < Q.blinded;
-    const bright = 0.85 + 0.23 * ez(t, WAKE, Q.wonderful + 0.1, EASE_IN_OUT);
+    // WHY round 9 (reviewer BLOCKER: the brightness change could not be seen): through "However, recently..." the corporations' app on
+    // this phone drops to standby (0.55) and breathes slowly over the ellipsis; on "truly" the woken window rises from 0.75 to 1.05 by
+    // "wonderful": a dim grey grid becoming a full-colour sky
+    const standby = t >= HOW0 && t < Q.blinded ? 0.45 * ez(t, HOW0, HOW0 + 0.5, EASE_IN_OUT) - 0.07 * bump(t, Q.recently + 0.15, Q.something - Q.recently - 0.1) : 0;
+    const sameDim = standby > 0.001 ? <div style={{ position: 'absolute', inset: 0, filter: `brightness(${1 - standby})` }}>{same}</div> : same;
+    const bright = 0.75 + 0.3 * ez(t, WAKE, Q.wonderful + 0.1, EASE_IN_OUT);
     const woke = <div style={{ position: 'absolute', inset: 0, filter: `brightness(${bright})` }}><OwnScreen look={WAKE_LOOK} w={d.w} h={d.h} /></div>;
-    const node = turn ? flipNode(lin(t, WAKE, WAKE + 0.5), same, woke, '50% 50%', 'wake')
+    const node = turn ? flipNode(lin(t, WAKE, WAKE + 0.5), sameDim, woke, '50% 50%', 'wake') : t >= HOW0 && t < WAKE ? sameDim
       : t < fa ? flipNode(g, same, real, atInput, 'circle') : flipNode(f, real, own, atInput, 'rise');
     const glow = t >= fa ? look.glow : turn ? WAKE_LOOK.glow : g > 0.5 ? 'rgba(201,166,224,1)' : SAME_GLOW;
     // a slow pulse on the ellipsis of "recently...", a small lift as it wakes, and the shared dip on "dictated"
-    return { node, glow, lift: t < fa ? bump(t, Q.recently + 0.1, 0.9) * 0.4 + bump(t, Q.wonderful, 0.8) * 0.5 + bump(t, LAND, 0.5) * 0.6 + dip : lift };
+    return { node, glow, lift: t < fa ? bump(t, Q.wonderful, 0.8) * 0.5 + bump(t, LAND, 0.5) * 0.6 + dip : lift };
   }
   const own = <OwnScreen look={look} w={d.w} h={d.h} />;
   if (d.id === 'tv') return { node: flipNode(f, <TVScreen same={same} t={t} frame={frame} />, own), glow: f > 0.5 ? look.glow : SAME_GLOW, lift: lift + dip };
