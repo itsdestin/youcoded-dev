@@ -13,7 +13,8 @@ const SIZE: Record<Kind, { w: number; h: number; lift: number; bezel: number; ra
   phone: { w: 136, h: 284, lift: 8, bezel: 7, radius: 20 },
   tablet: { w: 360, h: 250, lift: 10, bezel: 11, radius: 18 },
   laptop: { w: 400, h: 250, lift: 18, bezel: 9, radius: 10 },
-  monitor: { w: 470, h: 270, lift: 64, bezel: 8, radius: 8 },
+  // WHY 482 wide (was 470): the TV still's exact ratio (2560x1434), so a monitor wears a TV still with no crop and no stretch
+  monitor: { w: 482, h: 270, lift: 64, bezel: 8, radius: 8 },
   tv: { w: 1000, h: 560, lift: 46, bezel: 9, radius: 8 },
 };
 export const ROW = 440;           // shelf spacing
@@ -111,10 +112,13 @@ export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: numb
           boxShadow: `0 ${18 + lift * 26}px ${40 + lift * 40}px rgba(20,8,32,${0.5 + lift * 0.1}), 0 0 ${50 * night}px ${glow.replace('1)', `${0.12 * night})`)}, inset 0 1.5px 0 rgba(255,255,255,0.16), inset 0 -2px 0 rgba(0,0,0,0.35)` }} />
         <div style={{ position: 'absolute', left: b, top: b, width: d.w, height: d.h, borderRadius: z.radius, overflow: 'hidden', background: '#000' }}>
           {children}
+          {/* a hairline of black where the glass meets the bezel, and a soft edge shade: a screen is set into its frame */}
+          <div style={{ position: 'absolute', inset: 0, borderRadius: z.radius, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.65), inset 0 0 ' + (b * 1.4) + 'px rgba(0,0,0,0.22)', pointerEvents: 'none' }} />
           {/* glass: a faint diagonal sheen so screens read as objects, not flat rectangles */}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(118deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.04) 34%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 100%)', pointerEvents: 'none' }} />
         </div>
-        {d.kind === 'phone' && <div style={{ position: 'absolute', left: W / 2 - 14, top: b + 6, width: 28, height: 8, borderRadius: 8, background: '#120C18' }} />}
+        {/* WHY a small punch-hole camera and not a wide pill: the pill sat on the app's own title row and hid real interface */}
+        {d.kind === 'phone' && <div style={{ position: 'absolute', left: W / 2 - 2.5, top: b + 3.5, width: 5, height: 5, borderRadius: 5, background: '#0A060E', boxShadow: '0 0 0 0.8px rgba(255,255,255,0.08)' }} />}
       </div>
     </>
   );
@@ -142,22 +146,27 @@ export const Shelves: React.FC<{ night: number }> = ({ night }) => (
 );
 
 // =====================================================================================================
-// The few who decide: five arrow pointers. WHY dark and identical: a plain white arrow is everyone's
-// own cursor ("me, using my computer"), so the first cut read as ordinary users. Near-black, oversized,
-// with a hard (unblurred) shadow and moving in perfect lockstep, they read as one outside power that clicks
-// for everyone. The new thing, later, is a purple text caret: it does nothing until a person asks.
+// The pointer: one standard arrow (white with a dark edge, a soft shadow), the same shape every desktop uses,
+// so it reads at once as "someone is clicking". WHY (owner 2026-11-20: "the mouse pointers are kinda strange"):
+// the old oversized near-black arrows, five at a time and turned to face things, read as clip art. Now there is
+// one, correctly proportioned (about 0.64 wide for every 1 tall), never rotated, with a real click: it dips and
+// a ring spreads from its tip.
 // =====================================================================================================
 export type Pointer = { x: number; y: number; press: number; o: number; rot?: number };
 export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }) => {
   if (p.o <= 0) return null;
-  const sc = 1 - 0.12 * p.press;
+  // a click squeezes the arrow a little about its tip, as the real thing is pressed
+  const sc = 1 - 0.1 * p.press;
+  const ring = size * 0.5;
   return (
-    <div style={{ position: 'absolute', left: p.x, top: p.y, width: size, height: size, opacity: p.o, transform: `rotate(${p.rot ?? 0}deg) scale(${sc})`, transformOrigin: '0 0' }}>
-      {/* a click leaves a brief ring at the tip, in the night purple so it reads on light and dark screens alike */}
-      {p.press > 0.05 && <div style={{ position: 'absolute', left: -size * 0.32 * p.press, top: -size * 0.32 * p.press, width: size * 0.64 * p.press, height: size * 0.64 * p.press,
-        borderRadius: '50%', border: `${size * 0.035}px solid rgba(195,135,211,${0.85 * (1 - p.press)})` }} />}
-      <svg width={size} height={size} viewBox="0 0 24 24" style={{ overflow: 'visible', filter: `drop-shadow(${size * 0.05}px ${size * 0.07}px 0 rgba(8,3,14,0.55))` }}>
-        <path d="M1 1 L1 19.5 L6 15 L9.6 22.6 L13 21 L9.5 13.6 L16.2 13.4 Z" fill="#120A19" stroke="#E9DDF1" strokeWidth="0.9" strokeLinejoin="round" />
+    <div style={{ position: 'absolute', left: p.x, top: p.y, width: 0, height: 0, opacity: p.o }}>
+      {/* the click ring, centred on the tip, widening and fading as press falls back to 0 */}
+      {p.press > 0.04 && <div style={{ position: 'absolute', left: -ring * p.press, top: -ring * p.press, width: ring * 2 * p.press, height: ring * 2 * p.press, borderRadius: '50%',
+        border: `${Math.max(1.5, size * 0.035)}px solid rgba(255,255,255,${0.75 * (1 - p.press * 0.6)})`, boxShadow: '0 0 0 1px rgba(20,8,32,0.35)' }} />}
+      <svg width={size * 0.64} height={size} viewBox="0 0 16 25" style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', transform: `scale(${sc})`, transformOrigin: '0 0',
+        filter: `drop-shadow(${size * 0.02}px ${size * 0.05}px ${size * 0.04}px rgba(8,3,14,0.5))` }}>
+        {/* the classic arrow: tip at (1,1), a straight left edge, a notched tail */}
+        <path d="M1.2 1 L1.2 20.4 L5.6 16.2 L8.6 23.2 L11.6 21.9 L8.7 15.1 L14.8 15.1 Z" fill="#FFFFFF" stroke="#14091D" strokeWidth="1.5" strokeLinejoin="round" />
       </svg>
     </div>
   );

@@ -14,7 +14,7 @@ import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
 import { Q } from './take1b-cues';
-import { APP_BG, OwnScreen, SameScreen, ShareSwitch, sameLayout, shareKnob } from './take1b-screens';
+import { HERO_LOOK, OwnScreen, SameScreen, ShareSwitch, sameLayout, shareKnob } from './take1b-screens';
 import { PointerArrow } from './take1b-world';
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
@@ -48,7 +48,8 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
   const lay = 2;
   const L = sameLayout(PW, PH, lay);
   const on = mode === 'print' ? lin(t, FLIP, FLIP + 0.18) : 1 - lin(t, UNFLIP, UNFLIP + 0.18);
-  const shareO = mode === 'print' ? lin(t, SHARE_IN, SHARE_IN + 0.3) : 1 - lin(t, REWIND1 + 0.1, REWIND1 + 0.4);
+  // WHY no switch on the rewind: that phone now wears a real youcoded window, and a drawn switch would sit over its real interface
+  const shareO = mode === 'print' ? lin(t, SHARE_IN, SHARE_IN + 0.3) : 0;
   // the pointer that flips the switch (print only)
   const knob = shareKnob(PW, PH);
   const tip = { x: PX + knob.x, y: PY + knob.y };
@@ -79,7 +80,7 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
           <div style={{ position: 'absolute', left: BZ, top: BZ, width: PW, height: PH, borderRadius: 50, overflow: 'hidden' }}>
             {mode === 'print'
               ? <SameScreen w={PW} h={PH} lay={lay} lock={1} />
-              : <OwnScreen look={{ app: 0, glow: APP_BG[0], key: 'app0', theme: 'app0' }} w={PW} h={PH} p={1} />}
+              : <OwnScreen look={HERO_LOOK} w={PW} h={PH} />}
             {/* each thing on the screen is outlined the moment its line prints: copied out, still in place */}
             {mode === 'print' && PRINT_LINES.map((l, i) => {
               if (!l.item) return null;
@@ -92,7 +93,7 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
             <ShareSwitch w={PW} h={PH} o={shareO} on={on} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(118deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 34%, rgba(255,255,255,0) 35%)' }} />
           </div>
-          <div style={{ position: 'absolute', left: (PW + BZ * 2) / 2 - 40, top: BZ + 12, width: 80, height: 22, borderRadius: 22, background: '#120C18' }} />
+          <div style={{ position: 'absolute', left: (PW + BZ * 2) / 2 - 7, top: BZ + 9, width: 14, height: 14, borderRadius: 14, background: '#0A060E' }} />
         </div>
         <PointerArrow p={ptr} size={104} />
       </div>
