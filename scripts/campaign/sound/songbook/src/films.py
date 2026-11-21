@@ -293,7 +293,47 @@ OWN_FAST = _fast("own-everything-fast", None, None)
 OWN_FAST_GENTLER = _fast("own-everything-fast-gentler", -17.0, 0.8, lift=True)
 OWN_FAST_BAREST = _fast("own-everything-fast-barest", -19.0, 0.72, drop=("sub", "air"))
 
-FILMS = {f.name: f for f in (OWN_EVERYTHING, OWN_GENTLER, OWN_BAREST, OWN_FAST, OWN_FAST_GENTLER, OWN_FAST_BAREST)}
+# ---- "Make it mine" (60 s product film, no narrator; picture final) ----
+# WHY one song at 120 bpm (a bar is exactly 2.0 s): every spotted second in the film then falls on
+# a bar line (14, 30, 46, 54, name 56), and the look changes at 5.0 and 10.5 fall on beats, so
+# the picture and the music stay locked without any speed-up. Music answers feelings, so it turns
+# only where the story does: 14.0 the home (a new job for the app, the second piano starts
+# answering), 30.0 the money (plucked and held strings join), 46.0 the payoff (violin and piano
+# sing the tune, the lift), then the logo played as the last phrase. The two look changes and the
+# pull-back stay inside one section on purpose (no new idea every few seconds).
+# WHY no sound effects: the owner wants typing "quieter" and the pens were "too scratchy"; a
+# 60 s film that is mostly typing is best left to the song alone.
+MAKE_IT_MINE = Film(
+    "make-it-mine",
+    Piece(
+        "make-it-mine", 60.0, land=56.0, ending_start=54.0, rit=0.92, seed=33,
+        notes="Make it mine, one playful song at 120 bpm: gentle first conversation, the second "
+              "piano joins for the home, strings for the money, violin and piano for the payoff, "
+              "the logo played as the last phrase with the name at 56.0 s.",
+        sections=[
+            # 0-14: the look (7 bars): the tune, bouncing lightly, nothing answering yet
+            S("playful", 7, tune=["phrase1", "phrase2:3"], bpm=120, dyn=0.88, drop=("answer",),
+              label="the look: light bounce"),
+            # 14-30: the home (8 bars): the whole tune, the second piano answering
+            S("playful", 8, tune="full", start=14.0, bpm=120, label="the home: the answers join"),
+            # 30-46: the money (8 bars): plucked strings and a held string bed join
+            S("playful", 8, tune="full", start=30.0, bpm=120, add=("pizz", "held"),
+              label="the money: strings join"),
+            # 46-54: the payoff (4 bars): violin and piano sing the high phrase, everyone grows
+            # WHY the piano carries the tune here (not violin+piano): the violin's first bow stroke on
+            # the downbeat read as a noise-like attack (0.105, limit 0.1); the lift still brings the
+            # strings in gradually across the section
+            S("triumphant", 4, tune="phrase2", start=46.0, bpm=120, lift=True, voice="piano",
+              label="the payoff and the closing lines"),
+        ]),
+    hits=[],
+    picture=[(0.0, "the look"), (5.0, "Golden Sunbreak"), (10.5, "Devil's Garden"), (14.0, "the home"),
+             (30.0, "the money"), (43.0, "the email"), (46.0, "payoff shot"), (50.0, "stop waiting for updates."),
+             (52.7, "make anything you can imagine, just by asking."), (56.0, "youcoded (name)"), (60.0, "end")],
+    copy_to=os.path.normpath(os.path.join(HERE, "..", "..", "..", "film", "public", "audio", "sb-take2-mix.wav")),
+)
+
+FILMS = {f.name: f for f in (OWN_EVERYTHING, OWN_GENTLER, OWN_BAREST, OWN_FAST, OWN_FAST_GENTLER, OWN_FAST_BAREST, MAKE_IT_MINE)}
 
 
 def render_film(film):
