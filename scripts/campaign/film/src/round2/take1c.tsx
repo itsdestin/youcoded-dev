@@ -55,38 +55,38 @@ const cut = (t: number, x: number, y: number, z: number, tilt = 16): Shot => ({ 
 const at = (t: number, x: number, y: number, z: number, tilt = 16): Shot => ({ t, x, y, z, tilt });
 const TM = TREASURE_MARKS;
 const SHOTS: Shot[] = [
-  // i: open close on one hat, the handful land beside it, and the camera pulls back to reveal the book
-  // WHY lower and wider (zoom 1.9): the row of years under the ledge is in frame with the first hat, and it drifts
-  // slowly outward the whole time so the opening never holds still
-  at(0, 380, 390, 1.95, 13), at(Q.handful + 0.3, 385, 396, 1.88, 13), at(Q.corporations1 - 0.12, 386, 400, 1.8, 13),
-  // WHY the pull-back ends before "dictated" and the wide is held only briefly (review): the wide of twelve tiny
-  // people was a dead plateau; it now shows for ~0.6 s, then pushes in on one man and his two puppets while the
-  // strings go taut, and returns to the wide only for "technology" and the turn.
-  at(Q.dictated - 0.4, 760, 520, 1.0), at(Q.dictated - 0.05, 760, 520, 1.0),
-  cut(Q.dictated, 950, 500, 1.3), at(Q.interact + 0.5, 950, 520, 1.45),
-  cut(Q.technology1 - 0.1, 760, 530, 1.04), at(TURN.rules - 0.05, 760, 520, 1.0),
+  // i: WHY (round 5) every change of shot is a hard cut on a word, never a long pull-back (review: the blurred pull
+  // made the new men smear in like a glitch). Close on the first man and his calendar; the wide on "corporations";
+  // in on the masters working their bars on "dictated"; in on the people jerked by their phones on "interact"; the
+  // wide again on "technology", where the two on the right share a smirk.
+  at(0, 400, 425, 1.9, 13), at(Q.corporations1 - 0.04, 404, 430, 1.82, 13),
+  cut(Q.corporations1 - 0.03, 760, 520, 1.0), at(Q.dictated - 0.04, 760, 516, 1.02),
+  // WHY x 1130 and 1.9: the left page's title stays wholly out of this frame (at 1110 its last letters were sliced)
+  cut(Q.dictated - 0.03, 1150, 390, 1.9, 13), at(Q.interact - 0.04, 1154, 386, 1.96, 13),
+  cut(Q.interact - 0.03, 1110, 800, 2.5, 14), at(Q.technology1 - 0.14, 1114, 796, 2.6, 14),
+  cut(Q.technology1 - 0.13, 760, 520, 1.03), at(TURN.rules - 0.05, 760, 515, 1.0),
   // ii: one picture per thing they decided, each a hard cut on its word
   { t: L(1), ...H },
-  cut(Q.computersDo - 0.04, 375, 355, 2.3, 14), at(Q.cost - 0.07, 380, 358, 2.4, 14),
-  // WHY centred right of the laptop: the tag now hangs clear of it, beside the man who sets the price
-  cut(Q.cost - 0.05, 390, 810, 2.1, 14), at(Q.data - 0.07, 392, 814, 2.2, 14),
-  // WHY a push on the hat as the last keepsakes drop in (review: the payoff had no hold and the camera pulled away)
-  cut(Q.data - 0.05, 1190, 610, 1.3), at(Q.personalData, 1220, 610, 1.4), at(TURN.bargain, 1280, 610, 1.6),
-  // iii: the queue; a cut in to the boxes ticking themselves on "accepted"
-  at(L(2), 760, 560, 1.02), at(Q.accepted - 0.14, 745, 575, 1.08),
-  // WHY 1.8 and a little right/lower (review 2026-11-20): at 1.9 the 'terms of service' label was cut off at the edge
-  cut(Q.accepted - 0.12, 720, 735, 1.7), at(TURN.nothing - 0.01, 710, 735, 1.74),
-  // the room: a cut in to the price tags on "subscribe", back out for "own nothing", in to the glass
-  cut(TURN.nothing, 740, 520, 1.06), at(Q.subscribe - 0.07, 750, 515, 1.1),
-  cut(Q.subscribe - 0.05, 410, 480, 1.95, 15), at(Q.own - 0.08, 405, 485, 2.0, 15),
-  cut(Q.own - 0.06, H.x, H.y, H.z), at(Q.costOf - 0.37, 770, 505, 1.03),
-  // WHY wider (was 1.75 on her face): her things now float up and out of the page to a hat in the corner
-  cut(Q.costOf - 0.35, 1170, 400, 1.3), at(TURN.however - 0.02, 1175, 395, 1.4),
-  // iv: WHY a cut to a calm, nearly whole-book framing as the page turns (review 2026-11-20): the fast pull
-  // back during the turn smeared the falling page with motion blur. Then a slow push in while the drop falls.
-  cut(TURN.however, 800, 505, 1.1), at(DROP_LAND, 700, 560, 1.28),
-  // WHY a slow push toward the blot, a small lift on "wonderful": the stillest part of the film is where it turns
-  at(Q.wonderful - 0.1, 660, 560, 1.38), at(Q.wonderful + 0.5, 700, 530, 1.46), at(CUT.hubris - 0.01, 760, 520, 1.4),
+  // WHY y 272: the whole chapter opener sits inside the top of this frame (at 300 its label was sliced by the edge)
+  cut(Q.computersDo - 0.04, 395, 272, 2.45, 14), at(Q.cost - 0.07, 398, 270, 2.5, 14),
+  // the price board: laptop, her, the tag and the man with the stamp in one frame
+  cut(Q.cost - 0.05, 385, 790, 2.5, 14), at(Q.data - 0.07, 387, 786, 2.6, 14),
+  // WHY close on her, the arc and the hat only (review: slices of the neighbouring scenes cluttered the frame)
+  cut(Q.data - 0.05, 1165, 645, 2.35), at(TURN.bargain - 0.02, 1170, 642, 2.45),
+  // iii: the wide as the page turns (a cut, so the falling leaf is not smeared), in on the front of the queue and the
+  // whole man at his lectern on "accepted" (review BLOCKER: his head was cut off by the frame)
+  cut(TURN.bargain - 0.01, 760, 520, 1.02), at(Q.accepted - 0.14, 770, 540, 1.08),
+  cut(Q.accepted - 0.12, 1080, 660, 2.4), at(TURN.nothing - 0.01, 1086, 656, 2.48),
+  // the room fills the frame; in on the tags for "subscribe"; back out for "own nothing" with the right page clear
+  // for the headline; in on her and "free" for "the cost of convenience", pushing to her face as her smile goes
+  cut(TURN.nothing, 420, 520, 1.45), at(Q.subscribe - 0.07, 425, 515, 1.5),
+  cut(Q.subscribe - 0.05, 380, 560, 1.75, 15), at(Q.own - 0.08, 384, 556, 1.8, 15),
+  cut(Q.own - 0.06, 590, 540, 1.3), at(Q.costOf - 0.37, 585, 545, 1.34),
+  cut(Q.costOf - 0.35, 430, 650, 2.3), at(Q.convenience, 400, 700, 2.6), at(TURN.however - 0.02, 375, 765, 3.3),
+  // iv: the wide as the page turns; it holds the chapter title while the drop falls the height of the frame, then
+  // pushes in on the pen (taking the title out of frame) and eases back a little on "wonderful" so the pen can rise
+  cut(TURN.however, 760, 505, 1.05), at(TURN.however + TURN_DUR + 0.2, 640, 470, 1.15), at(DROP_LAND, 520, 450, 1.32),
+  at(Q.wonderful - 0.1, 440, 560, 1.75), at(Q.wonderful + 0.6, 470, 590, 1.5), at(CUT.hubris - 0.01, 480, 590, 1.48),
   // v: a hard cut on "hubris" (hats out of the page), the inkwell, the quill rising, the chart, the snatch
   // WHY framed on the page, not on the desk (it was 30% bare felt): the men left of centre, their desk at right,
   // and the frame's top free for the hats to grow out of

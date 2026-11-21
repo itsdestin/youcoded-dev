@@ -149,7 +149,17 @@ type HatProps = {
   pocket?: boolean;        // a waistcoat pocket, for the coin
   enter?: Enter;
   hatSx?: number;          // the hat's width (squash and stretch as it grows)
+  // WHY these three (round 5 review: the men were six identical, faceless, still cut-outs): all optional, so every
+  // existing call draws exactly as before. `face` gives one man a character; `hands` puts his two hands at any point
+  // (his own coordinates, feet at 0,0) with the arms drawn from the shoulders, so a scene can make him work a
+  // control bar, carry a padlock or hold a hat out; `hat: false` leaves his head bare (he is holding the hat).
+  face?: Face;
+  hands?: [number, number][];
+  hat?: boolean;
 };
+export type Face = 'smug' | 'monocle' | 'cigar' | 'moustache' | 'grin';
+/** One line-weight system for chapters i-iv (review: floors, tables, ledges and tags were each a different weight). */
+export const W = { outline: 3.4, detail: 2.2, ground: 2.6 };
 export const HatFigure: React.FC<HatProps> = (props) => {
   const { enter = 'draw', a, b, x, y, s = 1, crown = 78 } = props;
   if (enter !== 'draw') {
@@ -157,7 +167,7 @@ export const HatFigure: React.FC<HatProps> = (props) => {
   }
   return <HatFigureInk {...props} />;
 };
-const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', fist = 0, pocket = false, hatSx = 1 }) => {
+const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', fist = 0, pocket = false, hatSx = 1, face, hands: handsAt, hat = true }) => {
   const e = b ?? a + 1;
   const k = (i: number) => a + (e - a) * i;  // stagger inside the drawing window
   // WHY a solid pale ink, not transparency (review 2026-11-20): drawn see-through, the faded handful let the
@@ -185,6 +195,15 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
     grab: [[54, -252], [98, -226]], pat: [[-42, -90], [22, -108]], shove: [[-42, -90], [86, -58]], stretch: [[-42, -90]],
   };
   const hatY = -212 + drop * 34;      // slides down over the faceless head
+  if (handsAt) {
+    // WHY a soft elbow bend toward the outside: a straight shoulder-to-hand line reads as a stick, a bend as an arm
+    arms[pose] = handsAt.map(([hx, hy], i) => {
+      const sx = i === 0 ? -20 : 20;
+      const mx = (sx + hx) / 2 + (i === 0 ? -16 : 16), my = (-168 + hy) / 2 + 8;
+      return `M ${sx} -168 Q ${mx} ${my} ${hx} ${hy}`;
+    });
+    hands[pose] = handsAt;
+  }
   return (
     <g transform={`translate(${x} ${y + bob}) scale(${(flip ? -1 : 1) * s} ${s}) rotate(${lean})`}>
       <ellipse cx={0} cy={1} rx={44} ry={6} fill={P.ink} opacity={0.1 * (1 - fade * 0.6)} />
@@ -213,12 +232,44 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
       {eyes === 'coins' && [[-5, -199], [7, -200]].map(([cx, cy], i) => (
         <g key={i}><circle cx={cx} cy={cy} r={6.4} fill={P.sun} stroke={ink} strokeWidth={1.6} /><circle cx={cx} cy={cy} r={3} fill="none" stroke={ink} strokeWidth={1} opacity={0.6} /></g>
       ))}
+      {face && <Appear a={k(0.7)} out={ea}><g transform="rotate(-10 0 -197)"><FaceInk face={face} ink={ink} /></g></Appear>}
       {/* the tall hat */}
-      <g transform={`translate(0 ${hatY}) scale(${hatSx} 1)`}>
+      {hat && <g transform={`translate(0 ${hatY}) scale(${hatSx} 1)`}>
         <Shape d={`M -16 0 L -18.5 ${-crown} Q 0 ${-crown - 4} 18.5 ${-crown} L 16 0 Z`} a={k(0.6)} b={k(0.9)} fill={ink} c={ink} w={3} ea={ea} />
         <Wash d="M -16.4 -9 L -16.9 -19 L 16.9 -19 L 16.4 -9 Z" a={k(0.85)} fill={band ?? inner} ea={ea} />
         <Ink d="M -27 1 Q 0 -5 27 1" a={k(0.75)} b={k(0.95)} w={6} c={ink} ea={ea} />
-      </g>
+      </g>}
+    </g>
+  );
+};
+
+/** A face for one of the handful, drawn on the head (centre 0,-197, about 26 wide). Every one looks down its nose
+ *  with lids half shut: smug is the family resemblance, the prop is the individual. */
+const FaceInk: React.FC<{ face: Face; ink: string }> = ({ face, ink }) => {
+  const st = { stroke: ink, strokeWidth: 2, fill: 'none', strokeLinecap: 'round' as const };
+  // half-shut eyes: a lid line over a small pupil
+  const lid = (cx: number) => <><path d={`M ${cx - 4} -200 Q ${cx} -203 ${cx + 4} -200`} {...st} /><circle cx={cx} cy={-199} r={1.5} fill={ink} /></>;
+  return (
+    <g>
+      {face !== 'monocle' && lid(-5)}
+      {lid(5)}
+      {/* the nose in the air */}
+      <path d="M 12 -197 L 16 -192 L 11 -191" {...st} strokeWidth={1.8} />
+      {face === 'smug' && <path d="M -3 -187 Q 3 -185 8 -189" {...st} />}
+      {face === 'grin' && <path d="M -6 -189 Q 2 -182 10 -189 Z" fill={ink} stroke={ink} strokeWidth={1.4} strokeLinejoin="round" />}
+      {face === 'monocle' && <>
+        <circle cx={-5} cy={-199} r={6} fill="rgba(255,255,255,0.35)" stroke={ink} strokeWidth={2} />
+        <circle cx={-5} cy={-199} r={1.5} fill={ink} />
+        <path d="M -10 -195 Q -16 -180 -10 -168" stroke={ink} strokeWidth={1.2} fill="none" />
+        <path d="M -1 -187 Q 4 -185 8 -188" {...st} />
+      </>}
+      {face === 'cigar' && <>
+        <path d="M 2 -188 L 22 -184" stroke={ink} strokeWidth={4.5} strokeLinecap="butt" />
+        <path d="M 22 -184 L 25 -183.4" stroke="#C9B9A8" strokeWidth={4.5} strokeLinecap="butt" />
+        {/* one lazy curl of smoke, not a cloud */}
+        <path d="M 26 -188 q 5 -6 0 -11 q -5 -5 1 -12" {...st} strokeWidth={1.4} opacity={0.55} />
+      </>}
+      {face === 'moustache' && <path d="M -9 -189 Q -4 -194 1 -190 Q 6 -194 11 -189 Q 13 -186 15 -188 M -9 -189 Q -11 -186 -13 -188" {...st} strokeWidth={2.4} />}
     </g>
   );
 };
@@ -231,6 +282,9 @@ type PersonProps = {
   mood?: 'smile' | 'flat' | 'o'; flip?: boolean; bob?: number; tilt?: number; ea?: number; device?: 'phone' | 'none';
   hairColor?: string;
   enter?: Enter;
+  // WHY optional `look` (round 5): a sideways glance (eyes and mouth shift, in the figure's units) so a queue can turn
+  // its eyes to camera one by one; 0 draws exactly as before
+  look?: number;
 };
 export const Person: React.FC<PersonProps> = (props) => {
   const { enter = 'draw', a, b, x, y, s = 1, bob = 0 } = props;
@@ -239,7 +293,7 @@ export const Person: React.FC<PersonProps> = (props) => {
   }
   return <PersonInk {...props} />;
 };
-const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, hair = 'tuft', pose = 'down', mood = 'smile', flip, bob = 0, tilt = 0, ea, device = 'none', hairColor }) => {
+const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, hair = 'tuft', pose = 'down', mood = 'smile', flip, bob = 0, tilt = 0, ea, device = 'none', hairColor, look = 0 }) => {
   const e = b ?? a + 0.7;
   const k = (i: number) => a + (e - a) * i;
   const hc = hairColor ?? P.ink;
@@ -270,12 +324,12 @@ const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, ha
       {hair === 'curly' && <Ink d="M -16 -92 q 3 -9 9 -8 q 2 -8 9 -5 q 6 -6 10 1 q 7 1 5 9" a={k(0.6)} b={k(0.85)} w={4} c={hc} ea={ea} />}
       {hairD[hair] && (hair === 'tuft' ? <Ink d={hairD[hair]!} a={k(0.6)} b={k(0.85)} w={2.6} c={hc} ea={ea} />
         : <Shape d={hairD[hair]!} a={k(0.6)} b={k(0.85)} fill={hc} w={2} c={hc} ea={ea} />)}
-      <Appear a={k(0.75)} out={ea}>
+      <Appear a={k(0.75)} out={ea}><g transform={`translate(${look} 0)`}>
         <circle cx={-6} cy={-86} r={2.3} fill={P.ink} /><circle cx={6} cy={-86} r={2.3} fill={P.ink} />
         {mood === 'smile' && <path d="M -5 -78 Q 0 -74 5 -78" stroke={P.ink} strokeWidth={2} fill="none" strokeLinecap="round" />}
         {mood === 'flat' && <path d="M -4 -77 L 4 -77" stroke={P.ink} strokeWidth={2} strokeLinecap="round" />}
         {mood === 'o' && <circle cx={0} cy={-76} r={2.6} fill="none" stroke={P.ink} strokeWidth={1.8} />}
-      </Appear>
+      </g></Appear>
     </g>
   );
 };
@@ -339,9 +393,12 @@ export const PriceTag: React.FC<{ x: number; y: number; s?: number; at: number; 
 };
 
 /** One of the person's things: a small framed photo, a letter, a map pin, a heart, a calendar page. */
-export type Keepsake = 'photo' | 'letter' | 'pin' | 'heart' | 'calendar';
-export const KeepsakeIcon: React.FC<{ kind: Keepsake; x: number; y: number; s?: number; r?: number; color?: string }> = ({ kind, x, y, s = 1, r = 0, color = P.paper }) => {
-  const st = { stroke: P.ink, strokeWidth: 2.4, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const };
+// WHY the last four (round 5 review: envelopes, hearts and map pins are an app icon set, not anyone's life): a family
+// photo with the dog, a diary with a heart clasp, a house key and a doctor's note are things a person would miss.
+export type Keepsake = 'photo' | 'letter' | 'pin' | 'heart' | 'calendar' | 'family' | 'diary' | 'housekey' | 'note';
+export const KeepsakeIcon: React.FC<{ kind: Keepsake; x: number; y: number; s?: number; r?: number; color?: string; w?: number }> = ({ kind, x, y, s = 1, r = 0, color = P.paper, w = 2.4 }) => {
+  // `w`: stroke width in the icon's own units; pass 2.4 / s to keep the book's line weight at any size
+  const st = { stroke: P.ink, strokeWidth: w, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const };
   return (
     <g transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>
       {kind === 'photo' && <><rect x={-18} y={-14} width={36} height={28} rx={2} fill={color} {...st} /><path d="M -14 9 L -4 -2 L 3 5 L 8 0 L 14 9" fill="none" {...st} /><circle cx={8} cy={-6} r={3} fill={P.ink} /></>}
@@ -349,6 +406,27 @@ export const KeepsakeIcon: React.FC<{ kind: Keepsake; x: number; y: number; s?: 
       {kind === 'pin' && <><path d="M 0 16 C -14 0 -14 -16 0 -16 C 14 -16 14 0 0 16 Z" fill={color} {...st} /><circle cx={0} cy={-5} r={4.5} fill="none" {...st} /></>}
       {kind === 'heart' && <path d="M 0 13 C -22 -2 -14 -18 0 -8 C 14 -18 22 -2 0 13 Z" fill={color} {...st} />}
       {kind === 'calendar' && <><rect x={-16} y={-15} width={32} height={30} rx={3} fill={color} {...st} /><path d="M -16 -6 L 16 -6 M -8 -19 L -8 -11 M 8 -19 L 8 -11" fill="none" {...st} /><path d="M -8 3 h 4 M 3 3 h 4 M -8 10 h 4" {...st} /></>}
+      {kind === 'family' && <>
+        <rect x={-20} y={-16} width={40} height={32} rx={1.5} fill={color} {...st} />
+        {/* two heads and shoulders, and a dog at their feet */}
+        <path d="M -11 12 Q -11 2 -6 2 Q -1 2 -1 12 M 2 12 Q 2 0 8 0 Q 14 0 14 12" fill="none" {...st} />
+        <circle cx={-6} cy={-3} r={3.6} fill={color} {...st} /><circle cx={8} cy={-6} r={4} fill={color} {...st} />
+        <path d="M -17 12 L -16 7 L -12 7 L -11 10" fill="none" {...st} />
+      </>}
+      {kind === 'diary' && <>
+        <rect x={-15} y={-19} width={30} height={38} rx={2.5} fill={P.wash} {...st} />
+        <path d="M -10 -19 L -10 19" fill="none" {...st} />
+        <path d="M 15 -3 L 6 -3 L 6 5 L 15 5" fill={color} {...st} />
+        <path d="M 3 -11 C -3 -16 -7 -9 3 -4 C 13 -9 9 -16 3 -11 Z" fill={P.ink} stroke="none" transform="translate(0 -2)" />
+      </>}
+      {kind === 'housekey' && <>
+        <circle cx={-11} cy={0} r={8} fill={color} {...st} /><circle cx={-11} cy={0} r={2.4} fill="none" {...st} />
+        <path d="M -3 0 L 19 0 L 19 6 M 13 0 L 13 5 M 8 0 L 8 4" fill="none" {...st} />
+      </>}
+      {kind === 'note' && <>
+        <path d="M -14 -18 L 8 -18 L 14 -12 L 14 18 L -14 18 Z" fill={color} {...st} />
+        <path d="M -5 -11 h 6 M -2 -14 v 6 M -8 -1 h 16 M -8 5 h 16 M -8 11 h 10" fill="none" {...st} />
+      </>}
     </g>
   );
 };

@@ -5,6 +5,7 @@ import { E, LAST_WORD_END, T } from './take1c-cues';
 
 export const Q = {
   // (1) the handful
+  for: T('for', 'For more than'),
   decade: T('decade', 'a *decade, a small'),
   handful: T('handful', 'small *handful'),
   corporations1: T('corporations1', 'of corporations have'),
@@ -13,6 +14,8 @@ export const Q = {
   technology1: T('technology1', 'your *technology.'),
   // (2) what they decided
   they: T('they', 'They decided'),
+  decided: T('decided', 'They *decided'),
+  do: T('do', 'could *do,'),
   computersDo: T('computersDo', 'your *computers could do,'),
   cost: T('cost', 'what it would cost,'),
   costWord: T('costWord', 'would *cost,'),
@@ -21,6 +24,7 @@ export const Q = {
   // (3) the bargain
   andWeAll: T('andWeAll', 'And we all...'),
   accepted: T('accepted', 'just *accepted it.'),
+  it: T('it', 'accepted *it. We'),
   weAccepted: T('weAccepted', 'We accepted that'),
   subscribe: T('subscribe', 'would *subscribe to everything'),
   everything1: T('everything1', 'to *everything and own'),
@@ -116,7 +120,9 @@ export const TURN = {
   // WHY the cover is already open at frame 0: a dark cover was a dim, slow first second; the film now opens
   // straight on a bright page in close-up (the book is revealed by the pull-back).
   cover: -1.5,
-  rules: Q.they - 0.42,
+  // WHY 0.55 (was 0.42; round 5 review BLOCKER: "They decided" was spoken over a near-blank falling page): the leaf
+  // now lifts in the breath after "technology." and has landed, fully printed, as she says "decided"
+  rules: Q.they - 0.55,
   bargain: Q.andWeAll - 0.4,
   // WHY cuts, not turns, inside a chapter: a page turn marks a new chapter; within one, the film cuts hard on
   // the stressed word, which is what gives it an editor's rhythm instead of one long camera move.
