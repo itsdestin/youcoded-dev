@@ -31,17 +31,13 @@ export const LAST_WORD_END = WORDS[WORDS.length - 1].end;
 export const Q = {
   // (1) For more than a decade, a small handful of corporations have dictated how you interact with your technology.
   start: 0,
-  for1: at('*For more than'),
-  decade: at('a *decade,'),
-  small: at('a *small handful'),
-  handful: at('small *handful of'),
+  handful: at('a *small handful'),
   corporations: at('handful of *corporations'),
   dictated: at('have *dictated'),
   interact: at('you *interact'),
   technology1: at('your *technology.'),
   // (2) They decided what your computers could do, what it would cost, and what happened with your personal data.
   decided: at('*They decided'),
-  decidedWord: at('They *decided'),
   computers1: at('your *computers could'),
   could: at('computers *could do,'),
   couldDo: at('could *do,'),
@@ -68,7 +64,6 @@ export const Q = {
   something: at('*something truly'),
   truly: at('something *truly'),
   wonderful: at('truly *wonderful'),
-  happened: at('wonderful *happened.'),
   happenedEnd: end('wonderful *happened.'),
   // (5) Blinded by their own hubris, these corporations created a new kind of technology: artificial intelligence. ...
   blinded: at('*Blinded by'),
@@ -97,9 +92,6 @@ export const Q = {
   aTool: at('*a tool that'),
   software: at('make *software,'),
   scarce: at('the *ever-scarce'),
-  foundation: at('ever-scarce *foundation'),
-  about: at('bring *about'),
-  anyone: at('for *anyone who'),
   monopoliesEnd: end('these *monopolies,'),
   monopolies1: at('these *monopolies,'),
   forAnyone: at('*for anyone who'),
@@ -113,13 +105,7 @@ export const Q = {
   ourData: at('*And what happens'),
   whatHappens: at('*what happens with'),
   computers2: at('our *computers can'),
-  canWord: at('computers *can do.'),
-  doWord: at('can *do.'),
   costsWord: at('it *costs.'),
-  happensWord: at('what *happens with'),
-  withWord: at('happens *with our'),
-  ourWord: at('with *our data.'),
-  dataWord: at('our *data.'),
   ourDataEnd: end('our *data.'),
   // (8) It's time to free ourselves from the tech monopolies of the past.
   free: at("*It's time to free"),
@@ -128,9 +114,7 @@ export const Q = {
   past: at('the *past.'),
   // (9) It's time, at long, long last... to open source everything.
   itsTime: at("*It's time, at"),
-  long1: at('*long, long last...'),
   longLast: at('long, *long last...'),
-  long2End: end('long, *long last...'),
   open: at('to *open source'),
   everythingEnd: end('source *everything.'),
 } as const;

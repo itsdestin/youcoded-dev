@@ -1,24 +1,19 @@
 // Take 1B: what is drawn ON the screens. Two kinds of picture:
-//  1. The SAME screen: one bland, tidy, invented layout every device shows, because a few companies decided it
-//     (deliberately NOT youcoded; their "AI" tile is invented too).
-//  2. The REAL youcoded window, as a library of real stills in real themes (section 2 below). Nothing of the
-//     app's own interface is drawn in this file: the owner (2026-11-20) wanted every "someone's own" screen to be
-//     a real window, and the invented "ask" bar and drawn mini-apps are gone.
+//  1. The SAME screen: one bland, tidy layout every device shows, because a few companies decided it.
+//  2. The person's OWN things: small apps people made by asking (brand guide §8: in an ad, what a person
+//     makes may be staged). Each one is deliberately its own world, with its own colours and type, so the
+//     final wall reads as "everyone's copy is different" at a glance.
+//  3. The REAL youcoded window, as single frames of recordings of the running app (take1b-stills.mjs),
+//     wearing real community themes. WHY: brand guide section 8 says the app's own interface is never drawn;
+//     the reviewer (2026-11-20) caught the old drawn pastel "ask" bar as exactly that, and the owner did not
+//     like the pastel themes. Nothing of the app is drawn in this file any more.
 import React from 'react';
 import { Img, staticFile } from 'remotion';
 import { DMSANS, OUTFIT } from '../brand';
 import { WORLD } from './take1b-world';
-import ROWS_JSON from '../../public/stills/r4/rows.json';
-import GLOW_JSON from './take1b-glow.json';
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
 const smooth = (x: number) => { const t = cl(x); return t * t * (3 - 2 * t); };
-/** Blends two #rrggbb colours. WHY: tile colours change by blending over the same 6 frames as the layout moves, never a hard swap */
-const mixHex = (a: string, b: string, p: number) => {
-  const A = parseInt(a.slice(1), 16), B = parseInt(b.slice(1), 16);
-  const ch = (sh: number) => Math.round(((A >> sh) & 255) + (((B >> sh) & 255) - ((A >> sh) & 255)) * p);
-  return `rgb(${ch(16)},${ch(8)},${ch(0)})`;
-};
 /** One piece of a screen arriving during a build: `p` is the build (0..1), `i` its order among `n`. */
 const rise = (p: number, i: number, n: number, k: number): React.CSSProperties => {
   // WHY this shape: piece i arrives while the build passes i/(n+1) .. (i+1)/(n+1), so pieces land one after another
@@ -84,10 +79,8 @@ export const PhotoThumb: React.FC<{ w: number; h: number; v: number; r: number }
 };
 
 /** The three personal things on the same screen. */
-export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: number; k: number; old?: boolean }> = ({ kind, w, h, k, old = false }) => {
-  // WHY a bevelled, gradient card in the old skin: part of the ten-year-old look the wall starts in
-  const base: React.CSSProperties = { width: w, height: h, background: old ? 'linear-gradient(180deg,#FFFFFF,#E8ECF0)' : S.card, borderRadius: (old ? 2 : 3) * k, boxSizing: 'border-box', overflow: 'hidden', fontFamily: DMSANS,
-    border: old ? `${0.3 * k}px solid #B9C1CA` : undefined, boxShadow: old ? `0 ${0.4 * k}px ${0.8 * k}px rgba(0,0,0,0.2)` : undefined };
+export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: number; k: number }> = ({ kind, w, h, k }) => {
+  const base: React.CSSProperties = { width: w, height: h, background: S.card, borderRadius: 3 * k, boxSizing: 'border-box', overflow: 'hidden', fontFamily: DMSANS };
   if (kind === 'photo') {
     const g = 2 * k, tw = (w - g * 4) / 3;
     return (
@@ -104,7 +97,7 @@ export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: n
       <div style={{ width: 7 * k, height: 7 * k, borderRadius: 7 * k, background: '#E7B7A3', flex: 'none' }} />
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize: 3.6 * k, fontWeight: 700, color: S.ink }}>Sam</div>
-        <div style={{ fontSize: 3.3 * k, color: S.ink2, whiteSpace: 'nowrap' }}>running late!</div>
+        <div style={{ fontSize: 3.3 * k, color: S.ink2, whiteSpace: 'nowrap' }}>running late, save me a seat x</div>
       </div>
     </div>
   );
@@ -116,96 +109,18 @@ export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: n
   );
 };
 
-/** A padlock badge. `p` 0..1 is its arrival over 0.4 s. WHY a small solid badge in the tile's corner (round 7 reviewer: big brass
- *  emoji-style padlocks filling muddy tiles read as clip art): it is how a real system marks something you may not use. It drops in
- *  over 4 frames from a little above and larger, then settles; `off` 0..1 knocks it loose and away (line 7, when the tile is freed). */
+/** A padlock. `p` 0..1 is its arrival: it drops in a little large and shakes as it snaps shut. */
 const Lock: React.FC<{ s: number; p: number; off: number }> = ({ s, p, off }) => {
-  const d = cl(p / 0.33);                       // 4 frames of a 0.4 s arrival
-  const drop = d < 1 ? (1 - d * d) : 0;
-  const settle = d >= 1 ? Math.sin(Math.PI * cl((p - 0.33) / 0.17)) : 0;
-  const sc = 1 + 0.35 * drop - 0.06 * settle;
+  const a = smooth(p * 2.5);
+  const shake = p > 0.15 && p < 1 ? Math.sin((p - 0.15) * 46) * 9 * (1 - p) : 0;
   return (
-    <div style={{ width: s, height: s, borderRadius: s * 0.3, background: '#2A2034', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      opacity: (d > 0 ? 1 : 0) * (1 - smooth(off * 1.6)), boxShadow: `0 ${s * 0.08}px ${s * 0.18}px rgba(30,14,44,0.45)`,
-      transform: `translate(0, ${-drop * s * 0.6 + off * s * 1.4}px) rotate(${off * 50}deg) scale(${sc})` }}>
-      <svg width={s * 0.62} height={s * 0.62} viewBox="0 0 24 24">
-        <path d="M7.6 11V8.2a4.4 4.4 0 0 1 8.8 0V11" stroke="#F3EAF9" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-        <rect x="4.5" y="10.4" width="15" height="11" rx="2.6" fill="#F3EAF9" />
-      </svg>
-    </div>
+    <svg width={s} height={s} viewBox="0 0 24 24" style={{ opacity: a * (1 - smooth(off * 1.6)), transform: `translateY(${off * s * 1.4}px) rotate(${shake + off * 50}deg) scale(${1.35 - 0.35 * a})`, filter: 'drop-shadow(0 1px 1px rgba(40,20,60,0.35))' }}>
+      <rect x="4.5" y="10.5" width="15" height="11" rx="2.6" fill="#43354E" />
+      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="#43354E" strokeWidth="2.4" fill="none" />
+      <circle cx="12" cy="15.6" r="1.6" fill="#E7E2EC" />
+    </svg>
   );
 };
-
-/** One of the five plain, wordless marks of "a small handful of corporations" (no real logos): circle, square, triangle, ring, bar. */
-export const CorpMark: React.FC<{ i: number; s: number; color: string }> = ({ i, s, color }) => (
-  <svg width={s} height={s} viewBox="0 0 20 20" style={{ display: 'block' }}>
-    {i === 0 && <circle cx="10" cy="10" r="8.5" fill={color} />}
-    {i === 1 && <rect x="2" y="2" width="16" height="16" rx="2.5" fill={color} />}
-    {i === 2 && <path d="M10 1.8 L18.6 17.6 H1.4 Z" fill={color} strokeLinejoin="round" />}
-    {i === 3 && <circle cx="10" cy="10" r="7" fill="none" stroke={color} strokeWidth="3.6" />}
-    {i === 4 && <rect x="1.5" y="6.5" width="17" height="7" rx="3.5" fill={color} />}
-  </svg>
-);
-
-/** Which of the five marks a device's generic screen carries. WHY dealt along each shelf and offset by two per shelf: neighbours on a
- *  shelf, and the screens above and below, never carry the same mark, so all five are seen together in any close-up of three or four */
-const MARKS: Map<string, number> = (() => {
-  const m = new Map<string, number>();
-  for (const r of new Set(WORLD.devs.map((d) => d.row))) {
-    WORLD.devs.filter((d) => d.row === r).sort((a, b) => a.cx - b.cx).forEach((d, i) => m.set(d.id, (i + r * 2 + 50) % 5));
-  }
-  return m;
-})();
-export const markFor = (id: string) => MARKS.get(id) ?? 0;
-
-// WHY a new tile in their OWN app instead of an "AI" app icon (round 8 reviewer BLOCKER: white "AI" letters on a squircle was the most
-// literal stock picture of artificial intelligence, and it broke the film's own language): their new technology is simply one more card
-// in the same locked, same-everywhere app the opening taught, with the same rounded white card style. It is labelled only "assistant",
-// it has an empty text field with a caret (the caret is what later escapes), a padlock like every other locked thing, and a price.
-/** The big card's place on a wide (TV) screen, as fractions of the screen: it covers the photo / message / note blocks of layout 2. */
-export const NT = { x: 0.25, y: 0.17, w: 0.71, h: 0.4 };
-/** Its text field, as fractions of the card. The caret sits CARET_X into the card, centred in the field. */
-export const NT_FIELD = { x: 0.055, y: 0.47, w: 0.56, h: 0.36 };
-export const NT_CARET_X = NT_FIELD.x + 0.035;
-/** One step of a build: 0 before `a`, eased to 1 over `d` seconds. */
-const step01 = (t: number, a: number, d = 0.28) => smooth((t - a) / d);
-/** The big new card on the TV, building itself in steps: card, then field (with its caret), then padlock.
- *  `t` is the film time; the step times come from the film's phrase cues. `caretOn` blinks the field's caret. */
-export const NewTile: React.FC<{ w: number; h: number; t: number; card: number; field: number; lock: number; caretOn: boolean; caretGone: boolean }> = ({ w, h, t, card, field, lock, caretOn, caretGone }) => {
-  const c = step01(t, card, 0.3), f = step01(t, field, 0.3);
-  if (c <= 0) return null;
-  const k = Math.min(w, h) / 100;
-  const fx = NT_FIELD.x * w, fy = NT_FIELD.y * h, fw = NT_FIELD.w * w, fh = NT_FIELD.h * h;
-  // WHY a slight overshoot on the card only: it "arrives" like the other blocks do when the layout is dictated, then the
-  // field and padlock land on it one after another, each on its own spoken word
-  const pop = 0.94 + 0.06 * c + 0.025 * Math.sin(Math.PI * c);
-  return (
-    <div style={{ position: 'absolute', inset: 0, opacity: Math.min(1, c * 1.6), transform: `scale(${pop})`, transformOrigin: '50% 60%', background: S.card, borderRadius: 3.2 * k,
-      boxShadow: `0 ${1.4 * k}px ${4 * k}px rgba(40,20,60,${0.22 * c})`, fontFamily: DMSANS, overflow: 'visible' }}>
-      <div style={{ position: 'absolute', left: NT_FIELD.x * w, top: 0.1 * h, fontSize: 21 * k, fontWeight: 800, letterSpacing: '-0.035em', color: S.ink }}>assistant</div>
-      <div style={{ position: 'absolute', left: fx, top: fy, width: fw, height: fh, borderRadius: fh / 2, background: S.bg, border: `${0.5 * k}px solid ${S.line}`, boxSizing: 'border-box',
-        opacity: f, transform: `translateY(${(1 - f) * 3 * k}px)` }}>
-        {/* the caret: a thin solid text cursor, the one thing on this card that will get away from them */}
-        {!caretGone && <div style={{ position: 'absolute', left: (NT_CARET_X - NT_FIELD.x) * w - 0.8 * k, top: fh * 0.19 - 0.5 * k, width: 1.6 * k, height: fh * 0.62, borderRadius: 0.8 * k, background: '#9750AA', opacity: caretOn ? 1 : 0 }} />}
-      </div>
-      {/* the padlock sits at the field's end, like a locked input */}
-      {lock > 0 && <div style={{ position: 'absolute', left: fx + fw + 3 * k, top: fy + fh / 2 - 7.5 * k }}><Lock s={15 * k} p={lock} off={0} /></div>}
-    </div>
-  );
-};
-
-/** The corporations' AI: one plain, heavy, near-black tile. WHY so plain: it is theirs (invented, not youcoded) and the
- *  whole point of it is the price hung on it; the second letter is a bare bar so it can lift off as the caret. */
-export const AiTile: React.FC<{ s: number; caret?: number; bar?: boolean }> = ({ s, caret = 1, bar = true }) => (
-  <div style={{ width: s, height: s, borderRadius: s * 0.24, background: 'linear-gradient(180deg,#2B2036,#171020)', boxShadow: `0 ${s * 0.06}px ${s * 0.18}px rgba(20,8,32,0.45), inset 0 ${s * 0.012}px 0 rgba(255,255,255,0.16)`,
-    display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: s * 0.5, letterSpacing: '-0.03em', color: '#F7F1FA', flex: 'none' }}>
-    {/* WHY a whole "AI" with the blinking bar beside it (reviewer: the I was the caret, so the word flickered between A and AI):
-        the letters never change; the bar is the separate thing that later escapes */}
-    AI{bar && <span style={{ display: 'inline-block', width: s * 0.06, height: s * 0.36, borderRadius: s * 0.03, background: '#B06CC4', marginLeft: s * AI_GAP, opacity: caret }} />}
-  </div>
-);
-/** the gap between the "I" and the bar, as a fraction of the tile (shared so the film can aim the escaping caret at the bar) */
-export const AI_GAP = 0.1;
 
 export type SameProps = {
   w: number; h: number;
@@ -217,31 +132,13 @@ export type SameProps = {
   lock?: number | number[]; unlock?: number;
   /** 0..1 "Terms have changed" dialog; `accept` 0..1 its button pressed and the dialog gone */
   dialog?: number; accept?: number;
-  /** 0..1 the companies' new "AI" tile stamped onto the screen; `price` 0..1 its $20/mo chip popping on */
+  /** 0..1 the companies' new "ask…" bar stamped onto the screen; `price` 0..1 its $20/mo chip popping on */
   ai?: number; price?: number;
-  /** 0..1 hides the title (a banner or switch is using its row) */
-  hideTitle?: number;
-  /** Round 9 (lines 1-4 reviewer BLOCKER: the decade skin jump and the tiny corner marks were invisible): the opening is a boot.
-   *  `splash` 1 = a full-screen start-up screen showing ONE big corporation mark (`mark`, 0..4) on black; 0 = the app. */
-  splash?: number; mark?: number;
-  /** one person's own arrangement (line 1, "how you interact"): tile `swap.a` lifts and trades places with tile `swap.b`;
-   *  `swap.p` 0..1 is how far they have traded, `swap.lift` 0..1 how high tile a is held */
-  swap?: { a: number; b: number; p: number; lift: number };
-  /** the words in the notice that drops in with `banner` */
-  bannerText?: string;
+  /** 0..1 the "something wonderful" glimpse: the screen hushes and one purple caret blinks; `caret` is the blink */
+  glimpse?: { o: number; caret: boolean };
 };
-/** WHY simple generic line icons on the tiles (lines 1-4 reviewer: blank squares made "what your computers could do" unreadable):
- *  camera, music, pencil, map pin, game pad, download, so a padlock on one reads as "you may not do this". Drawn on a 24 grid. */
-const TILE_ICONS: string[] = [
-  'M4 8.5h3l1.6-2.2h6.8L17 8.5h3v10H4z M12 16.2a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
-  'M9 17.5V6l10-2v11.5 M9 17.5a2.2 2.2 0 1 1-4.4 0 2.2 2.2 0 0 1 4.4 0z M19 15.5a2.2 2.2 0 1 1-4.4 0 2.2 2.2 0 0 1 4.4 0z',
-  'M5 19l1-4 9.5-9.5 3 3L9 18z M13.5 7.5l3 3',
-  'M12 20.5s-6-5.6-6-10.3a6 6 0 0 1 12 0c0 4.7-6 10.3-6 10.3z M12 12.4a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z',
-  'M7.5 8h9a4.5 4.5 0 0 1 0 9c-1.6 0-2.4-1.5-4.5-1.5S9.1 17 7.5 17a4.5 4.5 0 0 1 0-9z M8 11v3 M6.5 12.5h3 M15.5 11.6h.01 M17.3 13.4h.01',
-  'M12 4.5v10 M7.8 10.6l4.2 4.2 4.2-4.2 M5 19.5h14',
-];
 
-export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, hideTitle = 0, splash = 0, mark = 0, swap, bannerText = 'Layout updated' }) => {
+export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, price = 0, glimpse }) => {
   const k = Math.min(w, h) / 100;
   const L = sameLayout(w, h, lay);
   const P = L.portrait;
@@ -249,142 +146,80 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
   const g = L.grid;
   const gx = 2.4 * k;
   const tw = (g.w * w - gx * (cols - 1)) / cols, th = (g.h * h - gx * (rows - 1)) / rows;
-  // WHY three colour sets that each click blends into (round 7 reviewer: a 2-frame hop of a few pixels was invisible across the room):
-  // warm pastels first; "dictated" turns every screen's tiles cool and grey-blue in the same 6 frames as the blocks move; the second
-  // order turns them again. One click, every screen, the same new look.
-  // WHY round 9: the film now opens straight into layout 1 (the boot splash replaced the first reorder), so set 1 is the warm one the
-  // viewer first sees, and the single order on "technology" turns every screen cool and grey-blue
-  const HUE_SETS = [
-    ['#EFA98B', '#F2C57C', '#E89AA8', '#F0B98E', '#E7A3C4', '#F4D08A'],
-    ['#EFA98B', '#F2C57C', '#E89AA8', '#F0B98E', '#E7A3C4', '#F4D08A'],
-    ['#7FA6CF', '#B9A3D8', '#86B8AE', '#A7B5C6', '#9C9FD9', '#8DB9D3'],
-  ];
-  const seg = Math.max(0, Math.min(1, Math.floor(lay)));
-  const tileHues = HUE_SETS[seg].map((c, i) => mixHex(c, HUE_SETS[Math.min(2, seg + 1)][i], smooth(lay - seg)));
+  const tileHues = ['#DCD3E6', '#D3C9DF', '#E2DBEA', '#CFC4DC', '#D9D0E4', '#CCC1D9'];
   const lockOf = (i: number) => (Array.isArray(lock) ? lock[i] ?? 0 : i % 3 !== 0 ? lock : 0);
-  // WHY one decisive press (round 7 reviewer: a 7% wobble nobody could see): `accept` runs 0..1 over half a second. The button darkens and
-  // sinks in its first 2 frames, holds pressed, then the whole dialog drops 12 px and fades
-  const pressed = accept > 0 ? 1 : 0;
-  const sink = cl(accept / 0.13);
-  // WHY a press-and-dismiss in 4 frames (round 9 reviewer: the 5-frame cross-fade left "Our terms have changed" as a double exposure over
-  // the page): once pressed, the dialog shrinks to 0.94 and drops a little while it goes, like a real sheet being dismissed
-  const leave = smooth((accept - 0.3) / 0.24);
-  const dlg = smooth(dialog) * (1 - leave);
-  const titleO = 1 - smooth(Math.max(hideTitle, 0) * 5);
+  const dlg = smooth(dialog) * (1 - smooth((accept - 0.3) * 3));
   return (
     <div style={{ position: 'absolute', inset: 0, background: S.bg, overflow: 'hidden', fontFamily: DMSANS }}>
       {/* status row */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: (P ? 0.065 : 0.09) * h, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${5 * k}px`, fontSize: 3.2 * k, fontWeight: 700, color: S.ink }}>
         <span>9:41</span><span style={{ display: 'flex', gap: 1 * k }}>{[0, 1, 2].map((i) => <span key={i} style={{ width: 2 * k, height: 2 * k, borderRadius: k, background: S.ink2 }} />)}</span>
       </div>
-      {/* WHY real words in the sidebar (round 7 reviewer: five grey bars read as a wireframe, not a product) */}
       {!P && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 0.2 * w, background: '#ECE6F2' }}>
-        {['Home', 'Photos', 'Messages', 'Settings'].map((l, i) => <div key={l} style={{ position: 'absolute', left: 4 * k, top: 0.19 * h + i * 0.1 * h, fontSize: 3.4 * k, fontWeight: i === 0 ? 800 : 600, color: S.ink, opacity: i === 0 ? 0.62 : 0.35, whiteSpace: 'nowrap' }}>{l}</div>)}
+        {[0, 1, 2, 3, 4].map((i) => <div key={i} style={{ position: 'absolute', left: 4 * k, top: (0.17 + i * 0.1) * h, width: 0.2 * w - 8 * k, height: 4 * k, borderRadius: 2 * k, background: i === 0 ? S.tile2 : S.tile }} />)}
       </div>}
-      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink, opacity: titleO }}>Good morning</div>
-      {/* WHY a neutral plan chip and no corporation mark in the app (round 9 reviewer BLOCKER: small black triangles and rings in every
-          corner read as warning and radio icons); who decides is shown once, big, on the boot splash */}
-      <div style={{ position: 'absolute', right: (P ? 0.07 : 0.05) * w, top: (P ? 0.085 : 0.1) * h, padding: `${0.6 * k}px ${2 * k}px`, borderRadius: 4 * k, background: S.tile, color: S.ink, fontSize: 2.8 * k, fontWeight: 700, opacity: titleO }}>Standard</div>
+      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink }}>Good morning</div>
       {(['photo', 'msg', 'note'] as const).map((kind) => (
         <div key={kind} style={box(L[kind], w, h)}><OwnCard kind={kind} w={L[kind].w * w} h={L[kind].h * h} k={k} /></div>
       ))}
       {[0, 1, 2, 3, 4, 5].map((i) => {
-        let x = g.x * w + (i % cols) * (tw + gx);
-        const y = g.y * h + Math.floor(i / cols) * (th + gx);
+        const x = g.x * w + (i % cols) * (tw + gx), y = g.y * h + Math.floor(i / cols) * (th + gx);
         const lk = lockOf(i);
         const lo = smooth(lk * 2.5) * (1 - smooth(unlock));
-        // one person's own arrangement: tile a is picked up and trades places with tile b (line 1, "how you interact")
-        const held = swap && i === swap.a ? swap.lift : 0;
-        if (swap && i === swap.a) x += (swap.b - swap.a) * (tw + gx) * swap.p;
-        if (swap && i === swap.b) x += (swap.a - swap.b) * (tw + gx) * swap.p;
-        const s = Math.min(tw, th);
-        // WHY a locked tile keeps its own colour at 30% saturation and its icon dims (round 7 reviewer: the old lock turned tiles to mud)
         return (
           <div key={i} style={{ position: 'absolute', left: x, top: y, width: tw, height: th, borderRadius: 3 * k, background: tileHues[i], display: 'flex', alignItems: 'center', justifyContent: 'center',
-            filter: lo > 0 ? `saturate(${1 - 0.7 * lo}) brightness(${1 - 0.04 * lo})` : undefined, overflow: 'visible', zIndex: held > 0 ? 2 : undefined,
-            transform: held > 0 ? `translateY(${-held * 1.2 * k}px) scale(${1 + 0.06 * held})` : undefined,
-            boxShadow: held > 0 ? `0 ${held * 2.4 * k}px ${held * 4 * k}px rgba(40,20,60,${0.35 * held})` : undefined }}>
-            <svg width={s * 0.46} height={s * 0.46} viewBox="0 0 24 24" style={{ opacity: 0.95 - 0.55 * lo }}>
-              <path d={TILE_ICONS[i]} fill="none" stroke="#FFFFFF" strokeWidth={2.1} strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {lk > 0 && <div style={{ position: 'absolute', right: -tw * 0.06, top: -tw * 0.06 }}><Lock s={Math.max(tw, th) * 0.3} p={lk} off={unlock} /></div>}
+            filter: lo > 0 ? `saturate(${1 - lo}) brightness(${1 - 0.1 * lo})` : undefined }}>
+            <div style={{ width: Math.min(tw, th) * 0.42, height: Math.min(tw, th) * 0.42, borderRadius: Math.min(tw, th) * 0.14, background: 'rgba(255,255,255,0.55)', opacity: 1 - 0.6 * lo }} />
+            {lk > 0 && <div style={{ position: 'absolute' }}><Lock s={Math.min(tw, th) * 0.62} p={lk} off={unlock} /></div>}
           </div>
         );
       })}
-      {/* WHY a small notice that drops in from the top edge (round 7 reviewer: the old dark pill covered the title row): "Good morning" stays readable under it */}
-      {banner > 0 && <div style={{ position: 'absolute', left: '50%', top: 0.008 * h, height: (P ? 0.045 : 0.06) * h, padding: `0 ${4 * k}px`, borderRadius: 4 * k, background: '#43354E', color: '#F3EAF9',
-        fontSize: 3.2 * k, fontWeight: 800, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', boxShadow: `0 ${k}px ${3 * k}px rgba(30,14,44,0.35)`,
-        transform: `translate(-50%, ${(smooth(banner / 0.28) - 1) * 12 * k}px)`, opacity: 1 - smooth((banner - 0.85) * 6) }}>{bannerText}</div>}
-      {/* their machine's tile, stamped on top of everything, with its price beside it (the same tile as on the big screen).
-          WHY a plain tile and no bar: the corporations' AI is theirs, not youcoded, and not somewhere you type */}
-      {/* WHY in place, never a sticker (round 8 reviewer: dark "AI" badges pasted on every screen read as clip art and cluttered the
-          payoff shots): their new card simply replaces the note card on every screen, same size, same card style, with a padlock, so
-          the whole wall changes in a ripple without anything being pasted on top. `price` is no longer drawn here (the TV carries it). */}
-      {ai > 0 && (() => {
-        const r = L.note;
-        const e = smooth(ai);
-        const fs = (P ? 3.4 : 3.3) * k;
-        return (
-          <div style={{ ...box(r, w, h), background: S.card, borderRadius: 3 * k, overflow: 'hidden', opacity: Math.min(1, e * 1.4), transform: `scale(${0.9 + 0.1 * e + 0.04 * Math.sin(Math.PI * e)})`,
-            boxShadow: `0 0 0 ${0.4 * k}px ${S.line}`, padding: `${1.4 * k}px ${2.2 * k}px`, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0.9 * k }}>
-            <div style={{ fontSize: fs, fontWeight: 800, color: S.ink, lineHeight: 1 }}>assistant</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 1.2 * k }}>
-              <div style={{ flex: 1, height: 2.6 * k, borderRadius: 2 * k, background: S.bg, boxShadow: `inset 0 0 0 ${0.3 * k}px ${S.line}` }} />
-              <div style={{ width: 2.8 * k, height: 2.8 * k, borderRadius: 0.8 * k, background: '#2A2034', flex: 'none' }} />
-            </div>
-          </div>
-        );
-      })()}
+      {/* the update banner that lands on every screen in the same frame */}
+      {banner > 0 && <div style={{ position: 'absolute', left: '6%', right: '6%', top: (P ? 0.075 : 0.06) * h, height: (P ? 0.06 : 0.09) * h, borderRadius: 3 * k, background: '#43354E', color: '#F3EAF9',
+        fontSize: 3.4 * k, fontWeight: 700, display: 'flex', alignItems: 'center', paddingLeft: 3 * k, transform: `translateY(${(smooth(banner * 4) - 1) * 6 * k}px)`, opacity: smooth(banner * 4) * (1 - smooth((banner - 0.8) * 5)), whiteSpace: 'nowrap', overflow: 'hidden' }}>Your layout has been updated</div>}
+      {/* their machine's bar, stamped on top of everything, with its price on it (the same one as on the big screen) */}
+      {ai > 0 && <div style={{ position: 'absolute', left: '50%', bottom: (P ? 0.03 : 0.05) * h, transform: `translateX(-50%) scale(${0.6 + 0.4 * smooth(ai)})`, opacity: smooth(ai * 1.5),
+        height: 10 * k, width: (P ? 0.84 : 0.56) * w, boxSizing: 'border-box', padding: `0 ${1.6 * k}px 0 ${4 * k}px`, borderRadius: 10 * k, background: '#1C1424', color: '#F3EAF9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 4.2 * k, fontWeight: 500, whiteSpace: 'nowrap',
+        boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)` }}>ask…
+        {/* WHY the price arrives separately, on "value" (reviewer 2026-11-20): the treasure is that every screen gets charged at once */}
+        <span style={{ height: 7 * k, padding: `0 ${2.2 * k}px`, borderRadius: 7 * k, background: '#FBF5EA', color: '#21152C', fontWeight: 900, fontSize: 3.8 * k, display: 'flex', alignItems: 'center',
+          opacity: smooth(price * 2), transform: `scale(${price <= 0 ? 0.4 : 0.4 + 0.6 * smooth(price) + 0.18 * Math.sin(Math.PI * cl(price))})` }}>$20/mo</span></div>}
+      {glimpse && glimpse.o > 0 && <>
+        {/* WHY a hush and a caret, not an input bar: something new is waiting here, and nothing of the real app is drawn */}
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(250,247,252,0.82)', opacity: glimpse.o }} />
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 2.6 * k, height: 15 * k, marginLeft: -1.3 * k, marginTop: -7.5 * k, borderRadius: 3 * k, background: '#9750AA', opacity: glimpse.o * (glimpse.caret ? 1 : 0) }} />
+      </>}
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,28,52,0.42)', opacity: dlg }} />
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.56) * w, transform: `translate(-50%,calc(-50% + ${leave * 3 * k}px)) scale(${(0.9 + 0.1 * smooth(dialog)) * (1 - 0.06 * leave)})`, opacity: dlg,
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.56) * w, transform: `translate(-50%,-50%) scale(${0.9 + 0.1 * dlg})`, opacity: dlg,
           background: '#FBF9FC', borderRadius: 4 * k, padding: 4 * k, boxSizing: 'border-box', boxShadow: `0 ${2 * k}px ${6 * k}px rgba(40,20,60,0.3)` }}>
-          <div style={{ fontSize: (P ? 8.4 : 8.8) * k, fontWeight: 900, color: S.ink, letterSpacing: '-0.03em', lineHeight: 1.05 }}>Our terms have changed</div>
+          <div style={{ fontSize: (P ? 5.6 : 6.4) * k, fontWeight: 900, color: S.ink, letterSpacing: '-0.03em', lineHeight: 1.05 }}>Our terms have changed</div>
           {[0.95, 0.8, 0.9].map((f, i) => <div key={i} style={{ height: 1.5 * k, width: `${f * 100}%`, background: S.line, borderRadius: k, marginTop: 1.5 * k }} />)}
-          <div style={{ marginTop: 3.5 * k, height: 12 * k, borderRadius: 8 * k, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 6.6 * k, fontWeight: 700,
-            background: pressed ? '#21172A' : '#5A5065', color: '#fff', transform: `translateY(${sink * 0.9 * k}px) scaleY(${1 - 0.06 * Math.sin(Math.PI * sink)})`,
-            boxShadow: pressed ? `inset 0 ${0.6 * k}px ${1.2 * k}px rgba(0,0,0,0.45)` : `0 ${0.9 * k}px 0 #3A3043` }}>Accept</div>
+          <div style={{ marginTop: 3 * k, height: 8.5 * k, borderRadius: 8 * k, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 4.4 * k, fontWeight: 700,
+            background: accept > 0.02 ? '#2E2238' : '#5A5065', color: '#fff', transform: `scale(${1 - 0.07 * Math.sin(Math.PI * cl(accept * 3))})` }}>{accept > 0.12 ? 'Accepted' : 'Accept'}</div>
         </div>
       </>}
-      {/* WHY a boot splash (round 9 reviewer BLOCKER: nothing on screen said "a small handful of corporations"): every screen starts up
-          showing one big plain mark on black, the picture everyone knows from switching a device on; five marks are dealt across the
-          wall. On "dictated" every splash gives way to the identical app in the same frame. */}
-      {splash > 0.001 && <div style={{ position: 'absolute', inset: 0, background: '#0E0A13', opacity: Math.min(1, splash * 1.4), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ transform: `scale(${0.9 + 0.1 * splash})`, opacity: splash }}><CorpMark i={mark} s={Math.min(w, h) * 0.42} color="#F4EFF8" /></div>
-      </div>}
     </div>
   );
 };
 
-/** "Share with partners": a switch on the phone that somebody else flips. `o` slides it in, `on` 0..1 flips it.
- *  WHY bigger, and the one saturated thing on the phone (reviewer 2026-11-20: a small grey-on-white row read as another stray control):
- *  a tall row with a large label, and a purple switch whose knob snaps across with a small overshoot. */
+/** "Share with partners": a switch on the phone that somebody else flips. `o` slides it in, `on` 0..1 flips it. */
 export const ShareSwitch: React.FC<{ w: number; h: number; o: number; on: number }> = ({ w, h, o, on }) => {
   const k = Math.min(w, h) / 100;
   if (o <= 0) return null;
-  // WHY 1.8x bigger, full-contrast ink, sliding down instead of fading (round 7 reviewer: the key action of the line was small grey text):
-  // the row drops 12 px into place; the knob crosses in 6 frames and the track fills purple behind it
-  const slide = smooth(o);
-  const snap = smooth(on);
-  // WHY round 9 (reviewer: the label touched the switch, the card ran edge to edge and "off" was a pale lilac): a card inset 4.5% from
-  // the glass, a label three quarters the old size with clear room before the switch, a plain grey track for off and the brand purple
-  // for on, and the knob squashes for one frame as it lands
-  const squash = on > 0.85 && on < 1 ? Math.sin(Math.PI * (on - 0.85) / 0.15) : 0;
   return (
-    <div style={{ position: 'absolute', left: '4.5%', right: '4.5%', top: 0.055 * h, height: 0.078 * h, borderRadius: 3.6 * k, background: '#FFFFFF', boxShadow: `0 ${k}px ${3.5 * k}px rgba(40,20,60,0.24)`, fontFamily: DMSANS,
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 * k, padding: `0 ${3.6 * k}px 0 ${4.4 * k}px`, boxSizing: 'border-box', fontSize: 5.6 * k, fontWeight: 800, letterSpacing: '-0.02em', color: '#21152C', whiteSpace: 'nowrap',
-      opacity: Math.min(1, o * 4), transform: `translateY(${(slide - 1) * 3 * k}px)` }}>
+    <div style={{ position: 'absolute', left: '5%', right: '5%', top: 0.075 * h, height: 0.075 * h, borderRadius: 3 * k, background: '#FBF9FC', boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.25)`, fontFamily: DMSANS,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${3.5 * k}px`, fontSize: 4.4 * k, fontWeight: 700, color: S.ink, opacity: smooth(o), transform: `translateY(${(smooth(o) - 1) * 8 * k}px)` }}>
       Share with partners
-      <span style={{ width: 15 * k, height: 8.6 * k, borderRadius: 10 * k, background: mixHex('#B9B3BF', '#9750AA', snap), position: 'relative', flex: 'none' }}>
-        <span style={{ position: 'absolute', top: 0.9 * k, left: 0.9 * k + snap * 6.4 * k, width: 6.8 * k, height: 6.8 * k, borderRadius: 8 * k, background: '#fff', boxShadow: `0 ${0.4 * k}px ${k}px rgba(30,10,40,0.35)`,
-          transform: `scale(${1 + 0.12 * squash}, ${1 - 0.12 * squash})` }} />
+      <span style={{ width: 11 * k, height: 6.4 * k, borderRadius: 6 * k, background: on > 0.5 ? '#9750AA' : '#CFC7D8', position: 'relative', flex: 'none' }}>
+        <span style={{ position: 'absolute', top: 0.7 * k, left: 0.7 * k + smooth(on) * 4.6 * k, width: 5 * k, height: 5 * k, borderRadius: 5 * k, background: '#fff' }} />
       </span>
     </div>
   );
 };
 /** Where the switch's knob sits, so a pointer can be aimed at it. */
-export const shareKnob = (w: number, h: number) => { const k = Math.min(w, h) / 100; return { x: 0.96 * w - 3.5 * k - 7.5 * k, y: 0.125 * h }; };
+export const shareKnob = (w: number, h: number) => { const k = Math.min(w, h) / 100; return { x: 0.95 * w - 3.5 * k - 5.5 * k, y: 0.1125 * h }; };
 
 /** The tablet-sized copy of the recipes that arrives on a neighbour's screen: what one person makes, others can use. */
 export const SharedRecipe: React.FC<{ w: number; h: number; k: number }> = ({ w, h, k }) => (
@@ -399,204 +234,296 @@ export const SharedRecipe: React.FC<{ w: number; h: number; k: number }> = ({ w,
   </div>
 );
 
+// =====================================================================================================
+// 2. (retired) The blank page with a caret. WHY gone: the request is now typed into the ask bar on the
+//    phone's own screen, so the viewer learns where you type, and the phone is never a blank slab.
+// =====================================================================================================
 
 // =====================================================================================================
-// 2. The real app, as a library of real stills (public/stills/r4, made by take1b-library.mjs): the app's own
-//    renderer in a shipped theme on a practice page, cut to the exact shape of each device so a still fills its
-//    screen edge to edge. WHY nothing is drawn here any more (owner 2026-11-20): every "someone's own" screen is a
-//    real youcoded window, each a different theme with a different page in focus. The default look is left out
-//    of the wall on purpose: it is the one every stranger already has, so it would not read as "made mine".
-//    Cotton Candy Sky and Meadow Mist are not in the library (the owner dislikes them).
+// 3. People's own things. Every one has a person's reason in its title (brand §9: not "there's an app
+//    for that", but something made to one person's wishes). `p` builds it piece by piece.
 // =====================================================================================================
-type Row = { file: string; shape: 'phone' | 'tablet' | 'laptop' | 'tv'; theme: string; focus: string; typed?: { text: string; prefix: number[]; rect: number[]; dpr: number; fs: number } };
-const ROWS = ROWS_JSON as Row[];
-const GLOW = GLOW_JSON as Record<string, string>;
-const R4 = (file: string) => `stills/r4/${file}`;
-const hexRgba = (c: string) => { const n = parseInt(c.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},1)`; };
+type AppProps = { w: number; h: number; p: number };
+const Frame: React.FC<{ bg: string; children: React.ReactNode }> = ({ bg, children }) => (
+  <div style={{ position: 'absolute', inset: 0, background: bg, overflow: 'hidden' }}>{children}</div>
+);
 
-export type Look = { still: string; glow: string; key: string; theme: string };
-export const lookOf = (file: string): Look => {
-  const r = ROWS.find((x) => x.file === file);
-  if (!r) throw new Error(`take1b: "${file}" is not in the still library (public/stills/r4/rows.json)`);
-  return { still: R4(file), glow: hexRgba(GLOW[file]), key: file, theme: r.theme };
+/** Grandma's recipes, big text, no ads: the film's hero (the one we watch being asked for). */
+export const Recipes: React.FC<AppProps> = ({ w, h, p }) => {
+  const k = Math.min(w, h) / 100, P = h > w;
+  const ink = '#3B2418', acc = '#C4572E';
+  return (
+    <Frame bg="#FBF3E6">
+      <div style={{ position: 'absolute', inset: 0, padding: `${(P ? 10 : 6) * k}px ${7 * k}px`, display: 'flex', flexDirection: P ? 'column' : 'row', gap: 5 * k, fontFamily: DMSANS, color: ink, boxSizing: 'border-box' }}>
+        <div style={{ flex: P ? 'none' : 1, display: 'flex', flexDirection: 'column', gap: 3 * k }}>
+          <div style={{ ...rise(p, 0, 6, k), fontSize: 4.4 * k, fontWeight: 700, letterSpacing: '0.04em', color: acc, textTransform: 'uppercase' }}>Grandma June's</div>
+          <div style={{ ...rise(p, 1, 6, k), fontSize: 12.5 * k, fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 0.98 }}>Sunday lemon cake</div>
+          {/* the plate: a warm drawn cake, never a stock photo */}
+          <div style={{ ...rise(p, 2, 6, k), height: (P ? 34 : 48) * k, borderRadius: 4 * k, background: 'linear-gradient(160deg,#F4D9A6,#E9B86F)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', left: '18%', right: '18%', bottom: '18%', height: '38%', borderRadius: '50% / 30%', background: '#FFF8EC', boxShadow: `0 ${k}px ${2 * k}px rgba(120,70,20,0.25)` }} />
+            <div style={{ position: 'absolute', left: '27%', right: '27%', bottom: '33%', height: '34%', borderRadius: `${3 * k}px ${3 * k}px ${k}px ${k}px`, background: 'linear-gradient(180deg,#FFF3C2 0 26%,#E8B35E 26% 100%)' }} />
+            <div style={{ position: 'absolute', left: '44%', bottom: '64%', width: 5 * k, height: 5 * k, borderRadius: '50%', background: '#F2D23E', boxShadow: `inset -${0.6 * k}px -${0.6 * k}px 0 #D9B21E` }} />
+          </div>
+        </div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2.4 * k }}>
+          {['3 eggs', '1 cup sugar', '2 lemons, zest and all', '"don\'t rush the oven"'].map((t, i) => (
+            <div key={i} style={{ ...rise(p, 3 + i * 0.6, 6, k), fontSize: 7 * k, fontWeight: i === 3 ? 500 : 700, fontStyle: i === 3 ? 'italic' : undefined, letterSpacing: '-0.02em',
+              borderBottom: i < 3 ? `${0.4 * k}px solid #EBD9BF` : undefined, paddingBottom: 1.6 * k, color: i === 3 ? acc : ink }}>{t}</div>
+          ))}
+        </div>
+      </div>
+    </Frame>
+  );
 };
 
-// The phone's untouched window (nothing asked yet), the same window with its box focused, and the box wiped clean
-// so the request can be typed into it (take1b-prep.py).
-// WHY Golden Sunbreak (round 5, reviewer BLOCKER: the default theme's lilac wallpaper read as Cotton Candy Sky, which the owner dislikes):
-// a real community theme, a rainy-city painting in deep teal and gold that sits well on the plum-black wall. The three pictures are
-// real captures of the real window (take1b-library.mjs: clean = greeting and placeholder hidden by CSS, cleanfocus = its own caret)
-export const PHONE_EMPTY = R4('golden-sunbreak-phone-clean.png');
-export const PHONE_FOCUS = R4('golden-sunbreak-phone-cleanfocus.png');
-export const PHONE_CLEAN = R4('golden-sunbreak-phone-clean.png');
-// WHY (round 8): the same window a moment after the request was really sent: its own bubble and its own working line
-export const PHONE_WORKING = R4('golden-sunbreak-phone-working.png');
+const Star: React.FC<{ s: number; on: boolean }> = ({ s, on }) => (
+  <svg width={s} height={s} viewBox="0 0 24 24"><path d="M12 2.6l2.8 6 6.5.7-4.9 4.4 1.4 6.4L12 16.8l-5.8 3.3 1.4-6.4L2.7 9.3l6.5-.7z" fill={on ? '#F5B83D' : 'none'} stroke={on ? '#E39F1C' : '#9DB8D6'} strokeWidth="1.6" strokeLinejoin="round" /></svg>
+);
+/** Two kids' jobs, with stars they tap themselves. */
+export const Chores: React.FC<AppProps> = ({ w, h, p }) => {
+  const k = Math.min(w, h) / 100, P = h > w;
+  const kids = [{ n: 'Mia', c: '#F28C7B', s: [1, 1, 1, 0] }, { n: 'Leo', c: '#5FA8E8', s: [1, 1, 0, 0] }];
+  const jobs = ['Feed Biscuit', 'Make bed', 'Lunchbox', 'Read 20 min'];
+  return (
+    <Frame bg="#1F4E8C">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: OUTFIT, color: '#18324D', boxSizing: 'border-box' }}>
+        <div style={{ ...rise(p, 0, 5, k), fontSize: 9 * k, fontWeight: 600, letterSpacing: '-0.03em', color: '#FFFFFF' }}>Jobs before the park</div>
+        <div style={{ display: 'flex', flexDirection: P ? 'column' : 'row', gap: 4 * k, marginTop: 4 * k }}>
+          {kids.map((kid, ki) => (
+            <div key={ki} style={{ ...rise(p, 1 + ki, 5, k), flex: 1, background: '#fff', borderRadius: 4 * k, padding: 3.5 * k, boxShadow: `0 ${0.6 * k}px ${2 * k}px rgba(24,50,77,0.08)` }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 2 * k, fontSize: 6 * k, fontWeight: 600 }}>
+                <span style={{ width: 6 * k, height: 6 * k, borderRadius: 6 * k, background: kid.c }} />{kid.n}
+              </div>
+              {jobs.map((j, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 4.4 * k, marginTop: 1.8 * k, fontFamily: DMSANS, fontWeight: 500 }}>
+                  {j}<Star s={6 * k} on={!!kid.s[i] && p > 0.5 + i * 0.1} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </Frame>
+  );
+};
 
-// The story's own devices get the looks their lines need. WHY these: the phone asked for "a page for my home" and
-// gets the loud Halftone pack with exactly that page; the laptop that was locked gets a warm golden look (the
-// laptop's turn is "what our computers can do"); the tablet that cost money is now free in a dramatic look of its own.
+/** Birds seen from one kitchen window. */
+export const Birds: React.FC<AppProps> = ({ w, h, p }) => {
+  const k = Math.min(w, h) / 100, P = h > w;
+  const rows: [string, number, string][] = [['Robin', 3, '#D9774E'], ['Blue tit', 2, '#4F86B8'], ['Wren', 1, '#9A7552'], ['Goldfinch', 4, '#D8B23A']];
+  return (
+    <Frame bg="#173A2B">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#EAF3E4', boxSizing: 'border-box', display: 'flex', flexDirection: P ? 'column' : 'row', gap: 5 * k }}>
+        <div style={{ flex: P ? 'none' : 0.9 }}>
+          <div style={{ ...rise(p, 0, 5, k), fontSize: 4 * k, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.7 }}>Kitchen window</div>
+          <div style={{ ...rise(p, 1, 5, k), fontSize: 11 * k, fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1 }}>10 birds today</div>
+          <svg style={{ ...rise(p, 2, 5, k), marginTop: 3 * k }} width={(P ? 0.86 : 0.4) * w} height={18 * k} viewBox="0 0 100 30" preserveAspectRatio="none">
+            <path d="M0 26 C 12 22, 18 10, 30 14 S 50 26, 62 12 S 85 4, 100 9" stroke="#9FD67A" strokeWidth="2" fill="none" />
+            <path d="M0 26 C 12 22, 18 10, 30 14 S 50 26, 62 12 S 85 4, 100 9 V30 H0Z" fill="#9FD67A" opacity="0.18" />
+          </svg>
+        </div>
+        <div style={{ flex: 1 }}>
+          {rows.map(([n, c, col], i) => (
+            <div key={i} style={{ ...rise(p, 2.5 + i * 0.5, 5, k), display: 'flex', alignItems: 'center', gap: 3 * k, background: 'rgba(255,255,255,0.08)', borderRadius: 3 * k, padding: `${2.2 * k}px ${3 * k}px`, marginBottom: 2 * k }}>
+              <svg width={7 * k} height={7 * k} viewBox="0 0 24 24"><path d="M4 15c0-5 4-9 9-9 2.5 0 4 1.5 4.5 3L21 10l-3 1.5c0 4.5-3.5 7.5-8 7.5H4z" fill={col} /><circle cx="15" cy="9" r="1.1" fill="#fff" /></svg>
+              <span style={{ fontSize: 5 * k, fontWeight: 700, flex: 1 }}>{n}</span><span style={{ fontSize: 5 * k, fontWeight: 900 }}>{c}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Frame>
+  );
+};
+
+/** When the fishing is good at one pier: a tide curve and one number. */
+export const Tides: React.FC<AppProps> = ({ w, h, p }) => {
+  const k = Math.min(w, h) / 100, P = h > w;
+  return (
+    <Frame bg="#0E2A3A">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#E6F4F7', boxSizing: 'border-box' }}>
+        <div style={{ ...rise(p, 0, 4, k), fontSize: 4 * k, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#5FC7D9' }}>Pier 9 · Saturday</div>
+        <div style={{ ...rise(p, 1, 4, k), fontSize: (P ? 14 : 12) * k, fontWeight: 900, letterSpacing: '-0.05em', marginTop: 1 * k }}>Go at 6:40</div>
+        <div style={{ ...rise(p, 1.5, 4, k), fontSize: 4.6 * k, opacity: 0.75 }}>rising tide, light wind</div>
+        <svg style={{ ...rise(p, 2.5, 4, k), position: 'absolute', left: 0, bottom: 0 }} width={w} height={h * (P ? 0.42 : 0.45)} viewBox="0 0 100 40" preserveAspectRatio="none">
+          <path d="M0 26 C 15 6, 30 6, 45 22 S 75 38, 100 12 V40 H0Z" fill="#1F5A6E" />
+          <path d="M0 30 C 15 12, 30 12, 45 27 S 75 42, 100 18 V40 H0Z" fill="#2B7A8E" opacity="0.9" />
+          <circle cx="30" cy="9" r="2.2" fill="#F5C431" />
+        </svg>
+      </div>
+    </Frame>
+  );
+};
+
+/** One band's setlist for Thursday practice. */
+export const Setlist: React.FC<AppProps> = ({ w, h, p }) => {
+  const k = Math.min(w, h) / 100;
+  const songs: [string, string][] = [['Paper Moon', 'G · 92'], ['Slow Train', 'E · 120'], ['Kitchen Light', 'C · 76'], ['Last Bus', 'A · 134']];
+  return (
+    <Frame bg="#17111C">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: OUTFIT, color: '#F6EEF9', boxSizing: 'border-box' }}>
+        <div style={{ ...rise(p, 0, 5, k), fontSize: 4 * k, fontWeight: 600, color: '#FF7A59', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Thursday practice</div>
+        <div style={{ ...rise(p, 0.6, 5, k), fontSize: 10 * k, fontWeight: 600, letterSpacing: '-0.04em', marginBottom: 2 * k }}>Setlist</div>
+        {songs.map(([s, m], i) => (
+          <div key={i} style={{ ...rise(p, 1.4 + i * 0.6, 5, k), display: 'flex', alignItems: 'baseline', gap: 3 * k, padding: `${1.8 * k}px 0`, borderTop: `${0.3 * k}px solid #3A2F42` }}>
+            <span style={{ fontSize: 4.4 * k, color: '#FF7A59', width: 5 * k }}>{i + 1}</span>
+            <span style={{ fontSize: 6 * k, flex: 1, fontWeight: 600 }}>{s}</span>
+            <span style={{ fontSize: 4 * k, opacity: 0.6, fontFamily: DMSANS }}>{m}</span>
+          </div>
+        ))}
+      </div>
+    </Frame>
+  );
+};
+
+/** A knitting row counter, huge, because the person's hands are full. */
+export const Knit: React.FC<AppProps> = ({ w, h, p }) => {
+  const k = Math.min(w, h) / 100;
+  return (
+    <Frame bg="#C2456A">
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, color: '#FFF1F4' }}>
+        <div style={{ ...rise(p, 0, 4, k), fontSize: 4.6 * k, fontWeight: 700 }}>Gran's scarf · row</div>
+        <div style={{ ...rise(p, 1, 4, k), fontSize: 30 * k, fontWeight: 900, letterSpacing: '-0.06em', lineHeight: 1 }}>112</div>
+        <div style={{ ...rise(p, 1.6, 4, k), width: '64%', height: 2.4 * k, borderRadius: 2 * k, background: 'rgba(255,241,244,0.3)', marginTop: 2 * k }}><div style={{ width: '80%', height: '100%', borderRadius: 2 * k, background: '#FFF1F4' }} /></div>
+        <div style={{ ...rise(p, 2.4, 4, k), display: 'flex', gap: 4 * k, marginTop: 5 * k }}>
+          {['−', '+'].map((s) => <div key={s} style={{ width: 15 * k, height: 15 * k, borderRadius: 15 * k, background: s === '+' ? '#FFF1F4' : 'rgba(255,241,244,0.18)', color: s === '+' ? '#C2456A' : '#FFF1F4', fontSize: 9 * k, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s}</div>)}
+        </div>
+      </div>
+    </Frame>
+  );
+};
+
+/** The one bus stop that matters, as one big number. */
+export const Bus: React.FC<AppProps> = ({ w, h, p }) => {
+  const k = Math.min(w, h) / 100, P = h > w;
+  return (
+    <Frame bg="#F5C431">
+      <div style={{ position: 'absolute', inset: 0, padding: 7 * k, fontFamily: DMSANS, color: '#1E1A0A', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ ...rise(p, 0, 4, k), fontSize: 5 * k, fontWeight: 700 }}>The 22 · outside my door</div>
+        <div style={{ ...rise(p, 1, 4, k), fontSize: (P ? 34 : 30) * k, fontWeight: 900, letterSpacing: '-0.06em', lineHeight: 0.9 }}>4<span style={{ fontSize: (P ? 10 : 9) * k, letterSpacing: '-0.02em' }}> min</span></div>
+        <div style={{ ...rise(p, 2, 4, k), fontSize: 4.6 * k, fontWeight: 500 }}>then 19 min · leave now if you want a seat</div>
+      </div>
+    </Frame>
+  );
+};
+
+/** What to sow this week in one small garden. */
+export const Garden: React.FC<AppProps> = ({ w, h, p }) => {
+  const k = Math.min(w, h) / 100, P = h > w;
+  const seeds: [string, string][] = [['Peas', '#7FB069'], ['Radish', '#D9566B'], ['Chard', '#E0A43A'], ['Basil', '#4F9A5B']];
+  return (
+    <Frame bg="#EADFC8">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: OUTFIT, color: '#3D2E1C', boxSizing: 'border-box' }}>
+        <div style={{ ...rise(p, 0, 5, k), fontSize: 9 * k, fontWeight: 600, letterSpacing: '-0.03em' }}>Sow this week</div>
+        <div style={{ ...rise(p, 0.5, 5, k), fontSize: 4.4 * k, fontFamily: DMSANS, opacity: 0.7, marginBottom: 3 * k }}>back bed · frost's gone</div>
+        <div style={{ display: 'grid', gridTemplateColumns: P ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: 3 * k }}>
+          {seeds.map(([s, c], i) => (
+            <div key={i} style={{ ...rise(p, 1.4 + i * 0.6, 5, k), background: '#FBF7EF', borderRadius: 3 * k, padding: 3 * k, borderTop: `${2 * k}px solid ${c}` }}>
+              <svg width={9 * k} height={9 * k} viewBox="0 0 24 24"><path d="M12 21V11" stroke="#5C7A3A" strokeWidth="2" /><path d="M12 12C12 7 8 5 4 5c0 4 3 7 8 7zM12 10c0-4 3-6 7-6 0 4-3 6-7 6z" fill={c} /></svg>
+              <div style={{ fontSize: 5 * k, fontWeight: 600, marginTop: 1 * k }}>{s}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Frame>
+  );
+};
+
+/** Ten Spanish words a day before a trip. */
+export const Spanish: React.FC<AppProps> = ({ w, h, p }) => {
+  const k = Math.min(w, h) / 100;
+  return (
+    <Frame bg="#E8483B">
+      <div style={{ position: 'absolute', inset: 0, padding: 6 * k, fontFamily: DMSANS, color: '#2B1F55', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 * k }}>
+        <div style={{ ...rise(p, 0, 4, k), fontSize: 4.4 * k, fontWeight: 700, opacity: 0.85, color: '#FFFFFF' }}>Seville in May · word 6 of 10</div>
+        <div style={{ ...rise(p, 1, 4, k), background: '#fff', borderRadius: 5 * k, padding: `${7 * k}px ${10 * k}px`, boxShadow: `0 ${1.5 * k}px ${4 * k}px rgba(43,31,85,0.15)`, transform: `${rise(p, 1, 4, k).transform} rotate(-2deg)`, textAlign: 'center' }}>
+          <div style={{ fontSize: 13 * k, fontWeight: 900, letterSpacing: '-0.04em' }}>la cuenta</div>
+          <div style={{ fontSize: 5 * k, opacity: 0.6 }}>the bill, please</div>
+        </div>
+      </div>
+    </Frame>
+  );
+};
+
+export const APPS = [Recipes, Chores, Birds, Tides, Setlist, Knit, Bus, Garden, Spanish];
+// WHY bold and unlike each other (reviewer 2026-11-20: the soft pastel family read as one stock UI kit, so
+// "every copy is different" did not land): dark ones, a loud yellow, a raspberry, each its own world.
+export const APP_BG = ['#FBF3E6', '#1F4E8C', '#173A2B', '#0E2A3A', '#17111C', '#C2456A', '#F5C431', '#EADFC8', '#E8483B'];
+
+// ---------------------------------------------------------------------------------------------------
+// The real app, photographed (take1b-themes.mjs) in six looks people asked for: a sunset (answering "make it
+// feel like sunset"), a loud poster, a dark late-edition magazine, paper and ink, a swimming pool, and the
+// community Halftone pack; each on a phone and on a desktop window, each busy and fresh. WHY these (reviewer and
+// owner, 2026-11-20): the cartoon desert, the painted city and the plain lilac read as clip art, and the window
+// that asked for a sunset showed a blue midday city. Every one of these is the real renderer wearing a real
+// theme pack, so nothing of the app is drawn here.
+// ---------------------------------------------------------------------------------------------------
+const THEMES = ['sunset', 'poster', 'editorial', 'paper', 'pool', 'halftone-dimension'];
+const STILL_GLOW: Record<string, string> = { sunset: '#EE8A5C', poster: '#3B55E6', editorial: '#8A5A44', paper: '#D9C9A6', pool: '#3BB4CE', 'halftone-dimension': '#B0335A', youcoded: '#C9A6E0' };
+const still = (theme: string, kind: 'phone' | 'wide', fresh: boolean) => `stills/take1b-th-${theme}-${kind}${fresh ? '-new' : ''}.png`;
+/** The phone's untouched app (youcoded's own look, nothing asked yet): the frame the request is typed into. */
+export const PHONE_EMPTY = 'stills/take1b-req-00.png';
+
+export type Look = { still: string; glow: string; key: string; theme: string } | { app: number; glow: string; key: string; theme: string };
+const hex = (c: string) => { const n = parseInt(c.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},1)`; };
+const stillLook = (theme: string, kind: 'phone' | 'wide', fresh: boolean): Look => ({ still: still(theme, kind, fresh), glow: hex(STILL_GLOW[theme]), key: still(theme, kind, fresh), theme });
+const appLook = (a: number): Look => ({ app: a, glow: hex(APP_BG[a]), key: `app${a}`, theme: `app${a}` });
+
+// The story's own devices get the looks their lines need.
 const FIXED: Record<string, Look> = {
-  // round 6: the phone asks in Golden Sunbreak and the page comes back in the same look (a person's own look stays theirs)
-  hero: lookOf('golden-sunbreak-phone-home.png'),
-  // round 6: the laptop and the tablet each ask for a page in their own real look (take1b-library.mjs shot the box, the typed request and the page that arrives)
-  lockLaptop: lookOf('devils-garden-laptop-lights.png'),
-  // WHY a big thermostat page (round 5 reviewer: the desert chat's words were unreadable at a glance): a page that reads from across the room
-  tagTablet: lookOf('halftone-dimension-tablet-paint.png'),
-  tv: lookOf('morning-rounds-tv-money.png'),   // WHY (reviewer BLOCKER): the biggest tile in every wide shot was a licensed character look; this is a plain community theme
-  // WHY fixed (round 8 reviewer BLOCKER: on "for anyone who asks" nobody but the phone was seen asking): the phone's two nearest
-  // neighbours are seen asking too, each in its own light look, and each gets the page it asked for (their "working" pictures match)
-  '0:l1': lookOf('light-phone-lights.png'),
-  '-1:l1': lookOf('creme-tablet-paint.png'),
+  hero: appLook(0),                                   // grandma's recipes: the thing that was asked for
+  lockLaptop: stillLook('sunset', 'wide', false),    // "what our computers can do": it asked for a sunset, and got one
+  tagTablet: stillLook('poster', 'wide', false),     // "what it costs": now free, in a loud look of its own
+  tv: stillLook('paper', 'wide', true),
 };
-export const HERO_LOOK = FIXED.hero;
-/** WHY one holdout (round 8 reviewer: nothing on screen answered "the tech monopolies of the past"): one monitor near the middle of the
- *  daylight wall keeps the old locked, priced app until the word "past", and is the last screen on the wall to become someone's own. */
-export const HOLDOUT = '-1:r1';
 
 /** A small seeded random generator. WHY seeded: the wall must come out the same on every render. */
 const rng = (seed: number) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
 
-/** Every device's look, decided once for the whole wall. Each draws only from stills cut for its own shape (the
- *  monitor shares the TV's shape), never repeats a still on its own shelf, never sits near the same theme on its
- *  shelf or the shelves above and below, and prefers whichever look has been used least: a mosaic with no stripes. */
+/** Every device's look, decided once for the whole wall. WHY this way (reviewer 2026-11-20: about 8 tiles
+ *  copied over and over, the same desert 15 times, in a visible pattern): each device draws from 32 different
+ *  screens (12 phone pictures, 12 window pictures, 8 made things), never repeats a screen anywhere on its own
+ *  shelf, never sits next to the same look (same theme or same made thing) on its shelf or the shelves above and
+ *  below, and prefers whatever has been used least, so the wall is a mosaic with no stripes or repeats in reach. */
 const LOOKS: Map<string, Look> = (() => {
   const out = new Map<string, Look>();
   const r = rng(20261120);
   const used = new Map<string, number>();
   const devs = [...WORLD.devs].sort((a, b) => a.row - b.row || a.cx - b.cx);
-  for (const d of devs) if (FIXED[d.id]) { out.set(d.id, FIXED[d.id]); used.set(FIXED[d.id].key, 1); }
+  for (const d of devs) {
+    if (FIXED[d.id]) { out.set(d.id, FIXED[d.id]); used.set(FIXED[d.id].key, (used.get(FIXED[d.id].key) ?? 0) + 1); }
+  }
   for (const d of devs) {
     if (out.has(d.id)) continue;
-    const shape = d.kind === 'monitor' ? 'tv' : d.kind;
-    // WHY no Kuromi / Strawberry Kitty (reviewer BLOCKER): they are real licensed characters; a public film must not show them
-    const cands = ROWS.filter((x) => x.shape === shape && !x.theme.startsWith('YouCoded (default)') && !/Kuromi|Strawberry Kitty/.test(x.theme) && !/-(phone|laptop|tablet|tv)-(empty|wake|typing|clean|cleanfocus|typed|working)\.png$/.test(x.file)).map((x) => lookOf(x.file));
+    const kind = d.kind === 'phone' ? 'phone' : 'wide';
+    const cands: Look[] = [...THEMES.flatMap((th) => [stillLook(th, kind, false), stillLook(th, kind, true)]), ...[1, 2, 3, 4, 5, 6, 7, 8].map(appLook)];
+    // neighbours already decided: the same shelf (all of it, for screens) and nearby on the shelves above and below
     const shelf = WORLD.devs.filter((o) => o.row === d.row && out.has(o.id));
-    const near = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < (o.w + d.w) / 2 + 700);   // WHY 700: about two devices either way, so a close-up of three never shows one theme twice
+    const near = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < (o.w + d.w) / 2 + 700);   // WHY 700: about two devices either way, so a close-up of three never shows one look twice
     const ok = (c: Look) => !shelf.some((o) => out.get(o.id)!.key === c.key) && !near.some((o) => out.get(o.id)!.theme === c.theme);
-    // WHY a penalty on the near-black looks (reviewer: a quarter of the wall read as blank black holes in daylight)
-    const order = cands.map((c) => ({ c, k: (used.get(c.key) ?? 0) + r() * 0.9 + (/^(Dark|Midnight|YouCoded Night)/.test(c.theme) ? 2.2 : 0) })).sort((a, b) => a.k - b.k).map((x) => x.c);
+    const order = cands.map((c) => ({ c, k: (used.get(c.key) ?? 0) + r() * 0.9 })).sort((a, b) => a.k - b.k).map((x) => x.c);
     const pick = order.find(ok) ?? order.find((c) => !near.some((o) => out.get(o.id)!.theme === c.theme)) ?? order[0];
     out.set(d.id, pick);
     used.set(pick.key, (used.get(pick.key) ?? 0) + 1);
   }
   return out;
 })();
-/** The same Home page in a given look's own theme, for a page that is shared to that device. WHY per theme (round 8 reviewer
- *  BLOCKER: the shared page replaced the neighbour's whole theme): what one person makes, another opens in THEIR own look. */
-export const homeIn = (look: Look, kind: string): Look | null => {
-  const shape = kind === 'monitor' ? 'tv' : kind;
-  const slug = look.key.replace(/-(phone|tablet|laptop|tv)-.*$/, '');
-  const f = `${slug}-${shape}-home.png`;
-  return ROWS.some((x) => x.file === f) ? lookOf(f) : null;
-};
-/** The "working" picture for a look (its own sent bubble and working line), if one was shot. */
-export const workingIn = (look: Look, kind: string): Look | null => {
-  const shape = kind === 'monitor' ? 'tv' : kind;
-  const f = `${look.key.replace(/-(phone|tablet|laptop|tv)-.*$/, '')}-${shape}-working.png`;
-  return ROWS.some((x) => x.file === f) ? lookOf(f) : null;
-};
 /** What a device shows once it is someone's own. */
 export const lookFor = (d: { id: string }): Look => LOOKS.get(d.id)!;
 /** For the render check: how many different screens the wall uses. */
 export const WALL_VARIETY = new Set([...LOOKS.values()].map((l) => l.key)).size;
-/** For the render check: the most any one theme is used across the wall. */
-export const WALL_THEMES = new Set([...LOOKS.values()].map((l) => l.theme)).size;
 
-/** One still of the real app, filling a screen exactly. WHY objectFit fill: every still is cut to its device's
- *  own ratio (within 0.3%), so nothing is cropped or letterboxed and nothing visibly stretches. */
+/** One frame of the real app, filling a screen. */
 export const RealApp: React.FC<{ src: string; w: number; h: number }> = ({ src, w, h }) => (
-  <Img src={staticFile(src)} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h, objectFit: 'fill' }} />
+  <Img src={staticFile(src)} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h, objectFit: 'cover', objectPosition: '50% 50%' }} />
 );
 
-/** A person's own screen: the real app in their theme, on the page they have in focus. */
-export const OwnScreen: React.FC<{ look: Look; w: number; h: number }> = ({ look, w, h }) => (
-  <div style={{ position: 'absolute', inset: 0, background: '#120A19', overflow: 'hidden' }}><RealApp src={look.still} w={w} h={h} /></div>
-);
-
-// ---------------------------------------------------------------------------------------------------
-// Typing into the phone's own message box.
-// The still is 1170x2442 (3x of a 390-wide phone); everything below is laid out in those picture pixels and the
-// whole layer is scaled to the screen, so the letters sit exactly where the app's own letters would.
-// ---------------------------------------------------------------------------------------------------
-const STILL_W = 1170, STILL_H = 2442;
-/** The message box in picture pixels (take1b-library INDEX.md: 24,2207,1122,132) and where its words start. */
-export const BOX = { x: 84, y: 2091, w: 1002, h: 132 };
-export const TEXT_X = 264, TEXT_MID = 2158, TEXT_MAX_X = 880;   // WHY: measured on the Golden Sunbreak capture (the placeholder starts at 264)
-const TEXT_PX = 48;          // the app's own message text size at 3x, measured by typing its placeholder over itself (54 was 17% too big)
-const INK = '#E6D6AE';       // the theme's own cream, a touch brighter than its chips (220,200,152)
-const MONO = "'Cascadia Mono', 'Noto Sans Mono', monospace";   // WHY: the app's own message font here (Cascadia, which falls back to Noto Sans Mono on the capture machine)
-
-/** The phone's window with its message box in one of three states: waiting, focused-and-blinking, or being typed in. */
-export const PhoneAsk: React.FC<{ w: number; h: number; text: string; caretOn: boolean; typing: boolean; sent?: number; sentText?: string }> = ({ w, h, text, caretOn, typing, sent = 0, sentText = '' }) => {
-  const s = w / STILL_W;
-  // WHY the real picture once the bubble has landed (round 8 reviewer BLOCKER: no sign of the app working): the drawn lift ends exactly on
-  // the real bubble's place and size, and the real capture takes over, with the app's own working line under it
-  if (sent >= 1) return <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#10101A' }}><RealApp src={PHONE_WORKING} w={w} h={h} /></div>;
-  // WHY real pictures while nobody is typing: the app's own blinking caret is a real capture, not something we draw
-  const src = typing || sent > 0 ? PHONE_CLEAN : caretOn ? PHONE_FOCUS : PHONE_EMPTY;
+/** A person's own screen: either the real app in their theme, or a thing they made in it (staged, brand §8). */
+export const OwnScreen: React.FC<{ look: Look; w: number; h: number; p: number }> = ({ look, w, h, p }) => {
+  if ('still' in look) return <div style={{ position: 'absolute', inset: 0, background: '#120A19', overflow: 'hidden' }}><RealApp src={look.still} w={w} h={h} /></div>;
+  const App = APPS[look.app];
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#10101A' }}>
-      <RealApp src={src} w={w} h={h} />
-      {sent > 0 && (
-        <div style={{ position: 'absolute', left: 0, top: 0, width: STILL_W, height: STILL_H, transform: `scale(${s})`, transformOrigin: '0 0' }}>
-          {/* WHY the sent sentence lifts out of the box into the app's own kind of message bubble (purple, right-aligned, time under it,
-              as in the real chat capture) so "ask, then get" is seen: it rises from the box to the top of the chat */}
-          {(() => {
-            const e = 1 - Math.pow(1 - cl(sent), 3);
-            const bw = 562, bh = 156;   // WHY: the real sent bubble's own size and place (golden-sunbreak-phone-working.png), so the hand-over is seamless
-            return (
-              <div style={{ position: 'absolute', left: 1114 - bw, top: 133 + (1 - e) * 1960, width: bw, height: bh, borderRadius: 60, boxSizing: 'border-box', padding: '22px 44px', opacity: Math.min(1, sent * 5),
-                background: 'linear-gradient(160deg,#E1AA34,#F3B93F)', boxShadow: '0 12px 36px rgba(20,10,0,0.35)', fontFamily: MONO, color: '#14100A', transform: `scale(${0.92 + 0.08 * e})`, transformOrigin: '100% 100%' }}>
-                <div style={{ fontSize: 46, lineHeight: '64px', whiteSpace: 'nowrap', textAlign: 'right' }}>{sentText}</div>
-                <div style={{ fontSize: 30, textAlign: 'right', color: 'rgba(80,50,0,0.7)', marginTop: 0 }}>8:00 AM</div>
-              </div>
-            );
-          })()}
-        </div>
-      )}
-      {typing && (
-        <div style={{ position: 'absolute', left: 0, top: 0, width: STILL_W, height: STILL_H, transform: `scale(${s})`, transformOrigin: '0 0' }}>
-          {/* WHY one nowrap line with the caret inside it: the caret is the next thing after the last letter, so it can
-              never lead or lag the text, and the text can never re-wrap or jump while it grows */}
-          <div style={{ position: 'absolute', left: TEXT_X, top: TEXT_MID - 40, width: TEXT_MAX_X - TEXT_X, height: 80, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow: 'hidden',
-            fontFamily: MONO, fontWeight: 400, fontSize: TEXT_PX, lineHeight: '80px', color: INK }}>
-            <span>{text}</span>
-            <span style={{ display: 'inline-block', width: 3, height: 58, marginLeft: 2, background: '#F4EEDF', opacity: caretOn ? 1 : 0, flex: 'none' }} />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ---------------------------------------------------------------------------------------------------
-// Typing into a laptop's or tablet's own message box (round 6).
-// WHY a reveal of a real picture, not drawn letters: take1b-library.mjs shot the same window with the whole sentence typed into the
-// app's own box (its font, size, colour), and measured where every letter ends. The film shows the box with nothing in it
-// and uncovers the typed picture up to the current letter, so the letters are the app's own; only the blinking caret is added.
-// ---------------------------------------------------------------------------------------------------
-export const askKit = (slug: string, shape: 'laptop' | 'tablet') => {
-  const f = (k: string) => `${slug}-${shape}-${k}.png`;
-  const row = ROWS.find((x) => x.file === f('typed'));
-  if (!row?.typed) throw new Error(`take1b: no typed picture ${f('typed')} (run take1b-library.mjs)`);
-  return { clean: R4(f('clean')), focus: R4(f('cleanfocus')), typed: R4(f('typed')), working: R4(f('working')), info: row.typed, text: row.typed.text };
-};
-export type AskKit = ReturnType<typeof askKit>;
-const STILL_PX = { laptop: [2240, 1400], tablet: [2000, 1388] } as const;
-export const ShapeAsk: React.FC<{ kit: AskKit; shape: 'laptop' | 'tablet'; w: number; h: number; n: number; caretOn: boolean; caretColor: string; sent?: boolean }> = ({ kit, shape, w, h, n, caretOn, caretColor, sent = false }) => {
-  const [SW, SH] = STILL_PX[shape];
-  // WHY (round 8 reviewer BLOCKER: the page arrived 0.1 s after the last key): once sent, the real window shows its own sent bubble and working line
-  if (sent) return <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#10101A' }}><RealApp src={kit.working} w={w} h={h} /></div>;
-  const { prefix, rect, dpr } = kit.info;
-  const top = (rect[1] - 7) * dpr, bot = (rect[1] + rect[3] + 7) * dpr, left = rect[0] * dpr;
-  const x = prefix[Math.min(n, prefix.length - 1)] * dpr;
-  // WHY the caret is the app's own focused picture while nothing is typed, then a thin bar that follows the last letter
-  const base = n > 0 ? kit.clean : caretOn ? kit.focus : kit.clean;
-  return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#10101A' }}>
-      <RealApp src={base} w={w} h={h} />
-      {n > 0 && <div style={{ position: 'absolute', inset: 0, clipPath: `inset(${(top / SH) * 100}% ${100 - ((x + 3) / SW) * 100}% ${100 - (bot / SH) * 100}% ${(left / SW) * 100}%)` }}><RealApp src={kit.typed} w={w} h={h} /></div>}
-      {n > 0 && <div style={{ position: 'absolute', left: (x / SW) * w + 1, top: ((rect[1] + 0.8) * dpr / SH) * h, width: Math.max(1.5, (2 / SW) * w * 1.4), height: ((rect[3] - 1.6) * dpr / SH) * h, background: caretColor, opacity: caretOn ? 1 : 0 }} />}
+    <div style={{ position: 'absolute', inset: 0, background: APP_BG[look.app], overflow: 'hidden' }}>
+      <App w={w} h={h} p={p} />
     </div>
   );
 };

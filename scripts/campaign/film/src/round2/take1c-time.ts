@@ -5,8 +5,6 @@ import { E, LAST_WORD_END, T } from './take1c-cues';
 
 export const Q = {
   // (1) the handful
-  for: T('for', 'For more than'),
-  decade: T('decade', 'a *decade, a small'),
   handful: T('handful', 'small *handful'),
   corporations1: T('corporations1', 'of corporations have'),
   dictated: T('dictated', 'have *dictated'),
@@ -14,8 +12,6 @@ export const Q = {
   technology1: T('technology1', 'your *technology.'),
   // (2) what they decided
   they: T('they', 'They decided'),
-  decided: T('decided', 'They *decided'),
-  do: T('do', 'could *do,'),
   computersDo: T('computersDo', 'your *computers could do,'),
   cost: T('cost', 'what it would cost,'),
   costWord: T('costWord', 'would *cost,'),
@@ -24,7 +20,6 @@ export const Q = {
   // (3) the bargain
   andWeAll: T('andWeAll', 'And we all...'),
   accepted: T('accepted', 'just *accepted it.'),
-  it: T('it', 'accepted *it. We'),
   weAccepted: T('weAccepted', 'We accepted that'),
   subscribe: T('subscribe', 'would *subscribe to everything'),
   everything1: T('everything1', 'to *everything and own'),
@@ -43,9 +38,6 @@ export const Q = {
   happened: T('happened', 'wonderful *happened.'),
   // (5) the treasure
   blinded: T('blinded', 'Blinded by their'),
-  byTheir: T('byTheir', 'Blinded *by their'),
-  their: T('their', 'by *their own hubris'),
-  ownHubris: T('ownHubris', 'their *own hubris,'),
   hubris: T('hubris', 'own *hubris,'),
   created1: T('created1', 'corporations *created a new'),
   newKind: T('newKind', 'a *new kind of technology:'),
@@ -54,7 +46,6 @@ export const Q = {
   intelligence: T('intelligence', 'artificial *intelligence.'),
   aTechnology: T('aTechnology', 'A technology they believed'),
   believed: T('believed', 'they *believed would'),
-  bringAbout: T('bringAbout', 'bring *about a great'),
   greatTreasure: T('greatTreasure', 'a *great treasure:'),
   treasure: T('treasure', 'great *treasure:'),
   these: T('these', 'these corporations created'),
@@ -65,7 +56,6 @@ export const Q = {
   but: T('but', 'But in their excitement,'),
   excitement: T('excitement', 'their *excitement,'),
   createdSomething: T('createdSomething', 'they *created something far'),
-  somethingFar: T('somethingFar', 'something far beyond'),
   far: T('far', 'something *far beyond'),
   beyond: T('beyond', 'far *beyond their own control:'),
   control: T('control', 'own *control:'),
@@ -100,7 +90,6 @@ export const Q = {
   // (8) free
   itsTime1: T('itsTime1', "It's time to free"),
   free: T('free', 'to *free ourselves'),
-  tech: T('tech', 'the *tech monopolies'),
   monopolies2: T('monopolies2', 'tech *monopolies of the past.'),
   past: T('past', 'the *past.'),
   pastEnd: E('pastEnd', 'the *past.'),
@@ -126,11 +115,8 @@ export const TURN = {
   // WHY the cover is already open at frame 0: a dark cover was a dim, slow first second; the film now opens
   // straight on a bright page in close-up (the book is revealed by the pull-back).
   cover: -1.5,
-  // WHY 0.55 (was 0.42; round 5 review BLOCKER: "They decided" was spoken over a near-blank falling page): the leaf
-  // now lifts in the breath after "technology." and has landed, fully printed, as she says "decided"
-  rules: Q.they - 0.55,
-  // WHY 0.2 (round 6): the shopkeeper pops his full hat back on after "data" and needs a beat on screen before the leaf lifts
-  bargain: Q.andWeAll - 0.2,
+  rules: Q.they - 0.42,
+  bargain: Q.andWeAll - 0.4,
   // WHY cuts, not turns, inside a chapter: a page turn marks a new chapter; within one, the film cuts hard on
   // the stressed word, which is what gives it an editor's rhythm instead of one long camera move.
   nothing: onFrame(Q.weAccepted - 0.03),
@@ -138,26 +124,14 @@ export const TURN = {
   // WHY a hard cut on "hubris", not a page turn on "blinded" (review 2026-11-20): the headline "something
   // wonderful happened." must stay up 1.95 s after "happened" is spoken, and the hats start growing on
   // "hubris". The cut takes the headline and the old page away on the same frame, which is a clean edit.
-  // WHY on "Blinded", not "hubris" (review SHOULD: the first four words of the line had no picture, and the old headline
-  // contradicted them): the men stand small and plain first, and their hats grow on "hubris"
-  // WHY back on "hubris" (review round 2 BLOCKER: cutting on "Blinded" put the villains under the fading "something
-  // wonderful happened." plate for 1.2 s): the wonderful page holds until the plate has had its brand hold, the men
-  // barge into its top corner on "Blinded" (BLINDED_POP in take1c-spreads-b.tsx), and the film cuts to them, clear of
-  // type, as the hats shoot up
   treasure: onFrame(Q.hubris - 0.03),
   anyone: onFrame(Q.forAnyone - 0.03),
   // WHY a separate spread for section 7: it mirrors chapter ii's three pictures one for one
-  // WHY after "And so" (review SHOULD: the "for anyone who asks." headline sat over the next chapter's wide for 1.1 s):
-  // the anyone spread now holds until that headline has had its brand minimum (2.2 s after "asks") and faded, then
-  // the film cuts straight into the close shot of her and the padlock
-  ours: onFrame(Q.asks + 2.25),
+  ours: onFrame(Q.andSo - 0.03),
   free: Q.itsTime1 - 0.42,
   // the riffle: every page of the book flies past, each one somebody's own
   // WHY four pages, not six: one per real theme, and each one now stays readable for ~0.8 s
-  // WHY the gaps shrink (0.8, 0.7, 0.55 s; review: four equal turns read as a template): the pages accelerate into
-  // "at long, long last"; the take1c.tsx RIFFLE_DUR list shortens each turn to match
-  // WHY the first leaf lifts on "past" (review SHOULD): the book literally turns the old kings into the past
-  riffle: [Q.pastEnd - 0.3, Q.itsTime2 + 0.25, Q.itsTime2 + 0.95, Q.itsTime2 + 1.5],
+  riffle: [Q.itsTime2 - 0.55, Q.itsTime2 + 0.25, Q.atLong + 0.07, Q.last - 0.53],
   everything: Q.toOpen - 0.72,
   close: Q.end - 0.05,                     // the book shuts as the last word lands
 };
@@ -169,33 +143,16 @@ export const CUT_TURNS = new Set<number>([TURN.nothing, TURN.treasure, TURN.anyo
 export const CUT = {
   hubris: TURN.treasure,
   these: onFrame(Q.these - 0.05),
-  // the quill escapes the men in one shot and is writing the wish in the next: cut as it leaves the frame, a
-  // beat before "a tool" (review: the cut used to land 0.3 s after the quill was gone, on an empty frame)
-  tool: onFrame(Q.aTool - 0.3),
-  // WHY these cuts are shared (round five): chapter v-vi is one spread shot from very different distances, and a few
-  // drawings (the asker's head and shoulders, the scrap) belong to one shot only, so both read the same frame
-  artificial: onFrame(Q.artificial - 0.05),
-  believe: onFrame(Q.aTechnology - 0.05),
-  cage: onFrame(Q.greatTreasure - 0.05),
-  value: onFrame(Q.value - 0.05),
-  escape: onFrame(Q.createdSomething - 0.05),
-  // WHY a second cut inside the escape (review round 2): the wide sets out where everything is, then the film cuts in
-  // close on the cage top for the squeeze and the grab, so the line's key action is big enough to read
-  beyond: onFrame(Q.beyond - 0.03),
-  scarce: onFrame(Q.scarce - 0.05),
-  anyWide: onFrame(Q.asks + 0.3),
+  // the quill escapes the men in one shot and is drawing the window in the next: cut on "a tool"
+  tool: onFrame(Q.aTool - 0.02),
 };
 /** When a spread's pictures are fully on the page (a cut lands at once, a turn after TURN_DUR). */
 export const land = (turnAt: number) => turnAt + (CUT_TURNS.has(turnAt) ? 0 : TURN_DUR);
 export const COVER_DUR = 1.1;
 export const CLOSE_DUR = 0.8;
 /** How long the shut book rests before the dip, and the dip's two halves (to the felt's dark, then up). */
-// WHY a 0.6 s cross-fade, not 8 frames (review BLOCKER: a 0.27 s jump from dark purple to near-white read as a flash):
-// the closed cover now lightens into the end card over 18 frames, and brightness only rises, once
-export const SHUT_REST = 0.3, DIP_OUT = 0.5, DIP_IN = 16 / 30;
+export const SHUT_REST = 0.3, DIP_OUT = 8 / 30, DIP_IN = 16 / 30;
 /** The frame the end card starts to fade up from dark (the book has already dipped out to dark by here).
  *  WHY a dip through dark, not a cross-fade: the 4-frame dissolve from the dark cover to the near-white card
  *  read as a flash; dark to dark and then a slow rise keeps the brightness change gentle. */
-// WHY the card follows the lit payoff page directly, with no shut-book beat (review BLOCKER: ~1.5 s of dim, near-empty
-// cover read as a dark flash and dead air): the open page cross-fades to the card over DIP_OUT, brightness only rises
-export const END_CARD = TURN.close + 1.5;
+export const END_CARD = TURN.close + CLOSE_DUR + SHUT_REST + DIP_OUT;
