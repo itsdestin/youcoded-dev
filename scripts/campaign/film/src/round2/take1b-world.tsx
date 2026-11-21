@@ -175,7 +175,7 @@ export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }
 // =====================================================================================================
 // A price tag on a string, swinging after it drops. Text can change (the price ticks).
 // =====================================================================================================
-export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0 }) => {
+export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; sub?: string }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, sub }) => {
   if (t < drop) return null;
   const dt = t - drop;
   const enter = Math.min(1, dt / 0.35);
@@ -194,7 +194,9 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
         </svg>
         <div style={{ position: 'absolute', left: 0, right: 0, top: 22 * scale, height: 70 * scale, display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: DMSANS, fontWeight: 900, fontSize: 38 * scale, letterSpacing: '-0.04em', color: C.plum, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
-          <span style={{ position: 'relative' }}>{text}
+          {/* WHY a small "per month" (reviewer): a tag on a device reads as the device's price; this says it is what using it costs */}
+          <span style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>{text}
+            {sub && <span style={{ fontSize: 14 * scale, fontWeight: 700, letterSpacing: 0, color: C.plum2, marginTop: 2 * scale }}>{sub}</span>}
             {/* WHY a strike drawn left to right: "what it costs" is decided by us now; the old price is crossed out before it becomes "free" */}
             {strike > 0 && <span style={{ position: 'absolute', left: '-6%', top: '52%', height: 6 * scale, borderRadius: 6 * scale, width: `${112 * strike}%`, background: C.purple }} />}
           </span>

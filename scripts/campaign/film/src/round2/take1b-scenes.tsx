@@ -22,7 +22,16 @@ const lin = (t: number, a: number, b: number) => cl((t - a) / (b - a));
 const ez = (t: number, a: number, b: number, e = EASE_OUT) => e(lin(t, a, b));
 const bump = (t: number, at: number, d = 0.28) => (t < at || t > at + d ? 0 : Math.sin(Math.PI * (t - at) / d));
 // WHY deeper than before: the reviewer found the plum lifted and muddy; plum-black lets the paper and screens hit white
-const Room: React.FC = () => <AbsoluteFill style={{ background: 'radial-gradient(ellipse 90% 80% at 50% 30%, #22142D 0%, #120A1B 60%, #0B0611 100%)' }} />;
+// WHY ghost screens (reviewer: the wall vanished for 7 s and the scenes felt like another film): faint, blurred screens on shelves
+// sit behind every card scene so the idea stays "the same thing, on every screen"
+const GHOSTS: [number, number, number, number][] = [[80, 110, 150, 300], [300, 190, 330, 220], [760, 90, 150, 300], [1180, 160, 330, 220], [1620, 100, 160, 320], [210, 640, 330, 220], [1460, 600, 330, 220], [60, 760, 150, 300], [1740, 720, 150, 300]];
+const Room: React.FC<{ ghosts?: boolean }> = ({ ghosts = true }) => (
+  <AbsoluteFill style={{ background: 'radial-gradient(ellipse 90% 80% at 50% 30%, #22142D 0%, #120A1B 60%, #0B0611 100%)' }}>
+    {ghosts && <AbsoluteFill style={{ filter: 'blur(5px)', opacity: 0.2 }}>
+      {GHOSTS.map(([x, y, w, h], i) => <div key={i} style={{ position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: 18, background: '#EDE6F3', boxShadow: '0 0 0 8px #3A2C46' }} />)}
+    </AbsoluteFill>}
+  </AbsoluteFill>
+);
 
 // ---------------------------------------------------------------------------------------------------
 // The receipt that prints out of the phone
@@ -33,7 +42,7 @@ const PRINT_LINES: { text: string; item?: 'photo' | 'msg' | 'note' }[] = [
   { text: 'your photos', item: 'photo' }, { text: 'Sam: running late…', item: 'msg' }, { text: 'pick up Mia at 3:15', item: 'note' },
   { text: 'where you were today' }, { text: 'who you message most' }, { text: 'what you looked at' },
 ];
-const HEAD = 84, LINE = 60;
+const HEAD = 90, LINE = 72;
 const FULL = HEAD + PRINT_LINES.length * LINE + 40;
 // the moments, all from the narrator's words
 const SHARE_IN = Q.data + 0.12, FLIP = Q.personal - 0.42, PRINT0 = FLIP + 0.12, PRINT1 = Q.weAll - 0.08;
@@ -44,7 +53,8 @@ if (PRINT1 - PRINT0 < 1.3) throw new Error('take1b: the receipt would print too 
 export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, mode }) => {
   const len = mode === 'print' ? FULL * ez(t, PRINT0, PRINT1, (x) => x) : FULL * (1 - ez(t, REWIND0, REWIND1, EASE_IN_OUT));
   // WHY the camera follows the paper down: the newest line is always in view, as in the "free*" shot later
-  const follow = Math.max(0, len - 150) * 0.78;
+  // WHY len - 70 (reviewer: the last lines were cropped by the frame's bottom): the newest line always sits about 120 px above the edge
+  const follow = Math.max(0, len - 70);
   const lay = 2;
   const L = sameLayout(PW, PH, lay);
   const on = mode === 'print' ? lin(t, FLIP, FLIP + 0.18) : 1 - lin(t, UNFLIP, UNFLIP + 0.18);
@@ -61,25 +71,27 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
       <Room />
       <div style={{ position: 'absolute', left: 0, top: -follow, width: 1920, height: 1080 }}>
         {/* the paper, behind the phone, coming out of its bottom edge */}
-        <div style={{ position: 'absolute', left: 960 - 230, top: PY + PH + BZ - 6, width: 460, height: Math.max(0, len), overflow: 'hidden',
+        <div style={{ position: 'absolute', left: 960 - 330, top: PY + PH + BZ - 6, width: 660, height: Math.max(0, len), overflow: 'hidden',
           background: 'linear-gradient(180deg,#E9DECB 0px,#FBF6EC 18px,#F3EADB 100%)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',
           clipPath: 'polygon(0 0,100% 0,100% calc(100% - 12px),95% 100%,90% calc(100% - 12px),85% 100%,80% calc(100% - 12px),75% 100%,70% calc(100% - 12px),65% 100%,60% calc(100% - 12px),55% 100%,50% calc(100% - 12px),45% 100%,40% calc(100% - 12px),35% 100%,30% calc(100% - 12px),25% 100%,20% calc(100% - 12px),15% 100%,10% calc(100% - 12px),5% 100%,0 calc(100% - 12px))' }}>
           {/* WHY read top-down as it unrolls (like the "free*" receipt): each new line appears as it leaves the phone */}
-          <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: FULL, padding: '28px 40px 0', boxSizing: 'border-box', fontFamily: DMSANS, color: C.plum }}>
-            <div style={{ height: HEAD - 28, fontSize: 30, fontWeight: 900, letterSpacing: '-0.02em' }}>shared with partners:</div>
+          <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: FULL, padding: '28px 56px 0', boxSizing: 'border-box', fontFamily: DMSANS, color: C.plum }}>
+            <div style={{ height: HEAD - 28, fontSize: 40, fontWeight: 900, letterSpacing: '-0.02em' }}>shared with partners:</div>
             {PRINT_LINES.map((l, i) => (
-              <div key={i} style={{ height: LINE, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px dashed #E2D4C0', fontSize: 29, fontWeight: 500, color: C.plum2 }}>
+              <div key={i} style={{ height: LINE, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px dashed #E2D4C0', fontSize: 38, fontWeight: 600, color: C.plum2 }}>
                 <span>{l.text}</span><span style={{ fontWeight: 700, color: C.plum }}>✓</span>
               </div>
             ))}
           </div>
         </div>
+        {/* a dark slot at the phone's foot, so the paper visibly comes out of it */}
+        <div style={{ position: 'absolute', left: 960 - 350, top: PY + PH + BZ - 14, width: 700, height: 22, borderRadius: 11, background: '#08040C', boxShadow: '0 4px 10px rgba(0,0,0,0.6)' }} />
         {/* the phone */}
         <div style={{ position: 'absolute', left: PX - BZ, top: PY - BZ, width: PW + BZ * 2, height: PH + BZ * 2, borderRadius: 64, background: 'linear-gradient(180deg,#3A2C46 0%,#241A2E 45%,#1A1222 100%)',
           boxShadow: '0 30px 60px rgba(6,2,12,0.6), inset 0 2px 0 rgba(255,255,255,0.16)' }}>
           <div style={{ position: 'absolute', left: BZ, top: BZ, width: PW, height: PH, borderRadius: 50, overflow: 'hidden' }}>
             {mode === 'print'
-              ? <SameScreen w={PW} h={PH} lay={lay} lock={1} />
+              ? <SameScreen w={PW} h={PH} lay={lay} lock={1} hideTitle={shareO} />
               : <OwnScreen look={HERO_LOOK} w={PW} h={PH} />}
             {/* each thing on the screen is outlined the moment its line prints: copied out, still in place */}
             {mode === 'print' && PRINT_LINES.map((l, i) => {
@@ -152,7 +164,7 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
   const total = reprise ? BASE_TOTAL + 20 * rp : lines.slice(0, landedN).reduce((a, s) => a + s[1], 0);
   const lastLand = drop(Math.max(0, landedN - 1)) + FALL;
   const thump = Math.exp(-(t - lastLand) * 12) * (landedN > 2 && t > lastLand ? 1 : 0);
-  const CARD_H = 104, PITCH = 114, BASE = 690;
+  const CARD_H = 116, PITCH = 126, BASE = 700;
   // WHY the camera climbs with the pile but lags it: the newest charge lands in view, and the pile keeps running out
   // of the top of the frame instead of stopping politely
   const rise = Math.max(0, landedN - 4.5) * PITCH;
@@ -172,11 +184,14 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
             {/* WHY wheels only while turning: at rest the number is set as plain type, so its spacing is exact */}
             {reprise && rp > 0 && rp < 1 ? <Odometer p={rp} size={176} /> : `$${dollars}.${cents}`}
           </div>
+          {/* WHY (reviewer: nothing said "own nothing"): the other number, set against the bill, thumps in on "nothing" */}
+          {!reprise && t >= Q.own && <div style={{ marginTop: 26, fontSize: 64, fontWeight: 900, letterSpacing: '-0.04em', color: C.nightText2, transform: `scale(${1 + Math.exp(-Math.max(0, t - Q.own - 0.33) * 12) * 0.12 * (t > Q.own + 0.33 ? 1 : 0)})`, transformOrigin: '0 50%', opacity: ez(t, Q.own, Q.own + 0.15) }}>
+            you own <span style={{ color: C.purpleNight, fontSize: 96, marginLeft: 12 }}>{t >= Q.own + 0.33 ? '0' : ''}</span></div>}
         </div>
         {/* the pile. WHY the fade at the bottom: the older charges sink away below the frame instead of running
             through the "own nothing." headline */}
-        <AbsoluteFill style={{ WebkitMaskImage: 'linear-gradient(180deg,#000 62%,transparent 78%)', maskImage: 'linear-gradient(180deg,#000 62%,transparent 78%)' }}>
-          <div style={{ position: 'absolute', left: 930, top: 0, width: 760, height: 1080, transform: `translateY(${rise + thump * 9}px)` }}>
+        <AbsoluteFill style={{ WebkitMaskImage: 'linear-gradient(180deg,#000 58%,transparent 70%)', maskImage: 'linear-gradient(180deg,#000 58%,transparent 70%)', opacity: scene }}>
+          <div style={{ position: 'absolute', left: 860, top: 0, width: 900, height: 1080, transform: `translateY(${rise + thump * 9}px)` }}>
             {lines.map(([name, price, col], i) => {
               const d = drop(i);
               if (t < d) return null;
@@ -189,13 +204,13 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
               const bounce = d >= 0 && since > 0 ? -Math.sin(since * 28) * Math.exp(-since * 14) * 10 : 0;
               const isAI = reprise && i === N;
               return (
-                <div key={i} style={{ position: 'absolute', left: ((i * 53) % 5 - 2) * 9, top: y - (1 - p) * (y + 300) + bounce, width: 720, height: CARD_H,
+                <div key={i} style={{ position: 'absolute', left: ((i * 53) % 5 - 2) * 9, top: y - (1 - p) * (y + 300) + bounce, width: 860, height: CARD_H,
                   transform: `rotate(${tilt}deg) scaleY(${1 - sq * 0.12}) scaleX(${1 + sq * 0.03})`, transformOrigin: '50% 100%',
                   borderRadius: 18, background: isAI ? 'linear-gradient(180deg,#5A3672,#43295A)' : 'linear-gradient(180deg,#34263F,#271C31)', boxShadow: '0 14px 26px rgba(6,2,12,0.6), inset 0 1.5px 0 rgba(255,255,255,0.14)',
                   display: 'flex', alignItems: 'center', padding: '0 30px', boxSizing: 'border-box', gap: 22, fontFamily: DMSANS }}>
                   <div style={{ width: 52, height: 52, borderRadius: 14, background: col, flex: 'none', boxShadow: 'inset 0 -3px 0 rgba(0,0,0,0.18)' }} />
-                  <div style={{ flex: 1, fontSize: 40, fontWeight: 700, color: C.nightText, letterSpacing: '-0.02em' }}>{name}</div>
-                  <div style={{ fontSize: 36, fontWeight: isAI ? 900 : 500, color: isAI ? C.nightText : C.nightText2, fontVariantNumeric: 'tabular-nums' }}>${price.toFixed(2)}/mo</div>
+                  <div style={{ flex: 1, fontSize: 50, fontWeight: 700, color: C.nightText, letterSpacing: '-0.02em' }}>{name}</div>
+                  <div style={{ fontSize: 44, fontWeight: isAI ? 900 : 500, color: isAI ? C.nightText : C.nightText2, fontVariantNumeric: 'tabular-nums' }}>${price.toFixed(2)}/mo</div>
                 </div>
               );
             })}
@@ -217,12 +232,12 @@ export const FreeTag: React.FC<{ t: number }> = ({ t }) => {
   const dt = t - t0;
   const swing = 7 * Math.exp(-dt * 2.4) * Math.sin(dt * 7);
   const enter = ez(t, t0, t0 + 0.45);
-  const LN = 118, HEAD = 150;
+  const LN = 100, HEAD = 130;
   // the paper unrolls one line at a time, a beat before each line's word
   const shown = PRINT.reduce((a, [, at]) => a + ez(t, at - 0.2, at + 0.12, EASE_OUT), 0);
   const len = 60 + HEAD * Math.min(1, ez(t, t0 + 0.2, PRINT[0][1] - 0.2)) + shown * LN + 30 * Math.min(1, shown);
   // the camera tilts down after the paper, and pushes in the whole time
-  const follow = Math.max(0, len - 640);   // WHY 640: the "free*" tag stays in view while its list is read
+  const follow = Math.max(0, len - 700);   // WHY 640: the "free*" tag stays in view while its list is read
   const push = 1 + 0.06 * lin(t, t0, Q.however);
   return (
     <AbsoluteFill>

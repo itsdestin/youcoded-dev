@@ -143,10 +143,12 @@ export type SameProps = {
   /** 0..1 the companies' new "AI" tile stamped onto the screen; `price` 0..1 its $20/mo chip popping on */
   ai?: number; price?: number;
   /** 0..1 the "something wonderful" glimpse: the screen hushes and one purple caret blinks; `caret` is the blink */
-  glimpse?: { o: number; caret: boolean };
+  glimpse?: { o: number; caret: boolean; truly?: number; dark?: number };
+  /** 0..1 hides the title (a banner or switch is using its row) */
+  hideTitle?: number;
 };
 
-export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, price = 0, glimpse }) => {
+export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, price = 0, glimpse, hideTitle = 0 }) => {
   const k = Math.min(w, h) / 100;
   const L = sameLayout(w, h, lay);
   const P = L.portrait;
@@ -154,7 +156,8 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
   const g = L.grid;
   const gx = 2.4 * k;
   const tw = (g.w * w - gx * (cols - 1)) / cols, th = (g.h * h - gx * (rows - 1)) / rows;
-  const tileHues = ['#DCD3E6', '#D3C9DF', '#E2DBEA', '#CFC4DC', '#D9D0E4', '#CCC1D9'];
+  // WHY mid-tone, saturated tiles (reviewer: the generic app read as a grey wireframe): a product people are stuck with needs solid colour for the locks to land on
+  const tileHues = ['#E9A98C', '#8FB2DA', '#9CC9A6', '#C9A2DC', '#E8CC83', '#8FC4C8'];
   const lockOf = (i: number) => (Array.isArray(lock) ? lock[i] ?? 0 : i % 3 !== 0 ? lock : 0);
   const dlg = smooth(dialog) * (1 - smooth((accept - 0.3) * 3));
   return (
@@ -166,7 +169,9 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
       {!P && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 0.2 * w, background: '#ECE6F2' }}>
         {[0, 1, 2, 3, 4].map((i) => <div key={i} style={{ position: 'absolute', left: 4 * k, top: (0.17 + i * 0.1) * h, width: 0.2 * w - 8 * k, height: 4 * k, borderRadius: 2 * k, background: i === 0 ? S.tile2 : S.tile }} />)}
       </div>}
-      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink }}>Good morning</div>
+      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink, opacity: 1 - smooth(Math.max(hideTitle, banner > 0 ? 1 : 0) * 5) }}>Good morning</div>
+      {/* a plain plan chip: nothing says "same as everyone's" like a tier name */}
+      <div style={{ position: 'absolute', right: (P ? 0.07 : 0.05) * w, top: (P ? 0.085 : 0.1) * h, padding: `${0.6 * k}px ${2 * k}px`, borderRadius: 4 * k, background: S.tile, color: S.ink, fontSize: 2.8 * k, fontWeight: 700, opacity: 1 - smooth(Math.max(hideTitle, banner > 0 ? 1 : 0) * 5) }}>Standard</div>
       {(['photo', 'msg', 'note'] as const).map((kind) => (
         <div key={kind} style={box(L[kind], w, h)}><OwnCard kind={kind} w={L[kind].w * w} h={L[kind].h * h} k={k} /></div>
       ))}
@@ -184,7 +189,7 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
       })}
       {/* the update banner that lands on every screen in the same frame */}
       {banner > 0 && <div style={{ position: 'absolute', left: '6%', right: '6%', top: (P ? 0.075 : 0.06) * h, height: (P ? 0.06 : 0.09) * h, borderRadius: 3 * k, background: '#43354E', color: '#F3EAF9',
-        fontSize: 3.4 * k, fontWeight: 700, display: 'flex', alignItems: 'center', paddingLeft: 3 * k, transform: `translateY(${(smooth(banner * 4) - 1) * 6 * k}px)`, opacity: smooth(banner * 4) * (1 - smooth((banner - 0.8) * 5)), whiteSpace: 'nowrap', overflow: 'hidden' }}>Your layout has been updated</div>}
+        fontSize: 3.4 * k, fontWeight: 700, display: 'flex', alignItems: 'center', paddingLeft: 3 * k, transform: `translateY(${(smooth(banner * 4) - 1) * 6 * k}px)`, opacity: smooth(banner * 6) * (1 - smooth((banner - 0.85) * 6)), whiteSpace: 'nowrap', overflow: 'hidden' }}>Your layout has been updated</div>}
       {/* their machine's tile, stamped on top of everything, with its price beside it (the same tile as on the big screen).
           WHY a plain tile and no bar: the corporations' AI is theirs, not youcoded, and not somewhere you type */}
       {ai > 0 && <div style={{ position: 'absolute', right: (P ? 0.07 : 0.05) * w, bottom: (P ? 0.04 : 0.07) * h, display: 'flex', alignItems: 'center', gap: 2 * k, flexDirection: P ? 'column-reverse' : 'row-reverse',
@@ -194,9 +199,13 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
         <span style={{ height: 7 * k, padding: `0 ${2.2 * k}px`, borderRadius: 7 * k, background: '#FBF5EA', color: '#21152C', fontWeight: 900, fontSize: 3.8 * k, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap',
           boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)`, opacity: smooth(price * 2), transform: `scale(${price <= 0 ? 0.4 : 0.4 + 0.6 * smooth(price) + 0.18 * Math.sin(Math.PI * cl(price))})` }}>$20/mo</span></div>}
       {glimpse && glimpse.o > 0 && <>
-        {/* WHY a hush and a caret, not an input bar: something new is waiting here, and nothing of the real app is drawn */}
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(250,247,252,0.82)', opacity: glimpse.o }} />
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 2.6 * k, height: 15 * k, marginLeft: -1.3 * k, marginTop: -7.5 * k, borderRadius: 3 * k, background: '#9750AA', opacity: glimpse.o * (glimpse.caret ? 1 : 0) }} />
+        {/* WHY (reviewer: the old 82% white wash left a blank phone and a caret too small to see): the app stays visible but quiet,
+            the title stays, and a big purple caret blinks in a cleared space. On "truly" a thin line grows under it (somewhere to
+            type); on "wonderful" the lock tiles go dark around it. Nothing of the real app is drawn. */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 0.15 * h, bottom: 0, background: S.bg, opacity: glimpse.o * 0.9 }} />
+        <div style={{ position: 'absolute', left: '50%', top: '47%', width: 4.2 * k, height: 26 * k, marginLeft: -2.1 * k, marginTop: -13 * k, borderRadius: 3 * k, background: '#9750AA', opacity: glimpse.o * (glimpse.caret ? 1 : 0) }} />
+        <div style={{ position: 'absolute', left: '50%', top: '47%', marginTop: 16 * k, height: 1.1 * k, width: (P ? 0.62 : 0.4) * w * (glimpse.truly ?? 0), marginLeft: -(P ? 0.31 : 0.2) * w * (glimpse.truly ?? 0), borderRadius: k, background: '#9750AA', opacity: 0.8 * glimpse.o }} />
+        <div style={{ position: 'absolute', inset: 0, background: '#1B1224', opacity: 0.55 * (glimpse.dark ?? 0) }} />
       </>}
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
