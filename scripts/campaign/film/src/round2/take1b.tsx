@@ -18,7 +18,7 @@ import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from 'remotion';
 import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
 import { EndCard, Line } from '../kit';
 import { LAST_WORD_END, Q } from './take1b-cues';
-import { AiTile, OwnScreen, PhoneAsk, SameScreen, SharedRecipe, TEXT_MID, TEXT_X, WALL_VARIETY, lookFor, tileCenter } from './take1b-screens';
+import { AiTile, OwnScreen, PhoneAsk, SameScreen, TEXT_MID, TEXT_X, WALL_VARIETY, lookFor, lookOf, tileCenter } from './take1b-screens';
 import { Dev, Device, PointerArrow, Pointer, PriceTag, Shelves, WORLD, dev } from './take1b-world';
 import { FreeTag, Receipt, SubStack } from './take1b-scenes';
 
@@ -39,7 +39,8 @@ const CUT_PRIVACY = Q.privacy + 0.1;                 // the "own nothing." headl
 // (9) the ending. WHY this order (reviewer 2026-11-20): the wall goes soft and pale under "open source everything."
 // so the words sit on a calm backdrop; the words leave completely; only then does the calm wall give way to the
 // end card, already whole (never a ghost of the headline over the wall, never a half-built card).
-const CALM0 = Q.open - 0.15;
+// WHY later (reviewer): the finished wall used to be sharp for 0.3 s before it blurred; now it gets about a second
+const CALM0 = Q.open + 0.1;
 const END_FADE = Math.max(LAST_WORD_END + 0.2, Q.open + 2.3);    // the headline is gone by here
 const END_CARD = END_FADE + 0.06, END_X = 0.3;                   // then a short dissolve to the end card
 // (1) the two synchronised clicks that rearrange every screen
@@ -56,11 +57,13 @@ const STAMP = Q.believed + 0.1;                      // they stamp it onto every
 // "a great treasure: shareholder value": a price tag drops onto their bar on "shareholder" and lands on "value";
 // then every screen's copy of the bar gets the same price, spreading out from the big screen as the camera pulls back
 const TAG = Q.value - 0.33;
+const TAG_X = 40, TAG_Y = -20;                       // WHY (reviewer): the tag hangs off the tile's corner and no longer hides the "I" of AI
 const PRICE_ALL = Q.value + 0.18;
 // (6) excited clicking, then the caret slips away down the wall
 const EXCITED = [Q.excitement + 0.05, Q.excitement + 0.45, Q.created2 + 0.05];
 const HOP0 = Q.far + 0.16, HOP = 0.38, LAND = HOP0 + 3 * HOP;
-const TYPE0 = Q.aTool + 0.15, TYPE1 = Q.monopolies1, SEND = TYPE1 + 0.25;
+// WHY 0.55 s earlier (reviewer): typing finishes sooner so the sent message sits in the chat before the page arrives
+const TYPE0 = Q.aTool + 0.15, TYPE1 = Q.monopolies1 - 0.55, SEND = TYPE1 + 0.25;
 const MACRO = TYPE0 - 0.3;                           // the cut to the phone's message box
 // the request, typed into the REAL phone's own message box (the box is a real capture, wiped clean of its
 // placeholder by take1b-prep.py; the letters are set in the app's own font, size and colour at its own spot).
@@ -91,11 +94,13 @@ const typedCaret = (t: number) => {
 const FLIP_HERO = Q.forAnyone;
 // (7) the lateral track along the shelves, then the three callbacks
 const TRACK_X0 = -1700, TRACK_X1 = 1700;
-const UNLOCK = Q.canDo + 0.1, LL_FLIP = Q.canDo + 0.45;
+// WHY earlier + three pages (reviewer): "what our computers can do" is shown as three different real pages snapping in
+const UNLOCK = Q.canDo + 0.05, LL_FLIP = Q.canDo + 0.3, LL_PAGE2 = Q.canDo + 0.66, LL_PAGE3 = Q.canDo + 1.0;
 const STRIKE = Q.costsWord - 0.25, TT_FLIP = Q.costsWord - 0.05;
 // (9) copies of the recipes arrive next door
-const SHARE_AT = [Q.itsTime + 0.4, Q.itsTime + 0.8];
-const SHARE_HOLD = Q.itsTime + 2.3;
+const SHARE_AT = [Q.itsTime + 0.35, Q.itsTime + 0.7];
+// WHY earlier (reviewer): the pull-back to the finished wall must arrive before the calm veil, so the payoff is seen sharp
+const SHARE_HOLD = Q.itsTime + 1.9;
 
 const HEADS = [
   { text: 'own *nothing.', at: Q.own, out: CUT_PRIVACY },
@@ -142,6 +147,8 @@ const flipAt = (d: Dev): number => {
   // everything out of shot changes in a ripple over the same seconds, so the wide shots later are complete
   return Q.andSo + 0.25 + (d.dist / MAXD) * (Q.canDo - Q.andSo - 0.3) + jit(d) * 0.25;
 };
+const LL_PAGES = [lookOf('dark-laptop-money.png'), lookOf('creme-laptop-paint.png')];
+const HOME_STILL: Record<string, string> = { laptop: 'midnight-laptop-home.png', tablet: 'morning-rounds-tablet-home.png', phone: 'dark-phone-home.png', tv: 'light-tv-home.png', monitor: 'light-tv-home.png' };
 const SAME_GLOW = 'rgba(236,230,244,1)';
 
 // ---------- screen geometry the pointers and the caret aim at ----------
@@ -151,6 +158,7 @@ const HS = { x: HERO.cx - HERO.w / 2, y: top(HERO) };
 const heroInput = { x: HS.x + (TEXT_X / 1170) * HERO.w, y: HS.y + (TEXT_MID / 2442) * HERO.h };
 // the message box's middle, for the macro shot
 const BOX_Y = heroInput.y;
+const BOX_UP = 0.28 * 1080;   // WHY: lifts the camera so the message box sits 78% of the way down the frame (lower third)
 const LL_TILE = (() => { const c = tileCenter(LL.w, LL.h, 2, 1); return { x: LL.cx - LL.w / 2 + c.x, y: top(LL) + c.y }; })();
 const acceptBtn = (d: Dev) => { const k = Math.min(d.w, d.h) / 100; return { x: d.cx + 3 * k, y: d.cy + (d.h > d.w ? 12 : 9.4) * k }; };
 
@@ -158,7 +166,7 @@ const acceptBtn = (d: Dev) => { const k = Math.min(d.w, d.h) / 100; return { x: 
 // [world x, world y at frame centre, scale, tilt back (deg, + looks up at the wall, - looks down on it), roll (deg)]
 type Cam = [number, number, number, number?, number?];
 type Scene = 'print' | 'rewind' | 'stack' | 'free';
-type Shot = { at: number; keys: [number, Cam][]; focus?: string[]; scene?: Scene; linear?: boolean; rack?: [number, number, number] };
+type Shot = { at: number; keys: [number, Cam][]; focus?: string[]; scene?: Scene; linear?: boolean; rack?: [number, number, number]; follow?: boolean };
 const TWO_X = (HERO.cx - HERO.w / 2 + TT.cx + TT.w / 2) / 2;          // the phone and the tablet, side by side
 const TRIO_X = (L0.cx - L0.w / 2 + TT.cx + TT.w / 2) / 2;            // laptop, phone, tablet
 const TRIO = ['0:l0', 'hero', 'tagTablet'];
@@ -168,8 +176,9 @@ const LL_GRID = (() => { const a = tileCenter(LL.w, LL.h, 2, 0), b = tileCenter(
 // letter is a bare bar; that bar is the caret that escapes (the bar sits about 0.17 tiles right of centre)
 const TILE_S = 0.5 * TV.h;
 const BAR_Y = TV.cy;
-const TV_CARET = { x: TV.cx + TILE_S * 0.165, y: TV.cy };
-const FORM_Y = top(TV) + TV.h + 80;                  // where the five stand, just under the big screen
+const TV_CARET = { x: TV.cx + TILE_S * 0.29, y: TV.cy };   // WHY 0.265: the bar now sits beside a whole "AI" (take1b-screens AiTile)
+const FORM_Y = top(TV) + TV.h + 80;
+const TILE_PT = { x: TV.cx + TILE_S * 0.2, y: TV.cy + TILE_S * 0.3 };   // a spot on the tile's lower right, where the pointer clicks                  // where the five stand, just under the big screen
 const SHOTS: Shot[] = [
   // (1) low angle on the whole wall, starting closer, tilted and out of focus; it settles as the five arrive
   // WHY (reviewer): the TV was cropped by the top edge and a 1 s heavy blur read as a loading error; lift the camera and rack only 3 px, done by 0.7 s
@@ -192,33 +201,50 @@ const SHOTS: Shot[] = [
   { at: Q.however, keys: [[Q.however, [0, -380, 0.5]], [Q.something, [0, -370, 0.6]], [Q.wonderful + 0.2, [0, hy + 30, 2.0]]], focus: ['hero'] },
   // (5) "blinded by their own hubris": low angle on the dark wall as the five march down it; one continuous
   // push from there into the big screen while they build their machine
-  { at: Q.blinded, keys: [[Q.blinded, [0, -640, 0.5, 7, 0]], [Q.these, [TV.cx, -700, 0.56, 5, 0]], [Q.ai, [TV.cx, TV.cy + 130, 1.25, 1, 0]], [Q.aTechnology, [TV.cx, TV.cy + 170, 1.5, 0, 0]]] },
+  // WHY the push starts straight away (reviewer): the old 3 s wide of a marching pointer said nothing; now the camera heads for the big screen from the first word
+  { at: Q.blinded, keys: [[Q.blinded, [TV.cx * 0.4, -640, 0.55, 7, 0]], [Q.these, [TV.cx, -700, 0.66, 5, 0]], [Q.ai, [TV.cx, TV.cy + 130, 1.25, 1, 0]], [Q.aTechnology, [TV.cx, TV.cy + 170, 1.5, 0, 0]]] },
   // "a technology they believed...": close on the bar as the price goes on
   { at: Q.aTechnology, keys: [[Q.aTechnology, [TV.cx + 40, TV.cy + 175, 1.9]], [Q.believed, [TV.cx + 40, TV.cy + 175, 2.05]]], focus: ['tv'] },
   // "...would bring about": a dutch angle on the wall as it is stamped onto every screen
-  { at: Q.believed, keys: [[Q.believed, [0, -480, 0.56, 0, 3]], [Q.great, [0, -470, 0.6, 0, 2]]] },
+  // WHY it starts on the tile (reviewer): the old hard cut from the macro to a dutch wide had nothing matching; now the camera pulls out of the tile in one move
+  { at: Q.believed, keys: [[Q.believed, [TV.cx + 40, TV.cy + 175, 2.05, 0, 0]], [Q.believed + 0.8, [0, -480, 0.56, 0, 3]], [Q.great, [0, -470, 0.6, 0, 2]]] },
   // "a great treasure: shareholder value": close on the end of their bar; a price tag drops on "shareholder" and
   // lands on "value"; then the camera pulls back as the same price pops onto every screen's copy of the bar
   { at: Q.great, keys: [[Q.great, [TV.cx + 70, BAR_Y + 50, 2.05]], [Q.value, [TV.cx + 90, BAR_Y + 60, 2.25]], [Q.value + 0.12, [TV.cx + 90, BAR_Y + 60, 2.25]], [Q.but - 0.02, [TV.cx * 0.4, TV.cy + 260, 0.78]]], focus: ['tv'] },
   // (6) excitement at the big screen, then one continuous shot: the caret escapes, lands, and is asked
-  { at: Q.but, keys: [[Q.but, [TV.cx, TV.cy + 170, 1.6]], [Q.far, [TV.cx, TV.cy + 170, 1.72]]], focus: ['tv'] },
-  { at: Q.far, keys: [[Q.far, [0, -720, 0.72]], [LAND + 0.15, [0, -690, 0.75]], [MACRO, [HERO.cx, hy + 20, 1.9]]], focus: ['hero'] },
+  // WHY it starts where the last shot ended (reviewer: the camera snapped from wide back to close): one pull-out on "value", then a slow push in
+  { at: Q.but, keys: [[Q.but, [TV.cx * 0.4, TV.cy + 260, 0.78]], [Q.but + 0.9, [TV.cx, TV.cy + 190, 1.3]], [Q.far, [TV.cx, TV.cy + 170, 1.6]]], focus: ['tv'] },
+  // WHY the camera follows the caret (reviewer BLOCKER: it was a 10 px bar in a wide shot nobody could follow): scale about 1.2, tracking its hops
+  { at: Q.far, follow: true, keys: [[Q.far, [TV.cx, TV.cy + 120, 1.45]], [HOP0 + 0.1, [TV.cx, TV.cy + 120, 1.15]], [LAND + 0.05, [HERO.cx, hy, 1.15]], [MACRO, [HERO.cx, hy + 20, 2.9]]], focus: ['hero'] },
   // "a tool that can make software...": cut close on the phone's own message box; the request is typed into it,
   // word by word, then sent; the camera pulls back as it is sent (following it up to its bubble) and the answer is built
-  { at: MACRO, keys: [[MACRO, [HERO.cx, BOX_Y - 20, 7.0]], [TYPE1, [HERO.cx, BOX_Y - 20, 7.5]], [SEND - 0.08, [HERO.cx, BOX_Y - 20, 7.55]], [FLIP_HERO, [HERO.cx, hy, 2.85]]], focus: ['hero'] },
-  { at: FLIP_HERO, keys: [[FLIP_HERO, [HERO.cx, hy, 2.85]], [FLIP_HERO + 0.8, [0, hy + 60, 2.3]], [Q.andSo, [0, -200, 0.95]]], focus: ['hero', ...FIRST_FOLLOWERS] },
+  // WHY re-framed (reviewer BLOCKER: a tiny box under blank wallpaper): the whole phone first, then in on the box with the box in the lower third (type about 56 px), the chat above it filling the frame; on send it eases back out to the whole phone
+  { at: MACRO, keys: [[MACRO, [HERO.cx, hy + 20, 2.9]], [TYPE0 + 0.5, [HERO.cx, BOX_Y - BOX_UP / 10.5, 10.5]], [SEND - 0.05, [HERO.cx, BOX_Y - BOX_UP / 10.7, 10.7]], [SEND + 0.65, [HERO.cx, hy, 3.4]], [FLIP_HERO, [HERO.cx, hy, 3.2]]], focus: ['hero'] },
+  // WHY the close shot is held through the whole page build (reviewer: it pulled back before the page details could be seen)
+  { at: FLIP_HERO, keys: [[FLIP_HERO, [HERO.cx, hy, 3.2]], [FLIP_HERO + 1.1, [HERO.cx, hy, 3.0]], [Q.andSo, [0, -200, 0.95]]], focus: ['hero', ...FIRST_FOLLOWERS] },
   // (7) "and so... we get to decide": a lateral track along the shelves; each screen turns its own as it passes
-  { at: Q.andSo, keys: [[Q.andSo, [TRACK_X0, hy - 60, 1.05, 3, 0]], [Q.canDo, [TRACK_X1, hy - 60, 1.05, 3, 0]]], linear: true },
-  { at: Q.canDo, keys: [[Q.canDo, [LL.cx, LL.cy + 10, 2.3]], [Q.costs, [LL.cx, LL.cy + 10, 2.42]]], focus: ['lockLaptop'] },
+  // WHY a wide pull-back first, then a track that eases to a stop on "decide" (reviewer): the change is seen spreading out from the phone, then the wall settles
+  { at: Q.andSo, keys: [[Q.andSo, [0, -200, 0.95, 0, 0]], [Q.andSo + 1.1, [-300, -250, 0.62, 2, 0]], [Q.decide, [TRACK_X1 * 0.55, hy - 60, 1.05, 3, 0]], [Q.canDo, [TRACK_X1 * 0.62, hy - 60, 1.0, 3, 0]]] },
+  { at: Q.canDo, keys: [[Q.canDo, [LL.cx, LL.cy + 10, 1.9]], [Q.costs, [LL.cx, LL.cy + 10, 2.6]]], focus: ['lockLaptop'] },
   { at: Q.costs, keys: [[Q.costs, [TT.cx - 40, TT.cy - 60, 1.9]], [Q.whatHappens, [TT.cx - 40, TT.cy - 60, 2.0]]], focus: ['tagTablet'] },
   { at: Q.whatHappens, keys: [[Q.whatHappens, [0, 0, 1]]], scene: 'rewind' },
   // (8) "free ourselves": low angle again, the whole wall flips to daylight (kept: the strongest colour moment)
-  { at: Q.free, keys: [[Q.free, [0, -420, 0.62, 6, 0]], [Q.itsTime, [0, -410, 0.6, 2, 0]]] },
+  // WHY a continuous push (reviewer: 3 s of an identical wall): the camera never stops, the devices lift in a ripple from the phone on "free"
+  { at: Q.free, keys: [[Q.free, [0, -420, 0.62, 6, 0]], [Q.itsTime - 0.7, [TRIO_X * 0.5, -300, 0.95, 2, 0]], [Q.itsTime, [TRIO_X, hy - 30, 1.7, 0, 0]]] },
   // (9) close on the recipes being shared next door, then all the way back
-  { at: Q.itsTime, keys: [[Q.itsTime, [TRIO_X, hy - 30, 1.7]], [SHARE_HOLD, [TRIO_X, hy - 40, 1.6]], [Q.open + 0.1, [0, -380, 0.52]], [END_FADE, [0, -400, 0.4]]], focus: TRIO },
+  { at: Q.itsTime, keys: [[Q.itsTime, [TRIO_X, hy - 30, 1.7]], [SHARE_HOLD, [TRIO_X, hy - 40, 1.6]], [Q.open - 0.4, [0, -380, 0.52]], [END_FADE, [0, -400, 0.42]]], focus: TRIO },
 ];
 const shotAt = (t: number) => { let s = SHOTS[0]; for (const x of SHOTS) if (t >= x.at) s = x; return s; };
 const camAt = (t: number, s: Shot): [number, number, number, number, number] => {
+  if (s.follow && t >= HOP0 - 0.2 && t < LAND + 0.15) {
+    // WHY: the camera rides the caret (lagging a hair behind it, so it feels held rather than glued) and hands back to the keys after it lands
+    const base = camAtKeys(t, s), c = caretAt(Math.max(HOP0, t - 0.1));
+    const w = ez(t, HOP0 - 0.2, HOP0 + 0.1, EASE_IN_OUT) * (1 - ez(t, LAND - 0.1, LAND + 0.15, EASE_IN_OUT));
+    return [lerp(base[0], c.x, w), lerp(base[1], c.y + 40, w), base[2], 0, 0];
+  }
+  return camAtKeys(t, s);
+};
+const camAtKeys = (t: number, s: Shot): [number, number, number, number, number] => {
   const k = s.keys;
   const full = (c: Cam): [number, number, number, number, number] => [c[0], c[1], c[2], c[3] ?? 0, c[4] ?? 0];
   if (t <= k[0][0]) return full(k[0][1]);
@@ -334,8 +360,8 @@ const pointers = (t: number): Pointer[] => {
       y += Math.sin((t - Q.these) * 2.2) * 6 * lin(t, Q.these, Q.these + 0.6);   // one shared slow breath, never frozen
     } else if (t < Q.believed) {
       // close on the bar: they hold their formation, faced at it; one clicks as the price goes on
-      x = TV.cx + (i - 2) * 200; y = FORM_Y + Math.sin((t - Q.these) * 2.2) * 6;
-      rot = aim(x, y, TV.cx, BAR_Y);
+      // WHY on the tile (reviewer: the pointer clicked air under the TV): the one that clicks stands on the tile's lower corner, the rest crowd just behind it
+      x = TILE_PT.x + (i - 2) * 70; y = TILE_PT.y + Math.abs(i - 2) * 34 + Math.sin((t - Q.these) * 2.2) * 4;
       if (i === 2) press = bump(t, TAG - 0.04);
     } else if (t < Q.great) {
       // "...would bring about": back above the wall, they stamp it onto every screen in four lockstep clicks
@@ -346,7 +372,7 @@ const pointers = (t: number): Pointer[] => {
       o = 0;
     } else if (t < Q.far + 0.001) {
       // (6) "in their excitement": quick synchronised clicks on the bar, each one making it bigger; then all at its caret
-      const home: [number, number] = [TV.cx + (i - 2) * 200, FORM_Y];
+      const home: [number, number] = [TILE_PT.x + (i - 2) * 70, TILE_PT.y + Math.abs(i - 2) * 34];   // WHY on the tile: the clicks that make it bigger land on it
       const gather = ez(t, EXCITED[2] + 0.2, Q.far - 0.04, EASE_IN_OUT);
       const pack = row(i, TV_CARET.x + 60, TV_CARET.y + 26, 110);
       x = lerp(home[0], pack[0], gather); y = lerp(home[1], pack[1] + Math.abs(i - 2) * 30, gather);
@@ -368,12 +394,17 @@ const pointers = (t: number): Pointer[] => {
 };
 
 // ---------- what each screen shows at time t ----------
-const flipNode = (f: number, a: React.ReactNode, b: React.ReactNode, at = '50% 50%') => {
+const flipNode = (f: number, a: React.ReactNode, b: React.ReactNode, at = '50% 50%', mode: 'circle' | 'wake' | 'rise' = 'wake') => {
   if (f <= 0) return a;
   if (f >= 1) return b;
-  // WHY a circle opening (from the centre, or from where the change came in): the change reads as arriving IN
-  // the screen. The new screen is always already complete behind the circle, never an empty panel.
-  return <>{a}<div style={{ position: 'absolute', inset: 0, clipPath: `circle(${EASE_OUT(f) * 150}% at ${at})` }}>{b}</div></>;
+  const e = EASE_OUT(f);
+  // WHY three kinds (reviewer: the same circular porthole on every screen looked like a stock transition):
+  //  circle = only where the caret lands, growing from its box; wake = every other screen wakes from its bottom edge
+  //  with a tiny settle; rise = the made page slides up into the phone as if it were built there. The new screen is
+  //  always complete behind the reveal, never an empty panel.
+  if (mode === 'circle') return <>{a}<div style={{ position: 'absolute', inset: 0, clipPath: `circle(${e * 150}% at ${at})` }}>{b}</div></>;
+  if (mode === 'rise') return <>{a}<div style={{ position: 'absolute', inset: 0, transform: `translateY(${(1 - e) * 100}%)`, boxShadow: '0 -20px 40px rgba(10,4,18,0.3)' }}>{b}</div></>;
+  return <>{a}<div style={{ position: 'absolute', inset: 0, clipPath: `inset(${(1 - e) * 100}% 0 0 0)` }}><div style={{ position: 'absolute', inset: 0, transform: `scale(${1 + 0.04 * (1 - e)})` }}>{b}</div></div></>;
 };
 // WHY a 4-frame snap rather than a slide: blocks sliding past each other looked messy, and a snap reads as
 // "one click, every screen, the same frame"
@@ -387,17 +418,18 @@ const blink = (frame: number) => Math.floor(frame / 15) % 2 === 0;
  *  it is. WHY so plain (owner 2026-11-20: the pill "ask" bar felt cheap and was an invented interface): it is theirs, not
  *  youcoded, and its whole point is the price they hang on it. The place you actually type is the real window's own box. */
 const TVMachine: React.FC<{ w: number; h: number; t: number; frame: number }> = ({ w, h, t, frame }) => {
-  const power = ez(t, POWER, POWER + 0.25);
+  const power = ez(t, POWER, POWER + 0.4, EASE_IN_OUT);
   const pop = ez(t, BAR_IN, BAR_IN + 0.5, EASE_OUT);
   // in their excitement each click makes it bigger (with a little kick), never smaller
   const clicks = EXCITED.filter((e) => t >= e).length;
   const kick = EXCITED.reduce((a, e) => Math.max(a, bump(t, e, 0.2)), 0);
   const big = 1 + clicks * 0.07 + kick * 0.04;
-  const sz = TILE_S * big * (0.5 + 0.5 * pop);
+  const sz = TILE_S * big * (0.5 + 0.5 * pop) * (1 + 0.07 * Math.sin(Math.PI * pop));   // WHY the overshoot: it settles with a little bounce
   // the white bar blinks like a caret until it lifts off the tile as the real purple one
-  const barOn = t < HOP0 && blink(frame) ? 1 : 0;
+  // WHY it stops 0.25 s early: the purple caret takes its place with a stretch before it jumps
+  const barOn = t < HOP0 - 0.25 && blink(frame) ? 1 : 0;
   return (
-    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#140C1D,#0C0713)', opacity: power, overflow: 'hidden' }}>
+    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#140C1D,#0C0713)', overflow: 'hidden' }}>
       {t >= BAR_IN && <div style={{ position: 'absolute', left: w / 2 - sz / 2, top: h / 2 - sz / 2, opacity: pop }}><AiTile s={sz} caret={barOn} /></div>}
     </div>
   );
@@ -407,8 +439,9 @@ const screenOf = (d: Dev, t: number, frame: number): { node: React.ReactNode; gl
   const look = lookFor(d);
   const fa = flipAt(d);
   const isHero = d.id === 'hero';
-  const f = lin(t, fa, fa + (isHero ? 0.45 : 0.5));
-  const lift = bump(t, fa, 0.7) * 0.9;
+  const f = lin(t, fa, fa + (isHero ? 0.8 : 0.5));
+  // WHY every device lifts in a ripple out from the phone on "free" (reviewer: the thesis word was never acted out)
+  const lift = bump(t, fa, 0.7) * 0.9 + bump(t, Q.freeWord + 0.05 + (d.dist / MAXD) * 0.9, 0.6) * 0.8;
   const lockS = Q.could - 0.05 + (d.dist / MAXD) * 0.45 + jit(d) * 0.15;
   const lock: number | number[] = d.id === 'lockLaptop' ? LL_LOCK_ORDER.map((r) => lin(t, LOCK0 + r * 0.08, LOCK0 + r * 0.08 + 0.4)) : lin(t, lockS, lockS + 0.45);
   const aiAt = STAMP + Math.hypot(d.cx - TV.cx, d.cy - TV.cy) / 3800 * 1.3;
@@ -429,28 +462,35 @@ const screenOf = (d: Dev, t: number, frame: number): { node: React.ReactNode; gl
     const n = charsAt(t);
     // WHY the box blinks between two real pictures before the first key: the app's own caret, not a drawn one
     const idleOn = Math.floor((t - LAND) / 0.53) % 2 === 0;
-    const real = <PhoneAsk w={d.w} h={d.h} text={REQUEST.slice(0, n)} typing={n > 0} caretOn={n > 0 ? typedCaret(t) : idleOn} />;
+    const real = <PhoneAsk w={d.w} h={d.h} text={REQUEST.slice(0, n)} typing={n > 0} caretOn={n > 0 ? typedCaret(t) : idleOn} sent={t >= SEND ? lin(t, SEND, SEND + 0.5) : 0} sentText={REQUEST} />;
     const own = <OwnScreen look={look} w={d.w} h={d.h} />;
     const g = lin(t, LAND - 0.12, LAND + 0.3);
-    const node = t < fa ? flipNode(g, same, real, atInput) : flipNode(f, real, own, atInput);
+    const node = t < fa ? flipNode(g, same, real, atInput, 'circle') : flipNode(f, real, own, atInput, 'rise');
     const glow = t >= fa ? look.glow : g > 0.5 ? 'rgba(201,166,224,1)' : SAME_GLOW;
     return { node, glow, lift: t < fa ? bump(t, Q.something, 0.7) * 0.7 + bump(t, LAND, 0.5) * 0.6 : lift };
   }
-  const own = <OwnScreen look={look} w={d.w} h={d.h} />;
+  let own = <OwnScreen look={look} w={d.w} h={d.h} />;
+  if (d.id === 'lockLaptop' && t >= LL_PAGE2) {
+    // WHY three real pages on "computers / can / do" (reviewer): each a real capture in its own look, snapped in over 4 frames
+    const pages = [look, LL_PAGES[0], LL_PAGES[1]];
+    const at = [LL_FLIP, LL_PAGE2, LL_PAGE3];
+    const idx = t >= LL_PAGE3 ? 2 : 1;
+    const pop = ez(t, at[idx], at[idx] + 0.13, EASE_OUT);
+    own = <><OwnScreen look={pages[idx - 1]} w={d.w} h={d.h} /><div style={{ position: 'absolute', inset: 0, opacity: Math.min(1, pop * 3), transform: `scale(${1.05 - 0.05 * pop})` }}><OwnScreen look={pages[idx]} w={d.w} h={d.h} /></div></>;
+  }
   if (d.id === 'tv') {
-    const before = t < POWER ? same : <TVMachine w={d.w} h={d.h} t={t} frame={frame} />;
+    // WHY a cross-fade (reviewer: a hard black pop): the bright screen dims out while the dark one with the tile comes up
+    const before = t < POWER ? same : <><TVMachine w={d.w} h={d.h} t={t} frame={frame} />{t < POWER + 0.4 && <div style={{ position: 'absolute', inset: 0, opacity: 1 - ez(t, POWER, POWER + 0.4, EASE_IN_OUT) }}>{same}</div>}</>;
     return { node: flipNode(f, before, own), glow: f > 0.5 ? look.glow : SAME_GLOW, lift };
   }
   let node = flipNode(f, same, own);
   // copies of the recipes arriving on the neighbours' screens: what one person makes, others can use
   const si = SHARE_TARGETS.indexOf(d.id);
+  // WHY the same real page, in the neighbour's own look (reviewer: a pasted cake card was clip art): what one person makes, another opens in their own theme
   if (si >= 0 && t >= SHARE_AT[si]) {
-    const k = Math.min(d.w, d.h) / 100;
-    const e = ez(t, SHARE_AT[si], SHARE_AT[si] + 0.55, EASE_OUT);
-    const cw = d.w * 0.5, ch = d.h * 0.8;
-    const fromLeft = d.cx > HERO.cx;      // it slides in from the side that faces the phone it came from
-    const x = fromLeft ? lerp(-cw - 10, d.w * 0.04, e) : lerp(d.w + 10, d.w * 0.96 - cw, e);
-    node = <>{node}<div style={{ position: 'absolute', left: x, top: d.h * 0.06, transform: `rotate(${(1 - e) * (fromLeft ? -6 : 6)}deg)` }}><SharedRecipe w={cw} h={ch} k={k} /></div></>;
+    const hl = lookOf(HOME_STILL[d.kind] ?? HOME_STILL.laptop);
+    const pop = ez(t, SHARE_AT[si], SHARE_AT[si] + 0.14, EASE_OUT);
+    node = <><OwnScreen look={look} w={d.w} h={d.h} /><div style={{ position: 'absolute', inset: 0, opacity: Math.min(1, pop * 3), transform: `scale(${1.05 - 0.05 * pop})` }}><OwnScreen look={hl} w={d.w} h={d.h} /></div></>;
   }
   return { node, glow: f > 0.5 ? look.glow : SAME_GLOW, lift: lift + (si >= 0 ? bump(t, SHARE_AT[si], 0.6) * 0.6 : 0) };
 };
@@ -461,7 +501,7 @@ export const Take1B: React.FC = () => {
   const t = frame / FPS;
   const shot = shotAt(t);
   const [cx, cy, s, rx, rz] = camAt(t, shot);
-  const night = 1 - ez(t, Q.freeWord, Q.freeWord + 1.2, EASE_IN_OUT);
+  const night = 1 - ez(t, Q.freeWord, Q.freeWord + 1.4, EASE_IN_OUT);
 
   // WHY the card is passed an earlier start: it arrives already whole (reviewer: a faded URL first, then the
   // platforms, read as a half-loaded card); the short dissolve below is the only movement
@@ -517,7 +557,7 @@ export const Take1B: React.FC = () => {
         {/* the room: plum-black (the reviewer found the old plum lifted and muddy), lit a little from above */}
         <AbsoluteFill style={{ background: 'linear-gradient(180deg,#1C1027 0%,#120A1B 55%,#0B0611 100%)' }} />
         {night < 1 && <Daylight t={t} cx={(HERO.cx - cx) * s + 960} cy={(HERO.cy - cy) * s + 540} />}
-        <AbsoluteFill style={{ transform: tilt > 0.01 ? `perspective(1700px) rotateX(${rx}deg) rotateZ(${rz}deg)` : undefined, transformOrigin: '50% 50%', filter: calm > 0.01 ? `blur(${calm * 18}px)` : undefined }}>
+        <AbsoluteFill style={{ transform: tilt > 0.01 ? `perspective(1700px) rotateX(${rx}deg) rotateZ(${rz}deg)` : undefined, transformOrigin: '50% 50%', filter: calm > 0.01 ? `blur(${calm * 11}px)` : undefined }}>
           <div style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, transform: `translate(${960 - cx * s}px, ${540 - cy * s}px) scale(${s})`, transformOrigin: '0 0' }}>
             <div style={{ position: 'absolute', left: 0, top: 0, filter: blur > 0.05 ? `blur(${blur}px)` : undefined }}>
               <div style={{ opacity: night }}><Shelves night={1} /></div>
@@ -534,7 +574,7 @@ export const Take1B: React.FC = () => {
         {/* a vignette holds the eye in the middle of the wide shots */}
         <AbsoluteFill style={{ background: 'radial-gradient(ellipse 85% 80% at 50% 45%, transparent 58%, rgba(8,3,14,0.55) 100%)', opacity: (0.35 + 0.65 * night) * (s > 1.3 ? 0.6 : 1) }} />
         {/* the ending's calm: the busy wall goes soft and pale behind the last line */}
-        {calm > 0.01 && <AbsoluteFill style={{ background: '#F7F0FB', opacity: calm * 0.62 }} />}
+        {calm > 0.01 && <AbsoluteFill style={{ background: '#F7F0FB', opacity: calm * 0.78 }} />}
       </>}
       {/* WHY a full-width band, stronger than before (reviewer 2026-11-20): "for anyone who asks." lost contrast over
           bright moving screens; one even band under every headline keeps all four the same and always legible */}
@@ -548,7 +588,7 @@ export const Take1B: React.FC = () => {
 
 /** Lavender opening outward from the person's phone at "free ourselves". */
 const Daylight: React.FC<{ t: number; cx: number; cy: number }> = ({ t, cx, cy }) => {
-  const p = ez(t, Q.freeWord, Q.freeWord + 0.95, EASE_IN_OUT);
+  const p = ez(t, Q.freeWord, Q.freeWord + 1.4, EASE_IN_OUT);   // WHY 1.4 s: the light visibly travels outward instead of popping
   const r = p * 175;
   // WHY a wide soft edge and a quick open: a slow, hard-edged circle read as a glowing ball for a moment
   const mask = `radial-gradient(circle farthest-corner at ${cx}px ${cy}px, #000 ${Math.max(0, r - 55)}%, transparent ${r}%)`;
@@ -564,21 +604,30 @@ const WorldProps: React.FC<{ t: number; frame: number }> = ({ t, frame }) => {
   const isFree = t >= TT_FLIP;
   const tagText = t < Q.costs ? `$${up[upI].toFixed(2)}` : isFree ? 'free' : '$14.99';
   const c = caretAt(t);
-  const CH = 118;
+  const CH = 118;   // WHY about 190 px tall once stretched (x1.6): 3x the old bar, so it can be followed at phone size
   // their tile's price, hung on its top right corner on "technology"; it stays until the bar is left behind
   // WHY follow the bar's size: it grows with every excited click, and the tag must stay hung on its end
   const big = 1 + EXCITED.filter((e) => t >= e).length * 0.07;
-  const barRight = TV.cx + (TILE_S * big) / 2 - 30;
-  const barTop = TV.cy - (TILE_S * big) / 2 + 6;
+  const barRight = TV.cx + (TILE_S * big) / 2 - 30 + TAG_X;
+  const barTop = TV.cy - (TILE_S * big) / 2 + 6 + TAG_Y;
   return (
     <>
       {(t < Q.data || t >= Q.costs) && <PriceTag x={TT.cx + TT.w / 2 - 70} y={TT.cy + TT.h / 2 + 4} sub={isFree ? undefined : 'per month'} t={t} drop={Q.cost + 0.15} text={tagText} strike={isFree ? 0 : strike} fall={lin(t, Q.costsWord + 0.45, Q.costsWord + 1.0)} />}
       {t >= TAG && t < LAND && <PriceTag x={barRight} y={barTop} t={t} drop={t >= Q.but ? Q.but - 1 : TAG} text="$20/mo" scale={0.95} />}
       {/* (6) the caret, out on its own: big enough to follow across the wall, shrinking into the phone's message box */}
-      {t >= HOP0 && t < LAND && (() => {
-        const h = Math.max(9, CH * c.h);
-        // WHY a light rim: on both the dark room and the light screens the purple bar must stay unmistakable
-        return <div style={{ position: 'absolute', left: c.x - h * 0.1, top: c.y - h / 2, width: Math.max(2.5, h * 0.2), height: h, borderRadius: h, background: C.purple, boxShadow: `0 0 0 ${Math.max(1.5, h * 0.05)}px #F3EAF9, 0 ${h * 0.12}px ${h * 0.25}px rgba(10,4,18,0.55)` }} />;
+      {t >= HOP0 - 0.25 && t < LAND && (() => {
+        // WHY it stretches out of the tile first (reviewer: no anticipation): a short squash then a tall stretch on the way out
+        const pre = lin(t, HOP0 - 0.25, HOP0);
+        const base = pre < 1 ? lerp(TILE_S * 0.4 * big, CH * 1.6, EASE_IN_OUT(pre)) * (1 - 0.12 * Math.sin(Math.PI * Math.min(1, pre * 1.6))) : CH * 1.6 * c.h;
+        const bar = (x: number, y: number, hh: number, o: number) => {
+          const h = Math.max(10, hh);
+          // WHY a light rim: on both the dark room and the light screens the purple bar must stay unmistakable
+          return <div key={o + '' + x} style={{ position: 'absolute', left: x - h * 0.065, top: y - h / 2, width: Math.max(3, h * 0.13), height: h, borderRadius: h, opacity: o, background: C.purple,
+            boxShadow: o < 1 ? 'none' : `0 0 0 ${Math.max(2, h * 0.04)}px #F3EAF9, 0 ${h * 0.12}px ${h * 0.25}px rgba(10,4,18,0.55)` }} />;
+        };
+        // WHY a short smear behind it (no particles): three fading copies from slightly earlier moments make it read as fast motion
+        const ghosts = t >= HOP0 ? [0.045, 0.09, 0.135].map((dt, gi) => { const g = caretAt(Math.max(HOP0, t - dt)); return bar(g.x, g.y, CH * 1.6 * g.h * 0.92, 0.3 - gi * 0.09); }) : [];
+        return <>{ghosts}{bar(c.x, c.y, base, 1)}</>;
       })()}
     </>
   );

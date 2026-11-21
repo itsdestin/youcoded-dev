@@ -181,12 +181,14 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
   const enter = Math.min(1, dt / 0.35);
   const ease = 1 - Math.pow(1 - enter, 3);
   // a damped swing: big first arc, settling within ~2 s, like a real tag on a string
-  const swing = 16 * Math.exp(-dt * 2.2) * Math.sin(dt * 8.5);
-  const fy = fall > 0 ? fall * fall * 1600 : 0;
+  // WHY a pendulum (reviewer: the tag landed stiffly): about 9 degrees, two clear swings, then rest
+  const swing = 9 * Math.exp(-dt * 1.6) * Math.sin(dt * 7);
+  // WHY a short drop and a fade (reviewer: the tag fell out of frame like a glitch): it lets go, sinks a few pixels and dissolves
+  const fy = fall > 0 ? fall * fall * 50 : 0;
   const len = 70 * scale;
   return (
-    <div style={{ position: 'absolute', left: x, top: y - (1 - ease) * 300 + fy, width: 0, height: 0, transform: `rotate(${swing + fall * 40}deg)`, transformOrigin: '0 0', opacity: fall > 0.8 ? 1 - (fall - 0.8) * 5 : 1 }}>
-      {fall === 0 && <div style={{ position: 'absolute', left: -1.2 * scale, top: 0, width: 2.4 * scale, height: len, background: '#D9CBE4' }} />}
+    <div style={{ position: 'absolute', left: x, top: y - (1 - ease) * 300 + fy, width: 0, height: 0, transform: `rotate(${swing + fall * 6}deg)`, transformOrigin: '0 0', opacity: fall > 0 ? 1 - fall : 1 }}>
+      {fall < 0.3 && <div style={{ position: 'absolute', left: -1.2 * scale, top: 0, width: 2.4 * scale, height: len, background: '#D9CBE4' }} />}
       <div style={{ position: 'absolute', left: -95 * scale, top: len, width: 190 * scale, height: 92 * scale, filter: `drop-shadow(0 ${10 * scale}px ${14 * scale}px rgba(20,8,32,0.45))` }}>
         <svg width={190 * scale} height={92 * scale} viewBox="0 0 190 92" style={{ position: 'absolute' }}>
           <path d="M95 0 L120 16 H182 a8 8 0 0 1 8 8 V84 a8 8 0 0 1 -8 8 H8 a8 8 0 0 1 -8 -8 V24 a8 8 0 0 1 8 -8 H70 Z" fill="#FBF5EA" />

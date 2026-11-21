@@ -123,12 +123,16 @@ const Lock: React.FC<{ s: number; p: number; off: number }> = ({ s, p, off }) =>
 
 /** The corporations' AI: one plain, heavy, near-black tile. WHY so plain: it is theirs (invented, not youcoded) and the
  *  whole point of it is the price hung on it; the second letter is a bare bar so it can lift off as the caret. */
-export const AiTile: React.FC<{ s: number; caret?: number }> = ({ s, caret = 1 }) => (
+export const AiTile: React.FC<{ s: number; caret?: number; bar?: boolean }> = ({ s, caret = 1, bar = true }) => (
   <div style={{ width: s, height: s, borderRadius: s * 0.24, background: 'linear-gradient(180deg,#2B2036,#171020)', boxShadow: `0 ${s * 0.06}px ${s * 0.18}px rgba(20,8,32,0.45), inset 0 ${s * 0.012}px 0 rgba(255,255,255,0.16)`,
     display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: s * 0.5, letterSpacing: '-0.03em', color: '#F7F1FA', flex: 'none' }}>
-    A<span style={{ display: 'inline-block', width: s * 0.075, height: s * 0.4, borderRadius: s * 0.04, background: '#F7F1FA', marginLeft: s * 0.05, opacity: caret }} />
+    {/* WHY a whole "AI" with the blinking bar beside it (reviewer: the I was the caret, so the word flickered between A and AI):
+        the letters never change; the bar is the separate thing that later escapes */}
+    AI{bar && <span style={{ display: 'inline-block', width: s * 0.06, height: s * 0.36, borderRadius: s * 0.03, background: '#B06CC4', marginLeft: s * AI_GAP, opacity: caret }} />}
   </div>
 );
+/** the gap between the "I" and the bar, as a fraction of the tile (shared so the film can aim the escaping caret at the bar) */
+export const AI_GAP = 0.1;
 
 export type SameProps = {
   w: number; h: number;
@@ -194,7 +198,7 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
           WHY a plain tile and no bar: the corporations' AI is theirs, not youcoded, and not somewhere you type */}
       {ai > 0 && <div style={{ position: 'absolute', right: (P ? 0.07 : 0.05) * w, bottom: (P ? 0.04 : 0.07) * h, display: 'flex', alignItems: 'center', gap: 2 * k, flexDirection: P ? 'column-reverse' : 'row-reverse',
         transform: `scale(${0.6 + 0.4 * smooth(ai)})`, transformOrigin: '100% 100%', opacity: smooth(ai * 1.5) }}>
-        <AiTile s={(P ? 22 : 20) * k} />
+        <AiTile s={(P ? 30 : 27) * k} bar={false} />
         {/* WHY the price arrives separately, on "value" (reviewer 2026-11-20): the treasure is that every screen gets charged at once */}
         <span style={{ height: 7 * k, padding: `0 ${2.2 * k}px`, borderRadius: 7 * k, background: '#FBF5EA', color: '#21152C', fontWeight: 900, fontSize: 3.8 * k, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap',
           boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.3)`, opacity: smooth(price * 2), transform: `scale(${price <= 0 ? 0.4 : 0.4 + 0.6 * smooth(price) + 0.18 * Math.sin(Math.PI * cl(price))})` }}>$20/mo</span></div>}
@@ -268,7 +272,7 @@ const R4 = (file: string) => `stills/r4/${file}`;
 const hexRgba = (c: string) => { const n = parseInt(c.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},1)`; };
 
 export type Look = { still: string; glow: string; key: string; theme: string };
-const lookOf = (file: string): Look => {
+export const lookOf = (file: string): Look => {
   const r = ROWS.find((x) => x.file === file);
   if (!r) throw new Error(`take1b: "${file}" is not in the still library (public/stills/r4/rows.json)`);
   return { still: R4(file), glow: hexRgba(GLOW[file]), key: file, theme: r.theme };
@@ -287,7 +291,7 @@ const FIXED: Record<string, Look> = {
   hero: lookOf('halftone-dimension-phone-home.png'),
   lockLaptop: lookOf('golden-sunbreak-laptop-lights.png'),
   tagTablet: lookOf('devils-garden-tablet-chat.png'),
-  tv: lookOf('kuromi-dreamer-tv-chat.png'),
+  tv: lookOf('morning-rounds-tv-money.png'),   // WHY (reviewer BLOCKER): the biggest tile in every wide shot was a licensed character look; this is a plain community theme
 };
 export const HERO_LOOK = FIXED.hero;
 
@@ -306,11 +310,13 @@ const LOOKS: Map<string, Look> = (() => {
   for (const d of devs) {
     if (out.has(d.id)) continue;
     const shape = d.kind === 'monitor' ? 'tv' : d.kind;
-    const cands = ROWS.filter((x) => x.shape === shape && !x.theme.startsWith('YouCoded (default)')).map((x) => lookOf(x.file));
+    // WHY no Kuromi / Strawberry Kitty (reviewer BLOCKER): they are real licensed characters; a public film must not show them
+    const cands = ROWS.filter((x) => x.shape === shape && !x.theme.startsWith('YouCoded (default)') && !/Kuromi|Strawberry Kitty/.test(x.theme)).map((x) => lookOf(x.file));
     const shelf = WORLD.devs.filter((o) => o.row === d.row && out.has(o.id));
     const near = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < (o.w + d.w) / 2 + 700);   // WHY 700: about two devices either way, so a close-up of three never shows one theme twice
     const ok = (c: Look) => !shelf.some((o) => out.get(o.id)!.key === c.key) && !near.some((o) => out.get(o.id)!.theme === c.theme);
-    const order = cands.map((c) => ({ c, k: (used.get(c.key) ?? 0) + r() * 0.9 })).sort((a, b) => a.k - b.k).map((x) => x.c);
+    // WHY a penalty on the near-black looks (reviewer: a quarter of the wall read as blank black holes in daylight)
+    const order = cands.map((c) => ({ c, k: (used.get(c.key) ?? 0) + r() * 0.9 + (/^(Dark|Midnight|YouCoded Night)/.test(c.theme) ? 2.2 : 0) })).sort((a, b) => a.k - b.k).map((x) => x.c);
     const pick = order.find(ok) ?? order.find((c) => !near.some((o) => out.get(o.id)!.theme === c.theme)) ?? order[0];
     out.set(d.id, pick);
     used.set(pick.key, (used.get(pick.key) ?? 0) + 1);
@@ -348,13 +354,35 @@ const TEXT_PX = 46;          // the app's own message text size at 3x, measured 
 const INK = '#4A3A5C';       // the app's own ink colour in this box (the compass icon beside it)
 
 /** The phone's window with its message box in one of three states: waiting, focused-and-blinking, or being typed in. */
-export const PhoneAsk: React.FC<{ w: number; h: number; text: string; caretOn: boolean; typing: boolean }> = ({ w, h, text, caretOn, typing }) => {
+export const PhoneAsk: React.FC<{ w: number; h: number; text: string; caretOn: boolean; typing: boolean; sent?: number; sentText?: string }> = ({ w, h, text, caretOn, typing, sent = 0, sentText = '' }) => {
   const s = w / STILL_W;
   // WHY real pictures while nobody is typing: the app's own blinking caret is a real capture, not something we draw
-  const src = typing ? PHONE_CLEAN : caretOn ? PHONE_FOCUS : PHONE_EMPTY;
+  const src = typing || sent > 0 ? PHONE_CLEAN : caretOn ? PHONE_FOCUS : PHONE_EMPTY;
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#F7F0FB' }}>
       <RealApp src={src} w={w} h={h} />
+      {sent > 0 && (
+        <div style={{ position: 'absolute', left: 0, top: 0, width: STILL_W, height: STILL_H, transform: `scale(${s})`, transformOrigin: '0 0' }}>
+          {/* WHY the empty-chat words are covered by a piece of the app's own wallpaper (reviewer BLOCKER: "Start a conversation"
+              showed right after the message was sent): the patch is cut from the plain stretch just above, same picture */}
+          <div style={{ position: 'absolute', left: 150, top: 1050, width: 870, height: 120, overflow: 'hidden' }}>
+            <Img src={staticFile(PHONE_CLEAN)} style={{ position: 'absolute', left: -150, top: -870, width: STILL_W, height: STILL_H }} />
+          </div>
+          {/* WHY the sent sentence lifts out of the box into the app's own kind of message bubble (purple, right-aligned, time under it,
+              as in the real chat capture) so "ask, then get" is seen: it rises from the box to the top of the chat */}
+          {(() => {
+            const e = 1 - Math.pow(1 - cl(sent), 3);
+            const bw = 790, bh = 196;
+            return (
+              <div style={{ position: 'absolute', left: 1116 - bw, top: 132 + (1 - e) * 2000, width: bw, height: bh, borderRadius: 52, boxSizing: 'border-box', padding: '36px 56px', opacity: Math.min(1, sent * 5),
+                background: 'linear-gradient(180deg,#9A55B6,#8E49AD)', boxShadow: '0 12px 36px rgba(80,30,110,0.28)', fontFamily: OUTFIT, color: '#FFFFFF', transform: `scale(${0.92 + 0.08 * e})`, transformOrigin: '100% 100%' }}>
+                <div style={{ fontSize: 52, lineHeight: '64px', whiteSpace: 'nowrap' }}>{sentText}</div>
+                <div style={{ fontSize: 32, textAlign: 'right', color: 'rgba(255,255,255,0.7)', marginTop: 10 }}>7:40 AM</div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
       {typing && (
         <div style={{ position: 'absolute', left: 0, top: 0, width: STILL_W, height: STILL_H, transform: `scale(${s})`, transformOrigin: '0 0' }}>
           {/* WHY one nowrap line with the caret inside it: the caret is the next thing after the last letter, so it can
