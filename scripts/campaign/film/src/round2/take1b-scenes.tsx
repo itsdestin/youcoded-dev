@@ -14,8 +14,8 @@ import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
 import { Q } from './take1b-cues';
-import { HERO_LOOK, OwnScreen, SameScreen, ShareSwitch, sameLayout, shareKnob } from './take1b-screens';
-import { Device, PointerArrow, Shelves, WORLD } from './take1b-world';
+import { HERO_LOOK, OwnScreen, SameScreen, ShareSwitch, markFor, sameLayout } from './take1b-screens';
+import { Device, Shelves, WORLD, dev } from './take1b-world';
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
 const lin = (t: number, a: number, b: number) => cl((t - a) / (b - a));
@@ -24,21 +24,23 @@ const bump = (t: number, at: number, d = 0.28) => (t < at || t > at + d ? 0 : Ma
 // WHY the real wall behind every card scene (reviewer 2026-11-20: the old blurred grey rectangles read as a missing-image
 // placeholder and made these scenes feel like another film): the same shelves and the same devices, defocused and dimmed,
 // at one steady angle, so the film stays in one room. Only the devices that can be seen are drawn.
-const GW = { cx: 0, cy: -430, s: 0.7 };
-const GW_DEVS = WORLD.devs.filter((d) => Math.abs(d.cx - GW.cx) < 960 / GW.s + d.w && Math.abs(d.cy - GW.cy) < 540 / GW.s + d.h);
-const GhostWall: React.FC<{ soft?: boolean }> = ({ soft = false }) => (
+type Cam = { cx: number; cy: number; s: number };
+const GW: Cam = { cx: 0, cy: -430, s: 0.7 };
+const camDevs = (c: Cam, skip: string[] = []) => WORLD.devs.filter((d) => !skip.includes(d.id) && Math.abs(d.cx - c.cx) < 960 / c.s + d.w && Math.abs(d.cy - c.cy) < 540 / c.s + d.h);
+const GW_DEVS = camDevs(GW);
+const GhostWall: React.FC<{ soft?: boolean; cam?: Cam; skip?: string[]; dy?: number }> = ({ soft = false, cam = GW, skip = [], dy = 0 }) => (
   // WHY softer in the rewind (round 5 reviewer: flat grey boxes read as a placeholder): less blur and a lighter veil, so the real shelves and screens read as the room
   <AbsoluteFill style={{ filter: `blur(${soft ? 6 : 13}px)` }}>
-    <div style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, transform: `translate(${960 - GW.cx * GW.s}px, ${540 - GW.cy * GW.s}px) scale(${GW.s})`, transformOrigin: '0 0' }}>
+    <div style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, transform: `translate(${960 - cam.cx * cam.s}px, ${540 - cam.cy * cam.s + dy}px) scale(${cam.s})`, transformOrigin: '0 0' }}>
       <Shelves night={1} />
-      {GW_DEVS.map((d) => <Device key={d.id} d={d} night={1} glow="rgba(236,230,244,1)"><SameScreen w={d.w} h={d.h} lay={2} lock={d.id === 'lockLaptop' ? 1 : 0} /></Device>)}
+      {(cam === GW ? GW_DEVS : camDevs(cam, skip)).map((d) => <Device key={d.id} d={d} night={1} glow="rgba(236,230,244,1)"><SameScreen w={d.w} h={d.h} lay={2} lock={d.id === 'lockLaptop' ? 1 : 0} /></Device>)}
     </div>
     <AbsoluteFill style={{ background: `rgba(11,6,17,${soft ? 0.48 : 0.66})` }} />
   </AbsoluteFill>
 );
-const Room: React.FC<{ ghosts?: boolean; soft?: boolean }> = ({ ghosts = true, soft = false }) => (
+const Room: React.FC<{ ghosts?: boolean; soft?: boolean; cam?: Cam; skip?: string[]; dy?: number }> = ({ ghosts = true, soft = false, cam, skip, dy }) => (
   <AbsoluteFill style={{ background: 'radial-gradient(ellipse 90% 80% at 50% 30%, #22142D 0%, #120A1B 60%, #0B0611 100%)' }}>
-    {ghosts && <GhostWall soft={soft} />}
+    {ghosts && <GhostWall soft={soft} cam={cam} skip={skip} dy={dy} />}
     <AbsoluteFill style={{ background: 'radial-gradient(ellipse 80% 75% at 50% 45%, transparent 55%, rgba(8,3,14,0.55) 100%)' }} />
   </AbsoluteFill>
 );
@@ -46,17 +48,27 @@ const Room: React.FC<{ ghosts?: boolean; soft?: boolean }> = ({ ghosts = true, s
 // ---------------------------------------------------------------------------------------------------
 // The receipt that prints out of the phone
 // ---------------------------------------------------------------------------------------------------
-const PW = 400, PH = 836, BZ = 16;      // WHY this big: the switch and the things it copies must read at a glance                       // phone screen and bezel, in frame pixels
-const PX = 960 - PW / 2, PY = 58;                        // screen's top-left before the camera follows the paper
+// WHY the wall's own phone, scaled up (round 7 reviewer: a bigger, differently drawn phone broke the cut from the wall): the same bezel,
+// corner curve and camera as take1b-world's phone (136x284, bezel 7, screen corner 12), only K times larger
+const K = 400 / 136;
+const PW = 400, PH = Math.round(284 * K), BZ = 7 * K, PR = 12 * K;   // screen width/height, bezel, screen corner, in frame pixels
+const PX = 960 - PW / 2, PY = 66;                        // screen's top-left before the camera follows the paper
+// WHY the backdrop is the real wall framed on the phone's own spot (round 7 reviewer: "your phone, the same one from the wall"): the phone
+// sits where the wall's phone would sit at this zoom, and its neighbours (the tablet just seen among them) are out of focus around it
+const HERO_D = dev('hero');
+const RCAM: Cam = { cx: HERO_D.cx, cy: HERO_D.cy + (540 - (PY + PH / 2)) / K, s: K };
 const PRINT_LINES: { text: string; item?: 'photo' | 'msg' | 'note' }[] = [
-  { text: 'your photos', item: 'photo' }, { text: 'Sam: running late…', item: 'msg' }, { text: 'pick up Mia at 3:15', item: 'note' },
+  { text: 'your photos', item: 'photo' }, { text: 'Sam: running late!', item: 'msg' }, { text: 'pick up Mia at 3:15', item: 'note' },
   { text: 'where you were today' }, { text: 'who you message most' }, { text: 'what you looked at' },
 ];
-const HEAD = 110, LINE = 88;      // WHY taller rows (reviewer: the receipt text was too small to read at phone size)
-const FULL = HEAD + PRINT_LINES.length * LINE + 40;
+// WHY a paper narrower than the phone (round 7 reviewer: paper twice the phone's width read as a sign hung under it): it is plainly
+// coming out of the phone; the type is set to fit, and the paper runs long with the camera following it
+const PAPER = 372;
+const HEAD = 72, LINE = 60;
+const FULL = HEAD + PRINT_LINES.length * LINE + 30;
 // the moments, all from the narrator's words
 // WHY the print starts on "personal" (reviewer 2026-11-20), after the switch has been held for 0.4 s, and its last line lands 0.35 s before the cut
-const SHARE_IN = Q.data + 0.12, FLIP = Q.personal - 0.46, PRINT0 = Q.personal, PRINT1 = Q.weAll - 0.35;
+const SHARE_IN = Q.data + 0.08, FLIP = Q.personal - 0.46, PRINT0 = Q.personal, PRINT1 = Q.weAll - 0.35;
 // WHY from "what happens" (not "And"): the tablet before it needs its own 1.2 s once its new screen is up
 // WHY the rewind starts ON "what" and ends on "data" (round 5 reviewer: the paper sat finished while the words went by): the data goes back into the phone
 // one row at a time, a tick per spoken word; then the phone itself dissolves into the wall behind it so the cut to the next shot matches
@@ -67,7 +79,7 @@ if (PRINT1 - PRINT0 < 1.1) throw new Error('take1b: the receipt would print too 
 export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, mode }) => {
   // WHY a ratchet and not a linear roll (reviewer): the paper steps out one row at a time, each with its own quick ease,
   // like a receipt printer; the header is row 0 and the little tail after the last line rides with the last row
-  const rows = [HEAD, ...PRINT_LINES.map((_, i) => LINE + (i === PRINT_LINES.length - 1 ? 40 : 0))];
+  const rows = [HEAD, ...PRINT_LINES.map((_, i) => LINE + (i === PRINT_LINES.length - 1 ? 30 : 0))];
   const pu = lin(t, PRINT0, PRINT1) * rows.length;
   const ratchet = rows.reduce((a, h, i) => a + h * ez(pu, i, i + 0.7), 0);
   // WHY the same ratchet run backwards: the rewind is the print in reverse, row by row
@@ -77,65 +89,60 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
   // after the paper is home the phone settles 3 px and dissolves into the wall (rewind only)
   const gone = mode === 'rewind' ? ez(t, GONE0, GONE1, EASE_IN_OUT) : 0;
   const settle = mode === 'rewind' ? -3 * bump(t, REWIND1 - 0.1, 0.25) : 0;
-  // WHY the camera follows the paper down: the newest line is always in view, as in the "free*" shot later
-  // WHY len - 70 (reviewer: the last lines were cropped by the frame's bottom): the newest line always sits about 120 px above the edge
-  // WHY len - 26 and not len - 70: the paper's torn end always sits 150 px above the frame's bottom edge, never cropped
-  const follow = Math.max(0, len - 26);
+  // WHY the camera holds the phone whole until the header and the first line are out (round 7 reviewer: the switch, the cause, left the
+  // frame just as the receipt, the effect, began); after that it follows the paper so the newest line is always in view
+  const follow = Math.max(0, len - HEAD - LINE);
   const lay = 2;
   const L = sameLayout(PW, PH, lay);
-  const on = mode === 'print' ? lin(t, FLIP, FLIP + 0.18) : 1 - lin(t, UNFLIP, UNFLIP + 0.18);
+  // WHY the knob crosses in 6 frames (round 7 reviewer), with no hand doing it: it is switched on for you, somewhere else
+  const on = mode === 'print' ? ez(t, FLIP, FLIP + 0.2, EASE_IN_OUT) : 1 - lin(t, UNFLIP, UNFLIP + 0.18);
   // WHY no switch on the rewind: that phone now wears a real youcoded window, and a drawn switch would sit over its real interface
-  const shareO = mode === 'print' ? lin(t, SHARE_IN, SHARE_IN + 0.3) : 0;
-  // the pointer that flips the switch (print only)
-  const knob = shareKnob(PW, PH);
-  const tip = { x: PX + knob.x, y: PY + knob.y };
-  const pIn = ez(t, Q.data, FLIP - 0.06, EASE_IN_OUT);
-  // WHY from the left, resting on the switch (reviewer): it comes in from the open side, flips it and stays put while the phone is
-  // still in frame, then quietly fades; it never wanders off the top as a stray cursor
-  const pOut = ez(t, FLIP + 0.5, FLIP + 0.8, EASE_IN);
-  const ptr = { x: tip.x - 520 * (1 - pIn), y: tip.y - 240 * (1 - pIn), press: bump(t, FLIP - 0.04, 0.26), o: mode === 'print' ? 1 - pOut : 0 };
+  const shareO = mode === 'print' ? lin(t, SHARE_IN, SHARE_IN + 0.25) : 0;
+  const phoneTop = PY + PH + BZ;
   return (
     <AbsoluteFill>
-      <Room soft={mode === 'rewind'} />
+      {mode === 'print' ? <Room cam={RCAM} skip={['hero']} dy={-follow} /> : <Room soft />}
       <div style={{ position: 'absolute', left: 0, top: -follow + settle, width: 1920, height: 1080, opacity: 1 - gone }}>
         {/* the paper, behind the phone, coming out of its bottom edge */}
-        <div style={{ position: 'absolute', left: 960 - 420, top: PY + PH + BZ - 6, width: 840, height: Math.max(0, len), overflow: 'hidden',
-          background: 'linear-gradient(180deg,#E9DECB 0px,#FBF6EC 18px,#F3EADB 100%)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',
-          clipPath: 'polygon(0 0,100% 0,100% calc(100% - 12px),95% 100%,90% calc(100% - 12px),85% 100%,80% calc(100% - 12px),75% 100%,70% calc(100% - 12px),65% 100%,60% calc(100% - 12px),55% 100%,50% calc(100% - 12px),45% 100%,40% calc(100% - 12px),35% 100%,30% calc(100% - 12px),25% 100%,20% calc(100% - 12px),15% 100%,10% calc(100% - 12px),5% 100%,0 calc(100% - 12px))' }}>
+        <div style={{ position: 'absolute', left: 960 - PAPER / 2, top: phoneTop - 8, width: PAPER, height: Math.max(0, len), overflow: 'hidden',
+          background: 'linear-gradient(180deg,#E3D8C5 0px,#FBF6EC 14px,#F3EADB 100%)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',
+          clipPath: 'polygon(0 0,100% 0,100% calc(100% - 10px),95% 100%,90% calc(100% - 10px),85% 100%,80% calc(100% - 10px),75% 100%,70% calc(100% - 10px),65% 100%,60% calc(100% - 10px),55% 100%,50% calc(100% - 10px),45% 100%,40% calc(100% - 10px),35% 100%,30% calc(100% - 10px),25% 100%,20% calc(100% - 10px),15% 100%,10% calc(100% - 10px),5% 100%,0 calc(100% - 10px))' }}>
           {/* WHY read top-down as it unrolls (like the "free*" receipt): each new line appears as it leaves the phone */}
-          <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: FULL, padding: '34px 60px 0', boxSizing: 'border-box', fontFamily: DMSANS, color: C.plum }}>
-            <div style={{ height: HEAD - 34, fontSize: 56, fontWeight: 900, letterSpacing: '-0.02em' }}>shared with partners:</div>
+          <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: FULL, padding: '24px 22px 0', boxSizing: 'border-box', fontFamily: DMSANS, color: C.plum, whiteSpace: 'nowrap' }}>
+            <div style={{ height: HEAD - 24, fontSize: 34, fontWeight: 900, letterSpacing: '-0.035em' }}>shared with partners:</div>
             {PRINT_LINES.map((l, i) => (
-              <div key={i} style={{ height: LINE, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px dashed #E2D4C0', fontSize: 52, fontWeight: 600, color: C.plum2 }}>
-                <span>{l.text}</span><span style={{ fontWeight: 700, color: C.plum }}>✓</span>
+              <div key={i} style={{ height: LINE, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px dashed #E2D4C0', fontSize: 27, fontWeight: 600, letterSpacing: '-0.02em', color: C.plum2 }}>
+                <span>{l.text}</span><span style={{ fontWeight: 800, color: C.plum }}>✓</span>
               </div>
             ))}
           </div>
         </div>
-        {/* a dark slot at the phone's foot, so the paper visibly comes out of it */}
-        <div style={{ position: 'absolute', left: 960 - 450, top: PY + PH + BZ - 14, width: 900, height: 22, borderRadius: 11, background: '#08040C', boxShadow: '0 4px 10px rgba(0,0,0,0.6)' }} />
-        {/* the phone */}
-        <div style={{ position: 'absolute', left: PX - BZ, top: PY - BZ, width: PW + BZ * 2, height: PH + BZ * 2, borderRadius: 64, background: 'linear-gradient(180deg,#3A2C46 0%,#241A2E 45%,#1A1222 100%)',
-          boxShadow: '0 30px 60px rgba(6,2,12,0.6), inset 0 2px 0 rgba(255,255,255,0.16)' }}>
-          <div style={{ position: 'absolute', left: BZ, top: BZ, width: PW, height: PH, borderRadius: 50, overflow: 'hidden' }}>
+        {/* the phone: the wall's phone, scaled */}
+        <div style={{ position: 'absolute', left: PX - BZ, top: PY - BZ, width: PW + BZ * 2, height: PH + BZ * 2, borderRadius: PR + BZ, background: 'linear-gradient(180deg,#3A2C46 0%,#241A2E 45%,#1A1222 100%)',
+          boxShadow: '0 30px 60px rgba(6,2,12,0.6), inset 0 2px 0 rgba(255,255,255,0.16), inset 0 -3px 0 rgba(0,0,0,0.35)' }}>
+          <div style={{ position: 'absolute', left: BZ, top: BZ, width: PW, height: PH, borderRadius: PR, overflow: 'hidden', background: '#000' }}>
             {mode === 'print'
-              ? <SameScreen w={PW} h={PH} lay={lay} lock={1} hideTitle={shareO} />
+              ? <SameScreen w={PW} h={PH} lay={lay} lock={1} hideTitle={shareO} mark={markFor('hero')} markPop={1} />
               : <OwnScreen look={HERO_LOOK} w={PW} h={PH} />}
-            {/* each thing on the screen is outlined the moment its line prints: copied out, still in place */}
+            {/* WHY each thing is outlined 0.15 s BEFORE its line prints (round 7 reviewer: the outlines fired after the camera had left them):
+                the item lights up on the phone, then its line comes out of the bottom, so the link is seen */}
             {mode === 'print' && PRINT_LINES.map((l, i) => {
               if (!l.item) return null;
-              const at = PRINT0 + (PRINT1 - PRINT0) * ((i + 1.6) / rows.length);
-              const o = bump(t, at, 0.7);
+              const at = PRINT0 + (PRINT1 - PRINT0) * ((i + 1) / rows.length) - 0.15;
+              const o = bump(t, at, 0.8);
               if (o <= 0) return null;
               const r = L[l.item];
-              return <div key={i} style={{ position: 'absolute', left: r.x * PW - 4, top: r.y * PH - 4, width: r.w * PW + 8, height: r.h * PH + 8, borderRadius: 14, border: `4px solid ${C.purpleNight}`, opacity: o }} />;
+              return <div key={i} style={{ position: 'absolute', left: r.x * PW - 5, top: r.y * PH - 5, width: r.w * PW + 10, height: r.h * PH + 10, borderRadius: 14, border: `5px solid ${C.purple}`, opacity: o }} />;
             })}
             <ShareSwitch w={PW} h={PH} o={shareO} on={on} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(118deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 34%, rgba(255,255,255,0) 35%)' }} />
+            <div style={{ position: 'absolute', inset: 0, borderRadius: PR, boxShadow: 'inset 0 0 0 2px rgba(0,0,0,0.7)' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(122deg, rgba(255,255,255,0.075) 0%, rgba(255,255,255,0.035) 38%, rgba(255,255,255,0) 58%)' }} />
           </div>
-          <div style={{ position: 'absolute', left: (PW + BZ * 2) / 2 - 7, top: BZ + 9, width: 14, height: 14, borderRadius: 14, background: '#0A060E' }} />
+          {/* the camera, in the bezel (as on the wall's phones) */}
+          <div style={{ position: 'absolute', left: (PW + BZ * 2) / 2 - 2 * K, top: (BZ - 4 * K) / 2, width: 4 * K, height: 4 * K, borderRadius: 4 * K, background: '#0A060E' }} />
+          {/* WHY a thin dark lip only as wide as the paper, in the phone's own bottom edge: the paper visibly comes out of the phone */}
+          <div style={{ position: 'absolute', left: (PW + BZ * 2) / 2 - PAPER / 2 - 6, width: PAPER + 12, top: PH + BZ * 2 - 9, height: 7, borderRadius: 4, background: '#07040A' }} />
         </div>
-        <PointerArrow p={ptr} size={78} />
       </div>
     </AbsoluteFill>
   );
@@ -185,7 +192,7 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
   // which slams in on "shareholder".
   // WHY the first four fall at once as the scene opens, then a short pause, then the rest accelerate to "own" (reviewer 2026-11-20:
   // one lonely card sat for 1.2 s at the cut): the pile already reads in the first half second
-  const drop = (i: number) => (reprise ? (i < N ? -99 : Q.shareholder - 0.1) : i < 4 ? Q.weAccepted + 0.04 + i * 0.1 : first + (Q.own - first) * Math.pow((i - 4) / (N - 5), 0.62));
+  const drop = (i: number) => (reprise ? (i < N ? -99 : Q.shareholder - 0.1) : i < 4 ? Q.weAccepted - 0.13 + i * 0.1 :   /* WHY -0.13 (round 7 reviewer: 0.3 s of an empty frame on the cut): the first charge is already falling on the cut frame */ first + (Q.own - first) * Math.pow((i - 4) / (N - 5), 0.62));
   const FALL = 0.16;                                     // WHY so short: a charge lands like a weight, not a feather
   const landedN = lines.filter((_, i) => t >= drop(i) + FALL).length;
   // the reprise's roll: $89.40 to $109.40 on "value", one eased turn of the wheels, then a thump as it locks
@@ -194,13 +201,15 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
   const total = reprise ? BASE_TOTAL + 20 * rp : lines.slice(0, landedN).reduce((a, s) => a + s[1], 0);
   const lastLand = drop(Math.max(0, landedN - 1)) + FALL;
   const thump = Math.exp(-(t - lastLand) * 12) * (landedN > 2 && t > lastLand ? 1 : 0);
-  // WHY 124 / 148 / 560 (round 6 reviewer: rows collided and a half-cut one sat at the bottom): the gap between cards (24 px) is wider than the
-  // most a tilted 900 px card can swing (about 8 px an end), and the oldest card sits wholly above the clean cut-off line
-  const CARD_H = 124, PITCH = 148, BASE = 560;
-  // WHY the camera climbs with the pile but lags it: the newest charge lands in view, and the pile keeps running out
-  // of the top of the frame instead of stopping politely
-  const rise = Math.max(0, landedN - 4.5) * PITCH;
-  const scene = reprise ? ez(t, Q.great, Q.great + 0.25) : ez(t, Q.weAccepted, Q.weAccepted + 0.6);
+  // WHY a pile that never leaves the frame (round 7 reviewer: the top card ran under the frame edge and the bottom one was sliced above the
+  // headline): the newest charge always lands in the same place, level with the total; the one before sits whole beneath it; every older
+  // one is pushed down into a pile of 12 px slivers, so eleven charges still end above 70% of the frame height, clear of the headline
+  const CARD_H = 120, TOPY = 380, NEXT = 140, SLIVER = 12;
+  const slotY = (sl: number) => (sl < 0 ? TOPY + sl * (TOPY + 300) : sl <= 1 ? TOPY + NEXT * sl : TOPY + NEXT + SLIVER * (sl - 1));
+  const arrive = (i: number) => { const d = drop(i); return d < 0 ? 1 : ez(t, d, d + FALL, EASE_IN); };
+  const count = lines.reduce((a, _, i) => a + arrive(i), 0);
+  // WHY the total shows at full strength on the cut frame (round 7 reviewer: a faded $0.00 on an empty half of the frame): only the reprise fades in
+  const scene = reprise ? ez(t, Q.great, Q.great + 0.25) : 1;
   // a slow push-in the whole time, so the frame never sits still
   const t0 = reprise ? Q.great : Q.weAccepted, t1 = reprise ? Q.but : Q.privacy + 0.1;
   const push = 1 + 0.07 * lin(t, t0, t1);
@@ -217,42 +226,41 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
             {reprise && rp > 0 && rp < 1 ? <Odometer p={rp} size={176} /> : `$${dollars}.${cents}`}
           </div>
         </div>
-        {/* the pile. WHY the fade at the bottom: the older charges sink away below the frame instead of running
-            through the "own nothing." headline */}
-        <AbsoluteFill style={{ WebkitMaskImage: 'linear-gradient(180deg,#000 64%,transparent 66.5%)', maskImage: 'linear-gradient(180deg,#000 64%,transparent 66.5%)', opacity: scene }}>
-          <div style={{ position: 'absolute', left: 800, top: 0, width: 940, height: 1080, transform: `translateY(${rise + thump * 9}px)` }}>
-            {lines.map(([name, price, col], i) => {
-              const d = drop(i);
-              if (t < d) return null;
-              const p = d < 0 ? 1 : ez(t, d, d + FALL, EASE_IN);
-              const y = BASE - i * PITCH;
-              const tilt = ((i * 37) % 7 - 3) * 0.35;
-              const since = t - d - FALL;
-              // WHY squash and a two-frame rebound: weight; it hits, compresses, and settles
-              const sq = d >= 0 && since > 0 ? Math.exp(-since * 16) : 0;
-              const bounce = d >= 0 && since > 0 ? -Math.sin(since * 28) * Math.exp(-since * 14) * 10 : 0;
-              const isAI = reprise && i === N;
-              // WHY a ripple of dead cards from the bottom up on "nothing" (reviewer: "you own 0" said the headline's idea twice, small):
-              // every charge goes grey and gets a padlock, and the bill stays; the picture says you own none of it
-              const dead = reprise ? 0 : ez(t, Q.own + 0.35 + i * 0.05, Q.own + 0.55 + i * 0.05, EASE_IN_OUT);
-              return (
-                <div key={i} style={{ position: 'absolute', left: ((i * 53) % 5 - 2) * 9, top: y - (1 - p) * (y + 300) + bounce, width: 900, height: CARD_H,
-                  transform: `rotate(${tilt}deg) scaleY(${1 - sq * 0.12}) scaleX(${1 + sq * 0.03})`, transformOrigin: '50% 100%',
-                  filter: dead > 0 ? `saturate(${1 - 0.85 * dead}) brightness(${1 - 0.22 * dead})` : undefined,
-                  borderRadius: 18, background: isAI ? 'linear-gradient(180deg,#5A3672,#43295A)' : 'linear-gradient(180deg,#34263F,#271C31)', boxShadow: '0 14px 26px rgba(6,2,12,0.6), inset 0 1.5px 0 rgba(255,255,255,0.14)',
-                  display: 'flex', alignItems: 'center', padding: '0 30px', boxSizing: 'border-box', gap: 22, fontFamily: DMSANS }}>
-                  <div style={{ width: 56, height: 56, borderRadius: 15, background: col, flex: 'none', boxShadow: 'inset 0 -3px 0 rgba(0,0,0,0.18)', position: 'relative' }}>
-                    {dead > 0 && <svg width={56} height={56} viewBox="0 0 24 24" style={{ position: 'absolute', inset: 0, opacity: dead, transform: `scale(${1.5 - 0.5 * dead})`, filter: 'none' }}>
-                      <path d="M7.4 11V8a4.6 4.6 0 0 1 9.2 0v3" stroke="#4A3B57" strokeWidth="2.8" fill="none" strokeLinecap="round" /><rect x="3.5" y="10" width="17" height="12.5" rx="3" fill="#D9AE4F" /><circle cx="12" cy="16" r="1.9" fill="#4A3B57" />
-                    </svg>}
-                  </div>
-                  <div style={{ flex: 1, fontSize: 58, fontWeight: 700, color: C.nightText, letterSpacing: '-0.02em' }}>{name}</div>
-                  <div style={{ fontSize: 50, fontWeight: isAI ? 900 : 500, color: isAI ? C.nightText : C.nightText2, fontVariantNumeric: 'tabular-nums' }}>${price.toFixed(2)}/mo</div>
+        {/* the pile */}
+        <div style={{ position: 'absolute', left: 800, top: 0, width: 860, height: 1080, opacity: scene, transform: `translateY(${thump * 6}px)` }}>
+          {lines.map(([name, price, col], i) => {
+            const d = drop(i);
+            if (t < d) return null;
+            const sl = count - 1 - i;                     // 0 = the newest, on top; 1 = the one before; >1 = the slivers
+            const y = slotY(sl);
+            const tilt = ((i * 37) % 7 - 3) * 0.3 * Math.min(1, Math.max(0, 1.6 - sl));   // the slivers lie straight, as a pile does
+            const since = t - d - FALL;
+            // WHY squash and a two-frame rebound: weight; it hits, compresses, and settles
+            const sq = d >= 0 && since > 0 ? Math.exp(-since * 16) : 0;
+            const bounce = d >= 0 && since > 0 ? -Math.sin(since * 28) * Math.exp(-since * 14) * 10 : 0;
+            const isAI = reprise && i === N;
+            // WHY the dead state sweeps top to bottom in 0.4 s on "nothing" (round 7 reviewer: the greying was too subtle to read):
+            // every charge goes fully grey and its colour chip becomes a padlock; the bill stays
+            const dead = reprise ? 0 : ez(t, Q.own + 0.33 + Math.min(sl, 10) * 0.04, Q.own + 0.5 + Math.min(sl, 10) * 0.04, EASE_IN_OUT);
+            return (
+              <div key={i} style={{ position: 'absolute', left: ((i * 53) % 5 - 2) * 6, top: y + bounce, width: 860, height: CARD_H,
+                transform: `rotate(${tilt}deg) scaleY(${1 - sq * 0.12}) scaleX(${1 + sq * 0.03})`, transformOrigin: '50% 100%',
+                filter: dead > 0 ? `saturate(${1 - dead}) brightness(${1 - 0.25 * dead})` : undefined,
+                borderRadius: 18, background: isAI ? 'linear-gradient(180deg,#5A3672,#43295A)' : 'linear-gradient(180deg,#34263F,#271C31)', // WHY a band of the charge's own colour along its foot: once a card is pushed down into the pile only that edge shows, so the pile
+                // reads as a stack of different bills rather than a dark smudge
+                boxShadow: `0 14px 26px rgba(6,2,12,0.6), inset 0 1.5px 0 rgba(255,255,255,0.14), inset 0 -6px 0 ${col}`,
+                display: 'flex', alignItems: 'center', padding: '0 30px', boxSizing: 'border-box', gap: 22, fontFamily: DMSANS }}>
+                <div style={{ width: 56, height: 56, borderRadius: 15, background: dead > 0.5 ? '#4A3B57' : col, flex: 'none', boxShadow: 'inset 0 -3px 0 rgba(0,0,0,0.18)', position: 'relative' }}>
+                  {dead > 0 && <svg width={80} height={80} viewBox="0 0 24 24" style={{ position: 'absolute', left: -12, top: -12, opacity: dead, transform: `scale(${1.25 - 0.25 * dead})` }}>
+                    <path d="M7.6 11V8.2a4.4 4.4 0 0 1 8.8 0V11" stroke="#E9DDF2" strokeWidth="2.4" fill="none" strokeLinecap="round" /><rect x="4.5" y="10.4" width="15" height="11" rx="2.6" fill="#E9DDF2" />
+                  </svg>}
                 </div>
-              );
-            })}
-          </div>
-        </AbsoluteFill>
+                <div style={{ flex: 1, fontSize: 56, fontWeight: 700, color: C.nightText, letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>{name}</div>
+                <div style={{ fontSize: 48, fontWeight: isAI ? 900 : 500, color: isAI ? C.nightText : C.nightText2, fontVariantNumeric: 'tabular-nums' }}>${price.toFixed(2)}/mo</div>
+              </div>
+            );
+          })}
+        </div>
       </AbsoluteFill>
     </AbsoluteFill>
   );
@@ -265,34 +273,43 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
 // WHY 0.25 s ahead of each word (reviewer: the tag sat blank for 0.6 s and the lines landed after their words): the line is already there as it is spoken
 const PRINT: [string, number][] = [['where you go', Q.wouldBe - 0.25], ['who you talk to', Q.costOf - 0.25], ['what you watch at 2 am', Q.convenience - 0.2], ['how you feel', Q.convenience + 0.3]];
 
-export const FreeTag: React.FC<{ t: number }> = ({ t }) => {
+/** When the tag leaves: it is pulled up out of the top of the frame across "However" (exported so the film can show the wall under it). */
+export const FREE_EXIT0 = Q.however - 0.1, FREE_EXIT1 = Q.however + 0.25;
+export const FreeTag: React.FC<{ t: number; bare?: boolean }> = ({ t, bare = false }) => {
   const t0 = Q.privacy + 0.1;   // the scene itself starts here (the "own nothing." headline needs its full hold first)
   const dt = t - t0;
   const swing = 7 * Math.exp(-dt * 2.4) * Math.sin(dt * 7);
-  const enter = ez(t, t0, t0 + 0.45);
-  const LN = 100, HEAD = 130;
+  const enter = ez(t, t0, t0 + 0.35);
+  // WHY plate and paper share one width and one corner (round 7 reviewer: two cream rectangles of different sizes looked assembled):
+  // the paper is tucked behind the plate, which throws a 1 px line of shadow onto it
+  const TW = 760, PLATE_H = TW * 92 / 190, LN = 92, HEAD = 110;
   // the paper unrolls one line at a time, a beat before each line's word
   const shown = PRINT.reduce((a, [, at]) => a + ez(t, at - 0.2, at + 0.12, EASE_OUT), 0);
-  const len = 60 + HEAD * ez(t, t0 + 0.05, t0 + 0.4)   /* WHY fixed range: the lines now start earlier than t0 + 0.2, which inverted the old window and left the header height at 0 */ + shown * LN + 30 * Math.min(1, shown);
-  // the camera tilts down after the paper, and pushes in the whole time
-  const follow = Math.max(0, len - 700);   // WHY 640: the "free*" tag stays in view while its list is read
+  const len = 50 + HEAD * ez(t, t0 + 0.05, t0 + 0.4) + shown * LN + 30 * Math.min(1, shown);
+  // WHY the whole tag at 0.86 and centred on its finished size (round 7 reviewer: the string and its hole were cut by the top edge and the
+  // lower 40% sat empty): the pin it hangs from is inside the frame, and the finished list is balanced top to bottom
+  const G = 0.8, FULL_H = 470 + 50 + HEAD + PRINT.length * LN + 30, TOP = (1080 - FULL_H * G) / 2;
   // WHY a bigger push in the second half (reviewer: the list froze for 0.6 s before the cut): the camera keeps closing on the ticks
-  const push = 1 + 0.05 * lin(t, t0, Q.however) + 0.1 * ez(t, PRINT[3][1] + 0.1, Q.however, EASE_IN_OUT);
+  const push = 1 + 0.05 * lin(t, t0, Q.however) + 0.08 * ez(t, PRINT[3][1] + 0.1, Q.however, EASE_IN_OUT);
+  // WHY pulled up and out instead of a cross-fade (round 7 reviewer: the dissolve laid the list's words over the wall like a double exposure)
+  const exit = EASE_IN(lin(t, FREE_EXIT0, FREE_EXIT1));
   return (
     <AbsoluteFill>
-      <Room />
-      <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: '50% 40%' }}>
-        <div style={{ position: 'absolute', left: 960, top: -70 - follow + (1 - enter) * -260, transform: `rotate(${swing}deg)`, transformOrigin: '0 0' }}>
+      {!bare && <Room />}
+      <AbsoluteFill style={{ transform: `translateY(${-exit * 1400}px) scale(${push})`, transformOrigin: '50% 50%' }}>
+        <div style={{ position: 'absolute', left: 960, top: TOP + (1 - enter) * -300, transform: `scale(${G}) rotate(${swing}deg)`, transformOrigin: '0 0' }}>
+          {/* the pin it hangs from */}
+          <div style={{ position: 'absolute', left: -9, top: -9, width: 18, height: 18, borderRadius: 18, background: 'radial-gradient(circle at 35% 35%, #8A7B96, #2A1F33 70%)', boxShadow: '0 3px 6px rgba(6,2,12,0.6)' }} />
           <div style={{ position: 'absolute', left: -2, top: 0, width: 4, height: 150, background: '#D9CBE4' }} />
-          <div style={{ position: 'absolute', left: -450, top: 380, width: 900, height: len, overflow: 'hidden',
-            background: 'linear-gradient(180deg,#FBF6EC,#F3EADB)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',
+          <div style={{ position: 'absolute', left: -TW / 2, top: 130 + PLATE_H - 28, width: TW, height: len, overflow: 'hidden', borderRadius: '32px 32px 0 0',
+            background: 'linear-gradient(180deg,#F4ECDD,#FBF5EA 30px,#F3EADB)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',
             clipPath: 'polygon(0 0,100% 0,100% calc(100% - 16px),95% 100%,90% calc(100% - 16px),85% 100%,80% calc(100% - 16px),75% 100%,70% calc(100% - 16px),65% 100%,60% calc(100% - 16px),55% 100%,50% calc(100% - 16px),45% 100%,40% calc(100% - 16px),35% 100%,30% calc(100% - 16px),25% 100%,20% calc(100% - 16px),15% 100%,10% calc(100% - 16px),5% 100%,0 calc(100% - 16px))' }}>
-            <div style={{ padding: '70px 56px 0', fontFamily: DMSANS, color: C.plum }}>
-              <div style={{ height: HEAD - 70, fontSize: 46, fontWeight: 700, letterSpacing: '-0.02em' }}>* paid for with:</div>
+            <div style={{ padding: '62px 56px 0', fontFamily: DMSANS, color: C.plum }}>
+              <div style={{ height: HEAD - 62, fontSize: 42, fontWeight: 700, letterSpacing: '-0.02em' }}>* paid for with:</div>
               {PRINT.map(([p, at], i) => {
                 const o = ez(t, at - 0.12, at + 0.2);
                 return (
-                  <div key={i} style={{ height: LN, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '3px dashed #E2D4C0', fontSize: 60, fontWeight: 700, letterSpacing: '-0.03em', color: C.plum, whiteSpace: 'nowrap',
+                  <div key={i} style={{ height: LN, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '3px dashed #E2D4C0', fontSize: 52, fontWeight: 700, letterSpacing: '-0.03em', color: C.plum, whiteSpace: 'nowrap',
                     opacity: o, transform: `translateY(${(1 - o) * 14}px)` }}>
                     <span>{p}</span><span style={{ fontWeight: 900, color: C.purple }}>✓</span>
                   </div>
@@ -300,13 +317,13 @@ export const FreeTag: React.FC<{ t: number }> = ({ t }) => {
               })}
             </div>
           </div>
-          <div style={{ position: 'absolute', left: -280, top: 130, width: 560, height: 272, filter: 'drop-shadow(0 26px 30px rgba(6,2,12,0.55))' }}>
-            <svg width={560} height={272} viewBox="0 0 190 92" style={{ position: 'absolute' }}>
+          <div style={{ position: 'absolute', left: -TW / 2, top: 130, width: TW, height: PLATE_H, filter: 'drop-shadow(0 1.5px 0 rgba(70,40,80,0.22)) drop-shadow(0 22px 26px rgba(6,2,12,0.45))' }}>
+            <svg width={TW} height={PLATE_H} viewBox="0 0 190 92" style={{ position: 'absolute' }}>
               <path d="M95 0 L120 16 H182 a8 8 0 0 1 8 8 V84 a8 8 0 0 1 -8 8 H8 a8 8 0 0 1 -8 -8 V24 a8 8 0 0 1 8 -8 H70 Z" fill="#FBF5EA" />
               <circle cx="95" cy="12" r="5" fill="#2A1F33" />
             </svg>
-            <div style={{ position: 'absolute', left: 0, right: 0, top: 60, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: 150, letterSpacing: '-0.05em', color: C.plum }}>
-              free<span style={{ color: C.purple, transform: 'translateY(-34px)', fontSize: 110 }}>*</span>
+            <div style={{ position: 'absolute', left: 0, right: 0, top: 70, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: 190, letterSpacing: '-0.05em', color: C.plum }}>
+              free<span style={{ color: C.purple, transform: 'translateY(-44px)', fontSize: 140 }}>*</span>
             </div>
           </div>
         </div>

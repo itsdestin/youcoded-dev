@@ -10,9 +10,12 @@ export type Dev = { id: string; kind: Kind; row: number; cx: number; cy: number;
 
 // screen sizes in world pixels, and what holds the screen up off the shelf
 const SIZE: Record<Kind, { w: number; h: number; lift: number; bezel: number; radius: number }> = {
-  phone: { w: 136, h: 284, lift: 8, bezel: 7, radius: 20 },
+  // WHY radius 12 (was 20, round 7 reviewer BLOCKER: the screen's corner clipped the app's own status row, "olden Sunbreak"):
+  // the real window's bottom-left chip now sits inside the rounded glass, as it does on a real phone
+  phone: { w: 136, h: 284, lift: 8, bezel: 7, radius: 12 },
   tablet: { w: 360, h: 250, lift: 10, bezel: 11, radius: 18 },
-  laptop: { w: 400, h: 250, lift: 18, bezel: 9, radius: 10 },
+  // WHY lift 30 (was 18, round 7 reviewer: the laptop read as another tablet): room for a keyboard deck seen from just above
+  laptop: { w: 400, h: 250, lift: 30, bezel: 9, radius: 10 },
   // WHY 482 wide (was 470): the TV still's exact ratio (2560x1434), so a monitor wears a TV still with no crop and no stretch
   monitor: { w: 482, h: 270, lift: 64, bezel: 8, radius: 8 },
   tv: { w: 1000, h: 560, lift: 46, bezel: 9, radius: 8 },
@@ -82,7 +85,7 @@ export const dev = (id: string) => {
 // =====================================================================================================
 // A device: body, bezel, glass, and the light it throws onto its shelf.
 // =====================================================================================================
-export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: number; children: React.ReactNode }> = ({ d, night, glow, lift = 0, children }) => {
+export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: number; glowK?: number; children: React.ReactNode }> = ({ d, night, glow, lift = 0, glowK = 1, children }) => {
   const z = SIZE[d.kind];
   const b = z.bezel;
   const W = d.w + b * 2, H = d.h + b * 2;
@@ -90,17 +93,26 @@ export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: numb
   // bodies are plum-black aluminium lit from above: a lighter top edge, a darker bottom
   const body = `linear-gradient(180deg, #3A2C46 0%, #241A2E 45%, #1A1222 100%)`;
   const pop = 1 + lift * 0.05;
+  // WHY glowK (round 7 reviewer): a screen that is switched off, or mostly outside a close shot, throws no light
+  const gk = Math.max(0, glowK);
   return (
     <>
       {/* the light the screen throws down onto the shelf (only reads at night) */}
-      <div style={{ position: 'absolute', left: d.cx - W * 0.7, width: W * 1.4, top: d.shelf - 26, height: 60, borderRadius: '50%',
-        background: `radial-gradient(closest-side, ${glow}, transparent)`, opacity: 0.32 * night }} />
+      {gk > 0.01 && <div style={{ position: 'absolute', left: d.cx - W * 0.7, width: W * 1.4, top: d.shelf - 26, height: 60, borderRadius: '50%',
+        background: `radial-gradient(closest-side, ${glow}, transparent)`, opacity: 0.32 * night * gk }} />}
       {/* contact shadow under the device */}
       <div style={{ position: 'absolute', left: d.cx - W * 0.46, width: W * 0.92, top: d.shelf - 9, height: 18, borderRadius: '50%',
         background: 'radial-gradient(closest-side, rgba(20,8,32,0.55), transparent)' }} />
       {/* stands */}
-      {d.kind === 'laptop' && <div style={{ position: 'absolute', left: d.cx - W * 0.56, width: W * 1.12, top: d.shelf - z.lift + 2, height: z.lift - 2,
-        background: 'linear-gradient(180deg,#5A4A66,#2C2136 70%,#1C1424)', borderRadius: '3px 3px 10px 10px', clipPath: 'polygon(4% 0,96% 0,100% 100%,0 100%)' }} />}
+      {/* WHY a keyboard deck seen from just above (round 7 reviewer: "it reads as the tablet again, not as a computer"): the hinge, two
+          faint rows of keys and a trackpad, so a laptop is a laptop from across the room */}
+      {d.kind === 'laptop' && <div style={{ position: 'absolute', left: d.cx - W * 0.58, width: W * 1.16, top: d.shelf - z.lift + 1, height: z.lift - 1,
+        background: 'linear-gradient(180deg,#4E3F5B 0%,#3A2E46 30%,#2A2034 100%)', borderRadius: '2px 2px 9px 9px', clipPath: 'polygon(7% 0,93% 0,100% 100%,0 100%)' }}>
+        <div style={{ position: 'absolute', left: '7%', right: '7%', top: 0, height: 2.5, background: '#16101C' }} />
+        {[0, 1, 2].map((r) => <div key={r} style={{ position: 'absolute', left: `${13 - r * 2}%`, right: `${13 - r * 2}%`, top: 5 + r * 5.5, height: 3.6, borderRadius: 1.5,
+          background: 'repeating-linear-gradient(90deg, rgba(14,9,20,0.75) 0 7px, transparent 7px 9px)' }} />)}
+        <div style={{ position: 'absolute', left: '40%', right: '40%', bottom: 3, height: 5, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }} />
+      </div>}
       {(d.kind === 'monitor' || d.kind === 'tv') && <>
         <div style={{ position: 'absolute', left: d.cx - (d.kind === 'tv' ? 30 : 22), width: d.kind === 'tv' ? 60 : 44, top: top + H - 4, height: d.shelf - (top + H) + 2,
           background: 'linear-gradient(90deg,#1E1527,#4A3B56 50%,#1E1527)' }} />
@@ -108,17 +120,21 @@ export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: numb
           background: 'linear-gradient(180deg,#4A3B56,#1E1527)', borderRadius: '6px 6px 2px 2px' }} />
       </>}
       <div style={{ position: 'absolute', left, top, width: W, height: H, transform: lift ? `translateY(${-lift * 14}px) scale(${pop})` : undefined, transformOrigin: '50% 100%' }}>
-        <div style={{ position: 'absolute', inset: 0, borderRadius: z.radius + b * 0.6, background: body,
-          boxShadow: `0 ${18 + lift * 26}px ${40 + lift * 40}px rgba(20,8,32,${0.5 + lift * 0.1}), 0 0 ${50 * night}px ${glow.replace('1)', `${0.12 * night})`)}, inset 0 1.5px 0 rgba(255,255,255,0.16), inset 0 -2px 0 rgba(0,0,0,0.35)` }} />
+        {/* WHY the body's corner is the screen's corner plus the bezel (round 7 reviewer: the screen looked pasted onto its frame): the two
+            curves are concentric, as on a real device */}
+        <div style={{ position: 'absolute', inset: 0, borderRadius: z.radius + b, background: body,
+          boxShadow: `0 ${18 + lift * 26}px ${40 + lift * 40}px rgba(20,8,32,${0.5 + lift * 0.1}), 0 0 ${50 * night * gk}px ${glow.replace('1)', `${0.12 * night * gk})`)}, inset 0 1.5px 0 rgba(255,255,255,0.16), inset 0 -2px 0 rgba(0,0,0,0.35)` }} />
         <div style={{ position: 'absolute', left: b, top: b, width: d.w, height: d.h, borderRadius: z.radius, overflow: 'hidden', background: '#000' }}>
           {children}
           {/* a hairline of black where the glass meets the bezel, and a soft edge shade: a screen is set into its frame */}
-          <div style={{ position: 'absolute', inset: 0, borderRadius: z.radius, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.65), inset 0 0 ' + (b * 1.4) + 'px rgba(0,0,0,0.22)', pointerEvents: 'none' }} />
-          {/* glass: a faint diagonal sheen so screens read as objects, not flat rectangles */}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(118deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.04) 34%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 100%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', inset: 0, borderRadius: z.radius, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.7), inset 0 0 ' + (b * 1.2) + 'px rgba(0,0,0,0.18)', pointerEvents: 'none' }} />
+          {/* glass: one soft diagonal highlight across the whole pane, about 6% at its brightest (round 7 reviewer: the old sheen ended
+              in a hard line a third of the way across, which read as a printed stripe rather than glass) */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(122deg, rgba(255,255,255,0.075) 0%, rgba(255,255,255,0.035) 38%, rgba(255,255,255,0) 58%, rgba(255,255,255,0) 82%, rgba(255,255,255,0.025) 100%)', pointerEvents: 'none' }} />
         </div>
-        {/* WHY a small punch-hole camera and not a wide pill: the pill sat on the app's own title row and hid real interface */}
-        {d.kind === 'phone' && <div style={{ position: 'absolute', left: W / 2 - 2.5, top: b + 3.5, width: 5, height: 5, borderRadius: 5, background: '#0A060E', boxShadow: '0 0 0 0.8px rgba(255,255,255,0.08)' }} />}
+        {/* WHY the camera sits in the bezel above the glass (round 7 reviewer BLOCKER: a punch-hole on the glass covered "ch" of the app's own
+            "new chat" title): the app's window is never covered by anything drawn */}
+        {d.kind === 'phone' && <div style={{ position: 'absolute', left: W / 2 - 2, top: (b - 4) / 2, width: 4, height: 4, borderRadius: 4, background: '#0A060E', boxShadow: '0 0 0 0.7px rgba(255,255,255,0.1)' }} />}
       </div>
     </>
   );
@@ -184,9 +200,9 @@ export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }
 // =====================================================================================================
 // A price tag on a string, swinging after it drops. Text can change (the price ticks).
 // =====================================================================================================
-export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; sub?: string; slap?: boolean }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, sub, slap = false }) => {
+export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; sub?: string; slap?: boolean; flipFrom?: string; flipAt?: number }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, sub, slap = false, flipFrom, flipAt }) => {
   if (t < drop) return null;
-  if (slap) return <SlapTag x={x} y={y} t={t} drop={drop} text={text} scale={scale} fall={fall} strike={strike} sub={sub} />;
+  if (slap) return <SlapTag x={x} y={y} t={t} drop={drop} text={text} scale={scale} fall={fall} strike={strike} sub={sub} flipFrom={flipFrom} flipAt={flipAt} />;
   const dt = t - drop;
   const enter = Math.min(1, dt / 0.35);
   const ease = 1 - Math.pow(1 - enter, 3);
@@ -221,24 +237,35 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
 /** WHY a tag that is slapped on instead of hung from a string (reviewer 2026-11-20: the dangling string and tag fell off the bottom
  *  edge of the frame): it lands centred on (x, y) on the device's own corner, a little large, overshoots and settles at a slight
  *  tilt, so the price is clearly "stuck on" that screen and sits well inside the frame. */
-const SlapTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale: number; fall: number; strike: number; sub?: string }> = ({ x, y, t, drop, text, scale, fall, strike, sub }) => {
+const SlapTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale: number; fall: number; strike: number; sub?: string; flipFrom?: string; flipAt?: number }> = ({ x, y, t, drop, text, scale, fall, strike, sub, flipFrom, flipAt }) => {
   const dt = t - drop;
-  const p = Math.min(1, dt / 0.16);
-  // falls in from 1.9x to 1x on an ease-in, overshoots under 1x for two frames, settles
-  const sz = dt < 0.16 ? 1.9 - 0.95 * p * p : 0.95 + 0.05 * Math.cos(Math.min(1, (dt - 0.16) / 0.3) * Math.PI * 2.5) * Math.exp(-(dt - 0.16) * 9);
-  const tilt = -7 + 4 * Math.exp(-dt * 7) * Math.sin(dt * 30);
+  // WHY solid from its first frame and only a little large (round 7 reviewer BLOCKER: it arrived as a giant see-through ghost bigger than
+  // the tablet, which read as a compositing error): it starts at 1.12x, 30 px up, lands in 5 frames, squashes 3% and settles in 2
+  const LAND = 5 / 30, SETTLE = 2 / 30;
+  const p = Math.min(1, dt / LAND), pin = p * p;   // ease-in: it is thrown, so it speeds up into the screen
+  const sz = dt < LAND ? 1.12 - 0.12 * pin : 1;
+  const squash = dt >= LAND && dt < LAND + SETTLE * 2 ? Math.sin(Math.PI * (dt - LAND) / (SETTLE * 2)) : 0;
+  const tilt = -6 + (dt < LAND ? 3 * (1 - pin) : 0);
+  const lift = dt < LAND ? (1 - pin) * 30 * scale : 0;
   const fy = fall > 0 ? fall * fall * 40 : 0;
   const W = 190 * scale * 1.15, H = 92 * scale * 1.15;
+  // WHY a split-flap turn for a price change (round 7 reviewer: four prices flickered past in 0.7 s): the old price folds away on its top
+  // half's hinge and the new one folds down into place, 4 frames each way, so one change is seen and read
+  const FLIP = 0.13;
+  const fp = flipFrom !== undefined && flipAt !== undefined ? Math.max(0, Math.min(1, (t - flipAt) / FLIP)) : 1;
+  const shown = fp < 0.5 && flipFrom !== undefined ? flipFrom : text;
+  const rx = fp < 1 ? (fp < 0.5 ? fp * 2 * 90 : (1 - (fp - 0.5) * 2) * -90) : 0;
   return (
-    <div style={{ position: 'absolute', left: x - W / 2, top: y - H / 2 + fy, width: W, height: H, transform: `rotate(${tilt + fall * 5}deg) scale(${sz})`, transformOrigin: '50% 50%', opacity: (fall > 0 ? 1 - fall : 1) * Math.min(1, dt / 0.04),
-      filter: `drop-shadow(0 ${8 * scale}px ${12 * scale}px rgba(20,8,32,0.5))` }}>
+    <div style={{ position: 'absolute', left: x - W / 2, top: y - H / 2 + fy - lift, width: W, height: H, transform: `rotate(${tilt + fall * 5}deg) scale(${sz * (1 + 0.012 * squash)}, ${sz * (1 - 0.03 * squash)})`, transformOrigin: '50% 100%', opacity: fall > 0 ? 1 - fall : 1,
+      filter: `drop-shadow(0 ${(8 + lift * 0.4) * scale}px ${(12 + lift * 0.5) * scale}px rgba(20,8,32,0.5))` }}>
       <svg width={W} height={H} viewBox="0 0 190 92" style={{ position: 'absolute' }}>
         <path d="M95 0 L120 16 H182 a8 8 0 0 1 8 8 V84 a8 8 0 0 1 -8 8 H8 a8 8 0 0 1 -8 -8 V24 a8 8 0 0 1 8 -8 H70 Z" fill="#FBF5EA" />
         <circle cx="95" cy="12" r="5" fill="#2A1F33" />
       </svg>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 22 * scale * 1.15, height: 70 * scale * 1.15, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 22 * scale * 1.15, height: 70 * scale * 1.15, display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: 300 * scale,
         fontFamily: DMSANS, fontWeight: 900, fontSize: 38 * scale * 1.15, letterSpacing: '-0.04em', color: C.plum, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
-        <span style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>{text}
+        <span style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>
+          <span style={{ display: 'inline-block', transform: rx ? `rotateX(${rx}deg)` : undefined, transformOrigin: '50% 55%' }}>{shown}</span>
           {sub && <span style={{ fontSize: 14 * scale * 1.15, fontWeight: 700, letterSpacing: 0, color: C.plum2, marginTop: 2 * scale }}>{sub}</span>}
           {strike > 0 && <span style={{ position: 'absolute', left: '-6%', top: '52%', height: 6 * scale, borderRadius: 6 * scale, width: `${112 * strike}%`, background: C.purple }} />}
         </span>

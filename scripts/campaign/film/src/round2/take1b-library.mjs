@@ -61,6 +61,9 @@ const LOOKS = [
 const FOCI = {
   chat:    { screen: null, what: 'chat mid-conversation', seed: true },
   empty:   { screen: null, what: 'empty conversation, before anyone asks', empty: true },
+  // WHY "wake" (round 7 reviewer BLOCKER: the hero close-up at "something wonderful" showed "Qwen3 Coder 30b A3b Instruct", jargon in a hero shot):
+  // the same untouched empty window, with a short, friendly local model chosen in the app's own picker (brand guide 8: choose what is IN the app, never hide it)
+  wake:    { screen: null, what: 'empty conversation, before anyone asks (friendly model in the picker)', empty: true, model: 'qwen36-27b' },
   typing:  { screen: null, what: 'empty conversation, message box focused', empty: true, focusBox: true },
   // WHY "clean" (round 5): the film types the request into the real box, so the placeholder words and the empty-chat
   // greeting are hidden by CSS in the real renderer: the app after a first message would not show them either
@@ -82,16 +85,16 @@ const FOCI = {
 const PLAN = {
   youcoded:             [['phone', 'empty'], ['tablet', 'empty'], ['laptop', 'empty'], ['tv', 'empty'], ['phone', 'typing'], ['tablet', 'typing'], ['laptop', 'typing'], ['tv', 'typing'], ['phone', 'chat'], ['laptop', 'home'], ['tv', 'money'], ['tablet', 'paint']],
   'youcoded-night':     [['phone', 'chat'], ['tablet', 'home'], ['laptop', 'chat'], ['tv', 'lights']],
-  creme:                [['phone', 'money'], ['tablet', 'chat'], ['laptop', 'paint'], ['tv', 'chat']],
-  light:                [['phone', 'lights'], ['tablet', 'money'], ['laptop', 'chat'], ['tv', 'home']],
+  creme:                [['phone', 'wake'], ['phone', 'money'], ['tablet', 'chat'], ['laptop', 'paint'], ['tv', 'chat']],
+  light:                [['phone', 'wake'], ['phone', 'lights'], ['tablet', 'money'], ['laptop', 'chat'], ['tv', 'home']],
   dark:                 [['phone', 'home'], ['tablet', 'chat'], ['laptop', 'money'], ['tv', 'paint']],
   midnight:             [['phone', 'chat'], ['tablet', 'climate'], ['laptop', 'home'], ['tv', 'chat']],
-  'halftone-dimension': [['phone', 'home'], ['tablet', 'chat'], ['laptop', 'money'], ['tv', 'media'], ['tablet', 'clean'], ['tablet', 'cleanfocus'], ['tablet', 'typed'], ['tablet', 'paint']],
-  'golden-sunbreak':    [['phone', 'empty'], ['phone', 'typing'], ['phone', 'clean'], ['phone', 'cleanfocus'], ['phone', 'chat'], ['phone', 'home'], ['tablet', 'money'], ['laptop', 'lights'], ['tv', 'chat']],
+  'halftone-dimension': [['phone', 'wake'], ['phone', 'home'], ['tablet', 'chat'], ['laptop', 'money'], ['tv', 'media'], ['tablet', 'clean'], ['tablet', 'cleanfocus'], ['tablet', 'typed'], ['tablet', 'paint']],
+  'golden-sunbreak':    [['phone', 'wake'], ['phone', 'empty'], ['phone', 'typing'], ['phone', 'clean'], ['phone', 'cleanfocus'], ['phone', 'chat'], ['phone', 'home'], ['tablet', 'money'], ['laptop', 'lights'], ['tv', 'chat']],
   'devils-garden':      [['phone', 'climate'], ['tablet', 'chat'], ['laptop', 'chat'], ['tv', 'home'], ['laptop', 'clean'], ['laptop', 'cleanfocus'], ['laptop', 'typed'], ['laptop', 'lights']],
   'kuromi-dreamer':     [['phone', 'chat'], ['tablet', 'paint'], ['laptop', 'climate'], ['tv', 'chat']],
   'strawberry-kitty':   [['phone', 'money'], ['tablet', 'chat'], ['laptop', 'media'], ['tv', 'paint']],
-  'morning-rounds':     [['phone', 'chat'], ['tablet', 'home'], ['laptop', 'chat'], ['tv', 'money']],
+  'morning-rounds':     [['phone', 'wake'], ['phone', 'chat'], ['tablet', 'home'], ['laptop', 'chat'], ['tv', 'money']],
 };
 
 // the sentences typed into the real boxes (what a person asks for; the page that arrives matches)
@@ -115,6 +118,7 @@ async function shoot(look, shapeKey, focusKey) {
     await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(slug)})}catch{}` });
     const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: f.scenario ?? 'site', theme: slug, ...(z.platform ? { platform: z.platform } : {}), ...(f.params ?? {}) });
     if (f.empty) { q.set('seed', 'none'); q.set('title', 'new chat'); }
+    if (f.model) q.set('model', f.model);
     else if (f.seed) { q.set('replyClock', 'now'); }
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, `window.__youcodedScreens && document.body.innerText.trim().length > 20`, 25000))) throw new Error('the app never started');
@@ -151,7 +155,7 @@ async function shoot(look, shapeKey, focusKey) {
     const info = await tab.evaluate(`(() => { const e = document.querySelector("[placeholder^='Message']"); const r = e ? (e.closest('form') || e.parentElement).getBoundingClientRect() : null;
       return { theme: document.documentElement.dataset.theme || '', box: r ? [r.left, r.top, r.width, r.height].map((n) => Math.round(n * ${z.dpr})) : null, w: innerWidth, h: innerHeight, font: e ? (() => { const c = getComputedStyle(e); return [c.fontFamily, c.fontSize, c.color, c.fontWeight, c.letterSpacing, c.paddingLeft].join(' | '); })() : '' }; })()`);
     writeFileSync(join(OUT, file), await tab.png());
-    rows.push({ file, shape: shapeKey, px: `${z.w * z.dpr}x${z.h * z.dpr}`, theme: label, kind, focus: f.what, typed: typed ? { ...typed, dpr: z.dpr } : undefined, box: info.box && (['empty','typing','chat','clean','cleanfocus','typed'].includes(focusKey)) ? info.box.join(',') : '', applied: info.theme });
+    rows.push({ file, shape: shapeKey, px: `${z.w * z.dpr}x${z.h * z.dpr}`, theme: label, kind, focus: f.what, typed: typed ? { ...typed, dpr: z.dpr } : undefined, box: info.box && (['empty','wake','typing','chat','clean','cleanfocus','typed'].includes(focusKey)) ? info.box.join(',') : '', applied: info.theme });
     console.log('ok', file, info.theme, info.font, JSON.stringify(info.box), tab.takeErrors().join(' | '));
   } catch (e) { problems.push(`${file}: ${e.message}`); console.log('FAIL', file, e.message); }
   finally { await tab.close?.(); }

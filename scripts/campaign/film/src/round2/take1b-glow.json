@@ -59,10 +59,6 @@
  "golden-sunbreak-phone-typing.png": "#727A7F",
  "golden-sunbreak-phone-clean.png": "#727B7F",
  "golden-sunbreak-phone-cleanfocus.png": "#727B7F",
- "creme-tablet-clean.png": "#F2EADC",
- "creme-tablet-cleanfocus.png": "#F2EADC",
- "creme-tablet-typed.png": "#F2EADC",
- "creme-tablet-paint.png": "#BED5C0",
  "devils-garden-laptop-clean.png": "#B28E95",
  "devils-garden-laptop-cleanfocus.png": "#B28E95",
  "devils-garden-laptop-typed.png": "#B28E95",
@@ -71,5 +67,10 @@
  "halftone-dimension-tablet-cleanfocus.png": "#1B112B",
  "halftone-dimension-tablet-typed.png": "#1C112B",
  "halftone-dimension-tablet-paint.png": "#6A827A",
- "golden-sunbreak-phone-home.png": "#261F26"
+ "golden-sunbreak-phone-home.png": "#261F26",
+ "creme-phone-wake.png": "#F1E9DB",
+ "light-phone-wake.png": "#EEEEEE",
+ "halftone-dimension-phone-wake.png": "#1C112B",
+ "golden-sunbreak-phone-wake.png": "#737C81",
+ "morning-rounds-phone-wake.png": "#E0C2BB"
 }
