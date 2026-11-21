@@ -54,5 +54,22 @@
  "kuromi-dreamer-tablet-paint.png": "#B2C5C6",
  "strawberry-kitty-tv-paint.png": "#BED1C3",
  "light-phone-lights.png": "#E0DDDA",
- "devils-garden-phone-climate.png": "#2A2335"
+ "devils-garden-phone-climate.png": "#2A2335",
+ "golden-sunbreak-phone-empty.png": "#727A7F",
+ "golden-sunbreak-phone-typing.png": "#727A7F",
+ "golden-sunbreak-phone-clean.png": "#727B7F",
+ "golden-sunbreak-phone-cleanfocus.png": "#727B7F",
+ "creme-tablet-clean.png": "#F2EADC",
+ "creme-tablet-cleanfocus.png": "#F2EADC",
+ "creme-tablet-typed.png": "#F2EADC",
+ "creme-tablet-paint.png": "#BED5C0",
+ "devils-garden-laptop-clean.png": "#B28E95",
+ "devils-garden-laptop-cleanfocus.png": "#B28E95",
+ "devils-garden-laptop-typed.png": "#B28E95",
+ "devils-garden-laptop-lights.png": "#331F27",
+ "halftone-dimension-tablet-clean.png": "#1B112B",
+ "halftone-dimension-tablet-cleanfocus.png": "#1B112B",
+ "halftone-dimension-tablet-typed.png": "#1C112B",
+ "halftone-dimension-tablet-paint.png": "#6A827A",
+ "golden-sunbreak-phone-home.png": "#261F26"
 }

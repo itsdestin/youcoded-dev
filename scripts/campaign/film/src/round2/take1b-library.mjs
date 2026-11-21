@@ -18,6 +18,8 @@ const OUT = join(FILM, 'public', 'stills', 'r4');
 mkdirSync(OUT, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const argv = process.argv.slice(2);
+// WHY --files (round 6): add a few new stills without re-shooting (and so changing) the ones the wall already uses
+const filesOnly = argv.includes('--files') ? argv[argv.indexOf('--files') + 1].split(',') : null;
 const only = argv.includes('--only') ? argv[argv.indexOf('--only') + 1].split(',') : null;
 
 // ---------------------------------------------------------------------------------------------------
@@ -64,6 +66,9 @@ const FOCI = {
   // greeting are hidden by CSS in the real renderer: the app after a first message would not show them either
   clean:      { screen: null, what: 'empty conversation, greeting and placeholder hidden (film types into it)', empty: true, clean: true },
   cleanfocus: { screen: null, what: 'same, message box focused (its own caret)', empty: true, focusBox: true, clean: true },
+  // WHY "typed" (round 6): the film types a request into a real laptop / tablet window. This picture has the whole sentence typed into
+  // the app's own message box (real font, size, colour); the film reveals it letter by letter, and the measured x of every letter's end is kept in rows.json
+  typed:      { screen: null, what: 'empty conversation, request typed in the message box (film reveals it)', empty: true, clean: true, typed: true },
   home:    { screen: 'pages/focus/page-home#site', what: 'Page: Home (lights, media, climate)', pages: true },
   money:   { screen: 'pages/focus/page-money#site', what: 'Page: Finance', pages: true },
   paint:   { screen: 'pages/focus/page-paint', what: 'Page: Paint studio', pages: true, scenario: 'default' },
@@ -81,14 +86,16 @@ const PLAN = {
   light:                [['phone', 'lights'], ['tablet', 'money'], ['laptop', 'chat'], ['tv', 'home']],
   dark:                 [['phone', 'home'], ['tablet', 'chat'], ['laptop', 'money'], ['tv', 'paint']],
   midnight:             [['phone', 'chat'], ['tablet', 'climate'], ['laptop', 'home'], ['tv', 'chat']],
-  'halftone-dimension': [['phone', 'home'], ['tablet', 'chat'], ['laptop', 'money'], ['tv', 'media']],
-  'golden-sunbreak':    [['phone', 'empty'], ['phone', 'typing'], ['phone', 'clean'], ['phone', 'cleanfocus'], ['phone', 'chat'], ['tablet', 'money'], ['laptop', 'lights'], ['tv', 'chat']],
-  'devils-garden':      [['phone', 'climate'], ['tablet', 'chat'], ['laptop', 'chat'], ['tv', 'home']],
+  'halftone-dimension': [['phone', 'home'], ['tablet', 'chat'], ['laptop', 'money'], ['tv', 'media'], ['tablet', 'clean'], ['tablet', 'cleanfocus'], ['tablet', 'typed'], ['tablet', 'paint']],
+  'golden-sunbreak':    [['phone', 'empty'], ['phone', 'typing'], ['phone', 'clean'], ['phone', 'cleanfocus'], ['phone', 'chat'], ['phone', 'home'], ['tablet', 'money'], ['laptop', 'lights'], ['tv', 'chat']],
+  'devils-garden':      [['phone', 'climate'], ['tablet', 'chat'], ['laptop', 'chat'], ['tv', 'home'], ['laptop', 'clean'], ['laptop', 'cleanfocus'], ['laptop', 'typed'], ['laptop', 'lights']],
   'kuromi-dreamer':     [['phone', 'chat'], ['tablet', 'paint'], ['laptop', 'climate'], ['tv', 'chat']],
   'strawberry-kitty':   [['phone', 'money'], ['tablet', 'chat'], ['laptop', 'media'], ['tv', 'paint']],
   'morning-rounds':     [['phone', 'chat'], ['tablet', 'home'], ['laptop', 'chat'], ['tv', 'money']],
 };
 
+// the sentences typed into the real boxes (what a person asks for; the page that arrives matches)
+const TYPED = { laptop: 'a page to run my lights', tablet: 'a paint studio' };
 const dist = await ensureBuild(join(WORKTREE, 'youcoded'), (m) => console.error('[build]', m));
 const srv = await serve(dist);
 const base = `http://127.0.0.1:${srv.port}/`;
@@ -101,6 +108,7 @@ async function waitFor(tab, expr, ms) { for (let t0 = Date.now(); Date.now() - t
 async function shoot(look, shapeKey, focusKey) {
   const [slug, label, kind] = look; const z = SHAPES[shapeKey]; const f = FOCI[focusKey];
   const file = `${slug}-${shapeKey}-${focusKey}.png`;
+  if (filesOnly && !filesOnly.includes(file)) return;
   const tab = await browser.newTab();
   try {
     await tab.send('Emulation.setDeviceMetricsOverride', { width: z.w, height: z.h, deviceScaleFactor: z.dpr, mobile: false });
@@ -125,14 +133,25 @@ async function shoot(look, shapeKey, focusKey) {
     if (f.clean) await tab.evaluate(`(() => { const st = document.createElement('style'); st.textContent = "[placeholder^='Message']::placeholder{color:transparent!important;opacity:0!important}"; document.head.appendChild(st);
       for (const e of document.querySelectorAll('div,p,span')) if (e.children.length === 0 && /^Start a conversation/.test((e.textContent || '').trim())) e.style.visibility = 'hidden';
       const m = document.querySelector("[placeholder^='Message']"); const c = getComputedStyle(m); console.log('FONT', c.fontFamily, c.fontSize, c.color, c.fontWeight, c.letterSpacing); })()`);
-    if (f.focusBox) await tab.evaluate(`document.querySelector("[placeholder^='Message']").focus()`);
+    let typed = null;
+    if (f.typed) {
+      const text = TYPED[shapeKey];
+      typed = await tab.evaluate(`(async () => { const text = ${JSON.stringify(text)}; const m = document.querySelector("[placeholder^='Message']"); m.focus();
+        const set = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(m), 'value').set; set.call(m, text); m.dispatchEvent(new Event('input', { bubbles: true }));
+        m.style.caretColor = 'transparent'; await new Promise((r) => setTimeout(r, 400));
+        const c = getComputedStyle(m); const ctx = document.createElement('canvas').getContext('2d'); ctx.font = c.fontStyle + ' ' + c.fontWeight + ' ' + c.fontSize + ' ' + c.fontFamily;
+        const r = m.getBoundingClientRect(); const pl = parseFloat(c.paddingLeft) + parseFloat(c.borderLeftWidth); const ls = parseFloat(c.letterSpacing) || 0;
+        const prefix = []; for (let i = 0; i <= text.length; i++) prefix.push(r.left + pl + ctx.measureText(text.slice(0, i)).width + ls * i);
+        return { text, prefix, ink: c.color, rect: [r.left, r.top, r.width, r.height], fs: parseFloat(c.fontSize), font: c.fontFamily, tag: m.tagName }; })()`, 10000);
+    }
+    if (f.focusBox && !f.typed) await tab.evaluate(`document.querySelector("[placeholder^='Message']").focus()`);
     // WHY wait on the theme font: a late web font would change the picture's typeface between shots
     await waitFor(tab, `(() => { const l = document.getElementById('theme-google-font'); if (l && !l.sheet) return false; return document.fonts.status === 'loaded'; })()`, 10000);
     await sleep(2200);
     const info = await tab.evaluate(`(() => { const e = document.querySelector("[placeholder^='Message']"); const r = e ? (e.closest('form') || e.parentElement).getBoundingClientRect() : null;
       return { theme: document.documentElement.dataset.theme || '', box: r ? [r.left, r.top, r.width, r.height].map((n) => Math.round(n * ${z.dpr})) : null, w: innerWidth, h: innerHeight, font: e ? (() => { const c = getComputedStyle(e); return [c.fontFamily, c.fontSize, c.color, c.fontWeight, c.letterSpacing, c.paddingLeft].join(' | '); })() : '' }; })()`);
     writeFileSync(join(OUT, file), await tab.png());
-    rows.push({ file, shape: shapeKey, px: `${z.w * z.dpr}x${z.h * z.dpr}`, theme: label, kind, focus: f.what, box: info.box && (['empty','typing','chat','clean','cleanfocus'].includes(focusKey)) ? info.box.join(',') : '', applied: info.theme });
+    rows.push({ file, shape: shapeKey, px: `${z.w * z.dpr}x${z.h * z.dpr}`, theme: label, kind, focus: f.what, typed: typed ? { ...typed, dpr: z.dpr } : undefined, box: info.box && (['empty','typing','chat','clean','cleanfocus','typed'].includes(focusKey)) ? info.box.join(',') : '', applied: info.theme });
     console.log('ok', file, info.theme, info.font, JSON.stringify(info.box), tab.takeErrors().join(' | '));
   } catch (e) { problems.push(`${file}: ${e.message}`); console.log('FAIL', file, e.message); }
   finally { await tab.close?.(); }

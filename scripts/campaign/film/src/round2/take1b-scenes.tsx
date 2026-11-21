@@ -194,7 +194,9 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
   const total = reprise ? BASE_TOTAL + 20 * rp : lines.slice(0, landedN).reduce((a, s) => a + s[1], 0);
   const lastLand = drop(Math.max(0, landedN - 1)) + FALL;
   const thump = Math.exp(-(t - lastLand) * 12) * (landedN > 2 && t > lastLand ? 1 : 0);
-  const CARD_H = 128, PITCH = 138, BASE = 700;
+  // WHY 124 / 148 / 560 (round 6 reviewer: rows collided and a half-cut one sat at the bottom): the gap between cards (24 px) is wider than the
+  // most a tilted 900 px card can swing (about 8 px an end), and the oldest card sits wholly above the clean cut-off line
+  const CARD_H = 124, PITCH = 148, BASE = 560;
   // WHY the camera climbs with the pile but lags it: the newest charge lands in view, and the pile keeps running out
   // of the top of the frame instead of stopping politely
   const rise = Math.max(0, landedN - 4.5) * PITCH;
@@ -217,14 +219,14 @@ export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, repris
         </div>
         {/* the pile. WHY the fade at the bottom: the older charges sink away below the frame instead of running
             through the "own nothing." headline */}
-        <AbsoluteFill style={{ WebkitMaskImage: 'linear-gradient(180deg,#000 58%,transparent 70%)', maskImage: 'linear-gradient(180deg,#000 58%,transparent 70%)', opacity: scene }}>
+        <AbsoluteFill style={{ WebkitMaskImage: 'linear-gradient(180deg,#000 64%,transparent 66.5%)', maskImage: 'linear-gradient(180deg,#000 64%,transparent 66.5%)', opacity: scene }}>
           <div style={{ position: 'absolute', left: 800, top: 0, width: 940, height: 1080, transform: `translateY(${rise + thump * 9}px)` }}>
             {lines.map(([name, price, col], i) => {
               const d = drop(i);
               if (t < d) return null;
               const p = d < 0 ? 1 : ez(t, d, d + FALL, EASE_IN);
               const y = BASE - i * PITCH;
-              const tilt = ((i * 37) % 7 - 3) * 0.7;
+              const tilt = ((i * 37) % 7 - 3) * 0.35;
               const since = t - d - FALL;
               // WHY squash and a two-frame rebound: weight; it hits, compresses, and settles
               const sq = d >= 0 && since > 0 ? Math.exp(-since * 16) : 0;

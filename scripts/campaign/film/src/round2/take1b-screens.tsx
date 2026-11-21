@@ -270,7 +270,7 @@ export const SharedRecipe: React.FC<{ w: number; h: number; k: number }> = ({ w,
 //    of the wall on purpose: it is the one every stranger already has, so it would not read as "made mine".
 //    Cotton Candy Sky and Meadow Mist are not in the library (the owner dislikes them).
 // =====================================================================================================
-type Row = { file: string; shape: 'phone' | 'tablet' | 'laptop' | 'tv'; theme: string; focus: string };
+type Row = { file: string; shape: 'phone' | 'tablet' | 'laptop' | 'tv'; theme: string; focus: string; typed?: { text: string; prefix: number[]; rect: number[]; dpr: number; fs: number } };
 const ROWS = ROWS_JSON as Row[];
 const GLOW = GLOW_JSON as Record<string, string>;
 const R4 = (file: string) => `stills/r4/${file}`;
@@ -296,10 +296,12 @@ export const PHONE_CLEAN = R4('golden-sunbreak-phone-clean.png');
 // gets the loud Halftone pack with exactly that page; the laptop that was locked gets a warm golden look (the
 // laptop's turn is "what our computers can do"); the tablet that cost money is now free in a dramatic look of its own.
 const FIXED: Record<string, Look> = {
-  hero: lookOf('halftone-dimension-phone-home.png'),
-  lockLaptop: lookOf('golden-sunbreak-laptop-lights.png'),
+  // round 6: the phone asks in Golden Sunbreak and the page comes back in the same look (a person's own look stays theirs)
+  hero: lookOf('golden-sunbreak-phone-home.png'),
+  // round 6: the laptop and the tablet each ask for a page in their own real look (take1b-library.mjs shot the box, the typed request and the page that arrives)
+  lockLaptop: lookOf('devils-garden-laptop-lights.png'),
   // WHY a big thermostat page (round 5 reviewer: the desert chat's words were unreadable at a glance): a page that reads from across the room
-  tagTablet: lookOf('midnight-tablet-climate.png'),
+  tagTablet: lookOf('halftone-dimension-tablet-paint.png'),
   tv: lookOf('morning-rounds-tv-money.png'),   // WHY (reviewer BLOCKER): the biggest tile in every wide shot was a licensed character look; this is a plain community theme
 };
 export const HERO_LOOK = FIXED.hero;
@@ -320,7 +322,7 @@ const LOOKS: Map<string, Look> = (() => {
     if (out.has(d.id)) continue;
     const shape = d.kind === 'monitor' ? 'tv' : d.kind;
     // WHY no Kuromi / Strawberry Kitty (reviewer BLOCKER): they are real licensed characters; a public film must not show them
-    const cands = ROWS.filter((x) => x.shape === shape && !x.theme.startsWith('YouCoded (default)') && !/Kuromi|Strawberry Kitty/.test(x.theme) && !/-phone-(empty|typing|clean|cleanfocus)\.png$/.test(x.file)).map((x) => lookOf(x.file));
+    const cands = ROWS.filter((x) => x.shape === shape && !x.theme.startsWith('YouCoded (default)') && !/Kuromi|Strawberry Kitty/.test(x.theme) && !/-(phone|laptop|tablet|tv)-(empty|typing|clean|cleanfocus|typed)\.png$/.test(x.file)).map((x) => lookOf(x.file));
     const shelf = WORLD.devs.filter((o) => o.row === d.row && out.has(o.id));
     const near = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < (o.w + d.w) / 2 + 700);   // WHY 700: about two devices either way, so a close-up of three never shows one theme twice
     const ok = (c: Look) => !shelf.some((o) => out.get(o.id)!.key === c.key) && !near.some((o) => out.get(o.id)!.theme === c.theme);
@@ -399,6 +401,36 @@ export const PhoneAsk: React.FC<{ w: number; h: number; text: string; caretOn: b
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------------------------------------------
+// Typing into a laptop's or tablet's own message box (round 6).
+// WHY a reveal of a real picture, not drawn letters: take1b-library.mjs shot the same window with the whole sentence typed into the
+// app's own box (its font, size, colour), and measured where every letter ends. The film shows the box with nothing in it
+// and uncovers the typed picture up to the current letter, so the letters are the app's own; only the blinking caret is added.
+// ---------------------------------------------------------------------------------------------------
+export const askKit = (slug: string, shape: 'laptop' | 'tablet') => {
+  const f = (k: string) => `${slug}-${shape}-${k}.png`;
+  const row = ROWS.find((x) => x.file === f('typed'));
+  if (!row?.typed) throw new Error(`take1b: no typed picture ${f('typed')} (run take1b-library.mjs)`);
+  return { clean: R4(f('clean')), focus: R4(f('cleanfocus')), typed: R4(f('typed')), info: row.typed, text: row.typed.text };
+};
+export type AskKit = ReturnType<typeof askKit>;
+const STILL_PX = { laptop: [2240, 1400], tablet: [2000, 1388] } as const;
+export const ShapeAsk: React.FC<{ kit: AskKit; shape: 'laptop' | 'tablet'; w: number; h: number; n: number; caretOn: boolean; caretColor: string }> = ({ kit, shape, w, h, n, caretOn, caretColor }) => {
+  const [SW, SH] = STILL_PX[shape];
+  const { prefix, rect, dpr } = kit.info;
+  const top = (rect[1] - 7) * dpr, bot = (rect[1] + rect[3] + 7) * dpr, left = rect[0] * dpr;
+  const x = prefix[Math.min(n, prefix.length - 1)] * dpr;
+  // WHY the caret is the app's own focused picture while nothing is typed, then a thin bar that follows the last letter
+  const base = n > 0 ? kit.clean : caretOn ? kit.focus : kit.clean;
+  return (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#10101A' }}>
+      <RealApp src={base} w={w} h={h} />
+      {n > 0 && <div style={{ position: 'absolute', inset: 0, clipPath: `inset(${(top / SH) * 100}% ${100 - ((x + 3) / SW) * 100}% ${100 - (bot / SH) * 100}% ${(left / SW) * 100}%)` }}><RealApp src={kit.typed} w={w} h={h} /></div>}
+      {n > 0 && <div style={{ position: 'absolute', left: (x / SW) * w + 1, top: ((rect[1] + 0.8) * dpr / SH) * h, width: Math.max(1.5, (2 / SW) * w * 1.4), height: ((rect[3] - 1.6) * dpr / SH) * h, background: caretColor, opacity: caretOn ? 1 : 0 }} />}
     </div>
   );
 };
