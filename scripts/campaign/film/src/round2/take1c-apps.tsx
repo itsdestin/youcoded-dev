@@ -142,7 +142,9 @@ type WinProps = {
   a?: number;                                      // when its outline starts to draw (default: long done)
   draw?: number;                                   // how long the outline takes (the quill drawing it)
   contentAt?: number;                              // when the inside arrives
-  request?: { text: string; at: number; dur: number; out?: number };   // out: when the bubble fades away
+  // WHY `bare` (review 2026-11-20): a title bar with three dots reads as the product's own window, which the brand
+  // forbids drawing. Bare cards are what a person MADE: a taped paper card, same content, no window chrome.
+  bare?: boolean;
   r?: number; s?: number;                          // tilt and extra scale, for windows in flight
   compact?: boolean;                               // one row fewer, for the smallest sizes
   /** 0..1: a wipe from left to right that repaints this window in `to`'s theme (a shared copy made someone's own) */
@@ -152,15 +154,17 @@ type WinProps = {
 /** The inside of a window (title bar and content) in one theme. */
 // WHY `what` separate from `theme`: a shared page keeps what it IS (her plants) while taking on the colours,
 // font and look of whoever it lands with (his theme).
-const Body: React.FC<{ theme: Theme; what: Theme; t: number; wipe: number; hero: number; compact?: boolean; id: string }> = ({ theme, what, t, wipe, hero, compact, id }) => {
+const Body: React.FC<{ theme: Theme; what: Theme; t: number; wipe: number; hero: number; compact?: boolean; id: string; bare?: boolean }> = ({ theme, what, t, wipe, hero, compact, id, bare }) => {
   const L = LOOK[theme];
   return (
     <>
       <rect x={0} y={0} width={W} height={H} fill={L.canvas} />
-      <rect x={0} y={0} width={W} height={BAR} fill={L.panel} />
-      <path d={`M 0 ${BAR} L ${W} ${BAR}`} stroke={L.edge} strokeWidth={1.5} />
-      {[0, 1, 2].map((i) => <circle key={i} cx={22 + i * 17} cy={BAR / 2} r={5} fill={L.edge} />)}
-      <text x={W / 2} y={BAR / 2 + 6} textAnchor="middle" fontFamily={DMSANS} fontWeight={600} fontSize={16} fill={L.muted}>{LABEL[what]}</text>
+      {!bare && <>
+        <rect x={0} y={0} width={W} height={BAR} fill={L.panel} />
+        <path d={`M 0 ${BAR} L ${W} ${BAR}`} stroke={L.edge} strokeWidth={1.5} />
+        {[0, 1, 2].map((i) => <circle key={i} cx={22 + i * 17} cy={BAR / 2} r={5} fill={L.edge} />)}
+        <text x={W / 2} y={BAR / 2 + 6} textAnchor="middle" fontFamily={DMSANS} fontWeight={600} fontSize={16} fill={L.muted}>{LABEL[what]}</text>
+      </>}
       {wipe > 0 && (
         <g clipPath={`url(#${id}-w)`}>
           {what === 'meadow' && <Plants L={L} hero={hero} />}
@@ -176,7 +180,7 @@ const Body: React.FC<{ theme: Theme; what: Theme; t: number; wipe: number; hero:
 
 let winSeq = 0;
 /** One app window in one theme. Draws its outline, floods its colour, then its inside wipes down and lands. */
-export const ThemedWindow: React.FC<WinProps> = ({ theme, x, y, w, a = -10, draw = 0.5, contentAt, request, r = 0, s = 1, compact, reskin, shadow = 0 }) => {
+export const ThemedWindow: React.FC<WinProps> = ({ theme, x, y, w, a = -10, draw = 0.5, contentAt, bare, r = 0, s = 1, compact, reskin, shadow = 0 }) => {
   const t = useT();
   // WHY a per-instance id: two copies of the same theme at the same spot (the shared copy) must not share clips
   const [uid] = React.useState(() => ++winSeq);
@@ -188,7 +192,6 @@ export const ThemedWindow: React.FC<WinProps> = ({ theme, x, y, w, a = -10, draw
   const wipe = lin(t, c, c + 0.45, EASE_IN_OUT);
   const hero = Math.min(1.08, pop(t, c + 0.15, 0.5));
   const id = `c-win-${uid}`;
-  const typed = request ? Math.floor(request.text.length * lin(t, request.at, request.at + request.dur, (v) => v)) : 0;
   const rs = reskin ? Math.max(0, Math.min(1, reskin.p)) : 0;
   return (
     <g transform={`translate(${x} ${y}) rotate(${r}) scale(${k}) translate(${-W / 2} ${-H / 2})`}>
@@ -200,23 +203,15 @@ export const ThemedWindow: React.FC<WinProps> = ({ theme, x, y, w, a = -10, draw
       {/* a soft drop shadow so the window sits on the page; it grows while the window is carried */}
       <path d={rr(6 + shadow * 10, 10 + shadow * 18, W, H, R)} fill={P.ink} opacity={(0.12 + shadow * 0.08) * fill} />
       <g clipPath={`url(#${id})`} opacity={fill}>
-        <Body theme={theme} what={theme} t={t} wipe={wipe} hero={hero} compact={compact} id={id} />
-        {reskin && rs > 0 && <g clipPath={`url(#${id}-r)`}><Body theme={reskin.to} what={theme} t={t} wipe={wipe} hero={hero} compact={compact} id={id} /></g>}
+        <Body theme={theme} what={theme} t={t} wipe={wipe} hero={hero} compact={compact} id={id} bare={bare} />
+        {reskin && rs > 0 && <g clipPath={`url(#${id}-r)`}><Body theme={reskin.to} what={theme} t={t} wipe={wipe} hero={hero} compact={compact} id={id} bare={bare} /></g>}
       </g>
       {/* the leading edge of a reskin: a thin ink line, so it reads as the window being redrawn, not a glitch */}
       {reskin && rs > 0 && rs < 1 && <path d={`M ${W * rs} 0 L ${W * rs} ${H}`} stroke={P.ink} strokeWidth={3} />}
-      <Ink d={`M 0 ${BAR} L ${W} ${BAR}`} a={a + draw * 0.7} b={a + draw} w={2.6} />
+      {!bare && <Ink d={`M 0 ${BAR} L ${W} ${BAR}`} a={a + draw * 0.7} b={a + draw} w={2.6} />}
       <Ink d={rr(0, 0, W, H, R)} a={a} b={a + draw} w={3.4} />
-      {request && t > request.at - 0.25 && (
-        // what the person asked, in a storybook speech bubble hanging off the foot of the window
-        <g opacity={lin(t, request.at - 0.25, request.at) * (request.out == null ? 1 : 1 - lin(t, request.out, request.out + 0.3))}>
-          <path d={`${rr(10, H - 18, W + 10, 56, 28)} M 52 ${H + 36} L 40 ${H + 58} L 74 ${H + 38}`} fill="#FFFFFF" stroke={P.ink} strokeWidth={2.6} strokeLinejoin="round" />
-          <text x={34} y={H + 18} fontFamily={DMSANS} fontWeight={500} fontSize={20} fill={P.ink}>
-            {request.text.slice(0, typed)}
-            {typed < request.text.length && <tspan fill={P.purple}>|</tspan>}
-          </text>
-        </g>
-      )}
+      {/* a strip of washi tape holds a bare card to the page */}
+      {bare && <rect x={W / 2 - 46} y={-9} width={92} height={22} fill="#E8C9D8" opacity={0.78 * fill} transform={`rotate(-2 ${W / 2} 0)`} />}
     </g>
   );
 };

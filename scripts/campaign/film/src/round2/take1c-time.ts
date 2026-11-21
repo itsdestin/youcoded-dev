@@ -131,7 +131,9 @@ export const TURN = {
   free: Q.itsTime1 - 0.42,
   // the riffle: every page of the book flies past, each one somebody's own
   // WHY four pages, not six: one per real theme, and each one now stays readable for ~0.8 s
-  riffle: [Q.itsTime2 - 0.55, Q.itsTime2 + 0.25, Q.atLong + 0.07, Q.last - 0.53],
+  // WHY the gaps shrink (0.8, 0.7, 0.55 s; review: four equal turns read as a template): the pages accelerate into
+  // "at long, long last"; the take1c.tsx RIFFLE_DUR list shortens each turn to match
+  riffle: [Q.itsTime2 - 0.55, Q.itsTime2 + 0.25, Q.itsTime2 + 0.95, Q.itsTime2 + 1.5],
   everything: Q.toOpen - 0.72,
   close: Q.end - 0.05,                     // the book shuts as the last word lands
 };
@@ -143,15 +145,18 @@ export const CUT_TURNS = new Set<number>([TURN.nothing, TURN.treasure, TURN.anyo
 export const CUT = {
   hubris: TURN.treasure,
   these: onFrame(Q.these - 0.05),
-  // the quill escapes the men in one shot and is drawing the window in the next: cut on "a tool"
-  tool: onFrame(Q.aTool - 0.02),
+  // the quill escapes the men in one shot and is writing the wish in the next: cut as it leaves the frame, a
+  // beat before "a tool" (review: the cut used to land 0.3 s after the quill was gone, on an empty frame)
+  tool: onFrame(Q.aTool - 0.3),
 };
 /** When a spread's pictures are fully on the page (a cut lands at once, a turn after TURN_DUR). */
 export const land = (turnAt: number) => turnAt + (CUT_TURNS.has(turnAt) ? 0 : TURN_DUR);
 export const COVER_DUR = 1.1;
 export const CLOSE_DUR = 0.8;
 /** How long the shut book rests before the dip, and the dip's two halves (to the felt's dark, then up). */
-export const SHUT_REST = 0.3, DIP_OUT = 8 / 30, DIP_IN = 16 / 30;
+// WHY a 0.6 s cross-fade, not 8 frames (review BLOCKER: a 0.27 s jump from dark purple to near-white read as a flash):
+// the closed cover now lightens into the end card over 18 frames, and brightness only rises, once
+export const SHUT_REST = 0.3, DIP_OUT = 0.6, DIP_IN = 16 / 30;
 /** The frame the end card starts to fade up from dark (the book has already dipped out to dark by here).
  *  WHY a dip through dark, not a cross-fade: the 4-frame dissolve from the dark cover to the near-white card
  *  read as a flash; dark to dark and then a slow rise keeps the brightness change gentle. */

@@ -11,7 +11,7 @@ import { AbsoluteFill, Audio, interpolate, staticFile, useCurrentFrame } from 'r
 import { C, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
 import { Day, EndCard } from '../kit';
 import { Boards, BOARD, BasePage, cameraAt, coverArt, Edges, Face, Lamp, Leaf, LeafShadow, PH, PW, Shot, Spread, World } from './take1c-book';
-import { lin } from './take1c-ink';
+import { lin, useT } from './take1c-ink';
 import { BARGAIN, DROP_LAND, HANDFUL, HOWEVER, NOTHING, RULES } from './take1c-spreads-a';
 import { ANYONE, EVERYTHING, FREE, OURS, OURS_HAND, TREASURE, TREASURE_MARKS, VARIANTS } from './take1c-spreads-b';
 import { Headline } from './take1c-page';
@@ -22,21 +22,26 @@ const SPREADS: Spread[] = [HANDFUL, RULES, BARGAIN, NOTHING, HOWEVER, TREASURE, 
 const STARTS = [TURN.cover, TURN.rules, TURN.bargain, TURN.nothing, TURN.however, TURN.treasure, TURN.anyone, TURN.ours, TURN.free, ...TURN.riffle, TURN.everything];
 // WHY found by name, not a typed index: adding a spread before the riffle must not silently shift which turns are fast
 const RIFFLE_FROM = SPREADS.indexOf(VARIANTS[0]);
+// WHY shorter each time (review: four equal turns read as a template): the pages speed up into "at long, long last"
+const RIFFLE_DUR = [0.8, 0.7, 0.55, 0.45];
 // a cut turn takes no time at all: the next spread is simply there on the next frame
-const DURS = STARTS.map((s, k) => (k === 0 ? COVER_DUR : CUT_TURNS.has(s) ? 0 : k >= RIFFLE_FROM ? 0.78 : TURN_DUR));
+const DURS = STARTS.map((s, k) => (k === 0 ? COVER_DUR : CUT_TURNS.has(s) ? 0 : k >= RIFFLE_FROM ? RIFFLE_DUR[k - RIFFLE_FROM] ?? 0.78 : TURN_DUR));
 if (STARTS.length !== SPREADS.length) throw new Error('take1c: every spread needs exactly one turn into it (see TURN in take1c-time.ts)');
 
 // ---------- the cover (seen only as the book shuts) ----------
 const FOIL = 'linear-gradient(160deg, #E3C6EC 0%, #B98BC9 38%, #8E5DA2 62%, #D7B3E2 100%)';
-/** Foil stamping: a flat shape filled with a soft metallic sheen, pressed slightly into the cloth. */
-const Foil: React.FC<{ d: string; w: number; h: number; vb: string }> = ({ d, w, h, vb }) => (
-  <div style={{ width: w, height: h, background: FOIL, clipPath: `path("${d}")`, filter: 'drop-shadow(0 -1px 0 rgba(0,0,0,0.35))' }} data-vb={vb} />
-);
-const QuillEmblem: React.FC = () => (
-  <div style={{ transform: 'translateY(-30px) rotate(-8deg)' }}>
-    <Foil w={150} h={190} vb="0 0 150 190" d="M 30 186 L 36 166 L 42 168 Z M 40 164 C 50 116 84 54 128 14 C 124 52 100 112 46 168 Z" />
-  </div>
-);
+const QuillEmblem: React.FC = () => {
+  // WHY about 2.3 times the old size and a slow sheen (review: a small flat quill read as a placeholder): the cover
+  // carries one clear emblem, and a band of light slides across the foil as the camera pushes in on it
+  const t = useT();
+  const sheen = lin(t, TURN.close, END_CARD, EASE_IN_OUT) * 100;
+  return (
+    <div style={{ transform: 'translateY(-20px) rotate(-8deg) scale(2.3)' }}>
+      <div style={{ width: 150, height: 190, background: FOIL, backgroundSize: '320% 320%', backgroundPosition: `${100 - sheen}% ${sheen}%`,
+        clipPath: 'path("M 30 186 L 36 166 L 42 168 Z M 40 164 C 50 116 84 54 128 14 C 124 52 100 112 46 168 Z")', filter: 'drop-shadow(0 -1px 0 rgba(0,0,0,0.35))' }} />
+    </div>
+  );
+};
 const COVER_END = coverArt(QuillEmblem);
 
 // ---------- the camera ----------
@@ -80,37 +85,52 @@ const SHOTS: Shot[] = [
   // v: a hard cut on "hubris" (hats out of the page), the inkwell, the quill rising, the chart, the snatch
   // WHY framed on the page, not on the desk (it was 30% bare felt): the men left of centre, their desk at right,
   // and the frame's top free for the hats to grow out of
-  cut(CUT.hubris, 430, 420, 2.0, 11), at(CUT.these - 0.01, 430, 405, 1.95, 11),
-  cut(CUT.these, 440, 540, 1.55, 14), at(Q.artificial - 0.07, 450, 545, 1.6, 14),
-  cut(Q.artificial - 0.05, TM.well.x + 10, 470, 2.6, 12), at(Q.aTechnology - 0.07, TM.well.x + 12, 465, 2.7, 12),
-  cut(Q.aTechnology - 0.05, 420, 500, 1.45, 14), at(Q.greatTreasure - 0.07, 425, 500, 1.52, 14),
-  // the chart close: the three men and their easel, with headroom above the hats (8% of the frame or more)
-  cut(Q.greatTreasure - 0.05, 382, 488, 2.55, 13), at(Q.but - 0.07, 386, 486, 2.62, 13),
-  cut(Q.but - 0.05, 450, 520, 1.5), at(Q.far - 0.07, 470, 520, 1.6),
+  // WHY wider than before (review: the hats ran off the top of the frame): the tallest hat now ends at about y 140
+  // on the page, and every shot with the men keeps at least 8% of the frame above it
+  cut(CUT.hubris, 430, 450, 1.38, 11), at(CUT.these - 0.01, 430, 445, 1.36, 11),
+  cut(CUT.these, 440, 470, 1.5, 14), at(Q.artificial - 0.07, 445, 470, 1.55, 14),
+  // WHY 2.0 and centred between the men and the well (review: the 2.6 close-up cropped the men out, so nothing
+  // reacted to the quill): now the men's hands rubbing and the quill rising are in one frame
+  cut(Q.artificial - 0.05, 520, 450, 1.55, 12), at(Q.aTechnology - 0.07, 525, 450, 1.6, 12),
+  cut(Q.aTechnology - 0.05, 420, 480, 1.45, 14), at(Q.greatTreasure - 0.07, 425, 480, 1.52, 14),
+  // the chart close: the three men and their easel, hats whole and with headroom above them
+  cut(Q.greatTreasure - 0.05, 400, 430, 1.7, 13), at(Q.but - 0.07, 404, 430, 1.74, 13),
+  cut(Q.but - 0.05, 450, 480, 1.5), at(Q.far - 0.07, 470, 465, 1.55),
   // the snatch: the men at the left of the same shot, the quill and the room it escapes into at the right
-  cut(Q.far - 0.05, 470, 500, 2.4, 12), at(CUT.tool - 0.01, 478, 498, 2.48, 12),
-  // a hard cut on "a tool": the quill is already at the empty window's corner
-  cut(CUT.tool, TM.win.x, TM.win.y + 10, 1.8, 14), at(Q.scarce - 0.07, TM.win.x, TM.win.y + 15, 1.9, 14),
-  cut(Q.scarce - 0.05, 250, 650, 1.9), at(Q.foundation - 0.07, 252, 655, 1.98),
-  cut(Q.foundation - 0.05, 780, 540, 1.04), at(TURN.anyone - 0.01, 790, 545, 1.08),
-  // vi: anyone (a cut, then a slow settle to the wide for the headline)
-  cut(TURN.anyone, 760, 460, 1.2), at(Q.asks + 0.3, 760, 490, 1.06), at(TURN.ours - 0.01, 760, 492, 1.05),
-  // vii: her hand closing on the key ("and so"), the full page ("a very long while"), the wide on "decide"
-  cut(TURN.ours, OURS_HAND.x + 14, OURS_HAND.y - 6, 5.0, 10), at(Q.veryLong - 0.1, OURS_HAND.x + 22, OURS_HAND.y, 4.6, 10),
-  at(Q.weGetStart - 0.1, 390, 520, 1.42, 15), at(Q.decide - 0.07, 392, 522, 1.45, 15),
+  cut(Q.far - 0.05, 480, 450, 1.6, 12), at(CUT.tool - 0.01, 484, 450, 1.65, 12),
+  // a hard cut as the quill leaves the frame: it is already at the scrap of paper, where it writes the wish
+  cut(CUT.tool, 1060, 410, 1.65, 14), at(Q.scarce - 0.07, 1060, 415, 1.7, 14),
+  cut(Q.scarce - 0.05, 252, 540, 1.5), at(Q.foundation - 0.07, 254, 545, 1.55),
+  // WHY the same centre and zoom on both sides of the next cut (review: the book seemed to jump): only the picture changes
+  cut(Q.foundation - 0.05, 760, 470, 1.2), at(TURN.anyone - 0.01, 760, 462, 1.2),
+  // vi: anyone (a cut, then a slow push so the four cards read at phone size; the headline sits in the clear band below)
+  cut(TURN.anyone, 760, 460, 1.2), at(Q.asks + 0.3, 760, 480, 1.3), at(TURN.ours - 0.01, 760, 482, 1.3),
+  // vii: the key falls into her hand with the padlock in the same frame ("and so"), a slow push as she carries it
+  // to the lock ("a very long while"), the wide on "decide" while the other two scenes ink in
+  // WHY a medium shot, not an extreme close-up on empty paper (review): the figure, key and lock stay together
+  cut(TURN.ours, 290, 340, 2.6, 12), at(Q.veryLong, 320, 400, 2.3, 13), at(Q.veryLong + 0.9, 350, 400, 2.3, 13), at(Q.decide - 0.07, 350, 405, 2.3, 13),
   cut(Q.decide - 0.05, H.x, H.y, H.z), at(Q.ourComputers - 0.07, 760, 505, 1.03),
-  cut(Q.ourComputers - 0.05, 375, 425, 2.3, 14), at(Q.itCosts - 0.07, 380, 428, 2.4, 14),
-  cut(Q.itCosts - 0.05, 290, 790, 2.45, 14), at(Q.ourData - 0.07, 292, 793, 2.55, 14),
-  cut(Q.ourData - 0.05, 1110, 610, 1.3), at(TURN.free, 1100, 600, 1.36),
-  // viii: down to the strings as they snap, then a cut to the handful fading
-  at(L(8) - 0.1, 700, 620, 1.2), at(Q.free + 0.1, 560, 700, 1.45), at(Q.monopolies2 - 0.07, 580, 690, 1.45),
+  cut(Q.ourComputers - 0.05, 375, 425, 2.3, 14), at(Q.canDo + 0.2, 380, 428, 2.4, 14),
+  // WHY the cut to the price tag waits a hair past "what it costs" begins (review: the screen filled and the cut came
+  // 0.4 s later): the reward of "can do" is held on screen about 0.9 s
+  cut(Q.itCosts + 0.08, 290, 790, 2.45, 14), at(Q.ourData - 0.07, 292, 793, 2.55, 14),
+  cut(Q.ourData - 0.05, 1120, 600, 1.5), at(TURN.free + 0.14, 1110, 600, 1.55),
+  // viii: a cut to the wide as the page falls (review: the pull-back during the turn smeared the falling page), then
+  // a slow push to the strings as they snap, with every hat and the heading inside the frame
+  cut(TURN.free + 0.15, 760, 505, 1.12), at(L(8), 760, 510, 1.12), at(Q.free + 0.1, 740, 520, 1.2), at(Q.monopolies2 - 0.07, 745, 520, 1.22),
   cut(Q.monopolies2 - 0.05, 760, 420, 1.12), at(TURN.riffle[0] - 0.1, 760, 440, 1.1),
-  // ix: pull back while every page flies past, then home for the last headline
+  // ix: pull back while every page flies past, then in on the one copy being passed across, then home to shut
   at(TURN.riffle[1], 760, 500, 0.84, 24), at(TURN.riffle[3], 760, 500, 0.86, 24),
-  { t: L(SPREADS.length - 1) - 0.08, ...H }, { t: TURN.close, ...H },
+  { t: L(SPREADS.length - 1) - 0.08, ...H },
+  // WHY the push-in on the payoff (review BLOCKER: the thesis was shot at the widest framing, with cards 10% of the
+  // frame): zoom 1.5, centred low enough that the headline (fixed bottom right) clears the people's feet
+  at(Q.open, 830, 560, 1.5, 14), at(Q.everything2 + 0.3, 830, 560, 1.5, 14),
+  // WHY the camera drifts onto the cover as the book shuts (review): the closed book fills the frame and the empty
+  // half of the desk is mostly out of shot; the sheen on the cover and the cross-fade carry it into the card
+  at(TURN.close, H.x, H.y, H.z), at(TURN.close + CLOSE_DUR, 1090, 500, 1.35, 16), at(END_CARD, 1130, 500, 1.55, 16),
   // the book shuts; the camera settles on its cover
   // WHY the camera stays home while it shuts: the closed book then lies exactly under the headline
-  at(TURN.close + CLOSE_DUR, 770, 500, 1.02, 16), at(75, 772, 500, 1.04, 16),
+  at(75, 1135, 500, 1.58, 16),
 ];
 // WHY checked: an out-of-order key would make the camera snap, and the keys are computed from word times.
 SHOTS.forEach((s, i) => { if (i && s.t <= SHOTS[i - 1].t) throw new Error(`take1c camera key ${i} (t=${s.t.toFixed(2)}) is not after key ${i - 1} (t=${SHOTS[i - 1].t.toFixed(2)})`); });
@@ -127,6 +147,12 @@ const Book: React.FC<{ t: number }> = ({ t }) => {
     const p = 1 - interpolate(t, [TURN.close, TURN.close + CLOSE_DUR], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE_IN_OUT });
     return (
       <>
+        {/* WHY a patch of felt over the left half (review BLOCKER: a black slab sat beside the closed cover): the book's
+            shadow on the desk is drawn for the whole open book, so once the left half has swung away its shadow was
+            left behind as a dark void. This fills it with the desk's own plum, solid at the spine and feathered
+            outward, and it comes in as the half leaves. */}
+        <div style={{ position: 'absolute', left: -560, top: -360, width: PW + 560, height: PH + 720, transform: 'translateZ(-12.9px)', pointerEvents: 'none',
+          background: 'radial-gradient(ellipse 100% 64% at 100% 50%, rgb(70,41,81) 0%, rgb(68,40,79) 50%, rgba(66,38,77,0) 100%)', opacity: 1 - p }} />
         <Boards left={false} right /><Edges left={false} right />
         <BasePage face={page(last, 'R')} side="R" />
         <LeafShadow p={p} side="R" />
@@ -178,7 +204,9 @@ const HEADLINES = [
   // it, and to leave 1.4 s after. Now each word lands on its spoken start, and the line stays while the book
   // shuts beneath it: the cover slides in under the words, which turn to the dark-mode colours as it does, so
   // they end printed on the closed cover like its title, until the dip to dark takes them.
-  { text: 'open source / *everything.', at: Q.open, out: END_CARD, words: [Q.open, Q.source, Q.everything2], cutOut: true,
+  // WHY it fades 0.35 s before the card fades up (review: it sat printed on the cover through the whole hand-off):
+  // it still holds the brand minimum of 1.2 s + 0.25 s per word after "everything.", then the cover is clean
+  { text: 'open source / *everything.', at: Q.open, out: Q.everything2 + 1.2 + 0.25 * 3 + 0.4, words: [Q.open, Q.source, Q.everything2],
     night: (t: number) => lin(t, TURN.close + CLOSE_DUR * 0.45, TURN.close + CLOSE_DUR * 0.95, EASE_IN_OUT) },
 ];
 // WHY measured from the LAST word's appearance: that is when the whole line is first readable
@@ -217,7 +245,7 @@ export const Take1C: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: C.night }}>
       <Audio src={staticFile('audio/voice-take1-lily.wav')} />
-      {showCard && <><Day /><AbsoluteFill style={{ transform: `scale(${settle})` }}><EndCard at={END_CARD + 0.12} /></AbsoluteFill></>}
+      {showCard && <><Day /><AbsoluteFill style={{ transform: `scale(${settle})` }}><EndCard at={END_CARD - DIP_OUT + 0.25} /></AbsoluteFill></>}
       {showBook && (
         <AbsoluteFill style={{ opacity: bookOpacity }}>
           {(whip.bx > 0 || whip.by > 0) && (
