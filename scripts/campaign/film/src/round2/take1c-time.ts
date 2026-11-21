@@ -5,6 +5,7 @@ import { E, LAST_WORD_END, T } from './take1c-cues';
 
 export const Q = {
   // (1) the handful
+  decade: T('decade', 'a *decade, a small'),
   handful: T('handful', 'small *handful'),
   corporations1: T('corporations1', 'of corporations have'),
   dictated: T('dictated', 'have *dictated'),
@@ -124,7 +125,9 @@ export const TURN = {
   // WHY a hard cut on "hubris", not a page turn on "blinded" (review 2026-11-20): the headline "something
   // wonderful happened." must stay up 1.95 s after "happened" is spoken, and the hats start growing on
   // "hubris". The cut takes the headline and the old page away on the same frame, which is a clean edit.
-  treasure: onFrame(Q.hubris - 0.03),
+  // WHY on "Blinded", not "hubris" (review SHOULD: the first four words of the line had no picture, and the old headline
+  // contradicted them): the men stand small and plain first, and their hats grow on "hubris"
+  treasure: onFrame(Q.blinded - 0.03),
   anyone: onFrame(Q.forAnyone - 0.03),
   // WHY a separate spread for section 7: it mirrors chapter ii's three pictures one for one
   ours: onFrame(Q.andSo - 0.03),
@@ -156,8 +159,10 @@ export const CLOSE_DUR = 0.8;
 /** How long the shut book rests before the dip, and the dip's two halves (to the felt's dark, then up). */
 // WHY a 0.6 s cross-fade, not 8 frames (review BLOCKER: a 0.27 s jump from dark purple to near-white read as a flash):
 // the closed cover now lightens into the end card over 18 frames, and brightness only rises, once
-export const SHUT_REST = 0.3, DIP_OUT = 0.6, DIP_IN = 16 / 30;
+export const SHUT_REST = 0.3, DIP_OUT = 0.5, DIP_IN = 16 / 30;
 /** The frame the end card starts to fade up from dark (the book has already dipped out to dark by here).
  *  WHY a dip through dark, not a cross-fade: the 4-frame dissolve from the dark cover to the near-white card
  *  read as a flash; dark to dark and then a slow rise keeps the brightness change gentle. */
-export const END_CARD = TURN.close + CLOSE_DUR + SHUT_REST + DIP_OUT;
+// WHY the card follows the lit payoff page directly, with no shut-book beat (review BLOCKER: ~1.5 s of dim, near-empty
+// cover read as a dark flash and dead air): the open page cross-fades to the card over DIP_OUT, brightness only rises
+export const END_CARD = TURN.close + 1.5;

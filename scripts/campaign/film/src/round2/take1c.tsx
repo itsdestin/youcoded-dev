@@ -56,7 +56,9 @@ const at = (t: number, x: number, y: number, z: number, tilt = 16): Shot => ({ t
 const TM = TREASURE_MARKS;
 const SHOTS: Shot[] = [
   // i: open close on one hat, the handful land beside it, and the camera pulls back to reveal the book
-  at(0, 380, 330, 2.5, 13), at(Q.handful + 0.3, 385, 336, 2.42, 13), at(Q.corporations1 - 0.12, 386, 338, 2.38, 13),
+  // WHY lower and wider (zoom 1.9): the row of years under the ledge is in frame with the first hat, and it drifts
+  // slowly outward the whole time so the opening never holds still
+  at(0, 380, 390, 1.95, 13), at(Q.handful + 0.3, 385, 396, 1.88, 13), at(Q.corporations1 - 0.12, 386, 400, 1.8, 13),
   // WHY the pull-back ends before "dictated" and the wide is held only briefly (review): the wide of twelve tiny
   // people was a dead plateau; it now shows for ~0.6 s, then pushes in on one man and his two puppets while the
   // strings go taut, and returns to the wide only for "technology" and the turn.
@@ -65,23 +67,26 @@ const SHOTS: Shot[] = [
   cut(Q.technology1 - 0.1, 760, 530, 1.04), at(TURN.rules - 0.05, 760, 520, 1.0),
   // ii: one picture per thing they decided, each a hard cut on its word
   { t: L(1), ...H },
-  cut(Q.computersDo - 0.04, 375, 425, 2.3, 14), at(Q.cost - 0.07, 380, 428, 2.4, 14),
+  cut(Q.computersDo - 0.04, 375, 355, 2.3, 14), at(Q.cost - 0.07, 380, 358, 2.4, 14),
   // WHY centred right of the laptop: the tag now hangs clear of it, beside the man who sets the price
-  cut(Q.cost - 0.05, 335, 760, 2.2, 14), at(Q.data - 0.07, 340, 765, 2.3, 14),
-  cut(Q.data - 0.05, 1110, 610, 1.3), at(TURN.bargain, 1100, 600, 1.36),
+  cut(Q.cost - 0.05, 390, 810, 2.1, 14), at(Q.data - 0.07, 392, 814, 2.2, 14),
+  // WHY a push on the hat as the last keepsakes drop in (review: the payoff had no hold and the camera pulled away)
+  cut(Q.data - 0.05, 1190, 610, 1.3), at(Q.personalData, 1220, 610, 1.4), at(TURN.bargain, 1280, 610, 1.6),
   // iii: the queue; a cut in to the boxes ticking themselves on "accepted"
   at(L(2), 760, 560, 1.02), at(Q.accepted - 0.14, 745, 575, 1.08),
   // WHY 1.8 and a little right/lower (review 2026-11-20): at 1.9 the 'terms of service' label was cut off at the edge
-  cut(Q.accepted - 0.12, 660, 748, 1.8), at(TURN.nothing - 0.01, 640, 748, 1.86),
+  cut(Q.accepted - 0.12, 720, 735, 1.7), at(TURN.nothing - 0.01, 710, 735, 1.74),
   // the room: a cut in to the price tags on "subscribe", back out for "own nothing", in to the glass
   cut(TURN.nothing, 740, 520, 1.06), at(Q.subscribe - 0.07, 750, 515, 1.1),
-  cut(Q.subscribe - 0.05, 410, 540, 2.05, 15), at(Q.own - 0.08, 405, 545, 2.12, 15),
+  cut(Q.subscribe - 0.05, 410, 480, 1.95, 15), at(Q.own - 0.08, 405, 485, 2.0, 15),
   cut(Q.own - 0.06, H.x, H.y, H.z), at(Q.costOf - 0.37, 770, 505, 1.03),
   // WHY wider (was 1.75 on her face): her things now float up and out of the page to a hat in the corner
   cut(Q.costOf - 0.35, 1170, 400, 1.3), at(TURN.however - 0.02, 1175, 395, 1.4),
   // iv: WHY a cut to a calm, nearly whole-book framing as the page turns (review 2026-11-20): the fast pull
   // back during the turn smeared the falling page with motion blur. Then a slow push in while the drop falls.
-  cut(TURN.however, 800, 505, 1.1), at(DROP_LAND, 835, 515, 1.28), at(CUT.hubris - 0.01, 845, 518, 1.33),
+  cut(TURN.however, 800, 505, 1.1), at(DROP_LAND, 700, 560, 1.28),
+  // WHY a slow push toward the blot, a small lift on "wonderful": the stillest part of the film is where it turns
+  at(Q.wonderful - 0.1, 660, 560, 1.38), at(Q.wonderful + 0.5, 700, 530, 1.46), at(CUT.hubris - 0.01, 760, 520, 1.4),
   // v: a hard cut on "hubris" (hats out of the page), the inkwell, the quill rising, the chart, the snatch
   // WHY framed on the page, not on the desk (it was 30% bare felt): the men left of centre, their desk at right,
   // and the frame's top free for the hats to grow out of
@@ -120,17 +125,18 @@ const SHOTS: Shot[] = [
   cut(TURN.free + 0.15, 760, 505, 1.12), at(L(8), 760, 510, 1.12), at(Q.free + 0.1, 740, 520, 1.2), at(Q.monopolies2 - 0.07, 745, 520, 1.22),
   cut(Q.monopolies2 - 0.05, 760, 420, 1.12), at(TURN.riffle[0] - 0.1, 760, 440, 1.1),
   // ix: pull back while every page flies past, then in on the one copy being passed across, then home to shut
-  at(TURN.riffle[1], 760, 500, 0.84, 24), at(TURN.riffle[3], 760, 500, 0.86, 24),
+  // WHY closer and flatter (review: cards were 12% of the frame at 24 degrees of tilt): the riffled cards now read
+  at(TURN.riffle[1], 800, 500, 1.02, 13), at(TURN.riffle[3], 800, 500, 1.04, 13),
   { t: L(SPREADS.length - 1) - 0.08, ...H },
   // WHY the push-in on the payoff (review BLOCKER: the thesis was shot at the widest framing, with cards 10% of the
   // frame): zoom 1.5, centred low enough that the headline (fixed bottom right) clears the people's feet
-  at(Q.open, 830, 560, 1.5, 14), at(Q.everything2 + 0.3, 830, 560, 1.5, 14),
+  at(Q.open, 830, 540, 1.4, 14), at(Q.everything2 + 0.3, 830, 540, 1.4, 14),
   // WHY the camera drifts onto the cover as the book shuts (review): the closed book fills the frame and the empty
   // half of the desk is mostly out of shot; the sheen on the cover and the cross-fade carry it into the card
-  at(TURN.close, H.x, H.y, H.z), at(TURN.close + CLOSE_DUR, 1090, 500, 1.35, 16), at(END_CARD, 1130, 500, 1.55, 16),
+  at(TURN.close + 0.6, 830, 540, 1.46, 14), at(END_CARD, 830, 530, 1.4, 14),
   // the book shuts; the camera settles on its cover
   // WHY the camera stays home while it shuts: the closed book then lies exactly under the headline
-  at(75, 1135, 500, 1.58, 16),
+  at(75, 830, 530, 1.4, 14),
 ];
 // WHY checked: an out-of-order key would make the camera snap, and the keys are computed from word times.
 SHOTS.forEach((s, i) => { if (i && s.t <= SHOTS[i - 1].t) throw new Error(`take1c camera key ${i} (t=${s.t.toFixed(2)}) is not after key ${i - 1} (t=${SHOTS[i - 1].t.toFixed(2)})`); });
@@ -142,7 +148,8 @@ const progress = (t: number, k: number) => interpolate(t, [STARTS[k], STARTS[k] 
 
 const Book: React.FC<{ t: number }> = ({ t }) => {
   const last = SPREADS.length - 1;
-  if (t >= TURN.close) {
+  // WHY disabled: the book no longer shuts (see END_CARD in take1c-time.ts); the lit payoff page cross-fades to the card
+  if (false as boolean) {
     // the whole left half (board and pages) swings over onto the right: a rigid board does not bend
     const p = 1 - interpolate(t, [TURN.close, TURN.close + CLOSE_DUR], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE_IN_OUT });
     return (
@@ -198,16 +205,17 @@ const HEADLINES = [
   { text: 'own *nothing.', at: Q.own, out: Q.costOf - 0.4, words: [Q.own, Q.nothing] },
   // WHY each word on its own spoken start, and out on the hard cut at "hubris" (review 2026-11-20): it used to
   // show "wonderful happened." a second before she said it, and leave while she was still saying it
-  { text: 'something *wonderful / happened.', at: Q.something, out: CUT.hubris, words: [Q.something, Q.wonderful, Q.happened], cutOut: true },
-  { text: 'for *anyone / who asks.', at: Q.forAnyone, out: TURN.ours - 0.04 },
+  { text: 'something *wonderful / happened.', at: Q.something, // WHY out on "hubris", not at the cut on "Blinded": it must stay up 1.95 s after "happened" (brand hold), and the men now begin plain
+  out: Q.hubris, words: [Q.something, Q.wonderful, Q.happened], cutOut: true },
+  // WHY words on their spoken starts and held 2.3 s after "asks" (review BLOCKER: the words spelled out 0.6-0.8 s early and left 1.1 s after)
+  { text: 'for *anyone / who asks.', at: Q.forAnyone, out: Q.asks + 2.3, words: [Q.forAnyone, Q.anyone, Q.who, Q.asks] },
   // WHY held through the book closing (review 2026-11-20): "everything." used to appear 0.85 s before she said
   // it, and to leave 1.4 s after. Now each word lands on its spoken start, and the line stays while the book
   // shuts beneath it: the cover slides in under the words, which turn to the dark-mode colours as it does, so
   // they end printed on the closed cover like its title, until the dip to dark takes them.
   // WHY it fades 0.35 s before the card fades up (review: it sat printed on the cover through the whole hand-off):
   // it still holds the brand minimum of 1.2 s + 0.25 s per word after "everything.", then the cover is clean
-  { text: 'open source / *everything.', at: Q.open, out: Q.everything2 + 1.2 + 0.25 * 3 + 0.4, words: [Q.open, Q.source, Q.everything2],
-    night: (t: number) => lin(t, TURN.close + CLOSE_DUR * 0.45, TURN.close + CLOSE_DUR * 0.95, EASE_IN_OUT) },
+  { text: 'open source / *everything.', at: Q.open, out: Q.everything2 + 1.2 + 0.25 * 3 + 0.4, words: [Q.open, Q.source, Q.everything2] },
 ];
 // WHY measured from the LAST word's appearance: that is when the whole line is first readable
 HEADLINES.forEach((h) => {
