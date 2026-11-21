@@ -26,18 +26,19 @@ const bump = (t: number, at: number, d = 0.28) => (t < at || t > at + d ? 0 : Ma
 // at one steady angle, so the film stays in one room. Only the devices that can be seen are drawn.
 const GW = { cx: 0, cy: -430, s: 0.7 };
 const GW_DEVS = WORLD.devs.filter((d) => Math.abs(d.cx - GW.cx) < 960 / GW.s + d.w && Math.abs(d.cy - GW.cy) < 540 / GW.s + d.h);
-const GhostWall: React.FC = () => (
-  <AbsoluteFill style={{ filter: 'blur(13px)' }}>
+const GhostWall: React.FC<{ soft?: boolean }> = ({ soft = false }) => (
+  // WHY softer in the rewind (round 5 reviewer: flat grey boxes read as a placeholder): less blur and a lighter veil, so the real shelves and screens read as the room
+  <AbsoluteFill style={{ filter: `blur(${soft ? 6 : 13}px)` }}>
     <div style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, transform: `translate(${960 - GW.cx * GW.s}px, ${540 - GW.cy * GW.s}px) scale(${GW.s})`, transformOrigin: '0 0' }}>
       <Shelves night={1} />
       {GW_DEVS.map((d) => <Device key={d.id} d={d} night={1} glow="rgba(236,230,244,1)"><SameScreen w={d.w} h={d.h} lay={2} lock={d.id === 'lockLaptop' ? 1 : 0} /></Device>)}
     </div>
-    <AbsoluteFill style={{ background: 'rgba(11,6,17,0.66)' }} />
+    <AbsoluteFill style={{ background: `rgba(11,6,17,${soft ? 0.48 : 0.66})` }} />
   </AbsoluteFill>
 );
-const Room: React.FC<{ ghosts?: boolean }> = ({ ghosts = true }) => (
+const Room: React.FC<{ ghosts?: boolean; soft?: boolean }> = ({ ghosts = true, soft = false }) => (
   <AbsoluteFill style={{ background: 'radial-gradient(ellipse 90% 80% at 50% 30%, #22142D 0%, #120A1B 60%, #0B0611 100%)' }}>
-    {ghosts && <GhostWall />}
+    {ghosts && <GhostWall soft={soft} />}
     <AbsoluteFill style={{ background: 'radial-gradient(ellipse 80% 75% at 50% 45%, transparent 55%, rgba(8,3,14,0.55) 100%)' }} />
   </AbsoluteFill>
 );
@@ -57,7 +58,10 @@ const FULL = HEAD + PRINT_LINES.length * LINE + 40;
 // WHY the print starts on "personal" (reviewer 2026-11-20), after the switch has been held for 0.4 s, and its last line lands 0.35 s before the cut
 const SHARE_IN = Q.data + 0.12, FLIP = Q.personal - 0.46, PRINT0 = Q.personal, PRINT1 = Q.weAll - 0.35;
 // WHY from "what happens" (not "And"): the tablet before it needs its own 1.2 s once its new screen is up
-const UNFLIP = Q.whatHappens + 0.1, REWIND0 = Q.whatHappens + 0.25, REWIND1 = Q.whatHappens + 1.3;
+// WHY the rewind starts ON "what" and ends on "data" (round 5 reviewer: the paper sat finished while the words went by): the data goes back into the phone
+// one row at a time, a tick per spoken word; then the phone itself dissolves into the wall behind it so the cut to the next shot matches
+const UNFLIP = Q.whatHappens + 0.1, REWIND0 = Q.whatHappens, REWIND1 = Q.ourDataEnd + 0.1;
+const GONE0 = Q.ourDataEnd + 0.25, GONE1 = Q.free - 0.05;
 if (PRINT1 - PRINT0 < 1.1) throw new Error('take1b: the receipt would print too fast to read');
 
 export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, mode }) => {
@@ -66,7 +70,13 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
   const rows = [HEAD, ...PRINT_LINES.map((_, i) => LINE + (i === PRINT_LINES.length - 1 ? 40 : 0))];
   const pu = lin(t, PRINT0, PRINT1) * rows.length;
   const ratchet = rows.reduce((a, h, i) => a + h * ez(pu, i, i + 0.7), 0);
-  const len = mode === 'print' ? ratchet : FULL * (1 - ez(t, REWIND0, REWIND1, EASE_IN_OUT));
+  // WHY the same ratchet run backwards: the rewind is the print in reverse, row by row
+  const pr = lin(t, REWIND0, REWIND1) * rows.length;
+  const back = rows.reduce((a, h, i) => a + h * ez(pr, i, i + 0.7, EASE_IN_OUT), 0);
+  const len = mode === 'print' ? ratchet : Math.max(0, FULL - back);
+  // after the paper is home the phone settles 3 px and dissolves into the wall (rewind only)
+  const gone = mode === 'rewind' ? ez(t, GONE0, GONE1, EASE_IN_OUT) : 0;
+  const settle = mode === 'rewind' ? -3 * bump(t, REWIND1 - 0.1, 0.25) : 0;
   // WHY the camera follows the paper down: the newest line is always in view, as in the "free*" shot later
   // WHY len - 70 (reviewer: the last lines were cropped by the frame's bottom): the newest line always sits about 120 px above the edge
   // WHY len - 26 and not len - 70: the paper's torn end always sits 150 px above the frame's bottom edge, never cropped
@@ -86,8 +96,8 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
   const ptr = { x: tip.x - 520 * (1 - pIn), y: tip.y - 240 * (1 - pIn), press: bump(t, FLIP - 0.04, 0.26), o: mode === 'print' ? 1 - pOut : 0 };
   return (
     <AbsoluteFill>
-      <Room />
-      <div style={{ position: 'absolute', left: 0, top: -follow, width: 1920, height: 1080 }}>
+      <Room soft={mode === 'rewind'} />
+      <div style={{ position: 'absolute', left: 0, top: -follow + settle, width: 1920, height: 1080, opacity: 1 - gone }}>
         {/* the paper, behind the phone, coming out of its bottom edge */}
         <div style={{ position: 'absolute', left: 960 - 420, top: PY + PH + BZ - 6, width: 840, height: Math.max(0, len), overflow: 'hidden',
           background: 'linear-gradient(180deg,#E9DECB 0px,#FBF6EC 18px,#F3EADB 100%)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',

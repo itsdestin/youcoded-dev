@@ -107,6 +107,8 @@ export const Q = {
   ourData: at('*And what happens'),
   whatHappens: at('*what happens with'),
   computers2: at('our *computers can'),
+  canWord: at('computers *can do.'),
+  doWord: at('can *do.'),
   costsWord: at('it *costs.'),
   ourDataEnd: end('our *data.'),
   // (8) It's time to free ourselves from the tech monopolies of the past.
@@ -116,6 +118,7 @@ export const Q = {
   past: at('the *past.'),
   // (9) It's time, at long, long last... to open source everything.
   itsTime: at("*It's time, at"),
+  long1: at('*long, long last...'),
   longLast: at('long, *long last...'),
   open: at('to *open source'),
   everythingEnd: end('source *everything.'),

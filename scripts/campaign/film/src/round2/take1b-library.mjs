@@ -60,6 +60,10 @@ const FOCI = {
   chat:    { screen: null, what: 'chat mid-conversation', seed: true },
   empty:   { screen: null, what: 'empty conversation, before anyone asks', empty: true },
   typing:  { screen: null, what: 'empty conversation, message box focused', empty: true, focusBox: true },
+  // WHY "clean" (round 5): the film types the request into the real box, so the placeholder words and the empty-chat
+  // greeting are hidden by CSS in the real renderer: the app after a first message would not show them either
+  clean:      { screen: null, what: 'empty conversation, greeting and placeholder hidden (film types into it)', empty: true, clean: true },
+  cleanfocus: { screen: null, what: 'same, message box focused (its own caret)', empty: true, focusBox: true, clean: true },
   home:    { screen: 'pages/focus/page-home#site', what: 'Page: Home (lights, media, climate)', pages: true },
   money:   { screen: 'pages/focus/page-money#site', what: 'Page: Finance', pages: true },
   paint:   { screen: 'pages/focus/page-paint', what: 'Page: Paint studio', pages: true, scenario: 'default' },
@@ -78,7 +82,7 @@ const PLAN = {
   dark:                 [['phone', 'home'], ['tablet', 'chat'], ['laptop', 'money'], ['tv', 'paint']],
   midnight:             [['phone', 'chat'], ['tablet', 'climate'], ['laptop', 'home'], ['tv', 'chat']],
   'halftone-dimension': [['phone', 'home'], ['tablet', 'chat'], ['laptop', 'money'], ['tv', 'media']],
-  'golden-sunbreak':    [['phone', 'chat'], ['tablet', 'money'], ['laptop', 'lights'], ['tv', 'chat']],
+  'golden-sunbreak':    [['phone', 'empty'], ['phone', 'typing'], ['phone', 'clean'], ['phone', 'cleanfocus'], ['phone', 'chat'], ['tablet', 'money'], ['laptop', 'lights'], ['tv', 'chat']],
   'devils-garden':      [['phone', 'climate'], ['tablet', 'chat'], ['laptop', 'chat'], ['tv', 'home']],
   'kuromi-dreamer':     [['phone', 'chat'], ['tablet', 'paint'], ['laptop', 'climate'], ['tv', 'chat']],
   'strawberry-kitty':   [['phone', 'money'], ['tablet', 'chat'], ['laptop', 'media'], ['tv', 'paint']],
@@ -118,15 +122,18 @@ async function shoot(look, shapeKey, focusKey) {
     } else {
       if (!(await waitFor(tab, `!!document.querySelector("[placeholder^='Message']")`, 25000))) throw new Error('no message box');
     }
+    if (f.clean) await tab.evaluate(`(() => { const st = document.createElement('style'); st.textContent = "[placeholder^='Message']::placeholder{color:transparent!important;opacity:0!important}"; document.head.appendChild(st);
+      for (const e of document.querySelectorAll('div,p,span')) if (e.children.length === 0 && /^Start a conversation/.test((e.textContent || '').trim())) e.style.visibility = 'hidden';
+      const m = document.querySelector("[placeholder^='Message']"); const c = getComputedStyle(m); console.log('FONT', c.fontFamily, c.fontSize, c.color, c.fontWeight, c.letterSpacing); })()`);
     if (f.focusBox) await tab.evaluate(`document.querySelector("[placeholder^='Message']").focus()`);
     // WHY wait on the theme font: a late web font would change the picture's typeface between shots
     await waitFor(tab, `(() => { const l = document.getElementById('theme-google-font'); if (l && !l.sheet) return false; return document.fonts.status === 'loaded'; })()`, 10000);
     await sleep(2200);
     const info = await tab.evaluate(`(() => { const e = document.querySelector("[placeholder^='Message']"); const r = e ? (e.closest('form') || e.parentElement).getBoundingClientRect() : null;
-      return { theme: document.documentElement.dataset.theme || '', box: r ? [r.left, r.top, r.width, r.height].map((n) => Math.round(n * ${z.dpr})) : null, w: innerWidth, h: innerHeight }; })()`);
+      return { theme: document.documentElement.dataset.theme || '', box: r ? [r.left, r.top, r.width, r.height].map((n) => Math.round(n * ${z.dpr})) : null, w: innerWidth, h: innerHeight, font: e ? (() => { const c = getComputedStyle(e); return [c.fontFamily, c.fontSize, c.color, c.fontWeight, c.letterSpacing, c.paddingLeft].join(' | '); })() : '' }; })()`);
     writeFileSync(join(OUT, file), await tab.png());
-    rows.push({ file, shape: shapeKey, px: `${z.w * z.dpr}x${z.h * z.dpr}`, theme: label, kind, focus: f.what, box: info.box && (focusKey === 'empty' || focusKey === 'typing' || focusKey === 'chat') ? info.box.join(',') : '', applied: info.theme });
-    console.log('ok', file, info.theme, tab.takeErrors().join(' | '));
+    rows.push({ file, shape: shapeKey, px: `${z.w * z.dpr}x${z.h * z.dpr}`, theme: label, kind, focus: f.what, box: info.box && (['empty','typing','chat','clean','cleanfocus'].includes(focusKey)) ? info.box.join(',') : '', applied: info.theme });
+    console.log('ok', file, info.theme, info.font, JSON.stringify(info.box), tab.takeErrors().join(' | '));
   } catch (e) { problems.push(`${file}: ${e.message}`); console.log('FAIL', file, e.message); }
   finally { await tab.close?.(); }
 }

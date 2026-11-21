@@ -285,9 +285,12 @@ export const lookOf = (file: string): Look => {
 
 // The phone's untouched window (nothing asked yet), the same window with its box focused, and the box wiped clean
 // so the request can be typed into it (take1b-prep.py).
-export const PHONE_EMPTY = R4('youcoded-phone-empty.png');
-export const PHONE_FOCUS = R4('youcoded-phone-typing.png');
-export const PHONE_CLEAN = R4('take1b-phone-clean.png');
+// WHY Golden Sunbreak (round 5, reviewer BLOCKER: the default theme's lilac wallpaper read as Cotton Candy Sky, which the owner dislikes):
+// a real community theme, a rainy-city painting in deep teal and gold that sits well on the plum-black wall. The three pictures are
+// real captures of the real window (take1b-library.mjs: clean = greeting and placeholder hidden by CSS, cleanfocus = its own caret)
+export const PHONE_EMPTY = R4('golden-sunbreak-phone-clean.png');
+export const PHONE_FOCUS = R4('golden-sunbreak-phone-cleanfocus.png');
+export const PHONE_CLEAN = R4('golden-sunbreak-phone-clean.png');
 
 // The story's own devices get the looks their lines need. WHY these: the phone asked for "a page for my home" and
 // gets the loud Halftone pack with exactly that page; the laptop that was locked gets a warm golden look (the
@@ -295,7 +298,8 @@ export const PHONE_CLEAN = R4('take1b-phone-clean.png');
 const FIXED: Record<string, Look> = {
   hero: lookOf('halftone-dimension-phone-home.png'),
   lockLaptop: lookOf('golden-sunbreak-laptop-lights.png'),
-  tagTablet: lookOf('devils-garden-tablet-chat.png'),
+  // WHY a big thermostat page (round 5 reviewer: the desert chat's words were unreadable at a glance): a page that reads from across the room
+  tagTablet: lookOf('midnight-tablet-climate.png'),
   tv: lookOf('morning-rounds-tv-money.png'),   // WHY (reviewer BLOCKER): the biggest tile in every wide shot was a licensed character look; this is a plain community theme
 };
 export const HERO_LOOK = FIXED.hero;
@@ -316,7 +320,7 @@ const LOOKS: Map<string, Look> = (() => {
     if (out.has(d.id)) continue;
     const shape = d.kind === 'monitor' ? 'tv' : d.kind;
     // WHY no Kuromi / Strawberry Kitty (reviewer BLOCKER): they are real licensed characters; a public film must not show them
-    const cands = ROWS.filter((x) => x.shape === shape && !x.theme.startsWith('YouCoded (default)') && !/Kuromi|Strawberry Kitty/.test(x.theme)).map((x) => lookOf(x.file));
+    const cands = ROWS.filter((x) => x.shape === shape && !x.theme.startsWith('YouCoded (default)') && !/Kuromi|Strawberry Kitty/.test(x.theme) && !/-phone-(empty|typing|clean|cleanfocus)\.png$/.test(x.file)).map((x) => lookOf(x.file));
     const shelf = WORLD.devs.filter((o) => o.row === d.row && out.has(o.id));
     const near = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < (o.w + d.w) / 2 + 700);   // WHY 700: about two devices either way, so a close-up of three never shows one theme twice
     const ok = (c: Look) => !shelf.some((o) => out.get(o.id)!.key === c.key) && !near.some((o) => out.get(o.id)!.theme === c.theme);
@@ -353,10 +357,11 @@ export const OwnScreen: React.FC<{ look: Look; w: number; h: number }> = ({ look
 // ---------------------------------------------------------------------------------------------------
 const STILL_W = 1170, STILL_H = 2442;
 /** The message box in picture pixels (take1b-library INDEX.md: 24,2207,1122,132) and where its words start. */
-export const BOX = { x: 24, y: 2207, w: 1122, h: 132 };
-export const TEXT_X = 205, TEXT_MID = 2275, TEXT_MAX_X = 940;
-const TEXT_PX = 46;          // the app's own message text size at 3x, measured by typing its placeholder over itself (54 was 17% too big)
-const INK = '#4A3A5C';       // the app's own ink colour in this box (the compass icon beside it)
+export const BOX = { x: 84, y: 2091, w: 1002, h: 132 };
+export const TEXT_X = 264, TEXT_MID = 2158, TEXT_MAX_X = 880;   // WHY: measured on the Golden Sunbreak capture (the placeholder starts at 264)
+const TEXT_PX = 48;          // the app's own message text size at 3x, measured by typing its placeholder over itself (54 was 17% too big)
+const INK = '#E6D6AE';       // the theme's own cream, a touch brighter than its chips (220,200,152)
+const MONO = "'Cascadia Mono', 'Noto Sans Mono', monospace";   // WHY: the app's own message font here (Cascadia, which falls back to Noto Sans Mono on the capture machine)
 
 /** The phone's window with its message box in one of three states: waiting, focused-and-blinking, or being typed in. */
 export const PhoneAsk: React.FC<{ w: number; h: number; text: string; caretOn: boolean; typing: boolean; sent?: number; sentText?: string }> = ({ w, h, text, caretOn, typing, sent = 0, sentText = '' }) => {
@@ -364,25 +369,20 @@ export const PhoneAsk: React.FC<{ w: number; h: number; text: string; caretOn: b
   // WHY real pictures while nobody is typing: the app's own blinking caret is a real capture, not something we draw
   const src = typing || sent > 0 ? PHONE_CLEAN : caretOn ? PHONE_FOCUS : PHONE_EMPTY;
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#F7F0FB' }}>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#10101A' }}>
       <RealApp src={src} w={w} h={h} />
       {sent > 0 && (
         <div style={{ position: 'absolute', left: 0, top: 0, width: STILL_W, height: STILL_H, transform: `scale(${s})`, transformOrigin: '0 0' }}>
-          {/* WHY the empty-chat words are covered by a piece of the app's own wallpaper (reviewer BLOCKER: "Start a conversation"
-              showed right after the message was sent): the patch is cut from the plain stretch just above, same picture */}
-          <div style={{ position: 'absolute', left: 150, top: 1050, width: 870, height: 120, overflow: 'hidden' }}>
-            <Img src={staticFile(PHONE_CLEAN)} style={{ position: 'absolute', left: -150, top: -870, width: STILL_W, height: STILL_H }} />
-          </div>
           {/* WHY the sent sentence lifts out of the box into the app's own kind of message bubble (purple, right-aligned, time under it,
               as in the real chat capture) so "ask, then get" is seen: it rises from the box to the top of the chat */}
           {(() => {
             const e = 1 - Math.pow(1 - cl(sent), 3);
-            const bw = 790, bh = 196;
+            const bw = 590, bh = 196;   // WHY: one short line in the theme's mono face
             return (
               <div style={{ position: 'absolute', left: 1116 - bw, top: 132 + (1 - e) * 2000, width: bw, height: bh, borderRadius: 52, boxSizing: 'border-box', padding: '36px 56px', opacity: Math.min(1, sent * 5),
-                background: 'linear-gradient(180deg,#9A55B6,#8E49AD)', boxShadow: '0 12px 36px rgba(80,30,110,0.28)', fontFamily: OUTFIT, color: '#FFFFFF', transform: `scale(${0.92 + 0.08 * e})`, transformOrigin: '100% 100%' }}>
-                <div style={{ fontSize: 52, lineHeight: '64px', whiteSpace: 'nowrap' }}>{sentText}</div>
-                <div style={{ fontSize: 32, textAlign: 'right', color: 'rgba(255,255,255,0.7)', marginTop: 10 }}>7:40 AM</div>
+                background: 'linear-gradient(160deg,#E1AA34,#F3B93F)', boxShadow: '0 12px 36px rgba(20,10,0,0.35)', fontFamily: MONO, color: '#14100A', transform: `scale(${0.92 + 0.08 * e})`, transformOrigin: '100% 100%' }}>
+                <div style={{ fontSize: 46, lineHeight: '64px', whiteSpace: 'nowrap' }}>{sentText}</div>
+                <div style={{ fontSize: 32, textAlign: 'right', color: 'rgba(80,50,0,0.7)', marginTop: 10 }}>7:40 AM</div>
               </div>
             );
           })()}
@@ -393,9 +393,9 @@ export const PhoneAsk: React.FC<{ w: number; h: number; text: string; caretOn: b
           {/* WHY one nowrap line with the caret inside it: the caret is the next thing after the last letter, so it can
               never lead or lag the text, and the text can never re-wrap or jump while it grows */}
           <div style={{ position: 'absolute', left: TEXT_X, top: TEXT_MID - 40, width: TEXT_MAX_X - TEXT_X, height: 80, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow: 'hidden',
-            fontFamily: OUTFIT, fontWeight: 400, fontSize: TEXT_PX, lineHeight: '80px', color: INK }}>
+            fontFamily: MONO, fontWeight: 400, fontSize: TEXT_PX, lineHeight: '80px', color: INK }}>
             <span>{text}</span>
-            <span style={{ display: 'inline-block', width: 3, height: 58, marginLeft: 2, background: '#2A1F35', opacity: caretOn ? 1 : 0, flex: 'none' }} />
+            <span style={{ display: 'inline-block', width: 3, height: 58, marginLeft: 2, background: '#F4EEDF', opacity: caretOn ? 1 : 0, flex: 'none' }} />
           </div>
         </div>
       )}
