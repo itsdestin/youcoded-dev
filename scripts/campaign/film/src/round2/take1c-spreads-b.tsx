@@ -259,7 +259,7 @@ const TreasureArt: React.FC = () => {
   const target: [number, number] = [REST.x + 6, REST.y - 92];
   return (
     <>
-      <Heading n="v" title="the treasure" />
+      <Heading n="v" title="a great treasure" />
       <Folio left={12} />
       <Sheet>
         <defs><clipPath id="c-well-mouth"><rect x={-200} y={-400} width={2000} height={MOUTH + 400} /></clipPath></defs>
@@ -317,7 +317,7 @@ const AnyoneArt: React.FC = () => {
   const foot = ASK_Y + windowHeight(ASK_W) / 2;
   return (
     <>
-      <Heading n="vi" title="anyone" />
+      <Heading n="vi" title="it got away" />
       <Folio left={14} hideRight />
       <Sheet>
         <WashBg x={380} y={420} r={230} sx={1.4} a={-10} seed={16} color={P.lilac} o={0.55} />
@@ -391,7 +391,7 @@ const OursArt: React.FC = () => {
   const carrying = t > Q.ourComputers + 0.25;
   return (
     <>
-      <Heading n="vii" title="ours" />
+      <Heading n="vii" title="ours to decide" />
       <Folio left={16} />
       <Sheet>
         <WashBg x={390} y={420} r={150} sx={1.75} a={L} seed={3} color={P.pinkSoft} o={0.7} />
@@ -452,7 +452,7 @@ const FreeArt: React.FC = () => {
   const L = land(TURN.free);
   return (
     <>
-      <Heading n="viii" title="the past" />
+      <Heading n="viii" title="so long, old kings" />
       <Folio left={18} />
       <Sheet>
         <Strings figA={L - 1.6} peopleA={L - 1.4} stringsA={L - 1.0} beats={[]} colourful snapAt={Q.free} fadeFrom={Q.monopolies2} fadeTo={Q.pastEnd} />
@@ -512,7 +512,7 @@ const EverythingArt: React.FC = () => {
   const carried = lift * (1 - lin(t, LAND - 0.08, LAND + 0.1));
   return (
     <>
-      <Heading n="ix" title="everything" />
+      <Heading n="ix" title="at long, long last" />
       <Folio left={32} hideRight />
       <Sheet>
         <WashBg x={380} y={600} r={240} sx={1.3} a={-10} seed={21} color={LOOK.meadow.page} o={0.8} />

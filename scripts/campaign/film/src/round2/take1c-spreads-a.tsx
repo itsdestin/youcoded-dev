@@ -94,7 +94,7 @@ export const Strings: React.FC<{
 
 const HandfulArt: React.FC = () => (
   <>
-    <Heading n="i" title="the handful" />
+    <Heading n="i" title="a small handful" />
     <Folio left={2} />
     <Sheet>
       {/* WHY this order: the film opens close on ONE hat, wiped in whole on "For"; two more land beside it on
@@ -140,7 +140,7 @@ const RulesArt: React.FC = () => {
   const shake = jolt(t, Q.computersDo + 0.25, 3, 0.45);
   return (
     <>
-      <Heading n="ii" title="the rules" />
+      <Heading n="ii" title="what they decided" />
       <Folio left={4} />
       <Sheet>
         {/* A: what your computers could do: a padlock snapped onto the laptop, the key kept by a hat */}
@@ -194,7 +194,7 @@ const BargainArt: React.FC = () => {
   const back = (y: number, k0: number) => Array.from({ length: 30 }, (_, k) => { const x = left + ((1262 - left) * (k + 1)) / 30; return `L ${x.toFixed(1)} ${(y + Math.sin(k * 1.7 + k0) * 2).toFixed(1)}`; }).join(' ');
   return (
     <>
-      <Heading n="iii" title="the bargain" />
+      <Heading n="iii" title="what we accepted" />
       <Folio left={6} />
       <Sheet>
         <Ink d="M 70 700 L 1450 700" a={L - 0.3} b={L + 0.3} w={2} c={P.inkSoft} />
@@ -383,7 +383,7 @@ const HoweverArt: React.FC = () => {
   const bob = Math.sin((t - Q.happened) * 2.4) * 6 * lift;
   return (
     <>
-      <Heading n="iv" title="however" />
+      <Heading n="iv" title="then, quietly" />
       <Folio left={10} hideRight />
       <Sheet rough={false}>
         {t >= DROP_LAND && (

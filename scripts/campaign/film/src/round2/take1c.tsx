@@ -209,7 +209,7 @@ export const Take1C: React.FC = () => {
   const settle = 0.97 + 0.03 * lin(t, END_CARD, END_CARD + 0.8, EASE_OUT);
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      <Audio src={staticFile('audio/take1-mix.wav')} />
+      <Audio src={staticFile('audio/voice-take1-lily.wav')} />
       {showBook && (
         <>
           {(whip.bx > 0 || whip.by > 0) && (
