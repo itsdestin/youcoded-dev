@@ -103,16 +103,47 @@ export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: n
   );
 };
 
-/** A padlock. `p` 0..1 is its arrival: it drops in a little large and shakes as it snaps shut. */
+/** Where a padlock is in its arrival `p` (0..1): it falls from above the tile, accelerating, lands at p = LOCK_LAND a
+ *  little large with a one-frame squash, then settles with a damped shake as it snaps shut. */
+export const LOCK_LAND = 0.4;
+const lockFall = (p: number) => {
+  const f = cl(p / LOCK_LAND);
+  const since = (p - LOCK_LAND) / (1 - LOCK_LAND);   // 0..1 after landing
+  return {
+    y: -(1 - f * f) * 1.8,                             // in lock heights above its rest
+    o: cl(f * 4),                                      // seen only once it is falling (a few frames)
+    sq: p >= LOCK_LAND ? Math.exp(-since * 14) : 0,     // the squash on contact
+    sc: p >= LOCK_LAND ? 1 + 0.15 * Math.exp(-since * 6) : 1.15,
+    shake: p >= LOCK_LAND && since < 1 ? Math.sin(since * 30) * 7 * (1 - since) : 0,
+    landed: p >= LOCK_LAND ? 1 : 0,
+  };
+};
+/** A padlock: a real-looking one (round 6 review: the old flat icon faded in place and read as a "disabled" state).
+ *  A steel shackle with thickness, a body with a lit top edge, a dark keyhole, and a shadow on the tile that grows as
+ *  it comes down. `off` 0..1 knocks it off (line 7). */
 const Lock: React.FC<{ s: number; p: number; off: number }> = ({ s, p, off }) => {
-  const a = smooth(p * 2.5);
-  const shake = p > 0.15 && p < 1 ? Math.sin((p - 0.15) * 46) * 9 * (1 - p) : 0;
+  const L = lockFall(p);
+  const gone = 1 - smooth(off * 1.6);
+  const near = cl(1 + L.y / 1.8);                     // 0 high above, 1 on the tile
   return (
-    <svg width={s} height={s} viewBox="0 0 24 24" style={{ opacity: a * (1 - smooth(off * 1.6)), transform: `translateY(${off * s * 1.4}px) rotate(${shake + off * 50}deg) scale(${1.35 - 0.35 * a})`, filter: 'drop-shadow(0 1px 1px rgba(40,20,60,0.35))' }}>
-      <rect x="4.5" y="10.5" width="15" height="11" rx="2.6" fill="#43354E" />
-      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="#43354E" strokeWidth="2.4" fill="none" />
-      <circle cx="12" cy="15.6" r="1.6" fill="#E7E2EC" />
-    </svg>
+    <div style={{ position: 'relative', width: s, height: s }}>
+      {/* its shadow on the tile: small and faint while it is high, full as it lands */}
+      <div style={{ position: 'absolute', left: s * 0.18, right: s * 0.06, top: s * 0.72, height: s * 0.24, borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(30,14,44,0.55), transparent)',
+        opacity: L.o * near * gone, transform: `scale(${0.5 + 0.5 * near}) translateX(${s * 0.06}px)` }} />
+      <svg width={s} height={s} viewBox="0 0 24 24" style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', opacity: L.o * gone, transformOrigin: '50% 90%',
+        transform: `translateY(${(L.y + off * 1.4) * s}px) rotate(${L.shake + off * 50}deg) scale(${L.sc * (1 + L.sq * 0.08)}, ${L.sc * (1 - L.sq * 0.12)})` }}>
+        <defs>
+          <linearGradient id="lkBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#6A5A78" /><stop offset="0.18" stopColor="#4A3B57" /><stop offset="1" stopColor="#2C2136" /></linearGradient>
+          <linearGradient id="lkSteel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#8F8A98" /><stop offset="0.45" stopColor="#E4E0EA" /><stop offset="1" stopColor="#7C7686" /></linearGradient>
+        </defs>
+        <path d="M7.6 11V7.8a4.4 4.4 0 0 1 8.8 0V11" stroke="#3B3346" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+        <path d="M7.6 11V7.8a4.4 4.4 0 0 1 8.8 0V11" stroke="url(#lkSteel)" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+        <rect x="4.2" y="10.2" width="15.6" height="11.6" rx="2.6" fill="url(#lkBody)" />
+        <rect x="4.9" y="10.7" width="14.2" height="1.1" rx="0.55" fill="rgba(255,255,255,0.28)" />
+        <circle cx="12" cy="15.3" r="1.55" fill="#140C1A" />
+        <rect x="11.35" y="15.6" width="1.3" height="3.2" rx="0.6" fill="#140C1A" />
+      </svg>
+    </div>
   );
 };
 
@@ -140,7 +171,11 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unloc
   const tw = (g.w * w - gx * (cols - 1)) / cols, th = (g.h * h - gx * (rows - 1)) / rows;
   const tileHues = ['#DCD3E6', '#D3C9DF', '#E2DBEA', '#CFC4DC', '#D9D0E4', '#CCC1D9'];
   const lockOf = (i: number) => (Array.isArray(lock) ? lock[i] ?? 0 : i % 3 !== 0 ? lock : 0);
-  const dlg = smooth(dialog) * (1 - smooth((accept - 0.3) * 3));
+  // the press: down over 3 frames, darker, up over 4 (accept runs over 0.6 s, so 0.167 per 3 frames), then the card
+  // drops a few px as it fades. WHY (review): the old button only swapped its word, there was no press to see
+  const press = accept <= 0 ? 0 : accept < 0.167 ? smooth(accept / 0.167) : 1 - smooth((accept - 0.167) / 0.22);
+  const dlg = smooth(dialog) * (1 - smooth((accept - 0.36) * 3.2));
+  const drop = smooth((accept - 0.36) * 3.2) * 7 * k / 3;
   return (
     <div style={{ position: 'absolute', inset: 0, background: S.bg, overflow: 'hidden', fontFamily: DMSANS }}>
       {/* status row */}
@@ -150,17 +185,21 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unloc
       {!P && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 0.2 * w, background: '#ECE6F2' }}>
         {[0, 1, 2, 3, 4].map((i) => <div key={i} style={{ position: 'absolute', left: 4 * k, top: (0.17 + i * 0.1) * h, width: 0.2 * w - 8 * k, height: 4 * k, borderRadius: 2 * k, background: i === 0 ? S.tile2 : S.tile }} />)}
       </div>}
-      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink }}>Good morning</div>
+      {/* WHY the title gives way to the switch (review: the switch used to slide over it and cover the top of Sam's
+          outline); the switch takes exactly the title's place */}
+      <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink, opacity: share ? 1 - smooth(share.o * 1.5) : 1 }}>Good morning</div>
       {(['photo', 'msg', 'note'] as const).map((kind) => (
         <div key={kind} style={box(L[kind], w, h)}><OwnCard kind={kind} w={L[kind].w * w} h={L[kind].h * h} k={k} /></div>
       ))}
       {[0, 1, 2, 3, 4, 5].map((i) => {
         const x = g.x * w + (i % cols) * (tw + gx), y = g.y * h + Math.floor(i / cols) * (th + gx);
         const lk = lockOf(i);
-        const lo = smooth(lk * 2.5) * (1 - smooth(unlock));
+        // WHY only once it has landed, and only 30% (review: the old full grey-out read as a generic "disabled" state;
+        // the tile keeps its colour, it is simply locked)
+        const lo = (lk >= LOCK_LAND ? 1 : 0) * (1 - smooth(unlock));
         return (
           <div key={i} style={{ position: 'absolute', left: x, top: y, width: tw, height: th, borderRadius: 3 * k, background: tileHues[i], display: 'flex', alignItems: 'center', justifyContent: 'center',
-            filter: lo > 0 ? `saturate(${1 - lo}) brightness(${1 - 0.1 * lo})` : undefined }}>
+            filter: lo > 0 ? `saturate(${1 - 0.3 * lo}) brightness(${1 - 0.06 * lo})` : undefined }}>
             <div style={{ width: Math.min(tw, th) * 0.42, height: Math.min(tw, th) * 0.42, borderRadius: Math.min(tw, th) * 0.14, background: 'rgba(255,255,255,0.55)', opacity: 1 - 0.6 * lo }} />
             {lk > 0 && <div style={{ position: 'absolute' }}><Lock s={Math.min(tw, th) * 0.62} p={lk} off={unlock} /></div>}
           </div>
@@ -178,12 +217,14 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unloc
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,28,52,0.42)', opacity: dlg }} />
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.56) * w, transform: `translate(-50%,-50%) scale(${0.9 + 0.1 * dlg})`, opacity: dlg,
+        {/* WHY 0.66 wide on landscape screens: the title stays on one line on the tablet as on the laptop */}
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.66) * w, transform: `translate(-50%,calc(-50% + ${drop}px)) scale(${0.9 + 0.1 * dlg})`, opacity: dlg,
           background: '#FBF9FC', borderRadius: 4 * k, padding: 4 * k, boxSizing: 'border-box', boxShadow: `0 ${2 * k}px ${6 * k}px rgba(40,20,60,0.3)` }}>
           <div style={{ fontSize: (P ? 5.6 : 6.4) * k, fontWeight: 900, color: S.ink, letterSpacing: '-0.03em', lineHeight: 1.05 }}>Our terms have changed</div>
           {[0.95, 0.8, 0.9].map((f, i) => <div key={i} style={{ height: 1.5 * k, width: `${f * 100}%`, background: S.line, borderRadius: k, marginTop: 1.5 * k }} />)}
           <div style={{ marginTop: 3 * k, height: 8.5 * k, borderRadius: 8 * k, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 4.4 * k, fontWeight: 700,
-            background: accept > 0.02 ? '#2E2238' : '#5A5065', color: '#fff', transform: `scale(${1 - 0.07 * Math.sin(Math.PI * cl(accept * 3))})` }}>{accept > 0.12 ? 'Accepted' : 'Accept'}</div>
+            background: press > 0.3 ? '#2A1F33' : '#5A5065', color: '#fff', transform: `scale(${1 - 0.06 * press})`,
+            boxShadow: press > 0 ? `inset 0 ${0.8 * k}px ${1.6 * k}px rgba(0,0,0,${0.45 * press}), 0 0 0 ${0.8 * k * press}px rgba(151,80,170,${0.35 * press})` : `0 ${0.5 * k}px ${1 * k}px rgba(40,20,60,0.25)` }}>{accept > 0.2 ? 'Accepted' : 'Accept'}</div>
         </div>
       </>}
     </div>
@@ -195,7 +236,7 @@ export const ShareSwitch: React.FC<{ w: number; h: number; o: number; on: number
   const k = Math.min(w, h) / 100;
   if (o <= 0) return null;
   return (
-    <div style={{ position: 'absolute', left: '5%', right: '5%', top: 0.075 * h, height: 0.075 * h, borderRadius: 3 * k, background: '#FBF9FC', boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.25)`, fontFamily: DMSANS,
+    <div style={{ position: 'absolute', left: '7%', right: '7%', top: 0.066 * h, height: 0.064 * h, borderRadius: 3 * k, background: '#FBF9FC', boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.25)`, fontFamily: DMSANS,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${3.5 * k}px`, fontSize: 4.4 * k, fontWeight: 700, color: S.ink, opacity: smooth(o), transform: `translateY(${(smooth(o) - 1) * 8 * k}px)` }}>
       Share with partners
       <span style={{ width: 11 * k, height: 6.4 * k, borderRadius: 6 * k, background: on > 0.5 ? '#9750AA' : '#CFC7D8', position: 'relative', flex: 'none' }}>

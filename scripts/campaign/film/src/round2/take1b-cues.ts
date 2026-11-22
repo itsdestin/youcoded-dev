@@ -67,6 +67,9 @@ export const Q = {
   happenedEnd: end('wonderful *happened.'),
   // (5) Blinded by their own hubris, these corporations created a new kind of technology: artificial intelligence. ...
   blinded: at('*Blinded by'),
+  // WHY its own name: `corporations` above is line 1's word; line 4's hush must end on THIS one (it used to use line
+  // 1's, so the hush never happened)
+  corporations2: at('these *corporations'),
   ownHubris: at('their *own hubris,'),
   hubris: at('own *hubris,'),
   these: at('*these corporations created'),

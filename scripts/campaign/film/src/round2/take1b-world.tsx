@@ -91,12 +91,12 @@ export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: numb
   const pop = 1 + lift * 0.05;
   return (
     <>
-      {/* the light the screen throws down onto the shelf (only reads at night) */}
-      <div style={{ position: 'absolute', left: d.cx - W * 0.7, width: W * 1.4, top: d.shelf - 26, height: 60, borderRadius: '50%',
-        background: `radial-gradient(closest-side, ${glow}, transparent)`, opacity: 0.32 * night }} />
-      {/* contact shadow under the device */}
-      <div style={{ position: 'absolute', left: d.cx - W * 0.46, width: W * 0.92, top: d.shelf - 9, height: 18, borderRadius: '50%',
-        background: 'radial-gradient(closest-side, rgba(20,8,32,0.55), transparent)' }} />
+      {/* the light the screen throws down onto the plank's lit top edge, tinted with what the screen shows */}
+      <div style={{ position: 'absolute', left: d.cx - W * 0.62, width: W * 1.24, top: d.shelf - 10, height: 34, borderRadius: '50%',
+        background: `radial-gradient(closest-side, ${glow}, transparent)`, opacity: 0.6 * night, mixBlendMode: 'screen' }} />
+      {/* contact shadow under the device: WHY darker and taller than before, the reviewer could not see it at all */}
+      <div style={{ position: 'absolute', left: d.cx - W * 0.5, width: W * 1.0, top: d.shelf - 14, height: 30, borderRadius: '50%',
+        background: 'radial-gradient(closest-side, rgba(8,3,12,0.85), rgba(8,3,12,0.35) 60%, transparent)' }} />
       {/* stands */}
       {d.kind === 'laptop' && <div style={{ position: 'absolute', left: d.cx - W * 0.56, width: W * 1.12, top: d.shelf - z.lift + 2, height: z.lift - 2,
         background: 'linear-gradient(180deg,#5A4A66,#2C2136 70%,#1C1424)', borderRadius: '3px 3px 10px 10px', clipPath: 'polygon(4% 0,96% 0,100% 100%,0 100%)' }} />}
@@ -120,7 +120,43 @@ export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: numb
   );
 };
 
-/** The shelves: lilac-lit planks with a highlight on the front edge and a shadow below. */
+/** A screen's light on the wall behind it. WHY (round 6 review: "devices look like floating cards, no light falling
+ *  anywhere"): a lit screen in a dark room washes the wall around it in its own colour, which seats it on the wall.
+ *  Drawn for every device in one layer before any device, so one screen's wash never tints its neighbour's glass. */
+export const WallGlow: React.FC<{ d: Dev; glow: string; k: number }> = ({ d, glow, k }) => {
+  const W = d.w * 2.1, H = d.h * 2.0;
+  return <div style={{ position: 'absolute', left: d.cx - W / 2, top: d.cy - H / 2, width: W, height: H, borderRadius: '50%', opacity: k,
+    background: `radial-gradient(closest-side, ${glow.replace('1)', '0.2)')}, ${glow.replace('1)', '0.06)')} 55%, transparent)` }} />;
+};
+
+// WHY a tiled noise image (not a full-size filter): a 256 px fractal-noise tile is rasterised once and repeated, so the
+// wall and the planks get a real surface (plaster grain, wood fibre) at no render cost. Inline, no external file.
+const noise = (freq: string, oct: number, alpha: number, w = 256, h = 256) =>
+  `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='${freq}' numOctaves='${oct}' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 0.95  0 0 0 0 0.9  0 0 0 ${alpha} 0'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`)}")`;
+const PLASTER = noise('0.9', 3, 0.09);
+const GRAIN = noise('0.012 0.55', 2, 0.14, 512, 128);   // stretched sideways: long wood fibres along the plank
+export const PLANK = 34;          // the plank's front face, in world px
+
+/** The back wall of the room: dark plum plaster with a fine grain, recessed panel seams where the unit's back boards
+ *  meet, and a broad fall-off from the lit top to the dark floor. WHY (owner on the storybook, and the round 6 review
+ *  of this film: "extremely flat, needs depth/texture"): the devices need a surface to sit against, not a void. */
+export const BackWall: React.FC<{ night: number }> = ({ night }) => {
+  const L = -REACH - 1400, T = -3 * ROW - 1500, R = REACH + 1400, B = 2 * ROW + 1400;
+  const seams: number[] = [];
+  for (let x = -4200; x <= 4200; x += 1400) seams.push(x);
+  return (
+    <div style={{ position: 'absolute', left: L, top: T, width: R - L, height: B - T, opacity: night }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#2A1A33 0%,#22152B 30%,#170E1F 62%,#0C0712 100%)' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: PLASTER, backgroundSize: '256px 256px', mixBlendMode: 'overlay', opacity: 0.9 }} />
+      {/* the back boards' seams: a dark groove with a faint lit edge, so the wall reads as one built unit */}
+      {seams.map((x) => <div key={x} style={{ position: 'absolute', left: x - L - 5, top: 0, bottom: 0, width: 10,
+        background: 'linear-gradient(90deg, rgba(6,2,10,0) 0%, rgba(6,2,10,0.55) 40%, rgba(6,2,10,0.55) 60%, rgba(255,230,240,0.05) 80%, rgba(255,255,255,0) 100%)' }} />)}
+    </div>
+  );
+};
+
+/** The shelves: thick wooden planks, a lit top edge that catches the screens' light, a darker grained front face and
+ *  a deep soft shadow on the wall beneath. By day a pale painted version. */
 export const Shelves: React.FC<{ night: number }> = ({ night }) => (
   <>
     {WORLD.shelves.map((s, i) => {
@@ -128,13 +164,20 @@ export const Shelves: React.FC<{ night: number }> = ({ night }) => (
       let x = -REACH - 400;
       for (const [a, b] of s.gaps) { segs.push([x, a]); x = b; }
       segs.push([x, REACH + 400]);
+      const n = night > 0.5;
       return segs.map(([a, b], j) => (
         <React.Fragment key={`${i}-${j}`}>
-          <div style={{ position: 'absolute', left: a, width: b - a, top: s.y, height: 16,
-            background: night > 0.5 ? 'linear-gradient(180deg,#4B3A58,#2A1F33)' : 'linear-gradient(180deg,#FFFFFF,#E6D8EF)',
-            boxShadow: night > 0.5 ? 'inset 0 1px 0 rgba(255,255,255,0.18)' : 'inset 0 1px 0 #fff' }} />
-          <div style={{ position: 'absolute', left: a, width: b - a, top: s.y + 16, height: 46,
-            background: `linear-gradient(180deg, rgba(${night > 0.5 ? '6,2,12,0.55' : '74,38,110,0.16'}), transparent)` }} />
+          {/* the shadow the plank throws on the wall under it */}
+          <div style={{ position: 'absolute', left: a, width: b - a, top: s.y + PLANK - 4, height: 120,
+            background: `linear-gradient(180deg, rgba(${n ? '4,1,8,0.8' : '74,38,110,0.2'}) 0%, rgba(${n ? '4,1,8,0.35' : '74,38,110,0.06'}) 35%, transparent 100%)` }} />
+          {/* the front face, with its grain */}
+          <div style={{ position: 'absolute', left: a, width: b - a, top: s.y, height: PLANK, borderRadius: 2,
+            background: n ? 'linear-gradient(180deg,#6A5060 0%,#4A3542 9%,#3A2933 22%,#2E2029 70%,#1E141B 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#F1E7F6 14%,#E6D8EF 100%)',
+            boxShadow: n ? '0 2px 0 rgba(0,0,0,0.4)' : 'none' }}>
+            {n && <div style={{ position: 'absolute', inset: 0, backgroundImage: GRAIN, backgroundSize: '512px 128px', mixBlendMode: 'overlay' }} />}
+            {/* the lit front edge: a hairline that catches the light of the screens above it */}
+            <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 3, background: n ? 'rgba(255,225,215,0.22)' : '#fff' }} />
+          </div>
         </React.Fragment>
       ));
     })}
@@ -146,23 +189,40 @@ export const Shelves: React.FC<{ night: number }> = ({ night }) => (
 // =====================================================================================================
 /** `lower`: instead of dropping in 0.35 s, the tag is let down slowly on its string from `lower` until `drop`, when it
  *  lands and starts to swing (their treasure is lowered with ceremony). `len`: the string's length in world px. */
-export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; lower?: number; len?: number }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, lower, len: lenIn }) => {
+export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; lower?: number; len?: number; anchored?: boolean; kicks?: number[] }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, lower, len: lenIn, anchored = false, kicks = [] }) => {
   if (t < (lower ?? drop)) return null;
   const dt = Math.max(0, t - drop);
   const enter = lower !== undefined ? Math.min(1, Math.max(0, (t - lower) / (drop - lower))) : Math.min(1, dt / 0.35);
   // WHY a gentle ease-out for the slow lowering: a hand letting a string down slows as it arrives
-  const ease = lower !== undefined ? 1 - Math.pow(1 - enter, 2) : 1 - Math.pow(1 - enter, 3);
+  // WHY ease-in for an anchored drop: the tag falls freely, accelerating, until its string snaps taut and catches it
+  const ease = lower !== undefined ? 1 - Math.pow(1 - enter, 2) : anchored ? enter * enter : 1 - Math.pow(1 - enter, 3);
   // a damped swing: big first arc, settling within ~2 s, like a real tag on a string
   // WHY the arc scales with the string: a long string swings through a smaller angle, more slowly (a pendulum)
   const long = Math.min(1, (70 * scale) / (lenIn ?? 70 * scale));
-  const swing = t < drop ? 0 : 16 * long * Math.exp(-dt * 2.2) * Math.sin(dt * 8.5 * Math.sqrt(long));
+  // (anchored: the swing starts the instant the string goes taut, kicked by the catch)
+  const sdt = anchored ? dt - 0.35 : dt;
+  let swing = t < drop || sdt < 0 ? 0 : 16 * long * Math.exp(-sdt * 2.2) * Math.sin(sdt * 8.5 * Math.sqrt(long));
+  // WHY a small tug on each price tick (review: the ticks were hard text swaps while everything else moves with weight)
+  let pulse = 0;
+  for (const k of kicks) {
+    if (t < k) continue;
+    const u = t - k;
+    swing += 3 * Math.exp(-u * 3) * Math.sin(u * 9);
+    pulse = Math.max(pulse, u < 0.1 ? Math.sin(Math.PI * u / 0.1) : 0);
+  }
   const fy = fall > 0 ? fall * fall * 1600 : 0;
   const len = lenIn ?? 70 * scale;
   const rise = lower !== undefined ? len + 140 * scale : 300;
+  // anchored: the string's top stays tied to (x, y) and only the tag drops; the string pays out behind it
+  const off = (1 - ease) * rise;
+  const strLen = anchored ? Math.max(0, len - off) : len;
+  const tagTop = anchored ? len - off : len;
   return (
-    <div style={{ position: 'absolute', left: x, top: y - (1 - ease) * rise + fy, width: 0, height: 0, transform: `rotate(${swing + fall * 40}deg)`, transformOrigin: '0 0', opacity: fall > 0.8 ? 1 - (fall - 0.8) * 5 : 1 }}>
-      {fall === 0 && <div style={{ position: 'absolute', left: -1.2 * scale, top: 0, width: 2.4 * scale, height: len, background: '#D9CBE4' }} />}
-      <div style={{ position: 'absolute', left: -95 * scale, top: len, width: 190 * scale, height: 92 * scale, filter: `drop-shadow(0 ${10 * scale}px ${14 * scale}px rgba(20,8,32,0.45))` }}>
+    <div style={{ position: 'absolute', left: x, top: (anchored ? y : y - off) + fy, width: 0, height: 0, transform: `rotate(${swing + fall * 40}deg)`, transformOrigin: '0 0', opacity: fall > 0.8 ? 1 - (fall - 0.8) * 5 : 1 }}>
+      {/* WHY a dark string (review: the pale one vanished against the bezel and the tag read as a floating sticker) */}
+      {fall === 0 && strLen > 0 && <div style={{ position: 'absolute', left: -1.5 * scale, top: 0, width: 3 * scale, height: strLen, borderRadius: 2, background: 'rgba(42,31,51,0.9)', boxShadow: '0.5px 0 0 rgba(255,240,230,0.25)' }} />}
+      <div style={{ position: 'absolute', left: -95 * scale, top: tagTop, width: 190 * scale, height: 92 * scale, transform: pulse ? `scale(${1 + 0.04 * pulse})` : undefined, transformOrigin: '50% 0',
+        filter: `drop-shadow(${7 * scale}px ${12 * scale}px ${10 * scale}px rgba(20,8,32,0.5))` }}>
         <svg width={190 * scale} height={92 * scale} viewBox="0 0 190 92" style={{ position: 'absolute' }}>
           <path d="M95 0 L120 16 H182 a8 8 0 0 1 8 8 V84 a8 8 0 0 1 -8 8 H8 a8 8 0 0 1 -8 -8 V24 a8 8 0 0 1 8 -8 H70 Z" fill="#FBF5EA" />
           <circle cx="95" cy="12" r="5" fill="#2A1F33" />
