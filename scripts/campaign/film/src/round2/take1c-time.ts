@@ -5,6 +5,8 @@ import { E, LAST_WORD_END, T } from './take1c-cues';
 
 export const Q = {
   // (1) the handful
+  decade: T('decade', 'a *decade,'),
+  small: T('small', 'a *small handful'),
   handful: T('handful', 'small *handful'),
   corporations1: T('corporations1', 'of corporations have'),
   dictated: T('dictated', 'have *dictated'),
@@ -19,6 +21,7 @@ export const Q = {
   personalData: T('personalData', 'personal *data.'),
   // (3) the bargain
   andWeAll: T('andWeAll', 'And we all...'),
+  weAll2: T('weAll2', '*we all just accepted'),
   accepted: T('accepted', 'just *accepted it.'),
   weAccepted: T('weAccepted', 'We accepted that'),
   subscribe: T('subscribe', 'would *subscribe to everything'),
@@ -63,6 +66,7 @@ export const Q = {
   tool: T('tool', 'a *tool that can'),
   makeSoftware: T('makeSoftware', 'can *make software,'),
   software: T('software', 'make *software,'),
+  the: T('the', '*the ever-scarce foundation'),
   scarce: T('scarce', 'the *ever-scarce foundation'),
   foundation: T('foundation', 'ever-scarce *foundation'),
   monopolies1: T('monopolies1', 'these *monopolies,'),
@@ -81,14 +85,17 @@ export const Q = {
   weGet: T('weGet', 'we get to decide.'),
   decide: T('decide', 'to *decide.'),
   ourComputers: T('ourComputers', 'What our computers can do.'),
+  computers2: T('computers2', 'our *computers can do.'),
   canDo: T('canDo', 'computers can *do.'),
   itCosts: T('itCosts', 'What it costs.'),
+  it2: T('it2', 'What *it costs.'),
   costs: T('costs', 'it *costs.'),
   ourData: T('ourData', 'And what happens with our data.'),
   happens: T('happens', 'what *happens with our'),
   data2: T('data2', 'our *data.'),
   // (8) free
   itsTime1: T('itsTime1', "It's time to free"),
+  time1: T('time1', "It's *time to free"),
   free: T('free', 'to *free ourselves'),
   monopolies2: T('monopolies2', 'tech *monopolies of the past.'),
   past: T('past', 'the *past.'),
@@ -96,7 +103,10 @@ export const Q = {
   // (9) everything
   itsTime2: T('itsTime2', "It's time, at long,"),
   atLong: T('atLong', 'at long, long last...'),
+  long1: T('long1', 'at *long, long last'),
+  long2: T('long2', 'long, *long last'),
   last: T('last', 'long *last...'),
+  lastEnd: E('lastEnd', 'long *last...'),
   toOpen: T('toOpen', 'to open source everything.'),
   open: T('open', 'to *open source'),
   source: T('source', 'open *source everything'),
@@ -125,18 +135,18 @@ export const TURN = {
   // wonderful happened." must stay up 1.95 s after "happened" is spoken, and the hats start growing on
   // "hubris". The cut takes the headline and the old page away on the same frame, which is a clean edit.
   treasure: onFrame(Q.hubris - 0.03),
-  anyone: onFrame(Q.forAnyone - 0.03),
+  // WHY a page turn on "the" (round six plan): chapter vi is a new spread, Theo and June's; it lands as she says
+  // "ever-scarce", in time for Theo's ask to write itself
+  anyone: Q.the - 0.3,
   // WHY a separate spread for section 7: it mirrors chapter ii's three pictures one for one
   ours: onFrame(Q.andSo - 0.03),
   free: Q.itsTime1 - 0.42,
-  // the riffle: every page of the book flies past, each one somebody's own
-  // WHY four pages, not six: one per real theme, and each one now stays readable for ~0.8 s
-  riffle: [Q.itsTime2 - 0.55, Q.itsTime2 + 0.25, Q.atLong + 0.07, Q.last - 0.53],
-  everything: Q.toOpen - 0.72,
+  // WHY one turn on "It's", no riffle (round six plan): the sharing of Maya's app gets the whole line
+  everything: Q.itsTime2 - 0.45,
   close: Q.end - 0.05,                     // the book shuts as the last word lands
 };
 /** Turns that are hard cuts (the new spread is simply there on the next frame). */
-export const CUT_TURNS = new Set<number>([TURN.nothing, TURN.treasure, TURN.anyone, TURN.ours]);
+export const CUT_TURNS = new Set<number>([TURN.nothing, TURN.treasure, TURN.ours]);
 /** Hard cuts inside a chapter that something on the page must change on, frame-exact.
  *  WHY shared: the hats used to reset one frame after the camera cut away from them (a one-frame pop);
  *  the camera and the drawing now read the same number, so both change on the same frame. */

@@ -133,7 +133,8 @@ export const InkDefs: React.FC = () => (
 
 // ---------- the handful: tall, pompous, faceless ----------
 // 'stretch': the right arm is left off, for a scene that draws its own long reaching arm from the shoulder
-export type HatPose = 'sides' | 'bar' | 'key' | 'rub' | 'reach' | 'hold' | 'grab' | 'pat' | 'shove' | 'stretch';
+export type HatPose = 'sides' | 'bar' | 'key' | 'rub' | 'reach' | 'hold' | 'grab' | 'pat' | 'shove' | 'stretch' | 'bare';
+// 'bare': no arms at all, for a scene that draws both arms itself (round six: the magnifying glass and the phone)
 type HatProps = {
   x: number; y: number; s?: number; a: number; b?: number;
   crown?: number;          // hat height (they grow with their hubris)
@@ -144,11 +145,18 @@ type HatProps = {
   band?: string;
   // WHY eyes only where the story needs them (chapter v): the hats slide down over them ("blinded"), and
   // they turn into coins when the men dream of treasure. Everywhere else the handful stay faceless.
-  eyes?: 'none' | 'dots' | 'coins';
+  eyes?: 'none' | 'dots' | 'coins' | 'smug';
+  // WHY look: a head turn on a faceless round head reads only through where the eyes sit (-1 left .. 1 right)
+  look?: number;
   fist?: number;           // 0..1: open hands closing on nothing (the tool escapes them)
   pocket?: boolean;        // a waistcoat pocket, for the coin
   enter?: Enter;
   hatSx?: number;          // the hat's width (squash and stretch as it grows)
+  // WHY these three (round six): the plan's three hats must read as three different men at a glance (tall and
+  // thin, wide, short and sharp), never stand like cut-outs, and one of them takes his hat off to use it as a bucket.
+  girth?: number;          // body width (1 = the old figure)
+  sway?: number;           // degrees the coat-tails swing about the shoulders
+  noHat?: boolean;         // bare-headed: his hat is drawn elsewhere (in his hand)
 };
 export const HatFigure: React.FC<HatProps> = (props) => {
   const { enter = 'draw', a, b, x, y, s = 1, crown = 78 } = props;
@@ -157,7 +165,7 @@ export const HatFigure: React.FC<HatProps> = (props) => {
   }
   return <HatFigureInk {...props} />;
 };
-const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', fist = 0, pocket = false, hatSx = 1 }) => {
+const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', look = 0, fist = 0, pocket = false, hatSx = 1, girth = 1, sway = 0, noHat = false }) => {
   const e = b ?? a + 1;
   const k = (i: number) => a + (e - a) * i;  // stagger inside the drawing window
   // WHY a solid pale ink, not transparency (review 2026-11-20): drawn see-through, the faded handful let the
@@ -178,21 +186,23 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
     pat: ['M -20 -168 C -40 -140 -46 -114 -42 -92', 'M 20 -168 C 44 -150 44 -122 24 -110'],
     shove: ['M -20 -168 C -40 -140 -46 -114 -42 -92', 'M 20 -168 C 46 -140 66 -100 84 -60'],
     stretch: ['M -20 -168 C -40 -140 -46 -114 -42 -92'],
+    bare: [],
   };
   const hands: Record<HatPose, [number, number][]> = {
     sides: [[-42, -90], [42, -90]], bar: [[-42, -90], [61, -134]], key: [[-42, -90], [73, -119]],
     rub: [[-4, -117], [4, -117]], reach: [[-42, -90], [106, -197]], hold: [[-33, -112], [33, -112]],
-    grab: [[54, -252], [98, -226]], pat: [[-42, -90], [22, -108]], shove: [[-42, -90], [86, -58]], stretch: [[-42, -90]],
+    grab: [[54, -252], [98, -226]], pat: [[-42, -90], [22, -108]], shove: [[-42, -90], [86, -58]], stretch: [[-42, -90]], bare: [],
   };
   const hatY = -212 + drop * 34;      // slides down over the faceless head
   return (
     <g transform={`translate(${x} ${y + bob}) scale(${(flip ? -1 : 1) * s} ${s}) rotate(${lean})`}>
-      <ellipse cx={0} cy={1} rx={44} ry={6} fill={P.ink} opacity={0.1 * (1 - fade * 0.6)} />
+      <ellipse cx={0} cy={1} rx={44 * girth} ry={6} fill={P.ink} opacity={0.1 * (1 - fade * 0.6)} />
       {/* legs and pointed shoes */}
       <Ink d="M -12 -2 L -10 -40 M 12 -2 L 10 -40" a={k(0)} b={k(0.25)} w={5} c={ink} ea={ea} />
       <Ink d="M -9 -2 L -28 -1 M 9 -2 L 28 -1" a={k(0.15)} b={k(0.3)} w={6} c={ink} ea={ea} />
       {/* the long coat, a starched shirt front, a bow tie and a watch chain across the belly */}
-      <Shape d={body} a={k(0.1)} b={k(0.55)} fill={ink} c={ink} w={3} ea={ea} />
+      {/* WHY skewed about the shoulders: the coat-tails swing while the collar stays put, which reads as cloth */}
+      <g transform={`translate(0 -178) skewX(${sway}) scale(${girth} 1) translate(0 178)`}><Shape d={body} a={k(0.1)} b={k(0.55)} fill={ink} c={ink} w={3} ea={ea} /></g>
       <Appear a={k(0.55)} out={ea}>
         <path d="M -9 -179 L 0 -136 L 9 -179 Z" fill={P.paper} />
         <path d="M -9 -178 L 0 -174 L 9 -178 L 9 -170 L 0 -174 L -9 -170 Z" fill={ink} stroke={P.paper} strokeWidth={1} />
@@ -209,16 +219,18 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
       ))}</Appear>
       {/* neck + faceless head */}
       <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} c={ink} w={2.6} ea={ea} /></g>
-      {eyes === 'dots' && <Appear a={k(0.7)} out={ea}><circle cx={-4} cy={-199} r={2.4} fill={ink} /><circle cx={6} cy={-200} r={2.4} fill={ink} /></Appear>}
+      {eyes === 'dots' && <Appear a={k(0.7)} out={ea}><circle cx={-4 + look * 5} cy={-199} r={2.4} fill={ink} /><circle cx={6 + look * 5} cy={-200} r={2.4} fill={ink} /></Appear>}
+      {/* smug: eyes shut into two pleased downward arcs (chapter v, "blinded by their own hubris") */}
+      {eyes === 'smug' && <Appear a={k(0.7)} out={ea}><path d={`M ${-8 + look * 5} -199 Q ${-4 + look * 5} -195 ${0 + look * 5} -199 M ${3 + look * 5} -200 Q ${7 + look * 5} -196 ${11 + look * 5} -200`} stroke={ink} strokeWidth={2.2} fill="none" strokeLinecap="round" /></Appear>}
       {eyes === 'coins' && [[-5, -199], [7, -200]].map(([cx, cy], i) => (
         <g key={i}><circle cx={cx} cy={cy} r={6.4} fill={P.sun} stroke={ink} strokeWidth={1.6} /><circle cx={cx} cy={cy} r={3} fill="none" stroke={ink} strokeWidth={1} opacity={0.6} /></g>
       ))}
       {/* the tall hat */}
-      <g transform={`translate(0 ${hatY}) scale(${hatSx} 1)`}>
+      {!noHat && <g transform={`translate(0 ${hatY}) scale(${hatSx} 1)`}>
         <Shape d={`M -16 0 L -18.5 ${-crown} Q 0 ${-crown - 4} 18.5 ${-crown} L 16 0 Z`} a={k(0.6)} b={k(0.9)} fill={ink} c={ink} w={3} ea={ea} />
         <Wash d="M -16.4 -9 L -16.9 -19 L 16.9 -19 L 16.4 -9 Z" a={k(0.85)} fill={band ?? inner} ea={ea} />
         <Ink d="M -27 1 Q 0 -5 27 1" a={k(0.75)} b={k(0.95)} w={6} c={ink} ea={ea} />
-      </g>
+      </g>}
     </g>
   );
 };
@@ -231,6 +243,8 @@ type PersonProps = {
   mood?: 'smile' | 'flat' | 'o'; flip?: boolean; bob?: number; tilt?: number; ea?: number; device?: 'phone' | 'none';
   hairColor?: string;
   enter?: Enter;
+  /** Seated: thighs forward, shins down past the seat (y is the seat height). WHY: Theo's armchair and June's stool. */
+  sit?: boolean;
 };
 export const Person: React.FC<PersonProps> = (props) => {
   const { enter = 'draw', a, b, x, y, s = 1, bob = 0 } = props;
@@ -239,7 +253,7 @@ export const Person: React.FC<PersonProps> = (props) => {
   }
   return <PersonInk {...props} />;
 };
-const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, hair = 'tuft', pose = 'down', mood = 'smile', flip, bob = 0, tilt = 0, ea, device = 'none', hairColor }) => {
+const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, hair = 'tuft', pose = 'down', mood = 'smile', flip, bob = 0, tilt = 0, ea, device = 'none', hairColor, sit = false }) => {
   const e = b ?? a + 0.7;
   const k = (i: number) => a + (e - a) * i;
   const hc = hairColor ?? P.ink;
@@ -260,8 +274,8 @@ const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, ha
   };
   return (
     <g transform={`translate(${x} ${y + bob}) rotate(${tilt}) scale(${(flip ? -1 : 1) * s} ${s})`}>
-      <Appear a={k(0.2)} out={ea}><ellipse cx={0} cy={1 - bob / s} rx={20} ry={3.5} fill={P.ink} opacity={0.12} /></Appear>
-      <Ink d="M -7 -1 L -6 -24 M 7 -1 L 6 -24" a={k(0)} b={k(0.3)} w={4} ea={ea} />
+      {!sit && <Appear a={k(0.2)} out={ea}><ellipse cx={0} cy={1 - bob / s} rx={20} ry={3.5} fill={P.ink} opacity={0.12} /></Appear>}
+      <Ink d={sit ? 'M -8 -22 L 12 -20 L 13 6 M 6 -22 L 22 -20 L 23 6' : 'M -7 -1 L -6 -24 M 7 -1 L 6 -24'} a={k(0)} b={k(0.3)} w={4} ea={ea} />
       <Shape d="M -18 -22 C -21 -50 -15 -68 0 -69 C 15 -68 21 -50 18 -22 Q 0 -18 -18 -22 Z" a={k(0.15)} b={k(0.55)} fill={body} w={3} ea={ea} />
       <Ink d={arms[pose]} a={k(0.4)} b={k(0.7)} w={3.6} ea={ea} />
       {device === 'phone' && <Shape d="M -11 -50 h 22 v 15 h -22 Z" a={k(0.6)} b={k(0.8)} fill={P.paper} w={2.4} ea={ea} />}
@@ -414,3 +428,153 @@ export const WashBg: React.FC<{ x: number; y: number; r: number; a: number; colo
     </g>
   );
 };
+
+// =====================================================================================================
+// THE STORY'S CAST (round six). One definition, used by both halves of the film.
+// WHY one place: the owner's note on the last round was "disconnected elements". The picture plan fixes a tiny
+// cast (three hats, one tower, three heroes and their three things, one inkwell, one quill) whose fate is followed
+// from the first line to the last. If both halves draw them from here, Maya's laptop in line 2 is literally the
+// same drawing as Maya's laptop in line 7.
+// =====================================================================================================
+
+/** The three hats: the same three in every chapter. WHY three outlines: tall and thin, wide, short and sharp, so a
+ *  stranger can tell them apart from the silhouette alone. Each always pairs with the same hero. */
+export const HATS = {
+  tall: { crown: 122, girth: 0.84, s: 1.0 },    // Maya's: the padlock
+  wide: { crown: 70, girth: 1.34, s: 0.95 },    // Theo's: the price tags and the lifting
+  short: { crown: 54, girth: 1.0, s: 0.82 },    // June's: the keepsakes and the magnifying glass
+} as const;
+export type HatName = keyof typeof HATS;
+
+/** The three heroes. Pale wash until they ask; then each keeps their own colour. */
+export const HEROES = {
+  maya: { hair: 'bun' as Hair, colour: '#8FC29E' },   // green: her plant app
+  theo: { hair: 'curly' as Hair, colour: '#EDC25E' }, // gold: his records app
+  june: { hair: 'long' as Hair, colour: '#CFB2E8' },  // lilac: her keepsake app
+};
+export type HeroName = keyof typeof HEROES;
+/** A hero: a Person with their own hair, and `bloom` 0..1 from the pale wash to their colour. */
+export const Hero: React.FC<Omit<PersonProps, 'hair' | 'body'> & { who: HeroName; bloom?: number }> = ({ who, bloom = 0, ...p }) => (
+  <Person {...p} hair={HEROES[who].hair} body={bloom > 0 ? mixHex(P.wash, HEROES[who].colour, Math.min(1, bloom)) : P.wash} />
+);
+
+/** A top hat on its own (in a hand, used as a bucket). (x, y) is the middle of the brim; r turns it about there. */
+export const TopHat: React.FC<{ x: number; y: number; s?: number; crown?: number; r?: number; c?: string }> = ({ x, y, s = 1, crown = 54, r = 0, c = P.ink }) => (
+  <g transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>
+    <path d={`M -16 0 L -18.5 ${-crown} Q 0 ${-crown - 4} 18.5 ${-crown} L 16 0 Z`} fill={c} stroke={c} strokeWidth={3} strokeLinejoin="round" />
+    <path d="M -16.4 -9 L -16.9 -19 L 16.9 -19 L 16.4 -9 Z" fill={P.inkSoft} />
+    {/* the open mouth of the hat, seen as it tips toward the camera */}
+    <ellipse cx={0} cy={0} rx={24} ry={7} fill={P.inkSoft} stroke={c} strokeWidth={4} />
+  </g>
+);
+
+/** The tower the hats stand on: a heavy stack of the SAME app windows the heroes later get (same rounded corners,
+ *  same three title-bar dots), seen edge-on. (x, y) is the middle of its top. */
+export const TOWER_SLAB = 46;
+const SLAB_DX = [0, 14, -10, 16, -6, 10, -14, 6, -8];
+export const Tower: React.FC<{ x: number; y: number; w?: number; n?: number; s?: number; c?: string; fill?: string; wobble?: number }> = ({ x, y, w = 330, n = 6, s = 1, c = P.ink, fill = P.paper, wobble = 0 }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    <ellipse cx={0} cy={n * TOWER_SLAB + 4} rx={w * 0.58} ry={9} fill={P.ink} opacity={0.12} />
+    {Array.from({ length: n }).map((_, i) => {
+      // drawn bottom first so each slab sits on the one below; the wobble grows toward the top
+      const j = n - 1 - i;
+      const dx = SLAB_DX[j % SLAB_DX.length] + wobble * (n - j) * 3;
+      const top = j * TOWER_SLAB;
+      const L = -w / 2 + dx;
+      return (
+        <g key={j}>
+          <path d={`M ${L + 14} ${top} L ${L + w - 14} ${top} Q ${L + w} ${top} ${L + w} ${top + 14} L ${L + w} ${top + TOWER_SLAB - 6} Q ${L + w} ${top + TOWER_SLAB} ${L + w - 8} ${top + TOWER_SLAB} L ${L + 8} ${top + TOWER_SLAB} Q ${L} ${top + TOWER_SLAB} ${L} ${top + TOWER_SLAB - 6} L ${L} ${top + 14} Q ${L} ${top} ${L + 14} ${top} Z`}
+            fill={fill} stroke={c} strokeWidth={3} strokeLinejoin="round" />
+          {/* the title bar: its three dots and the line under it */}
+          {[0, 1, 2].map((d) => <circle key={d} cx={L + 22 + d * 17} cy={top + 15} r={4.6} fill={c} />)}
+          <path d={`M ${L + 3} ${top + 28} L ${L + w - 3} ${top + 28}`} stroke={c} strokeWidth={2} opacity={0.45} />
+        </g>
+      );
+    })}
+  </g>
+);
+
+/** The hats' inkwell. (x, y) is the middle of its base; its mouth is 68·s above. `fill` 0..1: how much purple ink. */
+export const INKWELL_MOUTH = 68;
+export const Inkwell: React.FC<{ x: number; y: number; s?: number; fill?: number; glow?: number; rock?: number }> = ({ x, y, s = 1, fill = 1, glow = 0, rock = 0 }) => (
+  <g transform={`translate(${x} ${y}) rotate(${rock}) scale(${s})`}>
+    <ellipse cx={0} cy={2} rx={46} ry={6} fill={P.ink} opacity={0.14} />
+    <path d="M -38 0 L -38 -42 Q -38 -56 -22 -56 L 22 -56 Q 38 -56 38 -42 L 38 0 Z" fill={P.ink} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+    <path d="M -18 -56 L -18 -68 L 18 -68 L 18 -56 Z" fill={P.inkSoft} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+    <path d="M -27 -10 L -27 -40 Q -27 -47 -20 -48" stroke="#fff" strokeWidth={4} opacity={0.3} fill="none" strokeLinecap="round" />
+    {/* the ink at the mouth: plum-dark while empty, purple once the drop is in, brighter as it glows */}
+    <ellipse cx={0} cy={-68} rx={16} ry={3.6} fill={fill > 0 ? mixHex('#3A2448', C.purple, Math.min(1, fill)) : '#3A2448'} />
+    {glow > 0 && <ellipse cx={0} cy={-68} rx={16 + glow * 3} ry={3.6 + glow} fill={P.violet} opacity={0.35 * glow} />}
+  </g>
+);
+
+/** Theo's record player. (x, y) is the middle of its underside; `spin` turns the label (degrees). */
+export const RecordPlayer: React.FC<{ x: number; y: number; s?: number; spin?: number; c?: string; dashed?: boolean }> = ({ x, y, s = 1, spin = 0, c = P.ink, dashed }) => {
+  const st = dashed ? { strokeDasharray: '6 8', fill: 'none', opacity: 0.5 } : {};
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <path d="M -66 0 L 66 0 L 66 -26 Q 66 -30 62 -30 L -62 -30 Q -66 -30 -66 -26 Z" fill={P.wash} stroke={c} strokeWidth={3} strokeLinejoin="round" {...st} />
+      {!dashed && <>
+        <ellipse cx={-8} cy={-33} rx={48} ry={10} fill={P.ink} />
+        <ellipse cx={-8} cy={-34} rx={34} ry={6.5} fill="none" stroke={P.paper} strokeWidth={1.2} opacity={0.35} />
+        <g transform={`translate(-8 -34) scale(1 0.21) rotate(${spin})`}><circle r={13} fill={P.wash} /><rect x={-2} y={-12} width={4} height={8} fill={P.ink} /></g>
+        <path d="M 54 -34 L 54 -46 M 54 -44 L 30 -34" stroke={c} strokeWidth={3.4} strokeLinecap="round" fill="none" />
+        <circle cx={54} cy={-46} r={4} fill={c} />
+        <circle cx={50} cy={-14} r={4} fill={P.paper} stroke={c} strokeWidth={2} />
+      </>}
+    </g>
+  );
+};
+/** The low cabinet the record player lives on. (x, y): the middle of its feet; its top is 86·s above. */
+export const CABINET_TOP = 86;
+export const Cabinet: React.FC<{ x: number; y: number; s?: number }> = ({ x, y, s = 1 }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    <ellipse cx={0} cy={2} rx={86} ry={6} fill={P.ink} opacity={0.12} />
+    <path d="M -64 0 L -60 -14 M 64 0 L 60 -14" stroke={P.ink} strokeWidth={4} strokeLinecap="round" />
+    <path d="M -80 -14 L 80 -14 L 80 -86 L -80 -86 Z" fill={P.paperShade} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+    <path d="M 0 -18 L 0 -82 M -12 -50 L -6 -50 M 6 -50 L 12 -50" stroke={P.ink} strokeWidth={2.4} strokeLinecap="round" />
+  </g>
+);
+/** Theo's records: a row of sleeves, each with its record peeping out. (x, y): the middle of their bottom edge. */
+export const RECORD_SLEEVES = 4;
+export const Records: React.FC<{ x: number; y: number; s?: number; dashed?: boolean }> = ({ x, y, s = 1, dashed }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    {Array.from({ length: RECORD_SLEEVES }).map((_, i) => {
+      const sx = -94 + i * 48, r = [-4, 3, -2, 6][i];
+      return (
+        <g key={i} transform={`rotate(${r} ${sx + 22} 0)`}>
+          {!dashed && <circle cx={sx + 30} cy={-30} r={20} fill={P.ink} />}
+          <rect x={sx} y={-52} width={44} height={52} rx={2} fill={dashed ? 'none' : [P.paper, P.wash, P.paperShade, P.paper][i]} stroke={P.ink} strokeWidth={dashed ? 2 : 2.6}
+            strokeDasharray={dashed ? '5 7' : undefined} opacity={dashed ? 0.5 : 1} />
+          {!dashed && <circle cx={sx + 22} cy={-26} r={[9, 12, 7, 10][i]} fill="none" stroke={P.inkSoft} strokeWidth={2.2} />}
+        </g>
+      );
+    })}
+  </g>
+);
+
+/** June's keepsake box. (x, y): the middle of its base. `lid` 0 shut, 1 open; `inside`: how many of her five
+ *  keepsakes still peep over the rim (they leave from the right). */
+export const KEEPSAKES: Keepsake[] = ['photo', 'letter', 'heart', 'photo', 'letter'];
+export const KeepsakeBox: React.FC<{ x: number; y: number; s?: number; lid?: number; inside?: number; fill?: string }> = ({ x, y, s = 1, lid = 1, inside = 5, fill = P.wash }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    {/* the lid, hinged at the back edge: open it stands up behind the box, tipped back */}
+    <g transform={`translate(0 -58) rotate(${-lid * 18}) scale(1 ${1 - lid * 2})`}>
+      <path d="M -62 0 L 62 0 L 62 -14 Q 62 -18 58 -18 L -58 -18 Q -62 -18 -62 -14 Z" fill={fill} stroke={P.ink} strokeWidth={3 / Math.max(0.3, Math.abs(1 - lid * 2))} strokeLinejoin="round" />
+    </g>
+    {Array.from({ length: Math.max(0, Math.min(5, Math.round(inside))) }).map((_, i) => (
+      <KeepsakeIcon key={i} kind={KEEPSAKES[i]} x={-40 + i * 20} y={-62 - (i % 2) * 8} s={0.85} r={(i - 2) * 9} />
+    ))}
+    <path d="M -58 -58 L 58 -58 L 54 0 L -54 0 Z" fill={fill} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+    <path d="M -10 -40 L 10 -40" stroke={P.ink} strokeWidth={3} strokeLinecap="round" />
+    <path d="M -50 -48 L 50 -48" stroke={P.ink} strokeWidth={1.6} opacity={0.35} />
+  </g>
+);
+
+/** The puppet control: a crossbar with a short cross-piece. (x, y): its middle; w: its length. */
+export const Crossbar: React.FC<{ x: number; y: number; w?: number; r?: number; c?: string }> = ({ x, y, w = 110, r = 0, c = P.ink }) => (
+  <g transform={`translate(${x} ${y}) rotate(${r})`}>
+    <path d={`M ${-w / 2} 0 L ${w / 2} 0`} stroke={c} strokeWidth={7} strokeLinecap="round" />
+    <path d="M 0 -14 L 0 14" stroke={c} strokeWidth={6} strokeLinecap="round" />
+  </g>
+);

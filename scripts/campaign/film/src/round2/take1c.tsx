@@ -9,21 +9,20 @@
 import React from 'react';
 import { AbsoluteFill, Audio, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { C, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
-import { Day, EndCard } from '../kit';
+import { Day, EndCard, Icon } from '../kit';
 import { Boards, BOARD, BasePage, cameraAt, coverArt, Edges, Face, Lamp, Leaf, LeafShadow, PH, PW, Shot, Spread, World } from './take1c-book';
 import { lin } from './take1c-ink';
 import { BARGAIN, DROP_LAND, HANDFUL, HOWEVER, NOTHING, RULES } from './take1c-spreads-a';
-import { ANYONE, EVERYTHING, FREE, OURS, OURS_HAND, TREASURE, TREASURE_MARKS, VARIANTS } from './take1c-spreads-b';
+import { ANYONE, EVERYTHING, FREE, OURS, OURS_HAND, TREASURE, TREASURE_MARKS } from './take1c-spreads-b';
 import { Headline } from './take1c-page';
 import { CLOSE_DUR, COVER_DUR, CUT, CUT_TURNS, DIP_IN, DIP_OUT, END_CARD, Q, TURN, TURN_DUR } from './take1c-time';
 
 // ---------- the order of the book ----------
-const SPREADS: Spread[] = [HANDFUL, RULES, BARGAIN, NOTHING, HOWEVER, TREASURE, ANYONE, OURS, FREE, ...VARIANTS, EVERYTHING];
-const STARTS = [TURN.cover, TURN.rules, TURN.bargain, TURN.nothing, TURN.however, TURN.treasure, TURN.anyone, TURN.ours, TURN.free, ...TURN.riffle, TURN.everything];
-// WHY found by name, not a typed index: adding a spread before the riffle must not silently shift which turns are fast
-const RIFFLE_FROM = SPREADS.indexOf(VARIANTS[0]);
+// WHY no riffle (round six plan): one page turn to the last spread, so the sharing gets the whole of line 9
+const SPREADS: Spread[] = [HANDFUL, RULES, BARGAIN, NOTHING, HOWEVER, TREASURE, ANYONE, OURS, FREE, EVERYTHING];
+const STARTS = [TURN.cover, TURN.rules, TURN.bargain, TURN.nothing, TURN.however, TURN.treasure, TURN.anyone, TURN.ours, TURN.free, TURN.everything];
 // a cut turn takes no time at all: the next spread is simply there on the next frame
-const DURS = STARTS.map((s, k) => (k === 0 ? COVER_DUR : CUT_TURNS.has(s) ? 0 : k >= RIFFLE_FROM ? 0.78 : TURN_DUR));
+const DURS = STARTS.map((s, k) => (k === 0 ? COVER_DUR : CUT_TURNS.has(s) ? 0 : TURN_DUR));
 if (STARTS.length !== SPREADS.length) throw new Error('take1c: every spread needs exactly one turn into it (see TURN in take1c-time.ts)');
 
 // ---------- the cover (seen only as the book shuts) ----------
@@ -32,9 +31,14 @@ const FOIL = 'linear-gradient(160deg, #E3C6EC 0%, #B98BC9 38%, #8E5DA2 62%, #D7B
 const Foil: React.FC<{ d: string; w: number; h: number; vb: string }> = ({ d, w, h, vb }) => (
   <div style={{ width: w, height: h, background: FOIL, clipPath: `path("${d}")`, filter: 'drop-shadow(0 -1px 0 rgba(0,0,0,0.35))' }} data-vb={vb} />
 );
+// WHY a rounded-square frame round the quill (round six plan): it is the shape and size of the youcoded icon,
+// so when the emblem dissolves into the icon the outline does not jump
 const QuillEmblem: React.FC = () => (
-  <div style={{ transform: 'translateY(-30px) rotate(-8deg)' }}>
-    <Foil w={150} h={190} vb="0 0 150 190" d="M 30 186 L 36 166 L 42 168 Z M 40 164 C 50 116 84 54 128 14 C 124 52 100 112 46 168 Z" />
+  <div style={{ transform: 'translateY(-30px)', width: 176, height: 176, borderRadius: 42, border: '3px solid rgba(215,179,226,0.75)',
+    boxShadow: '0 -1px 0 rgba(0,0,0,0.35), inset 0 1px 0 rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ transform: 'rotate(-8deg) scale(0.72)' }}>
+      <Foil w={150} h={190} vb="0 0 150 190" d="M 30 186 L 36 166 L 42 168 Z M 40 164 C 50 116 84 54 128 14 C 124 52 100 112 46 168 Z" />
+    </div>
   </div>
 );
 const COVER_END = coverArt(QuillEmblem);
@@ -50,57 +54,52 @@ const cut = (t: number, x: number, y: number, z: number, tilt = 16): Shot => ({ 
 const at = (t: number, x: number, y: number, z: number, tilt = 16): Shot => ({ t, x, y, z, tilt });
 const TM = TREASURE_MARKS;
 const SHOTS: Shot[] = [
-  // i: open close on one hat, the handful land beside it, and the camera pulls back to reveal the book
-  at(0, 380, 330, 2.5, 13), at(Q.handful + 0.3, 385, 336, 2.42, 13), at(Q.corporations1 - 0.12, 386, 338, 2.38, 13),
-  at(Q.dictated, 760, 520, 1.0), at(Q.technology1, 760, 530, 1.04), at(TURN.rules - 0.05, 760, 520, 1.0),
-  // ii: one picture per thing they decided, each a hard cut on its word
+  // i (round six): open close on the tall hat, waist up, his crossbar in his hands and the dark field beyond the
+  // page's top edge; a slow push back while the other two land beside him, then a pull back past the tower to the
+  // whole spread from a low, steep angle as the strings pull tight on "dictated"
+  at(0, 372, 168, 3.3, 12), at(Q.small, 368, 174, 3.12, 12), at(Q.corporations1 + 0.3, 330, 330, 1.75, 15),
+  at(Q.dictated + 0.35, 742, 556, 1.12, 24), at(Q.technology1, 746, 560, 1.15, 24), at(TURN.rules - 0.05, 760, 505, 1.0, 18),
+  // ii: the wide of all three vignettes, then one hard cut per thing they decided, each on its word
   { t: L(1), ...H },
-  cut(Q.computersDo - 0.04, 375, 425, 2.3, 14), at(Q.cost - 0.07, 380, 428, 2.4, 14),
-  cut(Q.cost - 0.05, 290, 790, 2.45, 14), at(Q.data - 0.07, 292, 793, 2.55, 14),
-  cut(Q.data - 0.05, 1110, 610, 1.3), at(TURN.bargain, 1100, 600, 1.36),
-  // iii: the queue; a cut in to the boxes ticking themselves on "accepted"
-  at(L(2), 760, 560, 1.02), at(Q.accepted - 0.14, 745, 575, 1.08),
-  // WHY 1.8 and a little right/lower (review 2026-11-20): at 1.9 the 'terms of service' label was cut off at the edge
-  cut(Q.accepted - 0.12, 660, 748, 1.8), at(TURN.nothing - 0.01, 640, 748, 1.86),
-  // the room: a cut in to the price tags on "subscribe", back out for "own nothing", in to the glass
-  cut(TURN.nothing, 740, 520, 1.06), at(Q.subscribe - 0.07, 750, 515, 1.1),
-  cut(Q.subscribe - 0.05, 410, 540, 2.05, 15), at(Q.own - 0.08, 405, 545, 2.12, 15),
+  cut(Q.computersDo - 0.04, 384, 330, 2.3, 14), at(Q.cost - 0.07, 386, 334, 2.4, 14),
+  cut(Q.cost - 0.05, 392, 770, 2.3, 14), at(Q.data - 0.07, 394, 774, 2.4, 14),
+  cut(Q.data - 0.05, 1150, 640, 2.0), at(TURN.bargain - 0.02, 1146, 634, 2.08),
+  // WHY a cut to the wide as the page starts to turn: a fast pull back during the turn smears the leaf with motion blur
+  cut(TURN.bargain, 736, 660, 1.22),
+  // iii: the queue in depth; on "accepted" a slow push toward its front, where the heroes' ticks land last
+  at(L(2), 724, 680, 1.28), at(Q.accepted - 0.1, 716, 696, 1.34), at(TURN.nothing - 0.01, 590, 740, 1.6),
+  // Theo's room: a medium shot for the tags, the wide for "own nothing" (the headline's framing), in to June
+  cut(TURN.nothing, 380, 560, 1.9, 15), at(Q.own - 0.08, 385, 555, 1.98, 15),
   cut(Q.own - 0.06, H.x, H.y, H.z), at(Q.costOf - 0.37, 770, 505, 1.03),
-  cut(Q.costOf - 0.35, 1090, 470, 1.75), at(TURN.however - 0.02, 1095, 478, 1.85),
+  cut(Q.costOf - 0.35, 1130, 470, 1.75), at(TURN.however - 0.02, 1135, 476, 1.85),
   // iv: WHY a cut to a calm, nearly whole-book framing as the page turns (review 2026-11-20): the fast pull
   // back during the turn smeared the falling page with motion blur. Then a slow push in while the drop falls.
-  cut(TURN.however, 800, 505, 1.1), at(DROP_LAND, 835, 515, 1.28), at(CUT.hubris - 0.01, 845, 518, 1.33),
-  // v: a hard cut on "hubris" (hats out of the page), the inkwell, the quill rising, the chart, the snatch
-  // WHY framed on the page, not on the desk (it was 30% bare felt): the men left of centre, their desk at right,
-  // and the frame's top free for the hats to grow out of
-  cut(CUT.hubris, 430, 420, 2.0, 11), at(CUT.these - 0.01, 430, 405, 1.95, 11),
-  cut(CUT.these, 440, 540, 1.55, 14), at(Q.artificial - 0.07, 450, 545, 1.6, 14),
-  cut(Q.artificial - 0.05, TM.well.x + 10, 470, 2.6, 12), at(Q.aTechnology - 0.07, TM.well.x + 12, 465, 2.7, 12),
-  cut(Q.aTechnology - 0.05, 420, 500, 1.45, 14), at(Q.greatTreasure - 0.07, 425, 500, 1.52, 14),
-  // the chart close: the three men and their easel, with headroom above the hats (8% of the frame or more)
-  cut(Q.greatTreasure - 0.05, 382, 488, 2.55, 13), at(Q.but - 0.07, 386, 486, 2.62, 13),
-  cut(Q.but - 0.05, 450, 520, 1.5), at(Q.far - 0.07, 470, 520, 1.6),
-  // the snatch: the men at the left of the same shot, the quill and the room it escapes into at the right
-  cut(Q.far - 0.05, 470, 500, 2.4, 12), at(CUT.tool - 0.01, 478, 498, 2.48, 12),
-  // a hard cut on "a tool": the quill is already at the empty window's corner
-  cut(CUT.tool, TM.win.x, TM.win.y + 10, 1.8, 14), at(Q.scarce - 0.07, TM.win.x, TM.win.y + 15, 1.9, 14),
-  cut(Q.scarce - 0.05, 250, 650, 1.9), at(Q.foundation - 0.07, 252, 655, 1.98),
-  cut(Q.foundation - 0.05, 780, 540, 1.04), at(TURN.anyone - 0.01, 790, 545, 1.08),
-  // vi: anyone (a cut, then a slow settle to the wide for the headline)
-  cut(TURN.anyone, 760, 460, 1.2), at(Q.asks + 0.3, 760, 490, 1.06), at(TURN.ours - 0.01, 760, 492, 1.05),
-  // vii: her hand closing on the key ("and so"), the full page ("a very long while"), the wide on "decide"
-  cut(TURN.ours, OURS_HAND.x + 14, OURS_HAND.y - 6, 5.0, 10), at(Q.veryLong - 0.1, OURS_HAND.x + 22, OURS_HAND.y, 4.6, 10),
-  at(Q.weGetStart - 0.1, 390, 520, 1.42, 15), at(Q.decide - 0.07, 392, 522, 1.45, 15),
-  cut(Q.decide - 0.05, H.x, H.y, H.z), at(Q.ourComputers - 0.07, 760, 505, 1.03),
-  cut(Q.ourComputers - 0.05, 375, 425, 2.3, 14), at(Q.itCosts - 0.07, 380, 428, 2.4, 14),
-  cut(Q.itCosts - 0.05, 290, 790, 2.45, 14), at(Q.ourData - 0.07, 292, 793, 2.55, 14),
-  cut(Q.ourData - 0.05, 1110, 610, 1.3), at(TURN.free, 1100, 600, 1.36),
-  // viii: down to the strings as they snap, then a cut to the handful fading
-  at(L(8) - 0.1, 700, 620, 1.2), at(Q.free + 0.1, 560, 700, 1.45), at(Q.monopolies2 - 0.07, 580, 690, 1.45),
-  cut(Q.monopolies2 - 0.05, 760, 420, 1.12), at(TURN.riffle[0] - 0.1, 760, 440, 1.1),
-  // ix: pull back while every page flies past, then home for the last headline
-  at(TURN.riffle[1], 760, 500, 0.84, 24), at(TURN.riffle[3], 760, 500, 0.86, 24),
-  { t: L(SPREADS.length - 1) - 0.08, ...H }, { t: TURN.close, ...H },
+  cut(TURN.however, 790, 520, 1.1), at(DROP_LAND, 790, 545, 1.32), at(CUT.hubris - 0.01, 845, 518, 1.33),
+  // v (round six): close on the three on their tower as their hats shoot up; the medium for the inkwell being
+  // dragged in; close on the inkwell as the quill rises; the medium as they turn to it; close for the treasure
+  cut(CUT.hubris, 300, 430, 2.0, 11), at(CUT.these - 0.01, 300, 420, 1.96, 11),
+  cut(CUT.these, 430, 585, 1.8, 14), at(Q.artificial - 0.07, 440, 585, 1.86, 14),
+  cut(Q.artificial - 0.05, TM.well.x + 18, 470, 2.7, 12), at(Q.aTechnology - 0.07, TM.well.x + 20, 466, 2.8, 12),
+  cut(Q.aTechnology - 0.05, 440, 545, 1.62, 14), at(Q.greatTreasure - 0.07, 446, 545, 1.68, 14),
+  cut(Q.greatTreasure - 0.05, 432, 474, 2.2, 13), at(Q.but - 0.07, 436, 472, 2.28, 13),
+  // "but": the medium that shows the hats, the quill and Maya waiting small across the gutter; on "control" the
+  // camera whip-pans after the quill to her (the motion blur is measured from the move in useWhip)
+  cut(Q.but - 0.05, 620, 600, 1.6), at(Q.control - 0.02, 640, 600, 1.66),
+  at(Q.control + 0.45, TM.maya.x + 200, 505, 1.72, 14), at(TURN.anyone - 0.01, TM.maya.x + 204, 508, 1.76, 14),
+  // vi: the wide, held still from "asks" so the three windows can be taken in
+  // WHY 1.3 (review of the first build): at the home framing the three windows were too small to read
+  cut(TURN.anyone, 780, 480, 1.22), at(Q.asks, 782, 482, 1.3), at(TURN.ours - 0.01, 782, 482, 1.3),
+  // vii: an extreme close-up of Maya's raised hand as the quill drops into it; ease back to the full spread on
+  // "a very long while"; then chapter ii's three close-ups, each a hard cut on its clause
+  cut(TURN.ours, OURS_HAND.x + 14, OURS_HAND.y - 4, 4.6, 10), at(Q.so + 0.45, OURS_HAND.x + 18, OURS_HAND.y, 4.3, 10),
+  at(Q.longWhile + 0.3, H.x, H.y, H.z), at(Q.decide - 0.07, 762, 504, 1.03),
+  cut(Q.ourComputers - 0.05, 420, 420, 2.4, 14), at(Q.itCosts - 0.07, 424, 422, 2.48, 14),
+  cut(Q.itCosts - 0.05, 410, 700, 2.3, 14), at(Q.ourData - 0.07, 412, 702, 2.38, 14),
+  cut(Q.ourData - 0.05, 1120, 680, 1.9), at(TURN.free - 0.01, 1115, 676, 1.96),
+  // viii and ix: the wide, home framing for both (line 1's layout; the last headline)
+  // WHY 1.2, not the home 1.0 (review of the first build): at home the heroes and windows read too small
+  cut(TURN.free, 785, 485, 1.16), at(Q.free + 0.1, 785, 485, 1.2), at(TURN.everything - 0.02, 786, 486, 1.22),
+  cut(TURN.everything, 788, 482, 1.16), at(Q.last, 790, 482, 1.2), at(TURN.close, 790, 482, 1.21),
   // the book shuts; the camera settles on its cover
   // WHY the camera stays home while it shuts: the closed book then lies exactly under the headline
   at(TURN.close + CLOSE_DUR, 770, 500, 1.02, 16), at(75, 772, 500, 1.04, 16),
@@ -135,8 +134,7 @@ const Book: React.FC<{ t: number }> = ({ t }) => {
     if (k === 0) {
       leaves.push(<Leaf key={k} front={{ kind: 'cover', Art: COVER_END }} back={{ kind: 'board', spread: SPREADS[0] }} p={p} n={1} bend={0} w={PW + BOARD} h={PH + BOARD * 2} dy={-BOARD} lift={2} />);
     } else {
-      const riffle = k >= RIFFLE_FROM;
-      leaves.push(<Leaf key={k} front={page(k - 1, 'R')} back={page(k, 'L')} p={p} n={riffle ? 6 : 10} bend={riffle ? 70 : 58} lift={0.8 + (k - landed) * 0.4} />);
+      leaves.push(<Leaf key={k} front={page(k - 1, 'R')} back={page(k, 'L')} p={p} n={10} bend={58} lift={0.8 + (k - landed) * 0.4} />);
     }
   }
   const turning = leaves.length > 0 && !(landed === started);
@@ -156,6 +154,26 @@ const Book: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+// ---------- the hand-off to the end card ----------
+// WHY the quill becomes the icon (round six plan): the one quill has been the hero's tool all film; it lands on
+// the cover as its foil emblem, and that emblem dissolves into the real youcoded icon, which then glides into the
+// end card's icon position. The logo itself is never restyled: the real icon file simply takes the emblem's place.
+// WHY no dip through dark: the book now floats over the light field and the card is light too, so a straight
+// cross-fade never flashes (the old dip read as a grey frame on the light backdrop).
+const SHUT = TURN.close + CLOSE_DUR;
+const HAND = SHUT + 0.2;            // the emblem starts to become the icon
+const CARD = HAND + 0.55;           // the end card's own icon is in place under ours from here
+/** Where the cover's emblem sits on screen once the book is shut (measured from the render), and the card's icon. */
+const EMB = { x: 1261, y: 476, size: 142 };
+const ICON_END = { x: 960, y: 311, size: 252 };
+const IconFlight: React.FC<{ t: number }> = ({ t }) => {
+  const u = lin(t, HAND + 0.08, CARD, EASE_IN_OUT);
+  const o = lin(t, HAND, HAND + 0.22) * (1 - lin(t, CARD + 0.45, CARD + 0.55));
+  if (o <= 0) return null;
+  const x = EMB.x + (ICON_END.x - EMB.x) * u, y = EMB.y + (ICON_END.y - EMB.y) * u, size = EMB.size + (ICON_END.size - EMB.size) * u;
+  return <div style={{ position: 'absolute', left: x - size / 2, top: y - size / 2, opacity: o }}><Icon size={size} /></div>;
+};
+
 // ---------- the four headlines ----------
 // WHY all in one list on the screen layer: they share one position and one style, and each is held at least
 // 1.2 s + 0.25 s per word (the brand's muted-video rule) after its last word has inked in.
@@ -171,7 +189,9 @@ const HEADLINES = [
   // it, and to leave 1.4 s after. Now each word lands on its spoken start, and the line stays while the book
   // shuts beneath it: the cover slides in under the words, which turn to the dark-mode colours as it does, so
   // they end printed on the closed cover like its title, until the dip to dark takes them.
-  { text: 'open source / *everything.', at: Q.open, out: END_CARD, words: [Q.open, Q.source, Q.everything2], cutOut: true,
+  // WHY out just after the book shuts, fading (round six plan): the headline leaves first, then the quill emblem
+  // on the cover turns into the youcoded icon, so the eye has one thing to follow into the end card
+  { text: 'open source / *everything.', at: Q.open, out: SHUT + 0.15, words: [Q.open, Q.source, Q.everything2],
     night: (t: number) => lin(t, TURN.close + CLOSE_DUR * 0.45, TURN.close + CLOSE_DUR * 0.95, EASE_IN_OUT) },
 ];
 // WHY measured from the LAST word's appearance: that is when the whole line is first readable
@@ -200,16 +220,13 @@ export const Take1C: React.FC = () => {
   // the edges of the frame darken for the whisper ("however, recently…") and lift again on "wonderful"
   const dim = Math.min(lin(t, Q.however, Q.recently + 0.3), 1 - lin(t, Q.wonderful - 0.1, Q.wonderful + 0.7));
   const warm = lin(t, Q.wonderful - 0.1, Q.wonderful + 1.2) + lin(t, Q.toOpen, Q.everything2 + 0.5) * 0.6;
-  // WHY a dip through dark (review 2026-11-20): the 4-frame cross-fade from the dark cover to the near-white
-  // card read as a flash. The shut book now sinks into the plum dark over 8 frames, and the card rises out of
-  // that dark over 16, so the brightness climbs once, slowly, instead of jumping.
-  const toDark = lin(t, END_CARD - DIP_OUT, END_CARD, EASE_IN_OUT);
-  const fromDark = 1 - lin(t, END_CARD, END_CARD + DIP_IN, EASE_IN_OUT);
-  const showBook = t < END_CARD;
-  const settle = 0.97 + 0.03 * lin(t, END_CARD, END_CARD + 0.8, EASE_OUT);
+  // the shut book fades away over the light card's background while the emblem becomes the icon
+  const bookO = 1 - lin(t, HAND + 0.05, HAND + 0.5, EASE_IN_OUT);
+  const showBook = bookO > 0;
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      <Audio src={staticFile('audio/take1-mix.wav')} />
+      {/* WHY the narrator only (round six): the old music was rejected; a new score comes later */}
+      <Audio src={staticFile('audio/voice-take1-lily.wav')} />
       {showBook && (
         <>
           {(whip.bx > 0 || whip.by > 0) && (
@@ -217,16 +234,17 @@ export const Take1C: React.FC = () => {
               <filter id={`c-whip-${frame}`} x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation={`${whip.bx.toFixed(1)} ${whip.by.toFixed(1)}`} /></filter>
             </svg>
           )}
-          <AbsoluteFill style={{ filter: whip.bx > 0 || whip.by > 0 ? `url(#c-whip-${frame})` : undefined }}>
+          {t >= HAND && <Day />}
+          <AbsoluteFill style={{ filter: whip.bx > 0 || whip.by > 0 ? `url(#c-whip-${frame})` : undefined, opacity: bookO }}>
             <World cam={cam}><Book t={t} /></World>
             <Lamp dim={dim} warm={warm} />
           </AbsoluteFill>
           {HEADLINES.map((h) => <Headline key={h.text} {...h} />)}
         </>
       )}
-      {/* the card settles from 96% to full size as the cut lands, over its own background so no edge shows */}
-      {!showBook && <><Day /><AbsoluteFill style={{ transform: `scale(${settle})` }}><EndCard at={END_CARD + 0.12} /></AbsoluteFill></>}
-      {(showBook ? toDark : fromDark) > 0 && <AbsoluteFill style={{ background: C.night, opacity: showBook ? toDark : fromDark }} />}
+      {!showBook && <Day />}
+      {t >= CARD && <EndCard at={CARD} />}
+      <IconFlight t={t} />
     </AbsoluteFill>
   );
 };
