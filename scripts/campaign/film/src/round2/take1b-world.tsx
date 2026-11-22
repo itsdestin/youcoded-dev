@@ -81,7 +81,9 @@ export const dev = (id: string) => {
 // =====================================================================================================
 // A device: body, bezel, glass, and the light it throws onto its shelf.
 // =====================================================================================================
-export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: number; children: React.ReactNode }> = ({ d, night, glow, lift = 0, children }) => {
+// dim: 0..1, how far the room's lights are down on this device (the hush): its glass sheen and the glow it throws go
+// with it. WHY (round 7 review): with only the screen veiled, sixty glossy rectangles still caught light in the dark
+export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: number; dim?: number; children: React.ReactNode }> = ({ d, night, glow, lift = 0, dim = 0, children }) => {
   const z = SIZE[d.kind];
   const b = z.bezel;
   const W = d.w + b * 2, H = d.h + b * 2;
@@ -93,7 +95,7 @@ export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: numb
     <>
       {/* the light the screen throws down onto the plank's lit top edge, tinted with what the screen shows */}
       <div style={{ position: 'absolute', left: d.cx - W * 0.62, width: W * 1.24, top: d.shelf - 10, height: 34, borderRadius: '50%',
-        background: `radial-gradient(closest-side, ${glow}, transparent)`, opacity: 0.6 * night, mixBlendMode: 'screen' }} />
+        background: `radial-gradient(closest-side, ${glow}, transparent)`, opacity: 0.6 * night * (1 - 0.85 * dim), mixBlendMode: 'screen' }} />
       {/* contact shadow under the device: WHY darker and taller than before, the reviewer could not see it at all */}
       <div style={{ position: 'absolute', left: d.cx - W * 0.5, width: W * 1.0, top: d.shelf - 14, height: 30, borderRadius: '50%',
         background: 'radial-gradient(closest-side, rgba(8,3,12,0.85), rgba(8,3,12,0.35) 60%, transparent)' }} />
@@ -108,11 +110,11 @@ export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: numb
       </>}
       <div style={{ position: 'absolute', left, top, width: W, height: H, transform: lift ? `translateY(${-lift * 14}px) scale(${pop})` : undefined, transformOrigin: '50% 100%' }}>
         <div style={{ position: 'absolute', inset: 0, borderRadius: z.radius + b * 0.6, background: body,
-          boxShadow: `0 ${18 + lift * 26}px ${40 + lift * 40}px rgba(20,8,32,${0.5 + lift * 0.1}), 0 0 ${50 * night}px ${glow.replace('1)', `${0.12 * night})`)}, inset 0 1.5px 0 rgba(255,255,255,0.16), inset 0 -2px 0 rgba(0,0,0,0.35)` }} />
+          boxShadow: `0 ${18 + lift * 26}px ${40 + lift * 40}px rgba(20,8,32,${0.5 + lift * 0.1}), 0 0 ${50 * night}px ${glow.replace('1)', `${0.12 * night * (1 - 0.9 * dim)})`)}, inset 0 1.5px 0 rgba(255,255,255,0.16), inset 0 -2px 0 rgba(0,0,0,0.35)` }} />
         <div style={{ position: 'absolute', left: b, top: b, width: d.w, height: d.h, borderRadius: z.radius, overflow: 'hidden', background: '#000' }}>
           {children}
           {/* glass: a faint diagonal sheen so screens read as objects, not flat rectangles */}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(118deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.04) 34%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 100%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(118deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.04) 34%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 100%)', pointerEvents: 'none', opacity: 1 - 0.8 * dim }} />
         </div>
         {d.kind === 'phone' && <div style={{ position: 'absolute', left: W / 2 - 14, top: b + 6, width: 28, height: 8, borderRadius: 8, background: '#120C18' }} />}
       </div>
@@ -255,8 +257,9 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
   return (
     // fallDir -1: it swings and drifts the other way as it falls (the tablet's tag falls away from the person's phone)
     <div style={{ position: 'absolute', left: x + (fallDir < 0 ? fall * 90 : 0), top: (anchored ? y : y - off) + fy, width: 0, height: 0, transform: `rotate(${swing + fall * 40 * fallDir}deg)`, transformOrigin: '0 0', opacity: fall > 0.8 ? 1 - (fall - 0.8) * 5 : 1 }}>
-      {/* WHY a dark string (review: the pale one vanished against the bezel and the tag read as a floating sticker) */}
-      {fall === 0 && strLen > 0 && <div style={{ position: 'absolute', left: -1.5 * scale, top: 0, width: 3 * scale, height: strLen, borderRadius: 2, background: 'rgba(42,31,51,0.9)', boxShadow: '0.5px 0 0 rgba(255,240,230,0.25)' }} />}
+      {/* WHY cream twine with a faint dark edge (round 7 review: the dark string vanished against the dark bezel and wall,
+          so the tag fell in from nowhere and hung in mid-air): it reads against the room and against a pale screen */}
+      {fall === 0 && strLen > 0 && <div style={{ position: 'absolute', left: -1.6 * scale, top: 0, width: 3.2 * scale, height: strLen, borderRadius: 2, background: 'linear-gradient(90deg,#B9A98C,#F1E6D0 45%,#D9CAAE)', boxShadow: '0 0 0 0.6px rgba(30,18,38,0.55)' }} />}
       <div style={{ position: 'absolute', left: -95 * scale, top: tagTop, width: 190 * scale, height: 92 * scale, transform: pulse ? `scale(${1 + 0.04 * pulse})` : undefined, transformOrigin: '50% 0',
         filter: `drop-shadow(${7 * scale}px ${12 * scale}px ${10 * scale}px rgba(20,8,32,0.5))` }}>
         <svg width={190 * scale} height={92 * scale} viewBox="0 0 190 92" style={{ position: 'absolute' }}>

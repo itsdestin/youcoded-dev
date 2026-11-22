@@ -91,7 +91,7 @@ export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: n
       <div style={{ width: 7 * k, height: 7 * k, borderRadius: 7 * k, background: '#E7B7A3', flex: 'none' }} />
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize: 3.6 * k, fontWeight: 700, color: S.ink }}>Sam</div>
-        <div style={{ fontSize: 3.3 * k, color: S.ink2, whiteSpace: 'nowrap' }}>running late, save me a seat x</div>
+        <div style={{ fontSize: 3.3 * k, color: S.ink2, whiteSpace: 'nowrap' }}>running late, sorry!</div>
       </div>
     </div>
   );
@@ -106,12 +106,37 @@ export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: n
 /** Where a padlock is in its arrival `p` (0..1): it falls from above the tile, accelerating, lands at p = LOCK_LAND a
  *  little large with a one-frame squash, then settles with a damped shake as it snaps shut. */
 export const LOCK_LAND = 0.4;
-const lockFall = (p: number) => {
+/** A padlock's size as a share of its tile's short side. WHY 0.8 (round 7 review: at 0.62 the row of six read as
+ *  small icons appearing, not padlocks clamping shut). */
+export const LOCK_SIZE = 0.8;
+
+/** What each tile on the same screen does, as one plain plum glyph (24-unit paths). */
+const GLYPHS = [
+  // camera
+  'M4 8h3l1.6-2.2h6.8L17 8h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 8Zm8 2.4a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8Z',
+  // pencil
+  'M15.6 4.2l4.2 4.2-10.6 10.6-5.1.9.9-5.1L15.6 4.2Z',
+  // music note
+  'M9 17.5V6.2l10-2v10.6a2.6 2.6 0 1 1-1.6-2.4V7.6l-6.8 1.4v8.5a2.6 2.6 0 1 1-1.6-2.4Z',
+  // speech bubble
+  'M4 5h16a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 17h-9l-4.5 3.4V17H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 5Z',
+  // game controller
+  'M7 8h10a4.5 4.5 0 0 1 4.3 5.8l-1 3.2a2 2 0 0 1-3.3.8L14.6 16H9.4L7 17.8a2 2 0 0 1-3.3-.8l-1-3.2A4.5 4.5 0 0 1 7 8Zm.2 2.6v1.5H5.7v1.4h1.5V15h1.4v-1.5h1.5v-1.4H8.6v-1.5H7.2Zm9.3.6a.9.9 0 1 0 0 1.8.9.9 0 0 0 0-1.8Zm-1.8 1.8a.9.9 0 1 0 0 1.8.9.9 0 0 0 0-1.8Z',
+  // folder
+  'M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2.2h8.4A1.5 1.5 0 0 1 21 8.7v9.3a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18V6.5Z',
+];
+const TileGlyph: React.FC<{ i: number; s: number; o: number }> = ({ i, s, o }) => (
+  <svg width={s} height={s} viewBox="0 0 24 24" style={{ display: 'block', opacity: o }}><path d={GLYPHS[i % GLYPHS.length]} fill="#3A2848" fillRule="evenodd" /></svg>
+);
+// WHY solid from the first frame and falling from above the screen's top edge (round 7 review: the locks faded in from
+// a short height, and the last ones hung half-transparent above their tiles like ghosts): the screen's glass clips
+// it, so it drops into view out of the bezel with weight, accelerating, and never fades
+const lockFall = (p: number, from = 1.8) => {
   const f = cl(p / LOCK_LAND);
   const since = (p - LOCK_LAND) / (1 - LOCK_LAND);   // 0..1 after landing
   return {
-    y: -(1 - f * f) * 1.8,                             // in lock heights above its rest
-    o: cl(f * 4),                                      // seen only once it is falling (a few frames)
+    y: -(1 - f * f) * from,                            // in lock heights above its rest (gravity: f squared)
+    o: p > 0 ? 1 : 0,
     sq: p >= LOCK_LAND ? Math.exp(-since * 14) : 0,     // the squash on contact
     sc: p >= LOCK_LAND ? 1 + 0.15 * Math.exp(-since * 6) : 1.15,
     shake: p >= LOCK_LAND && since < 1 ? Math.sin(since * 30) * 7 * (1 - since) : 0,
@@ -121,10 +146,10 @@ const lockFall = (p: number) => {
 /** A padlock: a real-looking one (round 6 review: the old flat icon faded in place and read as a "disabled" state).
  *  A steel shackle with thickness, a body with a lit top edge, a dark keyhole, and a shadow on the tile that grows as
  *  it comes down. `off` 0..1 knocks it off (line 7). */
-export const Lock: React.FC<{ s: number; p: number; off: number }> = ({ s, p, off }) => {
-  const L = lockFall(p);
+export const Lock: React.FC<{ s: number; p: number; off: number; from?: number }> = ({ s, p, off, from = 1.8 }) => {
+  const L = lockFall(p, from);
   const gone = 1 - smooth(off * 1.6);
-  const near = cl(1 + L.y / 1.8);                     // 0 high above, 1 on the tile
+  const near = cl(1 + L.y / from);                     // 0 high above, 1 on the tile
   return (
     <div style={{ position: 'relative', width: s, height: s }}>
       {/* its shadow on the tile: small and faint while it is high, full as it lands */}
@@ -177,8 +202,11 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unloc
   // the press: down over 3 frames, darker, up over 4 (accept runs over 0.6 s, so 0.167 per 3 frames), then the card
   // drops a few px as it fades. WHY (review): the old button only swapped its word, there was no press to see
   const press = accept <= 0 ? 0 : accept < 0.167 ? smooth(accept / 0.167) : 1 - smooth((accept - 0.167) / 0.22);
-  const dlg = smooth(dialog) * (1 - smooth((accept - 0.36) * 3.2));
-  const drop = smooth((accept - 0.36) * 3.2) * 7 * k / 3;
+  // WHY a quick, solid arrival and a slower drop-and-fade exit (round 7 review: the cards cross-faded and sat as a
+  // translucent ghost over the Sam and Note cards; the tablet's screen jumped from grey to white in two frames)
+  const gone = smooth((accept - 0.36) * 2.1);
+  const dlg = smooth(dialog) * (1 - gone);
+  const drop = gone * 7 * k;
   return (
     <div style={{ position: 'absolute', inset: 0, background: S.bg, overflow: 'hidden', fontFamily: DMSANS }}>
       {/* status row */}
@@ -203,8 +231,11 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unloc
         return (
           <div key={i} style={{ position: 'absolute', left: x, top: y, width: tw, height: th, borderRadius: 3 * k, background: tileHues[i], display: 'flex', alignItems: 'center', justifyContent: 'center',
             filter: lo > 0 ? `saturate(${1 - 0.3 * lo}) brightness(${1 - 0.06 * lo})` : undefined }}>
-            <div style={{ width: Math.min(tw, th) * 0.42, height: Math.min(tw, th) * 0.42, borderRadius: Math.min(tw, th) * 0.14, background: 'rgba(255,255,255,0.55)', opacity: 1 - 0.6 * lo }} />
-            {lk > 0 && unlockOf(i) <= 0 && <div style={{ position: 'absolute' }}><Lock s={Math.min(tw, th) * 0.62} p={lk} off={0} /></div>}
+            {/* WHY plain glyphs of what each tile does (round 7 review: blank squares read as a wireframe, and the padlocks
+                locked nothing anyone could name): take photos, draw, play music, message, play, keep files. Generic
+                single-colour marks, no real app's logo */}
+            <TileGlyph i={i} s={Math.min(tw, th) * 0.5} o={0.5 * (1 - 0.5 * lo)} />
+            {lk > 0 && unlockOf(i) <= 0 && <div style={{ position: 'absolute' }}><Lock s={Math.min(tw, th) * LOCK_SIZE} p={lk} off={0} from={(y + th / 2) / (Math.min(tw, th) * LOCK_SIZE) + 0.8} /></div>}
           </div>
         );
       })}
@@ -214,14 +245,19 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unloc
         const o = outline[kind];
         if (o <= 0) return null;
         const r = L[kind];
-        return <div key={`o-${kind}`} style={{ position: 'absolute', left: r.x * w - 1.2 * k, top: r.y * h - 1.2 * k, width: r.w * w + 2.4 * k, height: r.h * h + 2.4 * k, borderRadius: 4 * k, boxSizing: 'border-box', border: `${1.3 * k}px solid #9750AA`, opacity: o }} />;
+        // WHY amber, twice as thick, with the card brightening under it (round 7 review: thin purple rings could not be
+        // seen at phone size, and purple belongs to the headline word alone): each line visibly comes from its card
+        return <React.Fragment key={`o-${kind}`}>
+          <div style={{ position: 'absolute', left: r.x * w, top: r.y * h, width: r.w * w, height: r.h * h, borderRadius: 3 * k, background: '#FFF4DC', mixBlendMode: 'screen', opacity: o * 0.5 }} />
+          <div style={{ position: 'absolute', left: r.x * w - 1.6 * k, top: r.y * h - 1.6 * k, width: r.w * w + 3.2 * k, height: r.h * h + 3.2 * k, borderRadius: 4.4 * k, boxSizing: 'border-box', border: `${2.6 * k}px solid #E0962E`, opacity: o }} />
+        </React.Fragment>;
       })}
       {share && <ShareSwitch w={w} h={h} o={share.o} on={share.on} />}
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,28,52,0.42)', opacity: dlg }} />
         {/* WHY 0.66 wide on landscape screens: the title stays on one line on the tablet as on the laptop */}
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.66) * w, transform: `translate(-50%,calc(-50% + ${drop}px)) scale(${0.9 + 0.1 * dlg})`, opacity: dlg,
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: (P ? 0.84 : 0.66) * w, transform: `translate(-50%,calc(-50% + ${drop}px)) scale(${0.96 + 0.04 * smooth(dialog)})`, opacity: cl(dlg * 1.6),
           background: '#FBF9FC', borderRadius: 4 * k, padding: 4 * k, boxSizing: 'border-box', boxShadow: `0 ${2 * k}px ${6 * k}px rgba(40,20,60,0.3)` }}>
           <div style={{ fontSize: (P ? 5.6 : 6.4) * k, fontWeight: 900, color: S.ink, letterSpacing: '-0.03em', lineHeight: 1.05 }}>Our terms have changed</div>
           {[0.95, 0.8, 0.9].map((f, i) => <div key={i} style={{ height: 1.5 * k, width: `${f * 100}%`, background: S.line, borderRadius: k, marginTop: 1.5 * k }} />)}
@@ -242,7 +278,7 @@ export const ShareSwitch: React.FC<{ w: number; h: number; o: number; on: number
     <div style={{ position: 'absolute', left: '7%', right: '7%', top: 0.066 * h, height: 0.064 * h, borderRadius: 3 * k, background: '#FBF9FC', boxShadow: `0 ${k}px ${3 * k}px rgba(40,20,60,0.25)`, fontFamily: DMSANS,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${3.5 * k}px`, fontSize: 4.4 * k, fontWeight: 700, color: S.ink, opacity: smooth(o), transform: `translateY(${(smooth(o) - 1) * 8 * k}px)` }}>
       Share with partners
-      <span style={{ width: 11 * k, height: 6.4 * k, borderRadius: 6 * k, background: on > 0.5 ? '#9750AA' : '#CFC7D8', position: 'relative', flex: 'none' }}>
+      <span style={{ width: 11 * k, height: 6.4 * k, borderRadius: 6 * k, background: on > 0.5 ? '#E0962E' : '#CFC7D8', position: 'relative', flex: 'none' }}>
         <span style={{ position: 'absolute', top: 0.7 * k, left: 0.7 * k + smooth(on) * 4.6 * k, width: 5 * k, height: 5 * k, borderRadius: 5 * k, background: '#fff' }} />
       </span>
     </div>

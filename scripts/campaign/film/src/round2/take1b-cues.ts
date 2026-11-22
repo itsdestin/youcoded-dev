@@ -51,6 +51,7 @@ export const Q = {
   weAll2: at('*we all just'),
   acceptedIt: at('just *accepted it.'),
   weAccepted: at('*We accepted that'),
+  accepted2: at('We *accepted that'),
   subscribe: at('would *subscribe'),
   everything1: at('to *everything and'),
   own: at('and *own nothing,'),
