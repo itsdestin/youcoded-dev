@@ -27,7 +27,7 @@ export const rr = (x: number, y: number, w: number, h: number, r: number) =>
 
 const mix = mixHex;
 
-export type Theme = 'meadow' | 'cotton' | 'sunbreak' | 'devils';
+export type Theme = 'meadow' | 'cotton' | 'sunbreak' | 'devils' | 'honey';
 /** The order people appear in: light, dark, light, dark, so neighbours never look alike. */
 export const THEMES: Theme[] = ['meadow', 'sunbreak', 'cotton', 'devils'];
 type Look = { name: string; canvas: string; panel: string; inset: string; accent: string; fg: string; muted: string; edge: string; font: string; page: string; dark: boolean };
@@ -38,12 +38,18 @@ const MEADOW = { canvas: '#F6FAF5', panel: '#DDE9DA', inset: '#BAD0B6', accent: 
 const COTTON = { canvas: '#FBF5FC', panel: '#ECDDF0', inset: '#D5BCE0', accent: '#8B47B8', fg: '#41304D', muted: '#695775', edge: '#B597C6' };
 const SUNBREAK = { canvas: '#08080E', panel: '#140E1A', inset: '#1C1428', accent: '#FFC030', fg: '#F8E8C8', muted: '#917950', edge: '#3C3223' };
 const DEVILS = { canvas: '#140810', panel: '#221020', inset: '#2E1828', accent: '#FFC627', fg: '#FBE9C9', muted: '#A28E6D', edge: '#7A3048' };
+// WHY a staged light gold theme for Theo (round seven review): Golden Sunbreak is a dark theme, and Theo's record
+// app drawn in it was a near-black slab that out-shouted Maya's and June's windows and read as a different app.
+// What a person makes inside the app may be staged (brand guide section 8), so Theo's copy wears a light, warm gold
+// look built from his own colour: the same light chrome as the other two, only the accent differs.
+const HONEY = { canvas: '#FFF9EB', panel: '#F5E6BF', inset: '#EBD196', accent: '#B9800F', fg: '#3B2A0C', muted: '#7A6236', edge: '#D8B866' };
 export const LOOK: Record<Theme, Look> = {
   meadow: { name: 'Meadow Mist', ...MEADOW, font: NUNITO, page: MEADOW.panel, dark: false },
   cotton: { name: 'Cotton Candy Sky', ...COTTON, font: COMFORTAA, page: COTTON.panel, dark: false },
   // Golden Sunbreak's manifest names no font, so it shows the app's default sans
   sunbreak: { name: 'Golden Sunbreak', ...SUNBREAK, font: DMSANS, page: mix(P.paper, SUNBREAK.accent, 0.24), dark: true },
   devils: { name: "Devil's Garden", ...DEVILS, font: GROTESK, page: mix(P.paper, DEVILS.edge, 0.2), dark: true },
+  honey: { name: 'Honey', ...HONEY, font: GROTESK, page: HONEY.panel, dark: false },
 };
 
 // ---------- the one frame every window shares ----------
@@ -57,7 +63,7 @@ const TITLE_Y = 100, ROW1 = 150, ROW2 = 186, BAR_Y = 214;
  *  are Theo's and June's apps (round six): each answers exactly what was taken from that person. */
 export type What = Theme | 'records' | 'keepsakes';
 /** What each page is called in its title bar (DM Sans, the frame's own label). */
-const LABEL: Record<What, string> = { meadow: 'my plants', cotton: 'biscuit', sunbreak: 'tonight', devils: 'game night', records: 'my records', keepsakes: 'keepsakes' };
+const LABEL: Record<What, string> = { meadow: 'my plants', cotton: 'biscuit', sunbreak: 'tonight', devils: 'game night', honey: 'my records', records: 'my records', keepsakes: 'keepsakes' };
 
 // ---------- what each person made ----------
 const Plants: React.FC<{ L: Look; hero: number }> = ({ L, hero }) => {
@@ -146,13 +152,13 @@ const Board: React.FC<{ L: Look; hero: number; t: number }> = ({ L, hero, t }) =
 
 /** The right-hand column: the same three slots in every window, only the words and colours differ. */
 const Column: React.FC<{ theme: What; L: Look; compact?: boolean; tick?: number; t: number }> = ({ theme, L, compact, tick, t }) => {
-  const title: Record<What, [string, string?]> = { meadow: ['monstera'], cotton: ['biscuit'], sunbreak: ['clear', 'tonight'], devils: ['you 3', 'jo 2'], records: ['my', 'records'], keepsakes: ['photos', '& letters'] };
+  const title: Record<What, [string, string?]> = { meadow: ['monstera'], cotton: ['biscuit'], sunbreak: ['clear', 'tonight'], devils: ['you 3', 'jo 2'], honey: ['my', 'records'], records: ['my', 'records'], keepsakes: ['photos', '& letters'] };
   const rows: Record<What, [string, string]> = {
     meadow: ['water in 2 days', 'watered today'], cotton: ['fed 8:02 am', 'next · 6 pm'],
     sunbreak: ['saturn 9:40', 'no clouds'], devils: ['your move', 'best of 7'],
-    records: ['38 albums', 'sorted by year'], keepsakes: ['5 things', 'just for me'],
+    honey: ['38 albums', 'sorted by year'], records: ['38 albums', 'sorted by year'], keepsakes: ['5 things', 'just for me'],
   };
-  const progress: Record<What, number> = { meadow: 0.7, cotton: 0.45, sunbreak: 0.85, devils: 0.6, records: 0, keepsakes: 0 };
+  const progress: Record<What, number> = { meadow: 0.7, cotton: 0.45, sunbreak: 0.85, devils: 0.6, honey: 0, records: 0, keepsakes: 0 };
   // WHY a tick box for the plants (round six plan): the one thing Maya's app does for her is remind her to water,
   // and the box ticks itself as the app fills, so it reads as working, not as a picture of an app
   if (theme === 'meadow') {
@@ -215,6 +221,7 @@ const Body: React.FC<{ theme: Theme; what: What; t: number; wipe: number; hero: 
           {what === 'sunbreak' && <Moon L={L} hero={hero} />}
           {what === 'cotton' && <Cat L={L} hero={hero} t={t} />}
           {what === 'devils' && <Board L={L} hero={hero} t={t} />}
+          {what === 'honey' && <Records L={L} hero={hero} />}
           {what === 'records' && <Records L={L} hero={hero} />}
           {what === 'keepsakes' && <Keepsakes L={L} hero={hero} />}
           <Column theme={what} L={L} compact={compact} tick={tick} t={t} />
