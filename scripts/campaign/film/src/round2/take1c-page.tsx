@@ -13,20 +13,32 @@ export const Sheet: React.FC<{ children: React.ReactNode; rough?: boolean }> = (
   </svg>
 );
 
-/** "i · the handful": printed at the top of the left-hand page. */
-export const Heading: React.FC<{ n: string; title: string; color?: string }> = ({ n, title, color = P.inkSoft }) => (
-  <div style={{ position: 'absolute', left: 0, top: 74, width: PW, textAlign: 'center', fontFamily: DMSANS, fontWeight: 700, fontSize: 21,
-    letterSpacing: '0.08em', color }}>
-    <span style={{ opacity: 0.75 }}>{n}</span><span style={{ margin: '0 0.6em', opacity: 0.5 }}>·</span>{title}
-  </div>
-);
+// WHY the chapter heading is now a number only (owner, round three: "i really don't like ... the style/text of
+// the headers on each page"): the old "iv · however", "vi · anyone", "ix · everything" just repeated the word
+// the narrator was saying, in a small spaced-out label that read like a web template. A premium picture book
+// marks a chapter with one confident figure and lets the picture speak. So every chapter opens with the same
+// mark in the same place: a heavy DM Sans numeral (the brand's headline cut) over a short ink rule, set in the
+// page's top margin. `title` is still accepted (the spreads pass it) but is deliberately not printed.
+const ROMAN: Record<string, number> = { i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8, ix: 9, x: 10 };
+/** A chapter's number, printed at the top of the left-hand page. */
+export const Heading: React.FC<{ n: string; title?: string; color?: string }> = ({ n, color = P.ink }) => {
+  const num = ROMAN[n.trim().toLowerCase()] ?? n;
+  return (
+    <div style={{ position: 'absolute', left: 0, top: 58, width: PW, display: 'flex', flexDirection: 'column', alignItems: 'center', color }}>
+      <div style={{ fontFamily: DMSANS, fontWeight: 900, fontSize: 40, lineHeight: 1, letterSpacing: '-0.04em', fontFeatureSettings: '"lnum"', opacity: 0.88 }}>{num}</div>
+      <div style={{ width: 22, height: 2.5, borderRadius: 2, marginTop: 10, background: color, opacity: 0.55 }} />
+    </div>
+  );
+};
 /** Page numbers at the foot of each page.
  *  WHY `hideRight`: on the four spreads that carry a headline, the right-hand number sat right under the
  *  headline's last line (it touched the "y" of "everything."), so those spreads print only the left number. */
 export const Folio: React.FC<{ left: number; hideRight?: boolean }> = ({ left, hideRight }) => (
   <>
     {(hideRight ? [0] : [0, 1]).map((i) => (
-      <div key={i} style={{ position: 'absolute', left: i * PW, top: PH - 66, width: PW, textAlign: 'center', fontFamily: DMSANS, fontWeight: 500, fontSize: 15, color: P.inkSoft, opacity: 0.7 }}>
+      // WHY smaller, lighter and set with lining figures: the folio is fine print (brand level three) and should
+      // be found, not seen; it now matches the chapter numeral's figures
+      <div key={i} style={{ position: 'absolute', left: i * PW, top: PH - 62, width: PW, textAlign: 'center', fontFamily: DMSANS, fontWeight: 500, fontSize: 13, letterSpacing: '0.04em', fontFeatureSettings: '"lnum", "tnum"', color: P.inkSoft, opacity: 0.6 }}>
         {left + i}
       </div>
     ))}
