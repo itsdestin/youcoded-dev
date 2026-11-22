@@ -12,7 +12,7 @@ import { C, EASE_IN_OUT, EASE_OUT, FPS } from '../brand';
 import { Day, EndCard, Icon } from '../kit';
 import { Boards, BOARD, BasePage, cameraAt, coverArt, Edges, Face, Lamp, Leaf, LeafShadow, PH, PW, Shot, Spread, World } from './take1c-book';
 import { lin } from './take1c-ink';
-import { BARGAIN, DROP_LAND, HANDFUL, HOWEVER, NOTHING, RULES } from './take1c-spreads-a';
+import { BARGAIN, DROP_LAND, HANDFUL, HOWEVER, JUNE_CUT, NOTHING, RULES } from './take1c-spreads-a';
 import { ANYONE, EMBLEM, EVERYTHING, FREE, OURS, OURS_HAND, TREASURE, TREASURE_MARKS } from './take1c-spreads-b';
 import { Headline } from './take1c-page';
 import { CLOSE_DUR, COVER_DUR, CUT, CUT_TURNS, Q, TURN, TURN_DUR } from './take1c-time';
@@ -68,15 +68,20 @@ const SHOTS: Shot[] = [
   // land (a fast move fought the landings); then one smooth pull back and tilt from "corporations" to "dictated",
   // the tilt capped at 20 so the book never seems to roll; and a slow creep in through the yanks, so the wide is
   // never still while she talks
-  at(0, 296, 252, 3.2, 12), at(Q.handful + 0.56, 290, 290, 2.4, 12),
-  at(Q.interact - 0.05, 756, 528, 1.2, 20), at(Q.technology1 + 0.15, 752, 522, 1.3, 20), at(TURN.rules + 0.12, 760, 505, 1.04, 17),
+  // WHY round eight: the hats now stand higher and nearer the gutter (see PUPPETS); the tall one opens left of centre,
+  // waist up, his control mid-frame, with the page's top edge and a strip of the backdrop above him
+  at(0, 446, 200, 3.3, 12), at(Q.handful + 0.56, 404, 236, 2.35, 12),
+  // WHY closer in the wide (round eight review: the hats shrank to 12% of the frame just as "dictated" is said)
+  at(Q.interact - 0.05, 770, 540, 1.3, 20), at(Q.technology1 + 0.15, 766, 534, 1.38, 20), at(TURN.rules + 0.12, 760, 505, 1.04, 17),
   // ii: the wide of all three vignettes, then one hard cut per thing they decided, each on its word
-  { t: L(1), ...H },
+  // WHY lower and closer (round eight review: the three vignettes were tiny for their 0.7 s on screen)
+  { t: L(1), x: 760, y: 610, z: 1.14, tilt: 16 },
   // WHY these framings (round seven review): each close-up showed half-cut neighbours at its edges (Theo's hat
   // under Maya, the tall hat's feet over Theo, the left page's hats beside June); each now holds one vignette
   cut(Q.computersDo - 0.04, 384, 296, 2.5, 14), at(Q.cost - 0.07, 386, 300, 2.58, 14),
   cut(Q.cost - 0.05, 380, 800, 2.4, 14), at(Q.data - 0.07, 382, 804, 2.48, 14),
-  cut(Q.data - 0.05, 1196, 620, 2.3), at(TURN.bargain - 0.02, 1192, 616, 2.36),
+  // WHY lower (round eight review: her feet were cut off and the top half of the frame was empty paper)
+  cut(Q.data - 0.05, 1176, 732, 2.15), at(TURN.bargain - 0.02, 1172, 728, 2.2),
   // WHY a cut to the wide as the page starts to turn: a fast pull back during the turn smears the leaf with motion blur
   cut(TURN.bargain, 736, 660, 1.22),
   // iii: the queue in depth; on "accepted" a slow push toward its front, where the heroes' ticks land last
@@ -87,12 +92,17 @@ const SHOTS: Shot[] = [
   // WHY the "own nothing" wide sits at ~1.4 on the left page (round seven): at the whole-book framing Theo's lifted
   // things were thumbnails; at this framing his room fills the frame and the headline still lands on clean paper
   // to the right of the gutter
-  cut(TURN.nothing, 360, 560, 1.9, 15), at(Q.own - 0.08, 365, 555, 1.98, 15),
-  cut(Q.own - 0.06, 714, 500, 1.36), at(Q.costOf - 0.37, 718, 505, 1.4),
-  cut(Q.costOf - 0.35, 1130, 470, 1.75), at(TURN.however - 0.02, 1135, 476, 1.85),
+  // WHY round eight: a slow push in on Theo while the tags land; the "own nothing" wide tighter so the lift is a big
+  // event (the headline still lands right of the gutter); the cut to June as soon after "privacy" as the headline
+  // allows (JUNE_CUT), framed so she and the hat fill most of the frame height
+  cut(TURN.nothing, 360, 560, 1.9, 15), at(Q.own - 0.08, 368, 552, 2.06, 15),
+  cut(Q.own - 0.06, 700, 488, 1.45), at(JUNE_CUT - 0.02, 704, 492, 1.49),
+  cut(JUNE_CUT, 1130, 520, 2.3), at(TURN.however - 0.02, 1132, 524, 2.38),
   // iv: WHY a cut to a calm, nearly whole-book framing as the page turns (review 2026-11-20): the fast pull
   // back during the turn smeared the falling page with motion blur. Then a slow push in while the drop falls.
-  cut(TURN.however, 790, 520, 1.1), at(DROP_LAND, 790, 545, 1.32), at(CUT.hubris - 0.01, 845, 518, 1.33),
+  // WHY wider (round eight review): wide and calm, with the backdrop filling a good part of the frame, so its sink on
+  // "however" and its sweep to light on "wonderful" can be seen; a gentle push in while the drop falls
+  cut(TURN.however, 776, 516, 0.88), at(DROP_LAND, 772, 534, 1.02), at(CUT.hubris - 0.01, 790, 530, 1.08),
   // v (round seven): close on the three on their tower as they rise on their toes; the medium as the tall one
   // slides the inkwell in; close on the inkwell as the quill rises (the tall one whole at the left edge, nobody
   // half-cut); the medium as they turn to it; close on hats, chest and quill for the treasure.
@@ -217,7 +227,7 @@ const wipeMask = (t: number) => {
 const minUp = (text: string) => 1.2 + 0.25 * text.split(/[\s/]+/).filter(Boolean).length;
 const HEADLINES = [
   // WHY each 'out' is the next cut: a headline never straddles a hard cut
-  { text: 'own *nothing.', at: Q.own, out: Q.costOf - 0.4, words: [Q.own, Q.nothing] },
+  { text: 'own *nothing.', at: Q.own, out: JUNE_CUT, words: [Q.own, Q.nothing] },
   // WHY each word on its own spoken start, and out on the hard cut at "hubris" (review 2026-11-20): it used to
   // show "wonderful happened." a second before she said it, and leave while she was still saying it
   // WHY three rows (round seven): on two rows "something wonderful" was wider than the headline box and its first
@@ -282,6 +292,8 @@ export const Take1C: React.FC = () => {
         </>
       )}
       {!showBook && <Day />}
+      {/* WHY a 0.4 s fade up from the dark field (round eight review: the first frame was a hard start) */}
+      {t < 0.4 && <AbsoluteFill style={{ background: C.night, opacity: 1 - lin(t, 0, 0.4, EASE_OUT) }} />}
       {t >= CARD && <EndCard at={CARD} />}
       <IconFlight t={t} />
     </AbsoluteFill>

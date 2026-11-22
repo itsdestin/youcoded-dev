@@ -231,13 +231,26 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
       {/* arms */}
       {arms[pose].map((d, i) => <Ink key={i} d={d} a={k(0.45)} b={k(0.75)} w={8} c={ink} ea={ea} />)}
       <Appear a={k(0.7)} out={ea}>{hands[pose].map(([hx, hy], i) => (
-        // an open hand is a ring; a hand closing on nothing shrinks to a small filled fist
-        <circle key={i} cx={hx} cy={hy} r={5.5 + (1 - fist) * 2 - fist * 1.5} fill={fist > 0.5 ? ink : P.paper} stroke={ink} strokeWidth={2.4} />
+        // an open hand is a glove; a hand closing on nothing shrinks to a small filled fist
+        // WHY a bigger glove with a thumb (round eight review: the small white rings on the black coats read as buttons)
+        <g key={i}>
+          <circle cx={hx} cy={hy} r={7.5 + (1 - fist) * 1 - fist * 3} fill={fist > 0.5 ? ink : P.paper} stroke={ink} strokeWidth={2.4} />
+          {fist <= 0.5 && <circle cx={hx + (i === 0 ? -6 : 6)} cy={hy - 5} r={3.4} fill={P.paper} stroke={ink} strokeWidth={2} />}
+        </g>
       ))}</Appear>
       {/* neck + faceless head */}
       <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} c={ink} w={2.6} ea={ea} /></g>
-      {eyes === 'dots' && <Appear a={k(0.7)} out={ea}><circle cx={-4 + look * 5} cy={-199} r={2.4} fill={ink} /><circle cx={6 + look * 5} cy={-200} r={2.4} fill={ink} /></Appear>}
-      {mouth && <Appear a={k(0.7)} out={ea}><path d={mouth === 'smug' ? `M ${-3 + look * 5} -190 Q ${2 + look * 5} -187 ${8 + look * 5} -192` : `M ${-2 + look * 5} -190 L ${7 + look * 5} -190.5`}
+      {/* WHY heavy-lidded with a one-sided smirk when smug (round eight review: the dot eyes and curved mouth read as a
+          friendly smiley, so the takers looked cheerful): half-shut eyes under a lid line and a mouth that lifts at one
+          corner read as pleased with himself */}
+      {eyes === 'dots' && mouth !== 'smug' && <Appear a={k(0.7)} out={ea}><circle cx={-4 + look * 5} cy={-199} r={2.4} fill={ink} /><circle cx={6 + look * 5} cy={-200} r={2.4} fill={ink} /></Appear>}
+      {eyes === 'dots' && mouth === 'smug' && <Appear a={k(0.7)} out={ea}>{[[-4, -199], [6, -200]].map(([ex, ey], i) => (
+        <g key={i}>
+          <path d={`M ${ex - 2.8 + look * 5} ${ey - 0.6} A 2.8 2.8 0 0 0 ${ex + 2.8 + look * 5} ${ey - 0.6} Z`} fill={ink} />
+          <path d={`M ${ex - 3.6 + look * 5} ${ey - 1.2} L ${ex + 3.4 + look * 5} ${ey - 1.8}`} stroke={ink} strokeWidth={1.8} strokeLinecap="round" />
+        </g>
+      ))}</Appear>}
+      {mouth && <Appear a={k(0.7)} out={ea}><path d={mouth === 'smug' ? `M ${-3 + look * 5} -190.4 L ${3 + look * 5} -190.6 Q ${7 + look * 5} -190.8 ${9 + look * 5} -194.5` : `M ${-2 + look * 5} -190 L ${7 + look * 5} -190.5`}
         stroke={ink} strokeWidth={2} fill="none" strokeLinecap="round" /></Appear>}
       {/* smug: eyes shut into two pleased downward arcs (chapter v, "blinded by their own hubris") */}
       {eyes === 'smug' && <Appear a={k(0.7)} out={ea}><path d={`M ${-8 + look * 5} -199 Q ${-4 + look * 5} -195 ${0 + look * 5} -199 M ${3 + look * 5} -200 Q ${7 + look * 5} -196 ${11 + look * 5} -200`} stroke={ink} strokeWidth={2.2} fill="none" strokeLinecap="round" /></Appear>}
@@ -344,8 +357,11 @@ export const Padlock: React.FC<{ x: number; y: number; s?: number; at: number; o
   return (
     <g transform={`translate(${x} ${y + drop}) rotate(${fall * 50}) scale(${s})`} opacity={1 - lin(t, (fallAt ?? 1e9) + 0.35, (fallAt ?? 1e9) + 0.6)}>
       <path d={`M -11 -14 L -11 ${-26 - open * 10} a 11 11 0 0 1 22 0 L 11 ${-14 - open * 10}`} transform={`translate(${open * 12} ${-open * 4})`} fill="none" stroke={color} strokeWidth={5} strokeLinecap="round" />
-      <rect x={-17} y={-16} width={34} height={28} rx={5} fill={color} />
-      <circle cx={0} cy={-4} r={3.4} fill={P.paper} /><path d="M 0 -3 L 0 4" stroke={P.paper} strokeWidth={2.6} strokeLinecap="round" />
+      {/* WHY outlined with a soft plum fill (round eight review): the solid black block was a different drawing style
+          from the outlined laptop it locks; now it is drawn by the same pen */}
+      <rect x={-17} y={-16} width={34} height={28} rx={5} fill={color === P.ink ? '#B9A3C4' : color} stroke={P.ink} strokeWidth={3} />
+      <path d="M -12 -9 L 12 -9" stroke={P.paper} strokeWidth={2} opacity={0.6} strokeLinecap="round" />
+      <circle cx={0} cy={-1} r={3.6} fill={P.ink} /><path d="M 0 0 L 0 6" stroke={P.ink} strokeWidth={2.8} strokeLinecap="round" />
     </g>
   );
 };
@@ -358,9 +374,11 @@ export const PriceTag: React.FC<{ x: number; y: number; s?: number; at: number; 
   if (p <= 0) return null;
   const sway = Math.sin((t - at) * 3.2) * 4 * Math.exp(-(t - at) * 0.7) + swing;
   const h = 70 + (two ? Math.min(2, prices.length) : prices.length) * 30;
+  const [clipId] = React.useState(() => `c-tag-${++clipSeq}`);
   const vis = prices.filter((q) => t >= q.at);
-  const nv = vis.length;
-  const slide = two && nv > 2 ? nv - 3 + lin(t, vis[nv - 1].at, vis[nv - 1].at + 0.25, EASE_IN_OUT) : 0;
+  // WHY the rows slide up BEFORE the new price starts (round eight review: for a moment three rows showed at once):
+  // the oldest row is gone, and the struck one has moved up, on the frame the pen starts writing the new one
+  const slide = two ? prices.reduce((s, q, k) => s + (k >= 2 ? lin(t, q.at - 0.2, q.at, EASE_IN_OUT) : 0), 0) : 0;
   return (
     <g transform={`translate(${x} ${y}) scale(${s}) rotate(${sway})`} opacity={Math.min(1, p)}>
       <path d="M 0 -30 L 0 0" stroke={P.ink} strokeWidth={2} />
@@ -370,12 +388,18 @@ export const PriceTag: React.FC<{ x: number; y: number; s?: number; at: number; 
         const struck = i < vis.length - 1 || (strikeAll != null && t >= strikeAll);
         const sp = i < vis.length - 1 ? lin(t, vis[i + 1].at, vis[i + 1].at + 0.2) : strikeAll != null ? lin(t, strikeAll, strikeAll + 0.25) : 0;
         const cy = 50 + (i - slide) * 30;
-        const ink = lin(t, q.at, q.at + 0.22) * (two ? Math.max(0, Math.min(1, 1 - (slide - i))) : 1);
-        if (ink <= 0) return null;
+        const ink = two ? Math.max(0, Math.min(1, 1 - (slide - i))) : 1;
+        // WHY written on left to right (round eight review: each new price faded in as pale grey ghost text): the pen
+        // writes it, which is what "re-inked" means
+        const write = lin(t, q.at, q.at + 0.28, EASE_IN_OUT);
+        if (ink <= 0 || write <= 0) return null;
         return (
           <g key={i} opacity={ink}>
+            {write < 1 && <defs><clipPath id={`${clipId}-${i}`}><rect x={-46} y={cy - 26} width={92 * write} height={34} /></clipPath></defs>}
+            <g clipPath={write < 1 ? `url(#${clipId}-${i})` : undefined}>
             <text x={0} y={cy} textAnchor="middle" fontFamily={DMSANS} fontWeight={700} fontSize={20} fill={struck ? P.inkSoft : P.ink} letterSpacing="-0.02em">{q.v}</text>
             {struck && <path d={`M -38 ${cy - 7} L ${-38 + 76 * sp} ${cy - 7}`} stroke={P.ink} strokeWidth={3} strokeLinecap="round" />}
+            </g>
           </g>
         );
       })}
@@ -547,10 +571,13 @@ export const INKWELL_MOUTH = 66;
 // pale glass with the ink line, a broad shoulder and a short open neck, the ink visible INSIDE the glass (a thin
 // dark band while it is empty, rising and turning purple once the drop lands), and a tiny top-hat stamp on its
 // label so that, in line 5, it is plainly the hats' own.
-export const Inkwell: React.FC<{ x: number; y: number; s?: number; fill?: number; glow?: number; rock?: number }> = ({ x, y, s = 1, fill = 1, glow = 0, rock = 0 }) => {
+// WHY `tint` (round eight review: one drop filling the jar two-thirds full read as a progress bar): with tint set, the
+// ink stays at its level and the purple spreads through it from where the drop went in, like a drop of dye.
+export const Inkwell: React.FC<{ x: number; y: number; s?: number; fill?: number; glow?: number; rock?: number; tint?: number }> = ({ x, y, s = 1, fill = 1, glow = 0, rock = 0, tint }) => {
   const f = Math.min(1, Math.max(0, fill));
   const level = -8 - 22 * f;                      // the ink's surface inside the glass
-  const inkCol = mixHex('#3A2448', C.purple, f);
+  const inkCol = tint == null ? mixHex('#3A2448', C.purple, f) : mixHex('#3A2448', C.purple, Math.min(1, Math.max(0, tint)) ** 2);
+  const spread = tint == null ? 0 : Math.min(1, Math.max(0, tint));
   const body = 'M -40 -2 Q -44 -2 -44 -8 L -44 -30 Q -44 -48 -24 -52 L -16 -54 L -16 -60 L 16 -60 L 16 -54 L 24 -52 Q 44 -48 44 -30 L 44 -8 Q 44 -2 40 -2 Z';
   return (
     <g transform={`translate(${x} ${y}) rotate(${rock}) scale(${s})`}>
@@ -560,6 +587,7 @@ export const Inkwell: React.FC<{ x: number; y: number; s?: number; fill?: number
       {/* the ink inside: a band at the bottom of the glass, its surface a flat ellipse */}
       <g clipPath={`url(#c-well-${Math.round(x)}-${Math.round(y)})`}>
         <rect x={-50} y={level} width={100} height={60} fill={inkCol} />
+        {spread > 0 && spread < 1 && <ellipse cx={0} cy={level + 2} rx={6 + 52 * spread} ry={4 + 30 * spread} fill={C.purple} opacity={0.9} />}
         <ellipse cx={0} cy={level} rx={44} ry={4.5} fill={mixHex(inkCol, '#ffffff', 0.18)} />
         {glow > 0 && <ellipse cx={0} cy={level} rx={44} ry={6} fill={P.violet} opacity={0.5 * glow} />}
       </g>
@@ -646,9 +674,20 @@ export const KeepsakeBox: React.FC<{ x: number; y: number; s?: number; lid?: num
 );
 
 /** The puppet control: a crossbar with a short cross-piece. (x, y): its middle; w: its length. */
-export const Crossbar: React.FC<{ x: number; y: number; w?: number; r?: number; c?: string }> = ({ x, y, w = 110, r = 0, c = P.ink }) => (
-  <g transform={`translate(${x} ${y}) rotate(${r})`}>
-    <path d={`M ${-w / 2} 0 L ${w / 2} 0`} stroke={c} strokeWidth={7} strokeLinecap="round" />
-    <path d="M 0 -14 L 0 14" stroke={c} strokeWidth={6} strokeLinecap="round" />
-  </g>
-);
+// WHY a real marionette control (round eight review: "one flat plank held at waist height reads as a tray or a
+// cane"): a main bar with a cross-piece seen in perspective, a little hook on top where it is held, and a ring at
+// every end where a string ties on. A stranger sees "puppet master" in the first second.
+export const Crossbar: React.FC<{ x: number; y: number; w?: number; r?: number; c?: string }> = ({ x, y, w = 110, r = 0, c = P.ink }) => {
+  const cx = w * 0.18;   // where the cross-piece crosses the main bar
+  const eye = (ex: number, ey: number, k: number) => <circle key={k} cx={ex} cy={ey} r={4.2} fill={P.paper} stroke={c} strokeWidth={2.4} />;
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${r})`}>
+      {/* the cross-piece, foreshortened: it runs toward the camera, so it is short and slanted */}
+      <path d={`M ${cx - 15} -13 L ${cx + 15} 13`} stroke={c} strokeWidth={6.5} strokeLinecap="round" />
+      <path d={`M ${-w / 2} 0 L ${w / 2} 0`} stroke={c} strokeWidth={7.5} strokeLinecap="round" />
+      {/* the hook it hangs from when put down */}
+      <path d="M -4 -4 L -4 -14 Q -4 -21 3 -21 Q 9 -21 9 -15" stroke={c} strokeWidth={2.6} fill="none" strokeLinecap="round" />
+      {[eye(-w / 2, 0, 0), eye(w / 2, 0, 1), eye(cx - 15, -13, 2), eye(cx + 15, 13, 3)]}
+    </g>
+  );
+};

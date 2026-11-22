@@ -47,14 +47,6 @@ const idle = (t: number, j: number) => ({
   sway: Math.sin(t * 1.6 + j * 2.4) * 7,
   lean: Math.sin(t * 0.85 + j * 1.3) * 3,
 });
-/** A string from a to b. Taut (slack 0) it is straight; slack (1) it falls steeply from the bar and curves away low
- *  toward its puppet, the way a loose string hangs. `wave` ripples it when the bar twitches. */
-const hang = (a: [number, number], b: [number, number], slack: number, wave = 0) => {
-  const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
-  const hx = a[0] + (b[0] - a[0]) * 0.12, hy = Math.max(a[1], b[1]) + 240;
-  const cx = mx + (hx - mx) * slack + wave * 0.6, cy = my + (hy - my) * slack + wave;
-  return `M ${a[0].toFixed(1)} ${a[1].toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
-};
 /** A string from a to b that hangs slack (`sag` units at its middle) and ripples when the bar twitches. */
 const stringPath = (a: [number, number], b: [number, number], sag: number, wave = 0) => {
   const mx = (a[0] + b[0]) / 2 + wave * 0.6, my = (a[1] + b[1]) / 2 + sag + wave;
@@ -88,14 +80,20 @@ const landSquash = (t: number, at: number) => (t < at ? 0 : 0.24 * Math.exp(-(t 
 // WHY the faint crowd stands only to the right of the tower (round seven): crowd figures under the tower had
 // their strings run up into its underside, so they looked tethered to the tower instead of to the hats.
 export const PUPPETS = {
-  tower: { x: 280, y: 404, w: 340, n: 6 },
+  // WHY higher and nearer the middle of the left page (round eight review: "every string fans sideways out of one
+  // point ... they read as tow ropes or a zip-line"): with the hats standing as high as the page allows (the tall
+  // one's crown just under the top edge) and spread along a wider tower, each string leaves its OWN hat's control and
+  // falls steeply toward its own person, the way marionette strings hang from the hands that work them.
+  // WHY the wide hat now stands on the right (nearest Theo, who is furthest back and right), the short one on the
+  // left over June: each string takes the shortest, steepest path to its own hero, and no string crosses another hat.
+  tower: { x: 372, y: 356, w: 400, n: 5 },
   // drawn back to front: the wide hat stands a step behind, the tall one a half step, the short one in front.
   // Each hat's strings are drawn straight after him, so a string from a hat further back passes behind the
   // hats in front of him, as it would.
   hats: [
-    { name: 'wide' as HatName, x: 168, y: 398, hero: 'theo' as HeroName },
-    { name: 'tall' as HatName, x: 286, y: 401, hero: 'maya' as HeroName },
-    { name: 'short' as HatName, x: 398, y: 404, hero: 'june' as HeroName },
+    { name: 'wide' as HatName, x: 506, y: 350, hero: 'theo' as HeroName },
+    { name: 'tall' as HatName, x: 366, y: 353, hero: 'maya' as HeroName },
+    { name: 'short' as HatName, x: 236, y: 356, hero: 'june' as HeroName },
   ],
   heroes: {
     maya: { x: 1150, y: 944, s: 3.2 },    // right-hand foreground, at her laptop
@@ -110,13 +108,15 @@ export const PUPPETS = {
   ] as [number, number, number][],
 };
 const HAIRS: Hair[] = ['tuft', 'bob', 'cap', 'bald', 'tuft', 'bob', 'cap'];
-/** Which hat's bar a crowd figure hangs from. WHY by x and identical to line 8's: the quill cuts there. */
-const crowdBar = (cx: number) => (cx < 300 ? 0 : cx < 760 ? 2 : 1);
+/** Which hat's bar a crowd figure hangs from (an index into PUPPETS.hats). WHY by x: the clumps on the left page and
+ *  by the gutter hang from the wide hat, who stands nearest them, the far clump from the tall one; no crowd string
+ *  then crosses another hat. Exported so line 8 cuts exactly these strings. */
+export const crowdBar = (cx: number) => (cx < 1000 ? 0 : 1);
 
 type PuppetsProps = {
   /** heroes' colour (0 pale wash, 1 their own colour) and the crowd's */
   bloom?: number; crowdBloom?: number;
-  /** strings hang slack until `tautAt`, and are pulled tight over 0.35 s */
+  /** strings dangle from the controls until `tautAt`, then reach down to their people over 0.5 s */
   tautAt?: number;
   /** the moments the bars yank everyone's strings */
   beats?: number[];
@@ -134,7 +134,6 @@ export const Puppets: React.FC<PuppetsProps> = ({ bloom = 0, crowdBloom = 0, tau
   const t = useT();
   const f = fade ? lin(t, fade[0], fade[1], EASE_IN_OUT) : 0;
   const yank = yankEnv(t, beats);
-  const slack = 1 - lin(t, tautAt, tautAt + 0.35, EASE_OUT);
   // WHY the tower shudders on each landing: the hats are heavy, and the pile of windows they stand on gives a little
   const wobble = landAt.reduce((s, la) => s + jolt(t, la, 0.7, 0.4), 0);
   const twitch = twitchAt != null ? jolt(t, twitchAt, 1, 0.75) : 0;
@@ -164,29 +163,46 @@ export const Puppets: React.FC<PuppetsProps> = ({ bloom = 0, crowdBloom = 0, tau
   };
   // the yank ripples back through the crowd: the further from the heroes, the later
   const crowdYank = (i: number, cx: number) => yankEnv(t, beats.map((b) => b + 0.12 + (Math.abs(cx - 960) / 960) * 0.2 + (i % 3) * 0.04));
+  // WHY the strings dangle from the controls until "dictated", then reach down to their people (round eight
+  // review: a long taut string swept across empty paper toward an off-screen Theo during the pull-back, a stray
+  // line). In the opening close-up they hang straight down out of the frame, plainly puppet strings; on "dictated"
+  // each swings out and down to the head it works, the hero strings first, the crowd's a beat after.
+  const reachOf = (delay: number) => lin(t, tautAt + delay, tautAt + delay + 0.5, EASE_IN_OUT);
+  const reachPath = (a: [number, number], head: [number, number], reach: number, k: number, wave: number) => {
+    const dangle: [number, number] = [a[0] + Math.sin(t * 1.7 + k) * 5 + wave * 0.5, a[1] + 300];
+    const e: [number, number] = [dangle[0] + (head[0] - dangle[0]) * reach, dangle[1] + (head[1] - dangle[1]) * reach];
+    // the control point starts under the bar (a straight hanging string) and moves to the middle (a straight taut one);
+    // in between the string bows out like a line being cast
+    const c0: [number, number] = [a[0] + wave, a[1] + 160], c1: [number, number] = [(a[0] + e[0]) / 2, (a[1] + e[1]) / 2];
+    const sag = Math.sin(reach * Math.PI) * 60;
+    const cx = c0[0] + (c1[0] - c0[0]) * reach, cy = c0[1] + (c1[1] - c0[1]) * reach + sag;
+    return `M ${a[0].toFixed(1)} ${a[1].toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${e[0].toFixed(1)} ${e[1].toFixed(1)}`;
+  };
   const strings = (j: number) => {
     const hs = hatState[j];
     // WHY only once he has landed, fading in fast: strings trailing from a falling hat streaked down the frame
     if (t < hs.landed) return null;
     const so = lin(t, hs.landed, hs.landed + 0.12);
     const out: React.ReactNode[] = [];
-    // the faint crowd strings, from the bar's ends
+    // the faint crowd strings, from the bar's ends. WHY unseen until they reach (round eight): eleven strings dangling
+    // down the tower's face in the close-up read as rack wiring; only the three hero strings hang there
     PUPPETS.crowd.forEach(([cx, cy, cs], i) => {
       if (crowdBar(cx) !== j) return;
       const cut = cutAt?.(3 + i);
       if (cut != null && t >= cut) return;
       const ry = crowdYank(i, cx);
       const head: [number, number] = [cx, cy - 104 * cs - ry * 10 * cs];
-      const end = (cx > hs.bx ? 1 : -1) * (30 + ((i * 11) % 22));
-      out.push(<path key={`c${i}`} d={hang([hs.bx + end, hs.by], head, slack, hs.tw * 30)} stroke={P.ink} strokeWidth={1.1} fill="none" opacity={0.16 * so * (1 - f)} />);
+      const end = (cx > hs.bx ? 1 : -1) * (24 + ((i * 11) % 30));
+      const reach = reachOf(0.14 + (i % 3) * 0.05 + Math.abs(cx - 700) / 4000);
+      out.push(<path key={`c${i}`} d={reachPath([hs.bx + end, hs.by + 4], head, reach, i, hs.tw * 30)} stroke={P.ink} strokeWidth={1.1} fill="none" opacity={0.18 * so * (1 - f) * Math.min(1, reach * 5)} />);
     });
-    // the hero's own string: one clear, darker string
+    // the hero's own string: one clear, darker string, from the ring at his control's end
     const who = hs.h.hero;
     const cut = cutAt?.(j);
     if (!(cut != null && t >= cut)) {
       const [hx, hy] = heroHead(who);
       const start: [number, number] = [hs.bx + (hx > hs.bx ? 52 : -52), hs.by];
-      out.push(<path key="h" d={hang(start, [hx, hy - heroLift(who, j)], slack, hs.tw * 40)} stroke={P.ink} strokeWidth={2} fill="none" opacity={0.8 * so * (1 - f * 0.6)} />);
+      out.push(<path key="h" d={reachPath(start, [hx, hy - heroLift(who, j)], reachOf(j * 0.05), 9 + j, hs.tw * 40)} stroke={P.ink} strokeWidth={2} fill="none" opacity={0.8 * so * (1 - f * 0.6)} />);
     }
     return out;
   };
@@ -307,14 +323,17 @@ const ML = RULES_LAYOUT.maya, TL = RULES_LAYOUT.theo, JL = RULES_LAYOUT.june;
  *  WHY computed from his hand: drawn at a fixed spot it floated beside him, not held. */
 const JS = HATS.short.s * JL.hat.s;
 const BUCKET_HAND = hatPt(JL.hat.x, JL.hat.y, JS, true, 0, 73, -119);
-const BUCKET = { x: BUCKET_HAND[0] - 26 * JS, y: BUCKET_HAND[1] - 6, r: -78 };
+// WHY upside down, gripped by the brim (round eight review: the hat floated 20 px from his glove, a detached prop):
+// turned mouth-up and tipped toward June, its near brim end sits exactly in his glove, so he is plainly holding it
+// out like a bucket. The brim's middle is 20 units from the hand along the tipped brim.
+const BUCKET_R = 155;
+const BUCKET = { x: BUCKET_HAND[0] - 19.9 * JS, y: BUCKET_HAND[1] + 9.3 * JS, r: BUCKET_R };
 // WHY the box is held at her chest and smaller (round seven): drawn big at her waist she seemed to stand in a crate
 const JBOX = { x: JL.x, y: JL.y - 40 * JL.s, s: 0.78 };
-// WHY from the box's far corner (round seven): rising from its middle, the big keepsakes passed over her face
-const STREAM_P0: [number, number] = [JBOX.x + 34, JBOX.y - 62 * JBOX.s];
-// WHY a high arc (round seven): a short, flat arc between the two figures was cramped and hard to follow; this one
-// rises into the empty upper page and drops into the hat, like the round-three arc the reviewers liked
-const STREAM_P1: [number, number] = [(JL.x + BUCKET.x) / 2, JL.y - 690];
+// WHY from the box's far right corner and over a point well to her right (round eight review: the big keepsakes
+// crossed her face and hid the smile that is meant to drain): the one curve now rises clear of her head
+const STREAM_P0: [number, number] = [JBOX.x + 44 * JBOX.s, JBOX.y - 62 * JBOX.s];
+const STREAM_P1: [number, number] = [(JL.x + BUCKET.x) / 2 + 80, JL.y - 470];
 const STREAM_P2: [number, number] = [BUCKET.x, BUCKET.y];
 const TALL_S = HATS.tall.s * ML.hat.s, WIDE_S = HATS.wide.s * TL.hat.s;
 
@@ -328,20 +347,28 @@ const RulesArt: React.FC = () => {
   // shut with a thunk on "computers"
   const tallId = idle(t, 1);
   const hasLock = t >= Q.computersDo - 0.04;
-  const lockHand = hatPt(ML.hat.x, ML.hat.y, TALL_S, true, 0, 73, -119);
-  const lockTo: [number, number] = [ML.laptop.x, ML.laptop.y - 26 * ML.laptop.s];
   const place = lin(t, Q.computersDo + 0.0, Q.computersDo + 0.34, EASE_IN_OUT);
   const clampAt = Q.computersDo + 0.36;
   const clamped = t >= clampAt;
-  const lx = lockHand[0] + (lockTo[0] - lockHand[0]) * place, ly = lockHand[1] + (lockTo[1] - lockHand[1]) * place - Math.sin(place * Math.PI) * 70;
+  // WHY he steps in and keeps hold of the lock until it touches the screen (round eight review: it was lobbed out of
+  // his hand and his hand was back before it landed): his hand carries it all the way, then lets go on the clamp
+  const step = place * (1 - lin(t, clampAt + 0.15, clampAt + 0.6, EASE_IN_OUT));
+  const tallX = ML.hat.x - 118 * step;
+  const tallLean = tallId.lean - 10 * step;
+  const lockHand = hatPt(tallX, ML.hat.y, TALL_S, true, tallLean, 73, -119);
+  const lockTo: [number, number] = [ML.laptop.x, ML.laptop.y - 26 * ML.laptop.s];
+  const lx = lockHand[0] + (lockTo[0] - lockHand[0]) * place, ly = lockHand[1] + (lockTo[1] - lockHand[1]) * place - Math.sin(place * Math.PI) * 50;
+  const carry = hasLock && !clamped ? toHat(tallX, ML.hat.y, TALL_S, true, tallLean, lx + 14, ly + 6) : undefined;
   const thunk = jolt(t, clampAt, 9, 0.38);
   const shake = jolt(t, clampAt, 3, 0.2);
   const lockSquash = landSquash(t, clampAt) * 0.9;
-  // the tall hat leans out with it, lets go, then dusts off his gloves with a weight shift
-  const reachOut = place * (1 - lin(t, clampAt + 0.05, clampAt + 0.4));
-  const dusting = t > clampAt + 0.2 && t < clampAt + 1.1;
-  const dustK = dusting ? Math.sin((t - clampAt) * 24) : 0;
-  const tallArms = dusting ? { l: [-12 + dustK * 12, -116 + Math.abs(dustK) * 4] as [number, number], r: [12 - dustK * 12, -120 - Math.abs(dustK) * 4] as [number, number] } : undefined;
+  // then he dusts off his gloves: WHY two slow, wide brushes held clear of the coat (round eight review: a fast
+  // sin(t*24) landed on random phases each frame, and the white gloves flickered on his chest like buttons)
+  const dustP = (t - clampAt - 0.28) / 0.9;
+  const dusting = dustP > 0 && dustP < 1;
+  const dustAmp = dusting ? Math.sin(dustP * Math.PI) : 0;
+  const dustK = dusting ? Math.sin(dustP * Math.PI * 2 * 2) * dustAmp : 0;
+  const tallArms = carry ? { r: carry } : dusting ? { l: [-30 + dustK * 18, -132] as [number, number], r: [30 + dustK * 18, -128 - dustAmp * 4] as [number, number] } : undefined;
   const mayaJump = jolt(t, clampAt + 0.02, 0.9, 0.5);
   // --- Theo: the wide hat leans in and flicks the tag with a gloved finger each time the price is re-inked
   const wideId = idle(t, 0);
@@ -349,7 +376,9 @@ const RulesArt: React.FC = () => {
   const flick = (rw: number) => lin(t, rw - 0.28, rw - 0.02, EASE_IN_OUT) * (1 - lin(t, rw + 0.12, rw + 0.45, EASE_IN_OUT));
   const reach = Math.max(flick(rewrite1), flick(rewrite2));
   const wideX = TL.hat.x - 46 * reach, wideLean = wideId.lean - 7 * reach;
-  const TAG = { x: TL.cabinet.x + 58, y: TL.cabinet.y - CABINET_TOP * TL.cabinet.s - 6, s: 1.12 };
+  // WHY smaller and hung from the record player's lid corner by its own string (round eight review: bigger than the
+  // cabinet door and hanging from nothing, it seemed to float)
+  const TAG = { x: TL.cabinet.x + 62 * TL.cabinet.s, y: TL.cabinet.y - CABINET_TOP * TL.cabinet.s - 28 * TL.cabinet.s + 30 * 0.86, s: 0.86 };
   const flickHit = (rw: number) => jolt(t, rw - 0.02, 1, 0.9);
   const tagSwing = flickHit(rewrite1) * 12 + flickHit(rewrite2) * 15 - 4;
   const finger = toHat(wideX, TL.hat.y, WIDE_S, true, wideLean, TAG.x + 50 * TAG.s, TAG.y + 52);
@@ -358,9 +387,14 @@ const RulesArt: React.FC = () => {
   const shortId = idle(t, 2);
   const bucket = t > Q.cost;
   const tip = lin(t, Q.data - 0.05, Q.data + 0.35, EASE_IN_OUT);
-  const flyFrom = Q.data + 0.04, gap = 0.12, dur = Q.personalData + 0.08 - flyFrom - gap * 4;
+  // WHY 0.16 s apart and smaller (round eight review: four big keepsakes in the air at once read as a juggled
+  // scatter): at most three are ever in flight, one behind another along the same curve
+  const flyFrom = Q.data + 0.04, gap = 0.16, dur = Q.personalData + 0.08 - flyFrom - gap * 4;
   const left = KEEPSAKES.length - Math.max(0, Math.min(5, Math.floor((t - flyFrom) / gap) + 1));
   const sad = t > Q.personalData - 0.15;
+  // his hand, live (he breathes and leans), so the hat he grips moves with it
+  const shortLean = shortId.lean * 0.5 - tip * 5 + turnJolt(2);
+  const shortHand = hatPt(JL.hat.x, JL.hat.y + shortId.bob * 0.5, JS, true, shortLean, 73, -119);
   // her head follows the keepsakes up and over toward his hat
   const follow = lin(t, flyFrom, flyFrom + 0.5, EASE_IN_OUT) * (1 - lin(t, Q.personalData, Q.personalData + 0.4));
   return (
@@ -375,10 +409,12 @@ const RulesArt: React.FC = () => {
         <g transform={`translate(${thunk * 0.4} ${Math.abs(thunk) * 0.9})`}><Laptop x={ML.laptop.x} y={ML.laptop.y} s={ML.laptop.s} a={DONE} /></g>
         <HeroString x={ML.x} y={ML.y} s={ML.s} lean={70} />
         <Hero who="maya" x={ML.x} y={ML.y} s={ML.s} a={DONE} pose="write" raise={Math.max(0, mayaJump) * 0.6} mood={t > clampAt + 0.04 ? 'o' : 'smile'} tilt={-jolt(t, clampAt, 5, 0.5)} />
-        <HatFigure x={ML.hat.x} y={ML.hat.y} s={TALL_S} crown={HATS.tall.crown} girth={HATS.tall.girth} a={DONE} flip
-          pose={hasLock && !clamped ? 'key' : 'rub'} armTo={tallArms} eyes="dots" mouth="smug" look={0.3 + 0.7 * turn(0)}
-          bob={tallId.bob + (dusting ? Math.abs(dustK) * 2 : 0)} sway={tallId.sway + (dusting ? dustK * 3 : 0)} lean={tallId.lean - 9 * reachOut + turnJolt(0) + (dusting ? -3 : 0)} />
-        {/* the padlock: up in his hand on the cut, swung onto the screen, and it clamps shut there on its own */}
+        <HatFigure x={tallX} y={ML.hat.y} s={TALL_S} crown={HATS.tall.crown} girth={HATS.tall.girth} a={DONE} flip
+          pose={hasLock && !clamped ? 'key' : dusting ? 'hold' : 'rub'} armTo={tallArms} eyes="dots" mouth="smug" look={0.3 + 0.7 * turn(0)}
+          bob={tallId.bob + dustAmp * 2} sway={tallId.sway + dustK * 3} lean={tallLean + turnJolt(0) - dustAmp * 3} />
+        {/* the hasp on the lid's top edge the padlock hooks through, so the screen reads as locked shut */}
+        {clamped && <rect x={lockTo[0] - 9} y={ML.laptop.y - 46 * ML.laptop.s - 7} width={18} height={12} rx={3} fill={P.paperShade} stroke={P.ink} strokeWidth={2.4} />}
+        {/* the padlock: in his hand on the cut, carried onto the screen, and it clamps shut there on its own */}
         {hasLock && (
           <g transform={`translate(${lx} ${ly}) scale(${1 + lockSquash * 0.7} ${1 - lockSquash})`}>
             <Padlock x={0} y={0} s={1.3} at={DONE} openAt={clamped ? undefined : DONE} />
@@ -395,7 +431,10 @@ const RulesArt: React.FC = () => {
           stacked prices were clutter. Now the new price sits under the one it struck out. */}
       <PriceTag x={TAG.x} y={TAG.y} s={TAG.s} at={DONE} swing={tagSwing} two
         prices={[{ v: '4.99/mo', at: DONE }, { v: '9.99/mo', at: rewrite1 }, { v: '14.99/mo', at: rewrite2 }]} />
-      <HeroString x={TL.x} y={TL.y} s={TL.s} lean={60} o={0.4} />
+      {/* WHY leaning left, off the page's edge (round eight review: rising to the right it ran straight through Maya) */}
+      {/* WHY hidden during Maya's close-up only (a hard cut on each side, so it never visibly pops): rising past her
+          vignette it showed as a stray line at the edge of her shot */}
+      {!(t >= Q.computersDo - 0.04 && t < Q.cost - 0.05) && <HeroString x={TL.x} y={TL.y} s={TL.s} lean={-170} o={0.4} />}
       <Hero who="theo" x={TL.x} y={TL.y} s={TL.s} a={DONE} pose="write" mood={t > rewrite2 + 0.1 ? 'o' : 'smile'} tilt={jolt(t, rewrite2 + 0.05, 4, 0.6)} />
       <HatFigure x={wideX} y={TL.hat.y} s={WIDE_S} crown={HATS.wide.crown} girth={HATS.wide.girth} a={DONE} flip pose="rub" armTo={wideArm}
         eyes="dots" mouth="smug" look={0.3 + 0.7 * turn(1)}
@@ -407,11 +446,18 @@ const RulesArt: React.FC = () => {
       <HeroString x={JL.x} y={JL.y} s={JL.s} lean={-60} />
       <Hero who="june" x={JL.x} y={JL.y} s={JL.s} a={DONE} pose="hold" mood={sad ? 'flat' : 'smile'} tilt={follow * 7 + jolt(t, Q.personalData, 3, 0.5)} />
       <KeepsakeBox x={JBOX.x} y={JBOX.y} s={JBOX.s} lid={1} inside={t < flyFrom ? 5 : left} />
+      {/* the hat first, so his glove is drawn over its brim; it turns about the hand that grips it */}
+      {bucket && <g transform={`translate(${shortHand[0] - BUCKET_HAND[0]} ${shortHand[1] - BUCKET_HAND[1]}) rotate(${-25 * (1 - tip) + Math.sin(t * 2) * 2} ${BUCKET_HAND[0]} ${BUCKET_HAND[1]})`}>
+        <TopHat x={BUCKET.x} y={BUCKET.y} s={JS} crown={HATS.short.crown} r={BUCKET.r} /></g>}
       <HatFigure x={JL.hat.x} y={JL.hat.y} s={JS} crown={HATS.short.crown} girth={HATS.short.girth} a={DONE} flip
         pose={bucket ? 'key' : 'sides'} noHat={bucket} eyes="dots" mouth="smug" look={0.3 + 0.7 * turn(2)}
-        bob={shortId.bob} sway={shortId.sway} lean={shortId.lean - tip * 5 + turnJolt(2)} />
-      {bucket && <TopHat x={BUCKET.x} y={BUCKET.y} s={JS} crown={HATS.short.crown} r={BUCKET.r - 40 * (1 - tip) + Math.sin(t * 2) * 2} />}
-      <Stream from={flyFrom} p0={STREAM_P0} p1={STREAM_P1} p2={STREAM_P2} count={5} gap={gap} dur={dur} s={2.2} emerge />
+        bob={shortId.bob * 0.5} sway={shortId.sway} lean={shortLean} />
+      {/* WHY a faint dotted trail along the one curve (round eight): it makes the single path readable, and line 7 can
+          visibly run the same trail backwards */}
+      <path d={`M ${STREAM_P0[0]} ${STREAM_P0[1]} Q ${STREAM_P1[0]} ${STREAM_P1[1]} ${STREAM_P2[0]} ${STREAM_P2[1]}`} fill="none" stroke={P.inkSoft}
+        strokeWidth={2.4} strokeDasharray="2 12" strokeLinecap="round" pathLength={1000}
+        opacity={0.5 * lin(t, flyFrom, flyFrom + 0.3) * (1 - lin(t, Q.personalData + 0.3, Q.personalData + 0.8))} />
+      <Stream from={flyFrom} p0={STREAM_P0} p1={STREAM_P1} p2={STREAM_P2} count={5} gap={gap} dur={dur} s={1.45} emerge />
     </Sheet>
   );
 };
@@ -421,8 +467,13 @@ export const RULES: Spread = { id: 'rules', Art: RulesArt };
 // WHY the queue runs back in depth (round six): the old single row on one ground line was the same picture as
 // line 1; now Maya, Theo and June lead it, large, and the faint crowd shrinks away toward the hat.
 const Q_AT = (u: number) => ({ x: 1290 - 1130 * u, y: 552 + 380 * u, s: 0.55 + 2.25 * u });
-const QUEUE: { u: number; who?: HeroName }[] = [
-  { u: 0.06 }, { u: 0.12 }, { u: 0.18 }, { u: 0.25 }, { u: 0.32 }, { u: 0.4 }, { u: 0.49 }, { u: 0.58 },
+// WHY in loose twos and threes, nudged off the line (round eight review: eleven look-alikes on one sloped line was
+// the "figures lined up on a ground line" picture again): a queue of real people bunches up and leaves gaps
+const QUEUE: { u: number; who?: HeroName; dx?: number }[] = [
+  { u: 0.05, dx: -8 }, { u: 0.085, dx: 10 },
+  { u: 0.16, dx: 4 }, { u: 0.195, dx: -12 }, { u: 0.23, dx: 9 },
+  { u: 0.33, dx: -6 }, { u: 0.37, dx: 14 },
+  { u: 0.47, dx: 8 }, { u: 0.515, dx: -16 }, { u: 0.555, dx: 6 },
   { u: 0.69, who: 'june' }, { u: 0.82, who: 'theo' }, { u: 0.97, who: 'maya' },
 ];
 /** The scroll's strip on the floor at depth u: its top and bottom edge (it widens toward the camera). */
@@ -433,7 +484,8 @@ const BargainArt: React.FC = () => {
   // the scroll unrolls from the hat's hand toward the camera through "we all..."
   const unroll = lin(t, L - 0.1, Q.weAll2 + 0.2, EASE_IN_OUT);
   const head = -0.04 + unroll * 1.08;   // how far toward the camera (in u) the scroll has reached
-  const hat = { x: 1380, y: 548, s: 1.15 };
+  // WHY bigger (round eight review: pushed into the top-right corner, he was too small to be the one handing it out)
+  const hat = { x: 1372, y: 560, s: 1.5 };
   const id = idle(t, 0);
   const hand = hatPt(hat.x, hat.y, HATS.wide.s * hat.s, false, id.lean, -42, -90);
   // the floor strip as a polygon, sampled along u
@@ -449,8 +501,10 @@ const BargainArt: React.FC = () => {
       <path d="M 40 985 Q 700 720 1480 548" stroke={P.inkSoft} strokeWidth={2} fill="none" opacity={0.5} />
       {unroll > 0 && (
         <g>
-          {/* WHY shaded: paper on paper, the scroll vanished into the page */}
-          <path d={poly} fill={P.paperShade} stroke={P.ink} strokeWidth={2.8} strokeLinejoin="round" />
+          {/* WHY a lighter sheet with a soft shadow under it (round eight review: the shaded strip read as a ramp or a
+              road): paper lying on the page, a little lifted, casts a shadow; a road does not */}
+          <path d={poly} fill={P.ink} opacity={0.13} transform="translate(7 12)" style={{ filter: 'blur(3px)' }} />
+          <path d={poly} fill="#FFFBF4" stroke={P.ink} strokeWidth={2.8} strokeLinejoin="round" />
           {/* WHY fold creases across the strip (round seven): a plain shaded strip read as a road or a ramp; light
               creases at even steps, widening toward the camera, say paper that has been folded and paid out */}
           {Array.from({ length: 16 }, (_, k) => 0.03 + k * 0.064).filter((u) => u < head - 0.02).map((u) => {
@@ -458,8 +512,9 @@ const BargainArt: React.FC = () => {
             return <path key={u} d={`M ${e.x - 2} ${e.top + 2} L ${e.x - 2} ${e.bot - 2}`} stroke={P.ink} strokeWidth={1 + 1.6 * u} opacity={0.18} />;
           })}
           {/* the leading curl, still unrolling: a little cylinder that grows as it nears the camera */}
-          <ellipse cx={headE.x} cy={(headE.top + headE.bot) / 2} rx={8 + 18 * Math.max(0, head)} ry={(headE.bot - headE.top) / 2 + 2} fill={P.paper} stroke={P.ink} strokeWidth={2.6} />
-          <ellipse cx={headE.x} cy={(headE.top + headE.bot) / 2} rx={(8 + 18 * Math.max(0, head)) * 0.45} ry={((headE.bot - headE.top) / 2) * 0.45} fill="none" stroke={P.ink} strokeWidth={1.6} opacity={0.6} />
+          {/* WHY a big curl (round eight review): the roll still to unroll is what says "scroll" at a glance */}
+          <ellipse cx={headE.x} cy={(headE.top + headE.bot) / 2} rx={14 + 34 * Math.max(0, head)} ry={(headE.bot - headE.top) / 2 + 4} fill="#FFFBF4" stroke={P.ink} strokeWidth={2.8} />
+          <path d={`M ${headE.x} ${(headE.top + headE.bot) / 2} m ${-(14 + 34 * Math.max(0, head)) * 0.5} 0 a ${(14 + 34 * Math.max(0, head)) * 0.5} ${((headE.bot - headE.top) / 2) * 0.55} 0 1 1 ${(14 + 34 * Math.max(0, head)) * 0.7} ${((headE.bot - headE.top) / 2) * 0.3}`} fill="none" stroke={P.ink} strokeWidth={1.8} opacity={0.65} />
         </g>
       )}
       {/* he rubs his free hand on his coat as the ticks land */}
@@ -473,13 +528,14 @@ const BargainArt: React.FC = () => {
         <g transform={`translate(-30 0) rotate(${unroll * 360 * 4})`}><path d="M -3 -6 L 3 6" stroke={P.ink} strokeWidth={1.6} /></g>
         <path d="M -14 -8 L 22 -8" stroke={P.ink} strokeWidth={1.4} opacity={0.3} />
       </g>
-      {QUEUE.map(({ u, who }, i) => {
-        const p = Q_AT(u);
+      {QUEUE.map(({ u, who, dx = 0 }, i) => {
+        const p0 = Q_AT(u), p = { ...p0, x: p0.x + dx * p0.s };
         // the ticks run from the back of the queue to the front; the heroes' land last and closest
         const tickAt = Q.accepted - 0.05 + i * 0.075;
         const nod = jolt(t, tickAt, 8, 0.55);
         const box = stripAt(u);
-        const bs = 16 + 40 * u;
+        // WHY bigger (round eight review: the far boxes could not be read at all)
+        const bs = 24 + 56 * u;
         const bx = p.x - bs * 0.5, by = (box.top + box.bot) / 2 - bs / 2;
         const boxed = head >= u;
         const shuffle = Math.sin(t * 1.4 + i * 1.7) * 1.2;
@@ -512,9 +568,10 @@ const MoTag: React.FC<{ x: number; y: number; at: number; text: string; dy?: num
   const sway = Math.sin((t - at) * 5) * 10 * Math.exp(-(t - at) * 1.5);
   return (
     <g transform={`translate(${x} ${y + dy}) rotate(${sway + r}) scale(${Math.min(1.08, p)})`}>
-      <path d="M 0 0 L 0 16" stroke={P.ink} strokeWidth={1.8} />
-      <path d="M -50 16 L 50 16 L 50 50 L -50 50 Z" fill={P.paper} stroke={P.ink} strokeWidth={2.6} strokeLinejoin="round" />
-      <text x={0} y={41} textAnchor="middle" fontSize={21} fontWeight={800} fill={P.ink} fontFamily="DM Sans" letterSpacing="-0.02em">{text}</text>
+      {/* WHY bigger (round eight review: at 21 units the prices could not be read at 1080p) */}
+      <path d="M 0 0 L 0 16" stroke={P.ink} strokeWidth={2} />
+      <path d="M -60 16 L 60 16 L 60 56 L -60 56 Z" fill={P.paper} stroke={P.ink} strokeWidth={2.8} strokeLinejoin="round" />
+      <text x={0} y={46} textAnchor="middle" fontSize={27} fontWeight={800} fill={P.ink} fontFamily="DM Sans" letterSpacing="-0.02em">{text}</text>
     </g>
   );
 };
@@ -522,6 +579,8 @@ const MoTag: React.FC<{ x: number; y: number; at: number; text: string; dy?: num
 // Theo's room (left page): his armchair, his record player on its cabinet, one shelf of records. Nothing else.
 const ROOM = { floor: 820, chair: { x: 236, seat: 740 }, cab: { x: 520 }, shelf: { x: 400, y: 470 }, bar: { x: 470, y: 132 } };
 const PLAYER_TOP = ROOM.floor - CABINET_TOP * 1.05;
+// WHY a step darker than Theo (round eight review: chair and man had the same fill and merged)
+const CHAIR = mixHex(P.wash, P.ink, 0.13);
 // June's corner (right page, top: the headline needs the clean paper below)
 const JUNE = { x: 1040, seat: 560, s: 1.5 };
 // WHY nearer June (round seven): at 1352 his arm had to stretch twice his height and read as a rubber hose
@@ -540,6 +599,9 @@ const Cuffed: React.FC<{ x: number; y: number; dx: number; dy: number }> = ({ x,
   );
 };
 
+/** The hard cut from Theo's room to June. WHY here: as soon after "privacy" as the "own nothing." headline's
+ *  minimum time allows (1.2 s + 0.25 s a word after "nothing"), snapped to a frame; the camera and headline read it. */
+export const JUNE_CUT = Math.round((Q.nothing + 1.2 + 0.25 * 2 + 0.02) * 30) / 30 - 0.001;
 const NothingArt: React.FC = () => {
   const t = useT();
   // --- own nothing: the bar's strings tighten and the record player and records rise to dangle under it
@@ -547,7 +609,12 @@ const NothingArt: React.FC = () => {
   // frames of the medium shot with no bar in view
   const barIn = lin(t, Q.own - 0.06, Q.own + 0.3, EASE_OUT);
   const barY = ROOM.bar.y - (1 - barIn) * 260;
-  const rise = lin(t, Q.own + 0.2, Q.own + 0.9, EASE_IN_OUT);
+  // WHY a small dip before the lift and a little overshoot at the top (round eight review): weight. The strings take
+  // up the slack, the things sink a hair as they are yanked, rise, and bob past their stop before settling.
+  const riseK = lin(t, Q.own + 0.24, Q.own + 0.9, EASE_IN_OUT);
+  const dipK = Math.sin(Math.PI * Math.min(1, Math.max(0, (t - Q.own - 0.14) / 0.12)));
+  const overK = Math.sin(Math.PI * Math.min(1, Math.max(0, (t - Q.own - 0.84) / 0.34)));
+  const rise = riseK - 0.035 * dipK + 0.04 * overK;
   const swing = Math.sin((t - Q.own) * 3.2) * 4 * lin(t, Q.own + 0.4, Q.own + 0.8) * Math.exp(-Math.max(0, t - Q.own - 0.8) * 0.6);
   const playerY = PLAYER_TOP - rise * (PLAYER_TOP - 330);
   const recordsY = ROOM.shelf.y - rise * (ROOM.shelf.y - 252);
@@ -555,44 +622,56 @@ const NothingArt: React.FC = () => {
   const reach = t > Q.own + 0.3 && t < Q.nothing + 0.5;
   // Theo is alive in his chair: a breath, and he turns toward his record player as the shot opens
   const theoBreath = Math.sin(t * 2.1) * 2.2;
-  const theoTurn = 5 * lin(t, Q.weAccepted + 0.3, Q.weAccepted + 0.8, EASE_IN_OUT) * (1 - lin(t, Q.own, Q.own + 0.3));
-  // --- privacy: the short hat leans in and swings a giant glass over June; through it, her face and his huge eye.
-  // On "convenience" he slips a shiny phone into her hands and she smiles down at it.
-  // WHY June and the short hat appear only on the cut to them (round seven): in the "own nothing" wide they sat on
-  // the right page two lines early, competing with the headline and giving the next beat away
-  const juneSeen = t >= Q.costOf - 0.35;
+  // WHY he reacts to each tag (round eight review: three seconds of a man who only breathes): he turns to the shelf
+  // as its tag lands, looks down at his own armchair's tag, and slumps a little
+  const theoTurn = 5 * lin(t, Q.weAccepted + 0.3, Q.weAccepted + 0.8, EASE_IN_OUT) * (1 - lin(t, Q.subscribe, Q.subscribe + 0.25))
+    + 9 * lin(t, Q.subscribe + 0.02, Q.subscribe + 0.3, EASE_OUT) * (1 - lin(t, Q.everything1, Q.everything1 + 0.25))
+    + 4 * lin(t, Q.everything1 + 0.05, Q.everything1 + 0.35, EASE_OUT) * (1 - lin(t, Q.own, Q.own + 0.3));
+  const theoSlump = 7 * lin(t, Q.everything1 + 0.1, Q.everything1 + 0.5, EASE_IN_OUT);
+  // --- privacy: one readable gesture (round eight review: the level handle read as a handshake, his eye was a small
+  // almond in a corner of the lens, the phone was hard to find). On the cut he raises a giant glass to HIS OWN eye
+  // and leans toward June, so his eye, hugely magnified, fills the lens and stares at her; on "cost" he leans right in
+  // and blinks. On "convenience" he lowers the glass to his chest and his other hand holds out a big lit phone in
+  // front of her; she takes it and smiles down at it, her keepsake box open and empty on her lap.
+  const juneSeen = t >= JUNE_CUT;
   const id = idle(t, 2);
-  // WHY the swing starts on the cut and lands on "cost": started on "privacy", it was over before we saw June
-  // WHY he lifts the glass away as he gives her the phone: the trade reads as one move (his look, then her ease),
-  // and the lens no longer covers the phone in her hands
-  const swingIn = lin(t, Q.costOf - 0.33, Q.costOf, EASE_IN_OUT) * (1 - lin(t, Q.convenience - 0.3, Q.convenience + 0.15, EASE_IN_OUT));
-  const leanIn = -6 - swingIn * 12 + id.lean * 0.6;
+  const raise = lin(t, JUNE_CUT + 0.02, JUNE_CUT + 0.36, EASE_IN_OUT) * (1 - lin(t, Q.convenience - 0.32, Q.convenience + 0.04, EASE_IN_OUT));
+  const leanK = lin(t, Q.costOf - 0.12, Q.costOf + 0.22, EASE_IN_OUT) * (1 - lin(t, Q.convenience - 0.3, Q.convenience + 0.1, EASE_IN_OUT));
+  const leanIn = -3 - raise * 5 - leanK * 9 + id.lean * 0.5;
   const sh = (lx: number, ly: number) => hatPt(SHORT.x, SHORT.y, SHORT.s, true, leanIn, lx, ly);
   const shoulderR = sh(20, -168), shoulderL = sh(-20, -168);
-  const face: [number, number] = [JUNE.x, JUNE.seat - 85 * JUNE.s];
-  const R = 64;
-  // WHY held against his chest when not in use (round seven): held up by his head, the empty ring read as a halo
-  const rest: [number, number] = [shoulderR[0] - 42, shoulderR[1] + 72];
-  const aim: [number, number] = [face[0] + 6, face[1] + 2];
-  const lens = { x: rest[0] + (aim[0] - rest[0]) * swingIn, y: rest[1] + (aim[1] - rest[1]) * swingIn - Math.sin(swingIn * Math.PI) * 50, r: R };
-  // WHY the handle points back toward him, nearly level (round seven): pointing down and right, his hand met
-  // June's hands below the lens and the two read as holding hands
-  const HA = (18 * Math.PI) / 180;
+  const R = 62;
+  // the lens: at his chest when lowered, over his eye (a little toward June) when raised
+  const eyeAt = sh(8, -199);
+  // WHY tucked behind his back by its handle when lowered: held at his chest the big ring covered him like a drum,
+  // and hanging by his legs it read as a wheel
+  const rest = sh(-16, -118);
+  const lens = { x: rest[0] + (eyeAt[0] - 14 - rest[0]) * raise, y: rest[1] + (eyeAt[1] + 4 - rest[1]) * raise, r: R };
+  // WHY the handle points down from the lens into his hand by his chest: it never meets June's hands
+  const HA = ((100 - 180 * (1 - raise)) * Math.PI) / 180;
   const rim: [number, number] = [lens.x + R * Math.cos(HA), lens.y + R * Math.sin(HA)];
-  const hand: [number, number] = [rim[0] + 58 * Math.cos(HA), rim[1] + 58 * Math.sin(HA)];
-  const give = lin(t, Q.convenience - 0.3, Q.convenience + 0.12, EASE_IN_OUT);
-  const herHand: [number, number] = [JUNE.x + 4, JUNE.seat - 46 * JUNE.s];
-  const phoneRest: [number, number] = [shoulderL[0] - 6, shoulderL[1] + 96];
-  const phone: [number, number] = [phoneRest[0] + (herHand[0] - phoneRest[0]) * give, phoneRest[1] + (herHand[1] - phoneRest[1]) * give - Math.sin(give * Math.PI) * 36];
+  const hand: [number, number] = [rim[0] + 54 * Math.cos(HA), rim[1] + 54 * Math.sin(HA)];
+  const blink = Math.max(0, 1 - Math.abs(t - (Q.costOf + 0.32)) / 0.06);
+  const give = lin(t, Q.convenience - 0.26, Q.convenience + 0.16, EASE_IN_OUT);
+  const herHand: [number, number] = [JUNE.x + 10, JUNE.seat - 50 * JUNE.s];
+  const phoneRest: [number, number] = sh(-46, -112);   // tucked at his far side, out of sight until he offers it
+  const offer: [number, number] = [JUNE.x + 64, JUNE.seat - 86 * JUNE.s];
+  // the phone comes up in front of her face first (offered), then down into her hands
+  const p1 = Math.min(1, give * 1.6), p2 = Math.max(0, give * 1.6 - 0.6) / 1.0;
+  const phone: [number, number] = give < 0.625
+    ? [phoneRest[0] + (offer[0] - phoneRest[0]) * EASE_OUT(p1), phoneRest[1] + (offer[1] - phoneRest[1]) * EASE_OUT(p1)]
+    : [offer[0] + (herHand[0] - offer[0]) * EASE_IN_OUT(Math.min(1, p2)), offer[1] + (herHand[1] - offer[1]) * EASE_IN_OUT(Math.min(1, p2))];
   const has = give >= 1;
-  // once she has it he takes his hand back to his side (left there, his arm joined them like held hands)
-  const back = lin(t, Q.convenience + 0.12, Q.convenience + 0.45, EASE_IN_OUT);
-  const hisHand: [number, number] = [phone[0] + (phoneRest[0] + 10 - phone[0]) * back, phone[1] + (phoneRest[1] + 10 - phone[1]) * back];
-  const juneMood = has ? 'smile' : swingIn > 0.6 ? 'o' : 'flat';
+  // once she has it he takes his hand back to his side
+  const back = lin(t, Q.convenience + 0.18, Q.convenience + 0.5, EASE_IN_OUT);
+  const hisHand: [number, number] = [phone[0] + 30 + (phoneRest[0] - phone[0] - 30) * back, phone[1] + 26 + (phoneRest[1] - phone[1] - 26) * back];
+  const juneMood = has ? 'smile' : leanK > 0.4 ? 'o' : 'flat';
   const june = (k: number) => (
     <g key={k}>
-      <Hero who="june" x={JUNE.x} y={JUNE.seat} s={JUNE.s} a={DONE} sit pose={has ? 'hold' : 'down'} mood={juneMood} tilt={has ? 10 * lin(t, Q.convenience + 0.12, Q.convenience + 0.4) : 0} />
-      <KeepsakeBox x={JUNE.x + 22} y={JUNE.seat - 4} s={0.66} lid={1} inside={0} />
+      <Hero who="june" x={JUNE.x} y={JUNE.seat} s={JUNE.s} a={DONE} sit pose={has ? 'hold' : 'down'} mood={juneMood}
+        tilt={has ? 9 * lin(t, Q.convenience + 0.16, Q.convenience + 0.42) : -3 * leanK} />
+      {/* WHY bigger and open (round eight review): her box being EMPTY is the tie back to line 2 */}
+      <KeepsakeBox x={JUNE.x + 24} y={JUNE.seat - 2} s={0.8} lid={1} inside={0} />
     </g>
   );
   /** An arm with an elbow: shoulder to hand through a joint that bends down and outward. */
@@ -602,9 +681,34 @@ const NothingArt: React.FC = () => {
     return `M ${a[0].toFixed(1)} ${a[1].toFixed(1)} L ${ex.toFixed(1)} ${ey.toFixed(1)} L ${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
   };
   const armW = 8 * SHORT.s;
+  const glassArt = (
+    <>
+      {/* the glass: lens, rim, handle, and through the lens his own eye, magnified, staring at her */}
+      <clipPath id="c-lens8"><circle cx={lens.x} cy={lens.y} r={lens.r} /></clipPath>
+      <g clipPath="url(#c-lens8)">
+        <circle cx={lens.x} cy={lens.y} r={lens.r} fill={P.paper} />
+        {raise > 0.35 && (
+          <g opacity={lin(raise, 0.35, 0.7)} transform={`translate(${lens.x + 6} ${lens.y + 2})`}>
+            {/* a slice of his magnified head behind the eye, so it reads as HIS face through the glass */}
+            <circle cx={14} cy={-6} r={74} fill={P.paper} stroke={P.ink} strokeWidth={5} />
+            <path d={`M -34 ${-26 - 4 * leanK} Q -6 -40 22 -30`} stroke={P.ink} strokeWidth={6} fill="none" strokeLinecap="round" />
+            <path d={`M -38 0 Q -4 ${-24 * (1 - blink)} 30 0 Q -4 ${24 * (1 - blink)} -38 0 Z`} fill="#fff" stroke={P.ink} strokeWidth={4.5} strokeLinejoin="round" />
+            {blink < 0.6 && <><circle cx={-12 - 4 * leanK} cy={1} r={12} fill={P.ink} /><circle cx={-16 - 4 * leanK} cy={-3} r={3.6} fill="#fff" /></>}
+          </g>
+        )}
+        <circle cx={lens.x} cy={lens.y} r={lens.r} fill="rgba(194,170,214,0.16)" />
+      </g>
+      <path d={`M ${lens.x - 44} ${lens.y - 40} A 58 58 0 0 1 ${lens.x + 12} ${lens.y - 58}`} stroke="#fff" strokeWidth={6} fill="none" opacity={0.75} strokeLinecap="round" />
+      <circle cx={lens.x} cy={lens.y} r={lens.r} fill="none" stroke={P.ink} strokeWidth={9} />
+      <path d={`M ${rim[0]} ${rim[1]} L ${hand[0]} ${hand[1]}`} stroke={P.ink} strokeWidth={15} strokeLinecap="round" />
+      <circle cx={hand[0]} cy={hand[1]} r={11} fill={P.paper} stroke={P.ink} strokeWidth={3} />
+    </>
+  );
   return (
     <Sheet>
-      {/* ---- Theo's room ---- */}
+      {/* ---- Theo's room ---- WHY gone after the hard cut to June (round eight review: half-cropped pieces of his
+          dangling things cluttered the left of her shot) */}
+      {!juneSeen && <>
       <path d={`M 70 ${ROOM.floor} L 690 ${ROOM.floor}`} stroke={P.ink} strokeWidth={2.4} />
       {/* the shelf on the wall, and where the records stood */}
       <path d={`M ${ROOM.shelf.x - 140} ${ROOM.shelf.y} L ${ROOM.shelf.x + 140} ${ROOM.shelf.y} M ${ROOM.shelf.x - 120} ${ROOM.shelf.y} L ${ROOM.shelf.x - 120} ${ROOM.shelf.y + 22} M ${ROOM.shelf.x + 120} ${ROOM.shelf.y} L ${ROOM.shelf.x + 120} ${ROOM.shelf.y + 22}`} stroke={P.ink} strokeWidth={3.4} strokeLinecap="round" />
@@ -613,11 +717,11 @@ const NothingArt: React.FC = () => {
       {rise > 0.2 && <g opacity={lin(t, Q.own + 0.2, Q.own + 0.6)}><RecordPlayer x={ROOM.cab.x} y={PLAYER_TOP} s={1.05} dashed /></g>}
       {/* the armchair, with Theo in it */}
       <path d={`M ${ROOM.chair.x - 80} ${ROOM.floor} L ${ROOM.chair.x - 80} ${ROOM.chair.seat - 70} Q ${ROOM.chair.x - 80} ${ROOM.chair.seat - 112} ${ROOM.chair.x - 36} ${ROOM.chair.seat - 112} L ${ROOM.chair.x + 36} ${ROOM.chair.seat - 112} Q ${ROOM.chair.x + 80} ${ROOM.chair.seat - 112} ${ROOM.chair.x + 80} ${ROOM.chair.seat - 70} L ${ROOM.chair.x + 80} ${ROOM.floor} Z`}
-        fill={P.wash} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+        fill={CHAIR} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
       <HeroString x={ROOM.chair.x - 6} y={ROOM.chair.seat} s={1.95} lean={80} />
-      <Hero who="theo" x={ROOM.chair.x - 6} y={ROOM.chair.seat} s={1.95} a={DONE} sit pose={reach ? 'up' : 'down'} mood={t > Q.own + 0.2 ? 'o' : 'flat'} bob={theoBreath} tilt={theoTurn} />
+      <Hero who="theo" x={ROOM.chair.x - 6} y={ROOM.chair.seat} s={1.95} a={DONE} sit pose={reach ? 'up' : 'down'} mood={t > Q.own + 0.2 ? 'o' : 'flat'} bob={theoBreath + theoSlump} tilt={theoTurn} />
       <path d={`M ${ROOM.chair.x - 100} ${ROOM.floor} L ${ROOM.chair.x - 100} ${ROOM.chair.seat - 30} Q ${ROOM.chair.x - 100} ${ROOM.chair.seat - 48} ${ROOM.chair.x - 80} ${ROOM.chair.seat - 48} L ${ROOM.chair.x - 66} ${ROOM.chair.seat - 48} L ${ROOM.chair.x - 66} ${ROOM.floor} Z M ${ROOM.chair.x + 66} ${ROOM.floor} L ${ROOM.chair.x + 66} ${ROOM.chair.seat - 48} L ${ROOM.chair.x + 80} ${ROOM.chair.seat - 48} Q ${ROOM.chair.x + 100} ${ROOM.chair.seat - 48} ${ROOM.chair.x + 100} ${ROOM.chair.seat - 30} L ${ROOM.chair.x + 100} ${ROOM.floor} Z`}
-        fill={P.wash} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+        fill={CHAIR} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
       <MoTag x={ROOM.chair.x + 92} y={ROOM.chair.seat - 46} at={Q.everything1 + 0.05} text="6.99/mo" r={10} />
       {/* the wide hat's crossbar, lowered in from above the page, held in his gloved hands */}
       {barIn > 0 && (
@@ -637,12 +741,13 @@ const NothingArt: React.FC = () => {
       {/* the record player and its tag (still on from line 2), and the records with theirs */}
       <g transform={`translate(${ROOM.cab.x} ${playerY}) rotate(${swing}) translate(${-ROOM.cab.x} ${-playerY})`}>
         <RecordPlayer x={ROOM.cab.x} y={playerY} s={1.05} spin={rise > 0 ? 0 : t * 200} />
-        <PriceTag x={ROOM.cab.x + 50} y={playerY - 4} s={0.62} at={DONE} swing={-6 + swing * 2} prices={[{ v: '14.99/mo', at: DONE }]} />
+        <PriceTag x={ROOM.cab.x + 50} y={playerY - 4} s={0.95} at={DONE} swing={-6 + swing * 2} prices={[{ v: '14.99/mo', at: DONE }]} />
       </g>
       <g transform={`translate(${recordsX} ${recordsY}) rotate(${-swing}) translate(${-recordsX} ${-recordsY})`}>
         <Records x={recordsX} y={recordsY} s={1.1} />
         <MoTag x={recordsX + 70} y={recordsY - 50} at={Q.subscribe + 0.05} text="2.99/mo" r={12} />
       </g>
+      </>}
 
       {/* ---- June's corner ---- */}
       {juneSeen && (
@@ -652,41 +757,24 @@ const NothingArt: React.FC = () => {
           <path d={`M ${JUNE.x - 40} ${JUNE.seat} L ${JUNE.x + 40} ${JUNE.seat} M ${JUNE.x - 30} ${JUNE.seat} L ${JUNE.x - 40} ${JUNE.seat + 70} M ${JUNE.x + 30} ${JUNE.seat} L ${JUNE.x + 40} ${JUNE.seat + 70}`} stroke={P.ink} strokeWidth={4} strokeLinecap="round" />
           <HeroString x={JUNE.x} y={JUNE.seat} s={JUNE.s} lean={-70} />
           {june(0)}
+          {/* WHY the glass is drawn behind him while lowered: hanging in front of his legs the big ring read as a wheel */}
+          {raise < 0.5 && glassArt}
           {/* the short hat, all of him in view, leaning in toward her */}
           <HatFigure x={SHORT.x} y={SHORT.y} s={SHORT.s} crown={HATS.short.crown} girth={HATS.short.girth} a={DONE} flip pose="bare"
             eyes="dots" mouth="smug" look={1} bob={id.bob} sway={id.sway} lean={leanIn} />
           <path d={arm(shoulderR, hand)} stroke={P.ink} strokeWidth={armW} fill="none" strokeLinecap="round" strokeLinejoin="round" />
           <path d={arm(shoulderL, hisHand, -1)} stroke={P.ink} strokeWidth={armW} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-          {/* WHY a lit screen, bigger (round seven): a small cream phone read as "he gave her something"; lit, it is the one
-              bright, glossy thing on the page, which is what "convenience" is */}
-          <g transform={`translate(${phone[0]} ${phone[1]}) rotate(${-10 + give * 10}) scale(1.6)`}>
+          {raise >= 0.5 && glassArt}
+          {/* WHY a lit screen, big (round eight review: hard to find): it is the one bright, glossy thing on the page,
+              which is what "convenience" is */}
+          {give > 0 && <g transform={`translate(${phone[0]} ${phone[1]}) rotate(${-8 + give * 8}) scale(2.2)`}>
             <rect x={-12} y={-19} width={24} height={36} rx={4.5} fill={P.ink} stroke={P.ink} strokeWidth={2.4} />
-            <defs><linearGradient id="c-phone7" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FFFFFF" /><stop offset="1" stopColor="#E6D6F2" /></linearGradient></defs>
-            <rect x={-9.5} y={-15.5} width={19} height={28} rx={2.5} fill="url(#c-phone7)" />
+            <defs><linearGradient id="c-phone8" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FFFFFF" /><stop offset="1" stopColor="#E6D6F2" /></linearGradient></defs>
+            <rect x={-9.5} y={-15.5} width={19} height={28} rx={2.5} fill="url(#c-phone8)" />
             <circle cx={5} cy={-10} r={2.4} fill={P.ink} />
             <path d="M -6 -3 L 4 -3 M -6 2 L 1 2" stroke={P.inkSoft} strokeWidth={1.6} strokeLinecap="round" opacity={0.6} />
-          </g>
-          <circle cx={has ? hisHand[0] : phone[0] - 4} cy={has ? hisHand[1] : phone[1] + 30} r={8} fill={P.paper} stroke={P.ink} strokeWidth={2.4} />
-          {/* the glass: through it, her face magnified and, on its far side, his huge eye peering in.
-              WHY magnified about the lens's own centre with his eye beside her face (round seven): the old copy of June
-              exactly filling the lens read as a diving helmet over her head, and his looking was lost */}
-          <clipPath id="c-lens7"><circle cx={lens.x} cy={lens.y} r={lens.r} /></clipPath>
-          <g clipPath="url(#c-lens7)">
-            <rect x={lens.x - lens.r} y={lens.y - lens.r} width={lens.r * 2} height={lens.r * 2} fill={P.paper} />
-            <g transform={`translate(${face[0]} ${face[1]}) scale(1.4) translate(${-face[0]} ${-face[1]})`}>{june(1)}</g>
-            {swingIn > 0.5 && t < Q.convenience && (
-              <g opacity={lin(t, Q.costOf - 0.12, Q.costOf + 0.1)} transform={`translate(${lens.x + 40} ${lens.y - 30}) scale(0.85)`}>
-                <path d="M -22 0 Q 0 -16 22 0 Q 0 16 -22 0 Z" fill="#fff" stroke={P.ink} strokeWidth={3} />
-                <circle cx={-5} cy={1} r={7.5} fill={P.ink} />
-                <circle cx={-7} cy={-2} r={2} fill="#fff" />
-              </g>
-            )}
-            <circle cx={lens.x} cy={lens.y} r={lens.r} fill="rgba(194,170,214,0.14)" />
-          </g>
-          <path d={`M ${lens.x - 46} ${lens.y - 42} A 62 62 0 0 1 ${lens.x + 14} ${lens.y - 62}`} stroke="#fff" strokeWidth={6} fill="none" opacity={0.7} strokeLinecap="round" />
-          <circle cx={lens.x} cy={lens.y} r={lens.r} fill="none" stroke={P.ink} strokeWidth={9} />
-          <path d={`M ${rim[0]} ${rim[1]} L ${hand[0]} ${hand[1]}`} stroke={P.ink} strokeWidth={15} strokeLinecap="round" />
-          <circle cx={hand[0]} cy={hand[1]} r={11} fill={P.paper} stroke={P.ink} strokeWidth={3} />
+          </g>}
+          <circle cx={hisHand[0]} cy={hisHand[1]} r={11} fill={P.paper} stroke={P.ink} strokeWidth={3} />
         </g>
       )}
     </Sheet>
@@ -708,9 +796,14 @@ const WELL = { x: 450, y: 770, s: 4.1 };
 const DROP = { x: WELL.x, y: WELL.y - INKWELL_MOUTH * WELL.s };
 /** The ink's surface inside the glass at fill f (the same sum as Inkwell draws), on the page. */
 const inkSurface = (f: number) => WELL.y + (-8 - 22 * f) * WELL.s;
+// WHY the ink stays at one low level and the purple spreads through it (round eight review: one drop filling the jar
+// two-thirds full read as a progress bar; the high surface also ran the ripples through the label)
+const WELL_FILL = 0.3;
 const HoweverArt: React.FC = () => {
   const t = useT();
-  const filled = lin(t, DROP_LAND, DROP_LAND + 0.5, EASE_OUT);
+  const filled = WELL_FILL;
+  // the drop's colour spreads from where it went in: half through at the landing ripple, full and glowing on "wonderful"
+  const tint = Math.min(1, lin(t, DROP_LAND, DROP_LAND + 0.45, EASE_OUT) * 0.55 + lin(t, DROP_LAND + 0.45, Q.wonderful, EASE_IN_OUT) * 0.45);
   const glow = lin(t, Q.wonderful - 0.1, Q.wonderful + 0.6) * (0.8 + 0.2 * Math.sin((t - Q.wonderful) * 2.4));
   // WHY ripples on the ink inside the glass (round seven): the old ring inside the narrow mouth was ~40 px across
   // and could not be seen; the glass is see-through now, so the whole surface of the ink can ring out, in violet
@@ -722,7 +815,7 @@ const HoweverArt: React.FC = () => {
       const q = Math.max(0, p - d) / (1 - d);
       if (q <= 0) return null;
       const rx = (6 + q * 34 * big) * WELL.s;
-      return <ellipse key={k} cx={WELL.x} cy={y} rx={rx} ry={rx * 0.1} fill="none" stroke={P.violet} strokeWidth={(3 - 2 * q) * 1.4} opacity={0.85 * (1 - q)} />;
+      return <ellipse key={k} cx={WELL.x} cy={y} rx={Math.min(rx, 40 * WELL.s)} ry={Math.min(rx, 40 * WELL.s) * 0.1} fill="none" stroke={P.violet} strokeWidth={(3 - 2 * q) * 1.4 * big} opacity={0.85 * (1 - q)} />;
     });
   };
   const splash = lin(t, DROP_LAND, DROP_LAND + 0.3);
@@ -734,9 +827,9 @@ const HoweverArt: React.FC = () => {
         <radialGradient id="c-wellglow7"><stop offset="0" stopColor={P.violet} stopOpacity="0.5" /><stop offset="0.55" stopColor={P.violet} stopOpacity="0.16" /><stop offset="1" stopColor={P.violet} stopOpacity="0" /></radialGradient>
       </defs>
       {glow > 0 && <ellipse cx={WELL.x} cy={WELL.y - 6} rx={88 * WELL.s} ry={26 * WELL.s} fill="url(#c-wellglow7)" opacity={glow} />}
-      <Inkwell x={WELL.x} y={WELL.y} s={WELL.s} fill={filled} glow={glow} />
+      <Inkwell x={WELL.x} y={WELL.y} s={WELL.s} fill={filled} glow={glow} tint={t < DROP_LAND ? 0 : tint} />
       {ripple(DROP_LAND, 1)}
-      {ripple(Q.happened, 1.15)}
+      {ripple(Q.happened, 1.6)}
       {/* the drop's little crown of a splash as it goes in, gone in a quarter second */}
       {splash > 0 && splash < 1 && <path d={`M ${DROP.x - 12} ${DROP.y} q -6 ${-22 * Math.sin(splash * Math.PI)} -15 ${-28 * Math.sin(splash * Math.PI)} M ${DROP.x + 12} ${DROP.y} q 6 ${-22 * Math.sin(splash * Math.PI)} 15 ${-28 * Math.sin(splash * Math.PI)} M ${DROP.x} ${DROP.y - 4} l 0 ${-30 * Math.sin(splash * Math.PI)}`}
         stroke={P.purple} strokeWidth={4} strokeLinecap="round" fill="none" opacity={1 - splash} />}
@@ -766,8 +859,13 @@ const HoweverPop: React.FC = () => {
         background: 'rgba(40,14,48,0.5)', filter: `blur(${2 + (1 - near) * 10}px)`, opacity: 0.45 * near, transform: `translateZ(0.5px) scale(${1.8 - 0.8 * near})` }} />
       <div style={{ position: 'absolute', left: DROP.x - W / 2, top: y - H, width: W, height: H, opacity: seen,
         transform: `translateZ(6px) scale(${1 / Math.sqrt(stretch)}, ${stretch})`, transformOrigin: '50% 100%' }}>
-        <div style={{ width: W, height: H, background: 'radial-gradient(circle at 36% 64%, #D49BE2 0%, #9750AA 45%, #6E3482 100%)',
-          clipPath: `path("M ${W / 2} 0 C ${W * 0.64} ${H * 0.29} ${W} ${H * 0.5} ${W} ${H * 0.71} A ${W / 2} ${H * 0.29} 0 0 1 0 ${H * 0.71} C 0 ${H * 0.5} ${W * 0.36} ${H * 0.29} ${W / 2} 0 Z")` }} />
+        {/* WHY flat purple with the book's ink outline and one paper highlight (round eight review: the glossy
+            gradient blob was a different material from the flat-ink world and read as a jelly bean) */}
+        <svg width={W} height={H} viewBox={`-3 -3 ${W + 6} ${H + 6}`} style={{ overflow: 'visible' }}>
+          <path d={`M ${W / 2} 0 C ${W * 0.64} ${H * 0.29} ${W} ${H * 0.5} ${W} ${H * 0.71} A ${W / 2} ${H * 0.29} 0 0 1 0 ${H * 0.71} C 0 ${H * 0.5} ${W * 0.36} ${H * 0.29} ${W / 2} 0 Z`}
+            fill={P.purple} stroke={P.ink} strokeWidth={2.6} strokeLinejoin="round" />
+          <path d={`M ${W * 0.28} ${H * 0.62} Q ${W * 0.3} ${H * 0.5} ${W * 0.4} ${H * 0.42}`} stroke="#FFFBF4" strokeWidth={4} fill="none" strokeLinecap="round" opacity={0.85} />
+        </svg>
       </div>
     </>
   );
