@@ -137,7 +137,9 @@ for (const [k, v] of Object.entries(PLAN8)) PLAN[k] = [...PLAN[k], ...v];
 // (FlowingKeywords.tsx: ultrathink, ultraplan, brainstorm, plan), which to a stranger looks like a glitch. Any
 // sentence holding one of them is skipped. The longest one that fits the real box on one line wins.
 const FLOW_WORDS = /\b(ultrathink|ultraplan|brainstorm|plan)\b/i;
-const ASK = ['can you make something for mia\'s pickups?', 'something for mia\'s pickups?', 'help with mia\'s pickups?', 'sort mia\'s pickups?', 'help with pickups?'].filter((s) => !FLOW_WORDS.test(s));
+// WHY every one starts with "make" (round 2 review: "sort mia's pickups?" was vague British slang and said nothing about
+// MAKING something, which is what the narrator is saying at that moment: "a tool that can make software")
+const ASK = ['can you make something for mia\'s pickups?', 'make something for mia\'s pickups?', 'make a pickup board for mia?', 'make mia a pickup board?', 'make me a pickup board?', 'make a pickup board?', 'make a pickup list?'].filter((s) => !FLOW_WORDS.test(s));
 let ASK_USED = ASK[0];   // set by the typechars shot after measuring the real box; the "asked" shot sends the same words
 FOCI.typechars = { screen: null, what: 'request typed one character at a time (one strip per character)', empty: true, clean: true, focusBox: true, model: 'qwen36-27b', typechars: true };
 FOCI.asked = { screen: null, what: 'request just sent (friendly model): its own sent bubble and the app working on it', empty: true, clean: true, working: true, model: 'qwen36-27b' };
@@ -148,6 +150,9 @@ FOCI.mineempty = { ...FOCI.mine, what: 'the same window and wallpaper, the board
 const BOARDS = {
   'golden-sunbreak-phone': { time: '3:15', who: 'Mia', where: 'school gate', from: 'Sam', msg: 'running late, save me a seat', av: '#E7B7A3', photos: [0, 1, 2] },
   'kuromi-dreamer-laptop': { time: '4:00', who: 'Leo', where: 'football, back field', from: 'Priya', msg: 'can you grab his PE bag?', av: '#9FC3E6', photos: [3, 4, 5] },
+  // WHY the same neighbour's board in YouCoded Night (round 2 review: Kuromi Dreamer and Strawberry Kitty are a real
+  // company's characters, which a public ad must not show; the Kuromi copy stays only as an unused file)
+  'youcoded-night-laptop': { time: '4:00', who: 'Leo', where: 'football, back field', from: 'Priya', msg: 'can you grab his PE bag?', av: '#9FC3E6', photos: [3, 4, 5] },
   'morning-rounds-phone': { time: '5:30', who: 'swim', where: 'leisure centre', from: 'nan', msg: "i'll bring the towels", av: '#C9B3E8', photos: [6, 7, 8] },
 };
 // The person's photos, drawn as soft little landscapes: the same pictures the film's phone shows before the turn
@@ -281,6 +286,18 @@ const PAINTINGS = {
   cat: { name: 'tilly at the window', ops: () => [...rectF('#1b2559', 0, 0, 1100, 700), ...blobF('#f4efd8', 780, 170, 70, 70), ...rectF('#fbe7c6', 0, 0, 130, 700), ...rectF('#fbe7c6', 970, 0, 1100, 700), ...rectF('#fbe7c6', 0, 0, 1100, 70), ...rectF('#fbe7c6', 0, 560, 1100, 700), S_('#fbe7c6', 30, [[550, 70], [550, 560]]),
     ...blobF('#1d1d1d', 380, 470, 120, 90), ...blobF('#1d1d1d', 380, 340, 70, 64), ...triF('#1d1d1d', 330, 300, 320, 230, 370, 290), ...triF('#1d1d1d', 430, 300, 440, 230, 390, 290), S_('#1d1d1d', 24, [[480, 520], [560, 500], [580, 430]]), dabP('#f2d34b', 16, 355, 335), dabP('#f2d34b', 16, 405, 335),
     ...blobF('#d63a3a', 780, 500, 60, 50), ...[740, 780, 820].map((x) => S_('#2f9e5b', 18, [[x, 460], [x + (x - 780) * 0.6, 360]]))] },
+  // WHY three more (round 2 review: the daylit wall needs roughly every third screen to be something a person made, and
+  // a painting never twice in one frame)
+  kite: { name: 'kite at the park', ops: () => [...rectF('#bfe3f7', 0, 0, 1100, 500), ...blobF('#ffffff', 260, 140, 120, 46), ...blobF('#ffffff', 820, 90, 100, 38), ...rectF('#7cc57f', 0, 480, 1100, 700), S_('#5f8f6a', 40, arcP(550, 760, 700, 260, Math.PI * 1.08, Math.PI * 1.92)),
+    ...triF('#d63a3a', 720, 120, 640, 230, 800, 230), ...triF('#f2d34b', 720, 340, 640, 230, 800, 230), S_('#2a1f45', 5, [[640, 230], [800, 230]]), S_('#2a1f45', 5, [[720, 120], [720, 340]]),
+    S_('#2a1f45', 4, [[720, 340], [640, 420], [520, 470], [380, 520]]), ...[[700, 380], [660, 410], [610, 440]].map(([x, y], i) => dabP(['#3070d6', '#e55d9c', '#e5a13a'][i], 22, x, y)),
+    dabP('#2a1f45', 26, 370, 505), S_('#2a1f45', 12, [[370, 520], [370, 590]]), S_('#2a1f45', 8, [[370, 540], [390, 520]]), S_('#2a1f45', 8, [[370, 590], [350, 640]]), S_('#2a1f45', 8, [[370, 590], [390, 640]])] },
+  balloon: { name: 'balloon ride', ops: () => [...rectF('#f9dcc0', 0, 0, 1100, 300), ...rectF('#f3b8a8', 0, 290, 1100, 520), ...rectF('#9cc79a', 0, 510, 1100, 700), S_('#6f9e6d', 36, arcP(300, 720, 420, 160, Math.PI * 1.1, Math.PI * 1.9)),
+    ...blobF('#d63a3a', 560, 250, 150, 170), S_('#f2d34b', 30, [[560, 90], [560, 410]]), S_('#f2d34b', 22, arcP(560, 250, 80, 165, Math.PI * 0.55, Math.PI * 1.45)), S_('#f2d34b', 22, arcP(560, 250, 80, 165, -Math.PI * 0.45, Math.PI * 0.45)),
+    S_('#5a4636', 4, [[470, 390], [520, 500]]), S_('#5a4636', 4, [[650, 390], [600, 500]]), ...rectF('#8a5a3c', 515, 495, 605, 560), ...blobF('#ffffff', 200, 160, 110, 40), ...blobF('#ffffff', 900, 330, 120, 42)] },
+  snowman: { name: 'first snow', ops: () => { const r = seeded(6); return [...rectF('#2a3a6a', 0, 0, 1100, 520), ...Array.from({ length: 40 }, () => dabP('#ffffff', 6 + r() * 6, r() * 1100, r() * 520)), ...rectF('#f4f6fb', 0, 500, 1100, 700),
+    ...blobF('#ffffff', 550, 480, 135, 115), ...blobF('#ffffff', 550, 310, 88, 82), S_('#d63a3a', 26, [[480, 375], [620, 375]]), S_('#d63a3a', 22, [[600, 380], [630, 450]]), ...rectF('#1d1d1d', 495, 190, 605, 235), S_('#1d1d1d', 16, [[465, 240], [635, 240]]),
+    dabP('#1d1d1d', 16, 520, 295), dabP('#1d1d1d', 16, 580, 295), ...triF('#e5a13a', 552, 315, 552, 330, 620, 324), dabP('#1d1d1d', 14, 550, 450), dabP('#1d1d1d', 14, 550, 500), S_('#8a5a3c', 10, [[430, 440], [330, 380]]), S_('#8a5a3c', 10, [[670, 440], [770, 380]])]; } },
   dog: { name: 'biscuit', ops: () => [...rectF('#f7dc5a', 0, 0, 1100, 640), ...rectF('#7cc57f', 0, 620, 1100, 700), ...blobF('#8a5a3c', 380, 260, 70, 150), ...blobF('#8a5a3c', 720, 260, 70, 150), ...blobF('#c08a5a', 550, 380, 210, 190), ...blobF('#fbe7c6', 550, 470, 110, 80),
     dabP('#1d1d1d', 44, 470, 330), dabP('#1d1d1d', 44, 630, 330), dabP('#ffffff', 12, 480, 320), dabP('#ffffff', 12, 640, 320), ...blobF('#1d1d1d', 550, 430, 42, 30), S_('#1d1d1d', 8, [[550, 455], [550, 490], [510, 510]]), S_('#1d1d1d', 8, [[550, 490], [590, 510]]), ...blobF('#e55d9c', 550, 545, 30, 36)] },
 };
@@ -288,6 +305,8 @@ const PAINT_FOR = {
   'creme-laptop': 'beach', 'creme-tablet': 'flowers', 'dark-tv': 'night', 'devils-garden-tablet': 'mountains', 'golden-sunbreak-laptop': 'city', 'halftone-dimension-phone': 'cat',   // (the phone's narrow paper squashes it: not used on the wall)
  
   'halftone-dimension-tablet': 'fish', 'kuromi-dreamer-tablet': 'cake', 'light-laptop': 'house', 'morning-rounds-laptop': 'garden', 'strawberry-kitty-tv': 'rainbow', 'youcoded-tablet': 'dog',
+  // round 2 (no character themes): the freed cake and rainbow, the phone-only cat on a tablet, and the three new ones
+  'midnight-tablet': 'cake', 'youcoded-night-laptop': 'rainbow', 'golden-sunbreak-tablet': 'cat', 'dark-laptop': 'kite', 'devils-garden-tv': 'balloon', 'halftone-dimension-tv': 'snowman',
 };
 /** Paints `design` in the studio through its own controls (colour, size, the brush) and the real mouse. */
 async function paintIn(tab, design) {
@@ -329,6 +348,14 @@ const PLAN6B = {
   youcoded: [['tablet', 'chat'], ['laptop', 'chat'], ['tv', 'chat']], 'kuromi-dreamer': [['tablet', 'chat'], ['laptop', 'chat']],
 };
 for (const [k, v] of Object.entries(PLAN6B)) PLAN[k] = [...PLAN[k], ...v];
+// Round 2 of the film's review: Kuromi Dreamer and Strawberry Kitty are a real company's characters, so the shared board,
+// the TV's film night and the wall leave them; the neighbour's board moves to YouCoded Night and the TV's film night is
+// shot in two light themes to choose from; six more paint studios so roughly every third screen is something made.
+const PLAN9 = {
+  'youcoded-night': [['laptop', 'mine'], ['laptop', 'paint']], 'devils-garden': [['tv', 'mine'], ['tv', 'paint']], creme: [['tv', 'mine']],
+  midnight: [['tablet', 'paint']], 'golden-sunbreak': [['tablet', 'paint']], dark: [['laptop', 'paint']], 'halftone-dimension': [['tv', 'paint']],
+};
+for (const [k, v] of Object.entries(PLAN9)) PLAN[k] = [...PLAN[k], ...v];
 // WHY more phones (round 6 picker): the wall holds 63 phones, and with no repeats inside a frame it needs more phone
 // looks than the conversations alone give; an empty window in a theme shows that theme's wallpaper whole
 for (const k of ['kuromi-dreamer', 'strawberry-kitty', 'devils-garden', 'youcoded']) PLAN[k] = [...PLAN[k], ['phone', 'wake']];
@@ -371,7 +398,9 @@ async function shoot(look, shapeKey, focusKey) {
     await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(slug)})}catch{}` });
     const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: f.scenario ?? 'site', theme: slug, ...(z.platform ? { platform: z.platform } : {}), ...(f.params ?? {}) });
     if (f.empty) { q.set('seed', 'none'); q.set('title', 'new chat'); }
-    if (f.working) q.set('replySpeed', '0.02');   // WHY: the reply crawls, so the app is caught mid-work, never mid-answer
+    // (0.002 for the hero's own ask, round 2 review: at 0.02 the reply's first word, "Got", had already landed under the
+    // sent bubble, which read as a broken answer; this slower still shows only the bubble and the working line)
+    if (f.working) q.set('replySpeed', f.model ? '0.002' : '0.02');   // WHY: the reply crawls, so the app is caught mid-work, never mid-answer
     if (f.model) q.set('model', f.model);
     else if (f.seed) { q.set('replyClock', 'now'); }
     await tab.navigate(`${base}?${q}`);
@@ -410,6 +439,10 @@ async function shoot(look, shapeKey, focusKey) {
         const set = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(m), 'value').set; set.call(m, ${JSON.stringify(text)}); m.dispatchEvent(new Event('input', { bubbles: true })); })()`);
       await sleep(300);
       await tab.evaluate(`(() => { const m = document.querySelector("[placeholder^='Message']"); m.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true, cancelable: true })); })()`);
+      // WHY wait for a plain working word (round 2 review: the app's rotating line said "Perplexing", which reads as odd to a
+      // stranger): the app picks a new word every few seconds; the picture is taken while it shows a plain one
+      // (the word changes every 2.5 s, so once a plain one is up the picture is taken at once, not after the usual pause)
+      if (f.model) await waitFor(tab, `/\\b(Thinking|Pondering|Mulling it over|Working)\\b/.test(document.body.innerText)`, 90000);
     }
     if (f.focusBox && !f.typed) await tab.evaluate(`document.querySelector("[placeholder^='Message']").focus()`);
     // WHY wait on the theme font: a late web font would change the picture's typeface between shots
@@ -463,7 +496,7 @@ async function shoot(look, shapeKey, focusKey) {
       console.log('ok typed', base, ASK_USED.length, 'strips, heights', [...new Set(lines)]);
       return;
     }
-    await sleep(2200);
+    if (!(f.working && f.model)) await sleep(2200);
     const info = await tab.evaluate(`(() => { const e = document.querySelector("[placeholder^='Message']"); const r = e ? (e.closest('form') || e.parentElement).getBoundingClientRect() : null;
       return { theme: document.documentElement.dataset.theme || '', box: r ? [r.left, r.top, r.width, r.height].map((n) => Math.round(n * ${z.dpr})) : null, w: innerWidth, h: innerHeight, font: e ? (() => { const c = getComputedStyle(e); return [c.fontFamily, c.fontSize, c.color, c.fontWeight, c.letterSpacing, c.paddingLeft].join(' | '); })() : '' }; })()`);
     writeFileSync(join(OUT, file), await tab.png());

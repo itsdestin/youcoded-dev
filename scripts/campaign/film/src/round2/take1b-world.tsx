@@ -168,17 +168,26 @@ const DAY_GRAIN = noiseDark('0.01 0.5', 2, 0.55, 512, 128);
  *  plaster back wall in the brand poster's own day wash (cream, peach, lilac; never purple-to-blue) with a real grain
  *  and the unit's seams, a warm pool of light where the person's phone is (the daylight opens out of it), falling off
  *  towards the edges, and light-oak shelves. `spread` 0..1 opens it out of (ox, oy) as a soft-edged circle. */
-export const DayRoom: React.FC<{ spread: number; ox: number; oy: number }> = ({ spread, ox, oy }) => {
+// devs: the devices in view, for the shadows the morning light casts behind them on the wall
+export const DayRoom: React.FC<{ spread: number; ox: number; oy: number; devs?: Dev[] }> = ({ spread, ox, oy, devs = [] }) => {
   if (spread <= 0) return null;
   const L = -REACH - 1400, T = -3 * ROW - 1500, R = REACH + 1400, B = 2 * ROW + 1400;
-  const rad = spread * 9000;
-  const m = spread >= 1 ? undefined : `radial-gradient(circle at ${ox - L}px ${oy - T}px, #000 ${Math.max(0, rad - 2600)}px, transparent ${rad}px)`;
+  // WHY a slower, tighter circle (round 2 review: it covered the visible frame in 0.3 s, an exposure flash): with the
+  // film's 1.8 s eased spread the light visibly travels out of the phone and reaches the frame's corners at the end
+  const rad = spread * 5200;
+  const m = spread >= 1 ? undefined : `radial-gradient(circle at ${ox - L}px ${oy - T}px, #000 ${Math.max(0, rad - 1700)}px, transparent ${rad}px)`;
   const seams: number[] = [];
   for (let x = -4200; x <= 4200; x += 1400) seams.push(x);
   return (
     <div style={{ position: 'absolute', left: L, top: T, width: R - L, height: B - T, WebkitMaskImage: m, maskImage: m }}>
       <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 38% 46% at ${ox - L}px ${oy - T + 200}px, #FFF3E2 0%, #FBE5DA 34%, #F2DDEC 64%, #E3CFE6 100%)` }} />
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: DAY_PLASTER, backgroundSize: '256px 256px', mixBlendMode: 'multiply', opacity: 0.55 }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: DAY_PLASTER, backgroundSize: '256px 256px', mixBlendMode: 'multiply', opacity: 0.8 }} />
+      {/* WHY one window light from the upper left (round 2 review: the daylit room had no direction, the same flat note the
+          owner gave the storybook): warm and bright where it falls, a cooler shade towards the lower right */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(128deg, rgba(255,236,200,0.5) 0%, rgba(255,226,190,0.18) 38%, rgba(140,110,160,0) 58%, rgba(96,76,128,0.2) 100%)', mixBlendMode: 'soft-light' }} />
+      {/* each device's shadow cast down and to the right on the wall behind it by that light */}
+      {devs.map((d) => <div key={`sh${d.id}`} style={{ position: 'absolute', left: d.cx - d.w / 2 - L + d.w * 0.05, top: d.cy - d.h / 2 - T + d.h * 0.07, width: d.w + 16, height: d.h + 16, borderRadius: 18,
+        boxShadow: `${d.w * 0.04}px ${d.h * 0.05}px ${Math.max(24, d.w * 0.09)}px rgba(92,52,72,0.3)` }} />)}
       {/* the morning light itself: a broad warm pool around the phone, and the room darkening towards its corners */}
       <div style={{ position: 'absolute', left: ox - L - 2600, top: oy - T - 1700, width: 5200, height: 3400, background: 'radial-gradient(closest-side, rgba(255,226,180,0.55), rgba(255,214,170,0.18) 55%, transparent)', mixBlendMode: 'screen' }} />
       <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 52% 62% at ${ox - L}px ${oy - T}px, transparent 40%, rgba(96,58,88,0.22) 100%)` }} />
@@ -270,7 +279,8 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
           fontFamily: DMSANS, fontWeight: 900, fontSize: 38 * scale, letterSpacing: '-0.04em', color: C.plum, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
           <span style={{ position: 'relative' }}>{text}
             {/* WHY a strike drawn left to right: "what it costs" is decided by us now; the old price is crossed out before it becomes "free" */}
-            {strike > 0 && <span style={{ position: 'absolute', left: '-6%', top: '52%', height: 6 * scale, borderRadius: 6 * scale, width: `${112 * strike}%`, background: C.purple }} />}
+            {/* (in the tag's own ink since round 2: purple belongs to the headline word alone) */}
+            {strike > 0 && <span style={{ position: 'absolute', left: '-6%', top: '50%', height: 4.5 * scale, borderRadius: 4 * scale, width: `${112 * strike}%`, background: C.plum }} />}
           </span>
         </div>
       </div>

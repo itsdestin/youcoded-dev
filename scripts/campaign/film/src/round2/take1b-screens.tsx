@@ -73,7 +73,9 @@ export const PhotoThumb: React.FC<{ w: number; h: number; v: number; r: number }
 };
 
 /** The three personal things on the same screen. */
-export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: number; k: number }> = ({ kind, w, h, k }) => {
+// personal: the person's own words (Sam, Mia). WHY false on other devices from line 7 (round 2 review): their things
+// live only on their phone; anyone else's old app shows plain placeholder words
+export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: number; k: number; personal?: boolean }> = ({ kind, w, h, k, personal = true }) => {
   const base: React.CSSProperties = { width: w, height: h, background: S.card, borderRadius: 3 * k, boxSizing: 'border-box', overflow: 'hidden', fontFamily: DMSANS };
   if (kind === 'photo') {
     const g = 2 * k, tw = (w - g * 4) / 3;
@@ -90,15 +92,15 @@ export const OwnCard: React.FC<{ kind: 'photo' | 'msg' | 'note'; w: number; h: n
     <div style={{ ...base, padding: 2.2 * k, display: 'flex', alignItems: 'center', gap: 2 * k }}>
       <div style={{ width: 7 * k, height: 7 * k, borderRadius: 7 * k, background: '#E7B7A3', flex: 'none' }} />
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: 3.6 * k, fontWeight: 700, color: S.ink }}>Sam</div>
-        <div style={{ fontSize: 3.3 * k, color: S.ink2, whiteSpace: 'nowrap' }}>running late, sorry!</div>
+        <div style={{ fontSize: 3.6 * k, fontWeight: 700, color: S.ink }}>{personal ? 'Sam' : 'Messages'}</div>
+        <div style={{ fontSize: 3.3 * k, color: S.ink2, whiteSpace: 'nowrap' }}>{personal ? 'running late, sorry!' : 'no new messages'}</div>
       </div>
     </div>
   );
   return (
     <div style={{ ...base, padding: 2.2 * k, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <div style={{ fontSize: 3.6 * k, fontWeight: 700, color: S.ink }}>Note</div>
-      <div style={{ fontSize: 3.3 * k, color: S.ink2, whiteSpace: 'nowrap' }}>pick up Mia at 3:15</div>
+      <div style={{ fontSize: 3.3 * k, color: S.ink2, whiteSpace: 'nowrap' }}>{personal ? 'pick up Mia at 3:15' : 'nothing today'}</div>
     </div>
   );
 };
@@ -184,9 +186,11 @@ export type SameProps = {
   share?: { o: number; on: number };
   /** the hero phone only: 0..1 outline on each of the person's three things as the receipt copies it out */
   outline?: { photo: number; msg: number; note: number };
+  /** false: plain placeholder words instead of the person's own (Sam, Mia) */
+  personal?: boolean;
 };
 
-export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, share, outline }) => {
+export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, share, outline, personal = true }) => {
   const k = Math.min(w, h) / 100;
   const L = sameLayout(w, h, lay);
   const P = L.portrait;
@@ -220,7 +224,7 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unloc
           outline); the switch takes exactly the title's place */}
       <div style={{ position: 'absolute', left: (P ? 0.07 : 0.25) * w, top: 0.075 * h, fontSize: 6 * k, fontWeight: 900, letterSpacing: '-0.03em', color: S.ink, opacity: share ? 1 - smooth(share.o * 1.5) : 1 }}>Good morning</div>
       {(['photo', 'msg', 'note'] as const).map((kind) => (
-        <div key={kind} style={box(L[kind], w, h)}><OwnCard kind={kind} w={L[kind].w * w} h={L[kind].h * h} k={k} /></div>
+        <div key={kind} style={box(L[kind], w, h)}><OwnCard kind={kind} w={L[kind].w * w} h={L[kind].h * h} k={k} personal={personal} /></div>
       ))}
       {[0, 1, 2, 3, 4, 5].map((i) => {
         const x = g.x * w + (i % cols) * (tw + gx), y = g.y * h + Math.floor(i / cols) * (th + gx);
@@ -305,19 +309,32 @@ const LIB: [string, number][] = [
   ['creme-laptop-chat', 218], ['creme-phone-chat', 208], ['creme-tablet-chat', 217], ['creme-tv-chat', 221], ['creme-tablet-paint', 200], ['creme-phone-wake', 233],
   ['dark-laptop-chat', 33], ['dark-phone-chat', 44], ['dark-tablet-chat', 35], ['dark-tv-chat', 31], ['dark-tv-paint', 70],
   ['devils-garden-laptop-chat', 131], ['devils-garden-phone-chat', 126], ['devils-garden-tablet-chat', 128], ['devils-garden-tv-chat', 135],
-  ['golden-sunbreak-laptop-chat', 88], ['golden-sunbreak-tablet-chat', 88], ['golden-sunbreak-tv-chat', 93], ['golden-sunbreak-laptop-paint', 110],
+  ['golden-sunbreak-laptop-chat', 88], ['golden-sunbreak-tablet-chat', 88], ['golden-sunbreak-tv-chat', 93], ['golden-sunbreak-laptop-paint', 110], ['golden-sunbreak-tablet-paint', 87],
   ['halftone-dimension-laptop-chat', 27], ['halftone-dimension-phone-chat', 33], ['halftone-dimension-tablet-chat', 28], ['halftone-dimension-tv-chat', 27], ['halftone-dimension-tablet-paint', 110],
-  ['kuromi-dreamer-laptop-chat', 183], ['kuromi-dreamer-phone-chat', 185], ['kuromi-dreamer-tablet-chat', 184], ['kuromi-dreamer-tv-chat', 182], ['kuromi-dreamer-tablet-paint', 190],
   ['light-laptop-chat', 222], ['light-phone-chat', 211], ['light-tablet-chat', 221], ['light-tv-chat', 225], ['light-laptop-paint', 200], ['light-phone-wake', 237],
   ['midnight-laptop-chat', 32], ['midnight-phone-chat', 41], ['midnight-tablet-chat', 33], ['midnight-tv-chat', 30],
   ['morning-rounds-laptop-chat', 205], ['morning-rounds-phone-chat', 192], ['morning-rounds-tablet-chat', 202], ['morning-rounds-tv-chat', 207], ['morning-rounds-laptop-paint', 200], ['morning-rounds-phone-wake', 205],
-  ['strawberry-kitty-laptop-chat', 209], ['strawberry-kitty-phone-chat', 210], ['strawberry-kitty-tablet-chat', 209], ['strawberry-kitty-tv-paint', 200],
   ['youcoded-laptop-chat', 198], ['youcoded-phone-chat', 194], ['youcoded-tablet-chat', 197], ['youcoded-tv-chat', 198], ['youcoded-tablet-paint', 200],
   ['youcoded-night-laptop-chat', 56], ['youcoded-night-phone-chat', 60],
-  ['kuromi-dreamer-phone-wake', 179], ['strawberry-kitty-phone-wake', 209], ['devils-garden-phone-wake', 153], ['youcoded-phone-wake', 198],
+  ['devils-garden-phone-wake', 153], ['youcoded-phone-wake', 198],
+  // round 2 of the review: six more paint studios, each with its own painting, so about every third big screen is
+  // something a person made (take1b-library.mjs PLAN9)
+  ['youcoded-night-laptop-paint', 132], ['devils-garden-tv-paint', 127], ['midnight-tablet-paint', 123], ['dark-laptop-paint', 129], ['halftone-dimension-tv-paint', 83], ['devils-garden-tablet-paint', 99],
 ];
+// WHY no Kuromi Dreamer or Strawberry Kitty anywhere (round 2 review): their wallpapers are a real company's characters
+// (Kuromi, a Hello Kitty-style cat), which a public ad must not show. Their stills stay on disk, unused.
 const LUM = new Map(LIB);
 const THEMES = ['youcoded-night', 'youcoded', 'creme', 'light', 'dark', 'midnight', 'halftone-dimension', 'golden-sunbreak', 'devils-garden', 'kuromi-dreamer', 'strawberry-kitty', 'morning-rounds'];
+// the painting in each studio (take1b-library.mjs PAINT_FOR): a painting never twice in one frame, whatever its theme
+const PAINTING: Record<string, string> = {
+  'creme-laptop-paint': 'beach', 'creme-tablet-paint': 'flowers', 'dark-tv-paint': 'night', 'devils-garden-tablet-paint': 'mountains', 'golden-sunbreak-laptop-paint': 'city',
+  'halftone-dimension-tablet-paint': 'fish', 'light-laptop-paint': 'house', 'morning-rounds-laptop-paint': 'garden', 'youcoded-tablet-paint': 'dog',
+  'midnight-tablet-paint': 'cake', 'youcoded-night-laptop-paint': 'rainbow', 'golden-sunbreak-tablet-paint': 'cat', 'dark-laptop-paint': 'kite', 'devils-garden-tv-paint': 'balloon', 'halftone-dimension-tv-paint': 'snowman',
+};
+// WHY (round 2 review): at wall size these plain light conversations read as blank white rectangles with grey bars, and
+// on the daylit wall they melt into the plaster, so at most one of them may sit in any wide frame
+const FAMILY = (theme: string) => (theme === 'youcoded' || theme === 'youcoded-night' ? 'purple' : theme === 'light' || theme === 'creme' ? 'pale' : theme === 'dark' || theme === 'midnight' || theme === 'halftone-dimension' ? 'dark' : theme);
+const PALE = (n: string) => focusOf(n) !== 'paint' && /^(light|creme|youcoded)-/.test(n) && !n.startsWith('youcoded-night');
 const themeOf = (name: string) => THEMES.filter((t) => name.startsWith(`${t}-`)).sort((a, b) => b.length - a.length)[0] ?? name;
 const shapeOf = (name: string) => (name.match(/-(phone|tablet|laptop|tv)-/)?.[1] ?? 'tv') as Shape;
 const focusOf = (name: string) => name.slice(name.lastIndexOf('-') + 1);
@@ -337,11 +354,16 @@ const FIXED: Record<string, string> = {
   lockLaptop: 'creme-laptop-paint',              // "what our computers can do": the padlocks fall and it opens into a paint studio ("beach day")
   // "what it costs": the tag turns to free and it opens into a conversation in Devil's Garden. WHY not the plan's
   // home page (round 6 review): the home dashboard is not in the app (brand guide 9)
-  tagTablet: 'devils-garden-tablet-chat',
+  // (round 2: a fish tank someone painted, in Halftone Dimension; Devil's Garden is now the TV's own look, and the
+  // payoff screens must not share a theme in the final wide)
+  tagTablet: 'halftone-dimension-tablet-paint',
   // WHY the TV's own film night (round 6 review: it used to open on a copy of the laptop's painting; the plan's
   // light-tv-media shows a real video service's logo): a family's thing, unmistakably someone's own, no brands
-  tv: 'strawberry-kitty-tv-mine',
-  '0:l0': 'kuromi-dreamer-laptop-chat',          // a neighbour on "who"; the shared board arrives here in its own Kuromi look
+  // (round 2: re-shot in Devil's Garden's sunlit desert; the Strawberry Kitty copy showed a real company's character)
+  tv: 'devils-garden-tv-mine',
+  // a neighbour on "who": their own rainbow painting (WHY, round 2 look check: the YouCoded Night chat read as plain purple
+  // wallpaper at this size); the shared board arrives here later in the same YouCoded Night look
+  '0:l0': 'youcoded-night-laptop-paint',
   '0:r1': 'morning-rounds-phone-chat',           // a neighbour on "who"; the shared board arrives here in Morning Rounds
   '-1:l0': 'youcoded-phone-chat',                // the third neighbour on "who", on the shelf above, clear of the headline
 };
@@ -368,7 +390,8 @@ const LOOKS: Map<string, Look> = (() => {
     // WHY no near-black still on a device the lateral track passes or next to a story device (round 6 review: a black
     // empty window in the middle of the track read as a dead screen, which is the TV's job alone)
     const tracked = d.row >= -1 && d.row <= 1 && Math.abs(d.cx) < 2400;
-    const cands = LIB.map(([n]) => n).filter((n) => shapeOf(n) === shape && !((nearStory || tracked) && (LUM.get(n) ?? 255) < 60));
+    // (a dark conversation, bubbles and all, may sit on the track since round 2; only the darkest, near-empty windows may not)
+    const cands = LIB.map(([n]) => n).filter((n) => shapeOf(n) === shape && !((nearStory && (LUM.get(n) ?? 255) < 60) || (tracked && (LUM.get(n) ?? 255) < 40)));
     // WHY two reaches: within a frame's width on this shelf and the next, and a little closer two shelves away (a frame
     // of the track holds about two and a half shelves)
     // (a frame of the track is about 1830 wide; 2000 keeps a margin)
@@ -377,16 +400,22 @@ const LOOKS: Map<string, Look> = (() => {
     // WHY the page too (round 6 look check): two climate pages side by side read as one screen copied, even in two themes
     const ok = (n: string) => !reach.some((o) => out.get(o.id)!.key === n) && !near.some((o) => out.get(o.id)!.theme === themeOf(n) || (focusOf(n) !== 'chat' && focusOf(out.get(o.id)!.key) === focusOf(n)));
     // WHY a penalty on pages: the plan wants conversations and paint studios to carry the wall
-    const page = (n: string) => (focusOf(n) === 'paint' ? -0.2 : focusOf(n) === 'chat' ? 0 : 0.5) + ((LUM.get(n) ?? 255) < 60 ? 0.7 : 0);
+    // (paint studios favoured harder since round 2: "people make things" has to read across the daylit wall)
+    const page = (n: string) => (focusOf(n) === 'paint' ? -1.2 : focusOf(n) === 'chat' ? 0 : 0.5) + ((LUM.get(n) ?? 255) < 60 ? 0.7 : 0);
     // WHY a cost for every screen in the same theme within a frame (round 6 look check: Kuromi's patterned wallpaper
     // turned up eight times in one wide, in different shapes, and read as one screen copied); and a small one on the
     // plain Light theme, which on the wall reads as a blank white rectangle
     // (counted over a whole wide frame: the shelf above and below too, about two frame-widths across)
     const wide = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 3 && Math.abs(o.cx - d.cx) < 3400);
-    const sameTheme = (n: string) => wide.filter((o) => out.get(o.id)!.theme === themeOf(n)).length * 0.8 + (themeOf(n) === 'light' ? 0.4 : 0);
+    // (round 2 review: Kuromi and Strawberry Kitty turned up four times each in one daylit wide at 0.8 a repeat, so the
+    // wall read as one pastel colour): a repeat in the same wide frame now costs more than any other preference
+    // (and a family cost after the round 2 look check: YouCoded and YouCoded Night both read lilac-purple on the wall, so
+    // together they still turned the daylit wide purple)
+    const sameTheme = (n: string) => wide.filter((o) => out.get(o.id)!.theme === themeOf(n)).length * 2.4 + wide.filter((o) => FAMILY(out.get(o.id)!.theme) === FAMILY(themeOf(n))).length * 1.2
+      + (PALE(n) ? 0.8 + 3 * wide.filter((o) => PALE(out.get(o.id)!.key)).length : 0);
     // WHY a painting never twice in a wide frame (round 6 look check: the fish tank turned up three times): each one is
     // a picture someone made, and a copy of it reads as copy-paste
-    const paintSeen = (n: string) => focusOf(n) === 'paint' && wide.some((o) => out.get(o.id)!.key === n);
+    const paintSeen = (n: string) => focusOf(n) === 'paint' && wide.some((o) => PAINTING[out.get(o.id)!.key] === PAINTING[n]);
     const order = cands.map((n) => ({ n, k: (used.get(n) ?? 0) + page(n) + sameTheme(n) + r() * 0.9 })).sort((a, b) => a.k - b.k).map((x) => x.n);
     const pick = order.find((n) => ok(n) && !paintSeen(n)) ?? order.find(ok) ?? order.find((n) => !reach.some((o) => out.get(o.id)!.key === n)) ?? order[0];
     out.set(d.id, look(pick));
