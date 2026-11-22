@@ -422,7 +422,9 @@ const FAR = { x: 215, y: 420, s: 0.52, n: 6, w: 300 };
 const FAR_TOP = FAR.y - FAR.n * TOWER_SLAB * FAR.s;
 const VI = {
   maya: { x: 165, y: 870, s: 1.9 }, mayaWin: { x: 480, y: 662, w: 420 },
-  theo: { x: 875, y: 400, s: 1.3 }, theoWin: { x: 1268, y: 252, w: 312 },
+  // WHY Theo 26 higher (integration check): his ground line sat under the first line of June's ask, so the
+  // words ran through it and he seemed to stand on her question
+  theo: { x: 875, y: 374, s: 1.3 }, theoWin: { x: 1268, y: 232, w: 312 },
   june: { x: 875, y: 676, s: 1.55 }, juneWin: { x: 1268, y: 520, w: 312 },
 };
 const VI_L = land(TURN.anyone);
@@ -457,7 +459,9 @@ const AnyoneArt: React.FC = () => {
     { t: JUNE_WIN.a + JUNE_WIN.draw * 0.8, x: jw.x0, y: jw.y1, r: -14, s: 0.8 },
     { t: JUNE_WIN.a + JUNE_WIN.draw, x: jw.x0 + 10, y: jw.y0 + 30, r: -14, s: 0.8 },
     // "asks": it settles above June and stays there, idling, until the page turns
-    { t: Q.asks, x: VI.june.x + 50, y: VI.june.y - VI.june.s * 120, z: 70, r: 8, s: 0.8, ease: EASE_OUT },
+    // WHY beside her raised hand rather than over her head (integration check): over her head it sat on the
+    // words of her ask for the whole held frame; here it is clear of text and still plainly hers
+    { t: Q.asks, x: VI.june.x + 108, y: VI.june.y - VI.june.s * 44, z: 56, r: 8, s: 0.8, ease: EASE_OUT },
   ]), t);
   const qp = pin(q, t, [{ win: VI.theoWin, a: THEO_WIN.a, draw: THEO_WIN.draw }, { win: VI.juneWin, a: JUNE_WIN.a, draw: JUNE_WIN.draw }]);
   return (
@@ -488,7 +492,7 @@ const AnyoneArt: React.FC = () => {
       <Floor x0={800} x1={1120} y={VI.june.y} />
       <Hero who="june" x={VI.june.x} y={VI.june.y} s={VI.june.s} a={-10} bloom={juneBloom} mood={juneBloom > 0.3 ? 'smile' : 'flat'}
         pose={juneBloom > 0.3 ? 'up' : 'down'} bob={jolt(t, JUNE_WIN.content + 0.1, -8, 0.5)} />
-      <Ask lines={['somewhere private', 'for my photos', 'and letters?']} x={VI.june.x - 92} y={VI.june.y - VI.june.s * 120 - 82} at={JUNE_ASK.at} dur={JUNE_ASK.dur} size={29} />
+      <Ask lines={['somewhere private', 'for my photos', 'and letters?']} x={VI.june.x - 92} y={VI.june.y - VI.june.s * 120 - 70} at={JUNE_ASK.at} dur={JUNE_ASK.dur} size={29} />
       <ThemedWindow theme="cotton" what="keepsakes" x={VI.juneWin.x} y={VI.juneWin.y} w={VI.juneWin.w} a={JUNE_WIN.a} draw={JUNE_WIN.draw} contentAt={JUNE_WIN.content} r={-1.5} />
       <FlyQuill q={qp} idle={qp === q} />
     </Sheet>

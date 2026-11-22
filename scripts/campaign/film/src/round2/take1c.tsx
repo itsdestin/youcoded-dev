@@ -79,9 +79,12 @@ const SHOTS: Shot[] = [
   // dragged in; close on the inkwell as the quill rises; the medium as they turn to it; close for the treasure
   cut(CUT.hubris, 300, 430, 2.0, 11), at(CUT.these - 0.01, 300, 420, 1.96, 11),
   cut(CUT.these, 430, 585, 1.8, 14), at(Q.artificial - 0.07, 440, 585, 1.86, 14),
-  cut(Q.artificial - 0.05, TM.well.x + 18, 470, 2.7, 12), at(Q.aTechnology - 0.07, TM.well.x + 20, 466, 2.8, 12),
+  // WHY the inkwell close sits higher and the treasure close a step left (integration check): framed as before,
+  // half of Maya's head peeked in at the bottom-right corner of the one and at the right edge of the other, which
+  // read as a cropping mistake. Now she is wholly out of both close-ups until the medium on "but" shows her.
+  cut(Q.artificial - 0.05, TM.well.x - 22, 420, 2.7, 12), at(Q.aTechnology - 0.07, TM.well.x - 20, 416, 2.8, 12),
   cut(Q.aTechnology - 0.05, 440, 545, 1.62, 14), at(Q.greatTreasure - 0.07, 446, 545, 1.68, 14),
-  cut(Q.greatTreasure - 0.05, 432, 474, 2.2, 13), at(Q.but - 0.07, 436, 472, 2.28, 13),
+  cut(Q.greatTreasure - 0.05, 390, 474, 2.2, 13), at(Q.but - 0.07, 394, 472, 2.28, 13),
   // "but": the medium that shows the hats, the quill and Maya waiting small across the gutter; on "control" the
   // camera whip-pans after the quill to her (the motion blur is measured from the move in useWhip)
   cut(Q.but - 0.05, 620, 600, 1.6), at(Q.control - 0.02, 640, 600, 1.66),
