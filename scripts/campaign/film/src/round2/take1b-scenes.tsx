@@ -55,18 +55,22 @@ export const receiptLen = (t: number, back = 0) => {
   // WHY each row feeds out in the third of a second before its line is due, and is whole a tenth before the word
   // (review: the new line was still half inside the phone for its first frames as the word was spoken)
   for (const l of RLINES) len += rowH(l) * ez(t, l.at - 0.36, l.at - 0.08, EASE_IN_OUT);
-  return len > 0 ? (len + 8) * (1 - back) : 0;
+  // WHY 14 below the last line (review: the last line sat on the torn edge): a clear margin of paper under it
+  return len > 0 ? (len + 14) * (1 - back) : 0;
 };
 /** The paper's bottom edge in world y (the camera follows it down in the receipt shots). */
 export const receiptBottom = (t: number) => R_TOP + receiptLen(t);
-export const ShelfReceipt: React.FC<{ t: number; dim?: number; back?: number }> = ({ t, dim = 0, back = 0 }) => {
+export const ShelfReceipt: React.FC<{ t: number; dim?: number; back?: number; fade?: number }> = ({ t, dim = 0, back = 0, fade = 0 }) => {
   const len = receiptLen(t, back);
   if (len <= 0.5) return null;
+  // WHY it thins out over its last few px as it rolls in (review: a row of torn teeth hung under the phone for several
+  // frames like a leftover): the end disappears cleanly into the phone's bottom edge
+  const tail = back > 0 ? cl(len / 16) : 1;
   const teeth = Array.from({ length: 21 }, (_, i) => `${i * 5}% ${i % 2 ? '100%' : 'calc(100% - 4px)'}`).join(',');
   return (
     <div style={{ position: 'absolute', left: HERO.cx - R_W / 2, top: R_TOP, width: R_W, height: len, overflow: 'hidden',
       // WHY a filter, not an overlay: when the room hushes the paper keeps only the faint light of its own phone
-      filter: `brightness(${1 - 0.55 * dim}) drop-shadow(0 6px 7px rgba(6,2,12,0.55))` }}>
+      opacity: tail * (1 - fade), filter: `brightness(${1 - 0.55 * dim}) drop-shadow(0 6px 7px rgba(6,2,12,0.55))${fade > 0.01 ? ` blur(${fade * 1.5}px)` : ''}` }}>
       <div style={{ position: 'absolute', inset: 0, clipPath: `polygon(0 0,100% 0,${teeth.split(',').reverse().join(',')})` }}>
         {/* the paper: warm white, a slot shadow where it leaves the phone, the bend over the plank's front edge (a
             bright crease at 2..6 px), a little shade down the plank's face where the shelf's own lip shadows it

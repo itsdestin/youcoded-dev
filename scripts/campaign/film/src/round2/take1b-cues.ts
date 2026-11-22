@@ -110,6 +110,7 @@ export const Q = {
   whatHappens: at('*what happens with'),
   computers2: at('our *computers can'),
   costsWord: at('it *costs.'),
+  can: at('computers *can do.'),
   ourDataEnd: end('our *data.'),
   // (8) It's time to free ourselves from the tech monopolies of the past.
   free: at("*It's time to free"),
@@ -121,6 +122,7 @@ export const Q = {
   timeWord: at("It's *time, at"),
   longFirst: at('at *long, long'),
   longLast: at('long, *long last...'),
+  last: at('long *last...'),
   open: at('to *open source'),
   everythingEnd: end('source *everything.'),
 } as const;

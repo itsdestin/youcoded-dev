@@ -155,6 +155,38 @@ export const BackWall: React.FC<{ night: number }> = ({ night }) => {
   );
 };
 
+// a darker grain for the daylit plaster and wood (the night tiles are light specks for a dark surface)
+const noiseDark = (freq: string, oct: number, alpha: number, w = 256, h = 256) =>
+  `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='${freq}' numOctaves='${oct}' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.22  0 0 0 0 0.25  0 0 0 ${alpha} 0'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`)}")`;
+const DAY_PLASTER = noiseDark('0.8', 3, 0.5);
+const DAY_GRAIN = noiseDark('0.01 0.5', 2, 0.55, 512, 128);
+
+/** The room by day (line 8 on). WHY (round 6 review: the daylight wall was a flat near-white lavender, devices like
+ *  stickers on a backdrop, the "extremely flat" look the owner rejected): the same room in morning light. A warm
+ *  plaster back wall in the brand poster's own day wash (cream, peach, lilac; never purple-to-blue) with a real grain
+ *  and the unit's seams, a warm pool of light where the person's phone is (the daylight opens out of it), falling off
+ *  towards the edges, and light-oak shelves. `spread` 0..1 opens it out of (ox, oy) as a soft-edged circle. */
+export const DayRoom: React.FC<{ spread: number; ox: number; oy: number }> = ({ spread, ox, oy }) => {
+  if (spread <= 0) return null;
+  const L = -REACH - 1400, T = -3 * ROW - 1500, R = REACH + 1400, B = 2 * ROW + 1400;
+  const rad = spread * 9000;
+  const m = spread >= 1 ? undefined : `radial-gradient(circle at ${ox - L}px ${oy - T}px, #000 ${Math.max(0, rad - 2600)}px, transparent ${rad}px)`;
+  const seams: number[] = [];
+  for (let x = -4200; x <= 4200; x += 1400) seams.push(x);
+  return (
+    <div style={{ position: 'absolute', left: L, top: T, width: R - L, height: B - T, WebkitMaskImage: m, maskImage: m }}>
+      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 38% 46% at ${ox - L}px ${oy - T + 200}px, #FFF3E2 0%, #FBE5DA 34%, #F2DDEC 64%, #E3CFE6 100%)` }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: DAY_PLASTER, backgroundSize: '256px 256px', mixBlendMode: 'multiply', opacity: 0.55 }} />
+      {/* the morning light itself: a broad warm pool around the phone, and the room darkening towards its corners */}
+      <div style={{ position: 'absolute', left: ox - L - 2600, top: oy - T - 1700, width: 5200, height: 3400, background: 'radial-gradient(closest-side, rgba(255,226,180,0.55), rgba(255,214,170,0.18) 55%, transparent)', mixBlendMode: 'screen' }} />
+      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 52% 62% at ${ox - L}px ${oy - T}px, transparent 40%, rgba(96,58,88,0.22) 100%)` }} />
+      {seams.map((x) => <div key={x} style={{ position: 'absolute', left: x - L - 4, top: 0, bottom: 0, width: 8,
+        background: 'linear-gradient(90deg, rgba(110,70,90,0) 0%, rgba(110,70,90,0.16) 45%, rgba(110,70,90,0.16) 55%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0) 100%)' }} />)}
+      <div style={{ position: 'absolute', left: -L, top: -T }}><Shelves night={0} /></div>
+    </div>
+  );
+};
+
 /** The shelves: thick wooden planks, a lit top edge that catches the screens' light, a darker grained front face and
  *  a deep soft shadow on the wall beneath. By day a pale painted version. */
 export const Shelves: React.FC<{ night: number }> = ({ night }) => (
@@ -169,12 +201,14 @@ export const Shelves: React.FC<{ night: number }> = ({ night }) => (
         <React.Fragment key={`${i}-${j}`}>
           {/* the shadow the plank throws on the wall under it */}
           <div style={{ position: 'absolute', left: a, width: b - a, top: s.y + PLANK - 4, height: 120,
-            background: `linear-gradient(180deg, rgba(${n ? '4,1,8,0.8' : '74,38,110,0.2'}) 0%, rgba(${n ? '4,1,8,0.35' : '74,38,110,0.06'}) 35%, transparent 100%)` }} />
+            background: `linear-gradient(180deg, rgba(${n ? '4,1,8,0.8' : '92,52,60,0.34'}) 0%, rgba(${n ? '4,1,8,0.35' : '92,52,60,0.1'}) 35%, transparent 100%)` }} />
           {/* the front face, with its grain */}
           <div style={{ position: 'absolute', left: a, width: b - a, top: s.y, height: PLANK, borderRadius: 2,
-            background: n ? 'linear-gradient(180deg,#6A5060 0%,#4A3542 9%,#3A2933 22%,#2E2029 70%,#1E141B 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#F1E7F6 14%,#E6D8EF 100%)',
-            boxShadow: n ? '0 2px 0 rgba(0,0,0,0.4)' : 'none' }}>
-            {n && <div style={{ position: 'absolute', inset: 0, backgroundImage: GRAIN, backgroundSize: '512px 128px', mixBlendMode: 'overlay' }} />}
+            // by day: light oak, its top edge catching the morning light, darker towards the underside (round 6 review:
+            // the daylit shelves were faint grey lines)
+            background: n ? 'linear-gradient(180deg,#6A5060 0%,#4A3542 9%,#3A2933 22%,#2E2029 70%,#1E141B 100%)' : 'linear-gradient(180deg,#FFF6EA 0%,#EBD3B6 12%,#DDBE9C 30%,#CDA984 75%,#B48F6E 100%)',
+            boxShadow: n ? '0 2px 0 rgba(0,0,0,0.4)' : '0 2px 0 rgba(110,70,60,0.28)' }}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: n ? GRAIN : DAY_GRAIN, backgroundSize: '512px 128px', mixBlendMode: n ? 'overlay' : 'multiply', opacity: n ? 1 : 0.45 }} />
             {/* the lit front edge: a hairline that catches the light of the screens above it */}
             <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 3, background: n ? 'rgba(255,225,215,0.22)' : '#fff' }} />
           </div>
@@ -189,13 +223,14 @@ export const Shelves: React.FC<{ night: number }> = ({ night }) => (
 // =====================================================================================================
 /** `lower`: instead of dropping in 0.35 s, the tag is let down slowly on its string from `lower` until `drop`, when it
  *  lands and starts to swing (their treasure is lowered with ceremony). `len`: the string's length in world px. */
-export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; lower?: number; len?: number; anchored?: boolean; kicks?: number[] }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, lower, len: lenIn, anchored = false, kicks = [] }) => {
+export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; lower?: number; len?: number; rise?: number; anchored?: boolean; kicks?: number[]; fallDir?: number }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, lower, len: lenIn, rise: riseIn, anchored = false, kicks = [], fallDir = 1 }) => {
   if (t < (lower ?? drop)) return null;
   const dt = Math.max(0, t - drop);
   const enter = lower !== undefined ? Math.min(1, Math.max(0, (t - lower) / (drop - lower))) : Math.min(1, dt / 0.35);
   // WHY a gentle ease-out for the slow lowering: a hand letting a string down slows as it arrives
   // WHY ease-in for an anchored drop: the tag falls freely, accelerating, until its string snaps taut and catches it
-  const ease = lower !== undefined ? 1 - Math.pow(1 - enter, 2) : anchored ? enter * enter : 1 - Math.pow(1 - enter, 3);
+  // (a softer ease-out when a `rise` is given: the lowering is seen moving right up to the landing, not parked early)
+  const ease = lower !== undefined ? 1 - Math.pow(1 - enter, riseIn !== undefined ? 1.5 : 2) : anchored ? enter * enter : 1 - Math.pow(1 - enter, 3);
   // a damped swing: big first arc, settling within ~2 s, like a real tag on a string
   // WHY the arc scales with the string: a long string swings through a smaller angle, more slowly (a pendulum)
   const long = Math.min(1, (70 * scale) / (lenIn ?? 70 * scale));
@@ -212,13 +247,14 @@ export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number;
   }
   const fy = fall > 0 ? fall * fall * 1600 : 0;
   const len = lenIn ?? 70 * scale;
-  const rise = lower !== undefined ? len + 140 * scale : 300;
+  const rise = riseIn ?? (lower !== undefined ? len + 140 * scale : 300);
   // anchored: the string's top stays tied to (x, y) and only the tag drops; the string pays out behind it
   const off = (1 - ease) * rise;
   const strLen = anchored ? Math.max(0, len - off) : len;
   const tagTop = anchored ? len - off : len;
   return (
-    <div style={{ position: 'absolute', left: x, top: (anchored ? y : y - off) + fy, width: 0, height: 0, transform: `rotate(${swing + fall * 40}deg)`, transformOrigin: '0 0', opacity: fall > 0.8 ? 1 - (fall - 0.8) * 5 : 1 }}>
+    // fallDir -1: it swings and drifts the other way as it falls (the tablet's tag falls away from the person's phone)
+    <div style={{ position: 'absolute', left: x + (fallDir < 0 ? fall * 90 : 0), top: (anchored ? y : y - off) + fy, width: 0, height: 0, transform: `rotate(${swing + fall * 40 * fallDir}deg)`, transformOrigin: '0 0', opacity: fall > 0.8 ? 1 - (fall - 0.8) * 5 : 1 }}>
       {/* WHY a dark string (review: the pale one vanished against the bezel and the tag read as a floating sticker) */}
       {fall === 0 && strLen > 0 && <div style={{ position: 'absolute', left: -1.5 * scale, top: 0, width: 3 * scale, height: strLen, borderRadius: 2, background: 'rgba(42,31,51,0.9)', boxShadow: '0.5px 0 0 rgba(255,240,230,0.25)' }} />}
       <div style={{ position: 'absolute', left: -95 * scale, top: tagTop, width: 190 * scale, height: 92 * scale, transform: pulse ? `scale(${1 + 0.04 * pulse})` : undefined, transformOrigin: '50% 0',

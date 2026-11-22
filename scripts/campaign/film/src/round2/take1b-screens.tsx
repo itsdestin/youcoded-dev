@@ -121,7 +121,7 @@ const lockFall = (p: number) => {
 /** A padlock: a real-looking one (round 6 review: the old flat icon faded in place and read as a "disabled" state).
  *  A steel shackle with thickness, a body with a lit top edge, a dark keyhole, and a shadow on the tile that grows as
  *  it comes down. `off` 0..1 knocks it off (line 7). */
-const Lock: React.FC<{ s: number; p: number; off: number }> = ({ s, p, off }) => {
+export const Lock: React.FC<{ s: number; p: number; off: number }> = ({ s, p, off }) => {
   const L = lockFall(p);
   const gone = 1 - smooth(off * 1.6);
   const near = cl(1 + L.y / 1.8);                     // 0 high above, 1 on the tile
@@ -152,7 +152,7 @@ export type SameProps = {
   /** the layout, 0..2 (in between while every block slides to its new place) */
   lay?: number;
   /** padlocks: one arrival value for every locked tile, or one per tile; `unlock` 0..1 knocks them off */
-  lock?: number | number[]; unlock?: number;
+  lock?: number | number[]; unlock?: number | number[];
   /** 0..1 "Terms have changed" dialog; `accept` 0..1 its button pressed and the dialog gone */
   dialog?: number; accept?: number;
   /** the hero phone only: the "Share with partners" switch (`o` slides it in, `on` flips it) */
@@ -171,6 +171,9 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unloc
   const tw = (g.w * w - gx * (cols - 1)) / cols, th = (g.h * h - gx * (rows - 1)) / rows;
   const tileHues = ['#DCD3E6', '#D3C9DF', '#E2DBEA', '#CFC4DC', '#D9D0E4', '#CCC1D9'];
   const lockOf = (i: number) => (Array.isArray(lock) ? lock[i] ?? 0 : i % 3 !== 0 ? lock : 0);
+  // WHY per tile (round 6 review: the padlocks used to fade in place): once a tile's padlock is knocked off, the film
+  // draws that padlock out in the room (take1b.tsx LaptopLocks) so it can tumble past the screen's edge and the shelf
+  const unlockOf = (i: number) => (Array.isArray(unlock) ? unlock[i] ?? 0 : unlock);
   // the press: down over 3 frames, darker, up over 4 (accept runs over 0.6 s, so 0.167 per 3 frames), then the card
   // drops a few px as it fades. WHY (review): the old button only swapped its word, there was no press to see
   const press = accept <= 0 ? 0 : accept < 0.167 ? smooth(accept / 0.167) : 1 - smooth((accept - 0.167) / 0.22);
@@ -196,12 +199,12 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unloc
         const lk = lockOf(i);
         // WHY only once it has landed, and only 30% (review: the old full grey-out read as a generic "disabled" state;
         // the tile keeps its colour, it is simply locked)
-        const lo = (lk >= LOCK_LAND ? 1 : 0) * (1 - smooth(unlock));
+        const lo = (lk >= LOCK_LAND ? 1 : 0) * (1 - smooth(unlockOf(i)));
         return (
           <div key={i} style={{ position: 'absolute', left: x, top: y, width: tw, height: th, borderRadius: 3 * k, background: tileHues[i], display: 'flex', alignItems: 'center', justifyContent: 'center',
             filter: lo > 0 ? `saturate(${1 - 0.3 * lo}) brightness(${1 - 0.06 * lo})` : undefined }}>
             <div style={{ width: Math.min(tw, th) * 0.42, height: Math.min(tw, th) * 0.42, borderRadius: Math.min(tw, th) * 0.14, background: 'rgba(255,255,255,0.55)', opacity: 1 - 0.6 * lo }} />
-            {lk > 0 && <div style={{ position: 'absolute' }}><Lock s={Math.min(tw, th) * 0.62} p={lk} off={unlock} /></div>}
+            {lk > 0 && unlockOf(i) <= 0 && <div style={{ position: 'absolute' }}><Lock s={Math.min(tw, th) * 0.62} p={lk} off={0} /></div>}
           </div>
         );
       })}
@@ -256,23 +259,26 @@ export const shareKnob = (w: number, h: number) => { const k = Math.min(w, h) / 
 //    The drawn apps of earlier rounds (recipes, chores, birds...) are gone.
 // =====================================================================================================
 type Shape = 'phone' | 'tablet' | 'laptop' | 'tv';
-// Every library still the wall may use, by name (theme-shape-focus). Left out on purpose: the "media" pages (they
-// show a real video service's name and logo, which the brand bans), the empty/typing/working/hero stills (story
-// only), and the two themes the owner dislikes (never shot). The number is the still's mean brightness (0..255),
-// measured once; under 60 counts as near-black and is kept away from the story devices.
+// Every library still the wall may use, by name (theme-shape-focus), with its mean brightness (0..255, measured
+// once; under 60 counts as near-black). WHY only conversations, paint studios and empty windows (round 6 review, and
+// brand guide 9: the smart-home and money dashboards are not in the app and must never read as features): the wall says
+// "everyone's copy looks different" through the themes, and "people make things" through the studios, each with its
+// own painting. Left out on purpose: the "media" pages (a real video service's logo), the story-only stills, the
+// Golden Sunbreak phone (the hero's own look) and the two themes the owner dislikes (never shot).
 const LIB: [string, number][] = [
-  ['creme-laptop-home', 214], ['creme-laptop-paint', 204], ['creme-phone-lights', 216], ['creme-phone-money', 217], ['creme-tablet-chat', 217], ['creme-tablet-paint', 209], ['creme-tv-chat', 221],
-  ['dark-laptop-money', 36], ['dark-phone-home', 41], ['dark-tablet-chat', 35], ['dark-tv-paint', 128],
-  ['devils-garden-laptop-chat', 127], ['devils-garden-laptop-lights', 34], ['devils-garden-phone-climate', 36], ['devils-garden-phone-lights', 39], ['devils-garden-tablet-chat', 125], ['devils-garden-tablet-paint', 119], ['devils-garden-tv-home', 35],
-  ['golden-sunbreak-laptop-lights', 28], ['golden-sunbreak-laptop-paint', 118], ['golden-sunbreak-tablet-climate', 29], ['golden-sunbreak-tablet-money', 27], ['golden-sunbreak-tv-chat', 93],
-  ['halftone-dimension-laptop-money', 27], ['halftone-dimension-phone-home', 32], ['halftone-dimension-phone-paint', 44], ['halftone-dimension-tablet-chat', 26], ['halftone-dimension-tablet-home', 33], ['halftone-dimension-tablet-paint', 114],
-  ['kuromi-dreamer-laptop-climate', 174], ['kuromi-dreamer-phone-chat', 180], ['kuromi-dreamer-tablet-paint', 192], ['kuromi-dreamer-tv-chat', 177],
-  ['light-laptop-chat', 222], ['light-laptop-paint', 207], ['light-phone-lights', 222], ['light-tablet-climate', 188], ['light-tablet-money', 222], ['light-tv-home', 222],
-  ['midnight-laptop-home', 42], ['midnight-phone-chat', 42], ['midnight-tablet-climate', 37], ['midnight-tv-chat', 30],
-  ['morning-rounds-laptop-chat', 204], ['morning-rounds-laptop-home', 223], ['morning-rounds-laptop-paint', 207], ['morning-rounds-phone-chat', 189], ['morning-rounds-phone-home', 223], ['morning-rounds-tablet-home', 222], ['morning-rounds-tv-money', 227],
-  ['strawberry-kitty-phone-money', 206], ['strawberry-kitty-tablet-chat', 206], ['strawberry-kitty-tv-paint', 203],
-  ['youcoded-laptop-home', 217], ['youcoded-night-laptop-chat', 51], ['youcoded-night-phone-chat', 55], ['youcoded-night-tablet-home', 41], ['youcoded-night-tv-lights', 33],
-  ['youcoded-phone-chat', 189], ['youcoded-tablet-paint', 212], ['youcoded-tv-money', 221],
+  ['creme-laptop-chat', 218], ['creme-phone-chat', 208], ['creme-tablet-chat', 217], ['creme-tv-chat', 221], ['creme-tablet-paint', 200], ['creme-phone-wake', 233],
+  ['dark-laptop-chat', 33], ['dark-phone-chat', 44], ['dark-tablet-chat', 35], ['dark-tv-chat', 31], ['dark-tv-paint', 70],
+  ['devils-garden-laptop-chat', 131], ['devils-garden-phone-chat', 126], ['devils-garden-tablet-chat', 128], ['devils-garden-tv-chat', 135],
+  ['golden-sunbreak-laptop-chat', 88], ['golden-sunbreak-tablet-chat', 88], ['golden-sunbreak-tv-chat', 93], ['golden-sunbreak-laptop-paint', 110],
+  ['halftone-dimension-laptop-chat', 27], ['halftone-dimension-phone-chat', 33], ['halftone-dimension-tablet-chat', 28], ['halftone-dimension-tv-chat', 27], ['halftone-dimension-tablet-paint', 110],
+  ['kuromi-dreamer-laptop-chat', 183], ['kuromi-dreamer-phone-chat', 185], ['kuromi-dreamer-tablet-chat', 184], ['kuromi-dreamer-tv-chat', 182], ['kuromi-dreamer-tablet-paint', 190],
+  ['light-laptop-chat', 222], ['light-phone-chat', 211], ['light-tablet-chat', 221], ['light-tv-chat', 225], ['light-laptop-paint', 200], ['light-phone-wake', 237],
+  ['midnight-laptop-chat', 32], ['midnight-phone-chat', 41], ['midnight-tablet-chat', 33], ['midnight-tv-chat', 30],
+  ['morning-rounds-laptop-chat', 205], ['morning-rounds-phone-chat', 192], ['morning-rounds-tablet-chat', 202], ['morning-rounds-tv-chat', 207], ['morning-rounds-laptop-paint', 200], ['morning-rounds-phone-wake', 205],
+  ['strawberry-kitty-laptop-chat', 209], ['strawberry-kitty-phone-chat', 210], ['strawberry-kitty-tablet-chat', 209], ['strawberry-kitty-tv-paint', 200],
+  ['youcoded-laptop-chat', 198], ['youcoded-phone-chat', 194], ['youcoded-tablet-chat', 197], ['youcoded-tv-chat', 198], ['youcoded-tablet-paint', 200],
+  ['youcoded-night-laptop-chat', 56], ['youcoded-night-phone-chat', 60],
+  ['kuromi-dreamer-phone-wake', 179], ['strawberry-kitty-phone-wake', 209], ['devils-garden-phone-wake', 153], ['youcoded-phone-wake', 198],
 ];
 const LUM = new Map(LIB);
 const THEMES = ['youcoded-night', 'youcoded', 'creme', 'light', 'dark', 'midnight', 'halftone-dimension', 'golden-sunbreak', 'devils-garden', 'kuromi-dreamer', 'strawberry-kitty', 'morning-rounds'];
@@ -292,12 +298,16 @@ export const look = (name: string): Look => ({ still: r4(name), glow: hex(THEME_
 
 // The story's own devices get the stills their lines need (plan).
 const FIXED: Record<string, string> = {
-  lockLaptop: 'creme-laptop-paint',              // "what our computers can do": the padlocks fall and it opens into a paint studio
-  tagTablet: 'halftone-dimension-tablet-home',   // "what it costs": the tag turns to free
-  // WHY not the plan's light-tv-media: that capture shows a real video service's name and red logo (brand: no real logos)
-  tv: 'strawberry-kitty-tv-paint',
-  '0:l0': 'kuromi-dreamer-laptop-climate',       // a neighbour on "who"; the shared board arrives here in its own Kuromi look
-  '0:r1': 'morning-rounds-phone-home',           // a neighbour on "who"; the shared board arrives here in Morning Rounds
+  lockLaptop: 'creme-laptop-paint',              // "what our computers can do": the padlocks fall and it opens into a paint studio ("beach day")
+  // "what it costs": the tag turns to free and it opens into a conversation in Devil's Garden. WHY not the plan's
+  // home page (round 6 review): the home dashboard is not in the app (brand guide 9)
+  tagTablet: 'devils-garden-tablet-chat',
+  // WHY the TV's own film night (round 6 review: it used to open on a copy of the laptop's painting; the plan's
+  // light-tv-media shows a real video service's logo): a family's thing, unmistakably someone's own, no brands
+  tv: 'strawberry-kitty-tv-mine',
+  '0:l0': 'kuromi-dreamer-laptop-chat',          // a neighbour on "who"; the shared board arrives here in its own Kuromi look
+  '0:r1': 'morning-rounds-phone-chat',           // a neighbour on "who"; the shared board arrives here in Morning Rounds
+  '-1:l0': 'youcoded-phone-chat',                // the third neighbour on "who", on the shelf above, clear of the headline
 };
 
 /** A small seeded random generator. WHY seeded: the wall must come out the same on every render. */
@@ -319,22 +329,44 @@ const LOOKS: Map<string, Look> = (() => {
     if (out.has(d.id) || d.id === 'hero') continue;
     const shape: Shape = d.kind === 'monitor' ? 'tv' : (d.kind as Shape);
     const nearStory = WORLD.devs.some((o) => STORY_IDS.includes(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < (o.w + d.w) / 2 + 260);
-    const cands = LIB.map(([n]) => n).filter((n) => shapeOf(n) === shape && !(nearStory && (LUM.get(n) ?? 255) < 60));
+    // WHY no near-black still on a device the lateral track passes or next to a story device (round 6 review: a black
+    // empty window in the middle of the track read as a dead screen, which is the TV's job alone)
+    const tracked = d.row >= -1 && d.row <= 1 && Math.abs(d.cx) < 2400;
+    const cands = LIB.map(([n]) => n).filter((n) => shapeOf(n) === shape && !((nearStory || tracked) && (LUM.get(n) ?? 255) < 60));
     // WHY two reaches: within a frame's width on this shelf and the next, and a little closer two shelves away (a frame
     // of the track holds about two and a half shelves)
-    const reach = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && ((Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < 2600) || (Math.abs(o.row - d.row) === 2 && Math.abs(o.cx - d.cx) < 1500)));
+    // (a frame of the track is about 1830 wide; 2000 keeps a margin)
+    const reach = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && ((Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < 2000) || (Math.abs(o.row - d.row) === 2 && Math.abs(o.cx - d.cx) < 1200)));
     const near = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < (o.w + d.w) / 2 + 620);
     // WHY the page too (round 6 look check): two climate pages side by side read as one screen copied, even in two themes
     const ok = (n: string) => !reach.some((o) => out.get(o.id)!.key === n) && !near.some((o) => out.get(o.id)!.theme === themeOf(n) || (focusOf(n) !== 'chat' && focusOf(out.get(o.id)!.key) === focusOf(n)));
     // WHY a penalty on pages: the plan wants conversations and paint studios to carry the wall
-    const page = (n: string) => (['chat', 'paint'].includes(focusOf(n)) ? 0 : 0.8);
-    const order = cands.map((n) => ({ n, k: (used.get(n) ?? 0) + page(n) + r() * 0.9 })).sort((a, b) => a.k - b.k).map((x) => x.n);
-    const pick = order.find(ok) ?? order.find((n) => !reach.some((o) => out.get(o.id)!.key === n)) ?? order[0];
+    const page = (n: string) => (focusOf(n) === 'paint' ? -0.2 : focusOf(n) === 'chat' ? 0 : 0.5) + ((LUM.get(n) ?? 255) < 60 ? 0.7 : 0);
+    // WHY a cost for every screen in the same theme within a frame (round 6 look check: Kuromi's patterned wallpaper
+    // turned up eight times in one wide, in different shapes, and read as one screen copied); and a small one on the
+    // plain Light theme, which on the wall reads as a blank white rectangle
+    // (counted over a whole wide frame: the shelf above and below too, about two frame-widths across)
+    const wide = WORLD.devs.filter((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 3 && Math.abs(o.cx - d.cx) < 3400);
+    const sameTheme = (n: string) => wide.filter((o) => out.get(o.id)!.theme === themeOf(n)).length * 0.8 + (themeOf(n) === 'light' ? 0.4 : 0);
+    // WHY a painting never twice in a wide frame (round 6 look check: the fish tank turned up three times): each one is
+    // a picture someone made, and a copy of it reads as copy-paste
+    const paintSeen = (n: string) => focusOf(n) === 'paint' && wide.some((o) => out.get(o.id)!.key === n);
+    const order = cands.map((n) => ({ n, k: (used.get(n) ?? 0) + page(n) + sameTheme(n) + r() * 0.9 })).sort((a, b) => a.k - b.k).map((x) => x.n);
+    const pick = order.find((n) => ok(n) && !paintSeen(n)) ?? order.find(ok) ?? order.find((n) => !reach.some((o) => out.get(o.id)!.key === n)) ?? order[0];
     out.set(d.id, look(pick));
     used.set(pick, (used.get(pick) ?? 0) + 1);
   }
   return out;
 })();
+// WHY a check (round 6 review: the same capture showed up several times in one frame): no two devices that can share a
+// frame (the same shelf or the next, within a wide frame's width) may show the same still. Fails the render loudly.
+{
+  const ds = WORLD.devs.filter((d) => LOOKS.has(d.id));
+  for (const a of ds) for (const b of ds) {
+    if (a.id >= b.id) continue;
+    if (Math.abs(a.row - b.row) <= 1 && Math.abs(a.cx - b.cx) < 1900 && LOOKS.get(a.id)!.key === LOOKS.get(b.id)!.key) throw new Error(`take1b: ${a.id} and ${b.id} show the same still (${LOOKS.get(a.id)!.key}) in one frame`);
+  }
+}
 /** What a device shows once it is someone's own (the hero phone's own stills are chosen in take1b.tsx). */
 export const lookFor = (d: { id: string }): Look => LOOKS.get(d.id) ?? look('golden-sunbreak-tv-chat');
 /** For the render check: how many different stills the wall uses. */
