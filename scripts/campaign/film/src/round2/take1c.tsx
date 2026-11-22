@@ -57,20 +57,32 @@ const SHOTS: Shot[] = [
   // i (round six): open close on the tall hat, waist up, his crossbar in his hands and the dark field beyond the
   // page's top edge; a slow push back while the other two land beside him, then a pull back past the tower to the
   // whole spread from a low, steep angle as the strings pull tight on "dictated"
-  at(0, 372, 168, 3.3, 12), at(Q.small, 368, 174, 3.12, 12), at(Q.corporations1 + 0.3, 330, 330, 1.75, 15),
-  at(Q.dictated + 0.35, 742, 556, 1.12, 24), at(Q.technology1, 746, 560, 1.15, 24), at(TURN.rules - 0.05, 760, 505, 1.0, 18),
+  // WHY round seven: frame his chest and hands at the sharpest zoom the page holds, so the crossbar sits mid-frame
+  // and its slack strings fall straight down out of the frame; a slow push back that HOLDS while the other two
+  // land (a fast move fought the landings); then one smooth pull back and tilt from "corporations" to "dictated",
+  // the tilt capped at 20 so the book never seems to roll; and a slow creep in through the yanks, so the wide is
+  // never still while she talks
+  at(0, 296, 252, 3.2, 12), at(Q.handful + 0.56, 290, 290, 2.4, 12),
+  at(Q.interact - 0.05, 756, 528, 1.2, 20), at(Q.technology1 + 0.15, 752, 522, 1.3, 20), at(TURN.rules + 0.12, 760, 505, 1.04, 17),
   // ii: the wide of all three vignettes, then one hard cut per thing they decided, each on its word
   { t: L(1), ...H },
-  cut(Q.computersDo - 0.04, 384, 330, 2.3, 14), at(Q.cost - 0.07, 386, 334, 2.4, 14),
-  cut(Q.cost - 0.05, 392, 770, 2.3, 14), at(Q.data - 0.07, 394, 774, 2.4, 14),
-  cut(Q.data - 0.05, 1150, 640, 2.0), at(TURN.bargain - 0.02, 1146, 634, 2.08),
+  // WHY these framings (round seven review): each close-up showed half-cut neighbours at its edges (Theo's hat
+  // under Maya, the tall hat's feet over Theo, the left page's hats beside June); each now holds one vignette
+  cut(Q.computersDo - 0.04, 384, 296, 2.5, 14), at(Q.cost - 0.07, 386, 300, 2.58, 14),
+  cut(Q.cost - 0.05, 380, 800, 2.4, 14), at(Q.data - 0.07, 382, 804, 2.48, 14),
+  cut(Q.data - 0.05, 1196, 620, 2.3), at(TURN.bargain - 0.02, 1192, 616, 2.36),
   // WHY a cut to the wide as the page starts to turn: a fast pull back during the turn smears the leaf with motion blur
   cut(TURN.bargain, 736, 660, 1.22),
   // iii: the queue in depth; on "accepted" a slow push toward its front, where the heroes' ticks land last
-  at(L(2), 724, 680, 1.28), at(Q.accepted - 0.1, 716, 696, 1.34), at(TURN.nothing - 0.01, 590, 740, 1.6),
+  // WHY the push ends at 1.42 (round seven): pushed to 1.6 it slid the hat paying out the scroll off the frame
+  at(L(2), 724, 680, 1.28), at(Q.accepted - 0.1, 716, 696, 1.34), at(TURN.nothing - 0.01, 700, 700, 1.42),
   // Theo's room: a medium shot for the tags, the wide for "own nothing" (the headline's framing), in to June
-  cut(TURN.nothing, 380, 560, 1.9, 15), at(Q.own - 0.08, 385, 555, 1.98, 15),
-  cut(Q.own - 0.06, H.x, H.y, H.z), at(Q.costOf - 0.37, 770, 505, 1.03),
+  // WHY x 360 for the medium (round seven): further right, June's page peeked in at the frame's right edge.
+  // WHY the "own nothing" wide sits at ~1.4 on the left page (round seven): at the whole-book framing Theo's lifted
+  // things were thumbnails; at this framing his room fills the frame and the headline still lands on clean paper
+  // to the right of the gutter
+  cut(TURN.nothing, 360, 560, 1.9, 15), at(Q.own - 0.08, 365, 555, 1.98, 15),
+  cut(Q.own - 0.06, 714, 500, 1.36), at(Q.costOf - 0.37, 718, 505, 1.4),
   cut(Q.costOf - 0.35, 1130, 470, 1.75), at(TURN.however - 0.02, 1135, 476, 1.85),
   // iv: WHY a cut to a calm, nearly whole-book framing as the page turns (review 2026-11-20): the fast pull
   // back during the turn smeared the falling page with motion blur. Then a slow push in while the drop falls.
@@ -189,7 +201,9 @@ const HEADLINES = [
   { text: 'own *nothing.', at: Q.own, out: Q.costOf - 0.4, words: [Q.own, Q.nothing] },
   // WHY each word on its own spoken start, and out on the hard cut at "hubris" (review 2026-11-20): it used to
   // show "wonderful happened." a second before she said it, and leave while she was still saying it
-  { text: 'something *wonderful / happened.', at: Q.something, out: CUT.hubris, words: [Q.something, Q.wonderful, Q.happened], cutOut: true },
+  // WHY three rows (round seven): on two rows "something wonderful" was wider than the headline box and its first
+  // letter sat on the book's gutter; one word a row keeps the whole line on the right-hand page
+  { text: 'something / *wonderful / happened.', at: Q.something, out: CUT.hubris, words: [Q.something, Q.wonderful, Q.happened], cutOut: true },
   { text: 'for *anyone / who asks.', at: Q.forAnyone, out: TURN.ours - 0.04 },
   // WHY held through the book closing (review 2026-11-20): "everything." used to appear 0.85 s before she said
   // it, and to leave 1.4 s after. Now each word lands on its spoken start, and the line stays while the book

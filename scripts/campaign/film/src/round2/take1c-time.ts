@@ -14,6 +14,7 @@ export const Q = {
   technology1: T('technology1', 'your *technology.'),
   // (2) what they decided
   they: T('they', 'They decided'),
+  decided: T('decided', 'They *decided'),
   computersDo: T('computersDo', 'your *computers could do,'),
   cost: T('cost', 'what it would cost,'),
   costWord: T('costWord', 'would *cost,'),
@@ -34,6 +35,7 @@ export const Q = {
   convenienceEnd: E('convenienceEnd', 'of *convenience.'),
   // (4) the turn
   however: T('however', 'However, recently...'),
+  howeverEnd: E('howeverEnd', '*However, recently...'),
   recently: T('recently', 'However, *recently...'),
   recentlyEnd: E('recentlyEnd', 'However, *recently...'),
   something: T('something', 'something truly wonderful'),

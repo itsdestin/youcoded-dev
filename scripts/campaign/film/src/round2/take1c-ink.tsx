@@ -157,6 +157,11 @@ type HatProps = {
   girth?: number;          // body width (1 = the old figure)
   sway?: number;           // degrees the coat-tails swing about the shoulders
   noHat?: boolean;         // bare-headed: his hat is drawn elsewhere (in his hand)
+  // WHY these two (round seven): with blank heads and fixed arm poses the hats read as cut-outs. A small smug
+  // mouth under the dot eyes gives them a face (still graphic: no monocle or moustache), and `armTo` lets a scene
+  // put either hand exactly where the story needs it (flicking a tag, dusting off gloves), drawn with an elbow.
+  mouth?: 'smug' | 'flat';
+  armTo?: { l?: [number, number]; r?: [number, number] };   // hand targets in the figure's own units
 };
 export const HatFigure: React.FC<HatProps> = (props) => {
   const { enter = 'draw', a, b, x, y, s = 1, crown = 78 } = props;
@@ -165,7 +170,7 @@ export const HatFigure: React.FC<HatProps> = (props) => {
   }
   return <HatFigureInk {...props} />;
 };
-const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', look = 0, fist = 0, pocket = false, hatSx = 1, girth = 1, sway = 0, noHat = false }) => {
+const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', look = 0, fist = 0, pocket = false, hatSx = 1, girth = 1, sway = 0, noHat = false, mouth, armTo }) => {
   const e = b ?? a + 1;
   const k = (i: number) => a + (e - a) * i;  // stagger inside the drawing window
   // WHY a solid pale ink, not transparency (review 2026-11-20): drawn see-through, the faded handful let the
@@ -193,6 +198,18 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
     rub: [[-4, -117], [4, -117]], reach: [[-42, -90], [106, -197]], hold: [[-33, -112], [33, -112]],
     grab: [[54, -252], [98, -226]], pat: [[-42, -90], [22, -108]], shove: [[-42, -90], [86, -58]], stretch: [[-42, -90]], bare: [],
   };
+  // an arm sent to a target: from the shoulder, bowing outward through an elbow
+  const armPath = (side: -1 | 1, [hx, hy]: [number, number]) => {
+    const sx = side * 20, sy = -168;
+    const mx = (sx + hx) / 2 + side * 16, my = (sy + hy) / 2 + 10;
+    return `M ${sx} ${sy} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${hx.toFixed(1)} ${hy.toFixed(1)}`;
+  };
+  if (armTo) {
+    const ap = [...arms[pose]], hp = [...hands[pose]];
+    if (armTo.l) { ap[0] = armPath(-1, armTo.l); hp[0] = armTo.l; }
+    if (armTo.r) { ap[1] = armPath(1, armTo.r); hp[1] = armTo.r; }
+    arms[pose] = ap.filter(Boolean); hands[pose] = hp.filter(Boolean);
+  }
   const hatY = -212 + drop * 34;      // slides down over the faceless head
   return (
     <g transform={`translate(${x} ${y + bob}) scale(${(flip ? -1 : 1) * s} ${s}) rotate(${lean})`}>
@@ -220,6 +237,8 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
       {/* neck + faceless head */}
       <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} c={ink} w={2.6} ea={ea} /></g>
       {eyes === 'dots' && <Appear a={k(0.7)} out={ea}><circle cx={-4 + look * 5} cy={-199} r={2.4} fill={ink} /><circle cx={6 + look * 5} cy={-200} r={2.4} fill={ink} /></Appear>}
+      {mouth && <Appear a={k(0.7)} out={ea}><path d={mouth === 'smug' ? `M ${-3 + look * 5} -190 Q ${2 + look * 5} -187 ${8 + look * 5} -192` : `M ${-2 + look * 5} -190 L ${7 + look * 5} -190.5`}
+        stroke={ink} strokeWidth={2} fill="none" strokeLinecap="round" /></Appear>}
       {/* smug: eyes shut into two pleased downward arcs (chapter v, "blinded by their own hubris") */}
       {eyes === 'smug' && <Appear a={k(0.7)} out={ea}><path d={`M ${-8 + look * 5} -199 Q ${-4 + look * 5} -195 ${0 + look * 5} -199 M ${3 + look * 5} -200 Q ${7 + look * 5} -196 ${11 + look * 5} -200`} stroke={ink} strokeWidth={2.2} fill="none" strokeLinecap="round" /></Appear>}
       {eyes === 'coins' && [[-5, -199], [7, -200]].map(([cx, cy], i) => (
@@ -245,6 +264,17 @@ type PersonProps = {
   enter?: Enter;
   /** Seated: thighs forward, shins down past the seat (y is the seat height). WHY: Theo's armchair and June's stool. */
   sit?: boolean;
+  /** 0..1: blends the pose's arms toward both arms up. WHY (round seven): a yank on the strings used to switch
+   *  between two poses on a threshold, a one-frame pop; a continuous blend lets the arms jerk up and fall back. */
+  raise?: number;
+};
+/** Blend two SVG paths made of the same commands (only their numbers differ). */
+const lerpPath = (a: string, b: string, k: number) => {
+  if (k <= 0) return a;
+  const na = a.match(/-?\d*\.?\d+/g) ?? [], nb = b.match(/-?\d*\.?\d+/g) ?? [];
+  if (na.length !== nb.length) return k < 0.5 ? a : b;
+  let i = 0;
+  return a.replace(/-?\d*\.?\d+/g, () => { const v = +na[i] + (+nb[i] - +na[i]) * k; i++; return v.toFixed(1); });
 };
 export const Person: React.FC<PersonProps> = (props) => {
   const { enter = 'draw', a, b, x, y, s = 1, bob = 0 } = props;
@@ -253,7 +283,7 @@ export const Person: React.FC<PersonProps> = (props) => {
   }
   return <PersonInk {...props} />;
 };
-const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, hair = 'tuft', pose = 'down', mood = 'smile', flip, bob = 0, tilt = 0, ea, device = 'none', hairColor, sit = false }) => {
+const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, hair = 'tuft', pose = 'down', mood = 'smile', flip, bob = 0, tilt = 0, ea, device = 'none', hairColor, sit = false, raise = 0 }) => {
   const e = b ?? a + 0.7;
   const k = (i: number) => a + (e - a) * i;
   const hc = hairColor ?? P.ink;
@@ -277,7 +307,7 @@ const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, ha
       {!sit && <Appear a={k(0.2)} out={ea}><ellipse cx={0} cy={1 - bob / s} rx={20} ry={3.5} fill={P.ink} opacity={0.12} /></Appear>}
       <Ink d={sit ? 'M -8 -22 L 12 -20 L 13 6 M 6 -22 L 22 -20 L 23 6' : 'M -7 -1 L -6 -24 M 7 -1 L 6 -24'} a={k(0)} b={k(0.3)} w={4} ea={ea} />
       <Shape d="M -18 -22 C -21 -50 -15 -68 0 -69 C 15 -68 21 -50 18 -22 Q 0 -18 -18 -22 Z" a={k(0.15)} b={k(0.55)} fill={body} w={3} ea={ea} />
-      <Ink d={arms[pose]} a={k(0.4)} b={k(0.7)} w={3.6} ea={ea} />
+      <Ink d={lerpPath(arms[pose], arms.bothUp, Math.min(1, Math.max(0, raise)))} a={k(0.4)} b={k(0.7)} w={3.6} ea={ea} />
       {device === 'phone' && <Shape d="M -11 -50 h 22 v 15 h -22 Z" a={k(0.6)} b={k(0.8)} fill={P.paper} w={2.4} ea={ea} />}
       <Shape d="M -17 -85 a 17 17 0 1 0 34 0 a 17 17 0 1 0 -34 0" a={k(0.35)} b={k(0.7)} fill={P.paper} w={3} ea={ea} />
       {hair === 'bun' && <Shape d="M -7 -104 a 7 7 0 1 0 14 0 a 7 7 0 1 0 -14 0" a={k(0.6)} b={k(0.8)} fill={hc} w={2} ea={ea} />}
@@ -320,13 +350,17 @@ export const Padlock: React.FC<{ x: number; y: number; s?: number; at: number; o
   );
 };
 /** A price tag on a string; `prices` are re-inked one after another, each striking out the one before. */
-export const PriceTag: React.FC<{ x: number; y: number; s?: number; at: number; prices: { v: string; at: number }[]; strikeAll?: number; final?: { v: string; at: number; color: string }; swing?: number }> = ({ x, y, s = 1, at, prices, strikeAll, final, swing = 0 }) => {
+// WHY `two` (round seven): three stacked prices (two struck through) were clutter at phone size. With `two`, the tag
+// keeps only the new price under the one it replaced; the oldest fades and the rows slide up as each new one inks in.
+export const PriceTag: React.FC<{ x: number; y: number; s?: number; at: number; prices: { v: string; at: number }[]; strikeAll?: number; final?: { v: string; at: number; color: string }; swing?: number; two?: boolean }> = ({ x, y, s = 1, at, prices, strikeAll, final, swing = 0, two }) => {
   const t = useT();
   const p = pop(t, at, 0.55);
   if (p <= 0) return null;
   const sway = Math.sin((t - at) * 3.2) * 4 * Math.exp(-(t - at) * 0.7) + swing;
-  const h = 70 + prices.length * 30;
+  const h = 70 + (two ? Math.min(2, prices.length) : prices.length) * 30;
   const vis = prices.filter((q) => t >= q.at);
+  const nv = vis.length;
+  const slide = two && nv > 2 ? nv - 3 + lin(t, vis[nv - 1].at, vis[nv - 1].at + 0.25, EASE_IN_OUT) : 0;
   return (
     <g transform={`translate(${x} ${y}) scale(${s}) rotate(${sway})`} opacity={Math.min(1, p)}>
       <path d="M 0 -30 L 0 0" stroke={P.ink} strokeWidth={2} />
@@ -335,8 +369,9 @@ export const PriceTag: React.FC<{ x: number; y: number; s?: number; at: number; 
       {vis.map((q, i) => {
         const struck = i < vis.length - 1 || (strikeAll != null && t >= strikeAll);
         const sp = i < vis.length - 1 ? lin(t, vis[i + 1].at, vis[i + 1].at + 0.2) : strikeAll != null ? lin(t, strikeAll, strikeAll + 0.25) : 0;
-        const cy = 50 + i * 30;
-        const ink = lin(t, q.at, q.at + 0.22);
+        const cy = 50 + (i - slide) * 30;
+        const ink = lin(t, q.at, q.at + 0.22) * (two ? Math.max(0, Math.min(1, 1 - (slide - i))) : 1);
+        if (ink <= 0) return null;
         return (
           <g key={i} opacity={ink}>
             <text x={0} y={cy} textAnchor="middle" fontFamily={DMSANS} fontWeight={700} fontSize={20} fill={struck ? P.inkSoft : P.ink} letterSpacing="-0.02em">{q.v}</text>
@@ -474,19 +509,30 @@ export const TOWER_SLAB = 46;
 const SLAB_DX = [0, 14, -10, 16, -6, 10, -14, 6, -8];
 export const Tower: React.FC<{ x: number; y: number; w?: number; n?: number; s?: number; c?: string; fill?: string; wobble?: number }> = ({ x, y, w = 330, n = 6, s = 1, c = P.ink, fill = P.paper, wobble = 0 }) => (
   <g transform={`translate(${x} ${y}) scale(${s})`}>
-    <ellipse cx={0} cy={n * TOWER_SLAB + 4} rx={w * 0.58} ry={9} fill={P.ink} opacity={0.12} />
+    {/* WHY a long soft cast shadow as well as the contact one (round seven): the light comes from the upper left,
+        so a heavy tower throws its shadow down and to the right across the page; without it the tower read as a
+        flat outline pasted on the paper */}
+    <path d={`M ${-w * 0.42} ${n * TOWER_SLAB} L ${w * 0.52} ${n * TOWER_SLAB} L ${w * 1.02} ${n * TOWER_SLAB + 26} L ${-w * 0.02} ${n * TOWER_SLAB + 30} Z`} fill={P.ink} opacity={0.07} />
+    <ellipse cx={0} cy={n * TOWER_SLAB + 4} rx={w * 0.58} ry={9} fill={P.ink} opacity={0.14} />
     {Array.from({ length: n }).map((_, i) => {
       // drawn bottom first so each slab sits on the one below; the wobble grows toward the top
       const j = n - 1 - i;
       const dx = SLAB_DX[j % SLAB_DX.length] + wobble * (n - j) * 3;
       const top = j * TOWER_SLAB;
       const L = -w / 2 + dx;
+      const H = TOWER_SLAB;
+      const slab = `M ${L + 14} ${top} L ${L + w - 14} ${top} Q ${L + w} ${top} ${L + w} ${top + 14} L ${L + w} ${top + H - 6} Q ${L + w} ${top + H} ${L + w - 8} ${top + H} L ${L + 8} ${top + H} Q ${L} ${top + H} ${L} ${top + H - 6} L ${L} ${top + 14} Q ${L} ${top} ${L + 14} ${top} Z`;
       return (
         <g key={j}>
-          <path d={`M ${L + 14} ${top} L ${L + w - 14} ${top} Q ${L + w} ${top} ${L + w} ${top + 14} L ${L + w} ${top + TOWER_SLAB - 6} Q ${L + w} ${top + TOWER_SLAB} ${L + w - 8} ${top + TOWER_SLAB} L ${L + 8} ${top + TOWER_SLAB} Q ${L} ${top + TOWER_SLAB} ${L} ${top + TOWER_SLAB - 6} L ${L} ${top + 14} Q ${L} ${top} ${L + 14} ${top} Z`}
-            fill={fill} stroke={c} strokeWidth={3} strokeLinejoin="round" />
+          <path d={slab} fill={fill} stroke={c} strokeWidth={3} strokeLinejoin="round" />
+          {/* WHY a dark lip along each window's foot (round seven): it is the window's thickness, so the stack reads
+              as heavy objects piled up, not ruled lines; and the slab above casts a thin shadow onto this one */}
+          <path d={`M ${L + 3} ${top + H - 9} L ${L + w - 3} ${top + H - 9} L ${L + w - 3} ${top + H - 5} Q ${L + w - 3} ${top + H - 1.5} ${L + w - 9} ${top + H - 1.5} L ${L + 9} ${top + H - 1.5} Q ${L + 3} ${top + H - 1.5} ${L + 3} ${top + H - 5} Z`} fill={c} opacity={0.82} />
+          {j > 0 && <path d={`M ${L + 6} ${top + 1.5} L ${L + w - 6} ${top + 1.5} L ${L + w - 10} ${top + 7} L ${L + 10} ${top + 7} Z`} fill={c} opacity={0.16} />}
           {/* the title bar: its three dots and the line under it */}
           {[0, 1, 2].map((d) => <circle key={d} cx={L + 22 + d * 17} cy={top + 15} r={4.6} fill={c} />)}
+          {/* a sliver of each window's content under its title bar, so it reads as a window, not a drawer */}
+          <path d={`M ${L + 82} ${top + 15} L ${L + w * 0.62} ${top + 15}`} stroke={c} strokeWidth={4} strokeLinecap="round" opacity={0.22} />
           <path d={`M ${L + 3} ${top + 28} L ${L + w - 3} ${top + 28}`} stroke={c} strokeWidth={2} opacity={0.45} />
         </g>
       );
@@ -494,19 +540,43 @@ export const Tower: React.FC<{ x: number; y: number; w?: number; n?: number; s?:
   </g>
 );
 
-/** The hats' inkwell. (x, y) is the middle of its base; its mouth is 68·s above. `fill` 0..1: how much purple ink. */
-export const INKWELL_MOUTH = 68;
-export const Inkwell: React.FC<{ x: number; y: number; s?: number; fill?: number; glow?: number; rock?: number }> = ({ x, y, s = 1, fill = 1, glow = 0, rock = 0 }) => (
-  <g transform={`translate(${x} ${y}) rotate(${rock}) scale(${s})`}>
-    <ellipse cx={0} cy={2} rx={46} ry={6} fill={P.ink} opacity={0.14} />
-    <path d="M -38 0 L -38 -42 Q -38 -56 -22 -56 L 22 -56 Q 38 -56 38 -42 L 38 0 Z" fill={P.ink} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
-    <path d="M -18 -56 L -18 -68 L 18 -68 L 18 -56 Z" fill={P.inkSoft} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
-    <path d="M -27 -10 L -27 -40 Q -27 -47 -20 -48" stroke="#fff" strokeWidth={4} opacity={0.3} fill="none" strokeLinecap="round" />
-    {/* the ink at the mouth: plum-dark while empty, purple once the drop is in, brighter as it glows */}
-    <ellipse cx={0} cy={-68} rx={16} ry={3.6} fill={fill > 0 ? mixHex('#3A2448', C.purple, Math.min(1, fill)) : '#3A2448'} />
-    {glow > 0 && <ellipse cx={0} cy={-68} rx={16 + glow * 3} ry={3.6 + glow} fill={P.violet} opacity={0.35 * glow} />}
-  </g>
-);
+/** The hats' inkwell. (x, y) is the middle of its base; its mouth is 66·s above. `fill` 0..1: how much purple ink. */
+export const INKWELL_MOUTH = 66;
+// WHY redrawn as glass in the book's line style (round seven): the old solid black block read as a toaster or a
+// jam jar, and was the one solid-filled object in a book of cream-filled line art. Now it is a squat glass inkwell:
+// pale glass with the ink line, a broad shoulder and a short open neck, the ink visible INSIDE the glass (a thin
+// dark band while it is empty, rising and turning purple once the drop lands), and a tiny top-hat stamp on its
+// label so that, in line 5, it is plainly the hats' own.
+export const Inkwell: React.FC<{ x: number; y: number; s?: number; fill?: number; glow?: number; rock?: number }> = ({ x, y, s = 1, fill = 1, glow = 0, rock = 0 }) => {
+  const f = Math.min(1, Math.max(0, fill));
+  const level = -8 - 22 * f;                      // the ink's surface inside the glass
+  const inkCol = mixHex('#3A2448', C.purple, f);
+  const body = 'M -40 -2 Q -44 -2 -44 -8 L -44 -30 Q -44 -48 -24 -52 L -16 -54 L -16 -60 L 16 -60 L 16 -54 L 24 -52 Q 44 -48 44 -30 L 44 -8 Q 44 -2 40 -2 Z';
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${rock}) scale(${s})`}>
+      <ellipse cx={0} cy={1} rx={52} ry={6.5} fill={P.ink} opacity={0.16} />
+      <defs><clipPath id={`c-well-${Math.round(x)}-${Math.round(y)}`}><path d={body} /></clipPath></defs>
+      <path d={body} fill="#EFE6EC" />
+      {/* the ink inside: a band at the bottom of the glass, its surface a flat ellipse */}
+      <g clipPath={`url(#c-well-${Math.round(x)}-${Math.round(y)})`}>
+        <rect x={-50} y={level} width={100} height={60} fill={inkCol} />
+        <ellipse cx={0} cy={level} rx={44} ry={4.5} fill={mixHex(inkCol, '#ffffff', 0.18)} />
+        {glow > 0 && <ellipse cx={0} cy={level} rx={44} ry={6} fill={P.violet} opacity={0.5 * glow} />}
+      </g>
+      <path d={body} fill="none" stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+      {/* the neck's lip, and the open mouth seen from just above */}
+      <path d="M -19 -60 L 19 -60 L 19 -66 L -19 -66 Z" fill="#EFE6EC" stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+      <ellipse cx={0} cy={-66} rx={16} ry={3.6} fill={f > 0 ? inkCol : '#3A2448'} stroke={P.ink} strokeWidth={1.6} />
+      {glow > 0 && <ellipse cx={0} cy={-66} rx={16} ry={3.6} fill={P.violet} opacity={0.45 * glow} />}
+      {/* the label, stamped with a tiny top hat */}
+      <path d="M -20 -40 L 20 -40 L 20 -22 L -20 -22 Z" fill={P.paper} stroke={P.ink} strokeWidth={2} />
+      <path d="M -5 -26 L -5.6 -35 L 5.6 -35 L 5 -26 Z M -9 -26 L 9 -26" fill={P.ink} stroke={P.ink} strokeWidth={1.6} strokeLinejoin="round" />
+      {/* two thin highlights on the glass, from the lamp at the upper left */}
+      <path d="M -36 -12 L -36 -30 Q -36 -40 -26 -44" stroke="#fff" strokeWidth={3.4} opacity={0.75} fill="none" strokeLinecap="round" />
+      <path d="M 34 -14 L 34 -24" stroke="#fff" strokeWidth={2.4} opacity={0.5} fill="none" strokeLinecap="round" />
+    </g>
+  );
+};
 
 /** Theo's record player. (x, y) is the middle of its underside; `spin` turns the label (degrees). */
 export const RecordPlayer: React.FC<{ x: number; y: number; s?: number; spin?: number; c?: string; dashed?: boolean }> = ({ x, y, s = 1, spin = 0, c = P.ink, dashed }) => {
@@ -562,11 +632,15 @@ export const KeepsakeBox: React.FC<{ x: number; y: number; s?: number; lid?: num
     <g transform={`translate(0 -58) rotate(${-lid * 18}) scale(1 ${1 - lid * 2})`}>
       <path d="M -62 0 L 62 0 L 62 -14 Q 62 -18 58 -18 L -58 -18 Q -62 -18 -62 -14 Z" fill={fill} stroke={P.ink} strokeWidth={3 / Math.max(0.3, Math.abs(1 - lid * 2))} strokeLinejoin="round" />
     </g>
+    {/* the dark inside of the open box, seen just over its front rim: an empty box then reads as empty */}
+    {lid > 0.4 && <path d="M -58 -58 L 58 -58 L 52 -70 L -52 -70 Z" fill={P.inkSoft} opacity={0.6 * Math.min(1, (lid - 0.4) / 0.3)} stroke={P.ink} strokeWidth={2} strokeLinejoin="round" />}
     {Array.from({ length: Math.max(0, Math.min(5, Math.round(inside))) }).map((_, i) => (
       <KeepsakeIcon key={i} kind={KEEPSAKES[i]} x={-40 + i * 20} y={-62 - (i % 2) * 8} s={0.85} r={(i - 2) * 9} />
     ))}
     <path d="M -58 -58 L 58 -58 L 54 0 L -54 0 Z" fill={fill} stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
-    <path d="M -10 -40 L 10 -40" stroke={P.ink} strokeWidth={3} strokeLinecap="round" />
+    {/* WHY a heart clasp (round seven): with a plain bar the box read as a laptop, the one object it must never be
+        confused with; a small heart on the front says "keepsakes" at a glance, in ii, iii and vii alike */}
+    <path d="M 0 -26 C -15 -36 -10 -48 0 -41 C 10 -48 15 -36 0 -26 Z" fill={P.paper} stroke={P.ink} strokeWidth={2.6} strokeLinejoin="round" />
     <path d="M -50 -48 L 50 -48" stroke={P.ink} strokeWidth={1.6} opacity={0.35} />
   </g>
 );
