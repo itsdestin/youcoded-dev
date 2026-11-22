@@ -15,7 +15,7 @@ import { lin } from './take1c-ink';
 import { BARGAIN, DROP_LAND, HANDFUL, HOWEVER, NOTHING, RULES } from './take1c-spreads-a';
 import { ANYONE, EVERYTHING, FREE, OURS, OURS_HAND, TREASURE, TREASURE_MARKS } from './take1c-spreads-b';
 import { Headline } from './take1c-page';
-import { CLOSE_DUR, COVER_DUR, CUT, CUT_TURNS, DIP_IN, DIP_OUT, END_CARD, Q, TURN, TURN_DUR } from './take1c-time';
+import { CLOSE_DUR, COVER_DUR, CUT, CUT_TURNS, Q, TURN, TURN_DUR } from './take1c-time';
 
 // ---------- the order of the book ----------
 // WHY no riffle (round six plan): one page turn to the last spread, so the sharing gets the whole of line 9
@@ -85,17 +85,20 @@ const SHOTS: Shot[] = [
   // "but": the medium that shows the hats, the quill and Maya waiting small across the gutter; on "control" the
   // camera whip-pans after the quill to her (the motion blur is measured from the move in useWhip)
   cut(Q.but - 0.05, 620, 600, 1.6), at(Q.control - 0.02, 640, 600, 1.66),
-  at(Q.control + 0.45, TM.maya.x + 200, 505, 1.72, 14), at(TURN.anyone - 0.01, TM.maya.x + 204, 508, 1.76, 14),
+  at(Q.control + 0.45, TM.maya.x + 200, 492, 1.72, 14), at(TURN.anyone - 0.01, TM.maya.x + 204, 495, 1.76, 14),
   // vi: the wide, held still from "asks" so the three windows can be taken in
   // WHY 1.3 (review of the first build): at the home framing the three windows were too small to read
-  cut(TURN.anyone, 780, 480, 1.22), at(Q.asks, 782, 482, 1.3), at(TURN.ours - 0.01, 782, 482, 1.3),
+  // WHY y 540 by "for anyone": the headline (fixed on screen) then sits on clean paper under June, not over her
+  cut(TURN.anyone, 780, 480, 1.22), at(Q.forAnyone - 0.3, 782, 540, 1.3), at(TURN.ours - 0.01, 783, 542, 1.31),
   // vii: an extreme close-up of Maya's raised hand as the quill drops into it; ease back to the full spread on
   // "a very long while"; then chapter ii's three close-ups, each a hard cut on its clause
-  cut(TURN.ours, OURS_HAND.x + 14, OURS_HAND.y - 4, 4.6, 10), at(Q.so + 0.45, OURS_HAND.x + 18, OURS_HAND.y, 4.3, 10),
+  // WHY 3.3, not 4.6: closer than this the page's drawing goes soft
+  cut(TURN.ours, OURS_HAND.x + 14, OURS_HAND.y - 4, 3.3, 10), at(Q.so + 0.45, OURS_HAND.x + 18, OURS_HAND.y, 3.1, 10),
   at(Q.longWhile + 0.3, H.x, H.y, H.z), at(Q.decide - 0.07, 762, 504, 1.03),
-  cut(Q.ourComputers - 0.05, 420, 420, 2.4, 14), at(Q.itCosts - 0.07, 424, 422, 2.48, 14),
-  cut(Q.itCosts - 0.05, 410, 700, 2.3, 14), at(Q.ourData - 0.07, 412, 702, 2.38, 14),
-  cut(Q.ourData - 0.05, 1120, 680, 1.9), at(TURN.free - 0.01, 1115, 676, 1.96),
+  // WHY the same three framings as chapter ii's cuts: line 7 visibly plays line 2 back, undone
+  cut(Q.ourComputers - 0.05, 390, 340, 2.5, 14), at(Q.itCosts - 0.07, 392, 344, 2.58, 14),
+  cut(Q.itCosts - 0.05, 400, 760, 2.45, 14), at(Q.ourData - 0.07, 402, 764, 2.53, 14),
+  cut(Q.ourData - 0.05, 1120, 640, 1.5), at(TURN.free - 0.01, 1114, 636, 1.56),
   // viii and ix: the wide, home framing for both (line 1's layout; the last headline)
   // WHY 1.2, not the home 1.0 (review of the first build): at home the heroes and windows read too small
   cut(TURN.free, 785, 485, 1.16), at(Q.free + 0.1, 785, 485, 1.2), at(TURN.everything - 0.02, 786, 486, 1.22),

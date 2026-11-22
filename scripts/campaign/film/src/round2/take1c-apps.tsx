@@ -53,8 +53,11 @@ const HERO = { x: 106, y: 196 };            // centre of the picture
 const COL = 214;                            // left edge of the text column
 const TITLE_Y = 100, ROW1 = 150, ROW2 = 186, BAR_Y = 214;
 
+/** What a window holds. The four theme names double as their old default contents; 'records' and 'keepsakes'
+ *  are Theo's and June's apps (round six): each answers exactly what was taken from that person. */
+export type What = Theme | 'records' | 'keepsakes';
 /** What each page is called in its title bar (DM Sans, the frame's own label). */
-const LABEL: Record<Theme, string> = { meadow: 'my plants', cotton: 'biscuit', sunbreak: 'tonight', devils: 'game night' };
+const LABEL: Record<What, string> = { meadow: 'my plants', cotton: 'biscuit', sunbreak: 'tonight', devils: 'game night', records: 'my records', keepsakes: 'keepsakes' };
 
 // ---------- what each person made ----------
 const Plants: React.FC<{ L: Look; hero: number }> = ({ L, hero }) => {
@@ -72,6 +75,34 @@ const Plants: React.FC<{ L: Look; hero: number }> = ({ L, hero }) => {
     </g>
   );
 };
+/** Theo's records: a row of album covers, each with its record peeking out. No prices anywhere. */
+const Records: React.FC<{ L: Look; hero: number }> = ({ L, hero }) => {
+  const covers = [[-62, -44, L.accent], [8, -44, L.inset], [-62, 26, L.edge], [8, 26, L.accent]] as const;
+  return (
+    <g transform={`translate(${HERO.x} ${HERO.y - 6}) scale(${hero})`}>
+      {covers.map(([x, y, c], i) => (
+        <g key={i}>
+          <circle cx={x + 58} cy={y + 30} r={26} fill={L.dark ? '#000' : P.ink} stroke={L.edge} strokeWidth={1.5} />
+          <circle cx={x + 58} cy={y + 30} r={7} fill={L.fg} opacity={0.8} />
+          <path d={rr(x, y, 60, 60, 4)} fill={c} stroke={P.ink} strokeWidth={2.4} />
+          {i % 2 === 0 ? <circle cx={x + 30} cy={y + 30} r={13} fill="none" stroke={L.canvas} strokeWidth={4} opacity={0.75} />
+            : <path d={`M ${x + 14} ${y + 44} L ${x + 30} ${y + 18} L ${x + 46} ${y + 44} Z`} fill={L.canvas} opacity={0.7} />}
+        </g>
+      ))}
+    </g>
+  );
+};
+/** June's keepsakes: her box, drawn open, with her photo, letter and heart inside. */
+const Keepsakes: React.FC<{ L: Look; hero: number }> = ({ L, hero }) => (
+  <g transform={`translate(${HERO.x} ${HERO.y + 18}) scale(${hero})`}>
+    <path d="M -70 -36 L -84 -74 L 84 -74 L 70 -36 Z" fill={L.inset} stroke={P.ink} strokeWidth={2.6} strokeLinejoin="round" />
+    <g transform="translate(-34 -52) rotate(-10)"><path d={rr(-22, -18, 44, 34, 3)} fill={L.canvas} stroke={P.ink} strokeWidth={2.4} /><path d="M -16 10 L -5 -2 L 3 6 L 9 0 L 16 10" fill="none" stroke={P.ink} strokeWidth={2.2} strokeLinejoin="round" /></g>
+    <g transform="translate(14 -56) rotate(8)"><path d={rr(-22, -14, 44, 28, 3)} fill={L.panel} stroke={P.ink} strokeWidth={2.4} /><path d="M -22 -14 L 0 3 L 22 -14" fill="none" stroke={P.ink} strokeWidth={2.2} /></g>
+    <path d="M 50 -38 C 30 -52 38 -70 50 -60 C 62 -70 70 -52 50 -38 Z" fill={L.accent} stroke={P.ink} strokeWidth={2.4} strokeLinejoin="round" />
+    <path d={rr(-74, -38, 148, 76, 8)} fill={L.edge} stroke={P.ink} strokeWidth={2.8} />
+    <circle cx={0} cy={-8} r={5} fill={P.ink} opacity={0.7} />
+  </g>
+);
 const Moon: React.FC<{ L: Look; hero: number }> = ({ L, hero }) => (
   <g transform={`translate(${HERO.x} ${HERO.y}) scale(${hero})`}>
     {/* fixed stars, so nothing flickers between frames */}
@@ -114,13 +145,28 @@ const Board: React.FC<{ L: Look; hero: number; t: number }> = ({ L, hero, t }) =
 };
 
 /** The right-hand column: the same three slots in every window, only the words and colours differ. */
-const Column: React.FC<{ theme: Theme; L: Look; compact?: boolean }> = ({ theme, L, compact }) => {
-  const title: Record<Theme, [string, string?]> = { meadow: ['Monstera'], cotton: ['biscuit'], sunbreak: ['clear', 'tonight'], devils: ['you 3', 'jo 2'] };
-  const rows: Record<Theme, [string, string]> = {
-    meadow: ['water in 2 days', 'basil · tomorrow'], cotton: ['fed 8:02 am', 'next · 6 pm'],
+const Column: React.FC<{ theme: What; L: Look; compact?: boolean; tick?: number; t: number }> = ({ theme, L, compact, tick, t }) => {
+  const title: Record<What, [string, string?]> = { meadow: ['monstera'], cotton: ['biscuit'], sunbreak: ['clear', 'tonight'], devils: ['you 3', 'jo 2'], records: ['my', 'records'], keepsakes: ['photos', '& letters'] };
+  const rows: Record<What, [string, string]> = {
+    meadow: ['water in 2 days', 'watered today'], cotton: ['fed 8:02 am', 'next · 6 pm'],
     sunbreak: ['saturn 9:40', 'no clouds'], devils: ['your move', 'best of 7'],
+    records: ['38 albums', 'sorted by year'], keepsakes: ['5 things', 'just for me'],
   };
-  const progress: Record<Theme, number> = { meadow: 0.7, cotton: 0.45, sunbreak: 0.85, devils: 0.6 };
+  const progress: Record<What, number> = { meadow: 0.7, cotton: 0.45, sunbreak: 0.85, devils: 0.6, records: 0, keepsakes: 0 };
+  // WHY a tick box for the plants (round six plan): the one thing Maya's app does for her is remind her to water,
+  // and the box ticks itself as the app fills, so it reads as working, not as a picture of an app
+  if (theme === 'meadow') {
+    const tk = tick == null ? 1 : lin(t, tick, tick + 0.22);
+    return (
+      <g fontFamily={DMSANS}>
+        <text x={COL} y={TITLE_Y} fontFamily={L.font} fontWeight={L.font === DMSANS ? 900 : 800} fontSize={36} fill={L.fg} letterSpacing="-0.02em">monstera</text>
+        <text x={COL} y={ROW1 + 6} fontWeight={700} fontSize={19} fill={L.fg}>water in 2 days</text>
+        <path d={rr(COL, ROW2 - 12, 26, 26, 6)} fill={L.canvas} stroke={L.accent} strokeWidth={2.6} />
+        {tk > 0 && <path d={`M ${COL + 6} ${ROW2 + 1} L ${COL + 11} ${ROW2 + 7} L ${COL + 21} ${ROW2 - 6}`} pathLength={1} strokeDasharray="1 2" strokeDashoffset={1 - tk} stroke={L.accent} strokeWidth={4} fill="none" strokeLinecap="round" strokeLinejoin="round" />}
+        <text x={COL + 36} y={ROW2 + 7} fontWeight={500} fontSize={17} fill={L.muted}>watered today</text>
+      </g>
+    );
+  }
   const [t1, t2] = title[theme];
   const two = !!t2;
   return (
@@ -129,8 +175,8 @@ const Column: React.FC<{ theme: Theme; L: Look; compact?: boolean }> = ({ theme,
       {two && <text x={COL} y={TITLE_Y + 22} fontFamily={L.font} fontWeight={L.font === DMSANS ? 900 : 800} fontSize={36} fill={L.accent} letterSpacing="-0.02em">{t2}</text>}
       <text x={COL} y={ROW1 + 6} fontWeight={700} fontSize={19} fill={L.fg}>{rows[theme][0]}</text>
       {!compact && <text x={COL} y={ROW2 + 6} fontWeight={500} fontSize={17} fill={L.muted}>{rows[theme][1]}</text>}
-      <path d={rr(COL, BAR_Y + (compact ? -26 : 0), 160, 12, 6)} fill={L.inset} />
-      <path d={rr(COL, BAR_Y + (compact ? -26 : 0), 160 * progress[theme], 12, 6)} fill={L.accent} />
+      {progress[theme] > 0 && <path d={rr(COL, BAR_Y + (compact ? -26 : 0), 160, 12, 6)} fill={L.inset} />}
+      {progress[theme] > 0 && <path d={rr(COL, BAR_Y + (compact ? -26 : 0), 160 * progress[theme], 12, 6)} fill={L.accent} />}
     </g>
   );
 };
@@ -143,6 +189,8 @@ type WinProps = {
   draw?: number;                                   // how long the outline takes (the quill drawing it)
   contentAt?: number;                              // when the inside arrives
   request?: { text: string; at: number; dur: number; out?: number };   // out: when the bubble fades away
+  what?: What;                                     // what it holds (default: the theme's own content)
+  tick?: number;                                   // when the plant app's tick box ticks itself
   r?: number; s?: number;                          // tilt and extra scale, for windows in flight
   compact?: boolean;                               // one row fewer, for the smallest sizes
   /** 0..1: a wipe from left to right that repaints this window in `to`'s theme (a shared copy made someone's own) */
@@ -152,7 +200,7 @@ type WinProps = {
 /** The inside of a window (title bar and content) in one theme. */
 // WHY `what` separate from `theme`: a shared page keeps what it IS (her plants) while taking on the colours,
 // font and look of whoever it lands with (his theme).
-const Body: React.FC<{ theme: Theme; what: Theme; t: number; wipe: number; hero: number; compact?: boolean; id: string }> = ({ theme, what, t, wipe, hero, compact, id }) => {
+const Body: React.FC<{ theme: Theme; what: What; t: number; wipe: number; hero: number; compact?: boolean; id: string; tick?: number }> = ({ theme, what, t, wipe, hero, compact, id, tick }) => {
   const L = LOOK[theme];
   return (
     <>
@@ -167,7 +215,9 @@ const Body: React.FC<{ theme: Theme; what: Theme; t: number; wipe: number; hero:
           {what === 'sunbreak' && <Moon L={L} hero={hero} />}
           {what === 'cotton' && <Cat L={L} hero={hero} t={t} />}
           {what === 'devils' && <Board L={L} hero={hero} t={t} />}
-          <Column theme={what} L={L} compact={compact} />
+          {what === 'records' && <Records L={L} hero={hero} />}
+          {what === 'keepsakes' && <Keepsakes L={L} hero={hero} />}
+          <Column theme={what} L={L} compact={compact} tick={tick} t={t} />
         </g>
       )}
     </>
@@ -176,7 +226,7 @@ const Body: React.FC<{ theme: Theme; what: Theme; t: number; wipe: number; hero:
 
 let winSeq = 0;
 /** One app window in one theme. Draws its outline, floods its colour, then its inside wipes down and lands. */
-export const ThemedWindow: React.FC<WinProps> = ({ theme, x, y, w, a = -10, draw = 0.5, contentAt, request, r = 0, s = 1, compact, reskin, shadow = 0 }) => {
+export const ThemedWindow: React.FC<WinProps> = ({ theme, x, y, w, a = -10, draw = 0.5, contentAt, request, r = 0, s = 1, compact, reskin, shadow = 0, what = theme, tick }) => {
   const t = useT();
   // WHY a per-instance id: two copies of the same theme at the same spot (the shared copy) must not share clips
   const [uid] = React.useState(() => ++winSeq);
@@ -200,8 +250,8 @@ export const ThemedWindow: React.FC<WinProps> = ({ theme, x, y, w, a = -10, draw
       {/* a soft drop shadow so the window sits on the page; it grows while the window is carried */}
       <path d={rr(6 + shadow * 10, 10 + shadow * 18, W, H, R)} fill={P.ink} opacity={(0.12 + shadow * 0.08) * fill} />
       <g clipPath={`url(#${id})`} opacity={fill}>
-        <Body theme={theme} what={theme} t={t} wipe={wipe} hero={hero} compact={compact} id={id} />
-        {reskin && rs > 0 && <g clipPath={`url(#${id}-r)`}><Body theme={reskin.to} what={theme} t={t} wipe={wipe} hero={hero} compact={compact} id={id} /></g>}
+        <Body theme={theme} what={what} t={t} wipe={wipe} hero={hero} compact={compact} id={id} tick={tick} />
+        {reskin && rs > 0 && <g clipPath={`url(#${id}-r)`}><Body theme={reskin.to} what={what} t={t} wipe={wipe} hero={hero} compact={compact} id={id} tick={tick} /></g>}
       </g>
       {/* the leading edge of a reskin: a thin ink line, so it reads as the window being redrawn, not a glitch */}
       {reskin && rs > 0 && rs < 1 && <path d={`M ${W * rs} 0 L ${W * rs} ${H}`} stroke={P.ink} strokeWidth={3} />}
