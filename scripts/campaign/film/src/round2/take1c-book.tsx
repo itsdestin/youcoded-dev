@@ -29,7 +29,16 @@ const noise = (freq: number, alpha: number, seed: number, size = 260) => `url("d
 // grain plus a large blotchy mottle read as a printed texture laid over the art. Good uncoated book paper
 // shows almost no pattern at viewing distance, only a fine tooth up close, so there is one very fine fibre
 // layer and no mottle at all.
-const FIBRE = noise(1.6, 0.03, 3, 240);
+// WHY a stronger, coarser fibre than before (review round six): at 0.03 the tooth vanished entirely once the book
+// was scaled down and the film encoded, and the page read as a flat digital rectangle. This one survives the
+// encode as a fine tooth you find when you look for it, still far below the line weight of the ink.
+const FIBRE = noise(0.85, 0.075, 3, 240);
+// WHY a cloud: real uncoated stock is never perfectly even. A very low-contrast tonal drift (2-3%), with patches
+// larger than a figure, is what makes paper read as paper at a distance; at this scale it never reads as a pattern.
+const cloudTile = (seed: number) => `url("data:image/svg+xml;utf8,${encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' width='380' height='490'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.006 0.005' numOctaves='2' seed='${seed}'/>` +
+  `<feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.26  0 0 0 0 0.30  0 0 0 0.16 -0.045'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`)}")`;
+const CLOUD = { L: cloudTile(11), R: cloudTile(23) };
 const CLOTH = `${noise(0.9, 0.22, 5, 200)}, repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 2.5px), repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 2.5px)`;
 
 /** Paper tooth + the page's curve into the gutter. Rendered over the art (multiply) so ink sits in the paper. */
@@ -37,7 +46,16 @@ const PaperOver: React.FC<{ side: 'L' | 'R' }> = ({ side }) => {
   const dir = side === 'L' ? '270deg' : '90deg';   // gradient starts at the spine
   return (
     <>
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: CLOUD[side], backgroundSize: '100% 100%', mixBlendMode: 'multiply', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', inset: 0, backgroundImage: FIBRE, mixBlendMode: 'multiply', pointerEvents: 'none' }} />
+      {/* WHY one gradient spanning the whole spread (each page shows its own half): the lamp sits upper left, so the
+          paper warms toward it and cools toward the lower right, matching the light on the field; drawn per page,
+          the two halves would not meet at the gutter */}
+      <div style={{ position: 'absolute', top: 0, left: side === 'R' ? -PW : 0, width: SW, height: PH, pointerEvents: 'none',
+        background: 'linear-gradient(150deg, rgba(255,242,224,0.20) 0%, rgba(255,242,224,0) 40%)' }} />
+      {/* the cool side is multiplied, so it shades the ink with the paper instead of fogging it */}
+      <div style={{ position: 'absolute', top: 0, left: side === 'R' ? -PW : 0, width: SW, height: PH, pointerEvents: 'none', mixBlendMode: 'multiply',
+        background: 'linear-gradient(150deg, rgba(222,216,236,0) 58%, rgba(222,216,236,0.45) 100%)' }} />
       {/* WHY these stops: a real page dips into a tight dark crease at the spine, rises over a soft shoulder that
           catches the light (the brightest band, ~10-20% in), lies flat across the middle, and turns down a hair
           at its outer edge. Multiplied, so the ink darkens into the gutter with the paper instead of floating on it. */}
@@ -78,7 +96,11 @@ export const PageFace: React.FC<{ face: Face; side: 'L' | 'R' }> = ({ face, side
 /** How bent the leaf is mid-turn: the free edge leads, like a page lifted by its corner. */
 const stripAngles = (p: number, n: number, bendMax: number) => {
   const theta = 180 * p;
-  const bend = bendMax * Math.sin(Math.PI * p);
+  // WHY the bend relaxes faster on the way down (review round six): with a symmetric bend the spine side of a
+  // landing leaf still stood ~14 degrees up a few frames from the end, so its top corner hovered above the board
+  // before the flat page replaced it. Paper falling flat lets go of its curve quickly; lifting, it keeps it.
+  const s = Math.sin(Math.PI * p);
+  const bend = bendMax * (p > 0.5 ? Math.pow(s, 1.6) : s);
   const first = theta - bend / 2;
   return Array.from({ length: n }, (_, k) => (k === 0 ? first : bend / (n - 1)));
 };
@@ -95,7 +117,10 @@ export const Leaf: React.FC<LeafProps> = ({ front, back, p, n = 10, bend = 58, w
   // lamp from the upper left: a front tipping toward the right darkens; a back tipping toward the lamp brightens
   // WHY softer (0.32, was 0.42): mid-turn the whole leaf went a flat grey that read as a dirty card, not paper
   const frontShadeAt = (phi: number) => 0.32 * Math.max(0, Math.sin((phi * Math.PI) / 180)) * (phi < 90 ? 1 : 0.5);
-  const backShadeAt = (phi: number) => { const rad = (phi * Math.PI) / 180; return 0.12 * Math.max(0, Math.cos(Math.PI - rad)) + 0.14 * Math.max(0, Math.sin(rad)) * (phi > 90 ? 0.3 : 1); };
+  // WHY the back's shade is zero when it lies flat (review round six): it used to keep a 12% tint at 180 degrees,
+  // so a landed leaf sat grey for several frames and then popped to cream when the flat page replaced it. Now the
+  // shade fades out as the leaf settles, and the hand-off to the flat page is invisible.
+  const backShadeAt = (phi: number) => { const rad = (phi * Math.PI) / 180; return 0.16 * Math.max(0, Math.sin(rad)) * (phi > 90 ? 0.45 : 1); };
   // WHY each strip's shade is a gradient from its left seam to its right seam (the average with its neighbour)
   // rather than one flat tint: flat tints stepped from strip to strip, so a turning page showed vertical stripes.
   const seam = (fn: (phi: number) => number, k: number) => {
@@ -211,7 +236,22 @@ export const cameraAt = (keys: Shot[], t: number) => {
 };
 
 export const PERSPECTIVE = 3400;
-export const HOME_SCALE = 0.87;   // the open book at the home framing fills ~68% of the width
+// WHY pulled back from 0.87 and with close-ups softened (review round six, a BLOCKER): the camera spent most of
+// the film so close that the new colour field showed as a sliver or not at all, so the book never visibly floated.
+// The wide and medium shots (zoom 1 to ~1.6, most of the film's running time where the book's edges are in
+// frame) are now ~10% further back, so the field and the shadow show on two or more sides. The tight close-ups
+// (2.2x and in) keep exactly their old size: they sit inside the page anyway, and pulling them back only dragged
+// half-cropped figures from neighbouring pictures into the edges of the frame. Between the two the scale blends
+// smoothly, so a push in still reads as one steady move.
+export const HOME_SCALE = 0.78;
+const CLOSE_SCALE = 0.87;
+const smooth = (a: number, b: number, x: number) => { const u = Math.max(0, Math.min(1, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
+/** The on-screen scale of book units for a camera zoom `z`. */
+export const screenScale = (z: number) => z * (HOME_SCALE + (CLOSE_SCALE - HOME_SCALE) * smooth(1.3, 2.2, z));
+/** How far above the frame's centre the book sits at the home framing (screen px). WHY: the float shadow falls
+ *  down and right; with the book a touch high its soft edge stays in frame instead of falling off the bottom.
+ *  It fades to nothing by a 1.6x push, so close shots keep exactly the composition they were framed for. */
+export const liftAt = (z: number) => 34 * Math.max(0, Math.min(1, (1.6 - z) / 0.6));
 
 // ---------- what the book floats over ----------
 // WHY a colour field from the posters instead of a desk (owner, latest: "the background in storybook also still
@@ -228,10 +268,14 @@ const FIELDS: Record<BookLook, FieldStyle> = {
   // a, "dusk lilac" (the one the film uses): the poster wash taken a few steps deeper, so the cream pages glow
   // against it and the book clearly floats. Before "wonderful" it is a quieter grey-lilac; on "wonderful" the
   // poster's pink-to-lilac warmth blooms in from the lower right corner, opposite the light.
+  // WHY re-graded (review round six): the old 'a' was a dusty grey-lilac that sank to a muddy mauve under the
+  // book (#9c7cab). It is now the posters' own wash (near-white upper left, lavender, pink low right), held one
+  // step deeper than the posters so the cream pages still lift off it. Before "wonderful" it is a desaturated
+  // lavender, never grey; the corner shade is half what it was, so the far corner stays lilac.
   a: {
-    quiet: 'linear-gradient(160deg, #DDD2E0 0%, #C9BBCF 55%, #B8A8C0 100%)',
-    bloom: 'radial-gradient(120% 100% at 100% 100%, #E5A3CB 0%, #D3AEE3 40%, rgba(205,170,224,0) 82%), linear-gradient(160deg, #E8D8F1 0%, #D2B8E0 60%, #C3A3D5 100%)',
-    light: 'rgba(255,248,252,0.40)', shade: 'rgba(60,28,74,0.22)', shadowA: 0.42,
+    quiet: 'radial-gradient(150% 125% at 14% 4%, #F8F4FA 0%, #EAE1EF 36%, #D9CCE3 72%, #CDBDD9 100%)',
+    bloom: 'radial-gradient(115% 95% at 100% 100%, #EDA9D3 0%, #DDB9EE 36%, rgba(232,214,244,0) 80%), radial-gradient(150% 125% at 14% 4%, #FCF8FE 0%, #F0E4F7 38%, #DFC9EC 76%, #D3B9E4 100%)',
+    light: 'rgba(255,252,255,0.45)', shade: 'rgba(84,48,104,0.11)', shadowA: 0.5,
   },
   // b, "night wash": the dark poster field, plum-black with a deep magenta-plum glow low on the right
   b: {
@@ -245,7 +289,8 @@ const FIELDS: Record<BookLook, FieldStyle> = {
   c: {
     quiet: 'radial-gradient(140% 120% at 16% 6%, #FCFAFC 0%, #F1ECF2 38%, #E2D9E6 78%, #D6CBDC 100%)',
     bloom: 'radial-gradient(120% 95% at 100% 100%, #F1B9DC 0%, #E7C3EE 34%, rgba(242,232,248,0) 78%), radial-gradient(140% 120% at 16% 6%, #FEFCFF 0%, #F7F0FB 40%, #ECDDF4 100%)',
-    light: 'rgba(255,255,255,0.35)', shade: 'rgba(70,40,84,0.20)', shadowA: 0.42,
+    // WHY a deeper shadow and half the corner shade: on this paler field the cream book needs more lift
+    light: 'rgba(255,255,255,0.35)', shade: 'rgba(70,40,84,0.10)', shadowA: 0.52,
   },
 };
 
@@ -263,7 +308,7 @@ const bloomAt = (t: number) => lin(t, Q.wonderful - 0.1, Q.wonderful + 1.4, EASE
 const Field: React.FC<{ cam: ReturnType<typeof cameraAt>; t: number }> = ({ cam, t }) => {
   const F = FIELDS[LOOK];
   // WHY 6% of the book's own on-screen movement: the field reads as far below the book, so it slides less
-  const k = HOME_SCALE * cam.z * 0.06;
+  const k = screenScale(cam.z) * 0.06;
   const px = -(cam.x - 760) * k, py = -(cam.y - 500) * k;
   const sc = 1 + 0.05 * Math.log(Math.max(0.5, cam.z));
   const bloom = 0.45 + 0.55 * bloomAt(t);   // never fully quiet, so the field is never a flat fill
@@ -293,8 +338,11 @@ const FloatShadow: React.FC<{ a: number; t: number }> = ({ a, t }) => {
   );
   return (
     <>
-      {layer(-320, 90, 150, 260, 10, a * 0.55)}   {/* the wide, soft umbra far below */}
-      {layer(-110, 34, 56, 90, -6, a * 0.75)}      {/* a closer, firmer shadow that gives the book its weight */}
+      {/* WHY thrown right as well as down (about 30/70, review round six): straight down, most of it fell off the
+          bottom of the frame and what showed read as a book lying on a table. With a sliver along the right edge
+          too, and the book sitting a touch high, the soft gap between book and shadow says "floating". */}
+      {layer(-320, 70, 120, 200, 4, a * 0.55)}   {/* the wide, soft umbra far below */}
+      {layer(-110, 30, 46, 70, -4, a * 0.7)}      {/* a closer, firmer shadow that gives the book its weight */}
     </>
   );
 };
@@ -305,8 +353,8 @@ export const World: React.FC<{ cam: ReturnType<typeof cameraAt>; children: React
   return (
     <AbsoluteFill style={{ perspective: PERSPECTIVE, perspectiveOrigin: '50% 46%', overflow: 'hidden', background: '#E9E1EC' }}>
       <Field cam={cam} t={t} />
-      <div style={{ position: 'absolute', left: 960 - PW, top: 540 - PH / 2, width: SW, height: PH, transformStyle: 'preserve-3d', transformOrigin: `${PW}px ${PH / 2}px`,
-        transform: `scale(${HOME_SCALE * cam.z}) rotateX(${cam.tilt}deg) rotateZ(${cam.roll}deg) translate(${PW - cam.x}px, ${PH / 2 - cam.y}px)` }}>
+      <div style={{ position: 'absolute', left: 960 - PW, top: 540 - PH / 2 - liftAt(cam.z), width: SW, height: PH, transformStyle: 'preserve-3d', transformOrigin: `${PW}px ${PH / 2}px`,
+        transform: `scale(${screenScale(cam.z)}) rotateX(${cam.tilt}deg) rotateZ(${cam.roll}deg) translate(${PW - cam.x}px, ${PH / 2 - cam.y}px)` }}>
         <FloatShadow a={FIELDS[LOOK].shadowA} t={t} />
         {children}
       </div>
