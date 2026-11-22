@@ -95,6 +95,7 @@ export const Q = {
   monopoliesEnd: end('these *monopolies,'),
   monopolies1: at('these *monopolies,'),
   forAnyone: at('*for anyone who'),
+  who: at('anyone *who asks.'),
   asks: at('who *asks.'),
   // (7) And so, for the first time in a very long while, we get to decide. What our computers can do. What it costs. ...
   andSo: at('*And so, for'),
@@ -114,6 +115,8 @@ export const Q = {
   past: at('the *past.'),
   // (9) It's time, at long, long last... to open source everything.
   itsTime: at("*It's time, at"),
+  timeWord: at("It's *time, at"),
+  longFirst: at('at *long, long'),
   longLast: at('long, *long last...'),
   open: at('to *open source'),
   everythingEnd: end('source *everything.'),

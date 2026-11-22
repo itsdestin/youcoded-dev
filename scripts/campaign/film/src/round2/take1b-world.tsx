@@ -142,41 +142,25 @@ export const Shelves: React.FC<{ night: number }> = ({ night }) => (
 );
 
 // =====================================================================================================
-// The few who decide: five arrow pointers. WHY dark and identical: a plain white arrow is everyone's
-// own cursor ("me, using my computer"), so the first cut read as ordinary users. Near-black, oversized,
-// with a hard (unblurred) shadow and moving in perfect lockstep, they read as one outside power that clicks
-// for everyone. The new thing, later, is a purple text caret: it does nothing until a person asks.
-// =====================================================================================================
-export type Pointer = { x: number; y: number; press: number; o: number; rot?: number };
-export const PointerArrow: React.FC<{ p: Pointer; size: number }> = ({ p, size }) => {
-  if (p.o <= 0) return null;
-  const sc = 1 - 0.12 * p.press;
-  return (
-    <div style={{ position: 'absolute', left: p.x, top: p.y, width: size, height: size, opacity: p.o, transform: `rotate(${p.rot ?? 0}deg) scale(${sc})`, transformOrigin: '0 0' }}>
-      {/* a click leaves a brief ring at the tip, in the night purple so it reads on light and dark screens alike */}
-      {p.press > 0.05 && <div style={{ position: 'absolute', left: -size * 0.32 * p.press, top: -size * 0.32 * p.press, width: size * 0.64 * p.press, height: size * 0.64 * p.press,
-        borderRadius: '50%', border: `${size * 0.035}px solid rgba(195,135,211,${0.85 * (1 - p.press)})` }} />}
-      <svg width={size} height={size} viewBox="0 0 24 24" style={{ overflow: 'visible', filter: `drop-shadow(${size * 0.05}px ${size * 0.07}px 0 rgba(8,3,14,0.55))` }}>
-        <path d="M1 1 L1 19.5 L6 15 L9.6 22.6 L13 21 L9.5 13.6 L16.2 13.4 Z" fill="#120A19" stroke="#E9DDF1" strokeWidth="0.9" strokeLinejoin="round" />
-      </svg>
-    </div>
-  );
-};
-
-// =====================================================================================================
 // A price tag on a string, swinging after it drops. Text can change (the price ticks).
 // =====================================================================================================
-export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0 }) => {
-  if (t < drop) return null;
-  const dt = t - drop;
-  const enter = Math.min(1, dt / 0.35);
-  const ease = 1 - Math.pow(1 - enter, 3);
+/** `lower`: instead of dropping in 0.35 s, the tag is let down slowly on its string from `lower` until `drop`, when it
+ *  lands and starts to swing (their treasure is lowered with ceremony). `len`: the string's length in world px. */
+export const PriceTag: React.FC<{ x: number; y: number; t: number; drop: number; text: string; scale?: number; fall?: number; dark?: boolean; strike?: number; lower?: number; len?: number }> = ({ x, y, t, drop, text, scale = 1, fall = 0, strike = 0, lower, len: lenIn }) => {
+  if (t < (lower ?? drop)) return null;
+  const dt = Math.max(0, t - drop);
+  const enter = lower !== undefined ? Math.min(1, Math.max(0, (t - lower) / (drop - lower))) : Math.min(1, dt / 0.35);
+  // WHY a gentle ease-out for the slow lowering: a hand letting a string down slows as it arrives
+  const ease = lower !== undefined ? 1 - Math.pow(1 - enter, 2) : 1 - Math.pow(1 - enter, 3);
   // a damped swing: big first arc, settling within ~2 s, like a real tag on a string
-  const swing = 16 * Math.exp(-dt * 2.2) * Math.sin(dt * 8.5);
+  // WHY the arc scales with the string: a long string swings through a smaller angle, more slowly (a pendulum)
+  const long = Math.min(1, (70 * scale) / (lenIn ?? 70 * scale));
+  const swing = t < drop ? 0 : 16 * long * Math.exp(-dt * 2.2) * Math.sin(dt * 8.5 * Math.sqrt(long));
   const fy = fall > 0 ? fall * fall * 1600 : 0;
-  const len = 70 * scale;
+  const len = lenIn ?? 70 * scale;
+  const rise = lower !== undefined ? len + 140 * scale : 300;
   return (
-    <div style={{ position: 'absolute', left: x, top: y - (1 - ease) * 300 + fy, width: 0, height: 0, transform: `rotate(${swing + fall * 40}deg)`, transformOrigin: '0 0', opacity: fall > 0.8 ? 1 - (fall - 0.8) * 5 : 1 }}>
+    <div style={{ position: 'absolute', left: x, top: y - (1 - ease) * rise + fy, width: 0, height: 0, transform: `rotate(${swing + fall * 40}deg)`, transformOrigin: '0 0', opacity: fall > 0.8 ? 1 - (fall - 0.8) * 5 : 1 }}>
       {fall === 0 && <div style={{ position: 'absolute', left: -1.2 * scale, top: 0, width: 2.4 * scale, height: len, background: '#D9CBE4' }} />}
       <div style={{ position: 'absolute', left: -95 * scale, top: len, width: 190 * scale, height: 92 * scale, filter: `drop-shadow(0 ${10 * scale}px ${14 * scale}px rgba(20,8,32,0.45))` }}>
         <svg width={190 * scale} height={92 * scale} viewBox="0 0 190 92" style={{ position: 'absolute' }}>

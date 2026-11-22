@@ -123,6 +123,70 @@ const PLAN8 = {
   'morning-rounds':     [['laptop', 'home'], ['phone', 'home'], ['laptop', 'paint'], ['tablet', 'media']],
 };
 for (const [k, v] of Object.entries(PLAN8)) PLAN[k] = [...PLAN[k], ...v];
+
+// ---------------------------------------------------------------------------------------------------
+// Round 6 (the agreed picture plan): the hero phone's request, typed for real one character at a time; the
+// app working on it; and the thing it made, a pickup board, inside the real window. Then the same board in two
+// neighbours' own windows, each filled with that neighbour's own life.
+// ---------------------------------------------------------------------------------------------------
+// WHY a plain, unsure, lower-case sentence with no "page" in it (plan): it must sound like a real person and be
+// understood by someone who has never used the app. The short form is the fallback if the long one would wrap.
+// WHY these three (measured 2026-11-21): the Golden Sunbreak phone's real box has room for about 194 css px of its
+// 16 px mono type, about 20 letters, so the longer sentences the plan hoped for would wrap to two lines.
+const ASK = ['something for mia\'s pickups?', 'help with mia\'s pickups?', 'plan mia\'s pickups?'];
+let ASK_USED = ASK[0];   // set by the typechars shot after measuring the real box; the "asked" shot sends the same words
+FOCI.typechars = { screen: null, what: 'request typed one character at a time (one strip per character)', empty: true, clean: true, focusBox: true, model: 'qwen36-27b', typechars: true };
+FOCI.asked = { screen: null, what: 'request just sent (friendly model): its own sent bubble and the app working on it', empty: true, clean: true, working: true, model: 'qwen36-27b' };
+FOCI.mine = { screen: 'pages/focus/page-home#site', what: 'Page: the pickup board the person asked for (staged inside the real window)', pages: true, mine: true };
+// What each board holds. WHY three different lives (plan): what one person made, others use with their OWN things;
+// the hero's private three things (their photos, Sam, Mia at 3:15) never appear on anyone else's screen.
+const BOARDS = {
+  'golden-sunbreak-phone': { time: '3:15', who: 'Mia', where: 'school gate', from: 'Sam', msg: 'running late, save me a seat', av: '#E7B7A3', photos: [0, 1, 2] },
+  'kuromi-dreamer-laptop': { time: '4:00', who: 'Leo', where: 'football, back field', from: 'Priya', msg: 'can you grab his PE bag?', av: '#9FC3E6', photos: [3, 4, 5] },
+  'morning-rounds-phone': { time: '5:30', who: 'swim', where: 'leisure centre', from: 'nan', msg: "i'll bring the towels", av: '#C9B3E8', photos: [6, 7, 8] },
+};
+// The person's photos, drawn as soft little landscapes: the same pictures the film's phone shows before the turn
+// (take1b-screens.tsx PhotoThumb), so the board is visibly built from THEIR things. 3..8 are other people's.
+const PHOTO = (v) => {
+  const skies = [['#F6C9A8', '#E79B9B'], ['#BFD8EE', '#E6D7F2'], ['#F3DFA2', '#EFB49A'], ['#CFE3C8', '#F1E6C9'], ['#F2C6D8', '#C9B8EE'], ['#B9DCE8', '#F5E3C4'], ['#F7D9B0', '#E9A7A0'], ['#D6E4F5', '#B9D1C9'], ['#EAD3F2', '#F6C9A8']][v % 9];
+  const hills = ['#7E9C7A', '#6F8FB0', '#B4826E', '#5F8F6A', '#8E6FA8', '#4F8FA0', '#C08A5A', '#6E8F8A', '#9A7AA8'][v % 9];
+  const sun = v % 2 ? 72 : 30;
+  return `<svg viewBox="0 0 100 70" preserveAspectRatio="xMidYMid slice" style="display:block;width:100%;height:100%"><defs><linearGradient id="k${v}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${skies[0]}"/><stop offset="1" stop-color="${skies[1]}"/></linearGradient></defs><rect width="100" height="70" fill="url(#k${v})"/><circle cx="${sun}" cy="26" r="9" fill="#FFF5E4" opacity="0.9"/><path d="${v % 2 ? 'M0 52 Q25 38 50 50 T100 44 V70 H0Z' : 'M0 48 Q30 30 60 46 T100 40 V70 H0Z'}" fill="${hills}"/><path d="M0 60 Q40 50 100 58 V70 H0Z" fill="${hills}" opacity="0.7"/></svg>`;
+};
+// The board itself: written with the page kit's own classes and the theme's own tokens, so each window draws it in
+// its own look. WHY so few parts, the time huge (plan): a stranger reads "3:15 · Mia" from across the room.
+// WHY the photos as one big picture over two small (round 6 look check): three small squares left the lower half of
+// the phone empty, and tall cells cropped the pictures oddly; landscape cells keep each picture whole.
+const photoGrid = (b, h) => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;${h}">${b.photos.map((v, i) => `<div style="${i === 0 ? 'grid-column:1 / span 2;' : ''}aspect-ratio:10 / 7;border-radius:var(--radius-md,10px);overflow:hidden">${PHOTO(v)}</div>`).join('')}</div>`;
+const msgCard = (b) => `<div class="yc-card" style="display:flex;align-items:center;gap:12px;padding:14px 16px"><span style="width:40px;height:40px;border-radius:40px;background:${b.av};flex:none"></span><span style="min-width:0"><span style="display:block;font-weight:700;font-size:16px">${b.from}</span><span class="yc-muted" style="display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.msg}</span></span></div>`;
+const head = (b, wide) => `<div class="yc-eyebrow" style="font-size:${wide ? 16 : 14}px">pickups · today</div>
+  <div style="display:flex;align-items:baseline;gap:${wide ? 18 : 12}px;line-height:0.92;margin-top:-2px"><span style="font-size:${wide ? 128 : 96}px;font-weight:800;letter-spacing:-0.04em;font-variant-numeric:tabular-nums">${b.time}</span><span style="font-size:${wide ? 68 : 46}px;font-weight:700;letter-spacing:-0.03em;color:var(--accent)">${b.who}</span></div>
+  <div class="yc-muted" style="font-size:${wide ? 18 : 15}px;margin-top:-4px">${b.where}</div>`;
+const boardHtml = (b, wide) => `<div id="yc-film-board" style="position:fixed;inset:0;z-index:2147483647;overflow:hidden;background:var(--canvas);color:var(--fg);font-family:var(--font-sans,system-ui);padding:${wide ? '30px 34px' : '18px 16px 20px'};display:flex;flex-direction:${wide ? 'row' : 'column'};gap:${wide ? 30 : 14}px">
+  ${wide
+    ? `<div style="flex:1;display:flex;flex-direction:column;gap:16px;min-width:0">${head(b, true)}<div style="flex:1"></div>${msgCard(b)}</div>${photoGrid(b, 'flex:1;min-width:0')}`
+    : `${head(b, false)}${msgCard(b)}${photoGrid(b, 'flex:1;min-height:0')}`}
+</div>`;
+const PLAN6 = {
+  'golden-sunbreak': [['phone', 'typechars'], ['phone', 'asked'], ['phone', 'mine']],
+  'kuromi-dreamer': [['laptop', 'mine']],
+  'morning-rounds': [['phone', 'mine']],
+};
+for (const [k, v] of Object.entries(PLAN6)) PLAN[k] = [...PLAN[k], ...v];
+/** Runs `expression` inside the Page's sandboxed iframe (its own Chrome target; same route as shoot.mjs waitForFrame). */
+async function inFrame(tab, expression, ms = 12000) {
+  let session = null;
+  const off = tab.on((m) => { if (m.method === 'Target.attachedToTarget' && m.params.targetInfo.type === 'iframe') session = m.params.sessionId; });
+  try {
+    await tab.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
+    for (const t0 = Date.now(); Date.now() - t0 < ms; await sleep(100)) {
+      if (!session) continue;
+      const r = await tab.browser.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }, session).catch(() => null);
+      if (r && !r.exceptionDetails) return r.result?.value;
+    }
+    throw new Error('could not reach the page frame');
+  } finally { off(); }
+}
 const dist = await ensureBuild(join(WORKTREE, 'youcoded'), (m) => console.error('[build]', m));
 const srv = await serve(dist);
 const base = `http://127.0.0.1:${srv.port}/`;
@@ -176,7 +240,7 @@ async function shoot(look, shapeKey, focusKey) {
     if (f.working) {
       // type the request into the real box and press Enter, exactly as a person would; then wait just long enough for the app's
       // own bubble and working line to draw (the reply itself is held back by replySpeed, set on the address below)
-      const text = WORKING[`${slug}-${shapeKey}`] ?? TYPED[shapeKey] ?? 'a page for my flat?';
+      const text = f.model ? ASK_USED : WORKING[`${slug}-${shapeKey}`] ?? TYPED[shapeKey] ?? 'a page for my flat?';
       await tab.evaluate(`(() => { const m = document.querySelector("[placeholder^='Message']"); m.focus();
         const set = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(m), 'value').set; set.call(m, ${JSON.stringify(text)}); m.dispatchEvent(new Event('input', { bubbles: true })); })()`);
       await sleep(300);
@@ -185,6 +249,46 @@ async function shoot(look, shapeKey, focusKey) {
     if (f.focusBox && !f.typed) await tab.evaluate(`document.querySelector("[placeholder^='Message']").focus()`);
     // WHY wait on the theme font: a late web font would change the picture's typeface between shots
     await waitFor(tab, `(() => { const l = document.getElementById('theme-google-font'); if (l && !l.sheet) return false; return document.fonts.status === 'loaded'; })()`, 10000);
+    if (f.mine) {
+      // WHY staged inside the frame (brand guide 8: what a person makes may be staged; the app around it never is): the
+      // board covers the practice page inside the Page's own frame, drawn with the page kit and the theme's tokens
+      const b = BOARDS[`${slug}-${shapeKey}`];
+      await sleep(1500);
+      await inFrame(tab, `(() => { document.getElementById('yc-film-board')?.remove(); document.body.insertAdjacentHTML('beforeend', ${JSON.stringify(boardHtml(b, shapeKey !== 'phone'))}); return true; })()`);
+      // the page's name, where the window shows it (title bar, the pages list): the person named their page
+      await tab.evaluate(`(() => { for (const e of document.querySelectorAll('span,div,button,a,p')) { if (e.children.length === 0 && (e.textContent || '').trim() === 'Home' && !e.closest('iframe')) e.textContent = 'Pickups'; } })()`);
+    }
+    if (f.typechars) {
+      // Real typing (plan): one character at a time into the app's own box through the browser's own text input, and a
+      // picture of the box after every character. WHY strips: only the box changes, so each picture is the band from just
+      // above the box to the bottom of the window; the film lays it over the first full picture at exactly this place.
+      await sleep(1500);
+      const pick = await tab.evaluate(`(() => { const m = document.querySelector("[placeholder^='Message']"); const c = getComputedStyle(m); const ctx = document.createElement('canvas').getContext('2d');
+        ctx.font = c.fontStyle + ' ' + c.fontWeight + ' ' + c.fontSize + ' ' + c.fontFamily; const avail = m.clientWidth - parseFloat(c.paddingLeft) - parseFloat(c.paddingRight) - 4;
+        return { avail, widths: ${JSON.stringify(ASK)}.map((s) => ctx.measureText(s).width + (parseFloat(c.letterSpacing) || 0) * s.length), fs: c.fontSize }; })()`);
+      ASK_USED = ASK.find((s, i) => pick.widths[i] <= pick.avail) ?? ASK[ASK.length - 1];
+      console.log('ASK fit', JSON.stringify(pick), '->', ASK_USED);
+      const form = await tab.evaluate(`(() => { const e = document.querySelector("[placeholder^='Message']"); const r = (e.closest('form') || e.parentElement).getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; })()`);
+      const y0 = Math.max(0, Math.floor(form[1] - 12));
+      const clip = { x: 0, y: y0, width: z.w, height: z.h - y0, scale: 1 };
+      const base = `${slug}-${shapeKey}-type`;
+      writeFileSync(join(OUT, `${base}-base.png`), await tab.png());
+      const lines = [];
+      for (let i = 0; i <= ASK_USED.length; i++) {
+        if (i > 0) await tab.send('Input.insertText', { text: ASK_USED[i - 1] });
+        // WHY 140 ms: long enough for the app to draw the letter, short enough that the caret's blink (which restarts on
+        // every keystroke) is still in its "on" half, so every strip shows the real caret, solid, as typing looks
+        await sleep(140);
+        writeFileSync(join(OUT, `${base}-${String(i).padStart(2, '0')}.png`), await tab.png({ clip }));
+        const h = await tab.evaluate(`document.querySelector("[placeholder^='Message']").scrollHeight`);
+        lines.push(h);
+      }
+      if (new Set(lines).size > 1) throw new Error(`the request wrapped onto a second line (${[...new Set(lines)]}); shorten ASK`);
+      writeFileSync(join(OUT, `${base}.json`), JSON.stringify({ text: ASK_USED, n: ASK_USED.length, y0: y0 * z.dpr, full: [z.w * z.dpr, z.h * z.dpr], box: form.map((v) => Math.round(v * z.dpr)), scrollHeights: [...new Set(lines)] }, null, 1));
+      rows.push({ file: `${base}-base.png`, shape: shapeKey, px: `${z.w * z.dpr}x${z.h * z.dpr}`, theme: label, kind, focus: f.what, box: form.map((v) => Math.round(v * z.dpr)).join(','), applied: '' });
+      console.log('ok typed', base, ASK_USED.length, 'strips, heights', [...new Set(lines)]);
+      return;
+    }
     await sleep(2200);
     const info = await tab.evaluate(`(() => { const e = document.querySelector("[placeholder^='Message']"); const r = e ? (e.closest('form') || e.parentElement).getBoundingClientRect() : null;
       return { theme: document.documentElement.dataset.theme || '', box: r ? [r.left, r.top, r.width, r.height].map((n) => Math.round(n * ${z.dpr})) : null, w: innerWidth, h: innerHeight, font: e ? (() => { const c = getComputedStyle(e); return [c.fontFamily, c.fontSize, c.color, c.fontWeight, c.letterSpacing, c.paddingLeft].join(' | '); })() : '' }; })()`);

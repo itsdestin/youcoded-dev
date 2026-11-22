@@ -6,90 +6,16 @@
 //    is one receipt that belongs to one phone, not a new prop in a void each time.
 //  - BillStack: "subscribe to everything and own nothing": monthly charges drop and stack on the shelf in front
 //    of the same phone, faster and faster, while the total climbs. Seen once.
-//  - Receipt (rewind): the old off-wall shot of line 7, kept only until that line moves onto the shelf too.
+//  (The old off-wall receipt shot is gone: line 7 rolls this same paper back up into the phone, on the shelf.)
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
 import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
 import { Q } from './take1b-cues';
-import { APP_BG, OwnScreen, SameScreen, ShareSwitch, sameLayout } from './take1b-screens';
 import { dev } from './take1b-world';
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
 const lin = (t: number, a: number, b: number) => cl((t - a) / (b - a));
 const ez = (t: number, a: number, b: number, e = EASE_OUT) => e(lin(t, a, b));
 const bump = (t: number, at: number, d = 0.28) => (t < at || t > at + d ? 0 : Math.sin(Math.PI * (t - at) / d));
-// WHY deeper than before: the reviewer found the plum lifted and muddy; plum-black lets the paper and screens hit white
-const Room: React.FC = () => <AbsoluteFill style={{ background: 'radial-gradient(ellipse 90% 80% at 50% 30%, #22142D 0%, #120A1B 60%, #0B0611 100%)' }} />;
-
-// ---------------------------------------------------------------------------------------------------
-// The receipt that prints out of the phone
-// ---------------------------------------------------------------------------------------------------
-const PW = 400, PH = 836, BZ = 16;      // WHY this big: the switch and the things it copies must read at a glance                       // phone screen and bezel, in frame pixels
-const PX = 960 - PW / 2, PY = 58;                        // screen's top-left before the camera follows the paper
-const PRINT_LINES: { text: string; item?: 'photo' | 'msg' | 'note' }[] = [
-  { text: 'your photos', item: 'photo' }, { text: 'Sam: running late…', item: 'msg' }, { text: 'pick up Mia at 3:15', item: 'note' },
-  { text: 'where you were today' }, { text: 'who you message most' }, { text: 'what you looked at' },
-];
-const HEAD = 84, LINE = 60;
-const FULL = HEAD + PRINT_LINES.length * LINE + 40;
-// the moments, all from the narrator's words
-const SHARE_IN = Q.data + 0.12, FLIP = Q.personal - 0.42, PRINT0 = FLIP + 0.12, PRINT1 = Q.weAll - 0.08;
-// WHY from "what happens" (not "And"): the tablet before it needs its own 1.2 s once its new screen is up
-const UNFLIP = Q.whatHappens + 0.1, REWIND0 = Q.whatHappens + 0.25, REWIND1 = Q.whatHappens + 1.3;
-if (PRINT1 - PRINT0 < 1.3) throw new Error('take1b: the receipt would print too fast to read');
-
-export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, mode }) => {
-  const len = mode === 'print' ? FULL * ez(t, PRINT0, PRINT1, (x) => x) : FULL * (1 - ez(t, REWIND0, REWIND1, EASE_IN_OUT));
-  // WHY the camera follows the paper down: the newest line is always in view, as in the "free*" shot later
-  const follow = Math.max(0, len - 150) * 0.78;
-  const lay = 2;
-  const L = sameLayout(PW, PH, lay);
-  const on = mode === 'print' ? lin(t, FLIP, FLIP + 0.18) : 1 - lin(t, UNFLIP, UNFLIP + 0.18);
-  const shareO = mode === 'print' ? lin(t, SHARE_IN, SHARE_IN + 0.3) : 1 - lin(t, REWIND1 + 0.1, REWIND1 + 0.4);
-  return (
-    <AbsoluteFill>
-      <Room />
-      <div style={{ position: 'absolute', left: 0, top: -follow, width: 1920, height: 1080 }}>
-        {/* the paper, behind the phone, coming out of its bottom edge */}
-        <div style={{ position: 'absolute', left: 960 - 230, top: PY + PH + BZ - 6, width: 460, height: Math.max(0, len), overflow: 'hidden',
-          background: 'linear-gradient(180deg,#E9DECB 0px,#FBF6EC 18px,#F3EADB 100%)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',
-          clipPath: 'polygon(0 0,100% 0,100% calc(100% - 12px),95% 100%,90% calc(100% - 12px),85% 100%,80% calc(100% - 12px),75% 100%,70% calc(100% - 12px),65% 100%,60% calc(100% - 12px),55% 100%,50% calc(100% - 12px),45% 100%,40% calc(100% - 12px),35% 100%,30% calc(100% - 12px),25% 100%,20% calc(100% - 12px),15% 100%,10% calc(100% - 12px),5% 100%,0 calc(100% - 12px))' }}>
-          {/* WHY read top-down as it unrolls (like the "free*" receipt): each new line appears as it leaves the phone */}
-          <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: FULL, padding: '28px 40px 0', boxSizing: 'border-box', fontFamily: DMSANS, color: C.plum }}>
-            <div style={{ height: HEAD - 28, fontSize: 30, fontWeight: 900, letterSpacing: '-0.02em' }}>shared with partners:</div>
-            {PRINT_LINES.map((l, i) => (
-              <div key={i} style={{ height: LINE, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px dashed #E2D4C0', fontSize: 29, fontWeight: 500, color: C.plum2 }}>
-                <span>{l.text}</span><span style={{ fontWeight: 700, color: C.plum }}>✓</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* the phone */}
-        <div style={{ position: 'absolute', left: PX - BZ, top: PY - BZ, width: PW + BZ * 2, height: PH + BZ * 2, borderRadius: 64, background: 'linear-gradient(180deg,#3A2C46 0%,#241A2E 45%,#1A1222 100%)',
-          boxShadow: '0 30px 60px rgba(6,2,12,0.6), inset 0 2px 0 rgba(255,255,255,0.16)' }}>
-          <div style={{ position: 'absolute', left: BZ, top: BZ, width: PW, height: PH, borderRadius: 50, overflow: 'hidden' }}>
-            {mode === 'print'
-              ? <SameScreen w={PW} h={PH} lay={lay} lock={1} />
-              : <OwnScreen look={{ app: 0, glow: APP_BG[0], key: 'app0', theme: 'app0' }} w={PW} h={PH} p={1} />}
-            {/* each thing on the screen is outlined the moment its line prints: copied out, still in place */}
-            {mode === 'print' && PRINT_LINES.map((l, i) => {
-              if (!l.item) return null;
-              const at = PRINT0 + (PRINT1 - PRINT0) * ((HEAD + (i + 0.6) * LINE) / FULL);
-              const o = bump(t, at, 0.7);
-              if (o <= 0) return null;
-              const r = L[l.item];
-              return <div key={i} style={{ position: 'absolute', left: r.x * PW - 4, top: r.y * PH - 4, width: r.w * PW + 8, height: r.h * PH + 8, borderRadius: 14, border: `4px solid ${C.purpleNight}`, opacity: o }} />;
-            })}
-            <ShareSwitch w={PW} h={PH} o={shareO} on={on} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(118deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 34%, rgba(255,255,255,0) 35%)' }} />
-          </div>
-          <div style={{ position: 'absolute', left: (PW + BZ * 2) / 2 - 40, top: BZ + 12, width: 80, height: 22, borderRadius: 22, background: '#120C18' }} />
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
 
 // ---------------------------------------------------------------------------------------------------
 // The receipt on the shelf (world units: it is drawn inside the wall's camera, so every shot sees the same paper)
