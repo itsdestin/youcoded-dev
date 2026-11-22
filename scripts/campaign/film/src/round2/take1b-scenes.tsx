@@ -1,21 +1,18 @@
-// Take 1B: the shots that step off the wall.
-//  - Receipt: "what happened with your personal data". The phone's things stay where they are, a pointer
-//    flips "Share with partners" on, and a receipt of them prints out of the phone. WHY: data that leaks out
-//    is the true picture; the first cut showed things being grabbed, an idea the owner had already rejected.
-//    In line 7 ("what happens with our data") the same receipt rolls back into the phone.
-//  - SubStack: "subscribe to everything and own nothing": monthly charges slam onto a pile that runs out of
-//    the frame, and the total climbs. Its reprise is "a great treasure: shareholder value": the same total,
-//    one new charge slams in on "shareholder" and the total rolls over to $109.40 on "value".
-//    WHY one number (reviewer 2026-11-20): the old six-bill table read as a data sheet; their treasure is
-//    simply your bill going up, and the viewer already knows this counter from chapter 3.
-//  - FreeTag: "our privacy would be the cost of convenience": a "free*" tag whose small print unrolls,
-//    four big lines, each on its own spoken word.
+// Take 1B: things in the room that are not screens, and the one shot that still steps off the wall.
+//  - ShelfReceipt: "what happened with your personal data". The person's phone prints a receipt of their three
+//    things (photos, Sam's message, Mia's pickup); in line 3 four more lines print onto the same paper. It hangs
+//    from the phone over the shelf lip, down across the screens of the shelf below, in every wall shot until
+//    line 7 rolls it back. WHY one object on the shelf (owner, round 4: "disconnected elements"): the data story
+//    is one receipt that belongs to one phone, not a new prop in a void each time.
+//  - BillStack: "subscribe to everything and own nothing": monthly charges drop and stack on the shelf in front
+//    of the same phone, faster and faster, while the total climbs. Seen once.
+//  - Receipt (rewind): the old off-wall shot of line 7, kept only until that line moves onto the shelf too.
 import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
 import { Q } from './take1b-cues';
-import { APP_BG, OwnScreen, SameScreen, ShareSwitch, sameLayout, shareKnob } from './take1b-screens';
-import { PointerArrow } from './take1b-world';
+import { APP_BG, OwnScreen, SameScreen, ShareSwitch, sameLayout } from './take1b-screens';
+import { dev } from './take1b-world';
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
 const lin = (t: number, a: number, b: number) => cl((t - a) / (b - a));
@@ -49,12 +46,6 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
   const L = sameLayout(PW, PH, lay);
   const on = mode === 'print' ? lin(t, FLIP, FLIP + 0.18) : 1 - lin(t, UNFLIP, UNFLIP + 0.18);
   const shareO = mode === 'print' ? lin(t, SHARE_IN, SHARE_IN + 0.3) : 1 - lin(t, REWIND1 + 0.1, REWIND1 + 0.4);
-  // the pointer that flips the switch (print only)
-  const knob = shareKnob(PW, PH);
-  const tip = { x: PX + knob.x, y: PY + knob.y };
-  const pIn = ez(t, Q.data, FLIP - 0.06, EASE_IN_OUT);
-  const pOut = ez(t, FLIP + 0.35, FLIP + 1.0, EASE_IN);
-  const ptr = { x: tip.x + 420 * (1 - pIn) + 380 * pOut, y: tip.y - 300 * (1 - pIn) - 700 * pOut, press: bump(t, FLIP - 0.04, 0.26), o: mode === 'print' ? 1 : 0 };
   return (
     <AbsoluteFill>
       <Room />
@@ -94,14 +85,76 @@ export const Receipt: React.FC<{ t: number; mode: 'print' | 'rewind' }> = ({ t, 
           </div>
           <div style={{ position: 'absolute', left: (PW + BZ * 2) / 2 - 40, top: BZ + 12, width: 80, height: 22, borderRadius: 22, background: '#120C18' }} />
         </div>
-        <PointerArrow p={ptr} size={104} />
       </div>
     </AbsoluteFill>
   );
 };
 
+
 // ---------------------------------------------------------------------------------------------------
-// The monthly bill
+// The receipt on the shelf (world units: it is drawn inside the wall's camera, so every shot sees the same paper)
+// ---------------------------------------------------------------------------------------------------
+const HERO = dev('hero');
+/** "Share with partners" slides onto the phone as line 2's last clause starts, and flips on by itself just before
+ *  "personal". WHY by itself: nobody on screen chose it; it was decided for them. */
+export const SHARE = { in: Q.data + 0.05, on: Q.personal - 0.4 };
+type RLine = { text: string[]; at: number; item?: 'photo' | 'msg' | 'note' };
+// WHY these times: line 2's three lines land on "personal", "data" and just after, each as its card is ringed;
+// line 3's four lines each land on their own spoken word, a beat after the paper feeds out for them
+const RLINES: RLine[] = [
+  { text: ['your photos'], at: SHARE.on + 0.18, item: 'photo' },
+  { text: ['Sam: running late…'], at: SHARE.on + 0.62, item: 'msg' },
+  { text: ['pick up Mia at 3:15'], at: SHARE.on + 1.06, item: 'note' },
+  { text: ['where you go'], at: Q.wouldBe },
+  { text: ['who you talk to'], at: Q.costOf },
+  { text: ['what you watch', 'at 2 am'], at: Q.convenience },
+  { text: ['how you feel'], at: Q.convenience + 0.5 },
+];
+if (RLINES[2].at > Q.weAll - 0.5) throw new Error('take1b: the receipt\'s last private line would print as the shot cuts');
+const R_W = 150;                       // the phone's full body width: the paper comes out of its bottom edge
+const R_TOP = HERO.cy + HERO.h / 2 + 7; // the phone body's bottom edge (screen + bezel)
+const R_HEAD = 24, R_ROW = 22, R_ROW2 = 15, R_FONT = 13.5, R_PAD = 9;
+const rowH = (l: RLine) => R_ROW + (l.text.length - 1) * R_ROW2;
+/** Where the person's three things are ringed on the phone, 0..1 each, as their line prints. */
+export const receiptOutline = (t: number) => {
+  const o = (i: number) => bump(t, RLINES[i].at - 0.12, 0.8);
+  return { photo: o(0), msg: o(1), note: o(2) };
+};
+/** How much paper hangs out of the phone, in world px. Line 7 (the other half of the film) rolls it back by
+ *  passing its own 0..1 `back`. */
+export const receiptLen = (t: number, back = 0) => {
+  let len = R_HEAD * ez(t, SHARE.on + 0.02, RLINES[0].at - 0.08, EASE_IN_OUT);
+  // WHY each row feeds out in the quarter second before its line is due: the words are on the paper as it arrives
+  for (const l of RLINES) len += rowH(l) * ez(t, l.at - 0.24, l.at + 0.02, EASE_IN_OUT);
+  return len > 0 ? (len + 8) * (1 - back) : 0;
+};
+export const ShelfReceipt: React.FC<{ t: number; dim?: number; back?: number }> = ({ t, dim = 0, back = 0 }) => {
+  const len = receiptLen(t, back);
+  if (len <= 0.5) return null;
+  const teeth = Array.from({ length: 21 }, (_, i) => `${i * 5}% ${i % 2 ? '100%' : 'calc(100% - 4px)'}`).join(',');
+  return (
+    <div style={{ position: 'absolute', left: HERO.cx - R_W / 2, top: R_TOP, width: R_W, height: len, overflow: 'hidden',
+      // WHY a filter, not an overlay: when the room hushes the paper keeps only the faint light of its own phone
+      filter: `brightness(${1 - 0.55 * dim}) drop-shadow(0 6px 7px rgba(6,2,12,0.55))` }}>
+      <div style={{ position: 'absolute', inset: 0, clipPath: `polygon(0 0,100% 0,${teeth.split(',').reverse().join(',')})` }}>
+        {/* the paper: warm white, a slot shadow where it leaves the phone, the bend over the shelf lip (8..24 px down),
+            and the glow of the screens behind it coming through towards the bottom */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#B9AE9C 0px,#EDE3D2 4px,#FBF6EC 8px,#FFFDF7 13px,#E9DFCD 22px,#D8CDBB 25px,#F6EFE3 30px,#FBF6EC 70%,#F3EADB 100%)' }} />
+        <div style={{ position: 'absolute', left: R_PAD, right: R_PAD, top: 6, fontFamily: DMSANS, color: C.plum }}>
+          <div style={{ height: R_HEAD, display: 'flex', alignItems: 'center', fontSize: 9.5, fontWeight: 900, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>shared with partners:</div>
+          {RLINES.map((l, i) => (
+            <div key={i} style={{ height: rowH(l), boxSizing: 'border-box', borderTop: '1.2px dashed #D9CAB4', paddingTop: 3, fontSize: R_FONT, lineHeight: `${R_ROW2}px`, fontWeight: 600, letterSpacing: '-0.02em', color: C.plum, whiteSpace: 'nowrap' }}>
+              {l.text.map((x, j) => <div key={j}>{x}</div>)}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------------------------------------------
+// The monthly bill, stacking on the shelf in front of the person's phone (world units)
 // ---------------------------------------------------------------------------------------------------
 // generic everyday subscriptions, no company names (brand: nothing identifying a real company)
 const SUBS: [string, number, string][] = [
@@ -109,153 +162,57 @@ const SUBS: [string, number, string][] = [
   ['Cloud backup', 4.99, '#6FB3A8'], ['Fitness', 12.99, '#E07A5F'], ['Password keeper', 3.99, '#8A7B96'], ['News', 8.0, '#C9A227'],
   ['Doorbell video', 4.99, '#7E9C7A'], ['Printer ink plan', 6.99, '#C387D3'], ['Car app', 7.99, '#5A6E8C'],
 ];
-const AI_LINE: [string, number, string] = ['AI assistant', 20, C.purpleNight];
-const BASE_TOTAL = SUBS.reduce((a, s) => a + s[1], 0);
-
-/** "$89.40" turning over to "$109.40" on mechanical wheels. WHY only two notches of the tens wheel (8, 9, 0)
- *  carrying the hundreds wheel from nothing to 1: one weighted tick a viewer can follow, not a blur of digits. */
-const Odometer: React.FC<{ p: number; size: number }> = ({ p, size }) => {
-  const tens = 8 + 2 * p, hundreds = Math.max(0, Math.min(1, tens - 9));
-  const W = size * 0.53, H = size * 1.02;
-  const wheel = (pos: number, blankZero: boolean, key: string) => {
-    const base = Math.floor(pos), frac = pos - base;
-    const show = (n: number) => (blankZero && n % 10 === 0 ? '' : String(n % 10));
-    return (
-      <span key={key} style={{ position: 'relative', width: blankZero ? W * Math.max(0, Math.min(1, pos)) : W, height: H, display: 'inline-block', overflow: 'hidden' }}>
-        <span style={{ position: 'absolute', left: 0, width: W, textAlign: blankZero ? 'right' : 'center', top: -frac * H, lineHeight: 1.02 }}>{show(base)}<br />{show(base + 1)}</span>
-      </span>
-    );
-  };
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'flex-start', height: H, overflow: 'hidden', fontVariantNumeric: 'tabular-nums', letterSpacing: 0 }}>
-      <span style={{ letterSpacing: '-0.05em', marginRight: size * 0.02 }}>$</span>
-      {hundreds > 0 && wheel(hundreds, true, 'h')}{wheel(tens, false, 't')}{wheel(9, false, 'o')}
-      <span style={{ letterSpacing: '-0.05em' }}>.40</span>
-    </span>
-  );
+const B_FIRST = Q.weAccepted + 0.45, B_FALL = 0.16;   // WHY so short a fall: a charge lands like a weight, not a feather
+// WHY accelerating: the charges arrive slowly, then faster and faster, the way subscriptions pile up; the last one
+// lands as "own" is spoken. The first two are already on the shelf when the shot opens.
+const bDrop = (i: number) => (i < 2 ? -99 : B_FIRST + (Q.own - B_FIRST) * Math.pow((i - 2) / (SUBS.length - 3), 0.62));
+const B_W = 330, B_H = 58, B_PITCH = 61;              // a card, in world px (about 560 x 100 on screen at the shot's scale)
+export const BILL_X = -30;                            // the pile's centre: in front of the phone, the tagged tablet clear to its right
+/** How far the camera climbs with the pile, in world px. WHY smooth and lagging: the newest charge always lands in
+ *  view and the pile keeps running out of the bottom of the frame instead of the camera jumping card by card. */
+export const billRise = (t: number) => {
+  const n = SUBS.reduce((a, _, i) => a + (bDrop(i) < 0 ? 1 : ez(t, bDrop(i) + B_FALL - 0.05, bDrop(i) + B_FALL + 0.45, EASE_IN_OUT)), 0);
+  return Math.max(0, n - 4.2) * B_PITCH;
 };
-
-export const SubStack: React.FC<{ t: number; reprise?: boolean }> = ({ t, reprise }) => {
-  const lines = reprise ? [...SUBS, AI_LINE] : SUBS;
-  const N = SUBS.length;
-  const first = Q.weAccepted + 0.45;
-  // WHY accelerating: the charges arrive slowly, then faster and faster, the way subscriptions actually pile up;
-  // the last one lands as "own" is spoken. In the reprise everything is already there except the new charge,
-  // which slams in on "shareholder".
-  const drop = (i: number) => (reprise ? (i < N ? -99 : Q.shareholder - 0.1) : i < 2 ? -99 : first + (Q.own - first) * Math.pow((i - 2) / (N - 3), 0.62));
-  const FALL = 0.16;                                     // WHY so short: a charge lands like a weight, not a feather
-  const landedN = lines.filter((_, i) => t >= drop(i) + FALL).length;
-  // the reprise's roll: $89.40 to $109.40 on "value", one eased turn of the wheels, then a thump as it locks
-  const rp = reprise ? ez(t, Q.value + 0.02, Q.value + 0.42, EASE_IN_OUT) : 0;
-  const lockThump = reprise ? Math.exp(-Math.max(0, t - Q.value - 0.42) * 12) * (t > Q.value + 0.42 ? 1 : 0) : 0;
-  const total = reprise ? BASE_TOTAL + 20 * rp : lines.slice(0, landedN).reduce((a, s) => a + s[1], 0);
-  const lastLand = drop(Math.max(0, landedN - 1)) + FALL;
-  const thump = Math.exp(-(t - lastLand) * 12) * (landedN > 2 && t > lastLand ? 1 : 0);
-  const CARD_H = 104, PITCH = 114, BASE = 690;
-  // WHY the camera climbs with the pile but lags it: the newest charge lands in view, and the pile keeps running out
-  // of the top of the frame instead of stopping politely
-  const rise = Math.max(0, landedN - 4.5) * PITCH;
-  const scene = reprise ? ez(t, Q.great, Q.great + 0.25) : ez(t, Q.weAccepted, Q.weAccepted + 0.6);
-  // a slow push-in the whole time, so the frame never sits still
-  const t0 = reprise ? Q.great : Q.weAccepted, t1 = reprise ? Q.but : Q.privacy + 0.1;
-  const push = 1 + 0.07 * lin(t, t0, t1);
-  const dollars = Math.floor(total), cents = total.toFixed(2).slice(-2);
-  return (
-    <AbsoluteFill>
-      <Room />
-      <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: '30% 45%' }}>
-        <div style={{ position: 'absolute', left: 190, top: 290, fontFamily: DMSANS, color: C.nightText, opacity: scene }}>
-          <div style={{ fontSize: 38, fontWeight: 500, color: C.nightText2, letterSpacing: '-0.01em' }}>every month</div>
-          <div style={{ fontSize: 176, fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1, fontVariantNumeric: 'tabular-nums', transform: `scale(${1 + thump * 0.035 + lockThump * 0.05})`, transformOrigin: '0 60%',
-            color: reprise && rp > 0 && rp < 1 ? C.purpleNight : undefined }}>
-            {/* WHY wheels only while turning: at rest the number is set as plain type, so its spacing is exact */}
-            {reprise && rp > 0 && rp < 1 ? <Odometer p={rp} size={176} /> : `$${dollars}.${cents}`}
-          </div>
+const billLanded = (t: number) => SUBS.filter((_, i) => t >= bDrop(i) + B_FALL).length;
+export const BillStack: React.FC<{ t: number }> = ({ t }) => (
+  <>
+    {/* the pile's contact shadow on the shelf */}
+    <div style={{ position: 'absolute', left: BILL_X - B_W * 0.55, width: B_W * 1.1, top: -6, height: 14, borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(6,2,12,0.75), transparent)' }} />
+    {SUBS.map(([name, price, col], i) => {
+      const d = bDrop(i);
+      if (t < d) return null;
+      const p = d < 0 ? 1 : ez(t, d, d + B_FALL, EASE_IN);
+      const y = -(i + 1) * B_PITCH;
+      const since = t - d - B_FALL;
+      // WHY squash and a small rebound: weight; it hits, compresses, and settles
+      const sq = d >= 0 && since > 0 ? Math.exp(-since * 16) : 0;
+      const bounce = d >= 0 && since > 0 ? -Math.sin(since * 28) * Math.exp(-since * 14) * 5 : 0;
+      const tilt = ((i * 37) % 7 - 3) * 0.6;
+      return (
+        <div key={i} style={{ position: 'absolute', left: BILL_X - B_W / 2 + ((i * 53) % 5 - 2) * 4, top: y - (1 - p) * 700 + bounce, width: B_W, height: B_H,
+          transform: `rotate(${tilt}deg) scaleY(${1 - sq * 0.12}) scaleX(${1 + sq * 0.03})`, transformOrigin: '50% 100%',
+          borderRadius: 10, background: 'linear-gradient(180deg,#3A2B46,#271C31)', boxShadow: '0 8px 14px rgba(6,2,12,0.6), inset 0 1px 0 rgba(255,255,255,0.16)',
+          display: 'flex', alignItems: 'center', padding: '0 17px', boxSizing: 'border-box', gap: 12, fontFamily: DMSANS }}>
+          <div style={{ width: 29, height: 29, borderRadius: 8, background: col, flex: 'none', boxShadow: 'inset 0 -2px 0 rgba(0,0,0,0.18)' }} />
+          <div style={{ flex: 1, fontSize: 22, fontWeight: 700, color: C.nightText, letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>{name}</div>
+          <div style={{ fontSize: 20, fontWeight: 500, color: C.nightText2, fontVariantNumeric: 'tabular-nums' }}>${price.toFixed(2)}/mo</div>
         </div>
-        {/* the pile. WHY the fade at the bottom: the older charges sink away below the frame instead of running
-            through the "own nothing." headline */}
-        <AbsoluteFill style={{ WebkitMaskImage: 'linear-gradient(180deg,#000 62%,transparent 78%)', maskImage: 'linear-gradient(180deg,#000 62%,transparent 78%)' }}>
-          <div style={{ position: 'absolute', left: 930, top: 0, width: 760, height: 1080, transform: `translateY(${rise + thump * 9}px)` }}>
-            {lines.map(([name, price, col], i) => {
-              const d = drop(i);
-              if (t < d) return null;
-              const p = d < 0 ? 1 : ez(t, d, d + FALL, EASE_IN);
-              const y = BASE - i * PITCH;
-              const tilt = ((i * 37) % 7 - 3) * 0.7;
-              const since = t - d - FALL;
-              // WHY squash and a two-frame rebound: weight; it hits, compresses, and settles
-              const sq = d >= 0 && since > 0 ? Math.exp(-since * 16) : 0;
-              const bounce = d >= 0 && since > 0 ? -Math.sin(since * 28) * Math.exp(-since * 14) * 10 : 0;
-              const isAI = reprise && i === N;
-              return (
-                <div key={i} style={{ position: 'absolute', left: ((i * 53) % 5 - 2) * 9, top: y - (1 - p) * (y + 300) + bounce, width: 720, height: CARD_H,
-                  transform: `rotate(${tilt}deg) scaleY(${1 - sq * 0.12}) scaleX(${1 + sq * 0.03})`, transformOrigin: '50% 100%',
-                  borderRadius: 18, background: isAI ? 'linear-gradient(180deg,#5A3672,#43295A)' : 'linear-gradient(180deg,#34263F,#271C31)', boxShadow: '0 14px 26px rgba(6,2,12,0.6), inset 0 1.5px 0 rgba(255,255,255,0.14)',
-                  display: 'flex', alignItems: 'center', padding: '0 30px', boxSizing: 'border-box', gap: 22, fontFamily: DMSANS }}>
-                  <div style={{ width: 52, height: 52, borderRadius: 14, background: col, flex: 'none', boxShadow: 'inset 0 -3px 0 rgba(0,0,0,0.18)' }} />
-                  <div style={{ flex: 1, fontSize: 40, fontWeight: 700, color: C.nightText, letterSpacing: '-0.02em' }}>{name}</div>
-                  <div style={{ fontSize: 36, fontWeight: isAI ? 900 : 500, color: isAI ? C.nightText : C.nightText2, fontVariantNumeric: 'tabular-nums' }}>${price.toFixed(2)}/mo</div>
-                </div>
-              );
-            })}
-          </div>
-        </AbsoluteFill>
-      </AbsoluteFill>
-    </AbsoluteFill>
-  );
-};
-
-// ---------------------------------------------------------------------------------------------------
-// "free*"
-// ---------------------------------------------------------------------------------------------------
-// WHY four lines, each on its own word (reviewer 2026-11-20): eleven small lines were unreadable on a phone
-const PRINT: [string, number][] = [['where you go', Q.wouldBe], ['who you talk to', Q.costOf], ['what you watch at 2 am', Q.convenience], ['how you feel', Q.convenience + 0.5]];
-
-export const FreeTag: React.FC<{ t: number }> = ({ t }) => {
-  const t0 = Q.privacy + 0.1;
-  const dt = t - t0;
-  const swing = 7 * Math.exp(-dt * 2.4) * Math.sin(dt * 7);
-  const enter = ez(t, t0, t0 + 0.45);
-  const LN = 118, HEAD = 150;
-  // the paper unrolls one line at a time, a beat before each line's word
-  const shown = PRINT.reduce((a, [, at]) => a + ez(t, at - 0.2, at + 0.12, EASE_OUT), 0);
-  const len = 60 + HEAD * Math.min(1, ez(t, t0 + 0.2, PRINT[0][1] - 0.2)) + shown * LN + 30 * Math.min(1, shown);
-  // the camera tilts down after the paper, and pushes in the whole time
-  const follow = Math.max(0, len - 640);   // WHY 640: the "free*" tag stays in view while its list is read
-  const push = 1 + 0.06 * lin(t, t0, Q.however);
+      );
+    })}
+  </>
+);
+/** The running total, set on the left of the frame (screen px). */
+export const BillTotal: React.FC<{ t: number }> = ({ t }) => {
+  const n = billLanded(t);
+  const total = SUBS.slice(0, n).reduce((a, s) => a + s[1], 0);
+  const lastLand = bDrop(Math.max(0, n - 1)) + B_FALL;
+  const thump = n > 2 && t > lastLand ? Math.exp(-(t - lastLand) * 12) : 0;
+  const o = ez(t, Q.weAccepted, Q.weAccepted + 0.5);
   return (
-    <AbsoluteFill>
-      <Room />
-      <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: '50% 40%' }}>
-        <div style={{ position: 'absolute', left: 960, top: -70 - follow + (1 - enter) * -260, transform: `rotate(${swing}deg)`, transformOrigin: '0 0' }}>
-          <div style={{ position: 'absolute', left: -2, top: 0, width: 4, height: 150, background: '#D9CBE4' }} />
-          <div style={{ position: 'absolute', left: -450, top: 380, width: 900, height: len, overflow: 'hidden',
-            background: 'linear-gradient(180deg,#FBF6EC,#F3EADB)', boxShadow: '0 20px 40px rgba(6,2,12,0.5)',
-            clipPath: 'polygon(0 0,100% 0,100% calc(100% - 16px),95% 100%,90% calc(100% - 16px),85% 100%,80% calc(100% - 16px),75% 100%,70% calc(100% - 16px),65% 100%,60% calc(100% - 16px),55% 100%,50% calc(100% - 16px),45% 100%,40% calc(100% - 16px),35% 100%,30% calc(100% - 16px),25% 100%,20% calc(100% - 16px),15% 100%,10% calc(100% - 16px),5% 100%,0 calc(100% - 16px))' }}>
-            <div style={{ padding: '70px 56px 0', fontFamily: DMSANS, color: C.plum }}>
-              <div style={{ height: HEAD - 70, fontSize: 46, fontWeight: 700, letterSpacing: '-0.02em' }}>* paid for with:</div>
-              {PRINT.map(([p, at], i) => {
-                const o = ez(t, at - 0.12, at + 0.2);
-                return (
-                  <div key={i} style={{ height: LN, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '3px dashed #E2D4C0', fontSize: 60, fontWeight: 700, letterSpacing: '-0.03em', color: C.plum, whiteSpace: 'nowrap',
-                    opacity: o, transform: `translateY(${(1 - o) * 14}px)` }}>
-                    <span>{p}</span><span style={{ fontWeight: 900, color: C.purple }}>✓</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div style={{ position: 'absolute', left: -280, top: 130, width: 560, height: 272, filter: 'drop-shadow(0 26px 30px rgba(6,2,12,0.55))' }}>
-            <svg width={560} height={272} viewBox="0 0 190 92" style={{ position: 'absolute' }}>
-              <path d="M95 0 L120 16 H182 a8 8 0 0 1 8 8 V84 a8 8 0 0 1 -8 8 H8 a8 8 0 0 1 -8 -8 V24 a8 8 0 0 1 8 -8 H70 Z" fill="#FBF5EA" />
-              <circle cx="95" cy="12" r="5" fill="#2A1F33" />
-            </svg>
-            <div style={{ position: 'absolute', left: 0, right: 0, top: 60, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: 150, letterSpacing: '-0.05em', color: C.plum }}>
-              free<span style={{ color: C.purple, transform: 'translateY(-34px)', fontSize: 110 }}>*</span>
-            </div>
-          </div>
-        </div>
-      </AbsoluteFill>
-    </AbsoluteFill>
+    <div style={{ position: 'absolute', left: 154, top: 300, fontFamily: DMSANS, color: C.nightText, opacity: o, textShadow: '0 4px 30px rgba(10,5,16,0.8)' }}>
+      <div style={{ fontSize: 38, fontWeight: 500, color: C.nightText2, letterSpacing: '-0.01em' }}>every month</div>
+      <div style={{ fontSize: 176, fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1, fontVariantNumeric: 'tabular-nums', transform: `scale(${1 + thump * 0.035})`, transformOrigin: '0 60%' }}>${total.toFixed(2)}</div>
+    </div>
   );
 };

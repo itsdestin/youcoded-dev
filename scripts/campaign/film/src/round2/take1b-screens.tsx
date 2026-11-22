@@ -126,19 +126,19 @@ export type SameProps = {
   w: number; h: number;
   /** the layout, 0..2 (in between while every block slides to its new place) */
   lay?: number;
-  /** 0..1 "Your layout has been updated" banner */
-  banner?: number;
   /** padlocks: one arrival value for every locked tile, or one per tile; `unlock` 0..1 knocks them off */
   lock?: number | number[]; unlock?: number;
   /** 0..1 "Terms have changed" dialog; `accept` 0..1 its button pressed and the dialog gone */
   dialog?: number; accept?: number;
   /** 0..1 the companies' new "ask…" bar stamped onto the screen; `price` 0..1 its $20/mo chip popping on */
   ai?: number; price?: number;
-  /** 0..1 the "something wonderful" glimpse: the screen hushes and one purple caret blinks; `caret` is the blink */
-  glimpse?: { o: number; caret: boolean };
+  /** the hero phone only: the "Share with partners" switch (`o` slides it in, `on` flips it) */
+  share?: { o: number; on: number };
+  /** the hero phone only: 0..1 outline on each of the person's three things as the receipt copies it out */
+  outline?: { photo: number; msg: number; note: number };
 };
 
-export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, price = 0, glimpse }) => {
+export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, lock = 0, unlock = 0, dialog = 0, accept = 0, ai = 0, price = 0, share, outline }) => {
   const k = Math.min(w, h) / 100;
   const L = sameLayout(w, h, lay);
   const P = L.portrait;
@@ -174,9 +174,15 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
           </div>
         );
       })}
-      {/* the update banner that lands on every screen in the same frame */}
-      {banner > 0 && <div style={{ position: 'absolute', left: '6%', right: '6%', top: (P ? 0.075 : 0.06) * h, height: (P ? 0.06 : 0.09) * h, borderRadius: 3 * k, background: '#43354E', color: '#F3EAF9',
-        fontSize: 3.4 * k, fontWeight: 700, display: 'flex', alignItems: 'center', paddingLeft: 3 * k, transform: `translateY(${(smooth(banner * 4) - 1) * 6 * k}px)`, opacity: smooth(banner * 4) * (1 - smooth((banner - 0.8) * 5)), whiteSpace: 'nowrap', overflow: 'hidden' }}>Your layout has been updated</div>}
+      {/* WHY outlines: each of the person's things is ringed the moment its line prints on the receipt below the
+          phone, so a viewer sees the paper is a copy of THESE things, which also stay where they are */}
+      {outline && (['photo', 'msg', 'note'] as const).map((kind) => {
+        const o = outline[kind];
+        if (o <= 0) return null;
+        const r = L[kind];
+        return <div key={`o-${kind}`} style={{ position: 'absolute', left: r.x * w - 1.2 * k, top: r.y * h - 1.2 * k, width: r.w * w + 2.4 * k, height: r.h * h + 2.4 * k, borderRadius: 4 * k, boxSizing: 'border-box', border: `${1.3 * k}px solid #9750AA`, opacity: o }} />;
+      })}
+      {share && <ShareSwitch w={w} h={h} o={share.o} on={share.on} />}
       {/* their machine's bar, stamped on top of everything, with its price on it (the same one as on the big screen) */}
       {ai > 0 && <div style={{ position: 'absolute', left: '50%', bottom: (P ? 0.03 : 0.05) * h, transform: `translateX(-50%) scale(${0.6 + 0.4 * smooth(ai)})`, opacity: smooth(ai * 1.5),
         height: 10 * k, width: (P ? 0.84 : 0.56) * w, boxSizing: 'border-box', padding: `0 ${1.6 * k}px 0 ${4 * k}px`, borderRadius: 10 * k, background: '#1C1424', color: '#F3EAF9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 4.2 * k, fontWeight: 500, whiteSpace: 'nowrap',
@@ -184,11 +190,6 @@ export const SameScreen: React.FC<SameProps> = ({ w, h, lay = 0, banner = 0, loc
         {/* WHY the price arrives separately, on "value" (reviewer 2026-11-20): the treasure is that every screen gets charged at once */}
         <span style={{ height: 7 * k, padding: `0 ${2.2 * k}px`, borderRadius: 7 * k, background: '#FBF5EA', color: '#21152C', fontWeight: 900, fontSize: 3.8 * k, display: 'flex', alignItems: 'center',
           opacity: smooth(price * 2), transform: `scale(${price <= 0 ? 0.4 : 0.4 + 0.6 * smooth(price) + 0.18 * Math.sin(Math.PI * cl(price))})` }}>$20/mo</span></div>}
-      {glimpse && glimpse.o > 0 && <>
-        {/* WHY a hush and a caret, not an input bar: something new is waiting here, and nothing of the real app is drawn */}
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(250,247,252,0.82)', opacity: glimpse.o }} />
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 2.6 * k, height: 15 * k, marginLeft: -1.3 * k, marginTop: -7.5 * k, borderRadius: 3 * k, background: '#9750AA', opacity: glimpse.o * (glimpse.caret ? 1 : 0) }} />
-      </>}
       {/* "Terms have changed": the same dialog, accepted by everyone */}
       {dlg > 0 && <>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,28,52,0.42)', opacity: dlg }} />
