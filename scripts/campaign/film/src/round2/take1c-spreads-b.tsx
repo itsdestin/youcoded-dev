@@ -155,7 +155,9 @@ const Ask: React.FC<{ lines: string[]; x: number; y: number; at: number; dur: nu
 };
 const ASKS = {
   maya: ['my plants keep dying.', 'can you help?'],
-  theo: ['can i keep my records', "somewhere that's", 'actually mine?'],
+  // WHY four short lines (integration): as three, "can i keep my records" ran to within a letter of June's
+  // "somewhere private" and the two asks read as one sentence across the page
+  theo: ['can i keep', 'my records', "somewhere that's", 'actually mine?'],
   june: ['somewhere private', 'for my photos', 'and letters?'],
 };
 
@@ -537,7 +539,7 @@ const FAR = { x: 112, y: 214, s: 0.4, n: 6, w: 300 };
 const VI = {
   maya: { x: 270, y: 694, s: 1.8 }, mayaWin: { x: 428, y: 352, w: 340 }, mayaAsk: { x: 250, y: 140 },
   lap: { x: 528, y: 604, s: 1.15 }, table: [446, 612] as [number, number],
-  theo: { x: 846, y: 628, s: 1.55 }, theoWin: { x: 986, y: 348, w: 320 }, theoAsk: { x: 826, y: 100 },
+  theo: { x: 846, y: 628, s: 1.55 }, theoWin: { x: 986, y: 348, w: 320 }, theoAsk: { x: 826, y: 72 },
   june: { x: 1202, y: 656, s: 1.75 }, juneWin: { x: 1338, y: 372, w: 320 }, juneAsk: { x: 1180, y: 124 },
 };
 const VI_L = land(TURN.anyone);
