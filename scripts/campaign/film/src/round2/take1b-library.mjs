@@ -139,7 +139,11 @@ for (const [k, v] of Object.entries(PLAN8)) PLAN[k] = [...PLAN[k], ...v];
 const FLOW_WORDS = /\b(ultrathink|ultraplan|brainstorm|plan)\b/i;
 // WHY every one starts with "make" (round 2 review: "sort mia's pickups?" was vague British slang and said nothing about
 // MAKING something, which is what the narrator is saying at that moment: "a tool that can make software")
-const ASK = ['can you make something for mia\'s pickups?', 'make something for mia\'s pickups?', 'make a pickup board for mia?', 'make mia a pickup board?', 'make me a pickup board?', 'make a pickup board?', 'make a pickup list?'].filter((s) => !FLOW_WORDS.test(s));
+// WHY a two-line sentence first (round 6 final review: "make a pickup board?" was terse and read as jargon; a person
+// asks in a whole, slightly unsure sentence that names their own thing): the real box wraps onto a second line, as it
+// does for anyone who types more than a few words on a phone, and the strips are cut tall enough to hold both lines
+const ASK2 = 'make me a board for mia\'s pickups?';
+const ASK = [ASK2, 'can you make something for mia\'s pickups?', 'make something for mia\'s pickups?', 'make a pickup board for mia?', 'make mia a pickup board?', 'make me a pickup board?', 'make a pickup board?', 'make a pickup list?'].filter((s) => !FLOW_WORDS.test(s));
 let ASK_USED = ASK[0];   // set by the typechars shot after measuring the real box; the "asked" shot sends the same words
 FOCI.typechars = { screen: null, what: 'request typed one character at a time (one strip per character)', empty: true, clean: true, focusBox: true, model: 'qwen36-27b', typechars: true };
 FOCI.asked = { screen: null, what: 'request just sent (friendly model): its own sent bubble and the app working on it', empty: true, clean: true, working: true, model: 'qwen36-27b' };
@@ -222,6 +226,37 @@ const filmNightHtml = (wp) => `<div id="yc-film-board" style="position:fixed;ins
   <div style="width:30%;display:flex;flex-direction:column;gap:16px"><div style="background:var(--accent);color:var(--on-accent,#1A1208);border-radius:20px;padding:22px 24px;box-shadow:0 10px 28px rgba(0,0,0,0.25)"><div style="font-size:18px;font-weight:700;opacity:0.78">friday</div><div style="font-size:72px;font-weight:800;letter-spacing:-0.04em;line-height:0.95">film night</div><div style="font-size:20px;font-weight:600;margin-top:8px;opacity:0.85">popcorn at 7</div></div>
   <div style="${GLASS};padding:16px 18px;font-size:20px;line-height:1.3">pick one each, most votes wins</div></div>
   <div style="flex:1;display:flex;gap:22px;align-items:center">${FILMS.map(poster).join('')}</div></div>`;
+// ---------------------------------------------------------------------------------------------------
+// Round 6 final pass: things other people made (review: "paint studios make up most of the legible screens, so the
+// wall reads as 'a drawing app' rather than 'everyone's copy works differently'"). Each is a small page someone asked
+// their own youcoded for, staged inside the real window's Page frame like the pickup board (brand guide 8), drawn
+// with the theme's own tokens so it wears that person's look. Plain, lower-case, believable household things; no
+// money or smart-home dashboards (brand guide 9).
+// ---------------------------------------------------------------------------------------------------
+const wrapPage = (wp, pad, dir, inner) => `<div id="yc-film-board" style="position:fixed;inset:0;z-index:2147483647;overflow:hidden;background:${wp ? `var(--canvas) center / cover no-repeat url('${wp}')` : 'var(--canvas)'};color:var(--fg);font-family:var(--font-sans,system-ui);padding:${pad};display:flex;flex-direction:${dir};gap:18px">${inner}</div>`;
+const hero = (label, title, sub, big = 64) => `<div style="background:var(--accent);color:var(--on-accent,#1A1208);border-radius:20px;padding:18px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.25)"><div style="font-size:17px;font-weight:700;opacity:0.78">${label}</div><div style="font-size:${big}px;font-weight:800;letter-spacing:-0.04em;line-height:0.98">${title}</div>${sub ? `<div style="font-size:19px;font-weight:600;margin-top:6px;opacity:0.85">${sub}</div>` : ''}</div>`;
+const row = (a, b, fs = 24, done = false) => `<div style="${GLASS};display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;font-size:${fs}px;font-weight:700"><span style="display:flex;align-items:center;gap:12px">${done !== null ? `<span style="width:${fs}px;height:${fs}px;border-radius:8px;flex:none;${done ? 'background:var(--accent)' : 'border:3px solid color-mix(in srgb, var(--fg) 45%, transparent)'}"></span>` : ''}<span style="${done ? 'opacity:0.55;text-decoration:line-through' : ''}">${a}</span></span><span style="opacity:0.7;font-weight:600">${b}</span></div>`;
+const col = (inner, extra = '') => `<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;${extra}">${inner}</div>`;
+const MADE = {
+  // a grandchild's page of gran's recipes, in big type
+  recipes: { name: 'Recipes', html: (wp) => wrapPage(wp, '30px 34px', 'row', col(hero("gran's recipes", 'lemon drizzle', 'big text, one step at a time', 70) + `<div style="${GLASS};padding:18px 22px;font-size:30px;line-height:1.35;font-weight:600">1. butter and sugar, beat till pale<br>2. eggs in one at a time<br>3. 40 mins at 180</div>`) + col(['shepherd\'s pie', 'flapjacks', 'sunday roast', 'rice pudding'].map((x) => row(x, '', 30, null)).join(''), 'justify-content:center')) },
+  chores: { name: 'Chores', html: (wp) => wrapPage(wp, '30px 34px', 'row', col(hero('this week', 'chores', 'whoever finishes first picks dinner', 72)) + col([['bins out', 'dan', true], ['hoover upstairs', 'ella', true], ['feed the cat', 'ruby', false], ['wash up', 'dan', false], ['water plants', 'ella', false]].map(([a, b, d]) => row(a, b, 26, d)).join(''), 'justify-content:center')) },
+  garden: { name: 'Veg patch', html: (wp) => wrapPage(wp, '30px 34px', 'row', col(hero('allotment 14', 'veg patch', 'sow, water, pick', 70)) + col([['tomatoes', 'water tue'], ['runner beans', 'tie up'], ['courgettes', 'pick sat'], ['lettuce', 'sow row 3'], ['strawberries', 'net them']].map(([a, b]) => row(a, b, 26, null)).join(''), 'justify-content:center')) },
+  journal: { name: 'Journal', html: (wp) => wrapPage(wp, '18px 16px', 'column', hero('tuesday', 'good day', 'walked the long way home', 56) + `<div style="${GLASS};padding:18px 18px;font-size:24px;line-height:1.4;font-weight:500">finally fixed the bike. rang mum, she sounds better. tried the new bakery, the cinnamon one is worth it.</div>` + `<div style="${GLASS};padding:14px 18px;font-size:21px;font-weight:700;display:flex;justify-content:space-between"><span>mood</span><span>calm</span></div>`) },
+  fixtures: { name: 'Fixtures', html: (wp) => wrapPage(wp, '28px 32px', 'row', col(hero('under 9s', 'sunday league', 'kick off 10:00, bring water', 60)) + col([['vs. riverside', '3 - 1'], ['vs. st mark\'s', '2 - 2'], ['vs. oakfield', 'sun'], ['vs. the rovers', 'next']].map(([a, b]) => row(a, b, 28, null)).join(''), 'justify-content:center')) },
+  quiz: { name: 'Quiz night', html: (wp) => wrapPage(wp, '30px 40px', 'row', col(hero('friday', 'quiz night', 'round 4 of 6: music', 76)) + `<div style="flex:1.3;display:flex;gap:22px;align-items:flex-end">${[['nan', 31, 0.95], ['the kids', 27, 0.8], ['mum & dad', 24, 0.7], ['uncle ray', 18, 0.5]].map(([n, s, h]) => `<div style="flex:1;display:flex;flex-direction:column;align-items:stretch;gap:10px"><div style="font-size:44px;font-weight:800;text-align:center">${s}</div><div style="height:${h * 330}px;border-radius:16px;background:var(--accent);opacity:${0.55 + h * 0.45}"></div><div style="font-size:24px;font-weight:700;text-align:center">${n}</div></div>`).join('')}</div>`) },
+  // (three more phones: phones are most of the wall, and each must read as someone's own thing, never a blank window)
+  walks: { name: 'Dog walks', html: (wp) => wrapPage(wp, '18px 16px', 'column', hero('biscuit', 'walks', 'who takes him out', 60) + [['mon', 'jo'], ['tue', 'sam'], ['wed', 'jo'], ['thu', 'kit'], ['fri', 'sam'], ['sat', 'everyone']].map(([a, b]) => row(a, b, 26, null)).join('')) },
+  reading: { name: 'Reading', html: (wp) => wrapPage(wp, '18px 16px', 'column', hero('book club', 'reading', 'chapter 9 by thursday', 58) + [['the long field', true], ['night boat', true], ['salt and honey', false], ['the quiet year', false], ['small hours', false]].map(([a, d]) => row(a, '', 25, d)).join('')) },
+  plants: { name: 'Plants', html: (wp) => wrapPage(wp, '18px 16px', 'column', hero('windowsill', 'plants', 'water on sundays', 60) + [['fern', 'mist'], ['basil', 'water'], ['cactus', 'leave it'], ['monstera', 'turn it'], ['mint', 'water']].map(([a, b]) => row(a, b, 26, null)).join('')) },
+  shop: { name: 'Shopping', html: (wp) => wrapPage(wp, '18px 16px', 'column', hero('saturday', 'big shop', '', 60) + [['milk x2', true], ['eggs', true], ['bread', false], ['bananas', false], ['cat food', false], ['birthday card', false]].map(([a, d]) => row(a, '', 26, d)).join('')) },
+};
+for (const k of Object.keys(MADE)) FOCI[k] = { ...FOCI.mine, what: `Page: ${MADE[k].name.toLowerCase()} someone made (staged inside the real window)`, made: k };
+const PLAN10 = {
+  creme: [['tablet', 'recipes'], ['phone', 'shop']], 'morning-rounds': [['laptop', 'chores']], 'devils-garden': [['laptop', 'garden']],
+  midnight: [['phone', 'journal']], dark: [['tablet', 'fixtures'], ['phone', 'walks']], 'halftone-dimension': [['tv', 'quiz'], ['phone', 'reading'], ['tablet', 'recipes']], 'youcoded-night': [['phone', 'plants']],
+};
+for (const [k, v] of Object.entries(PLAN10)) PLAN[k] = [...PLAN[k], ...v];
 // The wallpaper the theme draws behind the window, fetched into a data address so the Page's own frame can show it.
 // WHY: the made thing sits in the same look the person sees around it (Golden Sunbreak's sunlit street), not on black.
 const WALLPAPER = `(async () => { let best = null;
@@ -454,11 +489,12 @@ async function shoot(look, shapeKey, focusKey) {
       await sleep(1500);
       const wp = await tab.evaluate(WALLPAPER, 20000).catch(() => null);
       console.log('wallpaper', slug, wp ? `${Math.round(wp.length / 1024)} KB` : 'none');
-      const html = b ? boardHtml(b, shapeKey !== 'phone', wp, !!f.emptyBoard) : filmNightHtml(wp);
+      // (a "made" focus is someone else's own page, round 6 final pass; otherwise the board, or the TV's film night)
+      const html = f.made ? MADE[f.made].html(wp) : b ? boardHtml(b, shapeKey !== 'phone', wp, !!f.emptyBoard) : filmNightHtml(wp);
       await inFrame(tab, `(() => { document.getElementById('yc-film-board')?.remove(); document.body.insertAdjacentHTML('beforeend', ${JSON.stringify(html)}); return true; })()`);
       await sleep(600);
       // the page's name, where the window shows it (title bar, the pages list): the person named their page
-      await tab.evaluate(`(() => { for (const e of document.querySelectorAll('span,div,button,a,p')) { if (e.children.length === 0 && (e.textContent || '').trim() === 'Home' && !e.closest('iframe')) e.textContent = ${JSON.stringify(b ? 'Pickups' : 'Film night')}; } })()`);
+      await tab.evaluate(`(() => { for (const e of document.querySelectorAll('span,div,button,a,p')) { if (e.children.length === 0 && (e.textContent || '').trim() === 'Home' && !e.closest('iframe')) e.textContent = ${JSON.stringify(f.made ? MADE[f.made].name : b ? 'Pickups' : 'Film night')}; } })()`);
     }
     if (focusKey === 'paint' && PAINT_FOR[`${slug}-${shapeKey}`]) {
       await sleep(1200);
@@ -473,10 +509,21 @@ async function shoot(look, shapeKey, focusKey) {
       const pick = await tab.evaluate(`(() => { const m = document.querySelector("[placeholder^='Message']"); const c = getComputedStyle(m); const ctx = document.createElement('canvas').getContext('2d');
         ctx.font = c.fontStyle + ' ' + c.fontWeight + ' ' + c.fontSize + ' ' + c.fontFamily; const avail = m.clientWidth - parseFloat(c.paddingLeft) - parseFloat(c.paddingRight) - 4;
         return { avail, widths: ${JSON.stringify(ASK)}.map((s) => ctx.measureText(s).width + (parseFloat(c.letterSpacing) || 0) * s.length), fs: c.fontSize }; })()`);
-      ASK_USED = ASK.find((s, i) => pick.widths[i] <= pick.avail) ?? ASK[ASK.length - 1];
+      // the two-line sentence when it fits in two lines of the real box, otherwise the longest one-line one
+      ASK_USED = pick.widths[0] <= pick.avail * 1.85 ? ASK[0] : ASK.find((s, i) => i > 0 && pick.widths[i] <= pick.avail) ?? ASK[ASK.length - 1];
       console.log('ASK fit', JSON.stringify(pick), '->', ASK_USED);
-      const form = await tab.evaluate(`(() => { const e = document.querySelector("[placeholder^='Message']"); const r = (e.closest('form') || e.parentElement).getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; })()`);
-      const y0 = Math.max(0, Math.floor(form[1] - 12));
+      const formRect = `(() => { const e = document.querySelector("[placeholder^='Message']"); const r = (e.closest('form') || e.parentElement).getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; })()`;
+      const setBox = (v) => tab.evaluate(`(() => { const m = document.querySelector("[placeholder^='Message']"); const set = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(m), 'value').set; set.call(m, ${JSON.stringify('')} + ${JSON.stringify(v)}); m.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`);
+      // WHY measure the box with the whole sentence in it first: when it wraps the box grows upward, so every strip must
+      // start above the grown box (the film lays each strip over the base picture from this line down)
+      await setBox(ASK_USED); await sleep(400);
+      const formFull = await tab.evaluate(formRect);
+      await setBox(''); await sleep(400);
+      await tab.evaluate(`document.querySelector("[placeholder^='Message']").focus()`);
+      const form = await tab.evaluate(formRect);
+      // (and the chips row above the box, which the grown box pushes up: 60 css px above the box's highest top, so every
+      // strip carries the whole chips row wherever it sits, and never lays half a moved chip over the base picture's)
+      const y0 = Math.max(0, Math.floor(Math.min(form[1], formFull[1]) - 60));
       const clip = { x: 0, y: y0, width: z.w, height: z.h - y0, scale: 1 };
       const base = `${slug}-${shapeKey}-type`;
       writeFileSync(join(OUT, `${base}-base.png`), await tab.png());
@@ -490,7 +537,7 @@ async function shoot(look, shapeKey, focusKey) {
         const h = await tab.evaluate(`document.querySelector("[placeholder^='Message']").scrollHeight`);
         lines.push(h);
       }
-      if (new Set(lines).size > 1) throw new Error(`the request wrapped onto a second line (${[...new Set(lines)]}); shorten ASK`);
+      if (new Set(lines).size > 2) throw new Error(`the request ran past two lines (${[...new Set(lines)]}); shorten ASK`);
       writeFileSync(join(OUT, `${base}.json`), JSON.stringify({ text: ASK_USED, n: ASK_USED.length, y0: y0 * z.dpr, full: [z.w * z.dpr, z.h * z.dpr], box: form.map((v) => Math.round(v * z.dpr)), scrollHeights: [...new Set(lines)] }, null, 1));
       rows.push({ file: `${base}-base.png`, shape: shapeKey, px: `${z.w * z.dpr}x${z.h * z.dpr}`, theme: label, kind, focus: f.what, box: form.map((v) => Math.round(v * z.dpr)).join(','), applied: '' });
       console.log('ok typed', base, ASK_USED.length, 'strips, heights', [...new Set(lines)]);

@@ -64,9 +64,16 @@ export const receiptLen = (t: number, back = 0) => {
 /** The paper's bottom edge in world y (the camera follows it down in the receipt shots). */
 export const receiptBottom = (t: number) => R_TOP + receiptLen(t);
 // glowTop: 0..1, the hush on "However": the paper's upper third keeps a little of its phone's light
-export const ShelfReceipt: React.FC<{ t: number; dim?: number; back?: number; fade?: number; glowTop?: number }> = ({ t, dim = 0, back = 0, fade = 0, glowTop = 0 }) => {
+// tear: 0..1, line 7's payoff. WHY torn off and dropped rather than rolled back (round 6 final review: rolling back up
+// "reads like it is printing backwards"): the paper snaps free at the phone's slot and falls away down the wall, out of
+// frame; the slot is left empty, so the phone keeps nothing for the partners
+export const ShelfReceipt: React.FC<{ t: number; dim?: number; back?: number; fade?: number; glowTop?: number; tear?: number }> = ({ t, dim = 0, back = 0, fade = 0, glowTop = 0, tear = 0 }) => {
   const len = receiptLen(t, back);
-  if (len <= 0.5) return null;
+  if (len <= 0.5 || tear >= 1) return null;
+  // gravity: a small jolt as it snaps (it drops 3 px at once), then it accelerates down, swinging a little to one side
+  const fallY = tear > 0 ? 3 + tear * tear * 1500 : 0;
+  const fallR = tear * tear * 9;
+  const teethTop = Array.from({ length: 21 }, (_, i) => `${i * 5}% ${i % 2 ? '0%' : '4px'}`).join(',');
   // WHY it thins out over its last few px as it rolls in (review: a row of torn teeth hung under the phone for several
   // frames like a leftover): the end disappears cleanly into the phone's bottom edge
   const tail = back > 0 ? cl(len / 16) : 1;
@@ -76,10 +83,11 @@ export const ShelfReceipt: React.FC<{ t: number; dim?: number; back?: number; fa
     {/* WHY a dark slot across the phone's bottom edge (round 7 review: the paper came out of a straight edge with
         nothing to come out of) */}
     <div style={{ position: 'absolute', left: HERO.cx - R_W / 2 - 3, top: R_TOP - 2.5, width: R_W + 6, height: 4, borderRadius: 2, background: '#08040C', opacity: tail * (1 - fade), boxShadow: '0 1px 0 rgba(255,240,230,0.18)' }} />
-    <div style={{ position: 'absolute', left: HERO.cx - R_W / 2, top: R_TOP, width: R_W, height: len, overflow: 'hidden',
+    <div style={{ position: 'absolute', left: HERO.cx - R_W / 2, top: R_TOP + fallY, width: R_W, height: len, overflow: 'hidden', transform: fallR ? `rotate(${fallR}deg)` : undefined, transformOrigin: '50% 0',
       // WHY a filter, not an overlay: when the room hushes the paper keeps only the faint light of its own phone
-      opacity: tail * (1 - fade), filter: `brightness(${1 - 0.55 * dim}) drop-shadow(0 6px 7px rgba(6,2,12,0.55))${fade > 0.01 ? ` blur(${fade * 1.5}px)` : ''}` }}>
-      <div style={{ position: 'absolute', inset: 0, clipPath: `polygon(0 0,100% 0,${teeth.split(',').reverse().join(',')})` }}>
+      opacity: tail * (1 - fade) * (1 - cl((tear - 0.75) * 4)), filter: `brightness(${1 - 0.55 * dim}) drop-shadow(0 6px 7px rgba(6,2,12,0.55))${fade > 0.01 ? ` blur(${fade * 1.5}px)` : ''}` }}>
+      {/* (once torn, its top edge is ragged too) */}
+      <div style={{ position: 'absolute', inset: 0, clipPath: `polygon(${tear > 0 ? teethTop : '0 0,100% 0'},${teeth.split(',').reverse().join(',')})` }}>
         {/* the paper: warm white, a slot shadow where it leaves the phone, the bend over the plank's front edge (a
             bright crease at 2..6 px), a little shade down the plank's face where the shelf's own lip shadows it
             (to 35 px), then lit flat as it hangs */}

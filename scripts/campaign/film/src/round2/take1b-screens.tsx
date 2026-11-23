@@ -306,21 +306,33 @@ type Shape = 'phone' | 'tablet' | 'laptop' | 'tv';
 // own painting. Left out on purpose: the "media" pages (a real video service's logo), the story-only stills, the
 // Golden Sunbreak phone (the hero's own look) and the two themes the owner dislikes (never shot).
 const LIB: [string, number][] = [
-  ['creme-laptop-chat', 218], ['creme-phone-chat', 208], ['creme-tablet-chat', 217], ['creme-tv-chat', 221], ['creme-tablet-paint', 200], ['creme-phone-wake', 233],
+  ['creme-laptop-chat', 218], ['creme-phone-chat', 208], ['creme-tablet-chat', 217], ['creme-tv-chat', 221], ['creme-tablet-paint', 200],
   ['dark-laptop-chat', 33], ['dark-phone-chat', 44], ['dark-tablet-chat', 35], ['dark-tv-chat', 31], ['dark-tv-paint', 70],
   ['devils-garden-laptop-chat', 131], ['devils-garden-phone-chat', 126], ['devils-garden-tablet-chat', 128], ['devils-garden-tv-chat', 135],
   ['golden-sunbreak-laptop-chat', 88], ['golden-sunbreak-tablet-chat', 88], ['golden-sunbreak-tv-chat', 93], ['golden-sunbreak-laptop-paint', 110], ['golden-sunbreak-tablet-paint', 87],
   ['halftone-dimension-laptop-chat', 27], ['halftone-dimension-phone-chat', 33], ['halftone-dimension-tablet-chat', 28], ['halftone-dimension-tv-chat', 27], ['halftone-dimension-tablet-paint', 110],
-  ['light-laptop-chat', 222], ['light-phone-chat', 211], ['light-tablet-chat', 221], ['light-tv-chat', 225], ['light-laptop-paint', 200], ['light-phone-wake', 237],
+  ['light-laptop-chat', 222], ['light-phone-chat', 211], ['light-tablet-chat', 221], ['light-laptop-paint', 200],   // (no Light TV: a big near-blank white monitor)
   ['midnight-laptop-chat', 32], ['midnight-phone-chat', 41], ['midnight-tablet-chat', 33], ['midnight-tv-chat', 30],
-  ['morning-rounds-laptop-chat', 205], ['morning-rounds-phone-chat', 192], ['morning-rounds-tablet-chat', 202], ['morning-rounds-tv-chat', 207], ['morning-rounds-laptop-paint', 200], ['morning-rounds-phone-wake', 205],
-  ['youcoded-laptop-chat', 198], ['youcoded-phone-chat', 194], ['youcoded-tablet-chat', 197], ['youcoded-tv-chat', 198], ['youcoded-tablet-paint', 200],
+  // (round 6 final pass: Morning Rounds' mascot wallpaper turned up three times in one frame, so only its laptop
+  // conversation stays on the wall; its phone is the neighbour the board passes to)
+  ['morning-rounds-laptop-chat', 205], ['morning-rounds-laptop-paint', 200],
+  // (round 6 final pass: the default theme's laptop, tablet and TV conversations dropped; at wall size they read as "plain
+  // purple with tiny chat", big lilac blanks)
+  ['youcoded-phone-chat', 194], ['youcoded-tablet-paint', 200],
   ['youcoded-night-laptop-chat', 56], ['youcoded-night-phone-chat', 60],
   ['devils-garden-phone-wake', 153], ['youcoded-phone-wake', 198],
   // round 2 of the review: six more paint studios, each with its own painting, so about every third big screen is
   // something a person made (take1b-library.mjs PLAN9)
   ['youcoded-night-laptop-paint', 132], ['devils-garden-tv-paint', 127], ['midnight-tablet-paint', 123], ['dark-laptop-paint', 129], ['halftone-dimension-tv-paint', 83], ['devils-garden-tablet-paint', 99],
+  // round 6 final pass (review: "paint studios make up most of the legible screens, so the wall reads as 'a drawing app'
+  // rather than 'everyone's copy works differently'"; several phones were "almost blank white"): ten small pages other
+  // people made, each in its own theme (take1b-library.mjs MADE). The near-blank Creme, Light and Morning Rounds empty
+  // phones are gone. WHY the dark ones are listed at 80: they are full of big type, never the near-empty dark window the
+  // brightness gate keeps away from the story devices (measured 33-65)
+  ['creme-tablet-recipes', 202], ['creme-phone-shop', 203], ['morning-rounds-laptop-chores', 210], ['devils-garden-laptop-garden', 128],
+  ['midnight-phone-journal', 80], ['dark-tablet-fixtures', 80], ['halftone-dimension-tv-quiz', 80], ['dark-phone-walks', 80], ['halftone-dimension-phone-reading', 80], ['youcoded-night-phone-plants', 80],
 ];
+const MADE_FOCI = ['recipes', 'shop', 'chores', 'garden', 'journal', 'fixtures', 'quiz', 'walks', 'reading', 'plants'];
 // WHY no Kuromi Dreamer or Strawberry Kitty anywhere (round 2 review): their wallpapers are a real company's characters
 // (Kuromi, a Hello Kitty-style cat), which a public ad must not show. Their stills stay on disk, unused.
 const LUM = new Map(LIB);
@@ -356,7 +368,9 @@ const FIXED: Record<string, string> = {
   // home page (round 6 review): the home dashboard is not in the app (brand guide 9)
   // (round 2: a fish tank someone painted, in Halftone Dimension; Devil's Garden is now the TV's own look, and the
   // payoff screens must not share a theme in the final wide)
-  tagTablet: 'halftone-dimension-tablet-paint',
+  // (round 6 final pass: gran's recipes, a page someone made, in Halftone Dimension, so the payoff frame holds at most two
+  // paintings: the laptop's and its neighbour's)
+  tagTablet: 'halftone-dimension-tablet-recipes',
   // WHY the TV's own film night (round 6 review: it used to open on a copy of the laptop's painting; the plan's
   // light-tv-media shows a real video service's logo): a family's thing, unmistakably someone's own, no brands
   // (round 2: re-shot in Devil's Garden's sunlit desert; the Strawberry Kitty copy showed a real company's character)
@@ -401,7 +415,8 @@ const LOOKS: Map<string, Look> = (() => {
     const ok = (n: string) => !reach.some((o) => out.get(o.id)!.key === n) && !near.some((o) => out.get(o.id)!.theme === themeOf(n) || (focusOf(n) !== 'chat' && focusOf(out.get(o.id)!.key) === focusOf(n)));
     // WHY a penalty on pages: the plan wants conversations and paint studios to carry the wall
     // (paint studios favoured harder since round 2: "people make things" has to read across the daylit wall)
-    const page = (n: string) => (focusOf(n) === 'paint' ? -1.2 : focusOf(n) === 'chat' ? 0 : 0.5) + ((LUM.get(n) ?? 255) < 60 ? 0.7 : 0);
+    // (round 6 final pass: the made pages are favoured, the paint studios no longer are)
+    const page = (n: string) => (MADE_FOCI.includes(focusOf(n)) ? -0.9 : focusOf(n) === 'paint' ? 0 : focusOf(n) === 'chat' ? 0 : 0.5) + ((LUM.get(n) ?? 255) < 60 ? 0.7 : 0);
     // WHY a cost for every screen in the same theme within a frame (round 6 look check: Kuromi's patterned wallpaper
     // turned up eight times in one wide, in different shapes, and read as one screen copied); and a small one on the
     // plain Light theme, which on the wall reads as a blank white rectangle
@@ -415,9 +430,14 @@ const LOOKS: Map<string, Look> = (() => {
       + (PALE(n) ? 0.8 + 3 * wide.filter((o) => PALE(out.get(o.id)!.key)).length : 0);
     // WHY a painting never twice in a wide frame (round 6 look check: the fish tank turned up three times): each one is
     // a picture someone made, and a copy of it reads as copy-paste
-    const paintSeen = (n: string) => focusOf(n) === 'paint' && wide.some((o) => PAINTING[out.get(o.id)!.key] === PAINTING[n]);
+    // (and since the round 6 final pass, no second studio of any kind within about a frame's width on this shelf and the
+    // next: at most a couple of paintings in any frame)
+    const paintSeen = (n: string) => focusOf(n) === 'paint' && (wide.some((o) => PAINTING[out.get(o.id)!.key] === PAINTING[n])
+      || WORLD.devs.some((o) => o.id !== d.id && out.has(o.id) && Math.abs(o.row - d.row) <= 1 && Math.abs(o.cx - d.cx) < 1500 && focusOf(out.get(o.id)!.key) === 'paint'));
+    // a made page never twice within a wide frame either (it is one person's own thing)
+    const madeSeen = (n: string) => MADE_FOCI.includes(focusOf(n)) && wide.some((o) => focusOf(out.get(o.id)!.key) === focusOf(n));
     const order = cands.map((n) => ({ n, k: (used.get(n) ?? 0) + page(n) + sameTheme(n) + r() * 0.9 })).sort((a, b) => a.k - b.k).map((x) => x.n);
-    const pick = order.find((n) => ok(n) && !paintSeen(n)) ?? order.find(ok) ?? order.find((n) => !reach.some((o) => out.get(o.id)!.key === n)) ?? order[0];
+    const pick = order.find((n) => ok(n) && !paintSeen(n) && !madeSeen(n)) ?? order.find((n) => ok(n) && !paintSeen(n)) ?? order.find(ok) ?? order.find((n) => !reach.some((o) => out.get(o.id)!.key === n)) ?? order[0];
     out.set(d.id, look(pick));
     used.set(pick, (used.get(pick) ?? 0) + 1);
   }

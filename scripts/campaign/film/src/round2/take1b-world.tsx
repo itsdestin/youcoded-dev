@@ -116,7 +116,9 @@ export const Device: React.FC<{ d: Dev; night: number; glow: string; lift?: numb
           {/* glass: a faint diagonal sheen so screens read as objects, not flat rectangles */}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(118deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.04) 34%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 100%)', pointerEvents: 'none', opacity: 1 - 0.8 * dim }} />
         </div>
-        {d.kind === 'phone' && <div style={{ position: 'absolute', left: W / 2 - 14, top: b + 6, width: 28, height: 8, borderRadius: 8, background: '#120C18' }} />}
+        {/* WHY a small lens in the bezel, not a pill over the glass (round 6 final review: the app's own top bar ran under
+            the drawn camera cutout, so the real window did not sit in the phone like a real screen) */}
+        {d.kind === 'phone' && <div style={{ position: 'absolute', left: W / 2 - 2.2, top: b / 2 - 2.2, width: 4.4, height: 4.4, borderRadius: 4, background: '#0C0812', boxShadow: '0 0 0 0.6px rgba(255,255,255,0.12)' }} />}
       </div>
     </>
   );
