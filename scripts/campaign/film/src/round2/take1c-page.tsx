@@ -6,7 +6,11 @@ import { InkDefs, lin, mixHex, P, useT } from './take1c-ink';
 import { PH, PW, SW } from './take1c-book';
 
 /** The drawing surface for a spread: 1520×980 book units, ink defs included. */
-export const Sheet: React.FC<{ children: React.ReactNode; rough?: boolean }> = ({ children, rough = true }) => (
+// WHY no hand wobble by default (round nine review: "at full size the roughening ... reads as stair-stepped jaggies
+// rather than ink ... the rough ones look like a low-resolution capture"): the displacement filter is computed at the
+// page's own resolution and then magnified by the camera, so every edge stepped. Clean vector ink stays crisp at
+// any zoom, and now matches the crisp headline type beside it.
+export const Sheet: React.FC<{ children: React.ReactNode; rough?: boolean }> = ({ children, rough = false }) => (
   <svg viewBox={`0 0 ${SW} ${PH}`} width={SW} height={PH} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }}>
     <InkDefs />
     <g filter={rough ? 'url(#c-rough)' : undefined}>{children}</g>
@@ -41,7 +45,10 @@ export const Folio: React.FC<{ left: number; hideRight?: boolean }> = ({ left, h
 // WHY these numbers (review round six): the home framing pulled back (the book is smaller and sits a touch
 // higher, see HOME_SCALE in take1c-book.tsx), so the headline moved and shrank with the right-hand page it sits
 // on, keeping the same place on the page and room past its last letter.
-export const HEADLINE_SCREEN = { cx: 1254, cy: 752, w: 580, size: 72 };
+// WHY anchored by its TOP edge, centred on one column, at one size (round nine review: "the four headlines move and
+// change size on screen ... 'something wonderful happened.' sits low right in three rows and is the smallest"): a
+// one-row and a two-row headline now start on the same line and share one centre, and none has three rows.
+export const HEADLINE_SCREEN = { cx: 1254, top: 664, w: 780, size: 72 };
 /** A headline that inks in word by word at one fixed spot on screen. *word* is the purple one; "/" breaks a line.
  *  `words`: when given, each word appears on its own spoken start time instead of a fixed stagger.
  *  `cutOut`: it leaves on a hard cut (gone on the frame of `out`) instead of fading. */
@@ -54,7 +61,7 @@ export const Headline: React.FC<{ text: string; at: number; out: number; stagger
   const rows = text.split('/').map((r) => r.trim().split(/\s+/));
   let n = 0;
   return (
-    <div style={{ position: 'absolute', left: HEADLINE_SCREEN.cx - HEADLINE_SCREEN.w / 2, top: HEADLINE_SCREEN.cy - 200, width: HEADLINE_SCREEN.w, height: 400, display: 'flex', alignItems: 'center',
+    <div style={{ position: 'absolute', left: HEADLINE_SCREEN.cx - HEADLINE_SCREEN.w / 2, top: HEADLINE_SCREEN.top, width: HEADLINE_SCREEN.w, display: 'flex', alignItems: 'flex-start',
       justifyContent: 'center', textAlign: 'center', fontFamily: DMSANS, fontWeight: 900, fontSize: HEADLINE_SCREEN.size, letterSpacing: '-0.05em', lineHeight: 1.0, color: nt > 0 ? mixHex(P.ink, C.nightText, nt) : P.ink, opacity: 1 - exit, pointerEvents: 'none' }}>
       <div>
         {rows.map((row, r) => (

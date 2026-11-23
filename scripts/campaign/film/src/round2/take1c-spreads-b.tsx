@@ -21,7 +21,7 @@
 import React from 'react';
 import { DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
 import {
-  Cabinet, CABINET_TOP, Crossbar, HatFigure, HATS, Hero, Inkwell, INKWELL_MOUTH, jolt, KEEPSAKES, KeepsakeBox, Laptop, lin, mixHex, P, Padlock, Person, pop,
+  Cabinet, CABINET_TOP, Crossbar, HatFigure, HATS, Hero, Inkwell, INKWELL_MOUTH, jolt, KEEPSAKES, KeepsakeBox, Laptop, lin, lineE, mixHex, P, Padlock, Person, pop,
   PriceTag, Quill, RecordPlayer, TopHat, Tower, TOWER_SLAB, useT,
 } from './take1c-ink';
 import type { Hair, HatName, HeroName } from './take1c-ink';
@@ -34,6 +34,8 @@ import { CUT, land, Q, TURN } from './take1c-time';
 import type { Spread } from './take1c-book';
 
 // ---------- small motion helpers ----------
+/** Snap a time to the frame grid, a hair early, so a hard cut lands exactly on one frame. */
+const onFrame = (s: number) => Math.round(s * 30) / 30 - 0.001;
 type Key = { t: number; x: number; y: number; z?: number; r?: number; s?: number; ease?: (v: number) => number };
 /** Eased position along a list of keys (for the quill). A key's `ease` shapes the move INTO it. */
 const track = (keys: Key[], t: number) => {
@@ -161,10 +163,12 @@ const Ask: React.FC<{ lines: string[]; x: number; y: number; at: number; dur: nu
   );
 };
 // WHY short lines: each ask now stands in a narrow column beside its speaker, clear of every string and window
+// WHY Theo's and June's cut to six and five words (round nine review: "Theo's 10-word ask, June's 7-word ask and
+// the headline all land within about 2 s"): each still names exactly what was taken from them
 const ASKS = {
   maya: ['my plants', 'keep dying.', 'can you help?'],
-  theo: ['can i keep', 'my records', "somewhere that's", 'actually mine?'],
-  june: ['somewhere', 'private for', 'my photos', 'and letters?'],
+  theo: ['somewhere for', 'my records', "that's mine?"],
+  june: ['somewhere', 'private for', 'my letters?'],
 };
 
 /** A table (top at y, legs down to `floor`) with a real top: a lit upper face, a thick front edge, a shadowed
@@ -246,9 +250,10 @@ const ArmLine: React.FC<{ sh: [number, number]; to: [number, number]; s: number;
   const r = (7.5 - 3.6 * fist) * s;
   return (
     <g>
-      <path d={`M ${sh[0].toFixed(1)} ${sh[1].toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${to[0].toFixed(1)} ${to[1].toFixed(1)}`} stroke={c} strokeWidth={8 * s} fill="none" strokeLinecap="round" />
-      {point && <path d={`M ${to[0]} ${to[1]} l ${(ux / ul) * 15 * s} ${(uy / ul) * 15 * s}`} stroke={c} strokeWidth={4.6 * s} strokeLinecap="round" />}
-      <circle cx={to[0]} cy={to[1]} r={r} fill={fist > 0.5 ? c : P.paper} stroke={c} strokeWidth={2.4 * s} />
+      {/* WHY widths from lineE (round nine): the same sleeve and glove weight as HatFigure's own arms at this size */}
+      <path d={`M ${sh[0].toFixed(1)} ${sh[1].toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${to[0].toFixed(1)} ${to[1].toFixed(1)}`} stroke={c} strokeWidth={8 * lineE(s) / 3} fill="none" strokeLinecap="round" />
+      {point && <path d={`M ${to[0]} ${to[1]} l ${(ux / ul) * 15 * s} ${(uy / ul) * 15 * s}`} stroke={c} strokeWidth={4.6 * lineE(s) / 3} strokeLinecap="round" />}
+      <circle cx={to[0]} cy={to[1]} r={r} fill={fist > 0.5 ? c : P.paper} stroke={c} strokeWidth={2.4 * lineE(s) / 3} />
     </g>
   );
 };
@@ -315,12 +320,18 @@ const CK = 1.6;                                           // WHY 1.6x: "a great 
 // Maya's corner of the right page
 // WHY bigger and nearer the gutter (round eight review: at 140 px, pale and far right, her waiting did not register
 // before the whip-pan): the quill's escape now visibly heads for someone
-const MAYA = { x: 1140, y: 870, s: 2.5 };
-const LAP = { x: 1374, y: 772, s: 1.6 };
-const WIN = { x: 1250, y: 290, w: 400 };
+// WHY moved in from the page's outer edge and fitted into a shorter band (round nine review: "the camera drifts past
+// the book's edge ... the right fifth of the frame is backdrop"): her whole corner, window to feet, now fits a framing
+// that stays inside the paper (MAYA_CAM), with the inkwell whole at its left edge and no hat cut in half
+const MAYA = { x: 1040, y: 780, s: 2.1 };
+const LAP = { x: 1300, y: 690, s: 1.45 };
+const WIN = { x: 1190, y: 306, w: 320 };
 const WIN_H = windowHeight(WIN.w);
 // her ask stands to the LEFT of her string and ends beside her head (never crossed by the string)
-const MAYA_ASK = { x: 832, y: 500, size: 38 };
+const MAYA_ASK = { x: 780, y: 440, size: 36 };
+// WHY this framing (third render): the chest stands whole at the left edge, the inkwell just out of frame, and the
+// paper reaches past the right edge, so nothing at either edge is cut in half
+const MAYA_CAM = { x: 1014, y: 460, z: 2.25 };
 // WHY these times: the ask writes itself from "control" into "tool"; the quill traces the window on "can make"
 // and it fills on "software", ticking its own box, while Maya blooms green: all finished before the page turns.
 const ASK_A = { at: Q.control + 0.42, dur: 0.85 };
@@ -347,7 +358,8 @@ const TRACE = { a: Q.treasure + 0.1, b: Q.treasure + 0.72 };
 const vHat = (t: number, j: number): RigP => {
   const h = V_HATS[j], id = idleOf(t, j), tall = j === 2;
   // --- "blinded": their eyes shut into smug arcs and their chins lift, a beat apart, on the word itself
-  const blindAt = Q.blinded + 0.1 + j * 0.06;
+  // WHY from the cut (round nine: the cut moved on to "by"), so the smug arcs are seen closing
+  const blindAt = CUT.hubris + 0.1 + j * 0.07;
   const chinUp = lin(t, blindAt, blindAt + 0.3, EASE_OUT);
   // --- "hubris": ONE proud rise each, staggered: a dip (anticipation), up onto the toes with the chest out and
   // the chin high, the hat lifting a hair off the head and landing back with a small squash, then they stay a
@@ -560,16 +572,16 @@ const TreasureArt: React.FC = () => {
       {/* the right page: Maya, her padlocked laptop on its table, and her string up off the page */}
       {/* WHY her string only from "but" (round eight review: in the hats' shots it was a lone line at the top of the
           right page with nothing at its end, "a scratch or render glitch"): it first appears attached to her */}
-      {t > Q.but - 0.06 && <HeroString x={MAYA.x} y={MAYA.y} s={MAYA.s} lean={-70} />}
+      {t > Q.but - 0.06 && <HeroString x={MAYA.x} y={MAYA.y} s={MAYA.s} lean={60} />}
       <Floor x0={790} x1={1470} y={MAYA.y} />
-      <Table x0={LAP.x - 84} x1={LAP.x + 84} y={LAP.y} floor={MAYA.y} />
+      <Table x0={LAP.x - 80} x1={LAP.x + 80} y={LAP.y} floor={MAYA.y} />
       {/* her laptop, padlocked as chapter ii left it (the padlock hangs on its screen) */}
       <Laptop x={LAP.x} y={LAP.y} s={LAP.s} a={-10} />
       <Padlock x={LAP.x} y={LAP.y - 26 * LAP.s} s={1.2} at={-10} />
       <Hero who="maya" x={MAYA.x} y={MAYA.y} s={MAYA.s} a={-10} pose={t > PLANTS_AT ? 'wave' : 'down'} mood={mayaLook ? 'smile' : 'flat'} bloom={mayaBloom}
         bob={jolt(t, PLANTS_AT, -8, 0.5) + jolt(t, Q.control + 0.5, 4, 0.4)} tilt={mayaLook ? -3 : 0} />
       <Ask lines={ASKS.maya} x={MAYA_ASK.x} y={MAYA_ASK.y} at={ASK_A.at} dur={ASK_A.dur} size={MAYA_ASK.size}
-        tick={[MAYA_ASK.x + 236, MAYA_ASK.y + 2 * MAYA_ASK.size * 1.18 + 12, MAYA.x - 40, headTop + 30]} />
+        tick={[MAYA_ASK.x + 200, MAYA_ASK.y + 2 * MAYA_ASK.size * 1.18 + 14, MAYA.x - 34, headTop + 20]} />
       <ThemedWindow theme="meadow" x={WIN.x} y={WIN.y} w={WIN.w} a={WIN_A} draw={WIN_DRAW} contentAt={PLANTS_AT} tick={TICK_AT} />
       {/* once it has escaped, the quill is drawn last, over the window it is drawing */}
       {flying && <FlyQuill q={qv} idle={!(t > WIN_A - 0.14 && t < WIN_A + WIN_DRAW)} />}
@@ -578,7 +590,7 @@ const TreasureArt: React.FC = () => {
 };
 export const TREASURE: Spread = { id: 'treasure', Art: TreasureArt };
 /** Where things are on this spread, for the camera. */
-export const TREASURE_MARKS = { well: { x: WELL.to, y: MOUTH }, hats: { x: V_HATS[1].x, y: TOP }, maya: MAYA, win: WIN, winH: WIN_H, chest: CHEST, desk: DESK, top: TOP };
+export const TREASURE_MARKS = { well: { x: WELL.to, y: MOUTH }, hats: { x: V_HATS[1].x, y: TOP }, maya: MAYA, win: WIN, winH: WIN_H, chest: CHEST, desk: DESK, top: TOP, mayaCam: MAYA_CAM };
 
 // ======================= vi · anyone =======================
 // WHY three people in depth, each beside the window made for them (round eight review: "the film's core picture is
@@ -588,55 +600,62 @@ export const TREASURE_MARKS = { well: { x: WELL.to, y: MOUTH }, hats: { x: V_HAT
 // answering what was taken from its owner, filling the page top to bottom; the headline lands on the clean paper
 // between Theo and June. Each ask stands beside its speaker, clear of every string. The hats' tower stands far off
 // in the top-left corner, big enough to read as a stack of the same windows.
-const FAR = { x: 126, y: 252, s: 0.62, n: 6, w: 300 };
+// WHY round nine (review: "three windows, two long asks and the headline all land within about 2 s ... each window is
+// small ... drop the hats from this spread"): one beat per person. Maya, already made her plant app, stands at the
+// front of the left page. On the right page Theo and June stand side by side under the two places their windows
+// will be drawn, each with their short ask beside them; the camera goes in close on the right page so each window is
+// drawn big, then pulls back for the headline. Everything on the right page now sits ABOVE y ~640, so in the closing
+// wide (VI_CAM.wide) the headline has the lower right of the spread to itself. No hats: they are not in this line.
 const VI = {
-  maya: { x: 240, y: 852, s: 2.45 }, mayaWin: { x: 470, y: 332, w: 400 },
+  // WHY Maya's window a step left (first render): in the close-up of the right page its edge was cut in half by the frame
+  maya: { x: 240, y: 852, s: 2.45 }, mayaWin: { x: 404, y: 332, w: 400 },
   lap: { x: 522, y: 740, s: 1.5 }, table: [436, 608] as [number, number],
-  theo: { x: 850, y: 586, s: 1.75 }, theoWin: { x: 1000, y: 240, w: 340 }, theoAsk: { x: 922, y: 452 },
-  june: { x: 1262, y: 876, s: 2.45 }, juneWin: { x: 1348, y: 432, w: 340 }, juneAsk: { x: 1322, y: 664 },
+  theo: { x: 862, y: 640, s: 1.6 }, theoWin: { x: 960, y: 244, w: 300 }, theoAsk: { x: 906, y: 408 },
+  june: { x: 1218, y: 640, s: 1.6 }, juneWin: { x: 1322, y: 244, w: 300 }, juneAsk: { x: 1262, y: 408 },
 };
 const VI_L = land(TURN.anyone);
 // WHY from "ever-scarce", while the leaf is still falling: Theo's corner is uncovered first, and the ask must
 // be finished as the quill draws on "foundation"
 const THEO_ASK = { at: Q.scarce, dur: Q.foundation - Q.scarce - 0.06 };
 const THEO_WIN = { a: Q.foundation - 0.02, draw: 0.44, content: Q.foundation + 0.38 };
-const JUNE_ASK = { at: Q.monopolies1 + 0.08, dur: 0.78 };
-const JUNE_WIN = { a: Q.forAnyone, draw: 0.44, content: Q.anyone + 0.25 };
+// WHY June asks during "of these monopolies" and is drawn on "for anyone": her window is finished as the camera pulls
+// back, so the held wide (from "who") shows all three windows complete
+const JUNE_ASK = { at: Q.monopolies1 - 0.1, dur: 0.7 };
+const JUNE_WIN = { a: Q.forAnyone - 0.08, draw: 0.44, content: Q.anyone + 0.1 };
 if (THEO_ASK.at + THEO_ASK.dur > THEO_WIN.a + 0.1) throw new Error('take1c: Theo must finish asking before his window is drawn');
 if (JUNE_WIN.content + 0.7 > Q.asks) throw new Error('take1c: June\'s window must be finished by "asks", so the held frame is complete');
+/** The camera for chapter vi (take1c.tsx reads it): close on the right page for Theo, a short drift to June, then
+ *  the wide. The close framings stay inside the paper; the wide is framed high so the headline sits on clean paper. */
+export const VI_CAM = {
+  // WHY one held medium of the right page for both (first render): June stands near the page's outer edge, so a
+  // framing centred on her would show the edge of the book; Theo is drawn first, then June, in the same frame
+  closeAt: onFrame(VI_L + 0.12), theo: { x: 1064, y: 372, z: 2.45 },
+  juneFrom: Q.monopolies1 - 0.3, juneAt: Q.monopolies1 + 0.25, june: { x: 1069, y: 374, z: 2.47 },
+  // WHY the cut back to the wide just before "for" (first render: the headline's first words landed on June's close-up)
+  wideAt: onFrame(Q.forAnyone - 0.06), wide: { x: 760, y: 560, z: 1.2 },
+};
 const AnyoneArt: React.FC = () => {
   const t = useT();
   const theoBloom = lin(t, THEO_WIN.content + 0.1, THEO_WIN.content + 0.6, EASE_IN_OUT);
   const juneBloom = lin(t, JUNE_WIN.content + 0.1, JUNE_WIN.content + 0.6, EASE_IN_OUT);
-  // "monopolies": the hats turn and lean to stare, and their whole tower sways (two damped swings)
-  const stare = lin(t, Q.monopolies1 - 0.05, Q.monopolies1 + 0.25);
-  const wob = jolt(t, Q.monopolies1 + 0.05, 4.5, 1.1);
   const theoDraw: Drawn = { win: VI.theoWin, a: THEO_WIN.a, draw: THEO_WIN.draw };
   const juneDraw: Drawn = { win: VI.juneWin, a: JUNE_WIN.a, draw: JUNE_WIN.draw };
   const jh = windowHeight(VI.juneWin.w);
+  // each turns to look at the other's new window once it is drawn, so the three read as one group
+  const theoLook = lin(t, JUNE_WIN.content + 0.2, JUNE_WIN.content + 0.5);
   const q = track(checked('anyone', [
     { t: VI_L - 0.4, x: VI.mayaWin.x + 170, y: VI.mayaWin.y + 200, z: 60, r: 6, s: 0.9 },
-    { t: THEO_WIN.a - 0.5, x: VI.theoWin.x - 60, y: VI.theoWin.y + 60, z: 50, r: -6, s: 0.88 },
-    ...drawKeys(theoDraw, 0.86),
-    { t: THEO_WIN.content + 0.5, x: VI.theoWin.x + VI.theoWin.w / 2 + 20, y: VI.theoWin.y + windowHeight(VI.theoWin.w) / 2 - 20, z: 50, r: 4, s: 0.86, ease: EASE_OUT },
-    ...drawKeys(juneDraw, 0.86),
+    { t: THEO_WIN.a - 0.5, x: VI.theoWin.x - 60, y: VI.theoWin.y + 60, z: 50, r: -6, s: 0.86 },
+    ...drawKeys(theoDraw, 0.84),
+    { t: THEO_WIN.content + 0.5, x: VI.theoWin.x + VI.theoWin.w / 2 + 10, y: VI.theoWin.y + windowHeight(VI.theoWin.w) / 2 - 10, z: 50, r: 4, s: 0.84, ease: EASE_OUT },
+    ...drawKeys(juneDraw, 0.84),
     // "asks": it rises and settles just above June's new window, clear of every word and of the headline, and idles
     // there until the turn
-    { t: Q.asks, x: VI.juneWin.x + 20, y: VI.juneWin.y - jh / 2 - 26, z: 46, r: -18, s: 0.86, ease: EASE_OUT },
+    { t: Q.asks, x: VI.juneWin.x + 20, y: VI.juneWin.y - jh / 2 - 22, z: 46, r: -18, s: 0.84, ease: EASE_OUT },
   ]), t);
   const qp = pin(q, t, [theoDraw, juneDraw]);
   return (
     <Sheet>
-      {/* far off: the hats on their tower of windows */}
-      <g transform={`rotate(${wob} ${FAR.x} ${FAR.y + FAR.n * TOWER_SLAB * FAR.s})`}>
-        <Tower x={FAR.x} y={FAR.y} w={FAR.w} n={FAR.n} s={FAR.s} wobble={wob * 0.3} />
-        {(['wide', 'short', 'tall'] as HatName[]).map((who, j) => {
-          const id = idleOf(t, j);
-          const st = lin(t, Q.monopolies1 - 0.05 + j * 0.08, Q.monopolies1 + 0.25 + j * 0.08);
-          return <HatFigure key={who} x={FAR.x - 58 + j * 58} y={FAR.y} s={HATS[who].s * 0.66} crown={HATS[who].crown} girth={HATS[who].girth} a={-10} pose="sides"
-            eyes="dots" mouth="flat" look={0.3 + 0.7 * stare} lean={id.lean + st * 10} bob={id.bob * 0.6} sway={id.sway} />;
-        })}
-      </g>
       {/* Maya, with the window she was made, and her laptop, still padlocked (she opens it in chapter vii) */}
       <HeroString x={VI.maya.x} y={VI.maya.y} s={VI.maya.s} lean={18} o={0.5} />
       <Floor x0={60} x1={700} y={VI.maya.y} />
@@ -644,20 +663,19 @@ const AnyoneArt: React.FC = () => {
       <Laptop x={VI.lap.x} y={VI.lap.y} s={VI.lap.s} a={-10} />
       <Padlock x={VI.lap.x} y={VI.lap.y - 26 * VI.lap.s} s={1.1} at={-10} />
       <ThemedWindow theme="meadow" x={VI.mayaWin.x} y={VI.mayaWin.y} w={VI.mayaWin.w} />
-      <Hero who="maya" x={VI.maya.x} y={VI.maya.y} s={VI.maya.s} a={-10} bloom={1} mood="smile" pose="down" tilt={3 * lin(t, Q.monopolies1, Q.monopolies1 + 0.4)} />
-      {/* Theo, a step back */}
-      <HeroString x={VI.theo.x} y={VI.theo.y} s={VI.theo.s} lean={-40} o={0.5} />
-      <Floor x0={790} x1={1180} y={VI.theo.y} />
+      <Hero who="maya" x={VI.maya.x} y={VI.maya.y} s={VI.maya.s} a={-10} bloom={1} mood="smile" pose="down" tilt={3 * lin(t, Q.forAnyone, Q.forAnyone + 0.4)} />
+      {/* Theo and June, side by side on the right page, one floor between them */}
+      <Floor x0={800} x1={1460} y={VI.theo.y} />
+      <HeroString x={VI.theo.x} y={VI.theo.y} s={VI.theo.s} lean={-30} o={0.5} />
       <ThemedWindow theme="honey" x={VI.theoWin.x} y={VI.theoWin.y} w={VI.theoWin.w} a={THEO_WIN.a} draw={THEO_WIN.draw} contentAt={THEO_WIN.content} />
       <Hero who="theo" x={VI.theo.x} y={VI.theo.y} s={VI.theo.s} a={-10} bloom={theoBloom} mood={theoBloom > 0.3 ? 'smile' : 'flat'}
-        pose={theoBloom > 0.3 ? 'wave' : 'down'} bob={jolt(t, THEO_WIN.content + 0.1, -9, 0.5)} />
-      <Ask lines={ASKS.theo} x={VI.theoAsk.x} y={VI.theoAsk.y} at={THEO_ASK.at} dur={THEO_ASK.dur} size={27} />
-      {/* June, a step nearer, turned toward the others */}
-      <HeroString x={VI.june.x} y={VI.june.y} s={VI.june.s} lean={60} o={0.5} />
+        pose={theoBloom > 0.3 ? 'wave' : 'down'} tilt={-4 * theoLook} bob={jolt(t, THEO_WIN.content + 0.1, -9, 0.5)} />
+      <Ask lines={ASKS.theo} x={VI.theoAsk.x} y={VI.theoAsk.y} at={THEO_ASK.at} dur={THEO_ASK.dur} size={30} />
+      <HeroString x={VI.june.x} y={VI.june.y} s={VI.june.s} lean={30} o={0.5} />
       <ThemedWindow theme="cotton" x={VI.juneWin.x} y={VI.juneWin.y} w={VI.juneWin.w} a={JUNE_WIN.a} draw={JUNE_WIN.draw} contentAt={JUNE_WIN.content} />
-      <Hero who="june" x={VI.june.x} y={VI.june.y} s={VI.june.s} a={-10} bloom={juneBloom} mood={juneBloom > 0.3 ? 'smile' : 'flat'} flip
+      <Hero who="june" x={VI.june.x} y={VI.june.y} s={VI.june.s} a={-10} bloom={juneBloom} mood={juneBloom > 0.3 ? 'smile' : 'flat'}
         pose={juneBloom > 0.3 ? 'up' : 'down'} bob={jolt(t, JUNE_WIN.content + 0.1, -10, 0.5)} />
-      <Ask lines={ASKS.june} x={VI.juneAsk.x} y={VI.juneAsk.y} at={JUNE_ASK.at} dur={JUNE_ASK.dur} size={28} />
+      <Ask lines={ASKS.june} x={VI.juneAsk.x} y={VI.juneAsk.y} at={JUNE_ASK.at} dur={JUNE_ASK.dur} size={30} />
       <FlyQuill q={qp} idle={qp === q} />
     </Sheet>
   );
@@ -1053,7 +1071,7 @@ const IX = {
   // WHY June a step right of vi (integration review): on "everything" she throws both arms up, and her left hand
   // ran into the last letter of "open source", which sits at the fixed headline spot; vi has her ask to her right,
   // ix does not, so here she has the room. Still under her window's slot.
-  june: { ...VI.june, x: VI.june.x + 56 }, juneSlot: { ...VI.juneWin },
+  june: VI.june, juneSlot: { ...VI.juneWin },
 };
 const IX_WH = windowHeight(IX.mayaWin.w);
 const LIFT = Q.long1 + 0.02, PEEL = 0.6, SPLIT = Q.long2, FLY_END = Q.lastEnd - 0.1;
@@ -1122,7 +1140,8 @@ const EverythingArt: React.FC = () => {
   return (
     <Sheet>
       {/* Maya at her table: her laptop (her plant app on its screen, as in vii and viii) and her window above it */}
-      <HeroString x={IX.maya.x} y={IX.maya.y} s={IX.maya.s} lean={18} o={0.35} />
+      {/* WHY no strings from here on (round nine review, a BLOCKER: "the film's payoff ... is drawn with everyone still
+          on strings"): they were cut on "free ourselves", and they stay cut */}
       <Floor x0={60} x1={700} y={IX.maya.y} />
       <Table x0={IX.table[0]} x1={IX.table[1]} y={IX.lap.y} floor={IX.maya.y} />
       <Laptop x={IX.lap.x} y={IX.lap.y} s={IX.lap.s} a={-10} />
@@ -1133,7 +1152,7 @@ const EverythingArt: React.FC = () => {
       {slotsVis > 0 && [IX.theoSlot, IX.juneSlot].map((s, i) => (
         <path key={i} d={rr(s.x - s.w / 2, s.y - windowHeight(s.w) / 2, s.w, windowHeight(s.w), 22)} fill="none" stroke={P.inkSoft} strokeWidth={3} strokeDasharray="12 12" opacity={0.6 * slotsVis} />
       ))}
-      <Floor x0={790} x1={1180} y={IX.theo.y} />
+      <Floor x0={800} x1={1460} y={IX.theo.y} />
       {/* the copy: one while it peels, two after the split; each redrawn in its owner's look on "open" */}
       {t >= LIFT && split <= 0 && <ThemedWindow theme="meadow" x={p0.x} y={p0.y} w={p0.w} r={p0.r} shadow={peel} />}
       {split > 0 && ([[IX.juneSlot, 1, 'cotton', skinJ], [IX.theoSlot, -1, 'honey', skinT]] as const).map(([slot, side, to, p], i) => {
@@ -1141,9 +1160,7 @@ const EverythingArt: React.FC = () => {
         return <ThemedWindow key={i} theme="meadow" x={c.x} y={c.y + (fly >= 1 ? settle(i) : 0)} w={c.w} r={c.r} shadow={fly < 1 ? 1 : 0} reskin={{ to, p }} />;
       })}
       {/* Theo and June, each standing under the place their copy lands (drawn after it, as in chapter vi) */}
-      <HeroString x={IX.theo.x} y={IX.theo.y} s={IX.theo.s} lean={-40} o={0.35} />
       <Hero who="theo" x={IX.theo.x} y={IX.theo.y} s={IX.theo.s} a={-10} bloom={1} mood="smile" pose={cheer ? 'bothUp' : 'down'} bob={jolt(t, Q.everything2, -14, 0.5) + jolt(t, FLY_END, 5, 0.35)} />
-      <HeroString x={IX.june.x} y={IX.june.y} s={IX.june.s} lean={60} o={0.35} />
       <Hero who="june" x={IX.june.x} y={IX.june.y} s={IX.june.s} a={-10} bloom={1} mood="smile" flip pose={cheer ? 'bothUp' : 'down'} bob={jolt(t, Q.everything2 + 0.07, -14, 0.5) + jolt(t, FLY_END + 0.05, 5, 0.35)} />
       {/* WHY gone at the lift: from here the screen layer flies the same quill onto the closing cover (take1c.tsx) */}
       {t < QUILL_LIFT && <FlyQuill q={q} idle={t > FLY_END && t < SKIN_T[0] - 0.14 || t > SKIN_J[1] + 0.4} />}

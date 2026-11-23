@@ -12,7 +12,7 @@
 //  iv  "however, recently ... something wonderful"       one drop of purple falls into a lone inkwell (the hats'; v)
 // What is taken here (padlock, tag and lifted player, keepsakes) is exactly what line 7 hands back.
 import React from 'react';
-import { EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
+import { DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT } from '../brand';
 import {
   Cabinet, CABINET_TOP, Crossbar, HatFigure, HATS, Hero, HEROES, Ink, Inkwell, INKWELL_MOUTH, jolt, KeepsakeBox, KEEPSAKES, KeepsakeIcon, Keepsake,
   Laptop, lin, mixHex, P, Padlock, Person, pop, PriceTag, RecordPlayer, Records, TopHat, Tower, TOWER_SLAB, useT,
@@ -444,7 +444,9 @@ const RulesArt: React.FC = () => {
       {/* WHY her ground line starts at 870: from 800 its end poked into the right edge of Theo's close-up */}
       <path d={`M 870 ${JL.y} L 1470 ${JL.y}`} stroke={P.inkSoft} strokeWidth={2} />
       <HeroString x={JL.x} y={JL.y} s={JL.s} lean={-60} />
-      <Hero who="june" x={JL.x} y={JL.y} s={JL.s} a={DONE} pose="hold" mood={sad ? 'flat' : 'smile'} tilt={follow * 7 + jolt(t, Q.personalData, 3, 0.5)} />
+      {/* WHY her smile goes as soon as the first keepsake leaves (round nine review: "June also smiles while her letters
+          are being taken"): an "o" of alarm as they fly, then flat once they are gone */}
+      <Hero who="june" x={JL.x} y={JL.y} s={JL.s} a={DONE} pose="hold" mood={sad ? 'flat' : t > flyFrom + 0.08 ? 'o' : 'smile'} tilt={follow * 7 + jolt(t, Q.personalData, 3, 0.5)} />
       <KeepsakeBox x={JBOX.x} y={JBOX.y} s={JBOX.s} lid={1} inside={t < flyFrom ? 5 : left} />
       {/* the hat first, so his glove is drawn over its brim; it turns about the hand that grips it */}
       {bucket && <g transform={`translate(${shortHand[0] - BUCKET_HAND[0]} ${shortHand[1] - BUCKET_HAND[1]}) rotate(${-25 * (1 - tip) + Math.sin(t * 2) * 2} ${BUCKET_HAND[0]} ${BUCKET_HAND[1]})`}>
@@ -466,18 +468,23 @@ export const RULES: Spread = { id: 'rules', Art: RulesArt };
 // ======================= iii · we all accepted it =======================
 // WHY the queue runs back in depth (round six): the old single row on one ground line was the same picture as
 // line 1; now Maya, Theo and June lead it, large, and the faint crowd shrinks away toward the hat.
-const Q_AT = (u: number) => ({ x: 1290 - 1130 * u, y: 552 + 380 * u, s: 0.55 + 2.25 * u });
-// WHY in loose twos and threes, nudged off the line (round eight review: eleven look-alikes on one sloped line was
-// the "figures lined up on a ground line" picture again): a queue of real people bunches up and leaves gaps
+// WHY a shallower slope and a narrower strip (round nine): the front of the queue and its boxes now stay on the page,
+// so the close-up on "accepted" can show each hero's box whole
+const Q_AT = (u: number) => ({ x: 1290 - 1130 * u, y: 540 + 300 * u, s: 0.55 + 2.0 * u });
+// WHY only four faint people behind the three (round nine review: "a diagonal paper ramp of grey 'ghost' people ...
+// lose most of the ghost people"): enough to say "we all", few enough that the three we know lead it
 const QUEUE: { u: number; who?: HeroName; dx?: number }[] = [
-  { u: 0.05, dx: -8 }, { u: 0.085, dx: 10 },
-  { u: 0.16, dx: 4 }, { u: 0.195, dx: -12 }, { u: 0.23, dx: 9 },
-  { u: 0.33, dx: -6 }, { u: 0.37, dx: 14 },
-  { u: 0.47, dx: 8 }, { u: 0.515, dx: -16 }, { u: 0.555, dx: 6 },
-  { u: 0.69, who: 'june' }, { u: 0.82, who: 'theo' }, { u: 0.97, who: 'maya' },
+  { u: 0.1, dx: -8 }, { u: 0.2, dx: 10 }, { u: 0.3, dx: -6 }, { u: 0.42, dx: 8 },
+  { u: 0.58, who: 'june' }, { u: 0.77, who: 'theo' }, { u: 0.96, who: 'maya' },
 ];
 /** The scroll's strip on the floor at depth u: its top and bottom edge (it widens toward the camera). */
-const stripAt = (u: number) => { const p = Q_AT(u); return { x: p.x - 30 * p.s, top: p.y + 10 + 14 * u, bot: p.y + 34 + 126 * u }; };
+const stripAt = (u: number) => { const p = Q_AT(u); return { x: p.x - 30 * p.s, top: p.y + 10 + 12 * u, bot: p.y + 30 + 70 * u }; };
+/** The hard cut to the front of the queue, on "accepted" (snapped to a frame); the camera reads it. */
+export const ACCEPT_CUT = Math.round((Q.accepted - 0.04) * 30) / 30 - 0.001;
+/** The close-up on the three at the front of the queue: their boxes and "i agree" whole in frame. */
+export const QUEUE_FRONT = { x: 452, y: 730, z: 2.6 };
+// when each person's box is ticked: the faint ones back to front in the wide, then the three, one each, on "accepted"
+const tickTime = (i: number, who?: HeroName) => who ? Q.accepted + 0.12 + (['june', 'theo', 'maya'] as HeroName[]).indexOf(who) * 0.2 : Q.weAll2 + 0.2 + i * 0.07;
 const BargainArt: React.FC = () => {
   const t = useT();
   const L = land(TURN.bargain);
@@ -498,7 +505,7 @@ const BargainArt: React.FC = () => {
   return (
     <Sheet>
       {/* the long ground, falling away toward the hat */}
-      <path d="M 40 985 Q 700 720 1480 548" stroke={P.inkSoft} strokeWidth={2} fill="none" opacity={0.5} />
+      <path d="M 40 880 Q 700 700 1480 532" stroke={P.inkSoft} strokeWidth={2} fill="none" opacity={0.5} />
       {unroll > 0 && (
         <g>
           {/* WHY a lighter sheet with a soft shadow under it (round eight review: the shaded strip read as a ramp or a
@@ -531,24 +538,26 @@ const BargainArt: React.FC = () => {
       {QUEUE.map(({ u, who, dx = 0 }, i) => {
         const p0 = Q_AT(u), p = { ...p0, x: p0.x + dx * p0.s };
         // the ticks run from the back of the queue to the front; the heroes' land last and closest
-        const tickAt = Q.accepted - 0.05 + i * 0.075;
+        const tickAt = tickTime(i, who);
         const nod = jolt(t, tickAt, 8, 0.55);
         const box = stripAt(u);
-        // WHY bigger (round eight review: the far boxes could not be read at all)
-        const bs = 24 + 56 * u;
-        const bx = p.x - bs * 0.5, by = (box.top + box.bot) / 2 - bs / 2;
+        // WHY the box in front of each person's feet with "i agree" beside it (round nine review: round three's readable
+        // "I agree" row "told a stranger at once what 'accepted' meant"; the new tiny boxes did not)
+        const bs = 20 + 54 * u;
+        const bx = p.x - bs * 1.05, by = (box.top + box.bot) / 2 - bs / 2;
         const boxed = head >= u;
         const shuffle = Math.sin(t * 1.4 + i * 1.7) * 1.2;
         const person = who
-          ? <><HeroString x={p.x + shuffle} y={p.y} s={p.s} lean={-90 + i * 4} /><Hero who={who} x={p.x + shuffle} y={p.y} s={p.s} a={DONE} pose={t > tickAt - 0.1 && t < tickAt + 0.4 ? 'write' : 'down'} mood="flat" tilt={nod} /></>
+          ? <><HeroString x={p.x + shuffle} y={p.y} s={p.s} lean={-90 + i * 4} /><Hero who={who} x={p.x + shuffle} y={p.y} s={p.s} a={DONE} flip pose={t > tickAt - 0.25 && t < tickAt + 0.45 ? 'write' : 'down'} mood="flat" tilt={nod} /></>
           : <g opacity={0.36}><Person x={p.x + shuffle} y={p.y} s={p.s} a={DONE} hair={HAIRS[i % HAIRS.length]} body={P.paper} pose="down" mood="flat" tilt={nod} flip={i % 2 === 1} /></g>;
         return (
           <g key={i}>
             {person}
             {boxed && (
               <g opacity={who ? 1 : 0.5}>
-                <rect x={bx} y={by} width={bs} height={bs} rx={bs * 0.14} fill={P.paper} stroke={P.ink} strokeWidth={1.4 + 1.8 * u} />
-                <Ink d={`M ${bx + bs * 0.2} ${by + bs * 0.52} L ${bx + bs * 0.42} ${by + bs * 0.76} L ${bx + bs * 0.86} ${by + bs * 0.12}`} a={tickAt} b={tickAt + 0.16} w={2 + 3 * u} />
+                <rect x={bx} y={by} width={bs} height={bs} rx={bs * 0.14} fill={P.paper} stroke={P.ink} strokeWidth={2 + 2.4 * u} />
+                <Ink d={`M ${bx + bs * 0.2} ${by + bs * 0.52} L ${bx + bs * 0.42} ${by + bs * 0.76} L ${bx + bs * 0.86} ${by + bs * 0.12}`} a={tickAt} b={tickAt + 0.16} w={3 + 4 * u} />
+                {who && <text x={bx + bs + 12} y={by + bs * 0.72} fontFamily={DMSANS} fontWeight={700} fontSize={bs * 0.58} fill={P.ink} letterSpacing="-0.02em">i agree</text>}
               </g>
             )}
           </g>
@@ -791,7 +800,12 @@ export const DROP_LAND = Q.recentlyEnd - 0.02;
 // WHY the drop starts as "however" ends (round seven): the line then has motion from its first word
 const DROP_FROM = Q.howeverEnd + 0.04;
 // WHY this big (round seven): at 2.7 the first colour of the film was a small object adrift on an empty spread
-const WELL = { x: 450, y: 770, s: 4.1 };
+// WHY bigger again and lower (round nine review: "the film's turning point is its smallest picture"): with the camera
+// pushing in as the drop falls, the inkwell fills a good part of the frame when the purple lands, and stays left of
+// the headline's place
+const WELL = { x: 400, y: 800, s: 5.0 };
+/** Where the camera looks once it has pushed in on the inkwell (see take1c.tsx, chapter iv). */
+export const WELL_AT = { camX: 770, camY: 560 };
 // WHY on the left page: the headline lands on the right page at this moment, and must sit on clean paper
 const DROP = { x: WELL.x, y: WELL.y - INKWELL_MOUTH * WELL.s };
 /** The ink's surface inside the glass at fill f (the same sum as Inkwell draws), on the page. */
@@ -826,7 +840,7 @@ const HoweverArt: React.FC = () => {
       <defs>
         <radialGradient id="c-wellglow7"><stop offset="0" stopColor={P.violet} stopOpacity="0.5" /><stop offset="0.55" stopColor={P.violet} stopOpacity="0.16" /><stop offset="1" stopColor={P.violet} stopOpacity="0" /></radialGradient>
       </defs>
-      {glow > 0 && <ellipse cx={WELL.x} cy={WELL.y - 6} rx={88 * WELL.s} ry={26 * WELL.s} fill="url(#c-wellglow7)" opacity={glow} />}
+      {glow > 0 && <ellipse cx={WELL.x} cy={WELL.y - 6} rx={72 * WELL.s} ry={22 * WELL.s} fill="url(#c-wellglow7)" opacity={glow} />}
       <Inkwell x={WELL.x} y={WELL.y} s={WELL.s} fill={filled} glow={glow} tint={t < DROP_LAND ? 0 : tint} />
       {ripple(DROP_LAND, 1)}
       {ripple(Q.happened, 1.6)}

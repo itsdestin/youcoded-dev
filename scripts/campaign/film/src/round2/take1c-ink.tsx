@@ -131,6 +131,16 @@ export const InkDefs: React.FC = () => (
   </defs>
 );
 
+// ---------- one line weight ----------
+/** The outline weight on the page (book units) for a figure drawn at scale s.
+ *  WHY (round nine review: "three different stroke weights share a page ... the heroes heavy (about 6 px), the hats
+ *  and their tower thin"): every figure used to draw a 3-unit line scaled by its own size, so a big hero had a line
+ *  three times a small hat's. Now foreground figures and props share one weight, and small, far-off figures get a
+ *  lighter one (about 70%), which is how a picture-book artist separates depth. */
+export const lineE = (s: number) => 5.4 * Math.min(1, Math.max(0.62, 0.55 + 0.25 * s));
+/** The multiplier that turns a figure's 3-unit local line into lineE once its scale s is applied. */
+export const lineK = (s: number) => lineE(s) / (3 * s);
+
 // ---------- the handful: tall, pompous, faceless ----------
 // 'stretch': the right arm is left off, for a scene that draws its own long reaching arm from the shoulder
 export type HatPose = 'sides' | 'bar' | 'key' | 'rub' | 'reach' | 'hold' | 'grab' | 'pat' | 'shove' | 'stretch' | 'bare';
@@ -172,6 +182,8 @@ export const HatFigure: React.FC<HatProps> = (props) => {
 };
 const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop = 0, pose = 'sides', flip, lean = 0, bob = 0, fade = 0, ea, band, eyes = 'none', look = 0, fist = 0, pocket = false, hatSx = 1, girth = 1, sway = 0, noHat = false, mouth, armTo }) => {
   const e = b ?? a + 1;
+  // WHY every width times lk: see lineE
+  const lk = lineK(s);
   const k = (i: number) => a + (e - a) * i;  // stagger inside the drawing window
   // WHY a solid pale ink, not transparency (review 2026-11-20): drawn see-through, the faded handful let the
   // watercolour behind show through their bodies like a double exposure. Now "fade" mixes the ink toward
@@ -215,31 +227,31 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
     <g transform={`translate(${x} ${y + bob}) scale(${(flip ? -1 : 1) * s} ${s}) rotate(${lean})`}>
       <ellipse cx={0} cy={1} rx={44 * girth} ry={6} fill={P.ink} opacity={0.1 * (1 - fade * 0.6)} />
       {/* legs and pointed shoes */}
-      <Ink d="M -12 -2 L -10 -40 M 12 -2 L 10 -40" a={k(0)} b={k(0.25)} w={5} c={ink} ea={ea} />
-      <Ink d="M -9 -2 L -28 -1 M 9 -2 L 28 -1" a={k(0.15)} b={k(0.3)} w={6} c={ink} ea={ea} />
+      <Ink d="M -12 -2 L -10 -40 M 12 -2 L 10 -40" a={k(0)} b={k(0.25)} w={5 * lk} c={ink} ea={ea} />
+      <Ink d="M -9 -2 L -28 -1 M 9 -2 L 28 -1" a={k(0.15)} b={k(0.3)} w={6 * lk} c={ink} ea={ea} />
       {/* the long coat, a starched shirt front, a bow tie and a watch chain across the belly */}
       {/* WHY skewed about the shoulders: the coat-tails swing while the collar stays put, which reads as cloth */}
-      <g transform={`translate(0 -178) skewX(${sway}) scale(${girth} 1) translate(0 178)`}><Shape d={body} a={k(0.1)} b={k(0.55)} fill={ink} c={ink} w={3} ea={ea} /></g>
+      <g transform={`translate(0 -178) skewX(${sway}) scale(${girth} 1) translate(0 178)`}><Shape d={body} a={k(0.1)} b={k(0.55)} fill={ink} c={ink} w={3 * lk} ea={ea} /></g>
       <Appear a={k(0.55)} out={ea}>
         <path d="M -9 -179 L 0 -136 L 9 -179 Z" fill={P.paper} />
-        <path d="M -9 -178 L 0 -174 L 9 -178 L 9 -170 L 0 -174 L -9 -170 Z" fill={ink} stroke={P.paper} strokeWidth={1} />
+        <path d="M -9 -178 L 0 -174 L 9 -178 L 9 -170 L 0 -174 L -9 -170 Z" fill={ink} stroke={P.paper} strokeWidth={1 * lk} />
         {/* WHY no watch chain: with it they read as the board-game mascot; without, as any suited institution */}
-        {pocket && <path d="M 12 -112 L 32 -114" stroke={P.paperShade} strokeWidth={2.4} fill="none" strokeLinecap="round" />}
-        <path d="M 0 -38 L 0 -66" stroke={P.paper} strokeWidth={2} fill="none" strokeLinecap="round" opacity={0.6} />
+        {pocket && <path d="M 12 -112 L 32 -114" stroke={P.paperShade} strokeWidth={2.4 * lk} fill="none" strokeLinecap="round" />}
+        <path d="M 0 -38 L 0 -66" stroke={P.paper} strokeWidth={2 * lk} fill="none" strokeLinecap="round" opacity={0.6} />
         {[-124, -108].map((cy) => <circle key={cy} cx={-4} cy={cy} r={2} fill={P.paper} opacity={0.8} />)}
       </Appear>
       {/* arms */}
-      {arms[pose].map((d, i) => <Ink key={i} d={d} a={k(0.45)} b={k(0.75)} w={8} c={ink} ea={ea} />)}
+      {arms[pose].map((d, i) => <Ink key={i} d={d} a={k(0.45)} b={k(0.75)} w={8 * lk} c={ink} ea={ea} />)}
       <Appear a={k(0.7)} out={ea}>{hands[pose].map(([hx, hy], i) => (
         // an open hand is a glove; a hand closing on nothing shrinks to a small filled fist
         // WHY a bigger glove with a thumb (round eight review: the small white rings on the black coats read as buttons)
         <g key={i}>
-          <circle cx={hx} cy={hy} r={7.5 + (1 - fist) * 1 - fist * 3} fill={fist > 0.5 ? ink : P.paper} stroke={ink} strokeWidth={2.4} />
-          {fist <= 0.5 && <circle cx={hx + (i === 0 ? -6 : 6)} cy={hy - 5} r={3.4} fill={P.paper} stroke={ink} strokeWidth={2} />}
+          <circle cx={hx} cy={hy} r={7.5 + (1 - fist) * 1 - fist * 3} fill={fist > 0.5 ? ink : P.paper} stroke={ink} strokeWidth={2.4 * lk} />
+          {fist <= 0.5 && <circle cx={hx + (i === 0 ? -6 : 6)} cy={hy - 5} r={3.4} fill={P.paper} stroke={ink} strokeWidth={2 * lk} />}
         </g>
       ))}</Appear>
       {/* neck + faceless head */}
-      <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} c={ink} w={2.6} ea={ea} /></g>
+      <g transform="rotate(-10 0 -197)"><Shape d="M -13 -197 a 13 15 0 1 0 26 0 a 13 15 0 1 0 -26 0" a={k(0.5)} b={k(0.7)} fill={P.paper} c={ink} w={2.6 * lk} ea={ea} /></g>
       {/* WHY heavy-lidded with a one-sided smirk when smug (round eight review: the dot eyes and curved mouth read as a
           friendly smiley, so the takers looked cheerful): half-shut eyes under a lid line and a mouth that lifts at one
           corner read as pleased with himself */}
@@ -247,21 +259,21 @@ const HatFigureInk: React.FC<HatProps> = ({ x, y, s = 1, a, b, crown = 78, drop 
       {eyes === 'dots' && mouth === 'smug' && <Appear a={k(0.7)} out={ea}>{[[-4, -199], [6, -200]].map(([ex, ey], i) => (
         <g key={i}>
           <path d={`M ${ex - 2.8 + look * 5} ${ey - 0.6} A 2.8 2.8 0 0 0 ${ex + 2.8 + look * 5} ${ey - 0.6} Z`} fill={ink} />
-          <path d={`M ${ex - 3.6 + look * 5} ${ey - 1.2} L ${ex + 3.4 + look * 5} ${ey - 1.8}`} stroke={ink} strokeWidth={1.8} strokeLinecap="round" />
+          <path d={`M ${ex - 3.6 + look * 5} ${ey - 1.2} L ${ex + 3.4 + look * 5} ${ey - 1.8}`} stroke={ink} strokeWidth={1.8 * lk} strokeLinecap="round" />
         </g>
       ))}</Appear>}
       {mouth && <Appear a={k(0.7)} out={ea}><path d={mouth === 'smug' ? `M ${-3 + look * 5} -190.4 L ${3 + look * 5} -190.6 Q ${7 + look * 5} -190.8 ${9 + look * 5} -194.5` : `M ${-2 + look * 5} -190 L ${7 + look * 5} -190.5`}
-        stroke={ink} strokeWidth={2} fill="none" strokeLinecap="round" /></Appear>}
+        stroke={ink} strokeWidth={2 * lk} fill="none" strokeLinecap="round" /></Appear>}
       {/* smug: eyes shut into two pleased downward arcs (chapter v, "blinded by their own hubris") */}
-      {eyes === 'smug' && <Appear a={k(0.7)} out={ea}><path d={`M ${-8 + look * 5} -199 Q ${-4 + look * 5} -195 ${0 + look * 5} -199 M ${3 + look * 5} -200 Q ${7 + look * 5} -196 ${11 + look * 5} -200`} stroke={ink} strokeWidth={2.2} fill="none" strokeLinecap="round" /></Appear>}
+      {eyes === 'smug' && <Appear a={k(0.7)} out={ea}><path d={`M ${-8 + look * 5} -199 Q ${-4 + look * 5} -195 ${0 + look * 5} -199 M ${3 + look * 5} -200 Q ${7 + look * 5} -196 ${11 + look * 5} -200`} stroke={ink} strokeWidth={2.2 * lk} fill="none" strokeLinecap="round" /></Appear>}
       {eyes === 'coins' && [[-5, -199], [7, -200]].map(([cx, cy], i) => (
-        <g key={i}><circle cx={cx} cy={cy} r={6.4} fill={P.sun} stroke={ink} strokeWidth={1.6} /><circle cx={cx} cy={cy} r={3} fill="none" stroke={ink} strokeWidth={1} opacity={0.6} /></g>
+        <g key={i}><circle cx={cx} cy={cy} r={6.4} fill={P.sun} stroke={ink} strokeWidth={1.6 * lk} /><circle cx={cx} cy={cy} r={3} fill="none" stroke={ink} strokeWidth={1 * lk} opacity={0.6} /></g>
       ))}
       {/* the tall hat */}
       {!noHat && <g transform={`translate(0 ${hatY}) scale(${hatSx} 1)`}>
-        <Shape d={`M -16 0 L -18.5 ${-crown} Q 0 ${-crown - 4} 18.5 ${-crown} L 16 0 Z`} a={k(0.6)} b={k(0.9)} fill={ink} c={ink} w={3} ea={ea} />
+        <Shape d={`M -16 0 L -18.5 ${-crown} Q 0 ${-crown - 4} 18.5 ${-crown} L 16 0 Z`} a={k(0.6)} b={k(0.9)} fill={ink} c={ink} w={3 * lk} ea={ea} />
         <Wash d="M -16.4 -9 L -16.9 -19 L 16.9 -19 L 16.4 -9 Z" a={k(0.85)} fill={band ?? inner} ea={ea} />
-        <Ink d="M -27 1 Q 0 -5 27 1" a={k(0.75)} b={k(0.95)} w={6} c={ink} ea={ea} />
+        <Ink d="M -27 1 Q 0 -5 27 1" a={k(0.75)} b={k(0.95)} w={6 * lk} c={ink} ea={ea} />
       </g>}
     </g>
   );
@@ -298,6 +310,8 @@ export const Person: React.FC<PersonProps> = (props) => {
 };
 const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, hair = 'tuft', pose = 'down', mood = 'smile', flip, bob = 0, tilt = 0, ea, device = 'none', hairColor, sit = false, raise = 0 }) => {
   const e = b ?? a + 0.7;
+  // WHY every width times lk: see lineE
+  const lk = lineK(s);
   const k = (i: number) => a + (e - a) * i;
   const hc = hairColor ?? P.ink;
   const arms: Record<PersonPose, string> = {
@@ -318,20 +332,20 @@ const PersonInk: React.FC<PersonProps> = ({ x, y, s = 1, a, b, body = P.wash, ha
   return (
     <g transform={`translate(${x} ${y + bob}) rotate(${tilt}) scale(${(flip ? -1 : 1) * s} ${s})`}>
       {!sit && <Appear a={k(0.2)} out={ea}><ellipse cx={0} cy={1 - bob / s} rx={20} ry={3.5} fill={P.ink} opacity={0.12} /></Appear>}
-      <Ink d={sit ? 'M -8 -22 L 12 -20 L 13 6 M 6 -22 L 22 -20 L 23 6' : 'M -7 -1 L -6 -24 M 7 -1 L 6 -24'} a={k(0)} b={k(0.3)} w={4} ea={ea} />
-      <Shape d="M -18 -22 C -21 -50 -15 -68 0 -69 C 15 -68 21 -50 18 -22 Q 0 -18 -18 -22 Z" a={k(0.15)} b={k(0.55)} fill={body} w={3} ea={ea} />
-      <Ink d={lerpPath(arms[pose], arms.bothUp, Math.min(1, Math.max(0, raise)))} a={k(0.4)} b={k(0.7)} w={3.6} ea={ea} />
-      {device === 'phone' && <Shape d="M -11 -50 h 22 v 15 h -22 Z" a={k(0.6)} b={k(0.8)} fill={P.paper} w={2.4} ea={ea} />}
-      <Shape d="M -17 -85 a 17 17 0 1 0 34 0 a 17 17 0 1 0 -34 0" a={k(0.35)} b={k(0.7)} fill={P.paper} w={3} ea={ea} />
-      {hair === 'bun' && <Shape d="M -7 -104 a 7 7 0 1 0 14 0 a 7 7 0 1 0 -14 0" a={k(0.6)} b={k(0.8)} fill={hc} w={2} ea={ea} />}
-      {hair === 'curly' && <Ink d="M -16 -92 q 3 -9 9 -8 q 2 -8 9 -5 q 6 -6 10 1 q 7 1 5 9" a={k(0.6)} b={k(0.85)} w={4} c={hc} ea={ea} />}
-      {hairD[hair] && (hair === 'tuft' ? <Ink d={hairD[hair]!} a={k(0.6)} b={k(0.85)} w={2.6} c={hc} ea={ea} />
-        : <Shape d={hairD[hair]!} a={k(0.6)} b={k(0.85)} fill={hc} w={2} c={hc} ea={ea} />)}
+      <Ink d={sit ? 'M -8 -22 L 12 -20 L 13 6 M 6 -22 L 22 -20 L 23 6' : 'M -7 -1 L -6 -24 M 7 -1 L 6 -24'} a={k(0)} b={k(0.3)} w={4 * lk} ea={ea} />
+      <Shape d="M -18 -22 C -21 -50 -15 -68 0 -69 C 15 -68 21 -50 18 -22 Q 0 -18 -18 -22 Z" a={k(0.15)} b={k(0.55)} fill={body} w={3 * lk} ea={ea} />
+      <Ink d={lerpPath(arms[pose], arms.bothUp, Math.min(1, Math.max(0, raise)))} a={k(0.4)} b={k(0.7)} w={3.6 * lk} ea={ea} />
+      {device === 'phone' && <Shape d="M -11 -50 h 22 v 15 h -22 Z" a={k(0.6)} b={k(0.8)} fill={P.paper} w={2.4 * lk} ea={ea} />}
+      <Shape d="M -17 -85 a 17 17 0 1 0 34 0 a 17 17 0 1 0 -34 0" a={k(0.35)} b={k(0.7)} fill={P.paper} w={3 * lk} ea={ea} />
+      {hair === 'bun' && <Shape d="M -7 -104 a 7 7 0 1 0 14 0 a 7 7 0 1 0 -14 0" a={k(0.6)} b={k(0.8)} fill={hc} w={2 * lk} ea={ea} />}
+      {hair === 'curly' && <Ink d="M -16 -92 q 3 -9 9 -8 q 2 -8 9 -5 q 6 -6 10 1 q 7 1 5 9" a={k(0.6)} b={k(0.85)} w={4 * lk} c={hc} ea={ea} />}
+      {hairD[hair] && (hair === 'tuft' ? <Ink d={hairD[hair]!} a={k(0.6)} b={k(0.85)} w={2.6 * lk} c={hc} ea={ea} />
+        : <Shape d={hairD[hair]!} a={k(0.6)} b={k(0.85)} fill={hc} w={2 * lk} c={hc} ea={ea} />)}
       <Appear a={k(0.75)} out={ea}>
         <circle cx={-6} cy={-86} r={2.3} fill={P.ink} /><circle cx={6} cy={-86} r={2.3} fill={P.ink} />
-        {mood === 'smile' && <path d="M -5 -78 Q 0 -74 5 -78" stroke={P.ink} strokeWidth={2} fill="none" strokeLinecap="round" />}
-        {mood === 'flat' && <path d="M -4 -77 L 4 -77" stroke={P.ink} strokeWidth={2} strokeLinecap="round" />}
-        {mood === 'o' && <circle cx={0} cy={-76} r={2.6} fill="none" stroke={P.ink} strokeWidth={1.8} />}
+        {mood === 'smile' && <path d="M -5 -78 Q 0 -74 5 -78" stroke={P.ink} strokeWidth={2 * lk} fill="none" strokeLinecap="round" />}
+        {mood === 'flat' && <path d="M -4 -77 L 4 -77" stroke={P.ink} strokeWidth={2 * lk} strokeLinecap="round" />}
+        {mood === 'o' && <circle cx={0} cy={-76} r={2.6} fill="none" stroke={P.ink} strokeWidth={1.8 * lk} />}
       </Appear>
     </g>
   );
@@ -548,7 +562,7 @@ export const Tower: React.FC<{ x: number; y: number; w?: number; n?: number; s?:
       const slab = `M ${L + 14} ${top} L ${L + w - 14} ${top} Q ${L + w} ${top} ${L + w} ${top + 14} L ${L + w} ${top + H - 6} Q ${L + w} ${top + H} ${L + w - 8} ${top + H} L ${L + 8} ${top + H} Q ${L} ${top + H} ${L} ${top + H - 6} L ${L} ${top + 14} Q ${L} ${top} ${L + 14} ${top} Z`;
       return (
         <g key={j}>
-          <path d={slab} fill={fill} stroke={c} strokeWidth={3} strokeLinejoin="round" />
+          <path d={slab} fill={fill} stroke={c} strokeWidth={3 * lineK(s)} strokeLinejoin="round" />
           {/* WHY a dark lip along each window's foot (round seven): it is the window's thickness, so the stack reads
               as heavy objects piled up, not ruled lines; and the slab above casts a thin shadow onto this one */}
           <path d={`M ${L + 3} ${top + H - 9} L ${L + w - 3} ${top + H - 9} L ${L + w - 3} ${top + H - 5} Q ${L + w - 3} ${top + H - 1.5} ${L + w - 9} ${top + H - 1.5} L ${L + 9} ${top + H - 1.5} Q ${L + 3} ${top + H - 1.5} ${L + 3} ${top + H - 5} Z`} fill={c} opacity={0.82} />
@@ -575,6 +589,8 @@ export const INKWELL_MOUTH = 66;
 // ink stays at its level and the purple spreads through it from where the drop went in, like a drop of dye.
 export const Inkwell: React.FC<{ x: number; y: number; s?: number; fill?: number; glow?: number; rock?: number; tint?: number }> = ({ x, y, s = 1, fill = 1, glow = 0, rock = 0, tint }) => {
   const f = Math.min(1, Math.max(0, fill));
+  // WHY lk: the same outline weight as the figures beside it, at any size (see lineE)
+  const lk = lineK(s);
   const level = -8 - 22 * f;                      // the ink's surface inside the glass
   const inkCol = tint == null ? mixHex('#3A2448', C.purple, f) : mixHex('#3A2448', C.purple, Math.min(1, Math.max(0, tint)) ** 2);
   const spread = tint == null ? 0 : Math.min(1, Math.max(0, tint));
@@ -591,17 +607,17 @@ export const Inkwell: React.FC<{ x: number; y: number; s?: number; fill?: number
         <ellipse cx={0} cy={level} rx={44} ry={4.5} fill={mixHex(inkCol, '#ffffff', 0.18)} />
         {glow > 0 && <ellipse cx={0} cy={level} rx={44} ry={6} fill={P.violet} opacity={0.5 * glow} />}
       </g>
-      <path d={body} fill="none" stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
+      <path d={body} fill="none" stroke={P.ink} strokeWidth={3 * lk} strokeLinejoin="round" />
       {/* the neck's lip, and the open mouth seen from just above */}
-      <path d="M -19 -60 L 19 -60 L 19 -66 L -19 -66 Z" fill="#EFE6EC" stroke={P.ink} strokeWidth={3} strokeLinejoin="round" />
-      <ellipse cx={0} cy={-66} rx={16} ry={3.6} fill={f > 0 ? inkCol : '#3A2448'} stroke={P.ink} strokeWidth={1.6} />
+      <path d="M -19 -60 L 19 -60 L 19 -66 L -19 -66 Z" fill="#EFE6EC" stroke={P.ink} strokeWidth={3 * lk} strokeLinejoin="round" />
+      <ellipse cx={0} cy={-66} rx={16} ry={3.6} fill={f > 0 ? inkCol : '#3A2448'} stroke={P.ink} strokeWidth={1.6 * lk} />
       {glow > 0 && <ellipse cx={0} cy={-66} rx={16} ry={3.6} fill={P.violet} opacity={0.45 * glow} />}
       {/* the label, stamped with a tiny top hat */}
-      <path d="M -20 -40 L 20 -40 L 20 -22 L -20 -22 Z" fill={P.paper} stroke={P.ink} strokeWidth={2} />
-      <path d="M -5 -26 L -5.6 -35 L 5.6 -35 L 5 -26 Z M -9 -26 L 9 -26" fill={P.ink} stroke={P.ink} strokeWidth={1.6} strokeLinejoin="round" />
+      <path d="M -20 -40 L 20 -40 L 20 -22 L -20 -22 Z" fill={P.paper} stroke={P.ink} strokeWidth={2 * lk} />
+      <path d="M -5 -26 L -5.6 -35 L 5.6 -35 L 5 -26 Z M -9 -26 L 9 -26" fill={P.ink} stroke={P.ink} strokeWidth={1.6 * lk} strokeLinejoin="round" />
       {/* two thin highlights on the glass, from the lamp at the upper left */}
-      <path d="M -36 -12 L -36 -30 Q -36 -40 -26 -44" stroke="#fff" strokeWidth={3.4} opacity={0.75} fill="none" strokeLinecap="round" />
-      <path d="M 34 -14 L 34 -24" stroke="#fff" strokeWidth={2.4} opacity={0.5} fill="none" strokeLinecap="round" />
+      <path d="M -36 -12 L -36 -30 Q -36 -40 -26 -44" stroke="#fff" strokeWidth={3.4 * lk} opacity={0.75} fill="none" strokeLinecap="round" />
+      <path d="M 34 -14 L 34 -24" stroke="#fff" strokeWidth={2.4 * lk} opacity={0.5} fill="none" strokeLinecap="round" />
     </g>
   );
 };

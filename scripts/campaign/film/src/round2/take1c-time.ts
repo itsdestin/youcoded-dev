@@ -43,6 +43,7 @@ export const Q = {
   happened: T('happened', 'wonderful *happened.'),
   // (5) the treasure
   blinded: T('blinded', 'Blinded by their'),
+  by: T('by', 'Blinded *by their'),
   hubris: T('hubris', 'own *hubris,'),
   created1: T('created1', 'corporations *created a new'),
   newKind: T('newKind', 'a *new kind of technology:'),
@@ -51,6 +52,7 @@ export const Q = {
   intelligence: T('intelligence', 'artificial *intelligence.'),
   aTechnology: T('aTechnology', 'A technology they believed'),
   believed: T('believed', 'they *believed would'),
+  bring: T('bring', 'would *bring about'),
   greatTreasure: T('greatTreasure', 'a *great treasure:'),
   treasure: T('treasure', 'great *treasure:'),
   these: T('these', 'these corporations created'),
@@ -95,6 +97,7 @@ export const Q = {
   it2: T('it2', 'What *it costs.'),
   costs: T('costs', 'it *costs.'),
   ourData: T('ourData', 'And what happens with our data.'),
+  whatHappens: T('whatHappens', 'And *what happens with'),
   happens: T('happens', 'what *happens with our'),
   data2: T('data2', 'our *data.'),
   // (8) free
@@ -136,10 +139,14 @@ export const TURN = {
   // the stressed word, which is what gives it an editor's rhythm instead of one long camera move.
   nothing: onFrame(Q.weAccepted - 0.03),
   however: Q.convenienceEnd - 0.05,
-  // WHY a hard cut on "hubris", not a page turn on "blinded" (review 2026-11-20): the headline "something
-  // wonderful happened." must stay up 1.95 s after "happened" is spoken, and the hats start growing on
-  // "hubris". The cut takes the headline and the old page away on the same frame, which is a clean edit.
-  treasure: onFrame(Q.hubris - 0.03),
+  // WHY a hard cut on "blinded" (round eight review, a BLOCKER: cut on "hubris", the inkwell wide sat still for
+  // 1.1 s while she was already saying "Blinded by their own", which read as lag). The cut takes the headline and
+  // the old page away on the same frame; the headline has then been building for 2.6 s (see holdFromFirst in
+  // take1c.tsx), and the hats' eyes close into smug arcs on the word itself.
+  // WHY round nine, the cut moved on to "by" (review: "'something wonderful happened.' is complete for only about
+  // 0.8 s before the hard cut"): the finished line now holds 1.3 s after "happened" lands, and the hats close their
+  // eyes smugly just after the cut, still on "blinded by"
+  treasure: onFrame(Q.by - 0.03),
   // WHY a page turn on "the" (round six plan): chapter vi is a new spread, Theo and June's; it lands as she says
   // "ever-scarce", in time for Theo's ask to write itself
   anyone: Q.the - 0.3,
@@ -148,7 +155,10 @@ export const TURN = {
   free: Q.itsTime1 - 0.42,
   // WHY one turn on "It's", no riffle (round six plan): the sharing of Maya's app gets the whole line
   everything: Q.itsTime2 - 0.45,
-  close: Q.end - 0.05,                     // the book shuts as the last word lands
+  // WHY the book starts to shut halfway through "everything" (round nine review, a BLOCKER: the end card was
+  // readable for only about half a second): the cover swings over while she finishes the word, so the end card
+  // is built a second sooner and holds about two seconds
+  close: Q.everything2 + 0.42,
 };
 /** Turns that are hard cuts (the new spread is simply there on the next frame). */
 export const CUT_TURNS = new Set<number>([TURN.nothing, TURN.treasure, TURN.ours]);

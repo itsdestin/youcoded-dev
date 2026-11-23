@@ -3,7 +3,7 @@
 // that genuinely rotates around the spine, curls, shades itself and casts a shadow on the page beneath it
 // reads as an object in a room; a flat wipe reads as a slideshow.
 import React from 'react';
-import { AbsoluteFill, getInputProps, interpolate, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { EASE_IN_OUT, FPS } from '../brand';
 import { lin, P } from './take1c-ink';
 import { CLOSE_DUR, Q, TURN } from './take1c-time';
@@ -187,17 +187,29 @@ const PageEdges: React.FC<{ side: 'L' | 'R'; thick: number }> = ({ side, thick }
 // WHY the boards keep only a short, close shadow: the book now floats above a colour field, and its long soft
 // shadow is cast on that field by FloatShadow (below), which moves with the camera. Here the board just has its
 // thickness (the dark lip), a hairline catch-light on its top edge, and a touch of close occlusion.
-const BOARD_SHADOW = '0 6px 0 #22122B, 0 7px 0 rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.10), 0 14px 22px rgba(30,10,40,0.28)';
+// WHY a lighter rim on the top edge than before (round nine): over the new dark field the plum boards merged into
+// the plum-black; a fine lit edge from the lamp separates them
+const BOARD_SHADOW = '0 6px 0 #22122B, 0 7px 0 rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,236,250,0.22), inset 1px 0 0 rgba(255,236,250,0.10), 0 14px 22px rgba(10,4,16,0.32)';
+/** How deep the page block is (book units): the paper stands this far above the boards.
+ *  WHY (review, round nine: "no visible page-block thickness ... the book sits on it like a sticker"): the boards now
+ *  lie BLOCK below the paper, and the front edge of the page block is drawn as a real face hanging down from the
+ *  foot of each page, so the tilted camera sees a band of cream page edges between the paper and the cloth. */
+export const BLOCK = 30;
 export const Boards: React.FC<{ left: boolean; right: boolean }> = ({ left, right }) => (
   <>
     {left && <div style={{ position: 'absolute', left: -BOARD, top: -BOARD, width: PW + BOARD, height: PH + BOARD * 2, background: '#3A2145', backgroundImage: CLOTH,
-      borderRadius: '8px 0 0 8px', boxShadow: BOARD_SHADOW }} />}
+      borderRadius: '8px 0 0 8px', boxShadow: BOARD_SHADOW, transform: `translateZ(${-BLOCK}px)` }} />}
     {right && <div style={{ position: 'absolute', left: PW, top: -BOARD, width: PW + BOARD, height: PH + BOARD * 2, background: '#3A2145', backgroundImage: CLOTH,
-      borderRadius: '0 8px 8px 0', boxShadow: BOARD_SHADOW }} />}
+      borderRadius: '0 8px 8px 0', boxShadow: BOARD_SHADOW, transform: `translateZ(${-BLOCK}px)` }} />}
   </>
 );
+/** The page block's front face under one page: fine leaves, lit at the top and falling into shade at the boards. */
+const BlockFront: React.FC<{ side: 'L' | 'R' }> = ({ side }) => (
+  <div style={{ position: 'absolute', left: side === 'L' ? 0 : PW, top: PH, width: PW, height: BLOCK, transformOrigin: '50% 0', transform: 'rotateX(-90deg)',
+    background: `linear-gradient(${side === 'L' ? 90 : 270}deg, rgba(70,40,60,0.30) 0%, rgba(70,40,60,0) 6%), linear-gradient(180deg, rgba(255,250,240,0.25) 0%, rgba(80,50,70,0) 30%, rgba(80,50,70,0.38) 100%), repeating-linear-gradient(180deg, #E4D8CA 0 0.8px, #F7F0E6 0.8px 2.2px)` }} />
+);
 export const Edges: React.FC<{ left: boolean; right: boolean }> = ({ left, right }) => (
-  <>{left && <PageEdges side="L" thick={7} />}{right && <PageEdges side="R" thick={9} />}</>
+  <>{left && <><PageEdges side="L" thick={7} /><BlockFront side="L" /></>}{right && <><PageEdges side="R" thick={9} /><BlockFront side="R" /></>}</>
 );
 
 /** A flat page lying on its side of the spine. */
@@ -254,129 +266,162 @@ export const screenScale = (z: number) => z * (HOME_SCALE + (CLOSE_SCALE - HOME_
 export const liftAt = (z: number) => 34 * Math.max(0, Math.min(1, (1.6 - z) / 0.6));
 
 // ---------- what the book floats over ----------
-// WHY a colour field from the posters instead of a desk (owner, latest: "the background in storybook also still
-// feels extremely flat ... maybe floating over one of our poster gradients"): the felt desk was one flat purple.
-// The book now hovers above the same soft wash the posters use (brand colours only, no blue), lit from the upper
-// left like the pages, with a long soft shadow cast onto it and a fine moving film grain so it never bands.
-// Three looks were built so the owner can choose; 'a' is the one the film uses. A still of another look:
-//   npx remotion still src/index.ts take1c out.png --frame=N --props='{"bookLook":"b"}'
-export type BookLook = 'a' | 'b' | 'c';
-const LOOK: BookLook = (() => { try { const v = (getInputProps() as { bookLook?: string }).bookLook; return v === 'b' || v === 'c' ? v : 'a'; } catch { return 'a'; } })();
+// WHY the brand's poster colour field, dark then light (owner, latest: "the background in storybook also still feels
+// extremely flat. i feel like it need more depth/texture. maybe floating over one of our poster gradients"; picture
+// plan: dark field for lines 1-3, a step darker on "however", a broad diagonal wipe of warm light on "wonderful").
+// The old lilac wash was one smooth colour that did not move against the book, so the book read as a sticker on it.
+// Depth now comes from four things a viewer feels without naming them:
+//  1. two or three very large, low-contrast colour masses (the posters' own colours), never a glowing ball;
+//  2. a fine printed grain and a soft mottle fixed TO the field, so it has a surface;
+//  3. parallax: the field slides at about a third of the book's own on-screen movement and swells a little as the
+//     camera pushes in, so the book is plainly floating some distance above it;
+//  4. the book's own thickness (page block, boards set below the paper) and a long soft shadow cast down-right.
+// Dark: plum-black #140B1E to deep purple #55236A (the dark poster). Light: #FBF6FD to lilac #E2C6F2 to pink #F1B9DC.
 
-type FieldStyle = { quiet: string; bloom: string; light: string; shade: string; shadowA: number };
-const FIELDS: Record<BookLook, FieldStyle> = {
-  // a, "dusk lilac" (the one the film uses): the poster wash taken a few steps deeper, so the cream pages glow
-  // against it and the book clearly floats. Before "wonderful" it is a quieter grey-lilac; on "wonderful" the
-  // poster's pink-to-lilac warmth blooms in from the lower right corner, opposite the light.
-  // WHY re-graded (review round six): the old 'a' was a dusty grey-lilac that sank to a muddy mauve under the
-  // book (#9c7cab). It is now the posters' own wash (near-white upper left, lavender, pink low right), held one
-  // step deeper than the posters so the cream pages still lift off it. Before "wonderful" it is a desaturated
-  // lavender, never grey; the corner shade is half what it was, so the far corner stays lilac.
-  a: {
-    quiet: 'radial-gradient(150% 125% at 14% 4%, #F8F4FA 0%, #EAE1EF 36%, #D9CCE3 72%, #CDBDD9 100%)',
-    bloom: 'radial-gradient(115% 95% at 100% 100%, #EDA9D3 0%, #DDB9EE 36%, rgba(232,214,244,0) 80%), radial-gradient(150% 125% at 14% 4%, #FCF8FE 0%, #F0E4F7 38%, #DFC9EC 76%, #D3B9E4 100%)',
-    light: 'rgba(255,252,255,0.45)', shade: 'rgba(84,48,104,0.11)', shadowA: 0.5,
-  },
-  // b, "night wash": the dark poster field, plum-black with a deep magenta-plum glow low on the right
-  b: {
-    quiet: 'radial-gradient(160% 130% at 100% 100%, #2E1C3A 0%, #22142D 40%, #180D22 75%, #140B1E 100%)',
-    bloom: 'radial-gradient(170% 120% at 100% 100%, #55236A 0%, #3A1A52 30%, #24113A 58%, #140B1E 90%)',
-    light: 'rgba(200,170,220,0.10)', shade: 'rgba(6,2,10,0.35)', shadowA: 0.6,
-  },
-  // c, "lavender wash": the light poster field, airier and paler. Before "something wonderful" the lavender is held back toward a
-  // quiet grey-lilac (the book's colourless chapters); on "wonderful" the poster's pink-to-lilac warmth blooms in
-  // from the lower right corner, opposite the light.
-  c: {
-    quiet: 'radial-gradient(140% 120% at 16% 6%, #FCFAFC 0%, #F1ECF2 38%, #E2D9E6 78%, #D6CBDC 100%)',
-    bloom: 'radial-gradient(120% 95% at 100% 100%, #F1B9DC 0%, #E7C3EE 34%, rgba(242,232,248,0) 78%), radial-gradient(140% 120% at 16% 6%, #FEFCFF 0%, #F7F0FB 40%, #ECDDF4 100%)',
-    // WHY a deeper shadow and half the corner shade: on this paler field the cream book needs more lift
-    light: 'rgba(255,255,255,0.35)', shade: 'rgba(70,40,84,0.10)', shadowA: 0.52,
-  },
-};
-
-// WHY a moving grain: a smooth gradient on video bands into visible steps, and a still noise pattern looks like
-// a dirty lens. A fine luminance-only grain, shifted every frame, reads as film and hides the steps.
-const GRAIN_TILE = `url("data:image/svg+xml;utf8,${encodeURIComponent(
-  "<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7' stitchTiles='stitch'/>" +
-  "<feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>")}")`;
+// WHY data-URI noise tiles (as for the paper): decoded once and repeated, so the grain costs nothing per frame
+const noiseTile = (freq: number, seed: number, size: number, oct = 2) => `url("data:image/svg+xml;utf8,${encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='${freq}' numOctaves='${oct}' seed='${seed}' stitchTiles='stitch'/>` +
+  `<feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>`)}")`;
+const FIELD_GRAIN = noiseTile(0.85, 13, 220);        // fine tooth, like uncoated poster stock
+const FIELD_MOTTLE = noiseTile(0.006, 29, 900, 3);    // big soft clouds in the ink, far below the grain's scale
+const GRAIN_TILE = noiseTile(0.9, 7, 256);
 const grainShift = (frame: number) => { const h = Math.sin(frame * 12.9898) * 43758.5453; const r = h - Math.floor(h); return [Math.floor(r * 256), Math.floor(((r * 7.31) % 1) * 256)]; };
 
-/** How far the film has moved from its colourless chapters into colour: 0 before "wonderful", 1 after. */
-const bloomAt = (t: number) => lin(t, Q.wonderful - 0.1, Q.wonderful + 1.4, EASE_IN_OUT);
+/** The field's plate is 190% of the frame, centred, so its parallax never runs out of edge.
+ *  A point (fx, fy) in frame percent sits at this point of the plate. */
+const at = (fx: number, fy: number) => `${((45 + fx) / 190 * 100).toFixed(1)}% ${((45 + fy) / 190 * 100).toFixed(1)}%`;
+// The dark poster field: a plum-black ground, the deep purple mass low on the right (the posters' warm corner), a
+// quieter plum mass high on the left where the lamp is, and a faint wine mass low on the left so the foot of the
+// frame is never one flat tone.
+const DARK = [
+  `radial-gradient(62% 56% at ${at(94, 100)}, rgba(85,35,106,0.95) 0%, rgba(68,30,92,0.72) 30%, rgba(42,20,64,0.38) 62%, rgba(36,17,58,0) 100%)`,
+  `radial-gradient(46% 40% at ${at(6, 6)}, rgba(70,38,94,0.55) 0%, rgba(58,26,82,0.25) 50%, rgba(58,26,82,0) 100%)`,
+  `radial-gradient(38% 30% at ${at(16, 104)}, rgba(84,32,78,0.42) 0%, rgba(84,32,78,0) 100%)`,
+  '#140B1E',
+].join(', ');
+// The light poster field: near-white high on the left, the pink-to-lilac warmth low on the right.
+const LIGHT = [
+  `radial-gradient(52% 48% at ${at(98, 104)}, rgba(241,185,220,0.95) 0%, rgba(232,190,232,0.7) 36%, rgba(226,198,242,0) 100%)`,
+  `radial-gradient(64% 50% at ${at(64, 74)}, rgba(226,198,242,0.62) 0%, rgba(226,198,242,0) 100%)`,
+  `radial-gradient(44% 38% at ${at(8, 4)}, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%)`,
+  '#F7EEFB',
+].join(', ');
 
-/** The colour field, in screen space behind the book, drifting a little against the camera for depth. */
+/** The "however" sink (0..1) and the "wonderful" wipe (0..1), shared by the field, the lamp and the shadow. */
+export const sinkAt = (t: number) => lin(t, Q.however - 0.1, Q.recently + 0.4, EASE_IN_OUT);
+// WHY 1.5 s from just before "wonderful": the light crosses the frame while she says the word
+export const wipeAt = (t: number) => lin(t, Q.wonderful - 0.15, Q.wonderful + 1.35, EASE_IN_OUT);
+/** The wipe's leading edge, as a percent along the diagonal from the bottom-right corner to the top-left one. */
+export const wipeEdge = (w: number) => -24 + 150 * w;
+
+const Plate: React.FC<{ bg: string; px: number; py: number; sc: number; light: boolean }> = ({ bg, px, py, sc, light }) => (
+  <div style={{ position: 'absolute', left: '-45%', top: '-45%', width: '190%', height: '190%', transform: `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) scale(${sc.toFixed(4)})` }}>
+    <div style={{ position: 'absolute', inset: 0, background: bg }} />
+    {/* the mottle: soft clouds in the printed colour, so even an empty stretch of field has a surface */}
+    <div style={{ position: 'absolute', inset: 0, backgroundImage: FIELD_MOTTLE, backgroundSize: '900px 900px', mixBlendMode: light ? 'multiply' : 'soft-light', opacity: light ? 0.14 : 0.5 }} />
+    {/* the grain: fixed to the field (it moves with it), so the parallax can be seen in the texture itself */}
+    <div style={{ position: 'absolute', inset: 0, backgroundImage: FIELD_GRAIN, mixBlendMode: 'overlay', opacity: light ? 0.16 : 0.22 }} />
+  </div>
+);
+
+/** The colour field, in screen space behind the book, moving at about a third of the camera's speed. */
 const Field: React.FC<{ cam: ReturnType<typeof cameraAt>; t: number }> = ({ cam, t }) => {
-  const F = FIELDS[LOOK];
-  // WHY 6% of the book's own on-screen movement: the field reads as far below the book, so it slides less
-  const k = screenScale(cam.z) * 0.06;
-  const px = -(cam.x - 760) * k, py = -(cam.y - 500) * k;
-  const sc = 1 + 0.05 * Math.log(Math.max(0.5, cam.z));
-  const bloom = 0.45 + 0.55 * bloomAt(t);   // never fully quiet, so the field is never a flat fill
+  // WHY a third of the book's on-screen movement: far enough below the book to read as floating, near enough that
+  // the slide is visible; the zoom used is capped, so a close-up's big pans do not throw the field around
+  const k = 0.34 * screenScale(Math.min(cam.z, 1.7));
+  const px = -(cam.x - 760) * k, py = -(cam.y - 500) * k * 0.8;
+  // it swells a third as fast as the book when the camera pushes in (log space, like the camera)
+  const sc = Math.exp(0.3 * Math.log(Math.max(0.6, cam.z)));
+  const sink = sinkAt(t), w = wipeAt(t);
+  const edge = wipeEdge(w);
+  // WHY a soft-edged diagonal mask, never a radial bloom (picture plan): the light sweeps across like a page of
+  // the sky turning, from the lower right (where the posters are warm) to the upper left
+  const mask = `linear-gradient(to top left, #000 ${edge - 26}%, rgba(0,0,0,0.6) ${edge - 10}%, transparent ${edge}%)`;
   return (
-    <div style={{ position: 'absolute', left: '-10%', top: '-10%', width: '120%', height: '120%', transform: `translate(${px}px, ${py}px) scale(${sc})` }}>
-      <AbsoluteFill style={{ background: F.quiet }} />
-      <AbsoluteFill style={{ background: F.bloom, opacity: bloom }} />
-      {/* the light from the upper left falls across the field too, and fades into shade at the far corner */}
-      <AbsoluteFill style={{ background: `radial-gradient(70% 60% at 22% 14%, ${F.light} 0%, rgba(255,255,255,0) 100%)` }} />
-      <AbsoluteFill style={{ background: `radial-gradient(120% 110% at 40% 30%, rgba(0,0,0,0) 55%, ${F.shade} 100%)` }} />
-    </div>
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
+      <Plate bg={DARK} px={px} py={py} sc={sc} light={false} />
+      {/* "however": the dark field sinks a step darker while she whispers, and stays so until the light arrives */}
+      {sink > 0 && w < 1 && <AbsoluteFill style={{ background: '#07030C', opacity: 0.45 * sink }} />}
+      {w > 0 && (
+        <AbsoluteFill style={{ WebkitMaskImage: w >= 1 ? undefined : mask, maskImage: w >= 1 ? undefined : mask }}>
+          <Plate bg={LIGHT} px={px} py={py} sc={sc} light />
+        </AbsoluteFill>
+      )}
+      {/* a soft vignette, deep on the dark field and a breath of plum on the light one */}
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse 78% 82% at 48% 44%, rgba(6,2,12,0) 50%, rgba(6,2,12,0.62) 100%)', opacity: 1 - w }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse 78% 82% at 48% 44%, rgba(84,48,104,0) 55%, rgba(84,48,104,0.16) 100%)', opacity: w }} />
+    </AbsoluteFill>
   );
 };
 
-/** The book's shadow on the field: two soft layers set well below the book in 3D, so perspective alone makes
- *  them slide and swell against the book as the camera moves (the parallax that says "floating"). */
-const FloatShadow: React.FC<{ a: number; t: number }> = ({ a, t }) => {
+/** The book's shadow on the field: soft layers set below the book in 3D, so perspective alone makes them slide and
+ *  swell against the book as the camera moves (the parallax that says "floating"). */
+const FloatShadow: React.FC<{ t: number }> = ({ t }) => {
   // WHY read from the clock: while the book shuts, its left half swings away and only the right half casts
   const shut = lin(t, TURN.close + CLOSE_DUR * 0.15, TURN.close + CLOSE_DUR * 0.85, EASE_IN_OUT);
   const x0 = -BOARD + (PW + BOARD) * shut, w = SW + BOARD * 2 - (PW + BOARD) * shut;
+  // WHY near-black on the dark field and plum on the light one: a plum shadow on a plum-black field vanished
+  const day = wipeAt(t);
+  const col = (a: number) => `rgba(${Math.round(4 + 42 * day)},${Math.round(1 + 15 * day)},${Math.round(8 + 52 * day)},${a.toFixed(3)})`;
+  const A = 0.78 - 0.26 * day;
   // WHY the box sits far off to the left and only its shadow is thrown back under the book: a solid box would
   // show its own hard edge where the offset shadow peeks out below the book; the shadow alone is soft all round.
   const OFF = 6000;
   const layer = (z: number, dx: number, dy: number, blur: number, spread: number, alpha: number) => (
     <div style={{ position: 'absolute', left: x0 - OFF, top: -BOARD, width: w, height: PH + BOARD * 2, borderRadius: 30,
-      boxShadow: `${OFF + dx}px ${dy}px ${blur}px ${spread}px rgba(46,16,60,${alpha})`, transform: `translateZ(${z}px)` }} />
+      boxShadow: `${OFF + dx}px ${dy}px ${blur}px ${spread}px ${col(alpha)}`, transform: `translateZ(${z}px)` }} />
   );
   return (
     <>
-      {/* WHY thrown right as well as down (about 30/70, review round six): straight down, most of it fell off the
-          bottom of the frame and what showed read as a book lying on a table. With a sliver along the right edge
-          too, and the book sitting a touch high, the soft gap between book and shadow says "floating". */}
-      {layer(-320, 70, 120, 200, 4, a * 0.55)}   {/* the wide, soft umbra far below */}
-      {layer(-110, 30, 46, 70, -4, a * 0.7)}      {/* a closer, firmer shadow that gives the book its weight */}
+      {/* WHY thrown down and right: the lamp is upper left, as on the pages; the far layer is a long soft umbra, the
+          near one gives weight, and a tight contact layer seats the boards so the gap between them reads as air */}
+      {layer(-360, 90, 140, 220, 6, A * 0.6)}
+      {layer(-120, 36, 54, 80, -4, A * 0.75)}
+      {layer(-BLOCK - 4, 10, 16, 22, -2, A * 0.5)}
     </>
   );
 };
 
-/** Floats the book above its colour field under the camera. Children are in book units (spine at x = PW). */
-export const World: React.FC<{ cam: ReturnType<typeof cameraAt>; children: React.ReactNode }> = ({ cam, children }) => {
+/** Floats the book above its colour field under the camera. Children are in book units (spine at x = PW).
+ *  `fieldO` fades the field away (the end card is beneath); `drop` lowers the shut book out of the frame (screen px). */
+export const World: React.FC<{ cam: ReturnType<typeof cameraAt>; fieldO?: number; drop?: number; children: React.ReactNode }> = ({ cam, fieldO = 1, drop = 0, children }) => {
   const t = useCurrentFrame() / FPS;
   return (
-    <AbsoluteFill style={{ perspective: PERSPECTIVE, perspectiveOrigin: '50% 46%', overflow: 'hidden', background: '#E9E1EC' }}>
-      <Field cam={cam} t={t} />
-      <div style={{ position: 'absolute', left: 960 - PW, top: 540 - PH / 2 - liftAt(cam.z), width: SW, height: PH, transformStyle: 'preserve-3d', transformOrigin: `${PW}px ${PH / 2}px`,
-        transform: `scale(${screenScale(cam.z)}) rotateX(${cam.tilt}deg) rotateZ(${cam.roll}deg) translate(${PW - cam.x}px, ${PH / 2 - cam.y}px)` }}>
-        <FloatShadow a={FIELDS[LOOK].shadowA} t={t} />
-        {children}
-      </div>
+    <AbsoluteFill style={{ perspective: PERSPECTIVE, perspectiveOrigin: '50% 46%', overflow: 'hidden' }}>
+      {fieldO > 0 && <AbsoluteFill style={{ opacity: fieldO }}><Field cam={cam} t={t} /></AbsoluteFill>}
+      <AbsoluteFill style={{ transform: drop ? `translateY(${drop.toFixed(1)}px)` : undefined, transformStyle: 'preserve-3d', perspective: PERSPECTIVE, perspectiveOrigin: '50% 46%' }}>
+        <div style={{ position: 'absolute', left: 960 - PW, top: 540 - PH / 2 - liftAt(cam.z), width: SW, height: PH, transformStyle: 'preserve-3d', transformOrigin: `${PW}px ${PH / 2}px`,
+          transform: `scale(${screenScale(cam.z)}) rotateX(${cam.tilt}deg) rotateZ(${cam.roll}deg) translate(${PW - cam.x}px, ${PH / 2 - cam.y}px)` }}>
+          <FloatShadow t={t} />
+          {children}
+        </div>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
 
-/** The light over everything: a soft warm lift from the upper left, gentle falloff, and film grain.
- *  `dim` 0..1 lowers the edges (the whisper); `warm` 0..1 lifts the light (from "wonderful"). */
-export const Lamp: React.FC<{ dim?: number; warm?: number }> = ({ dim = 0, warm = 0 }) => {
+/** The light over everything: a soft warm lift from the upper left, gentle falloff, film grain, and the band of warm
+ *  light that crosses the whole frame on "wonderful". `dim` 0..1 lowers the edges (the whisper); `warm` 0..1 lifts
+ *  the light (from "wonderful"); `o` fades the whole lamp (the end card). */
+export const Lamp: React.FC<{ dim?: number; warm?: number; o?: number }> = ({ dim = 0, warm = 0, o = 1 }) => {
   const frame = useCurrentFrame();
+  const t = frame / FPS;
   const [gx, gy] = grainShift(frame);
-  const night = LOOK === 'b';
+  const w = wipeAt(t), edge = wipeEdge(w);
+  if (o <= 0) return null;
   return (
-    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+    <AbsoluteFill style={{ pointerEvents: 'none', opacity: o }}>
       {/* WHY a gentle falloff (~10%): a heavy vignette made the whole film a dim photo of a book */}
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse 80% 85% at 48% 44%, rgba(30,12,40,0) 64%, rgba(30,12,40,0.05) 86%, rgba(24,8,32,0.11) 100%)' }} />
       <AbsoluteFill style={{ background: `radial-gradient(ellipse 70% 70% at 36% 26%, rgba(255,242,226,${0.10 + warm * 0.08}) 0%, rgba(255,242,226,0) 70%)`, mixBlendMode: 'soft-light' }} />
       {/* WHY only the edges: a whole-frame dim turned the cream page grey, which read as a rendering fault */}
-      {/* WHY three stops from 30%: a two-stop ring starting at 50% printed a visible oval on the empty page */}
-      {dim > 0 && <AbsoluteFill style={{ background: `radial-gradient(ellipse 75% 80% at 52% 46%, rgba(30,12,40,0) 30%, rgba(30,12,40,${dim * (night ? 0.12 : 0.09)}) 65%, rgba(30,12,40,${dim * (night ? 0.3 : 0.24)}) 100%)` }} />}
-      <AbsoluteFill style={{ backgroundImage: GRAIN_TILE, backgroundPosition: `${gx}px ${gy}px`, mixBlendMode: 'overlay', opacity: night ? 0.10 : 0.07 }} />
+      {dim > 0 && <AbsoluteFill style={{ background: `radial-gradient(ellipse 75% 80% at 52% 46%, rgba(30,12,40,0) 30%, rgba(30,12,40,${dim * 0.1}) 65%, rgba(30,12,40,${dim * 0.26}) 100%)` }} />}
+      {/* WHY a band of warm light rides the wipe's edge across the page too (picture plan: "a broad diagonal wipe of
+          warm light crosses the whole frame"): in a close shot the field is barely in view, so the light must be
+          seen crossing the paper itself; it is a wide, soft band, brightest just behind the edge, gone once past */}
+      {w > 0 && w < 1 && <AbsoluteFill style={{ mixBlendMode: 'screen',
+        background: `linear-gradient(to top left, rgba(255,228,206,0) ${edge - 34}%, rgba(255,230,210,0.24) ${edge - 10}%, rgba(255,236,220,0.26) ${edge - 4}%, rgba(255,228,206,0) ${edge + 16}%)` }} />}
+      <AbsoluteFill style={{ backgroundImage: GRAIN_TILE, backgroundPosition: `${gx}px ${gy}px`, mixBlendMode: 'overlay', opacity: 0.07 }} />
     </AbsoluteFill>
   );
 };
