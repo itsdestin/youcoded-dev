@@ -1,0 +1,169 @@
+{
+  "title": "Backup fixes: four small decisions left",
+  "key": "backup-fixes-questions",
+  "out": "backup-fixes.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Backup fixes: four small decisions left",
+      "intro": "The four backup bugs you approved fixing on 2026-11-18 are built and independently reviewed, and wait on a side branch for your word. While fixing them, four related things came up that change what people see. None of them blocks what is already built. This is about today's Drive and iCloud backups (Settings, Backup & sync), not the new 'chats on every device' work."
+    },
+    {
+      "id": "B-1",
+      "words": true,
+      "surface": "Settings, Backup & sync",
+      "path": "Add a backup, last step of the setup",
+      "headline": "After you add a new backup, should the setup stay open until the first copy finishes?",
+      "today": "When you finish adding a Google Drive or iCloud backup, the setup stays open while the first copy is made, then closes onto the backup list. Until now that first copy was only your settings, memory and skills, so it took seconds.",
+      "problem": "You approved making a backup copy everything at once, including conversations and project files. With that fix the first copy can take many minutes, or far longer for someone with years of chats. The setup would sit open that whole time, looking stuck.",
+      "proposal": "Choose what the setup does while that first big copy runs. The 'Sign in again' repair you approved already closes at once and shows 'Uploading...' on the backup's row, so the second option matches it.",
+      "options": [
+        {
+          "id": "close-and-show-row",
+          "label": "Close, show progress on the row",
+          "pros": [
+            "The setup closes straight away. The new backup's row says 'Uploading...' until it is done.",
+            "Same behaviour as 'Sign in again', so one thing to learn.",
+            "If the copy fails, the usual red box appears under that row with Try again."
+          ],
+          "cons": [
+            "You are not told the moment it finishes unless you look at the row.",
+            "If you quit the app during the copy, it stops and finishes on the next hourly run. Nothing is lost, but the first backup is not complete yet."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "stay-open",
+          "label": "Stay open until done",
+          "pros": [
+            "When the setup closes, you know the first backup is really complete.",
+            "Nothing to build: this is what the fixed version does now."
+          ],
+          "cons": [
+            "Can sit on one screen for many minutes with no progress bar.",
+            "People may think it froze and close the app."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B-2",
+      "words": true,
+      "surface": "Settings, Backup & sync",
+      "path": "The backup list",
+      "headline": "If the file that remembers your backups gets damaged, should the app offer a way to start fresh?",
+      "today": "One small file on your device remembers which backups you set up. If it is damaged (rare: for example the computer loses power while it is being written), the old app treated it as empty and could overwrite it. The fix now leaves a damaged file untouched, shows an empty backup list, and answers every change with: 'The saved backup settings couldn't be read, so nothing was changed.'",
+      "problem": "That is safe, but it is a dead end. There is no button to get out of it, and an empty list looks as if the backups were wiped. The copies in Drive or iCloud are fine; only the app's memory of them is unreadable.",
+      "proposal": "Choose what a person in that state gets. The app already has a precedent elsewhere: when its Claude Code settings file is unreadable it resets it by itself and says 'Your old settings are saved in a file.'",
+      "options": [
+        {
+          "id": "start-fresh-button",
+          "label": "A 'Start fresh' button",
+          "pros": [
+            "The message gains one button. It puts the damaged file aside (kept, not deleted) and gives an empty list you can add backups to again.",
+            "Nothing happens without you pressing it.",
+            "The message can say plainly that your copies in Drive or iCloud are untouched."
+          ],
+          "cons": [
+            "You add your backups again by hand (a sign-in each).",
+            "A small new piece of screen for something almost nobody will meet."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "reset-automatically",
+          "label": "Reset by itself, tell me",
+          "pros": [
+            "No dead end and no decision to make: matches how the app treats its other damaged settings file."
+          ],
+          "cons": [
+            "Backups silently stop until you notice the message and add them again.",
+            "The file also holds a few other settings; resetting without asking is how the original bug lost people's backup lists."
+          ]
+        },
+        {
+          "id": "leave-it",
+          "label": "Leave it as built",
+          "pros": [
+            "Nothing new to approve or build."
+          ],
+          "cons": [
+            "A person stuck here has to ask for help or edit a file by hand."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B-3",
+      "words": true,
+      "surface": "Settings, Backup & sync",
+      "path": "Google Drive backup, the status light",
+      "headline": "Should a Google Drive backup show a red warning when part of it failed, where today it shows green?",
+      "today": "A Drive backup copies several things. If copying your memory or settings fails, you get a red warning. If copying your encyclopedia, your own skills, your plans, or the list of conversations fails, the app ignores it: the light stays green and the log says 'completed (0 errors)'.",
+      "problem": "The backup can be incomplete while saying it is fine. Worse, Drive copies older than 30 days are cleaned up automatically, so over a month the complete old copies disappear and only the incomplete new ones remain. Nobody is told.",
+      "proposal": "Count those failures like the others. This was not built yet because it makes warnings appear that people do not see today. Yes builds it; No leaves it.",
+      "options": [
+        {
+          "id": "show-failures",
+          "label": "Yes, show them",
+          "pros": [
+            "Green means everything was copied. Red tells you something was not, with Try again.",
+            "Old complete copies are not cleaned up after a backup that was incomplete."
+          ],
+          "cons": [
+            "Some people will see a red warning on a backup that looked healthy yesterday. It was already failing; they just were not told.",
+            "If the cause is on Google's side (storage full, sign-in expired) the warning stays until they fix it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave-silent",
+          "label": "No, leave it",
+          "pros": [
+            "No new warnings."
+          ],
+          "cons": [
+            "A backup can go on being incomplete for months while showing green."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B-4",
+      "words": true,
+      "surface": "Settings, Backup & sync",
+      "path": "Warnings at the top of the app",
+      "headline": "Should the 'Extra backups are stale' warning be repaired so it can actually appear?",
+      "today": "The app has a warning written for when no extra backup has succeeded in a day: 'Extra backups are stale. Your additional cloud backups (Drive or iCloud) haven't succeeded in over 24 hours.' Because of a mistake, the clock it reads is reset after every attempt, even a failed one, so the warning can never appear.",
+      "problem": "A failed backup shows a red box once. If you dismiss it, or it gets cleared, nothing ever reminds you that backups have not worked for days.",
+      "proposal": "Reset the clock only after a backup that really succeeded. The wording stays as it is. Yes builds it; No leaves it. It is asked because it is a warning nobody sees today.",
+      "options": [
+        {
+          "id": "repair",
+          "label": "Yes, repair it",
+          "pros": [
+            "A safety net: after a full day with no successful backup you are told, even if you dismissed the first error.",
+            "It goes away by itself after the next good backup."
+          ],
+          "cons": [
+            "Someone whose laptop was simply offline for a day sees it when they come back, until the next backup runs (usually within the hour).",
+            "Someone with a long-broken backup they have been ignoring starts seeing it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave-broken",
+          "label": "No, leave it",
+          "pros": [
+            "No new warnings."
+          ],
+          "cons": [
+            "Backups can be dead for weeks with nothing on screen once the first error is gone."
+          ]
+        }
+      ]
+    }
+  ]
+}
