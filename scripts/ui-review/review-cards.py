@@ -70,6 +70,7 @@ from deck.build import build_page, save_as_built                       # noqa: E
 from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff   # noqa: E402
 from deck.gate import after_path, check_gate            # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
+from deck.shotmark import crop_shot                     # noqa: E402
 from deck.preview import can_render, preview as render_preview   # noqa: E402
 from deck.selfie import selfie as run_selfie              # noqa: E402
 from deck.serve import already_served, record, serve, wait_for_submit   # noqa: E402
@@ -171,11 +172,24 @@ def main(argv):
     sf.add_argument('--before', default='origin/master', help='the git ref to compare this worktree against')
     sf.add_argument('--out', help='where the fixture, the pictures and the review land (default: a fresh temp folder, printed)')
     sf.add_argument('--dry-run', action='store_true', help='lay the fixture out and write the review spec; check nothing out, render nothing, serve nothing')
+    # `crop-shot` cuts part of a real screenshot and keeps its "real app" label (deck/shotmark.py says why).
+    cs = sub.add_parser('crop-shot')
+    cs.add_argument('src', help='a picture taken by shoot or explore')
+    cs.add_argument('dst', help='where the cropped picture goes (usually the deck folder\'s pictures/)')
+    cs.add_argument('box', nargs=4, type=int, metavar=('LEFT', 'TOP', 'WIDTH', 'HEIGHT'), help='the part to keep, in pixels')
     pv = sub.choices['preview']
     pv.add_argument('--sizes', help='window sizes to shoot, comma separated (default 1440x900,1280x800,1024x768)')
     pv.add_argument('--themes', help="themes to shoot, comma separated (default: the deck's first two)")
     pv.add_argument('--out', help='where the pictures go (default <spec dir>/preview/<spec name>/)')
     a = ap.parse_args(argv)
+    if a.cmd == 'crop-shot':
+        try:
+            crop_shot(a.src, a.dst, a.box)
+        except (ValueError, OSError) as e:
+            print(str(e), file=sys.stderr)
+            return 1
+        print(f'wrote {a.dst} (still labelled as a real screenshot)')
+        return 0
     if a.cmd == 'walkthrough-check':
         # WHY exit 1 + `todo:` lines: close-out.sh relays them verbatim, the same shape contract-check
         # uses, so the script never reads an answers file itself.

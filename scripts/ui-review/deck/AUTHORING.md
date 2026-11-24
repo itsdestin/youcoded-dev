@@ -127,7 +127,7 @@ A words slide carrying `dev`. Served, it shows an **Open the dev window** button
 | `checked` | no | one plain sentence on how and when the Today claim was confirmed, shown behind the (i) beside "Today". State it for every Today you assert: a stale Today was the worst fault in past decks |
 | `options[]` | no | written answers; one is enough, three the most he can hold |
 | `risk` | no | the *Risk* card |
-| `picture`, `caption` | no | a file beside the spec; a question about how something looks carries one |
+| `picture`, `caption` | no | a file beside the spec; a question about how something looks carries one. It must be a **real screenshot of the app**, taken by `shoot` or `explore` (they label every picture they take; crop with `review-cards.py crop-shot <src> <dst> L T W H`, which keeps the label). A design not built yet is built roughly on your branch and photographed; a frozen copy, mockup page or edited image is refused. A deck whose pictures are of something else (this deck tool, the website, a poster) sets top-level `"not_the_app": "<what they show>"`. Topics he already answered are not re-checked |
 | `reuse` | no | see "Reuse" |
 
 Option fields: `id`, `label` (two or three words, never "(recommended)"), `pros[]` / `cons[]` (each 25 words max; one of these or `summary` required), `summary`, `measured` (a digit), `recommended` (true on at most ONE), `picture`/`caption`, `reuse`. With options he picks one, or Other; without: **Yes / No / Other**.

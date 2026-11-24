@@ -33,6 +33,15 @@ def base_spec(**over):
     return spec
 
 
+
+def shot(path):
+    """A tiny picture labelled as a real screenshot (deck/shotmark.py): question and option pictures must carry the label."""
+    from io import BytesIO
+    from PIL import Image
+    from deck.shotmark import _with_mark
+    b = BytesIO(); Image.new('RGB', (4, 4)).save(b, 'PNG')
+    open(path, 'wb').write(_with_mark(b.getvalue(), {'by': 'shoot', 'screen': 'test'}))
+
 def put(tmp, spec, name='grow.json'):
     p = os.path.join(tmp, name)
     with open(p, 'w') as f:
@@ -431,7 +440,7 @@ class Grows(unittest.TestCase):
         self.assertEqual(validate(load_spec(put(self.tmp, st)))[0], [])   # a results list is not his to change
 
     def test_an_open_visual_row_or_question_must_carry_a_picture(self):
-        open(os.path.join(self.tmp, 'p.png'), 'wb').write(b'\x89PNG')
+        shot(os.path.join(self.tmp, 'p.png'))
         more = {'change': 'Different.'}
         st = base_spec(); st['steps'][1] = self.rows_step(calls=[{'id': 'r1', 'call': 'Fine.', 'why': 'Fine.', 'more': more, 'visual': True}])
         self.has(validate(load_spec(put(self.tmp, st)))[0], 'L-1/r1: this row is flagged visual but has no picture')
@@ -450,7 +459,7 @@ class Grows(unittest.TestCase):
 
     # ── round 15: a pick between PICTURES (options that each carry a picture) works in a growing deck, open and answered ──
     def pictured(self, **kw):
-        open(os.path.join(self.tmp, 'a.png'), 'wb').write(b'\x89PNG'); open(os.path.join(self.tmp, 'b.png'), 'wb').write(b'\x89PNG')
+        shot(os.path.join(self.tmp, 'a.png')); shot(os.path.join(self.tmp, 'b.png'))
         st = question('Q-1', 'Which look?', visual=True, **kw)
         st['options'][0].update(picture='a.png', caption='The first look.'); st['options'][1].update(picture='b.png', caption='The second look.')
         return st

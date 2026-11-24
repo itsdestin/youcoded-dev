@@ -33,6 +33,7 @@ import { mergeManifest, readManifest } from './manifest.mjs';
 import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
 import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES } from './themes.mjs';
 import { FREEZE } from './freeze.mjs';
+import { markShot } from './shotmark.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -303,7 +304,9 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     await tab.still(500);
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
-    r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
+    r.file = join(dir, `${theme}.png`);
+    // WHY the label (shotmark.mjs): a deck accepts a design picture only when it proves it is the real app.
+    writeFileSync(r.file, markShot(png, { by: 'shoot', screen: screen.name, theme }));
     // --page: the same screen as one still web page beside its picture, for a deck's
     // edit-the-words-in-place step (freeze.mjs says why). A failure here is reported on the
     // record and does not cost the picture.
