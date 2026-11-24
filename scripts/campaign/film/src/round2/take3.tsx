@@ -34,8 +34,10 @@ const linear = (x: number) => x;
 //   bar 2 -- the correction
 //   strike 1        2.500  (beat 4)     the marker hits "nothing." (downbeat of bar 2), pen lifts 2.68
 //   strike 2        2.8125 (beat 4.5)   the quicker pass back, pen lifts 2.98
-//   hand writes     3.125  (beat 5)     "everything." written below, full stop tapped ~3.90
-//   dissolve        4.375  (beat 7)     dark page eases to light across one whole beat, ending on beat 8
+//   hand writes     3.125  (beat 5)     "everything." written below
+//   full stop       3.750  (beat 6)     the pen taps the full stop
+//   dissolve        4.375  (beat 7)     the dark page's words fade out (fastest on beat 7, gone by 4.69),
+//                                       while the field turns light at an even rate, finishing on beat 8
 //   bar 3 -- the answer
 //   own your data.  5.000  (beat 8)     downbeat of bar 3, first line on the light page
 //   intelligence.   5.625  (beat 9)
@@ -53,11 +55,12 @@ export const T3 = {
   // fast hand. The two strokes sit on the beat and the half-beat, so the pen's rhythm is the music's.
   strike1: [b(4), b(4) + 0.18] as const,                          // the marker hits "nothing."
   strike2: [b(4.5), b(4.5) + 0.17] as const,                      // the second, quicker pass back the other way
-  // WHY the hand's own pace is unchanged (0.78 s with the full stop): handwriting faster than that stops
-  // looking like a person. Starting on beat 5 it finishes ~3.90, and the correction is read through beat 7.
+  // WHY the hand takes exactly one beat (0.54 s of writing, a 0.085 s lift, then the tap ON beat 6, 3.75 s):
+  // at 0.78 s the tap fell at 3.83, 89 ms after a note of the music's figure, so the two clicks smeared
+  // (critic, round 8). 0.54 s is still a person's pace; the correction is read from beat 6 through beat 7.
   write: b(5),
   // WHY one whole beat, beat 7 to beat 8: the 5-frame dissolve read as a flash that broke the pulse; a beat-long
-  // ease is a page turn the music can carry, and the light page's first words land on the bar's downbeat.
+  // turn is a page turn the music can carry, and the light page's first words land on the bar's downbeat.
   dissolve: b(7),
   data: b(8), intelligence: b(9), software: b(10), everything: b(11),
   // WHY the name one beat after "everything." like every other line: it lands on the downbeat of the last bar,
@@ -186,8 +189,9 @@ const penCurve = (x: number) => {
 // ---------- the handwriting ----------
 // Relative time each letter takes the hand (loops and descenders are slower than a straight v or r).
 const LETTER_TIME: Record<string, number> = { e: 1, v: 0.85, r: 0.75, y: 1.35, t: 0.9, h: 1.2, i: 0.55, n: 1, g: 1.45 };
-const SWEEP = 0.76 * 0.8;            // seconds for "everything" without the full stop
-const STOP_AFTER = 0.1;       // the pen lifts, then taps the full stop (Caveat's bold i has no dot to add)
+// WHY SWEEP + STOP_AFTER = one beat (0.625 s): the full stop is tapped on beat 6 (see T3.write)
+const SWEEP = 0.54;           // seconds for "everything" without the full stop
+const STOP_AFTER = 0.085;     // the pen lifts, then taps the full stop (Caveat's bold i has no dot to add)
 type Measure = { w: number; xs: number[] };   // text width and each letter's left edge, in unrotated px
 /** "everything." written on in Caveat, exactly where and how the poster sets it. The real text is revealed by a
  *  soft-edged, slanted wipe that follows a hand's rhythm letter by letter, and the full stop is tapped last.
@@ -288,7 +292,13 @@ const Struck: React.FC<{ size: number; anchorRight?: boolean }> = ({ size, ancho
 // WHY 0.25 s now (half the shared 0.5 s entrance): with the longer entrance a 0.1 s lead left frame 0 at ~60%
 // opacity; at half the entrance the line is ~97% in on frame 0 and its last settle still lands on beat 0.
 const FIRST_LEAD = 0.25;
+// WHY the dark page's words leave first, on beat 7, over half a beat (EASE_OUT: fastest on the beat itself):
+// fading only the whole scene left the white words showing through the brightening field as a pale ghost on
+// the light page (frames 147-149 of the first 96 BPM render). Gone by beat 7.5, they never meet the light.
+const WORDS_OUT = BEAT / 2;
 const Nothing: React.FC = () => {
+  const frame = useCurrentFrame();
+  const out = 1 - ramp(frame, T3.dissolve, T3.dissolve + WORDS_OUT, EASE_OUT);
   const { wide, m, mt, size } = useLayout();
   const row = rowStyle(size, C.nightText);
   // WHY the room under the struck line is there from the first frame (was: opened by a reflow during the second
@@ -298,7 +308,7 @@ const Nothing: React.FC = () => {
   const open = 1;
   return (
     <AbsoluteFill><Wash dark />
-      <div style={{ position: 'absolute', left: m, right: m, top: mt }}>
+      <div style={{ position: 'absolute', left: m, right: m, top: mt, opacity: out }}>
         {wide ? (<>
           <div style={{ ...row, marginBottom: GAP * size * open }}>
             <Arrive at={T3.youllOwn - FIRST_LEAD}>you'll own</Arrive><span style={{ display: 'inline-block', width: 0.26 * size }} />
@@ -332,7 +342,10 @@ const AddLine: React.FC<{ text: string; at: number; next?: number }> = ({ text, 
   // WHY the drain is exactly one beat, from the next line's arrival to the one after it (Destin, 2026-11-20:
   // "i think it could be smoother"): the accent is handed over across a whole beat, never two words mid-fade at
   // once, and it starts and ends on the grid like everything else. `next` absent: the closer stays purple.
-  const settle = next == null ? 0 : ramp(frame, next, next + BEAT, EASE_IN_OUT);
+  // WHY EASE_OUT (was EASE_IN_OUT): an ease-in-out puts the fastest colour change mid-beat, so on the light
+  // page the eye saw movement on every half-beat while bar 1 moves only on beats (critic, round 8). EASE_OUT
+  // makes most of the change WITH the next line's arrival, then lets it settle across the beat.
+  const settle = next == null ? 0 : ramp(frame, next, next + BEAT, EASE_OUT);
   return <div style={{ opacity: e.opacity, transform: `translateY(${e.y}em)`, color: interpolateColors(settle, [0, 1], [C.purple, C.plum]) }}>{text}</div>;
 };
 /** The poster's foot (posters.tsx `Foot`, light): icon + name, then the address and platforms. */
@@ -345,17 +358,20 @@ const Foot: React.FC<{ u: number; row: boolean }> = ({ u, row }) => (
     </div>
   </div>
 );
+// WHY the light page's first line starts 0.05 s (1.5 frames) early, as FIRST_LEAD does for frame 0: started
+// exactly on 5.0 the frame on the downbeat was an empty light page; now it already shows the words arriving.
+const PAGE_LEAD = 0.05;
 const OwnAll: React.FC = () => {
   const frame = useCurrentFrame();
   const { wide, u, m, mt, mb, allSize } = useLayout();
-  const own = entrance(frame, T3.data);
+  const own = entrance(frame, T3.data - PAGE_LEAD);
   const foot = entrance(frame, T3.end);
   return (
     <AbsoluteFill><Wash />
       <div style={{ position: 'absolute', left: m, right: m, top: mt, ...rowStyle(allSize, C.plum) }}>
         {/* WHY the same entrance as the noun under it: the two arrive together and must move alike */}
         <div style={{ opacity: own.opacity, transform: `translateY(${own.y}em)` }}>own your</div>
-        {LINES.map((l, i) => <AddLine key={l.text} text={l.text} at={l.at} next={LINES[i + 1]?.at ?? T3.everything} />)}
+        {LINES.map((l, i) => <AddLine key={l.text} text={l.text} at={i === 0 ? l.at - PAGE_LEAD : l.at} next={LINES[i + 1]?.at ?? T3.everything} />)}
         {/* WHY the closer uses the shared entrance (was a letter-by-letter wave over ~1 s): a third kind of
             arrival broke the pulse and kept the headline moving into the name's beat. Its emphasis is the purple
             it keeps, as on the poster. */}
@@ -377,10 +393,13 @@ const OwnAll: React.FC = () => {
 // night. The new scene's text is held back until `from` (see `onBeat`), so only the colour field dissolves
 // and the words still change exactly on the beat.
 // WHY the dissolve now runs from T3.dissolve to `from` (one whole beat, ~19 frames, was 5): see T3.dissolve.
+// WHY LINEAR (was EASE_IN_OUT): the ease packed the dark-to-light change into frames 137-145, peaking at 4.70 s,
+// half a beat before the music's lift on 5.0 (critic, round 8). At an even rate there is no mid-beat peak: the
+// field simply arrives on beat 8, where the first words and the music land.
 const Scene: React.FC<{ from: number; to: number; dissolve?: number; children: React.ReactNode }> = ({ from, to, dissolve, children }) => {
   const frame = useCurrentFrame();
   const start = dissolve == null ? Math.round(from * FPS) : Math.floor(dissolve * FPS);
-  const o = dissolve == null ? 1 : interpolate(frame, [dissolve * FPS, from * FPS], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE_IN_OUT });
+  const o = dissolve == null ? 1 : interpolate(frame, [dissolve * FPS, from * FPS], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: linear });
   return (
     <Sequence from={start} durationInFrames={Math.round(to * FPS) - start} layout="none">
       <AbsoluteFill style={{ opacity: o }}>
