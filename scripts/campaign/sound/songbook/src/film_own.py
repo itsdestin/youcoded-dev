@@ -1,114 +1,88 @@
-"""Own everything, the 10 s cut (take3.tsx at 112fcd2cf): one quiet idea, one turn, the logo.
+"""Own everything, the 10 s cut (take3.tsx at 172108ad5, one even 96 BPM grid): round 8.
 
-SECOND PASS (round 7 critics). What changed and why, in one line each:
-  * 120 BPM, the picture's own grid (was 134 with a fermata): every bar line, the strike and the
-    lines of type now share one pulse; no more 0.2-0.3 s near misses.
-  * bar 1 is quieter and nothing sits above the tune (no held strings in bar 1; was a viola C4 over
-    Bb3). Measured: bar 1 -20.1 LUFS, bar 3 -16.7 (was -18.2 and -17.7).
-  * the turn is clean: no G major any more (its B natural rubbed against the bright chord's
-    B-flat). Bar 2 moves F minor 7 -> C minor over G, so the strings step C -> B-flat into E-flat
-    over the same bass G; nothing a semitone apart rings across 4.0.
-  * no restruck chord in the pause (into="breath", not "hold"), no sigh in the ending, the quiet
-    logo (no plucked doublings, no low answer after the name), so the logo lands -0.3 dB against
-    the peak bar and the bar-1 cell is not played again under the name.
-  * the bass climb G, A-flat is played an octave up (G2, Ab2) so a phone can hear it.
+WRITTEN AFRESH from the owner's words on round 7: "animation timing and music in own everything
+feel very odd/choppy/inconsistent", and earlier, "the music should be a little more subtle".
+Round 7's notes showed why: 4 of its 6 tune notes stood alone, the bed was silent for bar 1's
+last 4 beats, the level moved 11.7 dB within a second. The picture now runs on one even beat, so
+the music is one unbroken, even phrase on that same beat.
 
-THE PLAN (the picture is type only, stark night turning to bright day; 120 BPM: a beat is 0.5 s)
+TEMPO: 96 BPM, the picture's own. Every line of type, the strike, the hand and the name land on
+its beats (0.625 s each); four bars are exactly 10.0 s and the name arrives on beat 12 (7.5 s).
 
-  Spotting. Feeling changes, not words: (a) 0-2.0 the lie, deadpan; (b) 2.0-3.3 the lie is struck
-  and corrected by hand (the music steps back, the pen speaks); (c) 4.0-4.25 the page goes bright,
-  "own your data." = THE TURN and the start of the payoff; (d) 4.25-6.5 the four "own your" lines,
-  the payoff passage, its top note at 5.0 = THE PEAK (Piece.peak); (e) 6.5 "everything." settles
-  inside a held breath; (f) 7.75 the name = the logo. 10.0 end.
+THE FOUNDATION: one soft piano figure in even eighths ("b 2 3 2 4 2 3 2": a low bass held under
+chord tones rocking upward from G3), 3.2 notes a second, from the first frame to the turn into
+the name. It never changes pattern; only its chords move, one per bar.
 
-  Beats to the name: 7.75 s x 2 = 15.5 = 3 bars (12) + a 1.5-beat breath + the 2-beat short ending.
+  bar  seconds    picture                                  chord     on top of the figure
+  1    0.0-2.5    the lie: you'll own / nothing. /         C minor 7 the cell, once, as three words:
+                  and you'll / be happy. (beats 0-3)                 B-flat 0.0, G 0.625, F 1.25 (held)
+  2    2.5-5.0    strike 2.5 and 2.81, the hand writes     F minor 7 held strings enter far under the
+                  3.125-3.83, dissolve 4.375-5.0                     pen and the dissolve (the figure goes on)
+  3    5.0-7.5    own your data. / intelligence. /         A-flat,   the ending bar: the sigh C6 on the
+                  software. / everything. (beats 8-11)     B-flat    bright page (the peak, 5.0 s), B-flat,
+                                                           sus       the logo's pick-ups on "everything."
+  4    7.5-10.0   the name (beat 12), still poster         E-flat    the quiet logo: F lands on the name
 
-  bar  seconds    picture                      harmony               tune (how it is changed)              texture / level (bar LUFS)
-  1    0.0-2.0    the lie, four lines          C minor (open C, G)   the cell an octave LOW in the lie's    piano alone, one soft open
-                                                                     own speech rhythm: Bb3 0.0, G4 0.75,   fifth on the downbeat;
-                                                                     F4 1.0 (on "you'll own", "and you'll", -20.1
-                                                                     "be happy."), flat touch: deadpan
-  2    2.0-4.0    strike 2.0 / 2.25, the hand  F minor 7 | C minor   rests: the pen speaks                  the piano's sparse pulse,
-                  writes 2.5-3.3               over G at 3.0                                                held strings enter far
-                                                                                                            under the pen; -21.7,
-                                                                                                            the valley
-  3    4.0-6.0    page bright 4.08-4.25,       E-flat over G |       the cell a step higher and an octave   rolling piano (half its
-                  own your data 4.25,          A-flat at 5.0         up, in a NEW, wider rhythm that takes  notes, upper octave), the
-                  intelligence 5.0,            (the bass climbs      one line each: C5 4.25, Ab5 5.0 (the   strings carry on, air and
-                  software 5.75                G2 -> Ab2)            top note, the peak), G5 5.75 (softer:  a trimmed sub arrive;
-                                                                     the sigh resolves down, not up)        -16.7
-  br   6.0-6.75   "everything." 6.5            A-flat rings          G5 held over the A-flat (its major     nothing new struck: the
-                                                                     seventh), no new attack                closer arrives into space
-  end  6.75-7.75  "everything." settles        B-flat sus (soft)     the logo's pick-ups B-flat 7.25,       quiet logo: softer touch,
-       7.75       the name                     E-flat                G 7.5, F landing on 7.75               no doublings, no answer;
-                                                                                                            -15.7 (logo -0.3 dB vs peak)
-
-  The cell climbs through the film: Bb3-G4-F4 (low, minor, the lie) -> C5-Ab5-G5 (a step higher, an
-  octave up, bright, stretched) -> Bb4-G5-F5 (the logo, home). Three hearings with the logo, each
-  in its own rhythm (1.5/0.5/2, 1.5/1.5/held, the logo's quick pick-ups). Not a bookend: the low
-  answer that would echo bar 1 after the name is gone (logo="quiet").
-  The bass climbs: C (bar 1), F, G (bar 2 at 3.0), G held into bar 3 (the common tone of the
-  turn), A-flat, B-flat (ending), E-flat (the name). No borrowed chord: in 10 s the one colour
-  change that matters is minor to major over the same G.
-  The strings voice-lead by step from 2.0: (Eb3 Ab3 C4) -> (Eb3 G3 C4) at 3.0 -> (Eb3 G3 Bb3) at 4.0
-  -> (Eb3 Ab3 C4) at 5.0.
+Layers: two at a time (the figure and the tune, or the figure and the held strings); three only
+in bar 3 (figure, strings, the sigh). No sub, no air, no answer, no plucked strings, no synth.
+The lift is the one colour change (minor to major as the page turns light), the strings under it
+and the sigh's top note; never a jump in level.
 """
 import numpy as np
 from scipy import signal as sg
 
 from dsp import SR
 from films import Film, place_effect, soften
-from motif import motif, write, rest
+from motif import write
 from score import Piece, Section as S
 
-BPM = 120.0          # WHY 120: the editor cut every hit on a 120 BPM grid (take3.tsx); the music keeps it
+BPM = 96.0           # WHY 96: the picture editor put every hit on one 96 BPM grid (take3.tsx, 172108ad5)
+BEAT = 60.0 / BPM    # 0.625 s
 
-# WHY this rhythm (1.5, 0.5, 2): it is the lie's own speech rhythm, so the three notes land exactly
-# on "you'll own", "and you'll" and "be happy." (0.0, 0.75, 1.0) instead of 0.1-0.15 s off them.
-# Touch: flat and soft (the lie read out without inflection; a looping feed restarts on it).
-cell_low = motif("signature").octave(-1).rhythm([1.5, 0.5, 2]).touch(0.8, 0.78, 0.68)
-# WHY a step higher, an octave up and stretched (1.5, 1.5): the same three words said brightly and
-# with room, one note per line of type (4.25, 5.0, 5.75); the G5 is touched softer than the A-flat
-# because a sigh resolves down, and it ends on the bar line so it rings through the breath.
-cell_bright = motif("signature").up(1).rhythm([1.5, 1.5, 0.5]).shift(0.5).touch(1.0, 0.9, 0.74)
+# WHY one figure for the whole film, in eighths: "one unbroken, even phrase". A bass held under
+# chord tones that rock up and back is the plainest continuous pulse; 3.2 notes a second at 96.
+FIG = "b 2 3 2 4 2 3 2"
+
+# WHY these three notes on beats 0, 1, 2: the brand's cell (B-flat, G, F) said once, one note per
+# line of type ("you'll own", "nothing.", "and you'll"), so the words and the tune share one beat.
+# The F holds under "be happy." The logo is its second and last hearing.
+CELL = write("Bb4/1 G5/1 F5/2")
+
+COMMON = dict(bpm=BPM, accomp="figure", figure=FIG, fig_floor="G3", fig_touch=0.30,
+              # WHY no sub, air, answer, pizz or synth: two layers is the norm; each of these is
+              # another group (or, for air, the 4 kHz+ energy that made thin bars bright)
+              pedal=True, into="flow")
 
 PIECE = Piece(
-    "own-everything-10s", 10.0, land=7.75, peak=5.0, seed=7, loudness=-17.0,
-    ending="short", rit=1.0, logo="quiet", mix={"sub": -3.0, "air": 3.0},
-    notes="Own everything, 10 s at the picture's 120 BPM: the cell low in the lie's speech rhythm, F minor "
-          "and C minor over G under the pen, the same bass G opening into E-flat as the page turns bright, the cell a step "
-          "higher one note per line, a held breath under 'everything.', the quiet logo on the name at 7.75 s.",
+    "own-everything-r8", 10.0, land=7.5, peak=5.0, seed=8, loudness=-17.0,
+    # WHY rit=1.0: the ending keeps the picture's grid, so the pick-ups and the name stay on beats
+    ending="sigh", rit=1.0, logo="quiet",
+    # WHY touch 0.85: "subtle" and round 7's "busy/harsh" ruling across the films; the tune 2 dB
+    # under its usual level because in a bed it is one voice of two.
+    # WHY tone only -1: at -2 the 4 kHz+ energy measured -37.6 dB of the whole (the guide calls
+    # below about -36 muffled); the sub 3 dB down keeps 40-80 Hz weight without a boom
+    touch=0.85, tone=-1.0, mix={"lead": -2.0, "sub": -3.0},
+    notes="Own everything, round 8, at the picture's 96 BPM: one even eighth-note piano figure from the first "
+          "frame to the name, C minor 7 under the cell said once with the first three lines, F minor 7 with "
+          "far held strings under the pen, A-flat to B-flat sus as the page turns light with the sigh on "
+          "'own your data.', the logo's pick-ups on 'everything.' and the quiet logo on the name at 7.5 s.",
     sections=[
-        # WHY held and sub dropped in bar 1: nothing above the low cell (top-voice), nothing heavy
-        # under it (phone-low). vary "thin": the piano keeps only its downbeat (C2, G2 and the G3
-        # pulse) so the cell is said over one soft open fifth, deadpan; shape 0.62 keeps it about
-        # 2-3 dB under the bright page.
-        S("stark", 1, bpm=BPM, tune=[cell_low], chords=[["Cm"]],
-          drop=("held", "sub"), lead=0.8, vary={1: "thin"}, into="flow",
-          # WHY the step back to 1.0 at the very end: a section's shape is held one beat past its
-          # end and then eased back to 1.0 (blocks.Dyn), multiplying the next section's own shape;
-          # ending at 1.0 keeps bar 1's 0.62 out of the strike bar
-          shape=[(0, 0.62), (3.95, 0.62), (4.0, 1.0)],
-          label="the lie"),
-        # WHY a section of its own for the strike (same mood, same speed, so it simply flows on at
-        # 2.00, the strike's downbeat): the held strings may enter here, far under the pen, as a
-        # quiet bed that carries straight through the turn, so the bright page blooms out of a
-        # sound instead of jumping out of silence. Their voices move by step: F minor 7, then C minor
-        # over G at 3.0, then E-flat over the same G at 4.0 (C falls to B-flat, nothing a semitone
-        # apart). WHY Cm/G, not G major: no B natural against the coming B-flat, and the bass G is
-        # already the common tone of the turn.
-        S("stark", 1, bpm=BPM, tune=[rest(1)], chords=[["Fm7", "Cm/G"]],
-          drop=("sub",), lead=0.8, into="flow", shape=[(0, 0.4), (2, 0.55), (4, 0.5)],
-          label="struck and corrected"),
-        # WHY into="breath" (not "hold"): a hold restrikes the chord at 6.0 where nothing happens on
-        # screen; a breath lets the A-flat chord and the G5 ring, so "everything." lands in space.
-        # WHY bass written G2 Ab2 (an octave above the roll's G1): the climb must be heard on a phone.
-        # WHY air and sub kept (sub trimmed 3 dB, air +3 in Piece.mix): without them the mix fails its
-        # band checks (no air above 8 kHz, nothing at 40-80 Hz); they arrive with the white page.
-        S("hopeful", 1, bpm=BPM, tune=[cell_bright], chords=[["Eb/G", "Ab"]],
-          accomp="rolling", density=0.5, register=12, lead=0.95,
-          bass=write("G2/2 Ab2/2"), into="breath", hold=1.5, shape="grow",
-          label="the page turns bright"),
+        S("hopeful", 1, tune=[CELL], chords=[["Cm7"]], drop=("held", "sub", "air", "answer"),
+          # WHY 4 dB down (the tune makes this bar about 1.7 dB fuller than bar 2 at the same level):
+          # the lie is the quietest bar, so the light page can lift by a staged
+          # 2-3 dB (strings in bar 2, the major chord and the sigh in bar 3), never a switch
+          lead=0.85, level_db=-4.0, label="the lie: figure and the cell", **COMMON),
+        # WHY Fm7 then Cm/G (half a bar each): the bass steps F, G, then A-flat into the light page,
+        # and a short film still needs a third chord (chords-distinct); Cm/G, not G major, so no
+        # B natural rubs against the coming B-flat sus
+        # WHY the sub kept here (and so in the ending): without it the 40-80 Hz band sat 12.4 dB
+        # under the whole (the mix check allows 12); it fades in over the bar, under the pen,
+        # and it is weight, not a part (layers does not count it)
+        S("hopeful", 1, tune=None, chords=[["Fm7", "Cm/G"]], drop=("air", "answer"),
+          # WHY a 1.5 s ramp centred on the bar line: the default 3 s ramp began at 1.0 s, so bar 1
+          # and bar 2 measured within 0.6 dB (loudness-range); this keeps the lie quieter for its
+          # whole bar and rises under the strike (2.0-3.5 s), one step of the staged lift
+          ramp=1.5, label="the pen: figure and far strings", **COMMON),
     ])
 
 
@@ -165,28 +139,37 @@ def _tap(seed):
     return _felt(env / env.max(), seed, body_hz=700.0, bright=2400.0)
 
 
+# WHY these times: take3.tsx T3 at 172108ad5. Strikes on beat 4 (2.5 s, 0.18 s long) and beat 4.5
+# (2.8125 s, 0.17 s); the hand starts on beat 5 (3.125 s), writes "everything" in SWEEP = 0.608 s,
+# lifts for STOP_AFTER = 0.1 s and taps the full stop.
+STRIKE1, STRIKE2, WRITE = 4 * BEAT, 4.5 * BEAT, 5 * BEAT
+SWEEP, STOP_AFTER = 0.76 * 0.8, 0.1
+
+
 def effects(music, plans, piece):
     out = np.zeros_like(music)
     rows = []
     # WHY -11 dB (the guide's range is 8-12 under the music): the owner asked for this film to be
-    # subtle, and the pen must be felt more than heard; the strike is the loudest of the three
-    for t0, t1, seed, rel, what in ((2.00, 2.18, 11, -10.0, "strike 1 through 'nothing.'"),
-                                    (2.25, 2.42, 12, -11.5, "strike 2, back the other way")):
-        n = int((t1 - t0 + 0.04) * SR)
+    # subtle, and the pen must be felt more than heard; the strike is the loudest of the three.
+    # The figure carries on under all of it (the music never stops for the pen).
+    for t0, dur, seed, rel, what in ((STRIKE1, 0.18, 11, -10.0, "strike 1 through 'nothing.'"),
+                                     (STRIKE2, 0.17, 12, -11.5, "strike 2, back the other way")):
+        n = int((dur + 0.04) * SR)
         x = soften(_felt(_ease_speed(n), seed, body_hz=950.0), 4000.0)
         r = place_effect(out, x, t0, music, rel)
         rows.append(dict(r, what=what))
-    n = int(0.608 * SR)                     # take3.tsx SWEEP: 0.76 * 0.8 s for "everything"
+    n = int(SWEEP * SR)
     x = soften(_felt(_letters_speed(n), 21, body_hz=1300.0), 4000.0)
-    rows.append(dict(place_effect(out, x, 2.50, music, -12.0), what="'everything' written"))
+    rows.append(dict(place_effect(out, x, WRITE, music, -12.0), what="'everything' written"))
     x = soften(_tap(31), 3500.0, dot=True)
-    rows.append(dict(place_effect(out, x, 2.50 + 0.608 + 0.1, music, -14.0), what="the full stop"))
+    rows.append(dict(place_effect(out, x, WRITE + SWEEP + STOP_AFTER, music, -14.0), what="the full stop"))
     return out, rows
 
 
 FILM = Film(
-    "own-everything-10s", PIECE, effects=effects, copy_to=None,
-    picture=[(0.0, "you'll own"), (0.25, "nothing."), (0.75, "and you'll"), (1.0, "be happy."),
-             (2.0, "strike 1"), (2.25, "strike 2"), (2.5, "everything. (written)"), (3.21, "full stop"),
-             (4.08, "dissolve to day"), (4.25, "own your data."), (5.0, "intelligence."), (5.75, "software."),
-             (6.5, "everything."), (7.75, "youcoded (name)"), (10.0, "end")])
+    "own-everything-r8", PIECE, effects=effects, copy_to=None,
+    picture=[(0 * BEAT, "you'll own"), (1 * BEAT, "nothing."), (2 * BEAT, "and you'll"), (3 * BEAT, "be happy."),
+             (STRIKE1, "strike 1"), (STRIKE2, "strike 2"), (WRITE, "everything. (written)"),
+             (WRITE + SWEEP + STOP_AFTER, "full stop"), (7 * BEAT, "dissolve to day (one beat)"),
+             (8 * BEAT, "own your data."), (9 * BEAT, "intelligence."), (10 * BEAT, "software."),
+             (11 * BEAT, "everything."), (12 * BEAT, "youcoded (name)"), (10.0, "end")])
