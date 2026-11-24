@@ -6,6 +6,7 @@ WHY every piece here pins style="v1" (2026-11-23): these are what the owner has 
 defaults (blend hand-over, listening answer) would change them. They are proofs of the blocks,
 not models of composition: most fail the composition checks, and that is reported, not hidden.
 """
+from motif import write
 from score import Piece, Section as S
 
 DEMOS = [
@@ -64,6 +65,35 @@ DEMOS = [
             S("playful", 8, tune=["phrase1", "phrase2"], bpm=116, add=("held",), label="playful"),
             S("triumphant", 4, tune="phrase2", bpm=100, add=("answer",), lift=True,
               label="triumphant"),
+        ]),
+    # WHY this example (round 8, 2026-11-24): the worked example of the steady-first guide. One
+    # even piano figure runs from the first beat to the logo; the chords change every two bars;
+    # the held strings enter at bar 5 and stay; the tune comes ONCE, as a phrase, over bars 9-11;
+    # the figure's register opens across bars 13-16 for the one lift. Two groups most of the time,
+    # three while the tune sings. It is written to pass every check, so a composer can copy it.
+    Piece(
+        "example-bed", 36.0, seed=17, peak=24.0, logo="quiet", loudness=-16.0, touch=0.85,
+        # WHY the tune 2 dB under its usual level: in a bed it is one voice among two, not a soloist
+        mix={"lead": -2.0},
+        notes="The steady bed: an even eighth-note piano figure under chords that change every two bars, "
+              "held strings entering at 8 s, the tune once as a phrase at 16 s, the figure opening upward "
+              "for the lift at 24 s, the quiet logo.",
+        sections=[
+            S("hopeful", 4, bpm=120, accomp="figure", figure=["b 2 3 2 4 2 3 2", "b 2 3 2 4 3 2 3"],
+              pedal=False, chords=[["Eb"], ["Eb"], ["Cm7"], ["Cm7"]], drop=("air", "held", "sub"),
+              level_db=-2.0, into="flow", label="the figure alone"),
+            S("hopeful", 4, bpm=120, accomp="figure", figure=["b 2 3 2 4 2 3 2", "b 2 3 2 4 3 2 3"],
+              pedal=False, chords=[["Abmaj7"], ["Abmaj7"], ["Bbsus"], ["Bb"]], drop=("air", "sub"),
+              level_db=-1.0, into="flow", label="strings join"),
+            S("hopeful", 4, bpm=120, accomp="figure", figure=["b 2 3 2 4 2 3 2", "b 2 3 2 4 3 2 3"],
+              tune=[write("Bb4/1 G5/1 F5/2 | Eb5/1 F5/1 G5/1 Ab5/1 | G5/3 r/1 | r/4")],
+              pedal=False, chords=[["Eb"], ["Ab/C"], ["Eb/G"], ["Bbsus"]], drop=("air", "sub"),
+              lead=0.85, level_db=-0.5, into="flow", label="the tune, once"),
+            S("hopeful", 4, bpm=120, accomp="figure", figure=["b 2 3 2 4 2 3 2", "b 2 3 4 5 4 3 2"],
+              fig_floor=("G3", "C4"), tune=[write("r/2 Eb5/1 F5/1 | G5/2 Ab5/1 Bb5/1 | G5/4 | r/4")],
+              pedal=False, chords=[["Abmaj7"], ["Cm7"], ["Abmaj7"], ["Bbsus"]], drop=("air",),
+              # WHY level and shape both: the one lift is +2-3 dB over two bars, never a switch
+              lead=0.9, level_db=1.5, ramp=3.0, ramp_at="after", shape=[(0, 1.0), (16, 1.12)], label="the lift"),
         ]),
     Piece(
         "example-piano-ending", 16.0, style="v1", logo="piano", seed=13,

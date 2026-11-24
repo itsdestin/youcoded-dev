@@ -21,6 +21,7 @@ The films below pin style="v1": they are what the owner has already heard, byte 
 """
 import json
 import os
+import re
 import shutil
 from dataclasses import dataclass, field
 from typing import Optional
@@ -417,6 +418,40 @@ def speech_from_words(path, t_from, t_to=None, start_at=0.0, gap=0.2):
     out.source = (path, t_from, t_to, start_at)
     out.words = [(w["w"], round(w["start"] - t_from + start_at, 3), round(w["end"] - t_from + start_at, 3)) for w in words]
     return out
+
+
+def _syllables(word):
+    """Syllables in an English word, counted from its vowel groups (a silent final e dropped).
+    Good to about 10 % over a sentence, which is all a tempo needs."""
+    s = re.sub(r"[^a-z]", "", word.lower())
+    n = len(re.findall(r"[aeiouy]+", s))
+    if s.endswith("e") and not s.endswith(("le", "ee")) and n > 1:
+        n -= 1
+    return max(1, n)
+
+
+def speech_pace(speech, t0=None, t1=None):
+    """HER PACE, for choosing the tempo (round 8). `speech` = speech_from_words(...) (it carries
+    her words). Returns syllables a second while she speaks (pauses of 0.2 s or more left out),
+    the seconds per syllable, and the tempo whose BEAT is two syllables (her stressed-syllable
+    rate in English): the pulse to write under her, with its eighths at her syllable rate.
+    WHY: round 7's storybook ran at 68.6 bpm under a narrator speaking 4.6 syllables a second
+    (stresses every 0.42 s, about 140 bpm); the owner: "the music is very slow/steady, while the
+    narrator is fast fast". Measured on take1-lily 0-37.9 s: 4.6 syl/s, 0.22 s, 138 bpm."""
+    words = [w for w in getattr(speech, "words", []) if (t0 is None or w[1] >= t0) and (t1 is None or w[1] < t1)]
+    if not words:
+        return None
+    talk, spans = 0.0, []
+    for _, a, b in words:
+        if spans and a - spans[-1][1] < 0.2:
+            spans[-1][1] = b
+        else:
+            spans.append([a, b])
+    talk = sum(b - a for a, b in spans)
+    syl = sum(_syllables(w) for w, _, _ in words)
+    rate = syl / max(talk, 1e-6)
+    return dict(syllables=syl, speaking_s=round(talk, 2), syl_per_s=round(rate, 2), syl_s=round(1 / rate, 3),
+                bpm=round(60 * rate / 2, 1))
 
 
 def resolve(names):

@@ -43,7 +43,7 @@ def one(piece, extra_fn=None, path=None):
     """Render, master, write and measure one piece. `extra_fn(x_premaster, plans)` may return
     extra audio (a film's sound effects) to add before the final limiter."""
     raw, band, plans, gains = render(piece)
-    xm = X.premaster_music(raw, plans)
+    xm = X.premaster_music(raw, plans, piece)
     extra = extra_fn(xm, plans) if extra_fn else None
     y = X.finish_piece(xm, piece, extra)
     path = path or os.path.join(OUT, f"{piece.name}.wav")
@@ -104,7 +104,9 @@ def mix_tests(v, mo=None, loudness=-14.0):
         ("no noise-like (drum-like) attack" + (f" (noisiest {at['noisiness_max']} at {at['noisiest']['t']} s, "
                                                f"struck there by: {at['noisiest']['loudest_part']})" if at.get("noisiest") else ""),
          at["noisiness_max"] is None or at["noisiness_max"] < 0.1),
-        ("air: 8-16 kHz 18-32 dB below total", -32 <= b["8000-16000"] <= -18),
+        # WHY 38 (was 32, round 8): a piece may now be darker on purpose (Piece.tone, Piece.air,
+        # Piece.touch) after "busy/harsh"; the floor still catches a mix with no top at all
+        ("air: 8-16 kHz 18-38 dB below total", -38 <= b["8000-16000"] <= -18),
         # WHY -12 for quiet pieces (2026-11-23): own (-17 LUFS) and tale (-16) measured -9.9 and
         # -10.3 here: a subtle film is lighter in the sub band and plays better on a phone for it.
         # The floor exists against a thin mix at full loudness, so it stays -9 there.

@@ -104,9 +104,16 @@ def level_plan(plans, n):
     return gain_db, dip_db
 
 
-def premaster_music(raw, plans):
+def premaster_music(raw, plans, piece=None):
     """Everything before the final limiter: master chain, hand-set levels, speech dip."""
-    x = premaster(raw, air_db=AIR_DB)
+    # WHY Piece.air / Piece.tone (round 8, "busy/harsh"): the 11 dB air shelf and the felt piano's
+    # upper partials were the only brightness controls, both fixed; a piece may now be darker.
+    # With the defaults (air None, tone 0) nothing here changes, so earlier pieces are unchanged.
+    air = AIR_DB if piece is None or getattr(piece, "air", None) is None else float(piece.air)
+    x = premaster(raw, air_db=air)
+    tone = float(getattr(piece, "tone", 0.0) or 0.0) if piece is not None else 0.0
+    if tone:
+        x = biquad(x, "highshelf", 3500, 0.6, tone)
     gain_db, dip_db = level_plan(plans, len(x))
     if dip_db.max() > 0:
         # WHY a crossfade between a dipped and an undipped copy: the dip then moves only as
@@ -135,4 +142,4 @@ def finish_piece(x, piece, extra=None):
 
 
 def master(raw, plans, piece, extra=None):
-    return finish_piece(premaster_music(raw, plans), piece, extra)
+    return finish_piece(premaster_music(raw, plans, piece), piece, extra)

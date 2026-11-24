@@ -417,7 +417,9 @@ def play_bass(band, p, dyn, plans, k_plan):
     b = getattr(p.sec, "bass", None)
     if p.ending:
         return
-    piano_bass = p.accomp in ("rolling", "still")
+    # WHY a piano figure too (round 8): under an even piano figure a written bass is the pianist's
+    # left hand, not a cello appearing from nowhere
+    piano_bass = p.accomp in ("rolling", "still") or (p.accomp == "figure" and p.sec.fig_voice == "piano")
     if hasattr(b, "notes"):
         for beat, m, d, touch, src in _phrase_notes(p, b):
             v = 0.58 * touch * dyn.v(beat)
@@ -640,8 +642,102 @@ def acc_still(band, p, bar, dyn, cut=4.0):
     return []
 
 
+def _fig_bars(sec):
+    """Section.figure as a list of bars of tokens (a single string = one bar, cycled)."""
+    f = sec.figure
+    bars = [f] if isinstance(f, str) else list(f)
+    out = []
+    for b in bars:
+        toks = b.replace("|", " ").split()
+        if abs(len(toks) * sec.step - 4.0) > 1e-6:
+            raise ValueError(f"figure bar '{b}' has {len(toks)} steps of {sec.step} beats = "
+                             f"{len(toks) * sec.step:g} beats; a bar is 4")
+        out.append(toks)
+    return out
+
+
+def _ladder(chord, floor):
+    """The chord's tones from `floor` (midi) upwards, two octaves: index 1 is the first chord tone
+    at or above the floor. WHY counted from a fixed floor (not from each chord's root): the
+    figure's notes then stay in one register and move by the smallest step when the chord
+    changes, which is what good voice-leading in an accompaniment is."""
+    tones = T.CHORD_TONES[chord]
+    return [m for m in range(int(floor), int(floor) + 25) if m % 12 in tones]
+
+
+def acc_figure(band, p, bar, dyn, cut=4.0):
+    """THE FIGURE (round 8): one even, continuous pattern, written as tokens (Section.figure),
+    reading its pitches from whatever chord is sounding. "b" = the bass (the chord's root or its
+    inversion's bass), 1..9 = chord tones counted up from fig_floor, "r" = rest, "-" = hold the
+    note before one step longer. A list of bars is cycled, so a figure can evolve slowly (one
+    token changed every few bars) without ever stopping.
+    WHY: the owner heard round 7 as "choppy/inconsistent" and its notes as "oddly thrown in".
+    A steady figure under changing chords is what makes a bed feel put together; variety then
+    comes from the chords, the register (fig_floor as a pair opens it across the section), a
+    layer entering or leaving, and the tune, rarely."""
+    sec = p.sec
+    if not getattr(sec, "figure", None):
+        return acc_rolling(band, p, bar, dyn, cut)          # the ending of a figure-less section
+    bars = _fig_bars(sec)
+    j = _bar_index(p, bar)
+    toks = bars[j % len(bars)]
+    fl = sec.fig_floor
+    if isinstance(fl, (tuple, list)):
+        a, b = m_(fl[0]), m_(fl[1])
+        x = 0.0 if len(p.bars) <= 1 else float(np.clip(j / (len(p.bars) - 1), 0, 1))
+        floor = int(round(a + (b - a) * x))
+    else:
+        floor = m_(fl)
+    floor += int(getattr(sec, "register", 0) or 0) if not p.ending else 0
+    pedal = p.mood["pedal"] if (p.ending or sec.pedal is None) else sec.pedal
+    st = float(sec.step)
+    fig = []
+    i = 0
+    while i < len(toks):
+        tok = toks[i]
+        off = i * st
+        n = 1
+        while i + n < len(toks) and toks[i + n] == "-":
+            n += 1
+        i += n
+        if tok in ("r", "-") or off >= cut - 1e-9:
+            continue
+        kind = "bass" if tok == "b" else "mid"
+        if not keep(p, bar, off, kind):
+            continue
+        beat = bar.beat + off
+        c = _chord(bar, off)
+        if tok == "b":
+            m = bn(p, V[c]["root"])
+        else:
+            lad = _ladder(c, floor)
+            m = lad[min(int(tok) - 1, len(lad) - 1)]
+        d = n * st
+        if tok == "b":
+            # WHY the bass held to the next bass token or chord change: a pianist's left hand keeps
+            # its bass note down under the moving figure; struck short it left a hole every bar
+            nxt_b = next((k * st for k in range(i, len(toks)) if toks[k] == "b"), 4.0)
+            chg = 2.0 if (len(bar.chords) == 2 and off < 2) else 4.0
+            d = max(d, min(nxt_b, chg, cut) - off)
+        if pedal and sec.fig_voice == "piano":
+            # WHY pedalled to the chord change like the rolling piano: an even figure that rings is
+            # a bed; dry, it ticks
+            d = max(d, (2.0 if (len(bar.chords) == 2 and off < 2) else 4.0) - off)
+        # WHY the downbeat only a hair stronger (1.1): an even touch is the point; accents are
+        # what made the old patterns skip and bounce
+        v = sec.fig_touch * (1.1 if abs(off % 4.0) < 1e-6 else 1.0) * dyn.v(beat)
+        if sec.fig_voice == "pizz":
+            band.pizz("vc" if m < m_("C3") else "vla", beat, m, v * 1.6, p=0.15)
+        elif sec.fig_voice == "synth":
+            band.synth(beat, m, v * 1.3, 900.0, p=(0.2 if i % 2 else -0.2), gate_beats=max(0.3, d * 0.9))
+        else:
+            band.piano("piano", beat, m, d, v, tone=-0.25 + 0.2 * p.mood["tone"], pedal=bool(pedal), p=-0.1)
+        fig.append((beat, m))
+    return fig
+
+
 ACCOMPANIMENTS = {"rolling": acc_rolling, "bounce": acc_bounce, "rocking": acc_rocking,
-                  "sparse": acc_sparse, "still": acc_still}
+                  "sparse": acc_sparse, "still": acc_still, "figure": acc_figure}
 
 
 def play_accomp(band, p, dyn, piece, plans):

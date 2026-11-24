@@ -18,6 +18,15 @@ plateau, and bars the checks called NEW that were the same bar moved up a step. 
     held notes clashing across a chord change and loudness plateaus are checked;
   * some findings are WARNINGS (printed, never failing): they need a musician's judgement.
 
+WHY round 8 (2026-11-24): the owner heard the round-7 scores, which passed all of the above, as
+"odd/choppy/inconsistent", "still too busy/harsh" and "the piano notes ... extremely inconsistent
+and oddly thrown in". The checks that forced novelty and irregularity (tune-rhythms, tune-entries,
+nothing-new, new-shapes, backing-static, harmonic-rhythm's run limit, drop-real) are gone or are
+warnings, and a first block, `steady`, fails a piece whose foundation stops, whose texture jumps
+from bar to bar, whose melody notes stand alone, which piles up more than three groups, plays more
+than 5 attacks a second, strikes the piano hard, or (under a narrator) ignores her pace. The audio
+adds the level's rate of change and the tone (energy above 4 kHz).
+
 Two halves:
   * from the NOTES the score plays (Band.log; no audio needed, so `render.sh --notes` runs them
     in about a second);
@@ -226,11 +235,173 @@ def _near_same(a, b):
 
 
 IDLE = {   # a layer switched on by add= that this situation never plays
-    "pizz": lambda p: p.accomp in ("bounce", "still"),
+    "pizz": lambda p: p.accomp in ("bounce", "still", "figure"),
     "synth": lambda p: p.accomp in ("sparse", "still"),
     "answer": lambda p: p.voice == "violin",
     "octaves": lambda p: p.voice == "violin",
 }
+
+
+# ====================================================================== steadiness (round 8)
+# WHY this block comes first and its checks fail a piece (2026-11-24): the owner heard round 7,
+# which passed every check above, as "odd/choppy/inconsistent" (own), "still too busy/harsh" (mim)
+# and "slow/steady while the narrator is fast fast ... piano notes extremely inconsistent and
+# oddly thrown in" (tale). Measured in its notes: mim had 7 gaps of 2+ beats with nothing
+# starting, 0 to 11 notes a second from one 2 s window to the next and 0-5 groups sounding; 11 of
+# 64 tune notes (mim), 4 of 6 (own) and 6 of 13 (tale) stood alone with no other tune note within
+# a beat; tale ran at 68.6 bpm under a voice at 4.6 syllables a second. The first principle is
+# now a continuous, even foundation; variety is slow evolution on top (SONGBOOK "Composing").
+
+FOUND = ("piano", "pizz", "bowed", "synth")        # the groups that can carry the foundation
+LINES = ("tune", "answer", "counter")               # melodic lines: they must come in phrases
+PHRASE_MIN = 3                                      # notes in the shortest phrase a line may play
+
+
+def _rings(e):
+    """How long a logged note sounds, in beats (a pluck rings about half a beat)."""
+    return max(e["dur"], 0.5 if e["part"].startswith("pizz") else 0.25)
+
+
+def _holds(plans):
+    return [(p.beat1 - p.hold, p.beat1) for p in plans[:-1] if p.hold and p.into in ("hold", "breath")]
+
+
+def steady(band, plans, piece, rows):
+    out = []
+
+    def add(cid, ok, value, limit, why, level="fail"):
+        out.append(dict(id=cid, ok=bool(ok), value=value, limit=limit, why=why, level=level))
+    B = plans[-1].beat0                                  # the body ends where the ending bar starts
+    land = piece.land_time()
+    holds = _holds(plans)
+    in_hold = lambda b: any(a - 1e-6 <= b < z for a, z in holds)
+    log = [e for e in band.log if e["beat"] < B - 1e-6]
+    found = [e for e in log if e["bus"] in FOUND]
+    # 1. FOUNDATION: in at least 90 % of the beats some foundation note sounds for half the beat
+    nb = int(round(B))
+    cov = np.zeros(max(nb, 1))
+    for e in found:
+        a, z = e["beat"], e["beat"] + _rings(e)
+        for b in range(max(0, int(a)), min(nb, int(np.ceil(z)))):
+            cov[b] = max(cov[b], min(z, b + 1) - max(a, b))
+    share = float(np.mean(cov >= 0.5)) if nb else 1.0
+    gaps = [b for b in range(nb) if cov[b] < 0.5 and not in_hold(b)]
+    add("foundation", share >= 0.9 - 1e-9, f"{100 * share:.0f} %", ">= 90 % of beats",
+        f"the foundation (piano, plucked, held strings or synth bed) sounds in only {100 * share:.0f} % of the beats; "
+        f"empty beats {gaps[:8]}: keep one bed going under everything" if share < 0.9 else
+        f"a foundation sounds in {100 * share:.0f} % of the beats")
+    # 2. PULSE: the foundation never goes more than 2 beats without a new note (a written hold aside)
+    ons = sorted({round(e["beat"] * 8) / 8 for e in found})
+    pts = [0.0] + ons + [B]
+    worst, at = 0.0, None
+    for a, z in zip(pts, pts[1:]):
+        g = z - a - sum(max(0.0, min(z, h1) - max(a, h0)) for h0, h1 in holds)
+        if g > worst:
+            worst, at = g, a
+    add("pulse", worst <= 2.0 + 1e-6, round(worst, 2), "<= 2 beats",
+        f"the foundation stops for {worst:g} beats from beat {at:g} ({band.sec(at):.2f} s): the pulse must never "
+        "stumble" if worst > 2 else f"the pulse never stops for more than {worst:g} beats")
+    # 3. EVEN: from one bar to the next, the number of attacks (all parts) and of foundation attacks
+    # may at most double (plus 2 and 1). WHY: round 7's mim went 4, 12 ... 9, 12, 2, 19 notes a bar
+    body = [r for r in rows if not r["ending"]]
+
+    def count(r, parts=None):
+        return len({round(n["rel"] * 8) for n in r["notes"] if parts is None or n["bus"] in parts})
+    bad = []
+    for a, b in zip(body, body[1:]):
+        for parts, slack, what in ((None, 2, "attacks"), (FOUND, 1, "foundation attacks")):
+            x, y = count(a, parts), count(b, parts)
+            if max(x, y) > 2 * min(x, y) + slack:
+                bad.append(f"bar {a['k']}->{b['k']} {what} {x}->{y}")
+    add("even", not bad, len(bad), "neighbouring bars at most 2x (+2) apart",
+        "the texture jumps from bar to bar (stop-start): " + "; ".join(bad[:4]) if bad else
+        "the number of notes changes gently from bar to bar")
+    # 4. GRID: onsets on the eighth-note grid (the sixteenth where a figure runs in sixteenths);
+    # chord rolls and humanising are allowed (0.07 beat)
+    g = 0.25 if any(getattr(p.sec, "step", 0.5) < 0.5 for p in plans[:-1]) else 0.5
+    # WHY 0.07 beat: the "still" pattern rolls its chord 0.03 beats a note, so the third note of a
+    # roll starts 0.06 beats late on purpose
+    off = [e for e in log if abs(e["beat"] / g - round(e["beat"] / g)) * g > 0.07]
+    share = 1 - len(off) / max(len(log), 1)
+    add("grid", share >= 0.95, f"{100 * share:.0f} %", f">= 95 % on the {'sixteenth' if g < 0.5 else 'eighth'} grid",
+        f"{len(off)} notes start off the grid (e.g. {[(round(e['t'], 2), nm(e['m'])) for e in off[:4]]}): put notes on "
+        "the beat's subdivisions, not on a breath or a cut" if share < 0.95 else
+        f"{100 * share:.0f} % of the notes start on the grid")
+    # 5. PHRASES: every tune, answer and counter note belongs to a phrase of at least 3 notes (a
+    # note joins the one before if it starts within a beat of its end and 4 beats of its start)
+    lone = []
+    for line in LINES:
+        ns = sorted((e for e in band.log if _cls(e) == line and not ((e.get("canon") or ("",))[0] == "logo")),
+                    key=lambda e: e["beat"])
+        run = []
+        for e in ns + [None]:
+            if e is not None and run and e["beat"] <= run[-1]["beat"] + run[-1]["dur"] + 1.0 + 1e-6 \
+                    and e["beat"] - run[-1]["beat"] <= 4.0 + 1e-6:
+                run.append(e)
+                continue
+            if run and len(run) < PHRASE_MIN:
+                lone += [(round(x["t"], 2), line, nm(x["m"])) for x in run if x["beat"] < B - 1e-6]
+            run = [e] if e is not None else []
+    add("phrases", not lone, len(lone), f"0 notes in groups under {PHRASE_MIN}",
+        f"{len(lone)} melody notes stand alone or in pairs (e.g. {lone[:4]}): a line comes in phrases of "
+        f"{PHRASE_MIN} or more notes, or not at all" if lone else
+        f"every melody note belongs to a phrase of {PHRASE_MIN} or more")
+    # 6. LAYERS: at most 3 groups sounding in any half bar (the tune counts once; air, doublings
+    # and the sub's weight aside). WHY 3: round 7's mim reached 5, and the owner heard "busy"
+    worst, wk, hist = 0, None, Counter()
+    for r in body:
+        for h in (0.0, 2.0):
+            bs = {("tune" if b in ("lead", "sing") else b)
+                  for b in sounding_buses(band, r["beat"] + h, r["beat"] + h + 2.0, exclude=("air", "double", "sub"))}
+            hist[len(bs)] += 1
+            if len(bs) > worst:
+                worst, wk = len(bs), (r["k"], sorted(bs))
+    add("layers", worst <= 3, worst, "<= 3 groups at once",
+        f"{worst} groups sound together in bar {wk[0]} ({', '.join(wk[1])}): two is the norm, three at most"
+        if worst > 3 else f"never more than {worst} groups at once (half bars by count: {dict(sorted(hist.items()))})")
+    # 7. ATTACK RATE: separate attacks (more than 30 ms apart) in any 4 s, at most 5 a second. WHY 5:
+    # an even eighth figure at 120 bpm is 4 a second and a tune on its beats adds none; the first
+    # "Make it mine" (heard as relentless) measured 5.2 and round 7's (heard as busy) 4.5 with 4-5
+    # groups: aim for 3-4.5 and let the layer count keep the texture light.
+    lim = 5.0
+    # one attack = notes starting within 30 ms of each other (a chord, the tune on the figure's beat)
+    ts = []
+    for t in sorted(e["t"] for e in log):
+        if not ts or t - ts[-1] > 0.03:
+            ts.append(t)
+    ts = np.array(ts)
+    worst, at = 0.0, 0.0
+    for t0 in np.arange(0.0, max(land - 4.0, 0.0) + 1e-6, 0.5):
+        r_ = float(((ts >= t0) & (ts < t0 + 4.0)).sum()) / 4.0
+        if r_ > worst:
+            worst, at = r_, t0
+    add("attack-rate", worst <= lim + 1e-9, round(worst, 1), f"<= {lim:g} a second (any 4 s)",
+        f"{worst:.1f} attacks a second at {at:.1f}-{at + 4:.1f} s: too busy for a bed" if worst > lim else
+        f"at most {worst:.1f} attacks a second in any 4 s")
+    # 8. TOUCH: no piano note at the loud sample layer, and an even hand. WHY 0.62 and 0.35: the felt
+    # piano switches to its hard recording at 0.7 and its filter opens with touch (900 Hz x 2^(2.4 x
+    # touch)); round 7's mim (heard as harsh) played 0.17-0.63 (p5-p95), tale (even) 0.14-0.37
+    vs = [e["vel"] for e in log if e["part"] == "piano"]
+    if vs:
+        top, spread = max(vs), float(np.percentile(vs, 95) - np.percentile(vs, 5))
+        add("touch", top <= 0.62 and spread <= 0.35, f"{top:.2f}/{spread:.2f}", "max <= 0.62, p95-p5 <= 0.35",
+            f"piano touch up to {top:.2f}, spread {spread:.2f}: soften the loudest notes (Piece.touch, lead=, @0.8)"
+            if not (top <= 0.62 and spread <= 0.35) else f"piano touch at most {top:.2f}, spread {spread:.2f}")
+    # 9. TEMPO FROM HER PACE: under a narrator, the beat is her stressed-syllable rate (two
+    # syllables) within 12 %. WHY: round 7's tale ran at half her pace (68.6 against 138)
+    words = getattr(piece.speech, "words", None) if piece.speech else None
+    if words:
+        from films import speech_pace
+        pace = speech_pace(piece.speech, 0.0, land)
+        if pace:
+            secs = [(p.bpm, p.beats) for p in plans[:-1]]
+            bpm = float(np.average([a for a, _ in secs], weights=[b for _, b in secs]))
+            ok = abs(bpm / pace["bpm"] - 1) <= 0.12
+            add("narrator-tempo", ok, round(bpm, 1), f"{pace['bpm']:g} +-12 %",
+                f"the music's beat is {bpm:.1f} bpm; she speaks {pace['syl_per_s']} syllables a second, a beat of "
+                f"{pace['bpm']:g} bpm (two syllables): choose the tempo from her pace" if not ok else
+                f"the beat ({bpm:.1f} bpm) follows her pace ({pace['syl_per_s']} syllables a second = {pace['bpm']:g} bpm)")
+    return out
 
 
 def symbolic(band, plans, piece, rows=None):
@@ -255,14 +426,24 @@ def symbolic(band, plans, piece, rows=None):
                 best, wk = n, key
         return best, wk
 
+    # ------------------------------------------------------------------ steadiness (round 8, first)
+    out += steady(band, plans, piece, rows)
     # ------------------------------------------------------------------ repetition
-    # 1. no whole bar heard more than twice in the same form
-    c = Counter(r["fp"] for r in body if r["n"])
-    worst = max(c.values(), default=0)
-    where = [r["k"] for r in body if c[r["fp"]] == worst] if worst > 2 else []
-    add("bar-repeats", worst <= 2, worst, "<= 2",
-        f"the same whole bar (tune, chords and accompaniment) is heard {worst} times (bars {where})" if worst > 2 else
-        "no whole bar is heard more than twice")
+    # 1. (round 8) no VERBATIM LOOP: a whole bar (tune, chords, accompaniment) may copy the bar 1,
+    # 2 or 4 before it for at most 4 bars running. WHY it replaces "no bar more than twice": a
+    # steady figure under a held chord is two identical bars, and that is the foundation the owner
+    # asked for; what he must never hear is the same 2- or 4-bar block going round unchanged.
+    worst, wk = 0, None
+    for per in (1, 2, 4):
+        run = 0
+        for i, r in enumerate(body):
+            run = run + 1 if i >= per and r["n"] and r["fp"] == body[i - per]["fp"] else 0
+            if run > worst:
+                worst, wk = run, (r["k"], per)
+    add("verbatim-loop", worst <= 4, worst, "<= 4 bars",
+        f"{worst} bars running (to bar {wk[0]}) each copy the bar {wk[1]} before exactly: change one small thing "
+        "(a chord, a figure note, the register, a layer)" if worst > 4 else
+        "no stretch of more than 4 bars is an exact copy of the bars before it")
     # 2. no tune bar more than twice the same (round 7: "the same" = identical, or 3/4 of its notes
     # match an earlier bar: bar 13 plus one E-flat was not a new bar)
     tb = [r for r in body if r["tune_fp"]]
@@ -283,33 +464,10 @@ def symbolic(band, plans, piece, rows=None):
         f"one tune shape (the same rhythm and intervals, moved) is heard {worst} times in 30 s (bars {wbars}): "
         "change its rhythm, direction or place in the bar" if worst > 3 else
         f"no tune shape more than {worst} times in 30 s, in any key")
-    # 4. rhythm variety in the tune: no one-bar rhythm more than 3 times in any 30 s, and enough
-    # different rhythms for the length (2 for 10 s, 3 for 30 s, 5 for 60 s)
-    rh = [(r["t0"], r["rhythm"]) for r in tb if r["rhythm"] and len(r["rhythm"]) >= 2]
-    worst, wkey = window_count(rh, 30.0)
-    distinct = len({x for _, x in rh})
-    need = int(min(5, max(2, round(land / 12))))
-    add("tune-rhythms", worst <= 3 and distinct >= need, f"{distinct}/{worst}", f">= {need} rhythms, <= 3 each per 30 s",
-        (f"the tune uses {distinct} different one-bar rhythms (at least {need} for {land:.0f} s)" if distinct < need else "") +
-        ("; " if distinct < need and worst > 3 else "") +
-        (f"one rhythm {wkey} opens {worst} bars in 30 s" if worst > 3 else "")
-        if (worst > 3 or distinct < need) else f"{distinct} different tune rhythms, none more than {worst} times in 30 s")
-    # 5. where the tune's phrases START: not always on beat 1
-    ents = []
-    prev_end = -99.0
-    for r in body:
-        for a, m, d in r["tune"]:
-            g = r["beat"] + a
-            if g - prev_end >= 1.0 - 1e-6:
-                ents.append((r["k"], a))
-            prev_end = max(prev_end, g + d)
-    if len(ents) >= 4:
-        on1 = sum(1 for _, a in ents if abs(a) < 1e-6)
-        share = on1 / len(ents)
-        add("tune-entries", share <= 0.7 + 1e-9, f"{on1}/{len(ents)}", "<= 70 % on beat 1",
-            f"{on1} of the tune's {len(ents)} entries start on beat 1: start some on a pick-up or off the beat "
-            "(write(..., pickup=1), .shift(0.5) or .shift(-1))" if share > 0.7 else
-            f"{len(ents) - on1} of {len(ents)} tune entries start off the downbeat")
+    # (round 8) REMOVED: tune-rhythms (at least 5 different one-bar rhythms) and tune-entries (at
+    # most 70 % of phrases on beat 1). WHY: they forced irregularity; round 7 met them with 14
+    # rhythms in 19 tune bars and 6 of 7 entries off the beat, and the owner heard "choppy" and
+    # notes "oddly thrown in". A tune may now be regular; it must be a phrase (see `phrases`).
     # 6. the cell: the identical form at most 3 times in any 30 s, the same SHAPE (any key) at most
     # 2 times in any 20 s, the logo counted; under 20 s, at most 3 hearings in all
     cells = _signature_cells(rows, piece)
@@ -337,9 +495,9 @@ def symbolic(band, plans, piece, rows=None):
             "the 'you-co-ded' cell is heard in the score before the logo" if body_cells else
             "the 'you-co-ded' cell is never heard before the logo: the score does not sound like ours")
     # ------------------------------------------------------------------ development
-    # 7. something new at least every 8 seconds. Round 7: a tune bar is new only if its SHAPE is
-    # new (moving a bar up a step is not new), and an accompaniment rhythm is new only if it is
-    # not part of one already heard (a viola switched off is not a new rhythm)
+    # 7. what is NEW in each bar, for the bar table's "new" column (informational since round 8):
+    # a tune SHAPE not heard before, a chord (pair) not heard before, an accompaniment rhythm that is
+    # not part of one already heard
     seen_s, seen_c, seen_b = set(), set(), []
     run_s, best, at, newk = 0.0, 0.0, None, 0
     for r in body:
@@ -357,27 +515,11 @@ def symbolic(band, plans, piece, rows=None):
         run_s = 0.0 if r["new"] else run_s + (r["t1"] - r["t0"])
         if run_s > best:
             best, at = run_s, r["k"]
-    add("nothing-new", best <= 8.0 + 1e-6, round(best, 1), "<= 8 s",
-        f"{best:.1f} s pass with nothing new (no new tune shape, chord or accompaniment rhythm), ending at bar {at}"
-        if best > 8 else f"something new at least every {max(best, bar_s):.1f} s")
-    # warning: a new tune SHAPE in too few bars (the surface changes, the gestures do not)
-    if len(tb) >= 6:
-        share = newk / len(tb)
-        add("new-shapes", share >= 0.4, f"{100 * share:.0f} %", ">= 40 % of tune bars", (
-            f"only {newk} of {len(tb)} tune bars bring a shape not heard before: the gestures repeat under changing "
-            "surfaces" if share < 0.4 else f"{newk} of {len(tb)} tune bars bring a new shape"), level="warn")
-    # 8. the accompaniment keeps developing: within any 6 bars it plays at least one rhythm it has
-    # not played (nor a fuller version of) in the 8 bars before
-    run, best, wk = 0, 0, None
-    for i, r in enumerate(body):
-        br = frozenset(r["back_rhythm"])
-        recent = [frozenset(x["back_rhythm"]) for x in body[max(0, i - 8): i]]
-        run = run + 1 if (i and any(br <= x for x in recent)) else 0
-        if run > best:
-            best, wk = run, r["k"]
-    add("backing-static", best <= 6, best, "<= 6 bars",
-        f"for {best} bars (to bar {wk}) the accompaniment plays only rhythms it played (or a thinner copy of) in the "
-        "8 bars before" if best > 6 else f"the accompaniment brings something new within every {best + 1} bars")
+    # (round 8) REMOVED as checks: nothing-new (something new every 8 s), new-shapes and
+    # backing-static (the accompaniment must change its rhythm within 6 bars). WHY: they punished
+    # exactly the steady foundation the owner now asks for; round 7 changed the accompaniment
+    # rhythm every 1-4 bars and he heard a patchwork. The bar table keeps the "new" column so a
+    # reader still sees where the music moves; `verbatim-loop` guards against a literal loop.
     # 9. the tune breathes: at least one bar in every 8 with no tune note starting
     if len(body) >= 8:
         bad = [body[i]["k"] for i in range(len(body) - 7) if all(r["tune_fp"] for r in body[i:i + 8])]
@@ -387,7 +529,9 @@ def symbolic(band, plans, piece, rows=None):
     # ------------------------------------------------------------------ harmony and bass
     chords = [c for r in body for c in r["chords"]]
     distinct = len(set(chords))
-    need = min(7, 3 + int(land // 15))
+    # WHY min(6, 3 + s/20) (was min(7, 3 + s/15), round 8): a calm bed changes chord every bar or
+    # two; six chords in a minute is plenty of harmony when the pulse under them is steady
+    need = min(6, 3 + int(land // 20))
     add("chords-distinct", distinct >= need, distinct, f">= {need}",
         f"{distinct} different chords ({', '.join(sorted(set(chords)))})")
     loop = 0
@@ -398,32 +542,8 @@ def symbolic(band, plans, piece, rows=None):
     add("chord-loop", loop <= 4, loop, "<= 4 bars",
         f"the chords repeat the bars four back for {loop} bars running (a loop)" if loop > 4 else
         "the progression never loops more than once")
-    # 10. harmonic rhythm both ways (round 7: 23 of 27 bars changed chord exactly on the bar line).
-    # No more than 12 bars running of one new chord per bar; in a piece over 30 s, at least one
-    # chord held across a bar line (or a pedal) per 30 s
-    run, worst, wk = 0, 0, None
-    prev = None
-    held = 0
-    for r in body:
-        if len(r["chords"]) == 1 and prev is not None and r["chords"][0] != prev:
-            run += 1
-        else:
-            run = 0
-        if len(r["chords"]) >= 1 and prev is not None and r["chords"][0] == prev:
-            held += 1
-        if run > worst:
-            worst, wk = run, r["k"]
-        prev = r["chords"][-1]
-    pedals = sum(1 for p in plans[:-1] if isinstance(getattr(p.sec, "bass", None), str) and p.sec.bass.startswith("pedal:"))
-    want = int(land // 30)
-    ok = worst <= 12 and (held + pedals) >= want
-    add("harmonic-rhythm", ok, f"{worst}/{held + pedals}", f"<= 12 bars of one chord a bar; >= {want} held/pedal",
-        (f"{worst} bars running each change chord exactly on the bar line (to bar {wk}): hold one across a bar, or put "
-         "two in a bar" if worst > 12 else "") +
-        (("; " if worst > 12 else "") + f"no chord is held across a bar line ({held + pedals}, want {want} in "
-         f"{land:.0f} s): a held chord or a pedal is how a score breathes" if held + pedals < want else "")
-        if not ok else f"the chords change at different speeds (longest run of one chord a bar: {worst} bars; "
-                       f"{held} held across a bar line, {pedals} pedal sections)")
+    # (round 8) REMOVED: harmonic-rhythm's "at most 12 bars of one chord per bar line". WHY: a
+    # chord every bar or two, on the bar line, is the calm, predictable floor a bed stands on.
 
     def moving(r):
         roots = {root_pc(c) for c in r["chords"]}
@@ -432,9 +552,11 @@ def symbolic(band, plans, piece, rows=None):
     # inversion now counts, as the guide always said)
     if len(body) >= 8:
         bad = [body[i]["k"] for i in range(len(body) - 7) if not any(moving(r) for r in body[i:i + 8])]
+        # WHY a warning since round 8: a bass that holds roots under a steady figure is fine; a
+        # walking bass was one of the voices that made round 7 busy
         add("bass-moves", not bad, len(bad), "0 windows",
             f"the bass plays only chord roots for 8 bars running (from bars {bad[:6]})" if bad else
-            "the bass leaves the root (inversion, passing note or pedal) at least once in every 8 bars")
+            "the bass leaves the root (inversion, passing note or pedal) at least once in every 8 bars", level="warn")
     # 12. tune notes that clash with a borrowed chord
     clash = []
     for r in body:
@@ -497,23 +619,9 @@ def symbolic(band, plans, piece, rows=None):
             add("peak-arrival", drop <= 5, drop, "falls <= a fourth",
                 f"the tune falls {drop} semitones ({nm(seq[i - 1][1])} to {nm(seq[i][1])}) onto the peak: arrive from below "
                 "or by step" if drop > 5 else f"the tune arrives at the peak on {nm(seq[i][1])} from {nm(seq[i - 1][1])}")
-        # the DROP before the lift (pieces of 20 s or more): somewhere in the two bars before the
-        # peak, half a bar with at most two instrument groups sounding (air and doublings aside)
-        if land >= 20:
-            pk = peak_row(rows, piece.peak)
-            if pk:
-                i = rows.index(pk)
-                cands = []
-                for r in rows[max(0, i - 2): i]:
-                    for h in (0.0, 1.0, 2.0):
-                        bs = sounding_buses(band, r["beat"] + h, r["beat"] + h + 2.0)
-                        cands.append((len(bs), r["k"], h, bs))
-                if cands:
-                    n_, k_, h_, bs_ = min(cands)
-                    add("drop-real", n_ <= 2, n_, "<= 2 groups for half a bar",
-                        f"the thinnest half bar before the peak still has {n_} groups sounding ({', '.join(bs_)}, bar {k_}): "
-                        "the peak must arrive out of space" if n_ > 2 else
-                        f"the drop: bar {k_} beat {h_ + 1:g} thins to {', '.join(bs_) or 'silence'}")
+        # (round 8) REMOVED: drop-real (half a bar thinned to two groups before the peak). WHY:
+        # it made every score stop and restart before its payoff (mim's drop was 2 notes between
+        # bars of 12 and 19); the lift now grows out of the continuous foundation.
     # 14. the settle: the bar before the ending is not the busiest of the piece (over 20 s)
     if land >= 20 and len(body) >= 4:
         busiest = max(r["n"] for r in body)
@@ -633,8 +741,10 @@ def symbolic(band, plans, piece, rows=None):
         talk = sum(t1 - t0 for t0, t1 in piece.speech)
         ons = {round(e["t"] / 0.03) for e in band.log if any(t0 <= e["t"] <= t1 for t0, t1 in piece.speech)}
         rate = len(ons) / max(talk, 1e-6)
-        add("voice-busy", rate <= 4.0, round(rate, 1), "<= 4 onsets/s",
-            f"{rate:.1f} separate attacks a second under her words (too busy to listen through)" if rate > 4 else
+        # WHY 5 (was 4, round 8): a bed whose eighths run at her own syllable rate (4.6 a second for
+        # take1-lily) moves WITH her; above that it competes. Round 7 at 0.7 a second was "slow"
+        add("voice-busy", rate <= 5.0, round(rate, 1), "<= 5 onsets/s",
+            f"{rate:.1f} separate attacks a second under her words (too busy to listen through)" if rate > 5 else
             f"{rate:.1f} attacks a second under her words")
         # the speech map covers every word she says inside the piece (round 7: a map that stopped
         # early was the only reason two voice checks passed)
@@ -732,13 +842,54 @@ def audio(y, band, plans, piece, rows=None):
         out.append(dict(id=cid, ok=bool(ok), value=value, limit=limit, why=why, level=level))
     # WHY every bar now (was body[1:]): a 3-bar film's range then came from two bars, which pushed
     # the composer to carve a valley instead of shaping the whole piece (own, round 7)
+    # WHY 2-9 dB (1.5-6 under 20 s; was 4-14, round 8): a bed that starts gently, lifts once and
+    # settles moves about 2-6 dB; round 7's mim moved 10.4 dB and was heard as stop-start
     lvb = [r["lufs"] for r in body]
     rng = max(lvb) - min(lvb) if lvb else 0.0
-    need = 4.0 if piece.land_time() >= 20 else 3.0
-    add("loudness-range", need - 1e-6 <= rng <= 14.0, round(rng, 1), f"{need:g}-14 dB",
-        f"bar loudness moves only {rng:.1f} dB across the piece (flat)" if rng < need else
-        (f"bar loudness moves {rng:.1f} dB (too wide: a jolt)" if rng > 14 else
+    need, top = (2.0, 9.0) if piece.land_time() >= 20 else (1.5, 6.0)
+    add("loudness-range", need - 1e-6 <= rng <= top + 1e-6, round(rng, 1), f"{need:g}-{top:g} dB",
+        f"bar loudness moves only {rng:.1f} dB across the piece (no lift at all)" if rng < need else
+        (f"bar loudness moves {rng:.1f} dB (too wide: the bed lurches)" if rng > top else
          f"bar loudness moves {rng:.1f} dB across the piece"))
+    # LEVEL RATE (round 8): the level moves no faster than 3 dB from one bar to the next and 6 dB
+    # within any second (400 ms loudness, from 1 s in to just before the name). WHY: the first
+    # "Make it mine", continuous and never heard as choppy, moved at most 5.4 dB in a second; round
+    # 7 moved 16.8 (mim), 11.7 (own) and 9.0 (tale), with bar steps of up to 6.3 dB.
+    steps = [(b["k"], round(b["lufs"] - a["lufs"], 1)) for a, b in zip(body, body[1:]) if abs(b["lufs"] - a["lufs"]) > 3.0]
+    tt, mv = M.momentary(y)
+    sel = np.where((tt >= 1.0) & (tt <= piece.land_time() - 0.3))[0]
+    fast, at_s = 0.0, None
+    for i in sel:
+        j = sel[(tt[sel] > tt[i]) & (tt[sel] <= tt[i] + 1.0 + 1e-6)]
+        if len(j):
+            d = float(np.max(np.abs(mv[j] - mv[i])))
+            if d > fast:
+                fast, at_s = d, float(tt[i])
+    ok = not steps and fast <= 6.0
+    add("level-rate", ok, f"{fast:.1f}/{len(steps)}", "<= 6 dB in 1 s; <= 3 dB bar to bar",
+        (f"the level moves {fast:.1f} dB within a second at {at_s:.1f} s" if fast > 6 else "") +
+        ("; " if fast > 6 and steps else "") + (f"bar-to-bar jumps over 3 dB: {steps[:4]} (bar, dB)" if steps else "")
+        if not ok else f"the level moves at most {fast:.1f} dB in a second and 3 dB from bar to bar")
+    # TONE (round 8): energy above 4 kHz at most -23 dB of the whole, and -19 dB in any bar. WHY:
+    # round 7's mim, heard as harsh, measured -21.9 (its thin "drop" bar -11.5: the high air line
+    # alone); the first mim -23.8, own -27.5, tale -27.8 (its bar 2 -16.4, the air over a sparse piano)
+    m_ = y[: int(piece.land_time() * SR)].mean(axis=1)
+
+    def hf(seg):
+        if len(seg) < 2048:
+            return -99.0
+        P = np.abs(np.fft.rfft(seg * np.hanning(len(seg)))) ** 2
+        f = np.fft.rfftfreq(len(seg), 1 / SR)
+        return 10 * math.log10(P[f > 4000].sum() / (P[f > 20].sum() + 1e-30) + 1e-20)
+    whole = hf(m_)
+    for r in rows:
+        r["hf"] = round(hf(y[int(r["t0"] * SR): int(r["t1"] * SR)].mean(axis=1)), 1)
+    worst = max(body, key=lambda r: r["hf"]) if body else None
+    ok = whole <= -23.0 and (worst is None or worst["hf"] <= -19.0)
+    add("tone", ok, f"{whole:.1f}/{worst['hf'] if worst else 0:.1f}", "<= -23 dB above 4 kHz (bars <= -19)",
+        f"too bright: {whole:.1f} dB of the energy above 4 kHz (bar {worst['k']}: {worst['hf']:.1f}); darken with "
+        "Piece.tone=-3, Piece.touch=0.85, drop the air line, fewer high notes or no violin" if not ok else
+        f"rounded tone: {whole:.1f} dB above 4 kHz (brightest bar {worst['hf'] if worst else 0:.1f})")
     # PLATEAU (round 7): no 16 s whose bars all sit within 1.5 dB, unless she is speaking over it.
     # WHY: a 6 dB range passed while two passages sat within 1.4 dB of each other for 32 s.
     # Measured on two-bar averages (energy), so a strict loud/soft alternation from bar to bar
@@ -758,9 +909,11 @@ def audio(y, band, plans, piece, rows=None):
         span = run[-1]["t1"] - run[0]["t0"] if run else 0.0
         if span > best:
             best, at = span, (run[0]["k"], run[-1]["k"])
-    add("plateau", best <= 16.0 + 1e-6, round(best, 1), "<= 16 s within 1.5 dB",
-        f"bars {at[0]}-{at[1]} ({best:.1f} s) stay within 1.5 dB of each other (two-bar averages): a turn must change "
-        "the level (about 2 dB) or the register" if best > 16 else f"the longest level plateau is {best:.1f} s")
+    # WHY a warning at 30 s since round 8 (was a failure at 16 s): an even bed is meant to sit at
+    # one level for a while; only a whole film without any lift is a problem
+    add("plateau", best <= 30.0 + 1e-6, round(best, 1), "<= 30 s within 1.5 dB",
+        f"bars {at[0]}-{at[1]} ({best:.1f} s) stay within 1.5 dB of each other (two-bar averages): is there a lift?"
+        if best > 30 else f"the longest level plateau is {best:.1f} s", level="warn")
     if piece.peak is not None:
         pk = peak_row(rows, piece.peak)
         if pk:
@@ -771,9 +924,12 @@ def audio(y, band, plans, piece, rows=None):
             # energy averages, not dB averages: loud moments dominate as they do for a listener
             e = lambda xs: 10 * math.log10(np.mean([10 ** (x / 10) for x in xs]))
             rise = e(at_) - e(before) if before and at_ else 0.0
-            add("payoff-louder", rise >= 2.0, round(rise, 1), ">= 2 dB",
-                f"the peak bars are {rise:+.1f} dB against the {len(before)} bars before (they must arrive, not fade in)"
-                if rise < 2 else f"the peak arrives {rise:+.1f} dB above what led to it")
+            # WHY 1.5-5 dB (was >= 2, round 8): the bed lifts ONCE, gently; round 7's +3.8 dB came
+            # with an 11.6 dB jump in half a second
+            add("payoff-louder", 1.5 <= rise <= 5.0, round(rise, 1), "1.5-5 dB",
+                f"the peak bars are {rise:+.1f} dB against the {len(before)} bars before (they must lift, not fade in)"
+                if rise < 1.5 else (f"the peak jumps {rise:+.1f} dB: lift it, do not switch it on" if rise > 5 else
+                                    f"the peak lifts {rise:+.1f} dB above what led to it"))
             loud = max(body + [r for r in rows if r["ending"]], key=lambda r: r["lufs"])
             ok = rows[i]["t0"] - 2.5 <= loud["t0"] <= rows[i]["t0"] + 2 * (rows[i]["t1"] - rows[i]["t0"]) + 0.01 \
                 or loud["ending"]
@@ -798,16 +954,7 @@ def audio(y, band, plans, piece, rows=None):
         add("voice-steady", not jumps, len(jumps), "<= +1.5 dB bar to bar",
             f"the music rises under her words: {jumps[:4]} (bar, dB): swell in her pauses or after she stops" if jumps
             else "the music under her words never rises more than 1.5 dB from one bar to the next")
-    # short films: the 400 ms curve shows what bar averages hide (warning)
-    tt, mv = M.momentary(y)
-    sel = tt < piece.land_time()
-    if sel.sum() > 6:
-        v = mv[sel]
-        rise = max((float(v[j] - v[i]) for i in range(len(v)) for j in range(i + 1, min(len(v), i + 6))), default=0.0)
-        add("momentary-rise", rise <= 6.0 or getattr(piece, "loudness", -14.0) > -16.5, round(rise, 1),
-            "<= 6 dB in 0.5 s (subtle films)",
-            f"the music rises {rise:.1f} dB within half a second (momentary range {float(np.percentile(v, 95) - np.percentile(v, 5)):.1f} dB)",
-            level="warn")
+    # (round 8: the momentary-rise warning became the level-rate check above)
     # phones: weight below 150 Hz in the opening bars (warning)
     heavy = [(r["k"], r["low"]) for r in body[:2] if r["low"] > 45]
     add("phone-low", not heavy, len(heavy), "<= 45 % of a bar's energy below 150 Hz (first 2 bars)",
@@ -821,9 +968,12 @@ def audio(y, band, plans, piece, rows=None):
         cur = cur + (r["t1"] - r["t0"]) if sim >= SIM_COPY else 0.0
         if cur > best:
             best, at = cur, r["k"]
-    add("audio-nothing-new", best <= 12.0, round(best, 1), "<= 12 s",
-        f"{best:.1f} s where every bar sounds like a copy ({SIM_COPY}) of an earlier one (ending at bar {at})" if best > 12 else
-        f"the sound renews itself (longest near-copy stretch {best:.1f} s at {SIM_COPY})")
+    # WHY a warning at 16 s since round 8 (was a failure at 12 s): a steady figure under a slow
+    # progression sounds like its earlier bars by design; verbatim-loop guards the literal loop
+    add("audio-nothing-new", best <= 16.0, round(best, 1), "<= 16 s",
+        f"{best:.1f} s where every bar sounds like a copy ({SIM_COPY}) of an earlier one (ending at bar {at}): is "
+        "anything evolving (a chord, the register, a layer)?" if best > 16 else
+        f"the sound renews itself (longest near-copy stretch {best:.1f} s at {SIM_COPY})", level="warn")
     return out
 
 
@@ -834,7 +984,7 @@ def table_text(rows, piece):
     au = "lufs" in rows[0]
     L = [f"NOTES: {piece.name}  ({len(rows)} bars; the last is the ending bar with the logo)",
          "bar  time    section                  chords            tune (beat:note)                                 "
-         "answer/counter          bass          notes  back  parts         new" + ("  LUFS  phone low%  sim" if au else "")]
+         "answer/counter          bass          notes  back  parts         new" + ("  LUFS  phone low%  >4k   sim" if au else "")]
     codes = {}
     for r in rows:
         code = codes.setdefault(r["back_rhythm"], "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[len(codes) % 26] + ("" if len(codes) < 26 else str(len(codes) // 26)))
@@ -848,7 +998,7 @@ def table_text(rows, piece):
         line = (f"{r['k']:>3}  {r['t0']:6.2f}  {r['sec'][:24]:<24} {'/'.join(r['chords']):<17} {tune[:48]:<48} "
                 f"{other[:23]:<23} {bass[:13]:<13} {r['n']:>5}  {code:<4}  {parts:<12}  {new:<7}")
         if au:
-            line += f"  {r['lufs']:5.1f}  {r['phone']:5.1f} {r['low']:>4}  {r.get('sim', '')}"
+            line += f"  {r['lufs']:5.1f}  {r['phone']:5.1f} {r['low']:>4} {r.get('hf', ''):>5}  {r.get('sim', '')}"
         L.append(line)
     L.append("back = the accompaniment's rhythm (same letter = identical rhythm); a = answer note, c = counter-line note")
     L.append("parts = groups sounding at least half the bar: L tune piano, V violin tune, D doubling, A answer, C counter, "
@@ -856,7 +1006,7 @@ def table_text(rows, piece):
     L.append("new = what is new in the bar: t a tune SHAPE not heard before, c a chord (pair), b an accompaniment rhythm")
     if au:
         L.append("LUFS = the bar's loudness; phone = the same in 300 Hz-8 kHz (what a phone plays); low% = energy below "
-                 f"150 Hz; sim = pitch-content similarity to the closest earlier bar (near copy at {SIM_COPY})")
+                 f"150 Hz; >4k = dB of the bar's energy above 4 kHz (tone); sim = pitch-content similarity to the closest earlier bar (near copy at {SIM_COPY})")
     return L
 
 

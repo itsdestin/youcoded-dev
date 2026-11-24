@@ -61,6 +61,13 @@ def pauses(piece, rows, tm, min_gap=0.2):
     for (w0, a0, b0), (w1, a1, b1) in zip(words, words[1:]):
         if a1 - b0 >= min_gap and b0 < piece.length:
             L.append(f"   {b0:6.2f}-{a1:6.2f} s ({a1 - b0:.2f} s)  bar {where(b0)} to {where(a1)}   after '{w0}', before '{w1}'")
+    # WHY her pace in the dump (round 8): the tempo under a narrator is chosen from it
+    import films as F
+    pace = F.speech_pace(piece.speech, 0.0, piece.land_time())
+    if pace:
+        L.insert(1, f"her pace: {pace['syl_per_s']} syllables a second while speaking ({pace['syllables']} in "
+                    f"{pace['speaking_s']} s), {pace['syl_s']} s a syllable: the beat = two syllables = {pace['bpm']:g} bpm "
+                    f"(eighths at her syllable rate)")
     if words[-1][2] < piece.length:
         L.append(f"   {words[-1][2]:6.2f} s on: she has stopped (after '{words[-1][0]}') at bar {where(words[-1][2])}")
     return L

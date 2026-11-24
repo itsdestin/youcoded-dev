@@ -85,6 +85,17 @@ class Section:
     # the words before it (tale). "after" starts the change exactly at the section's first beat.
     ramp: float = 3.0                # seconds the level_db change into this section takes
     ramp_at: str = "centre"          # "centre" (on the change) | "after" (starts at it) | "before" (ends at it)
+    # ---- round 8 (2026-11-24): THE FIGURE. WHY: the owner heard round 7 as "choppy", "busy/harsh"
+    # and "oddly thrown in": notes placed one by one, accompaniments switched bar by bar. A score
+    # now stands on one continuous, even figure that reads its pitches from the chords, so the
+    # harmony can move while the pulse never stumbles. accomp="figure" plays it (blocks.acc_figure).
+    figure: object = None            # "b 2 3 2 4 2 3 2" (one bar) or a list of bars, cycled: b = the bass,
+                                     # 1..9 = chord tones counted up from fig_floor, r = rest, - = hold
+    step: float = 0.5                # beats per figure token (0.5 = eighths, 0.25 = sixteenths, 1 = quarters)
+    fig_floor: object = "G3"         # where the chord-tone ladder starts; a pair ("G3", "C4") opens it
+                                     # gradually across the section (register that evolves slowly)
+    fig_voice: str = "piano"         # "piano" | "pizz" (plucked) | "synth" (the soft machine)
+    fig_touch: float = 0.30          # the figure's touch (even; the downbeat a hair stronger)
 
 
 @dataclass
@@ -119,6 +130,14 @@ class Piece:
     # a softer touch on a sparse line comes back up to the same level (tale's "softer" sighs measured
     # the same). This moves a group's level for one piece, in dB (e.g. {"counter": -2, "lead": -1}).
     mix: dict = field(default_factory=dict)
+    # ---- round 8 (2026-11-24). WHY: "too busy/harsh". Every group is levelled to a fixed loudness
+    # (mix.TARGET), so a quieter touch alone came back up to the same level; these change the SOUND.
+    # touch: multiplies every piano touch (0.8 = softer hammers: a rounder, darker note, same level);
+    # tone: dB of a high shelf at 3.5 kHz on the music (-3 = darker); air: the master's air shelf in
+    # dB (None = mix.AIR_DB, 11). The defaults leave every earlier piece byte for byte as it was.
+    touch: float = 1.0
+    tone: float = 0.0
+    air: Optional[float] = None
 
     def land_time(self):
         return self.land if self.land is not None else self.length - (LOGO_LEN[self.logo] - LOGO_LAND)
@@ -471,7 +490,10 @@ class Band:
               early=0.0):
         key = (bus, round(beat, 4), int(m))
         t = self.when(beat, jit, key) - early
-        v = self.vary(vel, key)
+        # WHY Piece.touch (round 8): a softer hand on every piano note, so the felt piano's filter
+        # closes and the loud sample layer (touch >= 0.7) is never reached; 1.0 changes nothing
+        tch = float(getattr(self.piece, "touch", 1.0) or 1.0)
+        v = self.vary(vel, key) if tch == 1.0 else float(np.clip(self.vary(vel, key) * tch, 0.04, 0.95))
         self._log(t, beat, m, beats, v, bus, role, "piano")
         self.log[-1]["canon"] = canon        # WHY: the checks tell the logo's own notes from the tune's
         if self.dry:
