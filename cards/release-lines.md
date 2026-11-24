@@ -121,3 +121,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#791 behind | Website: demo recordings rebuilt from 1.3.4; privacy policy corrected for the phone app.
 - youcoded#792 behind | Nothing visible.
 - youcoded#794 fixes | “Sign in again” for Claude now works when your login runs out, instead of failing with “Could not get login URL.”
+- youcoded#795 fixes | The release notes behind the version chip no longer open with a stray title, an empty “[Unreleased]” heading or a technical line.
