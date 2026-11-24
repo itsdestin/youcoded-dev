@@ -62,7 +62,7 @@
       "path": "Warnings, when no saved copy exists yet",
       "crop": "settings/sync#config-salvaged@600x648+420+126",
       "headline": "Damaged file, no saved copy: the app keeps the backups it can still read and asks you to check.",
-      "changed": "This covers people whose file is damaged before any last-good copy was ever saved (anyone updating from today's version). The app keeps only the backups that are complete in the damaged file and says how many.",
+      "changed": "This covers people whose file is damaged before any last-good copy was ever saved (anyone updating from today's version). The app keeps only the backups that are complete in the damaged file and says how many. If it can read none, it says so and asks you to add them again.",
       "notice": "Most people keep their backups. You are asked to check the list and add any that are missing.",
       "risk": "A backup that was cut off halfway in the damaged file is dropped, so the list can be short by one. The notice says so, but someone who dismisses it without looking would not know."
     },
@@ -75,7 +75,18 @@
       "headline": "Last resort: nothing readable, so a red notice offers 'Start fresh'.",
       "changed": "Only when there is no saved copy and nothing readable. Nothing is changed until you press Start fresh, which sets the unreadable file aside (kept, not deleted) and gives an empty list.",
       "notice": "No dead end any more. Your copies in Drive or iCloud are untouched; only the app's list of them is reset.",
-      "risk": "After Start fresh you add your backups again by hand. This should be very rare now that the two repairs above come first."
+      "risk": "After Start fresh you add your backups again by hand. This should be very rare now that the two repairs come first. Start fresh refuses to run if a saved copy or readable backups exist."
+    },
+    {
+      "id": "U-6",
+      "new": true,
+      "surface": "Settings, Backup & sync",
+      "path": "Warnings, when the repair itself could not be saved",
+      "crop": "settings/sync#config-write-failed@600x648+420+126",
+      "headline": "Repair could not be saved (for example a full disk): a red notice with 'Try again', and no Start fresh.",
+      "changed": "Added after the code review. If the app can repair the file but cannot save the repair, it says so and offers Try again. Before this fix it would have called the file damaged and offered Start fresh, which would have thrown away settings that were recoverable.",
+      "notice": "Nothing is changed while it cannot save. Try again repairs it once there is room.",
+      "risk": "The notice does not say why saving failed, because the app cannot always know. Someone with a full disk has to work that out themselves."
     }
   ]
 }
