@@ -1,0 +1,45 @@
+{
+ "deck": "waiting-notice-questions",
+ "started": "2026-11-24T01:31:10.188Z",
+ "submitted": null,
+ "cur": 1,
+ "answers": {
+  "F-1": {
+   "v": "skip",
+   "seconds": 19,
+   "theme": "ivory-schematic",
+   "t": 1795483945410
+  },
+  "Q-1": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "ivory-schematic",
+   "t": 1795483886912
+  },
+  "Q-2": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "ivory-schematic",
+   "t": 1795483886912
+  },
+  "Q-3": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "ivory-schematic",
+   "t": 1795483886912
+  },
+  "Q-4": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "ivory-schematic",
+   "t": 1795483886912
+  }
+ },
+ "built": {
+  "at": "2026-11-23T00:11:57Z",
+  "branch": "session/waiting-notice",
+  "commit": "8bfb0c460011e96e29b4dc22a330ee9596dab4d8",
+  "spec_sha256": "bf9ad9908d687bda33e2b13b985ee4b1357b48ed19eeaf9920224ac59ba92d45",
+  "spec_dirty": true
+ }
+}

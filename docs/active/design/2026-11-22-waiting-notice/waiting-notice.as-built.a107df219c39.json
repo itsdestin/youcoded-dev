@@ -1,0 +1,295 @@
+{
+  "title": "The \"waiting on something\" notice",
+  "key": "waiting-notice",
+  "out": "waiting-notice.html",
+  "grows": true,
+  "tag": "bug",
+  "stage": "design",
+  "rounds_before": 1,
+  "retired": {},
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "What goes wrong today",
+      "intro": "The notice from your screenshot, and the rule you suggested for it.",
+      "stage": "design"
+    },
+    {
+      "id": "L-0",
+      "words": true,
+      "context": true,
+      "surface": "Chat",
+      "path": "The notice above the message box",
+      "headline": "Why the notice misbehaves",
+      "calls": [
+        {
+          "id": "when",
+          "call": "When it appears",
+          "why": "You press Send while Claude Code waits for you to answer something. Your message is held back, not sent, and stays in the box."
+        },
+        {
+          "id": "stuck",
+          "call": "Why it never goes away",
+          "why": "It should vanish after 8 seconds, but the countdown restarts every time the screen updates. While Claude works, that is many times a second."
+        },
+        {
+          "id": "follows",
+          "call": "Why it follows you to other chats",
+          "why": "The app has one spot for floating notices, shared by every chat, so switching chats leaves it showing."
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Chat",
+      "path": "The notice above the message box",
+      "headline": "The notice should belong to one chat, and leave once the question is answered or you send a message.",
+      "changed": "Your suggestion, written as the rule the fix would follow.",
+      "notice": "It would never show in a chat it has nothing to do with, and never vanish while your message is still held back.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-2",
+      "page": "How the app's other warnings look and behave",
+      "intro": "Real pictures from the app. Most already belong to one chat and leave once the problem is fixed.",
+      "stage": "design"
+    },
+    {
+      "id": "L-1",
+      "words": true,
+      "context": true,
+      "gallery": true,
+      "surface": "Chat",
+      "path": "Every warning a chat can show",
+      "headline": "Every kind of warning in a chat today",
+      "calls": [
+        {
+          "id": "question",
+          "call": "A question from Claude",
+          "why": "A card in the chat. Only in that chat. Stays until you answer or dismiss it. This is what the notice is pointing you to.",
+          "picture": "pictures/question-card.png"
+        },
+        {
+          "id": "stuck",
+          "call": "Claude seems stuck",
+          "why": "Inside the chat, under the last reply, with a red outline. Only in that chat. Goes away by itself the moment Claude replies again.",
+          "picture": "pictures/stuck-inline.png"
+        },
+        {
+          "id": "error",
+          "call": "An error from the AI service",
+          "why": "Inside the chat, with a red outline and Details. Only in that chat. Stays until your next message. Buttons to try again or switch model.",
+          "picture": "pictures/error-card.png"
+        },
+        {
+          "id": "offline",
+          "call": "No internet",
+          "why": "Inside the chat, a small red-outlined line with Try again. Only in that chat. Goes away once the connection works.",
+          "picture": "pictures/offline.png"
+        },
+        {
+          "id": "signin",
+          "call": "Signed out of Claude",
+          "why": "Inside the chat, in place of the reply. After you sign in it turns green, then goes away with your next message.",
+          "before": "pictures/signin-expired.png",
+          "before_name": "Signed out",
+          "picture": "pictures/signin-back.png",
+          "picture_name": "Signed back in"
+        },
+        {
+          "id": "unconfirmed",
+          "call": "A message that may not have arrived",
+          "why": "A row just above the message box. Only in that chat. Goes away once the message is confirmed, or when you press Dismiss.",
+          "picture": "pictures/unconfirmed-send.png"
+        },
+        {
+          "id": "band",
+          "call": "Starting up, or tools that failed",
+          "why": "A strip just above the message box. Only in that chat. Grey while it works, red if it fails. Goes away once the chat is ready.",
+          "before": "pictures/band-connecting.png",
+          "before_name": "Starting up",
+          "picture": "pictures/band-failed.png",
+          "picture_name": "Tools failed"
+        },
+        {
+          "id": "phone",
+          "call": "Phone reconnecting to the computer",
+          "why": "A strip just above the message box on a phone. Only in that chat. Goes away once it reconnects, and keeps your draft.",
+          "picture": "pictures/phone-reconnecting.png"
+        },
+        {
+          "id": "top",
+          "call": "Something left out when the chat started",
+          "why": "An amber strip across the top of the chat. Only in that chat. It stays, because it is information rather than a problem to fix.",
+          "picture": "pictures/top-strip.png"
+        },
+        {
+          "id": "floating",
+          "call": "Short floating notices",
+          "why": "One floating spot for the whole app, used by about 40 messages like this one. Meant to leave after a few seconds. All share the stuck-timer bug.",
+          "picture": "pictures/today-floating-close.png"
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Your choices",
+      "intro": "Where the notice goes, when it shows, and what happens to your held-back message.",
+      "stage": "design"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "visual": true,
+      "surface": "Chat",
+      "path": "The notice above the message box",
+      "headline": "Where should the notice sit?",
+      "today": "It floats over the bottom of the chat, in every chat, and stays until Claude goes quiet.",
+      "checked": "Read in the app's code on 2026-11-21, and matches your screenshot.",
+      "problem": "It covers your messages and follows you to chats it has nothing to do with.",
+      "proposal": "Three drawings of the same moment: a question is waiting, and you pressed Send. All three stay in their own chat and leave once you answer or send.",
+      "options": [
+        {
+          "id": "strip",
+          "label": "Strip above the box",
+          "recommended": true,
+          "picture": "pictures/option-strip.png",
+          "caption": "Same strip as \"Connecting tools…\" and the phone's \"Reconnecting…\".",
+          "pros": [
+            "Never covers your messages.",
+            "Works like the other warnings above the box, so nothing new to learn.",
+            "Sits right where your held-back message is."
+          ],
+          "cons": [
+            "Pushes the chat up by one line while it shows."
+          ],
+          "reuse": {
+            "from": [
+              "The \"Connecting tools…\" strip above the message box",
+              "The app's standard buttons"
+            ],
+            "new": [
+              "The words, and the two buttons inside the strip"
+            ]
+          }
+        },
+        {
+          "id": "floating",
+          "label": "Floating, per chat",
+          "picture": "pictures/option-floating.png",
+          "caption": "Today's look, but only in its own chat, and staying until you answer.",
+          "pros": [
+            "Looks the same as today; only when it leaves changes."
+          ],
+          "cons": [
+            "Still covers part of the chat while it stays, which is what bothers you now.",
+            "Any other floating notice would replace it."
+          ]
+        },
+        {
+          "id": "inline",
+          "label": "In the chat",
+          "picture": "pictures/option-inline.png",
+          "caption": "A line right under the waiting question, like \"No internet\".",
+          "pros": [
+            "Sits right beside the thing you need to answer."
+          ],
+          "cons": [
+            "Scrolls away with the chat, so you can miss it.",
+            "When the thing waiting is a pop-up only on the terminal screen, there is no question in the chat to sit under."
+          ]
+        }
+      ],
+      "picture": "pictures/today-floating-notice.png",
+      "caption": "Today, from your screenshot: the notice covering your sent message."
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat",
+      "path": "The notice above the message box",
+      "headline": "When should the notice appear?",
+      "today": "Only when you press Send and the message is held back.",
+      "checked": "Read in the app's code on 2026-11-21.",
+      "problem": "Claude's question is usually already on screen, so a notice before you send would repeat it.",
+      "proposal": "Two choices.",
+      "options": [
+        {
+          "id": "after-send",
+          "label": "After you press Send",
+          "recommended": true,
+          "summary": "It only appears when your message is held back, as now.",
+          "pros": [
+            "Never repeats a question you can already see.",
+            "Shows exactly when you need to know why nothing sent."
+          ],
+          "cons": [
+            "You only learn something is waiting once you try to send."
+          ]
+        },
+        {
+          "id": "always",
+          "label": "Whenever something waits",
+          "summary": "It shows as soon as Claude Code waits on you, even before you type.",
+          "pros": [
+            "You know before you start typing."
+          ],
+          "cons": [
+            "Shows on top of a question you can already see, most of the time."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chat",
+      "path": "The message box",
+      "headline": "Once you answer, should your held-back message send itself?",
+      "today": "Your message stays in the box. After answering, you press Send again yourself.",
+      "checked": "Read in the app's code on 2026-11-21.",
+      "problem": "Pressing Send twice is a small annoyance; a message sending itself later can be a surprise.",
+      "proposal": "Two choices.",
+      "options": [
+        {
+          "id": "manual",
+          "label": "You press Send again",
+          "recommended": true,
+          "summary": "The message waits in the box until you send it.",
+          "pros": [
+            "Nothing sends without you pressing the button.",
+            "You can change or delete it first."
+          ],
+          "cons": [
+            "One extra press after answering."
+          ]
+        },
+        {
+          "id": "auto",
+          "label": "It sends itself",
+          "summary": "The notice says your message will send once you answer, and it goes out as soon as you do.",
+          "pros": [
+            "No second press."
+          ],
+          "cons": [
+            "A message typed minutes ago could go out after you changed your mind.",
+            "A bigger change to how sending works, so more that could go wrong."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Every floating notice",
+      "path": "The floating notices above the message box",
+      "headline": "Should I also fix the stuck timer for the other floating notices now?",
+      "today": "About 40 short notices, like \"Not connected\" or \"Couldn't switch model\", share the same stuck-timer bug.",
+      "checked": "Found by reading the shared notice code on 2026-11-21; the bug is in the one piece all of them use.",
+      "problem": "Any of them can stay on screen while Claude works, the same way this one did.",
+      "proposal": "Fix that one shared piece now. Yes: those notices leave on time, and that is the only change you would notice. No: they stay as they are."
+    }
+  ]
+}

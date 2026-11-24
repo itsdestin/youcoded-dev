@@ -1,0 +1,158 @@
+{
+  "title": "The \"waiting on something\" notice that won't go away",
+  "key": "waiting-notice-questions",
+  "out": "waiting-notice.questions.html",
+  "steps": [
+    {
+      "id": "F-1",
+      "words": true,
+      "context": true,
+      "surface": "Chat",
+      "path": "The notice above the message box",
+      "headline": "What is going on today",
+      "calls": [
+        {
+          "id": "what",
+          "call": "When does the notice appear?",
+          "why": "You press send while Claude Code is waiting for you to answer a question or permission card, or a pop-up in its terminal. Your message is NOT sent; it stays in the box."
+        },
+        {
+          "id": "why-stuck",
+          "call": "Why does it never go away?",
+          "why": "It is meant to vanish after 8 seconds, but a mistake restarts that countdown every time the screen updates. While Claude works, that is many times a second."
+        },
+        {
+          "id": "why-follows",
+          "call": "Why does it follow you to other chats?",
+          "why": "The app has a single spot for floating notices, shared by the whole window. It does not belong to any one chat, so switching chats leaves it showing."
+        },
+        {
+          "id": "others",
+          "call": "Other floating notices have the same bug",
+          "why": "About 40 other short notices use that same spot, like \"Not connected\" or \"Couldn't switch model\". All of them can get stuck the same way while Claude works."
+        },
+        {
+          "id": "rest",
+          "call": "Most other chat warnings already behave the way you want",
+          "why": "\"Claude seems stuck\", sign-in problems, \"this message didn't send\", the \"Connecting…\" band and \"Claude Code is asking something\" each belong to one chat and vanish once the problem is fixed."
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "How the notice should behave",
+      "intro": "Four decisions. The first one matters most; the rest follow from it."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat",
+      "path": "The notice above the message box",
+      "headline": "Where should this notice live, and when should it go away?",
+      "today": "It floats over the bottom of the chat, is shared by every chat, and is meant to vanish after 8 seconds but gets stuck instead.",
+      "checked": "Read in the app's current code on 2026-11-21, and matches your screenshot.",
+      "problem": "It covers your messages, follows you to chats it has nothing to do with, and can stay long after you answered the card.",
+      "proposal": "Three ways to fix it. All three stop it following you to other chats.",
+      "options": [
+        {
+          "id": "band",
+          "label": "A strip above the box",
+          "summary": "A one-line strip directly above the message box, in that chat only, like the existing \"Connecting…\" strip. It stays until you answer the card, close the pop-up, or send a message.",
+          "pros": [
+            "Never covers your messages.",
+            "Works like the app's other per-chat warnings, so nothing new to learn.",
+            "Another notice can't push it away while the problem is still there."
+          ],
+          "cons": [
+            "Takes one line of space above the box while it shows.",
+            "A bit more work than the other two."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "floating-per-chat",
+          "label": "Floating, per chat",
+          "summary": "Stays a floating bubble like today, but only on its own chat, and stays until you answer, close the pop-up, or send.",
+          "pros": [
+            "Looks the same as today; only when it leaves changes."
+          ],
+          "cons": [
+            "A bubble that stays can still cover messages, which is what bothers you now.",
+            "Any other notice that pops up would replace it."
+          ]
+        },
+        {
+          "id": "timer-only",
+          "label": "Just fix the timer",
+          "summary": "Keep it as it is, but make it really leave after 8 seconds, and when you switch chats.",
+          "pros": [
+            "Smallest change."
+          ],
+          "cons": [
+            "It can disappear while the card is still unanswered, leaving you unsure why your message didn't go."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat",
+      "path": "The notice above the message box",
+      "headline": "Should the notice appear only after you try to send?",
+      "today": "It appears only when you press send and the message is held back.",
+      "checked": "Read in the app's current code on 2026-11-21.",
+      "problem": "If it showed every time Claude Code waits on you, it would repeat a card that is usually already in plain view.",
+      "proposal": "Keep it as now: it appears only after a send is held back. Yes keeps that; No makes it show whenever something is waiting, even before you type."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chat",
+      "path": "The message box",
+      "headline": "Once you answer the card, should your held-back message send itself?",
+      "today": "Your message stays in the box. After answering the card you press send again yourself.",
+      "checked": "Read in the app's current code on 2026-11-21.",
+      "problem": "Pressing send twice is a small annoyance, but a message sending itself later can surprise you.",
+      "proposal": "Two choices.",
+      "options": [
+        {
+          "id": "manual",
+          "label": "You press send again",
+          "summary": "The message waits in the box until you send it, as it does now.",
+          "pros": [
+            "Nothing sends without you pressing the button.",
+            "You can change or delete the message first."
+          ],
+          "cons": [
+            "One extra press after answering."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "auto",
+          "label": "It sends itself",
+          "summary": "The strip says \"Your message will send once you answer\", and it goes out as soon as you do.",
+          "pros": [
+            "No second press."
+          ],
+          "cons": [
+            "A message typed minutes ago could go out after you forgot it or changed your mind.",
+            "A bigger change to how sending works, so more that could go wrong."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Every floating notice",
+      "path": "The notices above the message box",
+      "headline": "Should I also fix the stuck timer for the other floating notices now?",
+      "today": "About 40 short notices, like \"Not connected\" or \"Couldn't switch model\", share the same timer mistake and can stay on screen while Claude works.",
+      "checked": "Found by reading the shared notice code on 2026-11-21; the mistake is in one place all of them use.",
+      "problem": "Any of them can get stuck on screen the same way this one did.",
+      "proposal": "Fix that one shared mistake now, separately from this notice. Yes fixes it; the only thing you would notice is those notices leaving on time. No leaves them as they are."
+    }
+  ]
+}
