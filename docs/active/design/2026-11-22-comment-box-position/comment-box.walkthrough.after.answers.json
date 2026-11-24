@@ -1,0 +1,102 @@
+{
+ "deck": "comment-box-position-after",
+ "started": "2026-11-24T02:32:55.896Z",
+ "submitted": "2026-11-24T02:36:53Z",
+ "cur": 4,
+ "answers": {
+  "W-1": {
+   "ok": {
+    "box": true,
+    "word": true
+   },
+   "t": 1795487584131,
+   "v": "yes",
+   "seconds": 8,
+   "theme": "ivory-schematic"
+  },
+  "W-2": {
+   "ok": {
+    "md": true,
+    "docx": true
+   },
+   "t": 1795487638674,
+   "v": "yes",
+   "seconds": 55,
+   "theme": "ivory-schematic"
+  },
+  "W-3": {
+   "ok": {
+    "s1": true,
+    "s2": true,
+    "s3": true,
+    "s4": true
+   },
+   "t": 1795487656824,
+   "v": "yes",
+   "seconds": 18,
+   "theme": "ivory-schematic"
+  },
+  "W-4": {
+   "ok": {
+    "left": true,
+    "follow": true,
+    "hover": true,
+    "code": true,
+    "nohl": true
+   },
+   "t": 1795487784295,
+   "v": "yes",
+   "seconds": 124,
+   "theme": "ivory-schematic"
+  },
+  "W-5": {
+   "v": "yes",
+   "accepted": true,
+   "seconds": 8,
+   "theme": "ivory-schematic",
+   "t": 1795487812200
+  },
+  "W-6": {
+   "v": "other",
+   "accepted": true,
+   "seconds": 8,
+   "theme": "ivory-schematic",
+   "t": 1795487812200,
+   "results": {
+    "v1": "pass",
+    "v2": "pass"
+   }
+  },
+  "W-7": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "ivory-schematic",
+   "t": 1795487812200,
+   "ok": {
+    "b1": true,
+    "b2": true,
+    "b3": true
+   }
+  },
+  "W-8": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "ivory-schematic",
+   "t": 1795487812200,
+   "ok": {
+    "f1": true,
+    "f3": true,
+    "f4": true,
+    "f5": true,
+    "f2": true
+   }
+  }
+ },
+ "built": {
+  "at": "2026-11-23T00:58:07Z",
+  "branch": "session/comment-box-position",
+  "commit": "1c53eb3a3dfdc8835ba51064c0e0992780d62b8c",
+  "spec_sha256": "a8fea3b11f3255b7ee5d19c5b51002841e75d51d86d43f7e7ce8863d18ae57cd",
+  "spec_dirty": true
+ }
+}
