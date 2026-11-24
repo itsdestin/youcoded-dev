@@ -19,6 +19,7 @@ import numpy as np  # noqa: E402
 import soundfile as sf  # noqa: E402
 
 import blocks  # noqa: E402
+import form  # noqa: E402
 import measure as M  # noqa: E402
 import mix as X  # noqa: E402
 import films  # noqa: E402
@@ -69,6 +70,12 @@ def one(piece, extra_fn=None, path=None):
                            layers=sorted(p.layers), into=p.into)
                       for p in plans]
     st["notes"] = piece.notes
+    # THE COMPOSITION CHECKS (form.py): the notes, then the audio; the bar table goes to out/notes/
+    rows = form.bar_table(band, plans, piece)
+    st["composition"] = form.symbolic(band, plans, piece, rows) + form.audio(y, band, plans, piece, rows)
+    os.makedirs(os.path.join(OUT, "notes"), exist_ok=True)
+    with open(os.path.join(OUT, "notes", f"{piece.name}.txt"), "w") as f:
+        f.write("\n".join(form.table_text(rows, piece) + [""] + form.verdict_text(piece.name, st["composition"])) + "\n")
     return piece.name, st
 
 
@@ -119,6 +126,8 @@ def checks(name, v):
                  f"{j['bright_after']['8-16k']} dB; biggest 1 s change nearby {j['max_change_1s']} dB (at {j['max_change_at']} s); "
                  f"tempo per beat {j['tempo_per_beat']}")
     L.append(f"   bus loudness: {v['stem_lufs']}")
+    if "composition" in v:
+        L += ["   " + x for x in form.verdict_text(name, v["composition"])]
     return L
 
 
@@ -152,7 +161,18 @@ def write_joins(res):
 def main():
     os.makedirs(OUT, exist_ok=True)
     only = sys.argv[1:]
+    film_names = films.resolve(only)
+    unknown = [n for n in only if n not in [p.name for p in DEMOS] and not films.resolve([n])]
+    if unknown:
+        print(f"Unknown piece or film: {', '.join(unknown)}. Demos: {', '.join(p.name for p in DEMOS)}. "
+              f"Films: {', '.join(films.FILMS)}. Film files: {', '.join(films.ALIASES) or 'none'}.", file=sys.stderr)
+        sys.exit(2)
     todo = [p for p in DEMOS if not only or p.name in only]
+    if only and not todo:
+        # WHY: films only. Leave the demonstrations' files alone (another composer may be
+        # rendering at the same time; rewriting shared files here would race with them)
+        films.main(film_names)
+        return
     res = {}
     if todo:
         with Pool(len(todo)) as pool:
@@ -173,8 +193,8 @@ def main():
         f.write("\n".join(lines) + "\n")
     write_joins(old)
     print("\n".join(lines))
-    if not only or any(f in only for f in films.FILMS):
-        films.main([f for f in only if f in films.FILMS] or None)
+    if not only or film_names:
+        films.main(film_names or None)
 
 
 if __name__ == "__main__":

@@ -53,6 +53,9 @@ SEGMENTS = {
 }
 
 
+BAR_NOTES = {k + 1: [(b - 4 * k, n, d) for b, n, d in TUNE if 4 * k <= b < 4 * k + 4] for k in range(8)}
+
+
 def tune_index(name_beat):
     """Canonical position of a tune note (for the 'same tune everywhere' check)."""
     return TUNE.index(name_beat) if name_beat in TUNE else None
@@ -111,11 +114,91 @@ V = {
     "G":      dict(root="G2", sub="G1", fig=["G1", "D2", "B2", "D2"], rock=["G2", "D3", "B3", "D3"],
                    off=["G3", "B3"], lh=["G1", "D2", "B2"], bow=["D3", "G3", "B3"], air="D6"),
 }
+# ---- the wider vocabulary (2026-11-23). WHY: one four-chord loop for a whole film was the main
+# reason "Make it mine" sounded like a loop. These are all still E-flat major's own chords, its
+# inversions (a different bass note under the same chord, so the bass can walk by step) and three
+# "borrowed" colours a composer may use ONCE as a surprise: A-flat minor (iv, the bittersweet
+# turn), D-flat (bVII, the "sun through clouds" lift into E-flat) and F7 (V of V, a brighter
+# push towards B-flat). F7's A natural and A-flat minor's C-flat (B) clash with the tune's A-flat
+# and C: never put those tune notes over them (the composition check reports it).
+V.update({
+    "Eb/G":   dict(root="G2", sub="G1", fig=["G1", "Eb2", "Bb2", "Eb2"], rock=["G2", "Eb3", "Bb3", "Eb3"],
+                   off=["G3", "Bb3"], lh=["G1", "Eb2", "Bb2"], bow=["Eb3", "G3", "Bb3"], air="Eb6"),
+    "Eb/Bb":  dict(root="Bb2", sub="Bb1", fig=["Bb1", "G2", "Eb3", "G2"], rock=["Bb2", "G3", "Eb4", "G3"],
+                   off=["G3", "Bb3"], lh=["Bb1", "G2", "Eb3"], bow=["Eb3", "G3", "Bb3"], air="Eb6"),
+    "Eb/D":   dict(root="D2", sub="D2", fig=["D2", "Bb2", "G3", "Bb2"], rock=["D3", "Bb3", "G3", "Bb3"],
+                   off=["G3", "Bb3"], lh=["D2", "Bb2", "G3"], bow=["Eb3", "G3", "Bb3"], air="Eb6"),
+    "Cm7/Bb": dict(root="Bb2", sub="Bb1", fig=["Bb1", "G2", "Eb3", "G2"], rock=["Bb2", "G3", "Eb4", "G3"],
+                   off=["G3", "C4"], lh=["Bb1", "G2", "C3"], bow=["Eb3", "G3", "C4"], air="Eb6"),
+    "Ab/C":   dict(root="C2", sub="C2", fig=["C2", "Ab2", "Eb3", "Ab2"], rock=["C3", "Ab3", "Eb4", "Ab3"],
+                   off=["Ab3", "C4"], lh=["C2", "Ab2", "Eb3"], bow=["Eb3", "Ab3", "C4"], air="Eb6"),
+    "Ab/Bb":  dict(root="Bb2", sub="Bb1", fig=["Bb1", "Ab2", "Eb3", "Ab2"], rock=["Bb2", "Ab3", "C4", "Ab3"],
+                   off=["Ab3", "C4"], lh=["Bb1", "Ab2", "C3"], bow=["Eb3", "Ab3", "C4"], air="Eb6"),
+    "Bb":     dict(root="Bb2", sub="Bb1", fig=["Bb1", "F2", "D3", "F2"], rock=["Bb2", "F3", "D4", "F3"],
+                   off=["Bb3", "D4"], lh=["Bb1", "F2", "D3"], bow=["D3", "F3", "Bb3"], air="D6"),
+    "Bb/D":   dict(root="D2", sub="D2", fig=["D2", "Bb2", "F3", "Bb2"], rock=["D3", "F3", "Bb3", "F3"],
+                   off=["F3", "Bb3"], lh=["D2", "Bb2", "F3"], bow=["D3", "F3", "Bb3"], air="D6"),
+    "Gm7":    dict(root="G2", sub="G1", fig=["G1", "D2", "Bb2", "D2"], rock=["G2", "D3", "Bb3", "D3"],
+                   off=["F3", "Bb3"], lh=["G1", "D2", "F2"], bow=["D3", "F3", "Bb3"], air="D6"),
+    "Fm":     dict(root="F2", sub="F1", fig=["F1", "C2", "Ab2", "C2"], rock=["F2", "C3", "Ab3", "C3"],
+                   off=["Ab3", "C4"], lh=["F1", "C2", "Ab2"], bow=["C3", "F3", "Ab3"], air="Eb6"),
+    "Fm/Ab":  dict(root="Ab2", sub="Ab1", fig=["Ab1", "F2", "C3", "F2"], rock=["Ab2", "F3", "C4", "F3"],
+                   off=["Ab3", "C4"], lh=["Ab1", "F2", "C3"], bow=["C3", "F3", "Ab3"], air="Eb6"),
+    "Abm":    dict(root="Ab2", sub="Ab1", fig=["Ab1", "Eb2", "B2", "Eb2"], rock=["Ab2", "Eb3", "B3", "Eb3"],
+                   off=["B3", "Eb4"], lh=["Ab1", "Eb2", "B2"], bow=["Eb3", "Ab3", "B3"], air="Eb6"),
+    "Db":     dict(root="Db2", sub="Db2", fig=["Db2", "Ab2", "F3", "Ab2"], rock=["Db3", "Ab3", "F4", "Ab3"],
+                   off=["Ab3", "Db4"], lh=["Db2", "Ab2", "F3"], bow=["Db3", "F3", "Ab3"], air="Eb6"),
+    "F7":     dict(root="F2", sub="F1", fig=["F1", "C2", "A2", "C2"], rock=["F2", "C3", "A3", "C3"],
+                   off=["A3", "Eb4"], lh=["F1", "C2", "A2"], bow=["Eb3", "A3", "C4"], air="Eb6"),
+})
+
 CHORD_TONES = {   # pitch classes (0 = C) that a landing note may sit on
     "Eb": {3, 7, 10}, "Cm7": {0, 3, 7, 10}, "Abmaj7": {8, 0, 3, 7}, "Bbsus": {10, 3, 5, 8},
     "Bb7": {10, 2, 5, 8}, "Ab": {8, 0, 3}, "Cm": {0, 3, 7}, "Fm7": {5, 8, 0, 3},
     "Cm/G": {7, 0, 3}, "G": {7, 11, 2},
+    "Eb/G": {3, 7, 10}, "Eb/Bb": {3, 7, 10}, "Eb/D": {3, 7, 10, 2}, "Cm7/Bb": {0, 3, 7, 10},
+    "Ab/C": {8, 0, 3}, "Ab/Bb": {8, 0, 3, 10}, "Bb": {10, 2, 5}, "Bb/D": {10, 2, 5},
+    "Gm7": {7, 10, 2, 5}, "Fm": {5, 8, 0}, "Fm/Ab": {5, 8, 0}, "Abm": {8, 11, 3},
+    "Db": {1, 5, 8}, "F7": {5, 9, 0, 3},
 }
+# Notes of the tune that must not sound over a borrowed chord (they clash with its new note).
+CLASH = {"F7": {8}, "Abm": {0}, "Db": {2}, "G": {10, 0}}
+
+# Inversions a voice-leading helper may swap in for each chord (same chord, another bass note).
+INVERSIONS = {"Eb": ["Eb", "Eb/G", "Eb/Bb", "Eb/D"], "Cm7": ["Cm7", "Cm7/Bb"], "Abmaj7": ["Abmaj7", "Ab/C"],
+              "Ab": ["Ab", "Ab/C"], "Bb": ["Bb", "Bb/D"], "Fm7": ["Fm7", "Fm/Ab"], "Fm": ["Fm", "Fm/Ab"]}
+
+
+def smooth_bass(chords, keep_ends=True):
+    """VOICE-LEADING HELPER: given one chord per bar (names), pick an inversion for each so the
+    bass moves as little as possible (by step where it can), keeping the first and last chord in
+    root position. Returns the new list. Use it on a progression you wrote, then hand-edit.
+    WHY: a bass that only ever plays roots jumps a fourth or fifth every bar; walking by step is
+    what makes a repeated progression feel like it is going somewhere."""
+    opts = [INVERSIONS.get(c, [c]) if (not keep_ends or 0 < i < len(chords) - 1) else [c]
+            for i, c in enumerate(chords)]
+    pc = lambda c: note(V[c]["root"]) % 12
+    cost = [{o: (0.0, None) for o in opts[0]}]
+    for i in range(1, len(opts)):
+        row = {}
+        for o in opts[i]:
+            best = None
+            for prev, (c0, _) in cost[-1].items():
+                d = abs(pc(o) - pc(prev)) % 12
+                d = min(d, 12 - d)
+                step = d if d <= 2 else d + 1.5        # prefer steps over leaps
+                inv = 0.0 if o == opts[i][0] else 0.4   # a little preference for root position
+                c = c0 + step + inv
+                if best is None or c < best[0]:
+                    best = (c, prev)
+            row[o] = best
+        cost.append(row)
+    o = min(cost[-1], key=lambda k: cost[-1][k][0])
+    out = [o]
+    for i in range(len(cost) - 1, 0, -1):
+        o = cost[i][o][1]
+        out.append(o)
+    return out[::-1]
 
 # ------------------------------------------------------------------ THE ANSWER
 # blend-1's idea: after each bar of the tune, a second piano answers with a three-step ladder

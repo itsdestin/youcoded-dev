@@ -17,7 +17,7 @@ from dsp import SR, butter, db, note
 
 
 def canonical(canon):
-    seg, b = canon
+    seg, b = canon[0], canon[1]
     if seg == "ending":
         return {x[0]: note(x[1]) for x in T.ENDING}[b]
     if seg == "logo":
@@ -27,10 +27,18 @@ def canonical(canon):
 
 
 def tune_identity(band):
-    """Every tune note that sounded vs. the canonical tune. Returns counts and mismatches."""
+    """Every tune note that sounded vs. the canonical tune. Returns counts and mismatches.
+    WHY derived notes are counted, not compared (2026-11-23): a note a composer developed from
+    the tune (motif.py: moved, inverted, re-ended...) or wrote by hand carries its origin and its
+    changes in `canon`; demanding it equal the original note is what used to forbid any
+    development. The plain tune, the ending and the logo are still compared note for note."""
     seen, bad = {}, []
     for t, m, canon, bus in band.tune_log:
         if canon is None:
+            continue
+        if canon[0] == "written" or (len(canon) > 2 and canon[2]):
+            key = "written" if canon[0] == "written" else "developed"
+            seen[key] = seen.get(key, 0) + 1
             continue
         want = canonical(canon)
         seen[canon[0]] = seen.get(canon[0], 0) + 1

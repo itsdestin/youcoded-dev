@@ -15,7 +15,9 @@ momentary loudness around it (so it reads clearly but sits in the music, whereve
 then trimmed by the hit's gain_db. Both are mixed before the final limiter, so the delivered
 file is -14 LUFS with true peak at or below -1 dB as a whole.
 
-Next films (a 60 s product film, a 65-75 s narrated film) are added to FILMS the same way.
+New films go in their OWN file, src/film_<key>.py, exposing FILM (or FILMS = [...]); they are
+found automatically (see _discover) and rendered with `render.sh <key>` or `render.sh <film name>`.
+The films below pin style="v1": they are what the owner has already heard, byte for byte.
 """
 import json
 import os
@@ -90,6 +92,26 @@ class Film:
     hits: list = field(default_factory=list)
     picture: list = field(default_factory=list)
     copy_to: Optional[str] = None
+    # WHY (owner's rule, 2026-11-20): sound effects are MADE FOR EACH FILM, never taken from a
+    # shared kit. `effects(music, plans, piece)` is a module-level function in the film's own
+    # file; it gets the music before the final limiter and returns (audio, report rows). The film
+    # is then written twice: <name>.wav (music + effects) and <name>-no-pen.wav (music alone).
+    effects: Optional[object] = None
+
+
+def place_effect(out, x, t, music, rel_db, early=0.0):
+    """Helper for a film's own effects: add sound x at time t, its loudest 100 ms set rel_db
+    relative to the music's own momentary loudness around it. Returns the report row."""
+    tt, mv = M.momentary(music)
+    span = len(x) / SR
+    sel = (tt >= t - 0.2) & (tt <= t + span + 0.2)
+    music_l = float(np.median(mv[sel]))
+    g_db = music_l + rel_db - short_loud(x)
+    i = int(round((t - early) * SR))
+    j = min(len(out), i + len(x))
+    out[i:j] += x[: j - i] * 10 ** (g_db / 20)
+    return dict(t=t, length_s=round(span, 3), music_lufs_around=round(music_l, 1),
+                effect_loudest_100ms=round(music_l + rel_db, 1), under_music_db=-rel_db, above_5k_db=above_5k(x))
 
 
 # ------------------------------------------------------------------ effects
@@ -189,7 +211,7 @@ def sfx_layer(film, music, rel=SFX_REL, lp_hz=4500.0):
 OWN_EVERYTHING = Film(
     "own-everything",
     Piece(
-        "own-everything", 24.0, land=19.2, ending_start=16.8, rit=0.92, seed=21,
+        "own-everything", 24.0, style="v1", land=19.2, ending_start=16.8, rit=0.92, seed=21,
         notes="Typography, picture final. One song: stark and deadpan while the lie is told, "
               "the turn to bright as 'everything.' is written, a lift through the four "
               "statements (one per bar), the biggest on 'own everything.', the logo played as "
@@ -226,7 +248,7 @@ OWN_EVERYTHING = Film(
 def _subtle(name, loudness, statements):
     return Film(
         name,
-        Piece(name, 24.0, land=19.2, ending_start=16.8, rit=0.92, seed=21, loudness=loudness,
+        Piece(name, 24.0, style="v1", land=19.2, ending_start=16.8, rit=0.92, seed=21, loudness=loudness,
               notes="Own everything, played smaller: " + statements.label,
               sections=[
                   S("stark", 4, tune=["phrase1:3"], turn=True, bpm=100, span=1,
@@ -282,7 +304,7 @@ def _fast(name, loudness, statements_dyn, **kw):
     extra = {} if loudness is None else dict(loudness=loudness)
     return Film(
         name,
-        Piece(name, _FAST_LEN, land=_k(19.2), ending_start=_k(16.8), rit=0.92, seed=21,
+        Piece(name, _FAST_LEN, style="v1", land=_k(19.2), ending_start=_k(16.8), rit=0.92, seed=21,
               notes="Own everything, faster cut (about 18 s).",
               sections=[S("stark", 4, tune=["phrase1:3"], turn=True, bpm=_FAST_BPM, span=1,
                           label="deadpan, then the turn under 'everything.'"), stm], **extra),
@@ -306,7 +328,7 @@ OWN_FAST_BAREST = _fast("own-everything-fast-barest", -19.0, 0.72, drop=("sub", 
 MAKE_IT_MINE = Film(
     "make-it-mine",
     Piece(
-        "make-it-mine", 60.0, land=56.0, ending_start=54.0, rit=0.92, seed=33,
+        "make-it-mine", 60.0, style="v1", land=56.0, ending_start=54.0, rit=0.92, seed=33,
         notes="Make it mine, one playful song at 120 bpm: gentle first conversation, the second "
               "piano joins for the home, strings for the money, violin and piano for the payoff, "
               "the logo played as the last phrase with the name at 56.0 s.",
@@ -334,6 +356,58 @@ MAKE_IT_MINE = Film(
 )
 
 FILMS = {f.name: f for f in (OWN_EVERYTHING, OWN_GENTLER, OWN_BAREST, OWN_FAST, OWN_FAST_GENTLER, OWN_FAST_BAREST, MAKE_IT_MINE)}
+ALIASES = {}     # file key ("mim" for src/film_mim.py) -> the film names it defines
+
+
+def _discover():
+    """Films defined in their own files: src/film_<key>.py, each exposing FILM (one Film) or
+    FILMS (a list). WHY separate files: several composers can each score a film at the same time
+    without editing the same file. A file that fails to import is reported and skipped, so one
+    composer's half-finished edit never stops another's render."""
+    import glob
+    import importlib
+    import sys
+    import traceback
+    for path in sorted(glob.glob(os.path.join(HERE, "film_*.py"))):
+        key = os.path.basename(path)[len("film_"):-3]
+        try:
+            mod = importlib.import_module(f"film_{key}")
+            fl = list(getattr(mod, "FILMS", None) or [getattr(mod, "FILM")])
+        except Exception:
+            print(f"WARNING: src/film_{key}.py could not be loaded, skipped:\n{traceback.format_exc()}", file=sys.stderr)
+            continue
+        for f in fl:
+            if f.name in FILMS and f.name not in ALIASES.get(key, []):
+                print(f"WARNING: src/film_{key}.py redefines film '{f.name}'; the new one wins", file=sys.stderr)
+            FILMS[f.name] = f
+            ALIASES.setdefault(key, []).append(f.name)
+
+
+def speech_from_words(path, t_from, t_to, start_at=0.0, gap=0.3):
+    """Where a narrator speaks, from a word-timing file ([{"w", "start", "end"}, ...]): the words
+    between t_from and t_to (seconds in that file), joined into spans wherever the pause between
+    words is shorter than `gap`, moved so t_from lands at `start_at` (seconds in the piece).
+    Use it for Piece.speech, so the checks can hold the music to the room the voice needs."""
+    words = [w for w in json.load(open(path)) if w["end"] > t_from and w["start"] < t_to]
+    spans = []
+    for w in words:
+        a, b = w["start"] - t_from + start_at, w["end"] - t_from + start_at
+        if spans and a - spans[-1][1] < gap:
+            spans[-1][1] = b
+        else:
+            spans.append([a, b])
+    return [(round(a, 3), round(b, 3)) for a, b in spans]
+
+
+def resolve(names):
+    """Film names for what was typed: a film's name, or a film file's key (all its films)."""
+    out = []
+    for n in names:
+        out += ALIASES.get(n, [n] if n in FILMS else [])
+    return out
+
+
+_discover()
 
 
 def render_film(film):
@@ -341,7 +415,36 @@ def render_film(film):
     os.makedirs(OUT, exist_ok=True)
     # the music alone first (all the music checks apply to it: the "-no-pen" version), then one
     # mix per effects version (VARIANTS); the music is the same render in every one
+    if not film.hits and film.effects is None:
+        # WHY one render: a film with no effects is its music; rendering it three times (two
+        # effects versions and a no-pen copy) only tripled the time and the files
+        _, st = build.one(film.piece, path=os.path.join(OUT, f"{film.name}.wav"))
+        st["music_only"] = {k: st[k] for k in ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total",
+                                               "logo", "sections", "lufs_integrated", "true_peak_dbtp", "composition")}
+        st["versions"], st["picture"] = {}, film.picture
+        if film.copy_to:
+            shutil.copyfile(os.path.join(OUT, f"{film.name}.wav"), film.copy_to)
+            st["copied_to"] = film.copy_to
+        return film.name, st
     _, music_st = build.one(film.piece, path=os.path.join(OUT, f"{film.name}-no-pen.wav"))
+    if film.effects is not None:
+        rep = {}
+
+        def extra(xm, plans, rep=rep):
+            a, r = film.effects(xm, plans, film.piece)
+            rep["hits"] = r
+            return a
+        _, st = build.one(film.piece, extra_fn=extra, path=os.path.join(OUT, f"{film.name}.wav"))
+        st["hits"] = rep["hits"]
+        st["versions"] = {"best": dict(hits=rep["hits"], lufs=st["lufs_integrated"], true_peak=st["true_peak_dbtp"],
+                                       clipped=st["clipped_samples"], low_pass_hz=0.0)}
+        st["music_only"] = {k: music_st[k] for k in ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total",
+                                                   "logo", "sections", "lufs_integrated", "true_peak_dbtp", "composition")}
+        st["picture"] = film.picture
+        if film.copy_to:
+            shutil.copyfile(os.path.join(OUT, f"{film.name}.wav"), film.copy_to)
+            st["copied_to"] = film.copy_to
+        return film.name, st
     st, versions = None, {}
     for suffix, v in VARIANTS.items():
         if v is None:
@@ -360,7 +463,7 @@ def render_film(film):
             st = s
             st["hits"] = rep["hits"]
     st["music_only"] = {k: music_st[k] for k in ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total",
-                                               "logo", "sections", "lufs_integrated", "true_peak_dbtp")}
+                                               "logo", "sections", "lufs_integrated", "true_peak_dbtp", "composition")}
     st["versions"] = versions
     st["picture"] = film.picture
     if film.copy_to:
@@ -391,12 +494,14 @@ def report(name, st):
                  f"tempo {j['tempo_per_beat']}")
     for name_v, ver in st["versions"].items():
         L.append(f"   effects version '{name_v}': whole file {ver['lufs']} LUFS, true peak {ver['true_peak']} dBTP, "
-                 f"clipped {ver['clipped']}, pen low-pass {ver['low_pass_hz']:.0f} Hz")
+                 f"clipped {ver['clipped']}" + (f", pen low-pass {ver['low_pass_hz']:.0f} Hz" if ver['low_pass_hz'] else ""))
         for h in ver["hits"]:
-            L.append(f"      hit {h['t']:>5} s  {h['sound']:<32} {h['length_s']} s, {h['under_music_db']} dB under the music "
+            L.append(f"      hit {h['t']:>5} s  {h.get('sound', h.get('what', '')):<32} {h['length_s']} s, {h['under_music_db']} dB under the music "
                      f"({h['effect_loudest_100ms']} vs {h['music_lufs_around']} LUFS); energy above 5 kHz "
-                     f"{h['above_5k_db']} dB (previous pen: {h['previous_above_5k_db']} dB)")
-    L.append("   no-pen version: the music alone (same render)")
+                     f"{h['above_5k_db']} dB" + (f" (previous pen: {h['previous_above_5k_db']} dB)" if h.get('previous_above_5k_db') is not None else ""))
+    L.append("   no-pen version: the music alone (same render)" if st["versions"] else "   no effects: the file is the music alone")
+    import form
+    L += ["   " + x for x in form.verdict_text(name, mo["composition"])]
     # the tail: how long the last chord stays audible
     y, _ = sf.read(os.path.join(OUT, f"{name}.wav"), dtype="float64", always_2d=True)
     tt, v = M.momentary(y)
@@ -408,14 +513,30 @@ def report(name, st):
 
 def main(names=None):
     from multiprocessing import Pool
+    import glob
+    os.makedirs(OUT, exist_ok=True)
     todo = [FILMS[n] for n in (names or FILMS)]
-    with Pool(len(todo)) as pool:
+    with Pool(min(len(todo), os.cpu_count() or 4)) as pool:
         res = dict(pool.map(render_film, todo))
-    with open(os.path.join(OUT, "report.json"), "w") as f:
-        json.dump(res, f, indent=1)
     lines = []
+    # WHY one report file per film (2026-11-23): several composers render different films at the
+    # same time; a single shared report would be overwritten by whoever finished last. The
+    # combined checks.txt / report.json are rebuilt from the per-film files every time.
     for k, v in res.items():
-        lines += report(k, v)
+        L = report(k, v)
+        lines += L
+        with open(os.path.join(OUT, f"{k}.checks.txt"), "w") as f:
+            f.write("\n".join(L) + "\n")
+        with open(os.path.join(OUT, f"{k}.json"), "w") as f:
+            json.dump(v, f, indent=1)
+    allc, allj = [], {}
+    for path in sorted(glob.glob(os.path.join(OUT, "*.checks.txt"))):
+        allc.append(open(path).read().rstrip("\n"))
+        jp = path[: -len(".checks.txt")] + ".json"
+        if os.path.exists(jp):
+            allj[os.path.basename(jp)[:-5]] = json.load(open(jp))
     with open(os.path.join(OUT, "checks.txt"), "w") as f:
-        f.write("\n".join(lines) + "\n")
+        f.write("\n".join(allc) + "\n")
+    with open(os.path.join(OUT, "report.json"), "w") as f:
+        json.dump(allj, f, indent=1)
     print("\n".join(lines))

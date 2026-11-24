@@ -33,11 +33,13 @@ END_FADE = 1.0         # seconds: the last chord is faded to exact silence over 
 AIR_DB = 11.0          # the master's air shelf (the round-1 default was 2.5; chamber used 6)
 
 # loudness of each bus while it plays (LUFS). The tune is the loudest single thing.
-TARGET = dict(lead=-19.0, sing=-17.5, double=-26.5, answer=-24.0, piano=-23.0, pizz=-23.5,
+# WHY "counter" (2026-11-23): a second line sung against the tune (Section.counter) gets its own
+# bus, set between the answer and the held strings, so it is heard as a partner, never on top.
+TARGET = dict(lead=-19.0, sing=-17.5, double=-26.5, answer=-24.0, counter=-24.5, piano=-23.0, pizz=-23.5,
               bowed=-25.0, air=-27.0, synth=-31.0, sub=-26.5)
-HALL = dict(lead=0.24, sing=0.26, double=0.24, answer=0.26, piano=0.22, pizz=0.30, bowed=0.32,
+HALL = dict(lead=0.24, sing=0.26, double=0.24, answer=0.26, counter=0.28, piano=0.22, pizz=0.30, bowed=0.32,
             air=0.40, synth=0.28, sub=0.0)
-ROOM = dict(lead=0.10, sing=0.05, double=0.08, answer=0.10, piano=0.10, pizz=0.10, bowed=0.03,
+ROOM = dict(lead=0.10, sing=0.05, double=0.08, answer=0.10, counter=0.06, piano=0.10, pizz=0.10, bowed=0.03,
             air=0.0, synth=0.05, sub=0.0)
 
 

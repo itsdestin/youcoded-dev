@@ -7,6 +7,12 @@
 #   scripts/campaign/sound/songbook/render.sh                 # everything
 #   scripts/campaign/sound/songbook/render.sh demo-journey    # just one piece (by name)
 #   scripts/campaign/sound/songbook/render.sh own-everything  # just one film
+#   scripts/campaign/sound/songbook/render.sh mim             # every film in src/film_mim.py
+#   scripts/campaign/sound/songbook/render.sh --notes mim     # no audio: the notes bar by bar + the
+#                                                             # composition checks (out/notes/), ~1 s
+#
+# New films live in their own file, src/film_<key>.py (exposing FILM or FILMS); they are found
+# automatically. Each film's report: out/films/<name>.checks.txt; notes: out/notes/<name>.txt.
 #
 # Needs: Python 3 with numpy, scipy, soundfile, pyloudnorm (requirements.txt). It uses
 # songbook/.venv if you made one, otherwise the "felt and pulse" environment next door.
@@ -26,4 +32,9 @@ need "${SONGBOOK_PIANO:-$SOUND/felt-and-pulse/samples/upright-kw/UprightPianoKW-
 need "${SONGBOOK_STRINGS_A:-$SOUND/felt-and-pulse-playful/samples/vsco/Strings}/Viola Section" "$SOUND/felt-and-pulse-playful/fetch-strings.sh"
 need "${SONGBOOK_STRINGS_B:-$SOUND/playful-round2/chamber/samples/vsco/Strings}/Solo Violin" "$SOUND/playful-round2/chamber/fetch-extra.sh"
 # -I: isolated mode, so nothing in a sample folder can shadow a Python module
+if [ "${1:-}" = "--notes" ]; then
+  shift
+  "$PY" -I "$DIR/src/notes.py" "$@" 2> >(grep -v "RuntimeWarning: Unexpected value in sys" >&2)
+  exit
+fi
 "$PY" -I "$DIR/src/build.py" "$@" 2> >(grep -v "RuntimeWarning: Unexpected value in sys" >&2)

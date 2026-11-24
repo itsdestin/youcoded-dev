@@ -55,6 +55,22 @@ class Section:
     level_db: Optional[float] = None # hand-set music level for this section (dB)
     dyn: Optional[float] = None      # override how hard everyone plays
     label: str = ""                  # a name for the report
+    # ---- composing controls (2026-11-23; see SONGBOOK.md "Composing a score"). WHY: the blocks
+    # above could only switch whole layers on for whole sections, so the only kind of change a
+    # score could make was "more instruments". These let a section develop instead.
+    counter: object = None           # a motif.Phrase sung against the tune (a second line)
+    counter_voice: str = "cello"     # "cello" | "viola" | "violin" | "piano" | "pizz"
+    answer: object = None            # a motif.Phrase for the second piano instead of the automatic answer
+    bass: object = None              # None (chord roots) | "walk" | "pedal:Eb2" | a motif.Phrase (the bass line itself)
+    vary: Optional[dict] = None      # {bar number (1-based): "thin"|"half"|"drop"|"rest"|"bass"|"full"} per-bar texture
+    density: Optional[float] = None  # 0-1: leave out the accompaniment's weaker beats (1 = all)
+    register: int = 0                # move the accompaniment's middle notes (not the bass) by semitones (+12 / -12)
+    shape: object = None             # loudness across the section: "swell"|"fade"|"arch"|"drop-lift" or [(beat, x)]
+    broaden: float = 0.0             # slow the section's last two beats by this fraction (0.02 = 2 %), then a tempo
+    push: float = 0.0                # ms the tune sits ahead (-) or behind (+) the beat (timing feel)
+    legato: float = 0.0              # beats each tune note overlaps the next (a singing, joined touch)
+    lead: Optional[float] = None     # tune touch relative to the band (1.0 = mood default; 0.8 = more inward)
+    pedal: Optional[bool] = None     # override the mood's sustain pedal for this section
 
 
 @dataclass
@@ -72,6 +88,13 @@ class Piece:
     # little more subtle"): a piece may sit below the usual -14 LUFS, so a thinner arrangement is
     # not simply turned back up to full loudness by the final stage.
     loudness: float = -14.0
+    # ---- 2026-11-23. WHY style: the new defaults (a blend that hands over instead of stacking two
+    # accompaniments, an answer that listens for space in the tune, no tempo lurch into the ending)
+    # change how a piece sounds, so the pieces the owner has already heard pin "v1" and stay
+    # byte-for-byte what he heard; every new piece gets "v2".
+    style: str = "v2"
+    peak: Optional[float] = None     # seconds: THE climax (the composition checks hold the score to it)
+    speech: list = field(default_factory=list)   # [(t0, t1)] seconds where a narrator is speaking
 
     def land_time(self):
         return self.land if self.land is not None else self.length - (LOGO_LEN[self.logo] - LOGO_LAND)
@@ -84,7 +107,7 @@ class Bar:
     beat: float                      # global beat of its downbeat
     pos: Optional[int]               # position in the eight-bar progression (0-7)
     chords: list                     # one or two chord names
-    tune: list = field(default_factory=list)   # (beat in bar, midi, beats, canonical id)
+    tune: list = field(default_factory=list)   # (beat in bar, midi, beats, canonical id, touch)
 
 
 @dataclass
@@ -124,11 +147,21 @@ class SecPlan:
 
 
 def _tune_bars(sec, form):
-    """Lay the section's tune segments over its bars; give each bar its progression position."""
+    """Lay the section's tune segments (names or motif.Phrase objects) over its bars; give each
+    bar its progression position."""
     segs = sec.tune if isinstance(sec.tune, (list, tuple)) else ([sec.tune] if sec.tune else [])
     bars = [Bar(0, None, []) for _ in range(sec.bars)]
     k = 0
     for s in segs:
+        if hasattr(s, "notes"):
+            # a Phrase: its notes carry their own origin tags; it does not set the progression
+            for n in s.notes:
+                bi = k + int(n.beat // 4)
+                if bi >= sec.bars:
+                    continue
+                bars[bi].tune.append((n.beat - 4 * int(n.beat // 4), int(n.m), n.dur, tuple(n.src), n.vel))
+            k += s.nbars
+            continue
         # "phrase1:3" = only the first 3 bars of the first phrase (the rest of its 4 bars rest)
         s, _, cut = s.partition(":")
         notes, nbars, p0 = T.SEGMENTS[s]
@@ -144,7 +177,7 @@ def _tune_bars(sec, form):
             if bi >= sec.bars:
                 continue
             canon = (s, b)
-            bars[bi].tune.append((b - 4 * int(b // 4), note(nm), d, canon))
+            bars[bi].tune.append((b - 4 * int(b // 4), note(nm), d, canon, 1.0))
         k += nbars
     # bars without a position continue counting from the previous bar
     last = -1
@@ -193,14 +226,14 @@ def plan(piece):
     # THE ENDING bar: same players as the last section, ending chords, ending tune
     last = plans[-1]
     eb = Bar(beat, None, list(T.ENDING_CHORDS),
-             [(b, note(nm), d, ("ending", b)) for b, nm, d in T.ENDING])
+             [(b, note(nm), d, ("ending", b), 1.0) for b, nm, d in T.ENDING])
     ep = SecPlan(len(plans), last.sec, last.mood, "bright", last.voice, last.accomp, set(last.layers),
                  last.dyn, beat, [eb], 0.0, ending=True)
     ep.nominal_bpm = last.nominal_bpm
     ep.into, ep.span = "end", 1
     for b, nm, d in T.LOGO_CELL:        # the logo's pick-up notes belong to the ending bar
         if b < 4:
-            eb.tune.append((b, note(nm), d, ("logo", b)))
+            eb.tune.append((b, note(nm), d, ("logo", b), 1.0))
     plans.append(ep)
     _fit_tempi(piece, plans)
     return plans
@@ -257,6 +290,11 @@ def _segments(plans, bpms, rit=RIT):
             r = 4 * p.span
             segs.append((p.beat0, body - r, a, a))
             segs.append((p.beat0 + body - r, r, a, nxt))
+        elif getattr(p.sec, "broaden", 0.0) and not p.ending:
+            # WHY: a phrase end that broadens a little (a singer taking time before the next
+            # line) is the most human timing gesture there is; the next section starts a tempo
+            segs.append((p.beat0, body - 2, a, a))
+            segs.append((p.beat0 + body - 2, 2, a, a * (1 - p.sec.broaden)))
         else:
             segs.append((p.beat0, body, a, a))
         if p.hold:
@@ -310,7 +348,7 @@ def _h(*key):
     return (u + v) - 1.0          # sum of two uniforms: a soft bell
 
 
-BUSES = ["lead", "sing", "double", "answer", "piano", "pizz", "bowed", "air", "synth", "sub"]
+BUSES = ["lead", "sing", "double", "answer", "counter", "piano", "pizz", "bowed", "air", "synth", "sub"]
 TUNE_BUSES = ("lead", "sing", "double")
 # How much string brilliance each piano part gets (engine/sounds.py, _brilliance): a fraction
 # of the note's peak. The tune gets the most (it should sparkle); the low accompaniment none.
@@ -322,14 +360,19 @@ class Band:
     loudness. `backing=True` leaves the tune (and its doublings) out, for the
     'is the tune on top' measurement; nothing else moves."""
 
-    def __init__(self, piece, plans, backing=False):
-        import sounds
-        self.S = sounds
+    def __init__(self, piece, plans, backing=False, dry=False):
+        # WHY dry: the note dump and the composition checks need every note the score plays but
+        # not the sound; skipping synthesis makes a 60 s score readable in about a second
+        self.dry = dry
+        self.log = []           # every note placed: dict(t, beat, m, dur, vel, bus, role, part)
+        if not dry:
+            import sounds
+            self.S = sounds
         self.piece = piece
         self.plans = plans
         self.tm = plans[0].tm
         self.n = int(round(piece.length * SR))
-        self.bus = {b: np.zeros((self.n, 2)) for b in BUSES}
+        self.bus = {b: np.zeros((self.n if not dry else 1, 2)) for b in BUSES}
         self.backing = backing
         self.melody = []        # (seconds, midi) of every audible tune note (lead voice)
         self.tune_log = []      # (seconds, midi, canonical id, voice) for the identity check
@@ -353,7 +396,17 @@ class Band:
     def vary(self, v, key, sd=0.03):
         return float(np.clip(v + sd * _h("v", self.piece.seed, key), 0.04, 0.95))
 
+    def _log(self, t, beat, m, beats, vel, bus, role, part):
+        self.log.append(dict(t=float(t), beat=float(beat), m=int(m), dur=float(beats), vel=float(vel), bus=bus,
+                             role=role or "", part=part))
+
     def _put(self, bus, x, t, p=0.0, role="", m=None, canon=None):
+        if x is None:                               # dry: bookkeeping only
+            if role == "lead":
+                self.melody.append((t, m))
+                self.tune_log.append((t, m, canon, bus))
+            self.onsets.append((t, bus))
+            return
         if role == "lead":
             self.melody.append((t, m))
             self.tune_log.append((t, m, canon, bus))
@@ -370,6 +423,9 @@ class Band:
         key = (bus, round(beat, 4), int(m))
         t = self.when(beat, jit, key) - early
         v = self.vary(vel, key)
+        self._log(t, beat, m, beats, v, bus, role, "piano")
+        if self.dry:
+            return self._put(bus, None, t, p, role, int(m), canon)
         # WHY a tiny per-note tone wobble: the piano has only two recorded loudness layers, so
         # a repeated note would otherwise be the identical sound; a hair of brightness
         # variation is what a real hand does anyway
@@ -379,11 +435,19 @@ class Band:
 
     def pizz(self, sec_, beat, m, vel, p=0.0, jit=7.0, role="", bus="pizz"):
         key = (sec_, "pz", round(beat, 4), int(m))
+        if self.dry:
+            t = self.when(beat, jit, key)
+            self._log(t, beat, m, 0.25, self.vary(vel, key), bus, role, "pizz-" + sec_)
+            if role == "lead":
+                self.melody.append((t, int(m)))
+            self.onsets.append((t, bus))
+            return
         x, early = self.S.pizz(sec_, int(m), self.vary(vel, key), rr=int(abs(_h("rr", key)) * 7))
         if p:
             from dsp import pan as _pan
             x = 0.5 * x + 0.5 * _pan(x.mean(axis=1), p)
         t = self.when(beat, jit, key)
+        self._log(t, beat, m, 0.25, self.vary(vel, key), bus, role, "pizz-" + sec_)
         if role == "lead":
             self.melody.append((t, int(m)))
         if self.backing and role in ("lead", "double"):
@@ -396,6 +460,11 @@ class Band:
         key = (sec_, "bw", round(beat, 4), int(m))
         t = self.when(beat, jit, key)
         d = self.secs(beat, beats)
+        self._log(t, beat, m, beats, max(v0, v1) if shape is None else max(y for _, y in shape), bus, role, "bow-" + sec_)
+        if self.dry:
+            if bus == "bowed":
+                self.held_spans.append((t, t + d))
+            return self._put(bus, None, t, 0.0, role, int(m), canon)
         x = self.S.bowed(sec_, int(m), d, v0, v1, attack=attack, release=release,
                          rr=int(abs(_h("rr", key)) * 5), shape=shape)
         if p:
@@ -407,12 +476,18 @@ class Band:
     def synth(self, beat, m, vel, cutoff, p=0.0, gate_beats=0.4):
         key = ("syn", round(beat, 4), int(m))
         t = self.when(beat, 3.0, key)
+        self._log(t, beat, m, gate_beats, vel, "synth", "", "synth")
+        if self.dry:
+            return self._put("synth", None, t)
         x = self.S.synth(int(m), self.vary(vel, key, 0.02), cutoff=cutoff,
                          gate=self.secs(beat, gate_beats), seed=int(abs(_h("s", key)) * 1000))
         self._put("synth", pan(x, p), t)
 
     def sub(self, beat, m, beats, vel, fin=0.0):
         t = self.sec(beat)
+        self._log(t, beat, m, beats, vel, "sub", "", "sub")
+        if self.dry:
+            return
         x = self.S.sub(int(m), self.secs(beat, beats), vel)
         if fin > 0:
             k = min(len(x), int(fin * SR))

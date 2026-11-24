@@ -1,12 +1,16 @@
 """The demonstrations: each is ONE continuous song assembled only from the songbook's blocks.
 Nothing here writes a note; it only lists sections. This file is also the worked example of
 how to score a film (SONGBOOK.md, Technical appendix).
+
+WHY every piece here pins style="v1" (2026-11-23): these are what the owner has heard; the new
+defaults (blend hand-over, listening answer) would change them. They are proofs of the blocks,
+not models of composition: most fail the composition checks, and that is reported, not hidden.
 """
 from score import Piece, Section as S
 
 DEMOS = [
     Piece(
-        "demo-playful", 30.0, seed=3,
+        "demo-playful", 30.0, style="v1", seed=3,
         notes="Quick and light. One bar of the bounce alone, the tune with the second piano "
               "answering, the second phrase with held strings and the soft synth, then the lift: "
               "the solo violin takes the tune while the strings rise, into the full-blend logo.",
@@ -18,7 +22,7 @@ DEMOS = [
               label="the lift: violin takes the tune"),
         ]),
     Piece(
-        "demo-hopeful", 40.0, seed=5,
+        "demo-hopeful", 40.0, style="v1", seed=5,
         notes="Slower, warm, room for a narrator. Two passages under a voice (music 6 dB down, "
               "speech range dipped): the piano says the signature over its rolling left hand, "
               "then held strings and the low sub join. Then the voice rests and the music lifts: "
@@ -32,7 +36,7 @@ DEMOS = [
               label="the voice rests: the lift"),
         ]),
     Piece(
-        "demo-stark-to-bright", 24.0, seed=7,
+        "demo-stark-to-bright", 24.0, style="v1", seed=7,
         notes="Deadpan for 9 seconds: the tune's first bars, plain, over the dark chords, one "
               "low note pulsing. The turn: the harmony rises (A-flat, B-flat) and holds, and at "
               "9.0 s the same tune comes back bright, rocking, with plucked strings and the answer, "
@@ -44,7 +48,7 @@ DEMOS = [
               add=("pizz", "answer"), lift=True, label="bright, building"),
         ]),
     Piece(
-        "demo-journey", 60.0, seed=11,
+        "demo-journey", 60.0, style="v1", seed=11,
         notes="Every mood in one song: stark (the tune over the dark chords) -> a hush (the "
               "signature alone, the harmony turning) -> hopeful (the tune bright, rolling, "
               "answered; it speeds up into) -> playful (the whole tune, bouncing) -> a held chord "
@@ -62,7 +66,7 @@ DEMOS = [
               label="triumphant"),
         ]),
     Piece(
-        "example-piano-ending", 16.0, logo="piano", seed=13,
+        "example-piano-ending", 16.0, style="v1", logo="piano", seed=13,
         notes="Extra, to prove the second ending: a short hopeful passage on the piano that "
               "thins to the piano alone and ends on the piano-only logo.",
         sections=[
