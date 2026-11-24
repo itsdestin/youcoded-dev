@@ -8,6 +8,7 @@ import json
 import os
 import re
 
+from .shotmark import read_mark
 from .live import APP_SCENARIOS, APP_VIEWS, PANE_WIDTH, RESERVED_PARAMS, is_app_pane, is_live, pane_width
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -1308,8 +1309,37 @@ def _validate_pictures(spec, st, sid, errors):
             errors.append(f'{where}: picture is a file path beside the spec (no leading slash, no "..")')
         elif not os.path.exists(os.path.join(spec.get('_base', ''), pic)):
             errors.append(f'{where}: picture {pic} does not exist beside the spec')
+        elif not _not_the_app(spec) and not _settled(spec, sid) and read_mark(os.path.join(spec.get('_base', ''), pic)) is None:
+            # WHY (Destin, 2026-11-23: "it make fully custom/unique mockup ui's instead of basing on the real app?"): design
+            # options were photographs of hand-written HTML pasted into a frozen screen. A picture on a question or option must
+            # be a real screenshot of the app, labelled by `shoot` or `explore` (deck/shotmark.py). A design that does not
+            # exist yet is built roughly on the session's branch and photographed, never drawn.
+            errors.append(f'{where}: picture {pic} is not a real screenshot of the app. Build each design on your branch and take it '
+                          f'with `shoot` or `explore` (crop with `review-cards.py crop-shot`); never a frozen copy, mockup page or '
+                          f'edited image. A deck whose pictures are not of the app says so: "not_the_app": "<what they show>"')
         for w in banned_in(x.get('caption')):
             errors.append(f'{where}: caption uses banned word "{w}"')
+
+
+def _not_the_app(spec):
+    """A deck about something other than the app (this deck tool, the website, a poster) names what its pictures show."""
+    v = spec.get('not_the_app')
+    return isinstance(v, str) and len(v.split()) >= 2
+
+
+def _settled(spec, sid):
+    """True when he already answered this topic in an earlier round of a growing deck and it is not reopened: its old
+    pictures are history, and refusing them now would block every later round."""
+    if not spec.get('grows'):
+        return False
+    st = next((s for s in spec.get('steps') or [] if isinstance(s, dict) and s.get('id') == sid), {})
+    if st.get('reopened'):
+        return False
+    from .grows import earlier_rounds, real   # here, not at the top: grows imports this module
+    try:
+        return any(real(r['answers'].get(sid)) for r in earlier_rounds(spec))
+    except Exception:
+        return False
 
 
 def _validate_question(st, sid, errors, warnings):

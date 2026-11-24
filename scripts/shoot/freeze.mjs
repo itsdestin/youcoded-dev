@@ -23,9 +23,15 @@ export function scrubFrozen(root) {
   const DANGER = /^(javascript|vbscript):|^data:text\/html/i;
   // WHY strip whitespace/control characters first: "java\tscript:" still runs in a browser.
   const clean = (v) => String(v || '').replace(/[\u0000-\u0020]+/g, '');
+  // WHY read each url(...) as a whole quoted string (2026-11-23, Destin: a deck's pictures came out with square corners and
+  // lost spacing): the old pattern stopped at the first ")" even inside quotes. The app's own grain texture is an SVG drawing
+  // packed into the style text (`url("data:image/svg+xml,…filter='url(#n)'…")`), so the cleanup cut it in half, left a stray
+  // quote, and the browser threw away every style rule after it: the theme's corner sizes, colours and spacing. A packed
+  // picture (data:) or an in-page reference (#) stays whole; any other address still becomes url("").
+  const URL_IN_CSS = /url\(\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|([^)"'\s]*))\s*\)/gi;
   const cssClean = (t) => String(t || '')
     .replace(/@import[^;]*;?/gi, '')
-    .replace(/url\(\s*(["']?)\s*(?!data:|#)[^)]*\)/gi, 'url("")');
+    .replace(URL_IN_CSS, (all, dq, sq, bare) => (/^(data:|#)/i.test((dq ?? sq ?? bare ?? '').trim()) ? all : 'url("")'));
   root.querySelectorAll('script, link, iframe, frame, noscript, base, object, embed, applet').forEach((n) => n.remove());
   root.querySelectorAll('meta[http-equiv]').forEach((n) => { if (/refresh/i.test(n.getAttribute('http-equiv'))) n.remove(); });
   root.querySelectorAll('style').forEach((n) => { n.textContent = cssClean(n.textContent); });

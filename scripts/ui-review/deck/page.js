@@ -426,7 +426,6 @@
   // picture window plays it with controls. A rectangle on moving picture would point at nothing, so
   // a video has no area-dragging.
   const isVideo = src => /\.(webm|mp4)(\?|#|$)/i.test(src);
-  const fileName = src => { try { return decodeURIComponent(String(src).split(/[?#]/)[0].split('/').pop() || src); } catch (e) { return String(src); } };
   // WHY (Destin, round 14: a 1400x85 header strip showed as a thin unreadable line): a picture more than three times wider than tall fills its tile
   // cropped from the top-left at readable size (the CSS `.wide`); the popup still shows the whole picture. Decided once the picture has loaded.
   const WIDE_RATIO = 3;
@@ -437,13 +436,14 @@
   const attTile = (st, c, src, pk, name) => `<button type="button" class="atttile" data-sid="${esc(st.id)}" data-call="${esc(c.id)}" data-pk="${esc(pk)}" data-src="${esc(src)}" data-name="${esc(name)}" data-video="${isVideo(src) ? 1 : 0}" title="Open ${esc(name)}">`
     + `<span class="tilepv">${isVideo(src) ? `<video src="${esc(src)}#t=0.1" preload="metadata" muted playsinline tabindex="-1"></video>` : `<img src="${esc(src)}" alt="" loading="lazy">`}<span class="tilecm" hidden></span></span>`
     + `<span class="tilefoot"><span class="tiletext"><span class="tilename">${esc(name)}</span></span><span class="tileopen" aria-hidden="true">${ATT_ARROW}</span></span></button>`;
+  // WHY 'Open larger', not the file's name (2026-11-23): a tile captioned "blocked-send-waiting.png" was file jargon on a page he could not make sense of.
   const attCard = (st, c) => {
     if (!(c.picture || c.before)) return '';
     const open = attIsOpen(st, c), n = (c.before ? 1 : 0) + (c.picture ? 1 : 0);
     return `<div class="attcard${open ? ' open' : ''}" data-sid="${esc(st.id)}" data-call="${esc(c.id)}"><button type="button" class="atthead" aria-expanded="${open}">${ATT_GLYPH}<span class="attbar" aria-hidden="true">|</span><span class="attlabel">Attachments</span><span class="attn">${n}</span><span class="attfill"></span>${CHEV}</button>`
       + `<div class="attbody"${open ? '' : ' hidden'}><div class="attstrip scroll-mask-x">`
       + (c.before ? attTile(st, c, c.before, 'row ' + c.id + ' before', c.before_name || 'Before') : '')
-      + (c.picture ? attTile(st, c, c.picture, 'row ' + c.id, c.picture_name || (c.before ? 'After' : fileName(c.picture))) : '')
+      + (c.picture ? attTile(st, c, c.picture, 'row ' + c.id, c.picture_name || (c.before ? 'After' : 'Open larger')) : '')
       + `</div></div></div>`;
   };
   // WHY marks on an answered card (Destin, round 12: "why are the pictures missing?... we've lost some of our earlier design/feedback work"): the areas he drew on a
@@ -517,6 +517,11 @@
   // (Destin, round 6, "new first, settled folded below"). A list where no row has a state has no headings.
   // Round 10: the kind is ONE quiet label above the list's title; the controls on the rows say the rest.
   const listKind = st => st.context ? 'For your information' : st.calls.some(c => c.result === 'run' || c.result === 'skip') ? 'Checks' : st.calls.some(c => c.result) ? 'Results' : 'Yours to change';
+  // WHY one line saying what to do (Destin, 2026-11-23, on a list of the app's notices: "is this a question? what am i supposed to do on this page?
+  // ... no guidance for what the checkmarks mean in this context"): the kind label alone ("Yours to change") never said what a tick or the pencil means.
+  const listHelp = st => st.kind !== 'calls' ? '' : tickable(st)
+    ? `<p class="listhelp">Tick each one that is fine as it is. Press the pencil to say what should change.</p>`
+    : st.context ? `<p class="listhelp">Nothing to answer here. Anything wrong goes in the comment box at the foot of the page.</p>` : '';
   const groupHead = (label, n) => `<h4 class="grph">${label}<span class="grpn">${n}</span></h4>`;
   const callsCard = st => {
     const ul = rows => `<ul>${rows.map(c => callLi(st, c)).join('')}</ul>`;
@@ -1182,7 +1187,7 @@
       + (locked ? '' : (st.grow && st.grow.new && !(PAGES && PAGES[cur] && PAGES[cur].new)
         ? `<div class="qhrow"><h2 class="qh">${esc(st.headline)}</h2><span class="newtag">New</span></div>` : `<h2 class="qh">${esc(st.headline)}</h2>`))
       // WHY (Destin, round 10: "one summary line of its past, the full story opens on request"): on a deck that grows the story is ONE fold line under the title.
-      + (locked ? '' : growPast(st) + diffTop(st))
+      + (locked ? '' : listHelp(st) + growPast(st) + diffTop(st))
       + (listy(st) ? '' : (GROWS ? '' : storyLines(st)) + moreLines(st) + (st.reuse ? `<div class="builtfrom">Built from the app's own parts${reuseTip(st)}</div>` : ''))
       + `<div class="qbody">${cardsFor(st)}</div>` + (locked ? '' : diffFoot(st))
       + (locked ? '' : leaveButton(st))
