@@ -1,0 +1,38 @@
+{
+ "deck": "backup-fixes-questions",
+ "started": "2026-11-24T09:31:57.051Z",
+ "submitted": "2026-11-24T09:37:16Z",
+ "cur": 0,
+ "answers": {
+  "B-1": {
+   "v": "pick",
+   "pick": "close-and-show-row",
+   "t": 1795513035390,
+   "note": "i'd want to see this first. also want to see both options for 1) on the settings row and 2) in a new status bar chip",
+   "seconds": 80,
+   "theme": "midnight"
+  },
+  "B-2": {
+   "v": "other",
+   "t": 1795513035390,
+   "note": "i think we should offer a better recovery or something that tries to preserve/restore user settings? forcing them to set up backups themselves manually seems like it would discourage most users",
+   "seconds": 80,
+   "theme": "midnight"
+  },
+  "B-3": {
+   "v": "pick",
+   "pick": "show-failures",
+   "t": 1795513035390,
+   "seconds": 80,
+   "theme": "midnight"
+  },
+  "B-4": {
+   "v": "pick",
+   "pick": "repair",
+   "t": 1795513035390,
+   "note": "we should also try to look through all code relating to this and other warnings/backups and see if there are any other ways to improve or simplify the code. also, separate but possibly related, the status dot on the settings gear in my own youcoded v1.3.4 is red despite the individual status dots for backup/remote access settings rows being green. entirely unclear what the red dot traces back to",
+   "seconds": 80,
+   "theme": "midnight"
+  }
+ }
+}
