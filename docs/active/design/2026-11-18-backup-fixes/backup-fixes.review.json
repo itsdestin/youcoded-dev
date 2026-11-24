@@ -1,0 +1,81 @@
+{
+  "title": "Backup fixes: the new screens from your four answers",
+  "key": "backup-fixes-review",
+  "out": "backup-fixes.review.html",
+  "images": "images/backup-fixes.review",
+  "stage": "review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": {
+    "after": "Built"
+  },
+  "themes": [
+    "meadow-mist"
+  ],
+  "steps": [
+    {
+      "id": "U-1",
+      "new": true,
+      "surface": "Settings, Backup & sync",
+      "path": "The backup's own row, right after you add it",
+      "crop": "settings/sync#uploading@600x648+420+126",
+      "headline": "Progress on the backup's row: 'Uploading...' while the first copy runs.",
+      "changed": "After you add a backup the setup closes at once. The new backup's row says 'Uploading...' until the copy finishes, and still says so if you close and reopen this panel. (The red 'Couldn't sync' box at the top of these pictures is practice data, not part of this change.)",
+      "notice": "You see the copy is running only when this panel is open. A failure shows as the usual red box under the row with Try again.",
+      "risk": "'Back up all now' also reads 'Backing up…' during any copy, including the automatic hourly one, so it will look busy more often than today."
+    },
+    {
+      "id": "U-2",
+      "new": true,
+      "surface": "Chat",
+      "path": "The strip along the bottom of the window",
+      "crop": "chat#backup-chip@1440x110+0+790",
+      "headline": "Progress as a chip in the bottom strip: 'Backing up…' while any backup copy runs.",
+      "changed": "A grey 'Backing up…' chip appears in the bottom strip only while a copy is running, then disappears. Clicking it opens Backup & sync. It is switched off until you say keep.",
+      "notice": "You see a backup is running without opening Settings. Yes to both this and the row gives you both; No here keeps the row only.",
+      "risk": "It also appears during the automatic hourly and daily copies, so the strip changes by itself a few times a day. It follows the existing 'Sync warnings' switch in Customize, with no switch of its own.",
+      "highlight": {
+        "box": [
+          14.5,
+          68,
+          6.6,
+          30
+        ]
+      }
+    },
+    {
+      "id": "U-3",
+      "new": true,
+      "surface": "Settings, Backup & sync",
+      "path": "Warnings, after the app repaired a damaged settings file",
+      "crop": "settings/sync#config-restored@600x648+420+126",
+      "headline": "Damaged settings file, saved copy found: backups restored by themselves, with one notice.",
+      "changed": "The app now keeps a last-good copy of the file that remembers your backups. If the file is damaged it brings that copy back by itself, keeps the damaged file beside it, and shows this notice once.",
+      "notice": "Your backups keep working with nothing to set up again. The notice stays until you dismiss it, and an amber chip shows in the bottom strip until then.",
+      "risk": "The restored copy is from the last successful save, so a change made in the same moment the file was damaged could be missing."
+    },
+    {
+      "id": "U-4",
+      "new": true,
+      "surface": "Settings, Backup & sync",
+      "path": "Warnings, when no saved copy exists yet",
+      "crop": "settings/sync#config-salvaged@600x648+420+126",
+      "headline": "Damaged file, no saved copy: the app keeps the backups it can still read and asks you to check.",
+      "changed": "This covers people whose file is damaged before any last-good copy was ever saved (anyone updating from today's version). The app keeps only the backups that are complete in the damaged file and says how many.",
+      "notice": "Most people keep their backups. You are asked to check the list and add any that are missing.",
+      "risk": "A backup that was cut off halfway in the damaged file is dropped, so the list can be short by one. The notice says so, but someone who dismisses it without looking would not know."
+    },
+    {
+      "id": "U-5",
+      "new": true,
+      "surface": "Settings, Backup & sync",
+      "path": "Warnings, when nothing in the file can be read",
+      "crop": "settings/sync#config-damaged@600x648+420+126",
+      "headline": "Last resort: nothing readable, so a red notice offers 'Start fresh'.",
+      "changed": "Only when there is no saved copy and nothing readable. Nothing is changed until you press Start fresh, which sets the unreadable file aside (kept, not deleted) and gives an empty list.",
+      "notice": "No dead end any more. Your copies in Drive or iCloud are untouched; only the app's list of them is reset.",
+      "risk": "After Start fresh you add your backups again by hand. This should be very rare now that the two repairs above come first."
+    }
+  ]
+}
