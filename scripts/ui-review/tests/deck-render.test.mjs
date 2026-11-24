@@ -1483,6 +1483,8 @@ print(p)`;
       assert.match(await q("document.querySelector('li[data-call=chg] .callhead .how .tip').textContent"), /Reused from the app.*The pencil button.*New in this design.*The star/);
       // every list says which of the three kinds of card it is
       assert.equal(await q("document.querySelector('article.q .qnum .kindline').textContent"), 'Yours to change');
+      // Destin, 2026-11-23 ("no guidance for what the checkmarks mean"): the list says what a tick and the pencil do
+      assert.equal(await q("document.querySelector('article.q .listhelp').textContent"), 'Tick each one that is fine as it is. Press the pencil to say what should change.');
       assert.equal(await q("[...document.querySelectorAll('#cards *')].filter(e => parseFloat(getComputedStyle(e).borderLeftWidth) > 1.5 && getComputedStyle(e).borderRightWidth !== getComputedStyle(e).borderLeftWidth).length"), 0, 'no coloured bar at the left edge of anything ("fingernail")');
       // a video is a tile like any picture; its window plays it with controls and cannot be dragged on
       await q("document.querySelector('li[data-call=new] .atthead').click()");

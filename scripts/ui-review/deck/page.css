@@ -880,6 +880,8 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
    "less is always more… not duplicative text re-explaining each menu"). The kind is the small label above the
    list's title, in the same spot a question shows "Question 1 of 7". */
 .pages article.q .qnum .kindline{font:inherit;color:inherit}
+/* What to do on a list (page.js listHelp): one plain line under its title, the same quiet size as a page line. */
+.listhelp{margin:2px 0 10px;font-size:13px;line-height:1.45;color:var(--fg-2)}
 /* A row's words lead; its reason is one step quieter. Two levels, no more. */
 .callwhat{font-weight:600}
 /* WHY a card (round 10: "bare text with no card gets ignored easily as ai clutter"): the page's opening line —
