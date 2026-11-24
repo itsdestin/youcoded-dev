@@ -1,0 +1,1 @@
+export default { root: '/tmp/claude-1000/-home-destin-youcoded-dev/1d94ee8c-71e6-4c05-afdb-68b45dbe9211/scratchpad/store-review-6', test: { include: ['fuzz6.test.ts','probe*.test.ts'], testTimeout: 0, hookTimeout: 0, pool: 'forks' }, server: { fs: { strict: false } } };
