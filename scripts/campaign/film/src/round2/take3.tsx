@@ -5,52 +5,74 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AbsoluteFill, Audio, Sequence, continueRender, delayRender, interpolate, interpolateColors, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { loadFont as loadCaveat } from '@remotion/google-fonts/Caveat';
-import { C, DMSANS, EASE_IN, EASE_IN_OUT, EASE_OUT, FPS, OUTFIT } from '../brand';
+import { C, DMSANS, EASE_IN_OUT, EASE_OUT, FPS, OUTFIT } from '../brand';
 import { Lockup, ramp } from '../kit';
 
 const HAND = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
 const linear = (x: number) => x;
 
-// ---------- the hit points: ONE grid, 120 BPM (beat 0.5 s, half-beat 0.25 s, bar of 4 = 2.0 s) ----------
+// ---------- the hit points: ONE grid, 96 BPM (beat 0.625 s, bar of 4 beats = 2.5 s, film = 4 bars) ----------
 // WHY a 10 s recut (Destin, 2026-11-23: "i still think the own everything video is too long. it should be like
-// 10s"): the 18.2 s cut was the 24 s film played faster, so every hold was sized for a sit-down viewer. Each
-// beat below was re-judged for someone scrolling a feed: long enough to be read ONCE, no longer.
-// WHY 120 BPM: every hit lands on a beat or half-beat of it, and the grid's round numbers make the composer's
-// job exact. Every value in T3 is a multiple of 0.25 s (except the marker's lift-off ends, which are not hits).
+// 10s"): the 18.2 s cut was the 24 s film played faster, so every hold was sized for a sit-down viewer.
+// WHY re-timed onto a single pulse (Destin, 2026-11-24: "animation timing and music in own everything feel very
+// odd/choppy/inconsistent"): the 120 BPM cut used the grid only as a ruler. Its lines came in pairs (gaps 0.25,
+// 0.5, 0.25 s), then a 1 s hold, a 1.75 s gap after the hand, then lines every 0.75 s, then a 1.25 s gap to the
+// name; three different entrances (a 3-frame pop, a 0.45 s rise, a letter-by-letter wave); the lines under the
+// struck word jumped down mid-strike; and a 5-frame dissolve flashed off the grid. Now EVERY line of type arrives
+// exactly one beat after the one before, all with the same entrance (ENTER below), the film is exactly four bars,
+// and each bar does one job: say it, correct it, turn the page, build the answer + sign.
+// WHY 96 BPM: four bars of it are exactly 10.0 s; one line per beat (0.625 s) is the slowest even pulse that still
+// fits the eight lines, the strike, the hand and a 2 s hold. Beats fall between frames at 30 fps (18.75 frames);
+// every animation is interpolated on continuous time, so they still land evenly, not 18/19/19/19.
 //
-// FOR THE COMPOSER, the hits (seconds, beat number from 0 at 120 BPM):
-//   you'll own      0.00  (beat 0)      film opens on the words
-//   nothing.        0.25  (beat 0.5)    arrives almost with the line above: one statement, not two
-//   and you'll      0.75  (beat 1.5)
-//   be happy.       1.00  (beat 2)      the statement is whole
-//   strike 1        2.00  (beat 4)      the marker hits "nothing." (downbeat of bar 2)
-//   strike 2        2.25  (beat 4.5)    the quicker pass back
-//   hand writes     2.50  (beat 5)      "everything." written below, finished ~3.28
-//   own your data.  4.25  (beat 8.5)    page change (5-frame colour dissolve just before) -- the pickup into bar 3
-//   intelligence.   5.00  (beat 10)     the "own your" lines every 1.5 beats: a steady, quick rhythm
-//   software.       5.75  (beat 11.5)
-//   everything.     6.50  (beat 13)     the closer rises letter by letter, settled ~7.5
-//   name / logo     7.75  (beat 15.5)   the poster's foot arrives: the logo sound
-//   end of film    10.00  (beat 20)     the full poster holds 2.25 s (name fully in by ~8.2, so ~1.8 s read)
+// FOR THE COMPOSER, the hits (seconds, beat number from 0 at 96 BPM):
+//   bar 1 -- the statement
+//   you'll own      0.000  (beat 0)     film opens on the words (already settled on frame 0)
+//   nothing.        0.625  (beat 1)
+//   and you'll      1.250  (beat 2)
+//   be happy.       1.875  (beat 3)
+//   bar 2 -- the correction
+//   strike 1        2.500  (beat 4)     the marker hits "nothing." (downbeat of bar 2), pen lifts 2.68
+//   strike 2        2.8125 (beat 4.5)   the quicker pass back, pen lifts 2.98
+//   hand writes     3.125  (beat 5)     "everything." written below, full stop tapped ~3.90
+//   dissolve        4.375  (beat 7)     dark page eases to light across one whole beat, ending on beat 8
+//   bar 3 -- the answer
+//   own your data.  5.000  (beat 8)     downbeat of bar 3, first line on the light page
+//   intelligence.   5.625  (beat 9)
+//   software.       6.250  (beat 10)
+//   everything.     6.875  (beat 11)
+//   bar 4 -- the sign
+//   name / logo     7.500  (beat 12)    downbeat of bar 4: the poster's foot, fully in by 8.0
+//   end of film    10.000  (beat 16)    the finished poster holds still for 2.0 s
+export const BPM = 96;
+const BEAT = 60 / BPM;                                  // 0.625 s
+const b = (beat: number) => beat * BEAT;
 export const T3 = {
-  // WHY the opening lines nearly together: at feed speed a statement read in pieces is slow; the four lines
-  // land within one second and the whole sentence then holds a full second (two beats) before the marker.
-  youllOwn: 0.0, nothing: 0.25, andYoull: 0.75, beHappy: 1.0,
-  // WHY the marker keeps its old stroke lengths (0.18 s and 0.17 s, ~5 frames each): that is the speed of a real
-  // fast hand; making it shorter would read as a blur, so the time was taken from the holds instead.
-  strike1: [2.0, 2.18] as const,                                  // the marker hits "nothing."
-  strike2: [2.25, 2.42] as const,                                 // the second, quicker pass back the other way
-  reflow: [2.3, 2.55] as const,                                   // the lines below the struck one ease down to make room
+  youllOwn: b(0), nothing: b(1), andYoull: b(2), beHappy: b(3),
+  // WHY the marker keeps its stroke lengths (0.18 s and 0.17 s, ~5 frames each): that is the speed of a real
+  // fast hand. The two strokes sit on the beat and the half-beat, so the pen's rhythm is the music's.
+  strike1: [b(4), b(4) + 0.18] as const,                          // the marker hits "nothing."
+  strike2: [b(4.5), b(4.5) + 0.17] as const,                      // the second, quicker pass back the other way
   // WHY the hand's own pace is unchanged (0.78 s with the full stop): handwriting faster than that stops
-  // looking like a person. The finished correction then holds ~1 s, enough to read one word.
-  write: 2.5,
-  // WHY 0.75 s apart: each new line is three or four syllables and stays on the page, so it only has to be read
-  // as it arrives; a quicker beat would let the colour hand-over (below) no time to be seen.
-  data: 4.25, intelligence: 5.0, software: 5.75, everything: 6.5,
-  // WHY the name a beat and a half after "everything.": the closer needs ~1 s to rise and settle, and the name
-  // must land on a still headline, not on moving letters.
-  end: 7.75,
-  total: 10.0,
+  // looking like a person. Starting on beat 5 it finishes ~3.90, and the correction is read through beat 7.
+  write: b(5),
+  // WHY one whole beat, beat 7 to beat 8: the 5-frame dissolve read as a flash that broke the pulse; a beat-long
+  // ease is a page turn the music can carry, and the light page's first words land on the bar's downbeat.
+  dissolve: b(7),
+  data: b(8), intelligence: b(9), software: b(10), everything: b(11),
+  // WHY the name one beat after "everything." like every other line: it lands on the downbeat of the last bar,
+  // and with the shared entrance the headline is still by then.
+  end: b(12),
+  total: b(16),
+};
+// WHY one entrance for every line of type, name included: the same length and easing on every arrival is what
+// makes the arrivals read as one pulse. 0.5 s with EASE_OUT: the word is ~80% visible within 0.1 s (it lands ON
+// the beat) and settles over the rest, finished before the next beat (0.625 s).
+const ENTER = 0.5;
+const RISE = 0.12;                                      // em the line rises into place
+const entrance = (frame: number, at: number) => {
+  const p = frame < at * FPS ? 0 : ramp(frame, at, at + ENTER, EASE_OUT);
+  return { opacity: p, y: (1 - p) * RISE };
 };
 export const T3_FRAMES = Math.round(T3.total * FPS);
 
@@ -110,16 +132,10 @@ const Grain: React.FC<{ dark?: boolean }> = ({ dark }) => (
 );
 
 // ---------- arrivals ----------
-/** A piece of type that cuts on at `at`: a 3-frame fade and a short settle upward. WHY so small: the opening is
- *  deadpan; the words should land like a statement on the beat, not perform. */
-const Arrive: React.FC<{ at: number; children: React.ReactNode; rise?: number; leave?: number }> = ({ at, children, rise = 0.07, leave }) => {
-  const frame = useCurrentFrame();
-  const o = ramp(frame, at, at + 0.1, linear);
-  const y = (1 - ramp(frame, at, at + 0.5)) * rise;
-  // `leave`: gone by this time, lifting a hair as it fades (4 frames), so the next word owns the beat
-  const x = leave == null ? 0 : ramp(frame, leave - 0.14, leave, EASE_IN);
-  if (frame < at * FPS) return <span style={{ display: 'inline-block', opacity: 0 }}>{children}</span>;
-  return <span style={{ display: 'inline-block', opacity: o * (1 - x), transform: `translateY(${y - x * 0.05}em)` }}>{children}</span>;
+/** A piece of type arriving on its beat with the film's one shared entrance (see `entrance`). */
+const Arrive: React.FC<{ at: number; children: React.ReactNode }> = ({ at, children }) => {
+  const e = entrance(useCurrentFrame(), at);
+  return <span style={{ display: 'inline-block', opacity: e.opacity, transform: `translateY(${e.y}em)` }}>{children}</span>;
 };
 
 // ---------- the marker ----------
@@ -269,14 +285,17 @@ const Struck: React.FC<{ size: number; anchorRight?: boolean }> = ({ size, ancho
 // ---------- scene 1: "you'll own nothing. and you'll be happy." on night ----------
 // WHY the first line's fade starts 0.1 s before the film does: frame 0 was an empty field (the 3-frame fade
 // had not begun), and frame 0 is what a feed shows as the still before playing. Now the film opens on words.
-const FIRST_LEAD = 0.1;
+// WHY 0.25 s now (half the shared 0.5 s entrance): with the longer entrance a 0.1 s lead left frame 0 at ~60%
+// opacity; at half the entrance the line is ~97% in on frame 0 and its last settle still lands on beat 0.
+const FIRST_LEAD = 0.25;
 const Nothing: React.FC = () => {
-  const frame = useCurrentFrame();
   const { wide, m, mt, size } = useLayout();
   const row = rowStyle(size, C.nightText);
-  // WHY the room under the struck line opens only after the strike, just before the hand writes into it: an
-  // empty line there beforehand would read as a layout mistake. Only the lines below move, as on the poster.
-  const open = ramp(frame, T3.reflow[0], T3.reflow[1], EASE_IN_OUT);
+  // WHY the room under the struck line is there from the first frame (was: opened by a reflow during the second
+  // stroke): the two lines below jumped down while the marker was still moving, the "choppy" Destin saw. Held
+  // open from the start it reads as the break after a full stop ("nothing." / "and you'll be happy."), the page
+  // never moves, and the finished frame is the poster's layout exactly.
+  const open = 1;
   return (
     <AbsoluteFill><Wash dark />
       <div style={{ position: 'absolute', left: m, right: m, top: mt }}>
@@ -307,35 +326,14 @@ const LINES: { text: string; at: number }[] = [
 /** A noun line: rises in on its beat in purple, then settles to plum when the next line takes the beat.
  *  WHY the hand-over of colour: the newest word always carries the accent, and the page ends with only
  *  "everything." purple, as on the poster. */
-const AddLine: React.FC<{ text: string; at: number; next: number }> = ({ text, at, next }) => {
+const AddLine: React.FC<{ text: string; at: number; next?: number }> = ({ text, at, next }) => {
   const frame = useCurrentFrame();
-  const inP = ramp(frame, at, at + 0.45, EASE_OUT);
-  // WHY slower (Destin, 2026-11-20: "i don't love the color fade between the new 'own your' words. i think it
-  // could be smoother"): the old word used to drop to plum in 0.4 s exactly as the new one popped on, which
-  // read as a switch. Now the colour drains over 1.5 s, starting just before the next beat, and the new word
-  // fades up over a third of a second, so the accent is handed over instead of swapped.
-  const o = frame < at * FPS ? 0 : ramp(frame, at, at + 0.34, EASE_OUT);
-  // WHY 0.8 s (was ~1.15 s): the lines now come every 0.75 s, so the old drain would still be running when the
-  // line after next arrived and two words would be mid-fade at once. Starting a touch before the next beat and
-  // ending just after it keeps one accent at a time and still reads as a hand-over, not a switch.
-  const settle = ramp(frame, next - 0.15, next + 0.65, EASE_IN_OUT);
-  return <div style={{ opacity: o, transform: `translateY(${(1 - inP) * 0.22}em)`, color: interpolateColors(settle, [0, 1], [C.purple, C.plum]) }}>{text}</div>;
-};
-/** The closer: "everything." letter by letter, each rising into place a little after the one before.
- *  WHY inline spans moved with `top` rather than transforms: the letters stay one shaped run, so the settled
- *  word is pixel-for-pixel the poster's (inline-block letters would lose the font's kerning). */
-const Closer: React.FC<{ text: string; at: number }> = ({ text, at }) => {
-  const frame = useCurrentFrame();
-  if (frame < at * FPS) return <div style={{ opacity: 0 }}>{text}</div>;
-  return (
-    <div style={{ color: C.purple }}>
-      {text.split('').map((ch, i) => {
-        const t0 = at + i * 0.035;
-        const p = ramp(frame, t0, t0 + 0.6, EASE_OUT);
-        return <span key={i} style={{ position: 'relative', top: `${(1 - p) * 0.42}em`, opacity: ramp(frame, t0, t0 + 0.16, linear) }}>{ch}</span>;
-      })}
-    </div>
-  );
+  const e = entrance(frame, at);
+  // WHY the drain is exactly one beat, from the next line's arrival to the one after it (Destin, 2026-11-20:
+  // "i think it could be smoother"): the accent is handed over across a whole beat, never two words mid-fade at
+  // once, and it starts and ends on the grid like everything else. `next` absent: the closer stays purple.
+  const settle = next == null ? 0 : ramp(frame, next, next + BEAT, EASE_IN_OUT);
+  return <div style={{ opacity: e.opacity, transform: `translateY(${e.y}em)`, color: interpolateColors(settle, [0, 1], [C.purple, C.plum]) }}>{text}</div>;
 };
 /** The poster's foot (posters.tsx `Foot`, light): icon + name, then the address and platforms. */
 const Foot: React.FC<{ u: number; row: boolean }> = ({ u, row }) => (
@@ -350,17 +348,21 @@ const Foot: React.FC<{ u: number; row: boolean }> = ({ u, row }) => (
 const OwnAll: React.FC = () => {
   const frame = useCurrentFrame();
   const { wide, u, m, mt, mb, allSize } = useLayout();
-  const foot = ramp(frame, T3.end, T3.end + 0.7, EASE_OUT);
+  const own = entrance(frame, T3.data);
+  const foot = entrance(frame, T3.end);
   return (
     <AbsoluteFill><Wash />
       <div style={{ position: 'absolute', left: m, right: m, top: mt, ...rowStyle(allSize, C.plum) }}>
-        {/* WHY the same soft fade as the noun under it: the two arrive together and must move alike */}
-        <div style={{ opacity: ramp(frame, T3.data, T3.data + 0.34, EASE_OUT) }}>own your</div>
+        {/* WHY the same entrance as the noun under it: the two arrive together and must move alike */}
+        <div style={{ opacity: own.opacity, transform: `translateY(${own.y}em)` }}>own your</div>
         {LINES.map((l, i) => <AddLine key={l.text} text={l.text} at={l.at} next={LINES[i + 1]?.at ?? T3.everything} />)}
-        <Closer text="everything." at={T3.everything} />
+        {/* WHY the closer uses the shared entrance (was a letter-by-letter wave over ~1 s): a third kind of
+            arrival broke the pulse and kept the headline moving into the name's beat. Its emphasis is the purple
+            it keeps, as on the poster. */}
+        <AddLine text="everything." at={T3.everything} />
       </div>
-      {/* WHY a gentle arrival on the logo sound: the page becomes the finished poster without a cut */}
-      <div style={{ position: 'absolute', left: m, bottom: mb, opacity: ramp(frame, T3.end, T3.end + 0.45, linear), transform: `translateY(${(1 - foot) * 1.2 * u}px)` }}>
+      {/* WHY the foot arrives with the same entrance and timing as every line (its rise scaled to the lockup) */}
+      <div style={{ position: 'absolute', left: m, bottom: mb, opacity: foot.opacity, transform: `translateY(${(foot.y / RISE) * 1.2 * u}px)` }}>
         <Foot u={u} row={wide} />
       </div>
       <Grain />
@@ -374,11 +376,11 @@ const OwnAll: React.FC = () => {
 // WHY (review, 2026-11-20): a one-frame flip between plum-black and near-white flashed harshly on a phone at
 // night. The new scene's text is held back until `from` (see `onBeat`), so only the colour field dissolves
 // and the words still change exactly on the beat.
-const DISSOLVE = 5;
-const Scene: React.FC<{ from: number; to: number; dissolve?: boolean; children: React.ReactNode }> = ({ from, to, dissolve, children }) => {
+// WHY the dissolve now runs from T3.dissolve to `from` (one whole beat, ~19 frames, was 5): see T3.dissolve.
+const Scene: React.FC<{ from: number; to: number; dissolve?: number; children: React.ReactNode }> = ({ from, to, dissolve, children }) => {
   const frame = useCurrentFrame();
-  const start = Math.round(from * FPS) - (dissolve ? DISSOLVE : 0);
-  const o = dissolve ? interpolate(frame, [start, start + DISSOLVE], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE_IN_OUT }) : 1;
+  const start = dissolve == null ? Math.round(from * FPS) : Math.floor(dissolve * FPS);
+  const o = dissolve == null ? 1 : interpolate(frame, [dissolve * FPS, from * FPS], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: EASE_IN_OUT });
   return (
     <Sequence from={start} durationInFrames={Math.round(to * FPS) - start} layout="none">
       <AbsoluteFill style={{ opacity: o }}>
@@ -394,6 +396,6 @@ export const Take3: React.FC<{ narrator?: boolean }> = () => (
   <AbsoluteFill style={{ background: C.night }}>
     <Audio src={staticFile('audio/sb-take3-mix.wav')} />
     <Scene from={0} to={T3.data}><Nothing /></Scene>
-    <Scene from={T3.data} to={T3.total} dissolve><OwnAll /></Scene>
+    <Scene from={T3.data} to={T3.total} dissolve={T3.dissolve}><OwnAll /></Scene>
   </AbsoluteFill>
 );
