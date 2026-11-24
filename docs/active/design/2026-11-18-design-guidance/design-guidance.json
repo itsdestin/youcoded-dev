@@ -4,7 +4,7 @@
   "out": "design-guidance.html",
   "grows": true,
   "tag": "feature",
-  "stage": "understanding",
+  "stage": "design",
   "rounds_before": 0,
   "retired": {},
   "steps": [
@@ -146,9 +146,7 @@
             "\"Where is this used\" jumps between two pages."
           ]
         }
-      ],
-      "reopened": "You asked whether the kit could be a self-updating YouCoded page.",
-      "reframed": "Made the kit a self-updating YouCoded Page in both options, said what a page can and cannot show, and admitted the Screens tab's pictures are stale today."
+      ]
     },
     {
       "id": "Q-2",
@@ -185,9 +183,7 @@
             "No pictures of where a piece is used, and the Screens tab stays stale."
           ]
         }
-      ],
-      "reopened": "You pointed out the Work board already shows screens and asked whether a screen atlas would duplicate it.",
-      "reframed": "Dropped the separate atlas. The choice is now whether to extend the existing Screens tab or leave screens out of this work."
+      ]
     },
     {
       "id": "L-1",
@@ -561,6 +557,210 @@
       "proposal": "A line on what you imagine: a layout, an app it should feel like, what you would do on it first.",
       "answer": "words",
       "prompt": "How you picture it (optional)"
+    },
+    {
+      "id": "PD-1",
+      "page": "How the Design kit tab looks",
+      "intro": "Pick a drawing for each. Drag a box on any picture to comment on that spot.",
+      "stage": "design"
+    },
+    {
+      "id": "K-1",
+      "words": true,
+      "surface": "Work board",
+      "path": "Design kit tab",
+      "headline": "How should the Design kit tab lay out its examples and pieces?",
+      "today": "No Design kit tab exists. The Screens tab beside it shows picture tiles in groups, with a search box and filter pills.",
+      "checked": "Photographed the Work board's Screens tab 2026-11-18.",
+      "problem": "You asked to filter, sort, find things fast and see where each is used, with a clear hierarchy. Each layout favours a different one of those.",
+      "proposal": "Drawn inside the real Work board with its own styles. The screen pictures inside are a month old and the counts are made up; the real tab has live ones.",
+      "options": [
+        {
+          "id": "tiles",
+          "label": "Picture tiles",
+          "recommended": true,
+          "picture": "pictures/kit-A.png",
+          "summary": "Like the Screens tab: examples first as big picture tiles, then pieces grouped by job. Each tile says how many screens use it.",
+          "pros": [
+            "Same look and feel as Screens, so nothing new to learn.",
+            "Pictures first: you find things by how they look."
+          ],
+          "cons": [
+            "Comparing usage counts means reading tile by tile."
+          ],
+          "reuse": {
+            "from": [
+              "Screens tab: tiles, groups, search and filter pills"
+            ],
+            "new": [
+              "Sort menu",
+              "\"On N screens\" tag on each tile"
+            ]
+          }
+        },
+        {
+          "id": "index",
+          "label": "Side list and detail",
+          "picture": "pictures/kit-B.png",
+          "summary": "A list of every example and piece on the left; the chosen one fills the right with its versions, rules and where it's used.",
+          "pros": [
+            "Everything about one thing on one screen, no popup.",
+            "The whole list is always in view."
+          ],
+          "cons": [
+            "Only one thing's picture is visible at a time.",
+            "A layout no other tab uses."
+          ],
+          "reuse": {
+            "from": [
+              "Filter pills as list rows",
+              "Screens tiles inside the detail"
+            ],
+            "new": [
+              "The side list layout"
+            ]
+          }
+        },
+        {
+          "id": "table",
+          "label": "Sortable table",
+          "picture": "pictures/kit-C.png",
+          "summary": "One row each: small picture, name, kind, its job, screens using it, and whether it is approved or has an open question.",
+          "pros": [
+            "Best for sorting and comparing: most used, open questions.",
+            "Dense: about twelve things per screen."
+          ],
+          "cons": [
+            "Small pictures; you find things by name more than by look."
+          ],
+          "reuse": {
+            "from": [
+              "The table from Screens' \"set in more than one place\" fold"
+            ],
+            "new": [
+              "Sortable column headings"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "K-2",
+      "words": true,
+      "surface": "Work board",
+      "path": "Design kit tab → a piece or example",
+      "headline": "What should open when you click an example or piece?",
+      "today": "Clicking a screen on the Screens tab opens a popup: its picture on the left, where it is and its facts on the right, two buttons at the foot.",
+      "checked": "Opened a screen's popup on the Work board 2026-11-18.",
+      "problem": "An example has several versions (error, warning, unknown error), rules, a don't, and dozens of screens that use it. It has to fit without becoming a wall of text.",
+      "proposal": "Drawn inside the real Work board with its own styles. The screen pictures inside are a month old and the counts are made up; the real tab has live ones.",
+      "options": [
+        {
+          "id": "screens-popup",
+          "label": "Same popup as Screens",
+          "recommended": true,
+          "picture": "pictures/kit-D1.png",
+          "summary": "Picture on the left with a pill row to switch versions; its job, rules, a don't and the screens using it on the right.",
+          "pros": [
+            "Matches the Screens popup exactly, arrows to step through included.",
+            "Short: one version's picture at a time."
+          ],
+          "cons": [
+            "You switch versions one at a time instead of seeing them side by side."
+          ],
+          "reuse": {
+            "from": [
+              "Screens popup: header, arrows, picture, facts column, footer buttons",
+              "Filter pills as the version switch"
+            ],
+            "new": [
+              "Rules, Don't and Used on sections"
+            ]
+          }
+        },
+        {
+          "id": "one-column",
+          "label": "Every version at once",
+          "picture": "pictures/kit-D2.png",
+          "summary": "One column: a line on its job, every version side by side, a Do and Don't pair, then a strip of screens that use it.",
+          "pros": [
+            "All versions compared at a glance.",
+            "Do and Don't shown as a pair."
+          ],
+          "cons": [
+            "Taller; scrolls on a laptop.",
+            "Looks different from the Screens popup."
+          ],
+          "reuse": {
+            "from": [
+              "Screens popup shell",
+              "Screens tiles for the versions"
+            ],
+            "new": [
+              "Do and Don't cards"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "K-3",
+      "words": true,
+      "surface": "Work board",
+      "path": "Screens tab → a screen",
+      "headline": "How should a screen's popup show what it is built from?",
+      "today": "A screen's popup says where it is, its kind and how many clicks reach it. It says nothing about which pieces it uses.",
+      "checked": "Opened the Close session screen's popup on the Work board 2026-11-18.",
+      "problem": "To see where a piece is used, or spot a screen that hand-made its own button, each screen needs to list what it is made of.",
+      "proposal": "Both are worked out automatically when screens are photographed. Drawn inside the real Work board with its own styles. The screen pictures inside are a month old and the counts are made up; the real tab has live ones.",
+      "options": [
+        {
+          "id": "list",
+          "label": "Examples, then the rest",
+          "recommended": true,
+          "picture": "pictures/kit-S2.png",
+          "summary": "The examples it follows as rows that open in the kit, the other pieces as one line, and a tag if it has a hand-made part.",
+          "pros": [
+            "Shows what matters most first.",
+            "Flags screens that drifted from the kit."
+          ],
+          "cons": [
+            "Slightly taller facts column."
+          ],
+          "reuse": {
+            "from": [
+              "Screens popup facts column",
+              "Fact chips"
+            ],
+            "new": [
+              "\"Built from\" section",
+              "\"hand-made part\" tag"
+            ]
+          }
+        },
+        {
+          "id": "chips",
+          "label": "One row of chips",
+          "picture": "pictures/kit-S1.png",
+          "summary": "Everything it uses as chips, examples in bold; click one to open it in the kit.",
+          "pros": [
+            "Compact."
+          ],
+          "cons": [
+            "Examples and small pieces look alike.",
+            "No sign of hand-made parts."
+          ],
+          "reuse": {
+            "from": [
+              "Screens popup facts column",
+              "Fact chips"
+            ],
+            "new": [
+              "\"Built from\" section"
+            ]
+          }
+        }
+      ]
     }
   ]
 }

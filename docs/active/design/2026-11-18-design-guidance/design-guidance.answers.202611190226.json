@@ -1,0 +1,49 @@
+{
+ "deck": "design-guidance",
+ "started": "2026-11-19T02:25:29.749Z",
+ "submitted": "2026-11-19T02:26:01Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "work-board-tab",
+   "t": 1795055159808,
+   "seconds": 3,
+   "theme": "ivory-schematic"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "extend-screens",
+   "t": 1795055159808,
+   "seconds": 3,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-19T02:20:36Z",
+  "branch": "session/150-design-guidance-rebuild",
+  "commit": "59d36fc5bfd62be1190c39665e1192b1848e0eee",
+  "spec_sha256": "56e96011158671277db9646dc019b7115cd7f3355cb5009e2d0d1752bdc494f6",
+  "spec_dirty": true,
+  "ids": [
+   "U-1",
+   "U-2",
+   "U-3",
+   "U-4",
+   "U-5",
+   "U-6",
+   "U-7",
+   "U-8",
+   "Q-1",
+   "Q-2",
+   "L-1",
+   "Q-3",
+   "Q-4",
+   "Q-5",
+   "Q-6",
+   "Q-7",
+   "Q-8",
+   "Q-9"
+  ]
+ }
+}
