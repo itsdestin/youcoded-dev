@@ -35,6 +35,9 @@ from score import Piece, Section as S
 HERE = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.normpath(os.path.join(HERE, "..", "..", "sfx-kit", "out"))
 OUT = os.path.join(HERE, "..", "out", "films")
+# what a film's report keeps from the music-alone render (the music checks are about the music)
+MO_KEYS = ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total", "logo", "sections",
+           "lufs_integrated", "true_peak_dbtp", "composition", "tune_identity", "loudness_target")
 SFX_REL = -8.0     # dB: an effect's loudest 100 ms vs. the music's loudness around it
 # WHY -8 (was -2): the owner on the first pen sounds: "annoying and too scratchy". Pen and
 # marker sounds must be soft and smooth, felt more than heard.
@@ -383,12 +386,26 @@ def _discover():
             ALIASES.setdefault(key, []).append(f.name)
 
 
-def speech_from_words(path, t_from, t_to, start_at=0.0, gap=0.3):
+class Speech(list):
+    """Piece.speech built from a word file: a list of (t0, t1) spans that also remembers where it
+    came from, so the checks can see her words that fall inside the piece but outside the map
+    (`speech-covers`) and list her real breaths with their bar and beat (the note dump)."""
+    source = None        # (path, t_from, t_to, start_at)
+    words = ()           # [(word, t0, t1)] in piece seconds
+
+
+def speech_from_words(path, t_from, t_to=None, start_at=0.0, gap=0.2):
     """Where a narrator speaks, from a word-timing file ([{"w", "start", "end"}, ...]): the words
-    between t_from and t_to (seconds in that file), joined into spans wherever the pause between
-    words is shorter than `gap`, moved so t_from lands at `start_at` (seconds in the piece).
-    Use it for Piece.speech, so the checks can hold the music to the room the voice needs."""
-    words = [w for w in json.load(open(path)) if w["end"] > t_from and w["start"] < t_to]
+    between t_from and t_to (seconds in that file; None = to the end of the file), joined into
+    spans wherever the pause between words is shorter than `gap`, moved so t_from lands at
+    `start_at` (seconds in the piece). Use it for Piece.speech, so the checks can hold the music
+    to the room the voice needs.
+    WHY gap 0.2 (was 0.3, 2026-11-23, tale): a real 0.28 s breath after "accepted it." was joined
+    into speech, so a note placed in it counted as "while she speaks". A breath of 0.2 s or more is
+    now a breath; the attack-rate check (voice-busy) still judges her words as one stretch."""
+    allw = json.load(open(path))
+    t_to = max(w["end"] for w in allw) if t_to is None else t_to
+    words = [w for w in allw if w["end"] > t_from and w["start"] < t_to]
     spans = []
     for w in words:
         a, b = w["start"] - t_from + start_at, w["end"] - t_from + start_at
@@ -396,7 +413,10 @@ def speech_from_words(path, t_from, t_to, start_at=0.0, gap=0.3):
             spans[-1][1] = b
         else:
             spans.append([a, b])
-    return [(round(a, 3), round(b, 3)) for a, b in spans]
+    out = Speech((round(a, 3), round(b, 3)) for a, b in spans)
+    out.source = (path, t_from, t_to, start_at)
+    out.words = [(w["w"], round(w["start"] - t_from + start_at, 3), round(w["end"] - t_from + start_at, 3)) for w in words]
+    return out
 
 
 def resolve(names):
@@ -408,6 +428,10 @@ def resolve(names):
 
 
 _discover()
+# WHY (2026-11-23): the composition checks can then list every picture moment the music only
+# nearly hits (form.py, picture-sync); a Piece knows nothing about its film otherwise
+for _f in FILMS.values():
+    _f.piece._picture = list(_f.picture)
 
 
 def render_film(film):
@@ -419,8 +443,7 @@ def render_film(film):
         # WHY one render: a film with no effects is its music; rendering it three times (two
         # effects versions and a no-pen copy) only tripled the time and the files
         _, st = build.one(film.piece, path=os.path.join(OUT, f"{film.name}.wav"))
-        st["music_only"] = {k: st[k] for k in ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total",
-                                               "logo", "sections", "lufs_integrated", "true_peak_dbtp", "composition")}
+        st["music_only"] = {k: st[k] for k in MO_KEYS}
         st["versions"], st["picture"] = {}, film.picture
         if film.copy_to:
             shutil.copyfile(os.path.join(OUT, f"{film.name}.wav"), film.copy_to)
@@ -438,8 +461,7 @@ def render_film(film):
         st["hits"] = rep["hits"]
         st["versions"] = {"best": dict(hits=rep["hits"], lufs=st["lufs_integrated"], true_peak=st["true_peak_dbtp"],
                                        clipped=st["clipped_samples"], low_pass_hz=0.0)}
-        st["music_only"] = {k: music_st[k] for k in ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total",
-                                                   "logo", "sections", "lufs_integrated", "true_peak_dbtp", "composition")}
+        st["music_only"] = {k: music_st[k] for k in MO_KEYS}
         st["picture"] = film.picture
         if film.copy_to:
             shutil.copyfile(os.path.join(OUT, f"{film.name}.wav"), film.copy_to)
@@ -462,8 +484,7 @@ def render_film(film):
         if suffix == "":
             st = s
             st["hits"] = rep["hits"]
-    st["music_only"] = {k: music_st[k] for k in ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total",
-                                               "logo", "sections", "lufs_integrated", "true_peak_dbtp", "composition")}
+    st["music_only"] = {k: music_st[k] for k in MO_KEYS}
     st["versions"] = versions
     st["picture"] = film.picture
     if film.copy_to:
@@ -480,7 +501,8 @@ def report(name, st):
     b = st["bands_db_rel_total"]
     L.append(f"   bands: 40-80 {b['40-80']}  80-250 {b['80-250']}  2-8k {b['2000-8000']}  8-16k {b['8000-16000']}")
     li = mo["logo"]
-    L.append(f"   logo (played): {li['notes']}, name requested {li['requested_s']} s, heard {li['heard_s']} s ({li['error_ms']:+} ms)")
+    L.append(f"   logo (played): {li['notes']}, name requested {li['requested_s']} s, heard {li['heard_s']} s ({li['error_ms']:+} ms)"
+             if li.get("kind") != "none" else f"   no logo (hand-on ending at {li['requested_s']} s)")
     tv = mo["tune_on_top"]
     L.append(f"   music alone: tune on top {tv['above_0db']}/{tv['notes']} (weakest {tv['min_db']} dB); attacks not on a note "
              f"{ {k: len(v) for k, v in mo['attacks']['per_instrument_not_on_a_note'].items() if v} or 'none'}; "
@@ -500,6 +522,12 @@ def report(name, st):
                      f"({h['effect_loudest_100ms']} vs {h['music_lufs_around']} LUFS); energy above 5 kHz "
                      f"{h['above_5k_db']} dB" + (f" (previous pen: {h['previous_above_5k_db']} dB)" if h.get('previous_above_5k_db') is not None else ""))
     L.append("   no-pen version: the music alone (same render)" if st["versions"] else "   no effects: the file is the music alone")
+    # WHY (2026-11-23, mim): the mix checks used to print only for the demos, so a film could fail
+    # one (an attack that is not a note, a drum-like attack) silently
+    import build
+    tests = build.mix_tests(st, mo, loudness=mo.get("loudness_target", -14.0))
+    bad = [n for n, ok in tests if not ok]
+    L.append(f"   {'PASS' if not bad else 'FAIL'}  mix of {name}: " + ("every mix check kept" if not bad else "failed: " + "; ".join(bad)))
     import form
     L += ["   " + x for x in form.verdict_text(name, mo["composition"])]
     # the tail: how long the last chord stays audible

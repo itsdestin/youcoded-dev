@@ -8,7 +8,7 @@
 #   scripts/campaign/sound/songbook/render.sh demo-journey    # just one piece (by name)
 #   scripts/campaign/sound/songbook/render.sh own-everything  # just one film
 #   scripts/campaign/sound/songbook/render.sh mim             # every film in src/film_mim.py
-#   scripts/campaign/sound/songbook/render.sh --notes mim     # no audio: the notes bar by bar + the
+#   scripts/campaign/sound/songbook/render.sh --notes [--log] mim   # no audio: the notes bar by bar + the
 #                                                             # composition checks (out/notes/), ~1 s
 #
 # New films live in their own file, src/film_<key>.py (exposing FILM or FILMS); they are found

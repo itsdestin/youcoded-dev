@@ -103,16 +103,39 @@ def attacks(y, stems, onsets, held, until):
             rel = d - mine
             if np.any((rel > -0.04) & (rel < 0.2)):
                 continue
-            if bus in ("bowed", "air", "sing", "double") and any(s0 <= d <= s1 for s0, s1 in held):
+            if bus in ("bowed", "air", "sing", "double", "counter") and any(s0 <= d <= s1 for s0, s1 in held):
                 inside.setdefault(bus, []).append(round(float(d), 2))
                 continue
             bad.append(round(float(d), 2))
         res[bus] = bad
     det = flux_onsets(y, until)
     fl = flatness_at(y, det)
+    # WHY (2026-11-23, mim): the noisiest attack in the mix could only be fixed by guessing which
+    # instrument made it. Name its time and the instrument that STRIKES there: of the tracks loud
+    # in 2-10 kHz at that moment (within 20 dB of the loudest), the one whose energy rises most from
+    # the 35 ms before to the 25 ms after (a held line is loud there but does not strike).
+    worst = None
+    if fl.size:
+        t_w = float(det[int(np.argmax(fl))]) if len(det) == len(fl) else None
+        if t_w is not None:
+            i, n, pre = int(t_w * SR), int(0.025 * SR), int(0.035 * SR)
+            lv, rise = {}, {}
+            for bus, x in stems.items():
+                hb2 = butter(x.mean(axis=1), "bandpass", [2000, 10000], 4)
+                a1 = hb2[max(0, i - n // 5): i - n // 5 + n]
+                a0 = hb2[max(0, i - n // 5 - pre): max(1, i - n // 5)]
+                if len(a1) and len(a0):
+                    lv[bus] = float(np.sqrt(np.mean(a1 ** 2)) + 1e-12)
+                    rise[bus] = float(db(lv[bus] / (np.sqrt(np.mean(a0 ** 2)) + 1e-12)))
+            if lv:
+                top = max(lv.values())
+                cand = {k: rise[k] for k in lv if lv[k] >= top * 0.1}
+                who = max(cand, key=cand.get)
+                worst = dict(t=round(t_w, 2), loudest_part=who,
+                             rise_db={k: round(v, 1) for k, v in sorted(cand.items(), key=lambda kv: -kv[1])[:4]})
     return dict(per_instrument_not_on_a_note=res, inside_held_notes=inside, mix_attacks=len(det),
                 noisiness_median=round(float(np.median(fl)), 3) if fl.size else None,
-                noisiness_max=round(float(fl.max()), 3) if fl.size else None)
+                noisiness_max=round(float(fl.max()), 3) if fl.size else None, noisiest=worst)
 
 
 # ------------------------------------------------------------------ steadiness
@@ -180,6 +203,10 @@ def landing(band, plans, piece):
     land on the requested time? Measured from the lead piano's own track: the moment its
     energy above 200 Hz first reaches half of the landing note's peak."""
     cell = sorted((t, m) for t, m, canon, bus in band.tune_log if canon and canon[0] == "logo")
+    if piece.logo == "none":
+        # the hand-on ending has no logo: nothing lands
+        return dict(notes=[], pickup_gap_s=[], requested_s=round(piece.land_time(), 3), scheduled_s=None,
+                    heard_s=None, error_ms=0.0)
     x = butter(band.stems["lead"].mean(axis=1), "highpass", 200, 2)
     want = piece.land_time()
     i0, i1 = int((want - 0.08) * SR), int((want + 0.25) * SR)
@@ -249,5 +276,5 @@ def joins(y, plans, piece):
         name = ("into the ending" if p.ending else f"{plans[k - 1].sec.label} -> {p.sec.label}")
         out.append(join_report(y, plans, piece, p.t0, name, p.beat0))
     ep = plans[-1]
-    out.append(join_report(y, plans, piece, piece.land_time(), "the logo lands", ep.beat0 + 4))
+    out.append(join_report(y, plans, piece, piece.land_time(), "the logo lands", ep.beat0 + ep.blen))
     return out

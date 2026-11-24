@@ -28,7 +28,12 @@ from dsp import SR, note, pan, place
 from moods import MOODS
 
 LOGO_LAND = 0.5       # in both logo files the name lands 0.50 s after the file starts
-LOGO_LEN = {"blend": 3.0, "piano": 2.5}
+# WHY "quiet" and "none" (2026-11-23): "quiet" is the full-blend logo for a subtle film (no plucked
+# violin doubling, no low answer after it, a softer touch: the subtle films' logos measured louder
+# than their peaks, and the plucked doubling read as a drum-like attack); "none" is a HAND-ON
+# ending for a passage cut from the middle of a longer film: the ending bar's sigh over an open
+# B-flat chord that keeps ringing, no logo (the name is not on screen there).
+LOGO_LEN = {"blend": 3.0, "piano": 2.5, "quiet": 3.0, "none": 2.5}
 RIT = 0.85            # THE ENDING slows into the logo: its last bar ends at 85 % of the tempo
 BLEND_BARS = 2        # a mood change is prepared over this many bars (Section.span)
 
@@ -71,6 +76,15 @@ class Section:
     legato: float = 0.0              # beats each tune note overlaps the next (a singing, joined touch)
     lead: Optional[float] = None     # tune touch relative to the band (1.0 = mood default; 0.8 = more inward)
     pedal: Optional[bool] = None     # override the mood's sustain pedal for this section
+    # ---- round 7 (2026-11-23), from what the three test scores could not say:
+    # WHY answer_skip: Section.answer covered a whole section, so silencing the automatic answer in
+    # one bar meant writing the whole answer line by hand (mim did, twice)
+    answer_skip: tuple = ()          # bar numbers (1-based) where the automatic answer stays silent
+    # WHY ramp/ramp_at: the hand-set level (level_db) used to change over 3 s CENTRED on the section
+    # change, so a louder section starting on a narrator's word began rising 1.5 s earlier, under
+    # the words before it (tale). "after" starts the change exactly at the section's first beat.
+    ramp: float = 3.0                # seconds the level_db change into this section takes
+    ramp_at: str = "centre"          # "centre" (on the change) | "after" (starts at it) | "before" (ends at it)
 
 
 @dataclass
@@ -95,9 +109,23 @@ class Piece:
     style: str = "v2"
     peak: Optional[float] = None     # seconds: THE climax (the composition checks hold the score to it)
     speech: list = field(default_factory=list)   # [(t0, t1)] seconds where a narrator is speaking
+    # ---- round 7 (2026-11-23)
+    # WHY ending="short": the ending bar was fixed at four slowing beats, so a 10 s film whose
+    # name falls on a half-beat of the editor's 120 BPM grid could not stay on that grid (own had
+    # to play at 134). "short" is a two-beat ending: no sigh, just B-flat sus under the logo's two
+    # pick-up notes, so the landing can sit one bar-half after the last body bar.
+    ending: str = "sigh"             # "sigh" (4 beats: C6, B-flat, then the logo) | "short" (2 beats: the logo's pick-ups)
+    # WHY mix: every instrument group is set to a fixed loudness whenever it plays (mix.TARGET), so
+    # a softer touch on a sparse line comes back up to the same level (tale's "softer" sighs measured
+    # the same). This moves a group's level for one piece, in dB (e.g. {"counter": -2, "lead": -1}).
+    mix: dict = field(default_factory=dict)
 
     def land_time(self):
         return self.land if self.land is not None else self.length - (LOGO_LEN[self.logo] - LOGO_LAND)
+
+    @property
+    def ending_len(self):
+        return 2.0 if self.ending == "short" else 4.0
 
 
 # ====================================================================== the plan
@@ -128,10 +156,11 @@ class SecPlan:
     t0: float = 0.0
     t1: float = 0.0
     ending: bool = False
+    blen: float = 4.0                # beats in each bar: 4, except a short ending bar (2)
 
     @property
     def beats(self):
-        return 4 * len(self.bars) + self.hold
+        return self.blen * len(self.bars) + self.hold
 
     @property
     def beat1(self):
@@ -151,12 +180,18 @@ def _tune_bars(sec, form):
     bar its progression position."""
     segs = sec.tune if isinstance(sec.tune, (list, tuple)) else ([sec.tune] if sec.tune else [])
     bars = [Bar(0, None, []) for _ in range(sec.bars)]
+    spill = []          # pick-up notes before the section's first bar line (plan() gives them to the bar before)
     k = 0
     for s in segs:
         if hasattr(s, "notes"):
             # a Phrase: its notes carry their own origin tags; it does not set the progression
             for n in s.notes:
                 bi = k + int(n.beat // 4)
+                # WHY bi < 0 is skipped (not wrapped): a pick-up (negative beat) lands in the bar
+                # before the phrase; at the very start of a section there is no such bar here
+                if bi < 0:
+                    spill.append((n.beat, int(n.m), n.dur, tuple(n.src), n.vel))
+                    continue
                 if bi >= sec.bars:
                     continue
                 bars[bi].tune.append((n.beat - 4 * int(n.beat // 4), int(n.m), n.dur, tuple(n.src), n.vel))
@@ -174,7 +209,7 @@ def _tune_bars(sec, form):
                 bars[k + j].pos = (p0 + j) % 8
         for b, nm, d in notes:
             bi = k + int(b // 4)
-            if bi >= sec.bars:
+            if bi >= sec.bars or bi < 0:
                 continue
             canon = (s, b)
             bars[bi].tune.append((b - 4 * int(b // 4), note(nm), d, canon, 1.0))
@@ -192,7 +227,7 @@ def _tune_bars(sec, form):
             b.chords = list(T.PROGRESSION[form][b.pos])
     if sec.turn:
         bars[-1].chords = list(T.TURN)
-    return bars
+    return bars, spill
 
 
 def plan(piece):
@@ -213,9 +248,16 @@ def plan(piece):
             nxt = piece.sections[i + 1] if i + 1 < len(piece.sections) else None
             into = "blend" if (nxt is not None and (nxt.mood != s.mood or (nxt.bpm or 0) != (s.bpm or 0))) else "flow"
         hold = s.hold if s.hold is not None else {"hold": 2.0, "breath": 1.0}.get(into, 0.0)
-        bars = _tune_bars(s, form)
+        bars, spill = _tune_bars(s, form)
         for j, b in enumerate(bars):
             b.beat = beat + 4 * j
+        # WHY (2026-11-23): a phrase written with a pick-up (write(..., pickup=1), .shift(-1)) at the
+        # start of a section begins in the previous section's last bar, as a singer's breath-in does
+        if spill and plans:
+            pb = plans[-1].bars[-1]
+            for b_, m_, d_, src_, v_ in spill:
+                pb.tune.append((4.0 + b_, m_, d_, src_, v_))
+            pb.tune.sort(key=lambda x: x[0])
         p = SecPlan(i, s, mood, form, voice, s.accomp or mood["accomp"], layers,
                     s.dyn if s.dyn is not None else mood["dyn"], beat, bars, hold)
         p.nominal_bpm = s.bpm or mood["tempo"][1]
@@ -225,15 +267,22 @@ def plan(piece):
         beat += p.beats
     # THE ENDING bar: same players as the last section, ending chords, ending tune
     last = plans[-1]
-    eb = Bar(beat, None, list(T.ENDING_CHORDS),
-             [(b, note(nm), d, ("ending", b), 1.0) for b, nm, d in T.ENDING])
+    L = piece.ending_len
+    if L < 4:
+        # THE SHORT ENDING (2 beats): only the logo's two pick-up notes over B-flat sus
+        eb = Bar(beat, None, ["Bbsus"], [])
+    else:
+        eb = Bar(beat, None, list(T.ENDING_CHORDS),
+                 [(b, note(nm), d, ("ending", b), 1.0) for b, nm, d in T.ENDING])
     ep = SecPlan(len(plans), last.sec, last.mood, "bright", last.voice, last.accomp, set(last.layers),
                  last.dyn, beat, [eb], 0.0, ending=True)
+    ep.blen = L
     ep.nominal_bpm = last.nominal_bpm
     ep.into, ep.span = "end", 1
-    for b, nm, d in T.LOGO_CELL:        # the logo's pick-up notes belong to the ending bar
-        if b < 4:
-            eb.tune.append((b, note(nm), d, ("logo", b), 1.0))
+    if piece.logo != "none":
+        for b, nm, d in T.LOGO_CELL:    # the logo's pick-up notes belong to the ending bar
+            if b < 4:
+                eb.tune.append((b - (4 - L), note(nm), d, ("logo", b), 1.0))
     plans.append(ep)
     _fit_tempi(piece, plans)
     return plans
@@ -274,7 +323,7 @@ def _segments(plans, bpms, rit=RIT):
     segs = []
     for k, p in enumerate(plans):
         a = bpms[k]
-        body = 4 * len(p.bars)
+        body = p.blen * len(p.bars)
         if p.ending:
             # THE ENDING: one bar slowing in a straight line into the logo's landing (a
             # ritardando), then the final tempo holds for the logo's last notes and the tail
@@ -318,7 +367,7 @@ def _fit_tempi(piece, plans):
         worst = 0.0
         for a, b in zip(keys[:-1], keys[1:]):
             ta = tm.seconds(plans[a].beat0)
-            tb = tm.seconds(plans[b].beat0) if b < len(plans) else tm.seconds(plans[-1].beat0 + 4)
+            tb = tm.seconds(plans[b].beat0) if b < len(plans) else tm.seconds(plans[-1].beat0 + plans[-1].blen)
             want = anchors[b] - anchors[a]
             f = (tb - ta) / want
             worst = max(worst, abs(f - 1))
@@ -331,7 +380,7 @@ def _fit_tempi(piece, plans):
         p.bpm = bpms[k]
         p.t0 = tm.seconds(p.beat0)
         p.t1 = tm.seconds(p.beat1)
-    plans[-1].land_beat = plans[-1].beat0 + 4
+    plans[-1].land_beat = plans[-1].beat0 + plans[-1].blen
     plans[0].tempo_map = tm
     for p in plans:
         p.tm = tm
@@ -424,6 +473,7 @@ class Band:
         t = self.when(beat, jit, key) - early
         v = self.vary(vel, key)
         self._log(t, beat, m, beats, v, bus, role, "piano")
+        self.log[-1]["canon"] = canon        # WHY: the checks tell the logo's own notes from the tune's
         if self.dry:
             return self._put(bus, None, t, p, role, int(m), canon)
         # WHY a tiny per-note tone wobble: the piano has only two recorded loudness layers, so
@@ -461,15 +511,18 @@ class Band:
         t = self.when(beat, jit, key)
         d = self.secs(beat, beats)
         self._log(t, beat, m, beats, max(v0, v1) if shape is None else max(y for _, y in shape), bus, role, "bow-" + sec_)
+        # WHY counter too (2026-11-23): a bowed counter-line note swells 0.4-0.8 s after it starts,
+        # which the attack check flagged as "not on a note"; the held strings were already exempt
+        held = bus in ("bowed", "counter")
         if self.dry:
-            if bus == "bowed":
+            if held:
                 self.held_spans.append((t, t + d))
             return self._put(bus, None, t, 0.0, role, int(m), canon)
         x = self.S.bowed(sec_, int(m), d, v0, v1, attack=attack, release=release,
                          rr=int(abs(_h("rr", key)) * 5), shape=shape)
         if p:
             x = 0.6 * x + 0.4 * pan(x.mean(axis=1), p)
-        if bus == "bowed":
+        if held:
             self.held_spans.append((t, t + d))
         self._put(bus, x, t, 0.0, role, int(m), canon)
 

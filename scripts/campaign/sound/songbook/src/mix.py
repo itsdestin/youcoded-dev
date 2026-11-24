@@ -58,7 +58,9 @@ def mix(band, plans, piece, gains=None):
         gains = {}
         for b in BUSES:
             x = src[b]
-            gains[b] = 10 ** ((TARGET[b] - lufs(x)) / 20) if np.abs(x).max() > 1e-9 else 0.0
+            # WHY piece.mix: a per-piece trim of one group (see score.Piece.mix); 0 for every old piece
+            tgt = TARGET[b] + float((getattr(piece, "mix", None) or {}).get(b, 0.0))
+            gains[b] = 10 ** ((tgt - lufs(x)) / 20) if np.abs(x).max() > 1e-9 else 0.0
     for b in BUSES:
         stems[b] = src[b] * gains[b]
     hall_in = sum(stems[b] * HALL[b] for b in BUSES)
@@ -83,16 +85,20 @@ def level_plan(plans, n):
     for p in plans:
         s = p.sec
         lvl = s.level_db if s.level_db is not None else (-6.0 if s.narration else 0.0)
-        lv.append((p.t0, lvl, 3.0 if s.narration else 0.0))
-    for k, (t0, lvl, dip) in enumerate(lv):
+        lv.append((p.t0, lvl, 3.0 if s.narration else 0.0, float(getattr(s, "ramp", 3.0) or 0.01),
+                   getattr(s, "ramp_at", "centre")))
+    for k, (t0, lvl, dip, ramp, at) in enumerate(lv):
         if k == 0:
             gain_db[:] = lvl
             dip_db[:] = dip
             continue
-        _, plvl, pdip = lv[k - 1]
-        w = np.clip((t - (t0 - 1.5)) / 3.0, 0, 1)
+        _, plvl, pdip, _, _ = lv[k - 1]
+        # WHY ramp_at (2026-11-23): a change centred on the section line starts half a ramp early,
+        # under whatever the narrator is still saying; "after" begins exactly at the change
+        a0 = {"after": t0, "before": t0 - ramp}.get(at, t0 - ramp / 2)
+        w = np.clip((t - a0) / ramp, 0, 1)
         w = 0.5 - 0.5 * np.cos(np.pi * w)
-        m = t >= t0 - 1.5
+        m = t >= a0
         gain_db[m] = plvl + (lvl - plvl) * w[m]
         dip_db[m] = pdip + (dip - pdip) * w[m]
     return gain_db, dip_db

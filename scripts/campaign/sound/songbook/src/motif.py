@@ -16,7 +16,10 @@ Get material:
     motif("bar1")                 the tune's bar 1 (also "bar2".."bar8", "phrase1", "phrase2",
                                   "full", "signature" = the three notes, "cell" = the same, "ending")
     write("Bb4/1 G5/1 F5/2 | r/2 Eb5/1 D5/1")   by hand: NOTE/BEATS, r = rest, | = bar line
-                                  (checked: each bar must add up to 4 beats), @0.8 = softer touch
+                                  (checked: each bar must add up to 4 beats), @0.8 = softer touch,
+                                  ~/2 = tie (the note before lasts 2 beats longer, also across |)
+    write("F5/1 | Bb5/2 ...", pickup=1)  the first bar is a 1-beat pick-up before the bar line
+    .shift(-0.5)                  any phrase may start before its bar line (a pick-up)
 Develop it (each returns a new Phrase; chain them):
     .up(k) / .down(k)             move along the E-flat major scale (k steps; stays in key)
     .octave(k)                    k octaves up (negative = down)
@@ -187,26 +190,38 @@ def motif(which):
     return Phrase([N(b, note(nm), d, 1.0, (which, b, "")) for b, nm, d in notes], nbars)
 
 
-_TOK = re.compile(r"^(r|[A-Ga-g](?:b|#)?-?\d)/([\d.]+)(?:@([\d.]+))?$")
+_TOK = re.compile(r"^(r|~|[A-Ga-g](?:b|#)?-?\d)/([\d.]+)(?:@([\d.]+))?$")
 
 
-def write(text, label=""):
+def write(text, label="", pickup=0.0):
     """A line written by hand: 'Bb4/1 G5/1 F5/2 | r/1 Eb5/3'. Each bar between bar lines must add
-    up to 4 beats (a typo otherwise silently shifts everything after it)."""
-    notes, beat = [], 0.0
+    up to 4 beats (a typo otherwise silently shifts everything after it).
+
+    `~/2` TIES: it lengthens the note before it by 2 beats, across a bar line if it starts the
+    next bar ('Ab5/2 | ~/2 G5/2'). `pickup=1` makes the text's FIRST bar a pick-up of that many
+    beats, played before the phrase's bar line (it sounds at the end of the previous bar).
+    WHY both (2026-11-23, round-7 critics): every phrase the three test scores wrote started on a
+    downbeat and no note was ever tied over a bar line, because write() could not say either. A
+    melody that always lands on beat 1 is the stiffest thing a score can do."""
+    notes, beat = [], -float(pickup)
     bars = [b.split() for b in text.split("|")]
     for k, toks in enumerate(bars):
         start = beat
         for t in toks:
             g = _TOK.match(t)
             if not g:
-                raise ValueError(f"write(): cannot read '{t}' (use NOTE/BEATS like Bb4/1, r/2, G5/0.5@0.8)")
+                raise ValueError(f"write(): cannot read '{t}' (use NOTE/BEATS like Bb4/1, r/2, G5/0.5@0.8, ~/1)")
             nm, d, v = g.group(1), float(g.group(2)), float(g.group(3) or 1.0)
-            if nm != "r":
+            if nm == "~":
+                if not notes:
+                    raise ValueError(f"write(): '~' (a tie) needs a note before it in '{label or text[:30]}'")
+                notes[-1] = replace(notes[-1], dur=notes[-1].dur + d)
+            elif nm != "r":
                 notes.append(N(beat, note(nm[0].upper() + nm[1:]), d, v, ("written", beat, "")))
             beat += d
-        if len(bars) > 1 and (k < len(bars) - 1 or toks) and abs(beat - start - 4) > 1e-6 and k < len(bars) - 1:
-            raise ValueError(f"write(): bar {k + 1} of '{label or text[:30]}' adds up to {beat - start:g} beats, not 4")
+        want = pickup if (k == 0 and pickup) else 4
+        if len(bars) > 1 and k < len(bars) - 1 and abs(beat - start - want) > 1e-6:
+            raise ValueError(f"write(): bar {k + 1} of '{label or text[:30]}' adds up to {beat - start:g} beats, not {want:g}")
     return Phrase(notes, max(1, math.ceil(beat / 4 - 1e-6)), label)
 
 

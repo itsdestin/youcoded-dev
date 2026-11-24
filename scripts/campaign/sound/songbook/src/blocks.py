@@ -131,7 +131,7 @@ class Dyn:
                 pts.append((p.beat0, p.dyn))
                 continue
             q = plans[k - 1]
-            body_end = q.beat0 + 4 * len(q.bars)
+            body_end = q.beat0 + q.blen * len(q.bars)
             if q.into in ("blend", "build"):
                 pts += [(body_end - 4 * q.span, q.dyn), (p.beat0, p.dyn)]
             elif q.into in ("hold", "breath"):
@@ -146,7 +146,7 @@ class Dyn:
         self.curves = []
         self.lift_spans = []
         for k, p in enumerate(plans):
-            body_end = p.beat0 + 4 * len(p.bars)
+            body_end = p.beat0 + p.blen * len(p.bars)
             if p.sec.lift and not p.ending:
                 c = plans[k + 1].beat1 + 64 if (k + 1 < len(plans) and plans[k + 1].ending) else \
                     (plans[k + 1].beat1 if k + 1 < len(plans) else body_end)
@@ -210,7 +210,7 @@ def _blend(plans, p):
     nxt = plans[p.i + 1] if p.i + 1 < len(plans) else None
     if nxt is None or nxt.ending or p.into not in ("blend", "build"):
         return None, float("inf")
-    return nxt, p.beat0 + 4 * len(p.bars) - 4 * p.span
+    return nxt, p.beat0 + p.blen * len(p.bars) - 4 * p.span
 
 
 # ====================================================================== THE TUNE
@@ -243,7 +243,7 @@ def _violin(band, beat, m, d, vl, role, canon=None, solo_only=False):
 
 
 def play_tune(band, p, dyn, plans):
-    body_end = p.beat0 + 4 * len(p.bars)
+    body_end = p.beat0 + p.blen * len(p.bars)
     tone = p.mood["tone"]
     octaves = ("octaves" in p.layers) or p.sec.lift or p.voice == "both"
     # THE HANDOVER: when the tune passes from the piano to the violin at a section change, the
@@ -293,7 +293,7 @@ def play_tune(band, p, dyn, plans):
 
 def _phrase_notes(p, ph):
     """(global beat, midi, beats, touch, src) for a Phrase laid from the section's first beat."""
-    end = p.beat0 + 4 * len(p.bars) + p.hold
+    end = p.beat0 + p.blen * len(p.bars) + p.hold
     return [(p.beat0 + n.beat, n.m, min(n.dur, end - p.beat0 - n.beat), n.vel, n.src)
             for n in ph.notes if n.beat < end - p.beat0 - 1e-6]
 
@@ -336,9 +336,10 @@ def play_answer_v2(band, p, dyn, plans, k_plan):
     if nxt is not None:
         following += [b.beat + bb for b in nxt.bars for bb, *_ in b.tune][:1]
     count = 0
+    skip = set(getattr(p.sec, "answer_skip", ()) or ())
     for j, bar in enumerate(p.bars):
         mine = [x for x in on if bar.beat <= x[0] < bar.beat + 4]
-        if not mine:
+        if not mine or (j + 1) in skip:
             continue
         last_on = mine[-1][0]
         later = [b for b in following if b > last_on + 1e-6]
@@ -360,18 +361,25 @@ def play_answer_v2(band, p, dyn, plans, k_plan):
         while min(line) < 55:
             line = [m + 12 for m in line]
         # the last note lands on a note of the chord sounding then, and never doubles the tune
+        # WHY both conditions in ONE search (2026-11-23): the old code found a chord note, then
+        # stepped down off it to avoid doubling the tune without looking at the chord again; under
+        # the held A-flat over D-flat in mim it landed on G, a tritone against the D-flat
         land_b = start + 0.5 * (len(line) - 1)
-        ch = p.chord_at(min(land_b, p.beat0 + 4 * len(p.bars) - 0.01))
+        ch = p.chord_at(min(land_b, p.beat0 + p.blen * len(p.bars) - 0.01))
+        ring = {x[1] % 12 for x in on if x[0] <= land_b < x[0] + x[2]}
         lm = line[-1]
-        for _ in range(7):
-            if lm % 12 in T.CHORD_TONES.get(ch, set()):
+        for _ in range(14):
+            if lm % 12 in T.CHORD_TONES.get(ch, set()) and lm % 12 not in ring:
                 break
             lm = T.scale_step(lm, -1) if lm % 12 in T._SCALE else lm - 1
         line[-1] = lm
         for i, m in enumerate(line):
             beat = start + 0.5 * i
             sounding = [x for x in on if x[0] <= beat < x[0] + x[2]]
-            if sounding and (sounding[-1][1] - m) % 12 == 0:
+            if i < len(line) - 1 and sounding and (sounding[-1][1] - m) % 12 == 0:
+                m = T.scale_step(m, -1) if m % 12 in T._SCALE else m - 1
+            # and a passing note never sits on a borrowed chord's clashing note
+            if i < len(line) - 1 and m % 12 in T.CLASH.get(p.chord_at(beat), set()):
                 m = T.scale_step(m, -1) if m % 12 in T._SCALE else m - 1
             d = 0.5 if i < len(line) - 1 else max(0.5, min(1.5, nxt_on - beat))
             v = (0.42 + 0.05 * i) * dyn.v(beat) * _blend_fade(plans, p, beat, "answer")
@@ -501,12 +509,21 @@ def acc_rolling(band, p, bar, dyn, cut=4.0):
     on, double its low notes (cellos) and middle notes (violas)."""
     fig = []
     pedal = p.mood["pedal"] if (p.ending or p.sec.pedal is None) else p.sec.pedal
+    # WHY (2026-11-23, tale): thinned below about half, the strong eighths that survive are the
+    # ones the roll gives to its top note, so the figure became one note ticked on every beat
+    # (C3 C3 C3). A thinned roll (v2) now alternates fifth and tenth over the notes it keeps.
+    d_ = _DENSITY.get(id(p), getattr(p.sec, "density", None))
+    thinned = band.piece.style != "v1" and not p.ending and d_ is not None and d_ < 1.0
+    kept = 0
     for off, i, d, vel in ROLL:
         if off >= cut:
             continue
         kind = "bass" if i == 0 else "mid"
         if not keep(p, bar, off, kind):
             continue
+        if thinned and kind == "mid":
+            i = (1, 2)[kept % 2]
+            kept += 1
         beat = bar.beat + off
         ch = V[_chord(bar, off)]
         m = bn(p, ch["fig"][i]) if i == 0 else mid(p, ch["fig"][i])
@@ -656,6 +673,8 @@ def play_accomp(band, p, dyn, piece, plans):
         # the ending bar's pattern stops at beat 2 (the band holds the chord); in the piano-only
         # ending the piano keeps its pattern going to beat 3, since nothing else holds the sound
         cut = (3.0 if piece.logo == "piano" else 2.0) if p.ending else 4.0
+        if p.ending and p.blen < 4:
+            cut = 0.0                       # the short ending: the held chord alone carries it
         blending = cross and bar.beat >= b0 - 1e-6
         if v2 and blending:
             f = frac(bar.beat + 2.0)
@@ -679,15 +698,16 @@ def play_accomp(band, p, dyn, piece, plans):
         # the ending's held chord (B-flat sus) from beat 2: the band holds while the tune sighs
         # and the logo's pick-up notes lead to the landing
         bar = p.bars[0]
-        beat = bar.beat + 2.0
+        beat = bar.beat + p.blen - 2.0
+        quiet = piece.logo in ("quiet", "none")
         for q, nm in enumerate(["Bb1", "Eb3", "Ab3"]):
             band.piano("piano", beat + 0.015 * q, m_(nm), 2.0, (0.34 if q == 0 else 0.28) * dyn.v(beat)
-                       * (1.2 if piece.logo == "piano" else 1.0), tone=-0.2, pedal=True)
-        if (p.accomp in ("bounce", "rocking") or "pizz" in p.layers) and piece.logo != "piano":
+                       * (1.2 if piece.logo == "piano" else (0.85 if quiet else 1.0)), tone=-0.2, pedal=True)
+        if (p.accomp in ("bounce", "rocking") or "pizz" in p.layers) and piece.logo not in ("piano", "quiet", "none"):
             band.pizz("vc", beat, m_("Bb2"), 0.58 * dyn.v(beat), p=0.05)
     elif p.hold and p.into == "hold":
         # THE HOLD: a fresh, soft, pedalled chord on the section's last chord, held (a fermata)
-        beat = p.beat0 + 4 * len(p.bars)
+        beat = p.beat0 + p.blen * len(p.bars)
         c = p.bars[-1].chords[-1]
         for q, nm in enumerate(V[c]["lh"]):
             band.piano("piano", beat + 0.025 * q, m_(nm), p.hold + 0.4, (0.30 if q == 0 else 0.25) * dyn.v(beat),
@@ -700,7 +720,7 @@ def _segments(p):
     """(start beat, length, chord) for the whole section, the hold included in the last."""
     out = []
     for bar in p.bars:
-        for a, b, c in _chord_spans(bar):
+        for a, b, c in _chord_spans(bar, p.blen):
             out.append([bar.beat + a, b - a, c])
     out[-1][1] += p.hold
     if p.ending:
@@ -758,9 +778,9 @@ def play_held(band, p, dyn, plans, k, piece):
     bow), carrying the sound across the bar line."""
     segs_all = _segments(p)
     piano_end = p.ending and piece.logo == "piano"
-    end_beat = p.beat0 + 3.5 if piano_end else None
+    end_beat = p.beat0 + p.blen - 0.5 if piano_end else None
     nxt, b0 = _blend(plans, p)
-    body_end = p.beat0 + 4 * len(p.bars)
+    body_end = p.beat0 + p.blen * len(p.bars)
     follow = plans[k + 1] if (k + 1 < len(plans)) else None
 
     def factor(q, beat):
@@ -869,31 +889,46 @@ def play_logo(band, plans, piece):
     02-piano-only (piano cell, open low E-flat chord). The third note (F) lands exactly on
     the piece's landing time; everything then rings and resolves to the end of the file."""
     ep = plans[-1]
-    land = ep.beat0 + 4.0
+    land = ep.beat0 + ep.blen
     t_land = band.sec(land)
     tail = piece.length - t_land
     bpm_end = ep.tm.bpm_at(land)
-    blend = piece.logo == "blend"
+    if piece.logo == "none":
+        # THE HAND-ON ENDING (no logo): an open B-flat chord rings on under the next part of the
+        # film; the sigh (C6, B-flat) above it is the question left open
+        ring = (tail - 0.3) * bpm_end / 60.0
+        for q, (nm, v) in enumerate((("Bb1", 0.30), ("F2", 0.24), ("D3", 0.22), ("Bb3", 0.2))):
+            band.piano("piano", land + q * 0.03 * bpm_end / 60, m_(nm), ring, v * band.dyn.v(land), tone=-0.15, pedal=True)
+        band.landing = None
+        return
+    # WHY "quiet" (2026-11-23): the same logo for a subtle film: no plucked doubling (it measured
+    # as the most drum-like attack in two films), no low answer after it, a softer touch and a
+    # smaller swell, so the logo does not land louder than the film's own peak
+    quiet = piece.logo == "quiet"
+    blend = piece.logo in ("blend", "quiet")
+    touch = 0.85 if quiet else 1.0
     tone = 0.0 if blend else -0.15
-    cell = [(ep.beat0 + b, m_(nm)) for b, nm, _ in T.LOGO_CELL]
-    for i, (beat, m) in enumerate(cell):
+    cell = [(ep.beat0 + b - (4.0 - ep.blen), m_(nm), b) for b, nm, _ in T.LOGO_CELL]
+    for i, (beat, m, b0) in enumerate(cell):
         is_land = i == 2
         dur = (tail - 1.2) * bpm_end / 60.0 if is_land else 0.5
         # WHY 6 ms early: measured, this piano recording speaks about 6.5 ms after the sample
         # starts (its rounded attack); struck early, the name's note is HEARD on the frame
-        band.piano("lead", beat, m, dur, T.LOGO_VEL[i], tone=tone, pedal=True, p=-0.1,
-                   jit=(0.0 if is_land else 2.0), role="lead", canon=("logo", beat - ep.beat0),
+        band.piano("lead", beat, m, dur, T.LOGO_VEL[i] * touch, tone=tone, pedal=True, p=-0.1,
+                   jit=(0.0 if is_land else 2.0), role="lead", canon=("logo", b0),
                    early=LAND_EARLY)
-        if blend:
+        if blend and not quiet:
             band.pizz("vln", beat, m, (0.38, 0.42, 0.48)[i], p=0.0, jit=(0.0 if is_land else 3.0))
+    cell = [(beat, m) for beat, m, _ in cell]
     ring = (tail - 1.0) * bpm_end / 60.0      # beats the landing chord rings (pedalled)
     if blend:
         for q, (nm, v) in enumerate((("Eb2", 0.38), ("Eb3", 0.28))):
-            band.piano("piano", land + q * 0.03 * bpm_end / 60, m_(nm), ring, v, tone=-0.1, pedal=True)
-        band.pizz("vc", land, m_("Eb2"), 0.55, p=0.05, jit=0.0)
-        band.sub(land, m_("Eb2"), min(2.2, tail - 0.5) * bpm_end / 60.0, 0.55, fin=0.03)
+            band.piano("piano", land + q * 0.03 * bpm_end / 60, m_(nm), ring, v * touch, tone=-0.1, pedal=True)
+        if not quiet:
+            band.pizz("vc", land, m_("Eb2"), 0.55, p=0.05, jit=0.0)
+        band.sub(land, m_("Eb2"), min(2.2, tail - 0.5) * bpm_end / 60.0, 0.55 * touch, fin=0.03)
         # the swell: the held strings open into the landing chord and settle with it
-        lvl = max(0.15, plans[-2].mood["held"]) * 1.25 * band.dyn.v(land)
+        lvl = max(0.15, plans[-2].mood["held"]) * 1.25 * band.dyn.v(land) * (0.75 if quiet else 1.0)
         t0 = band.sec(land) - 0.15
         L = tail - 0.05
         pk = min(1.0 / L, 0.4)
@@ -905,8 +940,8 @@ def play_logo(band, plans, piece):
         if _on(plans[-2], "air", piece):
             band.bow("vln", land, m_("Eb6"), L * bpm_end / 60, 0, 0, p=-0.2, bus="air", attack=0.3, release=0.4,
                      shape=[(0, (plans[-2].mood["air"] or 0.05) * band.dyn.v(land)), (1.0, 0.0)])
-        # the second piano answers low, a little slower (the logo's own echo)
-        for (off, nm, v) in ((1.0, "Bb3", 0.36), (1.6, "G4", 0.38), (2.2, "F4", 0.42)):
+        # the second piano answers low, a little slower (the logo's own echo); not in "quiet"
+        for (off, nm, v) in () if quiet else ((1.0, "Bb3", 0.36), (1.6, "G4", 0.38), (2.2, "F4", 0.42)):
             d = 0.6 if nm != "F4" else max(0.6, (tail - 2.0) * bpm_end / 60)
             band.piano("answer", land + off, m_(nm), d, v, tone=-0.7, p=-0.25, pedal=True)
     else:
