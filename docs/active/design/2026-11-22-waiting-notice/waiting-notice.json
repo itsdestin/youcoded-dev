@@ -134,6 +134,825 @@
       ]
     },
     {
+      "id": "P-n-sending",
+      "page": "Sending messages",
+      "intro": "Notices when a message is held back, refused, or may not have arrived.",
+      "stage": "design"
+    },
+    {
+      "id": "L-n-sending",
+      "words": true,
+      "gallery": true,
+      "surface": "Floating notices",
+      "path": "The floating spot above the message box",
+      "headline": "Sending messages: 19 notices",
+      "calls": [
+        {
+          "id": "blocked-send-waiting",
+          "call": "Claude Code is waiting on something — answer it first.",
+          "why": "You try to send while Claude Code is showing a question, permission request or pop-up that must be answered first. About one chat. Should leave after 8 seconds, but gets stuck while Claude works. Buttons: Send anyway, Show card.",
+          "picture": "pictures/n/blocked-send-waiting.png"
+        },
+        {
+          "id": "escape-didnt-close",
+          "call": "Claude Code didn't close it — switch to terminal view to answer it. Your message is still here.",
+          "why": "You pressed Send anyway but the Claude Code pop-up did not close. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/escape-didnt-close.png"
+        },
+        {
+          "id": "not-ready-to-send",
+          "call": "This conversation is not ready to send yet. Your message is still here.",
+          "why": "You send in a built-in assistant chat that is still starting up. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/not-ready-to-send.png"
+        },
+        {
+          "id": "not-connected-message-kept",
+          "call": "Not connected — your message is still here. Send it again when you reconnect.",
+          "why": "You press Send while the phone or browser has lost its connection to the computer. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/not-connected-message-kept.png"
+        },
+        {
+          "id": "not-connected-original-kept",
+          "call": "Not connected — the original message is still here.",
+          "why": "You press Send again on a failed message bubble while disconnected. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/not-connected-original-kept.png"
+        },
+        {
+          "id": "send-compacting",
+          "call": "Conversation is compacting. Wait for it to finish, then send your message.",
+          "why": "You send in a built-in assistant chat while it is compacting. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/send-compacting.png"
+        },
+        {
+          "id": "send-queue-full",
+          "call": "Send queue is full (10 messages waiting). Wait for the current turn to finish.",
+          "why": "You send in a built-in assistant chat that already has ten messages waiting. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/send-queue-full.png"
+        },
+        {
+          "id": "send-changed",
+          "call": "This conversation changed while your message was being prepared. Your message is still here.",
+          "why": "A built-in assistant chat changed underneath a message you were sending. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/send-changed.png"
+        },
+        {
+          "id": "send-starting-full",
+          "call": "Starting up — the model is still loading, and ten messages are already waiting.",
+          "why": "You send while the local model is still loading and ten messages are already waiting. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/send-starting-full.png"
+        },
+        {
+          "id": "send-not-live",
+          "call": "This session is no longer running. Start or resume it to send messages.",
+          "why": "You send in a built-in assistant chat that has stopped running. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/send-not-live.png"
+        },
+        {
+          "id": "send-unconfirmed",
+          "call": "YouCoded couldn't confirm your message was sent — check the conversation before sending it again.",
+          "why": "A built-in assistant chat never answered whether your message arrived. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/send-unconfirmed.png"
+        },
+        {
+          "id": "send-failed-generic",
+          "call": "The message could not be sent.",
+          "why": "A built-in assistant chat refused a message for a reason with no specific wording. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/send-failed-generic.png"
+        },
+        {
+          "id": "queue-not-answering",
+          "call": "Claude Code isn't answering in this chat yet. Your message wasn't sent.",
+          "why": "You send in a Claude Code chat whose message queue is not ready yet but may be soon. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/queue-not-answering.png"
+        },
+        {
+          "id": "queue-refused",
+          "call": "This chat couldn't take your message. Your message wasn't sent.",
+          "why": "A Claude Code chat's message queue refuses your message. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/queue-refused.png"
+        },
+        {
+          "id": "queue-availability-changed",
+          "call": "Queue availability changed. Check the conversation before sending again.",
+          "why": "The chat's message queue went away in the middle of sending. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/queue-availability-changed.png"
+        },
+        {
+          "id": "queue-maybe-not-sent",
+          "call": "Your message may not have been sent. Check the chat before sending it again.",
+          "why": "The message queue gave an unclear answer, so the message may or may not have gone. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/queue-maybe-not-sent.png"
+        },
+        {
+          "id": "queue-outcome-unknown",
+          "call": "Message outcome is unknown. Check the queue and conversation before trying again.",
+          "why": "Sending through the queue failed in an unexpected way. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/queue-outcome-unknown.png"
+        },
+        {
+          "id": "lost-send-restored",
+          "call": "An earlier message didn't reach your computer. It's back in the message box.",
+          "why": "The app checks an unconfirmed earlier message, finds it never arrived, and puts the words back in the message box. About one chat. Leaves after 6 seconds.",
+          "picture": "pictures/n/lost-send-restored.png"
+        },
+        {
+          "id": "maybe-lost-send-restored",
+          "call": "An earlier message may not have reached your computer. It's back in the message box — check the conversation before sending it again.",
+          "why": "The app can't tell whether an earlier message arrived and puts its words back in the message box. About one chat. Leaves after 6 seconds.",
+          "picture": "pictures/n/maybe-lost-send-restored.png"
+        }
+      ]
+    },
+    {
+      "id": "P-n-commands",
+      "page": "Commands like /compact and /clear",
+      "intro": "Notices from commands you type or pick from the drawer.",
+      "stage": "design"
+    },
+    {
+      "id": "L-n-commands",
+      "words": true,
+      "gallery": true,
+      "surface": "Floating notices",
+      "path": "The floating spot above the message box",
+      "headline": "Commands like /compact and /clear: 33 notices",
+      "calls": [
+        {
+          "id": "not-in-native-runtime",
+          "call": "/doctor isn't available in YouCoded-runtime sessions yet.",
+          "why": "You use a Claude Code command (typed, from the command drawer or from Settings) in a built-in assistant chat that has no equivalent. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/not-in-native-runtime.png"
+        },
+        {
+          "id": "not-in-terminal-session",
+          "call": "/compact isn't available in a terminal session — it's a Claude Code command.",
+          "why": "You pick a Claude Code command while a plain terminal session is open. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/not-in-terminal-session.png"
+        },
+        {
+          "id": "skill-cant-start-native",
+          "call": "That skill can't be started from here in a YouCoded-runtime session yet.",
+          "why": "You start a skill from the drawer in a built-in assistant chat. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/skill-cant-start-native.png"
+        },
+        {
+          "id": "open-conversation-first",
+          "call": "Open a conversation first, then try again.",
+          "why": "You press a Settings button that runs a command (like Build new theme with Claude) with no chat open. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/open-conversation-first.png"
+        },
+        {
+          "id": "attachments-ignored",
+          "call": "Attachments ignored with /compact",
+          "why": "You send /compact, /clear or /copy with files attached. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/attachments-ignored.png"
+        },
+        {
+          "id": "no-response-to-copy",
+          "call": "No response to copy",
+          "why": "You type /copy before the assistant has replied. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/no-response-to-copy.png"
+        },
+        {
+          "id": "copied-to-clipboard",
+          "call": "Copied to clipboard",
+          "why": "/copy copied the last reply. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/copied-to-clipboard.png"
+        },
+        {
+          "id": "copy-failed-retry",
+          "call": "Couldn't copy — please try again.",
+          "why": "/copy could not write to the clipboard. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/copy-failed-retry.png"
+        },
+        {
+          "id": "compact-busy",
+          "call": "Can't compact while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+          "why": "You run /compact in a built-in assistant chat mid-reply. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/compact-busy.png"
+        },
+        {
+          "id": "compact-nothing",
+          "call": "Nothing to compact yet — there needs to be at least a couple of exchanges before there’s anything to summarize.",
+          "why": "You run /compact in a nearly empty built-in assistant chat. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/compact-nothing.png"
+        },
+        {
+          "id": "compact-summary-failed",
+          "call": "The model couldn’t write a usable summary, so the conversation was left intact. Try again later.",
+          "why": "/compact in a built-in assistant chat could not produce a summary. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/compact-summary-failed.png"
+        },
+        {
+          "id": "compact-not-live",
+          "call": "This session isn't running, so there's nothing to compact.",
+          "why": "/compact in a built-in assistant chat that has stopped. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/compact-not-live.png"
+        },
+        {
+          "id": "compact-interrupted",
+          "call": "Compaction stopped. The conversation was left as it was.",
+          "why": "A /compact in a built-in assistant chat was interrupted. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/compact-interrupted.png"
+        },
+        {
+          "id": "compact-error-detail",
+          "call": "Couldn't compact: model unavailable",
+          "why": "/compact in a built-in assistant chat failed for an unlisted reason that came with details. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/compact-error-detail.png"
+        },
+        {
+          "id": "compact-failed",
+          "call": "Couldn't compact this conversation.",
+          "why": "/compact in a built-in assistant chat failed with no details. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/compact-failed.png"
+        },
+        {
+          "id": "clear-busy",
+          "call": "Can't clear while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+          "why": "You run /clear in a built-in assistant chat mid-reply. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/clear-busy.png"
+        },
+        {
+          "id": "clear-not-live",
+          "call": "This session isn't running, so there's nothing to clear.",
+          "why": "/clear in a built-in assistant chat that has stopped. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/clear-not-live.png"
+        },
+        {
+          "id": "clear-error-detail",
+          "call": "Couldn't clear: write failed",
+          "why": "/clear in a built-in assistant chat failed for an unlisted reason that came with details. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/clear-error-detail.png"
+        },
+        {
+          "id": "clear-failed",
+          "call": "Couldn't clear this conversation.",
+          "why": "/clear in a built-in assistant chat failed with no details. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/clear-failed.png"
+        },
+        {
+          "id": "skill-not-a-skill",
+          "call": "That isn't an installed skill, and it isn't a command YouCoded-runtime sessions support yet. Browse the marketplace to install skills.",
+          "why": "You type an unknown /name in a built-in assistant chat. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/skill-not-a-skill.png"
+        },
+        {
+          "id": "skill-unreadable",
+          "call": "That skill is installed, but its instructions couldn't be read. Reinstalling it from the marketplace usually fixes this.",
+          "why": "A skill you ran in a built-in assistant chat has unreadable instructions. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/skill-unreadable.png"
+        },
+        {
+          "id": "skill-busy",
+          "call": "Can't start a skill while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+          "why": "You run a skill in a built-in assistant chat mid-reply. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/skill-busy.png"
+        },
+        {
+          "id": "skill-not-live",
+          "call": "This session isn't running, so there's nothing to run the skill in.",
+          "why": "You run a skill in a built-in assistant chat that has stopped. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/skill-not-live.png"
+        },
+        {
+          "id": "skill-error-detail",
+          "call": "Couldn't run /review: two skills match (a:review, b:review)",
+          "why": "Running a skill failed with details, including when two installed skills share the name. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/skill-error-detail.png"
+        },
+        {
+          "id": "skill-failed",
+          "call": "Couldn't run /review.",
+          "why": "Running a skill failed with no details. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/skill-failed.png"
+        },
+        {
+          "id": "terminal-waiting-for-answer",
+          "call": "Claude’s terminal is waiting for an answer. Check it before sending this command.",
+          "why": "You send /model, /clear or /compact while Claude Code's terminal shows a question. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/terminal-waiting-for-answer.png"
+        },
+        {
+          "id": "claude-did-not-confirm",
+          "call": "Claude did not confirm this action. Check the conversation before trying again.",
+          "why": "/model, /clear or /compact was sent to Claude Code but no confirmation came back. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/claude-did-not-confirm.png"
+        },
+        {
+          "id": "control-unconfirmed",
+          "call": "This action could not be confirmed. Check the conversation before trying again.",
+          "why": "Sending /model, /clear or /compact failed unexpectedly. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/control-unconfirmed.png"
+        },
+        {
+          "id": "clear-not-confirmed",
+          "call": "Clear was not confirmed; queued messages remain paused.",
+          "why": "/clear in a Claude Code chat with a queue did not finish cleanly. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/clear-not-confirmed.png"
+        },
+        {
+          "id": "clear-outcome-unknown",
+          "call": "Clear outcome is unknown. Do not repeat it without checking the conversation.",
+          "why": "/clear in a Claude Code chat got no answer. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/clear-outcome-unknown.png"
+        },
+        {
+          "id": "stop-not-confirmed",
+          "call": "Stop was not confirmed.",
+          "why": "You press Stop in a Claude Code chat and it is not confirmed. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/stop-not-confirmed.png"
+        },
+        {
+          "id": "stop-outcome-unknown",
+          "call": "Stop outcome is unknown. Check the conversation.",
+          "why": "You press Stop in a Claude Code chat and no answer comes back. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/stop-outcome-unknown.png"
+        },
+        {
+          "id": "stop-task-failed",
+          "call": "Couldn't stop this task.",
+          "why": "You press stop on a background task card and the request itself fails. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/stop-task-failed.png"
+        }
+      ]
+    },
+    {
+      "id": "P-n-files",
+      "page": "Files, pictures and downloads",
+      "intro": "Notices from files, downloads, uploads and copying.",
+      "stage": "design"
+    },
+    {
+      "id": "L-n-files",
+      "words": true,
+      "gallery": true,
+      "surface": "Floating notices",
+      "path": "The floating spot above the message box",
+      "headline": "Files, pictures and downloads: 17 notices",
+      "calls": [
+        {
+          "id": "download-unavailable",
+          "call": "Download isn’t available here.",
+          "why": "You press Download on a file where this device can't download. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/download-unavailable.png"
+        },
+        {
+          "id": "download-saving",
+          "call": "Saving report.pdf to this device…",
+          "why": "You press Download on a file and the computer accepts. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/download-saving.png"
+        },
+        {
+          "id": "download-refused",
+          "call": "Couldn’t download .env: it’s in a private location (like keys, passwords or .env files) that remote access never sends.",
+          "why": "The computer refuses a Download request or the request errors. About the whole app. Leaves after 5 seconds.",
+          "picture": "pictures/n/download-refused.png"
+        },
+        {
+          "id": "download-failed",
+          "call": "Couldn’t download report.pdf.",
+          "why": "A Download fails with no reason given. About the whole app. Leaves after 5 seconds.",
+          "picture": "pictures/n/download-failed.png"
+        },
+        {
+          "id": "picture-copy-failed",
+          "call": "Couldn't copy that picture.",
+          "why": "Copy picture from the right-click menu fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/picture-copy-failed.png"
+        },
+        {
+          "id": "picture-save-failed",
+          "call": "Couldn't save that picture.",
+          "why": "Save picture from the right-click menu fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/picture-save-failed.png"
+        },
+        {
+          "id": "copy-path",
+          "call": "Couldn't copy the path.",
+          "why": "Copy path on a file fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/copy-path.png"
+        },
+        {
+          "id": "open-file",
+          "call": "Couldn't open the file.",
+          "why": "Opening a file in its own app from the files drawer fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/open-file.png"
+        },
+        {
+          "id": "remove-from-list",
+          "call": "Couldn't remove this from the list.",
+          "why": "Removing a file from the conversation's files list fails. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/remove-from-list.png"
+        },
+        {
+          "id": "load-whole-file",
+          "call": "Couldn't load the whole file.",
+          "why": "You ask to see the rest of a large file and reading it fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/load-whole-file.png"
+        },
+        {
+          "id": "attach-pasted-image",
+          "call": "Couldn't attach the pasted image.",
+          "why": "Pasting a picture into the message box fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/attach-pasted-image.png"
+        },
+        {
+          "id": "open-file-picker",
+          "call": "Couldn't open the file picker.",
+          "why": "You press Attach and the file picker fails to open. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/open-file-picker.png"
+        },
+        {
+          "id": "open-folder",
+          "call": "Couldn't open the folder.",
+          "why": "Opening a project's folder from its page fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/open-folder.png"
+        },
+        {
+          "id": "office-save-failed",
+          "call": "An Office document couldn't be saved.",
+          "why": "An Office document tab closed while the Office page was hidden and could not save, so it came back. About the whole app. Leaves after 10 seconds. Buttons: Open Office. Its own red notice inside Office documents; not photographed this."
+        },
+        {
+          "id": "upload-too-large",
+          "call": "That file is over 25 MB, the most a phone can send to the computer. Attach a smaller one.",
+          "why": "You attach a file over 25 MB from a phone or browser. About the whole app. Leaves after 5 seconds.",
+          "picture": "pictures/n/upload-too-large.png"
+        },
+        {
+          "id": "upload-folder-full",
+          "call": "The computer’s space for attachments is full right now. Try again in a little while, or attach fewer files.",
+          "why": "You attach a file from a phone or browser while the computer's attachment folder is full. About the whole app. Leaves after 5 seconds.",
+          "picture": "pictures/n/upload-folder-full.png"
+        },
+        {
+          "id": "upload-failed",
+          "call": "Upload failed",
+          "why": "Sending an attachment from a phone or browser to the computer fails. About the whole app. Leaves after 5 seconds.",
+          "picture": "pictures/n/upload-failed.png"
+        }
+      ]
+    },
+    {
+      "id": "P-n-remote",
+      "page": "Phone, remote access and moving chats",
+      "intro": "Notices when a phone or another computer is involved.",
+      "stage": "design"
+    },
+    {
+      "id": "L-n-remote",
+      "words": true,
+      "gallery": true,
+      "surface": "Floating notices",
+      "path": "The floating spot above the message box",
+      "headline": "Phone, remote access and moving chats: 18 notices",
+      "calls": [
+        {
+          "id": "live-handoff-unavailable",
+          "call": "Live handoff is available from a computer or a remote connection to one.",
+          "why": "You agree to take over a conversation from another device on the Android app's own runtime. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/live-handoff-unavailable.png"
+        },
+        {
+          "id": "finish-current-transfer",
+          "call": "Finish the current conversation transfer, then try reopening this one again.",
+          "why": "You start a second conversation transfer while one is still running. About one chat. Leaves after 8 seconds.",
+          "picture": "pictures/n/finish-current-transfer.png"
+        },
+        {
+          "id": "handoff-unconfirmed",
+          "call": "Couldn't confirm the handoff from Work laptop.",
+          "why": "You resume a conversation that is open on another device and that device never confirms letting go. About one chat. Leaves after 8 seconds.",
+          "picture": "pictures/n/handoff-unconfirmed.png"
+        },
+        {
+          "id": "resume-failed",
+          "call": "Couldn't resume this conversation.",
+          "why": "Reopening a past conversation fails. About one chat. Leaves after 6 seconds.",
+          "picture": "pictures/n/resume-failed.png"
+        },
+        {
+          "id": "takeover-failed",
+          "call": "Couldn't take over from your other computer. Close the conversation there, then try again.",
+          "why": "You press Continue on a waiting transfer and taking it over from the other computer fails. About one chat. Leaves after 8 seconds.",
+          "picture": "pictures/n/takeover-failed.png"
+        },
+        {
+          "id": "remote-unsupported",
+          "call": "Theme browsing isn't available via remote access yet.",
+          "why": "On a phone or browser, you use a part of the app the computer doesn't offer over remote access yet (shown once per feature). About the whole app. Leaves after 6 seconds. Buttons: Dismiss (X close button). Its own notice."
+        },
+        {
+          "id": "tailscale-only",
+          "call": "YouCoded only connects to your computer over Tailscale, and this address isn’t one. Turn on Tailscale on both devices and add the computer again using its Tailscale address.",
+          "why": "The phone tries to reconnect to a saved computer at an address that isn't a Tailscale address. About the whole app. Leaves after 8 seconds.",
+          "picture": "pictures/n/tailscale-only.png"
+        },
+        {
+          "id": "saved-password-rejected",
+          "call": "Work PC didn't accept the saved password. Update it in Settings → Connect to Desktop.",
+          "why": "The phone's saved computer refuses its saved password (invalid, revoked or unknown). About the whole app. Leaves after 8 seconds.",
+          "picture": "pictures/n/saved-password-rejected.png"
+        },
+        {
+          "id": "saved-password-none-set",
+          "call": "Work PC has no remote access password set yet. Set one on that computer, in Settings → Remote access.",
+          "why": "The phone's saved computer has no remote access password set. About the whole app. Leaves after 8 seconds.",
+          "picture": "pictures/n/saved-password-none-set.png"
+        },
+        {
+          "id": "saved-password-expired",
+          "call": "Work PC signed this phone out after 30 days without use. Enter the password again in Settings → Connect to Desktop.",
+          "why": "The phone's saved sign-in to the computer expired from lack of use. About the whole app. Leaves after 8 seconds.",
+          "picture": "pictures/n/saved-password-expired.png"
+        },
+        {
+          "id": "saved-password-refused-other",
+          "call": "Work PC refused this sign-in.",
+          "why": "The phone's saved computer refuses the sign-in for another reason (e.g. retired). About the whole app. Leaves after 8 seconds.",
+          "picture": "pictures/n/saved-password-refused-other.png"
+        },
+        {
+          "id": "stop-not-sent-offline",
+          "call": "Not connected — Stop wasn't sent. Press it again once you're back online.",
+          "why": "You press Stop on a phone while disconnected. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/stop-not-sent-offline.png"
+        },
+        {
+          "id": "stop-refused",
+          "call": "Stop didn't go through. Press it again.",
+          "why": "Stop pressed on a phone is refused by the computer. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/stop-refused.png"
+        },
+        {
+          "id": "stop-unconfirmed-phone",
+          "call": "Your computer hasn't confirmed the stop. If the assistant is still working, press Stop again.",
+          "why": "Stop pressed on a phone is not confirmed in time. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/stop-unconfirmed-phone.png"
+        },
+        {
+          "id": "close-refused-detail",
+          "call": "Couldn't close \"Bug hunt\": session is busy",
+          "why": "Closing a conversation from a phone is refused and the computer gives a reason. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/close-refused-detail.png"
+        },
+        {
+          "id": "close-refused",
+          "call": "Couldn't close \"Bug hunt\". Your computer didn't accept the request.",
+          "why": "Closing a conversation from a phone is refused with no reason. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/close-refused.png"
+        },
+        {
+          "id": "close-unconfirmed",
+          "call": "Couldn't confirm \"Bug hunt\" closed on your computer, so it is back.",
+          "why": "Closing a conversation from a phone is never confirmed, so it reappears. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/close-unconfirmed.png"
+        },
+        {
+          "id": "mode-unconfirmed",
+          "call": "The permission mode didn't change. Your computer didn't confirm it.",
+          "why": "You change a chat's permission mode on a phone and the computer doesn't confirm. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/mode-unconfirmed.png"
+        }
+      ]
+    },
+    {
+      "id": "P-n-models",
+      "page": "Models, your account and start-up",
+      "intro": "Notices about switching models, signing in, and things found when the app starts.",
+      "stage": "design"
+    },
+    {
+      "id": "L-n-models",
+      "words": true,
+      "gallery": true,
+      "surface": "Floating notices",
+      "path": "The floating spot above the message box",
+      "headline": "Models, your account and start-up: 8 notices",
+      "calls": [
+        {
+          "id": "model-switch-failed",
+          "call": "Couldn't switch to Opus",
+          "why": "You switch models but Claude's next reply still comes from the old model. About one chat. Leaves after 4 seconds.",
+          "picture": "pictures/n/model-switch-failed.png"
+        },
+        {
+          "id": "model-switch-failed-again",
+          "call": "Model switch failed again. Ask Claude to diagnose with /model, or report a bug.",
+          "why": "A model switch fails a second time in a row. About one chat. Leaves after 4 seconds.",
+          "picture": "pictures/n/model-switch-failed-again.png"
+        },
+        {
+          "id": "save-fast-mode",
+          "call": "Couldn't save Fast mode.",
+          "why": "Turning Fast mode on or off (in the model picker or with /fast) fails to save. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-fast-mode.png"
+        },
+        {
+          "id": "save-effort",
+          "call": "Couldn't save the effort level.",
+          "why": "Changing the effort level (in the model picker or with /effort) fails to save. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-effort.png"
+        },
+        {
+          "id": "reload-model",
+          "call": "Couldn't reload the model.",
+          "why": "You press reload on the local model card and it fails. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/reload-model.png"
+        },
+        {
+          "id": "session-lost",
+          "call": "You were signed out of your YouCoded account. Friends see you as offline until you sign in again.",
+          "why": "The YouCoded server stops recognising your sign-in. About the whole app. Leaves after 30 seconds. Buttons: Sign in again.",
+          "picture": "pictures/n/session-lost.png"
+        },
+        {
+          "id": "plugin-turned-off",
+          "call": "We turned off a plugin that was found to be unsafe.",
+          "why": "At start-up, once per plugin, when YouCoded has newly turned off an installed plugin as unsafe. About the whole app. Leaves after 10 seconds. Buttons: Show.",
+          "picture": "pictures/n/plugin-turned-off.png"
+        },
+        {
+          "id": "settings-repaired",
+          "call": "Your Claude Code settings couldn't be read, so YouCoded reset them. Your old settings are saved in a file.",
+          "why": "At start-up, once, when YouCoded had to replace a damaged Claude Code settings file (no button on a phone or the Android app). About the whole app. Leaves after 30 seconds. Buttons: Show file.",
+          "picture": "pictures/n/settings-repaired.png"
+        }
+      ]
+    },
+    {
+      "id": "P-n-other",
+      "page": "Everything else",
+      "intro": "Saving settings, tags, projects, integrations and links.",
+      "stage": "design"
+    },
+    {
+      "id": "L-n-other",
+      "words": true,
+      "gallery": true,
+      "surface": "Floating notices",
+      "path": "The floating spot above the message box",
+      "headline": "Everything else: 26 notices",
+      "calls": [
+        {
+          "id": "plan-tier",
+          "call": "Couldn't change the plan tier.",
+          "why": "Changing your plan tier in Settings on Android fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/plan-tier.png"
+        },
+        {
+          "id": "voice-ready",
+          "call": "Voice is ready — tap the mic to talk.",
+          "why": "Voice input finishes setting up. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/voice-ready.png"
+        },
+        {
+          "id": "copy-failed",
+          "call": "Couldn't copy.",
+          "why": "Picking an option in a message's copy picker fails to copy. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/copy-failed.png"
+        },
+        {
+          "id": "like-theme-failed",
+          "call": "Couldn't like theme — try again",
+          "why": "Liking a theme in the marketplace fails (other than a sign-in problem). About the whole app. Leaves after 3 seconds. A small red notice beside the like button in the marketplace; not photographed this round."
+        },
+        {
+          "id": "change-favorites",
+          "call": "Couldn't change your favorites.",
+          "why": "Starring or unstarring a command, skill or theme fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/change-favorites.png"
+        },
+        {
+          "id": "save-setting",
+          "call": "Couldn't save this setting.",
+          "why": "Changing a new-session default in Settings fails to save. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-setting.png"
+        },
+        {
+          "id": "save-output-style",
+          "call": "Couldn't save your output style.",
+          "why": "Your output style edit failed to save after the preferences popup closed. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-output-style.png"
+        },
+        {
+          "id": "save-system-prompt",
+          "call": "Couldn't save your system prompt.",
+          "why": "Your system prompt edit failed to save after the preferences popup closed. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-system-prompt.png"
+        },
+        {
+          "id": "create-tag",
+          "call": "Couldn't create the tag.",
+          "why": "Creating a new conversation tag fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/create-tag.png"
+        },
+        {
+          "id": "save-tag",
+          "call": "Couldn't save the tag.",
+          "why": "Editing a conversation tag fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-tag.png"
+        },
+        {
+          "id": "delete-tag",
+          "call": "Couldn't delete the tag.",
+          "why": "Deleting a conversation tag fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/delete-tag.png"
+        },
+        {
+          "id": "save-tag-change",
+          "call": "Couldn't save this tag change.",
+          "why": "Adding or removing a tag on the open conversation is refused. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-tag-change.png"
+        },
+        {
+          "id": "save-note",
+          "call": "Couldn't save the note.",
+          "why": "Saving the open conversation's note is refused. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-note.png"
+        },
+        {
+          "id": "save-change",
+          "call": "Couldn't save this change.",
+          "why": "Changing a flag (such as pinned) on the open conversation is refused. About one chat. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-change.png"
+        },
+        {
+          "id": "open-link",
+          "call": "Couldn't open the link.",
+          "why": "Opening a link from a deliverables card fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/open-link.png"
+        },
+        {
+          "id": "open-browser",
+          "call": "Couldn't open the browser.",
+          "why": "Clicking a usage chip in the status bar fails to open the Claude usage page. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/open-browser.png"
+        },
+        {
+          "id": "open-page",
+          "call": "Couldn't open the page.",
+          "why": "Opening a project's online repository page fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/open-page.png"
+        },
+        {
+          "id": "open-setup-session",
+          "call": "Couldn't open a setup session.",
+          "why": "Starting a setup chat for an integration from the marketplace fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/open-setup-session.png"
+        },
+        {
+          "id": "install-integration",
+          "call": "Couldn't install Google Drive.",
+          "why": "Installing an integration from the marketplace errors. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/install-integration.png"
+        },
+        {
+          "id": "connect-integration",
+          "call": "Couldn't connect Google Drive.",
+          "why": "Connecting an integration fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/connect-integration.png"
+        },
+        {
+          "id": "uninstall-integration",
+          "call": "Couldn't uninstall Google Drive.",
+          "why": "Uninstalling an integration fails. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/uninstall-integration.png"
+        },
+        {
+          "id": "refresh-integrations",
+          "call": "Couldn't refresh the integrations list.",
+          "why": "After installing, connecting or uninstalling an integration, the list fails to reload. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/refresh-integrations.png"
+        },
+        {
+          "id": "refresh-project-list",
+          "call": "Couldn't refresh the project list.",
+          "why": "After adding or changing a project, the projects list fails to reload. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/refresh-project-list.png"
+        },
+        {
+          "id": "rename-project",
+          "call": "Couldn't rename this project.",
+          "why": "Renaming a project is refused. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/rename-project.png"
+        },
+        {
+          "id": "save-description",
+          "call": "Couldn't save the description.",
+          "why": "Saving a project's description is refused. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/save-description.png"
+        },
+        {
+          "id": "stop-syncing",
+          "call": "Couldn't stop syncing this project.",
+          "why": "Stop syncing on a project is refused. About the whole app. Leaves after 3 seconds.",
+          "picture": "pictures/n/stop-syncing.png"
+        }
+      ]
+    },
+    {
       "id": "P-3",
       "page": "Your choices",
       "intro": "Where the notice goes, when it shows, and what happens to your held-back message.",
@@ -142,68 +961,58 @@
     {
       "id": "Q-1",
       "words": true,
-      "visual": true,
       "surface": "Chat",
       "path": "The notice above the message box",
-      "headline": "Where should the notice sit?",
-      "today": "It floats over the bottom of the chat, in every chat, and stays until Claude goes quiet.",
-      "checked": "Read in the app's code on 2026-11-21, and matches your screenshot.",
-      "problem": "It covers your messages and follows you to chats it has nothing to do with.",
-      "proposal": "Three drawings of the same moment: a question is waiting, and you pressed Send. All three stay in their own chat and leave once you answer or send.",
+      "headline": "Now that you have seen every notice: how should they be organized?",
+      "today": "About 120 short notices share one floating spot above the message box. Most are about one chat; about 45 are about the whole app.",
+      "checked": "Counted from the app code on 2026-11-23; every one is photographed on the pages before this one.",
+      "problem": "Notices about one chat float over every chat, and the timer bug can leave any of them on screen while Claude works.",
+      "proposal": "Pick how they should be organized. Drawings of your pick, made in the real app, come next round.",
       "options": [
         {
-          "id": "strip",
-          "label": "Strip above the box",
+          "id": "two-homes",
+          "label": "Two homes",
           "recommended": true,
-          "picture": "pictures/option-strip.png",
-          "caption": "Same strip as \"Connecting tools…\" and the phone's \"Reconnecting…\".",
+          "summary": "Notices about one chat sit in a strip just above that chat's message box. Notices about the whole app keep floating.",
           "pros": [
-            "Never covers your messages.",
-            "Works like the other warnings above the box, so nothing new to learn.",
-            "Sits right where your held-back message is."
+            "A chat's notice never shows in another chat.",
+            "A problem stays until it is fixed; a plain confirmation still leaves after a few seconds.",
+            "The strip already exists for \"Connecting tools…\" and the phone's \"Reconnecting…\"."
           ],
           "cons": [
-            "Pushes the chat up by one line while it shows."
-          ],
-          "reuse": {
-            "from": [
-              "The \"Connecting tools…\" strip above the message box",
-              "The app's standard buttons"
-            ],
-            "new": [
-              "The words, and the two buttons inside the strip"
-            ]
-          }
-        },
-        {
-          "id": "floating",
-          "label": "Floating, per chat",
-          "picture": "pictures/option-floating.png",
-          "caption": "Today's look, but only in its own chat, and staying until you answer.",
-          "pros": [
-            "Looks the same as today; only when it leaves changes."
-          ],
-          "cons": [
-            "Still covers part of the chat while it stays, which is what bothers you now.",
-            "Any other floating notice would replace it."
+            "Two places to look instead of one.",
+            "Each notice has to be sorted into one home or the other."
           ]
         },
         {
-          "id": "inline",
-          "label": "In the chat",
-          "picture": "pictures/option-inline.png",
-          "caption": "A line right under the waiting question, like \"No internet\".",
+          "id": "all-strip",
+          "label": "All in the strip",
+          "summary": "Every notice, about one chat or the whole app, sits in the strip above the message box.",
           "pros": [
-            "Sits right beside the thing you need to answer."
+            "One place for everything.",
+            "Nothing ever covers your messages."
           ],
           "cons": [
-            "Scrolls away with the chat, so you can miss it.",
-            "When the thing waiting is a pop-up only on the terminal screen, there is no question in the chat to sit under."
+            "App-wide notices, like a failed download, would sit in whichever chat is open and stay there when you switch."
+          ]
+        },
+        {
+          "id": "floating-fixed",
+          "label": "Keep floating",
+          "summary": "Everything stays floating as today, with the timer fixed and chat notices shown only in their own chat.",
+          "pros": [
+            "Smallest change; looks the same as today."
+          ],
+          "cons": [
+            "Floating notices still cover the bottom of the chat while they show.",
+            "Only one can show at a time; a new one replaces the last."
           ]
         }
       ],
-      "picture": "pictures/today-floating-notice.png",
-      "caption": "Today, from your screenshot: the notice covering your sent message."
+      "picture": "pictures/today-real.png",
+      "caption": "Today, in the real app: a question is waiting and you pressed Send.",
+      "reopened": "You asked to see every similar notice before deciding, and rejected the hand-made drawings.",
+      "reframed": "Every floating notice is now on its own page with a real picture, and this question decides how all of them are organized, not just one."
     },
     {
       "id": "Q-2",
@@ -278,7 +1087,8 @@
             "A bigger change to how sending works, so more that could go wrong."
           ]
         }
-      ]
+      ],
+      "resolved": "Kept: you press Send yourself. Your note is the rule: the notice leaves on its own the moment the question is answered."
     },
     {
       "id": "Q-4",
@@ -289,7 +1099,8 @@
       "today": "About 40 short notices, like \"Not connected\" or \"Couldn't switch model\", share the same stuck-timer bug.",
       "checked": "Found by reading the shared notice code on 2026-11-21; the bug is in the one piece all of them use.",
       "problem": "Any of them can stay on screen while Claude works, the same way this one did.",
-      "proposal": "Fix that one shared piece now. Yes: those notices leave on time, and that is the only change you would notice. No: they stay as they are."
+      "proposal": "Fix that one shared piece now. Yes: those notices leave on time, and that is the only change you would notice. No: they stay as they are.",
+      "resolved": "Will fix the timer in the one shared piece; it stays useful whichever way you organize the notices."
     }
   ]
 }

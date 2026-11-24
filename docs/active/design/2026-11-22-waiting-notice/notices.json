@@ -1,0 +1,1880 @@
+[
+ {
+  "id": "blocked-send-waiting",
+  "text": "Claude Code is waiting on something — answer it first.",
+  "buttons": [
+   "Send anyway",
+   "Show card"
+  ],
+  "buttonVariants": [
+   [
+    "Send anyway",
+    "Show card"
+   ],
+   [
+    "Send anyway",
+    "Open terminal"
+   ],
+   [
+    "Show card"
+   ],
+   [
+    "Open terminal"
+   ],
+   []
+  ],
+  "duration": "8000 (with buttons); default 3000 for the plain fallback",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You try to send while Claude Code is showing a question, permission request or pop-up that must be answered first.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/pty-input-gate.ts:146",
+   "src/renderer/utils/blocked-send-toast.ts:31",
+   "src/renderer/hooks/useBlockedSend.ts:32",
+   "src/renderer/App.tsx:806",
+   "src/renderer/App.tsx:3788",
+   "src/renderer/components/buddy/BuddyChat.tsx:147",
+   "src/renderer/components/buddy/BuddyChat.tsx:201",
+   "src/renderer/components/InputBar.tsx:816"
+  ]
+ },
+ {
+  "id": "escape-didnt-close",
+  "text": "Claude Code didn't close it — switch to terminal view to answer it. Your message is still here.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You pressed Send anyway but the Claude Code pop-up did not close.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/components/InputBar.tsx:810"
+  ]
+ },
+ {
+  "id": "not-ready-to-send",
+  "text": "This conversation is not ready to send yet. Your message is still here.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You send in a built-in assistant chat that is still starting up.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/components/InputBar.tsx:775",
+   "src/renderer/state/native-send-copy.ts:9",
+   "src/renderer/components/InputBar.tsx:912",
+   "src/renderer/state/submit-outgoing.ts:377"
+  ]
+ },
+ {
+  "id": "not-connected-message-kept",
+  "text": "Not connected — your message is still here. Send it again when you reconnect.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press Send while the phone or browser has lost its connection to the computer.",
+  "group": "sending",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/InputBar.tsx:826",
+   "src/renderer/components/InputBar.tsx:1013",
+   "src/renderer/components/InputBar.tsx:1347"
+  ]
+ },
+ {
+  "id": "not-connected-original-kept",
+  "text": "Not connected — the original message is still here.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press Send again on a failed message bubble while disconnected.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/submit-outgoing.ts:369",
+   "src/renderer/components/ChatTimelineRow.tsx:105"
+  ]
+ },
+ {
+  "id": "send-compacting",
+  "text": "Conversation is compacting. Wait for it to finish, then send your message.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You send in a built-in assistant chat while it is compacting.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-send-copy.ts:6",
+   "src/renderer/components/InputBar.tsx:912",
+   "src/renderer/state/submit-outgoing.ts:377"
+  ]
+ },
+ {
+  "id": "send-queue-full",
+  "text": "Send queue is full (10 messages waiting). Wait for the current turn to finish.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You send in a built-in assistant chat that already has ten messages waiting.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-send-copy.ts:7",
+   "src/renderer/components/InputBar.tsx:912",
+   "src/renderer/state/submit-outgoing.ts:377"
+  ]
+ },
+ {
+  "id": "send-changed",
+  "text": "This conversation changed while your message was being prepared. Your message is still here.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "A built-in assistant chat changed underneath a message you were sending.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-send-copy.ts:8",
+   "src/renderer/components/InputBar.tsx:912",
+   "src/renderer/state/submit-outgoing.ts:377"
+  ]
+ },
+ {
+  "id": "send-starting-full",
+  "text": "Starting up — the model is still loading, and ten messages are already waiting.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You send while the local model is still loading and ten messages are already waiting.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-send-copy.ts:10",
+   "src/renderer/components/InputBar.tsx:912",
+   "src/renderer/state/submit-outgoing.ts:377"
+  ]
+ },
+ {
+  "id": "send-not-live",
+  "text": "This session is no longer running. Start or resume it to send messages.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You send in a built-in assistant chat that has stopped running.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-send-copy.ts:11",
+   "src/renderer/components/InputBar.tsx:912",
+   "src/renderer/state/submit-outgoing.ts:377"
+  ]
+ },
+ {
+  "id": "send-unconfirmed",
+  "text": "YouCoded couldn't confirm your message was sent — check the conversation before sending it again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "A built-in assistant chat never answered whether your message arrived.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-send-copy.ts:14",
+   "src/renderer/components/InputBar.tsx:912",
+   "src/renderer/state/submit-outgoing.ts:377"
+  ]
+ },
+ {
+  "id": "send-failed-generic",
+  "text": "The message could not be sent.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "A built-in assistant chat refused a message for a reason with no specific wording.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-send-copy.ts:15",
+   "src/renderer/components/InputBar.tsx:912",
+   "src/renderer/state/submit-outgoing.ts:377"
+  ]
+ },
+ {
+  "id": "queue-not-answering",
+  "text": "Claude Code isn't answering in this chat yet. Your message wasn't sent.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You send in a Claude Code chat whose message queue is not ready yet but may be soon.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/submit-outgoing.ts:124",
+   "src/renderer/state/submit-outgoing.ts:148"
+  ]
+ },
+ {
+  "id": "queue-refused",
+  "text": "This chat couldn't take your message. Your message wasn't sent.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "A Claude Code chat's message queue refuses your message.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/submit-outgoing.ts:125",
+   "src/renderer/state/submit-outgoing.ts:138",
+   "src/renderer/state/submit-outgoing.ts:148"
+  ]
+ },
+ {
+  "id": "queue-availability-changed",
+  "text": "Queue availability changed. Check the conversation before sending again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The chat's message queue went away in the middle of sending.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/submit-outgoing.ts:134",
+   "src/renderer/state/submit-outgoing.ts:148"
+  ]
+ },
+ {
+  "id": "queue-maybe-not-sent",
+  "text": "Your message may not have been sent. Check the chat before sending it again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The message queue gave an unclear answer, so the message may or may not have gone.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/submit-outgoing.ts:138",
+   "src/renderer/state/submit-outgoing.ts:148"
+  ]
+ },
+ {
+  "id": "queue-outcome-unknown",
+  "text": "Message outcome is unknown. Check the queue and conversation before trying again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Sending through the queue failed in an unexpected way.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/submit-outgoing.ts:148"
+  ],
+  "passthrough": "Shows any thrown Error's message as-is; this sentence is only the fallback when the thrown thing is not an Error."
+ },
+ {
+  "id": "lost-send-restored",
+  "text": "An earlier message didn't reach your computer. It's back in the message box.",
+  "buttons": [],
+  "duration": 6000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The app checks an unconfirmed earlier message, finds it never arrived, and puts the words back in the message box.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/submit-outgoing.ts:290",
+   "src/renderer/state/submit-outgoing.ts:325"
+  ]
+ },
+ {
+  "id": "maybe-lost-send-restored",
+  "text": "An earlier message may not have reached your computer. It's back in the message box — check the conversation before sending it again.",
+  "buttons": [],
+  "duration": 6000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The app can't tell whether an earlier message arrived and puts its words back in the message box.",
+  "group": "sending",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/submit-outgoing.ts:325"
+  ]
+ },
+ {
+  "id": "not-in-native-runtime",
+  "text": "/doctor isn't available in YouCoded-runtime sessions yet.",
+  "template": "${command} isn't available in YouCoded-runtime sessions yet.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You use a Claude Code command (typed, from the command drawer or from Settings) in a built-in assistant chat that has no equivalent.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/App.tsx:862",
+   "src/renderer/App.tsx:2509",
+   "src/renderer/App.tsx:4200",
+   "src/renderer/components/InputBar.tsx:862"
+  ]
+ },
+ {
+  "id": "not-in-terminal-session",
+  "text": "/compact isn't available in a terminal session — it's a Claude Code command.",
+  "template": "${command} isn't available in a terminal session — it's a Claude Code command.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You pick a Claude Code command while a plain terminal session is open.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/App.tsx:861"
+  ]
+ },
+ {
+  "id": "skill-cant-start-native",
+  "text": "That skill can't be started from here in a YouCoded-runtime session yet.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You start a skill from the drawer in a built-in assistant chat.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/App.tsx:2572"
+  ]
+ },
+ {
+  "id": "open-conversation-first",
+  "text": "Open a conversation first, then try again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press a Settings button that runs a command (like Build new theme with Claude) with no chat open.",
+  "group": "commands",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/App.tsx:4185"
+  ]
+ },
+ {
+  "id": "attachments-ignored",
+  "text": "Attachments ignored with /compact",
+  "template": "Attachments ignored with ${/compact|/clear|/copy}",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You send /compact, /clear or /copy with files attached.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/slash-command-dispatcher.ts:158",
+   "src/renderer/state/slash-command-dispatcher.ts:193",
+   "src/renderer/state/slash-command-dispatcher.ts:288"
+  ]
+ },
+ {
+  "id": "no-response-to-copy",
+  "text": "No response to copy",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You type /copy before the assistant has replied.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/slash-command-dispatcher.ts:296"
+  ]
+ },
+ {
+  "id": "copied-to-clipboard",
+  "text": "Copied to clipboard",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/copy copied the last reply.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/slash-command-dispatcher.ts:312"
+  ]
+ },
+ {
+  "id": "copy-failed-retry",
+  "text": "Couldn't copy — please try again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/copy could not write to the clipboard.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/slash-command-dispatcher.ts:312"
+  ]
+ },
+ {
+  "id": "compact-busy",
+  "text": "Can't compact while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You run /compact in a built-in assistant chat mid-reply.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:24",
+   "src/renderer/state/native-slash-actions.ts:92"
+  ]
+ },
+ {
+  "id": "compact-nothing",
+  "text": "Nothing to compact yet — there needs to be at least a couple of exchanges before there’s anything to summarize.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You run /compact in a nearly empty built-in assistant chat.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:26",
+   "src/renderer/state/native-slash-actions.ts:92"
+  ]
+ },
+ {
+  "id": "compact-summary-failed",
+  "text": "The model couldn’t write a usable summary, so the conversation was left intact. Try again later.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/compact in a built-in assistant chat could not produce a summary.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:30",
+   "src/renderer/state/native-slash-actions.ts:92"
+  ]
+ },
+ {
+  "id": "compact-not-live",
+  "text": "This session isn't running, so there's nothing to compact.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/compact in a built-in assistant chat that has stopped.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:32",
+   "src/renderer/state/native-slash-actions.ts:92"
+  ]
+ },
+ {
+  "id": "compact-interrupted",
+  "text": "Compaction stopped. The conversation was left as it was.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "A /compact in a built-in assistant chat was interrupted.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:33",
+   "src/renderer/state/native-slash-actions.ts:92"
+  ]
+ },
+ {
+  "id": "compact-error-detail",
+  "text": "Couldn't compact: model unavailable",
+  "template": "Couldn't compact: ${detail}",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/compact in a built-in assistant chat failed for an unlisted reason that came with details.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:96"
+  ],
+  "passthrough": "detail = raw error text from the built-in assistant"
+ },
+ {
+  "id": "compact-failed",
+  "text": "Couldn't compact this conversation.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/compact in a built-in assistant chat failed with no details.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:96"
+  ]
+ },
+ {
+  "id": "clear-busy",
+  "text": "Can't clear while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You run /clear in a built-in assistant chat mid-reply.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:103",
+   "src/renderer/state/native-slash-actions.ts:135"
+  ]
+ },
+ {
+  "id": "clear-not-live",
+  "text": "This session isn't running, so there's nothing to clear.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/clear in a built-in assistant chat that has stopped.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:105",
+   "src/renderer/state/native-slash-actions.ts:135"
+  ]
+ },
+ {
+  "id": "clear-error-detail",
+  "text": "Couldn't clear: write failed",
+  "template": "Couldn't clear: ${detail}",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/clear in a built-in assistant chat failed for an unlisted reason that came with details.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:137"
+  ],
+  "passthrough": "detail = raw error text"
+ },
+ {
+  "id": "clear-failed",
+  "text": "Couldn't clear this conversation.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/clear in a built-in assistant chat failed with no details.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:137"
+  ]
+ },
+ {
+  "id": "skill-not-a-skill",
+  "text": "That isn't an installed skill, and it isn't a command YouCoded-runtime sessions support yet. Browse the marketplace to install skills.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You type an unknown /name in a built-in assistant chat.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:150",
+   "src/renderer/state/native-slash-actions.ts:185"
+  ]
+ },
+ {
+  "id": "skill-unreadable",
+  "text": "That skill is installed, but its instructions couldn't be read. Reinstalling it from the marketplace usually fixes this.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "A skill you ran in a built-in assistant chat has unreadable instructions.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:152",
+   "src/renderer/state/native-slash-actions.ts:185"
+  ]
+ },
+ {
+  "id": "skill-busy",
+  "text": "Can't start a skill while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You run a skill in a built-in assistant chat mid-reply.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:158",
+   "src/renderer/state/native-slash-actions.ts:185"
+  ]
+ },
+ {
+  "id": "skill-not-live",
+  "text": "This session isn't running, so there's nothing to run the skill in.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You run a skill in a built-in assistant chat that has stopped.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:160",
+   "src/renderer/state/native-slash-actions.ts:185"
+  ]
+ },
+ {
+  "id": "skill-error-detail",
+  "text": "Couldn't run /review: two skills match (a:review, b:review)",
+  "template": "Couldn't run /${skill}: ${detail}",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Running a skill failed with details, including when two installed skills share the name.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:187"
+  ],
+  "passthrough": "detail = raw error text (the 'ambiguous' case names the clashing skill ids)"
+ },
+ {
+  "id": "skill-failed",
+  "text": "Couldn't run /review.",
+  "template": "Couldn't run /${skill}.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Running a skill failed with no details.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/native-slash-actions.ts:187"
+  ]
+ },
+ {
+  "id": "terminal-waiting-for-answer",
+  "text": "Claude’s terminal is waiting for an answer. Check it before sending this command.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You send /model, /clear or /compact while Claude Code's terminal shows a question.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/claude-control.ts:27"
+  ]
+ },
+ {
+  "id": "claude-did-not-confirm",
+  "text": "Claude did not confirm this action. Check the conversation before trying again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/model, /clear or /compact was sent to Claude Code but no confirmation came back.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/claude-control.ts:19",
+   "src/renderer/state/claude-control.ts:30",
+   "src/main/session-manager.ts:778",
+   "src/main/ipc/session.ts:279"
+  ],
+  "passthrough": "Line 30 shows the computer's own message. Known values: 'This conversation is not running.', 'This conversation is still starting. Try again when it is ready.', 'This Claude control request is not supported.', plus internal ones from main/claude-control-bridge.ts (e.g. 'Control queue is full', 'Control receipt timed out after handoff', 'Session closed after handoff', 'Stop is already awaiting confirmation')."
+ },
+ {
+  "id": "control-unconfirmed",
+  "text": "This action could not be confirmed. Check the conversation before trying again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Sending /model, /clear or /compact failed unexpectedly.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/claude-control.ts:31"
+  ]
+ },
+ {
+  "id": "clear-not-confirmed",
+  "text": "Clear was not confirmed; queued messages remain paused.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/clear in a Claude Code chat with a queue did not finish cleanly.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/claude-control.ts:41"
+  ],
+  "passthrough": "Usually the queue's own message instead: 'Clear was not confirmed. Queued messages remain paused.', 'The queue connection is no longer ready. Check the conversation before sending again.', 'Conversation queue is still starting.', 'Conversation identity changed.', 'Unsupported queue operation.', 'Invalid queue action.', 'Queue action could not be confirmed.' or a raw error (main/claude-queue-runtime.ts, main/ipc/queue.ts)."
+ },
+ {
+  "id": "clear-outcome-unknown",
+  "text": "Clear outcome is unknown. Do not repeat it without checking the conversation.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "/clear in a Claude Code chat got no answer.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/claude-control.ts:42"
+  ]
+ },
+ {
+  "id": "stop-not-confirmed",
+  "text": "Stop was not confirmed.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press Stop in a Claude Code chat and it is not confirmed.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/claude-control.ts:54"
+  ],
+  "passthrough": "Usually the queue's own message (same list as clear-not-confirmed)."
+ },
+ {
+  "id": "stop-outcome-unknown",
+  "text": "Stop outcome is unknown. Check the conversation.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press Stop in a Claude Code chat and no answer comes back.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/claude-control.ts:54"
+  ]
+ },
+ {
+  "id": "stop-task-failed",
+  "text": "Couldn't stop this task.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press stop on a background task card and the request itself fails.",
+  "group": "commands",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/components/tool-views/ToolBody.tsx:415"
+  ]
+ },
+ {
+  "id": "model-switch-failed",
+  "text": "Couldn't switch to Opus",
+  "template": "\"Couldn't switch to \" + Capitalized(pendingModel)",
+  "buttons": [],
+  "duration": 4000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You switch models but Claude's next reply still comes from the old model.",
+  "group": "model",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/App.tsx:2362"
+  ]
+ },
+ {
+  "id": "model-switch-failed-again",
+  "text": "Model switch failed again. Ask Claude to diagnose with /model, or report a bug.",
+  "buttons": [],
+  "duration": 4000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "A model switch fails a second time in a row.",
+  "group": "model",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/App.tsx:2360"
+  ]
+ },
+ {
+  "id": "save-fast-mode",
+  "text": "Couldn't save Fast mode.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Turning Fast mode on or off (in the model picker or with /fast) fails to save.",
+  "group": "model",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/ModelPickerPopup.tsx:399",
+   "src/renderer/state/slash-command-dispatcher.ts:265",
+   "src/renderer/utils/report-failure.ts:34",
+   "src/renderer/utils/announce.ts:37"
+  ]
+ },
+ {
+  "id": "save-effort",
+  "text": "Couldn't save the effort level.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Changing the effort level (in the model picker or with /effort) fails to save.",
+  "group": "model",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/ModelPickerPopup.tsx:428",
+   "src/renderer/state/slash-command-dispatcher.ts:270"
+  ]
+ },
+ {
+  "id": "reload-model",
+  "text": "Couldn't reload the model.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press reload on the local model card and it fails.",
+  "group": "model",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/components/ChatView.tsx:1418"
+  ]
+ },
+ {
+  "id": "plan-tier",
+  "text": "Couldn't change the plan tier.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Changing your plan tier in Settings on Android fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/SettingsPanel.tsx:2699",
+   "src/renderer/components/SettingsPanel.tsx:2704"
+  ]
+ },
+ {
+  "id": "session-lost",
+  "text": "You were signed out of your YouCoded account. Friends see you as offline until you sign in again.",
+  "buttons": [
+   "Sign in again"
+  ],
+  "duration": 30000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The YouCoded server stops recognising your sign-in.",
+  "group": "sign-in & account",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/utils/session-lost-notice.ts:17",
+   "src/renderer/state/account-context.tsx:164"
+  ]
+ },
+ {
+  "id": "live-handoff-unavailable",
+  "text": "Live handoff is available from a computer or a remote connection to one.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You agree to take over a conversation from another device on the Android app's own runtime.",
+  "group": "handoff & resume",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/App.tsx:2748"
+  ]
+ },
+ {
+  "id": "finish-current-transfer",
+  "text": "Finish the current conversation transfer, then try reopening this one again.",
+  "buttons": [],
+  "duration": 8000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You start a second conversation transfer while one is still running.",
+  "group": "handoff & resume",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/App.tsx:2757"
+  ]
+ },
+ {
+  "id": "handoff-unconfirmed",
+  "text": "Couldn't confirm the handoff from Work laptop.",
+  "template": "Couldn't confirm the handoff from ${device}.",
+  "buttons": [],
+  "duration": 8000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You resume a conversation that is open on another device and that device never confirms letting go.",
+  "group": "handoff & resume",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/resume-lease-gate.ts:27",
+   "src/renderer/state/resume-lease-gate.ts:29",
+   "src/renderer/App.tsx:2786"
+  ]
+ },
+ {
+  "id": "resume-failed",
+  "text": "Couldn't resume this conversation.",
+  "buttons": [],
+  "duration": 6000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Reopening a past conversation fails.",
+  "group": "handoff & resume",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/App.tsx:2797"
+  ]
+ },
+ {
+  "id": "takeover-failed",
+  "text": "Couldn't take over from your other computer. Close the conversation there, then try again.",
+  "buttons": [],
+  "duration": 8000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press Continue on a waiting transfer and taking it over from the other computer fails.",
+  "group": "handoff & resume",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/App.tsx:3655"
+  ]
+ },
+ {
+  "id": "download-unavailable",
+  "text": "Download isn’t available here.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press Download on a file where this device can't download.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/artifact-views/download-file.ts:35"
+  ]
+ },
+ {
+  "id": "download-saving",
+  "text": "Saving report.pdf to this device…",
+  "template": "Saving ${name} to this device…",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press Download on a file and the computer accepts.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/artifact-views/download-file.ts:41"
+  ]
+ },
+ {
+  "id": "download-refused",
+  "text": "Couldn’t download .env: it’s in a private location (like keys, passwords or .env files) that remote access never sends.",
+  "template": "Couldn’t download ${name}: ${reason}",
+  "buttons": [],
+  "duration": 5000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The computer refuses a Download request or the request errors.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/artifact-views/download-file.ts:45",
+   "src/renderer/components/artifact-views/download-file.ts:48",
+   "src/renderer/components/artifact-views/download-file.ts:21-28"
+  ],
+  "passthrough": "reason is one of: 'two downloads are already running on this connection. Wait for one to finish.' / 'it’s in a private location (like keys, passwords or .env files) that remote access never sends.' / 'this file is outside the folders remote access can read.' / 'that isn’t a file.' / 'the file is no longer on the computer.' / 'this file is kept on the computer and isn’t sent over remote access.' / 'the computer won’t send this file.' / 'the file has no path.' — otherwise the computer's raw error or exception message."
+ },
+ {
+  "id": "download-failed",
+  "text": "Couldn’t download report.pdf.",
+  "template": "Couldn’t download ${name}.",
+  "buttons": [],
+  "duration": 5000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "A Download fails with no reason given.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/artifact-views/download-file.ts:45",
+   "src/renderer/components/artifact-views/download-file.ts:48"
+  ]
+ },
+ {
+  "id": "picture-copy-failed",
+  "text": "Couldn't copy that picture.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Copy picture from the right-click menu fails.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/context-menu/build-menu.ts:362"
+  ]
+ },
+ {
+  "id": "picture-save-failed",
+  "text": "Couldn't save that picture.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Save picture from the right-click menu fails.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/context-menu/build-menu.ts:362"
+  ]
+ },
+ {
+  "id": "copy-path",
+  "text": "Couldn't copy the path.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Copy path on a file fails.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/SessionDrawer.tsx:524",
+   "src/renderer/components/project-view/ContextEditorOverlay.tsx:151",
+   "src/renderer/components/project-view/tabs/FilesTab.tsx:1279"
+  ]
+ },
+ {
+  "id": "open-file",
+  "text": "Couldn't open the file.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Opening a file in its own app from the files drawer fails.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/SessionDrawer.tsx:539"
+  ]
+ },
+ {
+  "id": "remove-from-list",
+  "text": "Couldn't remove this from the list.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Removing a file from the conversation's files list fails.",
+  "group": "files",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/components/SessionDrawer.tsx:640",
+   "src/renderer/components/SessionDrawer.tsx:642"
+  ]
+ },
+ {
+  "id": "load-whole-file",
+  "text": "Couldn't load the whole file.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You ask to see the rest of a large file and reading it fails.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/artifact-views/ActiveArtifactView.tsx:696",
+   "src/renderer/components/artifact-views/ActiveArtifactView.tsx:698"
+  ]
+ },
+ {
+  "id": "attach-pasted-image",
+  "text": "Couldn't attach the pasted image.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Pasting a picture into the message box fails.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/InputBar.tsx:644",
+   "src/renderer/components/InputBar.tsx:1052",
+   "src/renderer/components/InputBar.tsx:1054"
+  ]
+ },
+ {
+  "id": "open-file-picker",
+  "text": "Couldn't open the file picker.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press Attach and the file picker fails to open.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/InputBar.tsx:1038"
+  ]
+ },
+ {
+  "id": "open-folder",
+  "text": "Couldn't open the folder.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Opening a project's folder from its page fails.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/project-view/ProjectHero.tsx:394"
+  ]
+ },
+ {
+  "id": "office-save-failed",
+  "text": "An Office document couldn't be saved.",
+  "buttons": [
+   "Open Office"
+  ],
+  "duration": 10000,
+  "tone": "error",
+  "variant": "global",
+  "trigger": "An Office document tab closed while the Office page was hidden and could not save, so it came back.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/office/OfficeAlerts.tsx:21-27",
+   "src/renderer/components/pages/PageHost.tsx:561",
+   "src/renderer/components/pages/PageHost.tsx:587"
+  ],
+  "note": "Its own <Toast>, mounted by PageHost, not App's shared toast."
+ },
+ {
+  "id": "upload-too-large",
+  "text": "That file is over 25 MB, the most a phone can send to the computer. Attach a smaller one.",
+  "buttons": [],
+  "duration": 5000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You attach a file over 25 MB from a phone or browser.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/remote-shim.ts:2167",
+   "src/main/upload-store.ts:25",
+   "src/main/ipc/files.ts:39",
+   "src/main/ipc/files.ts:53"
+  ],
+  "passthrough": "Computer's error text passed through."
+ },
+ {
+  "id": "upload-folder-full",
+  "text": "The computer’s space for attachments is full right now. Try again in a little while, or attach fewer files.",
+  "buttons": [],
+  "duration": 5000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You attach a file from a phone or browser while the computer's attachment folder is full.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/remote-shim.ts:2167",
+   "src/main/upload-store.ts:32",
+   "src/main/ipc/files.ts:48"
+  ],
+  "passthrough": "Computer's error text passed through."
+ },
+ {
+  "id": "upload-failed",
+  "text": "Upload failed",
+  "buttons": [],
+  "duration": 5000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Sending an attachment from a phone or browser to the computer fails.",
+  "group": "files",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/remote-shim.ts:2167",
+   "src/main/ipc/files.ts:38",
+   "src/main/ipc/files.ts:58"
+  ],
+  "passthrough": "Computer's error text passed through."
+ },
+ {
+  "id": "plugin-turned-off",
+  "text": "We turned off a plugin that was found to be unsafe.",
+  "buttons": [
+   "Show"
+  ],
+  "duration": 10000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "At start-up, once per plugin, when YouCoded has newly turned off an installed plugin as unsafe.",
+  "group": "start-up",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/utils/plugin-off-notice.ts:14",
+   "src/renderer/components/PluginTurnedOffNotice.tsx:22",
+   "src/renderer/components/StartupNotices.tsx"
+  ]
+ },
+ {
+  "id": "settings-repaired",
+  "text": "Your Claude Code settings couldn't be read, so YouCoded reset them. Your old settings are saved in a file.",
+  "buttons": [
+   "Show file"
+  ],
+  "duration": 30000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "At start-up, once, when YouCoded had to replace a damaged Claude Code settings file (no button on a phone or the Android app).",
+  "group": "start-up",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/utils/settings-repair-notice.ts:22",
+   "src/renderer/components/SettingsRepairNotice.tsx:18",
+   "src/renderer/components/StartupNotices.tsx"
+  ]
+ },
+ {
+  "id": "remote-unsupported",
+  "text": "Theme browsing isn't available via remote access yet.",
+  "template": "${Feature} isn't available ${via remote access|on the phone} yet.  [+ second line \"${other} either.\" / \"A, B and C either.\" when more arrive]",
+  "buttons": [
+   "Dismiss (X close button)"
+  ],
+  "duration": 6000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "On a phone or browser, you use a part of the app the computer doesn't offer over remote access yet (shown once per feature).",
+  "group": "phone & remote",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/RemoteUnsupportedNotice.tsx",
+   "src/renderer/remote-unsupported.ts:82-84",
+   "src/renderer/remote-shim.ts:998",
+   "src/renderer/App.tsx:3546"
+  ],
+  "note": "Hand-made notice, not <Toast>. Feature values: Theme browsing, The skill marketplace, Friends and challenges, Integrations, Project files, Project details, File pickers, Theme editing, Skills, Developer tools, The local model manager, The local engine, The model providers list, The built-in assistant, The terminal, Syncing across your devices, Older messages (Office is never shown here)."
+ },
+ {
+  "id": "tailscale-only",
+  "text": "YouCoded only connects to your computer over Tailscale, and this address isn’t one. Turn on Tailscale on both devices and add the computer again using its Tailscale address.",
+  "buttons": [],
+  "duration": 8000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The phone tries to reconnect to a saved computer at an address that isn't a Tailscale address.",
+  "group": "phone & remote",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/remote-gate.tsx:353",
+   "src/shared/cleartext-hosts.ts:10",
+   "src/renderer/remote-shim.ts:2025"
+  ]
+ },
+ {
+  "id": "saved-password-rejected",
+  "text": "Work PC didn't accept the saved password. Update it in Settings → Connect to Desktop.",
+  "template": "${name} didn't accept the saved password. Update it in Settings → Connect to Desktop.",
+  "buttons": [],
+  "duration": 8000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The phone's saved computer refuses its saved password (invalid, revoked or unknown).",
+  "group": "phone & remote",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/remote-gate.tsx:101",
+   "src/renderer/remote-gate.tsx:361"
+  ]
+ },
+ {
+  "id": "saved-password-none-set",
+  "text": "Work PC has no remote access password set yet. Set one on that computer, in Settings → Remote access.",
+  "template": "${name} has no remote access password set yet. Set one on that computer, in Settings → Remote access.",
+  "buttons": [],
+  "duration": 8000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The phone's saved computer has no remote access password set.",
+  "group": "phone & remote",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/remote-gate.tsx:99",
+   "src/renderer/remote-gate.tsx:361"
+  ]
+ },
+ {
+  "id": "saved-password-expired",
+  "text": "Work PC signed this phone out after 30 days without use. Enter the password again in Settings → Connect to Desktop.",
+  "template": "${name} signed this phone out after ${DEVICE_EXPIRY_DAYS} days without use. Enter the password again in Settings → Connect to Desktop.",
+  "buttons": [],
+  "duration": 8000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The phone's saved sign-in to the computer expired from lack of use.",
+  "group": "phone & remote",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/remote-gate.tsx:103",
+   "src/renderer/remote-gate.tsx:361"
+  ],
+  "note": "Example 30 is a guess; check DEVICE_EXPIRY_DAYS."
+ },
+ {
+  "id": "saved-password-refused-other",
+  "text": "Work PC refused this sign-in.",
+  "template": "${name} refused this sign-in.",
+  "buttons": [],
+  "duration": 8000,
+  "tone": "default",
+  "variant": "global",
+  "trigger": "The phone's saved computer refuses the sign-in for another reason (e.g. retired).",
+  "group": "phone & remote",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/remote-gate.tsx:104",
+   "src/renderer/remote-gate.tsx:361"
+  ]
+ },
+ {
+  "id": "stop-not-sent-offline",
+  "text": "Not connected — Stop wasn't sent. Press it again once you're back online.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You press Stop on a phone while disconnected.",
+  "group": "phone & remote",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/phone-actions.ts:31"
+  ]
+ },
+ {
+  "id": "stop-refused",
+  "text": "Stop didn't go through. Press it again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Stop pressed on a phone is refused by the computer.",
+  "group": "phone & remote",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/phone-actions.ts:42"
+  ]
+ },
+ {
+  "id": "stop-unconfirmed-phone",
+  "text": "Your computer hasn't confirmed the stop. If the assistant is still working, press Stop again.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Stop pressed on a phone is not confirmed in time.",
+  "group": "phone & remote",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/phone-actions.ts:43"
+  ]
+ },
+ {
+  "id": "close-refused-detail",
+  "text": "Couldn't close \"Bug hunt\": session is busy",
+  "template": "Couldn't close ${\"name\"|that conversation}: ${detail}",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Closing a conversation from a phone is refused and the computer gives a reason.",
+  "group": "phone & remote",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/phone-session-actions.ts:39-40"
+  ],
+  "passthrough": "detail = computer's refusal text (example invented)"
+ },
+ {
+  "id": "close-refused",
+  "text": "Couldn't close \"Bug hunt\". Your computer didn't accept the request.",
+  "template": "Couldn't close ${\"name\"|that conversation}. Your computer didn't accept the request.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Closing a conversation from a phone is refused with no reason.",
+  "group": "phone & remote",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/phone-session-actions.ts:39-40"
+  ]
+ },
+ {
+  "id": "close-unconfirmed",
+  "text": "Couldn't confirm \"Bug hunt\" closed on your computer, so it is back.",
+  "template": "Couldn't confirm ${\"name\"|that conversation} closed on your computer, so it is back.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Closing a conversation from a phone is never confirmed, so it reappears.",
+  "group": "phone & remote",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/phone-session-actions.ts:41"
+  ]
+ },
+ {
+  "id": "mode-unconfirmed",
+  "text": "The permission mode didn't change. Your computer didn't confirm it.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "You change a chat's permission mode on a phone and the computer doesn't confirm.",
+  "group": "phone & remote",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/state/phone-session-actions.ts:70",
+   "src/renderer/state/phone-session-actions.ts:98"
+  ]
+ },
+ {
+  "id": "voice-ready",
+  "text": "Voice is ready — tap the mic to talk.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Voice input finishes setting up.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/InputBar.tsx:1441"
+  ]
+ },
+ {
+  "id": "copy-failed",
+  "text": "Couldn't copy.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Picking an option in a message's copy picker fails to copy.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/ChatTimelineRow.tsx:173"
+  ]
+ },
+ {
+  "id": "like-theme-failed",
+  "text": "Couldn't like theme — try again",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "error",
+  "variant": "anchored",
+  "trigger": "Liking a theme in the marketplace fails (other than a sign-in problem).",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/marketplace/LikeButton.tsx:155",
+   "src/renderer/components/marketplace/LikeButton.tsx:163",
+   "src/renderer/components/marketplace/LikeButton.tsx:201"
+  ]
+ },
+ {
+  "id": "change-favorites",
+  "text": "Couldn't change your favorites.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Starring or unstarring a command, skill or theme fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/CommandDrawer.tsx:204",
+   "src/renderer/components/ThemeScreen.tsx:173",
+   "src/renderer/components/marketplace/MarketplaceDetailOverlay.tsx:111",
+   "src/renderer/components/marketplace/MarketplaceDetailOverlay.tsx:135",
+   "src/renderer/components/marketplace/MarketplaceCard.tsx:128",
+   "src/renderer/components/marketplace/MarketplaceCard.tsx:129"
+  ]
+ },
+ {
+  "id": "save-setting",
+  "text": "Couldn't save this setting.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Changing a new-session default in Settings fails to save.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/hooks/useDefaultsSaver.ts:53",
+   "src/renderer/components/SettingsPanel.tsx:2708",
+   "src/renderer/components/SettingsPanel.tsx:3069"
+  ]
+ },
+ {
+  "id": "save-output-style",
+  "text": "Couldn't save your output style.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Your output style edit failed to save after the preferences popup closed.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/PreferencesPopup.tsx:170"
+  ]
+ },
+ {
+  "id": "save-system-prompt",
+  "text": "Couldn't save your system prompt.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Your system prompt edit failed to save after the preferences popup closed.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/PreferencesPopup.tsx:170"
+  ],
+  "note": "Same line has a fallback 'Couldn't save that setting.' for other keys, probably unreachable."
+ },
+ {
+  "id": "create-tag",
+  "text": "Couldn't create the tag.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Creating a new conversation tag fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/hooks/useTagRegistry.ts:166"
+  ]
+ },
+ {
+  "id": "save-tag",
+  "text": "Couldn't save the tag.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Editing a conversation tag fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/hooks/useTagRegistry.ts:172"
+  ]
+ },
+ {
+  "id": "delete-tag",
+  "text": "Couldn't delete the tag.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Deleting a conversation tag fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/hooks/useTagRegistry.ts:176"
+  ]
+ },
+ {
+  "id": "save-tag-change",
+  "text": "Couldn't save this tag change.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Adding or removing a tag on the open conversation is refused.",
+  "group": "other",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/hooks/useSessionMeta.ts:162",
+   "src/renderer/hooks/useSessionMeta.ts:62"
+  ]
+ },
+ {
+  "id": "save-note",
+  "text": "Couldn't save the note.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Saving the open conversation's note is refused.",
+  "group": "other",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/hooks/useSessionMeta.ts:178",
+   "src/renderer/hooks/useSessionMeta.ts:62"
+  ]
+ },
+ {
+  "id": "save-change",
+  "text": "Couldn't save this change.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Changing a flag (such as pinned) on the open conversation is refused.",
+  "group": "other",
+  "chatSpecific": true,
+  "sites": [
+   "src/renderer/hooks/useSessionMeta.ts:195",
+   "src/renderer/hooks/useSessionMeta.ts:62"
+  ]
+ },
+ {
+  "id": "open-link",
+  "text": "Couldn't open the link.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Opening a link from a deliverables card fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/DeliverablesCard.tsx:101"
+  ]
+ },
+ {
+  "id": "open-browser",
+  "text": "Couldn't open the browser.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Clicking a usage chip in the status bar fails to open the Claude usage page.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/StatusBar.tsx:938"
+  ]
+ },
+ {
+  "id": "open-page",
+  "text": "Couldn't open the page.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Opening a project's online repository page fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/project-view/ProjectHero.tsx:412"
+  ]
+ },
+ {
+  "id": "open-setup-session",
+  "text": "Couldn't open a setup session.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Starting a setup chat for an integration from the marketplace fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/marketplace/MarketplaceScreen.tsx:221",
+   "src/renderer/components/marketplace/MarketplaceScreen.tsx:223"
+  ]
+ },
+ {
+  "id": "install-integration",
+  "text": "Couldn't install Google Drive.",
+  "template": "Couldn't install ${displayName}.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Installing an integration from the marketplace errors.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/marketplace/MarketplaceScreen.tsx:231"
+  ]
+ },
+ {
+  "id": "connect-integration",
+  "text": "Couldn't connect Google Drive.",
+  "template": "Couldn't connect ${displayName}.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Connecting an integration fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/marketplace/MarketplaceScreen.tsx:242",
+   "src/renderer/components/marketplace/MarketplaceScreen.tsx:244"
+  ]
+ },
+ {
+  "id": "uninstall-integration",
+  "text": "Couldn't uninstall Google Drive.",
+  "template": "Couldn't uninstall ${displayName}.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Uninstalling an integration fails.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/marketplace/MarketplaceScreen.tsx:253"
+  ]
+ },
+ {
+  "id": "refresh-integrations",
+  "text": "Couldn't refresh the integrations list.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "After installing, connecting or uninstalling an integration, the list fails to reload.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/marketplace/MarketplaceScreen.tsx:233",
+   "src/renderer/components/marketplace/MarketplaceScreen.tsx:245",
+   "src/renderer/components/marketplace/MarketplaceScreen.tsx:254"
+  ]
+ },
+ {
+  "id": "refresh-project-list",
+  "text": "Couldn't refresh the project list.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "After adding or changing a project, the projects list fails to reload.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/project-view/ProjectView.tsx:713",
+   "src/renderer/components/project-view/ProjectView.tsx:717",
+   "src/renderer/components/project-view/ProjectView.tsx:967",
+   "src/renderer/components/project-view/ProjectView.tsx:970"
+  ]
+ },
+ {
+  "id": "rename-project",
+  "text": "Couldn't rename this project.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Renaming a project is refused.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/project-view/ProjectHero.tsx:186",
+   "src/renderer/components/project-view/ProjectHero.tsx:190",
+   "src/renderer/components/project-view/ProjectHero.tsx:80",
+   "src/renderer/components/project-view/ProjectHero.tsx:82"
+  ]
+ },
+ {
+  "id": "save-description",
+  "text": "Couldn't save the description.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Saving a project's description is refused.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/project-view/ProjectHero.tsx:223",
+   "src/renderer/components/project-view/ProjectHero.tsx:228"
+  ]
+ },
+ {
+  "id": "stop-syncing",
+  "text": "Couldn't stop syncing this project.",
+  "buttons": [],
+  "duration": "default 3000",
+  "tone": "default",
+  "variant": "global",
+  "trigger": "Stop syncing on a project is refused.",
+  "group": "other",
+  "chatSpecific": false,
+  "sites": [
+   "src/renderer/components/project-view/ProjectHero.tsx:241"
+  ]
+ }
+]
