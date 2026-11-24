@@ -123,3 +123,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#794 fixes | “Sign in again” for Claude now works when your login runs out, instead of failing with “Could not get login URL.”
 - youcoded#795 fixes | The release notes behind the version chip no longer open with a stray title, an empty “[Unreleased]” heading or a technical line.
 - youcoded#796 fixes | Commenting on words next to (or inside) an existing highlight now highlights them too.
+- youcoded#797 fixes | Resuming a chat after a crash or restart no longer shows a stray "No response requested." reply; the reply that was cut off now says "Interrupted."
