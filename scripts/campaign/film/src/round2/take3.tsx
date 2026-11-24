@@ -11,26 +11,46 @@ import { Lockup, ramp } from '../kit';
 const HAND = loadCaveat('normal', { weights: ['700'], subsets: ['latin'] }).fontFamily;
 const linear = (x: number) => x;
 
-// ---------- the hit points (seconds; 130 BPM, beat 0.4615 s, bar 1.846 s) ----------
-// WHY one table and one speed (Destin, 2026-11-20: "speed own everything up a bit, try 15-20s"): the film
-// was composed at 100 BPM (24 s). Every time below is that original hit time x K, so picture and music
-// (the songbook's own-everything-fast films, bpm 130) stay locked; change K and the songbook's bpm together.
-export const K = 100 / 130;
-const k = (x: number) => Math.round(x * K * 1000) / 1000;
-// WHY the strike and write come 0.37 s (under a beat) earlier than a plain scale: at the new speed the
-// corrected poster would otherwise be held only ~0.9 s before the page changes; this restores ~1.4 s.
-const EARLY = 0.37;
+// ---------- the hit points: ONE grid, 120 BPM (beat 0.5 s, half-beat 0.25 s, bar of 4 = 2.0 s) ----------
+// WHY a 10 s recut (Destin, 2026-11-23: "i still think the own everything video is too long. it should be like
+// 10s"): the 18.2 s cut was the 24 s film played faster, so every hold was sized for a sit-down viewer. Each
+// beat below was re-judged for someone scrolling a feed: long enough to be read ONCE, no longer.
+// WHY 120 BPM: every hit lands on a beat or half-beat of it, and the grid's round numbers make the composer's
+// job exact. Every value in T3 is a multiple of 0.25 s (except the marker's lift-off ends, which are not hits).
+//
+// FOR THE COMPOSER, the hits (seconds, beat number from 0 at 120 BPM):
+//   you'll own      0.00  (beat 0)      film opens on the words
+//   nothing.        0.25  (beat 0.5)    arrives almost with the line above: one statement, not two
+//   and you'll      0.75  (beat 1.5)
+//   be happy.       1.00  (beat 2)      the statement is whole
+//   strike 1        2.00  (beat 4)      the marker hits "nothing." (downbeat of bar 2)
+//   strike 2        2.25  (beat 4.5)    the quicker pass back
+//   hand writes     2.50  (beat 5)      "everything." written below, finished ~3.28
+//   own your data.  4.25  (beat 8.5)    page change (5-frame colour dissolve just before) -- the pickup into bar 3
+//   intelligence.   5.00  (beat 10)     the "own your" lines every 1.5 beats: a steady, quick rhythm
+//   software.       5.75  (beat 11.5)
+//   everything.     6.50  (beat 13)     the closer rises letter by letter, settled ~7.5
+//   name / logo     7.75  (beat 15.5)   the poster's foot arrives: the logo sound
+//   end of film    10.00  (beat 20)     the full poster holds 2.25 s (name fully in by ~8.2, so ~1.8 s read)
 export const T3 = {
-  // WHY the first line at 0: an empty opening frame read as a slow start; the film opens on the words.
-  youllOwn: 0.0, nothing: k(1.8), andYoull: k(3.6), beHappy: k(4.2),   // the deadpan statement
-  strike1: [k(6.6) - EARLY, k(6.83) - EARLY] as const,           // the marker hits "nothing."
-  strike2: [k(6.87) - EARLY, k(7.06) - EARLY] as const,          // the second, quicker pass back the other way
-  reflow: [k(7.0) - EARLY, k(7.35) - EARLY] as const,            // the lines below the struck one ease down to make room
-  write: k(7.28) - EARLY,                                        // the hand starts "everything."
-  data: k(9.6), intelligence: k(12.0), software: k(14.4), everything: k(16.8),
-  end: k(19.2),                                                  // the poster's foot (logo, address) arrives with the logo sound
-  // WHY 3.4 s of finished poster after the foot arrives (the brief asks for at least 3 s, logo ringing out)
-  total: k(19.2) + 3.4,
+  // WHY the opening lines nearly together: at feed speed a statement read in pieces is slow; the four lines
+  // land within one second and the whole sentence then holds a full second (two beats) before the marker.
+  youllOwn: 0.0, nothing: 0.25, andYoull: 0.75, beHappy: 1.0,
+  // WHY the marker keeps its old stroke lengths (0.18 s and 0.17 s, ~5 frames each): that is the speed of a real
+  // fast hand; making it shorter would read as a blur, so the time was taken from the holds instead.
+  strike1: [2.0, 2.18] as const,                                  // the marker hits "nothing."
+  strike2: [2.25, 2.42] as const,                                 // the second, quicker pass back the other way
+  reflow: [2.3, 2.55] as const,                                   // the lines below the struck one ease down to make room
+  // WHY the hand's own pace is unchanged (0.78 s with the full stop): handwriting faster than that stops
+  // looking like a person. The finished correction then holds ~1 s, enough to read one word.
+  write: 2.5,
+  // WHY 0.75 s apart: each new line is three or four syllables and stays on the page, so it only has to be read
+  // as it arrives; a quicker beat would let the colour hand-over (below) no time to be seen.
+  data: 4.25, intelligence: 5.0, software: 5.75, everything: 6.5,
+  // WHY the name a beat and a half after "everything.": the closer needs ~1 s to rise and settle, and the name
+  // must land on a still headline, not on moving letters.
+  end: 7.75,
+  total: 10.0,
 };
 export const T3_FRAMES = Math.round(T3.total * FPS);
 
@@ -247,6 +267,9 @@ const Struck: React.FC<{ size: number; anchorRight?: boolean }> = ({ size, ancho
 };
 
 // ---------- scene 1: "you'll own nothing. and you'll be happy." on night ----------
+// WHY the first line's fade starts 0.1 s before the film does: frame 0 was an empty field (the 3-frame fade
+// had not begun), and frame 0 is what a feed shows as the still before playing. Now the film opens on words.
+const FIRST_LEAD = 0.1;
 const Nothing: React.FC = () => {
   const frame = useCurrentFrame();
   const { wide, m, mt, size } = useLayout();
@@ -259,12 +282,12 @@ const Nothing: React.FC = () => {
       <div style={{ position: 'absolute', left: m, right: m, top: mt }}>
         {wide ? (<>
           <div style={{ ...row, marginBottom: GAP * size * open }}>
-            <Arrive at={T3.youllOwn}>you'll own</Arrive><span style={{ display: 'inline-block', width: 0.26 * size }} />
+            <Arrive at={T3.youllOwn - FIRST_LEAD}>you'll own</Arrive><span style={{ display: 'inline-block', width: 0.26 * size }} />
             <Arrive at={T3.nothing}><Struck size={size} anchorRight /></Arrive>
           </div>
           <div style={row}><Arrive at={T3.andYoull}>and you'll</Arrive> <Arrive at={T3.beHappy}>be happy.</Arrive></div>
         </>) : (<>
-          <div style={row}><Arrive at={T3.youllOwn}>you'll own</Arrive></div>
+          <div style={row}><Arrive at={T3.youllOwn - FIRST_LEAD}>you'll own</Arrive></div>
           <div style={{ ...row, marginBottom: GAP * size * open }}><Arrive at={T3.nothing}><Struck size={size} /></Arrive></div>
           <div style={row}><Arrive at={T3.andYoull}>and you'll</Arrive></div>
           <div style={row}><Arrive at={T3.beHappy}>be happy.</Arrive></div>
@@ -292,7 +315,10 @@ const AddLine: React.FC<{ text: string; at: number; next: number }> = ({ text, a
   // read as a switch. Now the colour drains over 1.5 s, starting just before the next beat, and the new word
   // fades up over a third of a second, so the accent is handed over instead of swapped.
   const o = frame < at * FPS ? 0 : ramp(frame, at, at + 0.34, EASE_OUT);
-  const settle = ramp(frame, next - 0.3 * K, next + 1.2 * K, EASE_IN_OUT);
+  // WHY 0.8 s (was ~1.15 s): the lines now come every 0.75 s, so the old drain would still be running when the
+  // line after next arrived and two words would be mid-fade at once. Starting a touch before the next beat and
+  // ending just after it keeps one accent at a time and still reads as a hand-over, not a switch.
+  const settle = ramp(frame, next - 0.15, next + 0.65, EASE_IN_OUT);
   return <div style={{ opacity: o, transform: `translateY(${(1 - inP) * 0.22}em)`, color: interpolateColors(settle, [0, 1], [C.purple, C.plum]) }}>{text}</div>;
 };
 /** The closer: "everything." letter by letter, each rising into place a little after the one before.
