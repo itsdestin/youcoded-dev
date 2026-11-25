@@ -12,8 +12,8 @@ why: Destin, 2026-11-25: 'just populating the marketplace. this isnt a new app f
 work: session/todo-page
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Tasks page: built, 18 unit tests + click-through journeys pass, tested in a dev copy of the app (saving, live reload, restart, themes, phone width). Source at pages/tasks/ on youcoded-dev branch session/todo-page; read its README.md first. Hand-installed for Destin as a personal page 2026-11-25.
+Next: Wait for #90's page sharing; then publish Tasks through it. Updates then come from the sharing system (no special starter-page update rules needed). Still to make: Home and Finance as templates, Calendar page, maybe an email client.
 Blocked: waits on #90.
 
 Chats
