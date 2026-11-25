@@ -227,6 +227,62 @@ def phrase_shape(beat, beat0, d, bb):
     return s
 
 
+# KTH phrase rules (the rebuild, 2026-11-24; toolkit-plan d2; Friberg's rule system at k about 1).
+# WHY: a pianist shapes the PHRASE - a small arch in loudness peaking about 60 % through, a breath
+# before the next phrase, the last note a little longer, a tiny gap before a leap or a repeated
+# note, short notes a little lighter, the melody a hair ahead of the chords. Round 8 instead nudged
+# each note by its own random amount, which is why it sounded random rather than placed.
+ARCH_DB = 1.0          # +-1 dB arch (the source's 1.5-2.5 dB is held to the 0.12 touch spread here)
+HIGH_DB_OCT = 1.0      # higher is a little louder: capped at +1 dB an octave (the source's 3 fights `tone`)
+DB_PER_TOUCH = 22.0    # the felt piano: about 22 dB from touch 0 to 1 (engine/sounds.py)
+LEAD_EARLY = 0.015     # the melody sounds 15 ms ahead of the band (Goebl 2001: 20-30 ms, scaled down)
+
+
+def kth_shape(notes, secs_per_beat):
+    """notes = [(global beat, midi, beats)] of one section's tune. Returns {(beat, midi):
+    (touch delta, beats delta, phrase id)}: loudness and length adjustments by phrase."""
+    out = {}
+    ns = sorted(notes)
+    phrases, cur = [], []
+    for n in ns:
+        if cur and n[0] - (cur[-1][0] + cur[-1][2]) > 1.0 + 1e-6:
+            phrases.append(cur)
+            cur = []
+        cur.append(n)
+    if cur:
+        phrases.append(cur)
+    for pi, ph in enumerate(phrases):
+        b0 = ph[0][0]
+        L = max(ph[-1][0] + ph[-1][2] - b0, 1e-6)
+        mean_m = float(np.mean([m for _, m, _ in ph]))
+        nxt = phrases[pi + 1][0][0] if pi + 1 < len(phrases) else None
+        for i, (b, m, d) in enumerate(ph):
+            x = (b - b0) / L
+            arch = ARCH_DB * (2 * (1 - abs(x - 0.6) / (0.6 if x < 0.6 else 0.4)) - 1)
+            db = arch + HIGH_DB_OCT * (m - mean_m) / 12.0
+            sec = d * secs_per_beat
+            gap = 0.0
+            if sec <= 0.25:
+                db -= 0.8
+                gap += 0.016
+            elif sec <= 0.45:
+                db -= 0.5
+                gap += 0.010
+            if i + 1 < len(ph):
+                step = abs(ph[i + 1][1] - m)
+                if step == 0:
+                    gap += 0.035                              # a repeated note is re-struck, not smeared
+                elif step >= 3:
+                    gap += 0.004 * min(step, 9)               # a leap takes a breath
+                dd = -gap / secs_per_beat
+            else:
+                # the phrase-final note: 40 ms longer, then at least 80 ms of breath before the next
+                room = ((nxt - b - d) * secs_per_beat - 0.08) if nxt is not None else 0.04
+                dd = max(0.0, min(0.04, room)) / secs_per_beat
+            out[(round(b, 4), int(m))] = (db / DB_PER_TOUCH, dd, pi)
+    return out
+
+
 def _violin(band, beat, m, d, vl, role, canon=None, solo_only=False):
     """The tune sung by the strings (chamber-2): the solo violin, the violin section doubling it
     quietly for body, the cellos an octave lower."""
@@ -261,6 +317,11 @@ def play_tune(band, p, dyn, plans):
     lead = 1.0 if (sec.lead is None or p.ending) else sec.lead
     legato = 0.0 if p.ending else sec.legato
     early = 0.0 if p.ending else -sec.push / 1000.0   # WHY: push < 0 = ahead of the beat (eager), > 0 = laid back
+    kth = {}
+    if band.v3:
+        allnotes = [(bar.beat + bb, int(m), d) for bar in p.bars for bb, m, d, canon, _ in bar.tune if canon[0] != "logo"]
+        kth = kth_shape(allnotes, 60.0 / max(p.bpm, 1e-6))
+        ph_touch = {}
     for bar in p.bars:
         last_bar = bar is p.bars[-1]
         for bb, m, d, canon, touch in bar.tune:
@@ -270,12 +331,21 @@ def play_tune(band, p, dyn, plans):
             if p.hold and abs(beat + d - body_end) < 1e-6:
                 d = d + p.hold                       # the tune holds through a fermata
             d = d + legato
-            s = phrase_shape(beat, p.beat0, d, bb)
+            k3 = kth.get((round(beat, 4), int(m)))
+            s = 1.0 if k3 is not None else phrase_shape(beat, p.beat0, d, bb)
             v = 0.60 * p.mood.get("lead", 1.0) * lead * touch * dyn.v(beat) * s * (0.72 if p.sec.narration else 1.0)   # softer under a voice
+            e_note, pv = early, None
+            if k3 is not None:
+                # v3: the phrase's shape (kth_shape) instead of the old 16-beat arch
+                base = v
+                v = float(np.clip(v + k3[0], 0.05, 0.62))
+                d = max(0.1, d + k3[1])
+                e_note = early + LEAD_EARLY
+                pv = ph_touch.setdefault(k3[2], base)
             piano_on = p.voice in ("piano", "both") or p.ending
             if piano_on:
                 band.piano("lead", beat, m, d, min(v, 0.69), tone=tone, pedal=pedal, p=-0.1,
-                           role="lead", canon=canon, early=early)
+                           role="lead", canon=canon, early=e_note, phrase_vel=pv)
                 if octaves:
                     band.piano("double", beat + 0.003, m - 12, d, min(v, 0.69) * 0.74, tone=tone - 0.1,
                                pedal=pedal, p=-0.1, role="double", early=early)
@@ -676,6 +746,8 @@ def acc_figure(band, p, bar, dyn, cut=4.0):
     comes from the chords, the register (fig_floor as a pair opens it across the section), a
     layer entering or leaving, and the tune, rarely."""
     sec = p.sec
+    if getattr(sec, "fig_mode", None) == "pedal":
+        return acc_pedal(band, p, bar, dyn, cut)
     if not getattr(sec, "figure", None):
         return acc_rolling(band, p, bar, dyn, cut)          # the ending of a figure-less section
     bars = _fig_bars(sec)
@@ -736,6 +808,68 @@ def acc_figure(band, p, bar, dyn, cut=4.0):
     return fig
 
 
+def acc_pedal(band, p, bar, dyn, cut=4.0):
+    """THE PEDAL PULSE (the rebuild, 2026-11-24; toolkit-plan c1): one pool of notes (default the
+    "you-co-ded" cell B-flat G F plus E-flat), taken in a fixed order on the steps of a 16-step
+    mask, the SAME whatever the chord. The pad carries the harmony; the brand's three notes are
+    heard all the time without becoming a jingle (Mastercard does this with its melody). The
+    mask drifts by one step every few bars (Section.fig_mask_walk) and the change plan may move
+    the pool up or down a step or two (register) or thin and fill the mask (density).
+    WHY: GTA V's map music is "one 16-step pattern circling a single note ... the same way
+    regardless of the chord changes" (Quaeschning); round 8's figure re-picked notes from every
+    chord, motion that is not the pulse, heard as "busy"."""
+    sec = p.sec
+    bl = getattr(band, "bedline", None)
+    st = float(sec.step)
+    bar_no = bl.bar_no(bar.beat) if bl is not None else 1 + int(bar.beat // 4)
+    mask = bl.mask(sec, bar_no) if bl is not None else (sec.fig_mask or "x.xxx.x.x.xxx.x.")
+    pool = bl.pool(sec, bar_no) if bl is not None else [m_(x) for x in (sec.fig_pedal or ["Bb4", "G4", "F4", "Eb4"])]
+    g_pulse = bl.gain("pulse", bar.beat) if bl is not None else 1.0
+    pedal = bool(sec.pedal) if (sec.pedal is not None and not p.ending) else False
+    fig = []
+    n_steps = int(round(p.blen / st))
+    for i in range(n_steps):
+        off = i * st
+        if off >= cut - 1e-9:
+            break
+        beat = bar.beat + off
+        s16 = int(round(beat / st)) % 16
+        if mask[s16] != "x" or not keep(p, bar, off, "mid"):
+            continue
+        g = bl.gain("pulse", beat) if bl is not None else g_pulse
+        if g <= 1e-3:
+            continue
+        # the k-th sounding step of this 16-step round takes the k-th pool note: a fixed order
+        k = sum(1 for j in range(s16) if mask[j] == "x")
+        m = pool[k % len(pool)]
+        # WHY legato (each note held into the next, a quarter-step overlap): a dry felt note dies
+        # in half a second, and the gap after it read as a hole in the bed
+        nxt = next((j for j in range(1, 17) if mask[(s16 + j) % 16] == "x"), 2)
+        d = st * (nxt + 0.25)
+        if pedal:
+            d = max(d, (2.0 if (len(bar.chords) == 2 and off < 2) else p.blen) - off)
+        v = sec.fig_touch * dyn.v(beat) * g
+        if sec.fig_voice == "pizz":
+            band.pizz("vla", beat, m, v * 1.6, p=0.15, role="pulse")
+        else:
+            band.piano("piano", beat, m, d, v, tone=-0.3 + 0.2 * p.mood["tone"], pedal=pedal,
+                       p=(0.12 if k % 2 else -0.12), role="pulse")
+        fig.append((beat, m))
+    if getattr(sec, "fig_bass", False):
+        # the chord's root, soft and held, at each chord change: a floor a phone can hear (the sub
+        # and the pad's lowest note are below what a phone plays)
+        for a, b, c in _chord_spans(bar, min(cut, p.blen)):
+            if bar.beat + a >= (bl.end_beat if bl is not None else 1e9) and not p.ending:
+                continue
+            if not keep(p, bar, a, "bass"):
+                continue
+            g = bl.gain("pulse", bar.beat + a) if bl is not None else 1.0
+            if g > 1e-3:
+                band.piano("piano", bar.beat + a, bn(p, V[c]["root"]), b - a, sec.fig_touch * 0.95 * dyn.v(bar.beat + a) * g,
+                           tone=-0.35, pedal=False, p=-0.05, role="bass")
+    return fig
+
+
 ACCOMPANIMENTS = {"rolling": acc_rolling, "bounce": acc_bounce, "rocking": acc_rocking,
                   "sparse": acc_sparse, "still": acc_still, "figure": acc_figure}
 
@@ -768,9 +902,11 @@ def play_accomp(band, p, dyn, piece, plans):
     for bar in p.bars:
         # the ending bar's pattern stops at beat 2 (the band holds the chord); in the piano-only
         # ending the piano keeps its pattern going to beat 3, since nothing else holds the sound
-        cut = (3.0 if piece.logo == "piano" else 2.0) if p.ending else 4.0
+        cut = (3.0 if piece.logo == "piano" else 2.0) if p.ending else p.blen   # WHY blen: an odd bar
         if p.ending and p.blen < 4:
-            cut = 0.0                       # the short ending: the held chord alone carries it
+            # the short ending: the held chord alone carries it; WHY the pedal pulse plays its first
+            # beat (v3): stopped a whole second before the name, the bed dropped 7 dB at once
+            cut = 1.0 if getattr(p.sec, "fig_mode", None) == "pedal" else 0.0
         blending = cross and bar.beat >= b0 - 1e-6
         if v2 and blending:
             f = frac(bar.beat + 2.0)
@@ -1050,6 +1186,10 @@ def render(band, plans, piece):
     dyn = Dyn(plans)
     band.dyn = dyn
     band.carry, band.held_on = {}, {}
+    # THE BED (the rebuild): a piece with a bed (every recipe) gets its sustain, layers, cycles
+    # and change plan from bed.py; the BedLine is made first because the pedal pulse reads it
+    import bed as BED
+    band.bedline = BED.BedLine(piece, plans) if piece.bed is not None else None
     for k, p in enumerate(plans):
         band.swing = p.mood["swing"]
         play_tune(band, p, dyn, plans)
@@ -1060,5 +1200,7 @@ def render(band, plans, piece):
         play_held(band, p, dyn, plans, k, piece)
         play_sub(band, p, dyn, piece, plans, k)
     band.swing = 0.0
+    if band.bedline is not None:
+        BED.play(band, plans, piece)
     play_logo(band, plans, piece)
     return dyn

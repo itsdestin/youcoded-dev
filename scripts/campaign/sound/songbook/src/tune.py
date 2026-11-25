@@ -238,3 +238,77 @@ def fit_ladder(ladder, landing_chord):
 def third_below(m):
     """The note a scale third below (for the answer in two voices)."""
     return scale_step(m, -2)
+
+# ------------------------------------------------------------------ THE REBUILD (2026-11-24, v3)
+# WHY richer chords: the research (what-we-learned.md, item 6; toolkit-plan c5) found calm game
+# and ambient music colours the SAME few chords with one extra soft note (a 9th, an 11th, a
+# major 7th) instead of moving through more chords. Each rich chord below borrows its plain
+# chord's voicings for the old blocks (they read root/fig/rock/off/lh/bow/air), so every old block
+# still plays it; the new blocks (the pad, the pedal pulse, the checks) read CHORD_TONES, which
+# holds the added notes. The owner rules rich against plain (recipes.OWNER["chords"]); PLAIN maps
+# each rich chord back to its plain one for that switch.
+PLAIN = {"Ebmaj9": "Eb", "Ebadd9": "Eb", "Ebsus2": "Eb", "Cm9": "Cm7", "Cm11": "Cm7",
+         "Abmaj9": "Abmaj7", "Abmaj7#11": "Abmaj7", "Fm9": "Fm7", "Bb9sus": "Bbsus", "Bbsus4": "Bbsus"}
+for _rich, _plain in PLAIN.items():
+    V[_rich] = dict(V[_plain])
+CHORD_TONES.update({
+    "Ebmaj9": {3, 7, 10, 2, 5}, "Ebadd9": {3, 7, 10, 5}, "Ebsus2": {3, 5, 10},
+    "Cm9": {0, 3, 7, 10, 2}, "Cm11": {0, 3, 7, 10, 5},
+    "Abmaj9": {8, 0, 3, 7, 10}, "Abmaj7#11": {8, 0, 3, 7, 2},
+    "Fm9": {5, 8, 0, 3, 7}, "Bb9sus": {10, 3, 5, 8, 0}, "Bbsus4": {10, 3, 5},
+})
+INVERSIONS.update({"Ebmaj9": ["Ebmaj9"], "Cm9": ["Cm9"], "Abmaj9": ["Abmaj9"]})
+# The chords a v3 recipe may use without thinking (toolkit-plan a3, recipe B). Borrowed colours
+# (Abm, Db, F7) stay at most once per film; plain Bb7 -> Eb only in the logo.
+VOCAB = ["Ebmaj9", "Ebadd9", "Ebsus2", "Cm9", "Cm11", "Abmaj9", "Abmaj7#11", "Fm9", "Gm7", "Bb9sus",
+         "Ab/Bb", "Bbsus4", "Eb", "Cm7", "Abmaj7", "Bbsus", "Cm", "Fm7", "Ab", "Eb/G", "Ab/C"]
+BORROWED = {"Abm", "Db", "F7"}
+
+
+def root_of(chord):
+    """The root pitch class of a chord name ('Ab/Bb' -> A-flat)."""
+    names = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
+    pc = names[chord[0]]
+    if len(chord) > 1 and chord[1] in "b#":
+        pc += -1 if chord[1] == "b" else 1
+    return pc % 12
+
+
+def colour_tones(chord):
+    """Pitch classes a held pedal note may sit on over this chord: its own tones plus its 9th,
+    11th and 6th (toolkit-plan c1). A note a semitone above the chord's third is left out (the
+    classic 'avoid note': an 11th over a major third grinds)."""
+    r = root_of(chord)
+    tones = set(CHORD_TONES[chord])
+    extra = {(r + 2) % 12, (r + 5) % 12, (r + 9) % 12}
+    thirds = {(r + 3) % 12, (r + 4) % 12} & tones
+    for x in list(extra):
+        if any((x - t) % 12 == 1 for t in thirds):
+            extra.discard(x)
+    if "/" in chord:
+        # WHY: Ab/Bb is a B-flat eleventh; over its bass, G is the 13th (a colour, not a clash)
+        b = root_of(chord.split("/")[1])
+        extra |= {(b + 2) % 12, (b + 5) % 12, (b + 9) % 12} - {(t + 1) % 12 for t in thirds}
+    return tones | extra
+
+
+# THE PHRASE BANK (toolkit-plan c6). WHY: a score used to restate the tune's opening bar like a
+# jingle; the research says the tune should be rare and come in short phrases. These are cut
+# from the tune (bars 1-8) and the developments composers already used, each 1-2 bars and at
+# least three notes (the phrases rule). A recipe picks 2-4 of them by seed, never the same one
+# twice in a row; tunebank.py places and (rarely) mutates them. "peak": the phrase reaches the
+# saved top note C6, so it is only for the peak.
+PHRASES = {
+    "cell":      dict(text="Bb4/1 G5/1 F5/2", peak=False),            # you-co-ded, held
+    "cell-on":   dict(text="Bb4/1 G5/1 F5/1.5 Eb5/0.5", peak=False),  # bar 1 as written
+    "cell-long": dict(text="Bb4/2 G5/2 | F5/4", peak=False),          # the cell in long notes
+    "falls":     dict(text="Ab5/1.5 G5/0.5 Eb5/1 C5/1", peak=False),  # bar 3
+    "question":  dict(text="Ab5/1.5 G5/0.5 Eb5/2 | Eb5/1.5 D5/2.5", peak=False),  # bars 3-4, hangs open
+    "climb":     dict(text="F5/1.5 G5/0.5 Ab5/1 Bb5/1", peak=False),  # bar 8, toward home
+    "settle":    dict(text="G5/1.5 F5/0.5 Eb5/2", peak=False),        # a gentle close
+    "rise":      dict(text="Eb5/1 F5/1 G5/2 | Bb5/4", peak=False),    # opens upward
+    "answer":    dict(text="G5/1 F5/1 Eb5/1 Bb4/1", peak=False),      # falls back to the cell's start
+    "higher":    dict(text="Eb5/1 C6/1 Bb5/1.5 G5/0.5", peak=True),   # bar 2: reaches C6
+    "from-top":  dict(text="C6/1 Bb5/1 Ab5/1.5 G5/0.5", peak=True),   # bar 7
+    "peak-arc":  dict(text="Eb5/1 G5/1 Bb5/2 | C6/3 Bb5/1", peak=True),
+}

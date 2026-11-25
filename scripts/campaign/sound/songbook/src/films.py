@@ -38,7 +38,9 @@ KIT = os.path.normpath(os.path.join(HERE, "..", "..", "sfx-kit", "out"))
 OUT = os.path.join(HERE, "..", "out", "films")
 # what a film's report keeps from the music-alone render (the music checks are about the music)
 MO_KEYS = ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total", "logo", "sections",
-           "lufs_integrated", "true_peak_dbtp", "composition", "tune_identity", "loudness_target")
+           "lufs_integrated", "true_peak_dbtp", "composition", "tune_identity", "loudness_target",
+           # WHY (the rebuild): the hard checks and the dashboard are judged on the music alone
+           "hard", "dashboard", "explain", "bed", "recipe")
 SFX_REL = -8.0     # dB: an effect's loudest 100 ms vs. the music's loudness around it
 # WHY -8 (was -2): the owner on the first pen sounds: "annoying and too scratchy". Pen and
 # marker sounds must be soft and smooth, felt more than heard.
@@ -431,10 +433,12 @@ def _syllables(word):
 
 
 def speech_pace(speech, t0=None, t1=None):
-    """HER PACE, for choosing the tempo (round 8). `speech` = speech_from_words(...) (it carries
-    her words). Returns syllables a second while she speaks (pauses of 0.2 s or more left out),
-    the seconds per syllable, and the tempo whose BEAT is two syllables (her stressed-syllable
-    rate in English): the pulse to write under her, with its eighths at her syllable rate.
+    """HER PACE, for choosing the tempo. `speech` = speech_from_words(...) (it carries her words).
+    Returns syllables a second while she speaks (pauses of 0.2 s or more left out), the seconds
+    per syllable, and `bpm` = her stressed-syllable rate (a beat every two syllables), kept for
+    reference only. THE TEMPO under her is chosen with timing.narrator_band(syl_per_s): the band
+    from a beat every 3 syllables to one every 2, the value nearest 120 (the rebuild, 2026-11-24:
+    a pulse at her stress rate, eighths at her syllable rate, sat in her own rhythm and was busy).
     WHY: round 7's storybook ran at 68.6 bpm under a narrator speaking 4.6 syllables a second
     (stresses every 0.42 s, about 140 bpm); the owner: "the music is very slow/steady, while the
     narrator is fast fast". Measured on take1-lily 0-37.9 s: 4.6 syl/s, 0.22 s, 138 bpm."""
@@ -562,9 +566,21 @@ def report(name, st):
     import build
     tests = build.mix_tests(st, mo, loudness=mo.get("loudness_target", -14.0))
     bad = [n for n, ok in tests if not ok]
-    L.append(f"   {'PASS' if not bad else 'FAIL'}  mix of {name}: " + ("every mix check kept" if not bad else "failed: " + "; ".join(bad)))
-    import form
-    L += ["   " + x for x in form.verdict_text(name, mo["composition"])]
+    if "hard" in mo:
+        # WHY (the rebuild): only genuine faults fail (dashboard.py); the mix numbers are gauges.
+        # The whole file's own faults (clipping with the effects in) are added to the music's.
+        import dashboard as D
+        hard = list(mo["hard"])
+        clip = st["clipped_samples"] > 0 or st["true_peak_dbtp"] > -1.0
+        if clip and all(r["ok"] for r in hard if r["id"] == "clipping"):
+            hard.append(dict(id="clipping", ok=False, value=st["true_peak_dbtp"], limit="",
+                             why="the whole file (music and effects) clips or is over -1 dBTP"))
+        L.append(f"   mix gauges of {name}: " + ("all in range" if not bad else "out of range: " + "; ".join(bad)))
+        L += ["   " + x for x in D.text(name, hard, mo["dashboard"], build._Explain(mo))]
+    else:
+        L.append(f"   {'PASS' if not bad else 'FAIL'}  mix of {name}: " + ("every mix check kept" if not bad else "failed: " + "; ".join(bad)))
+        import form
+        L += ["   " + x for x in form.verdict_text(name, mo["composition"])]
     # the tail: how long the last chord stays audible
     y, _ = sf.read(os.path.join(OUT, f"{name}.wav"), dtype="float64", always_2d=True)
     tt, v = M.momentary(y)

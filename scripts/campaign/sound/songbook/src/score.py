@@ -96,6 +96,20 @@ class Section:
                                      # gradually across the section (register that evolves slowly)
     fig_voice: str = "piano"         # "piano" | "pizz" (plucked) | "synth" (the soft machine)
     fig_touch: float = 0.30          # the figure's touch (even; the downbeat a hair stronger)
+    # ---- the rebuild (2026-11-24, toolkit-plan c1 and a2). WHY the pedal pulse: the round-8 figure
+    # re-picked its notes from every chord, which adds motion that is not the pulse ("busy"). GTA V's
+    # map music circles ONE pool of notes "the same way regardless of the chord changes"; the pad
+    # carries the harmony. fig_mode=None keeps the round-8 chord-following figure for old pieces;
+    # the recipes set it from recipes.OWNER["pulse"] ([OWNER] A/B, default "pedal").
+    fig_mode: Optional[str] = None   # "pedal" (fixed pitch pool, ignores the chords) | "chord" (round 8)
+    fig_pedal: object = None         # the pool, played in this order: default the cell + tonic, Bb4 G4 F4 Eb4
+    fig_mask: Optional[str] = None   # 16 steps, x = play, . = rest (e.g. "x.xxx.x.x.xxx.x.")
+    fig_mask_walk: tuple = (4, 1)    # (every N bars, flip K steps): the mask drifts slowly, seeded
+    fig_bass: bool = False           # pedal mode: the chord's root, soft and held, at each chord change
+    # WHY meter: fit_tempo may find that a weight-3 moment falls half a bar off the grid; the
+    # composer's fix is ONE odd bar (2 or 3 beats) at least two bars before it (toolkit-plan a2).
+    # Only a section of one bar with no tune may have one.
+    meter: int = 4                   # beats in each bar of this section: 4, or 2 / 3 for one odd bar
 
 
 @dataclass
@@ -138,6 +152,23 @@ class Piece:
     touch: float = 1.0
     tone: float = 0.0
     air: Optional[float] = None
+    # ---- the rebuild (2026-11-24). style="v3" (the recipes' default) turns on: the shared 1/f time
+    # line instead of per-note random nudges (timing.pink_line), phrase-shaped melody (blocks,
+    # KTH rules), the curved final ritardando (timing.rit_curve) and perceived-attack
+    # compensation. Old pieces (v1, v2) render as before.
+    sound: dict = field(default_factory=dict)    # sound switches for this piece (engine/options.py)
+    bed: Optional[dict] = None       # the bed (bed.py): sustain kind, layers on from bar 1, pad colour
+    changes: list = field(default_factory=list)  # THE CHANGE PLAN: [(bar, "in"|"out"|..., arg)], bed.py
+    cycles: list = field(default_factory=list)   # cycles.Cycle: short parts on unequal periods
+    hits: list = field(default_factory=list)     # [(seconds, weight, label)] the moments the music hits
+    clash_ok: dict = field(default_factory=dict) # {bar: "why"}: a semitone the composer means (not a fault)
+    explain: dict = field(default_factory=dict)  # {dashboard id: "one line"}: why a number is out of range
+    recipe: str = ""                 # "type-short" | "app-demo" | "narrated" (recipes.py)
+    brief: object = None             # recipes.Brief: what was asked (printed in every report)
+    owner: dict = field(default_factory=dict)    # the [OWNER] switches this piece was made with
+    # how the film's mux will play her voice against this music, so the hard check can measure her
+    # margin: dict(path=voice wav, t_from=s in that file, start_at=s in the piece, music_db=-10)
+    voice_mux: Optional[dict] = None
 
     def land_time(self):
         return self.land if self.land is not None else self.length - (LOGO_LEN[self.logo] - LOGO_LAND)
@@ -187,7 +218,7 @@ class SecPlan:
 
     def chord_at(self, beat):
         """Chord sounding at a global beat inside this section."""
-        k = int(np.clip((beat - self.beat0) // 4, 0, len(self.bars) - 1))
+        k = int(np.clip((beat - self.beat0) // self.blen, 0, len(self.bars) - 1))   # WHY blen: odd bars
         b = self.bars[k]
         if len(b.chords) == 1 or beat - b.beat < 2:
             return b.chords[0]
@@ -267,9 +298,13 @@ def plan(piece):
             nxt = piece.sections[i + 1] if i + 1 < len(piece.sections) else None
             into = "blend" if (nxt is not None and (nxt.mood != s.mood or (nxt.bpm or 0) != (s.bpm or 0))) else "flow"
         hold = s.hold if s.hold is not None else {"hold": 2.0, "breath": 1.0}.get(into, 0.0)
+        meter = int(getattr(s, "meter", 4) or 4)
+        if meter != 4 and (s.bars != 1 or s.tune):
+            # WHY: one odd bar is a timing fix, not a new metre; the tune's phrases are 4-beat bars
+            raise ValueError(f"section '{s.label}': an odd bar (meter={meter}) must be a section of 1 bar with no tune")
         bars, spill = _tune_bars(s, form)
         for j, b in enumerate(bars):
-            b.beat = beat + 4 * j
+            b.beat = beat + meter * j
         # WHY (2026-11-23): a phrase written with a pick-up (write(..., pickup=1), .shift(-1)) at the
         # start of a section begins in the previous section's last bar, as a singer's breath-in does
         if spill and plans:
@@ -279,6 +314,7 @@ def plan(piece):
             pb.tune.sort(key=lambda x: x[0])
         p = SecPlan(i, s, mood, form, voice, s.accomp or mood["accomp"], layers,
                     s.dyn if s.dyn is not None else mood["dyn"], beat, bars, hold)
+        p.blen = float(meter)
         p.nominal_bpm = s.bpm or mood["tempo"][1]
         p.into = into
         p.span = max(1, min(s.span, len(bars)))
@@ -311,34 +347,47 @@ def plan(piece):
 
 class TempoMap:
     """Piecewise tempo: each segment is (beat0, beats, bpm at start, bpm at end), tempo moving
-    in a straight line in between. seconds(beat) is exact (closed form)."""
+    in a straight line in between. seconds(beat) is exact (closed form). A segment with a fifth
+    element q (v3's final ritardando) follows timing.rit_curve instead, integrated numerically."""
 
     def __init__(self, segs):
         self.segs = segs
         self.t0 = [0.0]
-        for b0, nb, a, c in segs:
-            self.t0.append(self.t0[-1] + self._dur(nb, nb, a, c))
+        for s in segs:
+            self.t0.append(self.t0[-1] + self._dur(s[1], *s[1:]))
 
     @staticmethod
-    def _dur(x, nb, a, c):
+    def _dur(x, nb, a, c, q=None):
+        if q:
+            # WHY numeric: the curved ritardando (d4) has no simple closed form; 400 steps of a
+            # smooth curve over one bar are exact to well under a microsecond
+            xs = np.linspace(0.0, x, 401)
+            from timing import rit_curve
+            bpm = a * rit_curve(xs / nb, c / a, q)
+            return float(np.trapezoid(60.0 / bpm, xs)) if x > 0 else 0.0
         if abs(c - a) < 1e-9:
             return 60.0 * x / a
         k = (c - a) / nb
         return 60.0 / k * np.log((a + k * x) / a)
 
     def seconds(self, beat):
-        for j, (b0, nb, a, c) in enumerate(self.segs):
+        for j, s in enumerate(self.segs):
+            b0, nb = s[0], s[1]
             if beat < b0 + nb or j == len(self.segs) - 1:
-                return self.t0[j] + self._dur(beat - b0, nb, a, c)
+                return self.t0[j] + self._dur(beat - b0, *s[1:])
 
     def bpm_at(self, beat):
-        for b0, nb, a, c in self.segs:
+        for s in self.segs:
+            b0, nb, a, c = s[:4]
             if beat < b0 + nb:
+                if len(s) > 4 and s[4]:
+                    from timing import rit_curve
+                    return float(a * rit_curve((beat - b0) / nb, c / a, s[4]))
                 return a + (c - a) * (beat - b0) / nb
         return self.segs[-1][3]
 
 
-def _segments(plans, bpms, rit=RIT):
+def _segments(plans, bpms, rit=RIT, q=None):
     segs = []
     for k, p in enumerate(plans):
         a = bpms[k]
@@ -346,7 +395,9 @@ def _segments(plans, bpms, rit=RIT):
         if p.ending:
             # THE ENDING: one bar slowing in a straight line into the logo's landing (a
             # ritardando), then the final tempo holds for the logo's last notes and the tail
-            segs.append((p.beat0, body, a, a * rit))
+            # WHY q (v3, toolkit-plan d4): the slowing follows a curve that slows late, like a
+            # runner stopping, instead of a straight line; the end tempo (rit) is unchanged
+            segs.append((p.beat0, body, a, a * rit, q) if q else (p.beat0, body, a, a * rit))
             segs.append((p.beat0 + body, 64, a * rit, a * rit))
             continue
         nxt = bpms[k + 1]
@@ -370,6 +421,13 @@ def _segments(plans, bpms, rit=RIT):
     return [s for s in segs if s[1] > 0]
 
 
+def _rit_q(piece):
+    if getattr(piece, "style", "v2") == "v3":
+        from timing import RIT_Q
+        return RIT_Q
+    return None
+
+
 def _fit_tempi(piece, plans):
     """Scale tempi span by span so pinned times land exactly (see module docstring)."""
     anchors = {0: 0.0}
@@ -382,7 +440,7 @@ def _fit_tempi(piece, plans):
     keys = sorted(anchors)
     bpms = [p.nominal_bpm for p in plans]
     for _ in range(80):
-        tm = TempoMap(_segments(plans, bpms, piece.rit))
+        tm = TempoMap(_segments(plans, bpms, piece.rit, _rit_q(piece)))
         worst = 0.0
         for a, b in zip(keys[:-1], keys[1:]):
             ta = tm.seconds(plans[a].beat0)
@@ -394,7 +452,7 @@ def _fit_tempi(piece, plans):
                 bpms[k] *= f
         if worst < 1e-10:
             break
-    tm = TempoMap(_segments(plans, bpms, piece.rit))
+    tm = TempoMap(_segments(plans, bpms, piece.rit, _rit_q(piece)))
     for k, p in enumerate(plans):
         p.bpm = bpms[k]
         p.t0 = tm.seconds(p.beat0)
@@ -416,8 +474,26 @@ def _h(*key):
     return (u + v) - 1.0          # sum of two uniforms: a soft bell
 
 
-BUSES = ["lead", "sing", "double", "answer", "counter", "piano", "pizz", "bowed", "air", "synth", "sub"]
+def _accepts(fn, name):
+    """Does the instrument function take this keyword? WHY: the sound engine is being rebuilt at
+    the same time (engine/sounds.py); a keyword it does not know yet is simply not passed."""
+    import inspect
+    try:
+        return name in inspect.signature(fn).parameters
+    except (TypeError, ValueError):
+        return False
+
+
+BUSES = ["lead", "sing", "double", "answer", "counter", "piano", "pizz", "bowed", "air", "synth", "sub",
+         # WHY (the rebuild, 2026-11-24): "pad" carries the sustain layer that sounds under everything
+         # (bed.py; pad, held strings or pedalled ring) and "cycle" the short parts on unequal periods
+         # (cycles.py), each on its own bus so the mix can set them (and send them to the echo) alone
+         "pad", "cycle"]
 TUNE_BUSES = ("lead", "sing", "double")
+FOREGROUND_BUSES = TUNE_BUSES + ("answer", "counter", "cycle")   # left out of the no-melody (bed) mix
+# Mix defaults for the new buses, used by build.py only while mix.py does not define them yet
+# (mix.py belongs to the sound builder): loudness while playing, hall send, room send.
+NEW_BUS_DEFAULTS = dict(pad=(-30.0, 0.34, 0.0), cycle=(-27.0, 0.36, 0.08))
 # How much string brilliance each piano part gets (engine/sounds.py, _brilliance): a fraction
 # of the note's peak. The tune gets the most (it should sparkle); the low accompaniment none.
 SHINE = dict(lead=0.08, answer=0.04, double=0.035)
@@ -436,6 +512,13 @@ class Band:
         if not dry:
             import sounds
             self.S = sounds
+        # WHY options.use: the sound builder's switches (engine/options.py) are per piece; the
+        # instruments read the current piece's settings from there (Piece.sound)
+        try:
+            import options
+            options.use(piece)
+        except ImportError:
+            pass
         self.piece = piece
         self.plans = plans
         self.tm = plans[0].tm
@@ -447,6 +530,15 @@ class Band:
         self.onsets = []        # (seconds, bus)
         self.held_spans = []
         self.swing = 0.0
+        # THE SHARED TIME LINE (v3, toolkit-plan d1). WHY: round 8 nudged every note by its own
+        # random amount, which reads as random; one 1/f deviation per sixteenth, shared by the whole
+        # band, wanders the way a player's timing does. Two runs give the same line (seeded).
+        self.v3 = getattr(piece, "style", "v2") == "v3"
+        if self.v3:
+            from timing import line_sd_ms, pink_line
+            nb = int(plans[-1].beat0 + plans[-1].blen + 64) * 4
+            bpm = float(np.median([p.bpm for p in plans]))
+            self.line = pink_line(nb, int(piece.seed) * 7919 + 17, line_sd_ms(bpm))
 
     # ---- time
     def sec(self, beat):
@@ -458,10 +550,21 @@ class Band:
     def when(self, beat, jit_ms, key):
         frac = beat % 1.0
         sw = self.swing if abs(frac - 0.5) < 1e-6 else 0.0
+        if self.v3:
+            # v3: the shared line at this sixteenth plus a residual of at most 2 ms per note; jit 0
+            # (the logo's landing) stays exact
+            if not jit_ms:
+                return max(0.0, self.sec(beat) + sw)
+            k = int(np.clip(round(beat * 4), 0, len(self.line) - 1))
+            return max(0.0, self.sec(beat) + sw + float(self.line[k]) + _h("t", self.piece.seed, key) * 0.002)
         # WHY never before 0: the piece's first note must start the file, not be cut off by it
         return max(0.0, self.sec(beat) + sw + _h("t", self.piece.seed, key) * jit_ms / 1000.0)
 
     def vary(self, v, key, sd=0.03):
+        # WHY 0.015 in v3: touch is shaped by the phrase (blocks.kth_shape); a note's own wobble
+        # stays well inside the per-phrase spread of 0.12 (toolkit-plan b2)
+        if self.v3:
+            sd = min(sd, 0.015)
         return float(np.clip(v + sd * _h("v", self.piece.seed, key), 0.04, 0.95))
 
     def _log(self, t, beat, m, beats, vel, bus, role, part):
@@ -480,6 +583,8 @@ class Band:
             self.tune_log.append((t, m, canon, bus))
         if self.backing and (role in ("lead", "double") or bus in TUNE_BUSES):
             return
+        if self.backing == "bed" and bus in FOREGROUND_BUSES:
+            return                                  # the no-melody (bed) mix: cycles and answers out too
         if p:
             x = x * np.array([1 - max(p, 0), 1 + min(p, 0)])
         place(self.bus[bus], x, t)
@@ -487,8 +592,13 @@ class Band:
 
     # ---- instruments
     def piano(self, bus, beat, m, beats, vel, tone=0.0, pedal=False, p=0.0, jit=5.0, role="", canon=None,
-              early=0.0):
+              early=0.0, phrase_vel=None):
         key = (bus, round(beat, 4), int(m))
+        if self.v3 and not (canon and canon[0] == "logo"):
+            # WHY (v3, toolkit-plan d3b): a soft felt note is HEARD a few ms after it starts; struck
+            # that much early, it is heard on its beat (the logo already does this, LAND_EARLY)
+            from timing import perceived_delay
+            early = early + perceived_delay("piano", vel)
         t = self.when(beat, jit, key) - early
         # WHY Piece.touch (round 8): a softer hand on every piano note, so the felt piano's filter
         # closes and the loud sample layer (touch >= 0.7) is never reached; 1.0 changes nothing
@@ -501,9 +611,41 @@ class Band:
         # WHY a tiny per-note tone wobble: the piano has only two recorded loudness layers, so
         # a repeated note would otherwise be the identical sound; a hair of brightness
         # variation is what a real hand does anyway
+        kw = {}
+        if phrase_vel is not None and _accepts(self.S.felt_piano, "phrase_vel"):
+            # WHY: the filter follows the PHRASE's touch, so neighbouring notes keep one colour
+            # ("some notes much brighter than their neighbours", toolkit-plan b2)
+            kw["phrase_vel"] = float(np.clip(phrase_vel * (getattr(self.piece, "touch", 1.0) or 1.0), 0.04, 0.95))
         x = self.S.felt_piano(m, v, self.secs(beat, beats) * 0.97, pedal=pedal,
-                              tone=tone + 0.06 * _h("c", key), shine=SHINE.get(bus, 0.0))
+                              tone=tone + (0.02 if self.v3 else 0.06) * _h("c", key), shine=SHINE.get(bus, 0.0), **kw)
         self._put(bus, x, t, p, role, int(m), canon)
+
+    def pad(self, beat, m, beats, vel, cutoff=None, p=0.0, attack=None, release=None, role="sustain"):
+        """THE PAD (the rebuild): one soft held synth note on the "pad" bus. WHY: every calm game
+        and ambient reference has a held layer under everything; ours was only separate piano
+        attacks, which still sound choppy between notes (what-we-learned.md, item 2). The sound
+        is engine/sounds.pad when the sound builder provides it, else padvoice.pad (a plain
+        two-saw pad built to the same specification, toolkit-plan b3)."""
+        t = self.sec(beat)
+        self._log(t, beat, m, beats, vel, "pad", role, "pad")
+        if self.dry:
+            return self._put("pad", None, t)
+        d = self.secs(beat, beats)
+        fn = getattr(self.S, "pad", None)
+        if fn is None:
+            import padvoice
+            fn = padvoice.pad
+        # WHY only what is set: the sound builder's options (pad_attack, pad_release, pad_cutoff)
+        # are the defaults; t0 lets the pad's slow drifts run continuously from note to note
+        kw = {k: v for k, v in dict(cutoff=cutoff, attack=attack, release=release, t0=t).items()
+              if v is not None and _accepts(fn, k)}
+        x = fn(int(m), d, float(vel), **kw)
+        if x.ndim == 1:
+            x = pan(x, p)
+        elif p:
+            x = x * np.array([1 - max(p, 0), 1 + min(p, 0)])
+        place(self.bus["pad"], x, t)
+        self.onsets.append((t, "pad"))
 
     def pizz(self, sec_, beat, m, vel, p=0.0, jit=7.0, role="", bus="pizz"):
         key = (sec_, "pz", round(beat, 4), int(m))

@@ -37,4 +37,9 @@ MOODS = {
     "triumphant": dict(form="bright", tempo=(96, 112, 126), accomp="rocking", voice="both",
                        layers={"held", "sub", "pizz", "synth", "air", "low"}, dyn=1.06, tone=0.6,
                        pedal=True, held=0.26, air=0.05, swing=0.006),
+    # THE BED (the rebuild, 2026-11-24): the mood every recipe uses. WHY no layers of its own: in a
+    # recipe the sustain, held strings, sub and cycles come from bed.py and the change plan, so
+    # nothing switches on with a section; the pulse is the pedal figure; the tempo is the recipe's.
+    "bed": dict(form="bright", tempo=(90, 120, 140), accomp="figure", voice="piano",
+                layers=set(), dyn=0.9, tone=0.0, pedal=False, held=0.15, air=0.05, swing=0.0, lead=1.0),
 }

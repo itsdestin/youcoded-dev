@@ -278,3 +278,195 @@ def joins(y, plans, piece):
     ep = plans[-1]
     out.append(join_report(y, plans, piece, piece.land_time(), "the logo lands", ep.beat0 + ep.blen))
     return out
+
+
+# ------------------------------------------------------------------ the rebuild's audio instruments
+# (2026-11-24, toolkit-plan e1). WHY: "harsh" and "choppy" were the owner's words for rounds 7-8;
+# these turn them into numbers a composer can read. They feed the dashboard (dashboard.py), which
+# never fails a render on them: they are instruments, not goals.
+
+def _power_spectrum(x, lo=None, hi=None):
+    m = x.mean(axis=1) if x.ndim > 1 else x
+    f, p = signal.welch(m, SR, nperseg=8192)
+    return f, p
+
+
+def tilt(y, until=None):
+    """The spectral slope in dB per octave from 125 Hz to 8 kHz (octave-band energies, a straight
+    line fitted). Professional mixes sit near -5 dB/oct (Pestana 2013); our harsh round 7 measured
+    -2 to -3, the owner's chosen piano logo -11."""
+    x = y[: int(until * SR)] if until else y
+    f, p = _power_spectrum(x)
+    centres = [125 * 2 ** k for k in range(7)]          # 125 .. 8000
+    e = []
+    for c in centres:
+        sel = (f >= c / np.sqrt(2)) & (f < c * np.sqrt(2))
+        e.append(10 * np.log10(np.sum(p[sel]) + 1e-20))
+    k = np.arange(len(centres))
+    slope = np.polyfit(k, e, 1)[0]
+    return round(float(slope), 2), [round(v - e[0], 1) for v in e]
+
+
+def presence(y, until=None):
+    """Energy 2-5 kHz and 5-16 kHz in dB relative to the whole (the 'presence' and 'air' bands)."""
+    x = y[: int(until * SR)] if until else y
+    f, p = _power_spectrum(x)
+    tot = np.sum(p[(f >= 20) & (f < 20000)]) + 1e-20
+    b1 = np.sum(p[(f >= 2000) & (f < 5000)])
+    b2 = np.sum(p[(f >= 5000) & (f < 16000)])
+    return round(float(10 * np.log10(b1 / tot + 1e-20)), 1), round(float(10 * np.log10(b2 / tot + 1e-20)), 1)
+
+
+def novelty_peaks(y, until=None, hop=0.1, kernel_s=4.0):
+    """'Choppy' made measurable (Foote 2000): a self-similarity matrix of 100 ms log-mel frames,
+    a checkerboard kernel of 4 s slid along its diagonal; each clear peak is a moment where the
+    music turns into something different. Returns (peaks per 10 s, peak times)."""
+    x = y[: int(until * SR)] if until else y
+    m = x.mean(axis=1)
+    n = int(hop * SR)
+    frames = len(m) // n
+    if frames < 2 * int(kernel_s / hop) + 2:
+        return 0.0, []
+    win = np.hanning(2 * n)
+    spec = []
+    for i in range(frames - 1):
+        seg = m[i * n: i * n + 2 * n]
+        if len(seg) < 2 * n:
+            break
+        mag = np.abs(np.fft.rfft(seg * win))
+        spec.append(mag)
+    S = np.array(spec)
+    f = np.fft.rfftfreq(2 * n, 1 / SR)
+    edges = np.geomspace(60, 12000, 33)
+    mel = np.stack([S[:, (f >= a) & (f < b)].sum(axis=1) for a, b in zip(edges[:-1], edges[1:])], axis=1)
+    F = np.log(mel + 1e-9)
+    F = F - F.mean(axis=1, keepdims=True)
+    F = F / (np.linalg.norm(F, axis=1, keepdims=True) + 1e-9)
+    sim = F @ F.T
+    L = int(kernel_s / hop / 2)
+    g = np.outer(np.hanning(2 * L), np.hanning(2 * L))
+    sign = np.ones((2 * L, 2 * L))
+    sign[:L, L:] = -1
+    sign[L:, :L] = -1
+    K = g * sign
+    nov = np.zeros(len(F))
+    for i in range(L, len(F) - L):
+        nov[i] = np.sum(sim[i - L:i + L, i - L:i + L] * K)
+    nov = np.maximum(nov, 0)
+    if nov.max() <= 0:
+        return 0.0, []
+    nov /= nov.max()
+    pk, _ = signal.find_peaks(nov, height=0.35, distance=int(2.0 / hop))
+    times = [round(float(i * hop), 1) for i in pk]
+    return round(len(pk) / (len(m) / SR) * 10, 2), times
+
+
+def _vass(f1, f2, a1, a2):
+    fmin, fmax = np.minimum(f1, f2), np.maximum(f1, f2)
+    amin, amax = np.minimum(a1, a2), np.maximum(a1, a2)
+    s = 0.24 / (0.0207 * fmin + 18.96)
+    x = (amin * amax) ** 0.1 * 0.5 * (2 * amin / (amin + amax + 1e-12)) ** 3.11
+    return x * (np.exp(-3.5 * s * (fmax - fmin)) - np.exp(-5.75 * s * (fmax - fmin)))
+
+
+def _frame_roughness(seg, npk=14):
+    win = np.hanning(len(seg))
+    mag = np.abs(np.fft.rfft(seg * win))
+    f = np.fft.rfftfreq(len(seg), 1 / SR)
+    sel = (f > 50) & (f < 5000)
+    mag, f = mag[sel], f[sel]
+    pk, _ = signal.find_peaks(mag)
+    if len(pk) < 2:
+        return 0.0
+    pk = pk[np.argsort(mag[pk])[-npk:]]
+    a = mag[pk] / (np.sqrt(np.sum(mag[pk] ** 2)) + 1e-12)       # level-normalised
+    fr = f[pk]
+    i, j = np.triu_indices(len(pk), 1)
+    return float(np.sum(_vass(fr[i], fr[j], a[i], a[j])))
+
+
+_REF = None
+
+
+def roughness(y, until=None, hop=0.1):
+    """Vassilakis roughness per 100 ms frame, level-normalised, as a ratio to a plain E-flat major
+    triad (Eb4 G4 Bb4, each with 8 harmonics at 1/k) measured the same way. Returns (95th percentile ratio, worst
+    time). Uncalibrated until the owner's harsh/fine ratings set it (toolkit-plan f6)."""
+    global _REF
+    n = int(0.2 * SR)
+    if _REF is None:
+        t = np.arange(n) / SR
+        from dsp import midi_hz
+        # WHY harmonics (8, at 1/k): our instruments have overtones, which beat among themselves;
+        # a reference of pure sines made every piece look 10x rougher than a plain chord
+        tri = sum(np.sin(2 * np.pi * k * midi_hz(m) * t) / k for m in (63, 67, 70) for k in range(1, 9))
+        _REF = _frame_roughness(tri) or 1e-6
+    x = (y[: int(until * SR)] if until else y).mean(axis=1)
+    h = int(hop * SR)
+    vals = []
+    for i in range(0, len(x) - n, h):
+        seg = x[i:i + n]
+        if np.sqrt(np.mean(seg ** 2)) < 1e-4:
+            continue
+        vals.append((_frame_roughness(seg) / _REF, i / SR))
+    if not vals:
+        return 0.0, None
+    r = np.array([v for v, _ in vals])
+    w = max(vals)
+    return round(float(np.percentile(r, 95)), 2), round(w[1], 1)
+
+
+def silences(y, t0, t1, thresh=-50.0):
+    """Stretches between t0 and t1 where the music's momentary loudness is below `thresh` LUFS
+    (no sound where music should be): [(start, end)]."""
+    t, v = momentary(y)
+    out, cur = [], None
+    for a, b in zip(t, v):
+        if t0 <= a <= t1 and b < thresh:
+            cur = [a, a] if cur is None else [cur[0], a]
+        elif cur is not None:
+            out.append((round(cur[0], 2), round(cur[1], 2)))
+            cur = None
+    if cur is not None:
+        out.append((round(cur[0], 2), round(cur[1], 2)))
+    return [s for s in out if s[1] - s[0] >= 0.3]
+
+
+def voice_margin(music, voice_path, speech_words, start_at=0.0, t_from=0.0, music_db=0.0, win=1.67):
+    """How far a narrator stands above the music in the phone band (300 Hz-8 kHz) over her words,
+    in windows of `win` s: (median dB, worst dB, worst time). `music_db` = the gain the film's mux
+    puts on the music (e.g. -10). WHY: "the voice always wins"; under 6 dB she is masked."""
+    import soundfile as sf
+    v, sr = sf.read(voice_path, dtype="float64", always_2d=True)
+    if sr != SR:
+        from math import gcd
+        g = gcd(SR, sr)
+        v = signal.resample_poly(v, SR // g, sr // g, axis=0)
+    a = int(t_from * SR)
+    v = v[a:]
+    off = int(start_at * SR)
+    vv = np.zeros_like(music[:, :1].repeat(2, axis=1))
+    k = min(len(vv) - off, len(v))
+    if k <= 0:
+        return None
+    vv[off:off + k] = v[:k, :2] if v.shape[1] >= 2 else np.repeat(v[:k], 2, axis=1)
+    mm = music * 10 ** (music_db / 20)
+    band = lambda x: butter(butter(x.mean(axis=1), "highpass", 300, 4), "lowpass", 8000, 4)
+    vb, mb = band(vv), band(mm)
+    words = [(a_, b_) for _, a_, b_ in speech_words]
+    res = []
+    t = 0.0
+    L = len(music) / SR
+    while t + win <= L:
+        spoken = sum(max(0.0, min(t + win, b_) - max(t, a_)) for a_, b_ in words)
+        if spoken >= 0.5 * win:
+            i, j = int(t * SR), int((t + win) * SR)
+            dv = 10 * np.log10(np.mean(vb[i:j] ** 2) + 1e-20)
+            dm = 10 * np.log10(np.mean(mb[i:j] ** 2) + 1e-20)
+            res.append((dv - dm, t))
+        t += win / 2
+    if not res:
+        return None
+    d = np.array([x for x, _ in res])
+    w = min(res)
+    return round(float(np.median(d)), 1), round(w[0], 1), round(w[1], 2)

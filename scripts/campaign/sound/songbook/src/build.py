@@ -22,6 +22,7 @@ import blocks  # noqa: E402
 import form  # noqa: E402
 import measure as M  # noqa: E402
 import mix as X  # noqa: E402
+import dashboard as D  # noqa: E402
 import films  # noqa: E402
 from demos import DEMOS  # noqa: E402
 from dsp import SR, db  # noqa: E402
@@ -29,6 +30,21 @@ from master import lufs, measure, motif_check  # noqa: E402
 from score import Band, plan  # noqa: E402
 
 OUT = os.path.join(HERE, "..", "out")
+
+
+def _bus_defaults():
+    """WHY: score.BUSES gained "pad" and "cycle" (the rebuild); mix.py, the sound builder's file,
+    sets each bus's level. Until it names them, these defaults (score.NEW_BUS_DEFAULTS) stand in,
+    and any value mix.py does define wins."""
+    import score
+    for b, (tgt, hall, room) in score.NEW_BUS_DEFAULTS.items():
+        for name, val in (("TARGET", tgt), ("HALL", hall), ("ROOM", room)):
+            d = getattr(X, name, None)
+            if isinstance(d, dict):
+                d.setdefault(b, val)
+
+
+_bus_defaults()
 
 
 def render(piece, backing=False, gains=None):
@@ -54,6 +70,13 @@ def one(piece, extra_fn=None, path=None):
     st["loudness_target"] = getattr(piece, "loudness", -14.0)
     raw_b, _, _, _ = render(piece, backing=True, gains=gains)
     tv = motif_check(raw, raw_b, band.melody)
+    if getattr(piece, "style", "") == "v3":
+        # THE NO-MELODY ALT MIX (toolkit-plan a4): the bed alone (tune, cycles, answers out), mastered
+        # with the same gains, for every render; the editor can cut to it, and the owner can hear
+        # whether the bed stands on its own
+        raw_bed, _, _, _ = render(piece, backing="bed", gains=gains)
+        yb = X.finish_piece(X.premaster_music(raw_bed, plans, piece), piece)
+        sf.write(path[:-4] + "-bed.wav", yb, SR, subtype="PCM_24")
     each = [motif_check(raw, raw_b, [e])["min_db"] for e in band.melody]
     st["tune_on_top"] = dict(tv, each=[(round(t, 2), m, e) for (t, m), e in zip(band.melody, each)])
     st["tune_identity"] = M.tune_identity(band)
@@ -71,12 +94,20 @@ def one(piece, extra_fn=None, path=None):
                            layers=sorted(p.layers), into=p.into)
                       for p in plans]
     st["notes"] = piece.notes
+    st["explain"] = dict(getattr(piece, "explain", None) or {})
     # THE COMPOSITION CHECKS (form.py): the notes, then the audio; the bar table goes to out/notes/
     rows = form.bar_table(band, plans, piece)
     st["composition"] = form.symbolic(band, plans, piece, rows) + form.audio(y, band, plans, piece, rows)
+    # THE HARD CHECKS AND THE DASHBOARD (the rebuild): only genuine faults can fail
+    st["hard"] = D.hard(band, plans, piece, st["composition"], y=y, st=st)
+    st["dashboard"] = D.dashboard(band, plans, piece, rows, st["composition"], y=y, st=st,
+                                  mix_tests=mix_tests(st, loudness=st["loudness_target"]))
+    st["bed"] = getattr(band, "bed_info", None)
+    st["recipe"] = getattr(piece, "recipe_report", None)
     os.makedirs(os.path.join(OUT, "notes"), exist_ok=True)
     with open(os.path.join(OUT, "notes", f"{piece.name}.txt"), "w") as f:
-        f.write("\n".join(form.table_text(rows, piece) + [""] + form.verdict_text(piece.name, st["composition"])) + "\n")
+        f.write("\n".join(form.table_text(rows, piece) + [""] + (st["recipe"] or [])
+                           + D.text(piece.name, st["hard"], st["dashboard"], piece)) + "\n")
     return piece.name, st
 
 
@@ -120,7 +151,13 @@ def checks(name, v):
     b = v["bands_db_rel_total"]
     tests = mix_tests(v, loudness=v.get("loudness_target", -14.0))
     bad = [n for n, ok in tests if not ok]
-    L = [f"{'PASS' if not bad else 'FAIL'}  {name} ({v['seconds']} s): " + ("all checks" if not bad else "failed: " + "; ".join(bad))]
+    if "hard" in v:
+        # WHY: only the hard checks fail; every other mix number is a gauge on the dashboard
+        hb = [r["id"] for r in v["hard"] if not r["ok"]]
+        L = [f"{'PASS' if not hb else 'FAIL'}  {name} ({v['seconds']} s): " + ("no fault" if not hb else "faults: " + ", ".join(hb))
+             + (f"; mix gauges out of range: {'; '.join(bad)}" if bad else "")]
+    else:
+        L = [f"{'PASS' if not bad else 'FAIL'}  {name} ({v['seconds']} s): " + ("all checks" if not bad else "failed: " + "; ".join(bad))]
     L.append(f"   LUFS {v['lufs_integrated']}  true peak {v['true_peak_dbtp']} dBTP  clipped {v['clipped_samples']}  "
              f"first/last sample {v['first_sample_dbfs']}/{v['last_sample_dbfs']} dBFS  last 100 ms {v['last_100ms_rms_dbfs']} dBFS  "
              f"DC {v['dc_offset']}  mono loss {v['mono_fold_loss_lu']} LU")
@@ -149,9 +186,17 @@ def checks(name, v):
                  f"{j['bright_after']['8-16k']} dB; biggest 1 s change nearby {j['max_change_1s']} dB (at {j['max_change_at']} s); "
                  f"tempo per beat {j['tempo_per_beat']}")
     L.append(f"   bus loudness: {v['stem_lufs']}")
-    if "composition" in v:
+    if "hard" in v:
+        L += ["   " + x for x in D.text(name, v["hard"], v["dashboard"], _Explain(v))]
+    elif "composition" in v:
         L += ["   " + x for x in form.verdict_text(name, v["composition"])]
     return L
+
+
+class _Explain:
+    """The piece's explanations, carried in the measurements (a piece object is not kept)."""
+    def __init__(self, v):
+        self.explain = v.get("explain") or {}
 
 
 JOIN_FILES = {   # quick re-listening: ~10 s centred on each reworked join

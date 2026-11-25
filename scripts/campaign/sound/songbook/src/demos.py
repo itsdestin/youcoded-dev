@@ -103,3 +103,112 @@ DEMOS = [
             S("hopeful", 4, tune="phrase2", label="hopeful"),
         ]),
 ]
+
+
+# ====================================================================== THE REBUILD'S WORKED EXAMPLES
+# (2026-11-24) One short example per recipe, each made the way SONGBOOK.md "The procedure" says:
+# brief -> tempo -> recipe -> change plan -> the bed -> the tune -> read the dashboard. The
+# pictures are invented (no film exists for them); the editor is assumed to cut on the motion
+# grid, which is the point of choosing the tempo first.
+import os as _os  # noqa: E402
+
+import recipes as _R  # noqa: E402
+from cycles import Cycle as _Cy  # noqa: E402
+from films import speech_from_words as _sfw  # noqa: E402
+
+# ---- Recipe A: a 12 s type-only short, three cards and the name, subtle.
+# Tempo: 110 bpm (a bar 2.18 s): the cards on bar 1 beat 2, bar 2 beat 3 and the downbeat of bar 4
+# (the peak), the name after 4 bars and the short ending.
+_A_BPM = 110.0
+_A_LAND = _R.land_after(4, _A_BPM, ending="short")
+_A_BRIEF = _R.Brief("type-only", 12.0, ("calm", "certain", "warm"), "subtle",
+                    moments=[(6.545, "peak")], logo_at=_A_LAND,
+                    cards=[(0.545, "your apps"), (3.273, "your rules"), (6.545, "yours")])
+RECIPE_A = _R.type_short(
+    "recipe-a-example", 12.0, land=_A_LAND, bpm=_A_BPM, seed=21, brief=_A_BRIEF, hits=_A_BRIEF.hits(),
+    # WHY these choices: two chords, one per 2 bars, the same top note (G) in both; no tune (the
+    # pulse already says B-flat G F all the time, and the logo is the one statement); one change:
+    # the pad opens a little for the last card
+    chords="Ebmaj9 Ebmaj9 Abmaj9 Abmaj9",
+    changes=[(3, "brightness", 1.25)],
+    notes="Recipe A worked example: pad + pedal pulse, two chords, one change, the quiet logo.",
+    # WHY these explanations (the dashboard rule: explain an out-of-range gauge, never bend the music)
+    explain={"tilt": "a soft felt pulse and a pad with no tune: darker than the target, about the owner's own "
+                     "piano logo (-11); for his ear, not a reason to brighten anything",
+             "roughness": "uncalibrated: every example reads 1.9-2.4x a plain triad; waits for the owner's ratings",
+             "cell-present": "recipe A has no tune on purpose: the pulse plays B-flat G F throughout, the logo is "
+                             "the one statement",
+             "loudness-range": "one even phrase with no lift (recipe A); the older 1.5 dB floor was set on longer pieces",
+             "level-rate": "the level swings between pulse notes because the pad sits about 10 dB under the "
+                           "pulse: a balance question for the mix, reported to the sound side",
+             "mix-air-band": "the new darker master; the older 8-16 kHz floor predates it",
+             "mix-low-end": "no sub in a 12 s type-only short"})
+
+# ---- Recipe B: a 36 s app demo, cuts every 4 bars, the peak at bar 13, the full logo.
+_B_BPM = 116.0
+_B_LAND = _R.land_after(15, _B_BPM)
+_B_BRIEF = _R.Brief("app-demo", 36.0, ("bright", "easy", "capable"), "present",
+                    moments=[(8.276, "the editor"), (16.552, "the theme"), (24.828, "peak")], logo_at=_B_LAND,
+                    picture=[(0.0, "open"), (8.276, "the editor"), (16.552, "the theme"), (24.828, "it works")])
+RECIPE_B = _R.app_demo(
+    "recipe-b-example", 36.0, land=_B_LAND, bpm=_B_BPM, peak=24.828, seed=23, brief=_B_BRIEF,
+    hits=_B_BRIEF.hits(),
+    # WHY: the bright vocabulary, one chord per 2 bars, every change keeping at least one note; a
+    # second pass through the same four chords is the bed; the last pair turns to Ab/Bb for the lift
+    chords="Ebmaj9 Ebmaj9 Cm9 Cm9 Abmaj9 Abmaj9 Bb9sus Bb9sus Ebmaj9 Ebmaj9 Cm9 Cm9 Abmaj9 Abmaj9 Ab/Bb",
+    # the cell, then the cell again (the bank may vary its last note), and the peak phrase on the
+    # payoff; bed alone for three bars between them
+    tune=[(4, "cell"), (9, "cell"), (13, "from-top")],
+    cycles=[_Cy("Bb5/0.5 G5/1", period=23, offset=5, name="cycle1"),
+            _Cy("F5/1 D5/1", period=29, offset=14, name="cycle2", touch=0.26)],
+    # one change at each cut (8.3 s, 16.6 s) and the strings at the peak (24.8 s). WHY the sub at
+    # 16.6 s and not the pulse moving up: a step up there put the pulse (C5) above the cell's B-flat 4
+    changes=[(5, "in", "cycle1"), (9, "in", "sub"), (13, "in", "held"), (13, "peak")],
+    notes="Recipe B worked example: pad + pedal pulse + two co-prime cycles, three tune phrases, "
+          "a change at each cut, the strings and a 2.5 dB lift into the peak.",
+    explain={"chord-variety": "36 s is twice round four chords: every 3-chord run is new only because the piece "
+                              "is short",
+             "novelty-peaks": "the three tune entries and the lift each register as a turn besides the three "
+                              "planned changes; the gauge is not calibrated yet",
+             "roughness": "uncalibrated: every example reads 1.9-2.4x a plain triad; waits for the owner's ratings",
+             "bass-moves": "the pulse's bass plays each chord's root on purpose; the pad carries the inner motion",
+             "level-rate": "the level swings between pulse notes because the pad sits about 10 dB under the "
+                           "pulse: a balance question for the mix, reported to the sound side",
+             "mix-air-band": "the new darker master; the older 8-16 kHz floor predates it",
+             "mix-low-end": "the new master's low end; for the sound side"})
+
+# ---- Recipe C: a narrated stretch, the storybook voice from 0 to "...wonderful happened." with
+# 1.5 s of music before her first word; the turn at "However," (21.4 s in her file = 22.9 s here).
+_WORDS = _os.path.normpath(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "..", "..", "..", "film",
+                                         "src", "round2", "take1-words-lily.json"))
+_VOICE = _os.path.normpath(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "..", "..", "..", "film",
+                                         "public", "audio", "voice-take1-lily.wav"))
+_C_SPEECH = _sfw(_WORDS, 0.0, t_to=25.6, start_at=1.5)
+_C_LAND = _R.land_after(16, 120.0)          # her band's value nearest 120 is 120 itself
+RECIPE_C = _R.narrated(
+    "recipe-c-example", 36.0, land=_C_LAND, speech=_C_SPEECH, turn=22.9, seed=25, whimsy=True,
+    brief=_R.Brief("narrated", 36.0, ("storybook", "patient", "warm"), "subtle",
+                   moments=[(22.9, "the turn"), (26.5, "peak")], logo_at=_C_LAND),
+    notes="Recipe C worked example: a soft high pulse under her words, dark chords on her sentence ends "
+          "turning bright at 'However,', one cycle in her long pauses, the tune after her last word.")
+RECIPE_C.voice_mux = dict(path=_VOICE, t_from=0.0, start_at=1.5, music_db=-10.0)
+RECIPE_C.explain = {
+    "fg-duty": "the 2-bar stretch after her last word holds the tune's one phrase; the gauge reads that "
+               "tiny section, not the piece",
+    "chord-variety": "four chord changes in 36 s (one per sentence): too few for 3-chord runs to repeat",
+    "change-plan": "her turn (22 s) and her last word (27 s) are 6 s apart; the pulse comes down when she stops",
+    "novelty-peaks": "her sentence-end chord changes register as turns; the gauge is not calibrated yet",
+    "roughness": "uncalibrated: every example reads 1.9-2.4x a plain triad; waits for the owner's ratings",
+    "narrator-chords": "chords can only change on a half-bar (1 s at 120): three of her sentence ends fall "
+                       "0.3-0.5 s from one (a known limit of the chord grid)",
+    "bass-moves": "the pulse's bass plays each chord's root on purpose; the pad carries the inner motion",
+    "top-voice": "the high pulse's last note rings an eighth into the tune's first (B-flat 4) as the pulse "
+                 "comes down",
+    "speech-covers": "a worked example cut at '...wonderful happened.': her story goes on in the film",
+    "level-rate": "the step from -6 dB under her words to -2 dB after them, over two bars, plus the pad sitting "
+                  "about 10 dB under the pulse",
+    "mix-air-band": "the new darker master; the older 8-16 kHz floor predates it",
+    "mix-low-end": "the new master's low end; for the sound side"}
+RECIPE_C.peak = 26.5
+
+DEMOS += [RECIPE_A, RECIPE_B, RECIPE_C]
