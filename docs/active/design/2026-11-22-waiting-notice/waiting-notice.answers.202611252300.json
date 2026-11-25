@@ -1,0 +1,117 @@
+{
+ "deck": "waiting-notice",
+ "started": "2026-11-25T22:48:55.108Z",
+ "submitted": "2026-11-25T23:00:48Z",
+ "cur": 6,
+ "answers": {
+  "R-unsure": {
+   "note": "confused. not enough context to know what you mean here",
+   "t": 1795647647035,
+   "v": "other",
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  },
+  "R-words": {
+   "v": "pick",
+   "pick": "merge",
+   "t": 1795647641015,
+   "note": "i think we should only show additional detail when it would change how a user resolves the issue (like phone offline hints that they need to troubleshoot by reconnecting phone first. if the detail is not actionable, it should probably be excluded.",
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  },
+  "R-newchat": {
+   "v": "other",
+   "t": 1795647641015,
+   "note": "what you you mean? when would a user encounter this?",
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  },
+  "R-fyi": {
+   "v": "yes",
+   "t": 1795647641015,
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  },
+  "R-remote": {
+   "v": "yes",
+   "t": 1795647641015,
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  },
+  "R-screen": {
+   "v": "yes",
+   "t": 1795647641015,
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  },
+  "R-card": {
+   "v": "pick",
+   "pick": "goes",
+   "t": 1795647641015,
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  },
+  "R-elsewhere": {
+   "v": "pick",
+   "pick": "dot",
+   "t": 1795647641015,
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  },
+  "R-queue": {
+   "v": "yes",
+   "t": 1795647641015,
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  },
+  "R-phone": {
+   "v": "yes",
+   "t": 1795647641015,
+   "seconds": 71,
+   "theme": "halftone-dimension"
+  }
+ },
+ "built": {
+  "at": "2026-11-25T21:40:05Z",
+  "branch": "session/waiting-notice",
+  "commit": "e3cfe607298d6495482c75700a1bcf487e111167",
+  "spec_sha256": "e1f5a58e22af7ce8578d1c1aeb06eb7f21c92b3c76a0cffc382080de38528349",
+  "spec_dirty": false,
+  "ids": [
+   "R-unsure",
+   "R-words",
+   "R-newchat",
+   "R-fyi",
+   "R-remote",
+   "R-screen",
+   "R-card",
+   "R-elsewhere",
+   "R-queue",
+   "R-phone",
+   "L-drawn",
+   "L-sort-failed",
+   "L-sort-cant",
+   "K-1",
+   "K-2",
+   "K-3",
+   "K-4",
+   "K-5",
+   "K-6",
+   "K-7",
+   "L-ref-held",
+   "L-ref-unsure",
+   "L-ref-cant",
+   "L-ref-chatfail",
+   "L-ref-appfail",
+   "L-ref-done",
+   "L-ref-heads",
+   "L-0",
+   "S-2",
+   "L-1",
+   "Q-1",
+   "Q-2",
+   "Q-3",
+   "Q-4"
+  ]
+ }
+}
