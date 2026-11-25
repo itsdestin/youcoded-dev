@@ -1,0 +1,110 @@
+{
+ "deck": "waiting-notice",
+ "started": "2026-11-25T21:27:45.373Z",
+ "submitted": "2026-11-25T21:30:20Z",
+ "cur": 0,
+ "answers": {
+  "L-drawn": {
+   "ok": {
+    "held": true,
+    "cant": true,
+    "failed": true,
+    "k7-plugin": true,
+    "k7-settings": true,
+    "k7-password": true
+   },
+   "t": 1795642219666,
+   "v": "yes",
+   "seconds": 51,
+   "theme": "ivory-schematic"
+  },
+  "L-sort-failed": {
+   "ok": {
+    "skill-unreadable": true,
+    "skill-error-detail": true,
+    "skill-failed": true,
+    "takeover-failed": true,
+    "handoff-unconfirmed": true,
+    "resume-failed": true,
+    "compact-summary-failed": true,
+    "compact-interrupted": true,
+    "compact-error-detail": true,
+    "compact-failed": true,
+    "clear-error-detail": true,
+    "clear-failed": true,
+    "stop-task-failed": true,
+    "reload-model": true,
+    "close-refused-detail": true,
+    "close-refused": true,
+    "save-tag-change": true,
+    "save-note": true,
+    "save-change": true,
+    "remove-from-list": true
+   },
+   "t": 1795642219666,
+   "v": "yes",
+   "seconds": 51,
+   "theme": "ivory-schematic"
+  },
+  "L-sort-cant": {
+   "ok": {
+    "not-in-native-runtime": true,
+    "not-in-terminal-session": true,
+    "skill-cant-start-native": true,
+    "open-conversation-first": true,
+    "attachments-ignored": true,
+    "no-response-to-copy": true,
+    "compact-busy": true,
+    "compact-nothing": true,
+    "compact-not-live": true,
+    "clear-busy": true,
+    "clear-not-live": true,
+    "skill-not-a-skill": true,
+    "skill-busy": true,
+    "skill-not-live": true,
+    "live-handoff-unavailable": true,
+    "finish-current-transfer": true
+   },
+   "t": 1795642219666,
+   "v": "yes",
+   "seconds": 51,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-24T10:04:49Z",
+  "branch": "session/waiting-notice",
+  "commit": "ffd0bfc3334aafab8c14818846b391eea1c767bd",
+  "spec_sha256": "ecd5e9663bf602b981186e0dae751fcda2ba2fdd91988cf2ef1e86a9e7159762",
+  "spec_dirty": true,
+  "ids": [
+   "L-drawn",
+   "L-sort-failed",
+   "L-sort-cant",
+   "K-1",
+   "K-2",
+   "K-3",
+   "K-4",
+   "K-5",
+   "K-6",
+   "K-7",
+   "L-ref-held",
+   "L-ref-unsure",
+   "L-ref-cant",
+   "L-ref-chatfail",
+   "L-ref-appfail",
+   "L-ref-done",
+   "L-ref-heads",
+   "L-0",
+   "S-2",
+   "L-1",
+   "Q-1",
+   "Q-2",
+   "Q-3",
+   "Q-4"
+  ]
+ },
+ "pageNotes": {
+  "P-drawn": "please have a separate independent reviewer do a final check to see if there are any opportunities to simplify/improve/consolidate message/error types or for bugs/ommissions in our changes.\n"
+ }
+}
