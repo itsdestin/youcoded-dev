@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # THE SONGBOOK: re-render every demonstration, the join excerpts and the films into out/ and
 # print the hard checks and the dashboard (out/checks.txt, out/films/checks.txt; every number in the .json files next to
-# them). About 80 seconds; two runs give identical files. The film "Own everything" is also
-# copied to scripts/campaign/film/public/audio/sb-take3-mix.wav.
+# them). About 80 seconds; two runs give identical files. The films "Own everything" and "Make it
+# mine" are also copied to scripts/campaign/film/public/audio/ (sb-take3-mix.wav, sb-take2-mix.wav)
+# unless SONGBOOK_NO_COPY=1 is set (render into out/ only, e.g. to check the toolkit).
 #
 #   scripts/campaign/sound/songbook/render.sh                 # everything
 #   scripts/campaign/sound/songbook/render.sh demo-journey    # just one piece (by name)

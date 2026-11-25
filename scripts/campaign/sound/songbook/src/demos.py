@@ -139,9 +139,8 @@ RECIPE_A = _R.type_short(
              "cell-present": "recipe A has no tune on purpose: the pulse plays B-flat G F throughout, the logo is "
                              "the one statement",
              "loudness-range": "one even phrase with no lift (recipe A); the older 1.5 dB floor was set on longer pieces",
-             "level-rate": "the level swings between pulse notes because the pad sits about 10 dB under the "
-                           "pulse: a balance question for the mix, reported to the sound side",
-             "mix-air-band": "the new darker master; the older 8-16 kHz floor predates it",
+             "level-rate": "the pulse stopping into the short ending (8 s); inside the bed the pad sits about 8 dB "
+                           "under the pulse, the plan's pad level: a balance for the owner's ear",
              "mix-low-end": "no sub in a 12 s type-only short"})
 
 # ---- Recipe B: a 36 s app demo, cuts every 4 bars, the peak at bar 13, the full logo.
@@ -172,10 +171,8 @@ RECIPE_B = _R.app_demo(
                               "planned changes; the gauge is not calibrated yet",
              "roughness": "uncalibrated: every example reads 1.9-2.4x a plain triad; waits for the owner's ratings",
              "bass-moves": "the pulse's bass plays each chord's root on purpose; the pad carries the inner motion",
-             "level-rate": "the level swings between pulse notes because the pad sits about 10 dB under the "
-                           "pulse: a balance question for the mix, reported to the sound side",
-             "mix-air-band": "the new darker master; the older 8-16 kHz floor predates it",
-             "mix-low-end": "the new master's low end; for the sound side"})
+             "level-rate": "the level swings between pulse notes: the pad sits about 8 dB under the pulse (the "
+                           "plan's pad level, -30 to -36 LUFS); a balance for the owner's ear"})
 
 # ---- Recipe C: a narrated stretch, the storybook voice from 0 to "...wonderful happened." with
 # 1.5 s of music before her first word; the turn at "However," (21.4 s in her file = 22.9 s here).
@@ -205,10 +202,10 @@ RECIPE_C.explain = {
     "top-voice": "the high pulse's last note rings an eighth into the tune's first (B-flat 4) as the pulse "
                  "comes down",
     "speech-covers": "a worked example cut at '...wonderful happened.': her story goes on in the film",
-    "level-rate": "the step from -6 dB under her words to -2 dB after them, over two bars, plus the pad sitting "
-                  "about 10 dB under the pulse",
-    "mix-air-band": "the new darker master; the older 8-16 kHz floor predates it",
-    "mix-low-end": "the new master's low end; for the sound side"}
+    "level-rate": "the step from -6 dB under her words to -2 dB after them as the tune enters, plus the pad "
+                  "sitting about 8 dB under the pulse",
+    "mix-low-end": "no sub under her words (it enters only with the logo); nothing below E-flat 3 but the "
+                   "pulse's root"}
 RECIPE_C.peak = 26.5
 
 DEMOS += [RECIPE_A, RECIPE_B, RECIPE_C]

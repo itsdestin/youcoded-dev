@@ -474,16 +474,6 @@ def _h(*key):
     return (u + v) - 1.0          # sum of two uniforms: a soft bell
 
 
-def _accepts(fn, name):
-    """Does the instrument function take this keyword? WHY: the sound engine is being rebuilt at
-    the same time (engine/sounds.py); a keyword it does not know yet is simply not passed."""
-    import inspect
-    try:
-        return name in inspect.signature(fn).parameters
-    except (TypeError, ValueError):
-        return False
-
-
 BUSES = ["lead", "sing", "double", "answer", "counter", "piano", "pizz", "bowed", "air", "synth", "sub",
          # WHY (the rebuild, 2026-11-24): "pad" carries the sustain layer that sounds under everything
          # (bed.py; pad, held strings or pedalled ring) and "cycle" the short parts on unequal periods
@@ -491,9 +481,8 @@ BUSES = ["lead", "sing", "double", "answer", "counter", "piano", "pizz", "bowed"
          "pad", "cycle"]
 TUNE_BUSES = ("lead", "sing", "double")
 FOREGROUND_BUSES = TUNE_BUSES + ("answer", "counter", "cycle")   # left out of the no-melody (bed) mix
-# Mix defaults for the new buses, used by build.py only while mix.py does not define them yet
-# (mix.py belongs to the sound builder): loudness while playing, hall send, room send.
-NEW_BUS_DEFAULTS = dict(pad=(-30.0, 0.34, 0.0), cycle=(-27.0, 0.36, 0.08))
+# The new buses' levels, hall/room sends and echo returns live in mix.py (TARGET, HALL, ROOM, ECHO)
+# with every other bus; there is one place to set them.
 # How much string brilliance each piano part gets (engine/sounds.py, _brilliance): a fraction
 # of the note's peak. The tune gets the most (it should sparkle); the low accompaniment none.
 SHINE = dict(lead=0.08, answer=0.04, double=0.035)
@@ -612,7 +601,7 @@ class Band:
         # a repeated note would otherwise be the identical sound; a hair of brightness
         # variation is what a real hand does anyway
         kw = {}
-        if phrase_vel is not None and _accepts(self.S.felt_piano, "phrase_vel"):
+        if phrase_vel is not None:
             # WHY: the filter follows the PHRASE's touch, so neighbouring notes keep one colour
             # ("some notes much brighter than their neighbours", toolkit-plan b2)
             kw["phrase_vel"] = float(np.clip(phrase_vel * (getattr(self.piece, "touch", 1.0) or 1.0), 0.04, 0.95))
@@ -624,22 +613,18 @@ class Band:
         """THE PAD (the rebuild): one soft held synth note on the "pad" bus. WHY: every calm game
         and ambient reference has a held layer under everything; ours was only separate piano
         attacks, which still sound choppy between notes (what-we-learned.md, item 2). The sound
-        is engine/sounds.pad when the sound builder provides it, else padvoice.pad (a plain
-        two-saw pad built to the same specification, toolkit-plan b3)."""
+        is engine/sounds.pad (toolkit-plan b3; its timbre, cutoff, attack and release are the
+        switches pad_* in engine/options.py)."""
         t = self.sec(beat)
         self._log(t, beat, m, beats, vel, "pad", role, "pad")
         if self.dry:
             return self._put("pad", None, t)
         d = self.secs(beat, beats)
-        fn = getattr(self.S, "pad", None)
-        if fn is None:
-            import padvoice
-            fn = padvoice.pad
-        # WHY only what is set: the sound builder's options (pad_attack, pad_release, pad_cutoff)
-        # are the defaults; t0 lets the pad's slow drifts run continuously from note to note
-        kw = {k: v for k, v in dict(cutoff=cutoff, attack=attack, release=release, t0=t).items()
-              if v is not None and _accepts(fn, k)}
-        x = fn(int(m), d, float(vel), **kw)
+        # WHY only what is set: the options (pad_attack, pad_release, pad_cutoff) are the
+        # defaults; t0 lets the pad's slow drifts run continuously from note to note. (The interim
+        # padvoice.py stand-in was removed once sounds.pad existed: one pad, one specification.)
+        kw = {k: v for k, v in dict(cutoff=cutoff, attack=attack, release=release, t0=t).items() if v is not None}
+        x = self.S.pad(int(m), d, float(vel), **kw)
         if x.ndim == 1:
             x = pan(x, p)
         elif p:

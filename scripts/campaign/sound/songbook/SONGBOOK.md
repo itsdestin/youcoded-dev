@@ -60,7 +60,9 @@ Every film follows these steps in order. Commands are run from anywhere:
    and the dashboard.
 7. **Two sketches.** `render.sh --sketch <film> [switch=value]` renders the first 20 s twice: A as
    written, B with ONE switch changed (default: the sustain pad against held strings; or e.g.
-   `pulse=chord`, `chords=plain`, `bed.cutoff=1200`, `sec.fig_touch=0.35`). The owner picks.
+   `pulse=chord`, `chords=plain`, `bed.cutoff=1200`, `sec.fig_touch=0.35`, or any sound switch:
+   `pad_timbre=triangle`, `piano=salamander`, `air_db=11`). A misspelt switch stops with the list
+   of known ones. The owner picks.
 8. **Render and report.** `render.sh <film>`. Every render also writes `<name>-bed.wav`, the
    no-melody mix. Report the numbers: the hard checks, every out-of-range gauge with its one-line
    explanation, and the answers to "Before reporting" below. Never claim it sounds good.
@@ -141,7 +143,13 @@ FILM = Film("my-film-r1", PIECE, picture=BRIEF.picture, copy_to=None)
 
 Worked examples, rendered with note dumps and dashboards: `recipe-a-example`,
 `recipe-b-example`, `recipe-c-example` in `src/demos.py` (outputs in `out/`, notes in
-`out/notes/`). Copy the closest one.
+`out/notes/`). Copy the closest one. What their dumps show the engine doing (2026-11-25): the
+sustain sounds 100 % of the time, with common notes held through chord changes (B's E-flat 3 for
+the whole piece); the pulse keeps B-flat 4, G4, F4, E-flat 4 under every chord (`pedal-fit` 0,
+`pulse-sim` 0.93-1.00); B's two cycles (23 and 29 half-beats) come round at different places in
+the bar each time; layers enter on their bar lines with 2-bar fades (B: cycle at 8.3 s, sub at
+16.6 s, strings at the peak, 24.8 s); every phrase keeps one touch (spread 0.02-0.09) and arches;
+tilt -7.3 (B) and -6.9 (C) dB an octave, A darker at -12.4.
 
 ## The stack
 
@@ -235,6 +243,47 @@ and layers on one continuous piece.
 - **Endings**: the ending bar slows on a curve that slows late (end tempo 85 %; `rit=1.0` for the
   short ending); a real ending, never a fade, at least 1.5 s of ring after the name.
 
+## The sound (mix and master)
+
+Every piece goes through the same chain (`src/mix.py`, `src/engine/`); each choice is a switch in
+`src/engine/options.py` with a default. Order of precedence: the piece's `Piece.sound = {...}`,
+then the environment for a whole run (`SONGBOOK_SOUND="air_db=11,pad_timbre=triangle"`), then the
+piece's style profile, then the default.
+
+- **Felt piano** (Upright KW, CC0): the soft and loud recordings lined up and crossfaded between
+  touch 0.55 and 0.80; every recording matched to its neighbours in level and brightness; the
+  filter follows the phrase's touch (each note's own deviation counts 25 %); a faint ring of the
+  undamped strings while the pedal is down; added "shine" off.
+- **Pad** (`sounds.pad`, played by `bed.py` through `Band.pad`): two detuned saws (or triangles),
+  24 dB/oct low-pass at 900 Hz key-tracked 50 %, attack 1.2 s, release 2.2 s, a 25-second drift of
+  its colour, about 25 % wider than the piano. Its bus sits around -32 LUFS, about 8 dB under the
+  pulse.
+- **Buses**: one fixed gain per bus per film (`bus_gain="fixed"`), so a softer touch or a quieter
+  section is heard as written. Piano buses: high-pass 40 Hz, -2.5 dB at 250 Hz, low-pass 8 kHz.
+- **Spaces**: one darker hall (send high-pass 220 Hz, return low-pass 7 kHz; pre-delay 25 ms,
+  longer at slow tempi) and a small room; a dotted-eighth **echo** on the pad and cycles (the change
+  plan's `echo` entries scale it).
+- **Under a narrator**: a static mid-only cut of 2.5 dB at 3.2 kHz and the pad's centre 3 dB down,
+  moving only with the hand-set section levels. No ducking.
+- **Master**: high-pass 25 Hz, mono below 140 Hz, the air shelf at **0 dB** (a piece may ask for up
+  to +1.5; anything higher is capped), gentle glue (at most 2 dB), true-peak limiter at -1 dBTP.
+  `mix.deliver()` makes web (-14), subtle web (-16.5), US TV (-24 LKFS, -2 dBTP) and EU TV (-23)
+  files from one premaster.
+- **Profiles**: `style="v1"` pieces (what the owner has heard) keep the whole old sound byte for
+  byte (checked 2026-11-25: `make-it-mine` renders identical to the delivered
+  `sb-take2-mix.wav`); `"v2"` (rounds 7-8) get the new sound with the old bus levelling; `"v3"`
+  (every recipe) gets every default.
+
+| Sound switch | Default | Other values | Whose call |
+|---|---|---|---|
+| `piano` | `upright-kw` | `vcsl-upright`, `salamander` (fetch with `fetch-samples.sh`) | [OWNER] A/B |
+| `pad_timbre` | `saw` | `triangle` (rounder) | [OWNER] |
+| `pad_sub` | off | on (a sine an octave down) | [OWNER] |
+| `damper_thump` | off | on (a felt thump as a damper lands; reads as a knock in a sparse tune) | [OWNER] A/B |
+| `air_db` | 0 | up to 1.5 per piece; `air_db=11,air_policy=as-written` = the old 11 dB shelf | A/B pair in the plan |
+| `piano_layers`, `piano_even`, `piano_resonance`, `piano_shine`, `piano_bus_eq`, `glue`, `bus_gain`, `echo`, `voice_cut` | the new sound | the old behaviour, for A/B | ours |
+| `pad_cutoff`, `pad_attack`, `pad_release`, `reverb_lp`, `reverb_hp`, `hall_predelay`, `piano_3k_cut`, `piano_saturation`, `pad_centre_under_voice` | as above | numbers | ours |
+
 ## Measurement: hard fails and the dashboard
 
 **Hard fails** are faults whatever the music. Only these can fail a render:
@@ -258,7 +307,7 @@ and layers on one continuous piece.
 | touch and tone | `touch` (max 0.62, each phrase's spread <= 0.12), `tilt` (-5 to -8 dB an octave), `presence` (2-5 kHz <= -17 dB, 5-16 kHz <= -30), `roughness` (uncalibrated) |
 | timing | `tempo-stretch` (<= 3 %), `narrator-tempo` (her band), `narrator-chords` (on her phrase ends), `voice-margin` (10-14 dB), `picture-sync` (weight-3 hits on, nothing early), `hit-budget` |
 | older checks | every round-8 composition check (foundation, pulse, even, grid, phrases, the tune and cell identity limits, peak, settle, level-rate, loudness-range, tone, ...) |
-| mix | loudness, mono, the tune on top, attacks on notes, no drum-like attack, air and low bands |
+| mix | loudness, mono, the tune on top, attacks on notes, no drum-like attack, air and low bands (the air band's -38 dB floor applies only to the old 11 dB master; on the new one only its ceiling does, and `tilt` and `presence` judge the tone) |
 
 **THE RULE.** The dashboard never fails a render. For every out-of-range number the composer does
 one of two things: **explain it in one line** (`Piece.explain = {"gauge-id": "why"}`, printed next
@@ -282,8 +331,8 @@ for the B sketch with `render.sh --sketch <film> sustain=held`.
 | `under_voice` | `static` / `follow` | a fixed tone change under her (built, in the mix) or a dip that follows her words (NOT built: his rule) |
 | `chords` | `rich` / `plain` | 9th and sus chords, or plain triads and sevenths |
 
-The sound's own switches (piano, pad timbre, air shelf, reverb, echo) are in
-`src/engine/options.py` and `Piece.sound`. The optional bed library (long approved beds that films
+The sound's own [OWNER] switches (the piano A/B, pad timbre, pad sub, damper thump) are in
+**The sound** above. The optional bed library (long approved beds that films
 are cut from) is not built: it would reverse "each film gets its own piece" and is his call.
 
 ## Pitfalls (what went wrong, and must not come back)
@@ -373,10 +422,18 @@ passage from the middle of a film). The logo files are used only when the logo p
 They render as they were (`style="v1"` or `"v2"`); their reports now show the hard checks and the
 dashboard. "Own everything" (`own-everything*`, 2026-11-20); "Make it mine" first score
 (`make-it-mine`, rejected: "extremely repetitive"); round 7 (`make-it-mine-r3`,
-`own-everything-10s`, `fairytale-score-r2`: choppy, busy/harsh, thrown in); round 8 (film files
-`film_mim.py`, `film_own.py`, `film_tale.py`; unheard); the demonstrations (`demo-*`,
-`example-bed`, `example-piano-ending`). Some old pieces fail the hard `clash` check (the stark
-mood's G pulse against A-flat, a semitone): that is their record, not something to fix in them.
+`own-everything-10s`, `fairytale-score-r2`: choppy, busy/harsh, thrown in; no longer in the film
+list, their old reports remain in `out/films/`); round 8 (film files `film_mim.py`, `film_own.py`,
+`film_tale.py`; unheard); the demonstrations (`demo-*`, `example-bed`, `example-piano-ending`).
+Some old pieces fail the hard `clash` check (the stark mood's G pulse against A-flat, a
+semitone; `own-everything`, `-barest`, `-fast-barest`): that is their record, not something to
+fix in them.
+
+The round-8 film files (style `"v2"`) now play through the new sound. They still carry what their
+composers added to pass the old brightness floor: `air=12.5` (own), `air=17` and a held violin
+"air" layer (tale), `air=18`, `tone=3` and a shine wrapper around `Band.piano` (mim). The air
+values are capped to +1.5 dB by the new master; the rest still sounds. Before the owner hears a
+round-8 film again, its composer should take those out for musical reasons or say why they stay.
 
 ## What is still weak (honest)
 
@@ -384,14 +441,21 @@ mood's G pulse against A-flat, a semitone): that is their record, not something 
   the recipes are untested by ear; the three examples are proofs that the engine works.
 - **The gauges' ranges come from four pieces and the logo** (tilt, presence, roughness,
   novelty-peaks are uncalibrated until the owner rates harsh/fine and choppy/fine).
-- **The examples read the same out-of-range gauges**: roughness (1.9-2.4x, uncalibrated), the
-  level swinging 7-10 dB within a second between pulse notes (the pad sits about 10 dB under the
-  pulse: a balance question for the mix), the air and low-end mix bands of the new darker master.
+- **The examples read the same out-of-range gauges**: roughness (1.9-2.4x, uncalibrated) and the
+  level moving 7-9 dB within a second (the pad sits about 8 dB under the pulse, the plan's pad
+  level; in C also the step from -6 to -2 dB as the tune enters after her last word). The pad's
+  balance against the pulse is a question for the owner's ear, not a number to chase.
+- **Recipe A reads darker than the tilt range** (-12.4 dB an octave, about the owner's own piano
+  logo at -11): a soft pulse and a pad with no tune. Information, not a reason to brighten.
+- **Cycles are sparse in a busy short piece**: in recipe B the guards (tune phrases, the peak,
+  the ending) leave cycle1 sounding once in 36 s. Fewer tune phrases leave them more room.
+- **The A/B pianos are raw.** The VCSL upright needed two repairs at load (opposite-polarity
+  channels; recordings that stop while still sounding) and a flat level match; its soft G5 also
+  dies within 0.4 s and carries a small knock 0.55 s in, which F5-A5 soft notes inherit (the
+  attack gauge flags it after the logo). Salamander passes. Listen to the A/B with that in mind.
 - **Chords change only on a half-bar**, so a chord on her sentence end can be up to a second off;
   `narrator-chords` reads it.
 - **Syllables are counted from spelling** (about 10 % over a passage).
-- **The echo send is the mix's**; the change plan's `echo` entries are passed to it
-  (`band.echo_curve`) and do nothing until it reads them.
 - **The KTH loudness arch is held to +-1 dB** (the research's 1.5-2.5 dB would exceed the 0.12
   touch spread); harmonic charge (a crescendo toward the chord furthest from home) is not built.
 
@@ -409,7 +473,9 @@ render.sh <film>                     # render, mix, measure (and <name>-bed.wav,
 
 `<film>` = a film's name, a film file's key (`mim` for `src/film_mim.py`) or a demonstration's
 name. Never run `render.sh` with no arguments while others are composing (it re-renders
-everything and rewrites films' copies). Outputs (git-ignored): `out/films/<name>.wav`,
+everything). Films with `copy_to` (`own-everything`, `make-it-mine`) copy their file into
+`scripts/campaign/film/public/audio/` on every render; `SONGBOOK_NO_COPY=1 render.sh <film>`
+renders into `out/` only, for checking the toolkit without touching what an editor has cut to. Outputs (git-ignored): `out/films/<name>.wav`,
 `.checks.txt`, `.json`; `out/notes/<name>.txt` (bar table, recipe, bed, hard checks, dashboard),
 `.log.txt` (every note), `.grid.json` (motion grid); `out/sketches/`.
 
@@ -426,8 +492,10 @@ level_db/ramp/shape..., `Piece` logo/ending/land/rit/loudness/touch/tone/mix...)
 layers, change plan, pad voicing) · `cycles.py` · `tunebank.py` (phrases, placing, mutation) ·
 `timing.py` (fit_tempo, narrator band, phrase ends, shared time line, ritardando, perceived
 attack) · `dashboard.py` (hard checks and gauges) · `studio.py` (the procedure's commands) ·
-`padvoice.py` (a stand-in pad if the engine has none) · `tune.py` (tune, chords, vocabulary,
+`tune.py` (tune, chords, vocabulary,
 phrase bank) · `motif.py` (phrases and development) · `moods.py` · `blocks.py` (blocks into notes,
 the pedal pulse, phrase shaping) · `score.py` (sections, timing, the players) · `form.py` (the older
 composition checks and the bar table) · `measure.py` (mix and audio measurements) · `notes.py` ·
-`build.py` · `demos.py` · `films.py` · `mix.py` and `engine/` (the sound; another builder's).
+`build.py` · `demos.py` · `films.py` · `mix.py` (buses, spaces, echo, voice cut, delivery) ·
+`engine/` (`sounds.py` instruments and the pad, `master.py`, `options.py` the sound switches,
+`dsp.py`).

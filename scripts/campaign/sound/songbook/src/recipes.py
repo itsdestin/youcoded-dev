@@ -14,7 +14,7 @@ changed is the second sketch (studio.py --sketch).
 
 THE OWNER'S SWITCHES ([OWNER] in the plan: his decisions by ear, not ours). Defaults below;
 change one for a whole run with SONGBOOK_OWNER="sustain=held,pulse=chord", or per piece with
-owner={...}. Every piece records the switches it was made with (Piece.owner, printed in reports).
+owner_over={...}. Every piece records the switches it was made with (Piece.owner, printed in reports).
 """
 import os
 from dataclasses import dataclass, field

@@ -9,7 +9,9 @@
     render.sh --bed    <film>            step 3: the bed alone (sustain, pulse, cycles; no tune),
                                          rendered, with its dashboard
     render.sh --sketch <film> [k=v ...]  step 5: the first 20 s twice, as written (A) and with ONE
-                                         switch changed (B; default: the sustain pad <-> held)
+                                         switch changed (B; default: the sustain pad <-> held;
+                                         or an [OWNER] switch, a sound switch from
+                                         engine/options.py, bed.<k>, sec.<k>, a Piece field)
                                          into out/sketches/
 
 <film> is a film's name, a film file's key (film_<key>.py) or a demonstration's name.
@@ -170,6 +172,11 @@ def without_tune(piece):
     return q
 
 
+def _sound_keys():
+    import options
+    return list(options.DEFAULTS)
+
+
 def apply_switch(piece, key, value):
     """One switch changed, for the B sketch: an [OWNER] switch (sustain, pulse, chords), a bed
     field (bed.cutoff=1200), a piece field (touch=0.8) or a field on every section
@@ -198,7 +205,24 @@ def apply_switch(piece, key, value):
     elif key.startswith("sec."):
         for s in q.sections:
             setattr(s, key[4:], num(value))
+    elif key.startswith("sound.") or key in _sound_keys():
+        # WHY (integration, 2026-11-25): the sound's switches (engine/options.py: piano, pad_timbre,
+        # air_db, damper_thump, ...) are most of the owner's A/Bs; they go into Piece.sound, which
+        # wins over the environment and the style profile. Before this, `piano=salamander` was set
+        # as a plain attribute nobody reads, and the B sketch came out identical to A.
+        import options
+        k = key[6:] if key.startswith("sound.") else key
+        q.sound = dict(q.sound or {}, **options._parse(f"{k}={value}"))
+    elif key in ("narrator_tempo", "voice_busy", "under_voice"):
+        # these shape the piece when the recipe BUILDS it (tempo, the chord grid, the dashboard's
+        # target), so they cannot be flipped on a finished piece: rebuild with the environment
+        raise SystemExit(f"{key} is applied when the recipe builds the piece: run "
+                         f"SONGBOOK_OWNER={key}={value} render.sh <film> for the B version")
     else:
+        if not hasattr(q, key):
+            # WHY: a misspelt switch used to become an attribute nobody reads (B identical to A)
+            raise SystemExit(f"unknown switch {key!r}: an [OWNER] switch (sustain, pulse, chords), a sound "
+                             f"switch ({', '.join(_sound_keys())}), bed.<field>, sec.<field> or a Piece field")
         setattr(q, key, num(value))
     q.owner = dict(q.owner or {}, **({key: value} if key in ("sustain", "pulse", "chords") else {}))
     return q

@@ -7,7 +7,12 @@ upper partials, the hall, room and echo, mixing and mastering) is code in `src/`
 
 Two OPTIONAL pianos exist only for the owner's A/B against the current one (toolkit-plan b1;
 `SONGBOOK_SOUND="piano=vcsl-upright"` or `"piano=salamander"`, same felt processing). They are
-fetched by `fetch-samples.sh` into `samples/` (git-ignored) and checked against `samples.sha256`.
+fetched by `fetch-samples.sh` into `samples/` (git-ignored) and checked against `samples.sha256`. At load
+(`src/engine/sounds.py`, `_piano_pitched` and `_evenness`) the A/B recordings, and only they, are
+repaired as data: a recording whose two channels are in opposite polarity gets one turned (7 VCSL
+files, 13 Salamander), one that stops while still sounding gets a 20 ms fade (4 VCSL), and each
+is levelled flat across the keyboard so the comparison is between pianos, not registers. The
+files on disk are untouched.
 
 | What | Where it is read from | Licence | Used for |
 |---|---|---|---|

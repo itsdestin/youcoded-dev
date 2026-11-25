@@ -476,6 +476,12 @@ for _f in FILMS.values():
 def render_film(film):
     import build
     os.makedirs(OUT, exist_ok=True)
+    if os.environ.get("SONGBOOK_NO_COPY"):
+        # WHY (integration, 2026-11-25): a re-render to check the toolkit must not replace the audio
+        # an editor has already cut the film to (copy_to, in scripts/campaign/film/public/audio/);
+        # SONGBOOK_NO_COPY=1 renders into out/ only
+        import dataclasses
+        film = dataclasses.replace(film, copy_to=None)
     # the music alone first (all the music checks apply to it: the "-no-pen" version), then one
     # mix per effects version (VARIANTS); the music is the same render in every one
     if not film.hits and film.effects is None:

@@ -125,8 +125,32 @@ def _region(m, layer, regions=None):
 @lru_cache(maxsize=None)
 def _piano_pitched(path, semis):
     x, sr = sf.read(path, dtype="float64", always_2d=True)
+    # the two repairs below are for the A/B pianos only (samples/): the default kit stays byte-identical
+    ab = os.path.abspath(path).startswith(os.path.abspath(SAMPLES) + os.sep)
     if x.shape[1] == 1:
         x = np.repeat(x, 2, axis=1)
+    elif ab:
+        # WHY (integration, 2026-11-25): the VCSL upright's two channels are recorded with opposite
+        # polarity (their first 300 ms correlate -0.8 to -0.9, measured on C4); summed to mono
+        # (a phone speaker, and every measurement here) the note nearly cancels: notes came out
+        # 25-45 dB quiet and the mono fold lost 3.5 LU. A recording whose channels are clearly
+        # anti-correlated gets its right channel's polarity turned (7 VCSL files, 13 of Salamander's
+        # 60, none of the Upright KW's).
+        n = min(len(x), int(0.3 * sr))
+        a, b = x[:n, 0], x[:n, 1]
+        den = float(np.sqrt((a * a).sum() * (b * b).sum()))
+        if den > 0 and float((a * b).sum()) / den < -0.3:
+            x = x * np.array([1.0, -1.0])
+    # WHY (integration, 2026-11-25): some A/B recordings stop while still sounding (VCSL G5 soft:
+    # 1.2 s long, its last samples 30 dB under its peak), and a long note then ends in a click the
+    # attack check heard as a note that was never played. An A/B recording whose last 20 ms are
+    # still above -60 dB re its peak gets a 20 ms fade there (4 VCSL files). The default kit is not
+    # touched, so the pieces the owner has heard stay byte-identical.
+    k = int(0.02 * sr)
+    pk = float(np.abs(x).max())
+    if ab and len(x) > 4 * k and pk > 0 and float(np.abs(x[-k:]).max()) > pk * 1e-3:
+        x = x.copy()
+        x[-k:] *= np.linspace(1.0, 0.0, k)[:, None]
     return resample_ratio(x, (SR / sr) / (2.0 ** (semis / 12.0)))
 
 
@@ -183,10 +207,18 @@ def _evenness(kit):
             shelves.append((float(best), hz, float(db(np.sqrt((yy ** 2).mean())))))
         lv = np.array([q[2] for q in shelves])
         lfit = np.polyfit(k, lv, 2)
+        # WHY flat and wider for the A/B pianos (integration, 2026-11-25): their recordings are not
+        # levelled key by key the way the Upright KW's are; the VCSL soft layer falls 21 dB from
+        # E-flat 4 to G5 and Salamander's 10 dB (measured through this felt filter), so the tune and
+        # the logo's G5/F5 came out far under the pulse and the A/B compared registers, not pianos.
+        # Levelled flat (to the soft layer's median, up to +-24 dB) they play "the same notes
+        # through the same felt processing" (plan b1). The default kit keeps its curve and +-4 dB.
+        wide = kit != "upright-kw"
         if ref_fit is None:
-            ref_fit = lfit
+            ref_fit = np.array([0.0, 0.0, float(np.median(lv))]) if wide else lfit
+        lim = 24.0 if wide else 4.0
         for (key, _, _, path), (g_sh, hz, l) in zip(rows, shelves):
-            out[path] = (float(np.clip(np.polyval(ref_fit, key) - l, -4.0, 4.0)), g_sh, hz)
+            out[path] = (float(np.clip(np.polyval(ref_fit, key) - l, -lim, lim)), g_sh, hz)
     return out
 
 

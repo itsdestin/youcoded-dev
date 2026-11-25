@@ -22,6 +22,7 @@ import blocks  # noqa: E402
 import form  # noqa: E402
 import measure as M  # noqa: E402
 import mix as X  # noqa: E402
+import options as O  # noqa: E402
 import dashboard as D  # noqa: E402
 import films  # noqa: E402
 from demos import DEMOS  # noqa: E402
@@ -30,21 +31,6 @@ from master import lufs, measure, motif_check  # noqa: E402
 from score import Band, plan  # noqa: E402
 
 OUT = os.path.join(HERE, "..", "out")
-
-
-def _bus_defaults():
-    """WHY: score.BUSES gained "pad" and "cycle" (the rebuild); mix.py, the sound builder's file,
-    sets each bus's level. Until it names them, these defaults (score.NEW_BUS_DEFAULTS) stand in,
-    and any value mix.py does define wins."""
-    import score
-    for b, (tgt, hall, room) in score.NEW_BUS_DEFAULTS.items():
-        for name, val in (("TARGET", tgt), ("HALL", hall), ("ROOM", room)):
-            d = getattr(X, name, None)
-            if isinstance(d, dict):
-                d.setdefault(b, val)
-
-
-_bus_defaults()
 
 
 def render(piece, backing=False, gains=None):
@@ -68,6 +54,10 @@ def one(piece, extra_fn=None, path=None):
     st = measure(y, os.path.basename(path))
     st["logo"] = dict(kind=piece.logo, **M.landing(band, plans, piece))
     st["loudness_target"] = getattr(piece, "loudness", -14.0)
+    # WHY: the air-band gauge (mix_tests) depends on which master the piece went through
+    st["air_db"] = X.air_for(piece)
+    # every sound switch this render used (engine/options.py), so an A/B's two files say how they differ
+    st["sound"] = {k: (v if isinstance(v, (int, float, bool, str)) else str(v)) for k, v in O.summary(piece).items()}
     raw_b, _, _, _ = render(piece, backing=True, gains=gains)
     tv = motif_check(raw, raw_b, band.melody)
     if getattr(piece, "style", "") == "v3":
@@ -137,7 +127,12 @@ def mix_tests(v, mo=None, loudness=-14.0):
          at["noisiness_max"] is None or at["noisiness_max"] < 0.1),
         # WHY 38 (was 32, round 8): a piece may now be darker on purpose (Piece.tone, Piece.air,
         # Piece.touch) after "busy/harsh"; the floor still catches a mix with no top at all
-        ("air: 8-16 kHz 18-38 dB below total", -38 <= b["8000-16000"] <= -18),
+        # WHY the floor only on the old master (integration, 2026-11-25): the -38 dB floor was set
+        # against the 11 dB air shelf; on the new master (air 0, at most +1.5) a felt piano measures
+        # -55 to -65 here BY DESIGN, and the plan's `tilt` and `presence` gauges now judge the tone.
+        # Keeping the floor made every new piece explain it away (a gauge nobody should chase).
+        (("air: 8-16 kHz 18-38 dB below total", -38 <= b["8000-16000"] <= -18) if v.get("air_db", 11.0) >= 6.0 else
+         ("air: 8-16 kHz at least 18 dB below total (no floor on the darker master)", b["8000-16000"] <= -18)),
         # WHY -12 for quiet pieces (2026-11-23): own (-17 LUFS) and tale (-16) measured -9.9 and
         # -10.3 here: a subtle film is lighter in the sub band and plays better on a phone for it.
         # The floor exists against a thin mix at full loudness, so it stays -9 there.
