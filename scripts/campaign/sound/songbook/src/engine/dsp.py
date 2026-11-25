@@ -305,7 +305,9 @@ def env_follow(x, attack, release, frame=48):
     return e
 
 
-def compress(x, thresh_db, ratio, attack=0.02, release=0.25, makeup_db=0.0, knee=6.0):
+def compress(x, thresh_db, ratio, attack=0.02, release=0.25, makeup_db=0.0, knee=6.0, max_gr=None):
+    """Soft-knee compressor. `max_gr` (dB) caps the gain reduction (2026-11-24, plan b4: the
+    master's glue may never take more than 2 dB); None = uncapped (the old behaviour)."""
     frame = 48
     e = env_follow(x, attack, release, frame)
     lv = db(e)
@@ -314,6 +316,8 @@ def compress(x, thresh_db, ratio, attack=0.02, release=0.25, makeup_db=0.0, knee
     gr = np.where(over <= -knee / 2, 0.0,
                   np.where(over >= knee / 2, over * (1 - 1 / ratio),
                            (1 - 1 / ratio) * (over + knee / 2) ** 2 / (2 * knee)))
+    if max_gr is not None:
+        gr = np.minimum(gr, max_gr)
     g = undb(-gr + makeup_db)
     gs = np.interp(np.arange(len(x)), np.arange(len(g)) * frame + frame / 2, g)
     return x * (gs[:, None] if x.ndim == 2 else gs)

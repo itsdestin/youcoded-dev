@@ -1,0 +1,128 @@
+"""Switchable sound options: one place for every choice the owner makes by ear.
+
+WHY this file (rebuild plan 2026-11-24, section b): several sound changes are the owner's to
+judge by ear ([OWNER] in toolkit-plan.md) or are new enough to deserve a one-parameter A/B. Each
+is a named switch with a default, so an A/B render is one setting, not a code edit.
+
+Where a value comes from, first match wins:
+  1. the piece's own `sound` dict (Piece.sound = {"pad_timbre": "triangle"});
+  2. the environment, for a whole render run:  SONGBOOK_SOUND="air_db=11,piano_layers=switch";
+  3. the piece's style profile (PROFILES below: v1 = the old sound, byte for byte);
+  4. DEFAULTS below.
+The mix reads the piece directly; the instruments (which play before the mix) read the piece
+made current by `use(piece)`, which score.Band calls when it is created.
+
+Every option is a SOUND choice. None of them exists to make a measurement pass.
+"""
+import os
+
+DEFAULTS = dict(
+    # ---- master (b4). WHY 0: the old 11 dB shelf at 9 kHz was ~10x a normal mastering move and
+    # the likeliest technical cause of "harsh"; a piece may ask for up to air_max_db more.
+    air_db=0.0,
+    air_max_db=1.5,
+    air_policy="cap",            # "cap": a piece's Piece.air is held to air_max_db | "as-written"
+    glue="gentle",               # "gentle": 1.8:1, soft knee, at most 2 dB of gain reduction | "legacy"
+    # ---- piano (b2)
+    piano="upright-kw",          # [OWNER A/B] "upright-kw" (current) | "vcsl-upright" | "salamander"
+    piano_layers="crossfade",    # soft/loud recordings lined up and crossfaded 0.55-0.80 | "switch" (old: at 0.7)
+    piano_even="on",             # each recording matched to its neighbours in level and brightness | "off"
+    piano_shine="off",           # added 6-15 kHz partials: "off" | "capped" (<= -30 dB re the note) | "as-written"
+    piano_resonance="on",        # sympathetic-string ring while the pedal is down (~-33 dB) | "off"
+    # [OWNER A/B] a soft felt thump when a damper lands (-38 dB re the note, below 150 Hz). WHY off
+    # by default although the plan lists it: in a sparse tune it is a knock in the silence after a
+    # note, i.e. an attack that is not a note, which the owner's identity rules out ("no clacks");
+    # measured: on make-it-mine-r5 it adds two such attacks on the tune. "on" for his A/B.
+    damper_thump="off",
+    piano_bus_eq="on",           # HP 40, -2.5 dB at 250 Hz, LP 8 kHz 12 dB/oct on the piano buses | "off"
+    piano_3k_cut=0.0,            # optional extra dip at 3 kHz on the piano buses, dB (plan: -1.5 allowed)
+    piano_saturation=0.0,        # optional soft saturation on the piano buses, dB of drive (plan: 1-2)
+    # ---- pad (b3). [OWNER] the sustain layer's timbre: pad vs held strings vs pedalled piano is a
+    # composing choice; within the pad, the oscillator shape is this switch.
+    pad_timbre="saw",            # "saw" (two detuned saws) | "triangle" (rounder, fewer upper partials)
+    pad_sub=False,               # add a sine an octave down at -12 dB
+    pad_cutoff=900.0,            # Hz, 24 dB/oct, key-tracked 50 %
+    pad_attack=1.2,
+    pad_release=2.2,
+    # ---- mix (b4)
+    bus_gain="fixed",            # "fixed": one calibrated gain per bus, written touch carries through |
+                                 # "levelled": the old per-bus loudness levelling (TARGET while it plays)
+    # WHY no "hall-ir" choice yet: the plan's optional OpenAIR hall IR could not be fetched
+    # (its site failed certificate checks on 2026-11-24); the code-made hall stays, made darker.
+    reverb_lp=7000.0,            # Hz, low-pass on the hall's return (plan: send LP 7 kHz; was 12 kHz)
+    reverb_hp=220.0,             # Hz, high-pass on the hall's send (plan: 220; was 180)
+    echo="on",                   # dotted-eighth echo send on pad / cycles (and lead if Piece asks) | "off"
+    voice_cut="mid",             # under narration: static -2.5 dB at 3.2 kHz on the MID only | "stereo-dip" (old)
+    pad_centre_under_voice=-3.0, # dB on the pad's centre (mid) channel under narration
+)
+
+# WHY profiles by Piece.style: pieces the owner has already heard pin style="v1" and promise to
+# stay "byte for byte" what he heard (films.py, demos.py), so they keep the whole old sound. The
+# round 7-8 pieces (style "v2") get the new sound, but keep the old bus levelling, because their
+# per-piece trims (Piece.mix) were written against it. New pieces ("v3", the recipes) get every
+# default. A piece's own Piece.sound, or the environment, still overrides a profile (for A/Bs).
+PROFILES = {
+    "v1": dict(air_db=11.0, air_policy="as-written", glue="legacy", piano_layers="switch", piano_even="off",
+               piano_shine="as-written", piano_resonance="off", damper_thump="off", piano_bus_eq="off",
+               bus_gain="levelled", reverb_lp=12000.0, reverb_hp=180.0, hall_predelay=0.022, echo="off",
+               voice_cut="stereo-dip"),
+    "v2": dict(bus_gain="levelled"),
+}
+DEFAULTS["hall_predelay"] = "tempo"   # "tempo": 25 ms, opening toward 120 ms at or below 80 BPM | seconds
+
+_current = {}
+_piece = None
+
+
+def _parse(text):
+    out = {}
+    for part in (text or "").split(","):
+        if "=" not in part:
+            continue
+        k, v = (s.strip() for s in part.split("=", 1))
+        if k not in DEFAULTS:
+            raise KeyError(f"SONGBOOK_SOUND: unknown option {k!r}; known: {', '.join(DEFAULTS)}")
+        d = DEFAULTS[k]
+        if isinstance(d, bool):
+            v = v.lower() in ("1", "true", "yes", "on")
+        elif isinstance(d, float):
+            v = float(v)
+        out[k] = v
+    return out
+
+
+def _check(sd, where):
+    bad = [k for k in sd if k not in DEFAULTS]
+    if bad:
+        raise KeyError(f"{where}: unknown option(s) {bad}; known: {', '.join(DEFAULTS)}")
+
+
+def use(piece=None):
+    """Make `piece` current for the instruments (its Piece.sound and its style's profile). Call
+    once per piece before its notes are played (score.Band.__init__ does). use(None) resets."""
+    global _current, _piece
+    sd = dict(getattr(piece, "sound", None) or {}) if piece is not None else {}
+    _check(sd, "Piece.sound")
+    _current, _piece = sd, piece
+
+
+def get(name, piece=None):
+    """The option's value. Order: the piece's own Piece.sound, then the environment
+    (SONGBOOK_SOUND), then the piece's style profile (PROFILES), then DEFAULTS. Without `piece`,
+    the piece made current by use()."""
+    p = piece if piece is not None else _piece
+    sd = (getattr(p, "sound", None) or {}) if p is not None else _current
+    if name in sd:
+        return sd[name]
+    env = _parse(os.environ.get("SONGBOOK_SOUND", ""))
+    if name in env:
+        return env[name]
+    prof = PROFILES.get(getattr(p, "style", None), {}) if p is not None else {}
+    if name in prof:
+        return prof[name]
+    return DEFAULTS[name]
+
+
+def summary(piece=None):
+    """Every option and its value for this piece (for reports)."""
+    return {k: get(k, piece) for k in DEFAULTS}
